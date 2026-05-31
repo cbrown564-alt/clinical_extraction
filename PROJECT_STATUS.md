@@ -72,6 +72,8 @@ Treat deterministic rules as controlled variables. Categorize each rule by porta
 - Deterministic rule-catalogue Chunk 5 is complete for the cluster-candidate arithmetic surface: `gan2026.rules.cluster` exists with catalogued seizure-free cycle clusters, last-convulsive cluster persistence spans, interval/batch cluster cycles, adjective cluster rates, compact cluster count-per-period expressions, this-period cluster counts with unknown, vague, or explicit cluster size, last-month cluster counts, monthly clusters with explicit 24-hour size, unknown-frequency clusters with known size, each-comprising cluster windows, cluster-over-period counts, run/vague-day cluster patterns, cluster timing/day patterns, short-burst monthly clusters, implied-size clusters, and size-without-count clusters. These rules expose cluster metadata, registry examples, helper-backed date arithmetic, and group-level ablation while preserving default V1 labels/evidence.
 - Deterministic rule-catalogue Chunk 6 is complete for diary/log aggregation: `gan2026.rules.diary` exists with catalogued seizure-day per-period rules, seizure-day fraction logs, diary date lists, annual seizure-day logs, abbreviated month `xN` logs, sparse full-month semicolon logs, recorded full-month comma logs, increasing/current diary monthly trend logs, two-month sleep/awake summaries, recent-month summaries, reported month-count lists, extended this-month summaries, and sparse month/cluster event lists. These rules expose diary metadata, registry examples, helper-backed date arithmetic where needed, and group-level ablation while preserving default V1 labels/evidence.
 - The Gan-specific shorthand rule group is catalogued: `gan2026.rules.gan_shorthand` covers compact `TC`/`sz` count-per-period notation, compact `abs` adjective/count rates, and compact `qN-unit`/`qN-to-Munit` intervals with `gan2026_specific` portability and group-level ablation while preserving default V1 labels/evidence.
+- Temporal-selection diagnostics now expose structured `SelectionScore` records for the selected candidate and all candidate alternatives, naming semantic priority, evidence priority, monthly-frequency tie-breaker, and selection reason while preserving the original tuple ordering behavior.
+- Benchmark repair is isolated as benchmark-format metadata: `gan2026.rules.benchmark_repair` defines traceable `BenchmarkRepairStep` records and `repair_prediction_label_with_trace()` exposes which accepted-format/scorer-compatibility repairs changed a prediction while preserving the public `repair_prediction_label()` behavior.
 - `pytest` and `ruff` pass in the local `.venv` after validation error-analysis generation.
 
 ## Work Board
@@ -103,7 +105,7 @@ tuning surface.
 ### Now
 
 - Prepare ablation/reporting views that separate portable date/duration logic, seizure-expression parsing, seizure-specific temporal selection, Gan synthetic diary phrasing, and benchmark-formatting repairs.
-- Continue rule-catalogue migration with the next bounded group: temporal-selection/final-decision diagnostics or benchmark-repair isolation, before adding new deterministic behavior.
+- Create the validation-only deterministic-rule ablation/reporting view for V1, with benchmark-repair and Gan-specific shorthand reported separately from portable clinical rules.
 
 ### Next
 
@@ -126,6 +128,8 @@ tuning surface.
 
 ### Done Recently
 
+- 2026-05-31: Completed benchmark-repair isolation by adding `gan2026.rules.benchmark_repair`, routing prediction-label repair through traceable `BenchmarkRepairStep` metadata with `benchmark_format` portability, adding trace/registry tests, and preserving public repair behavior under full `pytest`/`ruff`.
+- 2026-05-31: Completed a bounded temporal-selection diagnostics slice by replacing the opaque final-selection tuple key with structured `SelectionScore` and per-candidate selection diagnostics, preserving default V1 selection behavior and passing full `pytest`/`ruff`.
 - 2026-05-31: Completed the Gan-specific shorthand bounded rule group by creating `gan2026.rules.gan_shorthand`, moving compact `TC`/`sz`, `abs`, and `qN-unit`/range interval rules out of `pipeline_v1`, adding registry, selected-candidate metadata, dataset-specific portability, and group-ablation tests, and preserving default V1 behavior under full `pytest`/`ruff`.
 - 2026-05-31: Completed deterministic rule-catalogue Chunk 6 by moving the broader monthly diary summary helper into `gan2026.rules.diary`, including recent-month summaries, reported month-count lists, extended this-month/as-of-this-month summaries, and sparse month/cluster event lists; candidate diagnostics now carry specific monthly-summary rule IDs, the old pipeline helper code was removed, and full `pytest`/`ruff` pass.
 - 2026-05-31: Continued deterministic rule-catalogue Chunk 6 by moving increasing/current diary monthly trend logs and two-month sleep/awake summaries into `gan2026.rules.diary`, adding selected-candidate metadata coverage, preserving default V1 behavior, and passing full `pytest`/`ruff`.
@@ -184,4 +188,4 @@ tuning surface.
 
 ## Immediate Next Step
 
-Create the deterministic-rule ablation/reporting view for V1 after finishing the remaining catalogue isolation work for temporal-selection diagnostics and benchmark repair; then start validation-only LLM/DSPy experiments on the residual reasoning families without inspecting or tuning on the test split.
+Create the deterministic-rule ablation/reporting view for V1 on validation only, keeping benchmark-repair and Gan-specific shorthand separate from portable clinical rules; then start validation-only LLM/DSPy experiments on the residual reasoning families without inspecting or tuning on the test split.

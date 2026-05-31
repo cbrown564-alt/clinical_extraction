@@ -730,6 +730,32 @@ def test_pipeline_can_ablate_catalogued_gan_shorthand_group() -> None:
     assert result.output.final_value == "no seizure frequency reference"
 
 
+def test_pipeline_exposes_structured_selection_scores() -> None:
+    note_text = (
+        "Historical seizures were 2 per month. "
+        "Patient reports focal aware sensory episodes only when significantly short on sleep."
+    )
+
+    result = Gan2026PipelineV1().run(_record(note_text))
+    final_selection = result.diagnostics["final_selection"]
+
+    assert result.output.final_value == "unknown"
+    assert final_selection["selected_score"] == {
+        "semantic_priority": 6,
+        "evidence_priority": 0,
+        "monthly_frequency_priority": 0.0,
+        "reason": "trigger_conditioned_unknown",
+    }
+    assert final_selection["selection_candidates"]
+    selected_score = next(
+        score
+        for score in final_selection["selection_candidates"]
+        if score["selected"] is True
+    )
+    assert selected_score["event_id"] == final_selection["selected_event_ids"][0]
+    assert selected_score["score"] == final_selection["selected_score"]
+
+
 @pytest.mark.parametrize(
     ("note_text", "expected_label", "expected_kind"),
     [
