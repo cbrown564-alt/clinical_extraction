@@ -633,6 +633,76 @@ def test_pipeline_extracts_common_seizure_free_phrasing(
     assert result.diagnostics["evidence_valid"] is True
 
 
+@pytest.mark.parametrize(
+    ("note_text", "expected_label", "expected_evidence"),
+    [
+        (
+            "He remained seizure-free for 8 months after starting levetiracetam, "
+            "before experiencing a generalised tonic-clonic seizure 3 Tuesdays ago, "
+            "preceded by a cluster of absences.",
+            "2 per 8 month",
+            (
+                "seizure-free for 8 months after starting levetiracetam, "
+                "before experiencing a generalised tonic-clonic seizure 3 Tuesdays ago, "
+                "preceded by a cluster of absences"
+            ),
+        ),
+        (
+            "On carbamazepine monotherapy he was seizure-free for five months, "
+            "until a focal impaired-awareness seizure occurred three Thursdays ago.",
+            "1 per 5 month",
+            (
+                "seizure-free for five months, until a focal impaired-awareness "
+                "seizure occurred three Thursdays ago"
+            ),
+        ),
+        (
+            "She had no seizures for nearly a year following initiation of valproate, "
+            "then developed myoclonic jerks leading to 3 tonic seizure 2 Saturdays ago.",
+            "3 per year",
+            (
+                "no seizures for nearly a year following initiation of valproate, "
+                "then developed myoclonic jerks leading to 3 tonic seizure 2 Saturdays ago"
+            ),
+        ),
+        (
+            "She may remain seizure-free for up to two month, but then will experience "
+            "clusters of four seizures in a single day.",
+            "1 cluster per 2 month, 4 per cluster",
+            (
+                "seizure-free for up to two month, but then will experience "
+                "clusters of four seizures in a single day"
+            ),
+        ),
+        (
+            "She may remain seizure-free for up to 4 month, but then will experience "
+            "clusters of three - four seizures in a single day.",
+            "1 cluster per 4 month, 3 to 4 per cluster",
+            (
+                "seizure-free for up to 4 month, but then will experience "
+                "clusters of three - four seizures in a single day"
+            ),
+        ),
+        (
+            "The driving plan is to reassess after the seizure-free interval. "
+            "Follow-up in three months by video.",
+            "no seizure frequency reference",
+            "The driving plan is to reassess after the seizure-free interval.",
+        ),
+    ],
+)
+def test_pipeline_handles_temporal_seizure_free_distractors(
+    note_text: str,
+    expected_label: str,
+    expected_evidence: str,
+) -> None:
+    result = Gan2026PipelineV1().run(_record(note_text))
+
+    assert result.output.final_value == expected_label
+    assert result.diagnostics["final_selection"]["evidence"] == expected_evidence
+    assert result.diagnostics["evidence_valid"] is True
+
+
 def test_pipeline_breakthrough_event_overrides_seizure_free_history() -> None:
     result = Gan2026PipelineV1().run(
         _record(

@@ -198,6 +198,27 @@ def _extract_candidates(note_text: str) -> list[_RawCandidate]:
 
 def _extract_cluster_candidates(text: str) -> list[_RawCandidate]:
     candidates: list[_RawCandidate] = []
+    cyclic_seizure_free_cluster = re.compile(
+        rf"\bseizure[- ]free\s+for\s+up\s+to\s+"
+        rf"(?P<denominator>{NUMBER_TOKEN})\s+(?P<unit>months?|years?)"
+        rf".{{0,80}}?\bclusters?\s+of\s+"
+        rf"(?P<raw_per_cluster>{NUMBER_TOKEN})\s+"
+        rf"(?:{SEIZURE_TERMS}|events?|episodes?|spells?)\s+in\s+a\s+single\s+day\b",
+        re.IGNORECASE,
+    )
+    for match in cyclic_seizure_free_cluster.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.CLUSTER_FREQUENCY,
+                label=(
+                    f"1 cluster per "
+                    f"{_period_label(match.group('unit'), match.group('denominator'))}, "
+                    f"{_cluster_size_token(match.group('raw_per_cluster'))} per cluster"
+                ),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
     adjective_cluster_rates = {
         "daily": ("day", None),
         "weekly": ("week", None),
@@ -608,6 +629,8 @@ def _extract_seizure_free_candidates(text: str) -> list[_RawCandidate]:
         re.IGNORECASE,
     )
     for match in seizure_free.finditer(text):
+        if _is_seizure_free_distractor(match, text):
+            continue
         count = match.groupdict().get("count")
         unit = match.groupdict().get("unit")
         if count and unit:
@@ -655,6 +678,42 @@ def _extract_distributed_count_candidates(text: str) -> list[_RawCandidate]:
 
 def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
     candidates: list[_RawCandidate] = []
+    remission_then_breakthrough = re.compile(
+        rf"\bseizure[- ]free\s+for\s+(?P<denominator>{NUMBER_TOKEN})\s+"
+        rf"(?P<unit>months?|years?)"
+        rf".{{0,180}}?\b(?:before\s+experiencing|until)\b"
+        rf".{{0,140}}?\b(?:{SEIZURE_TERMS})\b"
+        rf"(?:\s+occurred)?(?:\s+(?:{NUMBER_TOKEN})\s+\w+days?\s+ago)?"
+        rf"(?:.{{0,80}}?\bpreceded\s+by\s+a\s+cluster\s+of\s+absences\b)?",
+        re.IGNORECASE,
+    )
+    for match in remission_then_breakthrough.finditer(text):
+        evidence = _clean_evidence(match.group(0))
+        count = "2" if "preceded by a cluster of absences" in evidence.lower() else "1"
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label(count, match.group("unit"), match.group("denominator")),
+                evidence=evidence,
+            )
+        )
+
+    no_seizures_then_count = re.compile(
+        rf"\bno\s+(?:{SEIZURE_TERMS})\s+for\s+nearly\s+a\s+(?P<unit>year|month)"
+        rf".{{0,180}}?\bleading\s+to\s+(?P<count>{NUMBER_TOKEN})\s+"
+        rf"(?:{QUALIFIED_SEIZURE_TERMS})\b"
+        rf"(?:\s+(?:{NUMBER_TOKEN})\s+\w+days?\s+ago)?",
+        re.IGNORECASE,
+    )
+    for match in no_seizures_then_count.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label(match.group("count"), match.group("unit")),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
     candidates.extend(_extract_distributed_count_candidates(text))
 
     descriptor_rate = re.compile(
@@ -1691,6 +1750,27 @@ def _has_historical_lead_in(text: str, start: int) -> bool:
             "previously",
         )
     )
+
+
+def _is_seizure_free_distractor(match: re.Match[str], text: str) -> bool:
+    evidence = match.group(0).lower()
+    following = text[match.end() : match.end() + 160].lower()
+    surrounding = text[max(0, match.start() - 80) : match.end() + 160].lower()
+    if "up to" in evidence:
+        return True
+    if "required period" in evidence or "interval" in evidence:
+        return True
+    followup_months = re.compile(
+        rf"\bfollow-?up\s+in\s+(?:\d+|{NUMBER_WORD_PATTERN})\s+months?\b",
+        re.IGNORECASE,
+    )
+    if followup_months.search(evidence):
+        return True
+    if re.search(r"\b(?:before experiencing|until)\b", following):
+        return True
+    if re.search(r"\bthen\s+(?:developed|sustained|experienced|had)\b", following):
+        return True
+    return bool(re.search(r"\b(?:breakthrough|recent)\s+(?:seizure|event|episode)", surrounding))
 
 
 def _normalize_note_text(note_text: str) -> str:
