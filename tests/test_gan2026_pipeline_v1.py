@@ -67,6 +67,80 @@ def test_pipeline_extracts_simple_current_frequency_rates(
     ("note_text", "expected_label", "expected_evidence"),
     [
         (
+            "These events have been occurring multiple times in past week.",
+            "multiple per week",
+            "occurring multiple times in past week",
+        ),
+        (
+            "Current status: Several episodes per week, plus two tonic-clonic events "
+            "over the past six months.",
+            "multiple per week",
+            "Several episodes per week",
+        ),
+        (
+            "Brief focal episodes are now happening on most nights of the week.",
+            "multiple per week",
+            "happening on most nights of the week",
+        ),
+        (
+            "Petit mal occur on a near-daily basis, sometimes dozens in a day, "
+            "making accurate quantification challenging.",
+            "multiple per day",
+            "Petit mal occur on a near-daily basis, sometimes dozens in a day",
+        ),
+        (
+            "Generalised tonic-clonic seizures are rare, typically 3 events per year. "
+            "Focal sensory episodes occur several times each week, particularly in "
+            "the evenings.",
+            "multiple per week",
+            "Focal sensory episodes occur several times each week",
+        ),
+        (
+            "Focal tonic events occur several times per week, with convulsions only "
+            "twice per year.",
+            "multiple per week",
+            "Focal tonic events occur several times per week",
+        ),
+        (
+            "Generalised convulsions are rare. Focal non-motor occur several times "
+            "each week, particularly in the evenings.",
+            "multiple per week",
+            "Focal non-motor occur several times each week",
+        ),
+        (
+            "Generalised tonic-clonic seizures are rare. Focal sensory occur several "
+            "times each week.",
+            "multiple per week",
+            "Focal sensory occur several times each week",
+        ),
+        (
+            "She describes brief absence-like spells on most days, with two "
+            "generalised tonic-clonic seizures in the past eight weeks.",
+            "multiple per week",
+            "She describes brief absence-like spells on most days",
+        ),
+    ],
+)
+def test_pipeline_prioritizes_qualitative_high_frequency_current_patterns(
+    note_text: str,
+    expected_label: str,
+    expected_evidence: str,
+) -> None:
+    result = Gan2026PipelineV1().run(_record(note_text))
+
+    assert result.output.final_value == expected_label
+    assert result.diagnostics["final_selection"]["final_kind"] in {
+        FrequencyLabelKind.FREQUENCY,
+        FrequencyLabelKind.UNRESOLVED_MULTIPLE,
+    }
+    assert result.diagnostics["final_selection"]["evidence"] == expected_evidence
+    assert result.diagnostics["evidence_valid"] is True
+
+
+@pytest.mark.parametrize(
+    ("note_text", "expected_label", "expected_evidence"),
+    [
+        (
             "Present Seizure Frequency: focal seizures every 6 days.",
             "1 per 6 day",
             "seizures every 6 days",
@@ -617,6 +691,201 @@ def test_pipeline_preserves_seizure_free_as_semantic_state() -> None:
             "There have been no seizures since the last clinic review.",
             "seizure free for multiple year",
             "no seizures since",
+        ),
+        (
+            "Clinic Date: 28 December 2021. She reports excellent stability with a "
+            "seizure-free interval since 25/06/2021.",
+            "seizure free for 6 month",
+            "seizure-free interval since 25/06/2021",
+        ),
+        (
+            "The diary shows no recorded events or auras since May. They have maintained "
+            "an absence of events for over four months.",
+            "seizure free for 4 month",
+            "absence of events for over four months",
+        ),
+        (
+            "Since our last appointment, she has not experienced any seizures.",
+            "seizure free for multiple year",
+            "has not experienced any seizures",
+        ),
+        (
+            "Present Seizure Frequency: No recurrence.",
+            "seizure free for multiple year",
+            "No recurrence",
+        ),
+        (
+            "Since his last review, he reports excellent stability and seizure freedom continues.",
+            "seizure free for multiple year",
+            "seizure freedom continues",
+        ),
+        (
+            "The family report that there have been No clinical seizures observed since referral.",
+            "seizure free for multiple year",
+            "No clinical seizures observed since",
+        ),
+        (
+            "Seizures remain settled without recent breakthrough events, "
+            "indicating ongoing control.",
+            "seizure free for multiple year",
+            "Seizures remain settled without recent breakthrough events",
+        ),
+        (
+            "She confirms complete control of seizures since her last review.",
+            "seizure free for multiple year",
+            "complete control of seizures",
+        ),
+        (
+            "There has been no occurrence of events suggestive of seizures since his last review "
+            "twelve months ago.",
+            "seizure free for 12 month",
+            (
+                "no occurrence of events suggestive of seizures since his last review "
+                "twelve months ago"
+            ),
+        ),
+        (
+            "He described remaining free of his usual attacks over this interval.",
+            "seizure free for multiple year",
+            "free of his usual attacks over this interval",
+        ),
+        (
+            "The patient reports no auras, warnings, or witnessed events for an extended period.",
+            "seizure free for multiple year",
+            "no auras, warnings, or witnessed events for an extended period",
+        ),
+        (
+            "Since April, he has not described any further events suggestive of seizures.",
+            "seizure free for multiple year",
+            "has not described any further events suggestive of seizures",
+        ),
+        (
+            "Recent spells are dissociative. She last had a clearly epileptic focal event "
+            "approximately six months ago.",
+            "seizure free for 6 month",
+            "last had a clearly epileptic focal event approximately six months ago",
+        ),
+        (
+            "Seizures: Patient reports no events, warnings, or auras for over 18 months. "
+            "The note header says daily seizures.",
+            "seizure free for 18 month",
+            "no events, warnings, or auras for over 18 months",
+        ),
+        (
+            "There have been effectively no spell-like events suggestive of seizures "
+            "over the past six months. For context, his first seizure occurred in 2014.",
+            "seizure free for 6 month",
+            "no spell-like events suggestive of seizures over the past six months",
+        ),
+        (
+            "She describes \"No events suggestive of seizures\" over this interval, "
+            "although sleep is disrupted on two to three nights per week.",
+            "seizure free for multiple year",
+            "No events suggestive of seizures",
+        ),
+        (
+            "The patient reports no recent events suggestive of seizures, "
+            "with the last confirmed episode occurring over two years ago.",
+            "seizure free for multiple year",
+            "no recent events suggestive of seizures",
+        ),
+        (
+            "Prior to improvement, she described weekly clusters, usually 6 events. "
+            "After surgery she has had Sustained postoperative seizure freedom.",
+            "seizure free for multiple year",
+            "Sustained postoperative seizure freedom",
+        ),
+        (
+            "He performs light exercise three times per week. His seizure diary shows "
+            "no recorded events since June last year.",
+            "seizure free for multiple year",
+            "no recorded events since",
+        ),
+        (
+            "Present Seizure Frequency: Seizure-free interval extends to eleven months.",
+            "seizure free for 11 month",
+            "Seizure-free interval extends to eleven months",
+        ),
+        (
+            "The smartwatch log was reviewed. Interval history negative for seizures.",
+            "seizure free for multiple year",
+            "Interval history negative for seizures",
+        ),
+        (
+            "She reports durable seizure control over the past several months.",
+            "seizure free for multiple year",
+            "durable seizure control",
+        ),
+        (
+            "Clinic Date: 23 December 2021. They report Drug-free remission since 20-Jun-2021.",
+            "seizure free for 6 month",
+            "Drug-free remission since 20-Jun-2021",
+        ),
+        (
+            "Clinic Date: 22 November 2017. They volunteered a clear timepoint: "
+            "No focal clonic since 19-Mar-2017.",
+            "seizure free for 8 month",
+            "No focal clonic since 19-Mar-2017",
+        ),
+        (
+            "The device dashboard indicates a recorded seizure rate at zero over the "
+            "last six months.",
+            "seizure free for 6 month",
+            "recorded seizure rate at zero over the last six months",
+        ),
+        (
+            "Entries confirm Seizure cessation following initiation of last ASM.",
+            "seizure free for multiple year",
+            "Seizure cessation following initiation of last ASM",
+        ),
+        (
+            "Clinic Date: 02 October 2025. Patient reports that the prior cluster "
+            "pattern resolved since 11 Aug 2023.",
+            "seizure free for 25 month",
+            "prior cluster pattern resolved since 11 Aug 2023",
+        ),
+        (
+            "Clinic Date: 02 October 2025. Seizure control: Sustained remission "
+            "since 29-May-2023.",
+            "seizure free for 28 month",
+            "Sustained remission since 29-May-2023",
+        ),
+        (
+            "There have been no witnessed or reported seizures since the last review.",
+            "seizure free for multiple year",
+            "no witnessed or reported seizures since",
+        ),
+        (
+            "The diary shows no episodes brought to attention by carers or bystanders, "
+            "nor any events he has recognised as seizures, since early summer.",
+            "seizure free for multiple year",
+            (
+                "no episodes brought to attention by carers or bystanders, nor any "
+                "events he has recognised as seizures"
+            ),
+        ),
+        (
+            "Present Seizure Frequency: She has now been seizure free for one and "
+            "a half years.",
+            "seizure free for 1.5 year",
+            "seizure free for one and a half years",
+        ),
+        (
+            "He previously had daily absences, but has remained seizure free for a "
+            "prolonged period, not experiencing any seizures in one and a half years.",
+            "seizure free for 1.5 year",
+            "not experiencing any seizures in one and a half years",
+        ),
+        (
+            "He previously had convulsive events 2 times per year, but is currently "
+            "in long-term remission, having been seizure free for years.",
+            "seizure free for multiple year",
+            "currently in long-term remission, having been seizure free for years",
+        ),
+        (
+            "He and his family feel he is in a steady run without clear seizures at present.",
+            "seizure free for multiple year",
+            "steady run without clear seizures at present",
         ),
     ],
 )
@@ -1655,6 +1924,139 @@ def test_pipeline_extracts_counted_adverbial_monthly_events() -> None:
     assert result.diagnostics["evidence_valid"] is True
 
 
+@pytest.mark.parametrize(
+    ("note_text", "expected_label", "expected_evidence"),
+    [
+        (
+            "Prior to this period the seizures were occurring every 1 or 2 weeks. "
+            "Over the past year, however, the current pattern is <= two or four per year.",
+            "2 to 4 per year",
+            "two or four per year",
+        ),
+        (
+            "Previously, the seizure frequency was weekly clusters, usually three events. "
+            "Over the past five months on the present regimen, events have reduced to "
+            "<= once per month.",
+            "1 per month",
+            "once per month",
+        ),
+        (
+            "Prior to recent lifestyle changes, the patient reports five focal onset "
+            "seizures and four focal automatisms in the past two months. The patient "
+            "now describes a simple partial seizure monthly.",
+            "1 per month",
+            "simple partial seizure monthly",
+        ),
+    ],
+)
+def test_pipeline_prefers_current_improved_frequency_over_historical_baseline(
+    note_text: str,
+    expected_label: str,
+    expected_evidence: str,
+) -> None:
+    result = Gan2026PipelineV1().run(_record(note_text))
+
+    assert result.output.final_value == expected_label
+    assert result.diagnostics["final_selection"]["final_kind"] == FrequencyLabelKind.FREQUENCY
+    assert result.diagnostics["final_selection"]["evidence"] == expected_evidence
+    assert result.diagnostics["evidence_valid"] is True
+
+
+@pytest.mark.parametrize(
+    ("note_text", "expected_label", "expected_evidence"),
+    [
+        (
+            "Dose is levetiracetam 1 g twice a day. Patient reports 5 or 7 epileptic "
+            "spasms this year.",
+            "5 to 7 per year",
+            "5 or 7 epileptic spasms this year",
+        ),
+        (
+            "Current treatment is levetiracetam 500 mg twice a day. Over the last "
+            "two months he has documented five to six focal automatisms during the "
+            "last two months.",
+            "5 to 6 per 2 month",
+            "five to six focal automatisms during the last two months",
+        ),
+        (
+            "Carbamazepine dose is 200 mg twice a day. Patient reports an absence "
+            "seizure every other week.",
+            "1 per 2 week",
+            "seizure every other week",
+        ),
+    ],
+)
+def test_pipeline_ignores_medication_dose_frequencies(
+    note_text: str,
+    expected_label: str,
+    expected_evidence: str,
+) -> None:
+    result = Gan2026PipelineV1().run(_record(note_text))
+
+    assert result.output.final_value == expected_label
+    assert result.diagnostics["final_selection"]["final_kind"] == FrequencyLabelKind.FREQUENCY
+    assert result.diagnostics["final_selection"]["evidence"] == expected_evidence
+    assert result.diagnostics["evidence_valid"] is True
+
+
+@pytest.mark.parametrize(
+    ("note_text", "expected_label", "expected_evidence"),
+    [
+        (
+            "She reports brief absences occurring on most weekdays, often clustering "
+            "around late afternoon. There has been one tonic-clonic seizure in the "
+            "last eight weeks.",
+            "multiple per week",
+            "brief absences occurring on most weekdays",
+        ),
+        (
+            "Since the last review, the patient reports several focal seizures last "
+            "week characterised by brief behavioural arrest.",
+            "multiple per week",
+            "several focal seizures last week",
+        ),
+        (
+            "She reports nocturnal episodes occurring once per night on average for "
+            "the past three months. Sumatriptan is used <=4 per month for migraine.",
+            "1 per day",
+            "occurring once per night",
+        ),
+    ],
+)
+def test_pipeline_extracts_current_qualitative_high_frequency_phrasing(
+    note_text: str,
+    expected_label: str,
+    expected_evidence: str,
+) -> None:
+    result = Gan2026PipelineV1().run(_record(note_text))
+
+    assert result.output.final_value == expected_label
+    assert result.diagnostics["final_selection"]["final_kind"] in {
+        FrequencyLabelKind.FREQUENCY,
+        FrequencyLabelKind.UNRESOLVED_MULTIPLE,
+    }
+    assert result.diagnostics["final_selection"]["evidence"] == expected_evidence
+    assert result.diagnostics["evidence_valid"] is True
+
+
+def test_pipeline_prefers_convulsive_event_count_over_nonprogressive_myoclonic_jerks() -> None:
+    result = Gan2026PipelineV1().run(
+        _record(
+            "He described a clear increase in events over the last quarter, noting "
+            "two drop attacks and nine convulsions in the past three months. The "
+            "diary still records intermittent myoclonic jerks upon awakening once "
+            "or twice per week without progression to convulsion."
+        )
+    )
+
+    assert result.output.final_value == "11 per 3 month"
+    assert result.diagnostics["final_selection"]["final_kind"] == FrequencyLabelKind.FREQUENCY
+    assert result.diagnostics["final_selection"]["evidence"] == (
+        "two drop attacks and nine convulsions in the past three months"
+    )
+    assert result.diagnostics["evidence_valid"] is True
+
+
 def test_pipeline_breakthrough_event_overrides_seizure_free_history() -> None:
     result = Gan2026PipelineV1().run(
         _record(
@@ -1874,6 +2276,103 @@ def test_pipeline_extracts_validation_shorthand_frequency_patterns(
 
     assert result.output.final_value == expected_label
     assert result.diagnostics["final_selection"]["final_kind"] == FrequencyLabelKind.FREQUENCY
+    assert result.diagnostics["final_selection"]["evidence"] == expected_evidence
+    assert result.diagnostics["evidence_valid"] is True
+
+
+@pytest.mark.parametrize(
+    ("note_text", "expected_label", "expected_kind", "expected_evidence"),
+    [
+        (
+            "Clinic Date: 05 July 2018. Importantly, Liam has been seizure-free since 29/09/2017. "
+            "Earlier in the year she had five seizures during sleep.",
+            "seizure free for 9 month",
+            FrequencyLabelKind.SEIZURE_FREE,
+            "seizure-free since 29/09/2017",
+        ),
+        (
+            "Clinic Date: 12 January 2019. Prior to the current improvement he had "
+            "4-5 seizures per week. "
+            "Last seizure on 03-Sep-2017.",
+            "seizure free for 16 month",
+            FrequencyLabelKind.SEIZURE_FREE,
+            "Last seizure on 03-Sep-2017",
+        ),
+        (
+            "Since the last appointment, the patient reports no definite seizure events.",
+            "seizure free for multiple year",
+            FrequencyLabelKind.SEIZURE_FREE,
+            "no definite seizure events",
+        ),
+        (
+            "Patient reports focal aware sensory episodes only when significantly short on sleep. "
+            "The last event was on 10 September 2025 after an overnight shift.",
+            "unknown",
+            FrequencyLabelKind.UNKNOWN,
+            "only when significantly short on sleep",
+        ),
+        (
+            "Seizures happen when perimenstrual only (days -3 to +3). "
+            "Outside this window she reports no events over the last six months.",
+            "unknown",
+            FrequencyLabelKind.UNKNOWN,
+            "Seizures happen when perimenstrual only (days -3 to +3)",
+        ),
+        (
+            "Summary mentions smoker, rolled tobacco, ~3 per day. Seizures occur abs *monthly.",
+            "1 per month",
+            FrequencyLabelKind.FREQUENCY,
+            "abs *monthly",
+        ),
+        (
+            "Current medication is lamotrigine twice daily. "
+            "Seizures: Seizure days: 8/30 this month.",
+            "8 per month",
+            FrequencyLabelKind.FREQUENCY,
+            "Seizure days: 8/30 this month",
+        ),
+        (
+            "Maintain daily seizure diary entries. Present Seizure Frequency: "
+            "roughly one brief absence episode "
+            "in a typical month.",
+            "1 per month",
+            FrequencyLabelKind.FREQUENCY,
+            "one brief absence episode in a typical month",
+        ),
+        (
+            "Currently events are occurring qone to twod on workdays, with near-daily auras.",
+            "1 per 1 to 2 day",
+            FrequencyLabelKind.FREQUENCY,
+            "qone to twod",
+        ),
+        (
+            "The median inter-seizure interval ≈ two months, with occasional clustering "
+            "when sleep is restricted offshore. "
+            "Warning symptoms may occur weekly.",
+            "1 per 2 month",
+            FrequencyLabelKind.FREQUENCY,
+            "median inter-seizure interval ≈ two months",
+        ),
+        (
+            "Possible auras and one episode of anxiety were reviewed. "
+            "She describes her seizure control as "
+            "Better over the past seven months.",
+            "unknown",
+            FrequencyLabelKind.UNKNOWN,
+            "Better over the past seven months",
+        ),
+    ],
+)
+def test_pipeline_handles_late_validation_saturation_patterns(
+    note_text: str,
+    expected_label: str,
+    expected_kind: FrequencyLabelKind,
+    expected_evidence: str,
+) -> None:
+    result = Gan2026PipelineV1().run(_record(note_text))
+
+    assert result.output.final_value == expected_label
+    assert result.diagnostics["final_selection"]["final_kind"] == expected_kind
     assert result.diagnostics["final_selection"]["evidence"] == expected_evidence
     assert result.diagnostics["evidence_valid"] is True
 

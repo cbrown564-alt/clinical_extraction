@@ -363,7 +363,10 @@ UNIT_SYNONYMS = {
 ALLOWED_PREDICTION_PATTERNS = (
     re.compile(r"^unknown$"),
     re.compile(r"^no seizure frequency reference$"),
-    re.compile(r"^seizure free for (?:multiple|\d+(?: to \d+)?) (?:month|year)$"),
+    re.compile(
+        r"^seizure free for (?:multiple|\d+(?:\.\d+)?(?: to \d+(?:\.\d+)?)?) "
+        r"(?:month|year)$"
+    ),
     re.compile(
         r"^(?:multiple|\d+(?: to \d+)?) per "
         r"(?:(?:multiple|\d+(?: to \d+)?) )?(?:day|week|month|year)$"
@@ -516,7 +519,11 @@ def _canonicalize_seizure_free(text: str) -> str:
         return text
     text = text.replace("seizure-free", "seizure free")
     text = text.replace("sz free", "seizure free").replace("sz-free", "seizure free")
-    match = re.search(r"seizure free(?:\s*for)?\s*(\d+(?:\s*to\s*\d+)?)\s*(month|year)s?\b", text)
+    match = re.search(
+        r"seizure free(?:\s*for)?\s*"
+        r"(\d+(?:\.\d+)?(?:\s*to\s*\d+(?:\.\d+)?)?)\s*(month|year)s?\b",
+        text,
+    )
     if match:
         return f"seizure free for {match.group(1)} {match.group(2)}"
     if re.search(r"seizure free since\b", text):
