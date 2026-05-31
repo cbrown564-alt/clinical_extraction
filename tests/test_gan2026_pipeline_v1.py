@@ -528,6 +528,59 @@ def test_pipeline_extracts_contextual_trigger_and_diary_frequency_patterns(
             "7 per year",
             "seven brief seizures recorded in 2024 so far",
         ),
+        (
+            "Prior to commencing Lacosamide, episodes occurred at a rate of three to five "
+            "focal sensory per week. Since titration to the current dose, the frequency has "
+            "remained unchanged.",
+            "3 to 5 per week",
+            "rate of three to five focal sensory per week",
+        ),
+        (
+            "The diary over the past two months records five focal automatisms per week on "
+            "average, often clustering in the evening.",
+            "5 per week",
+            "records five focal automatisms per week",
+        ),
+        (
+            "He describes warning features and reports 2 to 4 focal non-motor per week, "
+            "usually clustering in the late afternoon.",
+            "2 to 4 per week",
+            "reports 2 to 4 focal non-motor per week",
+        ),
+        (
+            "Weekly morning clusters reported; number per cluster not documented.",
+            "1 cluster per week, multiple per cluster",
+            "Weekly morning clusters reported",
+        ),
+        (
+            "Seizure History This Quarter: Patient reports two clusters this quarter, both "
+            "occurring in the context of poor sleep. Within each cluster, events were brief "
+            "focal aware seizures.",
+            "2 cluster per 3 month, multiple per cluster",
+            "two clusters this quarter",
+        ),
+        (
+            "With respect to seizures, he describes three clusters this quarter, each "
+            "lasting 1-2 days with several brief episodes.",
+            "3 cluster per 3 month, multiple per cluster",
+            "three clusters this quarter, each lasting 1-2 days with several brief episodes",
+        ),
+        (
+            "Diagnosis: Generalised epilepsy with ongoing nocturnal clusters 3x/month; good "
+            "response to valproate.",
+            "3 cluster per month, multiple per cluster",
+            "nocturnal clusters 3x/month",
+        ),
+        (
+            "Cluster frequency unclear this month; last month ≈4 clusters.",
+            "4 cluster per month, multiple per cluster",
+            "last month ≈4 clusters",
+        ),
+        (
+            "Cluster frequency unclear this month; last month ≈three clusters.",
+            "3 cluster per month, multiple per cluster",
+            "last month ≈three clusters",
+        ),
     ],
 )
 def test_pipeline_extracts_trigger_assertion_heavy_frequency_rows(

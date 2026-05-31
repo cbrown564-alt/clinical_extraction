@@ -198,6 +198,100 @@ def _extract_candidates(note_text: str) -> list[_RawCandidate]:
 
 def _extract_cluster_candidates(text: str) -> list[_RawCandidate]:
     candidates: list[_RawCandidate] = []
+    adjective_cluster_rates = {
+        "daily": ("day", None),
+        "weekly": ("week", None),
+        "monthly": ("month", None),
+        "yearly": ("year", None),
+    }
+    for adjective, (unit, denominator) in adjective_cluster_rates.items():
+        adjective_cluster = re.compile(
+            rf"\b{adjective}\s+(?:{WORD_TOKEN}\s+){{0,3}}clusters?\s+reported\b",
+            re.IGNORECASE,
+        )
+        for match in adjective_cluster.finditer(text):
+            candidates.append(
+                _RawCandidate(
+                    kind=CandidateKind.CLUSTER_FREQUENCY,
+                    label=(
+                        f"1 cluster per {_period_label(unit, denominator)}, "
+                        "multiple per cluster"
+                    ),
+                    evidence=_clean_evidence(match.group(0)),
+                )
+            )
+
+    shorthand_cluster_rate = re.compile(
+        r"\b(?:(?:ongoing|nocturnal|morning|evening|monthly|weekly|daily)\s+){0,3}"
+        r"clusters?\s+"
+        rf"(?P<count>{NUMBER_TOKEN})\s*(?:x|×|/)\s*/?\s*"
+        r"(?P<unit>d|day|wk|week|mo|month|yr|year)\b",
+        re.IGNORECASE,
+    )
+    for match in shorthand_cluster_rate.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.CLUSTER_FREQUENCY,
+                label=(
+                    f"{_number_token(match.group('count'))} cluster per "
+                    f"{_expanded_compact_unit(match.group('unit'))}, multiple per cluster"
+                ),
+                evidence=_clean_evidence(re.sub(r"^ongoing\s+", "", match.group(0), flags=re.I)),
+            )
+        )
+
+    cluster_count_this_period_with_vague_size = re.compile(
+        rf"\b(?P<count>{NUMBER_TOKEN})\s+clusters?\s+this\s+"
+        rf"(?P<period>week|month|quarter|year),?\s+each\s+lasting\s+"
+        rf".{{0,40}}?\bseveral\s+(?:brief\s+)?(?:events?|episodes?|seizures?)\b",
+        re.IGNORECASE,
+    )
+    for match in cluster_count_this_period_with_vague_size.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.CLUSTER_FREQUENCY,
+                label=(
+                    f"{_number_token(match.group('count'))} cluster per "
+                    f"{_cluster_period_label(match.group('period'))}, multiple per cluster"
+                ),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    cluster_count_this_period = re.compile(
+        rf"\b(?P<count>{NUMBER_TOKEN})\s+clusters?\s+this\s+"
+        rf"(?P<period>week|month|quarter|year)\b",
+        re.IGNORECASE,
+    )
+    for match in cluster_count_this_period.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.CLUSTER_FREQUENCY,
+                label=(
+                    f"{_number_token(match.group('count'))} cluster per "
+                    f"{_cluster_period_label(match.group('period'))}, multiple per cluster"
+                ),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    last_month_cluster_count = re.compile(
+        rf"\blast\s+month\s*(?:≈|~|about|around|approximately)?\s*"
+        rf"(?P<count>{NUMBER_TOKEN})\s+clusters?\b",
+        re.IGNORECASE,
+    )
+    for match in last_month_cluster_count.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.CLUSTER_FREQUENCY,
+                label=(
+                    f"{_number_token(match.group('count'))} cluster per month, "
+                    "multiple per cluster"
+                ),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
     cluster_rate = re.compile(
         rf"\bcluster(?: days?|s)?\s+(?P<count>{NUMBER_TOKEN})\s+(?:this|per)\s+"
         rf"(?P<period>{UNIT_TOKEN}).{{0,80}}?(?:typically|usually|each|with)?\s*"
@@ -410,6 +504,28 @@ def _extract_distributed_count_candidates(text: str) -> list[_RawCandidate]:
 def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
     candidates: list[_RawCandidate] = []
     candidates.extend(_extract_distributed_count_candidates(text))
+
+    descriptor_rate = re.compile(
+        rf"\b(?:rate\s+of|records|reports)\s+(?P<count>{NUMBER_TOKEN})\s+"
+        rf"(?:focal|sensory|automatisms?|non-motor|motor|aware|impaired-awareness|"
+        rf"impaired\s+awareness|tonic-clonic|myoclonic|absence|brief)(?:\s+"
+        rf"(?:focal|sensory|automatisms?|non-motor|motor|aware|impaired-awareness|"
+        rf"impaired\s+awareness|tonic-clonic|myoclonic|absence|brief)){{0,4}}\s+"
+        rf"per\s+(?:(?P<denominator>{NUMBER_TOKEN})\s+)?(?P<unit>{UNIT_TOKEN})\b",
+        re.IGNORECASE,
+    )
+    for match in descriptor_rate.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label(
+                    match.group("count"),
+                    match.group("unit"),
+                    match.groupdict().get("denominator"),
+                ),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
 
     direct_rate = re.compile(
         rf"\b(?P<count>{NUMBER_TOKEN})\s+"
@@ -1341,6 +1457,13 @@ def _period_label(unit: str, denominator: str | None = None) -> str:
     if denominator_value in {None, "1"}:
         return unit_value
     return f"{denominator_value} {unit_value}"
+
+
+def _cluster_period_label(unit: str) -> str:
+    unit_value = _singular_unit(unit)
+    if unit_value == "quarter":
+        return "3 month"
+    return unit_value
 
 
 def _expanded_compact_unit(value: str) -> str:
