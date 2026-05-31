@@ -1,0 +1,65 @@
+# Clinical Extraction
+
+Hybrid deterministic-LLM pipelines for extracting structured data from unstructured clinical notes.
+
+The long-term goal is a Python package for modular clinical extraction tasks: data loading, clinical extraction/reasoning, normalization, structured schemas, scoring, evaluation, and error analysis. The short-term goal is narrower and sharper: beat the seizure-frequency benchmarks from Gan 2026, prioritizing purist F1.
+
+## Current Focus
+
+Immediate work is exclusively focused on:
+
+- Dataset: `data/Gan (2026)/synthetic_data_subset_1500.json`
+- Paper: `data/Gan (2026)/Synthetic Clinical Letters for Seizure Frequency.pdf`
+- Author code: `data/Gan (2026)/previous implementation/`
+- Primary metric: purist F1
+
+The first pipeline hypothesis is:
+
+```text
+clinical note
+  -> DSPy seizure-event extractor
+  -> deterministic frequency/date normalization
+  -> DSPy clinical reasoner for grouping, temporal selection, and final answer
+  -> deterministic schema/evidence validation
+  -> deterministic repair where interpretation is unchanged
+  -> Gan-compatible evaluation
+```
+
+## Design Principles
+
+- Build for Gan 2026 first, but keep task boundaries clean enough for later datasets.
+- Prefer small, inspectable modules over an abstraction-heavy framework.
+- Separate extraction from clinical selection so error analysis can localize failures.
+- Keep deterministic label policy compatible with the author-provided evaluation code.
+- Preserve auditable evidence spans and rationale in schemas, not just final labels.
+- Make notebooks a forcing function for reproducible learning, not a side artifact.
+
+## Repository Layout
+
+```text
+src/clinical_extraction/
+  core/                         Shared pipeline, schema, evidence, validation primitives.
+  tasks/seizure_frequency/
+    gan2026/                    Gan-specific loader, labels, scoring, pipeline, and analysis.
+docs/
+  design/                       Architecture and pipeline design notes.
+  decisions/                    Lightweight architecture decision records.
+  runbooks/                     Repeatable development/evaluation workflows.
+experiments/                    Run outputs and experiment records.
+notebooks/                      Living notebooks for loading, extraction, evaluation, errors.
+tests/                          Focused tests for data contracts and deterministic behavior.
+```
+
+## Getting Started
+
+Create and activate an environment, then install the package in editable mode:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -e ".[dev]"
+pytest
+```
+
+The first implementation milestone is to reproduce Gan-compatible data loading, label normalization, and evaluation locally before optimizing the DSPy pipeline.
+
