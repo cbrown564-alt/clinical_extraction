@@ -1,6 +1,6 @@
 # Project Status
 
-Last updated: 2026-05-31
+Last updated: 2026-06-01
 
 ## Active Objective
 
@@ -33,11 +33,12 @@ Treat deterministic rules as a frozen, ablatable comparator rather than an endle
 - A first note-only LLM-first validation-prefix run over 250 rows used GPT-4.1
   mini and no deterministic V1 candidates. After shared schema alias repair and
   Gan label repair through `normalize.py`, the artifact reports 250/250 decision
-  records, 0 call failures, 0 blocking parse/schema failures, 0.8440 Purist
-  accuracy/micro-F1 proxy, 0.8760 Pragmatic accuracy, 94 deterministic repair
+  records, 0 call failures, 0 blocking parse/schema failures, 0.9520 Purist
+  accuracy/micro-F1 proxy, 0.9560 Pragmatic accuracy, 113 deterministic repair
   notes, and 86/250 exact evidence substrings. This is useful signal but below
-  the >=0.9000 goal; the next architecture should move from direct note-to-label
-  extraction toward structured event extraction plus clinical selection.
+  a full validation-split claim; the next architecture should move from direct
+  note-to-label extraction toward structured event extraction plus clinical
+  selection before any rare 750-row validation run.
 - Design concern to revisit: early LLM results suggest the full V1-style event
   schema and metadata burden may ask too much of the model in one pass. This is
   not a critical flaw, but the next structured extractor should consider a
@@ -128,9 +129,15 @@ Treat deterministic rules as a frozen, ablatable comparator rather than an endle
   `schema_repair.py` handles model-output payload aliases, while `normalize.py`
   owns Gan-compatible label repair including selected-evidence formatting.
 - 2026-05-31: Ran/reparsed a GPT-4.1 mini note-only LLM-first 250-row validation
-  prefix artifact with 0.8440 Purist accuracy/micro-F1 proxy and 0.8760 Pragmatic
+  prefix artifact with 0.9520 Purist accuracy/micro-F1 proxy and 0.9560 Pragmatic
   accuracy after selected-evidence label repair; direct note-to-label extraction
-  remains below target.
+  clears the standard 250-row development gate but is not a full validation-split
+  claim.
+- 2026-06-01: Tightened selected-evidence Gan label repair for cluster-rate-only
+  evidence, implicit monthly cluster detail, yesterday-as-one-day windows, and
+  LLM final labels with event descriptions plus a per-window denominator. The
+  remaining 250-row misses are now mostly clinical selection/temporality issues
+  rather than formatter failures.
 
 ## Immediate Next Step
 

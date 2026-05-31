@@ -73,7 +73,12 @@ def repair_prediction_label_with_evidence(
         return repair_prediction_label(raw, ablation_config)
     raw_repaired = repair_prediction_label(raw, ablation_config)
     evidence_label = _prediction_label_from_selected_evidence(evidence)
-    if evidence_label and _should_prefer_selected_evidence_label(raw, raw_repaired, evidence):
+    if evidence_label and _should_prefer_selected_evidence_label(
+        raw,
+        raw_repaired,
+        evidence,
+        evidence_label,
+    ):
         return repair_prediction_label(evidence_label, ablation_config)
     return raw_repaired
 
@@ -743,6 +748,20 @@ def _fallback_prediction_repair(text: str) -> str:
         unit = match.group("unit")
         den_text = (denominator + " ").strip() if denominator and denominator != "1" else ""
         return f"{match.group('num')} per {den_text}{unit}"
+
+    event_per_window = re.search(
+        r"(?P<num>(?:\d+(?:\s*to\s*\d+)?|multiple))\s+"
+        r"(?=(?:[a-z]+(?:-[a-z]+)?\s+){0,5}"
+        r"(?:seizure|attack|convulsion|spasm|mal|event|tonic))"
+        r".*?\bper\s+(?P<den>(?:\d+(?:\s*to\s*\d+)?\s*)?)"
+        r"(?P<unit>day|week|month|year)",
+        text,
+    )
+    if event_per_window:
+        denominator = (event_per_window.group("den") or "").strip()
+        unit = event_per_window.group("unit")
+        den_text = f"{denominator} " if denominator and denominator != "1" else ""
+        return f"{event_per_window.group('num')} per {den_text}{unit}"
     return "no seizure frequency reference"
 
 
@@ -777,15 +796,47 @@ def _prediction_label_from_selected_evidence(evidence: str) -> str | None:
     if not evidence:
         return None
 
-    text = normalize_frequency_label(_words_to_numbers(evidence))
+    text = normalize_frequency_label(_once_twice_thrice(_words_to_numbers(evidence)))
     unit = r"day|week|month|year"
     count = r"\d+(?:\s*(?:to|-|–|—)\s*\d+)?"
+
+    calendar_log = _calendar_log_label_from_selected_evidence(text)
+    if calendar_log:
+        return calendar_log
+
+    q_interval = _q_interval_label_from_selected_evidence(text)
+    if q_interval:
+        return q_interval
+
+    median_interval = _median_interval_label_from_selected_evidence(text)
+    if median_interval:
+        return median_interval
+
+    if re.search(r"\bbimonthly\b", text):
+        return _format_prediction_rate("1 per 2", "month")
 
     cluster_label = _cluster_label_from_selected_evidence(text)
     if cluster_label:
         return cluster_label
-    if "cluster" in text:
+    if re.search(r"\bclusters?\b", text):
         return None
+
+    yesterday = re.search(
+        r"\b\d+\s+(?!(?:day|week|month|year)s?\b)"
+        r"(?=(?:[a-z]+(?:-[a-z]+)?\s+){0,4}"
+        r"(?:seizure|attack|convulsion|spasm|mal|event)).*\byesterday\b",
+        text,
+    )
+    if yesterday:
+        return _format_prediction_rate("1", "day")
+
+    compact_daily = re.search(r"\b1\s*/\s*d\b", text)
+    if compact_daily:
+        return _format_prediction_rate("1", "day")
+
+    range_count = _range_count_over_window(text)
+    if range_count:
+        return range_count
 
     summed = _sum_counts_over_window(text)
     if summed:
@@ -820,6 +871,10 @@ def _prediction_label_from_selected_evidence(evidence: str) -> str | None:
     if quarter:
         return _format_prediction_rate(quarter.group("count"), "3 month")
 
+    daily = _daily_label_from_selected_evidence(text)
+    if daily:
+        return daily
+
     times_every = re.search(
         rf"\b(?P<count>\d+)\s+(?:times|seizures?)?\s*every\s+"
         rf"(?P<period>\d+)\s+(?P<unit>{unit})s?\b",
@@ -844,10 +899,38 @@ def _prediction_label_from_selected_evidence(evidence: str) -> str | None:
     return None
 
 
-def _should_prefer_selected_evidence_label(raw: str, raw_repaired: str, evidence: str) -> bool:
+def _should_prefer_selected_evidence_label(
+    raw: str,
+    raw_repaired: str,
+    evidence: str,
+    evidence_label: str,
+) -> bool:
     normalized_raw = normalize_frequency_label(_words_to_numbers(str(raw)))
     normalized_evidence = normalize_frequency_label(_words_to_numbers(evidence))
-    if any(marker in normalized_evidence for marker in ("quarter", "≤", "<=", "up to")):
+    if any(
+        marker in normalized_evidence
+        for marker in (
+            "quarter",
+            "≤",
+            "<=",
+            "up to",
+            "bimonthly",
+            "median inter-seizure interval",
+        )
+    ):
+        return True
+    if re.search(
+        r"\bq(?:\d+|one|two|three|four|five|six|seven|eight|nine|ten)",
+        normalized_evidence,
+    ):
+        return True
+    if _calendar_log_label_from_selected_evidence(normalized_evidence):
+        return True
+    if _daily_label_from_selected_evidence(normalized_evidence) == evidence_label:
+        return True
+    if " to " in evidence_label and " to " not in raw_repaired:
+        return True
+    if _sum_counts_over_window(normalized_evidence) == evidence_label:
         return True
     if raw_repaired in {"unknown", "no seizure frequency reference"}:
         return True
@@ -872,7 +955,84 @@ def _raw_label_is_simple_rate(normalized_raw: str) -> bool:
     )
 
 
+def _calendar_log_label_from_selected_evidence(text: str) -> str | None:
+    entries = re.findall(
+        r"\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\s*x\s*(\d+)\b",
+        text,
+    )
+    if len(entries) < 2:
+        return None
+    return _format_prediction_rate(
+        f"{sum(int(value) for value in entries)} per {len(entries)}",
+        "month",
+    )
+
+
+def _q_interval_label_from_selected_evidence(text: str) -> str | None:
+    interval = r"(?:\d+|one|two|three|four|five|six|seven|eight|nine|ten)"
+    interval_range = rf"{interval}(?:\s*(?:to|-|–|—)\s*{interval})?"
+    match = re.search(
+        rf"\bq\s*(?P<interval>{interval_range})\s*"
+        r"(?P<unit>d|day|wk|week|mo|month|yr|year)\b",
+        text,
+    )
+    if not match:
+        match = re.search(
+            rf"\bq(?P<interval>{interval_range})\s*"
+            r"(?P<unit>d|day|wk|week|mo|month|yr|year)\b",
+            text,
+        )
+    if not match:
+        return None
+    unit = UNIT_SYNONYMS.get(match.group("unit"), match.group("unit"))
+    return _format_prediction_rate(
+        f"1 per {_words_to_numbers(match.group('interval'))}",
+        unit,
+    )
+
+
+def _median_interval_label_from_selected_evidence(text: str) -> str | None:
+    match = re.search(
+        r"\bmedian inter-seizure interval\s*(?:≈|~|about|approximately|around)?\s*"
+        r"(?P<interval>\d+(?:\s*(?:to|-|–|—)\s*\d+)?)\s+(?P<unit>day|week|month|year)s?\b",
+        text,
+    )
+    if not match:
+        return None
+    return _format_prediction_rate(f"1 per {match.group('interval')}", match.group("unit"))
+
+
+def _daily_label_from_selected_evidence(text: str) -> str | None:
+    if re.search(r"\b(?:multiple|several|many)\b.{0,40}\b(?:daily|every night|per day)\b", text):
+        return None
+    if re.search(r"\b(?:daily|every night|each night|nightly)\b", text):
+        return _format_prediction_rate("1", "day")
+    return None
+
+
 def _cluster_label_from_selected_evidence(text: str) -> str | None:
+    monthly_cluster = re.search(r"\bmonthly\s+clusters?\b", text)
+    if monthly_cluster:
+        per_cluster = re.search(
+            r"\b(?P<count>\d+(?:\s*to\s*\d+)?)\s+"
+            r"(?=(?:[a-z]+(?:-[a-z]+)?\s+){0,4}"
+            r"(?:seizure|absence|attack|convulsion|spasm|event|mal))",
+            text[monthly_cluster.end() :],
+        )
+        if per_cluster:
+            return f"1 cluster per month, {per_cluster.group('count')} per cluster"
+
+    every_cluster = re.search(
+        r"\bclusters?\b.*\bevery\s+(?P<count>\d+(?:\s*to\s*\d+)?)\s+"
+        r"(?P<unit>day|week|month|year)s?\b",
+        text,
+    )
+    if every_cluster:
+        return _format_prediction_rate(
+            f"1 per {every_cluster.group('count')}",
+            every_cluster.group("unit"),
+        )
+
     cluster_match = re.search(
         r"\b(?P<count>\d+)\s+clusters?\s+"
         r"(?:(?:per|every)\s+(?:(?P<den>\d+)\s+)?(?P<unit>day|week|month|year)"
@@ -916,6 +1076,7 @@ def _sum_counts_over_window(text: str) -> str | None:
         int(value)
         for value in re.findall(
             r"\b(\d+)\s+(?!(?:day|week|month|year)s?\b)"
+            r"(?!(?:seizure[- ]free|free)\b)"
             r"(?=(?:tonic(?:-clonic)?|drop|absence|"
             r"(?:[a-z]+(?:-[a-z]+)?\s+){0,4}"
             r"(?:seizure|attack|convulsion|spasm|mal|event)))",
@@ -928,6 +1089,32 @@ def _sum_counts_over_window(text: str) -> str | None:
     denominator = window.group("count") or "1"
     unit = window.group("unit")
     return _format_prediction_rate(f"{sum(counts)} per {denominator}", unit)
+
+
+def _range_count_over_window(text: str) -> str | None:
+    window = re.search(
+        r"\b(?:in|over|during|for)\s+(?:the\s+)?(?:past|last)\s+"
+        r"(?:(?P<count>\d+)\s+)?(?P<unit>day|week|month|year)s?\b",
+        text,
+    )
+    if not window:
+        return None
+
+    range_match = re.search(
+        r"\b(?P<low>\d+)\s*(?:to|-|–|—|or)\s*(?P<high>\d+)\s+"
+        r"(?=(?:[a-z]+(?:-[a-z]+)?\s+){0,4}"
+        r"(?:seizure|attack|convulsion|spasm|mal|event|tonic))",
+        text,
+    )
+    if not range_match:
+        return None
+
+    denominator = window.group("count") or "1"
+    unit = window.group("unit")
+    return _format_prediction_rate(
+        f"{range_match.group('low')} to {range_match.group('high')} per {denominator}",
+        unit,
+    )
 
 
 def _format_prediction_rate(count_text: str, unit_text: str) -> str:
