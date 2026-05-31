@@ -131,9 +131,9 @@ UNIT_TOKEN = r"day|week|month|quarter|year|days|weeks|months|quarters|years"
 WORD_TOKEN = r"[a-z][a-z\-‑–—]*"
 SEIZURE_TERMS = (
     r"seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|"
-    r"myoclonics?|jerks?|status epilepticus"
+    r"myoclonics?|jerks?|auras?|status epilepticus"
 )
-QUALIFIED_SEIZURE_TERMS = rf"(?:[a-z][a-z-]*\s+){{0,4}}(?:{SEIZURE_TERMS})"
+QUALIFIED_SEIZURE_TERMS = rf"(?:{WORD_TOKEN}\s+){{0,4}}(?:{SEIZURE_TERMS})"
 SEIZURE_RATE_PHRASE = (
     rf"(?:(?:tonic-clonic|myoclonic|convulsive|focal|absence|drop|epileptic|"
     rf"impaired awareness|focal onset|petit mal|brief)\s+){{0,4}}(?:{SEIZURE_TERMS})"
@@ -261,6 +261,34 @@ def _extract_cluster_candidates(text: str) -> list[_RawCandidate]:
                 label=(
                     f"{_number_token(match.group('count'))} cluster per "
                     f"{_singular_unit(match.group('period'))}, "
+                    f"{_number_token(match.group('per_cluster'))} per cluster"
+                ),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    clusters_each_comprising = re.compile(
+        rf"\b(?:(?P<prefix>Over the past|Over the last|During the past|During the last)\s+"
+        rf"(?P<prefix_denominator>{NUMBER_TOKEN})\s+(?P<prefix_unit>{UNIT_TOKEN})\s+"
+        rf".{{0,80}}?\b(?P<prefix_count>{NUMBER_TOKEN})\s+clusters?|"
+        rf"(?P<count>{NUMBER_TOKEN})\s+clusters?\s+"
+        rf"(?:over|in|during)\s+(?:the\s+)?(?:past|last)\s+"
+        rf"(?P<denominator>{NUMBER_TOKEN})\s+(?P<unit>{UNIT_TOKEN}))"
+        rf".{{0,120}}?\beach\s+comprising\s+"
+        rf"(?P<per_cluster>{NUMBER_TOKEN})\s+(?:brief\s+)?"
+        rf"(?:{WORD_TOKEN}\s+){{0,3}}(?:{SEIZURE_TERMS})\b",
+        re.IGNORECASE,
+    )
+    for match in clusters_each_comprising.finditer(text):
+        count = match.group("prefix_count") or match.group("count")
+        denominator = match.group("prefix_denominator") or match.group("denominator")
+        unit = match.group("prefix_unit") or match.group("unit")
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.CLUSTER_FREQUENCY,
+                label=(
+                    f"{_number_token(count)} cluster per "
+                    f"{_period_label(unit, denominator)}, "
                     f"{_number_token(match.group('per_cluster'))} per cluster"
                 ),
                 evidence=_clean_evidence(match.group(0)),
@@ -721,6 +749,57 @@ def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
             )
         )
 
+    period_first_experienced_count = re.compile(
+        rf"\b(?P<period>Over the past|Over the last|During the past|During the last|"
+        rf"over the past|over the last|during the past|during the last|in the past|"
+        rf"in the last)\s+"
+        rf"(?P<denominator>{NUMBER_TOKEN})\s+(?P<unit>{UNIT_TOKEN})[,\s()]+"
+        rf".{{0,80}}?\b(?P<count>{NUMBER_TOKEN})\s+"
+        rf"(?:{QUALIFIED_SEIZURE_TERMS})\b",
+        re.IGNORECASE,
+    )
+    for match in period_first_experienced_count.finditer(text):
+        trailing_context = text[match.end() : match.end() + 30].lower()
+        if (
+            "in that timeframe" in trailing_context
+            or "have occurred" in trailing_context
+            or "featuring" in trailing_context
+        ):
+            continue
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label(
+                    match.group("count"),
+                    match.group("unit"),
+                    match.group("denominator"),
+                ),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    period_first_featuring_count = re.compile(
+        rf"\b(?P<period>Over the past|Over the last|During the past|During the last|"
+        rf"over the past|over the last|during the past|during the last)\s+"
+        rf"(?P<denominator>{NUMBER_TOKEN})\s+(?P<unit>{UNIT_TOKEN}),?\s+"
+        rf".{{0,80}}?\b(?P<count>{NUMBER_TOKEN})\s+"
+        rf"(?:{QUALIFIED_SEIZURE_TERMS})\s+featuring\s+"
+        rf"(?:{WORD_TOKEN}\s+){{0,3}}awareness\b",
+        re.IGNORECASE,
+    )
+    for match in period_first_featuring_count.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label(
+                    match.group("count"),
+                    match.group("unit"),
+                    match.group("denominator"),
+                ),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
     period_first_timeframe_count = re.compile(
         rf"\b(?P<period>Over the past|Over the last|During the past|During the last)\s+"
         rf"(?P<denominator>{NUMBER_TOKEN})\s+(?P<unit>{UNIT_TOKEN}),?\s+"
@@ -784,6 +863,61 @@ def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
                     match.group("unit"),
                     match.group("denominator"),
                 ),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    there_have_been_count = re.compile(
+        rf"\b(?:there\s+(?:have|has|were|are)\s+been\s+)?(?P<count>{NUMBER_TOKEN})\s+"
+        rf"(?:{QUALIFIED_SEIZURE_TERMS})\s+"
+        rf"(?:over|in|during|recorded\s+in)\s+(?:the\s+)?(?:past|last)?\s*"
+        rf"(?:(?P<denominator>{NUMBER_TOKEN})\s+)?(?P<unit>{UNIT_TOKEN}|fortnight)\b",
+        re.IGNORECASE,
+    )
+    for match in there_have_been_count.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label(
+                    match.group("count"),
+                    match.group("unit"),
+                    match.group("denominator"),
+                ),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    adjective_count_rates = (
+        (r"daily", "day"),
+        (r"weekly", "week"),
+        (r"monthly", "month"),
+        (r"yearly", "year"),
+    )
+    for adjective, unit in adjective_count_rates:
+        pattern = re.compile(
+            rf"\b(?:occurring|occur|occurs)\s+(?:roughly\s+|approximately\s+|about\s+)?"
+            rf"(?P<count>{NUMBER_TOKEN})\s+{adjective}\b",
+            re.IGNORECASE,
+        )
+        for match in pattern.finditer(text):
+            candidates.append(
+                _RawCandidate(
+                    kind=CandidateKind.FREQUENCY_RATE,
+                    label=_rate_label(match.group("count"), unit),
+                    evidence=_clean_evidence(match.group(0)),
+                )
+            )
+
+    recorded_year_count = re.compile(
+        rf"\b(?P<count>{NUMBER_TOKEN})\s+(?:{QUALIFIED_SEIZURE_TERMS})\s+"
+        r"recorded\s+in\s+\d{4}\s+so\s+far\b",
+        re.IGNORECASE,
+    )
+    for match in recorded_year_count.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label(match.group("count"), "year"),
                 evidence=_clean_evidence(match.group(0)),
             )
         )
@@ -1001,6 +1135,34 @@ def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
                 )
             )
 
+    recorded_month_log = re.compile(
+        r"\b(?P<entries>(?:(?:January|February|March|April|May|June|July|August|"
+        r"September|October|November|December)\s+\d+[^,.;]*,\s*)+"
+        r"(?:January|February|March|April|May|June|July|August|September|October|"
+        r"November|December)\s+\d+[^.;]*)",
+        re.IGNORECASE,
+    )
+    for match in recorded_month_log.finditer(text):
+        if "recorded:" not in text[max(0, match.start() - 80) : match.start()].lower():
+            continue
+        entries = re.findall(
+            r"\b(?P<month>January|February|March|April|May|June|July|August|September|"
+            r"October|November|December)\s+(?P<count>\d+)",
+            match.group("entries"),
+            flags=re.IGNORECASE,
+        )
+        if not entries:
+            continue
+        total = sum(int(count) for _month, count in entries)
+        months = {FULL_MONTHS[month.lower()] for month, _count in entries}
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label(str(total), "month", str(len(months))),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
     last_prior_event_interval = re.compile(
         r"\bLast event:\s*[^.;]*?\b\d+\s+weeks?\s+ago[^.;]*?;\s+prior\s+to\s+that,\s+"
         r"one\s+event\s+in\s+late\s+[A-Z][a-z]+\s+\d{4}\b",
@@ -1123,6 +1285,9 @@ def _rate_label(count: str, unit: str, denominator: str | None = None) -> str:
     count_value = _number_token(count)
     unit_value = _singular_unit(unit)
     denominator_value = _number_token(denominator) if denominator else None
+    if unit_value == "fortnight":
+        unit_value = "week"
+        denominator_value = "2"
     if unit_value == "quarter":
         unit_value = "month"
         denominator_value = _quarter_month_denominator(denominator_value)

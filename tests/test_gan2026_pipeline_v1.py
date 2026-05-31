@@ -463,6 +463,86 @@ def test_pipeline_extracts_contextual_trigger_and_diary_frequency_patterns(
     assert result.diagnostics["evidence_valid"] is True
 
 
+@pytest.mark.parametrize(
+    ("note_text", "expected_label", "expected_evidence"),
+    [
+        (
+            "There were two generalised tonic-clonic seizures in the past fortnight after "
+            "many months without a convulsion.",
+            "2 per 2 week",
+            "two generalised tonic-clonic seizures in the past fortnight",
+        ),
+        (
+            "Over the last three weeks, there have been four brief episodes featuring "
+            "impaired awareness and post-event fatigue.",
+            "4 per 3 week",
+            (
+                "Over the last three weeks, there have been four brief episodes featuring "
+                "impaired awareness"
+            ),
+        ),
+        (
+            "Clips recorded on the family phone over the last eight weeks indicate brief "
+            "generalised episodes occurring approximately twice weekly.",
+            "2 per week",
+            "occurring approximately twice weekly",
+        ),
+        (
+            "Over the past six weeks he has experienced three clusters requiring recovery "
+            "time off work, each comprising two to four brief events over 24-48 hours.",
+            "3 cluster per 6 week, 2 to 4 per cluster",
+            (
+                "Over the past six weeks he has experienced three clusters requiring recovery "
+                "time off work, each comprising two to four brief events"
+            ),
+        ),
+        (
+            "Clustering over the past six weeks (four focal impaired-awareness episodes "
+            "and two focal aware auras).",
+            "6 per 6 week",
+            (
+                "over the past six weeks (four focal impaired-awareness episodes "
+                "and two focal aware auras"
+            ),
+        ),
+        (
+            "Over the last 12 weeks he recorded: July 0, August 2 brief events over one "
+            "weekend, September 1 isolated event; no prolonged confusion reported.",
+            "3 per 3 month",
+            (
+                "July 0, August 2 brief events over one weekend, September 1 isolated event"
+            ),
+        ),
+        (
+            "She describes two clusters in the past six weeks, each comprising 1-2 brief "
+            "focal-feeling spells with transient confusion and no injury.",
+            "2 cluster per 6 week, 1 to 2 per cluster",
+            (
+                "two clusters in the past six weeks, each comprising 1-2 brief "
+                "focal-feeling spells"
+            ),
+        ),
+        (
+            "Since commencing ketogenic diet therapy, the family notes only seven brief "
+            "seizures recorded in 2024 so far.",
+            "7 per year",
+            "seven brief seizures recorded in 2024 so far",
+        ),
+    ],
+)
+def test_pipeline_extracts_trigger_assertion_heavy_frequency_rows(
+    note_text: str,
+    expected_label: str,
+    expected_evidence: str,
+) -> None:
+    result = Gan2026PipelineV1().run(_record(note_text))
+
+    assert result.output.final_value == expected_label
+    assert result.diagnostics["final_selection"]["final_kind"] == FrequencyLabelKind.FREQUENCY
+    assert result.diagnostics["final_selection"]["evidence"] == expected_evidence
+    assert result.diagnostics["evidence_valid"] is True
+
+
 def test_pipeline_preserves_seizure_free_as_semantic_state() -> None:
     result = Gan2026PipelineV1().run(
         _record("He has been seizure free for a long duration and over several years.")
