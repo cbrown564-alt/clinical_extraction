@@ -353,6 +353,116 @@ def test_pipeline_sums_distributed_recent_event_counts(
     assert result.diagnostics["evidence_valid"] is True
 
 
+@pytest.mark.parametrize(
+    ("note_text", "expected_label", "expected_evidence"),
+    [
+        (
+            "Current frequency and recent course: By his account, events have been occurring "
+            "intermittently over the past three months, with two generalised convulsions in "
+            "that period and approximately four focal impaired-awareness episodes, often "
+            "clustering after a week of late shifts.",
+            "6 per 3 month",
+            (
+                "over the past three months, with two generalised convulsions in that period "
+                "and approximately four focal impaired-awareness episodes"
+            ),
+        ),
+        (
+            "Seizures: Over the past three months they report two brief myoclonic jerks on "
+            "awakening and one generalised tonic-clonic event at approximately 03:00 in early "
+            "September.",
+            "3 per 3 month",
+            (
+                "Over the past three months they report two brief myoclonic jerks on "
+                "awakening and one generalised tonic-clonic event"
+            ),
+        ),
+        (
+            "Present Seizure Frequency: Patient describes brief events most commonly "
+            "clustering as they are drifting off to sleep. Over the past six weeks, four "
+            "episodes have occurred, each lasting under two minutes.",
+            "4 per 6 week",
+            "Over the past six weeks, four episodes have occurred",
+        ),
+        (
+            "He and his partner report that the spells tend to cluster during periods of "
+            "heightened psychological pressure at work. Over the past three months he notes "
+            "approximately 3-5 focal seizures per month.",
+            "3 to 5 per month",
+            "3-5 focal seizures per month",
+        ),
+    ],
+)
+def test_pipeline_extracts_contextual_period_first_frequency_counts(
+    note_text: str,
+    expected_label: str,
+    expected_evidence: str,
+) -> None:
+    result = Gan2026PipelineV1().run(_record(note_text))
+
+    assert result.output.final_value == expected_label
+    assert result.diagnostics["final_selection"]["final_kind"] == FrequencyLabelKind.FREQUENCY
+    assert result.diagnostics["final_selection"]["evidence"] == expected_evidence
+    assert result.diagnostics["evidence_valid"] is True
+
+
+@pytest.mark.parametrize(
+    ("note_text", "expected_label", "expected_evidence"),
+    [
+        (
+            "Against this backdrop, he reports an increase in brief absence episodes and "
+            "two myoclonic clusters over the past three weeks, alongside one generalised "
+            "tonic-clonic seizure occurring late morning at work.",
+            "2 cluster per 3 week, multiple per cluster",
+            "two myoclonic clusters over the past three weeks",
+        ),
+        (
+            "Seizures: The diary shows infrequent events predominantly aligned with delayed "
+            "or missed ASM doses. Specifically: - 2025: January 0; February 1 generalised "
+            "convulsion after missing evening valproate; March 0; April 0; May 1 absence "
+            "cluster after late morning lamotrigine; June 0; July 0; August 1 generalised "
+            "convulsion following two late doses; September 0.",
+            "3 per 9 month",
+            (
+                "2025: January 0; February 1 generalised convulsion after missing evening "
+                "valproate; March 0; April 0; May 1 absence cluster after late morning "
+                "lamotrigine; June 0; July 0; August 1 generalised convulsion following "
+                "two late doses; September 0"
+            ),
+        ),
+        (
+            "Frequency has increased: July x 3 focal aware motor; August x 4 focal aware "
+            "motor; September x 5 focal aware motor with two focal to bilateral "
+            "tonic-clonic.",
+            "5 per month",
+            "September x 5 focal aware motor",
+        ),
+        (
+            "Seizures: Patient describes rare events that occur exclusively during prolonged "
+            "physical exertion at work. Last event: 3 weeks ago on-site following extended "
+            "machinery loading; prior to that, one event in late May 2025 during a "
+            "high-demand shift.",
+            "1 per 1 to 2 month",
+            (
+                "Last event: 3 weeks ago on-site following extended machinery loading; "
+                "prior to that, one event in late May 2025"
+            ),
+        ),
+    ],
+)
+def test_pipeline_extracts_contextual_trigger_and_diary_frequency_patterns(
+    note_text: str,
+    expected_label: str,
+    expected_evidence: str,
+) -> None:
+    result = Gan2026PipelineV1().run(_record(note_text))
+
+    assert result.output.final_value == expected_label
+    assert result.diagnostics["final_selection"]["final_kind"] == FrequencyLabelKind.FREQUENCY
+    assert result.diagnostics["final_selection"]["evidence"] == expected_evidence
+    assert result.diagnostics["evidence_valid"] is True
+
+
 def test_pipeline_preserves_seizure_free_as_semantic_state() -> None:
     result = Gan2026PipelineV1().run(
         _record("He has been seizure free for a long duration and over several years.")
