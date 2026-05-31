@@ -79,6 +79,13 @@ FULL_MONTHS = {
     "december": 12,
 }
 MONTH_NAME_PATTERN = "|".join([*FULL_MONTHS, *MONTH_ABBREVIATIONS])
+WORD_TOKEN = r"[a-z][a-z\-‑–—]*"
+SEIZURE_TERMS = (
+    r"seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|"
+    r"myoclonics?|jerks?|auras?|status epilepticus"
+)
+QUALIFIED_SEIZURE_TERMS = rf"(?:{WORD_TOKEN}\s+){{0,4}}(?:{SEIZURE_TERMS})"
+DIARY_COUNT_TOKEN = rf"(?:{NUMBER_VALUE_TOKEN}|no|none|zero|a|an|another)"
 
 
 def apply_diary_rules(
@@ -281,10 +288,10 @@ def _build_sleep_awake_month_summary(
     if denominator is None:
         return None
     counts = [
-        _integer_number_token(match.group("count_a")),
-        _integer_number_token(match.group("count_b")),
-        _integer_number_token(match.group("count_c")),
-        _integer_number_token(match.group("count_d")),
+        _diary_count_token(match.group("count_a")),
+        _diary_count_token(match.group("count_b")),
+        _diary_count_token(match.group("count_c")),
+        _diary_count_token(match.group("count_d")),
     ]
     integer_counts = [count for count in counts if count is not None]
     if len(integer_counts) != len(counts):
@@ -295,6 +302,40 @@ def _build_sleep_awake_month_summary(
         label=_rate_label(str(sum(integer_counts)), "month", str(denominator + 1)),
         evidence_group="evidence",
     )
+
+
+def _build_monthly_diary_summary(
+    match: re.Match[str], context: ExtractionContext, *, rule_id: str
+) -> RawCandidate | None:
+    clinic_date_func = cast(Callable[[str], object | None], context.helper("clinic_date"))
+    clinic_date = clinic_date_func(context.text)
+    if clinic_date is None:
+        return None
+    evidence = _trim_monthly_diary_evidence(match.group("evidence"))
+    parsed = _monthly_diary_counts(evidence, clinic_date, context)
+    if parsed is None:
+        return None
+    total, denominator = parsed
+    if total <= 0 or denominator <= 0:
+        return None
+    return RawCandidate(
+        kind=CandidateKind.FREQUENCY_RATE,
+        label=_rate_label(str(total), "month", str(denominator)),
+        evidence=evidence,
+        rule_id=rule_id,
+        rule_group=RuleGroup.DIARY_LOG_AGGREGATION,
+        portability=Portability.SEIZURE_FREQUENCY,
+        match_groups=match.groupdict(),
+    )
+
+
+def _monthly_diary_summary_builder(
+    rule_id: str,
+) -> Callable[[re.Match[str], ExtractionContext], RawCandidate | None]:
+    def build(match: re.Match[str], context: ExtractionContext) -> RawCandidate | None:
+        return _build_monthly_diary_summary(match, context, rule_id=rule_id)
+
+    return build
 
 
 SEIZURE_DAYS_PER_PERIOD_RULE = RuleSpec(
@@ -479,13 +520,13 @@ SLEEP_AWAKE_MONTH_SUMMARY_RULE = RuleSpec(
     description="Two-month diary summary split into sleep and awake event counts.",
     pattern=re.compile(
         rf"\b(?P<evidence>In\s+(?P<first_month>{MONTH_NAME_PATTERN})\s+"
-        rf"(?:he|she)\s+had\s+(?P<count_a>{NUMBER_TOKEN})\s+(?:seizures?|episodes?|"
+        rf"(?:he|she)\s+had\s+(?P<count_a>{DIARY_COUNT_TOKEN})\s+(?:seizures?|episodes?|"
         rf"events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|"
         rf"jerks?|auras?|status epilepticus)\s+during\s+sleep\s+and\s+"
-        rf"(?P<count_b>{NUMBER_TOKEN})\s+while\s+awake\.\s+In\s+"
+        rf"(?P<count_b>{DIARY_COUNT_TOKEN})\s+while\s+awake\.\s+In\s+"
         rf"(?P<second_month>{MONTH_NAME_PATTERN})\s+(?:he|she)\s+had\s+"
-        rf"(?P<count_c>{NUMBER_TOKEN})\s+in\s+sleep\s+and\s+"
-        rf"(?P<count_d>{NUMBER_TOKEN})\s+while\s+awake)\b",
+        rf"(?P<count_c>{DIARY_COUNT_TOKEN})\s+in\s+sleep\s+and\s+"
+        rf"(?P<count_d>{DIARY_COUNT_TOKEN})\s+while\s+awake)\b",
         re.IGNORECASE,
     ),
     build=_build_sleep_awake_month_summary,
@@ -506,6 +547,368 @@ SLEEP_AWAKE_MONTH_SUMMARY_RULE = RuleSpec(
     provenance="Diary/log V1 expression.",
 )
 
+SLEEP_AWAKE_DIRECT_MONTH_SUMMARY_RULE = RuleSpec(
+    rule_id="diary.sleep_awake_direct_month_summary",
+    group=RuleGroup.DIARY_LOG_AGGREGATION,
+    portability=Portability.SEIZURE_FREQUENCY,
+    description="Two-month diary summary with direct in-sleep and awake counts.",
+    pattern=re.compile(
+        rf"\b(?P<evidence>In\s+(?P<first_month>{MONTH_NAME_PATTERN})\s+"
+        rf"(?:he|she)\s+had\s+(?P<count_a>{DIARY_COUNT_TOKEN})\s+in\s+sleep\s+"
+        rf"and\s+(?P<count_b>{DIARY_COUNT_TOKEN})\s+while\s+awake\.\s+In\s+"
+        rf"(?P<second_month>{MONTH_NAME_PATTERN})\s+(?:he|she)\s+had\s+"
+        rf"(?P<count_c>{DIARY_COUNT_TOKEN})\s+in\s+sleep\s+and\s+"
+        rf"(?P<count_d>{DIARY_COUNT_TOKEN})\s+while\s+awake)\b",
+        re.IGNORECASE,
+    ),
+    build=_build_sleep_awake_month_summary,
+    examples=(
+        RuleExample(
+            text=(
+                "Clinic Date: 7 May 2023. In Feb he had 3 in sleep and one while "
+                "awake. In Apr he had five in sleep and no while awake."
+            ),
+            expected_label="9 per 3 month",
+            expected_evidence=(
+                "In Feb he had 3 in sleep and one while awake. In Apr he had five "
+                "in sleep and no while awake"
+            ),
+        ),
+    ),
+    provenance="Diary/log V1 expression.",
+)
+
+SLEEP_AWAKE_NOCTURNAL_DAYTIME_SUMMARY_RULE = RuleSpec(
+    rule_id="diary.sleep_awake_nocturnal_daytime_summary",
+    group=RuleGroup.DIARY_LOG_AGGREGATION,
+    portability=Portability.SEIZURE_FREQUENCY,
+    description="Two-month diary summary split into nocturnal and daytime/awake counts.",
+    pattern=re.compile(
+        rf"\b(?P<evidence>In\s+(?P<first_month>{MONTH_NAME_PATTERN})\s+"
+        rf"(?:he|she)\s+had\s+(?P<count_a>{DIARY_COUNT_TOKEN})\s+nocturnal\s+"
+        rf"(?:{SEIZURE_TERMS})\s+but\s+(?P<count_b>{DIARY_COUNT_TOKEN})\s+"
+        rf"daytime\s+events\.\s+In\s+(?P<second_month>{MONTH_NAME_PATTERN})\s+"
+        rf"(?:he|she)\s+had\s+(?P<count_c>{DIARY_COUNT_TOKEN})\s+nocturnal\s+"
+        rf"(?:{SEIZURE_TERMS})\s+and\s+(?P<count_d>{DIARY_COUNT_TOKEN})\s+"
+        rf"while\s+awake)\b",
+        re.IGNORECASE,
+    ),
+    build=_build_sleep_awake_month_summary,
+    examples=(
+        RuleExample(
+            text=(
+                "Clinic Date: 25 July 2014. In Jun he had a nocturnal seizure but "
+                "no daytime events. In July he had three nocturnal seizures and "
+                "5 while awake."
+            ),
+            expected_label="9 per 2 month",
+            expected_evidence=(
+                "In Jun he had a nocturnal seizure but no daytime events. In July "
+                "he had three nocturnal seizures and 5 while awake"
+            ),
+        ),
+    ),
+    provenance="Diary/log V1 expression.",
+)
+
+SLEEP_AWAKE_MONTH_SUMMARY_RULES = (
+    SLEEP_AWAKE_MONTH_SUMMARY_RULE,
+    SLEEP_AWAKE_DIRECT_MONTH_SUMMARY_RULE,
+    SLEEP_AWAKE_NOCTURNAL_DAYTIME_SUMMARY_RULE,
+)
+
+MONTHLY_DIARY_SUMMARY_RULES = (
+    RuleSpec(
+        rule_id="diary.monthly_summary.recent_reported",
+        group=RuleGroup.DIARY_LOG_AGGREGATION,
+        portability=Portability.SEIZURE_FREQUENCY,
+        description="Recent monthly diary count summary with reported events.",
+        pattern=re.compile(
+            r"\b(?P<evidence>(?:She|He)\s+has\s+had\s+[^.]+?,\s+"
+            r"with\s+events\s+reported\b)",
+            re.IGNORECASE,
+        ),
+        build=_monthly_diary_summary_builder("diary.monthly_summary.recent_reported"),
+        examples=(
+            RuleExample(
+                text=(
+                    "She has had no seizures so far this month, four in August, "
+                    "one in July and 3 in June, with events reported from both "
+                    "daytime and nocturnal periods."
+                ),
+                expected_label="8 per 4 month",
+                expected_evidence=(
+                    "She has had no seizures so far this month, four in August, "
+                    "one in July and 3 in June"
+                ),
+            ),
+        ),
+        provenance="Diary/log V1 expression.",
+    ),
+    RuleSpec(
+        rule_id="diary.monthly_summary.experienced_or_had",
+        group=RuleGroup.DIARY_LOG_AGGREGATION,
+        portability=Portability.SEIZURE_FREQUENCY,
+        description="Recent monthly diary count summary with experienced/had lead-in.",
+        pattern=re.compile(
+            r"\b(?P<evidence>(?:She|He)\s+(?:experienced|had)\s+[^.]+?,\s+"
+            r"occurring\s+during\b)",
+            re.IGNORECASE,
+        ),
+        build=_monthly_diary_summary_builder("diary.monthly_summary.experienced_or_had"),
+        examples=(
+            RuleExample(
+                text=(
+                    "He experienced 2 generalised tonic-clonic seizures so far in "
+                    "Sep, one in Aug, and 0 in Jul, occurring during both wakefulness "
+                    "and sleep."
+                ),
+                expected_label="3 per 3 month",
+                expected_evidence=(
+                    "2 generalised tonic-clonic seizures so far in Sep, one in Aug, "
+                    "and 0 in Jul"
+                ),
+            ),
+        ),
+        provenance="Diary/log V1 expression.",
+    ),
+    RuleSpec(
+        rule_id="diary.monthly_summary.this_month_so_far",
+        group=RuleGroup.DIARY_LOG_AGGREGATION,
+        portability=Portability.SEIZURE_FREQUENCY,
+        description="This-month-so-far diary count summary.",
+        pattern=re.compile(
+            r"\b(?P<evidence>This\s+month\s+so\s+far\s+[^.]+?,\s+over\s+waking\b)",
+            re.IGNORECASE,
+        ),
+        build=_monthly_diary_summary_builder("diary.monthly_summary.this_month_so_far"),
+        examples=(
+            RuleExample(
+                text=(
+                    "This month so far she has no seizures; earlier 4 in February, "
+                    "0 in January and 7 in December, over waking hours and sleep."
+                ),
+                expected_label="11 per 4 month",
+                expected_evidence=(
+                    "This month so far she has no seizures; earlier 4 in February, "
+                    "0 in January and 7 in December"
+                ),
+            ),
+        ),
+        provenance="Diary/log V1 expression.",
+    ),
+    RuleSpec(
+        rule_id="diary.monthly_summary.reported_list",
+        group=RuleGroup.DIARY_LOG_AGGREGATION,
+        portability=Portability.SEIZURE_FREQUENCY,
+        description="Reported or recorded month-count list.",
+        pattern=re.compile(
+            r"\b(?P<evidence>(?:She|He)\s+(?:reports|has\s+recorded)\s+[^.]+?,\s+"
+            r"(?:from\s+both|including)\b)",
+            re.IGNORECASE,
+        ),
+        build=_monthly_diary_summary_builder("diary.monthly_summary.reported_list"),
+        examples=(
+            RuleExample(
+                text=(
+                    "He reports 6 seizure events in September, 6 in August and "
+                    "four in July, and 2 in June, from both daytime and nocturnal periods."
+                ),
+                expected_label="18 per 4 month",
+                expected_evidence=(
+                    "He reports 6 seizure events in September, 6 in August and "
+                    "four in July, and 2 in June"
+                ),
+            ),
+        ),
+        provenance="Diary/log V1 expression.",
+    ),
+    RuleSpec(
+        rule_id="diary.monthly_summary.noted_all_from",
+        group=RuleGroup.DIARY_LOG_AGGREGATION,
+        portability=Portability.SEIZURE_FREQUENCY,
+        description="Noted month-count list with all-from state summary.",
+        pattern=re.compile(
+            r"\b(?P<evidence>(?:She|He)\s+noted\s+[^.]+?,\s+all\s+from\b)",
+            re.IGNORECASE,
+        ),
+        build=_monthly_diary_summary_builder("diary.monthly_summary.noted_all_from"),
+        examples=(
+            RuleExample(
+                text=(
+                    "She noted no seizures in June, four in May, and four in April, "
+                    "all from mixed states."
+                ),
+                expected_label="8 per 3 month",
+                expected_evidence="She noted no seizures in June, four in May, and four in April",
+            ),
+        ),
+        provenance="Diary/log V1 expression.",
+    ),
+    RuleSpec(
+        rule_id="diary.monthly_summary.this_month_extended",
+        group=RuleGroup.DIARY_LOG_AGGREGATION,
+        portability=Portability.SEIZURE_FREQUENCY,
+        description="This-month diary summary with earlier month counts.",
+        pattern=re.compile(
+            r"\b(?P<evidence>This\s+month,\s+(?:she|he)\s+has\s+had\s+[^.]+?,\s+"
+            r"across\b)",
+            re.IGNORECASE,
+        ),
+        build=_monthly_diary_summary_builder("diary.monthly_summary.this_month_extended"),
+        examples=(
+            RuleExample(
+                text=(
+                    "This month, she has had six convulsions; 0 were in December "
+                    "and 5 in November, across day and night."
+                ),
+                expected_label="11 per 3 month",
+                expected_evidence=(
+                    "This month, she has had six convulsions; 0 were in December "
+                    "and 5 in November"
+                ),
+            ),
+        ),
+        provenance="Diary/log V1 expression.",
+    ),
+    RuleSpec(
+        rule_id="diary.monthly_summary.as_of_this_month",
+        group=RuleGroup.DIARY_LOG_AGGREGATION,
+        portability=Portability.SEIZURE_FREQUENCY,
+        description="As-of-this-month diary summary with prior month counts.",
+        pattern=re.compile(
+            r"\b(?P<evidence>As\s+of\s+this\s+month\s+(?:she|he)\s+reports\s+"
+            r"[^.]+?\s+during\s+both\b)",
+            re.IGNORECASE,
+        ),
+        build=_monthly_diary_summary_builder("diary.monthly_summary.as_of_this_month"),
+        examples=(
+            RuleExample(
+                text=(
+                    "As of this month she reports four seizure events; 3 in August, "
+                    "three in July and five in June during both sleep and wakefulness."
+                ),
+                expected_label="15 per 4 month",
+                expected_evidence=(
+                    "As of this month she reports four seizure events; 3 in August, "
+                    "three in July and five in June"
+                ),
+            ),
+        ),
+        provenance="Diary/log V1 expression.",
+    ),
+    RuleSpec(
+        rule_id="diary.monthly_summary.sparse_cluster_event_list",
+        group=RuleGroup.DIARY_LOG_AGGREGATION,
+        portability=Portability.SEIZURE_FREQUENCY,
+        description="Sparse month list with a cluster/run and later single events.",
+        pattern=re.compile(
+            rf"\b(?P<evidence>He\s+had\s+a\s+cluster\s+of\s+{NUMBER_TOKEN}\s+"
+            rf"(?:{QUALIFIED_SEIZURE_TERMS})\s+in\s+(?:{MONTH_NAME_PATTERN}).+?"
+            rf"a\s+single\s+(?:{QUALIFIED_SEIZURE_TERMS})\s+was\s+recorded)\b",
+            re.IGNORECASE,
+        ),
+        build=_monthly_diary_summary_builder("diary.monthly_summary.sparse_cluster_event_list"),
+        examples=(
+            RuleExample(
+                text=(
+                    "He had a cluster of three seizures in August. In November he had "
+                    "a nocturnal seizure, and in February a single tonic seizure was recorded."
+                ),
+                expected_label="5 per 7 month",
+                expected_evidence=(
+                    "He had a cluster of three seizures in August. In November he had "
+                    "a nocturnal seizure, and in February a single tonic seizure was recorded"
+                ),
+            ),
+        ),
+        provenance="Diary/log V1 expression.",
+    ),
+    RuleSpec(
+        rule_id="diary.monthly_summary.parenthetical_sparse_list",
+        group=RuleGroup.DIARY_LOG_AGGREGATION,
+        portability=Portability.SEIZURE_FREQUENCY,
+        description="Sparse month list with parenthetical cluster detail.",
+        pattern=re.compile(
+            rf"\b(?P<evidence>He\s+had\s+a\s+cluster\s+of\s+{NUMBER_TOKEN}\s+"
+            rf"(?:{QUALIFIED_SEIZURE_TERMS})\s+in\s+(?:{MONTH_NAME_PATTERN})\s+"
+            rf"\([^)]+\)\.\s+In\s+(?:{MONTH_NAME_PATTERN})\s+[^.]+?,\s+"
+            rf"and\s+in\s+(?:{MONTH_NAME_PATTERN})\s+a\s+single\s+"
+            rf"(?:{QUALIFIED_SEIZURE_TERMS})\s+was\s+recorded)\b",
+            re.IGNORECASE,
+        ),
+        build=_monthly_diary_summary_builder("diary.monthly_summary.parenthetical_sparse_list"),
+        examples=(
+            RuleExample(
+                text=(
+                    "He had a cluster of three seizures in Dec (short). In Feb he had "
+                    "7 nocturnal seizures, and in Apr a single tonic seizure was recorded."
+                ),
+                expected_label="11 per 5 month",
+                expected_evidence=(
+                    "He had a cluster of three seizures in Dec (short). In Feb he had "
+                    "7 nocturnal seizures, and in Apr a single tonic seizure was recorded"
+                ),
+            ),
+        ),
+        provenance="Diary/log V1 expression.",
+    ),
+    RuleSpec(
+        rule_id="diary.monthly_summary.in_month_another",
+        group=RuleGroup.DIARY_LOG_AGGREGATION,
+        portability=Portability.SEIZURE_FREQUENCY,
+        description="Sparse month list ending with another event.",
+        pattern=re.compile(
+            rf"\b(?P<evidence>In\s+(?:{MONTH_NAME_PATTERN})\s+[^.]+?\([^)]+\)\.\s+"
+            rf"In\s+(?:{MONTH_NAME_PATTERN})\s+[^.]+?,\s+and\s+in\s+"
+            rf"(?:{MONTH_NAME_PATTERN})\s+another)\b",
+            re.IGNORECASE,
+        ),
+        build=_monthly_diary_summary_builder("diary.monthly_summary.in_month_another"),
+        examples=(
+            RuleExample(
+                text=(
+                    "In March he had a run of six seizures (brief). In June there was "
+                    "two further seizures at night, and in August another during therapy."
+                ),
+                expected_label="9 per 6 month",
+                expected_evidence=(
+                    "In March he had a run of six seizures (brief). In June there was "
+                    "two further seizures at night, and in August another"
+                ),
+            ),
+        ),
+        provenance="Diary/log V1 expression.",
+    ),
+    RuleSpec(
+        rule_id="diary.monthly_summary.in_cluster_another",
+        group=RuleGroup.DIARY_LOG_AGGREGATION,
+        portability=Portability.SEIZURE_FREQUENCY,
+        description="Sparse month list with in-a-cluster wording and another event.",
+        pattern=re.compile(
+            rf"\b(?P<evidence>In\s+(?:{MONTH_NAME_PATTERN})\s+[^.]+?\s+"
+            rf"in\s+a\s+cluster\.\s+In\s+(?:{MONTH_NAME_PATTERN})\s+[^.]+?,\s+"
+            rf"and\s+in\s+(?:{MONTH_NAME_PATTERN})\s+another)\b",
+            re.IGNORECASE,
+        ),
+        build=_monthly_diary_summary_builder("diary.monthly_summary.in_cluster_another"),
+        examples=(
+            RuleExample(
+                text=(
+                    "In Apr she experienced four short absences in a cluster. "
+                    "In Jul there was 2 further brief absences, and in Sep another."
+                ),
+                expected_label="7 per 6 month",
+                expected_evidence=(
+                    "In Apr she experienced four short absences in a cluster. "
+                    "In Jul there was 2 further brief absences, and in Sep another"
+                ),
+            ),
+        ),
+        provenance="Diary/log V1 expression.",
+    ),
+)
+
 DIARY_RULES = (
     SEIZURE_DAYS_PER_PERIOD_RULE,
     SEIZURE_DAYS_FRACTION_RULE,
@@ -515,7 +918,8 @@ DIARY_RULES = (
     SPARSE_FULL_MONTH_LOG_RULE,
     RECORDED_MONTH_LOG_RULE,
     INCREASING_MONTHLY_COUNT_RULE,
-    SLEEP_AWAKE_MONTH_SUMMARY_RULE,
+    *SLEEP_AWAKE_MONTH_SUMMARY_RULES,
+    *MONTHLY_DIARY_SUMMARY_RULES,
 )
 
 
@@ -548,6 +952,195 @@ def _integer_number_token(value: str) -> int | None:
     if normalized.isdigit():
         return int(normalized)
     return None
+
+
+def _diary_count_token(value: str) -> int | None:
+    normalized = value.strip().lower()
+    if normalized in {"no", "none", "zero"}:
+        return 0
+    if normalized in {"a", "an", "another"}:
+        return 1
+    return _integer_number_token(normalized)
+
+
+def _trim_monthly_diary_evidence(evidence: str) -> str:
+    trimmed = _clean_evidence(evidence)
+    trimmed = re.sub(
+        r",?\s+(?:with events reported|occurring during|from both|including|"
+        r"all from|over waking|across|during both)\b.*$",
+        "",
+        trimmed,
+        flags=re.IGNORECASE,
+    )
+    trimmed = re.sub(
+        rf"^((?:She|He)\s+)experienced\s+"
+        rf"(?={DIARY_COUNT_TOKEN}\s+(?:{QUALIFIED_SEIZURE_TERMS}).*?\bso\s+far\s+in\s+"
+        rf"(?:{MONTH_NAME_PATTERN})\b)",
+        "",
+        trimmed,
+        flags=re.IGNORECASE,
+    )
+    trimmed = re.sub(
+        rf"(\band\s+in\s+(?:{MONTH_NAME_PATTERN})\s+another)\s+at\s+\w+$",
+        r"\1",
+        trimmed,
+        flags=re.IGNORECASE,
+    )
+    trimmed = re.sub(
+        rf"(\band\s+in\s+(?:{MONTH_NAME_PATTERN})\s+another)\s+during\s+.+$",
+        r"\1",
+        trimmed,
+        flags=re.IGNORECASE,
+    )
+    trimmed = re.sub(
+        rf"(\band\s+in\s+(?:{MONTH_NAME_PATTERN})\s+a\s+single\s+"
+        rf"(?:{QUALIFIED_SEIZURE_TERMS})\s+was\s+recorded)\s+during\s+.+$",
+        r"\1",
+        trimmed,
+        flags=re.IGNORECASE,
+    )
+    return _clean_evidence(trimmed)
+
+
+def _monthly_diary_counts(
+    evidence: str, clinic_date: object, context: ExtractionContext
+) -> tuple[int, int] | None:
+    relative_note_date = cast(
+        Callable[[str, object | None], object | None],
+        context.helper("relative_note_date"),
+    )
+    month_span_inclusive = cast(
+        Callable[[object | None, object | None], int | None],
+        context.helper("month_span_inclusive"),
+    )
+    month_totals: dict[tuple[int, int], int] = {}
+    compact_months: set[tuple[int, int]] = set()
+
+    def date_key(date: object) -> tuple[int, int]:
+        month_date = cast(_MonthDate, date)
+        return month_date.year, month_date.month
+
+    def add(month_text: str, raw_count: str) -> None:
+        date = relative_note_date(month_text, clinic_date)
+        count = _diary_count_token(raw_count)
+        if date is None or count is None:
+            return
+        key = date_key(date)
+        month_totals[key] = month_totals.get(key, 0) + count
+        compact_months.add(key)
+
+    def add_month_date(date: object, raw_count: str) -> None:
+        count = _diary_count_token(raw_count)
+        if count is None:
+            return
+        key = date_key(date)
+        month_totals[key] = month_totals.get(key, 0) + count
+
+    this_month_patterns = [
+        rf"(?P<count>{DIARY_COUNT_TOKEN})\s+(?:{QUALIFIED_SEIZURE_TERMS})\s+"
+        rf"so\s+far\s+this\s+month",
+        rf"this\s+month\s+so\s+far\s+\w+\s+has\s+"
+        rf"(?P<count>{DIARY_COUNT_TOKEN})\s+(?:{QUALIFIED_SEIZURE_TERMS})",
+        rf"this\s+month,?\s+\w+\s+has\s+had\s+"
+        rf"(?P<count>{DIARY_COUNT_TOKEN})\s+(?:{QUALIFIED_SEIZURE_TERMS})",
+        rf"as\s+of\s+this\s+month\s+\w+\s+reports\s+"
+        rf"(?P<count>{DIARY_COUNT_TOKEN})\s+(?:{QUALIFIED_SEIZURE_TERMS})",
+    ]
+    for pattern in this_month_patterns:
+        for match in re.finditer(pattern, evidence, flags=re.IGNORECASE):
+            count = _diary_count_token(match.group("count"))
+            if count is not None:
+                key = date_key(clinic_date)
+                month_totals[key] = month_totals.get(key, 0) + count
+                compact_months.add(key)
+
+    single_to_date_month = re.compile(
+        rf"\b(?P<count>a|an)\s+(?:{QUALIFIED_SEIZURE_TERMS})\s+"
+        rf"(?:to\s+date\s+|so\s+far\s+)in\s+(?P<month>{MONTH_NAME_PATTERN})\b",
+        re.IGNORECASE,
+    )
+    for match in single_to_date_month.finditer(evidence):
+        add(match.group("month"), match.group("count"))
+
+    cluster_or_run_count_month = re.compile(
+        rf"\b(?:cluster|run)\s+of\s+(?P<count>{NUMBER_VALUE_TOKEN})\s+"
+        rf"(?:{QUALIFIED_SEIZURE_TERMS})\s+in\s+(?P<month>{MONTH_NAME_PATTERN})\b",
+        re.IGNORECASE,
+    )
+    for match in cluster_or_run_count_month.finditer(evidence):
+        add(match.group("month"), match.group("count"))
+
+    count_before_month = re.compile(
+        rf"\b(?P<count>no|none|zero|{NUMBER_VALUE_TOKEN})\s+"
+        rf"(?:(?:{QUALIFIED_SEIZURE_TERMS}|events?)\s+)?"
+        rf"(?:to\s+date\s+|so\s+far\s+)?"
+        rf"in\s+(?P<month>{MONTH_NAME_PATTERN})\b",
+        re.IGNORECASE,
+    )
+    for match in count_before_month.finditer(evidence):
+        preceding = evidence[max(0, match.start() - 16) : match.start()].lower()
+        if re.search(r"\b(?:cluster|run)\s+of\s+$", preceding):
+            continue
+        add(match.group("month"), match.group("count"))
+
+    count_were_month = re.compile(
+        rf"\b(?P<count>no|none|zero|{NUMBER_VALUE_TOKEN})\s+were\s+"
+        rf"in\s+(?P<month>{MONTH_NAME_PATTERN})\b",
+        re.IGNORECASE,
+    )
+    for match in count_were_month.finditer(evidence):
+        add(match.group("month"), match.group("count"))
+
+    month_leading = re.compile(
+        rf"\b(?:and\s+)?in\s+(?P<month>{MONTH_NAME_PATTERN})\b(?P<body>.*?)"
+        rf"(?=\b(?:and\s+)?in\s+(?:{MONTH_NAME_PATTERN})\b|[.;]|$)",
+        re.IGNORECASE,
+    )
+    count_in_month_body = re.compile(
+        rf"\b(?:cluster|run)\s+of\s+(?P<run_count>{NUMBER_VALUE_TOKEN})\s+"
+        rf"(?:{QUALIFIED_SEIZURE_TERMS})\b"
+        rf"|"
+        rf"\b(?P<count>no|none|zero|{NUMBER_VALUE_TOKEN})\s+"
+        rf"(?:further\s+)?(?:[\w-]+\s+){{0,3}}?"
+        rf"(?:{SEIZURE_TERMS}|events?|while\s+awake|in\s+sleep|daytime|nocturnal)\b"
+        rf"|\b(?P<single>a|an)\s+(?!run\s+of\b|cluster\s+of\b)"
+        rf"(?:[\w-]+\s+){{0,3}}(?:{SEIZURE_TERMS}|events?)\b"
+        rf"|\b(?P<another>another)\b",
+        re.IGNORECASE,
+    )
+    for match in month_leading.finditer(evidence):
+        date = relative_note_date(match.group("month"), clinic_date)
+        if date is None:
+            continue
+        key = date_key(date)
+        if key in compact_months:
+            continue
+        body = match.group("body")
+        for count_match in count_in_month_body.finditer(body):
+            raw_count = (
+                count_match.groupdict().get("run_count")
+                or count_match.groupdict().get("count")
+                or count_match.groupdict().get("single")
+                or count_match.groupdict().get("another")
+            )
+            if raw_count is not None:
+                add_month_date(date, raw_count)
+
+    if not month_totals:
+        return None
+    dates = [_MonthDate(year=year, month=month) for year, month in month_totals]
+    start = min(dates, key=lambda date: (date.year, date.month))
+    end = max(dates, key=lambda date: (date.year, date.month))
+    denominator = month_span_inclusive(start, end)
+    if denominator is None:
+        denominator = len(month_totals)
+    return sum(month_totals.values()), denominator
+
+
+class _MonthDate:
+    def __init__(self, *, year: int, month: int) -> None:
+        self.year = year
+        self.month = month
 
 
 def _singular_unit(value: str) -> str:

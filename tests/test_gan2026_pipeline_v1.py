@@ -436,6 +436,13 @@ def test_pipeline_can_ablate_catalogued_cluster_group() -> None:
             "5 per 2 month",
             "diary.sleep_awake_month_summary",
         ),
+        (
+            "Clinic Date: 25 September 2024. She has had no seizures so far this "
+            "month, four in August, one in July and 3 in June, with events reported "
+            "from both daytime and nocturnal periods.",
+            "8 per 4 month",
+            "diary.monthly_summary.recent_reported",
+        ),
     ],
 )
 def test_pipeline_exposes_catalogued_diary_metadata(
