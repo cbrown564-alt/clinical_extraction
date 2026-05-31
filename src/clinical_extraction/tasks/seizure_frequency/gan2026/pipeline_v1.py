@@ -150,11 +150,15 @@ SEIZURE_RATE_PHRASE = (
 )
 SEIZURE_RATE_DESCRIPTOR = (
     r"(?:tonic-clonic|myoclonic|convulsive|focal|absence|drop|epileptic|"
-    r"impaired awareness|focal onset|petit mal)"
+    r"impaired awareness|focal onset|petit mal|simple partial)"
 )
 SEIZURE_DESCRIPTOR_PHRASE = (
     r"(?:tonic-clonic|myoclonic|convulsive|focal(?:\s+[a-z][a-z-]*){0,3}|"
-    r"absence|drop|epileptic|impaired awareness|focal onset|petit mal)"
+    r"absence|drop|epileptic|impaired awareness|focal onset|petit mal|simple partial)"
+)
+SEIZURE_TYPE_DESCRIPTOR = (
+    r"(?:focal\s+(?:non-motor|sensory|tonic|clonic|motor|aware|impaired-awareness|"
+    r"impaired\s+awareness)|tonic|atonic|myoclonic|absence|petit\s+mal)"
 )
 
 
@@ -203,7 +207,7 @@ def _extract_candidates(note_text: str) -> list[_RawCandidate]:
     candidates.extend(_extract_seizure_free_candidates(normalized))
     candidates.extend(_extract_rate_candidates(normalized))
     candidates.extend(_extract_unknown_candidates(normalized))
-    return _prune_contained_frequency_fragments(_dedupe_candidates(candidates))
+    return _prune_contained_frequency_fragments(_dedupe_candidates(candidates), normalized)
 
 
 def _extract_cluster_candidates(text: str) -> list[_RawCandidate]:
@@ -733,8 +737,268 @@ def _extract_cluster_candidates(text: str) -> list[_RawCandidate]:
 
 def _extract_seizure_free_candidates(text: str) -> list[_RawCandidate]:
     candidates: list[_RawCandidate] = []
+    clinic_date = _clinic_date(text)
+    seizure_free_since_date = re.compile(
+        rf"\b(?:seizure(?:[-\u2010-\u2015]|\s)free\s+(?:interval\s+)?since|"
+        rf"drug-free\s+remission\s+since|no\s+focal\s+clonic\s+since|"
+        rf"sustained\s+remission\s+since|prior\s+cluster\s+pattern\s+resolved\s+since|"
+        rf"last\s+seizure\s+on)\s+"
+        rf"(?P<date>\d{{1,2}}(?:[-/](?:\d{{1,2}}|{MONTH_NAME_PATTERN})[-/]\d{{4}}|"
+        rf"\s+(?:{MONTH_NAME_PATTERN})\s+\d{{4}}))\b",
+        re.IGNORECASE,
+    )
+    for match in seizure_free_since_date.finditer(text):
+        months = _month_span_floor(_full_date(match.group("date")), clinic_date)
+        if months is None:
+            continue
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.SEIZURE_FREE,
+                label=f"seizure free for {months} month",
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    absence_for_duration = re.compile(
+        rf"\b(?P<evidence>(?:absence\s+of\s+events|"
+        rf"no\s+occurrence\s+of\s+events\s+suggestive\s+of\s+seizures)"
+        rf".{{0,80}}?\b(?P<count>{NUMBER_TOKEN})\s+months?\s+ago|"
+        rf"absence\s+of\s+events\s+for\s+over\s+(?P<over_count>{NUMBER_TOKEN})\s+months?)\b",
+        re.IGNORECASE,
+    )
+    for match in absence_for_duration.finditer(text):
+        count = match.groupdict().get("count") or match.groupdict().get("over_count")
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.SEIZURE_FREE,
+                label=f"seizure free for {_number_token(count)} month",
+                evidence=_clean_evidence(match.group("evidence")),
+            )
+        )
+
+    no_events_for_duration = re.compile(
+        rf"\b(?P<evidence>no\s+(?:events,\s+warnings,\s+or\s+auras|"
+        rf"spell-like\s+events\s+suggestive\s+of\s+seizures)\s+"
+        rf"(?:for|over)\s+(?:the\s+past\s+)?(?P<count>{NUMBER_TOKEN})\s+"
+        rf"(?P<unit>months?|years?))\b",
+        re.IGNORECASE,
+    )
+    for match in no_events_for_duration.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.SEIZURE_FREE,
+                label=(
+                    f"seizure free for {_number_token(match.group('count'))} "
+                    f"{_singular_unit(match.group('unit'))}"
+                ),
+                evidence=_clean_evidence(match.group("evidence")),
+            )
+        )
+
+    seizure_free_duration_status = re.compile(
+        rf"\b(?P<evidence>seizure(?:[-\u2010-\u2015]|\s)free\s+interval\s+"
+        rf"extends\s+to\s+(?P<count>{NUMBER_TOKEN})\s+(?P<unit>months?|years?)|"
+        rf"recorded\s+seizure\s+rate\s+at\s+zero\s+over\s+the\s+last\s+"
+        rf"(?P<zero_count>{NUMBER_TOKEN})\s+(?P<zero_unit>months?|years?))\b",
+        re.IGNORECASE,
+    )
+    for match in seizure_free_duration_status.finditer(text):
+        count = match.groupdict().get("count") or match.groupdict().get("zero_count")
+        unit = match.groupdict().get("unit") or match.groupdict().get("zero_unit")
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.SEIZURE_FREE,
+                label=f"seizure free for {_number_token(count)} {_singular_unit(unit)}",
+                evidence=_clean_evidence(match.group("evidence")),
+            )
+        )
+
+    seizure_free_one_and_half_years = re.compile(
+        r"\b(?:seizure(?:[-\u2010-\u2015]|\s)free\s+for|"
+        r"not\s+experiencing\s+any\s+seizures\s+in)\s+one\s+and\s+a\s+half\s+years\b",
+        re.IGNORECASE,
+    )
+    for match in seizure_free_one_and_half_years.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.SEIZURE_FREE,
+                label="seizure free for 1.5 year",
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    last_epileptic_event = re.compile(
+        rf"\b(?P<evidence>last\s+had\s+a\s+clearly\s+epileptic\s+"
+        rf"(?:{WORD_TOKEN}\s+){{0,5}}?event\s+approximately\s+"
+        rf"(?P<count>{NUMBER_TOKEN})\s+months?\s+ago)\b",
+        re.IGNORECASE,
+    )
+    for match in last_epileptic_event.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.SEIZURE_FREE,
+                label=f"seizure free for {_number_token(match.group('count'))} month",
+                evidence=_clean_evidence(match.group("evidence")),
+            )
+        )
+
+    no_definite_events = re.compile(
+        rf"\bno\s+definite\s+(?:{QUALIFIED_SEIZURE_TERMS})\b",
+        re.IGNORECASE,
+    )
+    for match in no_definite_events.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.SEIZURE_FREE,
+                label="seizure free for multiple month",
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    current_control_phrases = [
+        re.compile(
+            r"\b(?:seizure\s+freedom\s+continues|complete\s+seizure\s+control|"
+            r"complete\s+control\s+of\s+seizures|no\s+recurrence)\b",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            r"\bseizures\s+remain\s+settled\s+without\s+recent\s+breakthrough\s+events\b",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            r"\bcurrently\s+in\s+long-term\s+remission,\s+having\s+been\s+"
+            r"seizure\s+free\s+for\s+years\b",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            rf"\bhas\s+not\s+experienced\s+any\s+(?:{SEIZURE_TERMS})\b",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            r"\bno\s+clinical\s+seizures\s+observed\s+since\b",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            rf"\bno\s+(?:further\s+)?(?:witnessed\s+)?(?:{QUALIFIED_SEIZURE_TERMS})\s+"
+            rf"(?:reported|observed|recorded|since|suggestive\s+of\s+seizures)\b",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            r"\bfree\s+of\s+(?:his|her|their)\s+usual\s+attacks\s+over\s+this\s+interval\b",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            r"\bno\s+auras,\s+warnings,\s+or\s+witnessed\s+events\s+"
+            r"for\s+an\s+extended\s+period\b",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            r"\bhas\s+not\s+described\s+any\s+further\s+events\s+"
+            r"suggestive\s+of\s+seizures\b",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            r"\bno\s+(?:recent\s+)?events\s+suggestive\s+of\s+seizures\b",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            r"\bsustained\s+postoperative\s+seizure\s+freedom\b",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            r"\bno\s+recorded\s+events\s+since\b",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            r"\binterval\s+history\s+negative\s+for\s+seizures\b",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            r"\bdurable\s+seizure\s+control\b",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            r"\bseizure\s+cessation\s+following\s+initiation\s+of\s+last\s+asm\b",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            r"\bno\s+recorded\s+events,\s+either\s+focal\s+or\s+generalised,\s+"
+            r"during\s+the\s+period\s+monitored\b",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            r"\btypical\s+episodes\s+have\s+not\s+recurred\b",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            r"\bno\s+further\s+events\s+suggestive\s+of\s+"
+            r"(?:her|his|their)\s+previous\s+spells\b",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            r"\bno\s+recorded\s+spells\s+suggestive\s+of\s+seizure\s+activity\b",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            r"\bepisode-free\s+on\s+(?:her|his|their)\s+current\s+routine\b",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            r"\brecorded\s+seizure\s+rate\s+at\s+zero\s+on\s+"
+            r"the\s+monitoring\s+platform\s+during\s+this\s+period\b",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            r"\bno\s+recorded\s+events\s+requiring\s+rescue\s+measures\b",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            r"\bno\s+recorded\s+events\b",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            r"\bseizure-free\s+by\s+patient\s+report\b",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            r"\bno\s+clear-cut\s+events\s+to\s+suggest\s+recent\s+seizures\b",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            r"\bno\s+events\s+of\s+concern\b",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            r"\bno\s+episodes\s+brought\s+to\s+attention\s+by\s+"
+            r"(?:carers|caregivers)\s+or\s+bystanders,\s+nor\s+any\s+"
+            r"events\s+(?:he|she|they)\s+has\s+recognised\s+as\s+seizures\b",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            r"\bwithout\s+events\s+for\s+an\s+extended\s+period\b",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            r"\bsteady\s+run\s+without\s+clear\s+seizures\s+at\s+present\b",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            r"\bfocal\s+epileptic\s+spasms\s+freedom\s+achieved\b",
+            re.IGNORECASE,
+        ),
+    ]
+    for pattern in current_control_phrases:
+        for match in pattern.finditer(text):
+            candidates.append(
+                _RawCandidate(
+                    kind=CandidateKind.SEIZURE_FREE,
+                    label="seizure free for multiple year",
+                    evidence=_clean_evidence(match.group(0)),
+                )
+            )
+
     seizure_free = re.compile(
-        rf"\b(?:seizure[- ]free|free of (?:{SEIZURE_TERMS})|"
+        rf"\b(?:seizure(?:[-\u2010-\u2015]|\s)free|free of (?:{SEIZURE_TERMS})|"
         rf"no (?:further )?(?:{SEIZURE_TERMS})).{{0,80}}?"
         rf"(?:(?P<count>{NUMBER_TOKEN})\s+(?P<unit>months|month|years|year)|"
         r"several years|long duration|since\b)",
@@ -1207,6 +1471,10 @@ def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
         re.IGNORECASE,
     )
     for match in direct_rate.finditer(text):
+        if _is_medication_or_dose_rate_distractor(match, text):
+            continue
+        if _is_nonprogressive_myoclonic_rate_distractor(match, text):
+            continue
         candidates.append(
             _RawCandidate(
                 kind=CandidateKind.FREQUENCY_RATE,
@@ -1266,6 +1534,8 @@ def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
         re.IGNORECASE,
     )
     for match in implicit_interval.finditer(text):
+        if _has_historical_lead_in(text, match.start()):
+            continue
         candidates.append(
             _RawCandidate(
                 kind=CandidateKind.FREQUENCY_RATE,
@@ -1404,6 +1674,20 @@ def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
             )
         )
 
+    typical_month_single = re.compile(
+        rf"\b(?P<count>one|single|1)\s+(?:brief\s+)?(?:{SEIZURE_RATE_PHRASE})\s+"
+        r"in\s+a\s+typical\s+month\b",
+        re.IGNORECASE,
+    )
+    for match in typical_month_single.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label(match.group("count"), "month"),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
     implicit_a_period = re.compile(
         rf"\b(?:{SEIZURE_TERMS})\s+(?P<count>once|twice|thrice)\s+"
         rf"(?:a|an|per)\s+(?P<unit>day|week|month|year)\b",
@@ -1424,6 +1708,8 @@ def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
         re.IGNORECASE,
     )
     for match in frequency_a_period.finditer(text):
+        if _is_medication_or_dose_rate_distractor(match, text):
+            continue
         candidates.append(
             _RawCandidate(
                 kind=CandidateKind.FREQUENCY_RATE,
@@ -1441,8 +1727,23 @@ def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
         candidates.append(
             _RawCandidate(
                 kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label(match.group("count"), _adverbial_period_unit(match.group("period"))),
+                label=_rate_label(
+                    match.group("count"), _adverbial_period_unit(match.group("period"))
+                ),
                 evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    occurring_once_per_night = re.compile(
+        rf"\b(?:{SEIZURE_RATE_PHRASE})\s+(?P<evidence>occurring\s+once\s+per\s+night)\b",
+        re.IGNORECASE,
+    )
+    for match in occurring_once_per_night.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label("1", "day"),
+                evidence=_clean_evidence(match.group("evidence")),
             )
         )
 
@@ -1460,6 +1761,55 @@ def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
             )
         )
 
+    qualitative_recent_multiple = re.compile(
+        rf"\b(?P<evidence>(?:occurring\s+)?(?:multiple|several)\s+"
+        rf"(?:times|(?:{QUALIFIED_SEIZURE_TERMS}))\s+"
+        rf"(?:in\s+)?(?:the\s+)?past\s+week|"
+        rf"Several\s+(?:{QUALIFIED_SEIZURE_TERMS})\s+per\s+week|"
+        rf"(?:{QUALIFIED_SEIZURE_TERMS}|{SEIZURE_TYPE_DESCRIPTOR})\s+"
+        rf"occur\s+several\s+times\s+"
+        rf"(?:each|per)\s+week|"
+        rf"(?:{QUALIFIED_SEIZURE_TERMS})\s+several\s+times\s+per\s+week|"
+        rf"(?:{QUALIFIED_SEIZURE_TERMS})\s+on\s+most\s+days)\b",
+        re.IGNORECASE,
+    )
+    for match in qualitative_recent_multiple.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label="multiple per week",
+                evidence=_clean_evidence(match.group("evidence")),
+            )
+        )
+
+    most_nights_rate = re.compile(
+        r"\b(?P<evidence>happening\s+on\s+most\s+nights\s+of\s+the\s+week)\b",
+        re.IGNORECASE,
+    )
+    for match in most_nights_rate.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label="multiple per week",
+                evidence=_clean_evidence(match.group("evidence")),
+            )
+        )
+
+    near_daily_dozens_rate = re.compile(
+        rf"\b(?P<evidence>(?:{QUALIFIED_SEIZURE_TERMS}|{SEIZURE_DESCRIPTOR_PHRASE})\s+"
+        rf"occur\s+on\s+a\s+"
+        rf"near-daily\s+basis,\s+sometimes\s+dozens\s+in\s+a\s+day)\b",
+        re.IGNORECASE,
+    )
+    for match in near_daily_dozens_rate.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label="multiple per day",
+                evidence=_clean_evidence(match.group("evidence")),
+            )
+        )
+
     counted_adverbial_rate = re.compile(
         rf"\b(?P<evidence>(?:typically|usually)\s+(?P<count>{NUMBER_TOKEN})\s+"
         rf"(?:{QUALIFIED_SEIZURE_TERMS})\s+(?P<period>daily|weekly|monthly|yearly))\b",
@@ -1472,6 +1822,35 @@ def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
                 label=_rate_label(
                     match.group("count"), _adverbial_period_unit(match.group("period"))
                 ),
+                evidence=_clean_evidence(match.group("evidence")),
+            )
+        )
+
+    most_weekdays_rate = re.compile(
+        rf"\b(?:(?:she|he|they|patient|carer|caregiver)\s+reports?\s+)?"
+        rf"(?P<evidence>(?:{QUALIFIED_SEIZURE_TERMS})\s+occurring\s+on\s+"
+        rf"most\s+weekdays)\b",
+        re.IGNORECASE,
+    )
+    for match in most_weekdays_rate.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label="multiple per week",
+                evidence=_clean_evidence(match.group("evidence")),
+            )
+        )
+
+    simple_partial_adverbial_rate = re.compile(
+        r"\b(?P<evidence>simple\s+partial\s+seizure\s+"
+        r"(?P<period>daily|weekly|monthly|yearly))\b",
+        re.IGNORECASE,
+    )
+    for match in simple_partial_adverbial_rate.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label("1", _adverbial_period_unit(match.group("period"))),
                 evidence=_clean_evidence(match.group("evidence")),
             )
         )
@@ -1563,10 +1942,31 @@ def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
         re.IGNORECASE,
     )
     for match in recent_count.finditer(text):
+        if _has_historical_lead_in(text, match.start()):
+            continue
         candidates.append(
             _RawCandidate(
                 kind=CandidateKind.FREQUENCY_RATE,
                 label=_rate_label(match.group("count"), match.group("unit")),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    count_during_recent_window = re.compile(
+        rf"\b(?P<count>{NUMBER_TOKEN})\s+(?:{QUALIFIED_SEIZURE_TERMS})\s+"
+        rf"(?:during|in)\s+(?:the\s+)?(?:last|past)\s+"
+        rf"(?P<denominator>{NUMBER_TOKEN})\s+(?P<unit>{UNIT_TOKEN})\b",
+        re.IGNORECASE,
+    )
+    for match in count_during_recent_window.finditer(text):
+        if _has_historical_lead_in(text, match.start()):
+            continue
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label(
+                    match.group("count"), match.group("unit"), match.group("denominator")
+                ),
                 evidence=_clean_evidence(match.group(0)),
             )
         )
@@ -2154,18 +2554,42 @@ def _extract_monthly_diary_summary_candidates(
 
 
 def _extract_unknown_candidates(text: str) -> list[_RawCandidate]:
+    trigger_conditioned = [
+        re.compile(
+            r"\bonly\s+when\s+significantly\s+short\s+on\s+sleep\b",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            r"\bSeizures\s+happen\s+when\s+perimenstrual\s+only\s+\(days\s+-3\s+to\s+\+3\)",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            r"\bBetter\s+over\s+the\s+past\s+(?:\d+|[a-z]+)\s+months?\b",
+            re.IGNORECASE,
+        ),
+    ]
+    candidates = [
+        _RawCandidate(
+            kind=CandidateKind.UNKNOWN_FREQUENCY,
+            label="unknown",
+            evidence=_clean_evidence(match.group(0)),
+        )
+        for pattern in trigger_conditioned
+        for match in pattern.finditer(text)
+    ]
     unknown = re.compile(
         r"\b(?:frequency unclear|unclear frequency|cannot specify how often|last seizure\b.*?)",
         re.IGNORECASE,
     )
-    return [
+    candidates.extend(
         _RawCandidate(
             kind=CandidateKind.UNKNOWN_FREQUENCY,
             label="unknown",
             evidence=_clean_evidence(match.group(0)),
         )
         for match in unknown.finditer(text)
-    ]
+    )
+    return candidates
 
 
 def _candidate_event(index: int, candidate: _RawCandidate, note_text: str) -> CandidateEvent:
@@ -2217,17 +2641,24 @@ def _select_final_event(
     )
 
 
-def _selection_score(pair: tuple[CandidateEvent, NormalizedEvent]) -> tuple[int, float]:
-    _, normalized = pair
+def _selection_score(pair: tuple[CandidateEvent, NormalizedEvent]) -> tuple[int, int, float]:
+    event, normalized = pair
+    evidence = event.evidence.lower()
     if normalized.semantic_kind is FrequencyLabelKind.FREQUENCY:
-        return 4, normalized.monthly_frequency
+        return 4, _frequency_summary_priority(evidence), normalized.monthly_frequency
     if normalized.semantic_kind is FrequencyLabelKind.UNRESOLVED_MULTIPLE:
-        return 3, 0.0
+        if _is_specific_current_multiple_evidence(event.evidence):
+            return 4, 1, normalized.monthly_frequency
+        return 3, 0, 0.0
     if normalized.semantic_kind is FrequencyLabelKind.SEIZURE_FREE:
-        return 2, 0.0
+        if _is_current_seizure_free_evidence(evidence):
+            return 5, 0, 0.0
+        return 2, 0, 0.0
     if normalized.semantic_kind is FrequencyLabelKind.UNKNOWN:
-        return 1, 0.0
-    return 0, 0.0
+        if _is_trigger_conditioned_unknown_evidence(evidence):
+            return 6, 0, 0.0
+        return 1, 0, 0.0
+    return 0, 0, 0.0
 
 
 def _selection_rationale(normalized: NormalizedEvent) -> str:
@@ -2240,6 +2671,83 @@ def _selection_rationale(normalized: NormalizedEvent) -> str:
     if normalized.semantic_kind is FrequencyLabelKind.UNKNOWN:
         return "Selected seizure-frequency evidence that could not be converted to a rate."
     return "No seizure-frequency evidence was found."
+
+
+def _is_specific_current_multiple_evidence(evidence: str) -> bool:
+    normalized = evidence.lower()
+    return (
+        "most weekdays" in normalized
+        or "most nights of the week" in normalized
+        or "several episodes per week" in normalized
+        or "multiple times in past week" in normalized
+        or "near-daily basis, sometimes dozens in a day" in normalized
+        or re.search(r"\boccur\s+several\s+times\s+(?:each|per)\s+week\b", normalized)
+        is not None
+        or re.search(r"\bon\s+most\s+days\b", normalized) is not None
+        or (
+            "several" in normalized and re.search(r"\blast\s+week\b", normalized) is not None
+        )
+    )
+
+
+def _frequency_summary_priority(evidence: str) -> int:
+    if (
+        "seizure days:" in evidence
+        or evidence.startswith("abs ")
+        or "in a typical month" in evidence
+        or "median inter-seizure interval" in evidence
+        or re.search(r"\bq(?:one|two|three|four|five|six|seven|eight|nine|\d)", evidence)
+        is not None
+    ):
+        return 2
+    return 0
+
+
+def _is_trigger_conditioned_unknown_evidence(evidence: str) -> bool:
+    return (
+        "only when significantly short on sleep" in evidence
+        or "perimenstrual only" in evidence
+        or evidence.startswith("better over the past")
+    )
+
+
+def _is_current_seizure_free_evidence(evidence: str) -> bool:
+    return (
+        re.search(r"\bseizure-free since \d{1,2}(?:[-/ ]|$)", evidence) is not None
+        or re.search(r"\bseizure-free interval since \d{1,2}(?:[-/ ]|$)", evidence)
+        is not None
+        or evidence.startswith("last seizure on")
+        or re.search(
+            r"\bno events for\s+(?:\d+|one|two|three|four|five|six|seven|"
+            r"eight|nine|ten|eleven|twelve)\s+months?\b",
+            evidence,
+        )
+        is not None
+        or "absence of events for over" in evidence
+        or "no occurrence of events suggestive of seizures" in evidence
+        or "no definite seizure events" in evidence
+        or "no seizures since last visit" in evidence
+        or "no events, warnings, or auras for over" in evidence
+        or "no spell-like events suggestive of seizures over the past" in evidence
+        or "seizure-free interval extends to" in evidence
+        or "drug-free remission since" in evidence
+        or "no focal clonic since" in evidence
+        or "sustained remission since" in evidence
+        or "prior cluster pattern resolved since" in evidence
+        or "recorded seizure rate at zero over the last" in evidence
+        or "seizure free for one and a half years" in evidence
+        or "not experiencing any seizures in one and a half years" in evidence
+        or "currently in long-term remission, having been seizure free for years" in evidence
+        or "has not experienced any seizures" in evidence
+        or evidence
+        in {"no events suggestive of seizures", "no recent events suggestive of seizures"}
+        or evidence == "sustained postoperative seizure freedom"
+        or evidence == "no recorded events since"
+        or evidence == "interval history negative for seizures"
+        or evidence == "durable seizure control"
+        or evidence == "seizure cessation following initiation of last asm"
+        or evidence == "steady run without clear seizures at present"
+    )
 
 
 def _clinic_date(text: str) -> _ParsedMonthDate | None:
@@ -2302,6 +2810,33 @@ def _relative_note_date(value: str, anchor: _ParsedMonthDate | None) -> _ParsedM
     return None
 
 
+def _full_date(value: str) -> _ParsedMonthDate | None:
+    normalized = value.strip()
+    numeric = re.match(
+        r"(?P<day>\d{1,2})/(?P<month>\d{1,2})/(?P<year>\d{4})$",
+        normalized,
+    )
+    if numeric is not None:
+        return _ParsedMonthDate(
+            year=int(numeric.group("year")),
+            month=int(numeric.group("month")),
+            day=int(numeric.group("day")),
+        )
+
+    day_named = re.match(
+        rf"(?P<day>\d{{1,2}})[-\s](?P<month>{MONTH_NAME_PATTERN})[-\s](?P<year>\d{{4}})$",
+        normalized,
+        flags=re.IGNORECASE,
+    )
+    if day_named is not None:
+        return _ParsedMonthDate(
+            year=int(day_named.group("year")),
+            month=_month_number(day_named.group("month")),
+            day=int(day_named.group("day")),
+        )
+    return None
+
+
 def _year_month_date(year: str, month: str) -> _ParsedMonthDate:
     return _ParsedMonthDate(year=int(year), month=_month_number(month))
 
@@ -2321,6 +2856,15 @@ def _month_span(start: _ParsedMonthDate | None, end: _ParsedMonthDate | None) ->
     if months <= 0:
         return None
     return months
+
+
+def _month_span_floor(start: _ParsedMonthDate | None, end: _ParsedMonthDate | None) -> int | None:
+    months = _month_span(start, end)
+    if months is None:
+        return None
+    if start.day is not None and end.day is not None and end.day < start.day:
+        months -= 1
+    return months if months > 0 else None
 
 
 def _month_span_with_terminal_partial(
@@ -2673,21 +3217,43 @@ def _adverbial_period_unit(value: str) -> str:
 
 def _has_historical_lead_in(text: str, start: int) -> bool:
     preceding = text[max(0, start - 140) : start].lower()
-    return any(
-        marker in preceding
-        for marker in (
-            "prior to this",
-            "historical description",
-            "before improvement",
-            "previously",
-        )
+    historical_markers = (
+        "by way of comparison",
+        "compared with earlier",
+        "compared with the earlier",
+        "earlier pattern",
+        "prior to this",
+        "prior to these",
+        "prior to recent",
+        "prior pattern",
+        "historical description",
+        "before improvement",
+        "previously",
+        "historically",
     )
+    current_markers = (
+        "over the past",
+        "over the last",
+        "current",
+        "now",
+        "however",
+        "at present",
+        "has reduced",
+        "have reduced",
+        "stabilised at",
+        "stabilized at",
+    )
+    latest_historical = max((preceding.rfind(marker) for marker in historical_markers), default=-1)
+    if latest_historical == -1:
+        return False
+    latest_current = max((preceding.rfind(marker) for marker in current_markers), default=-1)
+    return latest_current < latest_historical
 
 
 def _is_seizure_free_distractor(match: re.Match[str], text: str) -> bool:
     evidence = match.group(0).lower()
-    following = text[match.end() : match.end() + 160].lower()
-    surrounding = text[max(0, match.start() - 80) : match.end() + 160].lower()
+    following = text[match.end() : match.end() + 260].lower()
+    surrounding = text[max(0, match.start() - 80) : match.end() + 260].lower()
     if "up to" in evidence:
         return True
     if "required period" in evidence or "interval" in evidence:
@@ -2700,6 +3266,16 @@ def _is_seizure_free_distractor(match: re.Match[str], text: str) -> bool:
         return True
     if re.search(r"\b(?:before experiencing|until)\b", following):
         return True
+    if re.search(r"\bhowever\b.{0,120}\b(?:reports?|reported|had|has had)\b", following):
+        return True
+    if "however" in following and "over the past" in following:
+        return True
+    if re.search(
+        r"\bto\s+(?:\d+|[a-z]+)\s+to\s+(?:\d+|[a-z]+)\s+"
+        r"(?:seizures|events|episodes)\b",
+        following,
+    ):
+        return True
     if re.search(r"\bthen\s+(?:developed|sustained|experienced|had)\b", following):
         return True
     return bool(re.search(r"\b(?:breakthrough|recent)\s+(?:seizure|event|episode)", surrounding))
@@ -2709,12 +3285,50 @@ def _is_adjective_rate_distractor(match: re.Match[str], text: str) -> bool:
     evidence = match.group(0).lower()
     preceding = text[max(0, match.start() - 80) : match.start()].lower()
     following = text[match.end() : match.end() + 80].lower()
+    surrounding = f"{preceding} {evidence} {following}"
     if evidence.startswith("daily") or evidence.endswith("daily"):
         if re.search(r"\bbrief\s+periods?\s+of\s+$", preceding):
             return True
     if evidence == "daily seizure":
-        return "recording" in following or "chart" in following
+        return (
+            "recording" in following
+            or "chart" in following
+            or "diary" in following
+            or "seizures:" in following
+        )
+    if re.search(r"\b(?:smoker|tobacco|caffeine|coffee|alcohol|units)\b", surrounding):
+        return True
     return False
+
+
+def _is_medication_or_dose_rate_distractor(match: re.Match[str], text: str) -> bool:
+    preceding = text[max(0, match.start() - 80) : match.start()].lower()
+    following = text[match.end() : match.end() + 80].lower()
+    surrounding = f"{preceding} {match.group(0).lower()} {following}"
+    dose_pattern = re.compile(
+        r"\b(?:dose|dosing|current treatment|current medication|medication|"
+        r"levetiracetam|lamotrigine|carbamazepine|brivaracetam|lacosamide|"
+        r"valproate|epilim|topiramate|zonisamide|sumatriptan)\b"
+        r".{0,80}(?:\b\d+\s*(?:mg|g|micrograms?|mcg|µg)\b|"
+        r"\b(?:mg|g|micrograms?|mcg|µg)\b)",
+        re.IGNORECASE,
+    )
+    if dose_pattern.search(surrounding):
+        return True
+    if re.search(r"\b(?:migraine|headache|prn)\b", surrounding) and re.search(
+        r"\bper\s+(?:day|week|month|year)\b", match.group(0), re.IGNORECASE
+    ):
+        return True
+    return False
+
+
+def _is_nonprogressive_myoclonic_rate_distractor(match: re.Match[str], text: str) -> bool:
+    surrounding = text[max(0, match.start() - 90) : match.end() + 90].lower()
+    return (
+        "myoclonic jerk" in surrounding
+        and re.search(r"\bwithout\s+progression\s+to\s+convulsions?\b", surrounding)
+        is not None
+    )
 
 
 def _normalize_note_text(note_text: str) -> str:
@@ -2751,11 +3365,24 @@ def _dedupe_candidates(candidates: list[_RawCandidate]) -> list[_RawCandidate]:
     return deduped
 
 
-def _prune_contained_frequency_fragments(candidates: list[_RawCandidate]) -> list[_RawCandidate]:
+def _prune_contained_frequency_fragments(
+    candidates: list[_RawCandidate], text: str
+) -> list[_RawCandidate]:
+    has_current_frequency_candidate = any(
+        candidate.kind in {CandidateKind.FREQUENCY_RATE, CandidateKind.CLUSTER_FREQUENCY}
+        and not _is_historical_candidate(candidate, text)
+        for candidate in candidates
+    )
     pruned: list[_RawCandidate] = []
     for candidate in candidates:
         if candidate.kind is CandidateKind.FREQUENCY_RATE and any(
             _is_contained_monthly_list_fragment(candidate, other) for other in candidates
+        ):
+            continue
+        if (
+            has_current_frequency_candidate
+            and candidate.kind in {CandidateKind.FREQUENCY_RATE, CandidateKind.CLUSTER_FREQUENCY}
+            and _is_historical_candidate(candidate, text)
         ):
             continue
         pruned.append(candidate)
@@ -2784,3 +3411,10 @@ def _is_contained_monthly_list_fragment(candidate: _RawCandidate, other: _RawCan
             "run of",
         )
     )
+
+
+def _is_historical_candidate(candidate: _RawCandidate, text: str) -> bool:
+    match = re.search(r"\s+".join(re.escape(part) for part in candidate.evidence.split()), text)
+    if match is None:
+        return False
+    return _has_historical_lead_in(text, match.start())

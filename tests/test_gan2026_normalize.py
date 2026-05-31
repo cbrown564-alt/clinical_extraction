@@ -13,6 +13,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     ("label", "expected"),
     [
         ("seizure free for multiple month", 0.0),
+        ("seizure free for 1.5 year", 0.0),
         ("unknown", 1000.0),
         ("no seizure frequency reference", 1000.0),
         ("1 per month", 365 / 30 / 12),
@@ -53,6 +54,7 @@ def test_label_to_frequency_record_preserves_no_reference_semantics_before_scori
         ("twice weekly", "2 per week"),
         ("3-5/mo", "3 to 5 per month"),
         ("seizure-free since 2020", "seizure free for multiple year"),
+        ("seizure free for 1.5 years", "seizure free for 1.5 year"),
         ("2 clusters per month 3 per cluster", "2 cluster per month, 3 per cluster"),
         ("2 per 0 month", "unknown"),
         ("no frequency mentioned", "no seizure frequency reference"),
