@@ -4,6 +4,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
     load_records,
     load_records_with_monthly_frequency,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import FrequencyLabelKind
 
 DATA_PATH = Path("data/Gan (2026)/synthetic_data_subset_1500.json")
 
@@ -32,6 +33,9 @@ def test_load_records_with_monthly_frequency_matches_author_parser_for_gold_labe
     records = load_records_with_monthly_frequency(DATA_PATH)
 
     assert len(records) == 1500
+    assert records[0].gold_normalized_label == "2 cluster per month, 6 per cluster"
+    assert records[0].gold_label_kind is FrequencyLabelKind.FREQUENCY
+    assert records[0].gold_yearly_bounds == (146.0, 146.0)
     assert records[0].gold_monthly_frequency == 12 * 365 / 30 / 12
     assert sum(record.row_ok for record in records) == 1435
     assert sum(not record.row_ok for record in records) == 65
@@ -45,4 +49,9 @@ def test_row_not_ok_records_remain_in_evaluation_surface() -> None:
     assert sum(
         record.gold_label == "no seizure frequency reference" for record in row_not_ok_records
     ) == 54
+    assert all(
+        record.gold_label_kind is FrequencyLabelKind.NO_REFERENCE
+        for record in row_not_ok_records
+        if record.gold_label == "no seizure frequency reference"
+    )
     assert all(record.gold_monthly_frequency is not None for record in row_not_ok_records)

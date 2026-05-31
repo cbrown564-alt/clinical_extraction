@@ -5,7 +5,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import label_to_monthly_frequency
+from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
+    FrequencyLabelKind,
+    label_to_frequency_record,
+)
 
 DEFAULT_DATA_PATH = Path("data/Gan (2026)/synthetic_data_subset_1500.json")
 SEIZURE_FREQUENCY_KEY = "check__Seizure Frequency Number"
@@ -25,6 +28,9 @@ class GanRecord:
 
 @dataclass(frozen=True)
 class GanFrequencyRecord(GanRecord):
+    gold_normalized_label: str
+    gold_label_kind: FrequencyLabelKind
+    gold_yearly_bounds: tuple[float, float] | None
     gold_monthly_frequency: float
 
 
@@ -51,6 +57,7 @@ def load_records(path: Path = DEFAULT_DATA_PATH) -> list[GanRecord]:
 def load_records_with_monthly_frequency(path: Path = DEFAULT_DATA_PATH) -> list[GanFrequencyRecord]:
     records = []
     for record in load_records(path):
+        frequency_record = label_to_frequency_record(record.gold_label)
         records.append(
             GanFrequencyRecord(
                 source_row_index=record.source_row_index,
@@ -61,7 +68,10 @@ def load_records_with_monthly_frequency(path: Path = DEFAULT_DATA_PATH) -> list[
                 quotes_ok_all_categories=record.quotes_ok_all_categories,
                 row_ok=record.row_ok,
                 raw=record.raw,
-                gold_monthly_frequency=label_to_monthly_frequency(record.gold_label),
+                gold_normalized_label=frequency_record.normalized_label,
+                gold_label_kind=frequency_record.kind,
+                gold_yearly_bounds=frequency_record.yearly_bounds,
+                gold_monthly_frequency=frequency_record.monthly_frequency,
             )
         )
     return records
