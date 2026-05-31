@@ -619,6 +619,68 @@ SLEEP_AWAKE_MONTH_SUMMARY_RULES = (
 
 MONTHLY_DIARY_SUMMARY_RULES = (
     RuleSpec(
+        rule_id="diary.monthly_summary.two_sentence_month_timeline",
+        group=RuleGroup.DIARY_LOG_AGGREGATION,
+        portability=Portability.SEIZURE_FREQUENCY,
+        description="Two-sentence month timeline with counted seizure events.",
+        pattern=re.compile(
+            rf"(?:^|(?<=[.;:]\s))(?P<evidence>In\s+(?:{MONTH_NAME_PATTERN})\s+[^.]+?\.\s+"
+            rf"In\s+(?:{MONTH_NAME_PATTERN})\s+[^.]+)\b",
+            re.IGNORECASE,
+        ),
+        build=_monthly_diary_summary_builder(
+            "diary.monthly_summary.two_sentence_month_timeline"
+        ),
+        examples=(
+            RuleExample(
+                text=(
+                    "In September a prolonged focal seizure settled spontaneously. "
+                    "In November a tonic seizure was recorded, and in February another "
+                    "during physiotherapy."
+                ),
+                expected_label="3 per 6 month",
+                expected_evidence=(
+                    "In September a prolonged focal seizure settled spontaneously. "
+                    "In November a tonic seizure was recorded, and in February another "
+                    "during physiotherapy"
+                ),
+            ),
+        ),
+        provenance="Diary/log V1 expression restored during baseline-drift audit.",
+    ),
+    RuleSpec(
+        rule_id="diary.monthly_summary.event_occurred_timeline",
+        group=RuleGroup.DIARY_LOG_AGGREGATION,
+        portability=Portability.SEIZURE_FREQUENCY,
+        description="Sparse month timeline beginning with an event-occurred sentence.",
+        pattern=re.compile(
+            rf"\b(?P<evidence>(?:A|An)\s+(?:prolonged\s+)?"
+            rf"(?:event|episode|seizure|convulsion)\s+occurred\s+in\s+"
+            rf"(?:{MONTH_NAME_PATTERN})\s+(?:\([^)]+\)\s*)?[^.]*\.\s+"
+            rf"In\s+(?:{MONTH_NAME_PATTERN})\s+[^.]+)\b",
+            re.IGNORECASE,
+        ),
+        build=_monthly_diary_summary_builder(
+            "diary.monthly_summary.event_occurred_timeline"
+        ),
+        examples=(
+            RuleExample(
+                text=(
+                    "A prolonged event occurred in Apr (approximately 12 minutes). "
+                    "In Jul she had a drop attack, and in Sep seven myoclonic jerks "
+                    "were documented at college."
+                ),
+                expected_label="9 per 6 month",
+                expected_evidence=(
+                    "A prolonged event occurred in Apr (approximately 12 minutes). "
+                    "In Jul she had a drop attack, and in Sep seven myoclonic jerks "
+                    "were documented at college"
+                ),
+            ),
+        ),
+        provenance="Diary/log V1 expression restored during baseline-drift audit.",
+    ),
+    RuleSpec(
         rule_id="diary.monthly_summary.recent_reported",
         group=RuleGroup.DIARY_LOG_AGGREGATION,
         portability=Portability.SEIZURE_FREQUENCY,
@@ -722,6 +784,31 @@ MONTHLY_DIARY_SUMMARY_RULES = (
             ),
         ),
         provenance="Diary/log V1 expression.",
+    ),
+    RuleSpec(
+        rule_id="diary.monthly_summary.had_both_from",
+        group=RuleGroup.DIARY_LOG_AGGREGATION,
+        portability=Portability.SEIZURE_FREQUENCY,
+        description="Month-count list with had lead-in and both-from state summary.",
+        pattern=re.compile(
+            r"\b(?P<evidence>(?:She|He)\s+had\s+[^.]+?\s+both\s+from\b)",
+            re.IGNORECASE,
+        ),
+        build=_monthly_diary_summary_builder("diary.monthly_summary.had_both_from"),
+        examples=(
+            RuleExample(
+                text=(
+                    "She had a convulsion so far in September, 6 in August, six in "
+                    "July, four in June both from being awake and asleep."
+                ),
+                expected_label="17 per 4 month",
+                expected_evidence=(
+                    "She had a convulsion so far in September, 6 in August, six in "
+                    "July, four in June"
+                ),
+            ),
+        ),
+        provenance="Diary/log V1 expression restored during baseline-drift audit.",
     ),
     RuleSpec(
         rule_id="diary.monthly_summary.noted_all_from",
@@ -1061,6 +1148,14 @@ def _monthly_diary_counts(
     )
     for match in single_to_date_month.finditer(evidence):
         add(match.group("month"), match.group("count"))
+
+    event_occurred_month = re.compile(
+        rf"\b(?:a|an)\s+(?:prolonged\s+)?(?:event|episode|seizure|convulsion)\s+"
+        rf"occurred\s+in\s+(?P<month>{MONTH_NAME_PATTERN})\b",
+        re.IGNORECASE,
+    )
+    for match in event_occurred_month.finditer(evidence):
+        add(match.group("month"), "a")
 
     cluster_or_run_count_month = re.compile(
         rf"\b(?:cluster|run)\s+of\s+(?P<count>{NUMBER_VALUE_TOKEN})\s+"
