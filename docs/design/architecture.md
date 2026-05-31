@@ -23,10 +23,15 @@ The project intentionally separates:
 - Event extraction from final clinical reasoning
 - Label normalization from metric mapping
 - Evidence validation from correctness evaluation
+- Model selection from prompt/program behavior
 - Experiment output from package source
 - General rules from task-specific, dataset-specific, and benchmark-specific rules
 
 These boundaries are useful now because they expose failure modes. They are also the minimum reusable shape needed later for other clinical extraction tasks.
+
+LLM model policy is documented in `docs/design/model_strategy.md`. Model choice
+should be recorded as run metadata so experiments can distinguish schema,
+prompt, deterministic-rule, optimizer, and runtime-model effects.
 
 ## Rule Taxonomy
 

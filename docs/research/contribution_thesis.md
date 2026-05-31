@@ -39,6 +39,9 @@ Implication for the repo:
 - Label rules by portability: general, task-specific, dataset-specific, or benchmark-specific.
 - Separate clinical logic from benchmark formatting.
 - Preserve ablation switches so each component can be removed or replaced.
+- Treat model choice as an experimental variable. Early hosted GPT-4.1 mini runs,
+  later local Qwen 3.6:35b comparisons, and possible GPT-5.4 GEPA-teacher runs
+  should be reported as distinct conditions rather than blended together.
 
 ## Contribution 3: Transparency Through Evidence, Reasoning, And Error Analysis
 
@@ -83,4 +86,3 @@ The implementation should produce artifacts that can become paper tables and fig
 - evidence-validity rate
 - schema-validity and repair-rate summaries
 - examples showing successful and failed temporal reasoning
-

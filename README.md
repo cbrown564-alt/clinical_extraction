@@ -37,6 +37,7 @@ clinical note
 - Make notebooks a forcing function for reproducible learning, not a side artifact.
 - Treat deterministic rules as explicit, categorized, testable, and ablatable components.
 - Separate general clinical/date rules from seizure-frequency rules, dataset-specific rules, and benchmark-formatting rules.
+- Use GPT-4.1 mini for most early LLM experiments; reserve Qwen 3.6:35b for later local strong-reasoning comparisons once a pipeline exceeds 0.8 purist F1; keep DSPy GEPA with GPT-5.4 as a backlog optimizer option.
 
 ## Research Thesis
 
@@ -48,6 +49,8 @@ The project is designed around four paper-level claims:
 - Deterministic preprocessing and post-processing rules should be described as controlled experimental variables rather than hidden implementation details.
 
 See [docs/research/contribution_thesis.md](/Users/cobro/code/clinical-extraction/docs/research/contribution_thesis.md).
+
+See [docs/design/model_strategy.md](/Users/cobro/code/clinical-extraction/docs/design/model_strategy.md) for LLM model policy and required run metadata.
 
 ## Repository Layout
 
