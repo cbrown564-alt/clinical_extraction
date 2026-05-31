@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import re
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
+from typing import cast
 
 from clinical_extraction.tasks.seizure_frequency.gan2026.candidates import (
     CandidateKind,
@@ -84,8 +85,9 @@ def apply_diary_rules(
     specs: Sequence[RuleSpec],
     text: str,
     ablation_config: AblationConfig,
+    helpers: dict[str, object] | None = None,
 ) -> list[RawCandidate]:
-    context = ExtractionContext(text=text)
+    context = ExtractionContext(text=text, helpers=helpers)
     candidates: list[RawCandidate] = []
     for spec in specs:
         candidates.extend(
@@ -220,6 +222,78 @@ def _build_recorded_month_log(
         match,
         rule_id="diary.recorded_month_log",
         label=_rate_label(str(total), "month", str(len(months))),
+    )
+
+
+def _is_in_monthly_trend_log(text: str, start: int) -> bool:
+    lower_text = text.lower()
+    segment_start = max(
+        lower_text.rfind("frequency has increased:", 0, start),
+        lower_text.rfind("frequency increased:", 0, start),
+        lower_text.rfind("current diary:", 0, start),
+    )
+    if segment_start < 0:
+        return False
+    terminator = lower_text.rfind(".", 0, start)
+    return terminator < segment_start
+
+
+def _build_increasing_monthly_count(
+    match: re.Match[str], context: ExtractionContext
+) -> RawCandidate | None:
+    if not _is_in_monthly_trend_log(context.text, match.start()):
+        return None
+    evidence = re.sub(
+        r"\s+with\s+two\b.*$",
+        "",
+        match.group("entry"),
+        flags=re.IGNORECASE,
+    )
+    return RawCandidate(
+        kind=CandidateKind.FREQUENCY_RATE,
+        label=_rate_label(match.group("count"), "month"),
+        evidence=_clean_evidence(evidence),
+        rule_id="diary.increasing_monthly_count",
+        rule_group=RuleGroup.DIARY_LOG_AGGREGATION,
+        portability=Portability.SEIZURE_FREQUENCY,
+        match_groups=match.groupdict(),
+    )
+
+
+def _build_sleep_awake_month_summary(
+    match: re.Match[str], context: ExtractionContext
+) -> RawCandidate | None:
+    clinic_date_func = cast(Callable[[str], object | None], context.helper("clinic_date"))
+    relative_note_date = cast(
+        Callable[[str, object | None], object | None],
+        context.helper("relative_note_date"),
+    )
+    month_span = cast(
+        Callable[[object | None, object | None], int | None],
+        context.helper("month_span"),
+    )
+    clinic_date = clinic_date_func(context.text)
+    if clinic_date is None:
+        return None
+    first_date = relative_note_date(match.group("first_month"), clinic_date)
+    second_date = relative_note_date(match.group("second_month"), clinic_date)
+    denominator = month_span(first_date, second_date)
+    if denominator is None:
+        return None
+    counts = [
+        _integer_number_token(match.group("count_a")),
+        _integer_number_token(match.group("count_b")),
+        _integer_number_token(match.group("count_c")),
+        _integer_number_token(match.group("count_d")),
+    ]
+    integer_counts = [count for count in counts if count is not None]
+    if len(integer_counts) != len(counts):
+        return None
+    return _build_diary_candidate(
+        match,
+        rule_id="diary.sleep_awake_month_summary",
+        label=_rate_label(str(sum(integer_counts)), "month", str(denominator + 1)),
+        evidence_group="evidence",
     )
 
 
@@ -373,6 +447,65 @@ RECORDED_MONTH_LOG_RULE = RuleSpec(
     provenance="Diary/log V1 expression.",
 )
 
+INCREASING_MONTHLY_COUNT_RULE = RuleSpec(
+    rule_id="diary.increasing_monthly_count",
+    group=RuleGroup.DIARY_LOG_AGGREGATION,
+    portability=Portability.SEIZURE_FREQUENCY,
+    description="Month-by-month trend log with one candidate per month entry.",
+    pattern=re.compile(
+        r"\b(?P<entry>(?P<month>Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|"
+        r"January|February|March|April|May|June|July|August|September|October|"
+        r"November|December)\s+x\s*(?P<count>\d+)[^.;]*)",
+        re.IGNORECASE,
+    ),
+    build=_build_increasing_monthly_count,
+    examples=(
+        RuleExample(
+            text=(
+                "Frequency has increased: July x 3 focal aware motor; "
+                "August x 4 focal aware motor; September x 5 focal aware motor."
+            ),
+            expected_label="5 per month",
+            expected_evidence="September x 5 focal aware motor",
+        ),
+    ),
+    provenance="Diary/log V1 expression.",
+)
+
+SLEEP_AWAKE_MONTH_SUMMARY_RULE = RuleSpec(
+    rule_id="diary.sleep_awake_month_summary",
+    group=RuleGroup.DIARY_LOG_AGGREGATION,
+    portability=Portability.SEIZURE_FREQUENCY,
+    description="Two-month diary summary split into sleep and awake event counts.",
+    pattern=re.compile(
+        rf"\b(?P<evidence>In\s+(?P<first_month>{MONTH_NAME_PATTERN})\s+"
+        rf"(?:he|she)\s+had\s+(?P<count_a>{NUMBER_TOKEN})\s+(?:seizures?|episodes?|"
+        rf"events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|"
+        rf"jerks?|auras?|status epilepticus)\s+during\s+sleep\s+and\s+"
+        rf"(?P<count_b>{NUMBER_TOKEN})\s+while\s+awake\.\s+In\s+"
+        rf"(?P<second_month>{MONTH_NAME_PATTERN})\s+(?:he|she)\s+had\s+"
+        rf"(?P<count_c>{NUMBER_TOKEN})\s+in\s+sleep\s+and\s+"
+        rf"(?P<count_d>{NUMBER_TOKEN})\s+while\s+awake)\b",
+        re.IGNORECASE,
+    ),
+    build=_build_sleep_awake_month_summary,
+    examples=(
+        RuleExample(
+            text=(
+                "Clinic Date: 10 March 2025. In January she had one seizure during "
+                "sleep and two while awake. In February she had one in sleep and "
+                "one while awake."
+            ),
+            expected_label="5 per 2 month",
+            expected_evidence=(
+                "In January she had one seizure during sleep and two while awake. "
+                "In February she had one in sleep and one while awake"
+            ),
+        ),
+    ),
+    provenance="Diary/log V1 expression.",
+)
+
 DIARY_RULES = (
     SEIZURE_DAYS_PER_PERIOD_RULE,
     SEIZURE_DAYS_FRACTION_RULE,
@@ -381,6 +514,8 @@ DIARY_RULES = (
     MONTHLY_COUNT_LOG_RULE,
     SPARSE_FULL_MONTH_LOG_RULE,
     RECORDED_MONTH_LOG_RULE,
+    INCREASING_MONTHLY_COUNT_RULE,
+    SLEEP_AWAKE_MONTH_SUMMARY_RULE,
 )
 
 
@@ -406,6 +541,13 @@ def _number_token(value: str | None) -> str:
     if " or " in normalized:
         return " to ".join(_number_token(part) for part in normalized.split(" or "))
     return NUMBER_WORDS.get(normalized, normalized)
+
+
+def _integer_number_token(value: str) -> int | None:
+    normalized = _number_token(value)
+    if normalized.isdigit():
+        return int(normalized)
+    return None
 
 
 def _singular_unit(value: str) -> str:

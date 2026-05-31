@@ -58,11 +58,13 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.rules.cluster import (
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.rules.diary import (
     DIARY_DATE_LIST_RULE,
+    INCREASING_MONTHLY_COUNT_RULE,
     MONTHLY_COUNT_LOG_RULE,
     RECORDED_MONTH_LOG_RULE,
     SEIZURE_DAY_LOG_RULE,
     SEIZURE_DAYS_FRACTION_RULE,
     SEIZURE_DAYS_PER_PERIOD_RULE,
+    SLEEP_AWAKE_MONTH_SUMMARY_RULE,
     SPARSE_FULL_MONTH_LOG_RULE,
     apply_diary_rules,
 )
@@ -838,38 +840,18 @@ def _extract_rate_candidates(
             )
         )
 
-    two_month_sleep_awake_summary = re.compile(
-        rf"\b(?P<evidence>In\s+(?P<first_month>{MONTH_NAME_PATTERN})\s+"
-        rf"(?:he|she)\s+had\s+(?P<count_a>{NUMBER_TOKEN})\s+(?:{SEIZURE_TERMS})\s+"
-        rf"during\s+sleep\s+and\s+(?P<count_b>{NUMBER_TOKEN})\s+while\s+awake\.\s+"
-        rf"In\s+(?P<second_month>{MONTH_NAME_PATTERN})\s+(?:he|she)\s+had\s+"
-        rf"(?P<count_c>{NUMBER_TOKEN})\s+in\s+sleep\s+and\s+(?P<count_d>{NUMBER_TOKEN})\s+"
-        rf"while\s+awake)\b",
-        re.IGNORECASE,
-    )
-    for match in two_month_sleep_awake_summary.finditer(text):
-        if clinic_date is None:
-            continue
-        first_date = _relative_note_date(match.group("first_month"), clinic_date)
-        second_date = _relative_note_date(match.group("second_month"), clinic_date)
-        denominator = _month_span(first_date, second_date)
-        if denominator is None:
-            continue
-        counts = [
-            _integer_number_token(match.group("count_a")),
-            _integer_number_token(match.group("count_b")),
-            _integer_number_token(match.group("count_c")),
-            _integer_number_token(match.group("count_d")),
-        ]
-        if any(count is None for count in counts):
-            continue
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label(str(sum(counts)), "month", str(denominator + 1)),
-                evidence=_clean_evidence(match.group("evidence")),
-            )
+    candidates.extend(
+        apply_diary_rules(
+            (SLEEP_AWAKE_MONTH_SUMMARY_RULE,),
+            text,
+            ablation_config,
+            helpers={
+                "clinic_date": _clinic_date,
+                "relative_note_date": _relative_note_date,
+                "month_span": _month_span,
+            },
         )
+    )
 
     candidates.extend(_extract_monthly_diary_summary_candidates(text, clinic_date))
     candidates.extend(_extract_distributed_count_candidates(text))
@@ -1314,35 +1296,9 @@ def _extract_rate_candidates(
         apply_diary_rules((SPARSE_FULL_MONTH_LOG_RULE,), text, ablation_config)
     )
 
-    increasing_monthly_counts = re.compile(
-        r"\b(?:Frequency has increased|Frequency increased|Current diary):\s*"
-        r"(?P<entries>(?:(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|"
-        r"January|February|March|April|May|June|July|August|September|October|"
-        r"November|December)\s+x\s*\d+[^.;]*;\s*)+"
-        r"(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|January|February|"
-        r"March|April|May|June|July|August|September|October|November|December)"
-        r"\s+x\s*\d+[^.;]*)",
-        re.IGNORECASE,
+    candidates.extend(
+        apply_diary_rules((INCREASING_MONTHLY_COUNT_RULE,), text, ablation_config)
     )
-    for match in increasing_monthly_counts.finditer(text):
-        entries = list(
-            re.finditer(
-                r"\b(?P<month>Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|"
-                r"January|February|March|April|May|June|July|August|September|"
-                r"October|November|December)\s+x\s*(?P<count>\d+)[^.;]*",
-                match.group("entries"),
-                flags=re.IGNORECASE,
-            )
-        )
-        for entry in entries:
-            evidence = re.sub(r"\s+with\s+two\b.*$", "", entry.group(0), flags=re.IGNORECASE)
-            candidates.append(
-                _RawCandidate(
-                    kind=CandidateKind.FREQUENCY_RATE,
-                    label=_rate_label(entry.group("count"), "month"),
-                    evidence=_clean_evidence(evidence),
-                )
-            )
 
     candidates.extend(
         apply_diary_rules((RECORDED_MONTH_LOG_RULE,), text, ablation_config)
