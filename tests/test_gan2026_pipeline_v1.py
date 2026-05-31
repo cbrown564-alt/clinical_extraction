@@ -905,6 +905,190 @@ def test_pipeline_extracts_remission_date_and_monthly_summary_frequency_counts(
     assert result.diagnostics["evidence_valid"] is True
 
 
+@pytest.mark.parametrize(
+    ("note_text", "expected_label", "expected_evidence"),
+    [
+        (
+            "Clinic Date: 02 October 2025. She had no seizures for nearly a year "
+            "following initiation of Valproate, then developed myoclonic jerks "
+            "leading to a tonic seizure two Saturdays ago.",
+            "1 per year",
+            (
+                "no seizures for nearly a year following initiation of Valproate, "
+                "then developed myoclonic jerks leading to a tonic seizure two "
+                "Saturdays ago"
+            ),
+        ),
+        (
+            "Clinic Date: 29 December 2021. He did not have seizures for over 6 "
+            "months, but then reported two generalised tonic-clonic seizures two "
+            "Fridays ago, each preceded by myoclonic jerks.",
+            "4 per 6 month",
+            (
+                "did not have seizures for over 6 months, but then reported two "
+                "generalised tonic-clonic seizures two Fridays ago, each preceded "
+                "by myoclonic jerks"
+            ),
+        ),
+    ],
+)
+def test_pipeline_extracts_seizure_free_interval_then_breakthrough_counts(
+    note_text: str,
+    expected_label: str,
+    expected_evidence: str,
+) -> None:
+    result = Gan2026PipelineV1().run(_record(note_text))
+
+    assert result.output.final_value == expected_label
+    assert result.diagnostics["final_selection"]["final_kind"] == FrequencyLabelKind.FREQUENCY
+    assert result.diagnostics["final_selection"]["evidence"] == expected_evidence
+    assert result.diagnostics["evidence_valid"] is True
+
+
+@pytest.mark.parametrize(
+    ("note_text", "expected_label", "expected_evidence"),
+    [
+        (
+            "Clinic Date: 14 November 2017. She first experienced a seizure in May "
+            "2017 while living abroad. It occurred during sleep. Her next seizure "
+            "came in November 2017 the same year, once more from sleep.",
+            "2 per 6 month",
+            (
+                "She first experienced a seizure in May 2017 while living abroad. "
+                "It occurred during sleep. Her next seizure came in November 2017"
+            ),
+        ),
+        (
+            "Clinic Date: 14 November 2016. She first experienced a seizure in July "
+            "2016 while living abroad. Her next 4 seizure came in November 2016 "
+            "the same year, once more from sleep.",
+            "5 per 4 month",
+            (
+                "She first experienced a seizure in July 2016 while living abroad. "
+                "Her next 4 seizure came in November 2016"
+            ),
+        ),
+        (
+            "Clinic Date: 20 June 2024. His first seizure occurred in January 2024 "
+            "in Ireland, at night while asleep. The second and third event was in "
+            "June 2024 in Scotland, also during sleep.",
+            "3 per 5 month",
+            (
+                "His first seizure occurred in January 2024 in Ireland, at night "
+                "while asleep. The second and third event was in June 2024"
+            ),
+        ),
+    ],
+)
+def test_pipeline_extracts_first_next_event_narrative_spans(
+    note_text: str,
+    expected_label: str,
+    expected_evidence: str,
+) -> None:
+    result = Gan2026PipelineV1().run(_record(note_text))
+
+    assert result.output.final_value == expected_label
+    assert result.diagnostics["final_selection"]["final_kind"] == FrequencyLabelKind.FREQUENCY
+    assert result.diagnostics["final_selection"]["evidence"] == expected_evidence
+    assert result.diagnostics["evidence_valid"] is True
+
+
+@pytest.mark.parametrize(
+    ("note_text", "expected_label", "expected_evidence"),
+    [
+        (
+            "Clinic Date: 10 May 2015. Seizures in 2014-2015: May: 5 days with "
+            "more severe seizures June: 5 days with seizures July: 12 days August: "
+            "3 days, most of them at sleep time, September: 12 days, October: 3 "
+            "days with seizures November: 7 days with seizures, December: 5 days "
+            "with more severe seizures January: 4 days, February: 2 days with "
+            "seizures March: 5 days with more severe seizures, April: 1 days with "
+            "seizures.",
+            "64 per 12 month",
+            (
+                "Seizures in 2014-2015: May: 5 days with more severe seizures "
+                "June: 5 days with seizures July: 12 days August: 3 days, most of "
+                "them at sleep time, September: 12 days, October: 3 days with "
+                "seizures November: 7 days with seizures, December: 5 days with "
+                "more severe seizures January: 4 days, February: 2 days with "
+                "seizures March: 5 days with more severe seizures, April: 1 days "
+                "with seizures"
+            ),
+        ),
+        (
+            "Clinic Date: 22 April 2025. Seizures in 2024-2025: Aug: 6 days, most "
+            "of them at sleep time, Sep: 11 days with seizures, Oct: 1 days, Nov: "
+            "7 days, most of them at sleep time, Dec: 8 days with seizures Jan: "
+            "9 days, Feb: 8 days with seizures Mar: 2 days.",
+            "52 per 8 month",
+            (
+                "Seizures in 2024-2025: Aug: 6 days, most of them at sleep time, "
+                "Sep: 11 days with seizures, Oct: 1 days, Nov: 7 days, most of "
+                "them at sleep time, Dec: 8 days with seizures Jan: 9 days, Feb: "
+                "8 days with seizures Mar: 2 days"
+            ),
+        ),
+    ],
+)
+def test_pipeline_extracts_seizure_day_annual_logs(
+    note_text: str,
+    expected_label: str,
+    expected_evidence: str,
+) -> None:
+    result = Gan2026PipelineV1().run(_record(note_text))
+
+    assert result.output.final_value == expected_label
+    assert result.diagnostics["final_selection"]["final_kind"] == FrequencyLabelKind.FREQUENCY
+    assert result.diagnostics["final_selection"]["evidence"] == expected_evidence
+    assert result.diagnostics["evidence_valid"] is True
+
+
+@pytest.mark.parametrize(
+    ("note_text", "expected_label", "expected_evidence"),
+    [
+        (
+            "Clinic Date: 25 February 2022. On 25/Jan his absences improved after "
+            "medication adjustment. His last event was on 30/Jan and he has "
+            "remained well since.",
+            "1 per month",
+            "His last event was on 30/Jan",
+        ),
+        (
+            "Clinic Date: 29 June 2020. On 28/Apr his absences improved after "
+            "medication adjustment. His last event was on 03/May and he has "
+            "remained well since.",
+            "1 per 2 month",
+            "His last event was on 03/May",
+        ),
+        (
+            "From: Dr Thomas Reed Sent: 29 June 2020 10:15 To: epilepsy.clinic@nhs.net. "
+            "On 28/Apr his absences improved after medication adjustment. His last "
+            "event was on 03/May and he has remained well since.",
+            "1 per 2 month",
+            "His last event was on 03/May",
+        ),
+        (
+            "Clinic Date: 16 January 2022. On 15 October his absences settled with "
+            "treatment. The most recent episode was on 23 October, and since then "
+            "he has been well.",
+            "1 per 3 month",
+            "The most recent episode was on 23 October",
+        ),
+    ],
+)
+def test_pipeline_extracts_last_event_date_summaries(
+    note_text: str,
+    expected_label: str,
+    expected_evidence: str,
+) -> None:
+    result = Gan2026PipelineV1().run(_record(note_text))
+
+    assert result.output.final_value == expected_label
+    assert result.diagnostics["final_selection"]["final_kind"] == FrequencyLabelKind.FREQUENCY
+    assert result.diagnostics["final_selection"]["evidence"] == expected_evidence
+    assert result.diagnostics["evidence_valid"] is True
+
+
 def test_pipeline_breakthrough_event_overrides_seizure_free_history() -> None:
     result = Gan2026PipelineV1().run(
         _record(
