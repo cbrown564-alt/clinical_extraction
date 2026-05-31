@@ -4,10 +4,14 @@ import re
 from dataclasses import dataclass
 from enum import StrEnum
 
+from clinical_extraction.tasks.seizure_frequency.gan2026.rule_metadata import (
+    AblationConfig,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.rules.benchmark_repair import (
     BenchmarkRepairStep,
     BenchmarkRepairTrace,
-    apply_benchmark_repair_steps,
+    apply_benchmark_repair_rules,
+    benchmark_repair_rule,
 )
 
 DAY_IN_YEAR = 365.0
@@ -45,13 +49,20 @@ def normalize_frequency_label(label: str) -> str:
     return " ".join(label.strip().lower().split())
 
 
-def repair_prediction_label(raw: str | None) -> str:
+def repair_prediction_label(
+    raw: str | None,
+    ablation_config: AblationConfig | None = None,
+) -> str:
     """Repair a free-form prediction into a Gan-compatible label string."""
-    return repair_prediction_label_with_trace(raw).final_label
+    return repair_prediction_label_with_trace(raw, ablation_config).final_label
 
 
-def repair_prediction_label_with_trace(raw: str | None) -> BenchmarkRepairTrace:
+def repair_prediction_label_with_trace(
+    raw: str | None,
+    ablation_config: AblationConfig | None = None,
+) -> BenchmarkRepairTrace:
     """Repair a prediction and expose benchmark-format repair events."""
+    ablation_config = ablation_config or AblationConfig()
     if raw is None:
         return BenchmarkRepairTrace(
             raw_label=None,
@@ -69,7 +80,11 @@ def repair_prediction_label_with_trace(raw: str | None) -> BenchmarkRepairTrace:
         )
 
     initial_label = text
-    text, events = apply_benchmark_repair_steps(text, BENCHMARK_REPAIR_STEPS)
+    text, events = apply_benchmark_repair_rules(
+        text,
+        BENCHMARK_REPAIR_RULES,
+        ablation_config,
+    )
     return BenchmarkRepairTrace(
         raw_label=raw,
         initial_label=initial_label,
@@ -904,4 +919,13 @@ BENCHMARK_REPAIR_STEPS = (
         description="Final accepted-format guard before returning a prediction label.",
         apply=_final_allowed_format_repair,
     ),
+)
+
+BENCHMARK_REPAIR_RULES = tuple(
+    benchmark_repair_rule(
+        rule_id=step.rule_id,
+        description=step.description,
+        apply=step.apply,
+    )
+    for step in BENCHMARK_REPAIR_STEPS
 )

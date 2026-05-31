@@ -786,6 +786,32 @@ def test_pipeline_exposes_structured_selection_scores() -> None:
     assert selected_score["score"] == final_selection["selected_score"]
 
 
+def test_pipeline_can_ablate_temporal_selection_group() -> None:
+    note_text = (
+        "Historical seizures were 2 per month. "
+        "Patient reports focal aware sensory episodes only when significantly short on sleep."
+    )
+
+    result = Gan2026PipelineV1(
+        ablation_config=AblationConfig(
+            enabled_groups=frozenset(
+                group for group in RuleGroup if group is not RuleGroup.TEMPORAL_SELECTION
+            )
+        )
+    ).run(_record(note_text))
+    final_selection = result.diagnostics["final_selection"]
+
+    assert result.output.final_value == "2 per month"
+    assert final_selection["selected_event_ids"] == ["event_1"]
+    assert final_selection["selected_score"]["reason"] == "frequency_monthly_rate_disabled"
+    assert {
+        score["score"]["reason"] for score in final_selection["selection_candidates"]
+    } == {
+        "frequency_monthly_rate_disabled",
+        "trigger_conditioned_unknown_disabled",
+    }
+
+
 @pytest.mark.parametrize(
     ("note_text", "expected_label", "expected_kind"),
     [
