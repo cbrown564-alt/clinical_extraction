@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from enum import StrEnum
 from re import Match, Pattern
@@ -61,6 +61,12 @@ class AblationConfig:
 @dataclass(frozen=True)
 class ExtractionContext:
     text: str
+    helpers: Mapping[str, object] | None = None
+
+    def helper(self, name: str) -> object:
+        if self.helpers is None or name not in self.helpers:
+            raise KeyError(f"ExtractionContext helper is not available: {name}")
+        return self.helpers[name]
 
 
 @dataclass(frozen=True)

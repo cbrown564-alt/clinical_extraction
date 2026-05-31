@@ -340,6 +340,141 @@ def _build_simple_partial_adverbial_rate(
     )
 
 
+def _build_recent_count(match: re.Match[str], _context: ExtractionContext) -> RawCandidate:
+    return _build_rate_candidate(
+        match,
+        rule_id="rate.recent_count",
+        count=match.group("count"),
+        unit=match.group("unit"),
+        evidence_group=0,
+    )
+
+
+def _build_count_during_recent_window(
+    match: re.Match[str], _context: ExtractionContext
+) -> RawCandidate:
+    return _build_rate_candidate(
+        match,
+        rule_id="rate.count_during_recent_window",
+        count=match.group("count"),
+        unit=match.group("unit"),
+        denominator=match.group("denominator"),
+        evidence_group=0,
+    )
+
+
+def _build_there_have_been_count(
+    match: re.Match[str], _context: ExtractionContext
+) -> RawCandidate:
+    return _build_rate_candidate(
+        match,
+        rule_id="rate.there_have_been_count",
+        count=match.group("count"),
+        unit=match.group("unit"),
+        denominator=match.groupdict().get("denominator"),
+        evidence_group="evidence",
+    )
+
+
+def _build_recorded_year_count(
+    match: re.Match[str], _context: ExtractionContext
+) -> RawCandidate:
+    return _build_rate_candidate(
+        match,
+        rule_id="rate.recorded_year_count",
+        count=match.group("count"),
+        unit="year",
+        evidence_group=0,
+    )
+
+
+def _build_yesterday_count(
+    match: re.Match[str], _context: ExtractionContext
+) -> RawCandidate:
+    return _build_rate_candidate(
+        match,
+        rule_id="rate.yesterday_or_today_count",
+        count=match.group("count"),
+        unit="day",
+        evidence_group=0,
+    )
+
+
+def _build_period_first_recent_count(
+    match: re.Match[str], _context: ExtractionContext
+) -> RawCandidate:
+    return _build_rate_candidate(
+        match,
+        rule_id="rate.period_first_recent_count",
+        count=match.group("count"),
+        unit=match.group("unit"),
+        evidence_group=0,
+    )
+
+
+def _build_period_first_experienced_count(
+    match: re.Match[str], _context: ExtractionContext
+) -> RawCandidate:
+    return _build_rate_candidate(
+        match,
+        rule_id="rate.period_first_experienced_count",
+        count=match.group("count"),
+        unit=match.group("unit"),
+        denominator=match.group("denominator"),
+        evidence_group=0,
+    )
+
+
+def _build_period_first_featuring_count(
+    match: re.Match[str], _context: ExtractionContext
+) -> RawCandidate:
+    return _build_rate_candidate(
+        match,
+        rule_id="rate.period_first_featuring_count",
+        count=match.group("count"),
+        unit=match.group("unit"),
+        denominator=match.group("denominator"),
+        evidence_group=0,
+    )
+
+
+def _build_period_first_timeframe_count(
+    match: re.Match[str], _context: ExtractionContext
+) -> RawCandidate:
+    return _build_rate_candidate(
+        match,
+        rule_id="rate.period_first_timeframe_count",
+        count=match.group("count"),
+        unit=match.group("unit"),
+        denominator=match.group("denominator"),
+        evidence_group=0,
+    )
+
+
+def _build_period_first_occurred_count(
+    match: re.Match[str], _context: ExtractionContext
+) -> RawCandidate:
+    return _build_rate_candidate(
+        match,
+        rule_id="rate.period_first_occurred_count",
+        count=match.group("count"),
+        unit=match.group("unit"),
+        denominator=match.group("denominator"),
+        evidence_group=0,
+    )
+
+
+def _skip_period_first_experienced_count(
+    match: re.Match[str], context: ExtractionContext
+) -> bool:
+    trailing_context = context.text[match.end() : match.end() + 30].lower()
+    return (
+        "in that timeframe" in trailing_context
+        or "have occurred" in trailing_context
+        or "featuring" in trailing_context
+    )
+
+
 def _has_historical_lead_in(match: re.Match[str], context: ExtractionContext) -> bool:
     preceding = context.text[max(0, match.start() - 140) : match.start()].lower()
     historical_markers = (
@@ -866,6 +1001,244 @@ SIMPLE_PARTIAL_ADVERBIAL_RATE_RULE = RuleSpec(
     provenance="Portable V1 adverbial-rate expression.",
 )
 
+RECENT_COUNT_RULE = RuleSpec(
+    rule_id="rate.recent_count",
+    group=RuleGroup.PORTABLE_RATE_EXPRESSIONS,
+    portability=Portability.SEIZURE_FREQUENCY,
+    description="Counted seizure phrase in a single recent day/week/month/quarter/year.",
+    pattern=re.compile(
+        rf"\b(?P<count>{NUMBER_TOKEN})\s+(?:{QUALIFIED_SEIZURE_TERMS})\s+"
+        rf"(?:last|this|past)\s+(?P<unit>day|week|month|quarter|year)\b",
+        re.IGNORECASE,
+    ),
+    build=_build_recent_count,
+    exclude=(_has_historical_lead_in,),
+    examples=(
+        RuleExample(
+            text="He describes three or four seizures last week.",
+            expected_label="3 to 4 per week",
+            expected_evidence="three or four seizures last week",
+        ),
+    ),
+    provenance="Portable V1 recent-window count expression.",
+)
+
+COUNT_DURING_RECENT_WINDOW_RULE = RuleSpec(
+    rule_id="rate.count_during_recent_window",
+    group=RuleGroup.PORTABLE_RATE_EXPRESSIONS,
+    portability=Portability.SEIZURE_FREQUENCY,
+    description="Counted seizure phrase during or in a recent multi-unit window.",
+    pattern=re.compile(
+        rf"\b(?P<count>{NUMBER_TOKEN})\s+(?:{QUALIFIED_SEIZURE_TERMS})\s+"
+        rf"(?:during|in)\s+(?:the\s+)?(?:last|past)\s+"
+        rf"(?P<denominator>{NUMBER_TOKEN})\s+(?P<unit>{UNIT_TOKEN})\b",
+        re.IGNORECASE,
+    ),
+    build=_build_count_during_recent_window,
+    exclude=(_has_historical_lead_in,),
+    examples=(
+        RuleExample(
+            text="The diary shows 7 to 9 focal onset seizures in three weeks.",
+            expected_label="7 to 9 per 3 week",
+            expected_evidence="7 to 9 focal onset seizures in three weeks",
+        ),
+    ),
+    provenance="Portable V1 recent-window count expression.",
+)
+
+THERE_HAVE_BEEN_COUNT_RULE = RuleSpec(
+    rule_id="rate.there_have_been_count",
+    group=RuleGroup.PORTABLE_RATE_EXPRESSIONS,
+    portability=Portability.SEIZURE_FREQUENCY,
+    description="Counted events over, in, during, or recorded in a period.",
+    pattern=re.compile(
+        rf"\b(?:there\s+(?:have|has|were|are)\s+been\s+)?"
+        rf"(?P<evidence>(?P<count>{NUMBER_TOKEN})\s+"
+        rf"(?:{QUALIFIED_SEIZURE_TERMS})\s+"
+        rf"(?:over|in|during|recorded\s+in)\s+(?:the\s+)?(?:past|last)?\s*"
+        rf"(?:(?P<denominator>{NUMBER_TOKEN})\s+)?(?P<unit>{UNIT_TOKEN}|fortnight))\b",
+        re.IGNORECASE,
+    ),
+    build=_build_there_have_been_count,
+    examples=(
+        RuleExample(
+            text="There have been four brief episodes over the past three weeks.",
+            expected_label="4 per 3 week",
+            expected_evidence="four brief episodes over the past three weeks",
+        ),
+    ),
+    provenance="Portable V1 recent-window count expression.",
+)
+
+RECORDED_YEAR_COUNT_RULE = RuleSpec(
+    rule_id="rate.recorded_year_count",
+    group=RuleGroup.PORTABLE_RATE_EXPRESSIONS,
+    portability=Portability.SEIZURE_FREQUENCY,
+    description="Counted seizure phrase recorded in a year so far.",
+    pattern=re.compile(
+        rf"\b(?P<count>{NUMBER_TOKEN})\s+(?:{QUALIFIED_SEIZURE_TERMS})\s+"
+        r"recorded\s+in\s+\d{4}\s+so\s+far\b",
+        re.IGNORECASE,
+    ),
+    build=_build_recorded_year_count,
+    examples=(
+        RuleExample(
+            text="Seven brief seizures recorded in 2024 so far.",
+            expected_label="7 per year",
+            expected_evidence="Seven brief seizures recorded in 2024 so far",
+        ),
+    ),
+    provenance="Portable V1 recent-window count expression.",
+)
+
+YESTERDAY_OR_TODAY_COUNT_RULE = RuleSpec(
+    rule_id="rate.yesterday_or_today_count",
+    group=RuleGroup.PORTABLE_RATE_EXPRESSIONS,
+    portability=Portability.SEIZURE_FREQUENCY,
+    description="Counted seizure phrase yesterday or today.",
+    pattern=re.compile(
+        rf"\b(?P<count>{NUMBER_TOKEN})\s+(?:{QUALIFIED_SEIZURE_TERMS})\s+"
+        r"(?:yesterday|today)\b",
+        re.IGNORECASE,
+    ),
+    build=_build_yesterday_count,
+    examples=(
+        RuleExample(
+            text="The patient reported 1 tonic-clonic seizures yesterday.",
+            expected_label="1 per day",
+            expected_evidence="1 tonic-clonic seizures yesterday",
+        ),
+    ),
+    provenance="Portable V1 recent-window count expression.",
+)
+
+PERIOD_FIRST_RECENT_COUNT_RULE = RuleSpec(
+    rule_id="rate.period_first_recent_count",
+    group=RuleGroup.PORTABLE_RATE_EXPRESSIONS,
+    portability=Portability.SEIZURE_FREQUENCY,
+    description="Single-unit period-first count such as This week ... three seizures.",
+    pattern=re.compile(
+        rf"\b(?P<period>This|Over the past|Over the last|During the past|During the last)\s+"
+        rf"(?P<unit>day|week|month|year),?\s+"
+        rf".{{0,60}}?\b(?P<count>{NUMBER_TOKEN})\s+(?:{QUALIFIED_SEIZURE_TERMS})\b",
+        re.IGNORECASE,
+    ),
+    build=_build_period_first_recent_count,
+    examples=(
+        RuleExample(
+            text="This week he has had 3 or 4 focal impaired awareness seizures.",
+            expected_label="3 to 4 per week",
+            expected_evidence="This week he has had 3 or 4 focal impaired awareness seizures",
+        ),
+    ),
+    provenance="Portable V1 period-first count expression.",
+)
+
+PERIOD_FIRST_EXPERIENCED_COUNT_RULE = RuleSpec(
+    rule_id="rate.period_first_experienced_count",
+    group=RuleGroup.PORTABLE_RATE_EXPRESSIONS,
+    portability=Portability.SEIZURE_FREQUENCY,
+    description="Multi-unit period-first count with count later in the span.",
+    pattern=re.compile(
+        rf"\b(?P<period>Over the past|Over the last|During the past|During the last|"
+        rf"over the past|over the last|during the past|during the last|in the past|"
+        rf"in the last)\s+"
+        rf"(?P<denominator>{NUMBER_TOKEN})\s+(?P<unit>{UNIT_TOKEN})[,\s()]+"
+        rf".{{0,80}}?\b(?P<count>{NUMBER_TOKEN})\s+"
+        rf"(?:{QUALIFIED_SEIZURE_TERMS})\b",
+        re.IGNORECASE,
+    ),
+    build=_build_period_first_experienced_count,
+    exclude=(_skip_period_first_experienced_count,),
+    examples=(
+        RuleExample(
+            text="Over the past month, they estimate 3 to 4 seizures.",
+            expected_label="3 to 4 per month",
+            expected_evidence="Over the past month, they estimate 3 to 4 seizures",
+        ),
+    ),
+    provenance="Portable V1 period-first count expression.",
+)
+
+PERIOD_FIRST_FEATURING_COUNT_RULE = RuleSpec(
+    rule_id="rate.period_first_featuring_count",
+    group=RuleGroup.PORTABLE_RATE_EXPRESSIONS,
+    portability=Portability.SEIZURE_FREQUENCY,
+    description="Period-first count with featuring-awareness wording.",
+    pattern=re.compile(
+        rf"\b(?P<period>Over the past|Over the last|During the past|During the last|"
+        rf"over the past|over the last|during the past|during the last)\s+"
+        rf"(?P<denominator>{NUMBER_TOKEN})\s+(?P<unit>{UNIT_TOKEN}),?\s+"
+        rf".{{0,80}}?\b(?P<count>{NUMBER_TOKEN})\s+"
+        rf"(?:{QUALIFIED_SEIZURE_TERMS})\s+featuring\s+"
+        rf"(?:{WORD_TOKEN}\s+){{0,3}}awareness\b",
+        re.IGNORECASE,
+    ),
+    build=_build_period_first_featuring_count,
+    examples=(
+        RuleExample(
+            text=(
+                "Over the last three weeks, there have been four brief episodes "
+                "featuring impaired awareness."
+            ),
+            expected_label="4 per 3 week",
+            expected_evidence=(
+                "Over the last three weeks, there have been four brief episodes "
+                "featuring impaired awareness"
+            ),
+        ),
+    ),
+    provenance="Portable V1 period-first count expression.",
+)
+
+PERIOD_FIRST_TIMEFRAME_COUNT_RULE = RuleSpec(
+    rule_id="rate.period_first_timeframe_count",
+    group=RuleGroup.PORTABLE_RATE_EXPRESSIONS,
+    portability=Portability.SEIZURE_FREQUENCY,
+    description="Period-first count ending with in that timeframe.",
+    pattern=re.compile(
+        rf"\b(?P<period>Over the past|Over the last|During the past|During the last)\s+"
+        rf"(?P<denominator>{NUMBER_TOKEN})\s+(?P<unit>{UNIT_TOKEN}),?\s+"
+        rf".{{0,260}}?\b(?P<count>{NUMBER_TOKEN})\s+(?:{QUALIFIED_SEIZURE_TERMS})\s+"
+        r"in\s+that\s+timeframe\b",
+        re.IGNORECASE,
+    ),
+    build=_build_period_first_timeframe_count,
+    examples=(
+        RuleExample(
+            text="Over the past four months, she reports three events in that timeframe.",
+            expected_label="3 per 4 month",
+            expected_evidence=(
+                "Over the past four months, she reports three events in that timeframe"
+            ),
+        ),
+    ),
+    provenance="Portable V1 period-first count expression.",
+)
+
+PERIOD_FIRST_OCCURRED_COUNT_RULE = RuleSpec(
+    rule_id="rate.period_first_occurred_count",
+    group=RuleGroup.PORTABLE_RATE_EXPRESSIONS,
+    portability=Portability.SEIZURE_FREQUENCY,
+    description="Period-first count with have occurred wording.",
+    pattern=re.compile(
+        rf"\b(?P<period>Over the past|Over the last|During the past|During the last)\s+"
+        rf"(?P<denominator>{NUMBER_TOKEN})\s+(?P<unit>{UNIT_TOKEN}),?\s+"
+        rf"(?P<count>{NUMBER_TOKEN})\s+(?:{QUALIFIED_SEIZURE_TERMS})\s+"
+        r"have\s+occurred\b",
+        re.IGNORECASE,
+    ),
+    build=_build_period_first_occurred_count,
+    examples=(
+        RuleExample(
+            text="Over the past six weeks, four episodes have occurred.",
+            expected_label="4 per 6 week",
+            expected_evidence="Over the past six weeks, four episodes have occurred",
+        ),
+    ),
+    provenance="Portable V1 period-first count expression.",
+)
+
 PORTABLE_RATE_RULES = (
     DAILY_BASIS_CURRENT_RULE,
     DAYS_OF_WEEK_RATE_RULE,
@@ -887,6 +1260,16 @@ PORTABLE_RATE_RULES = (
     PERSISTENT_ADVERBIAL_RATE_RULE,
     COUNTED_ADVERBIAL_RATE_RULE,
     SIMPLE_PARTIAL_ADVERBIAL_RATE_RULE,
+    RECENT_COUNT_RULE,
+    COUNT_DURING_RECENT_WINDOW_RULE,
+    THERE_HAVE_BEEN_COUNT_RULE,
+    RECORDED_YEAR_COUNT_RULE,
+    YESTERDAY_OR_TODAY_COUNT_RULE,
+    PERIOD_FIRST_RECENT_COUNT_RULE,
+    PERIOD_FIRST_EXPERIENCED_COUNT_RULE,
+    PERIOD_FIRST_FEATURING_COUNT_RULE,
+    PERIOD_FIRST_TIMEFRAME_COUNT_RULE,
+    PERIOD_FIRST_OCCURRED_COUNT_RULE,
 )
 
 
@@ -894,6 +1277,9 @@ def _rate_label(count: str, unit: str, denominator: str | None = None) -> str:
     count_value = _number_token(count)
     unit_value = _singular_unit(unit)
     denominator_value = _number_token(denominator) if denominator else None
+    if unit_value == "fortnight":
+        unit_value = "week"
+        denominator_value = "2"
     if unit_value == "quarter":
         unit_value = "month"
         denominator_value = _quarter_month_denominator(denominator_value)
