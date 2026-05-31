@@ -60,11 +60,12 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.rules.diary import (
     DIARY_DATE_LIST_RULE,
     INCREASING_MONTHLY_COUNT_RULE,
     MONTHLY_COUNT_LOG_RULE,
+    MONTHLY_DIARY_SUMMARY_RULES,
     RECORDED_MONTH_LOG_RULE,
     SEIZURE_DAY_LOG_RULE,
     SEIZURE_DAYS_FRACTION_RULE,
     SEIZURE_DAYS_PER_PERIOD_RULE,
-    SLEEP_AWAKE_MONTH_SUMMARY_RULE,
+    SLEEP_AWAKE_MONTH_SUMMARY_RULES,
     SPARSE_FULL_MONTH_LOG_RULE,
     apply_diary_rules,
 )
@@ -256,7 +257,6 @@ FULL_MONTHS = {
 MONTH_NAME_PATTERN = "|".join([*FULL_MONTHS, *MONTH_ABBREVIATIONS])
 MONTH_YEAR_DATE_PATTERN = rf"(?:(?:{MONTH_NAME_PATTERN})|\d{{1,2}})\s*(?:[-/]\s*|\s+)\d{{4}}"
 NUMBER_VALUE_TOKEN = rf"(?:multiple|\d+|{NUMBER_WORD_PATTERN})"
-DIARY_COUNT_TOKEN = rf"(?:{NUMBER_VALUE_TOKEN}|no|none|zero|a|an|another)"
 NUMBER_TOKEN = (
     rf"(?:{NUMBER_VALUE_TOKEN}(?:\s+(?:to|or)\s+{NUMBER_VALUE_TOKEN}|"
     rf"\s*[-–—]\s*{NUMBER_VALUE_TOKEN})?)"
@@ -842,7 +842,7 @@ def _extract_rate_candidates(
 
     candidates.extend(
         apply_diary_rules(
-            (SLEEP_AWAKE_MONTH_SUMMARY_RULE,),
+            SLEEP_AWAKE_MONTH_SUMMARY_RULES,
             text,
             ablation_config,
             helpers={
@@ -853,7 +853,18 @@ def _extract_rate_candidates(
         )
     )
 
-    candidates.extend(_extract_monthly_diary_summary_candidates(text, clinic_date))
+    candidates.extend(
+        apply_diary_rules(
+            MONTHLY_DIARY_SUMMARY_RULES,
+            text,
+            ablation_config,
+            helpers={
+                "clinic_date": _clinic_date,
+                "relative_note_date": _relative_note_date,
+                "month_span_inclusive": _month_span_inclusive,
+            },
+        )
+    )
     candidates.extend(_extract_distributed_count_candidates(text))
 
     candidates.extend(apply_rate_rules((DESCRIPTOR_RATE_RULE,), text, ablation_config))
@@ -1333,107 +1344,6 @@ def _extract_rate_candidates(
     return candidates
 
 
-def _extract_monthly_diary_summary_candidates(
-    text: str,
-    clinic_date: _ParsedMonthDate | None,
-) -> list[_RawCandidate]:
-    if clinic_date is None:
-        return []
-    candidates: list[_RawCandidate] = []
-    patterns = [
-        re.compile(
-            rf"\b(?P<evidence>In\s+(?:{MONTH_NAME_PATTERN})\s+[^.]+?\.\s+"
-            rf"In\s+(?:{MONTH_NAME_PATTERN})\s+[^.]+)\b",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            r"\b(?P<evidence>(?:She|He)\s+has\s+had\s+[^.]+?,\s+"
-            r"with\s+events\s+reported\b)",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            r"\b(?P<evidence>(?:She|He)\s+(?:experienced|had)\s+[^.]+?,\s+"
-            r"occurring\s+during\b)",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            r"\b(?P<evidence>(?:She|He)\s+had\s+[^.]+?\s+both\s+from\b)",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            r"\b(?P<evidence>(?:She|He)\s+noted\s+[^.]+?,\s+all\s+from\b)",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            r"\b(?P<evidence>(?:She|He)\s+(?:reports|has\s+recorded)\s+[^.]+?,\s+"
-            r"(?:from\s+both|including)\b)",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            r"\b(?P<evidence>(?:She|He)\s+has\s+recorded\s+[^.]+?,\s+"
-            r"including\b)",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            r"\b(?P<evidence>This\s+month,\s+(?:she|he)\s+has\s+had\s+[^.]+?,\s+"
-            r"across\b)",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            r"\b(?P<evidence>As\s+of\s+this\s+month\s+(?:she|he)\s+reports\s+"
-            r"[^.]+?\s+during\s+both\b)",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            r"\b(?P<evidence>This\s+month\s+so\s+far\s+[^.]+?,\s+over\s+waking\b)",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            rf"\b(?P<evidence>He\s+had\s+a\s+cluster\s+of\s+{NUMBER_TOKEN}\s+"
-            rf"(?:{QUALIFIED_SEIZURE_TERMS})\s+in\s+(?:{MONTH_NAME_PATTERN}).+?"
-            rf"a\s+single\s+(?:{QUALIFIED_SEIZURE_TERMS})\s+was\s+recorded)\b",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            rf"\b(?P<evidence>He\s+had\s+a\s+cluster\s+of\s+{NUMBER_TOKEN}\s+"
-            rf"(?:{QUALIFIED_SEIZURE_TERMS})\s+in\s+(?:{MONTH_NAME_PATTERN})\s+"
-            rf"\([^)]+\)\.\s+In\s+(?:{MONTH_NAME_PATTERN})\s+[^.]+?,\s+"
-            rf"and\s+in\s+(?:{MONTH_NAME_PATTERN})\s+a\s+single\s+"
-            rf"(?:{QUALIFIED_SEIZURE_TERMS})\s+was\s+recorded)\b",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            rf"\b(?P<evidence>In\s+(?:{MONTH_NAME_PATTERN})\s+[^.]+?\([^)]+\)\.\s+"
-            rf"In\s+(?:{MONTH_NAME_PATTERN})\s+[^.]+?,\s+and\s+in\s+"
-            rf"(?:{MONTH_NAME_PATTERN})\s+another)\b",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            rf"\b(?P<evidence>In\s+(?:{MONTH_NAME_PATTERN})\s+[^.]+?\s+"
-            rf"in\s+a\s+cluster\.\s+In\s+(?:{MONTH_NAME_PATTERN})\s+[^.]+?,\s+"
-            rf"and\s+in\s+(?:{MONTH_NAME_PATTERN})\s+another)\b",
-            re.IGNORECASE,
-        ),
-    ]
-    for pattern in patterns:
-        for match in pattern.finditer(text):
-            evidence = _trim_monthly_diary_evidence(match.group("evidence"))
-            parsed = _monthly_diary_counts(evidence, clinic_date)
-            if parsed is None:
-                continue
-            total, denominator = parsed
-            if total <= 0 or denominator <= 0:
-                continue
-            candidates.append(
-                _RawCandidate(
-                    kind=CandidateKind.FREQUENCY_RATE,
-                    label=_rate_label(str(total), "month", str(denominator)),
-                    evidence=evidence,
-                )
-            )
-    return candidates
-
-
 def _extract_unknown_candidates(
     text: str, ablation_config: AblationConfig
 ) -> list[_RawCandidate]:
@@ -1857,177 +1767,6 @@ def _integer_number_token(value: str) -> int | None:
     if normalized.isdigit():
         return int(normalized)
     return None
-
-
-def _diary_count_token(value: str) -> int | None:
-    normalized = value.strip().lower()
-    if normalized in {"no", "none", "zero"}:
-        return 0
-    if normalized in {"a", "an", "another"}:
-        return 1
-    return _integer_number_token(normalized)
-
-
-def _trim_monthly_diary_evidence(evidence: str) -> str:
-    trimmed = _clean_evidence(evidence)
-    trimmed = re.sub(
-        r",?\s+(?:with events reported|occurring during|from both|including|"
-        r"all from|over waking|across|during both)\b.*$",
-        "",
-        trimmed,
-        flags=re.IGNORECASE,
-    )
-    trimmed = re.sub(
-        rf"^((?:She|He)\s+)experienced\s+"
-        rf"(?={DIARY_COUNT_TOKEN}\s+(?:{QUALIFIED_SEIZURE_TERMS}).*?\bso\s+far\s+in\s+"
-        rf"(?:{MONTH_NAME_PATTERN})\b)",
-        "",
-        trimmed,
-        flags=re.IGNORECASE,
-    )
-    trimmed = re.sub(
-        rf"(\band\s+in\s+(?:{MONTH_NAME_PATTERN})\s+another)\s+at\s+\w+$",
-        r"\1",
-        trimmed,
-        flags=re.IGNORECASE,
-    )
-    trimmed = re.sub(
-        rf"(\band\s+in\s+(?:{MONTH_NAME_PATTERN})\s+another)\s+during\s+.+$",
-        r"\1",
-        trimmed,
-        flags=re.IGNORECASE,
-    )
-    trimmed = re.sub(
-        rf"(\band\s+in\s+(?:{MONTH_NAME_PATTERN})\s+a\s+single\s+"
-        rf"(?:{QUALIFIED_SEIZURE_TERMS})\s+was\s+recorded)\s+during\s+.+$",
-        r"\1",
-        trimmed,
-        flags=re.IGNORECASE,
-    )
-    return _clean_evidence(trimmed)
-
-
-def _monthly_diary_counts(
-    evidence: str, clinic_date: _ParsedMonthDate
-) -> tuple[int, int] | None:
-    month_totals: dict[tuple[int, int], int] = {}
-
-    def add(month_text: str, raw_count: str) -> None:
-        date = _relative_note_date(month_text, clinic_date)
-        count = _diary_count_token(raw_count)
-        if date is None or count is None:
-            return
-        key = (date.year, date.month)
-        month_totals[key] = month_totals.get(key, 0) + count
-        compact_months.add(key)
-
-    def add_month_date(date: _ParsedMonthDate, raw_count: str) -> None:
-        count = _diary_count_token(raw_count)
-        if count is None:
-            return
-        key = (date.year, date.month)
-        month_totals[key] = month_totals.get(key, 0) + count
-
-    compact_months: set[tuple[int, int]] = set()
-    this_month_patterns = [
-        rf"(?P<count>{DIARY_COUNT_TOKEN})\s+(?:{QUALIFIED_SEIZURE_TERMS})\s+"
-        rf"so\s+far\s+this\s+month",
-        rf"this\s+month\s+so\s+far\s+\w+\s+has\s+"
-        rf"(?P<count>{DIARY_COUNT_TOKEN})\s+(?:{QUALIFIED_SEIZURE_TERMS})",
-        rf"this\s+month,?\s+\w+\s+has\s+had\s+"
-        rf"(?P<count>{DIARY_COUNT_TOKEN})\s+(?:{QUALIFIED_SEIZURE_TERMS})",
-        rf"as\s+of\s+this\s+month\s+\w+\s+reports\s+"
-        rf"(?P<count>{DIARY_COUNT_TOKEN})\s+(?:{QUALIFIED_SEIZURE_TERMS})",
-    ]
-    for pattern in this_month_patterns:
-        for match in re.finditer(pattern, evidence, flags=re.IGNORECASE):
-            count = _diary_count_token(match.group("count"))
-            if count is not None:
-                key = (clinic_date.year, clinic_date.month)
-                month_totals[key] = month_totals.get(key, 0) + count
-                compact_months.add(key)
-
-    single_to_date_month = re.compile(
-        rf"\b(?P<count>a|an)\s+(?:{QUALIFIED_SEIZURE_TERMS})\s+"
-        rf"(?:to\s+date\s+|so\s+far\s+)in\s+(?P<month>{MONTH_NAME_PATTERN})\b",
-        re.IGNORECASE,
-    )
-    for match in single_to_date_month.finditer(evidence):
-        add(match.group("month"), match.group("count"))
-
-    cluster_or_run_count_month = re.compile(
-        rf"\b(?:cluster|run)\s+of\s+(?P<count>{NUMBER_VALUE_TOKEN})\s+"
-        rf"(?:{QUALIFIED_SEIZURE_TERMS})\s+in\s+(?P<month>{MONTH_NAME_PATTERN})\b",
-        re.IGNORECASE,
-    )
-    for match in cluster_or_run_count_month.finditer(evidence):
-        add(match.group("month"), match.group("count"))
-
-    count_before_month = re.compile(
-        rf"\b(?P<count>no|none|zero|{NUMBER_VALUE_TOKEN})\s+"
-        rf"(?:(?:{QUALIFIED_SEIZURE_TERMS}|events?)\s+)?"
-        rf"(?:to\s+date\s+|so\s+far\s+)?"
-        rf"in\s+(?P<month>{MONTH_NAME_PATTERN})\b",
-        re.IGNORECASE,
-    )
-    for match in count_before_month.finditer(evidence):
-        preceding = evidence[max(0, match.start() - 16) : match.start()].lower()
-        if re.search(r"\b(?:cluster|run)\s+of\s+$", preceding):
-            continue
-        add(match.group("month"), match.group("count"))
-
-    count_were_month = re.compile(
-        rf"\b(?P<count>no|none|zero|{NUMBER_VALUE_TOKEN})\s+were\s+"
-        rf"in\s+(?P<month>{MONTH_NAME_PATTERN})\b",
-        re.IGNORECASE,
-    )
-    for match in count_were_month.finditer(evidence):
-        add(match.group("month"), match.group("count"))
-
-    month_leading = re.compile(
-        rf"\b(?:and\s+)?in\s+(?P<month>{MONTH_NAME_PATTERN})\b(?P<body>.*?)"
-        rf"(?=\b(?:and\s+)?in\s+(?:{MONTH_NAME_PATTERN})\b|[.;]|$)",
-        re.IGNORECASE,
-    )
-    count_in_month_body = re.compile(
-        rf"\b(?:cluster|run)\s+of\s+(?P<run_count>{NUMBER_VALUE_TOKEN})\s+"
-        rf"(?:{QUALIFIED_SEIZURE_TERMS})\b"
-        rf"|"
-        rf"\b(?P<count>no|none|zero|{NUMBER_VALUE_TOKEN})\s+"
-        rf"(?:further\s+)?(?:[\w-]+\s+){{0,3}}?"
-        rf"(?:{SEIZURE_TERMS}|events?|while\s+awake|in\s+sleep|daytime|nocturnal)\b"
-        rf"|\b(?P<single>a|an)\s+(?!run\s+of\b|cluster\s+of\b)"
-        rf"(?:[\w-]+\s+){{0,3}}(?:{SEIZURE_TERMS}|events?)\b"
-        rf"|\b(?P<another>another)\b",
-        re.IGNORECASE,
-    )
-    for match in month_leading.finditer(evidence):
-        date = _relative_note_date(match.group("month"), clinic_date)
-        if date is None:
-            continue
-        key = (date.year, date.month)
-        if key in compact_months:
-            continue
-        body = match.group("body")
-        for count_match in count_in_month_body.finditer(body):
-            raw_count = (
-                count_match.groupdict().get("run_count")
-                or count_match.groupdict().get("count")
-                or count_match.groupdict().get("single")
-                or count_match.groupdict().get("another")
-            )
-            if raw_count is not None:
-                add_month_date(date, raw_count)
-
-    if not month_totals:
-        return None
-    dates = [_ParsedMonthDate(year=year, month=month) for year, month in month_totals]
-    start = min(dates, key=lambda date: (date.year, date.month))
-    end = max(dates, key=lambda date: (date.year, date.month))
-    denominator = _month_span_inclusive(start, end)
-    if denominator is None:
-        denominator = len(month_totals)
-    return sum(month_totals.values()), denominator
 
 
 def _increment_number_token(value: str) -> str | None:
