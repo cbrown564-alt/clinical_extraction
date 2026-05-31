@@ -4,223 +4,87 @@ Last updated: 2026-05-31
 
 ## Active Objective
 
-Build a Gan 2026 seizure-frequency extraction pipeline that exceeds 0.9 purist F1 while preserving enough structure to support future clinical extraction tasks.
+Build a Gan 2026 seizure-frequency extraction pipeline that can exceed 0.9 Purist F1 on development surfaces while preserving enough structure to support future clinical extraction tasks.
 
-## Research Objective
-
-Produce a paper-quality hybrid deterministic-LLM system that demonstrates modular breadth/depth, improved generalisation discipline, transparent per-note reasoning/evidence trails, and rigorous component-level error analysis/ablation.
+The current research aim is a paper-quality hybrid deterministic-LLM system with transparent evidence trails, component-level ablations, and conservative benchmark claims.
 
 ## Current Strategy
 
-Start with a small package core and a Gan-specific task implementation. Reproduce data loading, label normalization, and scoring before optimizing any DSPy modules.
+Use the Gan 2026 task as the first controlled extraction surface. Keep data loading, label normalization, scoring, split discipline, and deterministic-rule behavior explicit before optimizing LLM or DSPy components.
 
-Treat deterministic rules as controlled variables. Categorize each rule by portability and clinical meaning so experiments can separate general date logic, seizure-frequency logic, Gan-specific synthetic patterns, and benchmark-formatting repairs.
+Treat deterministic rules as a frozen, ablatable comparator rather than an endlessly expanding solution. Future gains should come from validation-only reasoning experiments, better candidate adjudication, and documented rule/category effects.
 
-## Active Milestones
+## Recent Context
 
-1. Port author-provided label repair logic and clarify the remaining normalization policy under tests.
-2. Build a simple deterministic baseline.
-3. Implement DSPy event extraction and clinical reasoning modules.
-4. Add row-level error analysis and a living notebook.
-5. Add ablation toggles for deterministic rule categories and DSPy stages.
-6. Produce paper-facing tables for component effects, rule effects, failure modes, and evidence validity.
+- The project skeleton, Gan 2026 task module, docs, runbook, split protocol, and local `.venv` are in place.
+- Gan-compatible loading and scoring are reproduced for all 1,500 local rows, including gold-label parsing, monthly scorer values, semantic label records, quality flags, and author-style prediction-label repair.
+- The locked split manifest is `data/Gan (2026)/splits/gan2026_split_v1.json`: 300 train rows, 750 validation rows, and 450 final holdout rows. Development should stay on train/validation.
+- Deterministic V1 is implemented in `gan2026.pipeline_v1` with candidate events, normalized events, final-selection diagnostics, and exact selected-evidence validation.
+- V1 was validation-saturated through hand-rule work, then frozen. The best recorded saturated validation artifact reports 0.9280 Purist micro F1/accuracy on 750 validation rows with 750/750 exact selected-evidence validity.
+- V1 was evaluated once on the locked test split without inspecting test-row failures: 0.7600 Purist micro F1/accuracy, 0.7867 Pragmatic micro F1/accuracy, and 450/450 exact selected-evidence validity. This indicates substantial validation-surface overfit.
+- The deterministic-rule catalogue now exposes rule metadata, portability categories, selected-candidate diagnostics, group/rule-ID ablations, temporal-selection ablations, and traceable benchmark-repair steps.
+- The latest validation-only deterministic ablation report records the current working-tree baseline as 0.9120 Purist micro F1/accuracy and 0.9213 Pragmatic micro F1/accuracy with 750/750 exact evidence validity. The 0.9280 versus 0.9120 drift must be resolved before paper-facing performance claims.
 
-## Current Repo State
+## Key References
 
-- Python package skeleton exists under `src/clinical_extraction`.
-- Gan 2026 task module exists under `tasks/seizure_frequency/gan2026`.
-- Initial README, architecture notes, pipeline design notes, decision record, and runbook exist.
-- Research contribution thesis exists under `docs/research`.
-- Git repository has been initialized.
-- Local `.venv` has been created with project dev dependencies.
-- Gan-compatible data loading and evaluation reproduction is complete for the current JSON surface.
-- Loader exposes full note text, gold label/reference, quality flags, raw rows, and parsed monthly gold frequency.
-- Gold label parsing now covers all 1,500 local Gan rows under focused tests.
-- Loader now preserves normalized gold labels, semantic label kind, yearly bounds, and monthly scorer values separately.
-- Locked Gan 2026 split manifest exists at `data/Gan (2026)/splits/gan2026_split_v1.json`: 300 train rows for DSPy GEPA or other optimizers, 750 validation rows for ordinary development, and 450 test rows for final holdout only.
-- Split protocol is documented in `docs/design/gan2026_split_protocol.md`, and loader helpers can load manifest-ordered split records.
-- Prediction-label repair behavior has been ported into `gan2026.normalize` for common author-script repairs.
-- Scoring policy prefers the author evaluation script when it conflicts with CSV-preparation behavior.
-- `row_ok=False` rows are included in the development/evaluation surface and retained for stratified analysis.
-- Step 1 inspection is documented in `docs/research/gan2026_step1_inspection.md`.
-- Ten-letter schema exploration is documented in `docs/research/gan2026_schema_exploration_10_examples.md`.
-- Pipeline V1 now specifies richer candidate-event, deterministic-normalization, and final-selection schemas.
-- LLM model strategy is documented in `docs/design/model_strategy.md`: GPT-4.1 mini for rapid baseline experiments, Qwen 3.6:35b later for local strong-reasoning tests after a pipeline exceeds 0.8 purist F1, and GPT-5.4 only as a possible DSPy GEPA teacher.
-- First schema-shaped deterministic V1 baseline is implemented in `gan2026.pipeline_v1`.
-- V1 run record exists at `experiments/gan2026_v1_deterministic_baseline_2026-05-31.md`.
-- V1 historical development result on all 1,500 local rows is 0.3120 Purist micro F1/accuracy; future candidate iteration should report validation-split results instead.
-- V1 selected-evidence validity is 1,500/1,500 exact source substrings.
-- V1 validation-split row-level error analysis exists at `experiments/gan2026_v1_validation_error_analysis_2026-05-31.md`, with CSV rows at `experiments/gan2026_v1_validation_error_rows_2026-05-31.csv`.
-- The validation error artifact now includes non-fallback clinical candidate counts, selected-evidence type, heuristic clinical mode flags, and likely failed-operation slices.
-- V1 deterministic recall now covers validation-derived interval, recent-window, distributed event-count, and common seizure-free patterns including `every N days/weeks/months`, `every other`, `occurring only every other month`, `once/twice a month`, adverbial `weekly/monthly/yearly/bimonthly`, `occur daily`, qualified daily forms such as `myoclonic jerk daily`, `tonic-clonic daily`, `tonic-clonic every night`, and `focal cognitive monthly`, `every night`, direct `N per quarter`, period-first count windows such as `This week ... 3 or 4 focal impaired awareness seizures` and `Over the past month ... 3 to 4 seizures`, qualified seizure-type count windows such as `7 to 9 focal onset seizures in three weeks`, `six or eight petit mal over the past month`, and `3 or 5 tonic-clonic over the past month`, implicit one-unit windows such as `two or four seizures over the past year`, same-day count windows such as `1 tonic-clonic seizures yesterday`, summed same-window seizure-type counts such as `one tonic-clonic and six petit mal in last week`, contextual period-first counts such as `over the past three months ... two ... and four ...`, passive count windows such as `Over the past six weeks, four episodes have occurred`, validation-derived cluster phrases such as `Monthly clusters, typically 6 to 7 seizures over 24 h`, `2 clusters this month; each ≈five absences`, `run ... with three short episodes occurring on separate days`, `cluster ... on multiple days`, and `two myoclonic clusters over the past three weeks`, seizure-day shorthand such as `Seizure days: six/30 this month` and `About three seizure days per week`, compact `TC`/`sz`/`abs` shorthand such as `TC *nine/mo`, `TC nine/mo`, `sz ×nine/mo`, `abs 8 monthly`, and `q2 - 3wk`, status-epilepticus count windows, diary date lists such as `Seizure events on 03-07, 03-27, 05-15, 05-19, 05-24`, monthly count logs such as `Seizure: 2022: Jan x1, Feb x0, ...`, sparse full-month logs such as `2025: January 0; February 1; ...`, increasing month-count trends such as `Frequency has increased: July x 3; August x 4; September x 5`, month-by-month diary summaries with sleep/awake splits and compact `this month / in Month` lists, sparse month event lists with single-event and cluster wording, last/prior event interval summaries, median inter-seizure interval statements, interval-range statements, `once in a fortnight` / `every second week`, standalone `Every N days on average`, isolated `single ... event last month`, long-window `three events in that timeframe`, trigger/assertion-heavy validation phrases such as `there have been four brief episodes`, `occurring approximately twice weekly`, `three clusters ... each comprising two to four`, parenthesized distributed counts with auras, short recorded month logs, and `seven brief seizures recorded in 2024 so far`, historical-frequency suppression for `Prior to this` contexts, `up to seven in bad weeks`, `free of seizures for N years`, and `no seizures since`.
-- First-pass missed-frequency remediation added support for descriptor-only seizure rates (`rate of three to five focal sensory per week`, `records five focal automatisms per week`, `reports 2 to 4 focal non-motor per week`) and cluster-count phrases with unspecified size (`Weekly morning clusters reported`, `two/three clusters this quarter`, `nocturnal clusters 3×/month`, and `last month ≈N clusters`).
-- Medication-withdrawal burst/date-span remediation added support for dated `since then / no further events since` rows: medication discontinuation followed by short-term seizure bursts, first/second/third event spans across named months, and residual current jerks after `No further tonic-clonic seizures ... since Jan-YYYY`.
-- Daily/year-to-date and date-span remediation added support for current daily basis phrasing, nights-per-period rates, year-to-date count denominators from note dates, remission-then-breakthrough spans, first/next event narratives, seizure-day annual logs, last-event date summaries, and email-style `Sent:` dates when `Clinic Date:` is absent.
-- Last-convulsive/cluster-cycle remediation added support for numeric month/year span anchors (`Apr/2022`, `1 - 2024`, `06/2017`), email-style `Date:` anchors, residual morning/single jerk spans, last-convulsive cluster persistence, seizure-free interval cluster cycles, and current `N days of the week` frequency rates.
-- Month-list and residual wrong-frequency remediation added support for extended recent-month diary lists (`This month, ...; N were in Month`, `As of this month ...`), cluster spacing intervals that override incidental daily mentions, `no more than twice weekly`, cluster-days-per-period phrasing, persistent adverbial semiology rates such as `myoclonic jerks persist daily`, counted adverbial rates such as `typically four episodes monthly`, historical-to-current improvement selection, medication-dose frequency distractor rejection, `most weekdays`, `several ... last week`, `once per night`, and nonprogressive-myoclonic-jerk suppression when stronger convulsive-event evidence is present.
-- Late residual saturation remediation added support for dated `seizure-free since` / `Last seizure on` evidence, `no definite seizure events`, trigger-conditioned unknowns such as sleep-deprivation-only and perimenstrual-only events, qualitative improvement-as-unknown (`Better over the past N months`), current-summary evidence priorities for seizure-day shorthand / compact `abs` / median interval / `qone to twod`, and extra rejection of lifestyle, diary-entry, and superseded seizure-free distractors.
-- Validation-saturation remediation added broader zero-event and current-control evidence such as `absence of events for over N months`, `no clinical seizures observed`, `seizure freedom continues`, `complete control`, `interval history negative for seizures`, `seizure burden 0%`-style device summaries, `drug-free remission since DATE`, `No focal clonic since DATE`, `sustained remission since DATE`, `prior cluster pattern resolved since DATE`, `seizure cessation following initiation of last ASM`, long-term-remission summaries, `one and a half years` seizure-free durations, and high-frequency qualitative current patterns such as `multiple times in past week`, `Several episodes per week`, `most nights of the week`, `near-daily ... dozens in a day`, `on most days`, and named seizure types that `occur several times each/per week`.
-- V1 validation result is 0.9280 Purist micro F1/accuracy on 750 validation rows; evidence validity remains 750/750.
-- Validation failures are currently dominated by 80 scorer-correct semantic mismatches, 44 wrong-frequency-bucket rows, 7 overpredicted-frequency rows, and 3 missed seizure-free/no-event rows; 3 incorrect rows have zero non-fallback clinical candidates.
-- Latest v1 validation refresh is `experiments/gan2026_v1_validation_error_analysis_2026-05-31.md`; the saturation pass improved validation from 0.8507 to 0.9280 Purist micro F1/accuracy with 750/750 exact selected-evidence validity. This remains a validation development result, not a held-out benchmark or final benchmark-comparable result.
-- Deterministic-only V1 is frozen as the saturated hand-rule baseline. It has a documented validation-saturation boundary: remaining non-scorer residuals are concentrated in trigger/unknown policy, EEG-only or non-epileptic semantic-state mapping, seizure-type selection where a human/LLM would reconcile semiology, cluster-size normalization, and benchmark/scorer-label policy decisions. Further deterministic-rule changes belong in a new ablated candidate with rule metadata, not in frozen V1.
-- Frozen deterministic-only V1 was evaluated once on the locked test split without test-row failure inspection: 0.7600 Purist micro F1/accuracy and 0.7867 Pragmatic micro F1/accuracy on 450 rows, with 450/450 exact selected-evidence validity. The holdout result is documented in `experiments/gan2026_v1_test_holdout_2026-05-31.md` and indicates substantial validation-surface overfit.
-- A critical deterministic-rule review is documented in `docs/research/gan2026_deterministic_rule_review_2026-05-31.md`; it recommends freezing V1, adding rule metadata/ablation switches, and moving residual reasoning families to validation-only LLM/DSPy experiments.
-- Deterministic rule-catalogue Chunks 1-2 are implemented: `RuleGroup`, `Portability`, `AblationConfig`, `RuleSpec`, `RuleExample`, `ExtractionContext`, and rule registry validation exist in `gan2026.rule_metadata`; V1 candidate diagnostics now carry optional `rule_id`, `rule_group`, `portability`, and `match_groups` fields; and one low-risk unknown-frequency rule is catalogued and group-ablatable while default V1 behavior is preserved.
-- Deterministic rule-catalogue Chunk 3 is complete for the portable-rate surface: `gan2026.rules.rate` exists with catalogued portable rate rules for daily-basis current rates, days-of-week rates, nights-per-period rates, descriptor-led count-per-period rates, qualified direct count-per-period rates, direct quarter rates, generic direct count-per-period rates with dose/nonprogressive-myoclonic exclusions, implicit every-N intervals, every-night intervals, every-other intervals, occurring every-N/every-other intervals, adjective rates, standalone/occurring adjective rates, adverbial rate expressions, recent-window counts, and period-first counts. These rules expose rule metadata, registry examples, and group-level ablation while preserving default V1 labels/evidence. Remaining rate-like patterns are intentionally deferred to cluster, diary/log, or Gan-shorthand catalogue chunks where their semantics fit better.
-- Deterministic rule-catalogue Chunk 4 is complete for the seizure-free/no-event assertion surface: `gan2026.rules.seizure_free` exists with catalogued no-definite-event, current-control/no-event assertion, date-anchored seizure-free, duration-based absence/no-event, one-and-a-half-year, last-epileptic-event, and generic seizure-free duration/since rules. These rules expose seizure-free/no-event metadata, preserve the generic seizure-free distractor guard, and support group-level ablation while preserving default V1 labels/evidence.
-- Deterministic rule-catalogue Chunk 5 is complete for the cluster-candidate arithmetic surface: `gan2026.rules.cluster` exists with catalogued seizure-free cycle clusters, last-convulsive cluster persistence spans, interval/batch cluster cycles, adjective cluster rates, compact cluster count-per-period expressions, this-period cluster counts with unknown, vague, or explicit cluster size, last-month cluster counts, monthly clusters with explicit 24-hour size, unknown-frequency clusters with known size, each-comprising cluster windows, cluster-over-period counts, run/vague-day cluster patterns, cluster timing/day patterns, short-burst monthly clusters, implied-size clusters, and size-without-count clusters. These rules expose cluster metadata, registry examples, helper-backed date arithmetic, and group-level ablation while preserving default V1 labels/evidence.
-- Deterministic rule-catalogue Chunk 6 is complete for diary/log aggregation: `gan2026.rules.diary` exists with catalogued seizure-day per-period rules, seizure-day fraction logs, diary date lists, annual seizure-day logs, abbreviated month `xN` logs, sparse full-month semicolon logs, recorded full-month comma logs, increasing/current diary monthly trend logs, two-month sleep/awake summaries, recent-month summaries, reported month-count lists, extended this-month summaries, and sparse month/cluster event lists. These rules expose diary metadata, registry examples, helper-backed date arithmetic where needed, and group-level ablation while preserving default V1 labels/evidence.
-- The Gan-specific shorthand rule group is catalogued: `gan2026.rules.gan_shorthand` covers compact `TC`/`sz` count-per-period notation, compact `abs` adjective/count rates, and compact `qN-unit`/`qN-to-Munit` intervals with `gan2026_specific` portability and group-level ablation while preserving default V1 labels/evidence.
-- Temporal-selection diagnostics now expose structured `SelectionScore` records for the selected candidate and all candidate alternatives, naming semantic priority, evidence priority, monthly-frequency tie-breaker, and selection reason while preserving the original tuple ordering behavior.
-- Benchmark repair is isolated as benchmark-format metadata: `gan2026.rules.benchmark_repair` defines traceable `BenchmarkRepairStep` records and `repair_prediction_label_with_trace()` exposes which accepted-format/scorer-compatibility repairs changed a prediction while preserving the public `repair_prediction_label()` behavior.
-- Deterministic rule-catalogue change report exists at `docs/research/deterministic_rule_catalogue_change_report_2026-05-31.md`, documenting before/after examples, completed improvements, verification, and ablation-reporting context.
-- Validation-ablation interpretation report exists at `docs/research/gan2026_validation_ablation_interpretation_2026-05-31.md`, summarizing why frozen V1 should now be treated as a controlled comparator and why the next work should focus on validation-only LLM/DSPy reasoning plus validation-baseline drift verification.
-- Validation-only deterministic rule ablation report exists at `experiments/gan2026_v1_validation_ablation_2026-05-31.md`, with changed-row CSV at `experiments/gan2026_v1_validation_ablation_changed_rows_2026-05-31.csv`. Current working-tree V1 validation baseline in the latest run is 0.9120 Purist micro F1/accuracy and 0.9213 Pragmatic micro F1/accuracy with 750/750 exact selected-evidence validity. Disabling portable-rate expressions, seizure-free/no-event assertions, cluster arithmetic, diary/log aggregation, temporal selection, and Gan shorthand reduced Purist micro F1 to 0.7453, 0.7933, 0.8427, 0.8507, 0.7613, and 0.8853 respectively. Disabling benchmark repair changed 6 labels but did not change Purist/Pragmatic micro F1; date-duration utilities remain helper-backed and unchanged by group ablation.
-- Temporal selection and benchmark repair now have executable ablation surfaces backed by normal `RuleSpec` registries: `gan2026.rules.temporal_selection.TEMPORAL_SELECTION_RULES` controls final-selection score reasons, and `gan2026.normalize.BENCHMARK_REPAIR_RULES` controls sequential prediction-label repair steps. Group and rule-ID ablations are covered by focused tests while preserving default V1 behavior.
-- `pytest` and `ruff` pass in the local `.venv` after validation error-analysis generation.
+- Split protocol: `docs/design/gan2026_split_protocol.md`
+- Model strategy: `docs/design/model_strategy.md`
+- Deterministic rule review: `docs/research/gan2026_deterministic_rule_review_2026-05-31.md`
+- Rule-catalogue change report: `docs/research/deterministic_rule_catalogue_change_report_2026-05-31.md`
+- Validation ablation interpretation: `docs/research/gan2026_validation_ablation_interpretation_2026-05-31.md`
+- Saturated validation analysis: `experiments/gan2026_v1_validation_error_analysis_2026-05-31.md`
+- Frozen test holdout: `experiments/gan2026_v1_test_holdout_2026-05-31.md`
+- Validation ablation report: `experiments/gan2026_v1_validation_ablation_2026-05-31.md`
+- Ablation changed rows: `experiments/gan2026_v1_validation_ablation_changed_rows_2026-05-31.csv`
+
+## Active Priorities
+
+1. Resolve the validation-baseline drift between the saturated 0.9280 artifact and the latest 0.9120 ablation baseline.
+2. Keep deterministic V1 frozen as a controlled comparator; put any new deterministic changes into a separate, explicitly ablated candidate.
+3. Start validation-only LLM/DSPy work on residual reasoning families:
+   temporal/current-versus-historical selection, seizure-free versus unknown/no-reference assertions, trigger-conditioned events, semiology reconciliation, non-epileptic or EEG-only mapping, and cluster-detail interpretation.
+4. Mine ablation changed rows where disabling deterministic groups improves correctness. These are high-value prompt, adjudicator, and error-taxonomy examples.
+5. Maintain conservative benchmark language: the test split has been touched once for frozen-context evaluation and must not become a tuning surface.
 
 ## Work Board
 
-## Recommended Next Steps From Validation Ablation Interpretation
-
-Work through these in order in the next session. Keep all new development on
-validation/train surfaces only; the V1 test result is frozen context, not a
-tuning surface.
-
-1. Treat deterministic V1 as frozen and use
-   `experiments/gan2026_v1_validation_ablation_2026-05-31.md` as the main
-   diagnostic context for the next candidate. The ablation result shows V1 is
-   carried most strongly by portable-rate extraction, temporal selection, and
-   seizure-free/no-event assertions; additional hand rules should go into a new
-   explicitly ablated candidate, not the frozen V1 baseline.
-2. Investigate the validation-baseline drift before paper-facing claims: the
-   saturated validation artifact recorded 0.9280 Purist micro F1, while the
-   latest ablation baseline is 0.9120. Confirm whether this is expected
-   working-tree drift, artifact/version mismatch, or a behavior regression.
-3. Start validation-only LLM/DSPy experiments for reasoning-heavy failure
-   families highlighted by the ablation: temporal/current-versus-historical
-   selection, seizure-free versus unknown/no-reference assertions, semiology
-   reconciliation, trigger-conditioned events, non-epileptic/EEG-only mapping,
-   and cluster-detail interpretation.
-4. Use the ablation changed-row CSV to mine examples where disabling a
-   deterministic group improves the answer. These rows are high-value prompt,
-   adjudicator, and error-taxonomy examples because they expose deterministic
-   overreach rather than simple recall misses.
-5. Replace or wrap the final-selection tuple priority with an explicit decision
-   record over structured candidate attributes: assertion, temporality,
-   semiology, event target, window, normalized rate, and uncertainty.
-6. Add paraphrase and adversarial tests for core portable rules so future gains
-   are not only exact-snippet gains. Prioritize portable-rate expressions and
-   seizure-free/no-event assertions because the ablation shows they are both
-   important and clinically brittle.
-
 ### Now
 
-- Verify the 0.9280 saturated-validation artifact versus the 0.9120 ablation
-  baseline before making paper-facing performance claims.
-- Start the LLM/DSPy reasoning track on validation-only artifacts, focusing
-  first on temporal selection, seizure-free versus unknown/no-reference,
-  trigger-conditioned events, semiology reconciliation, and cluster-detail
-  normalization.
-- Mine `experiments/gan2026_v1_validation_ablation_changed_rows_2026-05-31.csv`
-  for examples where disabling a deterministic group improves correctness.
+- Verify whether the 0.9280 to 0.9120 validation drift is expected working-tree drift, artifact/version mismatch, or a behavior regression.
+- Build the first validation-only LLM/DSPy reasoning experiment around deterministic V1 predictions and candidate diagnostics.
+- Mine `experiments/gan2026_v1_validation_ablation_changed_rows_2026-05-31.csv` for deterministic-overreach examples.
 
 ### Next
 
-- Convert mined ablation rows into a small validation-only prompt/adjudicator
-  development set with deterministic baseline predictions preserved as context.
-- Prepare controlled model-comparison scaffolding with the deterministic V1 holdout result treated as frozen context, not as a tuning surface.
+- Convert mined ablation rows into a small validation-only prompt/adjudicator development set.
+- Wrap or replace the final-selection tuple priority with an explicit decision record over assertion, temporality, semiology, event target, window, normalized rate, and uncertainty.
+- Add paraphrase and adversarial tests for portable-rate expressions and seizure-free/no-event assertions.
 - Start a living notebook for loading, gold-label distribution, scoring, and failure slices.
-- Use GPT-4.1 mini as the default LLM runtime model for early DSPy experiments and record exact model metadata in run artifacts after deterministic recall is less brittle.
+- Prepare controlled model-comparison scaffolding with exact model metadata in every run artifact.
 
 ### Blocked
 
-- Final benchmark-comparison language is blocked until replication surface and paper comparability are explicit.
+- Final benchmark-comparison language is blocked until the replication surface and paper comparability are explicit.
+- Further holdout analysis is blocked by the locked-test discipline; do not inspect test-row failures during candidate development.
 
 ### Backlog
 
 - Add run-record metadata templates under `experiments/`.
-- Add paraphrase and adversarial tests around portable-rate expressions and
-  seizure-free/no-event assertions to test whether future improvements transfer
-  beyond exact Gan snippets.
-- Refine heuristic row-level error slices into audited causal labels with examples once deterministic recall is less sparse.
-- Add DSPy event extraction and clinical reasoner modules after deterministic substrate parity.
-- Run controlled Qwen 3.6:35b local-model comparisons on the Windows laptop after deterministic saturation is documented and model-comparison scaffolding is ready.
-- Consider DSPy GEPA with GPT-5.4 as teacher after the hand-built pipeline has stable artifacts and failure slices.
+- Refine heuristic row-level error slices into audited causal labels with examples.
+- Add broader DSPy event extraction and clinical reasoner modules after the first reasoning experiment.
+- Run controlled Qwen 3.6:35b local-model comparisons after model-comparison scaffolding is ready.
+- Consider DSPy GEPA with GPT-5.4 as teacher only after stable artifacts and failure slices exist.
 
 ### Done Recently
 
-- 2026-05-31: Interpreted the validation-only deterministic-rule ablation as
-  evidence that frozen V1's validation score is carried mainly by
-  portable-rate expressions, temporal selection, and seizure-free/no-event
-  assertions. Recorded recommended next actions: verify the 0.9280 versus
-  0.9120 validation-baseline drift, keep V1 frozen, mine changed rows where
-  ablation improves correctness, and move reasoning-heavy residuals into
-  validation-only LLM/DSPy experiments rather than more unbounded hand rules.
-- 2026-05-31: Wrote `docs/research/gan2026_validation_ablation_interpretation_2026-05-31.md` as a durable short report interpreting the validation ablation, its strongest rule-group signals, the 0.9280 versus 0.9120 caution, and recommended next actions.
-- 2026-05-31: Reran the validation-only deterministic-rule ablation report after making temporal selection and benchmark repair executable registry-backed ablation surfaces. The refreshed report now shows `disable_temporal_selection` changes 135 rows and drops Purist micro F1 to 0.7613, while `disable_benchmark_repair` changes 6 labels with no aggregate F1 movement.
-- 2026-05-31: Made temporal selection and benchmark repair executable registry-backed ablation surfaces. Added `gan2026.rules.temporal_selection.TEMPORAL_SELECTION_RULES`, converted benchmark repair execution to `BENCHMARK_REPAIR_RULES` `RuleSpec` records, wired both through `AblationConfig`, added group/rule-ID regression tests, and preserved default V1 behavior under full `pytest` and Ruff.
-- 2026-05-31: Ran the validation-only deterministic-rule ablation analysis by adding `gan2026.ablation_analysis`, making benchmark repair respect `AblationConfig`, generating `experiments/gan2026_v1_validation_ablation_2026-05-31.md` and `experiments/gan2026_v1_validation_ablation_changed_rows_2026-05-31.csv`, and confirming the current working-tree baseline is 0.9120 Purist micro F1/accuracy with 750/750 exact selected-evidence validity.
-- 2026-05-31: Wrote `docs/research/deterministic_rule_catalogue_change_report_2026-05-31.md`, summarizing the deterministic rule-catalogue refactor with before/after examples, rule metadata and portability improvements, structured selection diagnostics, benchmark repair tracing, verification status, and the remaining validation-only ablation table task.
-- 2026-05-31: Completed benchmark-repair isolation by adding `gan2026.rules.benchmark_repair`, routing prediction-label repair through traceable `BenchmarkRepairStep` metadata with `benchmark_format` portability, adding trace/registry tests, and preserving public repair behavior under full `pytest`/`ruff`.
-- 2026-05-31: Completed a bounded temporal-selection diagnostics slice by replacing the opaque final-selection tuple key with structured `SelectionScore` and per-candidate selection diagnostics, preserving default V1 selection behavior and passing full `pytest`/`ruff`.
-- 2026-05-31: Completed the Gan-specific shorthand bounded rule group by creating `gan2026.rules.gan_shorthand`, moving compact `TC`/`sz`, `abs`, and `qN-unit`/range interval rules out of `pipeline_v1`, adding registry, selected-candidate metadata, dataset-specific portability, and group-ablation tests, and preserving default V1 behavior under full `pytest`/`ruff`.
-- 2026-05-31: Completed deterministic rule-catalogue Chunk 6 by moving the broader monthly diary summary helper into `gan2026.rules.diary`, including recent-month summaries, reported month-count lists, extended this-month/as-of-this-month summaries, and sparse month/cluster event lists; candidate diagnostics now carry specific monthly-summary rule IDs, the old pipeline helper code was removed, and full `pytest`/`ruff` pass.
-- 2026-05-31: Continued deterministic rule-catalogue Chunk 6 by moving increasing/current diary monthly trend logs and two-month sleep/awake summaries into `gan2026.rules.diary`, adding selected-candidate metadata coverage, preserving default V1 behavior, and passing full `pytest`/`ruff`.
-- 2026-05-31: Began deterministic rule-catalogue Chunk 6 by creating `gan2026.rules.diary`, moving seizure-day per-period/fraction rules, diary date lists, annual seizure-day logs, abbreviated month `xN` logs, sparse full-month semicolon logs, and recorded full-month comma logs into catalogued diary specs, adding registry/metadata/ablation tests, and preserving default V1 behavior under full `pytest`/`ruff`.
-- 2026-05-31: Completed deterministic rule-catalogue Chunk 5 by moving cluster timing/day rules, date-span cluster cycles, seizure-free interval cluster cycles, short-burst monthly clusters, implied-size clusters, and size-without-count clusters into `gan2026.rules.cluster`, with selected-candidate metadata tests and full `pytest`/`ruff` passing.
-- 2026-05-31: Expanded deterministic rule-catalogue Chunk 5 by moving explicit per-cluster size rules, monthly clusters over 24 h, unknown-frequency cluster-size rules, each-comprising cluster windows, and cluster-over-period counts into `gan2026.rules.cluster`, with selected-candidate metadata tests and full `pytest`/`ruff` passing.
-- 2026-05-31: Began deterministic rule-catalogue Chunk 5 by creating `gan2026.rules.cluster`, moving adjective cluster rates, compact cluster rates, this-period cluster counts, vague-size this-period clusters, and last-month cluster counts into catalogued cluster specs, adding registry/metadata/ablation tests, and preserving default V1 behavior under full `pytest`/`ruff`.
-- 2026-05-31: Completed deterministic rule-catalogue Chunk 4 by moving the generic seizure-free duration/since catch-all and its historical/current distractor guard into `gan2026.rules.seizure_free`, with selected-candidate metadata tests and full `pytest`/`ruff` passing.
-- 2026-05-31: Expanded deterministic rule-catalogue Chunk 4 by moving date-anchored seizure-free rules, duration-based absence/no-event rules, explicit duration-status rules, one-and-a-half-year seizure-free rules, and last-epileptic-event rules into `gan2026.rules.seizure_free`, reusing existing date helpers through `ExtractionContext` and passing full `pytest`/`ruff`.
-- 2026-05-31: Began deterministic rule-catalogue Chunk 4 by creating `gan2026.rules.seizure_free`, moving no-definite-event and current-control/no-event assertion rules into catalogued seizure-free specs, adding registry/metadata/ablation tests, and preserving default V1 behavior under full `pytest`/`ruff`.
-- 2026-05-31: Completed the portable-rate portion of deterministic rule-catalogue Chunk 3 by moving recent-window counts and period-first counts into `gan2026.rules.rate`, including historical/context skip behavior and selected-candidate metadata tests; full `pytest`/`ruff` pass.
-- 2026-05-31: Expanded deterministic rule-catalogue Chunk 3 again by moving the generic direct count-per-period rule with medication-dose/nonprogressive-myoclonic exclusions, seizure adjective rates, standalone/occurring adjective rates, and adverbial rules (`no more than twice weekly`, `persist monthly`, `typically four episodes monthly`, `simple partial seizure monthly`) into `gan2026.rules.rate`, with selected-candidate metadata tests and full `pytest`/`ruff` passing.
-- 2026-05-31: Expanded deterministic rule-catalogue Chunk 3 by moving descriptor-led count-per-period, qualified direct count-per-period, direct quarter, implicit every-N/every-night/every-other, and occurring every-N/every-other interval rules into `gan2026.rules.rate`, with selected-candidate metadata tests and full `pytest`/`ruff` passing.
-- 2026-05-31: Began deterministic rule-catalogue Chunk 3 by creating `gan2026.rules.rate`, moving daily-basis current rates, days-of-week rates, and nights-per-period rates into catalogued portable rate specs, adding registry and ablation tests, and preserving default V1 behavior under full `pytest`/`ruff`.
-- 2026-05-31: Implemented deterministic rule-catalogue Chunk 2 registry path: added `RuleSpec`, `RuleExample`, `ExtractionContext`, rule application, registry validation tests, pipeline-level `AblationConfig`, and one catalogued qualitative-improvement unknown-frequency rule with a focused group-ablation regression test.
-- 2026-05-31: Implemented deterministic rule-catalogue Chunk 1 metadata scaffold: added rule-group/portability enums and an ablation config, extended V1 raw/public candidate diagnostics with optional rule metadata and match groups, and verified behavior preservation with focused tests plus full `pytest`/`ruff`.
-- 2026-05-31: Added `docs/design/deterministic_rule_catalogue_plan.md`, an iterative plan for turning the deterministic regex stack into an inspectable, metadata-rich, ablatable rule catalogue before further deterministic-rule changes.
-- 2026-05-31: Evaluated frozen deterministic-only V1 once on the locked test split without inspecting test row-level failures: Purist micro F1/accuracy 0.7600, Pragmatic micro F1/accuracy 0.7867, and evidence validity 450/450. Added a holdout run record and a critical rule-review document concluding that V1 is validation-saturated and should now be ablated/frozen rather than extended with unbounded hand rules.
-- 2026-05-31: Created initial package, docs, tests, and Gan 2026 task skeleton.
-- 2026-05-31: Added project-specific Codex workflow skills for TDD, kanban/status, experiments, and scoring guardrails.
-- 2026-05-31: Created local `.venv`, installed dev dependencies, and verified `pytest`/`ruff`.
-- 2026-05-31: Reproduced Gan data loading/evaluation substrate with tested gold-label extraction, monthly frequency parsing, row quality flags, and evaluation helpers.
-- 2026-05-31: Documented Step 1 inspection findings, including cluster-policy disagreement, sentinel collapse, misleading `clinic_date` field naming, and 30-day month conversion.
-- 2026-05-31: Decided to include `row_ok=False` rows for development/evaluation while retaining the flag for stratified analysis, and to prefer author evaluation-script scoring.
-- 2026-05-31: Reconciled normalization sentinels by adding semantic label records and loader fields while preserving Gan scorer collapse to `1000`.
-- 2026-05-31: Ported tested author prediction-label repair behavior into `gan2026.normalize`; `pytest` and `ruff` pass.
-- 2026-05-31: Worked through 10 Gan letters and updated the V1 pipeline schema toward source-near candidate events, deterministic normalization, and traceable final selection.
-- 2026-05-31: Documented LLM model strategy and experiment-metadata requirements.
-- 2026-05-31: Implemented the first schema-shaped deterministic V1 baseline with candidate events, normalized events, final selection diagnostics, and exact evidence validation.
-- 2026-05-31: Evaluated V1 on all 1,500 local Gan rows: Purist micro F1/accuracy 0.3120, evidence validity 1,500/1,500, with failures dominated by missed frequency/seizure-free evidence.
-- 2026-05-31: Added Gan 2026 train/validation/test split protocol and locked `gan2026_split_v1` manifest; updated skills to enforce validation-first development and locked test holdout discipline.
-- 2026-05-31: Added reusable Gan row-level error-analysis generation, wrote focused tests, and generated V1 validation artifacts showing 0.3240 Purist micro F1/accuracy with 750/750 exact selected-evidence validity.
-- 2026-05-31: Improved V1 deterministic recall for validation-derived implicit interval, adverbial rate, and recent-window count phrases; refreshed validation artifacts now show 0.3893 Purist micro F1/accuracy with 750/750 exact selected-evidence validity.
-- 2026-05-31: Upgraded validation error analysis with clinical candidate counts, evidence-source classes, heuristic clinical mode flags, and likely failed-operation counts; focused tests and Ruff pass.
-- 2026-05-31: Added focused V1 tests and extraction support for summed distributed same-window event counts plus common seizure-free phrasing with breakthrough-event guard coverage; refreshed validation artifacts now show 0.4400 Purist micro F1/accuracy with 750/750 exact selected-evidence validity, and full `pytest`/Ruff pass.
-- 2026-05-31: Added focused V1 tests and extraction support for quarter windows, standalone/occur adjective rates, qualified seizure-type count windows, implicit one-unit `over the past year/month` windows, same-day count windows, and additional seizure-type nouns; refreshed validation artifacts now show 0.4667 Purist micro F1/accuracy with 750/750 exact selected-evidence validity, and full `pytest`/Ruff pass.
-- 2026-05-31: Fixed adjective-rate evidence extraction, added focused V1 tests and extraction support for every-other-month wording, period-first recent counts, nightly/daily qualified seizure phrases, and validation-derived cluster phrasings; refreshed validation artifacts now show 0.4920 Purist micro F1/accuracy with 750/750 exact selected-evidence validity, and full `pytest`/Ruff pass.
-- 2026-05-31: Added focused V1 tests and extraction support for validation-derived month-window semiology counts, monthly cluster summaries, seizure-day shorthand, compact `TC`/`sz` notation, and `up to N in bad weeks`; refreshed validation artifacts now show 0.5213 Purist micro F1/accuracy with 750/750 exact selected-evidence validity, and full `pytest`/Ruff pass.
-- 2026-05-31: Added focused V1 tests and extraction support for compact `abs` monthly counts, compact `qN-unit` intervals, status-epilepticus count windows, diary date lists, and monthly count logs; refreshed validation artifacts now show 0.5413 Purist micro F1/accuracy with 750/750 exact selected-evidence validity, and full `pytest`/Ruff pass.
-- 2026-05-31: Added focused V1 tests and extraction support for median inter-seizure intervals, interval-range phrasing, fortnight/every-second-week wording, standalone `Every N days on average`, isolated single-event recent counts, long-window `three events in that timeframe`, and historical-frequency suppression; refreshed validation artifacts now show 0.5587 Purist micro F1/accuracy with 750/750 exact selected-evidence validity, and full `pytest`/Ruff pass.
-- 2026-05-31: Added focused V1 tests and extraction support for contextual period-first event counts, passive count windows, trigger-linked sparse month logs, increasing month-count trends, last/prior event intervals, and cluster-over-period summaries; rows 5763, 5791, 5837, 5866, 5995, 6065, 6112, and 6251 are now correct, refreshed validation artifacts show 0.5733 Purist micro F1/accuracy with 750/750 exact selected-evidence validity, and full `pytest`/Ruff pass.
-- 2026-05-31: Added focused V1 tests and extraction support for trigger/assertion-heavy frequency rows covering fortnight counts, `there have been` period-first counts, `twice weekly`, cluster `each comprising` patterns, parenthesized distributed auras, short recorded month logs, and year-so-far counts; rows 6509, 6701, 6952, 7167, 7196, 7275, 7401, and 9002 are now correct, refreshed validation artifacts show 0.5813 Purist micro F1/accuracy with 750/750 exact selected-evidence validity, and full `pytest`/Ruff pass.
-- 2026-05-31: Reviewed the latest validation artifacts and confirmed the first-pass target rows (9287, 9299, 9300, 10003, 10047, 10063, 10097, 10237, and 10245) remain unresolved misses.
-- 2026-05-31: Added focused V1 tests and extraction support for descriptor-only seizure-rate phrases and unspecified-size cluster-count phrases; rows 9287, 9299, 9300, 10003, 10047, 10063, 10097, 10237, and 10245 are now correct, refreshed validation artifacts show 0.6027 Purist micro F1/accuracy with 750/750 exact selected-evidence validity, and full `pytest`/Ruff pass.
-- 2026-05-31: Completed second-pass remediation for the cluster-heavy target slice (rows 10383, 10434, 10517, 10630, 10673, 10807, 10829, 10873, 10894, 10896, 10902, 10965, 10967, and 11197); refreshed validation shows 0.6200 Purist micro F1/accuracy with 0.6200 precision/recall and same-cluster/size evidence captured correctly for all 14 rows.
-- 2026-05-31: Added temporal/assertion guards for seizure-free distractors plus remission-breakthrough and cyclic-cluster extraction support; rows 13051, 13058, 13149, 13178, 13190, 15404, and 15429 are now correct, refreshed validation shows 0.6293 Purist micro F1/accuracy with 750/750 exact selected-evidence validity, and full `pytest`/Ruff pass.
-- 2026-05-31: Added focused V1 tests and extraction support for dated medication-withdrawal bursts, initial/second/third event spans, and residual myoclonic jerk spans; rows 14187, 14214, 14250, 14284, 14317, 14383, 14454, 14581, 14611, 14672, and 15317 are now correct, `frequency_predicted_seizure_free` is absent from the latest error-type table, refreshed validation shows 0.6480 Purist micro F1/accuracy with 750/750 exact selected-evidence validity, and full `pytest`/Ruff pass.
-- 2026-05-31: Added focused V1 tests and extraction support for current daily basis phrasing, nights-per-period rates, year-to-date note-date denominators, remission/drop/last-event summaries, first/next event narratives, annual seizure-day logs, and email `Sent:` date anchors; rows 12218, 12236, 12314, 12788, 12810, 12827, 12835, 12877, 12901, 12949, 13008, 13114, 13267, 13290, 13627, 13711, 13721, 13732, 14524, 14540, 14562, 14567, 14587, 14592, 14635, 14662, 14765, 14806, 14872, 14965, 15004, 15012, and 15997 are now correct; refreshed validation shows 0.6987 Purist micro F1/accuracy with 750/750 exact selected-evidence validity.
-- 2026-05-31: Added focused V1 tests and extraction support for last-convulsive-plus-jerks spans, numeric month/year anchors, cluster-persistence spans, seizure-free interval cluster cycles, and current `N days of the week` rates; rows 15094, 15108, 15127, 15129, 15141, 15242, 15262, 15267, 15306, 15376, 15442, 15470, 15479, 15497, 15503, 15513, 15519, 15529, 15745, and 15766 are now correct; refreshed validation shows 0.7293 Purist micro F1/accuracy with 750/750 exact selected-evidence validity.
-- 2026-05-31: Added focused V1 tests and extraction support for month-by-month diary summaries, compact recent month-count lists, and sparse month/cluster event lists; rows 15966, 15982, 15992, 16021, 16041, 16084, 16091, 16107, 16108, 16133, 16195, 16220, 16324, 16645, 16674, and 16697 are now correct; refreshed validation shows 0.7747 Purist micro F1/accuracy with 750/750 exact selected-evidence validity.
-- 2026-05-31: Added focused V1 tests and extraction support for extended month-count lists, cluster spacing intervals, `no more than twice weekly`, cluster-days-per-period phrasing, persistent adverbial semiology rates, and counted adverbial rates; rows 16132, 16162, 16181, 16203, 16574, 16590, 16618, 16824, 16907, 16938, 16947, 16961, 17110, 17135, 17146, 17167, 17200, and 17201 are now correct; refreshed validation shows 0.8013 Purist micro F1/accuracy with 750/750 exact selected-evidence validity.
-- 2026-05-31: Added focused V1 tests and extraction support for historical-to-current improvement selection, medication-dose distractor rejection, current qualitative high-frequency phrases, and nonprogressive-myoclonic-jerk suppression; rows 103, 218, 409, 678, 744, 1281, 1687, 1773, 1880, 2548, 2609, 2731, and 2759 are now correct; refreshed validation shows 0.8293 Purist micro F1/accuracy with 750/750 exact selected-evidence validity.
-- 2026-05-31: Added focused V1 tests and extraction/selection support for dated seizure-free spans, no-definite-event statements, trigger-conditioned unknowns, qualitative improvement unknowns, compact-current-summary priorities, and lifestyle/diary/superseded seizure-free distractors; rows 2932, 2965, 3082, 3137, 3281, 3371, 3469, 3482, 3534, 3995, 4026, 4116, and 4592 are now correct; refreshed validation shows 0.8507 Purist micro F1/accuracy with 750/750 exact selected-evidence validity.
-- 2026-05-31: Added focused V1 tests and extraction/selection support for broader seizure-free/no-event summaries, device zero-event summaries, dated remission/focal-clonic-free spans, and qualitative high-frequency current patterns; refreshed validation shows 0.9040 Purist micro F1/accuracy with 750/750 exact selected-evidence validity and remaining failures concentrated in scorer-correct semantic mismatches, wrong-frequency buckets, and overpredicted-frequency rows.
-- 2026-05-31: Completed deterministic-only validation-saturation pass with additional tested support for `sustained remission since DATE`, `prior cluster pattern resolved since DATE`, `one and a half years` seizure-free durations, long-term-remission summaries, no-recent-event/no-collateral-event statements, `on most days`, and named seizure types that occur several times each/per week; refreshed validation shows 0.9280 Purist micro F1/accuracy with 750/750 exact selected-evidence validity. Remaining residuals are documented as better suited to scorer policy, LLM clinical reasoning, cluster normalization, or ablation/reporting rather than more unbounded hand rules.
+- 2026-05-31: Reproduced Gan 2026 loading, normalization, split handling, author-style scoring behavior, and prediction-label repair under tests.
+- 2026-05-31: Implemented schema-shaped deterministic V1 with evidence validation and row-level validation error-analysis artifacts.
+- 2026-05-31: Saturated deterministic V1 on validation through focused hand-rule work, reaching a recorded 0.9280 Purist micro F1/accuracy with exact evidence validity.
+- 2026-05-31: Froze deterministic V1 after a one-time locked-test evaluation showed 0.7600 Purist micro F1/accuracy and clear validation overfit.
+- 2026-05-31: Refactored deterministic rules into metadata-rich, ablatable catalogues covering portable rates, seizure-free/no-event assertions, clusters, diary/log aggregation, Gan shorthand, temporal selection, and benchmark repair.
+- 2026-05-31: Ran validation-only deterministic-rule ablations; strongest aggregate dependencies were portable-rate extraction, temporal selection, and seizure-free/no-event assertions.
+- 2026-05-31: Interpreted the ablation results and shifted the next plan toward validation-only LLM/DSPy reasoning rather than more unbounded hand rules.
 
 ## Immediate Next Step
 
-Start validation-only LLM/DSPy experiments on the residual reasoning families without inspecting or tuning on the test split, using the refreshed deterministic-rule ablation report as context.
+Resolve the validation-baseline drift, then start the first validation-only LLM/DSPy reasoning experiment using deterministic V1 outputs and ablation-changed rows as context.
