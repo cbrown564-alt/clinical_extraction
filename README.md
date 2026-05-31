@@ -4,6 +4,8 @@ Hybrid deterministic-LLM pipelines for extracting structured data from unstructu
 
 The long-term goal is a Python package for modular clinical extraction tasks: data loading, clinical extraction/reasoning, normalization, structured schemas, scoring, evaluation, and error analysis. The short-term goal is narrower and sharper: beat the seizure-frequency benchmarks from Gan 2026, prioritizing purist F1.
 
+This is also a research codebase. The intended paper contribution is not only higher benchmark performance, but a clearer account of how modular hybrid systems work: what deterministic rules contribute, what LLM reasoning contributes, where each fails, and how evidence/rationale trails can make clinical extraction less opaque.
+
 ## Current Focus
 
 Immediate work is exclusively focused on:
@@ -33,6 +35,19 @@ clinical note
 - Keep deterministic label policy compatible with the author-provided evaluation code.
 - Preserve auditable evidence spans and rationale in schemas, not just final labels.
 - Make notebooks a forcing function for reproducible learning, not a side artifact.
+- Treat deterministic rules as explicit, categorized, testable, and ablatable components.
+- Separate general clinical/date rules from seizure-frequency rules, dataset-specific rules, and benchmark-formatting rules.
+
+## Research Thesis
+
+The project is designed around four paper-level claims:
+
+- Previous epilepsy NLP systems tend to handle broad phenotyping or seizure-frequency extraction better than they handle both; a modular architecture should make both feasible.
+- Generalisation should be engineered and measured, especially because both rules-based systems and LLM systems can overfit to local templates or datasets.
+- Transparency requires intermediate schemas, evidence, rationale, error analysis, and ablation studies, not only final predictions.
+- Deterministic preprocessing and post-processing rules should be described as controlled experimental variables rather than hidden implementation details.
+
+See [docs/research/contribution_thesis.md](/Users/cobro/code/clinical-extraction/docs/research/contribution_thesis.md).
 
 ## Repository Layout
 
@@ -62,4 +77,3 @@ pytest
 ```
 
 The first implementation milestone is to reproduce Gan-compatible data loading, label normalization, and evaluation locally before optimizing the DSPy pipeline.
-

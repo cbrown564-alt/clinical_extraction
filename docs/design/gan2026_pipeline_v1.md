@@ -41,6 +41,21 @@ Final schema:
 5. Deterministic repair normalizes accepted-value formatting when clinical interpretation is unchanged.
 6. Gan-compatible evaluation reports purist and pragmatic metrics.
 
+## Deterministic Rule Design
+
+Rules in V1 should be explicit and categorized. The goal is not simply to maximize local score with ever more specific patterns. The goal is to measure which kinds of rules improve performance, where they fail, and which ones are likely to transfer beyond Gan 2026.
+
+Initial categories:
+
+- general date and duration normalization
+- seizure-frequency expression normalization
+- cluster/event aggregation arithmetic
+- current-versus-historical temporal cues
+- Gan-specific diary or synthetic-letter phrasing
+- benchmark label repair and formatting
+
+Every rule category should be easy to disable in ablations once the baseline works.
+
 ## Expected Failure Modes To Track
 
 - Missed current seizure-frequency evidence
@@ -52,4 +67,5 @@ Final schema:
 - Uncertain or negated statements treated as asserted
 - Final label valid but incompatible with Gan normalization policy
 - Evidence citation absent from source note
-
+- Score improves only because Gan-specific wording is overfit
+- Rule interaction becomes too complex to explain cleanly

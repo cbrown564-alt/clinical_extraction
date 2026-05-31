@@ -24,8 +24,21 @@ The project intentionally separates:
 - Label normalization from metric mapping
 - Evidence validation from correctness evaluation
 - Experiment output from package source
+- General rules from task-specific, dataset-specific, and benchmark-specific rules
 
 These boundaries are useful now because they expose failure modes. They are also the minimum reusable shape needed later for other clinical extraction tasks.
+
+## Rule Taxonomy
+
+Deterministic behavior should not collapse into an unstructured regex pile. Rules should be grouped by clinical meaning and expected portability:
+
+- `general`: dates, durations, intervals, section boundaries, evidence substring checks
+- `clinical_epilepsy`: seizure terminology and epilepsy-note conventions
+- `seizure_frequency`: rates, clusters, seizure-free durations, current-versus-historical selection helpers
+- `gan2026_specific`: synthetic-letter patterns or data quirks specific to Gan 2026
+- `benchmark_format`: transformations needed to produce accepted Gan label strings without changing clinical interpretation
+
+Each category should be separately testable and, where practical, ablatable.
 
 ## Non-Goals For The First Pass
 
@@ -35,4 +48,3 @@ These boundaries are useful now because they expose failure modes. They are also
 - Broad support for every epilepsy dataset
 
 Those can come later if repeated code proves they are needed.
-
