@@ -1089,6 +1089,572 @@ def test_pipeline_extracts_last_event_date_summaries(
     assert result.diagnostics["evidence_valid"] is True
 
 
+@pytest.mark.parametrize(
+    ("note_text", "expected_label", "expected_evidence"),
+    [
+        (
+            "Clinic Date: 09 May 2023. Last tonic-clonic seizure was in Apr/2022, "
+            "with 3 morning jerks since then.",
+            "4 per 13 month",
+            "Last tonic-clonic seizure was in Apr/2022, with 3 morning jerks since then",
+        ),
+        (
+            "Clinic Date: 10 April 2025. Last tonic-clonic seizure was in 1 - 2024, "
+            "with 2 to 3 morning jerks since then.",
+            "3 to 4 per 15 month",
+            (
+                "Last tonic-clonic seizure was in 1 - 2024, with 2 to 3 morning "
+                "jerks since then"
+            ),
+        ),
+        (
+            "Clinic Date: 08 June 2016. Her last clearly witnessed tonic-clonic "
+            "seizure was in 3/2015, with four morning jerks since then.",
+            "4 per 15 month",
+            (
+                "last clearly witnessed tonic-clonic seizure was in 3/2015, with "
+                "four morning jerks since then"
+            ),
+        ),
+        (
+            "Clinic Date: 09 August 2018. No further tonic-clonic seizures have "
+            "occurred since 06/2017, although three single jerks remain.",
+            "3 per 14 month",
+            (
+                "No further tonic-clonic seizures have occurred since 06/2017, "
+                "although three single jerks remain"
+            ),
+        ),
+        (
+            "From: Dr Alice Morgan Date: 11 March 2022 To: neurology.team@nhs.net. "
+            "No further tonic-clonic seizures have occurred since 12/2020, although "
+            "two to three single jerks remain.",
+            "2 to 3 per 15 month",
+            (
+                "No further tonic-clonic seizures have occurred since 12/2020, "
+                "although two to three single jerks remain"
+            ),
+        ),
+    ],
+)
+def test_pipeline_extracts_numeric_month_year_residual_jerk_spans(
+    note_text: str,
+    expected_label: str,
+    expected_evidence: str,
+) -> None:
+    result = Gan2026PipelineV1().run(_record(note_text))
+
+    assert result.output.final_value == expected_label
+    assert result.diagnostics["final_selection"]["final_kind"] == FrequencyLabelKind.FREQUENCY
+    assert result.diagnostics["final_selection"]["evidence"] == expected_evidence
+    assert result.diagnostics["evidence_valid"] is True
+
+
+@pytest.mark.parametrize(
+    ("note_text", "expected_label", "expected_evidence"),
+    [
+        (
+            "Clinic Date: 09 June 2023. Her last convulsive seizure was recorded "
+            "in 03/2022, with occasional clusters of myoclonic jerks persisting.",
+            "multiple cluster per 15 month, multiple per cluster",
+            (
+                "Her last convulsive seizure was recorded in 03/2022, with "
+                "occasional clusters of myoclonic jerks persisting"
+            ),
+        ),
+        (
+            "Clinic Date: 09 July 2019. Her last convulsive seizure was recorded "
+            "in June 2018, with occasional clusters of myoclonic jerks persisting.",
+            "multiple cluster per 13 month, multiple per cluster",
+            (
+                "Her last convulsive seizure was recorded in June 2018, with "
+                "occasional clusters of myoclonic jerks persisting"
+            ),
+        ),
+    ],
+)
+def test_pipeline_extracts_last_convulsive_cluster_persistence_spans(
+    note_text: str,
+    expected_label: str,
+    expected_evidence: str,
+) -> None:
+    result = Gan2026PipelineV1().run(_record(note_text))
+
+    assert result.output.final_value == expected_label
+    assert result.diagnostics["final_selection"]["final_kind"] == FrequencyLabelKind.FREQUENCY
+    assert result.diagnostics["final_selection"]["evidence"] == expected_evidence
+    assert result.diagnostics["evidence_valid"] is True
+
+
+@pytest.mark.parametrize(
+    ("note_text", "expected_label", "expected_evidence"),
+    [
+        (
+            "He can sometimes go nearly two week without seizures, but when they "
+            "recur he tends to have several in one day, often between 4 and 6.",
+            "1 cluster per 2 week, 4 to 6 per cluster",
+            (
+                "go nearly two week without seizures, but when they recur he tends "
+                "to have several in one day, often between 4 and 6"
+            ),
+        ),
+        (
+            "On occasions she is seizure-free for four to five consecutive days, "
+            "followed by a day with multiple events, typically two tonic seizures.",
+            "1 cluster per 4 to 5 day, 2 per cluster",
+            (
+                "seizure-free for four to five consecutive days, followed by a day "
+                "with multiple events, typically two tonic seizures"
+            ),
+        ),
+        (
+            "He may go 3 days without seizures, but when they happen he often has "
+            "them in batches, with four occurring within 24 hours.",
+            "1 cluster per 3 day, 4 per cluster",
+            (
+                "go 3 days without seizures, but when they happen he often has them "
+                "in batches, with four occurring within 24 hours"
+            ),
+        ),
+    ],
+)
+def test_pipeline_extracts_seizure_free_interval_cluster_cycles(
+    note_text: str,
+    expected_label: str,
+    expected_evidence: str,
+) -> None:
+    result = Gan2026PipelineV1().run(_record(note_text))
+
+    assert result.output.final_value == expected_label
+    assert result.diagnostics["final_selection"]["final_kind"] == FrequencyLabelKind.FREQUENCY
+    assert result.diagnostics["final_selection"]["evidence"] == expected_evidence
+    assert result.diagnostics["evidence_valid"] is True
+
+
+@pytest.mark.parametrize(
+    ("note_text", "expected_label", "expected_evidence"),
+    [
+        (
+            "His absence seizures are now occurring on two to three days of the "
+            "week, whereas previously they were restricted to once every couple "
+            "of weeks.",
+            "2 to 3 per week",
+            "absence seizures are now occurring on two to three days of the week",
+        ),
+        (
+            "His absence seizures are now occurring on four days of the week, "
+            "whereas previously they were restricted to once every couple of weeks.",
+            "4 per week",
+            "absence seizures are now occurring on four days of the week",
+        ),
+    ],
+)
+def test_pipeline_extracts_current_days_of_week_frequency(
+    note_text: str,
+    expected_label: str,
+    expected_evidence: str,
+) -> None:
+    result = Gan2026PipelineV1().run(_record(note_text))
+
+    assert result.output.final_value == expected_label
+    assert result.diagnostics["final_selection"]["final_kind"] == FrequencyLabelKind.FREQUENCY
+    assert result.diagnostics["final_selection"]["evidence"] == expected_evidence
+    assert result.diagnostics["evidence_valid"] is True
+
+
+@pytest.mark.parametrize(
+    ("note_text", "expected_label", "expected_evidence"),
+    [
+        (
+            "Clinic Date: 13 January 2024. In October he had two seizures during "
+            "sleep and none while awake. In December he had three in sleep and no "
+            "while awake.",
+            "5 per 3 month",
+            (
+                "In October he had two seizures during sleep and none while awake. "
+                "In December he had three in sleep and no while awake"
+            ),
+        ),
+        (
+            "Clinic Date: 25 July 2014. In Jun he had a nocturnal seizure but no "
+            "daytime events. In July he had three nocturnal seizures and 5 while awake.",
+            "9 per 2 month",
+            (
+                "In Jun he had a nocturnal seizure but no daytime events. In July "
+                "he had three nocturnal seizures and 5 while awake"
+            ),
+        ),
+        (
+            "Clinic Date: 7 May 2023. In Feb he had 3 in sleep and one while awake. "
+            "In Apr he had five in sleep and no while awake.",
+            "9 per 3 month",
+            (
+                "In Feb he had 3 in sleep and one while awake. In Apr he had five "
+                "in sleep and no while awake"
+            ),
+        ),
+    ],
+)
+def test_pipeline_extracts_two_month_sleep_awake_diary_summaries(
+    note_text: str,
+    expected_label: str,
+    expected_evidence: str,
+) -> None:
+    result = Gan2026PipelineV1().run(_record(note_text))
+
+    assert result.output.final_value == expected_label
+    assert result.diagnostics["final_selection"]["final_kind"] == FrequencyLabelKind.FREQUENCY
+    assert result.diagnostics["final_selection"]["evidence"] == expected_evidence
+    assert result.diagnostics["evidence_valid"] is True
+
+
+@pytest.mark.parametrize(
+    ("note_text", "expected_label", "expected_evidence"),
+    [
+        (
+            "Clinic Date: 25 September 2024. She has had no seizures so far this "
+            "month, four in August, one in July and 3 in June, with events reported "
+            "from both daytime and nocturnal periods.",
+            "8 per 4 month",
+            (
+                "She has had no seizures so far this month, four in August, one in "
+                "July and 3 in June"
+            ),
+        ),
+        (
+            "Clinic Date: 24 September 2011. He experienced 2 generalised "
+            "tonic-clonic seizures so far in Sep, one in Aug, and 0 in Jul, "
+            "occurring during both wakefulness and sleep.",
+            "3 per 3 month",
+            (
+                "2 generalised tonic-clonic seizures so far in Sep, one in Aug, "
+                "and 0 in Jul"
+            ),
+        ),
+        (
+            "Clinic Date: 24 March 2024. This month so far she has no seizures; "
+            "earlier 4 in February, 0 in January and 7 in December, over waking "
+            "hours and sleep.",
+            "11 per 4 month",
+            (
+                "This month so far she has no seizures; earlier 4 in February, "
+                "0 in January and 7 in December"
+            ),
+        ),
+    ],
+)
+def test_pipeline_extracts_recent_month_count_diary_summaries(
+    note_text: str,
+    expected_label: str,
+    expected_evidence: str,
+) -> None:
+    result = Gan2026PipelineV1().run(_record(note_text))
+
+    assert result.output.final_value == expected_label
+    assert result.diagnostics["final_selection"]["final_kind"] == FrequencyLabelKind.FREQUENCY
+    assert result.diagnostics["final_selection"]["evidence"] == expected_evidence
+    assert result.diagnostics["evidence_valid"] is True
+
+
+@pytest.mark.parametrize(
+    ("note_text", "expected_label", "expected_evidence"),
+    [
+        (
+            "Clinic Date: 23 September 2022. He reports 6 seizure events in "
+            "September, 6 in August and four in July, and 2 in June, from both "
+            "daytime and nocturnal periods.",
+            "18 per 4 month",
+            (
+                "He reports 6 seizure events in September, 6 in August and four in "
+                "July, and 2 in June"
+            ),
+        ),
+        (
+            "Clinic Date: 5 July 2019. She noted no seizures in June, four in May, "
+            "and four in April, all from mixed awake/asleep states.",
+            "8 per 3 month",
+            "She noted no seizures in June, four in May, and four in April",
+        ),
+        (
+            "Clinic Date: 5 October 2018. He has recorded three seizures to date in "
+            "September, 4 in August and three in July, including nocturnal and "
+            "daytime periods.",
+            "10 per 3 month",
+            (
+                "He has recorded three seizures to date in September, 4 in August "
+                "and three in July"
+            ),
+        ),
+    ],
+)
+def test_pipeline_extracts_reported_monthly_count_lists(
+    note_text: str,
+    expected_label: str,
+    expected_evidence: str,
+) -> None:
+    result = Gan2026PipelineV1().run(_record(note_text))
+
+    assert result.output.final_value == expected_label
+    assert result.diagnostics["final_selection"]["final_kind"] == FrequencyLabelKind.FREQUENCY
+    assert result.diagnostics["final_selection"]["evidence"] == expected_evidence
+    assert result.diagnostics["evidence_valid"] is True
+
+
+@pytest.mark.parametrize(
+    ("note_text", "expected_label", "expected_evidence"),
+    [
+        (
+            "Clinic Date: 20 February 2024. He had a cluster of three seizures in "
+            "August. In November he had a nocturnal seizure, and in February a "
+            "single tonic seizure was recorded during respite care.",
+            "5 per 7 month",
+            (
+                "He had a cluster of three seizures in August. In November he had "
+                "a nocturnal seizure, and in February a single tonic seizure was "
+                "recorded"
+            ),
+        ),
+        (
+            "Clinic Date: 10 October 2020. In Apr she experienced four short "
+            "absences in a cluster. In Jul there was 2 further brief absences, and "
+            "in Sep another at school.",
+            "7 per 6 month",
+            (
+                "In Apr she experienced four short absences in a cluster. In Jul "
+                "there was 2 further brief absences, and in Sep another"
+            ),
+        ),
+    ],
+)
+def test_pipeline_extracts_sparse_cluster_and_event_month_lists(
+    note_text: str,
+    expected_label: str,
+    expected_evidence: str,
+) -> None:
+    result = Gan2026PipelineV1().run(_record(note_text))
+
+    assert result.output.final_value == expected_label
+    assert result.diagnostics["final_selection"]["final_kind"] == FrequencyLabelKind.FREQUENCY
+    assert result.diagnostics["final_selection"]["evidence"] == expected_evidence
+    assert result.diagnostics["evidence_valid"] is True
+
+
+@pytest.mark.parametrize(
+    ("note_text", "expected_label", "expected_evidence"),
+    [
+        (
+            "Clinic Date: 6 April 2019. He has recorded 2 seizures to date in "
+            "March, 7 in February and six in January, including nocturnal and "
+            "daytime periods. He will continue daily seizure recording.",
+            "15 per 3 month",
+            (
+                "He has recorded 2 seizures to date in March, 7 in February and "
+                "six in January"
+            ),
+        ),
+        (
+            "Clinic Date: 24 January 2013. This month, she has had six convulsions; "
+            "0 were in December and 5 in November, across day and night.",
+            "11 per 3 month",
+            (
+                "This month, she has had six convulsions; 0 were in December and "
+                "5 in November"
+            ),
+        ),
+        (
+            "Clinic Date: 25 September 2014. As of this month she reports four "
+            "seizure events; 3 in August, three in July and five in June during "
+            "both sleep and wakefulness.",
+            "15 per 4 month",
+            (
+                "As of this month she reports four seizure events; 3 in August, "
+                "three in July and five in June"
+            ),
+        ),
+    ],
+)
+def test_pipeline_extracts_extended_month_count_lists(
+    note_text: str,
+    expected_label: str,
+    expected_evidence: str,
+) -> None:
+    result = Gan2026PipelineV1().run(_record(note_text))
+
+    assert result.output.final_value == expected_label
+    assert result.diagnostics["final_selection"]["final_kind"] == FrequencyLabelKind.FREQUENCY
+    assert result.diagnostics["final_selection"]["evidence"] == expected_evidence
+    assert result.diagnostics["evidence_valid"] is True
+
+
+@pytest.mark.parametrize(
+    ("note_text", "expected_label", "expected_evidence"),
+    [
+        (
+            "His seizures typically occur in clusters, generally spaced four days "
+            "apart, though brief periods of daily seizures have been reported.",
+            "1 per 4 day",
+            "seizures typically occur in clusters, generally spaced four days apart",
+        ),
+        (
+            "His seizures typically occur in clusters, generally spaced four to "
+            "five days apart, though brief periods of daily seizures have been "
+            "reported.",
+            "1 per 4 to 5 day",
+            (
+                "seizures typically occur in clusters, generally spaced four to "
+                "five days apart"
+            ),
+        ),
+        (
+            "His seizures typically occur in clusters, generally spaced 5 days "
+            "apart, though brief periods of daily seizures have been reported.",
+            "1 per 5 day",
+            "seizures typically occur in clusters, generally spaced 5 days apart",
+        ),
+    ],
+)
+def test_pipeline_prefers_cluster_spacing_over_incidental_daily_mentions(
+    note_text: str,
+    expected_label: str,
+    expected_evidence: str,
+) -> None:
+    result = Gan2026PipelineV1().run(_record(note_text))
+
+    assert result.output.final_value == expected_label
+    assert result.diagnostics["final_selection"]["final_kind"] == FrequencyLabelKind.FREQUENCY
+    assert result.diagnostics["final_selection"]["evidence"] == expected_evidence
+    assert result.diagnostics["evidence_valid"] is True
+
+
+@pytest.mark.parametrize(
+    ("note_text", "expected_label", "expected_evidence"),
+    [
+        (
+            "Clinic Date: 21 April 2011. He had a cluster of three seizures in "
+            "Dec (short, not full convulsions, fluctuating awareness, "
+            "self-terminating). In Feb he had 7 nocturnal seizures, and in Apr "
+            "a single tonic seizure was recorded during respite care.",
+            "11 per 5 month",
+            (
+                "He had a cluster of three seizures in Dec (short, not full "
+                "convulsions, fluctuating awareness, self-terminating). In Feb "
+                "he had 7 nocturnal seizures, and in Apr a single tonic seizure "
+                "was recorded"
+            ),
+        ),
+        (
+            "Clinic Date: 24 August 2012. In March he had a run of six seizures "
+            "within half an hour (not full generalised tonic-clonic, fluctuating "
+            "in intensity, resolved without medication). In June there was two "
+            "further seizures at night, and in August another during physiotherapy.",
+            "9 per 6 month",
+            (
+                "In March he had a run of six seizures within half an hour (not "
+                "full generalised tonic-clonic, fluctuating in intensity, resolved "
+                "without medication). In June there was two further seizures at "
+                "night, and in August another"
+            ),
+        ),
+    ],
+)
+def test_pipeline_extracts_sparse_parenthetical_month_event_lists(
+    note_text: str,
+    expected_label: str,
+    expected_evidence: str,
+) -> None:
+    result = Gan2026PipelineV1().run(_record(note_text))
+
+    assert result.output.final_value == expected_label
+    assert result.diagnostics["final_selection"]["final_kind"] == FrequencyLabelKind.FREQUENCY
+    assert result.diagnostics["final_selection"]["evidence"] == expected_evidence
+    assert result.diagnostics["evidence_valid"] is True
+
+
+@pytest.mark.parametrize("count", ["two", "3", "four"])
+def test_pipeline_selects_more_frequent_no_more_than_weekly_semiology(count: str) -> None:
+    result = Gan2026PipelineV1().run(
+        _record(
+            "Over the past year seizure control has been relatively stable. "
+            f"She experiences {count} generalised tonic-clonic seizures every "
+            "2 months. Absence seizures remain infrequent, usually no more than "
+            "twice weekly, and myoclonic jerks are reported only occasionally."
+        )
+    )
+
+    assert result.output.final_value == "2 per week"
+    assert result.diagnostics["final_selection"]["final_kind"] == FrequencyLabelKind.FREQUENCY
+    assert result.diagnostics["final_selection"]["evidence"] == "no more than twice weekly"
+    assert result.diagnostics["evidence_valid"] is True
+
+
+@pytest.mark.parametrize(
+    ("note_text", "expected_label", "expected_evidence"),
+    [
+        (
+            "He suffers clusters of absence seizures on four to five days each week. "
+            "Nocturnal tonic seizures continue to occur around once per year.",
+            "4 to 5 cluster per week, multiple per cluster",
+            "clusters of absence seizures on four to five days each week",
+        ),
+        (
+            "He suffers clusters of absence seizures on five days each month. "
+            "Nocturnal tonic seizures continue to occur around once per year.",
+            "5 cluster per month, multiple per cluster",
+            "clusters of absence seizures on five days each month",
+        ),
+    ],
+)
+def test_pipeline_extracts_cluster_days_per_period(
+    note_text: str,
+    expected_label: str,
+    expected_evidence: str,
+) -> None:
+    result = Gan2026PipelineV1().run(_record(note_text))
+
+    assert result.output.final_value == expected_label
+    assert result.diagnostics["final_selection"]["final_kind"] == FrequencyLabelKind.FREQUENCY
+    assert result.diagnostics["final_selection"]["evidence"] == expected_evidence
+    assert result.diagnostics["evidence_valid"] is True
+
+
+@pytest.mark.parametrize(
+    ("period", "expected_label"),
+    [("daily", "1 per day"), ("weekly", "1 per week"), ("monthly", "1 per month")],
+)
+def test_pipeline_extracts_persistent_adverbial_semiology_rates(
+    period: str,
+    expected_label: str,
+) -> None:
+    result = Gan2026PipelineV1().run(
+        _record(
+            "Only a single tonic-clonic seizure occurred over the past six months. "
+            f"Brief myoclonic jerks persist {period} on awakening but are considered "
+            "tolerable."
+        )
+    )
+
+    assert result.output.final_value == expected_label
+    assert result.diagnostics["final_selection"]["final_kind"] == FrequencyLabelKind.FREQUENCY
+    assert result.diagnostics["final_selection"]["evidence"] == (
+        f"Brief myoclonic jerks persist {period}"
+    )
+    assert result.diagnostics["evidence_valid"] is True
+
+
+def test_pipeline_extracts_counted_adverbial_monthly_events() -> None:
+    result = Gan2026PipelineV1().run(
+        _record(
+            "He has experienced ongoing focal impaired-awareness seizures, typically "
+            "four episodes monthly. These resolve spontaneously."
+        )
+    )
+
+    assert result.output.final_value == "4 per month"
+    assert result.diagnostics["final_selection"]["final_kind"] == FrequencyLabelKind.FREQUENCY
+    assert result.diagnostics["final_selection"]["evidence"] == "typically four episodes monthly"
+    assert result.diagnostics["evidence_valid"] is True
+
+
 def test_pipeline_breakthrough_event_overrides_seizure_free_history() -> None:
     result = Gan2026PipelineV1().run(
         _record(
