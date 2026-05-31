@@ -5,7 +5,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-
 DEFAULT_DATA_PATH = Path("data/Gan (2026)/synthetic_data_subset_1500.json")
 
 

@@ -5,7 +5,6 @@ from collections.abc import Callable, Sequence
 
 from clinical_extraction.tasks.seizure_frequency.gan2026.labels import map_pragmatic, map_purist
 
-
 Mapper = Callable[[float], str]
 
 
@@ -49,7 +48,9 @@ def evaluate_predictions(
     macro_f1 = sum(metrics["f1"] for metrics in per_label) / len(per_label)
 
     total_support = sum(support.values())
-    weighted_precision = sum(metrics["precision"] * support[metrics["label"]] for metrics in per_label)
+    weighted_precision = sum(
+        metrics["precision"] * support[metrics["label"]] for metrics in per_label
+    )
     weighted_recall = sum(metrics["recall"] * support[metrics["label"]] for metrics in per_label)
     weighted_f1 = sum(metrics["f1"] * support[metrics["label"]] for metrics in per_label)
 
@@ -66,7 +67,11 @@ def evaluate_predictions(
     return results
 
 
-def _label_metrics(label: str, y_true: Sequence[str], y_pred: Sequence[str]) -> dict[str, float | str]:
+def _label_metrics(
+    label: str,
+    y_true: Sequence[str],
+    y_pred: Sequence[str],
+) -> dict[str, float | str]:
     tp = sum(t == label and p == label for t, p in zip(y_true, y_pred, strict=True))
     fp = sum(t != label and p == label for t, p in zip(y_true, y_pred, strict=True))
     fn = sum(t == label and p != label for t, p in zip(y_true, y_pred, strict=True))
