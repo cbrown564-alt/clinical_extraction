@@ -162,3 +162,27 @@ def test_run_split_reuses_raw_outputs_without_new_call(tmp_path: Path) -> None:
     assert rows[0]["reused_raw_output"] is True
     assert rows[0]["decision_record"]["final_label"] == "2 per month"
     assert rows[0]["parse_errors"] == []
+
+
+def test_run_split_checkpoints_progress(tmp_path: Path) -> None:
+    jsonl_path = tmp_path / "checkpoint.jsonl"
+    report_path = tmp_path / "checkpoint.md"
+
+    rows, metadata = run_split(
+        [_record()],
+        split="validation",
+        split_manifest="gan2026_split_v1",
+        model="openai/gpt-4.1-mini",
+        temperature=0.0,
+        max_tokens=100,
+        mode="prompt-only",
+        progress_every=1,
+        checkpoint_jsonl_path=jsonl_path,
+        checkpoint_report_path=report_path,
+    )
+
+    assert metadata["summary"]["decision_records"] == 0
+    assert len(rows) == 1
+    assert jsonl_path.exists()
+    assert report_path.exists()
+    assert json.loads(jsonl_path.read_text(encoding="utf-8"))["parse_errors"] == ["not_run"]
