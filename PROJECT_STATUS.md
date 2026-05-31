@@ -25,6 +25,7 @@ Treat deterministic rules as a frozen, ablatable comparator rather than an endle
 - The deterministic-rule catalogue now exposes rule metadata, portability categories, selected-candidate diagnostics, group/rule-ID ablations, temporal-selection ablations, and traceable benchmark-repair steps.
 - The validation-baseline drift was traced to diary/log catalogue regression: sparse monthly timeline patterns from saturated V1 were not fully carried into `gan2026.rules.diary`. Restored catalogued rules now produce a current working-tree baseline of 0.9293 Purist micro F1/accuracy and 0.9387 Pragmatic micro F1/accuracy with 750/750 exact evidence validity.
 - A first validation-only prompt/adjudicator development set now mines ablation-changed rows into 16 JSONL examples with deterministic V1 candidate diagnostics: 10 deterministic-overreach examples and 6 support controls.
+- The first live DSPy final-selection adjudicator run over those 16 examples used GPT-4.1 mini via DSPy. It produced 16/16 parseable decision records with no call failures, but it is diagnostic rather than promotable: 6/16 Purist correct and 10/16 Pragmatic correct, preserving all support controls while failing all deterministic-overreach examples.
 
 ## Key References
 
@@ -39,6 +40,8 @@ Treat deterministic rules as a frozen, ablatable comparator rather than an endle
 - Ablation changed rows: `experiments/gan2026_v1_validation_ablation_changed_rows_2026-05-31.csv`
 - Prompt/adjudicator development set: `experiments/gan2026_v1_prompt_adjudicator_devset_2026-05-31.md`
 - Prompt/adjudicator JSONL: `experiments/gan2026_v1_prompt_adjudicator_devset_2026-05-31.jsonl`
+- First DSPy adjudicator run: `experiments/gan2026_v1_dspy_adjudicator_devset_gpt41mini_2026-05-31.md`
+- First DSPy adjudicator JSONL: `experiments/gan2026_v1_dspy_adjudicator_devset_gpt41mini_2026-05-31.jsonl`
 
 ## Active Priorities
 
@@ -52,12 +55,11 @@ Treat deterministic rules as a frozen, ablatable comparator rather than an endle
 
 ### Now
 
-- Build the first validation-only LLM/DSPy reasoning experiment using `experiments/gan2026_v1_prompt_adjudicator_devset_2026-05-31.jsonl`.
-- Define the adjudicator decision record over assertion, temporality, seizure/event target, window, normalized rate, uncertainty, selected event IDs, and final label.
+- Inspect the first DSPy adjudicator run row-by-row, focusing on why all deterministic-overreach examples kept unsupported deterministic choices.
+- Revise the adjudicator prompt/schema to force explicit override conditions for unsupported high-frequency, seizure-free/no-event, and temporal distractor candidates before any broader validation pass.
 
 ### Next
 
-- Compare the first adjudicator outputs against the dev-set gold labels before any broader validation pass.
 - Wrap or replace the final-selection tuple priority with an explicit decision record in candidate code if the dev-set experiment supports it.
 - Add paraphrase and adversarial tests for portable-rate expressions and seizure-free/no-event assertions.
 - Start a living notebook for loading, gold-label distribution, scoring, and failure slices.
@@ -86,7 +88,8 @@ Treat deterministic rules as a frozen, ablatable comparator rather than an endle
 - 2026-05-31: Ran validation-only deterministic-rule ablations; strongest aggregate dependencies were portable-rate extraction, temporal selection, and seizure-free/no-event assertions.
 - 2026-05-31: Resolved validation-baseline drift by restoring catalogued sparse monthly diary/timeline rules, refreshing validation/error and ablation artifacts, and confirming 0.9293 Purist micro F1/accuracy with exact evidence validity.
 - 2026-05-31: Mined validation ablation-changed rows into a 16-example prompt/adjudicator development set with V1 candidate and normalization diagnostics.
+- 2026-05-31: Implemented and ran the first live DSPy final-selection adjudicator over the 16-example validation dev set, recording prompt/model metadata and row-level outputs.
 
 ## Immediate Next Step
 
-Implement the first DSPy final-selection adjudicator over the 16-example validation dev set, record exact model/prompt metadata, and keep broader validation untouched until the dev-set behavior is understood.
+Audit the first DSPy adjudicator row rationales and convert the deterministic-overreach failures into explicit prompt/schema requirements before any broader validation run.
