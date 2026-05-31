@@ -22,7 +22,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label,
 )
 
-PROMPT_VERSION = "gan2026_final_selection_adjudicator_v0.2"
+PROMPT_VERSION = "gan2026_final_selection_adjudicator_v0.4"
 DEFAULT_DEVSET_PATH = Path(
     "experiments/gan2026_v1_prompt_adjudicator_devset_2026-05-31.jsonl"
 )
@@ -66,6 +66,8 @@ class AdjudicatorDecisionRecord(BaseModel):
     window: str
     normalized_rate: str
     uncertainty: Literal["low", "medium", "high"]
+    accepted_event_ids: list[str] = Field(default_factory=list)
+    rejected_event_ids: list[str] = Field(default_factory=list)
     selected_event_ids: list[str] = Field(default_factory=list)
     final_label: str
     rationale: str
@@ -75,14 +77,15 @@ class Gan2026FinalSelectionAdjudicatorSignature(dspy.Signature):
     """Adjudicate deterministic candidate diagnostics into one Gan-compatible final label.
 
     Return exactly one JSON object with these keys: assertion_status, temporality,
-    seizure_or_event_target, window, normalized_rate, uncertainty, selected_event_ids,
-    final_label, and rationale.
+    seizure_or_event_target, window, normalized_rate, uncertainty, accepted_event_ids,
+    rejected_event_ids, selected_event_ids, final_label, and rationale.
     """
 
     prompt_input_json: str = dspy.InputField(
         desc=(
-            "JSON containing candidate_events, normalized_events, deterministic_final_selection, "
-            "and the development question. It intentionally omits the gold label."
+            "JSON containing note_text, candidate_events, normalized_events, "
+            "deterministic_final_selection, and the development question. It intentionally "
+            "omits the gold label."
         )
     )
     decision_json: str = dspy.OutputField(
@@ -117,7 +120,41 @@ def build_prompt_input(example: Mapping[str, Any]) -> str:
         "prompt_version": PROMPT_VERSION,
         "task": "Gan 2026 seizure-frequency final-selection adjudication",
         "instructions": [
-            "Review only the candidate diagnostics provided here.",
+            "Review the full note first, then audit every candidate diagnostic against it.",
+            (
+                "A candidate is acceptable only if its evidence is a real seizure-frequency "
+                "statement in the note, not a heading, section label, medication instruction, "
+                "problem-list phrase, questionnaire field, or isolated words split across lines."
+            ),
+            (
+                "Reject generic event phrases such as brief events or daily events unless the "
+                "note context clearly says they are the patient's epileptic seizures in the "
+                "current assessment window."
+            ),
+            (
+                "If the note says plural seizures/events occur daily or several/multiple times "
+                "per day, use a Gan-compatible multiple-rate label such as multiple per day "
+                "rather than forcing the candidate's 1 per day label."
+            ),
+            (
+                "Reject candidates created from line-break joins or headings such as daily "
+                "Seizure when the note's real frequency sentence supports another candidate."
+            ),
+            (
+                "When multiple seizure types are current, choose the highest current burden "
+                "across types. Do not reject an unresolved-multiple label merely because a "
+                "lower numeric label is more specific."
+            ),
+            (
+                "Use unknown, not seizure-free, when events still occur under triggers, "
+                "provocation, poor sleep, or visual stimuli, or when seizure freedom applies "
+                "only to one semiology while other seizure-like events remain."
+            ),
+            (
+                "Treat a single recent breakthrough after a seizure-free interval as the "
+                "current benchmark rate when a broader cyclic or trigger pattern is only "
+                "suspected, anticipatory, or not clearly counted as seizures."
+            ),
             (
                 "Use only these assertion_status values: asserted, negated, historical, "
                 "hypothetical, unclear, mixed."
@@ -134,7 +171,12 @@ def build_prompt_input(example: Mapping[str, Any]) -> str:
             ),
             (
                 "When explicit current frequency evidence and seizure-free/no-event assertions "
-                "conflict, explain which evidence is better supported."
+                "conflict, reject no-red-flags/no-status/no-generalised-convulsion statements "
+                "as seizure-free only if they do not deny all seizure types."
+            ),
+            (
+                "Populate accepted_event_ids and rejected_event_ids after reviewing each "
+                "candidate. selected_event_ids must be a subset of accepted_event_ids."
             ),
             (
                 "If the candidates do not support a current seizure-frequency answer, return "
@@ -153,6 +195,8 @@ def build_prompt_input(example: Mapping[str, Any]) -> str:
             "window",
             "normalized_rate",
             "uncertainty",
+            "accepted_event_ids",
+            "rejected_event_ids",
             "selected_event_ids",
             "final_label",
             "rationale",
@@ -160,6 +204,7 @@ def build_prompt_input(example: Mapping[str, Any]) -> str:
         "example_id": example["example_id"],
         "source_row_index": example["source_row_index"],
         "development_question": example["adjudicator_target"]["development_question"],
+        "note_text": example["input"].get("note_text", ""),
         "candidate_events": example["input"]["candidate_events"],
         "normalized_events": example["input"]["normalized_events"],
         "deterministic_final_selection": example["input"]["deterministic_final_selection"],

@@ -150,6 +150,7 @@ def build_development_examples(
                 "ablation_condition": row.condition,
                 "row_ok": record.row_ok,
                 "input": {
+                    "note_text": record.note_text,
                     "candidate_events": _candidate_events(diagnostics),
                     "normalized_events": _normalized_events(diagnostics),
                     "deterministic_final_selection": diagnostics["final_selection"],
