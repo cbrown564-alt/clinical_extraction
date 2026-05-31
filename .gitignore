@@ -1,0 +1,17 @@
+.DS_Store
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+dist/
+build/
+*.egg-info/
+
+# Experiment outputs can be large; keep metadata in git and add selected artifacts intentionally.
+experiments/**/predictions*.csv
+experiments/**/predictions*.json
+experiments/**/traces/
+
