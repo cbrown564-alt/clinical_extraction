@@ -22,29 +22,29 @@ Scorer: Gan-compatible Purist micro F1 as the primary metric, Pragmatic micro F1
 
 | Condition | Disabled group | Changed rows | Correct | Evidence valid | Purist micro F1 | Pragmatic micro F1 | Unknown/no-reference predictions |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| baseline_all_groups | none | 0 | 684 / 750 | 750 / 750 | 0.9120 | 0.9213 | 131 |
-| disable_date_duration_utilities | date_duration_utilities | 0 | 684 / 750 | 750 / 750 | 0.9120 | 0.9213 | 131 |
-| disable_portable_rate_expressions | portable_rate_expressions | 183 | 559 / 750 | 750 / 750 | 0.7453 | 0.7733 | 230 |
-| disable_seizure_free_no_event_assertions | seizure_free_no_event_assertions | 131 | 595 / 750 | 750 / 750 | 0.7933 | 0.8027 | 243 |
-| disable_cluster_arithmetic | cluster_arithmetic | 59 | 632 / 750 | 750 / 750 | 0.8427 | 0.8547 | 171 |
-| disable_diary_log_aggregation | diary_log_aggregation | 48 | 638 / 750 | 750 / 750 | 0.8507 | 0.8653 | 168 |
-| disable_temporal_selection | temporal_selection | 135 | 571 / 750 | 750 / 750 | 0.7613 | 0.7853 | 127 |
-| disable_gan_shorthand | gan_shorthand | 21 | 664 / 750 | 750 / 750 | 0.8853 | 0.8973 | 145 |
-| disable_benchmark_repair | benchmark_repair | 6 | 684 / 750 | 750 / 750 | 0.9120 | 0.9213 | 131 |
+| baseline_all_groups | none | 0 | 697 / 750 | 750 / 750 | 0.9293 | 0.9387 | 118 |
+| disable_date_duration_utilities | date_duration_utilities | 0 | 697 / 750 | 750 / 750 | 0.9293 | 0.9387 | 118 |
+| disable_portable_rate_expressions | portable_rate_expressions | 183 | 572 / 750 | 750 / 750 | 0.7627 | 0.7907 | 217 |
+| disable_seizure_free_no_event_assertions | seizure_free_no_event_assertions | 131 | 608 / 750 | 750 / 750 | 0.8107 | 0.8200 | 230 |
+| disable_cluster_arithmetic | cluster_arithmetic | 59 | 645 / 750 | 750 / 750 | 0.8600 | 0.8720 | 158 |
+| disable_diary_log_aggregation | diary_log_aggregation | 61 | 638 / 750 | 750 / 750 | 0.8507 | 0.8653 | 168 |
+| disable_temporal_selection | temporal_selection | 135 | 584 / 750 | 750 / 750 | 0.7787 | 0.8027 | 114 |
+| disable_gan_shorthand | gan_shorthand | 21 | 677 / 750 | 750 / 750 | 0.9027 | 0.9147 | 132 |
+| disable_benchmark_repair | benchmark_repair | 6 | 697 / 750 | 750 / 750 | 0.9293 | 0.9387 | 118 |
 
 ## Prediction State Distribution
 
 | Condition | Frequency | Seizure-free | Unknown | No-reference | Unresolved multiple |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| baseline_all_groups | 459 | 130 | 9 | 122 | 30 |
-| disable_date_duration_utilities | 459 | 130 | 9 | 122 | 30 |
-| disable_portable_rate_expressions | 354 | 142 | 9 | 221 | 24 |
-| disable_seizure_free_no_event_assertions | 476 | 0 | 14 | 229 | 31 |
-| disable_cluster_arithmetic | 413 | 136 | 10 | 161 | 30 |
+| baseline_all_groups | 472 | 130 | 9 | 109 | 30 |
+| disable_date_duration_utilities | 472 | 130 | 9 | 109 | 30 |
+| disable_portable_rate_expressions | 367 | 142 | 9 | 208 | 24 |
+| disable_seizure_free_no_event_assertions | 489 | 0 | 14 | 216 | 31 |
+| disable_cluster_arithmetic | 426 | 136 | 10 | 148 | 30 |
 | disable_diary_log_aggregation | 417 | 135 | 9 | 159 | 30 |
-| disable_temporal_selection | 398 | 209 | 5 | 122 | 16 |
-| disable_gan_shorthand | 442 | 133 | 9 | 136 | 30 |
-| disable_benchmark_repair | 459 | 130 | 9 | 122 | 30 |
+| disable_temporal_selection | 411 | 209 | 5 | 109 | 16 |
+| disable_gan_shorthand | 455 | 133 | 9 | 123 | 30 |
+| disable_benchmark_repair | 472 | 130 | 9 | 109 | 30 |
 
 ## Top Changed Rows
 
@@ -115,7 +115,7 @@ Changed rows: 59
 
 ### disable_diary_log_aggregation
 
-Changed rows: 48
+Changed rows: 61
 
 | Row | Baseline correct | Ablated correct | Gold category | Baseline prediction | Ablated prediction |
 | ---: | --- | --- | --- | --- | --- |

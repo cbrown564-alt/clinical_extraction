@@ -12,9 +12,9 @@ Rows: 750
 
 | Average | Precision | Recall | F1 | Accuracy |
 | --- | ---: | ---: | ---: | ---: |
-| micro | 0.9280 | 0.9280 | 0.9280 | 0.9280 |
-| macro | 0.9152 | 0.9337 | 0.9189 | 0.9280 |
-| weighted | 0.9326 | 0.9280 | 0.9280 | 0.9280 |
+| micro | 0.9293 | 0.9293 | 0.9293 | 0.9293 |
+| macro | 0.9178 | 0.9343 | 0.9205 | 0.9293 |
+| weighted | 0.9339 | 0.9293 | 0.9294 | 0.9293 |
 
 Evidence validity: 750 / 750
 
@@ -23,17 +23,17 @@ Evidence validity: 750 / 750
 | Error type | Count |
 | --- | ---: |
 | correct | 616 |
-| scorer_correct_semantic_mismatch | 80 |
+| scorer_correct_semantic_mismatch | 81 |
 | wrong_frequency_bucket | 44 |
-| overpredicted_frequency | 7 |
+| overpredicted_frequency | 6 |
 | missed_seizure_free_evidence | 3 |
 
 ## Candidate Recall Diagnostics
 
 | Measure | Count |
 | --- | ---: |
-| Clinical candidates extracted | 1098 |
-| Rows with zero clinical candidates | 108 |
+| Clinical candidates extracted | 1085 |
+| Rows with zero clinical candidates | 109 |
 | Incorrect rows with zero clinical candidates | 3 |
 
 ## Gold Kinds
@@ -50,9 +50,9 @@ Evidence validity: 750 / 750
 
 | Prediction kind | Count |
 | --- | ---: |
-| frequency | 473 |
+| frequency | 472 |
 | seizure_free | 130 |
-| no_reference | 108 |
+| no_reference | 109 |
 | unresolved_multiple | 30 |
 | unknown | 9 |
 
@@ -60,9 +60,9 @@ Evidence validity: 750 / 750
 
 | Evidence type | Count |
 | --- | ---: |
-| clinical_evidence | 497 |
+| clinical_evidence | 496 |
 | other_text | 143 |
-| header_fallback | 108 |
+| header_fallback | 109 |
 | medication_or_dose | 2 |
 
 ## Likely Failed Operations
@@ -70,8 +70,8 @@ Evidence validity: 750 / 750
 | Operation | Count |
 | --- | ---: |
 | none | 616 |
-| semantic_state_mapping | 81 |
-| temporal_selection | 39 |
+| semantic_state_mapping | 82 |
+| temporal_selection | 38 |
 | assertion_classification | 9 |
 | candidate_extraction | 3 |
 | cluster_normalization | 1 |
@@ -103,15 +103,15 @@ These counts are restricted to incorrect rows.
 
 | Mode | Count |
 | --- | ---: |
-| medication_status | 51 |
-| ranges | 48 |
-| uncertainty | 39 |
-| historical_current | 34 |
+| medication_status | 50 |
+| ranges | 47 |
+| uncertainty | 38 |
+| historical_current | 33 |
 | clusters | 33 |
 | multiple_seizure_types | 29 |
-| relative_dates | 26 |
+| relative_dates | 25 |
 | negation | 20 |
-| family_history | 7 |
+| family_history | 6 |
 | pnes_functional | 4 |
 | lay_terminology | 3 |
 | legacy_terminology | 1 |
@@ -131,7 +131,7 @@ These counts are restricted to incorrect rows.
 | seizure_freq_1_per_mon | seizure_freq_more1week_less1day | 2 |
 | seizure_freq_more1per6mon_less1mon | seizure_freq_1ormore_daily | 1 |
 | seizure_freq_unknown | seizure_freq_1_per_6mon | 1 |
-| seizure_freq_unknown | seizure_freq_1_per_mon | 1 |
+| seizure_freq_more1week_less1day | seizure_freq_1_per_6mon | 1 |
 
 ## First High-Priority Rows
 

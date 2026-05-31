@@ -473,6 +473,13 @@ def test_pipeline_can_ablate_catalogued_cluster_group() -> None:
             "8 per 4 month",
             "diary.monthly_summary.recent_reported",
         ),
+        (
+            "Clinic Date: 30 September 2010. She had a convulsion so far in "
+            "September, 6 in August, six in July, four in June both from being "
+            "awake and asleep.",
+            "17 per 4 month",
+            "diary.monthly_summary.had_both_from",
+        ),
     ],
 )
 def test_pipeline_exposes_catalogued_diary_metadata(
@@ -2475,6 +2482,27 @@ def test_pipeline_extracts_reported_monthly_count_lists(
             (
                 "In Apr she experienced four short absences in a cluster. In Jul "
                 "there was 2 further brief absences, and in Sep another"
+            ),
+        ),
+        (
+            "Clinic Date: 4 March 2026. In September a prolonged focal seizure "
+            "settled spontaneously. In November a tonic seizure was recorded, "
+            "and in February another during physiotherapy.",
+            "3 per 6 month",
+            (
+                "In September a prolonged focal seizure settled spontaneously. "
+                "In November a tonic seizure was recorded, and in February another"
+            ),
+        ),
+        (
+            "Clinic Date: 22 September 2010. A prolonged event occurred in Apr "
+            "(approximately 12 minutes). In Jul she had a drop attack, and in Sep "
+            "seven myoclonic jerks were documented at college.",
+            "9 per 6 month",
+            (
+                "A prolonged event occurred in Apr (approximately 12 minutes). "
+                "In Jul she had a drop attack, and in Sep seven myoclonic jerks "
+                "were documented at college"
             ),
         ),
     ],

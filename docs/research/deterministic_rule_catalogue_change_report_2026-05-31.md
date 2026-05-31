@@ -511,15 +511,15 @@ experiments/gan2026_v1_validation_ablation_changed_rows_2026-05-31.csv
 Headline table:
 
 ```text
-baseline_all_groups:                    0.9120 Purist, 0.9213 Pragmatic
-disable_portable_rate_expressions:      0.7453 Purist, 0.7733 Pragmatic
-disable_seizure_free_no_event_assertions: 0.7933 Purist, 0.8027 Pragmatic
-disable_cluster_arithmetic:             0.8427 Purist, 0.8547 Pragmatic
+baseline_all_groups:                    0.9293 Purist, 0.9387 Pragmatic
+disable_portable_rate_expressions:      0.7627 Purist, 0.7907 Pragmatic
+disable_seizure_free_no_event_assertions: 0.8107 Purist, 0.8200 Pragmatic
+disable_cluster_arithmetic:             0.8600 Purist, 0.8720 Pragmatic
 disable_diary_log_aggregation:          0.8507 Purist, 0.8653 Pragmatic
-disable_temporal_selection:             0.7613 Purist, 0.7853 Pragmatic
-disable_gan_shorthand:                  0.8853 Purist, 0.8973 Pragmatic
-disable_benchmark_repair:               0.9120 Purist, 0.9213 Pragmatic
-disable_date_duration_utilities:        0.9120 Purist, 0.9213 Pragmatic
+disable_temporal_selection:             0.7787 Purist, 0.8027 Pragmatic
+disable_gan_shorthand:                  0.9027 Purist, 0.9147 Pragmatic
+disable_benchmark_repair:               0.9293 Purist, 0.9387 Pragmatic
+disable_date_duration_utilities:        0.9293 Purist, 0.9387 Pragmatic
 ```
 
 Changed rows:
@@ -529,7 +529,7 @@ portable_rate_expressions: 183
 temporal_selection: 135
 seizure_free_no_event_assertions: 131
 cluster_arithmetic: 59
-diary_log_aggregation: 48
+diary_log_aggregation: 61
 gan_shorthand: 21
 benchmark_repair: 6
 date_duration_utilities: 0
