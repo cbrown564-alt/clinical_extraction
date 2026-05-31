@@ -16,6 +16,11 @@ The initial loader treats each row as:
 - `check__Seizure Frequency Number.reference[-1]`: local gold evidence/reference text
 - `labels_match_all_categories`, `quotes_ok_all_categories`, `row_ok`: author quality flags
 - `raw`: complete original row for gold labels and quality flags
+- `gold_normalized_label`, `gold_label_kind`, `gold_yearly_bounds`, `gold_monthly_frequency`:
+  tested Gan-specific conversion fields that preserve raw semantic state before scoring collapse
+
+See `docs/design/gan2026_normalization_semantics.md` for the normalization and semantic
+conversion contract.
 
 ## Contract Principles
 
@@ -29,4 +34,5 @@ The initial loader treats each row as:
 
 ## Known Open Questions
 
-- How should no-reference, unknown, and seizure-free labels be represented in the final schema before scoring collapse?
+- Whether later task-neutral schemas should reuse the Gan-specific `FrequencyLabelKind` names or map
+  them into broader clinical-extraction ontology terms.

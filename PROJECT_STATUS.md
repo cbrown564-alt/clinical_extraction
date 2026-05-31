@@ -36,6 +36,8 @@ Treat deterministic rules as controlled variables. Categorize each rule by porta
 - Gan-compatible data loading and evaluation reproduction is complete for the current JSON surface.
 - Loader exposes full note text, gold label/reference, quality flags, raw rows, and parsed monthly gold frequency.
 - Gold label parsing now covers all 1,500 local Gan rows under focused tests.
+- Loader now preserves normalized gold labels, semantic label kind, yearly bounds, and monthly scorer values separately.
+- Prediction-label repair behavior has been ported into `gan2026.normalize` for common author-script repairs.
 - Scoring policy prefers the author evaluation script when it conflicts with CSV-preparation behavior.
 - `row_ok=False` rows are included in the development/evaluation surface and retained for stratified analysis.
 - Step 1 inspection is documented in `docs/research/gan2026_step1_inspection.md`.
@@ -45,19 +47,19 @@ Treat deterministic rules as controlled variables. Categorize each rule by porta
 
 ### Now
 
-- Reconcile Gan normalization policy for raw semantics vs scoring sentinels.
-- Port remaining author prediction repair behavior into `gan2026.normalize` under focused tests.
-- Preserve Gan-compatible Purist scoring while cluster and sentinel behavior are made explicit.
+- Build the first simple deterministic baseline on top of the stabilized Gan scoring substrate.
+- Create a small evaluation table for development rows using semantic label fields for slices.
+- Preserve Gan-compatible Purist scoring while baseline outputs are introduced.
 
 ### Next
 
-- Produce a simple deterministic baseline once scoring parity is in place.
 - Create the first evaluation/error-analysis table for development rows.
 - Start a living notebook for loading, gold-label distribution, scoring, and failure slices.
+- Add split manifests for development/evaluation/quarantine surfaces before stronger benchmark language.
 
 ### Blocked
 
-- Final benchmark-comparison language is blocked until local scoring policy is reconciled with the author implementation.
+- Final benchmark-comparison language is blocked until split policy and replication surface are explicit.
 
 ### Backlog
 
@@ -74,7 +76,9 @@ Treat deterministic rules as controlled variables. Categorize each rule by porta
 - 2026-05-31: Reproduced Gan data loading/evaluation substrate with tested gold-label extraction, monthly frequency parsing, row quality flags, and evaluation helpers.
 - 2026-05-31: Documented Step 1 inspection findings, including cluster-policy disagreement, sentinel collapse, misleading `clinic_date` field naming, and 30-day month conversion.
 - 2026-05-31: Decided to include `row_ok=False` rows for development/evaluation while retaining the flag for stratified analysis, and to prefer author evaluation-script scoring.
+- 2026-05-31: Reconciled normalization sentinels by adding semantic label records and loader fields while preserving Gan scorer collapse to `1000`.
+- 2026-05-31: Ported tested author prediction-label repair behavior into `gan2026.normalize`; `pytest` and `ruff` pass.
 
 ## Immediate Next Step
 
-Pause before baseline work to reconcile normalization policy: preserve raw semantic labels separately from scoring sentinels, then port the remaining author repair logic for model predictions.
+Implement the first simple deterministic baseline and evaluate it with row-level slices for label kind, cluster labels, and `row_ok`.
