@@ -65,6 +65,13 @@ class _RawCandidate:
     evidence: str
 
 
+@dataclass(frozen=True)
+class _ParsedMonthDate:
+    year: int
+    month: int
+    day: int | None = None
+
+
 NUMBER_WORDS = {
     "one": "1",
     "two": "2",
@@ -122,6 +129,7 @@ FULL_MONTHS = {
     "november": 11,
     "december": 12,
 }
+MONTH_NAME_PATTERN = "|".join([*FULL_MONTHS, *MONTH_ABBREVIATIONS])
 NUMBER_VALUE_TOKEN = rf"(?:multiple|\d+|{NUMBER_WORD_PATTERN})"
 NUMBER_TOKEN = (
     rf"(?:{NUMBER_VALUE_TOKEN}(?:\s+(?:to|or)\s+{NUMBER_VALUE_TOKEN}|"
@@ -711,6 +719,208 @@ def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
                 kind=CandidateKind.FREQUENCY_RATE,
                 label=_rate_label(match.group("count"), match.group("unit")),
                 evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    medication_withdrawal_burst = re.compile(
+        rf"\b(?:discontinued|came off|stopped|withdrew from)\s+"
+        rf"(?:{WORD_TOKEN}\s+){{0,4}}(?:on\s+)?(?P<start_date>"
+        rf"\d{{1,2}}(?:[-/ ](?:{MONTH_NAME_PATTERN}))|"
+        rf"\d{{1,2}}\s+(?:{MONTH_NAME_PATTERN}))\b"
+        rf".{{0,120}}?\b(?P<evidence>"
+        rf"(?:Shortly afterwards|Soon afterwards|In the following week|"
+        rf"Around that period|At that time),?\s+"
+        rf"(?:she|he|they)\s+(?:experienced|had|reported)\s+"
+        rf"(?P<count>{NUMBER_TOKEN})\s+(?:{QUALIFIED_SEIZURE_TERMS}))\b",
+        re.IGNORECASE,
+    )
+    clinic_date = _clinic_date(text)
+    for match in medication_withdrawal_burst.finditer(text):
+        start_date = _relative_note_date(match.group("start_date"), clinic_date)
+        denominator = _month_span(start_date, clinic_date)
+        if denominator is None:
+            continue
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label(match.group("count"), "month", str(denominator)),
+                evidence=_clean_evidence(match.group("evidence")),
+            )
+        )
+
+    initial_second_event = re.compile(
+        rf"\b(?P<evidence>(?:His|Her|The)\s+(?:initial|first)\s+"
+        rf"(?:event|seizure)\s+(?:was|was reported)\s+in\s+"
+        rf"(?P<first_month>{MONTH_NAME_PATTERN})\s+(?P<first_year>\d{{4}})"
+        rf".{{0,180}}?\b(?:A\s+second|The\s+second)\s+event\s+"
+        rf"(?:occurred|took place)\s+.*?\b(?:the\s+following\s+)?"
+        rf"(?P<second_month>{MONTH_NAME_PATTERN})\s+(?P<second_year>\d{{4}}))\b",
+        re.IGNORECASE,
+    )
+    for match in initial_second_event.finditer(text):
+        start_date = _year_month_date(match.group("first_year"), match.group("first_month"))
+        end_date = _year_month_date(match.group("second_year"), match.group("second_month"))
+        denominator = _month_span(start_date, end_date)
+        if denominator is None:
+            continue
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label("2", "month", str(denominator)),
+                evidence=_clean_evidence(match.group("evidence")),
+            )
+        )
+
+    first_second_third_event = re.compile(
+        rf"\b(?P<evidence>The\s+first\s+seizure\s+was\s+reported\s+in\s+"
+        rf"(?P<first_month>{MONTH_NAME_PATTERN})\s+(?P<first_year>\d{{4}})"
+        rf".{{0,180}}?\bThe\s+second\s+and\s+third\s+event\s+took\s+place\s+in\s+"
+        rf"(?P<second_month>{MONTH_NAME_PATTERN})\s+(?P<second_year>\d{{4}}))\b",
+        re.IGNORECASE,
+    )
+    for match in first_second_third_event.finditer(text):
+        start_date = _year_month_date(match.group("first_year"), match.group("first_month"))
+        end_date = _year_month_date(match.group("second_year"), match.group("second_month"))
+        denominator = _month_span(start_date, end_date)
+        if denominator is None:
+            continue
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label("3", "month", str(denominator)),
+                evidence=_clean_evidence(match.group("evidence")),
+            )
+        )
+
+    residual_jerks_since_date = re.compile(
+        rf"\b(?P<evidence>No\s+further\s+(?:{QUALIFIED_SEIZURE_TERMS})\s+"
+        rf"have\s+occurred\s+since\s+(?P<start_date>"
+        rf"(?:{MONTH_NAME_PATTERN})[-/ ]\d{{4}}),?\s+although\s+"
+        rf"(?P<count>{NUMBER_TOKEN})\s+(?:single\s+)?jerks?\s+remain)\b",
+        re.IGNORECASE,
+    )
+    for match in residual_jerks_since_date.finditer(text):
+        start_date = _relative_note_date(match.group("start_date"), clinic_date)
+        denominator = _month_span(start_date, clinic_date)
+        if denominator is None:
+            continue
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label(match.group("count"), "month", str(denominator)),
+                evidence=_clean_evidence(match.group("evidence")),
+            )
+        )
+
+    daily_basis_current = re.compile(
+        rf"\b(?P<evidence>continues\s+to\s+experience\s+"
+        rf"(?:{QUALIFIED_SEIZURE_TERMS})\s+on\s+a\s+daily\s+basis)\b",
+        re.IGNORECASE,
+    )
+    for match in daily_basis_current.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label("1", "day"),
+                evidence=_clean_evidence(match.group("evidence")),
+            )
+        )
+
+    nights_per_period = re.compile(
+        rf"\b(?P<evidence>still\s+has\s+(?:{QUALIFIED_SEIZURE_TERMS})\s+"
+        rf"(?P<count>{NUMBER_TOKEN})\s+nights?\s+per\s+(?P<unit>week|month|year))\b",
+        re.IGNORECASE,
+    )
+    for match in nights_per_period.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label(match.group("count"), match.group("unit")),
+                evidence=_clean_evidence(match.group("evidence")),
+            )
+        )
+
+    year_to_date_count = re.compile(
+        rf"\b(?P<evidence>(?P<count>{NUMBER_TOKEN})\s+"
+        rf"(?:{QUALIFIED_SEIZURE_TERMS})\s+"
+        rf"(?:(?:reported|documented)\s+)?(?:so\s+far\s+this\s+year|"
+        rf"this\s+year\s+to\s+date|in\s+\d{{4}}\s+so\s+far))\b",
+        re.IGNORECASE,
+    )
+    for match in year_to_date_count.finditer(text):
+        if clinic_date is None:
+            continue
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label(match.group("count"), "month", str(clinic_date.month)),
+                evidence=_clean_evidence(match.group("evidence")),
+            )
+        )
+
+    remission_then_drop_and_jerks = re.compile(
+        rf"\b(?P<evidence>(?P<denominator>{NUMBER_TOKEN})\s+months?\s+remission,?\s+"
+        rf"then\s+sustained\s+a\s+drop\s+attack(?:\s+\d+\s+\w+\s+ago)?,?\s+"
+        rf"preceded\s+by\s+myoclonic\s+jerks)\b",
+        re.IGNORECASE,
+    )
+    for match in remission_then_drop_and_jerks.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label("2", "month", match.group("denominator")),
+                evidence=_clean_evidence(match.group("evidence")),
+            )
+        )
+
+    last_episode_since_date = re.compile(
+        rf"\b(?P<evidence>last\s+such\s+episode\s+occurred\s+on\s+"
+        rf"(?P<start_date>\d{{1,2}}\s+(?:{MONTH_NAME_PATTERN})))\b",
+        re.IGNORECASE,
+    )
+    for match in last_episode_since_date.finditer(text):
+        start_date = _relative_note_date(match.group("start_date"), clinic_date)
+        denominator = _month_span(start_date, clinic_date)
+        if denominator is None:
+            continue
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label("1", "month", str(denominator)),
+                evidence=_clean_evidence(match.group("evidence")),
+            )
+        )
+
+    two_month_sleep_awake_summary = re.compile(
+        rf"\b(?P<evidence>In\s+(?P<first_month>{MONTH_NAME_PATTERN})\s+"
+        rf"(?:he|she)\s+had\s+(?P<count_a>{NUMBER_TOKEN})\s+(?:{SEIZURE_TERMS})\s+"
+        rf"during\s+sleep\s+and\s+(?P<count_b>{NUMBER_TOKEN})\s+while\s+awake\.\s+"
+        rf"In\s+(?P<second_month>{MONTH_NAME_PATTERN})\s+(?:he|she)\s+had\s+"
+        rf"(?P<count_c>{NUMBER_TOKEN})\s+in\s+sleep\s+and\s+(?P<count_d>{NUMBER_TOKEN})\s+"
+        rf"while\s+awake)\b",
+        re.IGNORECASE,
+    )
+    for match in two_month_sleep_awake_summary.finditer(text):
+        if clinic_date is None:
+            continue
+        first_date = _relative_note_date(match.group("first_month"), clinic_date)
+        second_date = _relative_note_date(match.group("second_month"), clinic_date)
+        denominator = _month_span(first_date, second_date)
+        if denominator is None:
+            continue
+        counts = [
+            _integer_number_token(match.group("count_a")),
+            _integer_number_token(match.group("count_b")),
+            _integer_number_token(match.group("count_c")),
+            _integer_number_token(match.group("count_d")),
+        ]
+        if any(count is None for count in counts):
+            continue
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label(str(sum(counts)), "month", str(denominator + 1)),
+                evidence=_clean_evidence(match.group("evidence")),
             )
         )
 
@@ -1606,6 +1816,73 @@ def _selection_rationale(normalized: NormalizedEvent) -> str:
     if normalized.semantic_kind is FrequencyLabelKind.UNKNOWN:
         return "Selected seizure-frequency evidence that could not be converted to a rate."
     return "No seizure-frequency evidence was found."
+
+
+def _clinic_date(text: str) -> _ParsedMonthDate | None:
+    match = re.search(
+        rf"\bClinic Date:\s*(?P<day>\d{{1,2}})\s+"
+        rf"(?P<month>{MONTH_NAME_PATTERN})\s+(?P<year>\d{{4}})\b",
+        text,
+        flags=re.IGNORECASE,
+    )
+    if match is None:
+        return None
+    return _ParsedMonthDate(
+        year=int(match.group("year")),
+        month=_month_number(match.group("month")),
+        day=int(match.group("day")),
+    )
+
+
+def _relative_note_date(value: str, anchor: _ParsedMonthDate | None) -> _ParsedMonthDate | None:
+    normalized = value.strip()
+    day_month = re.match(
+        rf"(?P<day>\d{{1,2}})[-/ ](?P<month>{MONTH_NAME_PATTERN})$",
+        normalized,
+        flags=re.IGNORECASE,
+    )
+    if day_month is not None and anchor is not None:
+        month = _month_number(day_month.group("month"))
+        year = anchor.year - 1 if month > anchor.month else anchor.year
+        return _ParsedMonthDate(year=year, month=month, day=int(day_month.group("day")))
+
+    month_year = re.match(
+        rf"(?P<month>{MONTH_NAME_PATTERN})[-/ ](?P<year>\d{{4}})$",
+        normalized,
+        flags=re.IGNORECASE,
+    )
+    if month_year is not None:
+        return _year_month_date(month_year.group("year"), month_year.group("month"))
+
+    month_only = re.match(
+        rf"(?P<month>{MONTH_NAME_PATTERN})$",
+        normalized,
+        flags=re.IGNORECASE,
+    )
+    if month_only is not None and anchor is not None:
+        month = _month_number(month_only.group("month"))
+        year = anchor.year - 1 if month > anchor.month else anchor.year
+        return _ParsedMonthDate(year=year, month=month)
+
+    return None
+
+
+def _year_month_date(year: str, month: str) -> _ParsedMonthDate:
+    return _ParsedMonthDate(year=int(year), month=_month_number(month))
+
+
+def _month_number(value: str) -> int:
+    normalized = value.lower()[:3]
+    return MONTH_ABBREVIATIONS[normalized]
+
+
+def _month_span(start: _ParsedMonthDate | None, end: _ParsedMonthDate | None) -> int | None:
+    if start is None or end is None:
+        return None
+    months = (end.year - start.year) * 12 + end.month - start.month
+    if months <= 0:
+        return None
+    return months
 
 
 def _rate_label(count: str, unit: str, denominator: str | None = None) -> str:
