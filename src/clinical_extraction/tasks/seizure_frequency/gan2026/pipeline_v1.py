@@ -26,7 +26,38 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.rule_metadata import (
     RuleGroup,
     RuleSpec,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.rules.cluster import (
+    ADJECTIVE_CLUSTER_RATE_RULE,
+    BATCH_WITHIN_24H_RULE,
+    BROAD_CLUSTER_COUNT_THIS_PERIOD_WITH_SIZE_RULE,
+    CLUSTER_COUNT_THIS_PERIOD_RULE,
+    CLUSTER_COUNT_THIS_PERIOD_VAGUE_SIZE_RULE,
+    CLUSTER_COUNT_THIS_PERIOD_WITH_SIZE_RULE,
+    CLUSTER_COUNT_WITH_IMPLIED_SIZE_RULE,
+    CLUSTER_DAYS_SIMPLE_RULE,
+    CLUSTER_OVER_PERIOD_RULE,
+    CLUSTER_PERIOD_WITH_PER_CLUSTER_RULE,
+    CLUSTER_RATE_WITH_SIZE_RULE,
+    CLUSTER_SEIZURE_DAYS_PER_PERIOD_RULE,
+    CLUSTER_SIZE_WITHOUT_COUNT_RULE,
+    CLUSTER_TIMING_RULE,
+    CLUSTERS_EACH_COMPRISING_RULE,
+    DESCRIPTOR_CLUSTER_SIZE_RULE,
+    LAST_CONVULSIVE_CLUSTER_PERSISTENCE_RULE,
+    LAST_MONTH_CLUSTER_COUNT_RULE,
+    MONTHLY_CLUSTER_RATE_WITH_SIZE_RULE,
+    NEARLY_INTERVAL_CLUSTER_RULE,
+    RUN_WITH_SEPARATE_DAYS_RULE,
+    SEIZURE_FREE_CYCLE_CLUSTER_RULE,
+    SEIZURE_FREE_INTERVAL_DAY_CLUSTER_RULE,
+    SHORT_BURST_CLUSTER_RULE,
+    SHORTHAND_CLUSTER_RATE_RULE,
+    UNKNOWN_CLUSTER_SIZE_RULE,
+    VAGUE_CLUSTER_DAYS_RULE,
+    apply_cluster_rules,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.rules.rate import (
+    COUNT_DURING_RECENT_WINDOW_RULE,
     COUNTED_ADVERBIAL_RATE_RULE,
     DAILY_BASIS_CURRENT_RULE,
     DAYS_OF_WEEK_RATE_RULE,
@@ -41,13 +72,34 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.rules.rate import (
     OCCURRING_EVERY_OTHER_INTERVAL_RULE,
     OCCURRING_INTERVAL_RULE,
     OCCURRING_ONCE_PER_NIGHT_RULE,
+    PERIOD_FIRST_EXPERIENCED_COUNT_RULE,
+    PERIOD_FIRST_FEATURING_COUNT_RULE,
+    PERIOD_FIRST_OCCURRED_COUNT_RULE,
+    PERIOD_FIRST_RECENT_COUNT_RULE,
+    PERIOD_FIRST_TIMEFRAME_COUNT_RULE,
     PERSISTENT_ADVERBIAL_RATE_RULE,
     QUALIFIED_DIRECT_RATE_RULE,
     QUARTER_DIRECT_RATE_RULE,
+    RECENT_COUNT_RULE,
+    RECORDED_YEAR_COUNT_RULE,
     SEIZURE_ADJECTIVE_RATE_RULE,
     SIMPLE_PARTIAL_ADVERBIAL_RATE_RULE,
     STANDALONE_ADJECTIVE_RATE_RULE,
+    THERE_HAVE_BEEN_COUNT_RULE,
+    YESTERDAY_OR_TODAY_COUNT_RULE,
     apply_rate_rules,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.rules.seizure_free import (
+    ABSENCE_FOR_DURATION_RULE,
+    CURRENT_CONTROL_PHRASE_RULE,
+    GENERIC_SEIZURE_FREE_RULE,
+    LAST_EPILEPTIC_EVENT_RULE,
+    NO_DEFINITE_EVENTS_RULE,
+    NO_EVENTS_FOR_DURATION_RULE,
+    SEIZURE_FREE_DURATION_STATUS_RULE,
+    SEIZURE_FREE_ONE_AND_HALF_YEARS_RULE,
+    SEIZURE_FREE_SINCE_DATE_RULE,
+    apply_seizure_free_rules,
 )
 
 _RawCandidate = RawCandidate
@@ -269,823 +321,154 @@ def _extract_candidates(
     ablation_config = ablation_config or AblationConfig()
     normalized = _normalize_note_text(note_text)
     candidates: list[_RawCandidate] = []
-    candidates.extend(_extract_cluster_candidates(normalized))
-    candidates.extend(_extract_seizure_free_candidates(normalized))
+    candidates.extend(_extract_cluster_candidates(normalized, ablation_config))
+    candidates.extend(_extract_seizure_free_candidates(normalized, ablation_config))
     candidates.extend(_extract_rate_candidates(normalized, ablation_config))
     candidates.extend(_extract_unknown_candidates(normalized, ablation_config))
     return _prune_contained_frequency_fragments(_dedupe_candidates(candidates), normalized)
 
 
-def _extract_cluster_candidates(text: str) -> list[_RawCandidate]:
+def _extract_cluster_candidates(
+    text: str, ablation_config: AblationConfig | None = None
+) -> list[_RawCandidate]:
+    ablation_config = ablation_config or AblationConfig()
     candidates: list[_RawCandidate] = []
-    clinic_date = _clinic_date(text)
-    cyclic_seizure_free_cluster = re.compile(
-        rf"\bseizure[- ]free\s+for\s+up\s+to\s+"
-        rf"(?P<denominator>{NUMBER_TOKEN})\s+(?P<unit>months?|years?)"
-        rf".{{0,80}}?\bclusters?\s+of\s+"
-        rf"(?P<raw_per_cluster>{NUMBER_TOKEN})\s+"
-        rf"(?:{SEIZURE_TERMS}|events?|episodes?|spells?)\s+in\s+a\s+single\s+day\b",
-        re.IGNORECASE,
+    candidates.extend(
+        apply_cluster_rules((SEIZURE_FREE_CYCLE_CLUSTER_RULE,), text, ablation_config)
     )
-    for match in cyclic_seizure_free_cluster.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.CLUSTER_FREQUENCY,
-                label=(
-                    f"1 cluster per "
-                    f"{_period_label(match.group('unit'), match.group('denominator'))}, "
-                    f"{_cluster_size_token(match.group('raw_per_cluster'))} per cluster"
-                ),
-                evidence=_clean_evidence(match.group(0)),
-            )
+    candidates.extend(
+        apply_cluster_rules(
+            (LAST_CONVULSIVE_CLUSTER_PERSISTENCE_RULE,),
+            text,
+            ablation_config,
+            helpers={
+                "clinic_date": _clinic_date,
+                "relative_note_date": _relative_note_date,
+                "month_span": _month_span,
+            },
         )
+    )
+    candidates.extend(
+        apply_cluster_rules((NEARLY_INTERVAL_CLUSTER_RULE,), text, ablation_config)
+    )
+    candidates.extend(
+        apply_cluster_rules(
+            (SEIZURE_FREE_INTERVAL_DAY_CLUSTER_RULE,), text, ablation_config
+        )
+    )
+    candidates.extend(
+        apply_cluster_rules((BATCH_WITHIN_24H_RULE,), text, ablation_config)
+    )
 
-    last_convulsive_cluster_persistence = re.compile(
-        rf"\b(?P<evidence>(?:Her|His|The)\s+last\s+convulsive\s+seizure\s+"
-        rf"was\s+recorded\s+in\s+(?P<start_date>{MONTH_YEAR_DATE_PATTERN}),?\s+"
-        rf"with\s+occasional\s+clusters?\s+of\s+myoclonic\s+jerks\s+persisting)\b",
-        re.IGNORECASE,
+    candidates.extend(
+        apply_cluster_rules((ADJECTIVE_CLUSTER_RATE_RULE,), text, ablation_config)
     )
-    for match in last_convulsive_cluster_persistence.finditer(text):
-        start_date = _relative_note_date(match.group("start_date"), clinic_date)
-        denominator = _month_span(start_date, clinic_date)
-        if denominator is None:
-            continue
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.CLUSTER_FREQUENCY,
-                label=(
-                    f"multiple cluster per {denominator} month, "
-                    "multiple per cluster"
-                ),
-                evidence=_clean_evidence(match.group("evidence")),
-            )
+    candidates.extend(
+        apply_cluster_rules((SHORTHAND_CLUSTER_RATE_RULE,), text, ablation_config)
+    )
+    candidates.extend(
+        apply_cluster_rules(
+            (CLUSTER_COUNT_THIS_PERIOD_VAGUE_SIZE_RULE,), text, ablation_config
         )
+    )
+    candidates.extend(
+        apply_cluster_rules((CLUSTER_COUNT_THIS_PERIOD_RULE,), text, ablation_config)
+    )
+    candidates.extend(
+        apply_cluster_rules((LAST_MONTH_CLUSTER_COUNT_RULE,), text, ablation_config)
+    )
 
-    nearly_interval_cluster = re.compile(
-        rf"\b(?P<evidence>go\s+(?:nearly\s+)?(?P<denominator>{NUMBER_TOKEN})\s+"
-        rf"(?P<unit>days?|weeks?)\s+without\s+(?:{SEIZURE_TERMS}),?\s+"
-        rf"but\s+when\s+they\s+recur\s+[^.]*?\bin\s+one\s+day,?\s+"
-        rf"often\s+between\s+(?P<low>{NUMBER_VALUE_TOKEN})\s+and\s+"
-        rf"(?P<high>{NUMBER_VALUE_TOKEN}))\b",
-        re.IGNORECASE,
+    candidates.extend(
+        apply_cluster_rules((CLUSTER_RATE_WITH_SIZE_RULE,), text, ablation_config)
     )
-    for match in nearly_interval_cluster.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.CLUSTER_FREQUENCY,
-                label=(
-                    f"1 cluster per "
-                    f"{_period_label(match.group('unit'), match.group('denominator'))}, "
-                    f"{_number_token(match.group('low'))} to "
-                    f"{_number_token(match.group('high'))} per cluster"
-                ),
-                evidence=_clean_evidence(match.group("evidence")),
-            )
+    candidates.extend(
+        apply_cluster_rules(
+            (MONTHLY_CLUSTER_RATE_WITH_SIZE_RULE,), text, ablation_config
         )
+    )
+    candidates.extend(
+        apply_cluster_rules((UNKNOWN_CLUSTER_SIZE_RULE,), text, ablation_config)
+    )
+    candidates.extend(
+        apply_cluster_rules(
+            (CLUSTER_COUNT_THIS_PERIOD_WITH_SIZE_RULE,), text, ablation_config
+        )
+    )
+    candidates.extend(
+        apply_cluster_rules((CLUSTERS_EACH_COMPRISING_RULE,), text, ablation_config)
+    )
+    candidates.extend(
+        apply_cluster_rules((CLUSTER_OVER_PERIOD_RULE,), text, ablation_config)
+    )
 
-    seizure_free_interval_day_cluster = re.compile(
-        rf"\b(?P<evidence>seizure[- ]free\s+for\s+"
-        rf"(?P<denominator>{NUMBER_TOKEN})\s+consecutive\s+(?P<unit>days?|weeks?),?\s+"
-        rf"followed\s+by\s+a\s+day\s+with\s+multiple\s+events,?\s+"
-        rf"typically\s+(?P<count>{NUMBER_TOKEN})\s+(?:{QUALIFIED_SEIZURE_TERMS}))\b",
-        re.IGNORECASE,
+    candidates.extend(
+        apply_cluster_rules((RUN_WITH_SEPARATE_DAYS_RULE,), text, ablation_config)
     )
-    for match in seizure_free_interval_day_cluster.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.CLUSTER_FREQUENCY,
-                label=(
-                    f"1 cluster per "
-                    f"{_period_label(match.group('unit'), match.group('denominator'))}, "
-                    f"{_cluster_size_token(match.group('count'))} per cluster"
-                ),
-                evidence=_clean_evidence(match.group("evidence")),
-            )
+    candidates.extend(
+        apply_cluster_rules((VAGUE_CLUSTER_DAYS_RULE,), text, ablation_config)
+    )
+    candidates.extend(
+        apply_cluster_rules(
+            (BROAD_CLUSTER_COUNT_THIS_PERIOD_WITH_SIZE_RULE,), text, ablation_config
         )
+    )
 
-    batch_within_24h = re.compile(
-        rf"\b(?P<evidence>go\s+(?P<denominator>{NUMBER_TOKEN})\s+"
-        rf"(?P<unit>days?|weeks?)\s+without\s+(?:{SEIZURE_TERMS}),?\s+"
-        rf"but\s+when\s+they\s+happen\s+[^.]*?\bin\s+batches,?\s+"
-        rf"with\s+(?P<count>{NUMBER_TOKEN})\s+occurring\s+within\s+24\s+hours)\b",
-        re.IGNORECASE,
+    candidates.extend(
+        apply_cluster_rules((CLUSTER_PERIOD_WITH_PER_CLUSTER_RULE,), text, ablation_config)
     )
-    for match in batch_within_24h.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.CLUSTER_FREQUENCY,
-                label=(
-                    f"1 cluster per "
-                    f"{_period_label(match.group('unit'), match.group('denominator'))}, "
-                    f"{_cluster_size_token(match.group('count'))} per cluster"
-                ),
-                evidence=_clean_evidence(match.group("evidence")),
-            )
-        )
+    candidates.extend(
+        apply_cluster_rules((DESCRIPTOR_CLUSTER_SIZE_RULE,), text, ablation_config)
+    )
+    candidates.extend(
+        apply_cluster_rules((CLUSTER_TIMING_RULE,), text, ablation_config)
+    )
 
-    adjective_cluster_rates = {
-        "daily": ("day", None),
-        "weekly": ("week", None),
-        "monthly": ("month", None),
-        "yearly": ("year", None),
-    }
-    for adjective, (unit, denominator) in adjective_cluster_rates.items():
-        adjective_cluster = re.compile(
-            rf"\b{adjective}\s+(?:{WORD_TOKEN}\s+){{0,3}}clusters?\s+reported\b",
-            re.IGNORECASE,
-        )
-        for match in adjective_cluster.finditer(text):
-            candidates.append(
-                _RawCandidate(
-                    kind=CandidateKind.CLUSTER_FREQUENCY,
-                    label=(
-                        f"1 cluster per {_period_label(unit, denominator)}, "
-                        "multiple per cluster"
-                    ),
-                    evidence=_clean_evidence(match.group(0)),
-                )
-            )
-
-    shorthand_cluster_rate = re.compile(
-        r"\b(?:(?:ongoing|nocturnal|morning|evening|monthly|weekly|daily)\s+){0,3}"
-        r"clusters?\s+"
-        rf"(?P<count>{NUMBER_TOKEN})\s*(?:x|×|/)\s*/?\s*"
-        r"(?P<unit>d|day|wk|week|mo|month|yr|year)\b",
-        re.IGNORECASE,
+    candidates.extend(
+        apply_cluster_rules((CLUSTER_DAYS_SIMPLE_RULE,), text, ablation_config)
     )
-    for match in shorthand_cluster_rate.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.CLUSTER_FREQUENCY,
-                label=(
-                    f"{_number_token(match.group('count'))} cluster per "
-                    f"{_expanded_compact_unit(match.group('unit'))}, multiple per cluster"
-                ),
-                evidence=_clean_evidence(re.sub(r"^ongoing\s+", "", match.group(0), flags=re.I)),
-            )
-        )
-
-    cluster_count_this_period_with_vague_size = re.compile(
-        rf"\b(?P<count>{NUMBER_TOKEN})\s+clusters?\s+this\s+"
-        rf"(?P<period>week|month|quarter|year),?\s+each\s+lasting\s+"
-        rf".{{0,40}}?\bseveral\s+(?:brief\s+)?(?:events?|episodes?|seizures?)\b",
-        re.IGNORECASE,
+    candidates.extend(
+        apply_cluster_rules((CLUSTER_SEIZURE_DAYS_PER_PERIOD_RULE,), text, ablation_config)
     )
-    for match in cluster_count_this_period_with_vague_size.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.CLUSTER_FREQUENCY,
-                label=(
-                    f"{_number_token(match.group('count'))} cluster per "
-                    f"{_cluster_period_label(match.group('period'))}, multiple per cluster"
-                ),
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
-
-    cluster_count_this_period = re.compile(
-        rf"\b(?P<count>{NUMBER_TOKEN})\s+clusters?\s+this\s+"
-        rf"(?P<period>week|month|quarter|year)\b",
-        re.IGNORECASE,
+    candidates.extend(
+        apply_cluster_rules((SHORT_BURST_CLUSTER_RULE,), text, ablation_config)
     )
-    for match in cluster_count_this_period.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.CLUSTER_FREQUENCY,
-                label=(
-                    f"{_number_token(match.group('count'))} cluster per "
-                    f"{_cluster_period_label(match.group('period'))}, multiple per cluster"
-                ),
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
-
-    last_month_cluster_count = re.compile(
-        rf"\blast\s+month\s*(?:≈|~|about|around|approximately)?\s*"
-        rf"(?P<count>{NUMBER_TOKEN})\s+clusters?\b",
-        re.IGNORECASE,
+    candidates.extend(
+        apply_cluster_rules((CLUSTER_COUNT_WITH_IMPLIED_SIZE_RULE,), text, ablation_config)
     )
-    for match in last_month_cluster_count.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.CLUSTER_FREQUENCY,
-                label=(
-                    f"{_number_token(match.group('count'))} cluster per month, "
-                    "multiple per cluster"
-                ),
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
-
-    cluster_rate = re.compile(
-        rf"\bcluster(?: days?|s)?\s+(?P<count>{NUMBER_TOKEN})\s+(?:this|per)\s+"
-        rf"(?P<period>{UNIT_TOKEN}).{{0,80}}?(?:typically|usually|each|with)?\s*"
-        rf"(?P<per_cluster>{NUMBER_TOKEN})\s+(?:{SEIZURE_TERMS})?\s*(?:in\s+24\s+h|per cluster)?",
-        re.IGNORECASE,
+    candidates.extend(
+        apply_cluster_rules((CLUSTER_SIZE_WITHOUT_COUNT_RULE,), text, ablation_config)
     )
-    for match in cluster_rate.finditer(text):
-        count = _number_token(match.group("count"))
-        period = _singular_unit(match.group("period"))
-        per_cluster = _number_token(match.group("per_cluster"))
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.CLUSTER_FREQUENCY,
-                label=f"{count} cluster per {period}, {per_cluster} per cluster",
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
-
-    monthly_cluster_rate = re.compile(
-        rf"\bMonthly\s+clusters?,?\s+(?:typically|usually|each|with)?\s*"
-        rf"(?P<per_cluster>{NUMBER_TOKEN})\s+(?:{SEIZURE_TERMS})\s+over\s+24\s+h\b",
-        re.IGNORECASE,
-    )
-    for match in monthly_cluster_rate.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.CLUSTER_FREQUENCY,
-                label=(
-                    "1 cluster per month, "
-                    f"{_number_token(match.group('per_cluster'))} per cluster"
-                ),
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
-
-    unknown_cluster = re.compile(
-        rf"\bclusters? characterized by (?P<per_cluster>{NUMBER_TOKEN})\s+.*?"
-        rf"(?:frequency unclear|cannot specify how often|unclear frequency)",
-        re.IGNORECASE,
-    )
-    for match in unknown_cluster.finditer(text):
-        per_cluster = _number_token(match.group("per_cluster"))
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.UNKNOWN_FREQUENCY,
-                label=f"unknown, {per_cluster} per cluster",
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
-
-    cluster_days = re.compile(
-        rf"\b(?P<count>{NUMBER_TOKEN})\s+clusters?\s+this\s+(?P<period>month|week);?\s+"
-        rf"each\s+(?:approx|≈|about|around)?\s*(?P<per_cluster>{NUMBER_TOKEN})\s+"
-        rf"(?:{SEIZURE_TERMS})\b",
-        re.IGNORECASE,
-    )
-    for match in cluster_days.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.CLUSTER_FREQUENCY,
-                label=(
-                    f"{_number_token(match.group('count'))} cluster per "
-                    f"{_singular_unit(match.group('period'))}, "
-                    f"{_number_token(match.group('per_cluster'))} per cluster"
-                ),
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
-
-    clusters_each_comprising = re.compile(
-        rf"\b(?:(?P<prefix>Over the past|Over the last|During the past|During the last)\s+"
-        rf"(?P<prefix_denominator>{NUMBER_TOKEN})\s+(?P<prefix_unit>{UNIT_TOKEN})\s+"
-        rf".{{0,80}}?\b(?P<prefix_count>{NUMBER_TOKEN})\s+clusters?|"
-        rf"(?P<count>{NUMBER_TOKEN})\s+clusters?\s+"
-        rf"(?:over|in|during)\s+(?:the\s+)?(?:past|last)\s+"
-        rf"(?P<denominator>{NUMBER_TOKEN})\s+(?P<unit>{UNIT_TOKEN}))"
-        rf".{{0,120}}?\beach\s+comprising\s+"
-        rf"(?P<per_cluster>{NUMBER_TOKEN})\s+(?:brief\s+)?"
-        rf"(?:{WORD_TOKEN}\s+){{0,3}}(?:{SEIZURE_TERMS})\b",
-        re.IGNORECASE,
-    )
-    for match in clusters_each_comprising.finditer(text):
-        count = match.group("prefix_count") or match.group("count")
-        denominator = match.group("prefix_denominator") or match.group("denominator")
-        unit = match.group("prefix_unit") or match.group("unit")
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.CLUSTER_FREQUENCY,
-                label=(
-                    f"{_number_token(count)} cluster per "
-                    f"{_period_label(unit, denominator)}, "
-                    f"{_number_token(match.group('per_cluster'))} per cluster"
-                ),
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
-
-    cluster_over_period = re.compile(
-        rf"\b(?P<count>{NUMBER_TOKEN})\s+(?:{WORD_TOKEN}\s+){{0,3}}clusters?\s+"
-        rf"over\s+(?:the\s+)?(?:past|last)\s+"
-        rf"(?:(?P<denominator>{NUMBER_TOKEN})\s+)?(?P<unit>{UNIT_TOKEN})\b",
-        re.IGNORECASE,
-    )
-    for match in cluster_over_period.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.CLUSTER_FREQUENCY,
-                label=(
-                    f"{_number_token(match.group('count'))} cluster per "
-                    f"{_period_label(match.group('unit'), match.group('denominator'))}, "
-                    "multiple per cluster"
-                ),
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
-
-    run_of_events = re.compile(
-        rf"\bover\s+the\s+past\s+(?P<period>fortnight|month|week),?\s+"
-        rf".{{0,80}}?\b(?:cluster|run)\b.{{0,80}}?\bwith\s+"
-        rf"(?P<per_cluster>{NUMBER_TOKEN})\s+(?:short\s+)?(?:{SEIZURE_TERMS})\s+"
-        r"occurring on separate days\b",
-        re.IGNORECASE,
-    )
-    for match in run_of_events.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.CLUSTER_FREQUENCY,
-                label=(
-                    f"1 cluster per {_period_unit_label(match.group('period'))}, "
-                    f"{_number_token(match.group('per_cluster'))} per cluster"
-                ),
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
-
-    vague_cluster_days = re.compile(
-        r"\bover\s+the\s+past\s+(?P<period>month|week|fortnight),?\s+"
-        r".{0,80}?\bcluster\b.{0,80}?\bon\s+(?P<days>multiple|several)\s+days\b",
-        re.IGNORECASE,
-    )
-    for match in vague_cluster_days.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.CLUSTER_FREQUENCY,
-                label=(
-                    f"{_number_token(match.group('days'))} cluster per "
-                    f"{_period_unit_label(match.group('period'))}, multiple per cluster"
-                ),
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
-
-    cluster_count_this_period_with_size = re.compile(
-        rf"\b(?P<count>{NUMBER_TOKEN})\s+clusters?\s+this\s+"
-        rf"(?P<period>week|month|quarter|year)[,;]?\s*.*?\beach\b.*?(?:approx|about|around|roughly|~|≈)?\s*"
-        rf"(?P<raw_per_cluster>{NUMBER_TOKEN})(?:\s*or\s+more)?\s+(?:{SEIZURE_TERMS})\b",
-        re.IGNORECASE,
-    )
-    for match in cluster_count_this_period_with_size.finditer(text):
-        per_cluster = _cluster_size_token(match.group("raw_per_cluster"))
-        period = match.group("period")
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.CLUSTER_FREQUENCY,
-                label=(
-                    f"{_number_token(match.group('count'))} cluster per "
-                    f"{_cluster_period_label(period)}, {per_cluster} per cluster"
-                ),
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
-
-    cluster_period_with_per_cluster = re.compile(
-        rf"\b(?P<period>daily|weekly|monthly|yearly|quarter)\b[^.;]{{0,80}}?\b"
-        rf"(?P<raw_per_cluster>{NUMBER_TOKEN})(?:\s*or\s+more)?\s+per\s+cluster\b",
-        re.IGNORECASE,
-    )
-    for match in cluster_period_with_per_cluster.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.CLUSTER_FREQUENCY,
-                label=(
-                    f"1 cluster per {_cluster_period_label(match.group('period'))}, "
-                    f"{_cluster_size_token(match.group('raw_per_cluster'))} per cluster"
-                ),
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
-
-    descriptor_cluster_size = re.compile(
-        rf"\b(?P<period>daily|weekly|monthly|yearly)\s+clusters?,\s*"
-        rf"(?:usually|typically)\s+(?P<raw_per_cluster>{NUMBER_TOKEN})(?:\s*or\s+more)?\s+"
-        rf"(?:{SEIZURE_TERMS}|events?|episodes?|spells?)\b",
-        re.IGNORECASE,
-    )
-    for match in descriptor_cluster_size.finditer(text):
-        period = _cluster_period_label(match.group("period"))
-        per_cluster = _cluster_size_token(match.group("raw_per_cluster"))
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.CLUSTER_FREQUENCY,
-                label=(
-                    f"1 cluster per {period}, "
-                    f"{per_cluster} per cluster"
-                ),
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
-
-    cluster_timing = re.compile(
-        rf"\b(?:(?:on|occurring)\s+)(?P<count>{NUMBER_TOKEN}|several|multiple)\s+"
-        rf"(?P<time>(?:morning|mornings|evening|evenings|night|nights|afternoon|afternoons))\s+"
-        rf"(?:each|per)\s+(?P<period>week|month|fortnight)\b",
-        re.IGNORECASE,
-    )
-    for match in cluster_timing.finditer(text):
-        context = text[max(0, match.start() - 260): min(len(text), match.end() + 260)]
-        period = _cluster_period_label(match.group("period"))
-        per_cluster = _infer_cluster_size(context)
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.CLUSTER_FREQUENCY,
-                label=(
-                    f"{_number_token(match.group('count'))} cluster per {period}, "
-                    f"{per_cluster} per cluster"
-                ),
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
-
-    cluster_days_simple = re.compile(
-        rf"\b(?P<count>{NUMBER_TOKEN})\s+cluster\s+days?\s+this\s+"
-        rf"(?P<period>month|week);?\b",
-        re.IGNORECASE,
-    )
-    for match in cluster_days_simple.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.CLUSTER_FREQUENCY,
-                label=(
-                    f"{_number_token(match.group('count'))} cluster per "
-                    f"{_singular_unit(match.group('period'))}, multiple per cluster"
-                ),
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
-
-    cluster_seizure_days_per_period = re.compile(
-        rf"\b(?P<evidence>clusters?\s+of\s+(?:{QUALIFIED_SEIZURE_TERMS})\s+on\s+"
-        rf"(?P<count>{NUMBER_TOKEN})\s+days?\s+each\s+(?P<period>week|month))\b",
-        re.IGNORECASE,
-    )
-    for match in cluster_seizure_days_per_period.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.CLUSTER_FREQUENCY,
-                label=(
-                    f"{_number_token(match.group('count'))} cluster per "
-                    f"{_singular_unit(match.group('period'))}, multiple per cluster"
-                ),
-                evidence=_clean_evidence(match.group("evidence")),
-            )
-        )
-
-    short_burst_cluster = re.compile(
-        r"\bshort\s+bursts?\s+around\s+the\s+beginning\s+of\s+most\s+months\b",
-        re.IGNORECASE,
-    )
-    for match in short_burst_cluster.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.CLUSTER_FREQUENCY,
-                label="1 cluster per month, multiple per cluster",
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
-
-    cluster_count_with_implied_size = re.compile(
-        rf"\b(?P<count>{NUMBER_TOKEN})(?:\s+[\w-]+){{0,3}}?\s+clusters?\s+this\s+"
-        rf"(?P<period>month|week|fortnight)\b(?P<rest>[^.]{{0,200}})",
-        re.IGNORECASE,
-    )
-    per_cluster_context = re.compile(
-        rf"(?:\beach\s+)?~?\s*(?P<raw_per_cluster>{NUMBER_TOKEN}(?:\s*[-–—]\s*{NUMBER_TOKEN})?\s*)\s+"
-        rf"(?:{SEIZURE_TERMS}|events?|episodes?|spells?)",
-        re.IGNORECASE,
-    )
-    for match in cluster_count_with_implied_size.finditer(text):
-        per_cluster_match = per_cluster_context.search(match.group("rest"))
-        if per_cluster_match is None:
-            continue
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.CLUSTER_FREQUENCY,
-                label=(
-                    f"{_number_token(match.group('count'))} cluster per "
-                    f"{_cluster_period_label(match.group('period'))}, "
-                    f"{_cluster_size_token(per_cluster_match.group('raw_per_cluster'))} per cluster"
-                ),
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
-
-    cluster_size_without_cluster_count = re.compile(
-        rf"\b(?P<period>daily|weekly|monthly|yearly|fortnightly|fortnight)\b[\s,;-]{{0,40}}?\s*"
-        rf"\b(?:about|around|approximately|roughly|~)?\s*(?P<raw_per_cluster>{NUMBER_TOKEN})(?:\s*or\s+more)?\s+"
-        rf"per\s+(?:{SEIZURE_TERMS}|events?|episodes?|spells?)?\s*cluster\b",
-        re.IGNORECASE,
-    )
-    for match in cluster_size_without_cluster_count.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.CLUSTER_FREQUENCY,
-                label=(
-                    f"1 cluster per {_cluster_period_label(match.group('period'))}, "
-                    f"{_cluster_size_token(match.group('raw_per_cluster'))} per cluster"
-                ),
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
     return candidates
 
 
-def _extract_seizure_free_candidates(text: str) -> list[_RawCandidate]:
+def _extract_seizure_free_candidates(
+    text: str, ablation_config: AblationConfig | None = None
+) -> list[_RawCandidate]:
+    ablation_config = ablation_config or AblationConfig()
     candidates: list[_RawCandidate] = []
-    clinic_date = _clinic_date(text)
-    seizure_free_since_date = re.compile(
-        rf"\b(?:seizure(?:[-\u2010-\u2015]|\s)free\s+(?:interval\s+)?since|"
-        rf"drug-free\s+remission\s+since|no\s+focal\s+clonic\s+since|"
-        rf"sustained\s+remission\s+since|prior\s+cluster\s+pattern\s+resolved\s+since|"
-        rf"last\s+seizure\s+on)\s+"
-        rf"(?P<date>\d{{1,2}}(?:[-/](?:\d{{1,2}}|{MONTH_NAME_PATTERN})[-/]\d{{4}}|"
-        rf"\s+(?:{MONTH_NAME_PATTERN})\s+\d{{4}}))\b",
-        re.IGNORECASE,
-    )
-    for match in seizure_free_since_date.finditer(text):
-        months = _month_span_floor(_full_date(match.group("date")), clinic_date)
-        if months is None:
-            continue
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.SEIZURE_FREE,
-                label=f"seizure free for {months} month",
-                evidence=_clean_evidence(match.group(0)),
-            )
+    candidates.extend(
+        apply_seizure_free_rules(
+            (
+                SEIZURE_FREE_SINCE_DATE_RULE,
+                ABSENCE_FOR_DURATION_RULE,
+                NO_EVENTS_FOR_DURATION_RULE,
+                SEIZURE_FREE_DURATION_STATUS_RULE,
+                SEIZURE_FREE_ONE_AND_HALF_YEARS_RULE,
+                LAST_EPILEPTIC_EVENT_RULE,
+                GENERIC_SEIZURE_FREE_RULE,
+                NO_DEFINITE_EVENTS_RULE,
+                CURRENT_CONTROL_PHRASE_RULE,
+            ),
+            text,
+            ablation_config,
+            helpers={
+                "clinic_date": _clinic_date,
+                "full_date": _full_date,
+                "month_span_floor": _month_span_floor,
+            },
         )
-
-    absence_for_duration = re.compile(
-        rf"\b(?P<evidence>(?:absence\s+of\s+events|"
-        rf"no\s+occurrence\s+of\s+events\s+suggestive\s+of\s+seizures)"
-        rf".{{0,80}}?\b(?P<count>{NUMBER_TOKEN})\s+months?\s+ago|"
-        rf"absence\s+of\s+events\s+for\s+over\s+(?P<over_count>{NUMBER_TOKEN})\s+months?)\b",
-        re.IGNORECASE,
     )
-    for match in absence_for_duration.finditer(text):
-        count = match.groupdict().get("count") or match.groupdict().get("over_count")
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.SEIZURE_FREE,
-                label=f"seizure free for {_number_token(count)} month",
-                evidence=_clean_evidence(match.group("evidence")),
-            )
-        )
 
-    no_events_for_duration = re.compile(
-        rf"\b(?P<evidence>no\s+(?:events,\s+warnings,\s+or\s+auras|"
-        rf"spell-like\s+events\s+suggestive\s+of\s+seizures)\s+"
-        rf"(?:for|over)\s+(?:the\s+past\s+)?(?P<count>{NUMBER_TOKEN})\s+"
-        rf"(?P<unit>months?|years?))\b",
-        re.IGNORECASE,
-    )
-    for match in no_events_for_duration.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.SEIZURE_FREE,
-                label=(
-                    f"seizure free for {_number_token(match.group('count'))} "
-                    f"{_singular_unit(match.group('unit'))}"
-                ),
-                evidence=_clean_evidence(match.group("evidence")),
-            )
-        )
-
-    seizure_free_duration_status = re.compile(
-        rf"\b(?P<evidence>seizure(?:[-\u2010-\u2015]|\s)free\s+interval\s+"
-        rf"extends\s+to\s+(?P<count>{NUMBER_TOKEN})\s+(?P<unit>months?|years?)|"
-        rf"recorded\s+seizure\s+rate\s+at\s+zero\s+over\s+the\s+last\s+"
-        rf"(?P<zero_count>{NUMBER_TOKEN})\s+(?P<zero_unit>months?|years?))\b",
-        re.IGNORECASE,
-    )
-    for match in seizure_free_duration_status.finditer(text):
-        count = match.groupdict().get("count") or match.groupdict().get("zero_count")
-        unit = match.groupdict().get("unit") or match.groupdict().get("zero_unit")
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.SEIZURE_FREE,
-                label=f"seizure free for {_number_token(count)} {_singular_unit(unit)}",
-                evidence=_clean_evidence(match.group("evidence")),
-            )
-        )
-
-    seizure_free_one_and_half_years = re.compile(
-        r"\b(?:seizure(?:[-\u2010-\u2015]|\s)free\s+for|"
-        r"not\s+experiencing\s+any\s+seizures\s+in)\s+one\s+and\s+a\s+half\s+years\b",
-        re.IGNORECASE,
-    )
-    for match in seizure_free_one_and_half_years.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.SEIZURE_FREE,
-                label="seizure free for 1.5 year",
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
-
-    last_epileptic_event = re.compile(
-        rf"\b(?P<evidence>last\s+had\s+a\s+clearly\s+epileptic\s+"
-        rf"(?:{WORD_TOKEN}\s+){{0,5}}?event\s+approximately\s+"
-        rf"(?P<count>{NUMBER_TOKEN})\s+months?\s+ago)\b",
-        re.IGNORECASE,
-    )
-    for match in last_epileptic_event.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.SEIZURE_FREE,
-                label=f"seizure free for {_number_token(match.group('count'))} month",
-                evidence=_clean_evidence(match.group("evidence")),
-            )
-        )
-
-    no_definite_events = re.compile(
-        rf"\bno\s+definite\s+(?:{QUALIFIED_SEIZURE_TERMS})\b",
-        re.IGNORECASE,
-    )
-    for match in no_definite_events.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.SEIZURE_FREE,
-                label="seizure free for multiple month",
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
-
-    current_control_phrases = [
-        re.compile(
-            r"\b(?:seizure\s+freedom\s+continues|complete\s+seizure\s+control|"
-            r"complete\s+control\s+of\s+seizures|no\s+recurrence)\b",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            r"\bseizures\s+remain\s+settled\s+without\s+recent\s+breakthrough\s+events\b",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            r"\bcurrently\s+in\s+long-term\s+remission,\s+having\s+been\s+"
-            r"seizure\s+free\s+for\s+years\b",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            rf"\bhas\s+not\s+experienced\s+any\s+(?:{SEIZURE_TERMS})\b",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            r"\bno\s+clinical\s+seizures\s+observed\s+since\b",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            rf"\bno\s+(?:further\s+)?(?:witnessed\s+)?(?:{QUALIFIED_SEIZURE_TERMS})\s+"
-            rf"(?:reported|observed|recorded|since|suggestive\s+of\s+seizures)\b",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            r"\bfree\s+of\s+(?:his|her|their)\s+usual\s+attacks\s+over\s+this\s+interval\b",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            r"\bno\s+auras,\s+warnings,\s+or\s+witnessed\s+events\s+"
-            r"for\s+an\s+extended\s+period\b",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            r"\bhas\s+not\s+described\s+any\s+further\s+events\s+"
-            r"suggestive\s+of\s+seizures\b",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            r"\bno\s+(?:recent\s+)?events\s+suggestive\s+of\s+seizures\b",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            r"\bsustained\s+postoperative\s+seizure\s+freedom\b",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            r"\bno\s+recorded\s+events\s+since\b",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            r"\binterval\s+history\s+negative\s+for\s+seizures\b",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            r"\bdurable\s+seizure\s+control\b",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            r"\bseizure\s+cessation\s+following\s+initiation\s+of\s+last\s+asm\b",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            r"\bno\s+recorded\s+events,\s+either\s+focal\s+or\s+generalised,\s+"
-            r"during\s+the\s+period\s+monitored\b",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            r"\btypical\s+episodes\s+have\s+not\s+recurred\b",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            r"\bno\s+further\s+events\s+suggestive\s+of\s+"
-            r"(?:her|his|their)\s+previous\s+spells\b",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            r"\bno\s+recorded\s+spells\s+suggestive\s+of\s+seizure\s+activity\b",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            r"\bepisode-free\s+on\s+(?:her|his|their)\s+current\s+routine\b",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            r"\brecorded\s+seizure\s+rate\s+at\s+zero\s+on\s+"
-            r"the\s+monitoring\s+platform\s+during\s+this\s+period\b",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            r"\bno\s+recorded\s+events\s+requiring\s+rescue\s+measures\b",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            r"\bno\s+recorded\s+events\b",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            r"\bseizure-free\s+by\s+patient\s+report\b",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            r"\bno\s+clear-cut\s+events\s+to\s+suggest\s+recent\s+seizures\b",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            r"\bno\s+events\s+of\s+concern\b",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            r"\bno\s+episodes\s+brought\s+to\s+attention\s+by\s+"
-            r"(?:carers|caregivers)\s+or\s+bystanders,\s+nor\s+any\s+"
-            r"events\s+(?:he|she|they)\s+has\s+recognised\s+as\s+seizures\b",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            r"\bwithout\s+events\s+for\s+an\s+extended\s+period\b",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            r"\bsteady\s+run\s+without\s+clear\s+seizures\s+at\s+present\b",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            r"\bfocal\s+epileptic\s+spasms\s+freedom\s+achieved\b",
-            re.IGNORECASE,
-        ),
-    ]
-    for pattern in current_control_phrases:
-        for match in pattern.finditer(text):
-            candidates.append(
-                _RawCandidate(
-                    kind=CandidateKind.SEIZURE_FREE,
-                    label="seizure free for multiple year",
-                    evidence=_clean_evidence(match.group(0)),
-                )
-            )
-
-    seizure_free = re.compile(
-        rf"\b(?:seizure(?:[-\u2010-\u2015]|\s)free|free of (?:{SEIZURE_TERMS})|"
-        rf"no (?:further )?(?:{SEIZURE_TERMS})).{{0,80}}?"
-        rf"(?:(?P<count>{NUMBER_TOKEN})\s+(?P<unit>months|month|years|year)|"
-        r"several years|long duration|since\b)",
-        re.IGNORECASE,
-    )
-    for match in seizure_free.finditer(text):
-        if _is_seizure_free_distractor(match, text):
-            continue
-        count = match.groupdict().get("count")
-        unit = match.groupdict().get("unit")
-        if count and unit:
-            label = f"seizure free for {_number_token(count)} {_singular_unit(unit)}"
-        else:
-            label = "seizure free for multiple year"
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.SEIZURE_FREE,
-                label=label,
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
     return candidates
 
 
@@ -1491,6 +874,14 @@ def _extract_rate_candidates(
 
     candidates.extend(apply_rate_rules((DIRECT_RATE_RULE,), text, ablation_config))
 
+    candidates.extend(
+        apply_rate_rules((COUNT_DURING_RECENT_WINDOW_RULE,), text, ablation_config)
+    )
+
+    candidates.extend(
+        apply_rate_rules((THERE_HAVE_BEEN_COUNT_RULE,), text, ablation_config)
+    )
+
     over_period = re.compile(
         rf"\b(?P<count>{NUMBER_TOKEN})\s+"
         rf"(?:{QUALIFIED_SEIZURE_TERMS}|{SEIZURE_DESCRIPTOR_PHRASE})\s+"
@@ -1739,126 +1130,23 @@ def _extract_rate_candidates(
         apply_rate_rules((OCCURRING_ADJECTIVE_RATE_RULE,), text, ablation_config)
     )
 
-    recent_count = re.compile(
-        rf"\b(?P<count>{NUMBER_TOKEN})\s+(?:{QUALIFIED_SEIZURE_TERMS})\s+"
-        rf"(?:last|this|past)\s+(?P<unit>day|week|month|quarter|year)\b",
-        re.IGNORECASE,
-    )
-    for match in recent_count.finditer(text):
-        if _has_historical_lead_in(text, match.start()):
-            continue
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label(match.group("count"), match.group("unit")),
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
+    candidates.extend(apply_rate_rules((RECENT_COUNT_RULE,), text, ablation_config))
 
-    count_during_recent_window = re.compile(
-        rf"\b(?P<count>{NUMBER_TOKEN})\s+(?:{QUALIFIED_SEIZURE_TERMS})\s+"
-        rf"(?:during|in)\s+(?:the\s+)?(?:last|past)\s+"
-        rf"(?P<denominator>{NUMBER_TOKEN})\s+(?P<unit>{UNIT_TOKEN})\b",
-        re.IGNORECASE,
+    candidates.extend(
+        apply_rate_rules((PERIOD_FIRST_RECENT_COUNT_RULE,), text, ablation_config)
     )
-    for match in count_during_recent_window.finditer(text):
-        if _has_historical_lead_in(text, match.start()):
-            continue
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label(
-                    match.group("count"), match.group("unit"), match.group("denominator")
-                ),
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
 
-    period_first_recent_count = re.compile(
-        rf"\b(?P<period>This|Over the past|Over the last|During the past|During the last)\s+"
-        rf"(?P<unit>day|week|month|year),?\s+"
-        rf".{{0,60}}?\b(?P<count>{NUMBER_TOKEN})\s+(?:{QUALIFIED_SEIZURE_TERMS})\b",
-        re.IGNORECASE,
+    candidates.extend(
+        apply_rate_rules((PERIOD_FIRST_EXPERIENCED_COUNT_RULE,), text, ablation_config)
     )
-    for match in period_first_recent_count.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label(match.group("count"), match.group("unit")),
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
 
-    period_first_experienced_count = re.compile(
-        rf"\b(?P<period>Over the past|Over the last|During the past|During the last|"
-        rf"over the past|over the last|during the past|during the last|in the past|"
-        rf"in the last)\s+"
-        rf"(?P<denominator>{NUMBER_TOKEN})\s+(?P<unit>{UNIT_TOKEN})[,\s()]+"
-        rf".{{0,80}}?\b(?P<count>{NUMBER_TOKEN})\s+"
-        rf"(?:{QUALIFIED_SEIZURE_TERMS})\b",
-        re.IGNORECASE,
+    candidates.extend(
+        apply_rate_rules((PERIOD_FIRST_FEATURING_COUNT_RULE,), text, ablation_config)
     )
-    for match in period_first_experienced_count.finditer(text):
-        trailing_context = text[match.end() : match.end() + 30].lower()
-        if (
-            "in that timeframe" in trailing_context
-            or "have occurred" in trailing_context
-            or "featuring" in trailing_context
-        ):
-            continue
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label(
-                    match.group("count"),
-                    match.group("unit"),
-                    match.group("denominator"),
-                ),
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
 
-    period_first_featuring_count = re.compile(
-        rf"\b(?P<period>Over the past|Over the last|During the past|During the last|"
-        rf"over the past|over the last|during the past|during the last)\s+"
-        rf"(?P<denominator>{NUMBER_TOKEN})\s+(?P<unit>{UNIT_TOKEN}),?\s+"
-        rf".{{0,80}}?\b(?P<count>{NUMBER_TOKEN})\s+"
-        rf"(?:{QUALIFIED_SEIZURE_TERMS})\s+featuring\s+"
-        rf"(?:{WORD_TOKEN}\s+){{0,3}}awareness\b",
-        re.IGNORECASE,
+    candidates.extend(
+        apply_rate_rules((PERIOD_FIRST_TIMEFRAME_COUNT_RULE,), text, ablation_config)
     )
-    for match in period_first_featuring_count.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label(
-                    match.group("count"),
-                    match.group("unit"),
-                    match.group("denominator"),
-                ),
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
-
-    period_first_timeframe_count = re.compile(
-        rf"\b(?P<period>Over the past|Over the last|During the past|During the last)\s+"
-        rf"(?P<denominator>{NUMBER_TOKEN})\s+(?P<unit>{UNIT_TOKEN}),?\s+"
-        rf".{{0,260}}?\b(?P<count>{NUMBER_TOKEN})\s+(?:{QUALIFIED_SEIZURE_TERMS})\s+"
-        r"in\s+that\s+timeframe\b",
-        re.IGNORECASE,
-    )
-    for match in period_first_timeframe_count.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label(
-                    match.group("count"),
-                    match.group("unit"),
-                    match.group("denominator"),
-                ),
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
 
     period_first_distributed_count = re.compile(
         rf"\b(?P<period>Over the past|Over the last|During the past|During the last|"
@@ -1887,45 +1175,9 @@ def _extract_rate_candidates(
             )
         )
 
-    period_first_occurred_count = re.compile(
-        rf"\b(?P<period>Over the past|Over the last|During the past|During the last)\s+"
-        rf"(?P<denominator>{NUMBER_TOKEN})\s+(?P<unit>{UNIT_TOKEN}),?\s+"
-        rf"(?P<count>{NUMBER_TOKEN})\s+(?:{QUALIFIED_SEIZURE_TERMS})\s+"
-        r"have\s+occurred\b",
-        re.IGNORECASE,
+    candidates.extend(
+        apply_rate_rules((PERIOD_FIRST_OCCURRED_COUNT_RULE,), text, ablation_config)
     )
-    for match in period_first_occurred_count.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label(
-                    match.group("count"),
-                    match.group("unit"),
-                    match.group("denominator"),
-                ),
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
-
-    there_have_been_count = re.compile(
-        rf"\b(?:there\s+(?:have|has|were|are)\s+been\s+)?(?P<count>{NUMBER_TOKEN})\s+"
-        rf"(?:{QUALIFIED_SEIZURE_TERMS})\s+"
-        rf"(?:over|in|during|recorded\s+in)\s+(?:the\s+)?(?:past|last)?\s*"
-        rf"(?:(?P<denominator>{NUMBER_TOKEN})\s+)?(?P<unit>{UNIT_TOKEN}|fortnight)\b",
-        re.IGNORECASE,
-    )
-    for match in there_have_been_count.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label(
-                    match.group("count"),
-                    match.group("unit"),
-                    match.group("denominator"),
-                ),
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
 
     adjective_count_rates = (
         (r"daily", "day"),
@@ -1948,33 +1200,13 @@ def _extract_rate_candidates(
                 )
             )
 
-    recorded_year_count = re.compile(
-        rf"\b(?P<count>{NUMBER_TOKEN})\s+(?:{QUALIFIED_SEIZURE_TERMS})\s+"
-        r"recorded\s+in\s+\d{4}\s+so\s+far\b",
-        re.IGNORECASE,
+    candidates.extend(
+        apply_rate_rules((RECORDED_YEAR_COUNT_RULE,), text, ablation_config)
     )
-    for match in recorded_year_count.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label(match.group("count"), "year"),
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
 
-    yesterday_count = re.compile(
-        rf"\b(?P<count>{NUMBER_TOKEN})\s+(?:{QUALIFIED_SEIZURE_TERMS})\s+"
-        r"(?:yesterday|today)\b",
-        re.IGNORECASE,
+    candidates.extend(
+        apply_rate_rules((YESTERDAY_OR_TODAY_COUNT_RULE,), text, ablation_config)
     )
-    for match in yesterday_count.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label(match.group("count"), "day"),
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
 
     seizure_days_per_period = re.compile(
         rf"\b(?:About\s+)?(?P<count>{NUMBER_TOKEN})\s+seizure\s+days?\s+"
@@ -3061,37 +2293,6 @@ def _has_historical_lead_in(text: str, start: int) -> bool:
         return False
     latest_current = max((preceding.rfind(marker) for marker in current_markers), default=-1)
     return latest_current < latest_historical
-
-
-def _is_seizure_free_distractor(match: re.Match[str], text: str) -> bool:
-    evidence = match.group(0).lower()
-    following = text[match.end() : match.end() + 260].lower()
-    surrounding = text[max(0, match.start() - 80) : match.end() + 260].lower()
-    if "up to" in evidence:
-        return True
-    if "required period" in evidence or "interval" in evidence:
-        return True
-    followup_months = re.compile(
-        rf"\bfollow-?up\s+in\s+(?:\d+|{NUMBER_WORD_PATTERN})\s+months?\b",
-        re.IGNORECASE,
-    )
-    if followup_months.search(evidence):
-        return True
-    if re.search(r"\b(?:before experiencing|until)\b", following):
-        return True
-    if re.search(r"\bhowever\b.{0,120}\b(?:reports?|reported|had|has had)\b", following):
-        return True
-    if "however" in following and "over the past" in following:
-        return True
-    if re.search(
-        r"\bto\s+(?:\d+|[a-z]+)\s+to\s+(?:\d+|[a-z]+)\s+"
-        r"(?:seizures|events|episodes)\b",
-        following,
-    ):
-        return True
-    if re.search(r"\bthen\s+(?:developed|sustained|experienced|had)\b", following):
-        return True
-    return bool(re.search(r"\b(?:breakthrough|recent)\s+(?:seizure|event|episode)", surrounding))
 
 
 def _is_medication_or_dose_rate_distractor(match: re.Match[str], text: str) -> bool:

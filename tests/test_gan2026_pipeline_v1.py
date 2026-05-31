@@ -46,10 +46,15 @@ def test_pipeline_preserves_existing_output_with_default_rule_metadata() -> None
         "Two events over the last five months"
     )
     event = result.diagnostics["candidate_events"][0]
-    assert event["rule_id"] == "unknown"
-    assert event["rule_group"] is None
-    assert event["portability"] is None
-    assert event["match_groups"] == {}
+    assert event["rule_id"] == "rate.there_have_been_count"
+    assert event["rule_group"] == RuleGroup.PORTABLE_RATE_EXPRESSIONS
+    assert event["portability"] == Portability.SEIZURE_FREQUENCY
+    assert event["match_groups"] == {
+        "count": "Two",
+        "denominator": "five",
+        "evidence": "Two events over the last five months",
+        "unit": "months",
+    }
 
 
 def test_candidate_event_exposes_rule_metadata_when_present() -> None:
@@ -99,6 +104,285 @@ def test_pipeline_can_ablate_a_catalogued_rule() -> None:
     assert event["portability"] == Portability.SEIZURE_FREQUENCY
     assert event["match_groups"] == {"duration": "seven"}
     assert ablated_result.output.final_value == "no seizure frequency reference"
+
+
+@pytest.mark.parametrize(
+    ("note_text", "expected_label", "expected_rule_id"),
+    [
+        (
+            "Since the last appointment, the patient reports no definite seizure events.",
+            "seizure free for multiple year",
+            "seizure_free.no_definite_events",
+        ),
+        (
+            "Since his last review, seizure freedom continues.",
+            "seizure free for multiple year",
+            "seizure_free.current_control_phrase",
+        ),
+        (
+            "He described remaining free of his usual attacks over this interval.",
+            "seizure free for multiple year",
+            "seizure_free.current_control_phrase",
+        ),
+        (
+            "Clinic Date: 23 December 2021. They report Drug-free remission since 20-Jun-2021.",
+            "seizure free for 6 month",
+            "seizure_free.since_date",
+        ),
+        (
+            "There has been an absence of events for over six months.",
+            "seizure free for 6 month",
+            "seizure_free.absence_for_duration",
+        ),
+        (
+            "Patient reports no events, warnings, or auras for over 18 months.",
+            "seizure free for 18 month",
+            "seizure_free.no_events_for_duration",
+        ),
+        (
+            "Present Seizure Frequency: Seizure-free interval extends to eleven months.",
+            "seizure free for 11 month",
+            "seizure_free.duration_status",
+        ),
+        (
+            "She has now been seizure free for one and a half years.",
+            "seizure free for 1.5 year",
+            "seizure_free.one_and_half_years",
+        ),
+        (
+            "She last had a clearly epileptic focal event approximately six months ago.",
+            "seizure free for 6 month",
+            "seizure_free.last_epileptic_event",
+        ),
+        (
+            "She remains free of seizures for two years on the current regimen.",
+            "seizure free for 2 year",
+            "seizure_free.generic_duration_or_since",
+        ),
+        (
+            "There have been no seizures since the last clinic review.",
+            "seizure free for multiple year",
+            "seizure_free.generic_duration_or_since",
+        ),
+    ],
+)
+def test_pipeline_exposes_catalogued_seizure_free_metadata(
+    note_text: str,
+    expected_label: str,
+    expected_rule_id: str,
+) -> None:
+    result = Gan2026PipelineV1().run(_record(note_text))
+
+    assert result.output.final_value == expected_label
+    selected_id = result.diagnostics["final_selection"]["selected_event_ids"][0]
+    selected_event = next(
+        event
+        for event in result.diagnostics["candidate_events"]
+        if event["event_id"] == selected_id
+    )
+    assert selected_event["rule_id"] == expected_rule_id
+    assert selected_event["rule_group"] == RuleGroup.SEIZURE_FREE_NO_EVENT_ASSERTIONS
+    assert selected_event["portability"] == Portability.SEIZURE_FREQUENCY
+
+
+def test_pipeline_can_ablate_catalogued_seizure_free_group() -> None:
+    note_text = "Since his last review, seizure freedom continues."
+
+    result = Gan2026PipelineV1(
+        ablation_config=AblationConfig(
+            enabled_groups=frozenset(
+                group
+                for group in RuleGroup
+                if group is not RuleGroup.SEIZURE_FREE_NO_EVENT_ASSERTIONS
+            )
+        )
+    ).run(_record(note_text))
+
+    assert result.output.final_value == "no seizure frequency reference"
+
+
+@pytest.mark.parametrize(
+    ("note_text", "expected_label", "expected_rule_id"),
+    [
+        (
+            "Weekly morning clusters reported; number per cluster not documented.",
+            "1 cluster per week, multiple per cluster",
+            "cluster.adjective_rate",
+        ),
+        (
+            "Diagnosis: Generalised epilepsy with ongoing nocturnal clusters 3x/month.",
+            "3 cluster per month, multiple per cluster",
+            "cluster.compact_count_per_period",
+        ),
+        (
+            "He describes three clusters this quarter, each lasting 1-2 days "
+            "with several brief episodes.",
+            "3 cluster per 3 month, multiple per cluster",
+            "cluster.count_this_period_vague_size",
+        ),
+        (
+            "Patient reports two clusters this quarter.",
+            "2 cluster per 3 month, multiple per cluster",
+            "cluster.count_this_period",
+        ),
+        (
+            "Cluster frequency unclear this month; last month ≈three clusters.",
+            "3 cluster per month, multiple per cluster",
+            "cluster.last_month_count",
+        ),
+        (
+            "Cluster days 2 this month, typically five events in 24 h.",
+            "2 cluster per month, 5 per cluster",
+            "cluster.rate_with_size",
+        ),
+        (
+            "Monthly clusters, typically 6 to 7 seizures over 24 h.",
+            "1 cluster per month, 6 to 7 per cluster",
+            "cluster.monthly_rate_with_size",
+        ),
+        (
+            "Clusters characterized by five spells, but frequency unclear.",
+            "unknown, 5 per cluster",
+            "cluster.unknown_frequency_with_size",
+        ),
+        (
+            "Two clusters this month; each approx six absences.",
+            "2 cluster per month, 6 per cluster",
+            "cluster.count_this_period_with_size",
+        ),
+        (
+            "Over the past six weeks he has experienced three clusters, "
+            "each comprising two to four brief events.",
+            "3 cluster per 6 week, 2 to 4 per cluster",
+            "cluster.each_comprising",
+        ),
+        (
+            "Two myoclonic clusters over the past three weeks.",
+            "2 cluster per 3 week, multiple per cluster",
+            "cluster.count_over_period",
+        ),
+        (
+            "Seizure-free for up to two months then clusters of four seizures "
+            "in a single day.",
+            "1 cluster per 2 month, 4 per cluster",
+            "cluster.seizure_free_cycle",
+        ),
+        (
+            "Clinic Date: 09 June 2023. Her last convulsive seizure was recorded "
+            "in 03/2022, with occasional clusters of myoclonic jerks persisting.",
+            "multiple cluster per 15 month, multiple per cluster",
+            "cluster.last_convulsive_persistence",
+        ),
+        (
+            "He can sometimes go nearly two week without seizures, but when they "
+            "recur he tends to have several in one day, often between 4 and 6.",
+            "1 cluster per 2 week, 4 to 6 per cluster",
+            "cluster.nearly_interval",
+        ),
+        (
+            "On occasions she is seizure-free for four to five consecutive days, "
+            "followed by a day with multiple events, typically two tonic seizures.",
+            "1 cluster per 4 to 5 day, 2 per cluster",
+            "cluster.seizure_free_interval_day",
+        ),
+        (
+            "He may go 3 days without seizures, but when they happen he often has "
+            "them in batches, with four occurring within 24 hours.",
+            "1 cluster per 3 day, 4 per cluster",
+            "cluster.batch_within_24h",
+        ),
+        (
+            "Over the past fortnight she describes a run of brief events, "
+            "with three short episodes occurring on separate days.",
+            "1 cluster per 2 week, 3 per cluster",
+            "cluster.run_with_separate_days",
+        ),
+        (
+            "Over the past month, the patient reports a cluster of short events "
+            "on multiple days.",
+            "multiple cluster per month, multiple per cluster",
+            "cluster.vague_days_over_period",
+        ),
+        (
+            "There have been three clusters this month; each ~4 - 5 events.",
+            "3 cluster per month, 4 to 5 per cluster",
+            "cluster.broad_count_this_period_with_size",
+        ),
+        (
+            "Cluster burden increased; now weekly, five per cluster.",
+            "1 cluster per week, 5 per cluster",
+            "cluster.period_with_per_cluster",
+        ),
+        (
+            "Current frequency: weekly clusters, usually three events.",
+            "1 cluster per week, 3 per cluster",
+            "cluster.descriptor_size",
+        ),
+        (
+            "Clusters on several mornings each week, sometimes repeating two or "
+            "three times within the same morning.",
+            "multiple cluster per week, 2 to 3 per cluster",
+            "cluster.timing_days",
+        ),
+        (
+            "Two cluster days this month.",
+            "2 cluster per month, multiple per cluster",
+            "cluster.days_this_period",
+        ),
+        (
+            "He suffers clusters of absence seizures on four to five days each week.",
+            "4 to 5 cluster per week, multiple per cluster",
+            "cluster.seizure_days_per_period",
+        ),
+        (
+            "Short bursts around the beginning of most months.",
+            "1 cluster per month, multiple per cluster",
+            "cluster.short_burst_monthly",
+        ),
+        (
+            "She reports 1 Travel-related clusters this month; ~4 - 6 events per episode.",
+            "1 cluster per month, 4 to 6 per cluster",
+            "cluster.count_with_implied_size",
+        ),
+        (
+            "Current pattern is fortnight, about five per event cluster.",
+            "1 cluster per 2 week, 5 per cluster",
+            "cluster.size_without_count",
+        ),
+    ],
+)
+def test_pipeline_exposes_catalogued_cluster_metadata(
+    note_text: str,
+    expected_label: str,
+    expected_rule_id: str,
+) -> None:
+    result = Gan2026PipelineV1().run(_record(note_text))
+
+    assert result.output.final_value == expected_label
+    selected_id = result.diagnostics["final_selection"]["selected_event_ids"][0]
+    selected_event = next(
+        event
+        for event in result.diagnostics["candidate_events"]
+        if event["event_id"] == selected_id
+    )
+    assert selected_event["rule_id"] == expected_rule_id
+    assert selected_event["rule_group"] == RuleGroup.CLUSTER_ARITHMETIC
+    assert selected_event["portability"] == Portability.SEIZURE_FREQUENCY
+    assert selected_event["match_groups"]
+
+
+def test_pipeline_can_ablate_catalogued_cluster_group() -> None:
+    note_text = "Weekly morning clusters reported; number per cluster not documented."
+
+    result = Gan2026PipelineV1(
+        ablation_config=AblationConfig(
+            enabled_groups=frozenset(
+                group for group in RuleGroup if group is not RuleGroup.CLUSTER_ARITHMETIC
+            )
+        )
+    ).run(_record(note_text))
+
+    assert result.output.final_value == "no seizure frequency reference"
 
 
 @pytest.mark.parametrize(
@@ -203,6 +487,57 @@ def test_pipeline_can_ablate_a_catalogued_rule() -> None:
             "She now describes a simple partial seizure monthly.",
             "1 per month",
             "rate.simple_partial_adverbial",
+        ),
+        (
+            "He describes three or four seizures last week.",
+            "3 to 4 per week",
+            "rate.recent_count",
+        ),
+        (
+            "The diary shows 7 to 9 focal onset seizures in the past three weeks.",
+            "7 to 9 per 3 week",
+            "rate.count_during_recent_window",
+        ),
+        (
+            "There have been four brief episodes over the past three weeks.",
+            "4 per 3 week",
+            "rate.there_have_been_count",
+        ),
+        (
+            "Seven brief seizures recorded in 2024 so far.",
+            "7 per year",
+            "rate.recorded_year_count",
+        ),
+        (
+            "The patient reported 1 tonic-clonic seizures yesterday.",
+            "1 per day",
+            "rate.yesterday_or_today_count",
+        ),
+        (
+            "This week he has had 3 or 4 focal impaired awareness seizures.",
+            "3 to 4 per week",
+            "rate.period_first_recent_count",
+        ),
+        (
+            "Over the past month, they estimate 3 to 4 seizures.",
+            "3 to 4 per month",
+            "rate.period_first_recent_count",
+        ),
+        (
+            "Over the last three weeks, there have been four brief episodes featuring "
+            "impaired awareness.",
+            "4 per 3 week",
+            "rate.period_first_featuring_count",
+        ),
+        (
+            "Over the past four months, she reports three events in that timeframe.",
+            "3 per 4 month",
+            "rate.period_first_timeframe_count",
+        ),
+        (
+            "Over the past six weeks, four episodes have occurred.",
+            "4 per 6 week",
+            "rate.period_first_occurred_count",
         ),
     ],
 )

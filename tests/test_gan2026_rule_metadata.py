@@ -12,8 +12,14 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.rule_metadata import (
     apply_rule,
     validate_rule_registry,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.rules.cluster import (
+    CLUSTER_RULES,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.rules.rate import (
     PORTABLE_RATE_RULES,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.rules.seizure_free import (
+    SEIZURE_FREE_RULES,
 )
 
 
@@ -118,3 +124,11 @@ def test_apply_rule_respects_ablation_config() -> None:
 
 def test_portable_rate_rule_registry_is_valid() -> None:
     validate_rule_registry(PORTABLE_RATE_RULES)
+
+
+def test_cluster_rule_registry_is_valid() -> None:
+    validate_rule_registry(CLUSTER_RULES)
+
+
+def test_seizure_free_rule_registry_is_valid() -> None:
+    validate_rule_registry(SEIZURE_FREE_RULES)
