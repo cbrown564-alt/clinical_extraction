@@ -27,17 +27,26 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.rule_metadata import (
     RuleSpec,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.rules.rate import (
+    COUNTED_ADVERBIAL_RATE_RULE,
     DAILY_BASIS_CURRENT_RULE,
     DAYS_OF_WEEK_RATE_RULE,
     DESCRIPTOR_RATE_RULE,
+    DIRECT_RATE_RULE,
     IMPLICIT_EVERY_OTHER_INTERVAL_RULE,
     IMPLICIT_INTERVAL_RULE,
     IMPLICIT_NIGHTLY_INTERVAL_RULE,
     NIGHTS_PER_PERIOD_RULE,
+    NO_MORE_THAN_ADVERBIAL_RATE_RULE,
+    OCCURRING_ADJECTIVE_RATE_RULE,
     OCCURRING_EVERY_OTHER_INTERVAL_RULE,
     OCCURRING_INTERVAL_RULE,
+    OCCURRING_ONCE_PER_NIGHT_RULE,
+    PERSISTENT_ADVERBIAL_RATE_RULE,
     QUALIFIED_DIRECT_RATE_RULE,
     QUARTER_DIRECT_RATE_RULE,
+    SEIZURE_ADJECTIVE_RATE_RULE,
+    SIMPLE_PARTIAL_ADVERBIAL_RATE_RULE,
+    STANDALONE_ADJECTIVE_RATE_RULE,
     apply_rate_rules,
 )
 
@@ -1480,28 +1489,7 @@ def _extract_rate_candidates(
         apply_rate_rules((QUARTER_DIRECT_RATE_RULE,), text, ablation_config)
     )
 
-    direct_rate = re.compile(
-        rf"\b(?P<count>{NUMBER_TOKEN})\s+"
-        rf"(?:times?|{SEIZURE_TERMS})?\s*(?:per|each|every)\s+"
-        rf"(?:(?P<denominator>{NUMBER_TOKEN})\s+)?(?P<unit>{UNIT_TOKEN})\b",
-        re.IGNORECASE,
-    )
-    for match in direct_rate.finditer(text):
-        if _is_medication_or_dose_rate_distractor(match, text):
-            continue
-        if _is_nonprogressive_myoclonic_rate_distractor(match, text):
-            continue
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label(
-                    match.group("count"),
-                    match.group("unit"),
-                    match.groupdict().get("denominator"),
-                ),
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
+    candidates.extend(apply_rate_rules((DIRECT_RATE_RULE,), text, ablation_config))
 
     over_period = re.compile(
         rf"\b(?P<count>{NUMBER_TOKEN})\s+"
@@ -1655,48 +1643,17 @@ def _extract_rate_candidates(
             )
         )
 
-    no_more_than_period = re.compile(
-        r"\bno\s+more\s+than\s+(?P<count>once|twice|thrice)\s+"
-        r"(?P<period>daily|weekly|monthly|yearly)\b",
-        re.IGNORECASE,
+    candidates.extend(
+        apply_rate_rules((NO_MORE_THAN_ADVERBIAL_RATE_RULE,), text, ablation_config)
     )
-    for match in no_more_than_period.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label(
-                    match.group("count"), _adverbial_period_unit(match.group("period"))
-                ),
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
 
-    occurring_once_per_night = re.compile(
-        rf"\b(?:{SEIZURE_RATE_PHRASE})\s+(?P<evidence>occurring\s+once\s+per\s+night)\b",
-        re.IGNORECASE,
+    candidates.extend(
+        apply_rate_rules((OCCURRING_ONCE_PER_NIGHT_RULE,), text, ablation_config)
     )
-    for match in occurring_once_per_night.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label("1", "day"),
-                evidence=_clean_evidence(match.group("evidence")),
-            )
-        )
 
-    persistent_adverbial_rate = re.compile(
-        rf"\b(?P<evidence>(?:{QUALIFIED_SEIZURE_TERMS})\s+persist\s+"
-        rf"(?P<period>daily|weekly|monthly|yearly))\b",
-        re.IGNORECASE,
+    candidates.extend(
+        apply_rate_rules((PERSISTENT_ADVERBIAL_RATE_RULE,), text, ablation_config)
     )
-    for match in persistent_adverbial_rate.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label("1", _adverbial_period_unit(match.group("period"))),
-                evidence=_clean_evidence(match.group("evidence")),
-            )
-        )
 
     qualitative_recent_multiple = re.compile(
         rf"\b(?P<evidence>(?:occurring\s+)?(?:multiple|several)\s+"
@@ -1747,21 +1704,9 @@ def _extract_rate_candidates(
             )
         )
 
-    counted_adverbial_rate = re.compile(
-        rf"\b(?P<evidence>(?:typically|usually)\s+(?P<count>{NUMBER_TOKEN})\s+"
-        rf"(?:{QUALIFIED_SEIZURE_TERMS})\s+(?P<period>daily|weekly|monthly|yearly))\b",
-        re.IGNORECASE,
+    candidates.extend(
+        apply_rate_rules((COUNTED_ADVERBIAL_RATE_RULE,), text, ablation_config)
     )
-    for match in counted_adverbial_rate.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label(
-                    match.group("count"), _adverbial_period_unit(match.group("period"))
-                ),
-                evidence=_clean_evidence(match.group("evidence")),
-            )
-        )
 
     most_weekdays_rate = re.compile(
         rf"\b(?:(?:she|he|they|patient|carer|caregiver)\s+reports?\s+)?"
@@ -1778,87 +1723,21 @@ def _extract_rate_candidates(
             )
         )
 
-    simple_partial_adverbial_rate = re.compile(
-        r"\b(?P<evidence>simple\s+partial\s+seizure\s+"
-        r"(?P<period>daily|weekly|monthly|yearly))\b",
-        re.IGNORECASE,
+    candidates.extend(
+        apply_rate_rules((SIMPLE_PARTIAL_ADVERBIAL_RATE_RULE,), text, ablation_config)
     )
-    for match in simple_partial_adverbial_rate.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label("1", _adverbial_period_unit(match.group("period"))),
-                evidence=_clean_evidence(match.group("evidence")),
-            )
-        )
 
-    adjective_rates = (
-        (r"daily", "1 per day"),
-        (r"weekly", "1 per week"),
-        (r"monthly", "1 per month"),
-        (r"yearly", "1 per year"),
-        (r"bimonthly", "1 per 2 month"),
+    candidates.extend(
+        apply_rate_rules((SEIZURE_ADJECTIVE_RATE_RULE,), text, ablation_config)
     )
-    for adjective, label in adjective_rates:
-        pattern = re.compile(
-            rf"\b(?:{adjective}\s+(?:{SEIZURE_RATE_PHRASE})|"
-            rf"(?:(?:{SEIZURE_RATE_PHRASE})|{SEIZURE_DESCRIPTOR_PHRASE})\s+{adjective})\b",
-            re.IGNORECASE,
-        )
-        for match in pattern.finditer(text):
-            if _is_adjective_rate_distractor(match, text):
-                continue
-            candidates.append(
-                _RawCandidate(
-                    kind=CandidateKind.FREQUENCY_RATE,
-                    label=label,
-                    evidence=_clean_evidence(match.group(0)),
-                )
-            )
 
-    standalone_adjective_rates = (
-        (r"daily", "1 per day"),
-        (r"weekly", "1 per week"),
-        (r"monthly", "1 per month"),
-        (r"yearly", "1 per year"),
-        (r"bimonthly", "1 per 2 month"),
+    candidates.extend(
+        apply_rate_rules((STANDALONE_ADJECTIVE_RATE_RULE,), text, ablation_config)
     )
-    for adjective, label in standalone_adjective_rates:
-        pattern = re.compile(
-            rf"\b(?:frequency|pattern|rate)\s+(?:is\s+|was\s+|reported as\s+)?{adjective}\b",
-            re.IGNORECASE,
-        )
-        for _match in pattern.finditer(text):
-            candidates.append(
-                _RawCandidate(
-                    kind=CandidateKind.FREQUENCY_RATE,
-                    label=label,
-                    evidence=adjective,
-                )
-            )
 
-    occurring_adjective_rates = (
-        (r"daily", "1 per day"),
-        (r"weekly", "1 per week"),
-        (r"monthly", "1 per month"),
-        (r"yearly", "1 per year"),
-        (r"bimonthly", "1 per 2 month"),
+    candidates.extend(
+        apply_rate_rules((OCCURRING_ADJECTIVE_RATE_RULE,), text, ablation_config)
     )
-    for adjective, label in occurring_adjective_rates:
-        pattern = re.compile(
-            rf"\b(?:occurring|occur|occurs)\s+(?:roughly\s+|approximately\s+)?{adjective}\b",
-            re.IGNORECASE,
-        )
-        for match in pattern.finditer(text):
-            if _is_adjective_rate_distractor(match, text):
-                continue
-            candidates.append(
-                _RawCandidate(
-                    kind=CandidateKind.FREQUENCY_RATE,
-                    label=label,
-                    evidence=_clean_evidence(match.group(0)),
-                )
-            )
 
     recent_count = re.compile(
         rf"\b(?P<count>{NUMBER_TOKEN})\s+(?:{QUALIFIED_SEIZURE_TERMS})\s+"
@@ -3215,26 +3094,6 @@ def _is_seizure_free_distractor(match: re.Match[str], text: str) -> bool:
     return bool(re.search(r"\b(?:breakthrough|recent)\s+(?:seizure|event|episode)", surrounding))
 
 
-def _is_adjective_rate_distractor(match: re.Match[str], text: str) -> bool:
-    evidence = match.group(0).lower()
-    preceding = text[max(0, match.start() - 80) : match.start()].lower()
-    following = text[match.end() : match.end() + 80].lower()
-    surrounding = f"{preceding} {evidence} {following}"
-    if evidence.startswith("daily") or evidence.endswith("daily"):
-        if re.search(r"\bbrief\s+periods?\s+of\s+$", preceding):
-            return True
-    if evidence == "daily seizure":
-        return (
-            "recording" in following
-            or "chart" in following
-            or "diary" in following
-            or "seizures:" in following
-        )
-    if re.search(r"\b(?:smoker|tobacco|caffeine|coffee|alcohol|units)\b", surrounding):
-        return True
-    return False
-
-
 def _is_medication_or_dose_rate_distractor(match: re.Match[str], text: str) -> bool:
     preceding = text[max(0, match.start() - 80) : match.start()].lower()
     following = text[match.end() : match.end() + 80].lower()
@@ -3254,15 +3113,6 @@ def _is_medication_or_dose_rate_distractor(match: re.Match[str], text: str) -> b
     ):
         return True
     return False
-
-
-def _is_nonprogressive_myoclonic_rate_distractor(match: re.Match[str], text: str) -> bool:
-    surrounding = text[max(0, match.start() - 90) : match.end() + 90].lower()
-    return (
-        "myoclonic jerk" in surrounding
-        and re.search(r"\bwithout\s+progression\s+to\s+convulsions?\b", surrounding)
-        is not None
-    )
 
 
 def _normalize_note_text(note_text: str) -> str:
