@@ -11,7 +11,15 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     FrequencyLabelKind,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline_v1 import (
+    CandidateKind,
     Gan2026PipelineV1,
+    _candidate_event,
+    _RawCandidate,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.rule_metadata import (
+    AblationConfig,
+    Portability,
+    RuleGroup,
 )
 
 
@@ -26,6 +34,167 @@ def _record(note_text: str, gold_label: str = "unknown") -> GanRecord:
         row_ok=True,
         raw={},
     )
+
+
+def test_pipeline_preserves_existing_output_with_default_rule_metadata() -> None:
+    note_text = "Present Seizure Frequency: Two events over the last five months."
+
+    result = Gan2026PipelineV1().run(_record(note_text))
+
+    assert result.output.final_value == "2 per 5 month"
+    assert result.diagnostics["final_selection"]["evidence"] == (
+        "Two events over the last five months"
+    )
+    event = result.diagnostics["candidate_events"][0]
+    assert event["rule_id"] == "unknown"
+    assert event["rule_group"] is None
+    assert event["portability"] is None
+    assert event["match_groups"] == {}
+
+
+def test_candidate_event_exposes_rule_metadata_when_present() -> None:
+    candidate = _RawCandidate(
+        kind=CandidateKind.FREQUENCY_RATE,
+        label="2 per week",
+        evidence="two seizures per week",
+        rule_id="rate.direct_count_per_period",
+        rule_group=RuleGroup.PORTABLE_RATE_EXPRESSIONS,
+        portability=Portability.SEIZURE_FREQUENCY,
+        match_groups={"count": "two", "unit": "week"},
+    )
+
+    event = _candidate_event(
+        index=1,
+        candidate=candidate,
+        note_text="Current frequency: two seizures per week.",
+    )
+
+    assert event.rule_id == "rate.direct_count_per_period"
+    assert event.rule_group == RuleGroup.PORTABLE_RATE_EXPRESSIONS
+    assert event.portability == Portability.SEIZURE_FREQUENCY
+    assert event.match_groups == {"count": "two", "unit": "week"}
+
+
+def test_pipeline_can_ablate_a_catalogued_rule() -> None:
+    note_text = (
+        "Possible auras and one episode of anxiety were reviewed. "
+        "She describes her seizure control as Better over the past seven months."
+    )
+
+    default_result = Gan2026PipelineV1().run(_record(note_text))
+    ablated_result = Gan2026PipelineV1(
+        ablation_config=AblationConfig(
+            enabled_groups=frozenset(
+                group
+                for group in RuleGroup
+                if group is not RuleGroup.SEIZURE_FREE_NO_EVENT_ASSERTIONS
+            )
+        )
+    ).run(_record(note_text))
+
+    assert default_result.output.final_value == "unknown"
+    event = default_result.diagnostics["candidate_events"][0]
+    assert event["rule_id"] == "unknown.qualitative_improvement"
+    assert event["rule_group"] == RuleGroup.SEIZURE_FREE_NO_EVENT_ASSERTIONS
+    assert event["portability"] == Portability.SEIZURE_FREQUENCY
+    assert event["match_groups"] == {"duration": "seven"}
+    assert ablated_result.output.final_value == "no seizure frequency reference"
+
+
+@pytest.mark.parametrize(
+    ("note_text", "expected_label", "expected_rule_id"),
+    [
+        (
+            "She continues to experience epileptic spasm on a daily basis.",
+            "1 per day",
+            "rate.daily_basis_current",
+        ),
+        (
+            "His absence seizures are now occurring on two to three days of the week.",
+            "2 to 3 per week",
+            "rate.days_of_week",
+        ),
+        (
+            "He still has generalised tonic-clonic seizures three nights per week.",
+            "3 per week",
+            "rate.nights_per_period",
+        ),
+        (
+            "The diary records five focal automatisms per week.",
+            "5 per week",
+            "rate.descriptor_count_per_period",
+        ),
+        (
+            "She describes 6 to 7 myoclonic per week.",
+            "6 to 7 per week",
+            "rate.qualified_direct_count_per_period",
+        ),
+        (
+            "Present Seizure Frequency: focal seizures every 6 days.",
+            "1 per 6 day",
+            "rate.implicit_every_n_interval",
+        ),
+        (
+            "She now describes seizures every night.",
+            "1 per day",
+            "rate.implicit_every_night_interval",
+        ),
+        (
+            "The current pattern is seizures every other week.",
+            "1 per 2 week",
+            "rate.implicit_every_other_interval",
+        ),
+        (
+            "The carer reports that seizures are occurring every 2 days on average.",
+            "1 per 2 day",
+            "rate.occurring_every_n_interval",
+        ),
+        (
+            "Focal events are now occurring only every other month or so.",
+            "1 per 2 month",
+            "rate.occurring_every_other_interval",
+        ),
+        (
+            "In clinic they report 12 to 30 per quarter.",
+            "12 to 30 per 3 month",
+            "rate.quarter_direct_count_per_period",
+        ),
+    ],
+)
+def test_pipeline_exposes_catalogued_portable_rate_metadata(
+    note_text: str,
+    expected_label: str,
+    expected_rule_id: str,
+) -> None:
+    result = Gan2026PipelineV1().run(_record(note_text))
+
+    assert result.output.final_value == expected_label
+    selected_id = result.diagnostics["final_selection"]["selected_event_ids"][0]
+    selected_event = next(
+        event
+        for event in result.diagnostics["candidate_events"]
+        if event["event_id"] == selected_id
+    )
+    assert selected_event["rule_id"] == expected_rule_id
+    assert selected_event["rule_group"] == RuleGroup.PORTABLE_RATE_EXPRESSIONS
+    assert selected_event["portability"] == Portability.SEIZURE_FREQUENCY
+    assert selected_event["match_groups"]
+
+
+def test_pipeline_can_ablate_catalogued_portable_rate_group() -> None:
+    note_text = "She continues to experience epileptic spasm on a daily basis."
+
+    result = Gan2026PipelineV1(
+        ablation_config=AblationConfig(
+            enabled_groups=frozenset(
+                group
+                for group in RuleGroup
+                if group is not RuleGroup.PORTABLE_RATE_EXPRESSIONS
+            )
+        )
+    ).run(_record(note_text))
+
+    assert result.output.final_value == "no seizure frequency reference"
 
 
 @pytest.mark.parametrize(

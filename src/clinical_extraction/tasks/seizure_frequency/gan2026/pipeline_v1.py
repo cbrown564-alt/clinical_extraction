@@ -2,27 +2,46 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
-from enum import StrEnum
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from clinical_extraction.core.evidence import evidence_is_substring, locate_evidence
 from clinical_extraction.core.pipeline import PipelineResult
 from clinical_extraction.core.schemas import FinalExtraction
+from clinical_extraction.tasks.seizure_frequency.gan2026.candidates import (
+    CandidateKind,
+    RawCandidate,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     FrequencyLabelKind,
     label_to_frequency_record,
     repair_prediction_label,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.rule_metadata import (
+    AblationConfig,
+    ExtractionContext,
+    Portability,
+    RuleExample,
+    RuleGroup,
+    RuleSpec,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.rules.rate import (
+    DAILY_BASIS_CURRENT_RULE,
+    DAYS_OF_WEEK_RATE_RULE,
+    DESCRIPTOR_RATE_RULE,
+    IMPLICIT_EVERY_OTHER_INTERVAL_RULE,
+    IMPLICIT_INTERVAL_RULE,
+    IMPLICIT_NIGHTLY_INTERVAL_RULE,
+    NIGHTS_PER_PERIOD_RULE,
+    OCCURRING_EVERY_OTHER_INTERVAL_RULE,
+    OCCURRING_INTERVAL_RULE,
+    QUALIFIED_DIRECT_RATE_RULE,
+    QUARTER_DIRECT_RATE_RULE,
+    apply_rate_rules,
+)
 
-
-class CandidateKind(StrEnum):
-    FREQUENCY_RATE = "frequency_rate"
-    CLUSTER_FREQUENCY = "cluster_frequency"
-    SEIZURE_FREE = "seizure_free"
-    UNKNOWN_FREQUENCY = "unknown_frequency"
-    NO_REFERENCE = "no_reference"
+_RawCandidate = RawCandidate
 
 
 class CandidateEvent(BaseModel):
@@ -34,6 +53,10 @@ class CandidateEvent(BaseModel):
     evidence: str
     start_char: int | None = None
     end_char: int | None = None
+    rule_id: str = "unknown"
+    rule_group: RuleGroup | None = None
+    portability: Portability | None = None
+    match_groups: dict[str, str | None] = Field(default_factory=dict)
 
 
 class NormalizedEvent(BaseModel):
@@ -59,17 +82,45 @@ class FinalSelection(BaseModel):
 
 
 @dataclass(frozen=True)
-class _RawCandidate:
-    kind: CandidateKind
-    label: str | None
-    evidence: str
-
-
-@dataclass(frozen=True)
 class _ParsedMonthDate:
     year: int
     month: int
     day: int | None = None
+
+
+def _build_qualitative_improvement_unknown(
+    match: re.Match[str], _context: ExtractionContext
+) -> _RawCandidate:
+    return _RawCandidate(
+        kind=CandidateKind.UNKNOWN_FREQUENCY,
+        label="unknown",
+        evidence=_clean_evidence(match.group(0)),
+        rule_id="unknown.qualitative_improvement",
+        rule_group=RuleGroup.SEIZURE_FREE_NO_EVENT_ASSERTIONS,
+        portability=Portability.SEIZURE_FREQUENCY,
+        match_groups=match.groupdict(),
+    )
+
+
+QUALITATIVE_IMPROVEMENT_UNKNOWN_RULE = RuleSpec(
+    rule_id="unknown.qualitative_improvement",
+    group=RuleGroup.SEIZURE_FREE_NO_EVENT_ASSERTIONS,
+    portability=Portability.SEIZURE_FREQUENCY,
+    description="Treat qualitative current improvement spans as unknown frequency.",
+    pattern=re.compile(
+        r"\bBetter\s+over\s+the\s+past\s+(?P<duration>\d+|[a-z]+)\s+months?\b",
+        re.IGNORECASE,
+    ),
+    build=_build_qualitative_improvement_unknown,
+    examples=(
+        RuleExample(
+            text="She describes seizure control as Better over the past seven months.",
+            expected_label="unknown",
+            expected_evidence="Better over the past seven months",
+        ),
+    ),
+    provenance="Validation-derived V1 qualitative improvement unknown-frequency guard.",
+)
 
 
 NUMBER_WORDS = {
@@ -165,8 +216,11 @@ SEIZURE_TYPE_DESCRIPTOR = (
 class Gan2026PipelineV1:
     """First deterministic, schema-shaped seizure-frequency baseline."""
 
+    def __init__(self, ablation_config: AblationConfig | None = None) -> None:
+        self.ablation_config = ablation_config or AblationConfig()
+
     def run(self, item: GanRecord) -> PipelineResult[FinalExtraction]:
-        candidates = _extract_candidates(item.note_text)
+        candidates = _extract_candidates(item.note_text, self.ablation_config)
         if not candidates:
             candidates = [
                 _RawCandidate(
@@ -200,13 +254,16 @@ class Gan2026PipelineV1:
         return PipelineResult(output=output, diagnostics=diagnostics)
 
 
-def _extract_candidates(note_text: str) -> list[_RawCandidate]:
+def _extract_candidates(
+    note_text: str, ablation_config: AblationConfig | None = None
+) -> list[_RawCandidate]:
+    ablation_config = ablation_config or AblationConfig()
     normalized = _normalize_note_text(note_text)
     candidates: list[_RawCandidate] = []
     candidates.extend(_extract_cluster_candidates(normalized))
     candidates.extend(_extract_seizure_free_candidates(normalized))
-    candidates.extend(_extract_rate_candidates(normalized))
-    candidates.extend(_extract_unknown_candidates(normalized))
+    candidates.extend(_extract_rate_candidates(normalized, ablation_config))
+    candidates.extend(_extract_unknown_candidates(normalized, ablation_config))
     return _prune_contained_frequency_fragments(_dedupe_candidates(candidates), normalized)
 
 
@@ -1052,7 +1109,10 @@ def _extract_distributed_count_candidates(text: str) -> list[_RawCandidate]:
     return candidates
 
 
-def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
+def _extract_rate_candidates(
+    text: str, ablation_config: AblationConfig | None = None
+) -> list[_RawCandidate]:
+    ablation_config = ablation_config or AblationConfig()
     candidates: list[_RawCandidate] = []
     remission_then_breakthrough = re.compile(
         rf"\bseizure[- ]free\s+for\s+(?P<denominator>{NUMBER_TOKEN})\s+"
@@ -1293,33 +1353,13 @@ def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
             )
         )
 
-    daily_basis_current = re.compile(
-        rf"\b(?P<evidence>continues\s+to\s+experience\s+"
-        rf"(?:{QUALIFIED_SEIZURE_TERMS})\s+on\s+a\s+daily\s+basis)\b",
-        re.IGNORECASE,
-    )
-    for match in daily_basis_current.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label("1", "day"),
-                evidence=_clean_evidence(match.group("evidence")),
-            )
+    candidates.extend(
+        apply_rate_rules(
+            (DAILY_BASIS_CURRENT_RULE, DAYS_OF_WEEK_RATE_RULE),
+            text,
+            ablation_config,
         )
-
-    days_of_week_rate = re.compile(
-        rf"\b(?P<evidence>(?:{SEIZURE_RATE_PHRASE})\s+are\s+now\s+occurring\s+on\s+"
-        rf"(?P<count>{NUMBER_TOKEN})\s+days?\s+of\s+the\s+week)\b",
-        re.IGNORECASE,
     )
-    for match in days_of_week_rate.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label(match.group("count"), "week"),
-                evidence=_clean_evidence(match.group("evidence")),
-            )
-        )
 
     cluster_spacing_interval = re.compile(
         rf"\b(?P<evidence>(?:{SEIZURE_RATE_PHRASE})\s+typically\s+occur\s+in\s+"
@@ -1336,19 +1376,9 @@ def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
             )
         )
 
-    nights_per_period = re.compile(
-        rf"\b(?P<evidence>still\s+has\s+(?:{QUALIFIED_SEIZURE_TERMS})\s+"
-        rf"(?P<count>{NUMBER_TOKEN})\s+nights?\s+per\s+(?P<unit>week|month|year))\b",
-        re.IGNORECASE,
+    candidates.extend(
+        apply_rate_rules((NIGHTS_PER_PERIOD_RULE,), text, ablation_config)
     )
-    for match in nights_per_period.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label(match.group("count"), match.group("unit")),
-                evidence=_clean_evidence(match.group("evidence")),
-            )
-        )
 
     year_to_date_count = re.compile(
         rf"\b(?P<evidence>(?P<count>{NUMBER_TOKEN})\s+"
@@ -1442,27 +1472,13 @@ def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
     candidates.extend(_extract_monthly_diary_summary_candidates(text, clinic_date))
     candidates.extend(_extract_distributed_count_candidates(text))
 
-    descriptor_rate = re.compile(
-        rf"\b(?:rate\s+of|records|reports)\s+(?P<count>{NUMBER_TOKEN})\s+"
-        rf"(?:focal|sensory|automatisms?|non-motor|motor|aware|impaired-awareness|"
-        rf"impaired\s+awareness|tonic-clonic|myoclonic|absence|brief)(?:\s+"
-        rf"(?:focal|sensory|automatisms?|non-motor|motor|aware|impaired-awareness|"
-        rf"impaired\s+awareness|tonic-clonic|myoclonic|absence|brief)){{0,4}}\s+"
-        rf"per\s+(?:(?P<denominator>{NUMBER_TOKEN})\s+)?(?P<unit>{UNIT_TOKEN})\b",
-        re.IGNORECASE,
+    candidates.extend(apply_rate_rules((DESCRIPTOR_RATE_RULE,), text, ablation_config))
+    candidates.extend(
+        apply_rate_rules((QUALIFIED_DIRECT_RATE_RULE,), text, ablation_config)
     )
-    for match in descriptor_rate.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label(
-                    match.group("count"),
-                    match.group("unit"),
-                    match.groupdict().get("denominator"),
-                ),
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
+    candidates.extend(
+        apply_rate_rules((QUARTER_DIRECT_RATE_RULE,), text, ablation_config)
+    )
 
     direct_rate = re.compile(
         rf"\b(?P<count>{NUMBER_TOKEN})\s+"
@@ -1475,27 +1491,6 @@ def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
             continue
         if _is_nonprogressive_myoclonic_rate_distractor(match, text):
             continue
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label(
-                    match.group("count"),
-                    match.group("unit"),
-                    match.groupdict().get("denominator"),
-                ),
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
-
-    qualified_direct_rate = re.compile(
-        rf"\b(?P<count>{NUMBER_TOKEN})\s+"
-        rf"(?:(?!day|days|week|weeks|month|months|quarter|quarters|year|years)"
-        rf"{WORD_TOKEN}\s+){{0,4}}(?:{SEIZURE_TERMS})\s+"
-        rf"(?:per|each|every)\s+"
-        rf"(?:(?P<denominator>{NUMBER_TOKEN})\s+)?(?P<unit>{UNIT_TOKEN})\b",
-        re.IGNORECASE,
-    )
-    for match in qualified_direct_rate.finditer(text):
         candidates.append(
             _RawCandidate(
                 kind=CandidateKind.FREQUENCY_RATE,
@@ -1528,79 +1523,21 @@ def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
             )
         )
 
-    implicit_interval = re.compile(
-        rf"\b(?:{SEIZURE_TERMS})\s+every\s+"
-        rf"(?:(?P<denominator>{NUMBER_TOKEN})\s+)?(?P<unit>{UNIT_TOKEN})\b",
-        re.IGNORECASE,
-    )
-    for match in implicit_interval.finditer(text):
-        if _has_historical_lead_in(text, match.start()):
-            continue
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label("1", match.group("unit"), match.group("denominator")),
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
+    candidates.extend(apply_rate_rules((IMPLICIT_INTERVAL_RULE,), text, ablation_config))
 
-    implicit_nightly_interval = re.compile(
-        rf"\b(?:{SEIZURE_RATE_PHRASE}|{SEIZURE_DESCRIPTOR_PHRASE})\s+every\s+night\b",
-        re.IGNORECASE,
+    candidates.extend(
+        apply_rate_rules((IMPLICIT_NIGHTLY_INTERVAL_RULE,), text, ablation_config)
     )
-    for match in implicit_nightly_interval.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label("1", "day"),
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
 
-    implicit_other_interval = re.compile(
-        rf"\b(?:{SEIZURE_TERMS})\s+every\s+other\s+(?P<unit>day|week|month|year)\b",
-        re.IGNORECASE,
+    candidates.extend(
+        apply_rate_rules((IMPLICIT_EVERY_OTHER_INTERVAL_RULE,), text, ablation_config)
     )
-    for match in implicit_other_interval.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label("1", match.group("unit"), "2"),
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
 
-    occurring_interval = re.compile(
-        rf"\b(?P<verb>occurring|occur|occurs|cluster|clusters)\s+"
-        rf"(?:only\s+|roughly\s+|approximately\s+)?every\s+"
-        rf"(?:(?P<denominator>{NUMBER_TOKEN})\s+)?(?P<unit>{UNIT_TOKEN})\b",
-        re.IGNORECASE,
-    )
-    for match in occurring_interval.finditer(text):
-        if _has_historical_lead_in(text, match.start()):
-            continue
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label("1", match.group("unit"), match.group("denominator")),
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
+    candidates.extend(apply_rate_rules((OCCURRING_INTERVAL_RULE,), text, ablation_config))
 
-    occurring_other_interval = re.compile(
-        r"\b(?P<verb>occurring|occur|occurs)\s+"
-        r"(?:only\s+|roughly\s+|approximately\s+)?every\s+other\s+"
-        r"(?P<unit>day|week|month|year)\b",
-        re.IGNORECASE,
+    candidates.extend(
+        apply_rate_rules((OCCURRING_EVERY_OTHER_INTERVAL_RULE,), text, ablation_config)
     )
-    for match in occurring_other_interval.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label("1", match.group("unit"), "2"),
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
 
     fortnight_interval = re.compile(
         r"\bonce\s+in\s+a\s+fortnight\b",
@@ -1852,19 +1789,6 @@ def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
                 kind=CandidateKind.FREQUENCY_RATE,
                 label=_rate_label("1", _adverbial_period_unit(match.group("period"))),
                 evidence=_clean_evidence(match.group("evidence")),
-            )
-        )
-
-    direct_per_period = re.compile(
-        rf"\b(?P<count>{NUMBER_TOKEN})\s+per\s+(?P<unit>quarter)\b",
-        re.IGNORECASE,
-    )
-    for match in direct_per_period.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label(match.group("count"), match.group("unit")),
-                evidence=_clean_evidence(match.group(0)),
             )
         )
 
@@ -2553,7 +2477,9 @@ def _extract_monthly_diary_summary_candidates(
     return candidates
 
 
-def _extract_unknown_candidates(text: str) -> list[_RawCandidate]:
+def _extract_unknown_candidates(
+    text: str, ablation_config: AblationConfig
+) -> list[_RawCandidate]:
     trigger_conditioned = [
         re.compile(
             r"\bonly\s+when\s+significantly\s+short\s+on\s+sleep\b",
@@ -2561,10 +2487,6 @@ def _extract_unknown_candidates(text: str) -> list[_RawCandidate]:
         ),
         re.compile(
             r"\bSeizures\s+happen\s+when\s+perimenstrual\s+only\s+\(days\s+-3\s+to\s+\+3\)",
-            re.IGNORECASE,
-        ),
-        re.compile(
-            r"\bBetter\s+over\s+the\s+past\s+(?:\d+|[a-z]+)\s+months?\b",
             re.IGNORECASE,
         ),
     ]
@@ -2577,6 +2499,14 @@ def _extract_unknown_candidates(text: str) -> list[_RawCandidate]:
         for pattern in trigger_conditioned
         for match in pattern.finditer(text)
     ]
+    context = ExtractionContext(text=text)
+    candidates.extend(
+        candidate
+        for candidate in QUALITATIVE_IMPROVEMENT_UNKNOWN_RULE.apply(
+            context, ablation_config
+        )
+        if isinstance(candidate, _RawCandidate)
+    )
     unknown = re.compile(
         r"\b(?:frequency unclear|unclear frequency|cannot specify how often|last seizure\b.*?)",
         re.IGNORECASE,
@@ -2603,6 +2533,10 @@ def _candidate_event(index: int, candidate: _RawCandidate, note_text: str) -> Ca
         evidence=evidence,
         start_char=start_char,
         end_char=end_char,
+        rule_id=candidate.rule_id,
+        rule_group=candidate.rule_group,
+        portability=candidate.portability,
+        match_groups=dict(candidate.match_groups),
     )
 
 
