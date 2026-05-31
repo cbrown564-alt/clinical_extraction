@@ -389,6 +389,80 @@ def test_pipeline_can_ablate_catalogued_cluster_group() -> None:
     ("note_text", "expected_label", "expected_rule_id"),
     [
         (
+            "About three seizure days per week are reported.",
+            "3 per week",
+            "diary.seizure_days_per_period",
+        ),
+        (
+            "Seizure days: six/30 this month.",
+            "6 per month",
+            "diary.seizure_days_fraction",
+        ),
+        (
+            "The diary documents: Seizure events on 03-07, 03-27, 05-15, 05-19, 05-24.",
+            "5 per 2 month",
+            "diary.date_list",
+        ),
+        (
+            "Seizures in 2023-2024: January: 4 days, February: 2 days.",
+            "6 per 2 month",
+            "diary.seizure_day_log",
+        ),
+        (
+            "Seizure: 2022: Jan x1, Feb x0, Mar x1.",
+            "2 per 3 month",
+            "diary.monthly_count_log",
+        ),
+        (
+            "2025: January 0; February 1; March 2.",
+            "3 per 3 month",
+            "diary.sparse_full_month_log",
+        ),
+        (
+            "Recorded: January 1 seizure, February 2 seizures, March 0 seizures.",
+            "3 per 3 month",
+            "diary.recorded_month_log",
+        ),
+    ],
+)
+def test_pipeline_exposes_catalogued_diary_metadata(
+    note_text: str,
+    expected_label: str,
+    expected_rule_id: str,
+) -> None:
+    result = Gan2026PipelineV1().run(_record(note_text))
+
+    assert result.output.final_value == expected_label
+    selected_id = result.diagnostics["final_selection"]["selected_event_ids"][0]
+    selected_event = next(
+        event
+        for event in result.diagnostics["candidate_events"]
+        if event["event_id"] == selected_id
+    )
+    assert selected_event["rule_id"] == expected_rule_id
+    assert selected_event["rule_group"] == RuleGroup.DIARY_LOG_AGGREGATION
+    assert selected_event["portability"] == Portability.SEIZURE_FREQUENCY
+    assert selected_event["match_groups"]
+
+
+def test_pipeline_can_ablate_catalogued_diary_group() -> None:
+    note_text = "Seizure days: six/30 this month."
+
+    result = Gan2026PipelineV1(
+        ablation_config=AblationConfig(
+            enabled_groups=frozenset(
+                group for group in RuleGroup if group is not RuleGroup.DIARY_LOG_AGGREGATION
+            )
+        )
+    ).run(_record(note_text))
+
+    assert result.output.final_value == "no seizure frequency reference"
+
+
+@pytest.mark.parametrize(
+    ("note_text", "expected_label", "expected_rule_id"),
+    [
+        (
             "She continues to experience epileptic spasm on a daily basis.",
             "1 per day",
             "rate.daily_basis_current",

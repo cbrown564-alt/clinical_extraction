@@ -15,6 +15,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.rule_metadata import (
 from clinical_extraction.tasks.seizure_frequency.gan2026.rules.cluster import (
     CLUSTER_RULES,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.rules.diary import (
+    DIARY_RULES,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.rules.rate import (
     PORTABLE_RATE_RULES,
 )
@@ -128,6 +131,10 @@ def test_portable_rate_rule_registry_is_valid() -> None:
 
 def test_cluster_rule_registry_is_valid() -> None:
     validate_rule_registry(CLUSTER_RULES)
+
+
+def test_diary_rule_registry_is_valid() -> None:
+    validate_rule_registry(DIARY_RULES)
 
 
 def test_seizure_free_rule_registry_is_valid() -> None:
