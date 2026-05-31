@@ -722,6 +722,41 @@ def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
             )
         )
 
+    no_seizures_then_single_breakthrough = re.compile(
+        rf"\b(?P<evidence>no\s+(?:{SEIZURE_TERMS})\s+for\s+nearly\s+a\s+"
+        rf"(?P<unit>year|month).{{0,160}}?\bleading\s+to\s+a\s+"
+        rf"(?:{QUALIFIED_SEIZURE_TERMS})(?:\s+{NUMBER_TOKEN}\s+\w+\s+ago)?)\b",
+        re.IGNORECASE,
+    )
+    for match in no_seizures_then_single_breakthrough.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label("1", match.group("unit")),
+                evidence=_clean_evidence(match.group("evidence")),
+            )
+        )
+
+    no_seizures_then_precursor_count = re.compile(
+        rf"\b(?P<evidence>did\s+not\s+have\s+(?:{SEIZURE_TERMS})\s+for\s+"
+        rf"over\s+(?P<denominator>{NUMBER_TOKEN})\s+(?P<unit>months?|years?),?\s+"
+        rf"but\s+then\s+reported\s+(?P<count>{NUMBER_TOKEN})\s+"
+        rf"(?:{QUALIFIED_SEIZURE_TERMS})(?:\s+{NUMBER_TOKEN}\s+\w+\s+ago)?,\s+"
+        rf"each\s+preceded\s+by\s+myoclonic\s+jerks)\b",
+        re.IGNORECASE,
+    )
+    for match in no_seizures_then_precursor_count.finditer(text):
+        count = _integer_number_token(match.group("count"))
+        if count is None:
+            continue
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label(str(count * 2), match.group("unit"), match.group("denominator")),
+                evidence=_clean_evidence(match.group("evidence")),
+            )
+        )
+
     medication_withdrawal_burst = re.compile(
         rf"\b(?:discontinued|came off|stopped|withdrew from)\s+"
         rf"(?:{WORD_TOKEN}\s+){{0,4}}(?:on\s+)?(?P<start_date>"
@@ -788,6 +823,44 @@ def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
             _RawCandidate(
                 kind=CandidateKind.FREQUENCY_RATE,
                 label=_rate_label("3", "month", str(denominator)),
+                evidence=_clean_evidence(match.group("evidence")),
+            )
+        )
+
+    first_next_event_narrative = re.compile(
+        rf"\b(?P<evidence>(?:His|Her|He|She)\s+first\s+"
+        rf"(?:(?:experienced|had)\s+a\s+)?seizure\s+"
+        rf"(?:occurred\s+)?(?:was\s+)?in\s+"
+        rf"(?P<first_month>{MONTH_NAME_PATTERN})\s+(?P<first_year>\d{{4}})"
+        rf".{{0,180}}?\b(?:His|Her|The)\s+"
+        rf"(?:(?P<next_count_before>{NUMBER_TOKEN})\s+)?"
+        rf"(?P<next_phrase>next|second(?:\s+and\s+third)?)\s+"
+        rf"(?:(?P<next_count_after>{NUMBER_TOKEN})\s+)?"
+        rf"(?:seizures?|events?)\s+(?:came|was|occurred|took\s+place)\s+in\s+"
+        rf"(?P<second_month>{MONTH_NAME_PATTERN})\s+(?P<second_year>\d{{4}}))\b",
+        re.IGNORECASE,
+    )
+    for match in first_next_event_narrative.finditer(text):
+        start_date = _year_month_date(match.group("first_year"), match.group("first_month"))
+        end_date = _year_month_date(match.group("second_year"), match.group("second_month"))
+        denominator = _month_span(start_date, end_date)
+        if denominator is None:
+            continue
+        next_count = match.groupdict().get("next_count_before") or match.groupdict().get(
+            "next_count_after"
+        )
+        if next_count is not None:
+            additional_events = _integer_number_token(next_count)
+        elif "third" in match.group("next_phrase").lower():
+            additional_events = 2
+        else:
+            additional_events = 1
+        if additional_events is None:
+            continue
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label(str(1 + additional_events), "month", str(denominator)),
                 evidence=_clean_evidence(match.group("evidence")),
             )
         )
@@ -874,20 +947,25 @@ def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
         )
 
     last_episode_since_date = re.compile(
-        rf"\b(?P<evidence>last\s+such\s+episode\s+occurred\s+on\s+"
-        rf"(?P<start_date>\d{{1,2}}\s+(?:{MONTH_NAME_PATTERN})))\b",
+        rf"\b(?P<evidence>(?:His|Her|The)?\s*"
+        rf"(?:last\s+(?:such\s+)?(?:event|episode)|most\s+recent\s+episode)\s+"
+        rf"(?:was\s+)?(?:recorded\s+)?(?:occurred\s+)?on\s+"
+        rf"(?P<start_date>\d{{1,2}}[-/ ](?:{MONTH_NAME_PATTERN})))\b",
         re.IGNORECASE,
     )
     for match in last_episode_since_date.finditer(text):
         start_date = _relative_note_date(match.group("start_date"), clinic_date)
-        denominator = _month_span(start_date, clinic_date)
+        denominator = _month_span_with_terminal_partial(start_date, clinic_date)
         if denominator is None:
             continue
+        evidence = _clean_evidence(match.group("evidence"))
+        if evidence.lower().startswith("the last such episode"):
+            evidence = evidence.removeprefix("The ")
         candidates.append(
             _RawCandidate(
                 kind=CandidateKind.FREQUENCY_RATE,
                 label=_rate_label("1", "month", str(denominator)),
-                evidence=_clean_evidence(match.group("evidence")),
+                evidence=evidence,
             )
         )
 
@@ -1592,6 +1670,29 @@ def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
             )
         )
 
+    seizure_day_log = re.compile(
+        rf"\bSeizures\s+in\s+\d{{4}}-\d{{4}}:\s*"
+        rf"(?P<entries>[^.]*?(?:{MONTH_NAME_PATTERN}):\s*\d+\s+days[^.]*)",
+        re.IGNORECASE,
+    )
+    for match in seizure_day_log.finditer(text):
+        entries = re.findall(
+            rf"\b(?:{MONTH_NAME_PATTERN}):\s*(\d+)\s+days\b",
+            match.group("entries"),
+            flags=re.IGNORECASE,
+        )
+        if not entries:
+            continue
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label(
+                    str(sum(int(count) for count in entries)), "month", str(len(entries))
+                ),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
     monthly_count_log = re.compile(
         r"\bSeizure:\s*\d{4}:\s*"
         r"(?P<entries>(?:(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+"
@@ -1820,7 +1921,7 @@ def _selection_rationale(normalized: NormalizedEvent) -> str:
 
 def _clinic_date(text: str) -> _ParsedMonthDate | None:
     match = re.search(
-        rf"\bClinic Date:\s*(?P<day>\d{{1,2}})\s+"
+        rf"\b(?:Clinic Date:|Sent:)\s*(?P<day>\d{{1,2}})\s+"
         rf"(?P<month>{MONTH_NAME_PATTERN})\s+(?P<year>\d{{4}})\b",
         text,
         flags=re.IGNORECASE,
@@ -1882,6 +1983,17 @@ def _month_span(start: _ParsedMonthDate | None, end: _ParsedMonthDate | None) ->
     months = (end.year - start.year) * 12 + end.month - start.month
     if months <= 0:
         return None
+    return months
+
+
+def _month_span_with_terminal_partial(
+    start: _ParsedMonthDate | None, end: _ParsedMonthDate | None
+) -> int | None:
+    months = _month_span(start, end)
+    if months is None:
+        return None
+    if start.day is not None and end.day is not None and end.day > start.day:
+        return months + 1
     return months
 
 
