@@ -443,6 +443,158 @@ def _extract_cluster_candidates(text: str) -> list[_RawCandidate]:
                 evidence=_clean_evidence(match.group(0)),
             )
         )
+
+    cluster_count_this_period_with_size = re.compile(
+        rf"\b(?P<count>{NUMBER_TOKEN})\s+clusters?\s+this\s+"
+        rf"(?P<period>week|month|quarter|year)[,;]?\s*.*?\beach\b.*?(?:approx|about|around|roughly|~|≈)?\s*"
+        rf"(?P<raw_per_cluster>{NUMBER_TOKEN})(?:\s*or\s+more)?\s+(?:{SEIZURE_TERMS})\b",
+        re.IGNORECASE,
+    )
+    for match in cluster_count_this_period_with_size.finditer(text):
+        per_cluster = _cluster_size_token(match.group("raw_per_cluster"))
+        period = match.group("period")
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.CLUSTER_FREQUENCY,
+                label=(
+                    f"{_number_token(match.group('count'))} cluster per "
+                    f"{_cluster_period_label(period)}, {per_cluster} per cluster"
+                ),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    cluster_period_with_per_cluster = re.compile(
+        rf"\b(?P<period>daily|weekly|monthly|yearly|quarter)\b[^.;]{{0,80}}?\b"
+        rf"(?P<raw_per_cluster>{NUMBER_TOKEN})(?:\s*or\s+more)?\s+per\s+cluster\b",
+        re.IGNORECASE,
+    )
+    for match in cluster_period_with_per_cluster.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.CLUSTER_FREQUENCY,
+                label=(
+                    f"1 cluster per {_cluster_period_label(match.group('period'))}, "
+                    f"{_cluster_size_token(match.group('raw_per_cluster'))} per cluster"
+                ),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    descriptor_cluster_size = re.compile(
+        rf"\b(?P<period>daily|weekly|monthly|yearly)\s+clusters?,\s*"
+        rf"(?:usually|typically)\s+(?P<raw_per_cluster>{NUMBER_TOKEN})(?:\s*or\s+more)?\s+"
+        rf"(?:{SEIZURE_TERMS}|events?|episodes?|spells?)\b",
+        re.IGNORECASE,
+    )
+    for match in descriptor_cluster_size.finditer(text):
+        period = _cluster_period_label(match.group("period"))
+        per_cluster = _cluster_size_token(match.group("raw_per_cluster"))
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.CLUSTER_FREQUENCY,
+                label=(
+                    f"1 cluster per {period}, "
+                    f"{per_cluster} per cluster"
+                ),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    cluster_timing = re.compile(
+        rf"\b(?:(?:on|occurring)\s+)(?P<count>{NUMBER_TOKEN}|several|multiple)\s+"
+        rf"(?P<time>(?:morning|mornings|evening|evenings|night|nights|afternoon|afternoons))\s+"
+        rf"(?:each|per)\s+(?P<period>week|month|fortnight)\b",
+        re.IGNORECASE,
+    )
+    for match in cluster_timing.finditer(text):
+        context = text[max(0, match.start() - 260): min(len(text), match.end() + 260)]
+        period = _cluster_period_label(match.group("period"))
+        per_cluster = _infer_cluster_size(context)
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.CLUSTER_FREQUENCY,
+                label=(
+                    f"{_number_token(match.group('count'))} cluster per {period}, "
+                    f"{per_cluster} per cluster"
+                ),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    cluster_days_simple = re.compile(
+        rf"\b(?P<count>{NUMBER_TOKEN})\s+cluster\s+days?\s+this\s+"
+        rf"(?P<period>month|week);?\b",
+        re.IGNORECASE,
+    )
+    for match in cluster_days_simple.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.CLUSTER_FREQUENCY,
+                label=(
+                    f"{_number_token(match.group('count'))} cluster per "
+                    f"{_singular_unit(match.group('period'))}, multiple per cluster"
+                ),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    short_burst_cluster = re.compile(
+        r"\bshort\s+bursts?\s+around\s+the\s+beginning\s+of\s+most\s+months\b",
+        re.IGNORECASE,
+    )
+    for match in short_burst_cluster.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.CLUSTER_FREQUENCY,
+                label="1 cluster per month, multiple per cluster",
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    cluster_count_with_implied_size = re.compile(
+        rf"\b(?P<count>{NUMBER_TOKEN})(?:\s+[\w-]+){{0,3}}?\s+clusters?\s+this\s+"
+        rf"(?P<period>month|week|fortnight)\b(?P<rest>[^.]{{0,200}})",
+        re.IGNORECASE,
+    )
+    per_cluster_context = re.compile(
+        rf"(?:\beach\s+)?~?\s*(?P<raw_per_cluster>{NUMBER_TOKEN}(?:\s*[-–—]\s*{NUMBER_TOKEN})?\s*)\s+"
+        rf"(?:{SEIZURE_TERMS}|events?|episodes?|spells?)",
+        re.IGNORECASE,
+    )
+    for match in cluster_count_with_implied_size.finditer(text):
+        per_cluster_match = per_cluster_context.search(match.group("rest"))
+        if per_cluster_match is None:
+            continue
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.CLUSTER_FREQUENCY,
+                label=(
+                    f"{_number_token(match.group('count'))} cluster per "
+                    f"{_cluster_period_label(match.group('period'))}, "
+                    f"{_cluster_size_token(per_cluster_match.group('raw_per_cluster'))} per cluster"
+                ),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    cluster_size_without_cluster_count = re.compile(
+        rf"\b(?P<period>daily|weekly|monthly|yearly|fortnightly|fortnight)\b[\s,;-]{{0,40}}?\s*"
+        rf"\b(?:about|around|approximately|roughly|~)?\s*(?P<raw_per_cluster>{NUMBER_TOKEN})(?:\s*or\s+more)?\s+"
+        rf"per\s+(?:{SEIZURE_TERMS}|events?|episodes?|spells?)?\s*cluster\b",
+        re.IGNORECASE,
+    )
+    for match in cluster_size_without_cluster_count.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.CLUSTER_FREQUENCY,
+                label=(
+                    f"1 cluster per {_cluster_period_label(match.group('period'))}, "
+                    f"{_cluster_size_token(match.group('raw_per_cluster'))} per cluster"
+                ),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
     return candidates
 
 
@@ -1424,6 +1576,51 @@ def _number_token(value: str | None) -> str:
     return NUMBER_WORDS.get(normalized, normalized)
 
 
+def _cluster_size_token(value: str | None) -> str:
+    if value is None:
+        return "multiple"
+    normalized = re.sub(r"\bor more\b", "", value, flags=re.IGNORECASE)
+    normalized = re.sub(r"[≈~]", "", normalized)
+    normalized = re.sub(r"\s*-\s*", " to ", normalized)
+    normalized = re.sub(r"\s+", " ", normalized).strip()
+    if normalized == "":
+        return "multiple"
+    return _number_token(normalized)
+
+
+def _infer_cluster_size(text: str) -> str:
+    patterns = [
+        re.compile(
+            rf"\beach\s+(?:approximately|about|around|roughly|\~|≈)?\s*(?P<count>{NUMBER_TOKEN})(?:\s*to\s*{NUMBER_TOKEN})?\s+(?:{SEIZURE_TERMS}|events?|episodes?|spells?)",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            rf"\b(?:usually|typically)\s+(?:approximately|about|around|roughly|\~|≈)?\s*(?P<count>{NUMBER_TOKEN})(?:\s*or\s+more)?\s+(?:{SEIZURE_TERMS}|events?|episodes?|spells?)",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            rf"\beach\s+cluster\s+(?:involves|comprising|comprised of)\s+"
+            rf"(?:approximately|about|around|roughly|\~|≈)?\s*(?P<count>{NUMBER_TOKEN})(?:\s*to\s*{NUMBER_TOKEN})?\s+"
+            rf"(?:{WORD_TOKEN}\s+){{0,2}}(?:{SEIZURE_TERMS}|events?|episodes?|spells?)",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            rf"\b(?:approximately|about|around|roughly|\~|≈)?\s*(?P<count>{NUMBER_TOKEN})(?:\s*or\s+more)?\s+per\s*(?:cluster|episode)\b",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            rf"(?P<count>{NUMBER_TOKEN})\s+(?:{SEIZURE_TERMS}|events?|episodes?|spells?)\s+per\s+(?:cluster|episode)\b",
+            re.IGNORECASE,
+        ),
+        re.compile(rf"(?P<count>{NUMBER_TOKEN})\s+times\b", re.IGNORECASE),
+    ]
+    for pattern in patterns:
+        match = pattern.search(text)
+        if match is not None:
+            return _cluster_size_token(match.group("count"))
+    return "multiple"
+
+
 def _integer_number_token(value: str) -> int | None:
     normalized = _number_token(value)
     if normalized.isdigit():
@@ -1461,6 +1658,10 @@ def _period_label(unit: str, denominator: str | None = None) -> str:
 
 def _cluster_period_label(unit: str) -> str:
     unit_value = _singular_unit(unit)
+    if unit_value in {"daily", "weekly", "monthly", "yearly", "fortnightly"}:
+        return unit_value[:-2] if unit_value.endswith("ly") else unit_value
+    if unit_value == "fortnight":
+        return "2 week"
     if unit_value == "quarter":
         return "3 month"
     return unit_value
