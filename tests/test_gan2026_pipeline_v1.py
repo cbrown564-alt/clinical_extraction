@@ -423,6 +423,19 @@ def test_pipeline_can_ablate_catalogued_cluster_group() -> None:
             "3 per 3 month",
             "diary.recorded_month_log",
         ),
+        (
+            "Frequency has increased: July x 3 focal aware motor; August x 4 focal "
+            "aware motor; September x 5 focal aware motor with two focal to bilateral "
+            "tonic-clonic.",
+            "5 per month",
+            "diary.increasing_monthly_count",
+        ),
+        (
+            "Clinic Date: 10 March 2025. In January she had one seizure during sleep "
+            "and two while awake. In February she had one in sleep and one while awake.",
+            "5 per 2 month",
+            "diary.sleep_awake_month_summary",
+        ),
     ],
 )
 def test_pipeline_exposes_catalogued_diary_metadata(
