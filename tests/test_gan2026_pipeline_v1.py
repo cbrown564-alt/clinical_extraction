@@ -122,6 +122,21 @@ def test_pipeline_extracts_simple_current_frequency_rates(
             "occurring bimonthly",
         ),
         (
+            "Current seizure frequency is daily.",
+            "1 per day",
+            "daily",
+        ),
+        (
+            "The caregiver says brief episodes occur daily.",
+            "1 per day",
+            "occur daily",
+        ),
+        (
+            "In clinic they report 12 to 30 per quarter.",
+            "12 to 30 per 3 month",
+            "12 to 30 per quarter",
+        ),
+        (
             "They believe there were 3 or 5 seizures last month.",
             "3 to 5 per month",
             "3 or 5 seizures last month",
@@ -130,6 +145,36 @@ def test_pipeline_extracts_simple_current_frequency_rates(
             "He describes three or four seizures last week.",
             "3 to 4 per week",
             "three or four seizures last week",
+        ),
+        (
+            "The diary shows 7 to 9 focal onset seizures in three weeks.",
+            "7 to 9 per 3 week",
+            "7 to 9 focal onset seizures in three weeks",
+        ),
+        (
+            "The diary shows 21 to 28 epileptic spasms in three months.",
+            "21 to 28 per 3 month",
+            "21 to 28 epileptic spasms in three months",
+        ),
+        (
+            "Family counted 3 or 4 focal impaired awareness seizures this week.",
+            "3 to 4 per week",
+            "3 or 4 focal impaired awareness seizures this week",
+        ),
+        (
+            "She describes 6 to 7 myoclonic per week.",
+            "6 to 7 per week",
+            "6 to 7 myoclonic per week",
+        ),
+        (
+            "The patient describes two or four seizures over the past year.",
+            "2 to 4 per year",
+            "two or four seizures over the past year",
+        ),
+        (
+            "The patient reported 1 tonic-clonic seizures yesterday.",
+            "1 per day",
+            "1 tonic-clonic seizures yesterday",
         ),
         (
             "These have become frequent, with seizures every other day.",
@@ -173,6 +218,11 @@ def test_pipeline_extracts_implicit_one_event_rates(
             "She has had two drop attacks and nine absence seizures in the past six months.",
             "11 per 6 month",
             "two drop attacks and nine absence seizures in the past six months",
+        ),
+        (
+            "He has had four absence seizures and one myoclonic this month.",
+            "5 per month",
+            "four absence seizures and one myoclonic this month",
         ),
     ],
 )

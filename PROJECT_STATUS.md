@@ -52,9 +52,9 @@ Treat deterministic rules as controlled variables. Categorize each rule by porta
 - V1 selected-evidence validity is 1,500/1,500 exact source substrings.
 - V1 validation-split row-level error analysis exists at `experiments/gan2026_v1_validation_error_analysis_2026-05-31.md`, with CSV rows at `experiments/gan2026_v1_validation_error_rows_2026-05-31.csv`.
 - The validation error artifact now includes non-fallback clinical candidate counts, selected-evidence type, heuristic clinical mode flags, and likely failed-operation slices.
-- V1 deterministic recall now covers validation-derived interval, recent-window, distributed event-count, and common seizure-free patterns including `every N days/weeks/months`, `every other`, `once/twice a month`, adverbial `weekly/monthly/yearly/bimonthly`, recent count windows such as `3 or 5 seizures last month`, summed same-window seizure-type counts such as `one tonic-clonic and six petit mal in last week`, `free of seizures for N years`, and `no seizures since`.
-- V1 validation result is 0.4400 Purist micro F1/accuracy on 750 validation rows; evidence validity remains 750/750.
-- Validation failures are dominated by 242 missed frequency-evidence rows, 58 wrong-frequency-bucket rows, 56 missed seizure-free/no-event rows, 34 frequency-predicted-as-seizure-free rows, and 30 overpredicted-frequency rows; 296 incorrect rows have zero non-fallback clinical candidates, making extraction recall and temporal/assertion selection the dominant next bottlenecks.
+- V1 deterministic recall now covers validation-derived interval, recent-window, distributed event-count, and common seizure-free patterns including `every N days/weeks/months`, `every other`, `once/twice a month`, adverbial `weekly/monthly/yearly/bimonthly`, `occur daily`, direct `N per quarter`, qualified seizure-type count windows such as `7 to 9 focal onset seizures in three weeks`, implicit one-unit windows such as `two or four seizures over the past year`, same-day count windows such as `1 tonic-clonic seizures yesterday`, summed same-window seizure-type counts such as `one tonic-clonic and six petit mal in last week`, `free of seizures for N years`, and `no seizures since`.
+- V1 validation result is 0.4667 Purist micro F1/accuracy on 750 validation rows; evidence validity remains 750/750.
+- Validation failures are dominated by 218 missed frequency-evidence rows, 60 wrong-frequency-bucket rows, 56 missed seizure-free/no-event rows, 35 frequency-predicted-as-seizure-free rows, and 31 overpredicted-frequency rows; 272 incorrect rows have zero non-fallback clinical candidates, making extraction recall and temporal/assertion selection the dominant next bottlenecks.
 - `pytest` and `ruff` pass in the local `.venv` after validation error-analysis generation.
 
 ## Work Board
@@ -62,12 +62,12 @@ Treat deterministic rules as controlled variables. Categorize each rule by porta
 ### Now
 
 - Improve deterministic candidate recall for ordinary frequency evidence before adding LLM reasoning.
-- Add focused tests for the refreshed first high-priority missed `frequency` rows, especially quarter-length windows, standalone `daily`, and focal-onset subtype counts.
-- Audit why seizure-free recall now creates 34 `frequency_predicted_seizure_free` errors, then add assertion/temporal guards before broadening more no-event phrases.
+- Add focused tests from the refreshed high-priority missed `frequency` rows, especially isolated `bimonthly`, remaining daily phrases, and `this week/month` subtype-count contexts not caught by current regexes.
+- Audit why seizure-free recall now creates 35 `frequency_predicted_seizure_free` errors, then add assertion/temporal guards before broadening more no-event phrases.
 
 ### Next
 
-- Add patterns for direct `N per quarter` and `N seizure_type in three weeks/months` evidence that remains missed after distributed-count recall.
+- Inspect rows 978, 1223, 1694, 1706, and 2369 from the refreshed validation error table before adding the next recall rules.
 - Start a living notebook for loading, gold-label distribution, scoring, and failure slices.
 - Use GPT-4.1 mini as the default LLM runtime model for early DSPy experiments and record exact model metadata in run artifacts after deterministic recall is less brittle.
 
@@ -102,7 +102,8 @@ Treat deterministic rules as controlled variables. Categorize each rule by porta
 - 2026-05-31: Improved V1 deterministic recall for validation-derived implicit interval, adverbial rate, and recent-window count phrases; refreshed validation artifacts now show 0.3893 Purist micro F1/accuracy with 750/750 exact selected-evidence validity.
 - 2026-05-31: Upgraded validation error analysis with clinical candidate counts, evidence-source classes, heuristic clinical mode flags, and likely failed-operation counts; focused tests and Ruff pass.
 - 2026-05-31: Added focused V1 tests and extraction support for summed distributed same-window event counts plus common seizure-free phrasing with breakthrough-event guard coverage; refreshed validation artifacts now show 0.4400 Purist micro F1/accuracy with 750/750 exact selected-evidence validity, and full `pytest`/Ruff pass.
+- 2026-05-31: Added focused V1 tests and extraction support for quarter windows, standalone/occur adjective rates, qualified seizure-type count windows, implicit one-unit `over the past year/month` windows, same-day count windows, and additional seizure-type nouns; refreshed validation artifacts now show 0.4667 Purist micro F1/accuracy with 750/750 exact selected-evidence validity, and full `pytest`/Ruff pass.
 
 ## Immediate Next Step
 
-Use the refreshed validation error table's first high-priority missed-frequency rows to add tests for quarter windows, standalone `daily`, and focal subtype count windows, while separately auditing seizure-free over-selection before adding more no-event recall.
+Use the refreshed validation error table's first high-priority missed-frequency rows to add tests for isolated `bimonthly`, remaining daily contexts, and cluster/several-count phrases, while separately auditing seizure-free over-selection before adding more no-event recall.
