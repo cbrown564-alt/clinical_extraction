@@ -69,6 +69,13 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.rules.diary import (
     SPARSE_FULL_MONTH_LOG_RULE,
     apply_diary_rules,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.rules.gan_shorthand import (
+    ABS_ADJECTIVE_RATE_RULE,
+    ABS_COUNT_RATE_RULE,
+    Q_INTERVAL_RULE,
+    TC_SZ_COUNT_RATE_RULE,
+    apply_gan_shorthand_rules,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.rules.rate import (
     COUNT_DURING_RECENT_WINDOW_RULE,
     COUNTED_ADVERBIAL_RATE_RULE,
@@ -1218,81 +1225,18 @@ def _extract_rate_candidates(
         apply_diary_rules((SEIZURE_DAYS_FRACTION_RULE,), text, ablation_config)
     )
 
-    compact_tc_rate = re.compile(
-        rf"\b(?:TC|sz)\s+(?:[*x×]\s*)?(?P<count>{NUMBER_VALUE_TOKEN})\s*/\s*"
-        r"(?P<unit>d|day|wk|week|mo|month|yr|year)\b",
-        re.IGNORECASE,
-    )
-    for match in compact_tc_rate.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label(
-                    match.group("count"),
-                    _expanded_compact_unit(match.group("unit")),
-                ),
-                evidence=_clean_evidence(match.group(0)),
-            )
+    candidates.extend(
+        apply_gan_shorthand_rules(
+            (
+                TC_SZ_COUNT_RATE_RULE,
+                ABS_ADJECTIVE_RATE_RULE,
+                ABS_COUNT_RATE_RULE,
+                Q_INTERVAL_RULE,
+            ),
+            text,
+            ablation_config,
         )
-
-    compact_abs_adjective_rate = re.compile(
-        r"\babs\s+(?:[*x×]\s*)?(?P<period>daily|weekly|monthly|yearly|bimonthly)\b",
-        re.IGNORECASE,
     )
-    period_labels = {
-        "daily": "1 per day",
-        "weekly": "1 per week",
-        "monthly": "1 per month",
-        "yearly": "1 per year",
-        "bimonthly": "1 per 2 month",
-    }
-    for match in compact_abs_adjective_rate.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=period_labels[match.group("period").lower()],
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
-
-    compact_abs_count_rate = re.compile(
-        rf"\babs\s+(?P<count>{NUMBER_TOKEN})\s+"
-        r"(?P<period>daily|weekly|monthly|yearly|bimonthly)\b",
-        re.IGNORECASE,
-    )
-    period_units = {
-        "daily": ("day", None),
-        "weekly": ("week", None),
-        "monthly": ("month", None),
-        "yearly": ("year", None),
-        "bimonthly": ("month", "2"),
-    }
-    for match in compact_abs_count_rate.finditer(text):
-        unit, denominator = period_units[match.group("period").lower()]
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label(match.group("count"), unit, denominator),
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
-
-    compact_q_interval = re.compile(
-        rf"\bq(?P<denominator>{NUMBER_TOKEN})\s*(?P<unit>d|day|wk|week|mo|month|yr|year)\b",
-        re.IGNORECASE,
-    )
-    for match in compact_q_interval.finditer(text):
-        candidates.append(
-            _RawCandidate(
-                kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label(
-                    "1",
-                    _expanded_compact_unit(match.group("unit")),
-                    match.group("denominator"),
-                ),
-                evidence=_clean_evidence(match.group(0)),
-            )
-        )
 
     candidates.extend(
         apply_diary_rules((DIARY_DATE_LIST_RULE,), text, ablation_config)

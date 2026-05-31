@@ -18,6 +18,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.rules.cluster import (
 from clinical_extraction.tasks.seizure_frequency.gan2026.rules.diary import (
     DIARY_RULES,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.rules.gan_shorthand import (
+    GAN_SHORTHAND_RULES,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.rules.rate import (
     PORTABLE_RATE_RULES,
 )
@@ -139,3 +142,14 @@ def test_diary_rule_registry_is_valid() -> None:
 
 def test_seizure_free_rule_registry_is_valid() -> None:
     validate_rule_registry(SEIZURE_FREE_RULES)
+
+
+def test_gan_shorthand_rule_registry_is_valid() -> None:
+    validate_rule_registry(GAN_SHORTHAND_RULES)
+
+
+def test_gan_shorthand_rules_are_dataset_specific() -> None:
+    assert GAN_SHORTHAND_RULES
+    assert {
+        (spec.group, spec.portability) for spec in GAN_SHORTHAND_RULES
+    } == {(RuleGroup.GAN_SHORTHAND, Portability.GAN2026_SPECIFIC)}

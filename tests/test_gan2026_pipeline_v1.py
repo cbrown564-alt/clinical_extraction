@@ -672,6 +672,65 @@ def test_pipeline_can_ablate_catalogued_portable_rate_group() -> None:
 
 
 @pytest.mark.parametrize(
+    ("note_text", "expected_label", "expected_rule_id"),
+    [
+        (
+            "Clinic shorthand says TC *nine/mo.",
+            "9 per month",
+            "gan_shorthand.tc_sz_count_rate",
+        ),
+        (
+            "Diary shorthand says abs *monthly.",
+            "1 per month",
+            "gan_shorthand.abs_adjective_rate",
+        ),
+        (
+            "On their calendar, abs 8 monthly over the past three months.",
+            "8 per month",
+            "gan_shorthand.abs_count_rate",
+        ),
+        (
+            "The current clinic shorthand is q2 - 3wk.",
+            "1 per 2 to 3 week",
+            "gan_shorthand.q_interval",
+        ),
+    ],
+)
+def test_pipeline_exposes_catalogued_gan_shorthand_metadata(
+    note_text: str,
+    expected_label: str,
+    expected_rule_id: str,
+) -> None:
+    result = Gan2026PipelineV1().run(_record(note_text))
+
+    assert result.output.final_value == expected_label
+    selected_id = result.diagnostics["final_selection"]["selected_event_ids"][0]
+    selected_event = next(
+        event
+        for event in result.diagnostics["candidate_events"]
+        if event["event_id"] == selected_id
+    )
+    assert selected_event["rule_id"] == expected_rule_id
+    assert selected_event["rule_group"] == RuleGroup.GAN_SHORTHAND
+    assert selected_event["portability"] == Portability.GAN2026_SPECIFIC
+    assert selected_event["match_groups"]
+
+
+def test_pipeline_can_ablate_catalogued_gan_shorthand_group() -> None:
+    note_text = "Clinic shorthand says TC *nine/mo."
+
+    result = Gan2026PipelineV1(
+        ablation_config=AblationConfig(
+            enabled_groups=frozenset(
+                group for group in RuleGroup if group is not RuleGroup.GAN_SHORTHAND
+            )
+        )
+    ).run(_record(note_text))
+
+    assert result.output.final_value == "no seizure frequency reference"
+
+
+@pytest.mark.parametrize(
     ("note_text", "expected_label", "expected_kind"),
     [
         (
