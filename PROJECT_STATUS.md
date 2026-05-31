@@ -66,6 +66,8 @@ Treat deterministic rules as controlled variables. Categorize each rule by porta
 - Deterministic-only V1 is frozen as the saturated hand-rule baseline. It has a documented validation-saturation boundary: remaining non-scorer residuals are concentrated in trigger/unknown policy, EEG-only or non-epileptic semantic-state mapping, seizure-type selection where a human/LLM would reconcile semiology, cluster-size normalization, and benchmark/scorer-label policy decisions. Further deterministic-rule changes belong in a new ablated candidate with rule metadata, not in frozen V1.
 - Frozen deterministic-only V1 was evaluated once on the locked test split without test-row failure inspection: 0.7600 Purist micro F1/accuracy and 0.7867 Pragmatic micro F1/accuracy on 450 rows, with 450/450 exact selected-evidence validity. The holdout result is documented in `experiments/gan2026_v1_test_holdout_2026-05-31.md` and indicates substantial validation-surface overfit.
 - A critical deterministic-rule review is documented in `docs/research/gan2026_deterministic_rule_review_2026-05-31.md`; it recommends freezing V1, adding rule metadata/ablation switches, and moving residual reasoning families to validation-only LLM/DSPy experiments.
+- Deterministic rule-catalogue Chunks 1-2 are implemented: `RuleGroup`, `Portability`, `AblationConfig`, `RuleSpec`, `RuleExample`, `ExtractionContext`, and rule registry validation exist in `gan2026.rule_metadata`; V1 candidate diagnostics now carry optional `rule_id`, `rule_group`, `portability`, and `match_groups` fields; and one low-risk unknown-frequency rule is catalogued and group-ablatable while default V1 behavior is preserved.
+- Deterministic rule-catalogue Chunk 3 is underway: `gan2026.rules.rate` exists with catalogued portable rate rules for daily-basis current rates, days-of-week rates, nights-per-period rates, descriptor-led count-per-period rates, qualified direct count-per-period rates, direct quarter rates, implicit every-N intervals, every-night intervals, every-other intervals, and occurring every-N/every-other intervals. These rules expose rule metadata, registry examples, and group-level ablation while preserving default V1 labels/evidence.
 - `pytest` and `ruff` pass in the local `.venv` after validation error-analysis generation.
 
 ## Work Board
@@ -96,8 +98,8 @@ tuning surface.
 
 ### Now
 
+- Continue deterministic rule-catalogue Chunk 3 by migrating the remaining generic direct count-per-period rule with medication/dose exclusions, adjective/adverbial rate rules, count-in-recent-window rules, and period-first count rules in small behavior-preserving passes.
 - Prepare ablation/reporting views that separate portable date/duration logic, seizure-expression parsing, seizure-specific temporal selection, Gan synthetic diary phrasing, and benchmark-formatting repairs.
-- Add rule metadata and ablation switches before any further deterministic-rule changes, following `docs/design/deterministic_rule_catalogue_plan.md`.
 
 ### Next
 
@@ -120,6 +122,10 @@ tuning surface.
 
 ### Done Recently
 
+- 2026-05-31: Expanded deterministic rule-catalogue Chunk 3 by moving descriptor-led count-per-period, qualified direct count-per-period, direct quarter, implicit every-N/every-night/every-other, and occurring every-N/every-other interval rules into `gan2026.rules.rate`, with selected-candidate metadata tests and full `pytest`/`ruff` passing.
+- 2026-05-31: Began deterministic rule-catalogue Chunk 3 by creating `gan2026.rules.rate`, moving daily-basis current rates, days-of-week rates, and nights-per-period rates into catalogued portable rate specs, adding registry and ablation tests, and preserving default V1 behavior under full `pytest`/`ruff`.
+- 2026-05-31: Implemented deterministic rule-catalogue Chunk 2 registry path: added `RuleSpec`, `RuleExample`, `ExtractionContext`, rule application, registry validation tests, pipeline-level `AblationConfig`, and one catalogued qualitative-improvement unknown-frequency rule with a focused group-ablation regression test.
+- 2026-05-31: Implemented deterministic rule-catalogue Chunk 1 metadata scaffold: added rule-group/portability enums and an ablation config, extended V1 raw/public candidate diagnostics with optional rule metadata and match groups, and verified behavior preservation with focused tests plus full `pytest`/`ruff`.
 - 2026-05-31: Added `docs/design/deterministic_rule_catalogue_plan.md`, an iterative plan for turning the deterministic regex stack into an inspectable, metadata-rich, ablatable rule catalogue before further deterministic-rule changes.
 - 2026-05-31: Evaluated frozen deterministic-only V1 once on the locked test split without inspecting test row-level failures: Purist micro F1/accuracy 0.7600, Pragmatic micro F1/accuracy 0.7867, and evidence validity 450/450. Added a holdout run record and a critical rule-review document concluding that V1 is validation-saturated and should now be ablated/frozen rather than extended with unbounded hand rules.
 - 2026-05-31: Created initial package, docs, tests, and Gan 2026 task skeleton.
