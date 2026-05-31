@@ -186,6 +186,36 @@ def test_pipeline_extracts_simple_current_frequency_rates(
             "1 per 2 week",
             "seizures every other week",
         ),
+        (
+            "Focal impaired-awareness events are now occurring only every other month or so.",
+            "1 per 2 month",
+            "occurring only every other month",
+        ),
+        (
+            "This week he has had 3 or 4 focal impaired awareness seizures.",
+            "3 to 4 per week",
+            "This week he has had 3 or 4 focal impaired awareness seizures",
+        ),
+        (
+            "Over the past month, they estimate 3 to 4 seizures.",
+            "3 to 4 per month",
+            "Over the past month, they estimate 3 to 4 seizures",
+        ),
+        (
+            "She now describes seizures every night.",
+            "1 per day",
+            "seizures every night",
+        ),
+        (
+            "They report a myoclonic jerk daily.",
+            "1 per day",
+            "myoclonic jerk daily",
+        ),
+        (
+            "They report larger convulsive events occurring tonic-clonic daily.",
+            "1 per day",
+            "tonic-clonic daily",
+        ),
     ],
 )
 def test_pipeline_extracts_implicit_one_event_rates(
@@ -307,6 +337,48 @@ def test_pipeline_keeps_cluster_structure_in_diagnostics() -> None:
     assert result.diagnostics["normalized_events"][0]["normalized_label"] == (
         "2 cluster per month, 6 per cluster"
     )
+
+
+@pytest.mark.parametrize(
+    ("note_text", "expected_label", "expected_evidence"),
+    [
+        (
+            "Over the past fortnight she describes a run of brief events, "
+            "with three short episodes occurring on separate days.",
+            "1 cluster per 2 week, 3 per cluster",
+            (
+                "Over the past fortnight she describes a run of brief events, "
+                "with three short episodes occurring on separate days"
+            ),
+        ),
+        (
+            "Over the past month, the patient reports a cluster of short events "
+            "on multiple days.",
+            "multiple cluster per month, multiple per cluster",
+            (
+                "Over the past month, the patient reports a cluster of short events "
+                "on multiple days"
+            ),
+        ),
+        (
+            "Over the past four weeks he reports 2 clusters this month; "
+            "each approx five absences in the morning.",
+            "2 cluster per month, 5 per cluster",
+            "2 clusters this month; each approx five absences",
+        ),
+    ],
+)
+def test_pipeline_extracts_validation_cluster_patterns(
+    note_text: str,
+    expected_label: str,
+    expected_evidence: str,
+) -> None:
+    result = Gan2026PipelineV1().run(_record(note_text))
+
+    assert result.output.final_value == expected_label
+    assert result.diagnostics["final_selection"]["final_kind"] == FrequencyLabelKind.FREQUENCY
+    assert result.diagnostics["final_selection"]["evidence"] == expected_evidence
+    assert result.diagnostics["evidence_valid"] is True
 
 
 def test_pipeline_handles_cluster_size_with_unknown_frequency() -> None:

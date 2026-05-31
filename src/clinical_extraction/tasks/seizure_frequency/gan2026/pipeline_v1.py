@@ -94,9 +94,17 @@ NUMBER_TOKEN = (
 UNIT_TOKEN = r"day|week|month|quarter|year|days|weeks|months|quarters|years"
 SEIZURE_TERMS = (
     r"seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|"
-    r"myoclonics?"
+    r"myoclonics?|jerks?"
 )
 QUALIFIED_SEIZURE_TERMS = rf"(?:[a-z][a-z-]*\s+){{0,4}}(?:{SEIZURE_TERMS})"
+SEIZURE_RATE_PHRASE = (
+    rf"(?:(?:tonic-clonic|myoclonic|convulsive|focal|absence|drop|epileptic|"
+    rf"impaired awareness|focal onset|petit mal|brief)\s+){{0,4}}(?:{SEIZURE_TERMS})"
+)
+SEIZURE_RATE_DESCRIPTOR = (
+    r"(?:tonic-clonic|myoclonic|convulsive|focal|absence|drop|epileptic|"
+    r"impaired awareness|focal onset|petit mal)"
+)
 
 
 class Gan2026PipelineV1:
@@ -178,6 +186,61 @@ def _extract_cluster_candidates(text: str) -> list[_RawCandidate]:
             _RawCandidate(
                 kind=CandidateKind.UNKNOWN_FREQUENCY,
                 label=f"unknown, {per_cluster} per cluster",
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    cluster_days = re.compile(
+        rf"\b(?P<count>{NUMBER_TOKEN})\s+clusters?\s+this\s+(?P<period>month|week);?\s+"
+        rf"each\s+(?:approx|≈|about|around)?\s*(?P<per_cluster>{NUMBER_TOKEN})\s+"
+        rf"(?:{SEIZURE_TERMS})\b",
+        re.IGNORECASE,
+    )
+    for match in cluster_days.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.CLUSTER_FREQUENCY,
+                label=(
+                    f"{_number_token(match.group('count'))} cluster per "
+                    f"{_singular_unit(match.group('period'))}, "
+                    f"{_number_token(match.group('per_cluster'))} per cluster"
+                ),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    run_of_events = re.compile(
+        rf"\bover\s+the\s+past\s+(?P<period>fortnight|month|week),?\s+"
+        rf".{{0,80}}?\b(?:cluster|run)\b.{{0,80}}?\bwith\s+"
+        rf"(?P<per_cluster>{NUMBER_TOKEN})\s+(?:short\s+)?(?:{SEIZURE_TERMS})\s+"
+        r"occurring on separate days\b",
+        re.IGNORECASE,
+    )
+    for match in run_of_events.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.CLUSTER_FREQUENCY,
+                label=(
+                    f"1 cluster per {_period_unit_label(match.group('period'))}, "
+                    f"{_number_token(match.group('per_cluster'))} per cluster"
+                ),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    vague_cluster_days = re.compile(
+        r"\bover\s+the\s+past\s+(?P<period>month|week|fortnight),?\s+"
+        r".{0,80}?\bcluster\b.{0,80}?\bon\s+(?P<days>multiple|several)\s+days\b",
+        re.IGNORECASE,
+    )
+    for match in vague_cluster_days.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.CLUSTER_FREQUENCY,
+                label=(
+                    f"{_number_token(match.group('days'))} cluster per "
+                    f"{_period_unit_label(match.group('period'))}, multiple per cluster"
+                ),
                 evidence=_clean_evidence(match.group(0)),
             )
         )
@@ -295,6 +358,19 @@ def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
             )
         )
 
+    implicit_nightly_interval = re.compile(
+        rf"\b(?:{SEIZURE_RATE_PHRASE})\s+every\s+night\b",
+        re.IGNORECASE,
+    )
+    for match in implicit_nightly_interval.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label("1", "day"),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
     implicit_other_interval = re.compile(
         rf"\b(?:{SEIZURE_TERMS})\s+every\s+other\s+(?P<unit>day|week|month|year)\b",
         re.IGNORECASE,
@@ -310,7 +386,7 @@ def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
 
     occurring_interval = re.compile(
         rf"\b(?P<verb>occurring|occur|occurs|cluster|clusters)\s+"
-        rf"(?:roughly\s+|approximately\s+)?every\s+"
+        rf"(?:only\s+|roughly\s+|approximately\s+)?every\s+"
         rf"(?:(?P<denominator>{NUMBER_TOKEN})\s+)?(?P<unit>{UNIT_TOKEN})\b",
         re.IGNORECASE,
     )
@@ -319,6 +395,21 @@ def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
             _RawCandidate(
                 kind=CandidateKind.FREQUENCY_RATE,
                 label=_rate_label("1", match.group("unit"), match.group("denominator")),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    occurring_other_interval = re.compile(
+        r"\b(?P<verb>occurring|occur|occurs)\s+"
+        r"(?:only\s+|roughly\s+|approximately\s+)?every\s+other\s+"
+        r"(?P<unit>day|week|month|year)\b",
+        re.IGNORECASE,
+    )
+    for match in occurring_other_interval.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label("1", match.group("unit"), "2"),
                 evidence=_clean_evidence(match.group(0)),
             )
         )
@@ -373,10 +464,11 @@ def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
     )
     for adjective, label in adjective_rates:
         pattern = re.compile(
-            rf"\b(?:{adjective}\s+(?:{SEIZURE_TERMS})|(?:{SEIZURE_TERMS})\s+{adjective})\b",
+            rf"\b(?:{adjective}\s+(?:{SEIZURE_RATE_PHRASE})|"
+            rf"(?:(?:{SEIZURE_RATE_PHRASE})|{SEIZURE_RATE_DESCRIPTOR})\s+{adjective})\b",
             re.IGNORECASE,
         )
-        for _match in pattern.finditer(text):
+        for match in pattern.finditer(text):
             candidates.append(
                 _RawCandidate(
                     kind=CandidateKind.FREQUENCY_RATE,
@@ -433,6 +525,21 @@ def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
         re.IGNORECASE,
     )
     for match in recent_count.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label(match.group("count"), match.group("unit")),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    period_first_recent_count = re.compile(
+        rf"\b(?P<period>This|Over the past|Over the last|During the past|During the last)\s+"
+        rf"(?P<unit>day|week|month|year),?\s+"
+        rf".{{0,60}}?\b(?P<count>{NUMBER_TOKEN})\s+(?:{QUALIFIED_SEIZURE_TERMS})\b",
+        re.IGNORECASE,
+    )
+    for match in period_first_recent_count.finditer(text):
         candidates.append(
             _RawCandidate(
                 kind=CandidateKind.FREQUENCY_RATE,
@@ -588,6 +695,13 @@ def _quarter_month_denominator(denominator: str | None) -> str:
 def _singular_unit(value: str) -> str:
     normalized = value.lower().strip()
     return normalized[:-1] if normalized.endswith("s") else normalized
+
+
+def _period_unit_label(value: str) -> str:
+    normalized = value.lower().strip()
+    if normalized == "fortnight":
+        return "2 week"
+    return _singular_unit(normalized)
 
 
 def _normalize_note_text(note_text: str) -> str:
