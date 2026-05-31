@@ -67,7 +67,7 @@ Treat deterministic rules as controlled variables. Categorize each rule by porta
 - Frozen deterministic-only V1 was evaluated once on the locked test split without test-row failure inspection: 0.7600 Purist micro F1/accuracy and 0.7867 Pragmatic micro F1/accuracy on 450 rows, with 450/450 exact selected-evidence validity. The holdout result is documented in `experiments/gan2026_v1_test_holdout_2026-05-31.md` and indicates substantial validation-surface overfit.
 - A critical deterministic-rule review is documented in `docs/research/gan2026_deterministic_rule_review_2026-05-31.md`; it recommends freezing V1, adding rule metadata/ablation switches, and moving residual reasoning families to validation-only LLM/DSPy experiments.
 - Deterministic rule-catalogue Chunks 1-2 are implemented: `RuleGroup`, `Portability`, `AblationConfig`, `RuleSpec`, `RuleExample`, `ExtractionContext`, and rule registry validation exist in `gan2026.rule_metadata`; V1 candidate diagnostics now carry optional `rule_id`, `rule_group`, `portability`, and `match_groups` fields; and one low-risk unknown-frequency rule is catalogued and group-ablatable while default V1 behavior is preserved.
-- Deterministic rule-catalogue Chunk 3 is underway: `gan2026.rules.rate` exists with catalogued portable rate rules for daily-basis current rates, days-of-week rates, nights-per-period rates, descriptor-led count-per-period rates, qualified direct count-per-period rates, direct quarter rates, implicit every-N intervals, every-night intervals, every-other intervals, and occurring every-N/every-other intervals. These rules expose rule metadata, registry examples, and group-level ablation while preserving default V1 labels/evidence.
+- Deterministic rule-catalogue Chunk 3 is underway: `gan2026.rules.rate` exists with catalogued portable rate rules for daily-basis current rates, days-of-week rates, nights-per-period rates, descriptor-led count-per-period rates, qualified direct count-per-period rates, direct quarter rates, generic direct count-per-period rates with dose/nonprogressive-myoclonic exclusions, implicit every-N intervals, every-night intervals, every-other intervals, occurring every-N/every-other intervals, adjective rates, standalone/occurring adjective rates, and adverbial rate expressions. These rules expose rule metadata, registry examples, and group-level ablation while preserving default V1 labels/evidence.
 - `pytest` and `ruff` pass in the local `.venv` after validation error-analysis generation.
 
 ## Work Board
@@ -98,7 +98,7 @@ tuning surface.
 
 ### Now
 
-- Continue deterministic rule-catalogue Chunk 3 by migrating the remaining generic direct count-per-period rule with medication/dose exclusions, adjective/adverbial rate rules, count-in-recent-window rules, and period-first count rules in small behavior-preserving passes.
+- Continue deterministic rule-catalogue Chunk 3 by migrating count-in-recent-window rules and period-first count rules in small behavior-preserving passes.
 - Prepare ablation/reporting views that separate portable date/duration logic, seizure-expression parsing, seizure-specific temporal selection, Gan synthetic diary phrasing, and benchmark-formatting repairs.
 
 ### Next
@@ -122,6 +122,7 @@ tuning surface.
 
 ### Done Recently
 
+- 2026-05-31: Expanded deterministic rule-catalogue Chunk 3 again by moving the generic direct count-per-period rule with medication-dose/nonprogressive-myoclonic exclusions, seizure adjective rates, standalone/occurring adjective rates, and adverbial rules (`no more than twice weekly`, `persist monthly`, `typically four episodes monthly`, `simple partial seizure monthly`) into `gan2026.rules.rate`, with selected-candidate metadata tests and full `pytest`/`ruff` passing.
 - 2026-05-31: Expanded deterministic rule-catalogue Chunk 3 by moving descriptor-led count-per-period, qualified direct count-per-period, direct quarter, implicit every-N/every-night/every-other, and occurring every-N/every-other interval rules into `gan2026.rules.rate`, with selected-candidate metadata tests and full `pytest`/`ruff` passing.
 - 2026-05-31: Began deterministic rule-catalogue Chunk 3 by creating `gan2026.rules.rate`, moving daily-basis current rates, days-of-week rates, and nights-per-period rates into catalogued portable rate specs, adding registry and ablation tests, and preserving default V1 behavior under full `pytest`/`ruff`.
 - 2026-05-31: Implemented deterministic rule-catalogue Chunk 2 registry path: added `RuleSpec`, `RuleExample`, `ExtractionContext`, rule application, registry validation tests, pipeline-level `AblationConfig`, and one catalogued qualitative-improvement unknown-frequency rule with a focused group-ablation regression test.

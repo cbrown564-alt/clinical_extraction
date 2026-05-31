@@ -239,6 +239,107 @@ def _build_occurring_every_other_interval(
     )
 
 
+def _build_direct_rate(match: re.Match[str], _context: ExtractionContext) -> RawCandidate:
+    return _build_rate_candidate(
+        match,
+        rule_id="rate.direct_count_per_period",
+        count=match.group("count"),
+        unit=match.group("unit"),
+        denominator=match.groupdict().get("denominator"),
+        evidence_group=0,
+    )
+
+
+def _build_adjective_rate(
+    match: re.Match[str], _context: ExtractionContext, *, rule_id: str
+) -> RawCandidate:
+    period = match.groupdict().get("period") or match.groupdict().get("period_after")
+    if period is None:
+        raise ValueError(f"Rule {rule_id} matched without a period group")
+    return _build_rate_candidate(
+        match,
+        rule_id=rule_id,
+        count="1",
+        unit=_adverbial_period_unit(period),
+        denominator=_adverbial_period_denominator(period),
+        evidence_group="evidence",
+    )
+
+
+def _build_seizure_adjective_rate(
+    match: re.Match[str], context: ExtractionContext
+) -> RawCandidate:
+    return _build_adjective_rate(match, context, rule_id="rate.seizure_adjective")
+
+
+def _build_standalone_adjective_rate(
+    match: re.Match[str], context: ExtractionContext
+) -> RawCandidate:
+    return _build_adjective_rate(match, context, rule_id="rate.standalone_adjective")
+
+
+def _build_occurring_adjective_rate(
+    match: re.Match[str], context: ExtractionContext
+) -> RawCandidate:
+    return _build_adjective_rate(match, context, rule_id="rate.occurring_adjective")
+
+
+def _build_no_more_than_adverbial_rate(
+    match: re.Match[str], _context: ExtractionContext
+) -> RawCandidate:
+    return _build_rate_candidate(
+        match,
+        rule_id="rate.no_more_than_adverbial",
+        count=match.group("count"),
+        unit=_adverbial_period_unit(match.group("period")),
+        evidence_group=0,
+    )
+
+
+def _build_occurring_once_per_night(
+    match: re.Match[str], _context: ExtractionContext
+) -> RawCandidate:
+    return _build_rate_candidate(
+        match,
+        rule_id="rate.occurring_once_per_night",
+        count="1",
+        unit="day",
+    )
+
+
+def _build_persistent_adverbial_rate(
+    match: re.Match[str], _context: ExtractionContext
+) -> RawCandidate:
+    return _build_rate_candidate(
+        match,
+        rule_id="rate.persistent_adverbial",
+        count="1",
+        unit=_adverbial_period_unit(match.group("period")),
+    )
+
+
+def _build_counted_adverbial_rate(
+    match: re.Match[str], _context: ExtractionContext
+) -> RawCandidate:
+    return _build_rate_candidate(
+        match,
+        rule_id="rate.counted_adverbial",
+        count=match.group("count"),
+        unit=_adverbial_period_unit(match.group("period")),
+    )
+
+
+def _build_simple_partial_adverbial_rate(
+    match: re.Match[str], _context: ExtractionContext
+) -> RawCandidate:
+    return _build_rate_candidate(
+        match,
+        rule_id="rate.simple_partial_adverbial",
+        count="1",
+        unit=_adverbial_period_unit(match.group("period")),
+    )
+
+
 def _has_historical_lead_in(match: re.Match[str], context: ExtractionContext) -> bool:
     preceding = context.text[max(0, match.start() - 140) : match.start()].lower()
     historical_markers = (
@@ -253,6 +354,63 @@ def _has_historical_lead_in(match: re.Match[str], context: ExtractionContext) ->
         "used to",
     )
     return any(marker in preceding for marker in historical_markers)
+
+
+def _is_medication_or_dose_rate_distractor(
+    match: re.Match[str], context: ExtractionContext
+) -> bool:
+    preceding = context.text[max(0, match.start() - 80) : match.start()].lower()
+    following = context.text[match.end() : match.end() + 80].lower()
+    surrounding = f"{preceding} {match.group(0).lower()} {following}"
+    dose_pattern = re.compile(
+        r"\b(?:dose|dosing|current treatment|current medication|medication|"
+        r"levetiracetam|lamotrigine|carbamazepine|brivaracetam|lacosamide|"
+        r"valproate|epilim|topiramate|zonisamide|sumatriptan)\b"
+        r".{0,80}(?:\b\d+\s*(?:mg|g|micrograms?|mcg|µg)\b|"
+        r"\b(?:mg|g|micrograms?|mcg|µg)\b)",
+        re.IGNORECASE,
+    )
+    if dose_pattern.search(surrounding):
+        return True
+    return bool(
+        re.search(r"\b(?:migraine|headache|prn)\b", surrounding)
+        and re.search(
+            r"\bper\s+(?:day|week|month|year)\b", match.group(0), re.IGNORECASE
+        )
+    )
+
+
+def _is_nonprogressive_myoclonic_rate_distractor(
+    match: re.Match[str], context: ExtractionContext
+) -> bool:
+    surrounding = context.text[max(0, match.start() - 90) : match.end() + 90].lower()
+    return (
+        "myoclonic jerk" in surrounding
+        and re.search(r"\bwithout\s+progression\s+to\s+convulsions?\b", surrounding)
+        is not None
+    )
+
+
+def _is_adjective_rate_distractor(
+    match: re.Match[str], context: ExtractionContext
+) -> bool:
+    evidence = match.group(0).lower()
+    preceding = context.text[max(0, match.start() - 80) : match.start()].lower()
+    following = context.text[match.end() : match.end() + 80].lower()
+    surrounding = f"{preceding} {evidence} {following}"
+    if evidence.startswith("daily") or evidence.endswith("daily"):
+        if re.search(r"\bbrief\s+periods?\s+of\s+$", preceding):
+            return True
+    if evidence == "daily seizure":
+        return (
+            "recording" in following
+            or "chart" in following
+            or "diary" in following
+            or "seizures:" in following
+        )
+    return bool(
+        re.search(r"\b(?:smoker|tobacco|caffeine|coffee|alcohol|units)\b", surrounding)
+    )
 
 
 DAILY_BASIS_CURRENT_RULE = RuleSpec(
@@ -499,6 +657,215 @@ QUARTER_DIRECT_RATE_RULE = RuleSpec(
     provenance="Portable V1 direct count-per-period expression.",
 )
 
+DIRECT_RATE_RULE = RuleSpec(
+    rule_id="rate.direct_count_per_period",
+    group=RuleGroup.PORTABLE_RATE_EXPRESSIONS,
+    portability=Portability.SEIZURE_FREQUENCY,
+    description="Generic direct count per period with medication-dose exclusions.",
+    pattern=re.compile(
+        rf"\b(?P<count>{NUMBER_TOKEN})\s+"
+        rf"(?:times?|{SEIZURE_TERMS})?\s*(?:per|each|every)\s+"
+        rf"(?:(?P<denominator>{NUMBER_TOKEN})\s+)?(?P<unit>{UNIT_TOKEN})\b",
+        re.IGNORECASE,
+    ),
+    build=_build_direct_rate,
+    exclude=(
+        _is_medication_or_dose_rate_distractor,
+        _is_nonprogressive_myoclonic_rate_distractor,
+    ),
+    examples=(
+        RuleExample(
+            text="He still has focal seizures four times per day.",
+            expected_label="4 per day",
+            expected_evidence="four times per day",
+        ),
+        RuleExample(
+            text="Current medication is lamotrigine 100 mg twice per day.",
+            anti_example=True,
+            note="Medication dose frequency is not a seizure-frequency candidate.",
+        ),
+    ),
+    provenance="Portable V1 direct count-per-period expression.",
+)
+
+SEIZURE_ADJECTIVE_RATE_RULE = RuleSpec(
+    rule_id="rate.seizure_adjective",
+    group=RuleGroup.PORTABLE_RATE_EXPRESSIONS,
+    portability=Portability.SEIZURE_FREQUENCY,
+    description="Seizure noun or descriptor modified by daily/weekly/monthly/yearly.",
+    pattern=re.compile(
+        rf"\b(?P<evidence>(?P<period>daily|weekly|monthly|yearly|bimonthly)\s+"
+        rf"(?:{SEIZURE_RATE_PHRASE})|"
+        rf"(?:(?:{SEIZURE_RATE_PHRASE})|{SEIZURE_DESCRIPTOR_PHRASE})\s+"
+        rf"(?P<period_after>daily|weekly|monthly|yearly|bimonthly))\b",
+        re.IGNORECASE,
+    ),
+    build=_build_seizure_adjective_rate,
+    exclude=(_is_adjective_rate_distractor,),
+    examples=(
+        RuleExample(
+            text="Present Seizure Frequency: monthly seizures.",
+            expected_label="1 per month",
+            expected_evidence="monthly seizures",
+        ),
+        RuleExample(
+            text="They report a myoclonic jerk daily.",
+            expected_label="1 per day",
+            expected_evidence="myoclonic jerk daily",
+        ),
+    ),
+    provenance="Portable V1 adjective-rate expression.",
+)
+
+STANDALONE_ADJECTIVE_RATE_RULE = RuleSpec(
+    rule_id="rate.standalone_adjective",
+    group=RuleGroup.PORTABLE_RATE_EXPRESSIONS,
+    portability=Portability.SEIZURE_FREQUENCY,
+    description="Frequency, pattern, or rate stated as daily/weekly/monthly/yearly.",
+    pattern=re.compile(
+        r"\b(?:frequency|pattern|rate)\s+(?:is\s+|was\s+|reported as\s+)?"
+        r"(?P<evidence>(?P<period>daily|weekly|monthly|yearly|bimonthly))\b",
+        re.IGNORECASE,
+    ),
+    build=_build_standalone_adjective_rate,
+    examples=(
+        RuleExample(
+            text="Current seizure frequency is daily.",
+            expected_label="1 per day",
+            expected_evidence="daily",
+        ),
+    ),
+    provenance="Portable V1 adjective-rate expression.",
+)
+
+OCCURRING_ADJECTIVE_RATE_RULE = RuleSpec(
+    rule_id="rate.occurring_adjective",
+    group=RuleGroup.PORTABLE_RATE_EXPRESSIONS,
+    portability=Portability.SEIZURE_FREQUENCY,
+    description="Occurring verbs modified by daily/weekly/monthly/yearly.",
+    pattern=re.compile(
+        r"\b(?P<evidence>(?:occurring|occur|occurs)\s+"
+        r"(?:roughly\s+|approximately\s+)?"
+        r"(?P<period>daily|weekly|monthly|yearly|bimonthly))\b",
+        re.IGNORECASE,
+    ),
+    build=_build_occurring_adjective_rate,
+    exclude=(_is_adjective_rate_distractor,),
+    examples=(
+        RuleExample(
+            text="She describes her seizures as occurring roughly yearly.",
+            expected_label="1 per year",
+            expected_evidence="occurring roughly yearly",
+        ),
+    ),
+    provenance="Portable V1 adjective-rate expression.",
+)
+
+NO_MORE_THAN_ADVERBIAL_RATE_RULE = RuleSpec(
+    rule_id="rate.no_more_than_adverbial",
+    group=RuleGroup.PORTABLE_RATE_EXPRESSIONS,
+    portability=Portability.SEIZURE_FREQUENCY,
+    description="Upper-bound adverbial rates such as no more than twice weekly.",
+    pattern=re.compile(
+        r"\bno\s+more\s+than\s+(?P<count>once|twice|thrice)\s+"
+        r"(?P<period>daily|weekly|monthly|yearly)\b",
+        re.IGNORECASE,
+    ),
+    build=_build_no_more_than_adverbial_rate,
+    examples=(
+        RuleExample(
+            text="Focal events occur no more than twice weekly.",
+            expected_label="2 per week",
+            expected_evidence="no more than twice weekly",
+        ),
+    ),
+    provenance="Portable V1 adverbial-rate expression.",
+)
+
+OCCURRING_ONCE_PER_NIGHT_RULE = RuleSpec(
+    rule_id="rate.occurring_once_per_night",
+    group=RuleGroup.PORTABLE_RATE_EXPRESSIONS,
+    portability=Portability.SEIZURE_FREQUENCY,
+    description="Seizure phrase followed by occurring once per night.",
+    pattern=re.compile(
+        rf"\b(?:{SEIZURE_RATE_PHRASE})\s+"
+        rf"(?P<evidence>occurring\s+once\s+per\s+night)\b",
+        re.IGNORECASE,
+    ),
+    build=_build_occurring_once_per_night,
+    examples=(
+        RuleExample(
+            text="Focal seizures occurring once per night.",
+            expected_label="1 per day",
+            expected_evidence="occurring once per night",
+        ),
+    ),
+    provenance="Portable V1 adverbial-rate expression.",
+)
+
+PERSISTENT_ADVERBIAL_RATE_RULE = RuleSpec(
+    rule_id="rate.persistent_adverbial",
+    group=RuleGroup.PORTABLE_RATE_EXPRESSIONS,
+    portability=Portability.SEIZURE_FREQUENCY,
+    description="Persistent semiology described as daily/weekly/monthly/yearly.",
+    pattern=re.compile(
+        rf"\b(?P<evidence>(?:{QUALIFIED_SEIZURE_TERMS})\s+persist\s+"
+        rf"(?P<period>daily|weekly|monthly|yearly))\b",
+        re.IGNORECASE,
+    ),
+    build=_build_persistent_adverbial_rate,
+    examples=(
+        RuleExample(
+            text="Brief myoclonic jerks persist monthly on awakening.",
+            expected_label="1 per month",
+            expected_evidence="Brief myoclonic jerks persist monthly",
+        ),
+    ),
+    provenance="Portable V1 adverbial-rate expression.",
+)
+
+COUNTED_ADVERBIAL_RATE_RULE = RuleSpec(
+    rule_id="rate.counted_adverbial",
+    group=RuleGroup.PORTABLE_RATE_EXPRESSIONS,
+    portability=Portability.SEIZURE_FREQUENCY,
+    description="Counted event phrase followed by daily/weekly/monthly/yearly.",
+    pattern=re.compile(
+        rf"\b(?P<evidence>(?:typically|usually)\s+(?P<count>{NUMBER_TOKEN})\s+"
+        rf"(?:{QUALIFIED_SEIZURE_TERMS})\s+(?P<period>daily|weekly|monthly|yearly))\b",
+        re.IGNORECASE,
+    ),
+    build=_build_counted_adverbial_rate,
+    examples=(
+        RuleExample(
+            text="Events are typically four episodes monthly.",
+            expected_label="4 per month",
+            expected_evidence="typically four episodes monthly",
+        ),
+    ),
+    provenance="Portable V1 adverbial-rate expression.",
+)
+
+SIMPLE_PARTIAL_ADVERBIAL_RATE_RULE = RuleSpec(
+    rule_id="rate.simple_partial_adverbial",
+    group=RuleGroup.PORTABLE_RATE_EXPRESSIONS,
+    portability=Portability.SEIZURE_FREQUENCY,
+    description="Simple partial seizure followed by daily/weekly/monthly/yearly.",
+    pattern=re.compile(
+        r"\b(?P<evidence>simple\s+partial\s+seizure\s+"
+        r"(?P<period>daily|weekly|monthly|yearly))\b",
+        re.IGNORECASE,
+    ),
+    build=_build_simple_partial_adverbial_rate,
+    examples=(
+        RuleExample(
+            text="She now describes a simple partial seizure monthly.",
+            expected_label="1 per month",
+            expected_evidence="simple partial seizure monthly",
+        ),
+    ),
+    provenance="Portable V1 adverbial-rate expression.",
+)
+
 PORTABLE_RATE_RULES = (
     DAILY_BASIS_CURRENT_RULE,
     DAYS_OF_WEEK_RATE_RULE,
@@ -511,6 +878,15 @@ PORTABLE_RATE_RULES = (
     OCCURRING_INTERVAL_RULE,
     OCCURRING_EVERY_OTHER_INTERVAL_RULE,
     QUARTER_DIRECT_RATE_RULE,
+    DIRECT_RATE_RULE,
+    SEIZURE_ADJECTIVE_RATE_RULE,
+    STANDALONE_ADJECTIVE_RATE_RULE,
+    OCCURRING_ADJECTIVE_RATE_RULE,
+    NO_MORE_THAN_ADVERBIAL_RATE_RULE,
+    OCCURRING_ONCE_PER_NIGHT_RULE,
+    PERSISTENT_ADVERBIAL_RATE_RULE,
+    COUNTED_ADVERBIAL_RATE_RULE,
+    SIMPLE_PARTIAL_ADVERBIAL_RATE_RULE,
 )
 
 
@@ -532,6 +908,22 @@ def _quarter_month_denominator(denominator: str | None) -> str:
     if denominator and denominator.isdigit():
         return str(int(denominator) * 3)
     return f"3 {denominator}"
+
+
+def _adverbial_period_unit(value: str) -> str:
+    return {
+        "daily": "day",
+        "weekly": "week",
+        "monthly": "month",
+        "yearly": "year",
+        "bimonthly": "month",
+    }[value.lower()]
+
+
+def _adverbial_period_denominator(value: str) -> str | None:
+    if value.lower() == "bimonthly":
+        return "2"
+    return None
 
 
 def _number_token(value: str | None) -> str:

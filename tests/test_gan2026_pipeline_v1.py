@@ -159,6 +159,51 @@ def test_pipeline_can_ablate_a_catalogued_rule() -> None:
             "12 to 30 per 3 month",
             "rate.quarter_direct_count_per_period",
         ),
+        (
+            "He still has focal seizures four times per day.",
+            "4 per day",
+            "rate.direct_count_per_period",
+        ),
+        (
+            "Present Seizure Frequency: monthly seizures.",
+            "1 per month",
+            "rate.seizure_adjective",
+        ),
+        (
+            "Current seizure frequency is daily.",
+            "1 per day",
+            "rate.standalone_adjective",
+        ),
+        (
+            "She describes her seizures as occurring roughly yearly.",
+            "1 per year",
+            "rate.occurring_adjective",
+        ),
+        (
+            "Focal events occur no more than twice weekly.",
+            "2 per week",
+            "rate.no_more_than_adverbial",
+        ),
+        (
+            "Focal seizures occurring once per night.",
+            "1 per day",
+            "rate.occurring_once_per_night",
+        ),
+        (
+            "Brief myoclonic jerks persist monthly on awakening.",
+            "1 per month",
+            "rate.persistent_adverbial",
+        ),
+        (
+            "Events are typically four episodes monthly.",
+            "4 per month",
+            "rate.counted_adverbial",
+        ),
+        (
+            "She now describes a simple partial seizure monthly.",
+            "1 per month",
+            "rate.simple_partial_adverbial",
+        ),
     ],
 )
 def test_pipeline_exposes_catalogued_portable_rate_metadata(
