@@ -91,8 +91,12 @@ NUMBER_TOKEN = (
     rf"(?:{NUMBER_VALUE_TOKEN}(?:\s+(?:to|or)\s+{NUMBER_VALUE_TOKEN}|"
     rf"\s*[-–—]\s*{NUMBER_VALUE_TOKEN})?)"
 )
-UNIT_TOKEN = r"day|week|month|year|days|weeks|months|years"
-SEIZURE_TERMS = r"seizures?|episodes?|events?|spells?|absences?|convulsions?"
+UNIT_TOKEN = r"day|week|month|quarter|year|days|weeks|months|quarters|years"
+SEIZURE_TERMS = (
+    r"seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|"
+    r"myoclonics?"
+)
+QUALIFIED_SEIZURE_TERMS = rf"(?:[a-z][a-z-]*\s+){{0,4}}(?:{SEIZURE_TERMS})"
 
 
 class Gan2026PipelineV1:
@@ -212,7 +216,7 @@ def _extract_distributed_count_candidates(text: str) -> list[_RawCandidate]:
     distributed_count = re.compile(
         rf"\b(?P<count_a>{NUMBER_VALUE_TOKEN})\s+{event_description}\s+and\s+"
         rf"(?P<count_b>{NUMBER_VALUE_TOKEN})\s+{event_description}\s+"
-        rf"(?:in|during)\s+(?:the\s+)?(?:last|past|this)\s+"
+        rf"(?:(?:in|during)\s+)?(?:the\s+)?(?:last|past|this)\s+"
         rf"(?:(?P<denominator>{NUMBER_VALUE_TOKEN})\s+)?(?P<unit>{UNIT_TOKEN})\b",
         re.IGNORECASE,
     )
@@ -259,9 +263,9 @@ def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
         )
 
     over_period = re.compile(
-        rf"\b(?P<count>{NUMBER_TOKEN})\s+(?:{SEIZURE_TERMS})\s+"
+        rf"\b(?P<count>{NUMBER_TOKEN})\s+(?:{QUALIFIED_SEIZURE_TERMS})\s+"
         rf"(?:over|in|during|across)\s+(?:the\s+)?(?:last|past)?\s*"
-        rf"(?P<denominator>{NUMBER_TOKEN})\s+(?P<unit>{UNIT_TOKEN})\b",
+        rf"(?:(?P<denominator>{NUMBER_TOKEN})\s+)?(?P<unit>{UNIT_TOKEN})\b",
         re.IGNORECASE,
     )
     for match in over_period.finditer(text):
@@ -347,6 +351,19 @@ def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
             )
         )
 
+    direct_per_period = re.compile(
+        rf"\b(?P<count>{NUMBER_TOKEN})\s+per\s+(?P<unit>quarter)\b",
+        re.IGNORECASE,
+    )
+    for match in direct_per_period.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label(match.group("count"), match.group("unit")),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
     adjective_rates = (
         (r"daily", "1 per day"),
         (r"weekly", "1 per week"),
@@ -359,12 +376,33 @@ def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
             rf"\b(?:{adjective}\s+(?:{SEIZURE_TERMS})|(?:{SEIZURE_TERMS})\s+{adjective})\b",
             re.IGNORECASE,
         )
-        for match in pattern.finditer(text):
+        for _match in pattern.finditer(text):
             candidates.append(
                 _RawCandidate(
                     kind=CandidateKind.FREQUENCY_RATE,
                     label=label,
                     evidence=_clean_evidence(match.group(0)),
+                )
+            )
+
+    standalone_adjective_rates = (
+        (r"daily", "1 per day"),
+        (r"weekly", "1 per week"),
+        (r"monthly", "1 per month"),
+        (r"yearly", "1 per year"),
+        (r"bimonthly", "1 per 2 month"),
+    )
+    for adjective, label in standalone_adjective_rates:
+        pattern = re.compile(
+            rf"\b(?:frequency|pattern|rate)\s+(?:is\s+|was\s+|reported as\s+)?{adjective}\b",
+            re.IGNORECASE,
+        )
+        for _match in pattern.finditer(text):
+            candidates.append(
+                _RawCandidate(
+                    kind=CandidateKind.FREQUENCY_RATE,
+                    label=label,
+                    evidence=adjective,
                 )
             )
 
@@ -377,7 +415,7 @@ def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
     )
     for adjective, label in occurring_adjective_rates:
         pattern = re.compile(
-            rf"\boccurring\s+(?:roughly\s+|approximately\s+)?{adjective}\b",
+            rf"\b(?:occurring|occur|occurs)\s+(?:roughly\s+|approximately\s+)?{adjective}\b",
             re.IGNORECASE,
         )
         for match in pattern.finditer(text):
@@ -390,7 +428,7 @@ def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
             )
 
     recent_count = re.compile(
-        rf"\b(?P<count>{NUMBER_TOKEN})\s+(?:{SEIZURE_TERMS})\s+"
+        rf"\b(?P<count>{NUMBER_TOKEN})\s+(?:{QUALIFIED_SEIZURE_TERMS})\s+"
         rf"(?:last|this|past)\s+(?P<unit>day|week|month|year)\b",
         re.IGNORECASE,
     )
@@ -399,6 +437,20 @@ def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
             _RawCandidate(
                 kind=CandidateKind.FREQUENCY_RATE,
                 label=_rate_label(match.group("count"), match.group("unit")),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    yesterday_count = re.compile(
+        rf"\b(?P<count>{NUMBER_TOKEN})\s+(?:{QUALIFIED_SEIZURE_TERMS})\s+"
+        r"(?:yesterday|today)\b",
+        re.IGNORECASE,
+    )
+    for match in yesterday_count.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label(match.group("count"), "day"),
                 evidence=_clean_evidence(match.group(0)),
             )
         )
@@ -498,6 +550,9 @@ def _rate_label(count: str, unit: str, denominator: str | None = None) -> str:
     count_value = _number_token(count)
     unit_value = _singular_unit(unit)
     denominator_value = _number_token(denominator) if denominator else None
+    if unit_value == "quarter":
+        unit_value = "month"
+        denominator_value = _quarter_month_denominator(denominator_value)
     if denominator_value in {None, "1"}:
         return f"{count_value} per {unit_value}"
     return f"{count_value} per {denominator_value} {unit_value}"
@@ -520,6 +575,14 @@ def _integer_number_token(value: str) -> int | None:
     if normalized.isdigit():
         return int(normalized)
     return None
+
+
+def _quarter_month_denominator(denominator: str | None) -> str:
+    if denominator in {None, "1"}:
+        return "3"
+    if denominator and denominator.isdigit():
+        return str(int(denominator) * 3)
+    return f"3 {denominator}"
 
 
 def _singular_unit(value: str) -> str:
