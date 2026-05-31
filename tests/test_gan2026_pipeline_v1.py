@@ -694,9 +694,49 @@ def test_pipeline_keeps_cluster_structure_in_diagnostics() -> None:
             "2 clusters this month; each approx five absences",
         ),
         (
+            "Cluster burden increased since 07/Dec/2023; now weekly, five per cluster.",
+            "1 cluster per week, 5 per cluster",
+            "weekly, five per cluster",
+        ),
+        (
+            "Since his last review, he reports brief episodes after work with clusters on "
+            "several mornings each week, sometimes repeating two or three times within the "
+            "same morning.",
+            "multiple cluster per week, 2 to 3 per cluster",
+            "on several mornings each week",
+        ),
+        (
+            "Over the past six weeks, he has brief nocturnal bunching on 3-4 nights "
+            "per week, with several brief episodes grouped together during the night.",
+            "3 to 4 cluster per week, multiple per cluster",
+            "on 3-4 nights per week",
+        ),
+        (
+            "He has been having clusters on several evenings per fortnight, and on "
+            "average each cluster involves roughly five brief spells.",
+            "multiple cluster per 2 week, 5 per cluster",
+            "on several evenings per fortnight",
+        ),
+        (
             "Monthly clusters, typically 6 to 7 seizures over 24 h.",
             "1 cluster per month, 6 to 7 per cluster",
             "Monthly clusters, typically 6 to 7 seizures over 24 h",
+        ),
+        (
+            "New nocturnal clustering with early-morning spillover; two nocturnal "
+            "clusters this month; each ~four - five events.",
+            "2 cluster per month, 4 to 5 per cluster",
+            "two nocturnal clusters this month; each ~four - five events",
+        ),
+        (
+            "There have been three nocturnal clusters this month; each ~4 - 5 events.",
+            "3 cluster per month, 4 to 5 per cluster",
+            "three nocturnal clusters this month; each ~4 - 5 events",
+        ),
+        (
+            "She reports 1 Travel-related clusters this month; ~4 - 6 events per episode.",
+            "1 cluster per month, 4 to 6 per cluster",
+            "1 Travel-related clusters this month; ~4 - 6 events per episode",
         ),
     ],
 )
