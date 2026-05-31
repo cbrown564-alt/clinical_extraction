@@ -21,3 +21,17 @@ def test_repair_decision_payload_handles_common_schema_aliases() -> None:
         "answer_kind": "frequency",
         "confidence": "high",
     }
+
+
+def test_repair_decision_payload_handles_llm_answer_kind_variants() -> None:
+    for answer_kind in (
+        "count and window",
+        "count per time window",
+        "direct statement",
+        "direct_extraction",
+        "electrographic seizure frequency",
+        "patient-reported count",
+    ):
+        assert repair_decision_payload({"answer_kind": answer_kind}) == {
+            "answer_kind": "frequency"
+        }

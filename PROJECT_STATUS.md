@@ -30,6 +30,19 @@ Treat deterministic rules as a frozen, ablatable comparator rather than an endle
   test, 50-row meaningful signal, then 250-row development result after a
   decision gate. Full 750-row validation runs should be rare and require a
   documented reason that 250 rows are insufficient.
+- A first note-only LLM-first validation-prefix run over 250 rows used GPT-4.1
+  mini and no deterministic V1 candidates. After shared schema alias repair and
+  Gan label repair through `normalize.py`, the artifact reports 250/250 decision
+  records, 0 call failures, 0 blocking parse/schema failures, 0.8200 Purist
+  accuracy/micro-F1 proxy, 0.8560 Pragmatic accuracy, 96 deterministic repair
+  notes, and 86/250 exact evidence substrings. This is useful signal but below
+  the >=0.9000 goal; the next architecture should move from direct note-to-label
+  extraction toward structured event extraction plus clinical selection.
+- Design concern to revisit: early LLM results suggest the full V1-style event
+  schema and metadata burden may ask too much of the model in one pass. This is
+  not a critical flaw, but the next structured extractor should consider a
+  slimmer first-pass schema that captures essential clinical facts and evidence
+  before adding richer metadata through validation or follow-up reasoning.
 
 ## Key References
 
@@ -46,6 +59,8 @@ Treat deterministic rules as a frozen, ablatable comparator rather than an endle
 - Prompt/adjudicator JSONL: `experiments/gan2026_v1_prompt_adjudicator_devset_2026-05-31.jsonl`
 - First DSPy adjudicator run: `experiments/gan2026_v1_dspy_adjudicator_devset_gpt41mini_2026-05-31.md`
 - First DSPy adjudicator JSONL: `experiments/gan2026_v1_dspy_adjudicator_devset_gpt41mini_2026-05-31.jsonl`
+- LLM-first 250-row validation-prefix run: `experiments/gan2026_llm_first_validation250_gpt41mini_v01_2026-05-31.md`
+- LLM-first 250-row JSONL: `experiments/gan2026_llm_first_validation250_gpt41mini_v01_2026-05-31.jsonl`
 
 ## Active Priorities
 
@@ -65,8 +80,15 @@ Treat deterministic rules as a frozen, ablatable comparator rather than an endle
 - Stabilize the LLM-first output contract and shared schema/label repair boundary:
   schema repair should handle payload aliases, while Gan label repair remains in
   `normalize.py`.
-- Use the 25/50/250 validation ladder for the next LLM-first or structured
-  extractor experiment.
+- Inspect the 250-row LLM-first failure modes, especially low exact-evidence
+  validity and direct note-to-label selection errors, before promoting any
+  broader run.
+- Build the next architecture as LLM-first structured event extraction plus a
+  clinical selector, keeping deterministic V1 only as comparator/diagnostic.
+- Revisit whether the V1 candidate-event schema should be staged: minimal
+  source-near event extraction first, then deterministic/schema-validation
+  enrichment or a second LLM reasoning step for metadata that proved too heavy
+  for direct extraction.
 
 ### Next
 
@@ -99,6 +121,15 @@ Treat deterministic rules as a frozen, ablatable comparator rather than an endle
 - 2026-05-31: Resolved validation-baseline drift by restoring catalogued sparse monthly diary/timeline rules, refreshing validation/error and ablation artifacts, and confirming 0.9293 Purist micro F1/accuracy with exact evidence validity.
 - 2026-05-31: Mined validation ablation-changed rows into a 16-example prompt/adjudicator development set with V1 candidate and normalization diagnostics.
 - 2026-05-31: Implemented and ran the first live DSPy final-selection adjudicator over the 16-example validation dev set, recording prompt/model metadata and row-level outputs.
+- 2026-05-31: Documented the standard LLM/DSPy validation ladder as 25-row smoke,
+  50-row meaningful signal, and 250-row development result after a decision gate;
+  full 750-row validation runs are now rare and require justification.
+- 2026-05-31: Refactored shared schema alias repair away from Gan label repair:
+  `schema_repair.py` handles model-output payload aliases, while `normalize.py`
+  owns Gan-compatible label repair including selected-evidence formatting.
+- 2026-05-31: Ran/reparsed a GPT-4.1 mini note-only LLM-first 250-row validation
+  prefix artifact with 0.8200 Purist accuracy/micro-F1 proxy and 0.8560 Pragmatic
+  accuracy; direct note-to-label extraction remains below target.
 
 ## Immediate Next Step
 
