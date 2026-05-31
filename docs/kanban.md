@@ -4,13 +4,12 @@ Last updated: 2026-05-31
 
 ## Now
 
-- Set up the local development environment and verify `pytest` and `ruff`.
-- Port Gan 2026 label repair/parsing behavior into `gan2026.normalize` under focused tests.
-- Preserve Gan-compatible Purist scoring while author behavior is reconciled.
+- Reconcile Gan normalization policy for raw semantics vs scoring sentinels.
+- Port remaining author prediction repair behavior into `gan2026.normalize` under focused tests.
+- Preserve Gan-compatible Purist scoring while cluster and sentinel behavior are made explicit.
 
 ## Next
 
-- Add tests for allowed label formats, sentinels, ranges, clusters, and `multiple`.
 - Produce a simple deterministic baseline once scoring parity is in place.
 - Create the first evaluation/error-analysis table for development rows.
 - Start a living notebook for loading, gold-label distribution, scoring, and failure slices.
@@ -18,7 +17,6 @@ Last updated: 2026-05-31
 ## Blocked
 
 - Final benchmark-comparison language is blocked until local scoring policy is reconciled with the author implementation.
-- Row inclusion policy for the 65 `row_ok=False` rows is blocked until the benchmark protocol is explicit.
 
 ## Backlog
 
@@ -31,3 +29,7 @@ Last updated: 2026-05-31
 
 - 2026-05-31: Created initial package, docs, tests, and Gan 2026 task skeleton.
 - 2026-05-31: Added project-specific Codex workflow skills for TDD, kanban/status, experiments, and scoring guardrails.
+- 2026-05-31: Created local `.venv`, installed dev dependencies, and verified `pytest`/`ruff`.
+- 2026-05-31: Reproduced Gan data loading/evaluation substrate with tested gold-label extraction, monthly frequency parsing, row quality flags, and evaluation helpers.
+- 2026-05-31: Documented Step 1 inspection findings, including cluster-policy disagreement, sentinel collapse, misleading `clinic_date` field naming, and 30-day month conversion.
+- 2026-05-31: Decided to include `row_ok=False` rows for development/evaluation while retaining the flag for stratified analysis, and to prefer author evaluation-script scoring.

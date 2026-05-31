@@ -12,18 +12,21 @@ The initial loader treats each row as:
 
 - `source_row_index`: stable source identifier
 - `clinic_date`: full clinical note text, despite the field name
+- `check__Seizure Frequency Number.seizure_frequency_number[0]`: canonical local gold seizure-frequency label
+- `check__Seizure Frequency Number.reference[-1]`: local gold evidence/reference text
+- `labels_match_all_categories`, `quotes_ok_all_categories`, `row_ok`: author quality flags
 - `raw`: complete original row for gold labels and quality flags
 
 ## Contract Principles
 
 - Preserve original rows untouched in `raw`.
 - Keep benchmark-specific label policy inside `gan2026`.
-- Do not silently drop rows based on quality flags until the benchmark protocol is explicit.
+- Include `row_ok=False` rows in the development/evaluation surface, while retaining the flag for stratified analysis.
 - Add tests before changing any conversion from raw labels to numeric rates or categories.
+- Preserve raw semantic labels separately from scoring sentinels where possible.
+- Treat `unknown` and `no seizure frequency reference` as distinct raw states even though Gan scoring maps both to the unknown category.
+- Prefer the author evaluation-script scoring policy where it conflicts with the CSV-preparation parser.
 
 ## Known Open Questions
 
-- Which raw field is the canonical gold label for seizure frequency?
-- Which row quality flags should define the first development/evaluation subset?
-- How should no-reference, unknown, and seizure-free labels be represented in the final schema?
-
+- How should no-reference, unknown, and seizure-free labels be represented in the final schema before scoring collapse?

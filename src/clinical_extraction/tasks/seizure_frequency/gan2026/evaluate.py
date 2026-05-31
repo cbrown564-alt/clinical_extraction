@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from collections import Counter
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Mapping, Sequence
+from typing import Any
 
 from clinical_extraction.tasks.seizure_frequency.gan2026.labels import map_pragmatic, map_purist
 
@@ -65,6 +66,17 @@ def evaluate_predictions(
         ),
     }
     return results
+
+
+def evaluate_frequency_records(
+    records: Sequence[Mapping[str, Any]],
+    prediction_key: str,
+    method: str = "purist",
+    gold_key: str = "gold_monthly_frequency",
+) -> dict[str, dict[str, float]]:
+    y_true = [float(record[gold_key]) for record in records]
+    y_pred = [float(record[prediction_key]) for record in records]
+    return evaluate_predictions(y_true, y_pred, method=method)
 
 
 def _label_metrics(

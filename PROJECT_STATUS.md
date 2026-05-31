@@ -18,13 +18,12 @@ Treat deterministic rules as controlled variables. Categorize each rule by porta
 
 ## Active Milestones
 
-1. Reproduce Gan-compatible data loading and evaluation.
-2. Port author-provided label parsing, repair, and category mapping under tests.
-3. Build a simple deterministic baseline.
-4. Implement DSPy event extraction and clinical reasoning modules.
-5. Add row-level error analysis and a living notebook.
-6. Add ablation toggles for deterministic rule categories and DSPy stages.
-7. Produce paper-facing tables for component effects, rule effects, failure modes, and evidence validity.
+1. Port author-provided label repair logic and clarify the remaining normalization policy under tests.
+2. Build a simple deterministic baseline.
+3. Implement DSPy event extraction and clinical reasoning modules.
+4. Add row-level error analysis and a living notebook.
+5. Add ablation toggles for deterministic rule categories and DSPy stages.
+6. Produce paper-facing tables for component effects, rule effects, failure modes, and evidence validity.
 
 ## Current Repo State
 
@@ -33,9 +32,15 @@ Treat deterministic rules as controlled variables. Categorize each rule by porta
 - Initial README, architecture notes, pipeline design notes, decision record, and runbook exist.
 - Research contribution thesis exists under `docs/research`.
 - Git repository has been initialized.
-- Dependency-free compile/import smoke checks pass.
-- `pytest` has not been run because it is not installed in the current system Python.
+- Local `.venv` has been created with project dev dependencies.
+- Gan-compatible data loading and evaluation reproduction is complete for the current JSON surface.
+- Loader exposes full note text, gold label/reference, quality flags, raw rows, and parsed monthly gold frequency.
+- Gold label parsing now covers all 1,500 local Gan rows under focused tests.
+- Scoring policy prefers the author evaluation script when it conflicts with CSV-preparation behavior.
+- `row_ok=False` rows are included in the development/evaluation surface and retained for stratified analysis.
+- Step 1 inspection is documented in `docs/research/gan2026_step1_inspection.md`.
+- `pytest` and `ruff` pass in the local `.venv`.
 
 ## Immediate Next Step
 
-Port the author-provided Gan label parser and repair logic into `gan2026.normalize` with focused tests.
+Pause before baseline work to reconcile normalization policy: preserve raw semantic labels separately from scoring sentinels, then port the remaining author repair logic for model predictions.
