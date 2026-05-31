@@ -183,8 +183,9 @@ def _extract_cluster_candidates(text: str) -> list[_RawCandidate]:
 def _extract_seizure_free_candidates(text: str) -> list[_RawCandidate]:
     candidates: list[_RawCandidate] = []
     seizure_free = re.compile(
-        rf"\b(?:seizure[- ]free|no further (?:{SEIZURE_TERMS})).{{0,80}}?"
-        rf"(?:(?P<count>{NUMBER_TOKEN})\s+(?P<unit>month|months|year|years)|"
+        rf"\b(?:seizure[- ]free|free of (?:{SEIZURE_TERMS})|"
+        rf"no (?:further )?(?:{SEIZURE_TERMS})).{{0,80}}?"
+        rf"(?:(?P<count>{NUMBER_TOKEN})\s+(?P<unit>months|month|years|year)|"
         r"several years|long duration|since\b)",
         re.IGNORECASE,
     )
@@ -205,8 +206,39 @@ def _extract_seizure_free_candidates(text: str) -> list[_RawCandidate]:
     return candidates
 
 
+def _extract_distributed_count_candidates(text: str) -> list[_RawCandidate]:
+    candidates: list[_RawCandidate] = []
+    event_description = r"[a-z][a-z-]*(?:\s+[a-z][a-z-]*){0,4}"
+    distributed_count = re.compile(
+        rf"\b(?P<count_a>{NUMBER_VALUE_TOKEN})\s+{event_description}\s+and\s+"
+        rf"(?P<count_b>{NUMBER_VALUE_TOKEN})\s+{event_description}\s+"
+        rf"(?:in|during)\s+(?:the\s+)?(?:last|past|this)\s+"
+        rf"(?:(?P<denominator>{NUMBER_VALUE_TOKEN})\s+)?(?P<unit>{UNIT_TOKEN})\b",
+        re.IGNORECASE,
+    )
+    for match in distributed_count.finditer(text):
+        count_a = _integer_number_token(match.group("count_a"))
+        count_b = _integer_number_token(match.group("count_b"))
+        if count_a is None or count_b is None:
+            continue
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label(
+                    str(count_a + count_b),
+                    match.group("unit"),
+                    match.groupdict().get("denominator"),
+                ),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+    return candidates
+
+
 def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
     candidates: list[_RawCandidate] = []
+    candidates.extend(_extract_distributed_count_candidates(text))
+
     direct_rate = re.compile(
         rf"\b(?P<count>{NUMBER_TOKEN})\s+"
         rf"(?:times?|{SEIZURE_TERMS})?\s*(?:per|each|every)\s+"
@@ -481,6 +513,13 @@ def _number_token(value: str | None) -> str:
     if " or " in normalized:
         return " to ".join(_number_token(part) for part in normalized.split(" or "))
     return NUMBER_WORDS.get(normalized, normalized)
+
+
+def _integer_number_token(value: str) -> int | None:
+    normalized = _number_token(value)
+    if normalized.isdigit():
+        return int(normalized)
+    return None
 
 
 def _singular_unit(value: str) -> str:

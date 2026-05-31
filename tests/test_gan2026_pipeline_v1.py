@@ -156,6 +156,39 @@ def test_pipeline_extracts_implicit_one_event_rates(
     assert result.diagnostics["evidence_valid"] is True
 
 
+@pytest.mark.parametrize(
+    ("note_text", "expected_label", "expected_evidence"),
+    [
+        (
+            "The diary records one tonic-clonic and six petit mal in last week.",
+            "7 per week",
+            "one tonic-clonic and six petit mal in last week",
+        ),
+        (
+            "Family report two focal epileptic spasms and one focal non-motor in last month.",
+            "3 per month",
+            "two focal epileptic spasms and one focal non-motor in last month",
+        ),
+        (
+            "She has had two drop attacks and nine absence seizures in the past six months.",
+            "11 per 6 month",
+            "two drop attacks and nine absence seizures in the past six months",
+        ),
+    ],
+)
+def test_pipeline_sums_distributed_recent_event_counts(
+    note_text: str,
+    expected_label: str,
+    expected_evidence: str,
+) -> None:
+    result = Gan2026PipelineV1().run(_record(note_text))
+
+    assert result.output.final_value == expected_label
+    assert result.diagnostics["final_selection"]["final_kind"] == FrequencyLabelKind.FREQUENCY
+    assert result.diagnostics["final_selection"]["evidence"] == expected_evidence
+    assert result.diagnostics["evidence_valid"] is True
+
+
 def test_pipeline_preserves_seizure_free_as_semantic_state() -> None:
     result = Gan2026PipelineV1().run(
         _record("He has been seizure free for a long duration and over several years.")
@@ -163,6 +196,46 @@ def test_pipeline_preserves_seizure_free_as_semantic_state() -> None:
 
     assert result.output.final_value == "seizure free for multiple year"
     assert result.diagnostics["final_selection"]["final_kind"] == FrequencyLabelKind.SEIZURE_FREE
+
+
+@pytest.mark.parametrize(
+    ("note_text", "expected_label", "expected_evidence"),
+    [
+        (
+            "She remains free of seizures for two years on the current regimen.",
+            "seizure free for 2 year",
+            "free of seizures for two years",
+        ),
+        (
+            "There have been no seizures since the last clinic review.",
+            "seizure free for multiple year",
+            "no seizures since",
+        ),
+    ],
+)
+def test_pipeline_extracts_common_seizure_free_phrasing(
+    note_text: str,
+    expected_label: str,
+    expected_evidence: str,
+) -> None:
+    result = Gan2026PipelineV1().run(_record(note_text))
+
+    assert result.output.final_value == expected_label
+    assert result.diagnostics["final_selection"]["final_kind"] == FrequencyLabelKind.SEIZURE_FREE
+    assert result.diagnostics["final_selection"]["evidence"] == expected_evidence
+    assert result.diagnostics["evidence_valid"] is True
+
+
+def test_pipeline_breakthrough_event_overrides_seizure_free_history() -> None:
+    result = Gan2026PipelineV1().run(
+        _record(
+            "She had been seizure free for two years, but now reports "
+            "three seizures last month."
+        )
+    )
+
+    assert result.output.final_value == "3 per month"
+    assert result.diagnostics["final_selection"]["final_kind"] == FrequencyLabelKind.FREQUENCY
 
 
 def test_pipeline_distinguishes_no_reference_from_unknown_frequency() -> None:
