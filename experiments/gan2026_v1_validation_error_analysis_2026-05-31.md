@@ -12,9 +12,9 @@ Rows: 750
 
 | Average | Precision | Recall | F1 | Accuracy |
 | --- | ---: | ---: | ---: | ---: |
-| micro | 0.4667 | 0.4667 | 0.4667 | 0.4667 |
-| macro | 0.5624 | 0.4180 | 0.4363 | 0.4667 |
-| weighted | 0.5931 | 0.4667 | 0.4597 | 0.4667 |
+| micro | 0.4920 | 0.4920 | 0.4920 | 0.4920 |
+| macro | 0.5540 | 0.4494 | 0.4534 | 0.4920 |
+| weighted | 0.5999 | 0.4920 | 0.4852 | 0.4920 |
 
 Evidence validity: 750 / 750
 
@@ -22,21 +22,21 @@ Evidence validity: 750 / 750
 
 | Error type | Count |
 | --- | ---: |
-| correct | 249 |
-| missed_frequency_evidence | 218 |
-| scorer_correct_semantic_mismatch | 101 |
-| wrong_frequency_bucket | 60 |
+| correct | 270 |
+| missed_frequency_evidence | 199 |
+| scorer_correct_semantic_mismatch | 99 |
+| wrong_frequency_bucket | 66 |
 | missed_seizure_free_evidence | 56 |
-| frequency_predicted_seizure_free | 35 |
-| overpredicted_frequency | 31 |
+| overpredicted_frequency | 33 |
+| frequency_predicted_seizure_free | 27 |
 
 ## Candidate Recall Diagnostics
 
 | Measure | Count |
 | --- | ---: |
-| Clinical candidates extracted | 473 |
-| Rows with zero clinical candidates | 399 |
-| Incorrect rows with zero clinical candidates | 272 |
+| Clinical candidates extracted | 513 |
+| Rows with zero clinical candidates | 378 |
+| Incorrect rows with zero clinical candidates | 253 |
 
 ## Gold Kinds
 
@@ -52,9 +52,9 @@ Evidence validity: 750 / 750
 
 | Prediction kind | Count |
 | --- | ---: |
-| no_reference | 399 |
-| frequency | 244 |
-| seizure_free | 84 |
+| no_reference | 378 |
+| frequency | 273 |
+| seizure_free | 76 |
 | unresolved_multiple | 14 |
 | unknown | 9 |
 
@@ -62,20 +62,20 @@ Evidence validity: 750 / 750
 
 | Evidence type | Count |
 | --- | ---: |
-| header_fallback | 398 |
-| clinical_evidence | 255 |
-| other_text | 89 |
+| header_fallback | 377 |
+| clinical_evidence | 275 |
+| other_text | 90 |
 | medication_or_dose | 8 |
 
 ## Likely Failed Operations
 
 | Operation | Count |
 | --- | ---: |
-| candidate_extraction | 274 |
-| none | 249 |
-| semantic_state_mapping | 101 |
-| temporal_selection | 96 |
-| assertion_classification | 19 |
+| none | 270 |
+| candidate_extraction | 255 |
+| semantic_state_mapping | 99 |
+| temporal_selection | 95 |
+| assertion_classification | 20 |
 | distractor_rejection | 8 |
 | cluster_normalization | 1 |
 | seizure_type_selection | 1 |
@@ -107,29 +107,29 @@ These counts are restricted to incorrect rows.
 
 | Mode | Count |
 | --- | ---: |
-| ranges | 378 |
-| medication_status | 353 |
-| uncertainty | 248 |
-| clusters | 234 |
-| multiple_seizure_types | 216 |
-| historical_current | 211 |
-| negation | 201 |
-| relative_dates | 174 |
+| ranges | 360 |
+| medication_status | 337 |
+| uncertainty | 238 |
+| clusters | 217 |
+| historical_current | 204 |
+| multiple_seizure_types | 201 |
+| negation | 189 |
+| relative_dates | 160 |
 | family_history | 65 |
-| pnes_functional | 29 |
-| lay_terminology | 21 |
+| pnes_functional | 25 |
+| lay_terminology | 19 |
 | legacy_terminology | 4 |
 
 ## Top Incorrect Category Pairs
 
 | Gold category | Prediction category | Count |
 | --- | --- | ---: |
-| seizure_freq_more1week_less1day | seizure_freq_unknown | 85 |
+| seizure_freq_more1week_less1day | seizure_freq_unknown | 76 |
 | currently_no_seizure | seizure_freq_unknown | 57 |
-| seizure_freq_more1mon_less1week | seizure_freq_unknown | 51 |
-| seizure_freq_more1per6mon_less1mon | seizure_freq_unknown | 42 |
-| seizure_freq_1ormore_daily | seizure_freq_unknown | 17 |
+| seizure_freq_more1mon_less1week | seizure_freq_unknown | 48 |
+| seizure_freq_more1per6mon_less1mon | seizure_freq_unknown | 41 |
 | seizure_freq_1_per_mon | seizure_freq_unknown | 16 |
+| seizure_freq_1ormore_daily | seizure_freq_unknown | 12 |
 | seizure_freq_more1mon_less1week | currently_no_seizure | 9 |
 | seizure_freq_more1per6mon_less1mon | currently_no_seizure | 9 |
 | seizure_freq_more1week_less1day | seizure_freq_1ormore_daily | 8 |
@@ -141,23 +141,23 @@ These counts are restricted to incorrect rows.
 
 | Row | Error type | Gold kind | Pred kind | Gold category | Pred category |
 | ---: | --- | --- | --- | --- | --- |
-| 978 | missed_frequency_evidence | frequency | no_reference | seizure_freq_more1per6mon_less1mon | seizure_freq_unknown |
-| 1223 | missed_frequency_evidence | frequency | no_reference | seizure_freq_more1week_less1day | seizure_freq_unknown |
-| 1694 | missed_frequency_evidence | frequency | no_reference | seizure_freq_more1week_less1day | seizure_freq_unknown |
-| 1706 | missed_frequency_evidence | frequency | no_reference | seizure_freq_more1week_less1day | seizure_freq_unknown |
-| 2369 | missed_frequency_evidence | frequency | no_reference | seizure_freq_more1mon_less1week | seizure_freq_unknown |
 | 2425 | missed_frequency_evidence | frequency | no_reference | seizure_freq_more1week_less1day | seizure_freq_unknown |
 | 2427 | missed_frequency_evidence | frequency | no_reference | seizure_freq_1_per_week | seizure_freq_unknown |
-| 2622 | missed_frequency_evidence | frequency | no_reference | seizure_freq_1ormore_daily | seizure_freq_unknown |
-| 2628 | missed_frequency_evidence | frequency | no_reference | seizure_freq_1ormore_daily | seizure_freq_unknown |
 | 2678 | missed_frequency_evidence | frequency | no_reference | seizure_freq_1ormore_daily | seizure_freq_unknown |
 | 2762 | missed_frequency_evidence | frequency | no_reference | seizure_freq_1_per_mon | seizure_freq_unknown |
-| 2822 | missed_frequency_evidence | frequency | no_reference | seizure_freq_1ormore_daily | seizure_freq_unknown |
-| 2824 | missed_frequency_evidence | frequency | no_reference | seizure_freq_1ormore_daily | seizure_freq_unknown |
 | 3224 | missed_frequency_evidence | frequency | no_reference | seizure_freq_more1week_less1day | seizure_freq_unknown |
-| 3242 | missed_frequency_evidence | frequency | no_reference | seizure_freq_more1week_less1day | seizure_freq_unknown |
-| 3261 | missed_frequency_evidence | frequency | no_reference | seizure_freq_more1week_less1day | seizure_freq_unknown |
-| 3262 | missed_frequency_evidence | frequency | no_reference | seizure_freq_more1week_less1day | seizure_freq_unknown |
 | 3297 | missed_frequency_evidence | frequency | no_reference | seizure_freq_more1week_less1day | seizure_freq_unknown |
 | 3325 | missed_frequency_evidence | frequency | no_reference | seizure_freq_more1week_less1day | seizure_freq_unknown |
 | 3623 | missed_frequency_evidence | frequency | no_reference | seizure_freq_1ormore_daily | seizure_freq_unknown |
+| 3681 | missed_frequency_evidence | frequency | no_reference | seizure_freq_more1week_less1day | seizure_freq_unknown |
+| 3682 | missed_frequency_evidence | frequency | no_reference | seizure_freq_more1week_less1day | seizure_freq_unknown |
+| 3710 | missed_frequency_evidence | frequency | no_reference | seizure_freq_more1week_less1day | seizure_freq_unknown |
+| 3791 | missed_frequency_evidence | frequency | no_reference | seizure_freq_more1per6mon_less1mon | seizure_freq_unknown |
+| 3801 | missed_frequency_evidence | frequency | no_reference | seizure_freq_more1week_less1day | seizure_freq_unknown |
+| 3806 | missed_frequency_evidence | frequency | no_reference | seizure_freq_more1week_less1day | seizure_freq_unknown |
+| 3846 | missed_frequency_evidence | frequency | no_reference | seizure_freq_1ormore_daily | seizure_freq_unknown |
+| 3849 | missed_frequency_evidence | frequency | no_reference | seizure_freq_1ormore_daily | seizure_freq_unknown |
+| 3889 | missed_frequency_evidence | frequency | no_reference | seizure_freq_more1per6mon_less1mon | seizure_freq_unknown |
+| 3892 | missed_frequency_evidence | frequency | no_reference | seizure_freq_more1per6mon_less1mon | seizure_freq_unknown |
+| 3940 | missed_frequency_evidence | frequency | no_reference | seizure_freq_more1week_less1day | seizure_freq_unknown |
+| 3949 | missed_frequency_evidence | frequency | no_reference | seizure_freq_more1week_less1day | seizure_freq_unknown |
