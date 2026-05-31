@@ -4,6 +4,12 @@ import re
 from dataclasses import dataclass
 from enum import StrEnum
 
+from clinical_extraction.tasks.seizure_frequency.gan2026.rules.benchmark_repair import (
+    BenchmarkRepairStep,
+    BenchmarkRepairTrace,
+    apply_benchmark_repair_steps,
+)
+
 DAY_IN_YEAR = 365.0
 DAYS_PER = {
     "day": 1.0,
@@ -41,62 +47,35 @@ def normalize_frequency_label(label: str) -> str:
 
 def repair_prediction_label(raw: str | None) -> str:
     """Repair a free-form prediction into a Gan-compatible label string."""
+    return repair_prediction_label_with_trace(raw).final_label
+
+
+def repair_prediction_label_with_trace(raw: str | None) -> BenchmarkRepairTrace:
+    """Repair a prediction and expose benchmark-format repair events."""
     if raw is None:
-        return "no seizure frequency reference"
+        return BenchmarkRepairTrace(
+            raw_label=None,
+            initial_label="no seizure frequency reference",
+            final_label="no seizure frequency reference",
+            events=(),
+        )
     text = str(raw).strip().lower()
     if text == "":
-        return "no seizure frequency reference"
+        return BenchmarkRepairTrace(
+            raw_label=raw,
+            initial_label="no seizure frequency reference",
+            final_label="no seizure frequency reference",
+            events=(),
+        )
 
-    text = text.replace(" per night", " per day")
-    text = text.replace(" per morning", " per day")
-    text = text.replace(" per afternoon", " per day")
-    text = text.replace(" per evening", " per day")
-    text = _normalize_unknown_no_reference(text)
-
-    text = _words_to_numbers(text)
-    text = re.sub(r"(\d+)\s*[-–—]\s*(\d+)", r"\1 to \2", text)
-    text = re.sub(r"\bonce\b", "1", text)
-    text = re.sub(r"\btwice\b", "2", text)
-    text = re.sub(r"\bthrice\b", "3", text)
-    text = _slash_per_forms(text)
-    text = _x_times_forms(text)
-    text = re.sub(r"\btimes?\b(?=\s+per\b)", "", text)
-    text = _every_each_forms(text)
-    text = _period_words(text)
-    text = _inequality_to_multiple(text)
-    text = _drop_prediction_noise(text)
-    text = _normalize_units(text)
-    text = normalize_frequency_label(text)
-    text = _reorder_period_then_count(text)
-    text = _canonicalize_seizure_free(text)
-    text = _normalize_units(text)
-    text = _fix_cluster_block(text)
-    text = _normalize_units(text)
-    text = _drop_per_one(text)
-    text = _cleanup_commas(text)
-    text = _compress_double_per_range(text)
-    text = _normalize_cluster_label(text)
-    text = _normalize_cluster_label2(text)
-    text = _clean_prediction_extras(text)
-
-    if re.search(r"\bper\s+0\s+(day|week|month|year)\b", text):
-        text = "unknown"
-
-    if not _is_allowed_prediction_format(text):
-        text = _fallback_prediction_repair(text)
-
-    text = _drop_per_one(text)
-    text = _cleanup_commas(text)
-
-    if not _is_allowed_prediction_format(text):
-        if text.startswith("seizure free"):
-            if re.search(r"\b(month|year)\b", text) is None:
-                return "seizure free for multiple year"
-        elif "per " in text and not re.search(r"\b(day|week|month|year)\b", text):
-            text = re.sub(r"per\s+\S+\b", "per month", text)
-        if not _is_allowed_prediction_format(text):
-            return "unknown"
-    return text
+    initial_label = text
+    text, events = apply_benchmark_repair_steps(text, BENCHMARK_REPAIR_STEPS)
+    return BenchmarkRepairTrace(
+        raw_label=raw,
+        initial_label=initial_label,
+        final_label=text,
+        events=events,
+    )
 
 
 def label_to_frequency_record(label: str) -> FrequencyLabelRecord:
@@ -728,3 +707,201 @@ def _fallback_prediction_repair(text: str) -> str:
         den_text = (denominator + " ").strip() if denominator and denominator != "1" else ""
         return f"{match.group('num')} per {den_text}{unit}"
     return "no seizure frequency reference"
+
+
+def _daypart_to_day(text: str) -> str:
+    text = text.replace(" per night", " per day")
+    text = text.replace(" per morning", " per day")
+    text = text.replace(" per afternoon", " per day")
+    return text.replace(" per evening", " per day")
+
+
+def _normalize_ranges(text: str) -> str:
+    return re.sub(r"(\d+)\s*[-–—]\s*(\d+)", r"\1 to \2", text)
+
+
+def _once_twice_thrice(text: str) -> str:
+    text = re.sub(r"\bonce\b", "1", text)
+    text = re.sub(r"\btwice\b", "2", text)
+    return re.sub(r"\bthrice\b", "3", text)
+
+
+def _drop_times_before_per(text: str) -> str:
+    return re.sub(r"\btimes?\b(?=\s+per\b)", "", text)
+
+
+def _zero_period_to_unknown(text: str) -> str:
+    if re.search(r"\bper\s+0\s+(day|week|month|year)\b", text):
+        return "unknown"
+    return text
+
+
+def _fallback_if_disallowed(text: str) -> str:
+    return text if _is_allowed_prediction_format(text) else _fallback_prediction_repair(text)
+
+
+def _final_allowed_format_repair(text: str) -> str:
+    if _is_allowed_prediction_format(text):
+        return text
+    if text.startswith("seizure free"):
+        if re.search(r"\b(month|year)\b", text) is None:
+            return "seizure free for multiple year"
+    elif "per " in text and not re.search(r"\b(day|week|month|year)\b", text):
+        text = re.sub(r"per\s+\S+\b", "per month", text)
+    if not _is_allowed_prediction_format(text):
+        return "unknown"
+    return text
+
+
+BENCHMARK_REPAIR_STEPS = (
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.daypart_to_day",
+        description="Map night/morning/afternoon/evening denominators to day.",
+        apply=_daypart_to_day,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.unknown_no_reference",
+        description="Normalize common unknown and no-reference prediction phrases.",
+        apply=_normalize_unknown_no_reference,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.word_numbers",
+        description="Convert number words used in labels to digits.",
+        apply=_words_to_numbers,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.range_delimiters",
+        description="Normalize hyphenated numeric ranges to 'to'.",
+        apply=_normalize_ranges,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.once_twice_thrice",
+        description="Convert once/twice/thrice to numeric counts.",
+        apply=_once_twice_thrice,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.slash_per_forms",
+        description="Convert slash-per shorthand into count per period labels.",
+        apply=_slash_per_forms,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.x_times_forms",
+        description="Convert x/times shorthand into count per period labels.",
+        apply=_x_times_forms,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.drop_times_before_per",
+        description="Drop redundant times tokens before per.",
+        apply=_drop_times_before_per,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.every_each_forms",
+        description="Convert every/each period phrasing into count per period labels.",
+        apply=_every_each_forms,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.period_words",
+        description="Convert daily/weekly/monthly/yearly period words into per labels.",
+        apply=_period_words,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.inequality_to_multiple",
+        description="Map inequality phrases to multiple when scorer format lacks bounds.",
+        apply=_inequality_to_multiple,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.drop_prediction_noise",
+        description="Drop approximate and seizure-word noise from prediction labels.",
+        apply=_drop_prediction_noise,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.normalize_units_first",
+        description="Normalize unit abbreviations and plurals.",
+        apply=_normalize_units,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.normalize_whitespace_first",
+        description="Normalize case, whitespace, and surrounding label text.",
+        apply=normalize_frequency_label,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.reorder_period_then_count",
+        description="Reorder period-then-count predictions into count-per-period labels.",
+        apply=_reorder_period_then_count,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.canonicalize_seizure_free",
+        description="Canonicalize seizure-free predictions into scorer-compatible labels.",
+        apply=_canonicalize_seizure_free,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.normalize_units_after_seizure_free",
+        description="Normalize units after seizure-free canonicalization.",
+        apply=_normalize_units,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.fix_cluster_block",
+        description="Repair cluster labels before final cluster normalization.",
+        apply=_fix_cluster_block,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.normalize_units_after_cluster",
+        description="Normalize units after cluster repair.",
+        apply=_normalize_units,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.drop_per_one_first",
+        description="Drop explicit per-one denominators.",
+        apply=_drop_per_one,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.cleanup_commas_first",
+        description="Clean comma spacing and normalize whitespace.",
+        apply=_cleanup_commas,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.compress_double_per_range",
+        description="Compress double per-period ranges with matching denominators.",
+        apply=_compress_double_per_range,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.normalize_cluster_label",
+        description="Normalize compact cluster-only labels.",
+        apply=_normalize_cluster_label,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.normalize_cluster_label2",
+        description="Normalize dual cluster and per-cluster labels.",
+        apply=_normalize_cluster_label2,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.clean_prediction_extras",
+        description="Drop trailing prediction extras that break scorer parsing.",
+        apply=_clean_prediction_extras,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.zero_period_to_unknown",
+        description="Map impossible zero-period denominators to unknown.",
+        apply=_zero_period_to_unknown,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.fallback_if_disallowed",
+        description="Apply fallback repair when the label is outside accepted formats.",
+        apply=_fallback_if_disallowed,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.drop_per_one_final",
+        description="Drop per-one denominators after fallback repair.",
+        apply=_drop_per_one,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.cleanup_commas_final",
+        description="Clean comma spacing after fallback repair.",
+        apply=_cleanup_commas,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.final_allowed_format_repair",
+        description="Final accepted-format guard before returning a prediction label.",
+        apply=_final_allowed_format_repair,
+    ),
+)

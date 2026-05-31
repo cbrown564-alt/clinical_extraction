@@ -1,11 +1,20 @@
 import pytest
 
 from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
+    BENCHMARK_REPAIR_STEPS,
     FrequencyLabelKind,
     label_to_frequency_record,
     label_to_monthly_frequency,
     parse_label_bounds,
     repair_prediction_label,
+    repair_prediction_label_with_trace,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.rule_metadata import (
+    Portability,
+    RuleGroup,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.rules.benchmark_repair import (
+    validate_benchmark_repair_steps,
 )
 
 
@@ -65,3 +74,25 @@ def test_repair_prediction_label_ports_author_prediction_repairs(
     expected: str,
 ) -> None:
     assert repair_prediction_label(raw) == expected
+
+
+def test_benchmark_repair_steps_are_valid_and_benchmark_format_only() -> None:
+    validate_benchmark_repair_steps(BENCHMARK_REPAIR_STEPS)
+    assert BENCHMARK_REPAIR_STEPS
+    assert {
+        (step.group, step.portability) for step in BENCHMARK_REPAIR_STEPS
+    } == {(RuleGroup.BENCHMARK_REPAIR, Portability.BENCHMARK_FORMAT)}
+
+
+def test_repair_prediction_label_trace_exposes_benchmark_repair_events() -> None:
+    trace = repair_prediction_label_with_trace("about twice weekly")
+
+    assert trace.final_label == "2 per week"
+    assert repair_prediction_label("about twice weekly") == trace.final_label
+    assert [event.rule_id for event in trace.events] == [
+        "benchmark_repair.once_twice_thrice",
+        "benchmark_repair.period_words",
+        "benchmark_repair.drop_prediction_noise",
+    ]
+    assert all(event.group is RuleGroup.BENCHMARK_REPAIR for event in trace.events)
+    assert all(event.portability is Portability.BENCHMARK_FORMAT for event in trace.events)

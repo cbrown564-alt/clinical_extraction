@@ -150,6 +150,30 @@ class NormalizedEvent(BaseModel):
     validation_errors: tuple[str, ...] = ()
 
 
+class SelectionScore(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
+    semantic_priority: int
+    evidence_priority: int
+    monthly_frequency_priority: float
+    reason: str
+
+    def sort_key(self) -> tuple[int, int, float]:
+        return (
+            self.semantic_priority,
+            self.evidence_priority,
+            self.monthly_frequency_priority,
+        )
+
+
+class SelectionCandidateScore(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
+    event_id: str
+    score: SelectionScore
+    selected: bool = False
+
+
 class FinalSelection(BaseModel):
     model_config = ConfigDict(frozen=True)
 
@@ -160,6 +184,8 @@ class FinalSelection(BaseModel):
     evidence: str
     monthly_frequency: float
     validation_errors: tuple[str, ...] = ()
+    selected_score: SelectionScore
+    selection_candidates: tuple[SelectionCandidateScore, ...]
 
 
 @dataclass(frozen=True)
@@ -1374,7 +1400,14 @@ def _select_final_event(
     normalized_events: list[NormalizedEvent],
 ) -> FinalSelection:
     pairs = list(zip(candidate_events, normalized_events, strict=True))
-    selected_event, selected_normalized = max(pairs, key=_selection_score)
+    scored_pairs = [
+        (event, normalized, _selection_score((event, normalized)))
+        for event, normalized in pairs
+    ]
+    selected_event, selected_normalized, selected_score = max(
+        scored_pairs,
+        key=lambda scored_pair: scored_pair[2].sort_key(),
+    )
     return FinalSelection(
         final_label=selected_normalized.normalized_label,
         final_kind=selected_normalized.semantic_kind,
@@ -1383,27 +1416,81 @@ def _select_final_event(
         evidence=selected_event.evidence,
         monthly_frequency=selected_normalized.monthly_frequency,
         validation_errors=selected_normalized.validation_errors,
+        selected_score=selected_score,
+        selection_candidates=tuple(
+            SelectionCandidateScore(
+                event_id=event.event_id,
+                score=score,
+                selected=event.event_id == selected_event.event_id,
+            )
+            for event, _normalized, score in scored_pairs
+        ),
     )
 
 
-def _selection_score(pair: tuple[CandidateEvent, NormalizedEvent]) -> tuple[int, int, float]:
+def _selection_score(pair: tuple[CandidateEvent, NormalizedEvent]) -> SelectionScore:
     event, normalized = pair
     evidence = event.evidence.lower()
     if normalized.semantic_kind is FrequencyLabelKind.FREQUENCY:
-        return 4, _frequency_summary_priority(evidence), normalized.monthly_frequency
+        evidence_priority = _frequency_summary_priority(evidence)
+        return SelectionScore(
+            semantic_priority=4,
+            evidence_priority=evidence_priority,
+            monthly_frequency_priority=normalized.monthly_frequency,
+            reason=(
+                "frequency_current_summary"
+                if evidence_priority > 0
+                else "frequency_monthly_rate"
+            ),
+        )
     if normalized.semantic_kind is FrequencyLabelKind.UNRESOLVED_MULTIPLE:
         if _is_specific_current_multiple_evidence(event.evidence):
-            return 4, 1, normalized.monthly_frequency
-        return 3, 0, 0.0
+            return SelectionScore(
+                semantic_priority=4,
+                evidence_priority=1,
+                monthly_frequency_priority=normalized.monthly_frequency,
+                reason="specific_current_multiple",
+            )
+        return SelectionScore(
+            semantic_priority=3,
+            evidence_priority=0,
+            monthly_frequency_priority=0.0,
+            reason="generic_unresolved_multiple",
+        )
     if normalized.semantic_kind is FrequencyLabelKind.SEIZURE_FREE:
         if _is_current_seizure_free_evidence(evidence):
-            return 5, 0, 0.0
-        return 2, 0, 0.0
+            return SelectionScore(
+                semantic_priority=5,
+                evidence_priority=0,
+                monthly_frequency_priority=0.0,
+                reason="current_seizure_free",
+            )
+        return SelectionScore(
+            semantic_priority=2,
+            evidence_priority=0,
+            monthly_frequency_priority=0.0,
+            reason="generic_seizure_free",
+        )
     if normalized.semantic_kind is FrequencyLabelKind.UNKNOWN:
         if _is_trigger_conditioned_unknown_evidence(evidence):
-            return 6, 0, 0.0
-        return 1, 0, 0.0
-    return 0, 0, 0.0
+            return SelectionScore(
+                semantic_priority=6,
+                evidence_priority=0,
+                monthly_frequency_priority=0.0,
+                reason="trigger_conditioned_unknown",
+            )
+        return SelectionScore(
+            semantic_priority=1,
+            evidence_priority=0,
+            monthly_frequency_priority=0.0,
+            reason="generic_unknown",
+        )
+    return SelectionScore(
+        semantic_priority=0,
+        evidence_priority=0,
+        monthly_frequency_priority=0.0,
+        reason="no_reference",
+    )
 
 
 def _selection_rationale(normalized: NormalizedEvent) -> str:
