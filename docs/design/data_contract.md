@@ -22,11 +22,27 @@ The initial loader treats each row as:
 See `docs/design/gan2026_normalization_semantics.md` for the normalization and semantic
 conversion contract.
 
+## Split Surface
+
+Gan 2026 split policy lives in `docs/design/gan2026_split_protocol.md`. The locked
+v1 manifest is:
+
+```text
+data/Gan (2026)/splits/gan2026_split_v1.json
+```
+
+Use validation, not the full dataset, for ordinary deterministic-rule, prompt,
+ablation, and error-analysis work. Reserve train for DSPy GEPA or another optimizer
+that needs training examples. Treat test as a locked final holdout and never tune
+on it.
+
 ## Contract Principles
 
 - Preserve original rows untouched in `raw`.
 - Keep benchmark-specific label policy inside `gan2026`.
 - Include `row_ok=False` rows in the development/evaluation surface, while retaining the flag for stratified analysis.
+- Use explicit split manifests for development and holdout evaluation; do not treat
+  all 1,500 rows as the default iteration surface.
 - Add tests before changing any conversion from raw labels to numeric rates or categories.
 - Preserve raw semantic labels separately from scoring sentinels where possible.
 - Treat `unknown` and `no seizure frequency reference` as distinct raw states even though Gan scoring maps both to the unknown category.

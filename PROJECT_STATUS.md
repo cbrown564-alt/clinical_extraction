@@ -37,6 +37,8 @@ Treat deterministic rules as controlled variables. Categorize each rule by porta
 - Loader exposes full note text, gold label/reference, quality flags, raw rows, and parsed monthly gold frequency.
 - Gold label parsing now covers all 1,500 local Gan rows under focused tests.
 - Loader now preserves normalized gold labels, semantic label kind, yearly bounds, and monthly scorer values separately.
+- Locked Gan 2026 split manifest exists at `data/Gan (2026)/splits/gan2026_split_v1.json`: 300 train rows for DSPy GEPA or other optimizers, 750 validation rows for ordinary development, and 450 test rows for final holdout only.
+- Split protocol is documented in `docs/design/gan2026_split_protocol.md`, and loader helpers can load manifest-ordered split records.
 - Prediction-label repair behavior has been ported into `gan2026.normalize` for common author-script repairs.
 - Scoring policy prefers the author evaluation script when it conflicts with CSV-preparation behavior.
 - `row_ok=False` rows are included in the development/evaluation surface and retained for stratified analysis.
@@ -46,7 +48,7 @@ Treat deterministic rules as controlled variables. Categorize each rule by porta
 - LLM model strategy is documented in `docs/design/model_strategy.md`: GPT-4.1 mini for rapid baseline experiments, Qwen 3.6:35b later for local strong-reasoning tests after a pipeline exceeds 0.8 purist F1, and GPT-5.4 only as a possible DSPy GEPA teacher.
 - First schema-shaped deterministic V1 baseline is implemented in `gan2026.pipeline_v1`.
 - V1 run record exists at `experiments/gan2026_v1_deterministic_baseline_2026-05-31.md`.
-- V1 development result on all 1,500 local rows is 0.3120 Purist micro F1/accuracy; this is not benchmark-comparable and mostly reflects low recall plus unknown/no-reference scorer collapse.
+- V1 historical development result on all 1,500 local rows is 0.3120 Purist micro F1/accuracy; future candidate iteration should report validation-split results instead.
 - V1 selected-evidence validity is 1,500/1,500 exact source substrings.
 - `pytest` and `ruff` pass in the local `.venv` after baseline implementation.
 
@@ -55,22 +57,20 @@ Treat deterministic rules as controlled variables. Categorize each rule by porta
 ### Now
 
 - Improve deterministic candidate recall for ordinary frequency evidence before adding LLM reasoning.
-- Create a row-level error-analysis table for the V1 baseline, prioritizing missed `frequency` and `seizure_free` gold kinds.
+- Create a validation-split row-level error-analysis table for the V1 baseline, prioritizing missed `frequency` and `seizure_free` gold kinds.
 - Add patterns for distributed month lists, interval language such as `every 4 days`, and no-event/seizure-free phrasing with breakthrough-event guards.
 
 ### Next
 
 - Start a living notebook for loading, gold-label distribution, scoring, and failure slices.
-- Add split manifests for development/evaluation/quarantine surfaces before stronger benchmark language.
 - Use GPT-4.1 mini as the default LLM runtime model for early DSPy experiments and record exact model metadata in run artifacts after deterministic recall is less brittle.
 
 ### Blocked
 
-- Final benchmark-comparison language is blocked until split policy and replication surface are explicit.
+- Final benchmark-comparison language is blocked until replication surface and paper comparability are explicit.
 
 ### Backlog
 
-- Add split manifests for development, evaluation, and quarantine surfaces.
 - Add run-record metadata templates under `experiments/`.
 - Implement row-level error slicing for the expected Gan 2026 failure modes.
 - Add DSPy event extraction and clinical reasoner modules after deterministic substrate parity.
@@ -91,7 +91,8 @@ Treat deterministic rules as controlled variables. Categorize each rule by porta
 - 2026-05-31: Documented LLM model strategy and experiment-metadata requirements.
 - 2026-05-31: Implemented the first schema-shaped deterministic V1 baseline with candidate events, normalized events, final selection diagnostics, and exact evidence validation.
 - 2026-05-31: Evaluated V1 on all 1,500 local Gan rows: Purist micro F1/accuracy 0.3120, evidence validity 1,500/1,500, with failures dominated by missed frequency/seizure-free evidence.
+- 2026-05-31: Added Gan 2026 train/validation/test split protocol and locked `gan2026_split_v1` manifest; updated skills to enforce validation-first development and locked test holdout discipline.
 
 ## Immediate Next Step
 
-Build the V1 row-level error-analysis table, then improve deterministic recall for distributed event counts, interval-derived rates, and seizure-free/no-event phrasing while preserving exact evidence validation.
+Build the V1 validation-split row-level error-analysis table, then improve deterministic recall for distributed event counts, interval-derived rates, and seizure-free/no-event phrasing while preserving exact evidence validation.
