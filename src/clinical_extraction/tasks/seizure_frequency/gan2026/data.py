@@ -11,6 +11,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
 )
 
 DEFAULT_DATA_PATH = Path("data/Gan (2026)/synthetic_data_subset_1500.json")
+DEFAULT_SPLIT_MANIFEST_PATH = Path("data/Gan (2026)/splits/gan2026_split_v1.json")
 SEIZURE_FREQUENCY_KEY = "check__Seizure Frequency Number"
 
 
@@ -75,6 +76,28 @@ def load_records_with_monthly_frequency(path: Path = DEFAULT_DATA_PATH) -> list[
             )
         )
     return records
+
+
+def load_split_manifest(path: Path = DEFAULT_SPLIT_MANIFEST_PATH) -> dict[str, Any]:
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def load_records_for_split(
+    split: str,
+    data_path: Path = DEFAULT_DATA_PATH,
+    manifest_path: Path = DEFAULT_SPLIT_MANIFEST_PATH,
+) -> list[GanFrequencyRecord]:
+    manifest = load_split_manifest(manifest_path)
+    splits = manifest["splits"]
+    if split not in splits:
+        expected = ", ".join(sorted(splits))
+        raise ValueError(f"Unknown split {split!r}. Expected one of: {expected}")
+
+    records_by_index = {
+        record.source_row_index: record for record in load_records_with_monthly_frequency(data_path)
+    }
+    split_indices = splits[split]["source_row_indices"]
+    return [records_by_index[int(source_row_index)] for source_row_index in split_indices]
 
 
 def _first_value(value: str | list[str]) -> str:
