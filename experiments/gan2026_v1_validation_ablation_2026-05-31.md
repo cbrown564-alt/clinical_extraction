@@ -28,7 +28,7 @@ Scorer: Gan-compatible Purist micro F1 as the primary metric, Pragmatic micro F1
 | disable_seizure_free_no_event_assertions | seizure_free_no_event_assertions | 131 | 595 / 750 | 750 / 750 | 0.7933 | 0.8027 | 243 |
 | disable_cluster_arithmetic | cluster_arithmetic | 59 | 632 / 750 | 750 / 750 | 0.8427 | 0.8547 | 171 |
 | disable_diary_log_aggregation | diary_log_aggregation | 48 | 638 / 750 | 750 / 750 | 0.8507 | 0.8653 | 168 |
-| disable_temporal_selection | temporal_selection | 0 | 684 / 750 | 750 / 750 | 0.9120 | 0.9213 | 131 |
+| disable_temporal_selection | temporal_selection | 135 | 571 / 750 | 750 / 750 | 0.7613 | 0.7853 | 127 |
 | disable_gan_shorthand | gan_shorthand | 21 | 664 / 750 | 750 / 750 | 0.8853 | 0.8973 | 145 |
 | disable_benchmark_repair | benchmark_repair | 6 | 684 / 750 | 750 / 750 | 0.9120 | 0.9213 | 131 |
 
@@ -42,7 +42,7 @@ Scorer: Gan-compatible Purist micro F1 as the primary metric, Pragmatic micro F1
 | disable_seizure_free_no_event_assertions | 476 | 0 | 14 | 229 | 31 |
 | disable_cluster_arithmetic | 413 | 136 | 10 | 161 | 30 |
 | disable_diary_log_aggregation | 417 | 135 | 9 | 159 | 30 |
-| disable_temporal_selection | 459 | 130 | 9 | 122 | 30 |
+| disable_temporal_selection | 398 | 209 | 5 | 122 | 16 |
 | disable_gan_shorthand | 442 | 133 | 9 | 136 | 30 |
 | disable_benchmark_repair | 459 | 130 | 9 | 122 | 30 |
 
@@ -134,11 +134,22 @@ Changed rows: 48
 
 ### disable_temporal_selection
 
-Changed rows: 0
+Changed rows: 135
 
 | Row | Baseline correct | Ablated correct | Gold category | Baseline prediction | Ablated prediction |
 | ---: | --- | --- | --- | --- | --- |
-| - | - | - | - | - | - |
+| 5921 | False | True | seizure_freq_more1per6mon_less1mon | seizure_freq_1ormore_daily / 1 per day | seizure_freq_more1per6mon_less1mon / 1 per 6 to 8 week |
+| 6889 | False | True | seizure_freq_unknown | seizure_freq_more1mon_less1week / 1 per 2 to 3 week | seizure_freq_unknown / multiple per week |
+| 10386 | False | True | seizure_freq_more1week_less1day | seizure_freq_1ormore_daily / 1 per day | seizure_freq_more1week_less1day / 1 cluster per week, 2 to 3 per cluster |
+| 13209 | False | True | seizure_freq_1_per_yr | seizure_freq_more1per6mon_less1mon / 1 per 4 to 5 week | seizure_freq_1_per_yr / 1 per 8 month |
+| 15986 | False | True | seizure_freq_more1mon_less1week | seizure_freq_more1week_less1day / 1 per 5 to 7 day | seizure_freq_more1mon_less1week / 11 per 3 month |
+| 278 | True | False | seizure_freq_unknown | seizure_freq_unknown / multiple per week | currently_no_seizure / seizure free for multiple year |
+| 466 | True | False | seizure_freq_more1week_less1day | seizure_freq_more1week_less1day / 21 to 28 per month | currently_no_seizure / seizure free for multiple year |
+| 744 | True | False | seizure_freq_unknown | seizure_freq_unknown / multiple per week | seizure_freq_more1per6mon_less1mon / 1 per 8 week |
+| 891 | True | False | seizure_freq_more1week_less1day | seizure_freq_more1week_less1day / 1 per 2 day | currently_no_seizure / seizure free for multiple year |
+| 899 | True | False | seizure_freq_more1mon_less1week | seizure_freq_more1mon_less1week / 1 per 2 week | currently_no_seizure / seizure free for multiple year |
+| 1171 | True | False | seizure_freq_more1week_less1day | seizure_freq_more1week_less1day / 7 to 9 per 3 week | currently_no_seizure / seizure free for multiple year |
+| 1363 | True | False | seizure_freq_1ormore_daily | seizure_freq_1ormore_daily / 3 per day | seizure_freq_more1week_less1day / 1 to 2 per week |
 
 ### disable_gan_shorthand
 

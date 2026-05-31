@@ -75,43 +75,61 @@ Treat deterministic rules as controlled variables. Categorize each rule by porta
 - Temporal-selection diagnostics now expose structured `SelectionScore` records for the selected candidate and all candidate alternatives, naming semantic priority, evidence priority, monthly-frequency tie-breaker, and selection reason while preserving the original tuple ordering behavior.
 - Benchmark repair is isolated as benchmark-format metadata: `gan2026.rules.benchmark_repair` defines traceable `BenchmarkRepairStep` records and `repair_prediction_label_with_trace()` exposes which accepted-format/scorer-compatibility repairs changed a prediction while preserving the public `repair_prediction_label()` behavior.
 - Deterministic rule-catalogue change report exists at `docs/research/deterministic_rule_catalogue_change_report_2026-05-31.md`, documenting before/after examples, completed improvements, verification, and ablation-reporting context.
-- Validation-only deterministic rule ablation report exists at `experiments/gan2026_v1_validation_ablation_2026-05-31.md`, with changed-row CSV at `experiments/gan2026_v1_validation_ablation_changed_rows_2026-05-31.csv`. Current working-tree V1 validation baseline in that run is 0.9120 Purist micro F1/accuracy and 0.9213 Pragmatic micro F1/accuracy with 750/750 exact selected-evidence validity; disabling portable-rate expressions, seizure-free/no-event assertions, cluster arithmetic, diary/log aggregation, and Gan shorthand reduced Purist micro F1 to 0.7453, 0.7933, 0.8427, 0.8507, and 0.8853 respectively. The report should be rerun after the executable temporal-selection and benchmark-repair RuleSpec registry fix.
+- Validation-ablation interpretation report exists at `docs/research/gan2026_validation_ablation_interpretation_2026-05-31.md`, summarizing why frozen V1 should now be treated as a controlled comparator and why the next work should focus on validation-only LLM/DSPy reasoning plus validation-baseline drift verification.
+- Validation-only deterministic rule ablation report exists at `experiments/gan2026_v1_validation_ablation_2026-05-31.md`, with changed-row CSV at `experiments/gan2026_v1_validation_ablation_changed_rows_2026-05-31.csv`. Current working-tree V1 validation baseline in the latest run is 0.9120 Purist micro F1/accuracy and 0.9213 Pragmatic micro F1/accuracy with 750/750 exact selected-evidence validity. Disabling portable-rate expressions, seizure-free/no-event assertions, cluster arithmetic, diary/log aggregation, temporal selection, and Gan shorthand reduced Purist micro F1 to 0.7453, 0.7933, 0.8427, 0.8507, 0.7613, and 0.8853 respectively. Disabling benchmark repair changed 6 labels but did not change Purist/Pragmatic micro F1; date-duration utilities remain helper-backed and unchanged by group ablation.
 - Temporal selection and benchmark repair now have executable ablation surfaces backed by normal `RuleSpec` registries: `gan2026.rules.temporal_selection.TEMPORAL_SELECTION_RULES` controls final-selection score reasons, and `gan2026.normalize.BENCHMARK_REPAIR_RULES` controls sequential prediction-label repair steps. Group and rule-ID ablations are covered by focused tests while preserving default V1 behavior.
 - `pytest` and `ruff` pass in the local `.venv` after validation error-analysis generation.
 
 ## Work Board
 
-## Recommended Next Steps From Deterministic V1 Review
+## Recommended Next Steps From Validation Ablation Interpretation
 
 Work through these in order in the next session. Keep all new development on
 validation/train surfaces only; the V1 test result is frozen context, not a
 tuning surface.
 
-1. Add rule metadata and ablation switches before any further deterministic-rule
-   changes. Use `docs/design/deterministic_rule_catalogue_plan.md` as the
-   implementation roadmap.
-2. Split extraction into rule groups: date/duration utilities, portable rate
-   expressions, seizure-free/no-event assertions, cluster arithmetic, diary/log
-   aggregation, temporal selection, Gan-specific shorthand, and benchmark repair.
-3. Build a validation-only ablation table by rule group, then report the already
-   frozen test result as deterministic V1 holdout performance.
-4. Replace or wrap the final-selection tuple priority with an explicit decision
+1. Treat deterministic V1 as frozen and use
+   `experiments/gan2026_v1_validation_ablation_2026-05-31.md` as the main
+   diagnostic context for the next candidate. The ablation result shows V1 is
+   carried most strongly by portable-rate extraction, temporal selection, and
+   seizure-free/no-event assertions; additional hand rules should go into a new
+   explicitly ablated candidate, not the frozen V1 baseline.
+2. Investigate the validation-baseline drift before paper-facing claims: the
+   saturated validation artifact recorded 0.9280 Purist micro F1, while the
+   latest ablation baseline is 0.9120. Confirm whether this is expected
+   working-tree drift, artifact/version mismatch, or a behavior regression.
+3. Start validation-only LLM/DSPy experiments for reasoning-heavy failure
+   families highlighted by the ablation: temporal/current-versus-historical
+   selection, seizure-free versus unknown/no-reference assertions, semiology
+   reconciliation, trigger-conditioned events, non-epileptic/EEG-only mapping,
+   and cluster-detail interpretation.
+4. Use the ablation changed-row CSV to mine examples where disabling a
+   deterministic group improves the answer. These rows are high-value prompt,
+   adjudicator, and error-taxonomy examples because they expose deterministic
+   overreach rather than simple recall misses.
+5. Replace or wrap the final-selection tuple priority with an explicit decision
    record over structured candidate attributes: assertion, temporality,
    semiology, event target, window, normalized rate, and uncertainty.
-5. Start validation-only LLM/DSPy experiments for reasoning-heavy failure
-   families: semiology reconciliation, trigger conditions,
-   current-versus-historical selection, non-epileptic/EEG-only mapping, and
-   cluster-detail interpretation.
 6. Add paraphrase and adversarial tests for core portable rules so future gains
-   are not only exact-snippet gains.
+   are not only exact-snippet gains. Prioritize portable-rate expressions and
+   seizure-free/no-event assertions because the ablation shows they are both
+   important and clinically brittle.
 
 ### Now
 
-- Rerun the validation-only deterministic-rule ablation report now that temporal selection and benchmark repair are executable registry-backed ablation groups.
-- Start the LLM/DSPy reasoning track on validation-only artifacts, focusing first on trigger/unknown policy, semiology reconciliation, non-epileptic current-event mapping, and cluster-detail normalization.
+- Verify the 0.9280 saturated-validation artifact versus the 0.9120 ablation
+  baseline before making paper-facing performance claims.
+- Start the LLM/DSPy reasoning track on validation-only artifacts, focusing
+  first on temporal selection, seizure-free versus unknown/no-reference,
+  trigger-conditioned events, semiology reconciliation, and cluster-detail
+  normalization.
+- Mine `experiments/gan2026_v1_validation_ablation_changed_rows_2026-05-31.csv`
+  for examples where disabling a deterministic group improves correctness.
 
 ### Next
 
+- Convert mined ablation rows into a small validation-only prompt/adjudicator
+  development set with deterministic baseline predictions preserved as context.
 - Prepare controlled model-comparison scaffolding with the deterministic V1 holdout result treated as frozen context, not as a tuning surface.
 - Start a living notebook for loading, gold-label distribution, scoring, and failure slices.
 - Use GPT-4.1 mini as the default LLM runtime model for early DSPy experiments and record exact model metadata in run artifacts after deterministic recall is less brittle.
@@ -123,6 +141,9 @@ tuning surface.
 ### Backlog
 
 - Add run-record metadata templates under `experiments/`.
+- Add paraphrase and adversarial tests around portable-rate expressions and
+  seizure-free/no-event assertions to test whether future improvements transfer
+  beyond exact Gan snippets.
 - Refine heuristic row-level error slices into audited causal labels with examples once deterministic recall is less sparse.
 - Add DSPy event extraction and clinical reasoner modules after deterministic substrate parity.
 - Run controlled Qwen 3.6:35b local-model comparisons on the Windows laptop after deterministic saturation is documented and model-comparison scaffolding is ready.
@@ -130,6 +151,15 @@ tuning surface.
 
 ### Done Recently
 
+- 2026-05-31: Interpreted the validation-only deterministic-rule ablation as
+  evidence that frozen V1's validation score is carried mainly by
+  portable-rate expressions, temporal selection, and seizure-free/no-event
+  assertions. Recorded recommended next actions: verify the 0.9280 versus
+  0.9120 validation-baseline drift, keep V1 frozen, mine changed rows where
+  ablation improves correctness, and move reasoning-heavy residuals into
+  validation-only LLM/DSPy experiments rather than more unbounded hand rules.
+- 2026-05-31: Wrote `docs/research/gan2026_validation_ablation_interpretation_2026-05-31.md` as a durable short report interpreting the validation ablation, its strongest rule-group signals, the 0.9280 versus 0.9120 caution, and recommended next actions.
+- 2026-05-31: Reran the validation-only deterministic-rule ablation report after making temporal selection and benchmark repair executable registry-backed ablation surfaces. The refreshed report now shows `disable_temporal_selection` changes 135 rows and drops Purist micro F1 to 0.7613, while `disable_benchmark_repair` changes 6 labels with no aggregate F1 movement.
 - 2026-05-31: Made temporal selection and benchmark repair executable registry-backed ablation surfaces. Added `gan2026.rules.temporal_selection.TEMPORAL_SELECTION_RULES`, converted benchmark repair execution to `BENCHMARK_REPAIR_RULES` `RuleSpec` records, wired both through `AblationConfig`, added group/rule-ID regression tests, and preserved default V1 behavior under full `pytest` and Ruff.
 - 2026-05-31: Ran the validation-only deterministic-rule ablation analysis by adding `gan2026.ablation_analysis`, making benchmark repair respect `AblationConfig`, generating `experiments/gan2026_v1_validation_ablation_2026-05-31.md` and `experiments/gan2026_v1_validation_ablation_changed_rows_2026-05-31.csv`, and confirming the current working-tree baseline is 0.9120 Purist micro F1/accuracy with 750/750 exact selected-evidence validity.
 - 2026-05-31: Wrote `docs/research/deterministic_rule_catalogue_change_report_2026-05-31.md`, summarizing the deterministic rule-catalogue refactor with before/after examples, rule metadata and portability improvements, structured selection diagnostics, benchmark repair tracing, verification status, and the remaining validation-only ablation table task.
@@ -193,4 +223,4 @@ tuning surface.
 
 ## Immediate Next Step
 
-Rerun the validation-only deterministic-rule ablation report with the new temporal-selection and benchmark-repair executable RuleSpec registries, then start validation-only LLM/DSPy experiments on the residual reasoning families without inspecting or tuning on the test split.
+Start validation-only LLM/DSPy experiments on the residual reasoning families without inspecting or tuning on the test split, using the refreshed deterministic-rule ablation report as context.

@@ -5,10 +5,10 @@ Date: 2026-05-31
 ## Summary
 
 The deterministic V1 seizure-frequency extractor has been refactored from a
-validation-saturated regex stack into a mostly catalogued, metadata-rich rule
+validation-saturated regex stack into a catalogued, metadata-rich rule
 surface. The main improvement is not higher recall by itself. The improvement is
-that deterministic behavior is now easier to inspect, safer to change, and ready
-for validation-only ablation reporting.
+that deterministic behavior is now easier to inspect, safer to change, and
+measurable through validation-only ablation reporting.
 
 The refactor preserved default V1 behavior while adding:
 
@@ -16,12 +16,13 @@ The refactor preserved default V1 behavior while adding:
 - rule-level IDs, examples, and provenance
 - group, portability, and rule-ID ablation switches
 - selected-candidate metadata in pipeline diagnostics
-- structured final-selection scores
-- traceable benchmark-format repair metadata
+- structured, ablatable final-selection score rules
+- traceable and ablatable benchmark-format repair rules
 
-One planned deliverable is still outstanding: the formal validation-only
-ablation table by rule group. The report below distinguishes completed catalogue
-work from that remaining experiment artifact.
+The validation-only ablation table now exists at
+`experiments/gan2026_v1_validation_ablation_2026-05-31.md`, with changed-row
+details in
+`experiments/gan2026_v1_validation_ablation_changed_rows_2026-05-31.csv`.
 
 ## Why This Was Needed
 
@@ -299,10 +300,11 @@ Why this is better:
   Gan-specific shorthand.
 - Cross-dataset claims can exclude or separately report this category.
 
-### 7. Benchmark Repair Became Traceable
+### 7. Benchmark Repair Became Traceable And Ablatable
 
 Benchmark repair is necessary for Gan-style label compatibility, but it is not
-clinical extraction. The refactor separates it as benchmark-format metadata.
+clinical extraction. The refactor separates it as benchmark-format metadata and
+executes repair through normal `RuleSpec` records.
 
 Before:
 
@@ -335,15 +337,34 @@ benchmark_repair.drop_prediction_noise:
   about 2 per week -> 2 per week
 ```
 
+The same repair sequence is now backed by `BENCHMARK_REPAIR_RULES`, a registry
+of 30 `RuleSpec` records. That means group and rule-ID ablations use the same
+`AblationConfig` mechanism as extraction rules.
+
+Rule-ID ablation example:
+
+```text
+Input label:
+about twice weekly
+
+Disabled rule:
+benchmark_repair.once_twice_thrice
+
+Result:
+final label = 1 per week
+trace does not contain benchmark_repair.once_twice_thrice
+```
+
 Why this is better:
 
 - Benchmark-format transformations are visible and auditable.
+- Individual repair steps can be disabled as controlled variables.
 - Clinical extraction behavior can be discussed separately from scorer
   compatibility.
 - Reports can measure repair dependence without pretending repair is clinical
   reasoning.
 
-### 8. Final Selection Became Explainable
+### 8. Final Selection Became Explainable And Ablatable
 
 Before, final selection used an opaque tuple priority. It worked, but a reviewer
 could not easily see why one candidate won.
@@ -398,9 +419,33 @@ selected_score = {
 }
 ```
 
+The selection reasons are now also represented as `TEMPORAL_SELECTION_RULES`, a
+registry of 9 `RuleSpec` records. Disabling the temporal-selection group zeros
+the selection priorities while preserving candidate extraction and
+normalization, so the ablation isolates the final-choice policy rather than
+removing upstream evidence.
+
+Temporal-selection ablation example:
+
+```text
+Input:
+Historical seizures were 2 per month. Patient reports focal aware sensory
+episodes only when significantly short on sleep.
+
+Default:
+selected label = unknown
+selected reason = trigger_conditioned_unknown
+
+With temporal_selection disabled:
+selected label = 2 per month
+candidate reasons = frequency_monthly_rate_disabled,
+                    trigger_conditioned_unknown_disabled
+```
+
 Why this is better:
 
 - Sorting behavior is preserved, but the decision is now visible.
+- Selection policy can be disabled independently from extraction rules.
 - Error analysis can distinguish extraction failures from selection failures.
 - The deterministic selector is easier to compare against a future LLM reasoner.
 
@@ -413,42 +458,32 @@ portable_rate_expressions: 30
 seizure_free_no_event_assertions: 10
 cluster_arithmetic: 27
 diary_log_aggregation: 22
+temporal_selection: 9
 gan_shorthand: 4
+benchmark_repair: 30
 ```
 
-Benchmark repair is represented separately as 30 `BenchmarkRepairStep` records.
-
-The following groups exist in `RuleGroup` but do not currently have normal
-`RuleSpec` registries:
+The following group exists in `RuleGroup` but does not currently have a normal
+executable `RuleSpec` registry:
 
 ```text
 date_duration_utilities
-temporal_selection
-benchmark_repair
 ```
 
-This is partly intentional:
-
-- `date_duration_utilities` currently functions as helper-backed parsing inside
-  other rule groups.
-- `temporal_selection` is represented by structured `SelectionScore`
-  diagnostics rather than regex-style `RuleSpec` entries.
-- `benchmark_repair` is represented by `BenchmarkRepairStep` records rather
-  than extraction rules.
-
-However, this means the implementation is not a literal full completion of the
-original "every group as a rule catalogue" framing.
+`date_duration_utilities` currently functions as helper-backed parsing inside
+other rule groups. Its ablation has no effect in the current validation report
+because no executable date-duration rule surface exists yet.
 
 ## Verification
 
-Focused verification after the audit:
+Focused verification after the registry fix:
 
 ```text
-pytest -q tests/test_gan2026_rule_metadata.py \
-          tests/test_gan2026_normalize.py \
-          tests/test_gan2026_pipeline_v1.py
+pytest -q
+398 passed in 1.01s
 
-373 passed in 0.92s
+ruff check .
+All checks passed.
 ```
 
 The tested areas cover:
@@ -457,31 +492,58 @@ The tested areas cover:
 - rule registry validation
 - selected-candidate rule metadata
 - group-level ablation tests for migrated rule groups
-- benchmark repair trace tests
+- benchmark repair trace and rule-ID ablation tests
 - structured final-selection score diagnostics
+- temporal-selection group ablation tests
+
+## Validation Ablation Results
+
+The validation-only ablation report was regenerated after temporal selection and
+benchmark repair became executable registry-backed ablation groups.
+
+Report artifacts:
+
+```text
+experiments/gan2026_v1_validation_ablation_2026-05-31.md
+experiments/gan2026_v1_validation_ablation_changed_rows_2026-05-31.csv
+```
+
+Headline table:
+
+```text
+baseline_all_groups:                    0.9120 Purist, 0.9213 Pragmatic
+disable_portable_rate_expressions:      0.7453 Purist, 0.7733 Pragmatic
+disable_seizure_free_no_event_assertions: 0.7933 Purist, 0.8027 Pragmatic
+disable_cluster_arithmetic:             0.8427 Purist, 0.8547 Pragmatic
+disable_diary_log_aggregation:          0.8507 Purist, 0.8653 Pragmatic
+disable_temporal_selection:             0.7613 Purist, 0.7853 Pragmatic
+disable_gan_shorthand:                  0.8853 Purist, 0.8973 Pragmatic
+disable_benchmark_repair:               0.9120 Purist, 0.9213 Pragmatic
+disable_date_duration_utilities:        0.9120 Purist, 0.9213 Pragmatic
+```
+
+Changed rows:
+
+```text
+portable_rate_expressions: 183
+temporal_selection: 135
+seizure_free_no_event_assertions: 131
+cluster_arithmetic: 59
+diary_log_aggregation: 48
+gan_shorthand: 21
+benchmark_repair: 6
+date_duration_utilities: 0
+```
+
+Evidence validity remained 750/750 for every validation condition. The frozen
+test holdout remains prior context only; no test-row diagnostics were generated
+for this ablation work.
 
 ## Remaining Work
 
-The original plan is not complete until the validation-only ablation report
-exists.
-
-Required next artifact:
-
-```text
-experiments/gan2026_v1_rule_group_ablation_2026-05-31.md
-```
-
-That artifact should evaluate validation rows with one rule group disabled at a
-time and report:
-
-- Purist micro F1
-- Pragmatic micro F1
-- evidence validity
-- no-reference and unknown distribution changes
-- top changed rows by disabled group
-- frozen test result only as already-known holdout context
-
-No test-row diagnostics should be generated for this ablation work.
+The main remaining catalogue question is whether `date_duration_utilities`
+should become a separately executable ablation surface or remain documented as
+helper-backed support inside rate, seizure-free, cluster, and diary rules.
 
 ## Bottom Line
 
@@ -490,5 +552,6 @@ deterministic extractor now exposes what fired, why it fired, how portable the
 behavior is, and how the final candidate was selected. That makes the system
 much more defensible as a research object.
 
-The remaining gap is not extraction behavior. It is the formal validation-only
-ablation report that turns the new controls into performance evidence.
+The validation ablation report now turns those controls into performance
+evidence. The only non-executable rule group left is the helper-backed
+`date_duration_utilities` surface.
