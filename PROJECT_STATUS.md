@@ -44,22 +44,25 @@ Treat deterministic rules as controlled variables. Categorize each rule by porta
 - Ten-letter schema exploration is documented in `docs/research/gan2026_schema_exploration_10_examples.md`.
 - Pipeline V1 now specifies richer candidate-event, deterministic-normalization, and final-selection schemas.
 - LLM model strategy is documented in `docs/design/model_strategy.md`: GPT-4.1 mini for rapid baseline experiments, Qwen 3.6:35b later for local strong-reasoning tests after a pipeline exceeds 0.8 purist F1, and GPT-5.4 only as a possible DSPy GEPA teacher.
-- `pytest` and `ruff` pass in the local `.venv`.
+- First schema-shaped deterministic V1 baseline is implemented in `gan2026.pipeline_v1`.
+- V1 run record exists at `experiments/gan2026_v1_deterministic_baseline_2026-05-31.md`.
+- V1 development result on all 1,500 local rows is 0.3120 Purist micro F1/accuracy; this is not benchmark-comparable and mostly reflects low recall plus unknown/no-reference scorer collapse.
+- V1 selected-evidence validity is 1,500/1,500 exact source substrings.
+- `pytest` and `ruff` pass in the local `.venv` after baseline implementation.
 
 ## Work Board
 
 ### Now
 
-- Implement the first schema-shaped extraction baseline, expecting imperfect coverage but interpretable row-level failures.
-- Evaluate the first baseline with Gan-compatible Purist scoring plus slices for label kind, clusters, ranges, `multiple`, seizure-free, no-reference, and evidence validity.
-- Preserve candidate events, normalization outputs, and final-selection rationale in run artifacts.
-- Use GPT-4.1 mini as the default LLM runtime model for early DSPy experiments and record exact model metadata in run artifacts.
+- Improve deterministic candidate recall for ordinary frequency evidence before adding LLM reasoning.
+- Create a row-level error-analysis table for the V1 baseline, prioritizing missed `frequency` and `seizure_free` gold kinds.
+- Add patterns for distributed month lists, interval language such as `every 4 days`, and no-event/seizure-free phrasing with breakthrough-event guards.
 
 ### Next
 
-- Create the first evaluation/error-analysis table for development rows using the schema failure modes in `docs/research/gan2026_schema_exploration_10_examples.md`.
 - Start a living notebook for loading, gold-label distribution, scoring, and failure slices.
 - Add split manifests for development/evaluation/quarantine surfaces before stronger benchmark language.
+- Use GPT-4.1 mini as the default LLM runtime model for early DSPy experiments and record exact model metadata in run artifacts after deterministic recall is less brittle.
 
 ### Blocked
 
@@ -86,7 +89,9 @@ Treat deterministic rules as controlled variables. Categorize each rule by porta
 - 2026-05-31: Ported tested author prediction-label repair behavior into `gan2026.normalize`; `pytest` and `ruff` pass.
 - 2026-05-31: Worked through 10 Gan letters and updated the V1 pipeline schema toward source-near candidate events, deterministic normalization, and traceable final selection.
 - 2026-05-31: Documented LLM model strategy and experiment-metadata requirements.
+- 2026-05-31: Implemented the first schema-shaped deterministic V1 baseline with candidate events, normalized events, final selection diagnostics, and exact evidence validation.
+- 2026-05-31: Evaluated V1 on all 1,500 local Gan rows: Purist micro F1/accuracy 0.3120, evidence validity 1,500/1,500, with failures dominated by missed frequency/seizure-free evidence.
 
 ## Immediate Next Step
 
-Implement the first schema-shaped extraction baseline and evaluate it rigorously, using failures as signal for the next iteration rather than expecting perfect first-pass behavior.
+Build the V1 row-level error-analysis table, then improve deterministic recall for distributed event counts, interval-derived rates, and seizure-free/no-event phrasing while preserving exact evidence validation.
