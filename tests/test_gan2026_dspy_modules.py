@@ -22,6 +22,7 @@ def _example() -> dict:
         "ablation_condition": "disable_cluster_arithmetic",
         "row_ok": True,
         "input": {
+            "note_text": "Present seizure frequency: two seizures per month.",
             "candidate_events": [
                 {
                     "event_id": "event_1",
@@ -95,6 +96,8 @@ def test_parse_decision_json_accepts_fenced_json_and_repairs_label() -> None:
       "window": "current",
       "normalized_rate": "2 per month",
       "uncertainty": "low",
+      "accepted_event_ids": ["event_1"],
+      "rejected_event_ids": [],
       "selected_event_ids": ["event_1"],
       "final_label": " 2 PER MONTH ",
       "rationale": "The current frequency is explicitly stated."
@@ -117,6 +120,8 @@ def test_parse_decision_json_repairs_common_model_schema_aliases() -> None:
             "window": "current",
             "normalized_rate": 2.0,
             "uncertainty": "certain",
+            "accepted_event_ids": ["event_1"],
+            "rejected_event_ids": [],
             "selected_event_ids": ["event_1"],
             "final_label": "2 per month",
             "rationale": "The current frequency is explicitly stated.",

@@ -195,6 +195,7 @@ def test_build_development_examples_attaches_deterministic_diagnostics(monkeypat
 
     assert examples[0]["example_id"] == "gan2026-validation-10-disable_temporal_selection"
     assert examples[0]["lesson_type"] == "deterministic_overreach"
+    assert examples[0]["input"]["note_text"] == record.note_text
     assert examples[0]["input"]["deterministic_final_selection"]["final_label"] == "2 per month"
     assert examples[0]["input"]["candidate_events"][0]["normalized_label"] == "2 per month"
     assert "assertion_status" in examples[0]["adjudicator_target"]["decision_record_fields"]

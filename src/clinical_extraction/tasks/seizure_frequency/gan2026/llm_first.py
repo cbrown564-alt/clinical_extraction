@@ -1,0 +1,517 @@
+"""LLM-first Gan 2026 seizure-frequency extraction experiments."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import re
+import subprocess
+import sys
+from collections import Counter
+from collections.abc import Mapping, Sequence
+from datetime import UTC, datetime
+from pathlib import Path
+from typing import Any, Literal
+
+import dspy
+from pydantic import BaseModel, ConfigDict, ValidationError
+
+from clinical_extraction.core.evidence import evidence_is_substring
+from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
+    GanFrequencyRecord,
+    load_records_for_split,
+    load_split_manifest,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.labels import map_pragmatic, map_purist
+from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
+    label_to_frequency_record,
+    repair_prediction_label,
+)
+
+PROMPT_VERSION = "gan2026_llm_first_direct_extractor_v0.1"
+DEFAULT_JSONL_PATH = Path("experiments/gan2026_llm_first_validation_gpt41mini_2026-05-31.jsonl")
+DEFAULT_REPORT_PATH = Path("experiments/gan2026_llm_first_validation_gpt41mini_2026-05-31.md")
+
+
+class LlmFirstDecisionRecord(BaseModel):
+    """Traceable note-to-label decision emitted by the LLM-first extractor."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    final_label: str
+    evidence: str
+    answer_kind: Literal[
+        "frequency",
+        "seizure_free",
+        "unknown",
+        "no_reference",
+        "unresolved_multiple",
+    ]
+    selected_seizure_type: str
+    time_window: str
+    confidence: Literal["low", "medium", "high"]
+    rationale: str
+
+
+class Gan2026LlmFirstExtractorSignature(dspy.Signature):
+    """Extract the Gan 2026 seizure-frequency answer directly from one note.
+
+    Return exactly one JSON object with these keys: final_label, evidence,
+    answer_kind, selected_seizure_type, time_window, confidence, and rationale.
+    """
+
+    prompt_input_json: str = dspy.InputField(
+        desc=(
+            "JSON containing one clinical note and task instructions. It intentionally omits "
+            "gold labels and deterministic candidate diagnostics."
+        )
+    )
+    decision_json: str = dspy.OutputField(
+        desc=(
+            "One strict JSON object. final_label must be a Gan-compatible label such as "
+            "'2 per month', '2 to 3 per week', 'multiple per day', "
+            "'seizure free for multiple month', 'unknown', or "
+            "'no seizure frequency reference'."
+        )
+    )
+
+
+class DspyLlmFirstExtractor(dspy.Module):
+    """DSPy note-to-label extractor with no deterministic candidate inputs."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.predict = dspy.Predict(Gan2026LlmFirstExtractorSignature)
+
+    def forward(self, prompt_input_json: str) -> dspy.Prediction:
+        return self.predict(prompt_input_json=prompt_input_json)
+
+
+def build_prompt_input(record: GanFrequencyRecord) -> str:
+    """Build the LLM-first prompt payload, excluding gold labels."""
+
+    payload = {
+        "prompt_version": PROMPT_VERSION,
+        "task": "Gan 2026 seizure-frequency LLM-first extraction",
+        "source_row_index": record.source_row_index,
+        "instructions": [
+            "Read the full clinical note and extract the current seizure-frequency answer.",
+            "Do not use deterministic rule candidates; this input contains only the note.",
+            (
+                "Return final_label as one Gan-compatible string. Examples: 1 per day, "
+                "2 to 3 per month, multiple per week, 1 cluster per week, 2 to 3 per cluster, "
+                "seizure free for 6 month, unknown, no seizure frequency reference."
+            ),
+            (
+                "If several current seizure types are present, select the highest current "
+                "seizure burden across seizure types."
+            ),
+            (
+                "Plural daily seizures/events should map to multiple per day unless the note "
+                "clearly says exactly one per day."
+            ),
+            (
+                "Use unknown when seizures or seizure-like events are discussed but current "
+                "frequency cannot be converted to a Gan-compatible rate."
+            ),
+            (
+                "Use no seizure frequency reference only when the note contains no usable "
+                "seizure-frequency evidence."
+            ),
+            (
+                "Use seizure-free only when the note asserts no seizures/events for a current "
+                "duration; do not use seizure-free for a single semiology if other current "
+                "seizure-like events remain."
+            ),
+            (
+                "For trigger-conditioned or provoked-only events, report the stated frequency "
+                "if countable; otherwise use unknown rather than seizure-free."
+            ),
+            (
+                "For cluster labels, include both cluster rate and events per cluster when both "
+                "are stated."
+            ),
+            "Evidence must be an exact substring from the note when possible.",
+            "Return exactly one JSON object with no markdown.",
+        ],
+        "allowed_decision_fields": [
+            "final_label",
+            "evidence",
+            "answer_kind",
+            "selected_seizure_type",
+            "time_window",
+            "confidence",
+            "rationale",
+        ],
+        "note_text": record.note_text,
+    }
+    return json.dumps(payload, ensure_ascii=False, sort_keys=True)
+
+
+def parse_decision_json(raw_output: str) -> tuple[LlmFirstDecisionRecord | None, list[str]]:
+    errors: list[str] = []
+    try:
+        payload = _repair_decision_payload(json.loads(_extract_json_object(raw_output)))
+    except json.JSONDecodeError as exc:
+        return None, [f"invalid_json: {exc.msg}"]
+
+    try:
+        decision = LlmFirstDecisionRecord.model_validate(payload)
+    except ValidationError as exc:
+        return None, [f"schema_validation_error: {exc.errors()[0]['msg']}"]
+
+    prepared_label = _prepare_prediction_label(decision.final_label)
+    repaired_label = repair_prediction_label(prepared_label)
+    if repaired_label != decision.final_label:
+        errors.append(f"final_label_repaired: {decision.final_label!r} -> {repaired_label!r}")
+        decision = decision.model_copy(update={"final_label": repaired_label})
+
+    try:
+        label_to_frequency_record(decision.final_label)
+    except ValueError as exc:
+        errors.append(f"unscorable_final_label: {exc}")
+
+    return decision, errors
+
+
+def _repair_decision_payload(payload: Any) -> Any:
+    if not isinstance(payload, dict):
+        return payload
+
+    repaired = dict(payload)
+    kind_aliases = {
+        "extracted": "frequency",
+        "seizure frequency": "frequency",
+        "seizure_frequency": "frequency",
+        "patient report": "frequency",
+        "current frequency": "frequency",
+        "seizure-free": "seizure_free",
+        "no reference": "no_reference",
+        "no seizure frequency reference": "no_reference",
+        "multiple": "unresolved_multiple",
+    }
+    answer_kind = repaired.get("answer_kind")
+    if isinstance(answer_kind, str):
+        repaired["answer_kind"] = kind_aliases.get(answer_kind.strip().lower(), answer_kind)
+
+    confidence = repaired.get("confidence")
+    if isinstance(confidence, int | float):
+        if confidence >= 0.8:
+            repaired["confidence"] = "high"
+        elif confidence >= 0.45:
+            repaired["confidence"] = "medium"
+        else:
+            repaired["confidence"] = "low"
+    return repaired
+
+
+def _prepare_prediction_label(label: str) -> str:
+    prepared = re.sub(r"\bevery\b", "per", label, flags=re.IGNORECASE)
+    prepared = re.sub(
+        r"\b(one|a|an)\s+per\s+",
+        "1 per ",
+        prepared,
+        flags=re.IGNORECASE,
+    )
+    return prepared
+
+
+def run_split(
+    records: Sequence[GanFrequencyRecord],
+    *,
+    split: str,
+    split_manifest: str,
+    model: str,
+    temperature: float,
+    max_tokens: int,
+    mode: Literal["live", "prompt-only"],
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    metadata = _run_metadata(
+        records,
+        split=split,
+        split_manifest=split_manifest,
+        model=model,
+        temperature=temperature,
+        max_tokens=max_tokens,
+        mode=mode,
+    )
+    program = DspyLlmFirstExtractor()
+    if mode == "live":
+        dspy.configure(
+            lm=dspy.LM(
+                model,
+                temperature=temperature,
+                max_tokens=max_tokens,
+                cache=False,
+                num_retries=2,
+            )
+        )
+
+    rows: list[dict[str, Any]] = []
+    for record in records:
+        prompt_input_json = build_prompt_input(record)
+        raw_output = ""
+        call_error: str | None = None
+        if mode == "live":
+            try:
+                prediction = program(prompt_input_json=prompt_input_json)
+                raw_output = str(prediction.decision_json)
+            except Exception as exc:  # pragma: no cover - exercised only with live APIs.
+                call_error = f"{type(exc).__name__}: {exc}"
+
+        decision, parse_errors = (
+            parse_decision_json(raw_output) if raw_output else (None, ["not_run"])
+        )
+        evidence_valid = (
+            evidence_is_substring(record.note_text, decision.evidence)
+            if decision and decision.evidence
+            else False
+        )
+        comparison = _compare_to_gold(record, decision) if decision else None
+        rows.append(
+            {
+                "source_row_index": record.source_row_index,
+                "split": split,
+                "split_manifest": split_manifest,
+                "prompt_version": PROMPT_VERSION,
+                "prompt_input_json": prompt_input_json,
+                "raw_output": raw_output,
+                "call_error": call_error,
+                "parse_errors": parse_errors,
+                "decision_record": decision.model_dump() if decision else None,
+                "evidence_valid": evidence_valid,
+                "reference": {
+                    "gold_label": record.gold_label,
+                    "gold_monthly_frequency": record.gold_monthly_frequency,
+                    "row_ok": record.row_ok,
+                },
+                "comparison": comparison,
+            }
+        )
+
+    metadata["summary"] = summarize_records(rows)
+    return rows, metadata
+
+
+def summarize_records(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
+    decision_rows = [row for row in rows if row.get("decision_record")]
+    call_failures = sum(bool(row.get("call_error")) for row in rows)
+    parse_failures = sum(bool(row.get("parse_errors")) for row in rows)
+    purist_correct = sum(bool((row.get("comparison") or {}).get("purist_correct")) for row in rows)
+    pragmatic_correct = sum(
+        bool((row.get("comparison") or {}).get("pragmatic_correct")) for row in rows
+    )
+    evidence_valid = sum(bool(row.get("evidence_valid")) for row in rows)
+    final_labels = Counter(
+        row["decision_record"]["final_label"] for row in rows if row.get("decision_record")
+    )
+    return {
+        "examples": len(rows),
+        "decision_records": len(decision_rows),
+        "call_failures": call_failures,
+        "parse_or_validation_failures": parse_failures,
+        "evidence_valid": evidence_valid,
+        "purist_correct": purist_correct,
+        "purist_accuracy": round(purist_correct / len(rows), 4) if rows else 0.0,
+        "pragmatic_correct": pragmatic_correct,
+        "pragmatic_accuracy": round(pragmatic_correct / len(rows), 4) if rows else 0.0,
+        "final_labels": dict(sorted(final_labels.items())),
+    }
+
+
+def write_jsonl(rows: Sequence[Mapping[str, Any]], path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8") as handle:
+        for row in rows:
+            handle.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
+
+
+def write_report(
+    rows: Sequence[Mapping[str, Any]],
+    metadata: Mapping[str, Any],
+    path: Path,
+    *,
+    jsonl_path: Path,
+) -> None:
+    summary = metadata["summary"]
+    lines = [
+        "# Gan 2026 LLM-First Validation Run",
+        "",
+        f"Date: {metadata['date']}",
+        "",
+        "This is a validation development result on `gan2026_split_v1`. It is not a final "
+        "holdout or benchmark result.",
+        "",
+        "## Experiment Unit",
+        "",
+        "Hypothesis: a note-only DSPy extractor can produce the prediction-bearing Gan "
+        "seizure-frequency interpretation, while deterministic code is limited to label "
+        "repair, evidence validation, and scoring.",
+        "",
+        "Minimal change: add an LLM-first direct extraction runner. No deterministic V1 "
+        "candidate diagnostics are provided to the model.",
+        "",
+        f"Data surface: `{metadata['split']}` split, `{metadata['split_manifest']}`, "
+        f"{summary['examples']} rows.",
+        "Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a "
+        "side-car.",
+        "",
+        "## Model And Prompt Metadata",
+        "",
+        f"- DSPy version: `{metadata['dspy_version']}`",
+        f"- Runtime model display/API identifier: `{metadata['model']}`",
+        "- Provider/execution: hosted OpenAI via DSPy/LiteLLM",
+        "- Model role: LLM-first note-to-label extractor",
+        f"- Prompt/program version: `{metadata['prompt_version']}`",
+        f"- Temperature: `{metadata['temperature']}`",
+        f"- Max tokens: `{metadata['max_tokens']}`",
+        f"- Mode: `{metadata['mode']}`",
+        "- Optimizer: none",
+        "- Deterministic rule configuration: none before prediction; deterministic code only "
+        "repairs labels, validates evidence, and scores.",
+        f"- Git commit: `{metadata['git_commit']}`",
+        f"- Working tree note: `{metadata['working_tree_note']}`",
+        f"- JSONL artifact: `{jsonl_path}`",
+        "",
+        "## Summary",
+        "",
+        f"- Decision records: {summary['decision_records']} / {summary['examples']}",
+        f"- Call failures: {summary['call_failures']}",
+        f"- Parse/schema/label issues: {summary['parse_or_validation_failures']}",
+        f"- Exact evidence substrings: {summary['evidence_valid']} / {summary['examples']}",
+        f"- Purist validation accuracy/micro F1 proxy: {summary['purist_accuracy']:.4f} "
+        f"({summary['purist_correct']} / {summary['examples']})",
+        f"- Pragmatic validation accuracy/micro F1 proxy: {summary['pragmatic_accuracy']:.4f} "
+        f"({summary['pragmatic_correct']} / {summary['examples']})",
+        "",
+        "## Rows",
+        "",
+        "| Row | Final | Gold | Purist | Notes |",
+        "| ---: | --- | --- | --- | --- |",
+    ]
+    for row in rows:
+        decision = row.get("decision_record") or {}
+        comparison = row.get("comparison") or {}
+        notes = "; ".join(row.get("parse_errors") or [])
+        if row.get("call_error"):
+            notes = f"{notes}; {row['call_error']}" if notes else str(row["call_error"])
+        if not row.get("evidence_valid"):
+            evidence_note = "evidence_not_exact_substring"
+            notes = f"{notes}; {evidence_note}" if notes else evidence_note
+        lines.append(
+            f"| {row['source_row_index']} | {decision.get('final_label', '')} | "
+            f"{row['reference']['gold_label']} | "
+            f"{'yes' if comparison.get('purist_correct') else 'no'} | {notes} |"
+        )
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def _compare_to_gold(
+    record: GanFrequencyRecord,
+    decision: LlmFirstDecisionRecord,
+) -> dict[str, Any]:
+    predicted_record = label_to_frequency_record(decision.final_label)
+    gold_purist = str(map_purist(record.gold_monthly_frequency))
+    predicted_purist = str(map_purist(predicted_record.monthly_frequency))
+    gold_pragmatic = str(map_pragmatic(record.gold_monthly_frequency))
+    predicted_pragmatic = str(map_pragmatic(predicted_record.monthly_frequency))
+    return {
+        "predicted_monthly_frequency": predicted_record.monthly_frequency,
+        "gold_monthly_frequency": record.gold_monthly_frequency,
+        "predicted_purist_category": predicted_purist,
+        "gold_purist_category": gold_purist,
+        "purist_correct": predicted_purist == gold_purist,
+        "predicted_pragmatic_category": predicted_pragmatic,
+        "gold_pragmatic_category": gold_pragmatic,
+        "pragmatic_correct": predicted_pragmatic == gold_pragmatic,
+    }
+
+
+def _extract_json_object(raw_output: str) -> str:
+    text = raw_output.strip()
+    fenced = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", text, flags=re.DOTALL)
+    if fenced:
+        return fenced.group(1)
+    first = text.find("{")
+    last = text.rfind("}")
+    if first != -1 and last != -1 and last > first:
+        return text[first : last + 1]
+    return text
+
+
+def _run_metadata(
+    records: Sequence[GanFrequencyRecord],
+    *,
+    split: str,
+    split_manifest: str,
+    model: str,
+    temperature: float,
+    max_tokens: int,
+    mode: str,
+) -> dict[str, Any]:
+    return {
+        "date": datetime.now(UTC).date().isoformat(),
+        "created_at_utc": datetime.now(UTC).isoformat(),
+        "mode": mode,
+        "model": model,
+        "temperature": temperature,
+        "max_tokens": max_tokens,
+        "prompt_version": PROMPT_VERSION,
+        "dspy_version": getattr(dspy, "__version__", "unknown"),
+        "split": split,
+        "split_manifest": split_manifest,
+        "row_count": len(records),
+        "git_commit": _git_output(["git", "rev-parse", "--short", "HEAD"]),
+        "working_tree_note": _working_tree_note(),
+        "python": sys.version.split()[0],
+    }
+
+
+def _working_tree_note() -> str:
+    status = _git_output(["git", "status", "--short"])
+    return "clean" if status == "" else "dirty/uncommitted local changes"
+
+
+def _git_output(args: Sequence[str]) -> str:
+    try:
+        return subprocess.check_output(args, text=True, stderr=subprocess.DEVNULL).strip()
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return "unknown"
+
+
+def main(argv: Sequence[str] | None = None) -> None:
+    parser = argparse.ArgumentParser(
+        description="Run the Gan 2026 LLM-first seizure-frequency extraction experiment."
+    )
+    parser.add_argument("--split", choices=("train", "validation"), default="validation")
+    parser.add_argument("--jsonl", type=Path, default=DEFAULT_JSONL_PATH)
+    parser.add_argument("--markdown", type=Path, default=DEFAULT_REPORT_PATH)
+    parser.add_argument("--model", default="openai/gpt-4.1-mini")
+    parser.add_argument("--temperature", type=float, default=0.0)
+    parser.add_argument("--max-tokens", type=int, default=900)
+    parser.add_argument("--mode", choices=("live", "prompt-only"), default="live")
+    parser.add_argument("--limit", type=int, default=None)
+    args = parser.parse_args(argv)
+
+    records = load_records_for_split(args.split)
+    if args.limit is not None:
+        records = records[: args.limit]
+    manifest = load_split_manifest()
+    split_manifest = str(manifest.get("manifest_version", "gan2026_split_v1"))
+    rows, metadata = run_split(
+        records,
+        split=args.split,
+        split_manifest=split_manifest,
+        model=args.model,
+        temperature=args.temperature,
+        max_tokens=args.max_tokens,
+        mode=args.mode,
+    )
+    write_jsonl(rows, args.jsonl)
+    write_report(rows, metadata, args.markdown, jsonl_path=args.jsonl)
+    print(json.dumps(metadata["summary"], sort_keys=True))
+
+
+if __name__ == "__main__":
+    main()
