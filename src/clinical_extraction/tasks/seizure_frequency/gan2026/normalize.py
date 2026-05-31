@@ -71,8 +71,11 @@ def repair_prediction_label_with_evidence(
 
     if raw is None:
         return repair_prediction_label(raw, ablation_config)
+    raw_repaired = repair_prediction_label(raw, ablation_config)
     evidence_label = _prediction_label_from_selected_evidence(evidence)
-    return repair_prediction_label(evidence_label or raw, ablation_config)
+    if evidence_label and _should_prefer_selected_evidence_label(raw, raw_repaired, evidence):
+        return repair_prediction_label(evidence_label, ablation_config)
+    return raw_repaired
 
 
 def repair_prediction_label_with_trace(
@@ -778,6 +781,30 @@ def _prediction_label_from_selected_evidence(evidence: str) -> str | None:
     unit = r"day|week|month|year"
     count = r"\d+(?:\s*(?:to|-|–|—)\s*\d+)?"
 
+    cluster_label = _cluster_label_from_selected_evidence(text)
+    if cluster_label:
+        return cluster_label
+    if "cluster" in text:
+        return None
+
+    summed = _sum_counts_over_window(text)
+    if summed:
+        return summed
+
+    slash_week = re.search(
+        r"\b(?P<count>\d+)\s*/\s*7\b",
+        text,
+    )
+    if slash_week:
+        return _format_prediction_rate(slash_week.group("count"), "week")
+
+    single_last_period = re.search(
+        rf"\b(?:single|1)\b.*\b(?:last|past)\s+(?P<unit>{unit})\b",
+        text,
+    )
+    if single_last_period:
+        return _format_prediction_rate("1", single_last_period.group("unit"))
+
     upper_bound = re.search(
         rf"(?:≤|<=|up to|at most|no more than)\s+(?P<count>{count})\s+"
         rf"(?:seizures?\s+)?per\s+(?P<unit>{unit})s?\b",
@@ -815,6 +842,92 @@ def _prediction_label_from_selected_evidence(evidence: str) -> str | None:
         )
 
     return None
+
+
+def _should_prefer_selected_evidence_label(raw: str, raw_repaired: str, evidence: str) -> bool:
+    normalized_raw = normalize_frequency_label(_words_to_numbers(str(raw)))
+    normalized_evidence = normalize_frequency_label(_words_to_numbers(evidence))
+    if any(marker in normalized_evidence for marker in ("quarter", "≤", "<=", "up to")):
+        return True
+    if raw_repaired in {"unknown", "no seizure frequency reference"}:
+        return True
+    if raw_repaired.startswith("multiple per "):
+        return True
+    if normalized_raw != raw_repaired and any(
+        marker in normalized_raw
+        for marker in ("≤", "<=", "up to", "at most", "no more than", "quarter")
+    ):
+        return True
+    return not _raw_label_is_simple_rate(normalized_raw)
+
+
+def _raw_label_is_simple_rate(normalized_raw: str) -> bool:
+    return bool(
+        re.match(
+            r"^(?:multiple|\d+(?:\s*to\s*\d+)?)\s+per\s+"
+            r"(?:(?:multiple|\d+(?:\s*to\s*\d+)?)\s+)?"
+            r"(?:day|week|month|year)s?$",
+            normalized_raw,
+        )
+    )
+
+
+def _cluster_label_from_selected_evidence(text: str) -> str | None:
+    cluster_match = re.search(
+        r"\b(?P<count>\d+)\s+clusters?\s+"
+        r"(?:(?:per|every)\s+(?:(?P<den>\d+)\s+)?(?P<unit>day|week|month|year)"
+        r"|(?:this|past|last)\s+(?P<period>day|week|month|year))\b",
+        text,
+    )
+    if not cluster_match:
+        return None
+
+    tail = text[cluster_match.end() :]
+    per_cluster_match = re.search(
+        r"\b(?:each|per\s+cluster|cluster(?:s)?\s+(?:with|of|having))\s+"
+        r"(?:≈|~|about\s+|approximately\s+|around\s+)?(?P<count>\d+)\s+"
+        r"(?=(?:[a-z]+(?:-[a-z]+)?\s+){0,4}"
+        r"(?:seizure|absence|attack|convulsion|spasm|event|mal))",
+        tail,
+    )
+    if not per_cluster_match:
+        return None
+
+    denominator = cluster_match.group("den") or "1"
+    unit = cluster_match.group("unit") or cluster_match.group("period")
+    den_text = f"{denominator} " if denominator != "1" else ""
+    return (
+        f"{cluster_match.group('count')} cluster per {den_text}{unit}, "
+        f"{per_cluster_match.group('count')} per cluster"
+    )
+
+
+def _sum_counts_over_window(text: str) -> str | None:
+    window = re.search(
+        r"\b(?:in|over|during|for)\s+(?:the\s+)?(?:past|last)\s+"
+        r"(?:(?P<count>\d+)\s+)?(?P<unit>day|week|month|year)s?\b",
+        text,
+    )
+    if not window:
+        return None
+
+    prefix = text
+    counts = [
+        int(value)
+        for value in re.findall(
+            r"\b(\d+)\s+(?!(?:day|week|month|year)s?\b)"
+            r"(?=(?:tonic(?:-clonic)?|drop|absence|"
+            r"(?:[a-z]+(?:-[a-z]+)?\s+){0,4}"
+            r"(?:seizure|attack|convulsion|spasm|mal|event)))",
+            prefix,
+        )
+    ]
+    if not counts:
+        return None
+
+    denominator = window.group("count") or "1"
+    unit = window.group("unit")
+    return _format_prediction_rate(f"{sum(counts)} per {denominator}", unit)
 
 
 def _format_prediction_rate(count_text: str, unit_text: str) -> str:

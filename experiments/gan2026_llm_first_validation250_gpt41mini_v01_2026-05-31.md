@@ -25,7 +25,7 @@ Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a
 - Mode: `live`
 - Optimizer: none
 - Deterministic rule configuration: none before prediction; deterministic code only repairs labels, validates evidence, and scores.
-- Git commit: `5ba74ea`
+- Git commit: `cb4fd3d`
 - Working tree note: `dirty/uncommitted local changes`
 - JSONL artifact: `experiments/gan2026_llm_first_validation250_gpt41mini_v01_2026-05-31.jsonl`
 
@@ -34,25 +34,25 @@ Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a
 - Decision records: 250 / 250
 - Call failures: 0
 - Parse/schema/label issues: 0
-- Deterministic repair notes: 96
+- Deterministic repair notes: 94
 - Exact evidence substrings: 86 / 250
-- Purist validation accuracy/micro F1 proxy: 0.8200 (205 / 250)
-- Pragmatic validation accuracy/micro F1 proxy: 0.8560 (214 / 250)
+- Purist validation accuracy/micro F1 proxy: 0.8440 (211 / 250)
+- Pragmatic validation accuracy/micro F1 proxy: 0.8760 (219 / 250)
 
 ## Rows
 
 | Row | Final | Gold | Purist | Notes |
 | ---: | --- | --- | --- | --- |
-| 10 | 4 per day | 4 per day | yes | final_label_repaired: '≤ four per day' -> '4 per day'; evidence_not_exact_substring |
+| 10 | multiple per day | 4 per day | no | final_label_repaired: '≤ four per day' -> 'multiple per day'; evidence_not_exact_substring |
 | 40 | 4 per week | 4 per week | yes | final_label_repaired: '≤ four per week' -> '4 per week'; evidence_not_exact_substring |
-| 79 | 6 to 7 per year | 6 to 7 per year | yes | final_label_repaired: '≤ 6 to 7 per year' -> '6 to 7 per year'; evidence_not_exact_substring |
+| 79 | multiple per year | 6 to 7 per year | no | final_label_repaired: '≤ 6 to 7 per year' -> 'multiple per year'; evidence_not_exact_substring |
 | 103 | 2 to 4 per year | 2 to 4 per year | yes | evidence_not_exact_substring |
 | 128 | 17 per month | 17 per month | yes | evidence_not_exact_substring |
 | 156 | 1 per 6 day | 1 per 6 day | yes | final_label_repaired: '1 per 6 days' -> '1 per 6 day'; evidence_not_exact_substring |
-| 180 | 1 per 7 day | 1 per 7 day | yes | final_label_repaired: '1 per week' -> '1 per 7 day'; evidence_not_exact_substring |
+| 180 | 1 per week | 1 per 7 day | yes | evidence_not_exact_substring |
 | 182 | 1 per 2 day | 1 per 2 day | yes | final_label_repaired: '1 every 2 days' -> '1 per 2 day'; evidence_not_exact_substring |
 | 187 | no seizure frequency reference | 1 per 7 to 9 day | no | final_label_repaired: '2 nocturnal generalised tonic–clonic seizures per 4 months' -> 'no seizure frequency reference'; evidence_not_exact_substring |
-| 190 | 1 per 4 week | 1 per 4 week | yes | final_label_repaired: '1 cluster per 4 weeks' -> '1 per 4 week' |
+| 190 | unknown | 1 per 4 week | no | final_label_repaired: '1 cluster per 4 weeks' -> 'unknown' |
 | 198 | 1 per 4 week | 1 per 4 week | yes | final_label_repaired: '1 per 4 weeks' -> '1 per 4 week'; evidence_not_exact_substring |
 | 212 | 1 per 3 to 4 week | 1 per 3 to 4 week | yes | final_label_repaired: '1 per 3 to 4 weeks' -> '1 per 3 to 4 week'; evidence_not_exact_substring |
 | 218 | 1 per 3 week | 1 per 3 week | yes | evidence_not_exact_substring |
@@ -67,9 +67,9 @@ Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a
 | 467 | 9 per month | 9 per month | yes | evidence_not_exact_substring |
 | 531 | 12 to 30 per 3 month | 12 to 30 per 3 month | yes | final_label_repaired: '12 to 30 per quarter' -> '12 to 30 per 3 month'; evidence_not_exact_substring |
 | 598 | 1 per 8 month | 1 per 8 month | yes | final_label_repaired: '1 per eight months' -> '1 per 8 month' |
-| 659 | 1 per 4 day | 2 per 4 day | yes | final_label_repaired: '2 per 4 days' -> '1 per 4 day'; evidence_not_exact_substring |
-| 665 | 1 per 2 week | 2 per 2 week | no | final_label_repaired: '2 per 2 weeks' -> '1 per 2 week'; evidence_not_exact_substring |
-| 678 | 1 per 4 month | 2 per 4 month | yes | final_label_repaired: '2 per 4 month' -> '1 per 4 month'; evidence_not_exact_substring |
+| 659 | 2 per 4 day | 2 per 4 day | yes | final_label_repaired: '2 per 4 days' -> '2 per 4 day'; evidence_not_exact_substring |
+| 665 | 2 per 2 week | 2 per 2 week | yes | final_label_repaired: '2 per 2 weeks' -> '2 per 2 week'; evidence_not_exact_substring |
+| 678 | 2 per 4 month | 2 per 4 month | yes | evidence_not_exact_substring |
 | 694 | 1 per week | 1 per week | yes |  |
 | 704 | 2 per month | 2 per month | yes |  |
 | 725 | multiple per day | 1 per day | no | evidence_not_exact_substring |
@@ -102,7 +102,7 @@ Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a
 | 1357 | no seizure frequency reference | 1 per day | no | final_label_repaired: '1 tonic-clonic seizure yesterday' -> 'no seizure frequency reference'; evidence_not_exact_substring |
 | 1363 | 3 per day | 3 per day | yes | evidence_not_exact_substring |
 | 1413 | 9 per month | 9 per month | yes | evidence_not_exact_substring |
-| 1454 | no seizure frequency reference | 7 per week | no | final_label_repaired: '1 tonic-clonic and 6 petit mal in last week' -> 'no seizure frequency reference'; evidence_not_exact_substring |
+| 1454 | 7 per week | 7 per week | yes | final_label_repaired: '1 tonic-clonic and 6 petit mal in last week' -> '7 per week'; evidence_not_exact_substring |
 | 1486 | 2 to 3 per month | 3 per month | yes | evidence_not_exact_substring |
 | 1573 | 11 per week | 11 per week | yes | evidence_not_exact_substring |
 | 1591 | 11 per month | 11 per month | yes | evidence_not_exact_substring |
@@ -118,15 +118,15 @@ Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a
 | 1772 | 11 per 6 month | 11 per 6 month | yes | evidence_not_exact_substring |
 | 1773 | 11 per 3 month | 11 per 3 month | yes | evidence_not_exact_substring |
 | 1790 | 8 per 4 month | 8 per 4 month | yes | evidence_not_exact_substring |
-| 1794 | no seizure frequency reference | 8 per 2 month | no | final_label_repaired: '6 drop attacks and 2 absence seizures in the past two months' -> 'no seizure frequency reference'; evidence_not_exact_substring |
-| 1866 | 1 per month | 8 per 2 month | no | final_label_repaired: '1 per 2 month for drop attacks, 7 per 2 month for absence seizures' -> '1 per month'; evidence_not_exact_substring |
+| 1794 | 8 per 2 month | 8 per 2 month | yes | final_label_repaired: '6 drop attacks and 2 absence seizures in the past two months' -> '8 per 2 month'; evidence_not_exact_substring |
+| 1866 | 8 per 2 month | 8 per 2 month | yes | final_label_repaired: '1 per 2 month for drop attacks, 7 per 2 month for absence seizures' -> '8 per 2 month'; evidence_not_exact_substring |
 | 1880 | 7 per 2 month | 8 per 2 month | no | final_label_repaired: '7 per 2 months' -> '7 per 2 month'; evidence_not_exact_substring |
 | 1887 | 4 per 3 month | 4 per 3 month | yes | evidence_not_exact_substring |
 | 1914 | 7 per 3 month | 7 per 3 month | yes | evidence_not_exact_substring |
 | 1922 | 7 per 3 month | 7 per 3 month | yes | evidence_not_exact_substring |
 | 1923 | 7 per 6 month | 7 per 6 month | yes | evidence_not_exact_substring |
 | 1979 | 6 per 2 month | 6 per 2 month | yes | final_label_repaired: '6 per 2 months' -> '6 per 2 month'; evidence_not_exact_substring |
-| 1980 | 3 per 3 month | 6 per 3 month | no | evidence_not_exact_substring |
+| 1980 | 6 per 3 month | 6 per 3 month | yes | final_label_repaired: '3 per 3 month' -> '6 per 3 month'; evidence_not_exact_substring |
 | 2023 | 5 per month | 5 per month | yes | evidence_not_exact_substring |
 | 2080 | multiple per month | multiple per month | yes | final_label_repaired: 'a few per month' -> 'multiple per month'; evidence_not_exact_substring |
 | 2094 | multiple per month | multiple per month | yes | final_label_repaired: 'several per month' -> 'multiple per month' |
@@ -187,9 +187,9 @@ Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a
 | 3118 | seizure free for multiple year | seizure free for multiple month | yes | final_label_repaired: 'seizure free for multiple month' -> 'seizure free for multiple year' |
 | 3137 | seizure free for multiple year | seizure free for multiple month | yes | final_label_repaired: 'seizure free for multiple month' -> 'seizure free for multiple year' |
 | 3224 | unknown | 1 cluster per month, 6 to 7 per cluster | no | final_label_repaired: 'monthly clusters, typically 6 to 7 seizures over 24 h' -> 'unknown'; evidence_not_exact_substring |
-| 3242 | unknown | 2 cluster per month, 5 per cluster | no | final_label_repaired: '2 clusters per month, each ≈five absences' -> 'unknown'; evidence_not_exact_substring |
+| 3242 | 2 cluster per month, 5 per cluster | 2 cluster per month, 5 per cluster | yes | final_label_repaired: '2 clusters per month, each ≈five absences' -> '2 cluster per month, 5 per cluster'; evidence_not_exact_substring |
 | 3261 | 2 cluster per month, 4 per cluster | 2 cluster per month, 4 per cluster | yes | final_label_repaired: '2 clusters per month, 4 per cluster' -> '2 cluster per month, 4 per cluster'; evidence_not_exact_substring |
-| 3262 | unknown | 2 cluster per month, 5 per cluster | no | final_label_repaired: '2 clusters per month' -> 'unknown'; evidence_not_exact_substring |
+| 3262 | 2 cluster per month, 5 per cluster | 2 cluster per month, 5 per cluster | yes | final_label_repaired: '2 clusters per month' -> '2 cluster per month, 5 per cluster'; evidence_not_exact_substring |
 | 3281 | 8 per 30 day | 8 per month | yes | final_label_repaired: '8 per 30 days' -> '8 per 30 day'; evidence_not_exact_substring |
 | 3297 | 6 per 30 day | 6 per month | yes | final_label_repaired: '6 per 30 days' -> '6 per 30 day'; evidence_not_exact_substring |
 | 3325 | 3 per week | 3 per week | yes | evidence_not_exact_substring |
@@ -234,8 +234,8 @@ Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a
 | 4110 | 1 to 2 per day | 1 per 1 to 2 day | no | evidence_not_exact_substring |
 | 4116 | 1 to 2 per day | 1 per 1 to 2 day | no | evidence_not_exact_substring |
 | 4173 | 1 per 2 week | 1 per 2 week | yes | final_label_repaired: '1 per 2 weeks' -> '1 per 2 week'; evidence_not_exact_substring |
-| 4243 | 1 per 2 to 3 week | 1 per 2 to 3 week | yes | final_label_repaired: '2 to 3 per 3 week' -> '1 per 2 to 3 week'; evidence_not_exact_substring |
-| 4258 | no seizure frequency reference | 4 per week | no | final_label_repaired: '4 per 7' -> 'no seizure frequency reference'; evidence_not_exact_substring |
+| 4243 | 2 to 3 per 3 week | 1 per 2 to 3 week | yes | evidence_not_exact_substring |
+| 4258 | 4 per week | 4 per week | yes | final_label_repaired: '4 per 7' -> '4 per week'; evidence_not_exact_substring |
 | 4337 | 3 per 3 month | 3 per 3 month | yes | evidence_not_exact_substring |
 | 4345 | 4 per month | 4 per month | yes | evidence_not_exact_substring |
 | 4368 | 5 per 3 month | 5 per 2 month | yes | evidence_not_exact_substring |
@@ -288,7 +288,7 @@ Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a
 | 5491 | unknown | unknown | yes | evidence_not_exact_substring |
 | 5504 | unknown | unknown | yes |  |
 | 5507 | 3 per 4 month | unknown | no | evidence_not_exact_substring |
-| 5528 | no seizure frequency reference | 1 per month | no | final_label_repaired: '1 isolated event last month' -> 'no seizure frequency reference'; evidence_not_exact_substring |
+| 5528 | 1 per month | 1 per month | yes | final_label_repaired: '1 isolated event last month' -> '1 per month'; evidence_not_exact_substring |
 | 5534 | 1 per 2 week | 1 per multiple month | no | evidence_not_exact_substring |
 | 5551 | multiple per day | multiple per day | yes |  |
 | 5567 | multiple per week | multiple per week | yes | final_label_repaired: 'several per week' -> 'multiple per week' |

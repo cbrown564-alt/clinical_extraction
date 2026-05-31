@@ -33,8 +33,8 @@ Treat deterministic rules as a frozen, ablatable comparator rather than an endle
 - A first note-only LLM-first validation-prefix run over 250 rows used GPT-4.1
   mini and no deterministic V1 candidates. After shared schema alias repair and
   Gan label repair through `normalize.py`, the artifact reports 250/250 decision
-  records, 0 call failures, 0 blocking parse/schema failures, 0.8200 Purist
-  accuracy/micro-F1 proxy, 0.8560 Pragmatic accuracy, 96 deterministic repair
+  records, 0 call failures, 0 blocking parse/schema failures, 0.8440 Purist
+  accuracy/micro-F1 proxy, 0.8760 Pragmatic accuracy, 94 deterministic repair
   notes, and 86/250 exact evidence substrings. This is useful signal but below
   the >=0.9000 goal; the next architecture should move from direct note-to-label
   extraction toward structured event extraction plus clinical selection.
@@ -128,8 +128,9 @@ Treat deterministic rules as a frozen, ablatable comparator rather than an endle
   `schema_repair.py` handles model-output payload aliases, while `normalize.py`
   owns Gan-compatible label repair including selected-evidence formatting.
 - 2026-05-31: Ran/reparsed a GPT-4.1 mini note-only LLM-first 250-row validation
-  prefix artifact with 0.8200 Purist accuracy/micro-F1 proxy and 0.8560 Pragmatic
-  accuracy; direct note-to-label extraction remains below target.
+  prefix artifact with 0.8440 Purist accuracy/micro-F1 proxy and 0.8760 Pragmatic
+  accuracy after selected-evidence label repair; direct note-to-label extraction
+  remains below target.
 
 ## Immediate Next Step
 

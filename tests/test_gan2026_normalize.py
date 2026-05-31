@@ -104,6 +104,77 @@ def test_repair_prediction_label_with_evidence_preserves_quarter_window() -> Non
     )
 
 
+def test_repair_prediction_label_with_evidence_preserves_parseable_raw_label() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "2 per 2 weeks",
+            "The app logs indicate a regular pattern of seizures twice every two weeks",
+        )
+        == "2 per 2 week"
+    )
+
+
+def test_repair_prediction_label_with_evidence_sums_counts_in_selected_window() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "1 tonic-clonic and 6 petit mal in last week",
+            "Over the past week she reports one tonic-clonic and six petit mal in last week",
+        )
+        == "7 per week"
+    )
+
+
+def test_repair_prediction_label_with_evidence_sums_word_counts_in_multi_month_window() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "six drop attacks and two absence seizures in the past two months",
+            "Over the past two months she reports six drop attacks and two absence seizures",
+        )
+        == "8 per 2 month"
+    )
+
+
+def test_repair_prediction_label_with_evidence_repairs_single_last_period() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "1 isolated event last month",
+            "He described a single very brief event last month",
+        )
+        == "1 per month"
+    )
+
+
+def test_repair_prediction_label_with_evidence_repairs_slash_week() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "4 per 7",
+            "seizure frequency four/7",
+        )
+        == "4 per week"
+    )
+
+
+def test_repair_prediction_label_with_evidence_preserves_cluster_structure() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "2 clusters per month, each five absences",
+            "Over the past four weeks he reports two clusters this month; "
+            "each five absences in the morning.",
+        )
+        == "2 cluster per month, 5 per cluster"
+    )
+
+
+def test_repair_prediction_label_with_evidence_does_not_count_window_as_event_count() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "abs monthly",
+            "Over the past six months he describes brief events occurring abs monthly",
+        )
+        == "1 per month"
+    )
+
+
 def test_benchmark_repair_steps_are_valid_and_benchmark_format_only() -> None:
     validate_benchmark_repair_steps(BENCHMARK_REPAIR_STEPS)
     validate_rule_registry(BENCHMARK_REPAIR_RULES)
