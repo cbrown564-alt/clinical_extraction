@@ -16,7 +16,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     FrequencyLabelKind,
     label_to_frequency_record,
-    normalize_frequency_label,
     repair_prediction_label,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.rule_metadata import (
@@ -121,6 +120,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.rules.seizure_free impo
     SEIZURE_FREE_ONE_AND_HALF_YEARS_RULE,
     SEIZURE_FREE_SINCE_DATE_RULE,
     apply_seizure_free_rules,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.rules.temporal_selection import (
+    temporal_selection_rule_is_enabled,
 )
 
 _RawCandidate = RawCandidate
@@ -345,7 +347,11 @@ class Gan2026PipelineV1:
             _normalize_candidate(event, raw_candidate, self.ablation_config)
             for event, raw_candidate in zip(candidate_events, candidates, strict=True)
         ]
-        final_selection = _select_final_event(candidate_events, normalized_events)
+        final_selection = _select_final_event(
+            candidate_events,
+            normalized_events,
+            self.ablation_config,
+        )
         output = FinalExtraction(
             final_value=final_selection.final_label,
             rationale=final_selection.rationale,
@@ -1384,14 +1390,7 @@ def _normalize_candidate(
     ablation_config: AblationConfig | None = None,
 ) -> NormalizedEvent:
     ablation_config = ablation_config or AblationConfig()
-    if ablation_config.rule_is_enabled(
-        rule_id="benchmark_repair.all",
-        group=RuleGroup.BENCHMARK_REPAIR,
-        portability=Portability.BENCHMARK_FORMAT,
-    ):
-        label = repair_prediction_label(candidate.label)
-    else:
-        label = normalize_frequency_label(candidate.label)
+    label = repair_prediction_label(candidate.label, ablation_config)
     errors: tuple[str, ...] = ()
     try:
         record = label_to_frequency_record(label)
@@ -1411,10 +1410,12 @@ def _normalize_candidate(
 def _select_final_event(
     candidate_events: list[CandidateEvent],
     normalized_events: list[NormalizedEvent],
+    ablation_config: AblationConfig | None = None,
 ) -> FinalSelection:
+    ablation_config = ablation_config or AblationConfig()
     pairs = list(zip(candidate_events, normalized_events, strict=True))
     scored_pairs = [
-        (event, normalized, _selection_score((event, normalized)))
+        (event, normalized, _selection_score((event, normalized), ablation_config))
         for event, normalized in pairs
     ]
     selected_event, selected_normalized, selected_score = max(
@@ -1441,12 +1442,17 @@ def _select_final_event(
     )
 
 
-def _selection_score(pair: tuple[CandidateEvent, NormalizedEvent]) -> SelectionScore:
+def _selection_score(
+    pair: tuple[CandidateEvent, NormalizedEvent],
+    ablation_config: AblationConfig | None = None,
+) -> SelectionScore:
+    ablation_config = ablation_config or AblationConfig()
     event, normalized = pair
     evidence = event.evidence.lower()
     if normalized.semantic_kind is FrequencyLabelKind.FREQUENCY:
         evidence_priority = _frequency_summary_priority(evidence)
-        return SelectionScore(
+        return _ablatable_selection_score(
+            ablation_config,
             semantic_priority=4,
             evidence_priority=evidence_priority,
             monthly_frequency_priority=normalized.monthly_frequency,
@@ -1458,13 +1464,15 @@ def _selection_score(pair: tuple[CandidateEvent, NormalizedEvent]) -> SelectionS
         )
     if normalized.semantic_kind is FrequencyLabelKind.UNRESOLVED_MULTIPLE:
         if _is_specific_current_multiple_evidence(event.evidence):
-            return SelectionScore(
+            return _ablatable_selection_score(
+                ablation_config,
                 semantic_priority=4,
                 evidence_priority=1,
                 monthly_frequency_priority=normalized.monthly_frequency,
                 reason="specific_current_multiple",
             )
-        return SelectionScore(
+        return _ablatable_selection_score(
+            ablation_config,
             semantic_priority=3,
             evidence_priority=0,
             monthly_frequency_priority=0.0,
@@ -1472,13 +1480,15 @@ def _selection_score(pair: tuple[CandidateEvent, NormalizedEvent]) -> SelectionS
         )
     if normalized.semantic_kind is FrequencyLabelKind.SEIZURE_FREE:
         if _is_current_seizure_free_evidence(evidence):
-            return SelectionScore(
+            return _ablatable_selection_score(
+                ablation_config,
                 semantic_priority=5,
                 evidence_priority=0,
                 monthly_frequency_priority=0.0,
                 reason="current_seizure_free",
             )
-        return SelectionScore(
+        return _ablatable_selection_score(
+            ablation_config,
             semantic_priority=2,
             evidence_priority=0,
             monthly_frequency_priority=0.0,
@@ -1486,23 +1496,49 @@ def _selection_score(pair: tuple[CandidateEvent, NormalizedEvent]) -> SelectionS
         )
     if normalized.semantic_kind is FrequencyLabelKind.UNKNOWN:
         if _is_trigger_conditioned_unknown_evidence(evidence):
-            return SelectionScore(
+            return _ablatable_selection_score(
+                ablation_config,
                 semantic_priority=6,
                 evidence_priority=0,
                 monthly_frequency_priority=0.0,
                 reason="trigger_conditioned_unknown",
             )
-        return SelectionScore(
+        return _ablatable_selection_score(
+            ablation_config,
             semantic_priority=1,
             evidence_priority=0,
             monthly_frequency_priority=0.0,
             reason="generic_unknown",
         )
-    return SelectionScore(
+    return _ablatable_selection_score(
+        ablation_config,
         semantic_priority=0,
         evidence_priority=0,
         monthly_frequency_priority=0.0,
         reason="no_reference",
+    )
+
+
+def _ablatable_selection_score(
+    ablation_config: AblationConfig,
+    *,
+    semantic_priority: int,
+    evidence_priority: int,
+    monthly_frequency_priority: float,
+    reason: str,
+) -> SelectionScore:
+    if not temporal_selection_rule_is_enabled(reason, ablation_config):
+        return SelectionScore(
+            semantic_priority=0,
+            evidence_priority=0,
+            monthly_frequency_priority=0.0,
+            reason=f"{reason}_disabled",
+        )
+    return SelectionScore(
+        semantic_priority=semantic_priority,
+        evidence_priority=evidence_priority,
+        monthly_frequency_priority=monthly_frequency_priority,
+        reason=reason,
     )
 
 

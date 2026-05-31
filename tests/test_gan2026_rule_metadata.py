@@ -2,6 +2,9 @@ import re
 
 import pytest
 
+from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
+    BENCHMARK_REPAIR_RULES,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.rule_metadata import (
     AblationConfig,
     ExtractionContext,
@@ -26,6 +29,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.rules.rate import (
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.rules.seizure_free import (
     SEIZURE_FREE_RULES,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.rules.temporal_selection import (
+    TEMPORAL_SELECTION_RULES,
 )
 
 
@@ -148,8 +154,30 @@ def test_gan_shorthand_rule_registry_is_valid() -> None:
     validate_rule_registry(GAN_SHORTHAND_RULES)
 
 
+def test_temporal_selection_rule_registry_is_valid() -> None:
+    validate_rule_registry(TEMPORAL_SELECTION_RULES)
+
+
+def test_benchmark_repair_rule_registry_is_valid() -> None:
+    validate_rule_registry(BENCHMARK_REPAIR_RULES)
+
+
 def test_gan_shorthand_rules_are_dataset_specific() -> None:
     assert GAN_SHORTHAND_RULES
     assert {
         (spec.group, spec.portability) for spec in GAN_SHORTHAND_RULES
     } == {(RuleGroup.GAN_SHORTHAND, Portability.GAN2026_SPECIFIC)}
+
+
+def test_temporal_selection_rules_are_seizure_frequency_specific() -> None:
+    assert TEMPORAL_SELECTION_RULES
+    assert {
+        (spec.group, spec.portability) for spec in TEMPORAL_SELECTION_RULES
+    } == {(RuleGroup.TEMPORAL_SELECTION, Portability.SEIZURE_FREQUENCY)}
+
+
+def test_benchmark_repair_rules_are_benchmark_format_only() -> None:
+    assert BENCHMARK_REPAIR_RULES
+    assert {
+        (spec.group, spec.portability) for spec in BENCHMARK_REPAIR_RULES
+    } == {(RuleGroup.BENCHMARK_REPAIR, Portability.BENCHMARK_FORMAT)}
