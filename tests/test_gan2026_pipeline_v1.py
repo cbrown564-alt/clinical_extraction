@@ -14,6 +14,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline_v1 import (
     CandidateKind,
     Gan2026PipelineV1,
     _candidate_event,
+    _normalize_candidate,
     _RawCandidate,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.rule_metadata import (
@@ -104,6 +105,35 @@ def test_pipeline_can_ablate_a_catalogued_rule() -> None:
     assert event["portability"] == Portability.SEIZURE_FREQUENCY
     assert event["match_groups"] == {"duration": "seven"}
     assert ablated_result.output.final_value == "no seizure frequency reference"
+
+
+def test_pipeline_can_ablate_benchmark_repair_during_normalization() -> None:
+    candidate = _RawCandidate(
+        kind=CandidateKind.FREQUENCY_RATE,
+        label="twice weekly",
+        evidence="twice weekly",
+    )
+    event = _candidate_event(
+        index=1,
+        candidate=candidate,
+        note_text="Current seizure frequency is twice weekly.",
+    )
+
+    default_normalized = _normalize_candidate(event, candidate)
+    ablated_normalized = _normalize_candidate(
+        event,
+        candidate,
+        AblationConfig(
+            enabled_groups=frozenset(
+                group for group in RuleGroup if group is not RuleGroup.BENCHMARK_REPAIR
+            )
+        ),
+    )
+
+    assert default_normalized.normalized_label == "2 per week"
+    assert default_normalized.semantic_kind == FrequencyLabelKind.FREQUENCY
+    assert ablated_normalized.normalized_label == "unknown"
+    assert ablated_normalized.semantic_kind == FrequencyLabelKind.UNKNOWN
 
 
 @pytest.mark.parametrize(

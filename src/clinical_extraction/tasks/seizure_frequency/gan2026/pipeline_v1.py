@@ -16,6 +16,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     FrequencyLabelKind,
     label_to_frequency_record,
+    normalize_frequency_label,
     repair_prediction_label,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.rule_metadata import (
@@ -341,7 +342,7 @@ class Gan2026PipelineV1:
             for index, candidate in enumerate(candidates, start=1)
         ]
         normalized_events = [
-            _normalize_candidate(event, raw_candidate)
+            _normalize_candidate(event, raw_candidate, self.ablation_config)
             for event, raw_candidate in zip(candidate_events, candidates, strict=True)
         ]
         final_selection = _select_final_event(candidate_events, normalized_events)
@@ -1377,8 +1378,20 @@ def _candidate_event(index: int, candidate: _RawCandidate, note_text: str) -> Ca
     )
 
 
-def _normalize_candidate(event: CandidateEvent, candidate: _RawCandidate) -> NormalizedEvent:
-    label = repair_prediction_label(candidate.label)
+def _normalize_candidate(
+    event: CandidateEvent,
+    candidate: _RawCandidate,
+    ablation_config: AblationConfig | None = None,
+) -> NormalizedEvent:
+    ablation_config = ablation_config or AblationConfig()
+    if ablation_config.rule_is_enabled(
+        rule_id="benchmark_repair.all",
+        group=RuleGroup.BENCHMARK_REPAIR,
+        portability=Portability.BENCHMARK_FORMAT,
+    ):
+        label = repair_prediction_label(candidate.label)
+    else:
+        label = normalize_frequency_label(candidate.label)
     errors: tuple[str, ...] = ()
     try:
         record = label_to_frequency_record(label)
