@@ -85,6 +85,7 @@ NUMBER_WORDS = {
     "seventeen": "17",
     "eighteen": "18",
     "nineteen": "19",
+    "single": "1",
     "once": "1",
     "twice": "2",
     "thrice": "3",
@@ -434,6 +435,8 @@ def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
         re.IGNORECASE,
     )
     for match in occurring_interval.finditer(text):
+        if _has_historical_lead_in(text, match.start()):
+            continue
         candidates.append(
             _RawCandidate(
                 kind=CandidateKind.FREQUENCY_RATE,
@@ -453,6 +456,78 @@ def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
             _RawCandidate(
                 kind=CandidateKind.FREQUENCY_RATE,
                 label=_rate_label("1", match.group("unit"), "2"),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    fortnight_interval = re.compile(
+        r"\bonce\s+in\s+a\s+fortnight\b",
+        re.IGNORECASE,
+    )
+    for match in fortnight_interval.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label("1", "week", "2"),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    second_period_interval = re.compile(
+        r"\bhappening\s+(?:about\s+|roughly\s+|approximately\s+)?every\s+second\s+"
+        r"(?P<unit>day|week|month|year)\b",
+        re.IGNORECASE,
+    )
+    for match in second_period_interval.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label("1", match.group("unit"), "2"),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    median_interval = re.compile(
+        rf"\bmedian\s+inter-seizure\s+interval\s*(?:≈|~|=|is)?\s*"
+        rf"(?P<denominator>{NUMBER_TOKEN})\s+(?P<unit>{UNIT_TOKEN})\b",
+        re.IGNORECASE,
+    )
+    for match in median_interval.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label("1", match.group("unit"), match.group("denominator")),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    ranging_interval = re.compile(
+        rf"\b(?:(?:{SEIZURE_TERMS})\s+occurring\s+with\s+|occurring\s+with\s+)?"
+        rf"intervals\s+ranging\s+"
+        rf"(?P<denominator>{NUMBER_TOKEN})\s+(?P<unit>{UNIT_TOKEN})\b",
+        re.IGNORECASE,
+    )
+    for match in ranging_interval.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label("1", match.group("unit"), match.group("denominator")),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    standalone_every_interval = re.compile(
+        rf"\bEvery\s+(?P<denominator>{NUMBER_TOKEN})\s+(?P<unit>{UNIT_TOKEN})"
+        r"(?:\s+on\s+average)?\b",
+        re.IGNORECASE,
+    )
+    for match in standalone_every_interval.finditer(text):
+        if _has_historical_lead_in(text, match.start()):
+            continue
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label("1", match.group("unit"), match.group("denominator")),
                 evidence=_clean_evidence(match.group(0)),
             )
         )
@@ -587,6 +662,26 @@ def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
             _RawCandidate(
                 kind=CandidateKind.FREQUENCY_RATE,
                 label=_rate_label(match.group("count"), match.group("unit")),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    period_first_timeframe_count = re.compile(
+        rf"\b(?P<period>Over the past|Over the last|During the past|During the last)\s+"
+        rf"(?P<denominator>{NUMBER_TOKEN})\s+(?P<unit>{UNIT_TOKEN}),?\s+"
+        rf".{{0,260}}?\b(?P<count>{NUMBER_TOKEN})\s+(?:{QUALIFIED_SEIZURE_TERMS})\s+"
+        r"in\s+that\s+timeframe\b",
+        re.IGNORECASE,
+    )
+    for match in period_first_timeframe_count.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label(
+                    match.group("count"),
+                    match.group("unit"),
+                    match.group("denominator"),
+                ),
                 evidence=_clean_evidence(match.group(0)),
             )
         )
@@ -914,6 +1009,19 @@ def _expanded_compact_unit(value: str) -> str:
         "yr": "year",
         "year": "year",
     }[value.lower()]
+
+
+def _has_historical_lead_in(text: str, start: int) -> bool:
+    preceding = text[max(0, start - 140) : start].lower()
+    return any(
+        marker in preceding
+        for marker in (
+            "prior to this",
+            "historical description",
+            "before improvement",
+            "previously",
+        )
+    )
 
 
 def _normalize_note_text(note_text: str) -> str:
