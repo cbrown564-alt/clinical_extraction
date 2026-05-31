@@ -444,6 +444,56 @@ def test_pipeline_extracts_validation_cluster_patterns(
             "7 per week",
             "up to seven in bad weeks",
         ),
+        (
+            "Diary shorthand says abs *monthly.",
+            "1 per month",
+            "abs *monthly",
+        ),
+        (
+            "Diary shorthand says abs Xmonthly.",
+            "1 per month",
+            "abs Xmonthly",
+        ),
+        (
+            "On their calendar, abs 8 monthly over the past three months.",
+            "8 per month",
+            "abs 8 monthly",
+        ),
+        (
+            "The current clinic shorthand is qtwo - threewk.",
+            "1 per 2 to 3 week",
+            "qtwo - threewk",
+        ),
+        (
+            "The current clinic shorthand is q2 - 3wk.",
+            "1 per 2 to 3 week",
+            "q2 - 3wk",
+        ),
+        (
+            "The current clinic shorthand is q1 - 2d.",
+            "1 per 1 to 2 day",
+            "q1 - 2d",
+        ),
+        (
+            "Recent diary: seven to eight absence seizures this quarter.",
+            "7 to 8 per 3 month",
+            "seven to eight absence seizures this quarter",
+        ),
+        (
+            "There were nineteen episode of status epilepticus in the past week.",
+            "19 per week",
+            "nineteen episode of status epilepticus in the past week",
+        ),
+        (
+            "The diary documents: Seizure events on 03-07, 03-27, 05-15, 05-19, 05-24.",
+            "5 per 2 month",
+            "Seizure events on 03-07, 03-27, 05-15, 05-19, 05-24",
+        ),
+        (
+            "Seizure: 2022: Jan x1, Feb x0, Mar x1, Apr x2, May x1, Jun x1, Jul x1.",
+            "7 per 7 month",
+            "Seizure: 2022: Jan x1, Feb x0, Mar x1, Apr x2, May x1, Jun x1, Jul x1",
+        ),
     ],
 )
 def test_pipeline_extracts_validation_shorthand_frequency_patterns(

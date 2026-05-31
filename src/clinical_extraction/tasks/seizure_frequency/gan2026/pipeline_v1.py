@@ -78,6 +78,13 @@ NUMBER_WORDS = {
     "ten": "10",
     "eleven": "11",
     "twelve": "12",
+    "thirteen": "13",
+    "fourteen": "14",
+    "fifteen": "15",
+    "sixteen": "16",
+    "seventeen": "17",
+    "eighteen": "18",
+    "nineteen": "19",
     "once": "1",
     "twice": "2",
     "thrice": "3",
@@ -86,6 +93,20 @@ NUMBER_WORDS = {
 }
 
 NUMBER_WORD_PATTERN = "|".join(NUMBER_WORDS)
+MONTH_ABBREVIATIONS = {
+    "jan": 1,
+    "feb": 2,
+    "mar": 3,
+    "apr": 4,
+    "may": 5,
+    "jun": 6,
+    "jul": 7,
+    "aug": 8,
+    "sep": 9,
+    "oct": 10,
+    "nov": 11,
+    "dec": 12,
+}
 NUMBER_VALUE_TOKEN = rf"(?:multiple|\d+|{NUMBER_WORD_PATTERN})"
 NUMBER_TOKEN = (
     rf"(?:{NUMBER_VALUE_TOKEN}(?:\s+(?:to|or)\s+{NUMBER_VALUE_TOKEN}|"
@@ -94,7 +115,7 @@ NUMBER_TOKEN = (
 UNIT_TOKEN = r"day|week|month|quarter|year|days|weeks|months|quarters|years"
 SEIZURE_TERMS = (
     r"seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|"
-    r"myoclonics?|jerks?"
+    r"myoclonics?|jerks?|status epilepticus"
 )
 QUALIFIED_SEIZURE_TERMS = rf"(?:[a-z][a-z-]*\s+){{0,4}}(?:{SEIZURE_TERMS})"
 SEIZURE_RATE_PHRASE = (
@@ -543,7 +564,7 @@ def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
 
     recent_count = re.compile(
         rf"\b(?P<count>{NUMBER_TOKEN})\s+(?:{QUALIFIED_SEIZURE_TERMS})\s+"
-        rf"(?:last|this|past)\s+(?P<unit>day|week|month|year)\b",
+        rf"(?:last|this|past)\s+(?P<unit>day|week|month|quarter|year)\b",
         re.IGNORECASE,
     )
     for match in recent_count.finditer(text):
@@ -624,6 +645,105 @@ def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
                     match.group("count"),
                     _expanded_compact_unit(match.group("unit")),
                 ),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    compact_abs_adjective_rate = re.compile(
+        r"\babs\s+(?:[*x×]\s*)?(?P<period>daily|weekly|monthly|yearly|bimonthly)\b",
+        re.IGNORECASE,
+    )
+    period_labels = {
+        "daily": "1 per day",
+        "weekly": "1 per week",
+        "monthly": "1 per month",
+        "yearly": "1 per year",
+        "bimonthly": "1 per 2 month",
+    }
+    for match in compact_abs_adjective_rate.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=period_labels[match.group("period").lower()],
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    compact_abs_count_rate = re.compile(
+        rf"\babs\s+(?P<count>{NUMBER_TOKEN})\s+"
+        r"(?P<period>daily|weekly|monthly|yearly|bimonthly)\b",
+        re.IGNORECASE,
+    )
+    period_units = {
+        "daily": ("day", None),
+        "weekly": ("week", None),
+        "monthly": ("month", None),
+        "yearly": ("year", None),
+        "bimonthly": ("month", "2"),
+    }
+    for match in compact_abs_count_rate.finditer(text):
+        unit, denominator = period_units[match.group("period").lower()]
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label(match.group("count"), unit, denominator),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    compact_q_interval = re.compile(
+        rf"\bq(?P<denominator>{NUMBER_TOKEN})\s*(?P<unit>d|day|wk|week|mo|month|yr|year)\b",
+        re.IGNORECASE,
+    )
+    for match in compact_q_interval.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label(
+                    "1",
+                    _expanded_compact_unit(match.group("unit")),
+                    match.group("denominator"),
+                ),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    diary_date_list = re.compile(
+        r"\bSeizure events on (?P<dates>\d{2}-\d{2}(?:,\s*\d{2}-\d{2})+)\b",
+        re.IGNORECASE,
+    )
+    for match in diary_date_list.finditer(text):
+        dates = re.findall(r"(\d{2})-\d{2}", match.group("dates"))
+        months = [int(month) for month in dates]
+        denominator = max(max(months) - min(months), 1)
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label(str(len(dates)), "month", str(denominator)),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    monthly_count_log = re.compile(
+        r"\bSeizure:\s*\d{4}:\s*"
+        r"(?P<entries>(?:(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+"
+        r"x\d+,?\s*){2,})",
+        re.IGNORECASE,
+    )
+    for match in monthly_count_log.finditer(text):
+        entries = re.findall(
+            r"\b(?P<month>Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+x(?P<count>\d+)",
+            match.group("entries"),
+            flags=re.IGNORECASE,
+        )
+        if not entries:
+            continue
+        total = sum(int(count) for _month, count in entries)
+        denominator = len({MONTH_ABBREVIATIONS[month.lower()] for month, _count in entries})
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label(str(total), "month", str(denominator)),
                 evidence=_clean_evidence(match.group(0)),
             )
         )
