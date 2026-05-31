@@ -77,7 +77,8 @@ validation/train surfaces only; the V1 test result is frozen context, not a
 tuning surface.
 
 1. Add rule metadata and ablation switches before any further deterministic-rule
-   changes.
+   changes. Use `docs/design/deterministic_rule_catalogue_plan.md` as the
+   implementation roadmap.
 2. Split extraction into rule groups: date/duration utilities, portable rate
    expressions, seizure-free/no-event assertions, cluster arithmetic, diary/log
    aggregation, temporal selection, Gan-specific shorthand, and benchmark repair.
@@ -96,7 +97,7 @@ tuning surface.
 ### Now
 
 - Prepare ablation/reporting views that separate portable date/duration logic, seizure-expression parsing, seizure-specific temporal selection, Gan synthetic diary phrasing, and benchmark-formatting repairs.
-- Add rule metadata and ablation switches before any further deterministic-rule changes.
+- Add rule metadata and ablation switches before any further deterministic-rule changes, following `docs/design/deterministic_rule_catalogue_plan.md`.
 
 ### Next
 
@@ -119,6 +120,7 @@ tuning surface.
 
 ### Done Recently
 
+- 2026-05-31: Added `docs/design/deterministic_rule_catalogue_plan.md`, an iterative plan for turning the deterministic regex stack into an inspectable, metadata-rich, ablatable rule catalogue before further deterministic-rule changes.
 - 2026-05-31: Evaluated frozen deterministic-only V1 once on the locked test split without inspecting test row-level failures: Purist micro F1/accuracy 0.7600, Pragmatic micro F1/accuracy 0.7867, and evidence validity 450/450. Added a holdout run record and a critical rule-review document concluding that V1 is validation-saturated and should now be ablated/frozen rather than extended with unbounded hand rules.
 - 2026-05-31: Created initial package, docs, tests, and Gan 2026 task skeleton.
 - 2026-05-31: Added project-specific Codex workflow skills for TDD, kanban/status, experiments, and scoring guardrails.
