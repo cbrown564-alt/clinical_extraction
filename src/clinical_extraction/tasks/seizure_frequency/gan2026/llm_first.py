@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import argparse
 import json
 import re
 import subprocess
@@ -19,8 +18,6 @@ from pydantic import BaseModel, ConfigDict, ValidationError
 from clinical_extraction.core.evidence import evidence_is_substring
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
     GanFrequencyRecord,
-    load_records_for_split,
-    load_split_manifest,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.labels import map_pragmatic, map_purist
 from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
@@ -199,6 +196,9 @@ def run_split(
     reuse_raw_outputs: Mapping[int, str] | None = None,
     reuse_source: str | None = None,
     escalation_reason: str | None = None,
+    progress_every: int | None = None,
+    checkpoint_jsonl_path: Path | None = None,
+    checkpoint_report_path: Path | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     reuse_raw_outputs = reuse_raw_outputs or {}
     metadata = _run_metadata(
@@ -268,9 +268,42 @@ def run_split(
                 "comparison": comparison,
             }
         )
+        if progress_every and len(rows) % progress_every == 0:
+            _emit_progress_checkpoint(
+                rows,
+                metadata,
+                total=len(records),
+                jsonl_path=checkpoint_jsonl_path,
+                report_path=checkpoint_report_path,
+            )
 
     metadata["summary"] = summarize_records(rows)
     return rows, metadata
+
+
+def _emit_progress_checkpoint(
+    rows: Sequence[Mapping[str, Any]],
+    metadata: dict[str, Any],
+    *,
+    total: int,
+    jsonl_path: Path | None,
+    report_path: Path | None,
+) -> None:
+    metadata["summary"] = summarize_records(rows)
+    if jsonl_path is not None:
+        write_jsonl(rows, jsonl_path)
+    if report_path is not None and jsonl_path is not None:
+        write_report(rows, metadata, report_path, jsonl_path=jsonl_path)
+    progress = {
+        "processed": len(rows),
+        "total": total,
+        "call_failures": metadata["summary"]["call_failures"],
+        "parse_or_validation_failures": metadata["summary"]["parse_or_validation_failures"],
+        "purist_accuracy_so_far": metadata["summary"]["purist_accuracy"],
+        "pragmatic_accuracy_so_far": metadata["summary"]["pragmatic_accuracy"],
+        "reused_raw_outputs": metadata["summary"]["reused_raw_outputs"],
+    }
+    print(json.dumps(progress, sort_keys=True), file=sys.stderr, flush=True)
 
 
 def summarize_records(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
@@ -509,59 +542,11 @@ def _git_output(args: Sequence[str]) -> str:
 
 
 def main(argv: Sequence[str] | None = None) -> None:
-    parser = argparse.ArgumentParser(
-        description="Run the Gan 2026 LLM-first seizure-frequency extraction experiment."
+    from clinical_extraction.tasks.seizure_frequency.gan2026.llm_first_cli import (
+        main as cli_main,
     )
-    parser.add_argument("--split", choices=("train", "validation"), default="validation")
-    parser.add_argument("--jsonl", type=Path, default=DEFAULT_JSONL_PATH)
-    parser.add_argument("--markdown", type=Path, default=DEFAULT_REPORT_PATH)
-    parser.add_argument("--model", default="openai/gpt-4.1-mini")
-    parser.add_argument("--temperature", type=float, default=0.0)
-    parser.add_argument("--max-tokens", type=int, default=900)
-    parser.add_argument("--mode", choices=("live", "prompt-only"), default="live")
-    parser.add_argument("--limit", type=int, default=None)
-    parser.add_argument(
-        "--disable-dspy-cache",
-        action="store_true",
-        help="Disable DSPy/LiteLLM cache for new model calls.",
-    )
-    parser.add_argument(
-        "--reuse-jsonl",
-        type=Path,
-        default=None,
-        help="Reuse raw model outputs from an existing JSONL artifact by source_row_index.",
-    )
-    parser.add_argument(
-        "--escalation-reason",
-        default=None,
-        help="Reason for a rare broader validation run; recorded in the report.",
-    )
-    args = parser.parse_args(argv)
 
-    records = load_records_for_split(args.split)
-    if args.limit is not None:
-        records = records[: args.limit]
-    manifest = load_split_manifest()
-    split_manifest = str(manifest.get("manifest_version", "gan2026_split_v1"))
-    reuse_raw_outputs = (
-        load_reusable_raw_outputs(args.reuse_jsonl) if args.reuse_jsonl else {}
-    )
-    rows, metadata = run_split(
-        records,
-        split=args.split,
-        split_manifest=split_manifest,
-        model=args.model,
-        temperature=args.temperature,
-        max_tokens=args.max_tokens,
-        mode=args.mode,
-        dspy_cache=not args.disable_dspy_cache,
-        reuse_raw_outputs=reuse_raw_outputs,
-        reuse_source=str(args.reuse_jsonl) if args.reuse_jsonl else None,
-        escalation_reason=args.escalation_reason,
-    )
-    write_jsonl(rows, args.jsonl)
-    write_report(rows, metadata, args.markdown, jsonl_path=args.jsonl)
-    print(json.dumps(metadata["summary"], sort_keys=True))
+    cli_main(argv)
 
 
 if __name__ == "__main__":
