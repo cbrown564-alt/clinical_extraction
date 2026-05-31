@@ -195,7 +195,12 @@ def run_split(
     temperature: float,
     max_tokens: int,
     mode: Literal["live", "prompt-only"],
+    dspy_cache: bool = True,
+    reuse_raw_outputs: Mapping[int, str] | None = None,
+    reuse_source: str | None = None,
+    escalation_reason: str | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    reuse_raw_outputs = reuse_raw_outputs or {}
     metadata = _run_metadata(
         records,
         split=split,
@@ -205,6 +210,9 @@ def run_split(
         max_tokens=max_tokens,
         mode=mode,
     )
+    metadata["dspy_cache"] = dspy_cache
+    metadata["reuse_source"] = reuse_source
+    metadata["escalation_reason"] = escalation_reason
     program = DspyLlmFirstExtractor()
     if mode == "live":
         dspy.configure(
@@ -212,7 +220,7 @@ def run_split(
                 model,
                 temperature=temperature,
                 max_tokens=max_tokens,
-                cache=False,
+                cache=dspy_cache,
                 num_retries=2,
             )
         )
@@ -220,9 +228,10 @@ def run_split(
     rows: list[dict[str, Any]] = []
     for record in records:
         prompt_input_json = build_prompt_input(record)
-        raw_output = ""
+        raw_output = reuse_raw_outputs.get(record.source_row_index, "")
         call_error: str | None = None
-        if mode == "live":
+        reused_raw_output = raw_output != ""
+        if mode == "live" and not reused_raw_output:
             try:
                 prediction = program(prompt_input_json=prompt_input_json)
                 raw_output = str(prediction.decision_json)
@@ -246,6 +255,7 @@ def run_split(
                 "prompt_version": PROMPT_VERSION,
                 "prompt_input_json": prompt_input_json,
                 "raw_output": raw_output,
+                "reused_raw_output": reused_raw_output,
                 "call_error": call_error,
                 "parse_errors": parse_errors,
                 "decision_record": decision.model_dump() if decision else None,
@@ -266,6 +276,7 @@ def run_split(
 def summarize_records(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     decision_rows = [row for row in rows if row.get("decision_record")]
     call_failures = sum(bool(row.get("call_error")) for row in rows)
+    reused_raw_outputs = sum(bool(row.get("reused_raw_output")) for row in rows)
     parse_failures = sum(_has_blocking_parse_issue(row.get("parse_errors")) for row in rows)
     repair_notes = sum(_has_repair_note(row.get("parse_errors")) for row in rows)
     purist_correct = sum(bool((row.get("comparison") or {}).get("purist_correct")) for row in rows)
@@ -280,6 +291,7 @@ def summarize_records(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         "examples": len(rows),
         "decision_records": len(decision_rows),
         "call_failures": call_failures,
+        "reused_raw_outputs": reused_raw_outputs,
         "parse_or_validation_failures": parse_failures,
         "repair_notes": repair_notes,
         "evidence_valid": evidence_valid,
@@ -296,6 +308,23 @@ def write_jsonl(rows: Sequence[Mapping[str, Any]], path: Path) -> None:
     with path.open("w", encoding="utf-8") as handle:
         for row in rows:
             handle.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
+
+
+def load_reusable_raw_outputs(path: Path) -> dict[int, str]:
+    """Load reusable raw model outputs from a prior JSONL artifact."""
+
+    reusable: dict[int, str] = {}
+    if not path.exists():
+        return reusable
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        row = json.loads(line)
+        raw_output = row.get("raw_output")
+        source_row_index = row.get("source_row_index")
+        if isinstance(source_row_index, int) and isinstance(raw_output, str) and raw_output:
+            reusable[source_row_index] = raw_output
+    return reusable
 
 
 def write_report(
@@ -325,6 +354,11 @@ def write_report(
         "",
         f"Data surface: `{metadata['split']}` split, `{metadata['split_manifest']}`, "
         f"{summary['examples']} rows.",
+        (
+            f"Rare full-validation reason: {metadata['escalation_reason']}"
+            if metadata.get("escalation_reason")
+            else "Rare full-validation reason: not applicable for this run size."
+        ),
         "Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a "
         "side-car.",
         "",
@@ -338,6 +372,9 @@ def write_report(
         f"- Temperature: `{metadata['temperature']}`",
         f"- Max tokens: `{metadata['max_tokens']}`",
         f"- Mode: `{metadata['mode']}`",
+        f"- DSPy cache enabled: `{metadata.get('dspy_cache')}`",
+        f"- Reused raw model outputs: `{summary['reused_raw_outputs']}`",
+        f"- Reuse source: `{metadata.get('reuse_source') or 'none'}`",
         "- Optimizer: none",
         "- Deterministic rule configuration: none before prediction; deterministic code only "
         "repairs labels, validates evidence, and scores.",
@@ -483,6 +520,22 @@ def main(argv: Sequence[str] | None = None) -> None:
     parser.add_argument("--max-tokens", type=int, default=900)
     parser.add_argument("--mode", choices=("live", "prompt-only"), default="live")
     parser.add_argument("--limit", type=int, default=None)
+    parser.add_argument(
+        "--disable-dspy-cache",
+        action="store_true",
+        help="Disable DSPy/LiteLLM cache for new model calls.",
+    )
+    parser.add_argument(
+        "--reuse-jsonl",
+        type=Path,
+        default=None,
+        help="Reuse raw model outputs from an existing JSONL artifact by source_row_index.",
+    )
+    parser.add_argument(
+        "--escalation-reason",
+        default=None,
+        help="Reason for a rare broader validation run; recorded in the report.",
+    )
     args = parser.parse_args(argv)
 
     records = load_records_for_split(args.split)
@@ -490,6 +543,9 @@ def main(argv: Sequence[str] | None = None) -> None:
         records = records[: args.limit]
     manifest = load_split_manifest()
     split_manifest = str(manifest.get("manifest_version", "gan2026_split_v1"))
+    reuse_raw_outputs = (
+        load_reusable_raw_outputs(args.reuse_jsonl) if args.reuse_jsonl else {}
+    )
     rows, metadata = run_split(
         records,
         split=args.split,
@@ -498,6 +554,10 @@ def main(argv: Sequence[str] | None = None) -> None:
         temperature=args.temperature,
         max_tokens=args.max_tokens,
         mode=args.mode,
+        dspy_cache=not args.disable_dspy_cache,
+        reuse_raw_outputs=reuse_raw_outputs,
+        reuse_source=str(args.reuse_jsonl) if args.reuse_jsonl else None,
+        escalation_reason=args.escalation_reason,
     )
     write_jsonl(rows, args.jsonl)
     write_report(rows, metadata, args.markdown, jsonl_path=args.jsonl)
