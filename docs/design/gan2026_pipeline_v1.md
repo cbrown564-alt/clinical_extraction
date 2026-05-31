@@ -179,6 +179,20 @@ GPT-4.1 mini. Stronger or local models should be introduced as controlled
 model-swap experiments, not while the schema and deterministic substrate are
 still moving.
 
+## Validation Escalation
+
+LLM/DSPy runs should not default to the full 750-row validation split. Use the
+standard validation ladder from `docs/design/gan2026_split_protocol.md`:
+
+1. 25 validation rows for smoke tests after prompt/schema/code changes.
+2. 50 validation rows for meaningful signal once the output contract is stable.
+3. 250 validation rows after a decision gate when the result will decide whether
+   to promote, revise, or reject the candidate.
+
+Full 750-row validation runs are rare and should be reserved for stable
+candidates or paper-facing comparisons where a 250-row slice is insufficient.
+The experiment artifact must state why the full validation surface is necessary.
+
 ## Deterministic Rule Design
 
 Rules in V1 should be explicit and categorized. The goal is not simply to maximize local score with ever more specific patterns. The goal is to measure which kinds of rules improve performance, where they fail, and which ones are likely to transfer beyond Gan 2026.

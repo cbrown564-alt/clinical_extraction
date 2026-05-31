@@ -15,3 +15,16 @@ Goal: reproduce the benchmark-facing substrate before optimizing model behavior.
 
 Do not claim benchmark progress until local scoring matches the author policy on controlled examples.
 
+## LLM/DSPy Development Run Sizes
+
+For prediction-bearing LLM/DSPy or hybrid pipeline experiments, use validation
+prefixes rather than the full validation split by default:
+
+1. Smoke test on 25 validation rows.
+2. Meaningful test on 50 validation rows.
+3. Move to 250 validation rows only after the 50-row run has no systemic
+   output-contract failures and the larger slice will decide a concrete
+   promote/revise/reject question.
+
+Full 750-row validation runs should be rare and documented in the experiment
+artifact.

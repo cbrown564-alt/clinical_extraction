@@ -26,6 +26,10 @@ Treat deterministic rules as a frozen, ablatable comparator rather than an endle
 - The validation-baseline drift was traced to diary/log catalogue regression: sparse monthly timeline patterns from saturated V1 were not fully carried into `gan2026.rules.diary`. Restored catalogued rules now produce a current working-tree baseline of 0.9293 Purist micro F1/accuracy and 0.9387 Pragmatic micro F1/accuracy with 750/750 exact evidence validity.
 - A first validation-only prompt/adjudicator development set now mines ablation-changed rows into 16 JSONL examples with deterministic V1 candidate diagnostics: 10 deterministic-overreach examples and 6 support controls.
 - The first live DSPy final-selection adjudicator run over those 16 examples used GPT-4.1 mini via DSPy. It produced 16/16 parseable decision records with no call failures, but it is diagnostic rather than promotable: 6/16 Purist correct and 10/16 Pragmatic correct, preserving all support controls while failing all deterministic-overreach examples.
+- LLM/DSPy validation runs now follow a cost-controlled ladder: 25-row smoke
+  test, 50-row meaningful signal, then 250-row development result after a
+  decision gate. Full 750-row validation runs should be rare and require a
+  documented reason that 250 rows are insufficient.
 
 ## Key References
 
@@ -48,15 +52,21 @@ Treat deterministic rules as a frozen, ablatable comparator rather than an endle
 1. Keep deterministic V1 frozen as a controlled comparator; put any new deterministic changes into a separate, explicitly ablated candidate.
 2. Start validation-only LLM/DSPy work on residual reasoning families:
    temporal/current-versus-historical selection, seizure-free versus unknown/no-reference assertions, trigger-conditioned events, semiology reconciliation, non-epileptic or EEG-only mapping, and cluster-detail interpretation.
-3. Use the mined ablation dev set as the seed surface for prompt, adjudicator, and error-taxonomy experiments.
-4. Maintain conservative benchmark language: the test split has been touched once for frozen-context evaluation and must not become a tuning surface.
+3. Use the 25/50/250 validation ladder for LLM/DSPy and hybrid architecture
+   comparisons; do not run all 750 validation rows unless the experiment artifact
+   states why the 250-row slice is insufficient.
+4. Use the mined ablation dev set as the seed surface for prompt, adjudicator, and error-taxonomy experiments.
+5. Maintain conservative benchmark language: the test split has been touched once for frozen-context evaluation and must not become a tuning surface.
 
 ## Work Board
 
 ### Now
 
-- Inspect the first DSPy adjudicator run row-by-row, focusing on why all deterministic-overreach examples kept unsupported deterministic choices.
-- Revise the adjudicator prompt/schema to force explicit override conditions for unsupported high-frequency, seizure-free/no-event, and temporal distractor candidates before any broader validation pass.
+- Stabilize the LLM-first output contract and shared schema/label repair boundary:
+  schema repair should handle payload aliases, while Gan label repair remains in
+  `normalize.py`.
+- Use the 25/50/250 validation ladder for the next LLM-first or structured
+  extractor experiment.
 
 ### Next
 

@@ -57,6 +57,24 @@ def repair_prediction_label(
     return repair_prediction_label_with_trace(raw, ablation_config).final_label
 
 
+def repair_prediction_label_with_evidence(
+    raw: str | None,
+    evidence: str,
+    ablation_config: AblationConfig | None = None,
+) -> str:
+    """Repair a prediction, using selected evidence only for benchmark formatting.
+
+    The evidence string is assumed to have already been selected by the prediction-bearing
+    model or pipeline. This function may preserve explicit counts or time windows from that
+    selected evidence, but it does not choose different clinical evidence.
+    """
+
+    if raw is None:
+        return repair_prediction_label(raw, ablation_config)
+    evidence_label = _prediction_label_from_selected_evidence(evidence)
+    return repair_prediction_label(evidence_label or raw, ablation_config)
+
+
 def repair_prediction_label_with_trace(
     raw: str | None,
     ablation_config: AblationConfig | None = None,
@@ -439,6 +457,7 @@ def _x_times_forms(text: str) -> str:
 
 def _every_each_forms(text: str) -> str:
     text = re.sub(r"\b\d+\s+(?=every\s+other\s+(day|week|month|year)\b)", "", text)
+    text = re.sub(r"\b\d+\s+(?=(?:every|each)\s+\d+\s*(day|week|month|year)s?\b)", "", text)
     text = re.sub(r"\b(?:every|each)\s+other\s+(day|week|month|year)\b", r"1 per 2 \1", text)
     text = re.sub(r"\b(?:every|each)\s+(\d+)\s*(day|week|month|year)s?\b", r"1 per \1 \2", text)
     text = re.sub(r"\b(?:every|each)\s+(day|week|month|year)s?\b", r"1 per \1", text)
@@ -749,6 +768,62 @@ def _zero_period_to_unknown(text: str) -> str:
     if re.search(r"\bper\s+0\s+(day|week|month|year)\b", text):
         return "unknown"
     return text
+
+
+def _prediction_label_from_selected_evidence(evidence: str) -> str | None:
+    if not evidence:
+        return None
+
+    text = normalize_frequency_label(_words_to_numbers(evidence))
+    unit = r"day|week|month|year"
+    count = r"\d+(?:\s*(?:to|-|–|—)\s*\d+)?"
+
+    upper_bound = re.search(
+        rf"(?:≤|<=|up to|at most|no more than)\s+(?P<count>{count})\s+"
+        rf"(?:seizures?\s+)?per\s+(?P<unit>{unit})s?\b",
+        text,
+    )
+    if upper_bound:
+        return _format_prediction_rate(upper_bound.group("count"), upper_bound.group("unit"))
+
+    quarter = re.search(
+        rf"\b(?P<count>{count})\s+(?:seizures?\s+)?per\s+quarter\b",
+        text,
+    )
+    if quarter:
+        return _format_prediction_rate(quarter.group("count"), "3 month")
+
+    times_every = re.search(
+        rf"\b(?P<count>\d+)\s+(?:times|seizures?)?\s*every\s+"
+        rf"(?P<period>\d+)\s+(?P<unit>{unit})s?\b",
+        text,
+    )
+    if times_every:
+        return _format_prediction_rate(
+            f"{times_every.group('count')} per {times_every.group('period')}",
+            times_every.group("unit"),
+        )
+
+    every_range = re.search(
+        rf"\bevery\s+(?P<count>{count})\s+(?P<unit>{unit})s?\b",
+        text,
+    )
+    if every_range:
+        return _format_prediction_rate(
+            f"1 per {every_range.group('count')}",
+            every_range.group("unit"),
+        )
+
+    return None
+
+
+def _format_prediction_rate(count_text: str, unit_text: str) -> str:
+    count = re.sub(r"\s*(?:-|–|—)\s*", " to ", count_text.strip())
+    count = re.sub(r"\s+", " ", count)
+    unit = unit_text.rstrip("s").strip()
+    if " per " in count:
+        return f"{count} {unit}"
+    return f"{count} per {unit}"
 
 
 def _fallback_if_disallowed(text: str) -> str:

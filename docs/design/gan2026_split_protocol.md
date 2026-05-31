@@ -35,6 +35,34 @@ for external scripts and manual inspection.
   ablations, row-level error analysis, scorer-facing diagnostics, and model-choice
   decisions.
 - Report ordinary progress as validation development results.
+- Do not treat all 750 validation rows as the default LLM/DSPy iteration run.
+  Hosted or local model experiments should escalate through validation prefixes:
+  25 rows for smoke tests, 50 rows for meaningful signal, and 250 rows for a
+  stronger development result after a decision gate is met.
+- Full 750-row validation runs are rare. Use them only when a candidate, prompt,
+  schema, model, and repair policy are stable enough that the result will change
+  a project decision or become a durable comparison artifact.
+
+## Validation Run Ladder
+
+Use this ladder for ordinary LLM/DSPy and hybrid architecture iteration:
+
+1. **Smoke test: 25 validation rows.** Run after prompt/schema/code changes to
+   catch call failures, JSON/schema failures, evidence-validity problems, and
+   obvious scorer-format drift. Do not promote from aggregate F1 alone.
+2. **Meaningful signal: 50 validation rows.** Run when the smoke test has no
+   blocking output-contract failures and the row-level failures are interpretable.
+   Use this stage for prompt/schema comparisons and first model-swap checks.
+3. **Decision gate before 250 rows.** Move to 250 only when the 50-row result has:
+   no systemic call failures, no unresolved schema/parse failure family, exact
+   evidence behavior adequate for row-level review, and a clear reason the larger
+   slice will decide whether to promote, revise, or reject the candidate.
+4. **Development result: 250 validation rows.** Treat this as the standard
+   stronger validation signal for LLM/DSPy candidate comparisons.
+5. **Rare full validation: 750 rows.** Run only with a written reason in the
+   experiment artifact, such as freezing a development candidate before holdout
+   evaluation, producing a paper-facing ablation/comparison table, or resolving a
+   high-impact uncertainty that the 250-row slice cannot answer.
 
 ### Test
 
@@ -72,7 +100,8 @@ old split is insufficient.
 
 ## Allowed Workflow
 
-1. Develop deterministic rules, prompt strategies, and ablations on validation.
+1. Develop deterministic rules, prompt strategies, and ablations on validation,
+   using the validation run ladder for LLM/DSPy and hybrid runs.
 2. Use train only when running DSPy GEPA or another training/optimization procedure.
 3. Freeze code, prompts, model identifiers, scorer, and split manifest version.
 4. Run the locked test split once for final evaluation.

@@ -8,6 +8,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     label_to_monthly_frequency,
     parse_label_bounds,
     repair_prediction_label,
+    repair_prediction_label_with_evidence,
     repair_prediction_label_with_trace,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.rule_metadata import (
@@ -77,6 +78,30 @@ def test_repair_prediction_label_ports_author_prediction_repairs(
     expected: str,
 ) -> None:
     assert repair_prediction_label(raw) == expected
+
+
+def test_repair_prediction_label_with_evidence_normalizes_common_output_shapes() -> None:
+    assert repair_prediction_label("1 every 2 days") == "1 per 2 day"
+
+
+def test_repair_prediction_label_with_evidence_preserves_selected_upper_bound() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "multiple per week",
+            "overall a frequency of ≤ four seizures per week",
+        )
+        == "4 per week"
+    )
+
+
+def test_repair_prediction_label_with_evidence_preserves_quarter_window() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "2 to 3 per month",
+            "Current estimated seizure frequency is 12 to 30 per quarter",
+        )
+        == "12 to 30 per 3 month"
+    )
 
 
 def test_benchmark_repair_steps_are_valid_and_benchmark_format_only() -> None:
