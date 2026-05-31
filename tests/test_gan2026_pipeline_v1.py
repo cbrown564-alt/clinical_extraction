@@ -63,6 +63,99 @@ def test_pipeline_extracts_simple_current_frequency_rates(
     assert result.diagnostics["evidence_valid"] is True
 
 
+@pytest.mark.parametrize(
+    ("note_text", "expected_label", "expected_evidence"),
+    [
+        (
+            "Present Seizure Frequency: focal seizures every 6 days.",
+            "1 per 6 day",
+            "seizures every 6 days",
+        ),
+        (
+            "Present Seizure Frequency: focal seizures every seven to nine days.",
+            "1 per 7 to 9 day",
+            "seizures every seven to nine days",
+        ),
+        (
+            "Present Seizure Frequency: tonic-clonic seizures once a week.",
+            "1 per week",
+            "seizures once a week",
+        ),
+        (
+            "Present Seizure Frequency: monthly seizures.",
+            "1 per month",
+            "monthly seizures",
+        ),
+        (
+            "Present Seizure Frequency: bimonthly seizures.",
+            "1 per 2 month",
+            "bimonthly seizures",
+        ),
+        (
+            "The carer reports that seizures are occurring every 2 days on average.",
+            "1 per 2 day",
+            "occurring every 2 days",
+        ),
+        (
+            "Since review, events tend to cluster every seven to nine days.",
+            "1 per 7 to 9 day",
+            "cluster every seven to nine days",
+        ),
+        (
+            "The patient reports ongoing episodes occurring every 3 - 4 weeks.",
+            "1 per 3 to 4 week",
+            "occurring every 3 - 4 weeks",
+        ),
+        (
+            "Frequency is now reported as twice a month.",
+            "2 per month",
+            "twice a month",
+        ),
+        (
+            "She describes her seizures as occurring roughly yearly.",
+            "1 per year",
+            "occurring roughly yearly",
+        ),
+        (
+            "She notes the events are occurring bimonthly on average.",
+            "1 per 2 month",
+            "occurring bimonthly",
+        ),
+        (
+            "They believe there were 3 or 5 seizures last month.",
+            "3 to 5 per month",
+            "3 or 5 seizures last month",
+        ),
+        (
+            "He describes three or four seizures last week.",
+            "3 to 4 per week",
+            "three or four seizures last week",
+        ),
+        (
+            "These have become frequent, with seizures every other day.",
+            "1 per 2 day",
+            "seizures every other day",
+        ),
+        (
+            "The current pattern is seizures every other week.",
+            "1 per 2 week",
+            "seizures every other week",
+        ),
+    ],
+)
+def test_pipeline_extracts_implicit_one_event_rates(
+    note_text: str,
+    expected_label: str,
+    expected_evidence: str,
+) -> None:
+    result = Gan2026PipelineV1().run(_record(note_text))
+
+    assert result.output.final_value == expected_label
+    assert result.diagnostics["final_selection"]["final_kind"] == FrequencyLabelKind.FREQUENCY
+    assert result.diagnostics["final_selection"]["evidence"] == expected_evidence
+    assert result.diagnostics["evidence_valid"] is True
+
+
 def test_pipeline_preserves_seizure_free_as_semantic_state() -> None:
     result = Gan2026PipelineV1().run(
         _record("He has been seizure free for a long duration and over several years.")

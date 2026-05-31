@@ -51,8 +51,9 @@ Treat deterministic rules as controlled variables. Categorize each rule by porta
 - V1 historical development result on all 1,500 local rows is 0.3120 Purist micro F1/accuracy; future candidate iteration should report validation-split results instead.
 - V1 selected-evidence validity is 1,500/1,500 exact source substrings.
 - V1 validation-split row-level error analysis exists at `experiments/gan2026_v1_validation_error_analysis_2026-05-31.md`, with CSV rows at `experiments/gan2026_v1_validation_error_rows_2026-05-31.csv`.
-- V1 validation result is 0.3240 Purist micro F1/accuracy on 750 validation rows; evidence validity remains 750/750.
-- Validation failures are dominated by 356 missed frequency-evidence rows, 85 missed seizure-free/no-event rows, and 26 frequency rows incorrectly selected as seizure-free.
+- V1 deterministic recall now covers validation-derived interval and recent-window patterns including `every N days/weeks/months`, `every other`, `once/twice a month`, adverbial `weekly/monthly/yearly/bimonthly`, and recent count windows such as `3 or 5 seizures last month`.
+- V1 validation result is 0.3893 Purist micro F1/accuracy on 750 validation rows; evidence validity remains 750/750.
+- Validation failures are dominated by 267 missed frequency-evidence rows, 80 missed seizure-free/no-event rows, 56 wrong-frequency-bucket rows, and 30 overpredicted-frequency rows.
 - `pytest` and `ruff` pass in the local `.venv` after validation error-analysis generation.
 
 ## Work Board
@@ -60,8 +61,9 @@ Treat deterministic rules as controlled variables. Categorize each rule by porta
 ### Now
 
 - Improve deterministic candidate recall for ordinary frequency evidence before adding LLM reasoning.
-- Add patterns for distributed month lists, interval language such as `every 4 days`, and no-event/seizure-free phrasing with breakthrough-event guards.
-- Use the validation error table's first high-priority rows to add focused tests for missed `frequency` and `seizure_free` gold kinds.
+- Add patterns for distributed event sums such as multiple seizure types in the same recent window.
+- Add no-event/seizure-free phrasing with breakthrough-event guards.
+- Use the refreshed validation error table's first high-priority rows to add focused tests for missed `frequency` and `seizure_free` gold kinds.
 
 ### Next
 
@@ -96,7 +98,8 @@ Treat deterministic rules as controlled variables. Categorize each rule by porta
 - 2026-05-31: Evaluated V1 on all 1,500 local Gan rows: Purist micro F1/accuracy 0.3120, evidence validity 1,500/1,500, with failures dominated by missed frequency/seizure-free evidence.
 - 2026-05-31: Added Gan 2026 train/validation/test split protocol and locked `gan2026_split_v1` manifest; updated skills to enforce validation-first development and locked test holdout discipline.
 - 2026-05-31: Added reusable Gan row-level error-analysis generation, wrote focused tests, and generated V1 validation artifacts showing 0.3240 Purist micro F1/accuracy with 750/750 exact selected-evidence validity.
+- 2026-05-31: Improved V1 deterministic recall for validation-derived implicit interval, adverbial rate, and recent-window count phrases; refreshed validation artifacts now show 0.3893 Purist micro F1/accuracy with 750/750 exact selected-evidence validity.
 
 ## Immediate Next Step
 
-Add focused validation-derived tests for the top missed-frequency rows, then improve deterministic recall for distributed event counts, interval-derived rates, and seizure-free/no-event phrasing while preserving exact evidence validation.
+Add focused validation-derived tests for distributed event-count rows such as summed seizure types in the same week/month, then improve no-event/seizure-free recall while preserving exact evidence validation.

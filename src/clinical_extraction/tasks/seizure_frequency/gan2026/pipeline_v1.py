@@ -78,13 +78,19 @@ NUMBER_WORDS = {
     "ten": "10",
     "eleven": "11",
     "twelve": "12",
+    "once": "1",
     "twice": "2",
     "thrice": "3",
     "several": "multiple",
     "few": "multiple",
 }
 
-NUMBER_TOKEN = r"(?:multiple|\d+(?:\s+to\s+\d+)?|" + "|".join(NUMBER_WORDS) + r")"
+NUMBER_WORD_PATTERN = "|".join(NUMBER_WORDS)
+NUMBER_VALUE_TOKEN = rf"(?:multiple|\d+|{NUMBER_WORD_PATTERN})"
+NUMBER_TOKEN = (
+    rf"(?:{NUMBER_VALUE_TOKEN}(?:\s+(?:to|or)\s+{NUMBER_VALUE_TOKEN}|"
+    rf"\s*[-–—]\s*{NUMBER_VALUE_TOKEN})?)"
+)
 UNIT_TOKEN = r"day|week|month|year|days|weeks|months|years"
 SEIZURE_TERMS = r"seizures?|episodes?|events?|spells?|absences?|convulsions?"
 
@@ -238,6 +244,132 @@ def _extract_rate_candidates(text: str) -> list[_RawCandidate]:
                 evidence=_clean_evidence(match.group(0)),
             )
         )
+
+    implicit_interval = re.compile(
+        rf"\b(?:{SEIZURE_TERMS})\s+every\s+"
+        rf"(?:(?P<denominator>{NUMBER_TOKEN})\s+)?(?P<unit>{UNIT_TOKEN})\b",
+        re.IGNORECASE,
+    )
+    for match in implicit_interval.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label("1", match.group("unit"), match.group("denominator")),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    implicit_other_interval = re.compile(
+        rf"\b(?:{SEIZURE_TERMS})\s+every\s+other\s+(?P<unit>day|week|month|year)\b",
+        re.IGNORECASE,
+    )
+    for match in implicit_other_interval.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label("1", match.group("unit"), "2"),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    occurring_interval = re.compile(
+        rf"\b(?P<verb>occurring|occur|occurs|cluster|clusters)\s+"
+        rf"(?:roughly\s+|approximately\s+)?every\s+"
+        rf"(?:(?P<denominator>{NUMBER_TOKEN})\s+)?(?P<unit>{UNIT_TOKEN})\b",
+        re.IGNORECASE,
+    )
+    for match in occurring_interval.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label("1", match.group("unit"), match.group("denominator")),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    implicit_a_period = re.compile(
+        rf"\b(?:{SEIZURE_TERMS})\s+(?P<count>once|twice|thrice)\s+"
+        rf"(?:a|an|per)\s+(?P<unit>day|week|month|year)\b",
+        re.IGNORECASE,
+    )
+    for match in implicit_a_period.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label(match.group("count"), match.group("unit")),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    frequency_a_period = re.compile(
+        r"\b(?P<count>once|twice|thrice)\s+(?:a|an)\s+"
+        r"(?P<unit>day|week|month|year)\b",
+        re.IGNORECASE,
+    )
+    for match in frequency_a_period.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label(match.group("count"), match.group("unit")),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
+
+    adjective_rates = (
+        (r"daily", "1 per day"),
+        (r"weekly", "1 per week"),
+        (r"monthly", "1 per month"),
+        (r"yearly", "1 per year"),
+        (r"bimonthly", "1 per 2 month"),
+    )
+    for adjective, label in adjective_rates:
+        pattern = re.compile(
+            rf"\b(?:{adjective}\s+(?:{SEIZURE_TERMS})|(?:{SEIZURE_TERMS})\s+{adjective})\b",
+            re.IGNORECASE,
+        )
+        for match in pattern.finditer(text):
+            candidates.append(
+                _RawCandidate(
+                    kind=CandidateKind.FREQUENCY_RATE,
+                    label=label,
+                    evidence=_clean_evidence(match.group(0)),
+                )
+            )
+
+    occurring_adjective_rates = (
+        (r"daily", "1 per day"),
+        (r"weekly", "1 per week"),
+        (r"monthly", "1 per month"),
+        (r"yearly", "1 per year"),
+        (r"bimonthly", "1 per 2 month"),
+    )
+    for adjective, label in occurring_adjective_rates:
+        pattern = re.compile(
+            rf"\boccurring\s+(?:roughly\s+|approximately\s+)?{adjective}\b",
+            re.IGNORECASE,
+        )
+        for match in pattern.finditer(text):
+            candidates.append(
+                _RawCandidate(
+                    kind=CandidateKind.FREQUENCY_RATE,
+                    label=label,
+                    evidence=_clean_evidence(match.group(0)),
+                )
+            )
+
+    recent_count = re.compile(
+        rf"\b(?P<count>{NUMBER_TOKEN})\s+(?:{SEIZURE_TERMS})\s+"
+        rf"(?:last|this|past)\s+(?P<unit>day|week|month|year)\b",
+        re.IGNORECASE,
+    )
+    for match in recent_count.finditer(text):
+        candidates.append(
+            _RawCandidate(
+                kind=CandidateKind.FREQUENCY_RATE,
+                label=_rate_label(match.group("count"), match.group("unit")),
+                evidence=_clean_evidence(match.group(0)),
+            )
+        )
     return candidates
 
 
@@ -342,7 +474,12 @@ def _rate_label(count: str, unit: str, denominator: str | None = None) -> str:
 def _number_token(value: str | None) -> str:
     if value is None:
         return "1"
-    normalized = " ".join(value.lower().replace("-", " ").split())
+    normalized = re.sub(r"\s*[-–—]\s*", " to ", value.lower())
+    normalized = " ".join(normalized.split())
+    if " to " in normalized:
+        return " to ".join(_number_token(part) for part in normalized.split(" to "))
+    if " or " in normalized:
+        return " to ".join(_number_token(part) for part in normalized.split(" or "))
     return NUMBER_WORDS.get(normalized, normalized)
 
 
