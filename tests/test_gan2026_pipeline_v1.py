@@ -157,6 +157,16 @@ def test_pipeline_extracts_simple_current_frequency_rates(
             "21 to 28 epileptic spasms in three months",
         ),
         (
+            "The diary lists six or eight petit mal over the past month.",
+            "6 to 8 per month",
+            "six or eight petit mal over the past month",
+        ),
+        (
+            "The family reports 3 or 5 tonic-clonic over the past month.",
+            "3 to 5 per month",
+            "3 or 5 tonic-clonic over the past month",
+        ),
+        (
             "Family counted 3 or 4 focal impaired awareness seizures this week.",
             "3 to 4 per week",
             "3 or 4 focal impaired awareness seizures this week",
@@ -207,9 +217,19 @@ def test_pipeline_extracts_simple_current_frequency_rates(
             "seizures every night",
         ),
         (
+            "The current pattern is tonic-clonic every night.",
+            "1 per day",
+            "tonic-clonic every night",
+        ),
+        (
             "They report a myoclonic jerk daily.",
             "1 per day",
             "myoclonic jerk daily",
+        ),
+        (
+            "Current diary summary: focal cognitive monthly.",
+            "1 per month",
+            "focal cognitive monthly",
         ),
         (
             "They report larger convulsive events occurring tonic-clonic daily.",
@@ -366,9 +386,67 @@ def test_pipeline_keeps_cluster_structure_in_diagnostics() -> None:
             "2 cluster per month, 5 per cluster",
             "2 clusters this month; each approx five absences",
         ),
+        (
+            "Monthly clusters, typically 6 to 7 seizures over 24 h.",
+            "1 cluster per month, 6 to 7 per cluster",
+            "Monthly clusters, typically 6 to 7 seizures over 24 h",
+        ),
     ],
 )
 def test_pipeline_extracts_validation_cluster_patterns(
+    note_text: str,
+    expected_label: str,
+    expected_evidence: str,
+) -> None:
+    result = Gan2026PipelineV1().run(_record(note_text))
+
+    assert result.output.final_value == expected_label
+    assert result.diagnostics["final_selection"]["final_kind"] == FrequencyLabelKind.FREQUENCY
+    assert result.diagnostics["final_selection"]["evidence"] == expected_evidence
+    assert result.diagnostics["evidence_valid"] is True
+
+
+@pytest.mark.parametrize(
+    ("note_text", "expected_label", "expected_evidence"),
+    [
+        (
+            "Seizure days: six/30 this month.",
+            "6 per month",
+            "Seizure days: six/30 this month",
+        ),
+        (
+            "About three seizure days per week are reported.",
+            "3 per week",
+            "About three seizure days per week",
+        ),
+        (
+            "Clinic shorthand says TC *nine/mo.",
+            "9 per month",
+            "TC *nine/mo",
+        ),
+        (
+            "Clinic shorthand says TC *5/wk.",
+            "5 per week",
+            "TC *5/wk",
+        ),
+        (
+            "Diary summary says TC nine/mo.",
+            "9 per month",
+            "TC nine/mo",
+        ),
+        (
+            "Current frequency reported as: sz ×nine/mo.",
+            "9 per month",
+            "sz ×nine/mo",
+        ),
+        (
+            "Seizures worsen, up to seven in bad weeks.",
+            "7 per week",
+            "up to seven in bad weeks",
+        ),
+    ],
+)
+def test_pipeline_extracts_validation_shorthand_frequency_patterns(
     note_text: str,
     expected_label: str,
     expected_evidence: str,
