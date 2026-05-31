@@ -21,6 +21,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     label_to_frequency_record,
     repair_prediction_label,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.schema_repair import (
+    repair_decision_payload,
+)
 
 PROMPT_VERSION = "gan2026_final_selection_adjudicator_v0.4"
 DEFAULT_DEVSET_PATH = Path(
@@ -215,7 +218,7 @@ def build_prompt_input(example: Mapping[str, Any]) -> str:
 def parse_decision_json(raw_output: str) -> tuple[AdjudicatorDecisionRecord | None, list[str]]:
     errors: list[str] = []
     try:
-        payload = _repair_decision_payload(json.loads(_extract_json_object(raw_output)))
+        payload = repair_decision_payload(json.loads(_extract_json_object(raw_output)))
     except json.JSONDecodeError as exc:
         return None, [f"invalid_json: {exc.msg}"]
 
@@ -226,7 +229,9 @@ def parse_decision_json(raw_output: str) -> tuple[AdjudicatorDecisionRecord | No
 
     repaired_label = repair_prediction_label(decision.final_label)
     if repaired_label != decision.final_label:
-        errors.append(f"final_label_repaired: {decision.final_label!r} -> {repaired_label!r}")
+        errors.append(
+            f"final_label_repaired: {decision.final_label!r} -> {repaired_label!r}"
+        )
         decision = decision.model_copy(update={"final_label": repaired_label})
 
     try:
@@ -235,41 +240,6 @@ def parse_decision_json(raw_output: str) -> tuple[AdjudicatorDecisionRecord | No
         errors.append(f"unscorable_final_label: {exc}")
 
     return decision, errors
-
-
-def _repair_decision_payload(payload: Any) -> Any:
-    if not isinstance(payload, dict):
-        return payload
-
-    repaired = dict(payload)
-    assertion_aliases = {
-        "present": "asserted",
-        "positive": "asserted",
-        "current": "asserted",
-        "certain": "asserted",
-    }
-    uncertainty_aliases = {
-        "none": "low",
-        "certain": "low",
-        "clear": "low",
-        "unclear": "high",
-    }
-    assertion_status = repaired.get("assertion_status")
-    if isinstance(assertion_status, str):
-        repaired["assertion_status"] = assertion_aliases.get(
-            assertion_status.strip().lower(),
-            assertion_status,
-        )
-    uncertainty = repaired.get("uncertainty")
-    if isinstance(uncertainty, str):
-        repaired["uncertainty"] = uncertainty_aliases.get(
-            uncertainty.strip().lower(),
-            uncertainty,
-        )
-    normalized_rate = repaired.get("normalized_rate")
-    if normalized_rate is not None and not isinstance(normalized_rate, str):
-        repaired["normalized_rate"] = str(normalized_rate)
-    return repaired
 
 
 def run_adjudicator_devset(
@@ -349,7 +319,10 @@ def run_adjudicator_devset(
 
 def summarize_adjudicator_records(records: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     live_records = [record for record in records if record.get("decision_record")]
-    parse_failures = sum(bool(record.get("parse_errors")) for record in records)
+    parse_failures = sum(
+        _has_blocking_parse_issue(record.get("parse_errors")) for record in records
+    )
+    repair_notes = sum(_has_repair_note(record.get("parse_errors")) for record in records)
     call_failures = sum(bool(record.get("call_error")) for record in records)
     purist_correct = sum(
         bool((record.get("comparison") or {}).get("purist_correct")) for record in records
@@ -367,6 +340,7 @@ def summarize_adjudicator_records(records: Sequence[Mapping[str, Any]]) -> dict[
         "decision_records": len(live_records),
         "call_failures": call_failures,
         "parse_or_validation_failures": parse_failures,
+        "repair_notes": repair_notes,
         "purist_correct": purist_correct,
         "purist_accuracy": round(purist_correct / len(records), 4) if records else 0.0,
         "pragmatic_correct": pragmatic_correct,
@@ -436,6 +410,7 @@ def write_adjudicator_report(
         f"- Decision records: {summary['decision_records']} / {summary['examples']}",
         f"- Call failures: {summary['call_failures']}",
         f"- Parse/schema/label issues: {summary['parse_or_validation_failures']}",
+        f"- Deterministic repair notes: {summary['repair_notes']}",
         f"- Purist dev-set accuracy: {summary['purist_accuracy']:.4f} "
         f"({summary['purist_correct']} / {summary['examples']})",
         f"- Pragmatic dev-set accuracy: {summary['pragmatic_accuracy']:.4f} "
@@ -490,6 +465,24 @@ def _compare_to_reference(
         "gold_pragmatic_category": gold_pragmatic,
         "pragmatic_correct": predicted_pragmatic == gold_pragmatic,
     }
+
+
+def _has_blocking_parse_issue(errors: Any) -> bool:
+    return any(
+        str(error).startswith(
+            (
+                "invalid_json:",
+                "schema_validation_error:",
+                "unscorable_final_label:",
+                "not_run",
+            )
+        )
+        for error in errors or []
+    )
+
+
+def _has_repair_note(errors: Any) -> bool:
+    return any(str(error).startswith("final_label_repaired:") for error in errors or [])
 
 
 def _extract_json_object(raw_output: str) -> str:

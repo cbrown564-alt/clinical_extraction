@@ -25,7 +25,10 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
 from clinical_extraction.tasks.seizure_frequency.gan2026.labels import map_pragmatic, map_purist
 from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     label_to_frequency_record,
-    repair_prediction_label,
+    repair_prediction_label_with_evidence,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.schema_repair import (
+    repair_decision_payload,
 )
 
 PROMPT_VERSION = "gan2026_llm_first_direct_extractor_v0.1"
@@ -103,6 +106,11 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "seizure free for 6 month, unknown, no seizure frequency reference."
             ),
             (
+                "Preserve explicit count-and-window labels when possible. For example, write "
+                "12 to 30 per 3 month rather than converting a quarterly count to a vague "
+                "monthly bucket."
+            ),
+            (
                 "If several current seizure types are present, select the highest current "
                 "seizure burden across seizure types."
             ),
@@ -151,7 +159,7 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
 def parse_decision_json(raw_output: str) -> tuple[LlmFirstDecisionRecord | None, list[str]]:
     errors: list[str] = []
     try:
-        payload = _repair_decision_payload(json.loads(_extract_json_object(raw_output)))
+        payload = repair_decision_payload(json.loads(_extract_json_object(raw_output)))
     except json.JSONDecodeError as exc:
         return None, [f"invalid_json: {exc.msg}"]
 
@@ -160,10 +168,14 @@ def parse_decision_json(raw_output: str) -> tuple[LlmFirstDecisionRecord | None,
     except ValidationError as exc:
         return None, [f"schema_validation_error: {exc.errors()[0]['msg']}"]
 
-    prepared_label = _prepare_prediction_label(decision.final_label)
-    repaired_label = repair_prediction_label(prepared_label)
+    repaired_label = repair_prediction_label_with_evidence(
+        decision.final_label,
+        decision.evidence,
+    )
     if repaired_label != decision.final_label:
-        errors.append(f"final_label_repaired: {decision.final_label!r} -> {repaired_label!r}")
+        errors.append(
+            f"final_label_repaired: {decision.final_label!r} -> {repaired_label!r}"
+        )
         decision = decision.model_copy(update={"final_label": repaired_label})
 
     try:
@@ -172,48 +184,6 @@ def parse_decision_json(raw_output: str) -> tuple[LlmFirstDecisionRecord | None,
         errors.append(f"unscorable_final_label: {exc}")
 
     return decision, errors
-
-
-def _repair_decision_payload(payload: Any) -> Any:
-    if not isinstance(payload, dict):
-        return payload
-
-    repaired = dict(payload)
-    kind_aliases = {
-        "extracted": "frequency",
-        "seizure frequency": "frequency",
-        "seizure_frequency": "frequency",
-        "patient report": "frequency",
-        "current frequency": "frequency",
-        "seizure-free": "seizure_free",
-        "no reference": "no_reference",
-        "no seizure frequency reference": "no_reference",
-        "multiple": "unresolved_multiple",
-    }
-    answer_kind = repaired.get("answer_kind")
-    if isinstance(answer_kind, str):
-        repaired["answer_kind"] = kind_aliases.get(answer_kind.strip().lower(), answer_kind)
-
-    confidence = repaired.get("confidence")
-    if isinstance(confidence, int | float):
-        if confidence >= 0.8:
-            repaired["confidence"] = "high"
-        elif confidence >= 0.45:
-            repaired["confidence"] = "medium"
-        else:
-            repaired["confidence"] = "low"
-    return repaired
-
-
-def _prepare_prediction_label(label: str) -> str:
-    prepared = re.sub(r"\bevery\b", "per", label, flags=re.IGNORECASE)
-    prepared = re.sub(
-        r"\b(one|a|an)\s+per\s+",
-        "1 per ",
-        prepared,
-        flags=re.IGNORECASE,
-    )
-    return prepared
 
 
 def run_split(
@@ -296,7 +266,8 @@ def run_split(
 def summarize_records(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     decision_rows = [row for row in rows if row.get("decision_record")]
     call_failures = sum(bool(row.get("call_error")) for row in rows)
-    parse_failures = sum(bool(row.get("parse_errors")) for row in rows)
+    parse_failures = sum(_has_blocking_parse_issue(row.get("parse_errors")) for row in rows)
+    repair_notes = sum(_has_repair_note(row.get("parse_errors")) for row in rows)
     purist_correct = sum(bool((row.get("comparison") or {}).get("purist_correct")) for row in rows)
     pragmatic_correct = sum(
         bool((row.get("comparison") or {}).get("pragmatic_correct")) for row in rows
@@ -310,6 +281,7 @@ def summarize_records(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         "decision_records": len(decision_rows),
         "call_failures": call_failures,
         "parse_or_validation_failures": parse_failures,
+        "repair_notes": repair_notes,
         "evidence_valid": evidence_valid,
         "purist_correct": purist_correct,
         "purist_accuracy": round(purist_correct / len(rows), 4) if rows else 0.0,
@@ -378,6 +350,7 @@ def write_report(
         f"- Decision records: {summary['decision_records']} / {summary['examples']}",
         f"- Call failures: {summary['call_failures']}",
         f"- Parse/schema/label issues: {summary['parse_or_validation_failures']}",
+        f"- Deterministic repair notes: {summary['repair_notes']}",
         f"- Exact evidence substrings: {summary['evidence_valid']} / {summary['examples']}",
         f"- Purist validation accuracy/micro F1 proxy: {summary['purist_accuracy']:.4f} "
         f"({summary['purist_correct']} / {summary['examples']})",
@@ -426,6 +399,24 @@ def _compare_to_gold(
         "gold_pragmatic_category": gold_pragmatic,
         "pragmatic_correct": predicted_pragmatic == gold_pragmatic,
     }
+
+
+def _has_blocking_parse_issue(errors: Any) -> bool:
+    return any(
+        str(error).startswith(
+            (
+                "invalid_json:",
+                "schema_validation_error:",
+                "unscorable_final_label:",
+                "not_run",
+            )
+        )
+        for error in errors or []
+    )
+
+
+def _has_repair_note(errors: Any) -> bool:
+    return any(str(error).startswith("final_label_repaired:") for error in errors or [])
 
 
 def _extract_json_object(raw_output: str) -> str:
