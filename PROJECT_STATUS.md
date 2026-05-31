@@ -51,9 +51,10 @@ Treat deterministic rules as controlled variables. Categorize each rule by porta
 - V1 historical development result on all 1,500 local rows is 0.3120 Purist micro F1/accuracy; future candidate iteration should report validation-split results instead.
 - V1 selected-evidence validity is 1,500/1,500 exact source substrings.
 - V1 validation-split row-level error analysis exists at `experiments/gan2026_v1_validation_error_analysis_2026-05-31.md`, with CSV rows at `experiments/gan2026_v1_validation_error_rows_2026-05-31.csv`.
+- The validation error artifact now includes non-fallback clinical candidate counts, selected-evidence type, heuristic clinical mode flags, and likely failed-operation slices.
 - V1 deterministic recall now covers validation-derived interval and recent-window patterns including `every N days/weeks/months`, `every other`, `once/twice a month`, adverbial `weekly/monthly/yearly/bimonthly`, and recent count windows such as `3 or 5 seizures last month`.
 - V1 validation result is 0.3893 Purist micro F1/accuracy on 750 validation rows; evidence validity remains 750/750.
-- Validation failures are dominated by 267 missed frequency-evidence rows, 80 missed seizure-free/no-event rows, 56 wrong-frequency-bucket rows, and 30 overpredicted-frequency rows.
+- Validation failures are dominated by 267 missed frequency-evidence rows, 80 missed seizure-free/no-event rows, 56 wrong-frequency-bucket rows, and 30 overpredicted-frequency rows; 344 incorrect rows have zero non-fallback clinical candidates, making extraction recall the dominant next bottleneck.
 - `pytest` and `ruff` pass in the local `.venv` after validation error-analysis generation.
 
 ## Work Board
@@ -77,7 +78,7 @@ Treat deterministic rules as controlled variables. Categorize each rule by porta
 ### Backlog
 
 - Add run-record metadata templates under `experiments/`.
-- Implement row-level error slicing for the expected Gan 2026 failure modes.
+- Refine heuristic row-level error slices into audited causal labels with examples once deterministic recall is less sparse.
 - Add DSPy event extraction and clinical reasoner modules after deterministic substrate parity.
 - After at least one pipeline exceeds 0.8 purist F1, run controlled Qwen 3.6:35b local-model comparisons on the Windows laptop.
 - Consider DSPy GEPA with GPT-5.4 as teacher after the hand-built pipeline has stable artifacts and failure slices.
@@ -99,6 +100,7 @@ Treat deterministic rules as controlled variables. Categorize each rule by porta
 - 2026-05-31: Added Gan 2026 train/validation/test split protocol and locked `gan2026_split_v1` manifest; updated skills to enforce validation-first development and locked test holdout discipline.
 - 2026-05-31: Added reusable Gan row-level error-analysis generation, wrote focused tests, and generated V1 validation artifacts showing 0.3240 Purist micro F1/accuracy with 750/750 exact selected-evidence validity.
 - 2026-05-31: Improved V1 deterministic recall for validation-derived implicit interval, adverbial rate, and recent-window count phrases; refreshed validation artifacts now show 0.3893 Purist micro F1/accuracy with 750/750 exact selected-evidence validity.
+- 2026-05-31: Upgraded validation error analysis with clinical candidate counts, evidence-source classes, heuristic clinical mode flags, and likely failed-operation counts; focused tests and Ruff pass.
 
 ## Immediate Next Step
 

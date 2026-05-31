@@ -30,6 +30,14 @@ Evidence validity: 750 / 750
 | overpredicted_frequency | 30 |
 | frequency_predicted_seizure_free | 25 |
 
+## Candidate Recall Diagnostics
+
+| Measure | Count |
+| --- | ---: |
+| Clinical candidates extracted | 346 |
+| Rows with zero clinical candidates | 480 |
+| Incorrect rows with zero clinical candidates | 344 |
+
 ## Gold Kinds
 
 | Gold kind | Count |
@@ -49,6 +57,68 @@ Evidence validity: 750 / 750
 | seizure_free | 46 |
 | unknown | 11 |
 | unresolved_multiple | 10 |
+
+## Selected Evidence Types
+
+| Evidence type | Count |
+| --- | ---: |
+| header_fallback | 479 |
+| clinical_evidence | 189 |
+| other_text | 74 |
+| medication_or_dose | 8 |
+
+## Likely Failed Operations
+
+| Operation | Count |
+| --- | ---: |
+| candidate_extraction | 347 |
+| none | 182 |
+| semantic_state_mapping | 110 |
+| temporal_selection | 80 |
+| assertion_classification | 19 |
+| distractor_rejection | 8 |
+| seizure_type_selection | 2 |
+| cluster_normalization | 1 |
+| range_normalization | 1 |
+
+## Clinical Error Mode Flags
+
+These flags are heuristic row slices, not mutually exclusive causal labels.
+
+| Mode | Count |
+| --- | ---: |
+| ranges | 693 |
+| medication_status | 648 |
+| uncertainty | 441 |
+| clusters | 407 |
+| multiple_seizure_types | 400 |
+| historical_current | 394 |
+| negation | 364 |
+| relative_dates | 332 |
+| family_history | 111 |
+| pnes_functional | 56 |
+| lay_terminology | 42 |
+| legacy_terminology | 17 |
+| none | 1 |
+
+## Incorrect Clinical Error Mode Flags
+
+These counts are restricted to incorrect rows.
+
+| Mode | Count |
+| --- | ---: |
+| ranges | 427 |
+| medication_status | 402 |
+| uncertainty | 278 |
+| clusters | 254 |
+| multiple_seizure_types | 247 |
+| historical_current | 239 |
+| negation | 238 |
+| relative_dates | 208 |
+| family_history | 71 |
+| pnes_functional | 31 |
+| lay_terminology | 30 |
+| legacy_terminology | 8 |
 
 ## Top Incorrect Category Pairs
 
