@@ -236,6 +236,48 @@ def test_pipeline_extracts_simple_current_frequency_rates(
             "1 per day",
             "tonic-clonic daily",
         ),
+        (
+            "In terms of timing, he tends to experience a spell roughly once in a fortnight.",
+            "1 per 2 week",
+            "once in a fortnight",
+        ),
+        (
+            "He phrased it as happening about every second week.",
+            "1 per 2 week",
+            "happening about every second week",
+        ),
+        (
+            "Importantly, the median inter-seizure interval ≈ six weeks.",
+            "1 per 6 week",
+            "median inter-seizure interval ≈ six weeks",
+        ),
+        (
+            "Current seizure control: Median inter-seizure interval ≈ four months.",
+            "1 per 4 month",
+            "Median inter-seizure interval ≈ four months",
+        ),
+        (
+            "Seizures: Patient reports events occurring with intervals ranging 14 - 21 days.",
+            "1 per 14 to 21 day",
+            "events occurring with intervals ranging 14 - 21 days",
+        ),
+        (
+            "They report intervals ranging three - four days between focal aware seizures.",
+            "1 per 3 to 4 day",
+            "intervals ranging three - four days",
+        ),
+        (
+            "Event pattern: Every 8 days on average.",
+            "1 per 8 day",
+            "Every 8 days on average",
+        ),
+        (
+            "Current seizure control: Median inter-seizure interval ≈ four months. "
+            "Background to improvement: Prior to this, events clustered approximately "
+            "every four to five days.",
+            "1 per 4 month",
+            "Median inter-seizure interval ≈ four months",
+        ),
     ],
 )
 def test_pipeline_extracts_implicit_one_event_rates(
@@ -273,6 +315,28 @@ def test_pipeline_extracts_implicit_one_event_rates(
             "He has had four absence seizures and one myoclonic this month.",
             "5 per month",
             "four absence seizures and one myoclonic this month",
+        ),
+        (
+            "He described a single very brief event last month after night duties.",
+            "1 per month",
+            "single very brief event last month",
+        ),
+        (
+            "Over the past four months, she reports three events in that timeframe.",
+            "3 per 4 month",
+            "Over the past four months, she reports three events in that timeframe",
+        ),
+        (
+            "Over the past four months, she describes seizure activity separated by clear "
+            "periods without symptoms, with intermittent episodes punctuated by normal "
+            "intervals. She reports three events in that timeframe: two morning episodes "
+            "and one evening event.",
+            "3 per 4 month",
+            (
+                "Over the past four months, she describes seizure activity separated by clear "
+                "periods without symptoms, with intermittent episodes punctuated by normal "
+                "intervals. She reports three events in that timeframe"
+            ),
         ),
     ],
 )
