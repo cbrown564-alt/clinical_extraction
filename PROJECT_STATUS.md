@@ -63,7 +63,7 @@ Treat deterministic rules as controlled variables. Categorize each rule by porta
 - V1 validation result is 0.9280 Purist micro F1/accuracy on 750 validation rows; evidence validity remains 750/750.
 - Validation failures are currently dominated by 80 scorer-correct semantic mismatches, 44 wrong-frequency-bucket rows, 7 overpredicted-frequency rows, and 3 missed seizure-free/no-event rows; 3 incorrect rows have zero non-fallback clinical candidates.
 - Latest v1 validation refresh is `experiments/gan2026_v1_validation_error_analysis_2026-05-31.md`; the saturation pass improved validation from 0.8507 to 0.9280 Purist micro F1/accuracy with 750/750 exact selected-evidence validity. This remains a validation development result, not a held-out benchmark or final benchmark-comparable result.
-- Deterministic-only V1 is now at a documented validation-saturation boundary: remaining non-scorer residuals are concentrated in trigger/unknown policy, EEG-only or non-epileptic semantic-state mapping, seizure-type selection where a human/LLM would reconcile semiology, cluster-size normalization, and benchmark/scorer-label policy decisions. Further hand rules should be introduced only with ablation flags and a clear portability category.
+- Deterministic-only V1 is frozen as the saturated hand-rule baseline. It has a documented validation-saturation boundary: remaining non-scorer residuals are concentrated in trigger/unknown policy, EEG-only or non-epileptic semantic-state mapping, seizure-type selection where a human/LLM would reconcile semiology, cluster-size normalization, and benchmark/scorer-label policy decisions. Further deterministic-rule changes belong in a new ablated candidate with rule metadata, not in frozen V1.
 - Frozen deterministic-only V1 was evaluated once on the locked test split without test-row failure inspection: 0.7600 Purist micro F1/accuracy and 0.7867 Pragmatic micro F1/accuracy on 450 rows, with 450/450 exact selected-evidence validity. The holdout result is documented in `experiments/gan2026_v1_test_holdout_2026-05-31.md` and indicates substantial validation-surface overfit.
 - A critical deterministic-rule review is documented in `docs/research/gan2026_deterministic_rule_review_2026-05-31.md`; it recommends freezing V1, adding rule metadata/ablation switches, and moving residual reasoning families to validation-only LLM/DSPy experiments.
 - `pytest` and `ruff` pass in the local `.venv` after validation error-analysis generation.
@@ -76,28 +76,25 @@ Work through these in order in the next session. Keep all new development on
 validation/train surfaces only; the V1 test result is frozen context, not a
 tuning surface.
 
-1. Freeze deterministic-only V1 as the saturated hand-rule baseline and preserve
-   the locked holdout result as final for this candidate.
-2. Add rule metadata and ablation switches before any further deterministic-rule
+1. Add rule metadata and ablation switches before any further deterministic-rule
    changes.
-3. Split extraction into rule groups: date/duration utilities, portable rate
+2. Split extraction into rule groups: date/duration utilities, portable rate
    expressions, seizure-free/no-event assertions, cluster arithmetic, diary/log
    aggregation, temporal selection, Gan-specific shorthand, and benchmark repair.
-4. Build a validation-only ablation table by rule group, then report the already
+3. Build a validation-only ablation table by rule group, then report the already
    frozen test result as deterministic V1 holdout performance.
-5. Replace or wrap the final-selection tuple priority with an explicit decision
+4. Replace or wrap the final-selection tuple priority with an explicit decision
    record over structured candidate attributes: assertion, temporality,
    semiology, event target, window, normalized rate, and uncertainty.
-6. Start validation-only LLM/DSPy experiments for reasoning-heavy failure
+5. Start validation-only LLM/DSPy experiments for reasoning-heavy failure
    families: semiology reconciliation, trigger conditions,
    current-versus-historical selection, non-epileptic/EEG-only mapping, and
    cluster-detail interpretation.
-7. Add paraphrase and adversarial tests for core portable rules so future gains
+6. Add paraphrase and adversarial tests for core portable rules so future gains
    are not only exact-snippet gains.
 
 ### Now
 
-- Treat deterministic-only V1 as frozen after the locked test result; do not tune rules, prompts, thresholds, or normalization from test performance.
 - Prepare ablation/reporting views that separate portable date/duration logic, seizure-expression parsing, seizure-specific temporal selection, Gan synthetic diary phrasing, and benchmark-formatting repairs.
 - Add rule metadata and ablation switches before any further deterministic-rule changes.
 
