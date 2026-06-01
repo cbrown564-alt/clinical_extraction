@@ -4,14 +4,14 @@ from pathlib import Path
 
 import pytest
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.run_registry import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry import (
     RunRegistryEntry,
     load_run_registry,
     registry_entry_from_json_record,
     validate_run_registry_artifacts,
     write_run_registry,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.run_registry_report import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry_report import (
     render_run_registry_markdown,
     write_run_registry_markdown,
 )

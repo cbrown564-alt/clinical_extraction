@@ -1,11 +1,13 @@
 import json
 from pathlib import Path
 
-from clinical_extraction.tasks.seizure_frequency.gan2026 import (
-    llm_only_structured_events_repair_ablation as repair_ablation,
+from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
+    FrequencyLabelKind,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
-from clinical_extraction.tasks.seizure_frequency.gan2026.label_parser import FrequencyLabelKind
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
+    llm_only_structured_events_repair_ablation as repair_ablation,
+)
 
 repair_ablation_ladder = repair_ablation.repair_ablation_ladder
 run_repair_ablation = repair_ablation.run_repair_ablation

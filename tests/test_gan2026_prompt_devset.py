@@ -4,12 +4,14 @@ from pathlib import Path
 
 import pytest
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.ablation_analysis import (
-    CHANGED_ROW_FIELDNAMES,
+from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
+    FrequencyLabelKind,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
-from clinical_extraction.tasks.seizure_frequency.gan2026.label_parser import FrequencyLabelKind
-from clinical_extraction.tasks.seizure_frequency.gan2026.prompt_devset import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.ablation_analysis import (
+    CHANGED_ROW_FIELDNAMES,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.prompt_devset import (
     AblationChangedRow,
     build_development_examples,
     load_changed_rows,
@@ -174,11 +176,11 @@ def test_build_development_examples_attaches_deterministic_diagnostics(monkeypat
     )
 
     monkeypatch.setattr(
-        "clinical_extraction.tasks.seizure_frequency.gan2026.prompt_devset.load_records_for_split",
+        "clinical_extraction.tasks.seizure_frequency.gan2026.experiments.prompt_devset.load_records_for_split",
         lambda *args, **kwargs: [record],
     )
     monkeypatch.setattr(
-        "clinical_extraction.tasks.seizure_frequency.gan2026.prompt_devset.load_split_manifest",
+        "clinical_extraction.tasks.seizure_frequency.gan2026.experiments.prompt_devset.load_split_manifest",
         lambda _path: {"manifest_version": "gan2026_split_v1"},
     )
 

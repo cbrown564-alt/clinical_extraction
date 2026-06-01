@@ -24,4 +24,3 @@ def test_convert_to_categories() -> None:
         "seizure_freq_1_per_mon",
         "seizure_freq_1_per_week",
     ]
-

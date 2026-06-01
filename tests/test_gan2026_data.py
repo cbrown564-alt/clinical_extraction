@@ -1,5 +1,8 @@
 from pathlib import Path
 
+from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
+    FrequencyLabelKind,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
     DEFAULT_SPLIT_MANIFEST_PATH,
     load_records,
@@ -7,7 +10,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
     load_records_with_monthly_frequency,
     load_split_manifest,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.label_parser import FrequencyLabelKind
 
 DATA_PATH = Path("data/Gan (2026)/synthetic_data_subset_1500.json")
 
@@ -49,9 +51,10 @@ def test_row_not_ok_records_remain_in_evaluation_surface() -> None:
     row_not_ok_records = [record for record in records if not record.row_ok]
 
     assert len(row_not_ok_records) == 65
-    assert sum(
-        record.gold_label == "no seizure frequency reference" for record in row_not_ok_records
-    ) == 54
+    assert (
+        sum(record.gold_label == "no seizure frequency reference" for record in row_not_ok_records)
+        == 54
+    )
     assert all(
         record.gold_label_kind is FrequencyLabelKind.NO_REFERENCE
         for record in row_not_ok_records

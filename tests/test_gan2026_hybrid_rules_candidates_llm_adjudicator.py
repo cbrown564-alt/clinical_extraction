@@ -1,10 +1,12 @@
 import json
 from pathlib import Path
 
-from clinical_extraction.tasks.seizure_frequency.gan2026 import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
+    FrequencyLabelKind,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.hybrid import (
     hybrid_rules_candidates_llm_adjudicator as hybrid,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.label_parser import FrequencyLabelKind
 
 PROMPT_VERSION = hybrid.PROMPT_VERSION
 AdjudicatorDecisionRecord = hybrid.AdjudicatorDecisionRecord
@@ -357,7 +359,7 @@ def test_hybrid_prompt_only_scores_deterministic_and_recall(monkeypatch) -> None
             return Result()
 
     monkeypatch.setattr(
-        "clinical_extraction.tasks.seizure_frequency.gan2026."
+        "clinical_extraction.tasks.seizure_frequency.gan2026.hybrid."
         "hybrid_rules_candidates_llm_adjudicator.Gan2026PipelineV1",
         lambda: Pipeline(),
     )

@@ -1,18 +1,23 @@
 import pytest
 
-from clinical_extraction.tasks.seizure_frequency.gan2026 import (
-    deterministic_selection,
-    temporal,
+from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
+    FrequencyLabelKind,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
     GanRecord,
     load_records_with_monthly_frequency,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic import (
+    deterministic_selection,
+    temporal,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rule_metadata import (
+    AblationConfig,
+    Portability,
+    RuleGroup,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.evaluate import (
     evaluate_frequency_records,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.label_parser import (
-    FrequencyLabelKind,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline_v1 import (
     CandidateKind,
@@ -24,11 +29,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline_v1 import (
     _RawCandidate,
     _relative_note_date,
     _select_final_event,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.rule_metadata import (
-    AblationConfig,
-    Portability,
-    RuleGroup,
 )
 
 
@@ -317,8 +317,7 @@ def test_pipeline_can_ablate_catalogued_seizure_free_group() -> None:
             "cluster.count_over_period",
         ),
         (
-            "Seizure-free for up to two months then clusters of four seizures "
-            "in a single day.",
+            "Seizure-free for up to two months then clusters of four seizures in a single day.",
             "1 cluster per 2 month, 4 per cluster",
             "cluster.seizure_free_cycle",
         ),
@@ -353,8 +352,7 @@ def test_pipeline_can_ablate_catalogued_seizure_free_group() -> None:
             "cluster.run_with_separate_days",
         ),
         (
-            "Over the past month, the patient reports a cluster of short events "
-            "on multiple days.",
+            "Over the past month, the patient reports a cluster of short events on multiple days.",
             "multiple cluster per month, multiple per cluster",
             "cluster.vague_days_over_period",
         ),
@@ -723,9 +721,7 @@ def test_pipeline_can_ablate_catalogued_portable_rate_group() -> None:
     result = Gan2026PipelineV1(
         ablation_config=AblationConfig(
             enabled_groups=frozenset(
-                group
-                for group in RuleGroup
-                if group is not RuleGroup.PORTABLE_RATE_EXPRESSIONS
+                group for group in RuleGroup if group is not RuleGroup.PORTABLE_RATE_EXPRESSIONS
             )
         )
     ).run(_record(note_text))
@@ -825,9 +821,7 @@ def test_pipeline_exposes_structured_selection_scores() -> None:
     }
     assert final_selection["selection_candidates"]
     selected_score = next(
-        score
-        for score in final_selection["selection_candidates"]
-        if score["selected"] is True
+        score for score in final_selection["selection_candidates"] if score["selected"] is True
     )
     assert selected_score["event_id"] == final_selection["selected_event_ids"][0]
     assert selected_score["score"] == final_selection["selected_score"]
@@ -851,9 +845,7 @@ def test_pipeline_can_ablate_temporal_selection_group() -> None:
     assert result.output.final_value == "2 per month"
     assert final_selection["selected_event_ids"] == ["event_1"]
     assert final_selection["selected_score"]["reason"] == "frequency_monthly_rate_disabled"
-    assert {
-        score["score"]["reason"] for score in final_selection["selection_candidates"]
-    } == {
+    assert {score["score"]["reason"] for score in final_selection["selection_candidates"]} == {
         "frequency_monthly_rate_disabled",
         "trigger_conditioned_unknown_disabled",
     }
@@ -1414,18 +1406,13 @@ def test_pipeline_extracts_contextual_trigger_and_diary_frequency_patterns(
             "Over the last 12 weeks he recorded: July 0, August 2 brief events over one "
             "weekend, September 1 isolated event; no prolonged confusion reported.",
             "3 per 3 month",
-            (
-                "July 0, August 2 brief events over one weekend, September 1 isolated event"
-            ),
+            ("July 0, August 2 brief events over one weekend, September 1 isolated event"),
         ),
         (
             "She describes two clusters in the past six weeks, each comprising 1-2 brief "
             "focal-feeling spells with transient confusion and no injury.",
             "2 cluster per 6 week, 1 to 2 per cluster",
-            (
-                "two clusters in the past six weeks, each comprising 1-2 brief "
-                "focal-feeling spells"
-            ),
+            ("two clusters in the past six weeks, each comprising 1-2 brief focal-feeling spells"),
         ),
         (
             "Since commencing ketogenic diet therapy, the family notes only seven brief "
@@ -1609,7 +1596,7 @@ def test_pipeline_preserves_seizure_free_as_semantic_state() -> None:
             "no spell-like events suggestive of seizures over the past six months",
         ),
         (
-            "She describes \"No events suggestive of seizures\" over this interval, "
+            'She describes "No events suggestive of seizures" over this interval, '
             "although sleep is disrupted on two to three nights per week.",
             "seizure free for multiple year",
             "No events suggestive of seizures",
@@ -1676,8 +1663,7 @@ def test_pipeline_preserves_seizure_free_as_semantic_state() -> None:
             "prior cluster pattern resolved since 11 Aug 2023",
         ),
         (
-            "Clinic Date: 02 October 2025. Seizure control: Sustained remission "
-            "since 29-May-2023.",
+            "Clinic Date: 02 October 2025. Seizure control: Sustained remission since 29-May-2023.",
             "seizure free for 28 month",
             "Sustained remission since 29-May-2023",
         ),
@@ -1696,8 +1682,7 @@ def test_pipeline_preserves_seizure_free_as_semantic_state() -> None:
             ),
         ),
         (
-            "Present Seizure Frequency: She has now been seizure free for one and "
-            "a half years.",
+            "Present Seizure Frequency: She has now been seizure free for one and a half years.",
             "seizure free for 1.5 year",
             "seizure free for one and a half years",
         ),
@@ -2202,10 +2187,7 @@ def test_pipeline_extracts_last_event_date_summaries(
             "Clinic Date: 10 April 2025. Last tonic-clonic seizure was in 1 - 2024, "
             "with 2 to 3 morning jerks since then.",
             "3 to 4 per 15 month",
-            (
-                "Last tonic-clonic seizure was in 1 - 2024, with 2 to 3 morning "
-                "jerks since then"
-            ),
+            ("Last tonic-clonic seizure was in 1 - 2024, with 2 to 3 morning jerks since then"),
         ),
         (
             "Clinic Date: 08 June 2016. Her last clearly witnessed tonic-clonic "
@@ -2426,10 +2408,7 @@ def test_pipeline_extracts_two_month_sleep_awake_diary_summaries(
             "tonic-clonic seizures so far in Sep, one in Aug, and 0 in Jul, "
             "occurring during both wakefulness and sleep.",
             "3 per 3 month",
-            (
-                "2 generalised tonic-clonic seizures so far in Sep, one in Aug, "
-                "and 0 in Jul"
-            ),
+            ("2 generalised tonic-clonic seizures so far in Sep, one in Aug, and 0 in Jul"),
         ),
         (
             "Clinic Date: 24 March 2024. This month so far she has no seizures; "
@@ -2480,10 +2459,7 @@ def test_pipeline_extracts_recent_month_count_diary_summaries(
             "September, 4 in August and three in July, including nocturnal and "
             "daytime periods.",
             "10 per 3 month",
-            (
-                "He has recorded three seizures to date in September, 4 in August "
-                "and three in July"
-            ),
+            ("He has recorded three seizures to date in September, 4 in August and three in July"),
         ),
     ],
 )
@@ -2568,19 +2544,13 @@ def test_pipeline_extracts_sparse_cluster_and_event_month_lists(
             "March, 7 in February and six in January, including nocturnal and "
             "daytime periods. He will continue daily seizure recording.",
             "15 per 3 month",
-            (
-                "He has recorded 2 seizures to date in March, 7 in February and "
-                "six in January"
-            ),
+            ("He has recorded 2 seizures to date in March, 7 in February and six in January"),
         ),
         (
             "Clinic Date: 24 January 2013. This month, she has had six convulsions; "
             "0 were in December and 5 in November, across day and night.",
             "11 per 3 month",
-            (
-                "This month, she has had six convulsions; 0 were in December and "
-                "5 in November"
-            ),
+            ("This month, she has had six convulsions; 0 were in December and 5 in November"),
         ),
         (
             "Clinic Date: 25 September 2014. As of this month she reports four "
@@ -2621,10 +2591,7 @@ def test_pipeline_extracts_extended_month_count_lists(
             "five days apart, though brief periods of daily seizures have been "
             "reported.",
             "1 per 4 to 5 day",
-            (
-                "seizures typically occur in clusters, generally spaced four to "
-                "five days apart"
-            ),
+            ("seizures typically occur in clusters, generally spaced four to five days apart"),
         ),
         (
             "His seizures typically occur in clusters, generally spaced 5 days "
@@ -2912,8 +2879,7 @@ def test_pipeline_prefers_convulsive_event_count_over_nonprogressive_myoclonic_j
 def test_pipeline_breakthrough_event_overrides_seizure_free_history() -> None:
     result = Gan2026PipelineV1().run(
         _record(
-            "She had been seizure free for two years, but now reports "
-            "three seizures last month."
+            "She had been seizure free for two years, but now reports three seizures last month."
         )
     )
 
@@ -2955,13 +2921,9 @@ def test_pipeline_keeps_cluster_structure_in_diagnostics() -> None:
             ),
         ),
         (
-            "Over the past month, the patient reports a cluster of short events "
-            "on multiple days.",
+            "Over the past month, the patient reports a cluster of short events on multiple days.",
             "multiple cluster per month, multiple per cluster",
-            (
-                "Over the past month, the patient reports a cluster of short events "
-                "on multiple days"
-            ),
+            ("Over the past month, the patient reports a cluster of short events on multiple days"),
         ),
         (
             "Over the past four weeks he reports 2 clusters this month; "

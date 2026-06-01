@@ -1,18 +1,20 @@
 import json
 from pathlib import Path
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.architecture_component_ablation import (
-    Architecture,
-    ConditionSpec,
-    compare_condition_rows,
-    condition_from_llm_rows,
-    load_jsonl,
-    summarize_condition,
-    write_component_ablation_report,
+from clinical_extraction.tasks.seizure_frequency.gan2026.experiments import (
+    architecture_component_ablation as component_ablation,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.architecture_component_ablation import (
-    condition_from_hybrid_rules_candidates_llm_adjudicator_rows as condition_from_hybrid_rows,
+
+Architecture = component_ablation.Architecture
+ConditionSpec = component_ablation.ConditionSpec
+compare_condition_rows = component_ablation.compare_condition_rows
+condition_from_hybrid_rows = (
+    component_ablation.condition_from_hybrid_rules_candidates_llm_adjudicator_rows
 )
+condition_from_llm_rows = component_ablation.condition_from_llm_rows
+load_jsonl = component_ablation.load_jsonl
+summarize_condition = component_ablation.summarize_condition
+write_component_ablation_report = component_ablation.write_component_ablation_report
 
 
 def test_condition_from_llm_rows_accepts_direct_and_structured_artifacts() -> None:
@@ -87,8 +89,10 @@ def test_hybrid_conditions_split_deterministic_top_from_llm_adjudicator() -> Non
 def test_report_and_jsonl_helpers(tmp_path: Path) -> None:
     path = tmp_path / "rows.jsonl"
     path.write_text(
-        json.dumps({"source_row_index": 1, "value": "a"}) + "\n\n"
-        + json.dumps({"source_row_index": 2, "value": "b"}) + "\n",
+        json.dumps({"source_row_index": 1, "value": "a"})
+        + "\n\n"
+        + json.dumps({"source_row_index": 2, "value": "b"})
+        + "\n",
         encoding="utf-8",
     )
     rows = load_jsonl(path)

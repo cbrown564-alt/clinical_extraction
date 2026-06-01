@@ -1,23 +1,24 @@
 from __future__ import annotations
 
-from clinical_extraction.tasks.seizure_frequency.gan2026 import label_parser as _labels
-from clinical_extraction.tasks.seizure_frequency.gan2026.benchmark_prediction_repair import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.contract import label_parser as _labels
+from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rule_metadata import (
+    AblationConfig,
+)
+
+from .contract.benchmark_prediction_repair import (
     BENCHMARK_REPAIR_RULES,
     BENCHMARK_REPAIR_STEPS,
     FORMAT_PRESERVING_BENCHMARK_REPAIR_RULES,
     FORMAT_PRESERVING_BENCHMARK_REPAIR_STEPS,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.gold_policy import (
+from .contract.gold_policy import (
     CLEAN_SCORER_FACING_GOLD_NORMALIZATION_RULES,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.rule_metadata import (
-    AblationConfig,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.rules.benchmark_repair import (
+from .deterministic.rules.benchmark_repair import (
     BenchmarkRepairTrace,
     apply_benchmark_repair_rules,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.selected_evidence_derivation import (
+from .selected_evidence.selected_evidence_derivation import (
     prediction_label_from_selected_evidence,
     should_prefer_selected_evidence_label,
 )
