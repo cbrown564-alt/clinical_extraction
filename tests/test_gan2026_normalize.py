@@ -1,5 +1,8 @@
 import pytest
 
+from clinical_extraction.tasks.seizure_frequency.gan2026.gold_policy import (
+    CLEAN_SCORER_FACING_GOLD_NORMALIZATION_RULES as GOLD_POLICY_RULES,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.label_parser import (
     FrequencyLabelKind,
     label_to_frequency_record,
@@ -499,6 +502,16 @@ def test_clean_scorer_facing_gold_policy_trace_names_policy_layer() -> None:
     ]
     assert all(event.group is RuleGroup.GOLD_NORMALIZATION_POLICY for event in trace.events)
     assert all(event.portability is Portability.GAN2026_SPECIFIC for event in trace.events)
+
+
+def test_clean_scorer_facing_gold_policy_rules_have_dedicated_owner() -> None:
+    assert CLEAN_SCORER_FACING_GOLD_NORMALIZATION_RULES is GOLD_POLICY_RULES
+    assert {
+        rule.group for rule in CLEAN_SCORER_FACING_GOLD_NORMALIZATION_RULES
+    } == {RuleGroup.GOLD_NORMALIZATION_POLICY}
+    assert {
+        rule.portability for rule in CLEAN_SCORER_FACING_GOLD_NORMALIZATION_RULES
+    } == {Portability.GAN2026_SPECIFIC}
 
 
 @pytest.mark.parametrize(
