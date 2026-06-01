@@ -26,12 +26,12 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label_format_preserving,
 )
 
-PROMPT_VERSION = "gan2026_section_claim_table_v3"
+PROMPT_VERSION = "gan2026_section_claim_table_v4"
 DEFAULT_JSONL_PATH = Path(
-    "experiments/gan2026_section_claim_table_validation25_gpt41mini_v3_2026-06-01.jsonl"
+    "experiments/gan2026_section_claim_table_validation25_gpt41mini_v4_2026-06-01.jsonl"
 )
 DEFAULT_REPORT_PATH = Path(
-    "experiments/gan2026_section_claim_table_validation25_gpt41mini_v3_2026-06-01.md"
+    "experiments/gan2026_section_claim_table_validation25_gpt41mini_v4_2026-06-01.md"
 )
 
 
@@ -139,6 +139,11 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "the ambiguity in rationale."
             ),
             (
+                "Do not use historical as claim_type. Historical is represented only by "
+                "temporality or assertion_status; choose the source-near clinical claim type "
+                "from the schema enum instead."
+            ),
+            (
                 "Keep current/recent, historical, negated, no-reference, seizure-free, "
                 "last-event-only, and unclear-frequency statements as separate claim rows."
             ),
@@ -183,6 +188,12 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "clustering around an ordinary rate should stay an ordinary frequency."
             ),
             (
+                "When the selected current claim states both cluster cadence and per-cluster "
+                "burden, preserve both parts in final_label: one cluster each month with six "
+                "to seven seizures in a cluster -> 1 cluster per month, 6 to 7 per cluster. "
+                "Do not flatten this to 6 to 7 per day, multiple per month, or 1 per day."
+            ),
+            (
                 "Cluster cadence can be the ordinary Gan-facing frequency when a cluster "
                 "statement gives only timing, such as every seven to nine days -> "
                 "1 per 7 to 9 day. Use unknown only when the current cadence cannot be "
@@ -215,6 +226,40 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
             (
                 "If multiple current seizure semiologies are active, select the highest "
                 "current or recent seizure burden unless the note gives an overall count."
+            ),
+            (
+                "If multiple active seizure semiologies have exact counts in the same current "
+                "window, add the counts and preserve the shared denominator in final_label: "
+                "six drop attacks plus two absence seizures over two months -> 8 per 2 month. "
+                "Do not omit a semiology or soften an exact total to multiple."
+            ),
+            (
+                "Do not convert window-limited hormonal, perimenstrual, rescue-medication, "
+                "conditional, or last-event-only statements into ordinary rates unless an "
+                "event count and denominator are explicitly stated for current seizure burden. "
+                "Use unknown when the note discusses seizures but the current frequency cannot "
+                "be converted."
+            ),
+            (
+                "Separate boundary answers carefully: no seizure frequency reference means no "
+                "usable seizure-frequency evidence; seizure_free means definite epileptic "
+                "seizures are negated for a stated current interval; unknown means seizure "
+                "evidence exists but the frequency is vague, conditional, proxy-only, or not "
+                "convertible."
+            ),
+            (
+                "Rescue medication use frequency, caregiver concern, falls, collapses, and "
+                "non-epileptic-like episodes are not seizure-frequency counts unless the note "
+                "explicitly ties them to definite epileptic seizures."
+            ),
+            (
+                "Preserve compact every-interval notation correctly: q2-3wk, qtwo-threewk, "
+                "or every two to three weeks means 1 per 2 to 3 week, not 2 to 3 per week."
+            ),
+            (
+                "When the source gives an explicit maximum current burden such as up to once "
+                "daily or as many as seven in a week, preserve the maximum as 7 per week "
+                "instead of softening it to multiple per week."
             ),
             (
                 "Use unknown when seizures or seizure-like events are discussed but current "
