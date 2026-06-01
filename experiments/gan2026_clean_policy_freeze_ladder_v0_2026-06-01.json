@@ -1,0 +1,2840 @@
+{
+  "artifact": "gan2026_clean_policy_freeze_ladder_v0",
+  "claim_language": "validation development no-call replay; not final holdout or benchmark result",
+  "date": "2026-06-01",
+  "limits": {
+    "25": {
+      "conditions": [
+        {
+          "metadata": {
+            "git_commit": "3e559c5",
+            "max_tokens": 0,
+            "mode": "prompt-only",
+            "model": "openai/gpt-4.1-mini",
+            "prompt_version": "gan2026_llm_structured_event_selector_v0.5",
+            "temperature": 0.0,
+            "working_tree_note": "clean"
+          },
+          "name": "raw_model_selection",
+          "repair_config": {
+            "basic_label_repair": false,
+            "basic_label_repair_format_only": false,
+            "breakthrough_repair": false,
+            "clean_scorer_facing_gold_policy": false,
+            "dated_sequence_repair": false,
+            "elapsed_anchor_repair": false,
+            "monthly_diary_repair": false,
+            "non_epileptic_repair": false,
+            "post_change_burst_repair": false,
+            "residual_jerk_repair": false,
+            "selected_evidence_repair": false,
+            "usual_interval_repair": false
+          },
+          "rows": [
+            {
+              "evidence_valid": true,
+              "final_label": "up to 4 per day",
+              "gold_label": "4 per day",
+              "parse_errors": [
+                "unscorable_final_label: Unparsable label (raw: 'up to 4 per day' / normalized: 'up to 4 per day')"
+              ],
+              "pragmatic_correct": false,
+              "purist_correct": false,
+              "source_row_index": 10
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "≤ 4 per week",
+              "gold_label": "4 per week",
+              "parse_errors": [
+                "unscorable_final_label: Unparsable label (raw: '≤ 4 per week' / normalized: '≤ 4 per week')"
+              ],
+              "pragmatic_correct": false,
+              "purist_correct": false,
+              "source_row_index": 40
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "≤ 6 to 7 per year",
+              "gold_label": "6 to 7 per year",
+              "parse_errors": [
+                "unscorable_final_label: Unparsable label (raw: '≤ 6 to 7 per year' / normalized: '≤ 6 to 7 per year')"
+              ],
+              "pragmatic_correct": false,
+              "purist_correct": false,
+              "source_row_index": 79
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 to 4 per year",
+              "gold_label": "2 to 4 per year",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 103
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "17 per month",
+              "gold_label": "17 per month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 128
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per 6 days",
+              "gold_label": "1 per 6 day",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 156
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per week",
+              "gold_label": "1 per 7 day",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 180
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per 2 days",
+              "gold_label": "1 per 2 day",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 182
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 cluster per week",
+              "gold_label": "1 per 7 to 9 day",
+              "parse_errors": [
+                "unscorable_final_label: Unparsable cluster label: '1 cluster per week'"
+              ],
+              "pragmatic_correct": false,
+              "purist_correct": false,
+              "source_row_index": 187
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 cluster per 4 weeks",
+              "gold_label": "1 per 4 week",
+              "parse_errors": [
+                "unscorable_final_label: Unparsable cluster label: '1 cluster per 4 weeks'"
+              ],
+              "pragmatic_correct": false,
+              "purist_correct": false,
+              "source_row_index": 190
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per month",
+              "gold_label": "1 per 4 week",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 198
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per month",
+              "gold_label": "1 per 3 to 4 week",
+              "parse_errors": [],
+              "pragmatic_correct": false,
+              "purist_correct": false,
+              "source_row_index": 212
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per 3 weeks",
+              "gold_label": "1 per 3 week",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 218
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per 4 months",
+              "gold_label": "1 per 4 month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 243
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "multiple per week",
+              "gold_label": "multiple per week",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 278
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "multiple per day",
+              "gold_label": "multiple per day",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 280
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "multiple per month",
+              "gold_label": "multiple per month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 338
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per month or less",
+              "gold_label": "1 per month",
+              "parse_errors": [
+                "unscorable_final_label: Unparsable label (raw: '1 per month or less' / normalized: '1 per month or less')"
+              ],
+              "pragmatic_correct": false,
+              "purist_correct": false,
+              "source_row_index": 409
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 per year",
+              "gold_label": "2 per year",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 419
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 per week",
+              "gold_label": "2 per week",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 446
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "21 to 28 per month",
+              "gold_label": "21 to 28 per month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 466
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "9 per month",
+              "gold_label": "9 per month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 467
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "12 to 30 per quarter",
+              "gold_label": "12 to 30 per 3 month",
+              "parse_errors": [
+                "unscorable_final_label: Unparsable label (raw: '12 to 30 per quarter' / normalized: '12 to 30 per quarter')"
+              ],
+              "pragmatic_correct": false,
+              "purist_correct": false,
+              "source_row_index": 531
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per 8 months",
+              "gold_label": "1 per 8 month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 598
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 per 4 days",
+              "gold_label": "2 per 4 day",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 659
+            }
+          ],
+          "summary": {
+            "changed_rows": [],
+            "changed_vs_previous": 0,
+            "exact_evidence": 25,
+            "improved_vs_previous": 0,
+            "parse_schema_label_failures": 7,
+            "pragmatic_accuracy": 0.68,
+            "pragmatic_correct": 17,
+            "purist_accuracy": 0.68,
+            "purist_correct": 17,
+            "regressed_vs_previous": 0,
+            "repair_notes": 0,
+            "rows": 25
+          }
+        },
+        {
+          "metadata": {
+            "git_commit": "3e559c5",
+            "max_tokens": 0,
+            "mode": "prompt-only",
+            "model": "openai/gpt-4.1-mini",
+            "prompt_version": "gan2026_llm_structured_event_selector_v0.5",
+            "temperature": 0.0,
+            "working_tree_note": "clean"
+          },
+          "name": "strict_format_only",
+          "repair_config": {
+            "basic_label_repair": true,
+            "basic_label_repair_format_only": true,
+            "breakthrough_repair": false,
+            "clean_scorer_facing_gold_policy": false,
+            "dated_sequence_repair": false,
+            "elapsed_anchor_repair": false,
+            "monthly_diary_repair": false,
+            "non_epileptic_repair": false,
+            "post_change_burst_repair": false,
+            "residual_jerk_repair": false,
+            "selected_evidence_repair": false,
+            "usual_interval_repair": false
+          },
+          "rows": [
+            {
+              "evidence_valid": true,
+              "final_label": "4 per day",
+              "gold_label": "4 per day",
+              "parse_errors": [
+                "final_label_repaired: 'up to 4 per day' -> '4 per day'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 10
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "4 per week",
+              "gold_label": "4 per week",
+              "parse_errors": [
+                "final_label_repaired: '≤ 4 per week' -> '4 per week'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 40
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "6 to 7 per year",
+              "gold_label": "6 to 7 per year",
+              "parse_errors": [
+                "final_label_repaired: '≤ 6 to 7 per year' -> '6 to 7 per year'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 79
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 to 4 per year",
+              "gold_label": "2 to 4 per year",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 103
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "17 per month",
+              "gold_label": "17 per month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 128
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per 6 day",
+              "gold_label": "1 per 6 day",
+              "parse_errors": [
+                "final_label_repaired: '1 per 6 days' -> '1 per 6 day'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 156
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per week",
+              "gold_label": "1 per 7 day",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 180
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per 2 day",
+              "gold_label": "1 per 2 day",
+              "parse_errors": [
+                "final_label_repaired: '1 per 2 days' -> '1 per 2 day'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 182
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 cluster per week",
+              "gold_label": "1 per 7 to 9 day",
+              "parse_errors": [
+                "unscorable_final_label: Unparsable cluster label: '1 cluster per week'"
+              ],
+              "pragmatic_correct": false,
+              "purist_correct": false,
+              "source_row_index": 187
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 cluster per 4 week",
+              "gold_label": "1 per 4 week",
+              "parse_errors": [
+                "final_label_repaired: '1 cluster per 4 weeks' -> '1 cluster per 4 week'",
+                "unscorable_final_label: Unparsable cluster label: '1 cluster per 4 week'"
+              ],
+              "pragmatic_correct": false,
+              "purist_correct": false,
+              "source_row_index": 190
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per month",
+              "gold_label": "1 per 4 week",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 198
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per month",
+              "gold_label": "1 per 3 to 4 week",
+              "parse_errors": [],
+              "pragmatic_correct": false,
+              "purist_correct": false,
+              "source_row_index": 212
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per 3 week",
+              "gold_label": "1 per 3 week",
+              "parse_errors": [
+                "final_label_repaired: '1 per 3 weeks' -> '1 per 3 week'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 218
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per 4 month",
+              "gold_label": "1 per 4 month",
+              "parse_errors": [
+                "final_label_repaired: '1 per 4 months' -> '1 per 4 month'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 243
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "multiple per week",
+              "gold_label": "multiple per week",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 278
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "multiple per day",
+              "gold_label": "multiple per day",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 280
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "multiple per month",
+              "gold_label": "multiple per month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 338
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per month",
+              "gold_label": "1 per month",
+              "parse_errors": [
+                "final_label_repaired: '1 per month or less' -> '1 per month'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 409
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 per year",
+              "gold_label": "2 per year",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 419
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 per week",
+              "gold_label": "2 per week",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 446
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "21 to 28 per month",
+              "gold_label": "21 to 28 per month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 466
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "9 per month",
+              "gold_label": "9 per month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 467
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "12 to 30 per 3 month",
+              "gold_label": "12 to 30 per 3 month",
+              "parse_errors": [
+                "final_label_repaired: '12 to 30 per quarter' -> '12 to 30 per 3 month'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 531
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per 8 month",
+              "gold_label": "1 per 8 month",
+              "parse_errors": [
+                "final_label_repaired: '1 per 8 months' -> '1 per 8 month'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 598
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 per 4 day",
+              "gold_label": "2 per 4 day",
+              "parse_errors": [
+                "final_label_repaired: '2 per 4 days' -> '2 per 4 day'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 659
+            }
+          ],
+          "summary": {
+            "changed_rows": [
+              {
+                "gold_label": "4 per day",
+                "new_label": "4 per day",
+                "new_purist_correct": true,
+                "notes": [
+                  "final_label_repaired: 'up to 4 per day' -> '4 per day'"
+                ],
+                "previous_label": "up to 4 per day",
+                "previous_purist_correct": false,
+                "source_row_index": 10
+              },
+              {
+                "gold_label": "4 per week",
+                "new_label": "4 per week",
+                "new_purist_correct": true,
+                "notes": [
+                  "final_label_repaired: '≤ 4 per week' -> '4 per week'"
+                ],
+                "previous_label": "≤ 4 per week",
+                "previous_purist_correct": false,
+                "source_row_index": 40
+              },
+              {
+                "gold_label": "6 to 7 per year",
+                "new_label": "6 to 7 per year",
+                "new_purist_correct": true,
+                "notes": [
+                  "final_label_repaired: '≤ 6 to 7 per year' -> '6 to 7 per year'"
+                ],
+                "previous_label": "≤ 6 to 7 per year",
+                "previous_purist_correct": false,
+                "source_row_index": 79
+              },
+              {
+                "gold_label": "1 per 6 day",
+                "new_label": "1 per 6 day",
+                "new_purist_correct": true,
+                "notes": [
+                  "final_label_repaired: '1 per 6 days' -> '1 per 6 day'"
+                ],
+                "previous_label": "1 per 6 days",
+                "previous_purist_correct": true,
+                "source_row_index": 156
+              },
+              {
+                "gold_label": "1 per 2 day",
+                "new_label": "1 per 2 day",
+                "new_purist_correct": true,
+                "notes": [
+                  "final_label_repaired: '1 per 2 days' -> '1 per 2 day'"
+                ],
+                "previous_label": "1 per 2 days",
+                "previous_purist_correct": true,
+                "source_row_index": 182
+              },
+              {
+                "gold_label": "1 per 4 week",
+                "new_label": "1 cluster per 4 week",
+                "new_purist_correct": false,
+                "notes": [
+                  "final_label_repaired: '1 cluster per 4 weeks' -> '1 cluster per 4 week'",
+                  "unscorable_final_label: Unparsable cluster label: '1 cluster per 4 week'"
+                ],
+                "previous_label": "1 cluster per 4 weeks",
+                "previous_purist_correct": false,
+                "source_row_index": 190
+              },
+              {
+                "gold_label": "1 per 3 week",
+                "new_label": "1 per 3 week",
+                "new_purist_correct": true,
+                "notes": [
+                  "final_label_repaired: '1 per 3 weeks' -> '1 per 3 week'"
+                ],
+                "previous_label": "1 per 3 weeks",
+                "previous_purist_correct": true,
+                "source_row_index": 218
+              },
+              {
+                "gold_label": "1 per 4 month",
+                "new_label": "1 per 4 month",
+                "new_purist_correct": true,
+                "notes": [
+                  "final_label_repaired: '1 per 4 months' -> '1 per 4 month'"
+                ],
+                "previous_label": "1 per 4 months",
+                "previous_purist_correct": true,
+                "source_row_index": 243
+              },
+              {
+                "gold_label": "1 per month",
+                "new_label": "1 per month",
+                "new_purist_correct": true,
+                "notes": [
+                  "final_label_repaired: '1 per month or less' -> '1 per month'"
+                ],
+                "previous_label": "1 per month or less",
+                "previous_purist_correct": false,
+                "source_row_index": 409
+              },
+              {
+                "gold_label": "12 to 30 per 3 month",
+                "new_label": "12 to 30 per 3 month",
+                "new_purist_correct": true,
+                "notes": [
+                  "final_label_repaired: '12 to 30 per quarter' -> '12 to 30 per 3 month'"
+                ],
+                "previous_label": "12 to 30 per quarter",
+                "previous_purist_correct": false,
+                "source_row_index": 531
+              },
+              {
+                "gold_label": "1 per 8 month",
+                "new_label": "1 per 8 month",
+                "new_purist_correct": true,
+                "notes": [
+                  "final_label_repaired: '1 per 8 months' -> '1 per 8 month'"
+                ],
+                "previous_label": "1 per 8 months",
+                "previous_purist_correct": true,
+                "source_row_index": 598
+              },
+              {
+                "gold_label": "2 per 4 day",
+                "new_label": "2 per 4 day",
+                "new_purist_correct": true,
+                "notes": [
+                  "final_label_repaired: '2 per 4 days' -> '2 per 4 day'"
+                ],
+                "previous_label": "2 per 4 days",
+                "previous_purist_correct": true,
+                "source_row_index": 659
+              }
+            ],
+            "changed_vs_previous": 12,
+            "exact_evidence": 25,
+            "improved_vs_previous": 5,
+            "parse_schema_label_failures": 2,
+            "pragmatic_accuracy": 0.88,
+            "pragmatic_correct": 22,
+            "purist_accuracy": 0.88,
+            "purist_correct": 22,
+            "regressed_vs_previous": 0,
+            "repair_notes": 12,
+            "rows": 25
+          }
+        },
+        {
+          "metadata": {
+            "git_commit": "3e559c5",
+            "max_tokens": 0,
+            "mode": "prompt-only",
+            "model": "openai/gpt-4.1-mini",
+            "prompt_version": "gan2026_llm_structured_event_selector_v0.5",
+            "temperature": 0.0,
+            "working_tree_note": "clean"
+          },
+          "name": "clean_scorer_facing_policy",
+          "repair_config": {
+            "basic_label_repair": true,
+            "basic_label_repair_format_only": true,
+            "breakthrough_repair": false,
+            "clean_scorer_facing_gold_policy": true,
+            "dated_sequence_repair": false,
+            "elapsed_anchor_repair": false,
+            "monthly_diary_repair": false,
+            "non_epileptic_repair": false,
+            "post_change_burst_repair": false,
+            "residual_jerk_repair": false,
+            "selected_evidence_repair": false,
+            "usual_interval_repair": false
+          },
+          "rows": [
+            {
+              "evidence_valid": true,
+              "final_label": "4 per day",
+              "gold_label": "4 per day",
+              "parse_errors": [
+                "final_label_repaired: 'up to 4 per day' -> '4 per day'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 10
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "4 per week",
+              "gold_label": "4 per week",
+              "parse_errors": [
+                "final_label_repaired: '≤ 4 per week' -> '4 per week'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 40
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "6 to 7 per year",
+              "gold_label": "6 to 7 per year",
+              "parse_errors": [
+                "final_label_repaired: '≤ 6 to 7 per year' -> '6 to 7 per year'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 79
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 to 4 per year",
+              "gold_label": "2 to 4 per year",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 103
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "17 per month",
+              "gold_label": "17 per month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 128
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per 6 day",
+              "gold_label": "1 per 6 day",
+              "parse_errors": [
+                "final_label_repaired: '1 per 6 days' -> '1 per 6 day'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 156
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per week",
+              "gold_label": "1 per 7 day",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 180
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per 2 day",
+              "gold_label": "1 per 2 day",
+              "parse_errors": [
+                "final_label_repaired: '1 per 2 days' -> '1 per 2 day'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 182
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per week",
+              "gold_label": "1 per 7 to 9 day",
+              "parse_errors": [
+                "final_label_repaired: '1 cluster per week' -> '1 per week'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": false,
+              "source_row_index": 187
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per 4 week",
+              "gold_label": "1 per 4 week",
+              "parse_errors": [
+                "final_label_repaired: '1 cluster per 4 weeks' -> '1 per 4 week'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 190
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per month",
+              "gold_label": "1 per 4 week",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 198
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per month",
+              "gold_label": "1 per 3 to 4 week",
+              "parse_errors": [],
+              "pragmatic_correct": false,
+              "purist_correct": false,
+              "source_row_index": 212
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per 3 week",
+              "gold_label": "1 per 3 week",
+              "parse_errors": [
+                "final_label_repaired: '1 per 3 weeks' -> '1 per 3 week'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 218
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per 4 month",
+              "gold_label": "1 per 4 month",
+              "parse_errors": [
+                "final_label_repaired: '1 per 4 months' -> '1 per 4 month'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 243
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "multiple per week",
+              "gold_label": "multiple per week",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 278
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "multiple per day",
+              "gold_label": "multiple per day",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 280
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "multiple per month",
+              "gold_label": "multiple per month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 338
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per month",
+              "gold_label": "1 per month",
+              "parse_errors": [
+                "final_label_repaired: '1 per month or less' -> '1 per month'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 409
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 per year",
+              "gold_label": "2 per year",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 419
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 per week",
+              "gold_label": "2 per week",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 446
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "21 to 28 per month",
+              "gold_label": "21 to 28 per month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 466
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "9 per month",
+              "gold_label": "9 per month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 467
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "12 to 30 per 3 month",
+              "gold_label": "12 to 30 per 3 month",
+              "parse_errors": [
+                "final_label_repaired: '12 to 30 per quarter' -> '12 to 30 per 3 month'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 531
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per 8 month",
+              "gold_label": "1 per 8 month",
+              "parse_errors": [
+                "final_label_repaired: '1 per 8 months' -> '1 per 8 month'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 598
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 per 4 day",
+              "gold_label": "2 per 4 day",
+              "parse_errors": [
+                "final_label_repaired: '2 per 4 days' -> '2 per 4 day'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 659
+            }
+          ],
+          "summary": {
+            "changed_rows": [
+              {
+                "gold_label": "1 per 7 to 9 day",
+                "new_label": "1 per week",
+                "new_purist_correct": false,
+                "notes": [
+                  "final_label_repaired: '1 cluster per week' -> '1 per week'"
+                ],
+                "previous_label": "1 cluster per week",
+                "previous_purist_correct": false,
+                "source_row_index": 187
+              },
+              {
+                "gold_label": "1 per 4 week",
+                "new_label": "1 per 4 week",
+                "new_purist_correct": true,
+                "notes": [
+                  "final_label_repaired: '1 cluster per 4 weeks' -> '1 per 4 week'"
+                ],
+                "previous_label": "1 cluster per 4 week",
+                "previous_purist_correct": false,
+                "source_row_index": 190
+              }
+            ],
+            "changed_vs_previous": 2,
+            "exact_evidence": 25,
+            "improved_vs_previous": 1,
+            "parse_schema_label_failures": 0,
+            "pragmatic_accuracy": 0.96,
+            "pragmatic_correct": 24,
+            "purist_accuracy": 0.92,
+            "purist_correct": 23,
+            "regressed_vs_previous": 0,
+            "repair_notes": 13,
+            "rows": 25
+          }
+        }
+      ]
+    },
+    "50": {
+      "conditions": [
+        {
+          "metadata": {
+            "git_commit": "3e559c5",
+            "max_tokens": 0,
+            "mode": "prompt-only",
+            "model": "openai/gpt-4.1-mini",
+            "prompt_version": "gan2026_llm_structured_event_selector_v0.5",
+            "temperature": 0.0,
+            "working_tree_note": "clean"
+          },
+          "name": "raw_model_selection",
+          "repair_config": {
+            "basic_label_repair": false,
+            "basic_label_repair_format_only": false,
+            "breakthrough_repair": false,
+            "clean_scorer_facing_gold_policy": false,
+            "dated_sequence_repair": false,
+            "elapsed_anchor_repair": false,
+            "monthly_diary_repair": false,
+            "non_epileptic_repair": false,
+            "post_change_burst_repair": false,
+            "residual_jerk_repair": false,
+            "selected_evidence_repair": false,
+            "usual_interval_repair": false
+          },
+          "rows": [
+            {
+              "evidence_valid": true,
+              "final_label": "up to 4 per day",
+              "gold_label": "4 per day",
+              "parse_errors": [
+                "unscorable_final_label: Unparsable label (raw: 'up to 4 per day' / normalized: 'up to 4 per day')"
+              ],
+              "pragmatic_correct": false,
+              "purist_correct": false,
+              "source_row_index": 10
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "≤ 4 per week",
+              "gold_label": "4 per week",
+              "parse_errors": [
+                "unscorable_final_label: Unparsable label (raw: '≤ 4 per week' / normalized: '≤ 4 per week')"
+              ],
+              "pragmatic_correct": false,
+              "purist_correct": false,
+              "source_row_index": 40
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "≤ 6 to 7 per year",
+              "gold_label": "6 to 7 per year",
+              "parse_errors": [
+                "unscorable_final_label: Unparsable label (raw: '≤ 6 to 7 per year' / normalized: '≤ 6 to 7 per year')"
+              ],
+              "pragmatic_correct": false,
+              "purist_correct": false,
+              "source_row_index": 79
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 to 4 per year",
+              "gold_label": "2 to 4 per year",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 103
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "17 per month",
+              "gold_label": "17 per month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 128
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per 6 days",
+              "gold_label": "1 per 6 day",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 156
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per week",
+              "gold_label": "1 per 7 day",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 180
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per 2 days",
+              "gold_label": "1 per 2 day",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 182
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 cluster per week",
+              "gold_label": "1 per 7 to 9 day",
+              "parse_errors": [
+                "unscorable_final_label: Unparsable cluster label: '1 cluster per week'"
+              ],
+              "pragmatic_correct": false,
+              "purist_correct": false,
+              "source_row_index": 187
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 cluster per 4 weeks",
+              "gold_label": "1 per 4 week",
+              "parse_errors": [
+                "unscorable_final_label: Unparsable cluster label: '1 cluster per 4 weeks'"
+              ],
+              "pragmatic_correct": false,
+              "purist_correct": false,
+              "source_row_index": 190
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per month",
+              "gold_label": "1 per 4 week",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 198
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per month",
+              "gold_label": "1 per 3 to 4 week",
+              "parse_errors": [],
+              "pragmatic_correct": false,
+              "purist_correct": false,
+              "source_row_index": 212
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per 3 weeks",
+              "gold_label": "1 per 3 week",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 218
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per 4 months",
+              "gold_label": "1 per 4 month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 243
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "multiple per week",
+              "gold_label": "multiple per week",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 278
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "multiple per day",
+              "gold_label": "multiple per day",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 280
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "multiple per month",
+              "gold_label": "multiple per month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 338
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per month or less",
+              "gold_label": "1 per month",
+              "parse_errors": [
+                "unscorable_final_label: Unparsable label (raw: '1 per month or less' / normalized: '1 per month or less')"
+              ],
+              "pragmatic_correct": false,
+              "purist_correct": false,
+              "source_row_index": 409
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 per year",
+              "gold_label": "2 per year",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 419
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 per week",
+              "gold_label": "2 per week",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 446
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "21 to 28 per month",
+              "gold_label": "21 to 28 per month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 466
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "9 per month",
+              "gold_label": "9 per month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 467
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "12 to 30 per quarter",
+              "gold_label": "12 to 30 per 3 month",
+              "parse_errors": [
+                "unscorable_final_label: Unparsable label (raw: '12 to 30 per quarter' / normalized: '12 to 30 per quarter')"
+              ],
+              "pragmatic_correct": false,
+              "purist_correct": false,
+              "source_row_index": 531
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per 8 months",
+              "gold_label": "1 per 8 month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 598
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 per 4 days",
+              "gold_label": "2 per 4 day",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 659
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 per month",
+              "gold_label": "2 per 2 week",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": false,
+              "source_row_index": 665
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 per 4 months",
+              "gold_label": "2 per 4 month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 678
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per week",
+              "gold_label": "1 per week",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 694
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 per month",
+              "gold_label": "2 per month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 704
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per day",
+              "gold_label": "1 per day",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 725
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per day",
+              "gold_label": "1 per day",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 731
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "multiple per week",
+              "gold_label": "multiple per week",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 743
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "most weekdays",
+              "gold_label": "multiple per week",
+              "parse_errors": [
+                "unscorable_final_label: Unparsable label (raw: 'most weekdays' / normalized: 'most weekdays')"
+              ],
+              "pragmatic_correct": false,
+              "purist_correct": false,
+              "source_row_index": 744
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per week",
+              "gold_label": "1 per week",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 763
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per week",
+              "gold_label": "1 per 7 to 10 day",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": false,
+              "source_row_index": 790
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per month",
+              "gold_label": "1 per month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 816
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per year",
+              "gold_label": "1 per year",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 849
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per year",
+              "gold_label": "1 per year",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 854
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "multiple per month",
+              "gold_label": "multiple per month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 869
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 every other day",
+              "gold_label": "1 per 2 day",
+              "parse_errors": [
+                "unscorable_final_label: Unparsable label (raw: '1 every other day' / normalized: '1 every other day')"
+              ],
+              "pragmatic_correct": false,
+              "purist_correct": false,
+              "source_row_index": 891
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per 2 weeks",
+              "gold_label": "1 per 2 week",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 899
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 per month",
+              "gold_label": "1 per 2 month",
+              "parse_errors": [],
+              "pragmatic_correct": false,
+              "purist_correct": false,
+              "source_row_index": 959
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 to 3 per month",
+              "gold_label": "1 per 2 month",
+              "parse_errors": [],
+              "pragmatic_correct": false,
+              "purist_correct": false,
+              "source_row_index": 960
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 every 2 months",
+              "gold_label": "1 per 2 month",
+              "parse_errors": [
+                "unscorable_final_label: Unparsable label (raw: '1 every 2 months' / normalized: '1 every 2 months')"
+              ],
+              "pragmatic_correct": false,
+              "purist_correct": false,
+              "source_row_index": 978
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 per month",
+              "gold_label": "1 per 2 month",
+              "parse_errors": [],
+              "pragmatic_correct": false,
+              "purist_correct": false,
+              "source_row_index": 987
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 to 3 per month",
+              "gold_label": "1 to 3 per month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 1030
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "3 to 5 per month",
+              "gold_label": "3 to 5 per month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 1046
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "3 to 4 per week",
+              "gold_label": "3 to 4 per week",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 1070
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "3 to 5 per week",
+              "gold_label": "3 to 5 per week",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 1094
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "5 to 7 per 3 weeks",
+              "gold_label": "5 to 7 per 3 week",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 1165
+            }
+          ],
+          "summary": {
+            "changed_rows": [],
+            "changed_vs_previous": 0,
+            "exact_evidence": 50,
+            "improved_vs_previous": 0,
+            "parse_schema_label_failures": 10,
+            "pragmatic_accuracy": 0.72,
+            "pragmatic_correct": 36,
+            "purist_accuracy": 0.68,
+            "purist_correct": 34,
+            "regressed_vs_previous": 0,
+            "repair_notes": 0,
+            "rows": 50
+          }
+        },
+        {
+          "metadata": {
+            "git_commit": "3e559c5",
+            "max_tokens": 0,
+            "mode": "prompt-only",
+            "model": "openai/gpt-4.1-mini",
+            "prompt_version": "gan2026_llm_structured_event_selector_v0.5",
+            "temperature": 0.0,
+            "working_tree_note": "clean"
+          },
+          "name": "strict_format_only",
+          "repair_config": {
+            "basic_label_repair": true,
+            "basic_label_repair_format_only": true,
+            "breakthrough_repair": false,
+            "clean_scorer_facing_gold_policy": false,
+            "dated_sequence_repair": false,
+            "elapsed_anchor_repair": false,
+            "monthly_diary_repair": false,
+            "non_epileptic_repair": false,
+            "post_change_burst_repair": false,
+            "residual_jerk_repair": false,
+            "selected_evidence_repair": false,
+            "usual_interval_repair": false
+          },
+          "rows": [
+            {
+              "evidence_valid": true,
+              "final_label": "4 per day",
+              "gold_label": "4 per day",
+              "parse_errors": [
+                "final_label_repaired: 'up to 4 per day' -> '4 per day'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 10
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "4 per week",
+              "gold_label": "4 per week",
+              "parse_errors": [
+                "final_label_repaired: '≤ 4 per week' -> '4 per week'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 40
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "6 to 7 per year",
+              "gold_label": "6 to 7 per year",
+              "parse_errors": [
+                "final_label_repaired: '≤ 6 to 7 per year' -> '6 to 7 per year'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 79
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 to 4 per year",
+              "gold_label": "2 to 4 per year",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 103
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "17 per month",
+              "gold_label": "17 per month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 128
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per 6 day",
+              "gold_label": "1 per 6 day",
+              "parse_errors": [
+                "final_label_repaired: '1 per 6 days' -> '1 per 6 day'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 156
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per week",
+              "gold_label": "1 per 7 day",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 180
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per 2 day",
+              "gold_label": "1 per 2 day",
+              "parse_errors": [
+                "final_label_repaired: '1 per 2 days' -> '1 per 2 day'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 182
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 cluster per week",
+              "gold_label": "1 per 7 to 9 day",
+              "parse_errors": [
+                "unscorable_final_label: Unparsable cluster label: '1 cluster per week'"
+              ],
+              "pragmatic_correct": false,
+              "purist_correct": false,
+              "source_row_index": 187
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 cluster per 4 week",
+              "gold_label": "1 per 4 week",
+              "parse_errors": [
+                "final_label_repaired: '1 cluster per 4 weeks' -> '1 cluster per 4 week'",
+                "unscorable_final_label: Unparsable cluster label: '1 cluster per 4 week'"
+              ],
+              "pragmatic_correct": false,
+              "purist_correct": false,
+              "source_row_index": 190
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per month",
+              "gold_label": "1 per 4 week",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 198
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per month",
+              "gold_label": "1 per 3 to 4 week",
+              "parse_errors": [],
+              "pragmatic_correct": false,
+              "purist_correct": false,
+              "source_row_index": 212
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per 3 week",
+              "gold_label": "1 per 3 week",
+              "parse_errors": [
+                "final_label_repaired: '1 per 3 weeks' -> '1 per 3 week'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 218
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per 4 month",
+              "gold_label": "1 per 4 month",
+              "parse_errors": [
+                "final_label_repaired: '1 per 4 months' -> '1 per 4 month'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 243
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "multiple per week",
+              "gold_label": "multiple per week",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 278
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "multiple per day",
+              "gold_label": "multiple per day",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 280
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "multiple per month",
+              "gold_label": "multiple per month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 338
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per month",
+              "gold_label": "1 per month",
+              "parse_errors": [
+                "final_label_repaired: '1 per month or less' -> '1 per month'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 409
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 per year",
+              "gold_label": "2 per year",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 419
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 per week",
+              "gold_label": "2 per week",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 446
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "21 to 28 per month",
+              "gold_label": "21 to 28 per month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 466
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "9 per month",
+              "gold_label": "9 per month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 467
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "12 to 30 per 3 month",
+              "gold_label": "12 to 30 per 3 month",
+              "parse_errors": [
+                "final_label_repaired: '12 to 30 per quarter' -> '12 to 30 per 3 month'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 531
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per 8 month",
+              "gold_label": "1 per 8 month",
+              "parse_errors": [
+                "final_label_repaired: '1 per 8 months' -> '1 per 8 month'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 598
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 per 4 day",
+              "gold_label": "2 per 4 day",
+              "parse_errors": [
+                "final_label_repaired: '2 per 4 days' -> '2 per 4 day'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 659
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 per month",
+              "gold_label": "2 per 2 week",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": false,
+              "source_row_index": 665
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 per 4 month",
+              "gold_label": "2 per 4 month",
+              "parse_errors": [
+                "final_label_repaired: '2 per 4 months' -> '2 per 4 month'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 678
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per week",
+              "gold_label": "1 per week",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 694
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 per month",
+              "gold_label": "2 per month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 704
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per day",
+              "gold_label": "1 per day",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 725
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per day",
+              "gold_label": "1 per day",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 731
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "multiple per week",
+              "gold_label": "multiple per week",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 743
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "most weekdays",
+              "gold_label": "multiple per week",
+              "parse_errors": [
+                "unscorable_final_label: Unparsable label (raw: 'most weekdays' / normalized: 'most weekdays')"
+              ],
+              "pragmatic_correct": false,
+              "purist_correct": false,
+              "source_row_index": 744
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per week",
+              "gold_label": "1 per week",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 763
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per week",
+              "gold_label": "1 per 7 to 10 day",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": false,
+              "source_row_index": 790
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per month",
+              "gold_label": "1 per month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 816
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per year",
+              "gold_label": "1 per year",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 849
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per year",
+              "gold_label": "1 per year",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 854
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "multiple per month",
+              "gold_label": "multiple per month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 869
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per 2 day",
+              "gold_label": "1 per 2 day",
+              "parse_errors": [
+                "final_label_repaired: '1 every other day' -> '1 per 2 day'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 891
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per 2 week",
+              "gold_label": "1 per 2 week",
+              "parse_errors": [
+                "final_label_repaired: '1 per 2 weeks' -> '1 per 2 week'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 899
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 per month",
+              "gold_label": "1 per 2 month",
+              "parse_errors": [],
+              "pragmatic_correct": false,
+              "purist_correct": false,
+              "source_row_index": 959
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 to 3 per month",
+              "gold_label": "1 per 2 month",
+              "parse_errors": [],
+              "pragmatic_correct": false,
+              "purist_correct": false,
+              "source_row_index": 960
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per 2 month",
+              "gold_label": "1 per 2 month",
+              "parse_errors": [
+                "final_label_repaired: '1 every 2 months' -> '1 per 2 month'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 978
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 per month",
+              "gold_label": "1 per 2 month",
+              "parse_errors": [],
+              "pragmatic_correct": false,
+              "purist_correct": false,
+              "source_row_index": 987
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 to 3 per month",
+              "gold_label": "1 to 3 per month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 1030
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "3 to 5 per month",
+              "gold_label": "3 to 5 per month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 1046
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "3 to 4 per week",
+              "gold_label": "3 to 4 per week",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 1070
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "3 to 5 per week",
+              "gold_label": "3 to 5 per week",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 1094
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "5 to 7 per 3 week",
+              "gold_label": "5 to 7 per 3 week",
+              "parse_errors": [
+                "final_label_repaired: '5 to 7 per 3 weeks' -> '5 to 7 per 3 week'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 1165
+            }
+          ],
+          "summary": {
+            "changed_rows": [
+              {
+                "gold_label": "4 per day",
+                "new_label": "4 per day",
+                "new_purist_correct": true,
+                "notes": [
+                  "final_label_repaired: 'up to 4 per day' -> '4 per day'"
+                ],
+                "previous_label": "up to 4 per day",
+                "previous_purist_correct": false,
+                "source_row_index": 10
+              },
+              {
+                "gold_label": "4 per week",
+                "new_label": "4 per week",
+                "new_purist_correct": true,
+                "notes": [
+                  "final_label_repaired: '≤ 4 per week' -> '4 per week'"
+                ],
+                "previous_label": "≤ 4 per week",
+                "previous_purist_correct": false,
+                "source_row_index": 40
+              },
+              {
+                "gold_label": "6 to 7 per year",
+                "new_label": "6 to 7 per year",
+                "new_purist_correct": true,
+                "notes": [
+                  "final_label_repaired: '≤ 6 to 7 per year' -> '6 to 7 per year'"
+                ],
+                "previous_label": "≤ 6 to 7 per year",
+                "previous_purist_correct": false,
+                "source_row_index": 79
+              },
+              {
+                "gold_label": "1 per 6 day",
+                "new_label": "1 per 6 day",
+                "new_purist_correct": true,
+                "notes": [
+                  "final_label_repaired: '1 per 6 days' -> '1 per 6 day'"
+                ],
+                "previous_label": "1 per 6 days",
+                "previous_purist_correct": true,
+                "source_row_index": 156
+              },
+              {
+                "gold_label": "1 per 2 day",
+                "new_label": "1 per 2 day",
+                "new_purist_correct": true,
+                "notes": [
+                  "final_label_repaired: '1 per 2 days' -> '1 per 2 day'"
+                ],
+                "previous_label": "1 per 2 days",
+                "previous_purist_correct": true,
+                "source_row_index": 182
+              },
+              {
+                "gold_label": "1 per 4 week",
+                "new_label": "1 cluster per 4 week",
+                "new_purist_correct": false,
+                "notes": [
+                  "final_label_repaired: '1 cluster per 4 weeks' -> '1 cluster per 4 week'",
+                  "unscorable_final_label: Unparsable cluster label: '1 cluster per 4 week'"
+                ],
+                "previous_label": "1 cluster per 4 weeks",
+                "previous_purist_correct": false,
+                "source_row_index": 190
+              },
+              {
+                "gold_label": "1 per 3 week",
+                "new_label": "1 per 3 week",
+                "new_purist_correct": true,
+                "notes": [
+                  "final_label_repaired: '1 per 3 weeks' -> '1 per 3 week'"
+                ],
+                "previous_label": "1 per 3 weeks",
+                "previous_purist_correct": true,
+                "source_row_index": 218
+              },
+              {
+                "gold_label": "1 per 4 month",
+                "new_label": "1 per 4 month",
+                "new_purist_correct": true,
+                "notes": [
+                  "final_label_repaired: '1 per 4 months' -> '1 per 4 month'"
+                ],
+                "previous_label": "1 per 4 months",
+                "previous_purist_correct": true,
+                "source_row_index": 243
+              },
+              {
+                "gold_label": "1 per month",
+                "new_label": "1 per month",
+                "new_purist_correct": true,
+                "notes": [
+                  "final_label_repaired: '1 per month or less' -> '1 per month'"
+                ],
+                "previous_label": "1 per month or less",
+                "previous_purist_correct": false,
+                "source_row_index": 409
+              },
+              {
+                "gold_label": "12 to 30 per 3 month",
+                "new_label": "12 to 30 per 3 month",
+                "new_purist_correct": true,
+                "notes": [
+                  "final_label_repaired: '12 to 30 per quarter' -> '12 to 30 per 3 month'"
+                ],
+                "previous_label": "12 to 30 per quarter",
+                "previous_purist_correct": false,
+                "source_row_index": 531
+              },
+              {
+                "gold_label": "1 per 8 month",
+                "new_label": "1 per 8 month",
+                "new_purist_correct": true,
+                "notes": [
+                  "final_label_repaired: '1 per 8 months' -> '1 per 8 month'"
+                ],
+                "previous_label": "1 per 8 months",
+                "previous_purist_correct": true,
+                "source_row_index": 598
+              },
+              {
+                "gold_label": "2 per 4 day",
+                "new_label": "2 per 4 day",
+                "new_purist_correct": true,
+                "notes": [
+                  "final_label_repaired: '2 per 4 days' -> '2 per 4 day'"
+                ],
+                "previous_label": "2 per 4 days",
+                "previous_purist_correct": true,
+                "source_row_index": 659
+              },
+              {
+                "gold_label": "2 per 4 month",
+                "new_label": "2 per 4 month",
+                "new_purist_correct": true,
+                "notes": [
+                  "final_label_repaired: '2 per 4 months' -> '2 per 4 month'"
+                ],
+                "previous_label": "2 per 4 months",
+                "previous_purist_correct": true,
+                "source_row_index": 678
+              },
+              {
+                "gold_label": "1 per 2 day",
+                "new_label": "1 per 2 day",
+                "new_purist_correct": true,
+                "notes": [
+                  "final_label_repaired: '1 every other day' -> '1 per 2 day'"
+                ],
+                "previous_label": "1 every other day",
+                "previous_purist_correct": false,
+                "source_row_index": 891
+              },
+              {
+                "gold_label": "1 per 2 week",
+                "new_label": "1 per 2 week",
+                "new_purist_correct": true,
+                "notes": [
+                  "final_label_repaired: '1 per 2 weeks' -> '1 per 2 week'"
+                ],
+                "previous_label": "1 per 2 weeks",
+                "previous_purist_correct": true,
+                "source_row_index": 899
+              },
+              {
+                "gold_label": "1 per 2 month",
+                "new_label": "1 per 2 month",
+                "new_purist_correct": true,
+                "notes": [
+                  "final_label_repaired: '1 every 2 months' -> '1 per 2 month'"
+                ],
+                "previous_label": "1 every 2 months",
+                "previous_purist_correct": false,
+                "source_row_index": 978
+              },
+              {
+                "gold_label": "5 to 7 per 3 week",
+                "new_label": "5 to 7 per 3 week",
+                "new_purist_correct": true,
+                "notes": [
+                  "final_label_repaired: '5 to 7 per 3 weeks' -> '5 to 7 per 3 week'"
+                ],
+                "previous_label": "5 to 7 per 3 weeks",
+                "previous_purist_correct": true,
+                "source_row_index": 1165
+              }
+            ],
+            "changed_vs_previous": 17,
+            "exact_evidence": 50,
+            "improved_vs_previous": 7,
+            "parse_schema_label_failures": 3,
+            "pragmatic_accuracy": 0.86,
+            "pragmatic_correct": 43,
+            "purist_accuracy": 0.82,
+            "purist_correct": 41,
+            "regressed_vs_previous": 0,
+            "repair_notes": 17,
+            "rows": 50
+          }
+        },
+        {
+          "metadata": {
+            "git_commit": "3e559c5",
+            "max_tokens": 0,
+            "mode": "prompt-only",
+            "model": "openai/gpt-4.1-mini",
+            "prompt_version": "gan2026_llm_structured_event_selector_v0.5",
+            "temperature": 0.0,
+            "working_tree_note": "clean"
+          },
+          "name": "clean_scorer_facing_policy",
+          "repair_config": {
+            "basic_label_repair": true,
+            "basic_label_repair_format_only": true,
+            "breakthrough_repair": false,
+            "clean_scorer_facing_gold_policy": true,
+            "dated_sequence_repair": false,
+            "elapsed_anchor_repair": false,
+            "monthly_diary_repair": false,
+            "non_epileptic_repair": false,
+            "post_change_burst_repair": false,
+            "residual_jerk_repair": false,
+            "selected_evidence_repair": false,
+            "usual_interval_repair": false
+          },
+          "rows": [
+            {
+              "evidence_valid": true,
+              "final_label": "4 per day",
+              "gold_label": "4 per day",
+              "parse_errors": [
+                "final_label_repaired: 'up to 4 per day' -> '4 per day'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 10
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "4 per week",
+              "gold_label": "4 per week",
+              "parse_errors": [
+                "final_label_repaired: '≤ 4 per week' -> '4 per week'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 40
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "6 to 7 per year",
+              "gold_label": "6 to 7 per year",
+              "parse_errors": [
+                "final_label_repaired: '≤ 6 to 7 per year' -> '6 to 7 per year'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 79
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 to 4 per year",
+              "gold_label": "2 to 4 per year",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 103
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "17 per month",
+              "gold_label": "17 per month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 128
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per 6 day",
+              "gold_label": "1 per 6 day",
+              "parse_errors": [
+                "final_label_repaired: '1 per 6 days' -> '1 per 6 day'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 156
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per week",
+              "gold_label": "1 per 7 day",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 180
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per 2 day",
+              "gold_label": "1 per 2 day",
+              "parse_errors": [
+                "final_label_repaired: '1 per 2 days' -> '1 per 2 day'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 182
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per week",
+              "gold_label": "1 per 7 to 9 day",
+              "parse_errors": [
+                "final_label_repaired: '1 cluster per week' -> '1 per week'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": false,
+              "source_row_index": 187
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per 4 week",
+              "gold_label": "1 per 4 week",
+              "parse_errors": [
+                "final_label_repaired: '1 cluster per 4 weeks' -> '1 per 4 week'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 190
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per month",
+              "gold_label": "1 per 4 week",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 198
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per month",
+              "gold_label": "1 per 3 to 4 week",
+              "parse_errors": [],
+              "pragmatic_correct": false,
+              "purist_correct": false,
+              "source_row_index": 212
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per 3 week",
+              "gold_label": "1 per 3 week",
+              "parse_errors": [
+                "final_label_repaired: '1 per 3 weeks' -> '1 per 3 week'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 218
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per 4 month",
+              "gold_label": "1 per 4 month",
+              "parse_errors": [
+                "final_label_repaired: '1 per 4 months' -> '1 per 4 month'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 243
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "multiple per week",
+              "gold_label": "multiple per week",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 278
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "multiple per day",
+              "gold_label": "multiple per day",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 280
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "multiple per month",
+              "gold_label": "multiple per month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 338
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per month",
+              "gold_label": "1 per month",
+              "parse_errors": [
+                "final_label_repaired: '1 per month or less' -> '1 per month'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 409
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 per year",
+              "gold_label": "2 per year",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 419
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 per week",
+              "gold_label": "2 per week",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 446
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "21 to 28 per month",
+              "gold_label": "21 to 28 per month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 466
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "9 per month",
+              "gold_label": "9 per month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 467
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "12 to 30 per 3 month",
+              "gold_label": "12 to 30 per 3 month",
+              "parse_errors": [
+                "final_label_repaired: '12 to 30 per quarter' -> '12 to 30 per 3 month'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 531
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per 8 month",
+              "gold_label": "1 per 8 month",
+              "parse_errors": [
+                "final_label_repaired: '1 per 8 months' -> '1 per 8 month'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 598
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 per 4 day",
+              "gold_label": "2 per 4 day",
+              "parse_errors": [
+                "final_label_repaired: '2 per 4 days' -> '2 per 4 day'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 659
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 per month",
+              "gold_label": "2 per 2 week",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": false,
+              "source_row_index": 665
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 per 4 month",
+              "gold_label": "2 per 4 month",
+              "parse_errors": [
+                "final_label_repaired: '2 per 4 months' -> '2 per 4 month'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 678
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per week",
+              "gold_label": "1 per week",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 694
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 per month",
+              "gold_label": "2 per month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 704
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per day",
+              "gold_label": "1 per day",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 725
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per day",
+              "gold_label": "1 per day",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 731
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "multiple per week",
+              "gold_label": "multiple per week",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 743
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "multiple per week",
+              "gold_label": "multiple per week",
+              "parse_errors": [
+                "final_label_repaired: 'most weekdays' -> 'multiple per week'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 744
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per week",
+              "gold_label": "1 per week",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 763
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per week",
+              "gold_label": "1 per 7 to 10 day",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": false,
+              "source_row_index": 790
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per month",
+              "gold_label": "1 per month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 816
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per year",
+              "gold_label": "1 per year",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 849
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per year",
+              "gold_label": "1 per year",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 854
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "multiple per month",
+              "gold_label": "multiple per month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 869
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per 2 day",
+              "gold_label": "1 per 2 day",
+              "parse_errors": [
+                "final_label_repaired: '1 every other day' -> '1 per 2 day'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 891
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per 2 week",
+              "gold_label": "1 per 2 week",
+              "parse_errors": [
+                "final_label_repaired: '1 per 2 weeks' -> '1 per 2 week'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 899
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 per month",
+              "gold_label": "1 per 2 month",
+              "parse_errors": [],
+              "pragmatic_correct": false,
+              "purist_correct": false,
+              "source_row_index": 959
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 to 3 per month",
+              "gold_label": "1 per 2 month",
+              "parse_errors": [],
+              "pragmatic_correct": false,
+              "purist_correct": false,
+              "source_row_index": 960
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 per 2 month",
+              "gold_label": "1 per 2 month",
+              "parse_errors": [
+                "final_label_repaired: '1 every 2 months' -> '1 per 2 month'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 978
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "2 per month",
+              "gold_label": "1 per 2 month",
+              "parse_errors": [],
+              "pragmatic_correct": false,
+              "purist_correct": false,
+              "source_row_index": 987
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "1 to 3 per month",
+              "gold_label": "1 to 3 per month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 1030
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "3 to 5 per month",
+              "gold_label": "3 to 5 per month",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 1046
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "3 to 4 per week",
+              "gold_label": "3 to 4 per week",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 1070
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "3 to 5 per week",
+              "gold_label": "3 to 5 per week",
+              "parse_errors": [],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 1094
+            },
+            {
+              "evidence_valid": true,
+              "final_label": "5 to 7 per 3 week",
+              "gold_label": "5 to 7 per 3 week",
+              "parse_errors": [
+                "final_label_repaired: '5 to 7 per 3 weeks' -> '5 to 7 per 3 week'"
+              ],
+              "pragmatic_correct": true,
+              "purist_correct": true,
+              "source_row_index": 1165
+            }
+          ],
+          "summary": {
+            "changed_rows": [
+              {
+                "gold_label": "1 per 7 to 9 day",
+                "new_label": "1 per week",
+                "new_purist_correct": false,
+                "notes": [
+                  "final_label_repaired: '1 cluster per week' -> '1 per week'"
+                ],
+                "previous_label": "1 cluster per week",
+                "previous_purist_correct": false,
+                "source_row_index": 187
+              },
+              {
+                "gold_label": "1 per 4 week",
+                "new_label": "1 per 4 week",
+                "new_purist_correct": true,
+                "notes": [
+                  "final_label_repaired: '1 cluster per 4 weeks' -> '1 per 4 week'"
+                ],
+                "previous_label": "1 cluster per 4 week",
+                "previous_purist_correct": false,
+                "source_row_index": 190
+              },
+              {
+                "gold_label": "multiple per week",
+                "new_label": "multiple per week",
+                "new_purist_correct": true,
+                "notes": [
+                  "final_label_repaired: 'most weekdays' -> 'multiple per week'"
+                ],
+                "previous_label": "most weekdays",
+                "previous_purist_correct": false,
+                "source_row_index": 744
+              }
+            ],
+            "changed_vs_previous": 3,
+            "exact_evidence": 50,
+            "improved_vs_previous": 2,
+            "parse_schema_label_failures": 0,
+            "pragmatic_accuracy": 0.92,
+            "pragmatic_correct": 46,
+            "purist_accuracy": 0.86,
+            "purist_correct": 43,
+            "regressed_vs_previous": 0,
+            "repair_notes": 19,
+            "rows": 50
+          }
+        }
+      ]
+    }
+  },
+  "policy_decision": "clean scorer-facing policy frozen after first table-backed slice; no upper-bound, diary, temporal, evidence-state, or cluster-reconstruction modules included",
+  "raw_output_source": "experiments/gan2026_llm_structured_validation750_gpt41mini_v05_completion_2026-06-01.jsonl",
+  "split": "validation",
+  "split_manifest": "gan2026_split_v1"
+}
