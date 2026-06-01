@@ -33,6 +33,16 @@ modules.
   arithmetic, cluster conversion, and clinical-selection overrides are named
   deterministic modules.
 - Completed `gan2026_clean_attribution_format50_v0` as a no-call 50-row diagnostic: raw 34/50 Purist (0.6800), strict format-only 41/50 (0.8200), 17 surface repairs, 7 improvements, 0 regressions, 50/50 exact evidence, and 3 strict parse failures (2 cluster-only plus `most weekdays`).
+- Completed a family-by-family gold-normalization policy review and recorded
+  the decision matrix in
+  `docs/research/gan2026_gold_normalization_policy_question_2026-06-01.md`.
+  Clean LLM-first scorer-facing normalization now includes cluster-name
+  stripping, vague weekday cadence, Gan-specific `bimonthly`, explicit-denominator
+  vague quantities, period dialect/shorthand, cluster grammar, and single
+  already-totaled count/window syntax. Upper-bound ceilings, seizure-free final
+  selection, diary arithmetic, unknown/no-reference classification, cluster
+  arithmetic/reconstruction, and last-event-only interval logic are named
+  deterministic modules.
 
 ## Key References
 
@@ -64,16 +74,18 @@ modules.
 
 ### Now
 
-- Work through the gold-normalization policy question family by family, starting
-  with cluster-name stripping, vague weekday cadence, and `bimonthly`.
-- For each family, build direct-citation row tables: quote, gold label,
-  source-near prediction, proposed scorer-facing label, and decision category.
-- Decide which rules are clean scorer-facing normalization, named deterministic
-  modules, or unresolved annotation ambiguity before the next architecture run.
+- Turn the agreed gold-normalization decision matrix into narrow tests and
+  named policy/module boundaries before the next architecture run.
+- Keep clean scorer-facing normalization separate from named deterministic
+  modules in run attribution and claim language.
+- Build direct-citation row tables for any newly proposed gold-policy family
+  before implementation.
 
 ### Next
 
 - Compare v0.2 and v0.4 error families before broader selector guidance.
+- Implement the first clean scorer-facing policy slice behind explicit tests:
+  cluster-name stripping, vague weekday cadence, and Gan-specific `bimonthly`.
 - If useful, run a focused 25- or 50-row comparison for the selected next
   architecture before any 250-row escalation.
 
@@ -96,11 +108,14 @@ modules.
   failure-slice queues.
 - 2026-06-01: Framed Gan gold-normalization consistency as a core research
   question with examples for cluster stripping, vague weekdays, and `bimonthly`.
+- 2026-06-01: Settled the first gold-normalization policy matrix: clean
+  scorer-facing families versus named deterministic modules, with validation row
+  examples and explicit boundary cases.
 - 2026-06-01: Replaced deterministic V1's implicit final-selection tuple key
   with an explicit `SelectionPriority` record and `selected_decision` diagnostic.
 
 ## Immediate Next Step
 
-Audit the first gold-normalization family with direct citations and decide
-whether it is clean scorer-facing normalization, a named deterministic module,
-or unresolved annotation ambiguity.
+Add tests for the first clean scorer-facing gold-normalization slice and keep
+upper-bound, temporal-selection, evidence-state, diary-arithmetic, and
+cluster-arithmetic behavior in named deterministic modules.

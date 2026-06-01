@@ -110,6 +110,57 @@ Use this taxonomy while working through gold-normalization questions:
 - `inconsistent_gold_policy`: cases where similar source phrasing maps to
   different gold-label logic
 
+## Policy Decisions From 2026-06-01 Review
+
+The following decisions were made from validation-only row inspection. They are
+development-surface policy decisions, not locked-test findings.
+
+### Clean LLM-First Scorer-Facing Normalization
+
+These transformations are eligible for the clean LLM-first scorer-facing path
+when the source-near trace preserves the original expression and the
+normalization preserves the selected clinical fact.
+
+| Family | Clean scorer-facing policy | Representative validation rows |
+|---|---|---|
+| Cluster-name stripping | If evidence states recurring cluster cadence but no usable within-cluster event count, and Gan gold represents the cadence as a plain rate, drop `cluster` only in the scorer-facing label. | `190`: clusters every 4 weeks -> `1 per 4 week`; `16356`: clusters every 4 days -> `1 per 4 day`; `16394`: clusters every 2 to 4 days -> `1 per 2 to 4 day` |
+| Vague weekday cadence | Map multi-day weekday language such as `most weekdays` to Gan's coarse `multiple per week`; do not infer daily or within-day multiplicity. | `744`: most weekdays -> `multiple per week` |
+| Gan-specific `bimonthly` | Map bare `bimonthly` / `bi-monthly` to `1 per 2 month` for Gan scorer-facing normalization; contradictory explicit wording overrides the bare term. | `959`, `960`, `987`: bimonthly -> `1 per 2 month` |
+| Vague quantity with explicit denominator | Map vague count words to Gan coarse labels only when the phrase already supplies the denominator and preserves the same coarse class. | `1707`/`1687`: several last week -> `multiple per week`; `12111`/`12130`: several times each week -> `multiple per week`; `280`: multiple in past day -> `multiple per day` |
+| Period dialect and shorthand | Expand period names, abbreviations, and terse seizure-frequency shorthand into Gan syntax when count, period, and event structure are preserved. | `531`: per quarter -> per 3 month; `4110`: q1-2d -> `1 per 1 to 2 day`; `3949`: Xfour/wk -> `4 per week`; `3827`: X7/mo -> `7 per month` |
+| Cluster syntax grammar | Normalize source-near cluster primitives into Gan cluster syntax when cadence and per-cluster load are preserved. | `11118`: 2 cluster days/month, six in 24 h -> `2 cluster per month, 6 per cluster`; `10894`: weekly clusters, four events -> `1 cluster per week, 4 per cluster` |
+| Single already-totaled count/window | Rephrase a single selected total count and explicit window into Gan syntax. | `7 in past 3 months`-style source-near facts may become `7 per 3 month` without arithmetic if already totaled in the selected fact. |
+
+### Named Deterministic Modules
+
+These transformations are not clean scorer-facing normalization because they
+change epistemic status, compute a new label, classify evidence state, or select
+among competing temporal/clinical facts. They may still be useful, but they need
+separate naming, tests, ablation, and claim language.
+
+| Family | Decision | Representative validation rows |
+|---|---|---|
+| Upper-bound phrasing | Named upper-bound module: converting a ceiling such as `up to 4 per day` or `<= once per month` into a point estimate changes epistemic status. | `409`: <= once per month -> `1 per month`; `10`: <= four per day -> `4 per day`; `3623`: up to seven in bad weeks -> `7 per week` |
+| Seizure-free/no-event final selection | Named temporal-selection module except for simple spelling/duration grammar after seizure-free has already been selected. | `12584`: weekly absences persist despite no events since last visit -> `1 per week`; `12548`: daily drop attacks despite no events since review -> `1 per day`; `3048`: no events for 16 months -> seizure-free grammar only if already selected |
+| Diary/calendar arithmetic | Named arithmetic module when summing counts, constructing ranges, inferring denominators, aggregating semiologies, or calculating month spans. | `9496`: monthly cells -> `6 per 12 month`; `16162`: 6 + 0 + 5 -> `11 per 3 month`; `1922`: two drop attacks plus five convulsions -> `7 per 3 month` |
+| Unknown vs no-reference classification | Named evidence-state module except for literal grammar. Preserve `unknown` and `no seizure frequency reference` as distinct semantic states even though Gan scoring collapses both numerically. | `10147`: cluster frequency uncertain -> `unknown`; `11254`: last seizure date only -> `unknown`; `11434`: administrative cancellation letter -> no-reference |
+| Cluster arithmetic/reconstruction | Named cluster module for multiplication, reconstruction from evidence, unresolved `multiple per cluster` scoring, or plain-total conversion. | `2 cluster per month, 6 per cluster` -> `12 per month`; `3224`: plain `6 to 7 per month` repaired to cluster syntax is reconstruction |
+| Last-event-only elapsed interval | Named temporal module; last-event-only statements stay out of the clean path unless the selected fact explicitly states a seizure-free duration or an explicit count/window. | `11254`: last seizure on 31-May -> `unknown`; `14040`: latest one on 05/Apr but unable to quantify -> `unknown`; `3048`: no events for 16 months -> clean only after seizure-free selection |
+
+### Explicit Boundary Cases
+
+- `several focal seizures last month` is clean only if it maps to
+  `multiple per month`; converting it to
+  `multiple cluster per month, multiple per cluster` is not clean because it
+  introduces cluster structure.
+- `monthly clusters` may be clean cluster grammar if the selected source-near
+  fact is already cluster-structured; it is not license to infer a per-cluster
+  count.
+- `yearly`, `monthly`, `weekly`, or shorthand expressions in medication,
+  rescue-plan, post-ictal-duration, or administrative contexts must be ignored.
+- Contradictory explicit wording overrides a bare normalization convention, for
+  example `bimonthly, twice per month` should not become `1 per 2 month`.
+
 ## Audit Plan
 
 1. Build a validation-only inventory of candidate normalization families:
