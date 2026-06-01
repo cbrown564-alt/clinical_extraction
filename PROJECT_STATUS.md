@@ -109,6 +109,24 @@ ownership, and deterministic repair boundaries explicitly.
   model-shape/schema repair, and selected-claim validation. The claim-table
   runner now owns prompt/run/scoring/report orchestration. Behavior is
   preserved; Ruff, mypy, focused claim-table tests, and full pytest are green.
+- Phase 5 continued with a hybrid adjudicator parser ownership split:
+  `hybrid_adjudicator_parser.py` now owns the hybrid adjudicator Pydantic
+  decision record, model-shape/schema repair, parser-owned defaults, final-label
+  repair, and scorable-label validation. The hybrid runner keeps prompt/run/
+  scoring/report orchestration. Behavior is preserved; focused hybrid tests,
+  Ruff, mypy, and full pytest are green.
+- Phase 5 continued with a claim-table report ownership split:
+  `claim_table_report.py` now owns the LLM-only claim-table Markdown report and
+  review-table formatting helpers. The claim-table runner keeps prompt/run/
+  scoring orchestration and exposes the same `write_report` entry point.
+  Behavior is preserved; focused claim-table tests, Ruff, mypy, and full pytest
+  are green.
+- Phase 5 continued with a hybrid adjudicator report ownership split:
+  `hybrid_adjudicator_report.py` now owns both hybrid adjudicator Markdown
+  report writers and report-only interpretation/formatting helpers. The hybrid
+  runner keeps prompt/run/scoring orchestration and exposes the same report
+  entry points. Behavior is preserved; focused hybrid tests, Ruff, mypy, and
+  full pytest are green.
 
 ## Key References
 
@@ -140,8 +158,9 @@ ownership, and deterministic repair boundaries explicitly.
 ### Now
 
 - Continue the codebase thermonuclear review Phase 5 behavior splits without
-  changing scorer behavior: next candidates are hybrid parser or report
-  ownership splits, or other large-file ownership splits.
+  changing scorer behavior: next candidates are the remaining large LLM
+  structured-events runner, artifact-analysis helpers, or other ownership
+  splits.
 - Design hybrid rules-candidates LLM adjudicator v0.2 as a conservative/targeted adjudicator with
   deterministic fallback and named overreach-family gates; repeat 25/50/250.
 - Design LLM-only claim-table selector v5 as claim-table plus constrained selector, with
@@ -260,10 +279,33 @@ ownership, and deterministic repair boundaries explicitly.
   `python -m pytest tests/test_gan2026_llm_only_claim_table_selector.py -q`,
   and `python -m pytest -q` are green (`595 passed`, 11 third-party DSPy
   deprecation warnings).
+- 2026-06-01: Continued Phase 5 by extracting the hybrid adjudicator parser
+  from `hybrid_rules_candidates_llm_adjudicator.py` into
+  `hybrid_adjudicator_parser.py`. The runner is now 1049 lines and the parser
+  module is 102 lines. Verification: `python -m ruff check .`,
+  `python -m mypy src`,
+  `python -m pytest tests/test_gan2026_hybrid_rules_candidates_llm_adjudicator.py -q`,
+  and `python -m pytest -q` are green (`595 passed`, 11 third-party DSPy
+  deprecation warnings).
+- 2026-06-01: Continued Phase 5 by extracting the LLM-only claim-table report
+  writer from `llm_only_claim_table_selector.py` into `claim_table_report.py`.
+  The runner is now 826 lines and the report module is 217 lines. Verification:
+  `python -m ruff check .`, `python -m mypy src`,
+  `python -m pytest tests/test_gan2026_llm_only_claim_table_selector.py -q`,
+  and `python -m pytest -q` are green (`595 passed`, 11 third-party DSPy
+  deprecation warnings).
+- 2026-06-01: Continued Phase 5 by extracting the hybrid adjudicator report
+  writers from `hybrid_rules_candidates_llm_adjudicator.py` into
+  `hybrid_adjudicator_report.py`. The runner is now 843 lines and the report
+  module is 218 lines. Verification: `python -m ruff check .`,
+  `python -m mypy src`,
+  `python -m pytest tests/test_gan2026_hybrid_rules_candidates_llm_adjudicator.py -q`,
+  and `python -m pytest -q` are green (`595 passed`, 11 third-party DSPy
+  deprecation warnings).
 
 ## Immediate Next Step
 
 Continue the Phase 5 behavior-preserving splits from the remaining large
-behavior modules, preferably a hybrid parser or report ownership split before
-returning to the validation-only v0.2/v5 experiment cycle. Do not inspect
-holdout rows.
+behavior modules, with the LLM structured-events runner or artifact-analysis
+helpers as likely next ownership splits before returning to the validation-only
+v0.2/v5 experiment cycle. Do not inspect holdout rows.
