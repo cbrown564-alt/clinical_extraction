@@ -8,6 +8,57 @@ literature/hybrid_seizure_phenotype_literature_review.pdf
 
 The engineering design should support a research paper, not only a benchmark run. The core claim is that seizure-frequency extraction should be treated as a modular, auditable clinical extraction problem where deterministic rules and LLM reasoning are both explicit, testable components.
 
+## Experimental Ontology
+
+Pipeline names should describe the research role of each component, not the
+order in which an idea happened to be tried. Gan 2026 experiments should be
+organized into three top-level families:
+
+- `rules_only`: deterministic rules produce the prediction-bearing clinical
+  interpretation. This family is the baseline for portability, rule-category
+  ablation, evidence validity, and reproducibility.
+- `llm_only`: an LLM produces the prediction-bearing clinical interpretation.
+  Deterministic code may validate JSON, check evidence, normalize already
+  selected facts, repair benchmark-facing format, and score outputs, but it
+  must not introduce or choose the clinical fact.
+- `hybrid`: both deterministic rules and an LLM contribute semantic behavior.
+  Hybrid experiments must state which component extracts candidate facts, which
+  component selects or adjudicates the final clinical interpretation, and which
+  deterministic steps remain formatting or scoring only.
+
+Within each family, pipeline and artifact names should include the task
+decomposition and component ownership:
+
+- direct final-label prediction
+- event extraction followed by final selection
+- claim-table extraction followed by a query over claims
+- rules-generated candidates followed by LLM adjudication
+- LLM-generated candidates followed by deterministic normalization or selection
+
+Examples:
+
+```text
+rules_only_v1
+llm_only_direct_labeler
+llm_only_structured_events
+llm_only_claim_table_selector
+hybrid_rules_candidates_llm_adjudicator
+hybrid_llm_events_rules_normalizer
+```
+
+Artifact names should follow the same ontology before run details:
+
+```text
+gan2026_rules_only_v1_validation750_2026-06-01.json
+gan2026_llm_only_claim_table_selector_validation250_gpt41mini_v4_2026-06-01.jsonl
+gan2026_hybrid_rules_candidates_llm_adjudicator_validation250_gpt41mini_v01_2026-06-01.jsonl
+```
+
+Legacy labels such as `Architecture 2` or `section-claim-table` can appear in
+historical notes when referring to already-created artifacts, but they should
+not remain as runnable aliases or current code names. New code, CLI choices,
+reports, and project-status entries should use the ontological names above.
+
 ## Contribution 1: Modular Breadth And Depth
 
 Prior epilepsy NLP systems often do one of two things well:

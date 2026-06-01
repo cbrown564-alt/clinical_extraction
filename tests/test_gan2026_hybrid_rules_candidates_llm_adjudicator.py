@@ -1,18 +1,20 @@
 import json
 from pathlib import Path
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.dspy_modules import (
-    PROMPT_VERSION,
-    AdjudicatorDecisionRecord,
-    build_architecture2_prompt_input,
-    build_prompt_input,
-    parse_decision_json,
-    run_adjudicator_devset,
-    run_architecture2_split,
-    summarize_architecture2_records,
-    write_adjudicator_jsonl,
+from clinical_extraction.tasks.seizure_frequency.gan2026 import (
+    hybrid_rules_candidates_llm_adjudicator as hybrid,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import FrequencyLabelKind
+
+PROMPT_VERSION = hybrid.PROMPT_VERSION
+AdjudicatorDecisionRecord = hybrid.AdjudicatorDecisionRecord
+build_hybrid_prompt_input = hybrid.build_hybrid_rules_candidates_llm_adjudicator_prompt_input
+build_prompt_input = hybrid.build_prompt_input
+parse_decision_json = hybrid.parse_decision_json
+run_adjudicator_devset = hybrid.run_adjudicator_devset
+run_hybrid_split = hybrid.run_hybrid_rules_candidates_llm_adjudicator_split
+summarize_hybrid_records = hybrid.summarize_hybrid_rules_candidates_llm_adjudicator_records
+write_adjudicator_jsonl = hybrid.write_adjudicator_jsonl
 
 
 def _example() -> dict:
@@ -268,7 +270,7 @@ def test_prompt_only_run_writes_not_run_records(tmp_path: Path) -> None:
     assert json.loads(path.read_text(encoding="utf-8"))["example_id"] == "gan2026-validation-1-demo"
 
 
-def test_build_architecture2_prompt_input_excludes_gold_and_scores() -> None:
+def test_build_hybrid_prompt_input_excludes_gold_and_scores() -> None:
     class Record:
         source_row_index = 10
         note_text = "Current seizure frequency is two per month."
@@ -302,7 +304,7 @@ def test_build_architecture2_prompt_input_excludes_gold_and_scores() -> None:
         },
     }
 
-    prompt = json.loads(build_architecture2_prompt_input(Record(), diagnostics))
+    prompt = json.loads(build_hybrid_prompt_input(Record(), diagnostics))
 
     assert prompt["claim_type"] == "hybrid_llm_adjudicator"
     assert prompt["candidate_events"][0]["normalized_label"] == "2 per month"
@@ -310,7 +312,7 @@ def test_build_architecture2_prompt_input_excludes_gold_and_scores() -> None:
     assert "gold_label" not in json.dumps(prompt)
 
 
-def test_architecture2_prompt_only_scores_deterministic_and_recall(monkeypatch) -> None:
+def test_hybrid_prompt_only_scores_deterministic_and_recall(monkeypatch) -> None:
     class Record:
         source_row_index = 10
         note_text = "Current seizure frequency is two per month."
@@ -355,11 +357,12 @@ def test_architecture2_prompt_only_scores_deterministic_and_recall(monkeypatch) 
             return Result()
 
     monkeypatch.setattr(
-        "clinical_extraction.tasks.seizure_frequency.gan2026.dspy_modules.Gan2026PipelineV1",
+        "clinical_extraction.tasks.seizure_frequency.gan2026."
+        "hybrid_rules_candidates_llm_adjudicator.Gan2026PipelineV1",
         lambda: Pipeline(),
     )
 
-    records, metadata = run_architecture2_split(
+    records, metadata = run_hybrid_split(
         [Record()],
         split="validation",
         split_manifest="gan2026_split_v1",
@@ -379,8 +382,8 @@ def test_architecture2_prompt_only_scores_deterministic_and_recall(monkeypatch) 
     assert metadata["summary"]["candidate_purist_recall_rate"] == 1.0
 
 
-def test_summarize_architecture2_records_counts_changes() -> None:
-    summary = summarize_architecture2_records(
+def test_summarize_hybrid_records_counts_changes() -> None:
+    summary = summarize_hybrid_records(
         [
             {
                 "decision_record": {"final_label": "2 per month"},

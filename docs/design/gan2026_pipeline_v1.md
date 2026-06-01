@@ -210,8 +210,11 @@ Routine Gan LLM/DSPy experiments should use the single CLI in
 `src/clinical_extraction/tasks/seizure_frequency/gan2026/llm_pipeline_cli.py`.
 Use the `gan2026-llm-experiment` console script, or run the module directly with
 `python -m clinical_extraction.tasks.seizure_frequency.gan2026.llm_pipeline_cli`.
-Use `--pipeline` to select the implementation (`llm-first`, `structured`,
-`section-claim-table`, or `architecture2`). The CLI owns cross-pipeline concerns
+Use `--pipeline` to select the implementation (`llm_only_direct_labeler`,
+`llm_only_structured_events`, `llm_only_claim_table_selector`, or
+`hybrid_rules_candidates_llm_adjudicator`). Historical artifacts may still use
+older names, but current code, CLI commands, and new artifacts should use the
+ontology-aligned names. The CLI owns cross-pipeline concerns
 that should stay consistent across experiments:
 
 - pipeline selection, split loading, and optional validation-prefix limits

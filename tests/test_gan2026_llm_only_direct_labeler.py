@@ -2,9 +2,9 @@ import json
 from pathlib import Path
 
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm_first import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm_only_direct_labeler import (
     PROMPT_VERSION,
-    LlmFirstDecisionRecord,
+    LlmOnlyDirectLabelerDecisionRecord,
     build_prompt_input,
     load_reusable_raw_outputs,
     parse_decision_json,
@@ -56,7 +56,7 @@ def test_parse_decision_json_accepts_fenced_json_and_repairs_label() -> None:
 
     decision, errors = parse_decision_json(raw)
 
-    assert isinstance(decision, LlmFirstDecisionRecord)
+    assert isinstance(decision, LlmOnlyDirectLabelerDecisionRecord)
     assert decision.final_label == "2 per month"
     assert errors == ["final_label_repaired: ' 2 PER MONTH ' -> '2 per month'"]
 

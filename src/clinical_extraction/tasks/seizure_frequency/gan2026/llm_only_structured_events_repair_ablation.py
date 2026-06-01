@@ -15,7 +15,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
     load_records_for_split,
     load_split_manifest,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm_structured import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm_only_structured_events import (
     StructuredRepairConfig,
     load_reusable_raw_outputs,
     run_split,
@@ -25,13 +25,13 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
 )
 
 DEFAULT_INPUT_JSONL = Path(
-    "experiments/gan2026_llm_structured_validation750_gpt41mini_v05_completion_2026-06-01.jsonl"
+    "experiments/gan2026_llm_only_structured_events_validation750_gpt41mini_v05_completion_2026-06-01.jsonl"
 )
 DEFAULT_REPORT_PATH = Path(
-    "experiments/gan2026_llm_structured_validation750_v05_repair_ablation_2026-06-01.md"
+    "experiments/gan2026_llm_only_structured_events_validation750_v05_repair_ablation_2026-06-01.md"
 )
 DEFAULT_JSON_PATH = Path(
-    "experiments/gan2026_llm_structured_validation750_v05_repair_ablation_2026-06-01.json"
+    "experiments/gan2026_llm_only_structured_events_validation750_v05_repair_ablation_2026-06-01.json"
 )
 
 
@@ -175,8 +175,9 @@ def write_ablation_report(result: Mapping[str, Any], path: Path, *, json_path: P
                 "",
                 "## Basic Repair Split Interpretation",
                 "",
-                "The clean LLM-first attribution baseline is raw model selection plus "
-                "format-preserving basic label repair only. This condition keeps casing, "
+                "The clean LLM-only structured-events attribution baseline is raw "
+                "model selection plus format-preserving basic label repair only. "
+                "This condition keeps casing, "
                 "plural units, compact rate syntax, event-word cleanup, and directly "
                 "stated every/each-period phrasing, but excludes vague-quantity remapping, "
                 "semantic fallback to unknown/no-reference, impossible-denominator fallback, "
@@ -195,8 +196,9 @@ def write_ablation_report(result: Mapping[str, Any], path: Path, *, json_path: P
                 "vague-quantity remapping.",
                 "",
                 "Use the format-preserving condition, not the full basic condition, for "
-                "clean LLM-first attribution. Treat the full basic condition as a named "
-                "deterministic repair module if it is retained.",
+                "clean LLM-only structured-events attribution. Treat the full "
+                "basic condition as a named deterministic repair module if it "
+                "is retained.",
             ]
         )
     lines.extend(["", "## Top Changed Rows", ""])
@@ -412,7 +414,10 @@ def _yes_no(value: bool) -> str:
 
 def main(argv: Sequence[str] | None = None) -> None:
     parser = argparse.ArgumentParser(
-        description="Run a no-call repair-family ablation over structured LLM raw outputs."
+        description=(
+            "Run a no-call repair-family ablation over LLM-only structured-events "
+            "raw outputs."
+        )
     )
     parser.add_argument("--split", choices=("train", "validation"), default="validation")
     parser.add_argument("--reuse-jsonl", type=Path, default=DEFAULT_INPUT_JSONL)

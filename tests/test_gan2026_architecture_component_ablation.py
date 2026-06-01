@@ -5,11 +5,13 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.architecture_component_
     Architecture,
     ConditionSpec,
     compare_condition_rows,
-    condition_from_architecture2_rows,
     condition_from_llm_rows,
     load_jsonl,
     summarize_condition,
     write_component_ablation_report,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.architecture_component_ablation import (
+    condition_from_hybrid_rules_candidates_llm_adjudicator_rows as condition_from_hybrid_rows,
 )
 
 
@@ -51,7 +53,7 @@ def test_condition_from_llm_rows_accepts_direct_and_structured_artifacts() -> No
     assert condition.rows[1].prediction_label == "unknown"
 
 
-def test_architecture2_conditions_split_deterministic_top_from_llm_adjudicator() -> None:
+def test_hybrid_conditions_split_deterministic_top_from_llm_adjudicator() -> None:
     source_rows = [
         {
             "source_row_index": 10,
@@ -73,7 +75,7 @@ def test_architecture2_conditions_split_deterministic_top_from_llm_adjudicator()
         }
     ]
 
-    deterministic, adjudicator = condition_from_architecture2_rows(source_rows)
+    deterministic, adjudicator = condition_from_hybrid_rows(source_rows)
 
     assert deterministic.architecture == Architecture.DETERMINISTIC_THEN_LLM
     assert deterministic.name == "deterministic_candidate_generator_top"

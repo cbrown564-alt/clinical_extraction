@@ -36,11 +36,15 @@ DEFAULT_ADJUDICATOR_JSONL_PATH = Path(
 DEFAULT_ADJUDICATOR_REPORT_PATH = Path(
     "experiments/gan2026_v1_dspy_adjudicator_devset_gpt41mini_2026-05-31.md"
 )
-DEFAULT_ARCH2_JSONL_PATH = Path(
-    "experiments/gan2026_arch2_validation25_gpt41mini_v01_2026-06-01.jsonl"
+DEFAULT_HYBRID_RULES_CANDIDATES_LLM_ADJUDICATOR_JSONL_PATH = Path(
+    "experiments/"
+    "gan2026_hybrid_rules_candidates_llm_adjudicator_validation25_gpt41mini_v01_"
+    "2026-06-01.jsonl"
 )
-DEFAULT_ARCH2_REPORT_PATH = Path(
-    "experiments/gan2026_arch2_validation25_gpt41mini_v01_2026-06-01.md"
+DEFAULT_HYBRID_RULES_CANDIDATES_LLM_ADJUDICATOR_REPORT_PATH = Path(
+    "experiments/"
+    "gan2026_hybrid_rules_candidates_llm_adjudicator_validation25_gpt41mini_v01_"
+    "2026-06-01.md"
 )
 
 
@@ -222,17 +226,17 @@ def build_prompt_input(example: Mapping[str, Any]) -> str:
     return json.dumps(payload, ensure_ascii=False, sort_keys=True)
 
 
-def build_architecture2_prompt_input(
+def build_hybrid_rules_candidates_llm_adjudicator_prompt_input(
     record: Any,
     diagnostics: Mapping[str, Any],
 ) -> str:
-    """Build a split-wide Architecture 2 prompt without gold labels or V1 scores."""
+    """Build a split-wide hybrid prompt without gold labels or V1 scores."""
 
-    candidate_events = _architecture2_candidate_events(diagnostics)
+    candidate_events = _hybrid_rules_candidates_llm_adjudicator_candidate_events(diagnostics)
     deterministic_final = diagnostics.get("final_selection") or {}
     payload = {
         "prompt_version": PROMPT_VERSION,
-        "architecture": "gan2026_architecture_2_deterministic_candidates_llm_adjudicator",
+        "architecture": "gan2026_hybrid_rules_candidates_llm_adjudicator",
         "claim_type": "hybrid_llm_adjudicator",
         "task": "Gan 2026 seizure-frequency candidate adjudication",
         "source_row_index": record.source_row_index,
@@ -407,7 +411,7 @@ def run_adjudicator_devset(
     return records, metadata
 
 
-def run_architecture2_split(
+def run_hybrid_rules_candidates_llm_adjudicator_split(
     records: Sequence[Any],
     *,
     split: str,
@@ -424,7 +428,7 @@ def run_architecture2_split(
     checkpoint_jsonl_path: Path | None = None,
     checkpoint_report_path: Path | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
-    """Run Architecture 2 over ordinary Gan split records."""
+    """Run the hybrid rules-candidates LLM-adjudicator pipeline over Gan records."""
 
     reuse_raw_outputs = reuse_raw_outputs or {}
     metadata = _run_metadata(
@@ -434,7 +438,7 @@ def run_architecture2_split(
         max_tokens=max_tokens,
         mode=mode,
     )
-    metadata["architecture"] = "architecture_2_deterministic_candidates_llm_adjudicator"
+    metadata["architecture"] = "hybrid_rules_candidates_llm_adjudicator"
     metadata["claim_type"] = "hybrid_llm_adjudicator"
     metadata["dspy_cache"] = dspy_cache
     metadata["reuse_source"] = reuse_source
@@ -456,7 +460,10 @@ def run_architecture2_split(
     for record in records:
         deterministic_result = pipeline.run(record)
         diagnostics = deterministic_result.diagnostics
-        prompt_input_json = build_architecture2_prompt_input(record, diagnostics)
+        prompt_input_json = build_hybrid_rules_candidates_llm_adjudicator_prompt_input(
+            record,
+            diagnostics,
+        )
         raw_output = reuse_raw_outputs.get(record.source_row_index, "")
         call_error: str | None = None
         reused_raw_output = raw_output != ""
@@ -512,7 +519,7 @@ def run_architecture2_split(
             }
         )
         if progress_every and len(output_rows) % progress_every == 0:
-            _emit_arch2_checkpoint(
+            _emit_hybrid_candidate_adjudicator_checkpoint(
                 output_rows,
                 metadata,
                 total=len(records),
@@ -520,11 +527,13 @@ def run_architecture2_split(
                 report_path=checkpoint_report_path,
             )
 
-    metadata["summary"] = summarize_architecture2_records(output_rows)
+    metadata["summary"] = summarize_hybrid_rules_candidates_llm_adjudicator_records(output_rows)
     return output_rows, metadata
 
 
-def summarize_architecture2_records(records: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
+def summarize_hybrid_rules_candidates_llm_adjudicator_records(
+    records: Sequence[Mapping[str, Any]],
+) -> dict[str, Any]:
     count = len(records)
     decisions = [record for record in records if record.get("decision_record")]
     parse_failures = sum(
@@ -551,13 +560,21 @@ def summarize_architecture2_records(records: Sequence[Mapping[str, Any]]) -> dic
         bool(((record.get("scores") or {}).get("adjudicator") or {}).get("pragmatic_correct"))
         for record in records
     )
-    changed = sum(_arch2_changed_final_label(record) for record in records)
+    changed = sum(_hybrid_candidate_adjudicator_changed_final_label(record) for record in records)
     improved = sum(
-        _arch2_changed_correctness(record, from_correct=False, to_correct=True)
+        _hybrid_candidate_adjudicator_changed_correctness(
+            record,
+            from_correct=False,
+            to_correct=True,
+        )
         for record in records
     )
     regressed = sum(
-        _arch2_changed_correctness(record, from_correct=True, to_correct=False)
+        _hybrid_candidate_adjudicator_changed_correctness(
+            record,
+            from_correct=True,
+            to_correct=False,
+        )
         for record in records
     )
     return {
@@ -623,11 +640,14 @@ def write_adjudicator_jsonl(records: Sequence[Mapping[str, Any]], path: Path) ->
             handle.write(json.dumps(record, ensure_ascii=False, sort_keys=True) + "\n")
 
 
-def write_architecture2_jsonl(records: Sequence[Mapping[str, Any]], path: Path) -> None:
+def write_hybrid_rules_candidates_llm_adjudicator_jsonl(
+    records: Sequence[Mapping[str, Any]],
+    path: Path,
+) -> None:
     write_adjudicator_jsonl(records, path)
 
 
-def load_architecture2_raw_outputs(path: Path) -> dict[int, str]:
+def load_hybrid_rules_candidates_llm_adjudicator_raw_outputs(path: Path) -> dict[int, str]:
     reusable: dict[int, str] = {}
     if not path.exists():
         return reusable
@@ -642,7 +662,7 @@ def load_architecture2_raw_outputs(path: Path) -> dict[int, str]:
     return reusable
 
 
-def write_architecture2_report(
+def write_hybrid_rules_candidates_llm_adjudicator_report(
     records: Sequence[Mapping[str, Any]],
     metadata: Mapping[str, Any],
     path: Path,
@@ -651,7 +671,7 @@ def write_architecture2_report(
 ) -> None:
     summary = metadata["summary"]
     lines = [
-        "# Gan 2026 Architecture 2 Candidate Adjudicator",
+        "# Gan 2026 Hybrid Rules-Candidates LLM Adjudicator",
         "",
         f"Date: {metadata['date']}",
         "",
@@ -854,7 +874,9 @@ def _compare_to_reference(
     }
 
 
-def _architecture2_candidate_events(diagnostics: Mapping[str, Any]) -> list[dict[str, Any]]:
+def _hybrid_rules_candidates_llm_adjudicator_candidate_events(
+    diagnostics: Mapping[str, Any],
+) -> list[dict[str, Any]]:
     normalized_by_id = {
         event.get("event_id"): event for event in diagnostics.get("normalized_events", [])
     }
@@ -929,14 +951,14 @@ def _candidate_recall(record: Any, diagnostics: Mapping[str, Any]) -> dict[str, 
     }
 
 
-def _arch2_changed_final_label(record: Mapping[str, Any]) -> bool:
+def _hybrid_candidate_adjudicator_changed_final_label(record: Mapping[str, Any]) -> bool:
     scores = record.get("scores") or {}
     deterministic = scores.get("deterministic_top") or {}
     adjudicator = scores.get("adjudicator") or {}
     return bool(adjudicator) and deterministic.get("final_label") != adjudicator.get("final_label")
 
 
-def _arch2_changed_correctness(
+def _hybrid_candidate_adjudicator_changed_correctness(
     record: Mapping[str, Any],
     *,
     from_correct: bool,
@@ -952,7 +974,7 @@ def _arch2_changed_correctness(
     )
 
 
-def _emit_arch2_checkpoint(
+def _emit_hybrid_candidate_adjudicator_checkpoint(
     records: Sequence[Mapping[str, Any]],
     metadata: dict[str, Any],
     *,
@@ -960,11 +982,16 @@ def _emit_arch2_checkpoint(
     jsonl_path: Path | None,
     report_path: Path | None,
 ) -> None:
-    metadata["summary"] = summarize_architecture2_records(records)
+    metadata["summary"] = summarize_hybrid_rules_candidates_llm_adjudicator_records(records)
     if jsonl_path is not None:
-        write_architecture2_jsonl(records, jsonl_path)
+        write_hybrid_rules_candidates_llm_adjudicator_jsonl(records, jsonl_path)
     if report_path is not None and jsonl_path is not None:
-        write_architecture2_report(records, metadata, report_path, jsonl_path=jsonl_path)
+        write_hybrid_rules_candidates_llm_adjudicator_report(
+            records,
+            metadata,
+            report_path,
+            jsonl_path=jsonl_path,
+        )
     progress = {
         "processed": len(records),
         "total": total,
