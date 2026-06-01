@@ -104,6 +104,11 @@ ownership, and deterministic repair boundaries explicitly.
   jerk, post-change burst, dated-sequence, and elapsed-anchor repairs live in
   one typed helper module. Behavior is preserved; Ruff, mypy, focused
   structured-events tests, and full pytest are green.
+- Phase 5 continued with a claim-table parser ownership split:
+  `claim_table_parser.py` now owns the LLM-only claim-table Pydantic records,
+  model-shape/schema repair, and selected-claim validation. The claim-table
+  runner now owns prompt/run/scoring/report orchestration. Behavior is
+  preserved; Ruff, mypy, focused claim-table tests, and full pytest are green.
 
 ## Key References
 
@@ -135,8 +140,8 @@ ownership, and deterministic repair boundaries explicitly.
 ### Now
 
 - Continue the codebase thermonuclear review Phase 5 behavior splits without
-  changing scorer behavior: next candidates are claim-table/hybrid parser or
-  report ownership splits, or other large-file ownership splits.
+  changing scorer behavior: next candidates are hybrid parser or report
+  ownership splits, or other large-file ownership splits.
 - Design hybrid rules-candidates LLM adjudicator v0.2 as a conservative/targeted adjudicator with
   deterministic fallback and named overreach-family gates; repeat 25/50/250.
 - Design LLM-only claim-table selector v5 as claim-table plus constrained selector, with
@@ -248,10 +253,17 @@ ownership, and deterministic repair boundaries explicitly.
   `python -m pytest tests/test_gan2026_llm_only_structured_events.py -q`, and
   `python -m pytest -q` are green (`595 passed`, 11 third-party DSPy
   deprecation warnings).
+- 2026-06-01: Continued Phase 5 by extracting the LLM-only claim-table parser
+  from `llm_only_claim_table_selector.py` into `claim_table_parser.py`. The
+  runner is now 1018 lines and the parser module is 223 lines. Verification:
+  `python -m ruff check .`, `python -m mypy src`,
+  `python -m pytest tests/test_gan2026_llm_only_claim_table_selector.py -q`,
+  and `python -m pytest -q` are green (`595 passed`, 11 third-party DSPy
+  deprecation warnings).
 
 ## Immediate Next Step
 
 Continue the Phase 5 behavior-preserving splits from the remaining large
-behavior modules, preferably a claim-table/hybrid parser or report ownership
-split before returning to the validation-only v0.2/v5 experiment cycle. Do not
-inspect holdout rows.
+behavior modules, preferably a hybrid parser or report ownership split before
+returning to the validation-only v0.2/v5 experiment cycle. Do not inspect
+holdout rows.
