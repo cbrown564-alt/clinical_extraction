@@ -147,6 +147,13 @@ ownership, and deterministic repair boundaries explicitly.
   remains the public derivation surface and is down to 425 lines. Behavior is
   preserved; Ruff, mypy, focused normalize/structured-events tests, and full
   pytest are green.
+- Phase 5 continued with the selected-evidence rate-derivation split:
+  `selected_evidence_rate.py` now owns selected-evidence rate, interval,
+  upper-bound, daily, fortnight, quarter, and year-to-date rate idioms.
+  `selected_evidence_derivation.py` remains the compatibility/public
+  orchestration surface and is down to 159 lines. Behavior is preserved;
+  Ruff, mypy, focused normalize/structured-events tests, and full pytest are
+  green.
 
 ## Key References
 
@@ -179,7 +186,7 @@ ownership, and deterministic repair boundaries explicitly.
 
 - Continue the codebase thermonuclear review Phase 5 behavior splits without
   changing scorer behavior: next candidates are artifact-analysis helpers,
-  selected-evidence cluster/rate derivation, or other ownership splits.
+  run-registry scaffolding, or other ownership splits.
 - Design hybrid rules-candidates LLM adjudicator v0.2 as a conservative/targeted adjudicator with
   deterministic fallback and named overreach-family gates; repeat 25/50/250.
 - Design LLM-only claim-table selector v5 as claim-table plus constrained selector, with
