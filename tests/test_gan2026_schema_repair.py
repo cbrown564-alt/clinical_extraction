@@ -1,5 +1,6 @@
 from clinical_extraction.tasks.seizure_frequency.gan2026.schema_repair import (
     repair_decision_payload,
+    repair_structured_extraction_payload,
 )
 
 
@@ -35,3 +36,31 @@ def test_repair_decision_payload_handles_llm_answer_kind_variants() -> None:
         assert repair_decision_payload({"answer_kind": answer_kind}) == {
             "answer_kind": "frequency"
         }
+
+
+def test_repair_structured_extraction_payload_handles_cluster_final_kind_alias() -> None:
+    payload = repair_structured_extraction_payload(
+        {
+            "events": [{"kind": "cluster", "temporality": "ongoing"}],
+            "selection": {"final_kind": "cluster_frequency"},
+        }
+    )
+
+    assert payload == {
+        "events": [{"kind": "cluster_frequency", "temporality": "current"}],
+        "selection": {"final_kind": "frequency", "confidence": "medium"},
+    }
+
+
+def test_repair_structured_extraction_payload_handles_last_event_final_kind_alias() -> None:
+    payload = repair_structured_extraction_payload(
+        {
+            "events": [{"kind": "last event"}],
+            "selection": {"final_kind": "last_event_only", "confidence": 0.9},
+        }
+    )
+
+    assert payload == {
+        "events": [{"kind": "last_event_only"}],
+        "selection": {"final_kind": "frequency", "confidence": "high"},
+    }

@@ -1,4 +1,11 @@
-"""Reusable CLI harness for Gan 2026 LLM-backed pipelines."""
+"""General CLI harness for Gan 2026 LLM-backed pipelines.
+
+This module is intentionally pipeline-agnostic: direct extractors, structured
+extractors, DSPy programs, and future hybrid LLM pipelines should bind into this
+runner by providing a small callback spec. Pipeline modules own extraction and
+report formatting; this module owns shared CLI concerns such as split loading,
+raw-output reuse, DSPy cache control, progress cadence, and checkpoint paths.
+"""
 
 from __future__ import annotations
 
@@ -16,7 +23,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
 )
 
 
-class RunSplitFn(Protocol):
+class PipelineRunFn(Protocol):
     def __call__(
         self,
         records: Sequence[GanFrequencyRecord],
@@ -37,7 +44,7 @@ class RunSplitFn(Protocol):
     ) -> tuple[list[dict[str, Any]], dict[str, Any]]: ...
 
 
-class WriteReportFn(Protocol):
+class PipelineReportWriter(Protocol):
     def __call__(
         self,
         rows: Sequence[Mapping[str, Any]],
@@ -49,19 +56,21 @@ class WriteReportFn(Protocol):
 
 
 @dataclass(frozen=True)
-class LlmPipelineCliSpec:
+class GanLlmPipelineCliSpec:
+    """Callbacks and defaults needed to expose a Gan LLM pipeline on the CLI."""
+
     description: str
     default_jsonl_path: Path
     default_report_path: Path
-    run_split: RunSplitFn
+    run_split: PipelineRunFn
     write_jsonl: Callable[[Sequence[Mapping[str, Any]], Path], None]
-    write_report: WriteReportFn
+    write_report: PipelineReportWriter
     load_reusable_raw_outputs: Callable[[Path], dict[int, str]]
     default_model: str = "openai/gpt-4.1-mini"
     default_max_tokens: int = 900
 
 
-def run_cli(spec: LlmPipelineCliSpec, argv: Sequence[str] | None = None) -> None:
+def run_cli(spec: GanLlmPipelineCliSpec, argv: Sequence[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description=spec.description)
     parser.add_argument("--split", choices=("train", "validation"), default="validation")
     parser.add_argument("--jsonl", type=Path, default=spec.default_jsonl_path)
@@ -127,3 +136,8 @@ def run_cli(spec: LlmPipelineCliSpec, argv: Sequence[str] | None = None) -> None
     spec.write_jsonl(rows, args.jsonl)
     spec.write_report(rows, metadata, args.markdown, jsonl_path=args.jsonl)
     print(json.dumps(metadata["summary"], sort_keys=True))
+
+
+# Backward-compatible alias for the first pipeline bindings that imported the
+# old name while the shared runner was being split out.
+LlmPipelineCliSpec = GanLlmPipelineCliSpec
