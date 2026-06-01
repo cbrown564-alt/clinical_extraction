@@ -21,7 +21,7 @@ def write_report(
 ) -> None:
     summary = metadata["summary"]
     lines = [
-        "# Gan 2026 LLM-Only Minimal Evidence Selector V0",
+        "# Gan 2026 LLM-Only Minimal Evidence Selector V2",
         "",
         f"Date: {metadata['date']}",
         "",
@@ -30,12 +30,13 @@ def write_report(
         "",
         "## Experiment Unit",
         "",
-        "Hypothesis: a minimal model-boundary schema can capture the prediction-bearing "
-        "answer and exact evidence while deterministic sidecars recover rich diagnostics.",
+        "Hypothesis: a minimal model-boundary schema can capture the clinically selected "
+        "source-near answer and exact evidence while deterministic sidecars recover scorer "
+        "labels and rich diagnostics.",
         "",
-        "Prediction-bearing component: model-produced `answer` object. Deterministic code "
-        "validates structure and evidence, runs strict scorer-format repair and frozen "
-        "clean scorer-facing policy, derives diagnostic state, and scores each layer.",
+        "Model task: produce `answer.answer_text` and exact selected evidence. Deterministic "
+        "code validates structure and evidence, derives scorer-facing labels from the selected "
+        "evidence, derives diagnostic state, and scores each layer.",
         "",
         f"Data surface: `{metadata['split']}` split, `{metadata['split_manifest']}`, "
         f"{summary['examples']} rows.",
@@ -76,7 +77,7 @@ def write_report(
         f"- Exact supporting-fact evidence substrings: "
         f"{summary['supporting_fact_evidence_valid']} / "
         f"{summary['supporting_fact_evidence_total']}",
-        f"- Raw minimal-answer score: Purist {summary['raw_purist_accuracy']:.4f} "
+        f"- Raw source-near answer score: Purist {summary['raw_purist_accuracy']:.4f} "
         f"({summary['raw_purist_correct']} / {summary['examples']}), Pragmatic "
         f"{summary['raw_pragmatic_accuracy']:.4f} "
         f"({summary['raw_pragmatic_correct']} / {summary['examples']})",

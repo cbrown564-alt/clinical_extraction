@@ -30,40 +30,41 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build
 from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label_clean_scorer_facing,
     repair_prediction_label_format_preserving,
+    repair_prediction_label_with_evidence,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.reports.minimal_evidence_report import (
     write_report,
 )
 
-PROMPT_VERSION = "gan2026_llm_only_minimal_evidence_selector_v0"
+PROMPT_VERSION = "gan2026_llm_only_minimal_evidence_selector_v2"
 PROMPT_POLICY_TAXONOMY: list[dict[str, str]] = [
     {
-        "policy_id": "mes_v0.schema.shallow_json_object",
+        "policy_id": "mes_v2.schema.shallow_json_object",
         "controlled_variable": "minimal_schema_shape",
         "portability": "general",
         "status": "active",
         "description": "Prompt requires a shallow answer plus supporting_facts JSON object.",
     },
     {
-        "policy_id": "mes_v0.evidence.exact_answer_substring",
+        "policy_id": "mes_v2.evidence.exact_answer_substring",
         "controlled_variable": "answer_evidence_substring_policy",
         "portability": "seizure_frequency",
         "status": "active",
         "description": "Prompt requires answer.evidence to be copied from the note.",
     },
     {
-        "policy_id": "mes_v0.answer.source_near_text",
+        "policy_id": "mes_v2.answer.source_near_text",
         "controlled_variable": "source_near_answer_policy",
         "portability": "seizure_frequency",
         "status": "active",
-        "description": "Prompt asks for source-near answer_text rather than rich selector state.",
+        "description": "Prompt asks for source-near answer text; normalization is downstream.",
     },
 ]
 DEFAULT_JSONL_PATH = Path(
-    "experiments/gan2026_llm_only_minimal_evidence_selector_validation25_v0_2026-06-01.jsonl"
+    "experiments/gan2026_llm_only_minimal_evidence_selector_validation25_v2_2026-06-01.jsonl"
 )
 DEFAULT_REPORT_PATH = Path(
-    "experiments/gan2026_llm_only_minimal_evidence_selector_validation25_v0_2026-06-01.md"
+    "experiments/gan2026_llm_only_minimal_evidence_selector_validation25_v2_2026-06-01.md"
 )
 
 
@@ -152,7 +153,6 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
             ),
             "Do not return markdown, Python dict syntax, comments, or any extra top-level keys.",
             "Do not create a nested final_query object.",
-            "The answer object is the prediction-bearing model output.",
             (
                 "Use answer.state to describe the selected answer family: frequency, "
                 "cluster_frequency, seizure_free, unknown_frequency, no_frequency_reference, "
@@ -168,10 +168,6 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "If there are competing or contextual seizure-frequency facts, include a few "
                 "supporting_facts rows. Keep this short. Use an empty list only when no "
                 "supporting fact can be copied cleanly."
-            ),
-            (
-                "Do not fill cluster_axis, boundary_state, selector_decision, temporality, "
-                "assertion_status, section, semiology, or uncertainty. Those are derived later."
             ),
             (
                 "Use no_frequency_reference only when the note contains no usable "
@@ -445,7 +441,7 @@ def _score_layers(
 ) -> dict[str, dict[str, Any]]:
     raw_label = _raw_answer_label(extraction)
     strict_label = repair_prediction_label_format_preserving(raw_label) if raw_label else None
-    clean_label = repair_prediction_label_clean_scorer_facing(raw_label) if raw_label else None
+    clean_label = _selected_evidence_repaired_label(record, extraction, raw_label)
     return {
         "raw": _score_label(record, raw_label),
         "strict_format": _score_label(record, strict_label),
@@ -462,6 +458,22 @@ def _raw_answer_label(extraction: MinimalEvidenceExtractionRecord | None) -> str
     if state == "no_frequency_reference":
         return "no seizure frequency reference"
     return extraction.answer.answer_text
+
+
+def _selected_evidence_repaired_label(
+    record: GanFrequencyRecord,
+    extraction: MinimalEvidenceExtractionRecord | None,
+    raw_label: str | None,
+) -> str | None:
+    if raw_label is None:
+        return None
+    if extraction is None:
+        return repair_prediction_label_clean_scorer_facing(raw_label)
+    return repair_prediction_label_with_evidence(
+        raw_label,
+        extraction.answer.evidence,
+        context_text=record.note_text,
+    )
 
 
 def _score_label(record: GanFrequencyRecord, label: str | None) -> dict[str, Any]:
@@ -543,7 +555,7 @@ def _derived_diagnostics(
         "final_label": clean.get("final_label"),
         "semantic_kind": _semantic_kind_for_state(extraction.answer.state),
         "monthly_frequency": clean.get("predicted_monthly_frequency"),
-        "normalization_policy": "frozen_clean_scorer_policy_v0",
+        "normalization_policy": "selected_evidence_repair_after_minimal_answer_v2",
     }
     return {
         "derived_state": {
@@ -616,7 +628,7 @@ def _repair_answer_payload(answer: Mapping[str, Any], notes: list[str]) -> dict[
         repaired["state"] = _state_from_answer_kind(repaired["answer_kind"])
         notes.append("schema_repair: answer_kind mapped to answer.state")
     if "answer_text" not in repaired:
-        for alias in ("final_label", "raw_selected_frequency", "normalized_rate"):
+        for alias in ("raw_selected_frequency", "normalized_rate", "final_label"):
             if isinstance(repaired.get(alias), str):
                 repaired["answer_text"] = repaired[alias]
                 notes.append(f"schema_repair: {alias} mapped to answer.answer_text")
@@ -655,6 +667,9 @@ def _repair_fact_payload(
         notes.append("schema_repair: missing fact_id filled")
     if "role" not in repaired:
         repaired["role"] = "context"
+    if repaired.get("role") == "cluster_context":
+        repaired["role"] = "context"
+        notes.append("schema_repair: cluster_context role mapped to context")
     if "state" not in repaired and "claim_type" in repaired:
         repaired["state"] = _state_from_claim_type(repaired["claim_type"])
         notes.append("schema_repair: claim_type mapped to fact.state")
@@ -667,6 +682,9 @@ def _repair_fact_payload(
     if "fact_text" not in repaired and isinstance(repaired.get("evidence"), str):
         repaired["fact_text"] = repaired["evidence"]
         notes.append("schema_repair: evidence copied to fact_text")
+    if "evidence" not in repaired and isinstance(repaired.get("fact_text"), str):
+        repaired["evidence"] = repaired["fact_text"]
+        notes.append("schema_repair: fact_text copied to evidence")
     if "state" in repaired:
         repaired["state"] = _state_alias(_unwrap_singleton(repaired["state"]))
     return {
@@ -893,6 +911,6 @@ def _run_metadata(
         extra={
             "pipeline_name": PROMPT_VERSION,
             "prompt_policy_ids": [policy["policy_id"] for policy in PROMPT_POLICY_TAXONOMY],
-            "schema_contract": "minimal_model_boundary_plus_derived_diagnostics_v0",
+            "schema_contract": "minimal_source_near_answer_plus_selected_evidence_repair_v2",
         },
     )

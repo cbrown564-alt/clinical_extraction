@@ -14,11 +14,11 @@ def _record() -> GanFrequencyRecord:
     return GanFrequencyRecord(
         source_row_index=10,
         note_text=(
-            "Interval history: Present seizure frequency is two focal seizures per month. "
+            "Interval history: Current seizure frequency is two per month. "
             "Past history included daily seizures in 2020."
         ),
         gold_label="2 per month",
-        gold_reference="two focal seizures per month",
+        gold_reference="Current seizure frequency is two per month",
         labels_match_all_categories=True,
         quotes_ok_all_categories=True,
         row_ok=True,
@@ -30,13 +30,13 @@ def _record() -> GanFrequencyRecord:
     )
 
 
-def _raw_minimal(answer_text: str = "two focal seizures per month") -> str:
+def _raw_minimal(answer_text: str = "Current seizure frequency is two per month") -> str:
     return json.dumps(
         {
             "answer": {
                 "state": "frequency",
                 "answer_text": answer_text,
-                "evidence": "two focal seizures per month",
+                "evidence": "Current seizure frequency is two per month",
                 "confidence": "high",
                 "reason": "The interval history gives the current frequency.",
             },
@@ -45,8 +45,8 @@ def _raw_minimal(answer_text: str = "two focal seizures per month") -> str:
                     "fact_id": "f1",
                     "role": "selected",
                     "state": "frequency",
-                    "fact_text": "two focal seizures per month",
-                    "evidence": "two focal seizures per month",
+                    "fact_text": "Current seizure frequency is two per month",
+                    "evidence": "Current seizure frequency is two per month",
                 },
                 {
                     "fact_id": "f2",
@@ -64,13 +64,19 @@ def test_build_prompt_input_exposes_minimal_contract_without_rich_selector_state
     prompt = json.loads(minimal_selector.build_prompt_input(_record()))
 
     assert prompt["prompt_version"] == minimal_selector.PROMPT_VERSION
-    assert prompt["prompt_version"] == "gan2026_llm_only_minimal_evidence_selector_v0"
+    assert prompt["prompt_version"] == "gan2026_llm_only_minimal_evidence_selector_v2"
     assert prompt["prompt_policy_taxonomy"] == minimal_selector.PROMPT_POLICY_TAXONOMY
     assert prompt["answer_schema"]["answer_text"] == "source-near selected answer text"
+    assert "final_label" not in prompt["answer_schema"]
     assert prompt["supporting_fact_schema"]["fact_id"] == "stable string such as f1"
     prompt_text = json.dumps(prompt)
     assert "Do not create a nested final_query object" in prompt_text
-    assert "Do not fill cluster_axis" in prompt_text
+    assert "answer.final_label" not in prompt_text
+    assert "convert number words to digits" not in prompt_text
+    assert "convert quarter to 3 month" not in prompt_text
+    assert "prediction-bearing" not in prompt_text
+    assert "Do not fill cluster_axis" not in prompt_text
+    assert "selector_decision" not in prompt_text
     assert "gold_label" not in prompt_text
     assert "candidate_events" not in prompt
     assert "final_query_schema" not in prompt
@@ -85,7 +91,7 @@ def test_parse_minimal_evidence_selector_json_validates_shallow_schema() -> None
 
     assert isinstance(extraction, minimal_selector.MinimalEvidenceExtractionRecord)
     assert extraction.answer.state == "frequency"
-    assert extraction.answer.answer_text == "two focal seizures per month"
+    assert extraction.answer.answer_text == "Current seizure frequency is two per month"
     assert extraction.supporting_facts[0].fact_id == "f1"
     assert errors == []
     assert diagnostics["raw_json_valid"] is True
@@ -101,14 +107,14 @@ def test_parse_minimal_evidence_selector_json_repairs_qwen_style_final_selector_
                     "claim_id": "c1",
                     "claim_type": "frequency",
                     "raw_frequency": "<= four per day",
-                    "evidence": "two focal seizures per month",
+                    "evidence": "Current seizure frequency is two per month",
                 }
             ],
             "final_query": "What is the patient's current seizure frequency?",
             "final_selector": {
                 "answer_kind": "frequency",
                 "final_label": "2 per month",
-                "evidence": "two focal seizures per month",
+                "evidence": "Current seizure frequency is two per month",
                 "reasoning": "The selected claim gives the current frequency.",
             },
         }
@@ -127,6 +133,36 @@ def test_parse_minimal_evidence_selector_json_repairs_qwen_style_final_selector_
     assert diagnostics["extra_fields_seen"] == ["claims", "final_query", "final_selector"]
 
 
+def test_parse_minimal_evidence_selector_json_repairs_missing_fact_evidence() -> None:
+    payload = json.loads(_raw_minimal())
+    del payload["supporting_facts"][0]["evidence"]
+
+    extraction, errors, diagnostics = minimal_selector.parse_minimal_evidence_selector_json(
+        json.dumps(payload)
+    )
+
+    assert extraction is not None
+    assert extraction.supporting_facts[0].evidence == "Current seizure frequency is two per month"
+    assert "schema_repair: fact_text copied to evidence" in errors
+    assert diagnostics["repair_applied"] is True
+
+
+def test_parse_minimal_evidence_selector_json_repairs_cluster_context_role_alias() -> None:
+    payload = json.loads(_raw_minimal())
+    payload["supporting_facts"][0]["role"] = "cluster_context"
+    payload["supporting_facts"][0]["state"] = "cluster_context"
+
+    extraction, errors, diagnostics = minimal_selector.parse_minimal_evidence_selector_json(
+        json.dumps(payload)
+    )
+
+    assert extraction is not None
+    assert extraction.supporting_facts[0].role == "context"
+    assert extraction.supporting_facts[0].state == "cluster_context"
+    assert "schema_repair: cluster_context role mapped to context" in errors
+    assert diagnostics["repair_applied"] is True
+
+
 def test_run_split_records_score_layers_evidence_and_derived_projection() -> None:
     rows, metadata = minimal_selector.run_split(
         [_record()],
@@ -137,19 +173,27 @@ def test_run_split_records_score_layers_evidence_and_derived_projection() -> Non
         max_tokens=100,
         mode="prompt-only",
         dspy_cache=True,
-        reuse_raw_outputs={10: _raw_minimal("2 per month")},
+        reuse_raw_outputs={10: _raw_minimal("Current seizure frequency is two per month")},
     )
 
     row = rows[0]
-    assert metadata["pipeline_name"] == "gan2026_llm_only_minimal_evidence_selector_v0"
-    assert metadata["schema_contract"] == "minimal_model_boundary_plus_derived_diagnostics_v0"
+    assert metadata["pipeline_name"] == "gan2026_llm_only_minimal_evidence_selector_v2"
+    assert metadata["schema_contract"] == (
+        "minimal_source_near_answer_plus_selected_evidence_repair_v2"
+    )
     assert row["minimal_record"]["answer"]["state"] == "frequency"
     assert row["evidence_summary"]["answer_evidence_valid"] is True
     assert row["evidence_summary"]["supporting_fact_evidence_valid"] == 2
-    assert row["score_layers"]["raw"]["scorable"] is True
+    assert row["score_layers"]["raw"]["final_label"] == (
+        "Current seizure frequency is two per month"
+    )
     assert row["score_layers"]["clean_scorer_facing"]["final_label"] == "2 per month"
     assert row["score_layers"]["clean_scorer_facing"]["purist_correct"] is True
     assert row["derived_diagnostics"]["derived_state"]["boundary_state"] == "ordinary_frequency"
+    assert row["derived_diagnostics"]["normalization"]["raw_selected_frequency"] == (
+        "Current seizure frequency is two per month"
+    )
+    assert row["derived_diagnostics"]["normalization"]["final_label"] == "2 per month"
     assert row["derived_diagnostics"]["review_projection"]["final_query"]["derived_from"] == (
         "minimal_answer"
     )
@@ -177,6 +221,33 @@ def test_run_split_maps_boundary_states_to_scorable_sentinels() -> None:
     assert row["score_layers"]["raw"]["final_label"] == "unknown"
     assert row["derived_diagnostics"]["derived_state"]["boundary_state"] == "unknown_frequency"
     assert row["derived_diagnostics"]["normalization"]["semantic_kind"] == "unknown"
+
+
+def test_run_split_derives_clean_label_from_selected_evidence_not_model_normalization() -> None:
+    rows, _ = minimal_selector.run_split(
+        [_record()],
+        split="validation",
+        split_manifest="gan2026_split_v1",
+        model="openai/gpt-4.1-mini",
+        temperature=0.0,
+        max_tokens=100,
+        mode="prompt-only",
+        dspy_cache=True,
+        reuse_raw_outputs={
+            10: _raw_minimal("overall a frequency of <= two seizures per month")
+        },
+    )
+
+    row = rows[0]
+    assert row["minimal_record"]["answer"]["answer_text"] == (
+        "overall a frequency of <= two seizures per month"
+    )
+    assert row["score_layers"]["raw"]["final_label"] == (
+        "overall a frequency of <= two seizures per month"
+    )
+    assert row["score_layers"]["clean_scorer_facing"]["final_label"] == "2 per month"
+    assert row["score_layers"]["clean_scorer_facing"]["scorable"] is True
+    assert row["score_layers"]["clean_scorer_facing"]["purist_correct"] is True
 
 
 def test_summarize_records_counts_contract_and_evidence_failures() -> None:
@@ -217,8 +288,8 @@ def test_write_report_includes_minimal_contract_metadata(tmp_path: Path) -> None
     minimal_selector.write_report(rows, metadata, report_path, jsonl_path=tmp_path / "rows.jsonl")
 
     report = report_path.read_text(encoding="utf-8")
-    assert "Gan 2026 LLM-Only Minimal Evidence Selector V0" in report
+    assert "Gan 2026 LLM-Only Minimal Evidence Selector V2" in report
     assert "Schema contract" in report
-    assert "Raw minimal-answer score" in report
+    assert "Raw source-near answer score" in report
     assert "Contract And Evidence Issues" in report
     assert "cluster_axis=none" in report
