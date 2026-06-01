@@ -13,9 +13,11 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.candidates import (
     RawCandidate,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanRecord
-from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.label_parser import (
     FrequencyLabelKind,
     label_to_frequency_record,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.rule_metadata import (

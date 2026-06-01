@@ -7,7 +7,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
 from clinical_extraction.tasks.seizure_frequency.gan2026.evaluate import (
     evaluate_frequency_records,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.label_parser import (
     FrequencyLabelKind,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline_v1 import (

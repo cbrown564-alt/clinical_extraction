@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
+from clinical_extraction.tasks.seizure_frequency.gan2026.label_parser import FrequencyLabelKind
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_only_claim_table_selector import (
     PROMPT_POLICY_TAXONOMY,
     PROMPT_VERSION,
@@ -12,7 +13,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm_only_claim_table_se
     summarize_records,
     write_report,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import FrequencyLabelKind
 
 
 def _record() -> GanFrequencyRecord:

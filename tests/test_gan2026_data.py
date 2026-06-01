@@ -7,7 +7,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
     load_records_with_monthly_frequency,
     load_split_manifest,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import FrequencyLabelKind
+from clinical_extraction.tasks.seizure_frequency.gan2026.label_parser import FrequencyLabelKind
 
 DATA_PATH = Path("data/Gan (2026)/synthetic_data_subset_1500.json")
 

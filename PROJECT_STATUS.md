@@ -70,6 +70,11 @@ ownership, and deterministic repair boundaries explicitly.
 - The codebase thermonuclear review consolidation phase has started: shared
   Git/Python run metadata and common report-provenance rendering now live in
   task-level helpers used by the current LLM-only and hybrid Gan runners.
+- Phase 5 of the codebase thermonuclear review has started with a
+  behavior-preserving Gan label-parser extraction: label kind/record semantics,
+  bounds parsing, and monthly-frequency conversion now live in `label_parser.py`,
+  while `normalize.py` remains the benchmark repair and scorer-facing
+  normalization layer.
 
 ## Key References
 
@@ -100,6 +105,9 @@ ownership, and deterministic repair boundaries explicitly.
 
 ### Now
 
+- Continue the codebase thermonuclear review Phase 5 behavior splits without
+  changing scorer behavior: next candidates are benchmark repair/gold policy,
+  selected-evidence derivation, or temporal/date helpers.
 - Design hybrid rules-candidates LLM adjudicator v0.2 as a conservative/targeted adjudicator with
   deterministic fallback and named overreach-family gates; repeat 25/50/250.
 - Design LLM-only claim-table selector v5 as claim-table plus constrained selector, with
@@ -174,10 +182,14 @@ ownership, and deterministic repair boundaries explicitly.
   `reports.py` and wiring direct-labeler, structured-events, claim-table
   selector, and hybrid adjudicator reports through them; Ruff, mypy, and full
   pytest are green.
+- 2026-06-01: Started Phase 5 of the codebase thermonuclear review by
+  extracting Gan label parsing into `label_parser.py` and updating production
+  and test imports to use the new ownership boundary; Ruff, focused tests,
+  mypy, and full pytest are green.
 
 ## Immediate Next Step
 
-Implement the next validation-only revision cycle: hybrid rules-candidates LLM
-adjudicator v0.2 conservative adjudication and LLM-only claim-table selector v5
-constrained selection. Do not
-inspect holdout rows.
+Continue the Phase 5 behavior-preserving split from `normalize.py`, preferably
+by extracting benchmark-format repair or clean scorer-facing gold policy before
+returning to the validation-only v0.2/v5 experiment cycle. Do not inspect
+holdout rows.

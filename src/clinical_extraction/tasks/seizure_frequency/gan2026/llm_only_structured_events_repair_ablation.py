@@ -15,13 +15,13 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
     load_records_for_split,
     load_split_manifest,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.label_parser import (
+    label_to_frequency_record,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_only_structured_events import (
     StructuredRepairConfig,
     load_reusable_raw_outputs,
     run_split,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
-    label_to_frequency_record,
 )
 
 DEFAULT_INPUT_JSONL = Path(

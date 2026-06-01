@@ -17,10 +17,12 @@ from pydantic import BaseModel, ConfigDict, ValidationError
 
 from clinical_extraction.core.evidence import evidence_is_substring
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
+from clinical_extraction.tasks.seizure_frequency.gan2026.label_parser import (
+    label_to_frequency_record,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.labels import map_pragmatic, map_purist
 from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     evidence_describes_current_non_epileptic_events,
-    label_to_frequency_record,
     monthly_diary_label_from_text,
     repair_prediction_label,
     repair_prediction_label_clean_scorer_facing,
