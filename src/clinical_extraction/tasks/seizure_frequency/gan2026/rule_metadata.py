@@ -28,6 +28,7 @@ class RuleGroup(StrEnum):
     TEMPORAL_SELECTION = "temporal_selection"
     GAN_SHORTHAND = "gan_shorthand"
     BENCHMARK_REPAIR = "benchmark_repair"
+    GOLD_NORMALIZATION_POLICY = "gold_normalization_policy"
 
 
 class Portability(StrEnum):
