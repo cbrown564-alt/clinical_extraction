@@ -57,17 +57,18 @@ def _raw_structured() -> str:
 def test_repair_ablation_ladder_matches_audit_condition_order() -> None:
     assert [name for name, _ in repair_ablation_ladder()] == [
         "A_raw_llm_final_label_only",
-        "B_basic_gan_label_repair",
-        "C_selected_evidence_repair",
-        "D_monthly_diary_arithmetic",
-        "E_usual_interval_override",
-        "F_breakthrough_after_seizure_free",
-        "G_non_epileptic_override",
-        "H_residual_jerk_date_anchor",
-        "I_post_change_burst",
-        "J_dated_sequence",
-        "K_elapsed_anchor",
-        "L_full_current_stack",
+        "B_format_preserving_basic_label_repair",
+        "C_full_basic_gan_label_repair",
+        "D_selected_evidence_repair",
+        "E_monthly_diary_arithmetic",
+        "F_usual_interval_override",
+        "G_breakthrough_after_seizure_free",
+        "H_non_epileptic_override",
+        "I_residual_jerk_date_anchor",
+        "J_post_change_burst",
+        "K_dated_sequence",
+        "L_elapsed_anchor",
+        "M_full_current_stack",
     ]
 
 
@@ -87,7 +88,9 @@ def test_run_repair_ablation_filters_to_rows_with_saved_raw_outputs(tmp_path: Pa
 
     raw_summary = result["conditions"][0]["summary"]
     basic_summary = result["conditions"][1]["summary"]
+    full_basic_summary = result["conditions"][2]["summary"]
     assert raw_summary["rows"] == 1
     assert raw_summary["exact_label_accuracy"] == 0.0
     assert basic_summary["rows"] == 1
     assert basic_summary["exact_label_accuracy"] == 1.0
+    assert full_basic_summary["exact_label_accuracy"] == 1.0

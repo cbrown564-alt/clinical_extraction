@@ -77,6 +77,14 @@ Treat deterministic rules as a frozen, ablatable comparator rather than an endle
   source-evidence arithmetic; usual-interval, breakthrough, non-epileptic,
   residual-jerk, post-change-burst, dated-sequence, and elapsed-anchor repairs
   are deterministic clinical-selection overrides.
+- The basic Gan label-repair family has been split into a strict
+  format-preserving subset and the prior full basic family. On the 650 saved
+  v0.5 validation-development raw outputs, raw model selection reached 394/650
+  Purist correct = 0.6062, strict format-preserving basic repair reached 387/650
+  = 0.5954 with 19 improvements and 26 regressions versus raw, and full basic
+  repair reached 461/650 = 0.7092. The clean LLM-first attribution baseline is
+  therefore raw selection plus strict format-preserving repair, not the full
+  basic family.
 - A v0.4 structured selector revision added explicit benchmark-window guidance:
   do not let current seizure-free status erase a recent countable last-event
   window, and select the most frequent current/recent seizure-like event rather
@@ -116,6 +124,7 @@ Treat deterministic rules as a frozen, ablatable comparator rather than an endle
 - Structured LLM-first repair audit: `experiments/gan2026_llm_structured_validation750_v05_repair_audit_2026-06-01.md`
 - Structured LLM-first decision retrospective: `experiments/gan2026_llm_structured_decision_retrospective_2026-06-01.md`
 - Structured LLM-first repair ablation: `experiments/gan2026_llm_structured_validation750_v05_repair_ablation_2026-06-01.md`
+- Structured LLM-first basic-split repair ablation: `experiments/gan2026_llm_structured_validation750_v05_basic_split_repair_ablation_2026-06-01.md`
 
 ## Active Priorities
 
@@ -136,9 +145,9 @@ Treat deterministic rules as a frozen, ablatable comparator rather than an endle
 
 ### Now
 
-- Split or audit `B_basic_gan_label_repair` into strictly format-preserving
-  normalization versus semantic fallback/vague-quantifier remapping, so the
-  clean replay does not smuggle semantic repair into an LLM-first claim.
+- Re-run the standard 25/50/250 validation ladder on the cleaned architecture:
+  raw model selection plus `basic_label_repair=True`,
+  `basic_label_repair_format_only=True`, and all later repair families disabled.
 - Keep the staged output contract: minimal source-near event facts first,
   deterministic normalization/validation second, and LLM clinical selection
   last. Avoid drifting back to a deterministic-candidate-first pipeline.
@@ -149,13 +158,9 @@ Treat deterministic rules as a frozen, ablatable comparator rather than an endle
 
 ### Next
 
-- Run a clean-architecture no-call replay with raw model selection plus only
-  accepted format-preserving benchmark normalization. With current coarse
-  switches, the nearest executable config is `basic_label_repair=True` and all
-  other `StructuredRepairConfig` families disabled, but do not call it strictly
-  format-only until the basic family is split/audited.
-- Re-run the standard 25/50/250 ladder on the cleaned architecture before any
-  further 750-row validation claim.
+- Investigate the 26 strict-format regressions from the basic-split replay
+  before promoting the format-preserving subset as harmless benchmark
+  normalization.
 - Wrap or replace the final-selection tuple priority with an explicit decision record in candidate code if the dev-set experiment supports it.
 - Add paraphrase and adversarial tests for portable-rate expressions and seizure-free/no-event assertions.
 - Start a living notebook for loading, gold-label distribution, scoring, and failure slices.
@@ -275,9 +280,15 @@ Treat deterministic rules as a frozen, ablatable comparator rather than an endle
   monthly diary arithmetic, and all clinical-selection override families are
   excluded from LLM-first attribution unless promoted as named deterministic
   modules with separate ablations.
+- 2026-06-01: Split the basic Gan label-repair family into a strict
+  format-preserving subset versus the prior full basic family, then ran a
+  no-call basic-split replay over 650 saved v0.5 validation-development raw
+  outputs. Strict format-preserving repair scored 0.5954 Purist versus 0.6062
+  raw and 0.7092 full basic, confirming that full basic remains a semantic
+  repair upper bound rather than a clean LLM-first attribution condition.
 
 ## Immediate Next Step
 
-Split or audit the basic Gan label repair family so its format-preserving subset
-can be replayed cleanly; then run the no-call replay using raw model selection
-plus that accepted normalization subset as the LLM-first attribution baseline.
+Run the cleaned 25-row validation smoke with raw structured model selection plus
+strict format-preserving basic repair only, then inspect whether the strict
+format-regression families need further narrowing before the 50/250 ladder.

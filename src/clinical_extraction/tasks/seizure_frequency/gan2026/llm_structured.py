@@ -24,6 +24,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     label_to_frequency_record,
     monthly_diary_label_from_text,
     repair_prediction_label,
+    repair_prediction_label_format_preserving,
     repair_prediction_label_with_evidence,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.schema_repair import (
@@ -109,6 +110,7 @@ class StructuredRepairConfig:
     """Controls deterministic repair families applied after structured LLM output."""
 
     basic_label_repair: bool = True
+    basic_label_repair_format_only: bool = False
     selected_evidence_repair: bool = True
     monthly_diary_repair: bool = True
     usual_interval_repair: bool = True
@@ -282,10 +284,15 @@ def parse_structured_json(
 
     repaired_label = final_label
     if repair_config.basic_label_repair and not repair_config.selected_evidence_repair:
+        basic_repair = (
+            repair_prediction_label_format_preserving
+            if repair_config.basic_label_repair_format_only
+            else repair_prediction_label
+        )
         repaired_label = _replace_repaired_label(
             errors,
             repaired_label,
-            repair_prediction_label(repaired_label),
+            basic_repair(repaired_label),
         )
     if repair_config.selected_evidence_repair:
         repaired_label = _replace_repaired_label(
