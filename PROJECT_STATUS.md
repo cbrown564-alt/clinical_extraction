@@ -23,6 +23,24 @@ Use Gan 2026 as the first controlled extraction surface. Keep deterministic V1 f
 - Hybrid rules-candidates LLM adjudicator v0.1 reached 243/250 Purist and 244/250 Pragmatic on 250-row schema replay, then 680/750 Purist and 689/750 Pragmatic on full validation. It underperformed deterministic top on the same rows (697/750 Purist) because the adjudicator introduced 24 deterministic-correct regressions against 7 corrections. V0.2 validation250 live was output-contract clean but low-information on a saturated surface: deterministic top was already 246/250 Purist and Pragmatic; raw adjudicator was 245/250 Purist and 246/250 Pragmatic; conservative gated final was 244/250 Purist and 245/250 Pragmatic. The follow-up saturated-surface analysis confirmed weak prediction-bearing utility: raw changes had 1 correction and 2 regressions; gated changes had 0 corrections and 2 regressions. Treat v0.2 as revise-only and switch future saturated comparisons to hard-case panels, validation hard slices, selective-action analysis, or frozen test generalization audits.
 - Routine LLM experiments use cache-first `gan2026-llm-experiment --pipeline ...`; saved-output replay is reserved for explicit offline artifact analysis.
 - Qwen 3.6/Ollama setup lane is complete for endpoint routing but not yet validation-ladder ready. Verified local tags `qwen3.6:35b` and `qwen3.6:27b`; adopted `qwen3.6:35b` as the intended strong-local tag; routed DSPy/LiteLLM through native `ollama_chat/qwen3.6:35b` at `http://localhost:11434` with `think=false`; documented and rejected the OpenAI-compatible `/v1/chat/completions` route for Qwen reasoning models; recorded hardware/model metadata and registered a validation1 setup smoke. The validation1 smoke had 0 call failures and nonempty output, but Qwen returned Python-style single-quoted output plus a `final_selector` shape, so v5 remains blocked on prompt hardening or a named schema-repair ablation before validation5/25.
+- The simplified schema branch is now the active local-model transfer lane. It
+  keeps rich diagnostics as deterministic sidecars but reduces the raw model
+  contract to `answer` plus `supporting_facts` in
+  `llm_only_minimal_evidence_selector_v0`. This is intended to test whether
+  local models can reliably emit answer state and exact evidence before asking
+  them to satisfy the full v5 claim-table selector.
+- First hosted simplified-contract baseline is recorded:
+  `llm_only_minimal_evidence_selector_v0` on GPT-4.1 mini validation25 live
+  produced 25/25 minimal records, 0 call failures, 0 invalid JSON/schema
+  failures, no alias repairs, answer evidence exact in 24/25 rows,
+  supporting-fact evidence exact in 49/50 facts, raw minimal-answer Purist and
+  Pragmatic 2/25 because source-near answers are mostly scorer-unparsable,
+  strict-format 15/25, and frozen clean scorer-facing 16/25 Purist and
+  Pragmatic. Derived state and review projection were complete for 25/25 rows;
+  scorer-facing normalization with monthly frequency was complete for 16/25.
+  Error analysis found the main gap versus claim-table v4/v5 is not evidence
+  selection but the missing parser-ready `final_label` conversion field; see
+  `experiments/gan2026_minimal_evidence_selector_validation25_error_analysis_2026-06-01.md`.
 - Clean scorer-facing normalization is frozen unless direct-citation review justifies another family. Shared schema repair is alias-only; parser defaults belong to their task parser.
 - The codebase thermonuclear review follow-up is complete: the Gan package now has stable ownership boundaries under `contract/`, `deterministic/`, `selected_evidence/`, `llm/`, `hybrid/`, `reports/`, `experiments/`, and `cli/`, while preserving public contracts and scorer behavior.
 - Phase 6 run-registry scaffolding is active: `experiments/registry.jsonl` is canonical, and `experiments/RUN_INDEX.md` is the human scan surface.
@@ -37,6 +55,7 @@ Use Gan 2026 as the first controlled extraction surface. Keep deterministic V1 f
 - Model strategy: `docs/design/model_strategy.md`
 - Review follow-up: `docs/research/codebase_thermonuclear_review_followup_2026-06-01.md`
 - Intermediate schema/rationale synthesis: `docs/research/gan2026_intermediate_schema_report_2026-06-01.md`
+- Simplified schema recommendation: `docs/research/gan2026_simplified_schema_recommendation_2026-06-01.md`
 - Latest LLM-only v4 run/review: `experiments/gan2026_section_claim_table_validation250_gpt41mini_v4_schema_replay_2026-06-01.md`, `experiments/gan2026_section_claim_table_validation750_v4_interpretation_2026-06-01.md`
 - Latest hybrid v0.1 run/reviews: `experiments/gan2026_arch2_validation250_gpt41mini_v01_schema_replay_2026-06-01.md`, `experiments/gan2026_arch2_validation250_v01_failure_review_2026-06-01.md`, `experiments/gan2026_arch2_validation750_v01_interpretation_2026-06-01.md`
 - Hybrid v0.2 artifacts: `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation25_gpt41mini_v02_prompt_only_2026-06-01.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation25_v02_prompt_only_component_ablation_2026-06-01.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation25_gpt41mini_v02_live_2026-06-01.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation25_v02_live_component_ablation_2026-06-01.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation50_gpt41mini_v02_live_2026-06-01.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation50_v02_live_component_ablation_2026-06-01.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation250_gpt41mini_v02_live_2026-06-01.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation250_v02_live_component_ablation_2026-06-01.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation250_v02_audit_trail_interpretation_2026-06-01.md`, `experiments/gan2026_hybrid_adjudicator_v02_selective_action_report_2026-06-01.md`, `experiments/gan2026_hybrid_adjudicator_v02_validation_hard_slices_2026-06-01.json`
@@ -55,17 +74,29 @@ Use Gan 2026 as the first controlled extraction surface. Keep deterministic V1 f
 
 ### Now
 
-- Manually review the drafted hybrid adjudicator v0.2 synthetic hard-case JSONL panel before any component-stress run; validation hard-slice generator and selective-action report are now in place.
-- Generate claim-table v5 component-ablation artifacts before any 25/50/250 validation ladder; v5 now uses claim-table plus constrained selector state with cluster-axis and boundary-state fields.
-- Do not start the Qwen 3.6 validation5/25 ladder until v5 is hardened for local Qwen output contracts; see `docs/research/gan2026_qwen_schema_contract_risk_2026-06-01.md`. Either adjust the prompt so `ollama_chat/qwen3.6:35b` emits strict JSON with the required `final_query` schema, or create an explicitly named schema-repair ablation for Python-style dicts and selector aliases.
+- After the GPT-4.1 mini minimal-contract run is recorded, run the same
+  `llm_only_minimal_evidence_selector` contract on
+  `ollama_chat/qwen3.6:35b` at `http://localhost:11434` with `think=false`.
+  Treat the Qwen run as a local-model transfer and output-contract diagnostic,
+  not as holdout evidence.
+- Keep claim-table v5 as the rich hosted-model/review comparator, but do not use
+  it as the default Qwen contract until the minimal evidence selector has
+  established whether Qwen can reliably emit strict JSON, answer state, and
+  exact evidence under a smaller schema.
 
 ### Next
 
+- Compare the minimal evidence selector against claim-table v5 on matched
+  validation rows after the GPT-4.1 mini and Qwen minimal runs exist. The main
+  comparison is contract transfer and evidence validity first, then Purist and
+  Pragmatic score layers.
 - Run claim-table v5 only after the raw/model, strict/schema repair, constrained-selector state, and clean scorer-facing policy ablations are ready.
 - Extend the saturated-surface tooling with component-stress ablations over the hard panels once the synthetic hard-case JSONL panel is label-reviewed.
 - Decide whether v0.2 needs stricter gate policy, a different adjudicator task, or rejection as added complexity over deterministic top; do not tune from locked-test row-level failures.
 - Design LLM-replacement ablations for deterministic post-processing modules, reporting score, repair attribution, evidence validity, and replay variance.
-- After Qwen strict-output contract is repaired on validation1, run validation5 before any validation25 smoke and compare only against the matched GPT-4.1 mini baseline as a local-model transfer diagnostic, not as holdout evidence.
+- If Qwen passes the minimal validation1 contract, run minimal validation5
+  before any validation25 smoke and compare only against the matched GPT-4.1
+  mini minimal-contract baseline.
 - Consolidate remaining saved-output replay helpers into dedicated artifact-analysis modules.
 - Extend named repair-mode metadata beyond structured-events where downstream repair layers blur raw, strict, clean, selected-evidence, and hybrid attribution.
 
@@ -73,11 +104,35 @@ Use Gan 2026 as the first controlled extraction surface. Keep deterministic V1 f
 
 - Final benchmark-comparison language and further holdout analysis are blocked until replication comparability is explicit and locked-test discipline permits.
 - Do not run LLM-only claim-table selector beyond 250 rows until v5 passes the 25/50 ladder and a written decision justifies another 250-row diagnostic.
-- Qwen 3.6 local validation ladder is blocked until `ollama_chat/qwen3.6:35b` produces strict schema-compatible v5 output, or until a named Qwen schema-repair ablation is designed and reported separately. Endpoint/model identity is no longer the blocker.
+- Qwen 3.6 full v5 claim-table validation ladder remains blocked until
+  `ollama_chat/qwen3.6:35b` produces strict schema-compatible v5 output, or
+  until a named Qwen schema-repair ablation is designed and reported
+  separately. Endpoint/model identity is no longer the blocker. The minimal
+  evidence-selector Qwen lane is not blocked by this v5-specific constraint.
 
 ### Done Recently
 
 - 2026-06-01: Implemented v0.2 saturated-surface tooling and artifacts: JSON schemas for synthetic hard cases and validation hard slices, validation-only hard-slice generator, selective-action report over the saved validation250 v0.2 JSONL, 56-row synthetic hard-case panel draft, run-registry entry, and generated report showing raw changes 1 correction/2 regressions and gated changes 0 corrections/2 regressions.
+- 2026-06-01: Ran the first hosted simplified-contract baseline on this
+  device after verifying `.env` OpenAI API access with a GPT-4.1 mini
+  LiteLLM smoke. `llm_only_minimal_evidence_selector_v0` validation25 live
+  produced 25/25 minimal records, 0 call failures, 0 invalid JSON/schema
+  failures, no alias repairs, answer evidence exact in 24/25 rows,
+  supporting-fact evidence exact in 49/50 facts, raw minimal-answer
+  Purist/Pragmatic 2/25, strict-format 15/25, frozen clean scorer-facing
+  Purist/Pragmatic 16/25, and complete derived state/review projection for
+  25/25 rows. Registered the run as
+  `gan2026_minimal_evidence_selector_validation25_gpt41mini_v0_2026-06-01`.
+- 2026-06-01: Added minimal evidence-selector validation25 error analysis
+  comparing the run against claim-table v4/v5 and structured-events v0.5 on the
+  same prefix. The main failure family is scorer-facing normalization:
+  all 9 minimal clean failures are unscorable-after-clean rows, while the model
+  usually selected the right source text.
+- 2026-06-01: Added the simplified schema recommendation and implemented
+  `llm_only_minimal_evidence_selector_v0`, a minimal model-boundary pipeline
+  with `answer` plus `supporting_facts`, evidence diagnostics, raw/strict/clean
+  score layers, alias repair for Qwen-like selector drift, derived diagnostic
+  sidecars, report output, CLI registration, and focused tests.
 - 2026-06-01: Completed the Qwen 3.6/Ollama setup lane: verified native Ollama `/api/chat`, switched DSPy/LiteLLM guidance to `ollama_chat/qwen3.6:35b` with `think=false`, rejected the `/v1` OpenAI-compatible route for Qwen reasoning models, added report provenance for native Ollama, recorded local hardware/model metadata, ran prompt-only v5 plus validation1 Qwen setup smoke, and registered the artifacts. The endpoint is unblocked; Qwen v5 remains blocked on strict JSON/schema adherence.
 - 2026-06-01: Logged a Qwen schema-contract risk note explaining the validation1 failure mode: Qwen selected the clinically relevant `≤ four per day` claim but emitted Python-style single-quoted output, made `final_query` a string, and invented `final_selector`, so future Qwen ladders require prompt hardening or a named schema-repair ablation before metric interpretation.
 - 2026-06-01: Added a hybrid adjudicator v0.2 saturated-surface evaluation plan covering synthetic hard cases, validation hard slices aligned to deterministic dominant errors, selective-action metrics, component-stress ablations, and frozen-test generalization audit criteria.
@@ -98,4 +153,7 @@ Use Gan 2026 as the first controlled extraction surface. Keep deterministic V1 f
 
 ## Immediate Next Step
 
-Manually review labels/rationales in `experiments/gan2026_hybrid_adjudicator_v02_synthetic_hard_cases_2026-06-01.jsonl`, then run component-stress ablations over the hard panel if it passes review. Do not inspect holdout rows unless the candidate and analysis policy are frozen first.
+Run `gan2026-llm-experiment --pipeline llm_only_minimal_evidence_selector`
+on `ollama_chat/qwen3.6:35b` with native Ollama chat and `think=false`,
+starting with validation1 or validation5. Compare Qwen only against the
+matched GPT-4.1 mini minimal baseline as a local-model transfer diagnostic.

@@ -15,6 +15,17 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Claim language: Endpoint setup is unblocked through ollama_chat/qwen3.6:35b with think=false, but v5 is not ladder-ready for Qwen: validation1 returned a nonempty Python-style dict and final_selector shape, producing a schema parse failure. Do not treat this as model-quality evidence or start validation5/25 until prompt hardening or a named schema-repair ablation exists. Dedicated schema-contract risk note logged for future Qwen prompt/repair design.
 - Artifacts: `experiments/gan2026_qwen36_35b_ollama_chat_setup_smoke_2026-06-01.md`, `docs/research/gan2026_qwen_schema_contract_risk_2026-06-01.md`, `experiments/gan2026_llm_only_claim_table_selector_validation1_prompt_only_v5_2026-06-01.jsonl`, `experiments/gan2026_llm_only_claim_table_selector_validation1_prompt_only_v5_2026-06-01.md`, `experiments/gan2026_llm_only_claim_table_selector_validation1_qwen36_35b_v5_ollama_chat_smoke_2026-06-01.jsonl`, `experiments/gan2026_llm_only_claim_table_selector_validation1_qwen36_35b_v5_ollama_chat_smoke_2026-06-01.md`.
 
+### `gan2026_minimal_evidence_selector_validation25_gpt41mini_v0_2026-06-01`
+- Date/split: `2026-06-01`; `validation`; `25` rows.
+- Pipeline: `llm_only_minimal_evidence_selector`; mode `live minimal answer plus supporting_facts contract`; replay `live`.
+- Model role: hosted LLM-only minimal evidence selector baseline; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `minimal alias/shape repair available; strict_format + frozen_clean_scorer_facing scoring`.
+- Primary metrics: answer_evidence_valid=24, call_failures=0, clean_pragmatic_correct=16, clean_purist_correct=16, derived_state_complete=25, invalid_json_failures=0, minimal_records=25, parse_schema_failures=0, raw_pragmatic_correct=2, raw_purist_correct=2, raw_scorable=2, review_projection_complete=25, row_count=25, strict_format_purist_correct=15, supporting_fact_evidence_total=50, supporting_fact_evidence_valid=49.
+- Evidence validity: Answer evidence exact in 24/25 rows; supporting-fact evidence exact in 49/50 facts. Row 243 used a non-exact answer/supporting evidence substring.
+- Cache/reuse source: DSPy cache enabled; run recorded 0 reused raw outputs; first-device OpenAI/LiteLLM smoke passed from .env before run.
+- Claim language: Hosted simplified-contract baseline is output-contract clean with no JSON/schema failures and no alias repairs, but raw source-near answers are mostly scorer-unparsable; frozen clean scorer-facing score is 16/25 Purist and Pragmatic. Use as matched GPT-4.1 mini transfer baseline for Qwen minimal-contract validation, not holdout evidence.
+- Artifacts: `experiments/gan2026_llm_only_minimal_evidence_selector_validation25_v0_2026-06-01.jsonl`, `experiments/gan2026_llm_only_minimal_evidence_selector_validation25_v0_2026-06-01.md`.
+
 ### `gan2026_hybrid_adjudicator_v02_validation250_live_2026-06-01`
 - Date/split: `2026-06-01`; `validation`; `250` rows.
 - Pipeline: `hybrid_rules_candidates_llm_adjudicator`; mode `live rules candidates then conservative LLM adjudicator`; replay `live`.
