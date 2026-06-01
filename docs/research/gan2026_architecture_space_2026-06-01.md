@@ -438,6 +438,26 @@ Stop condition:
 - do not escalate to 250 rows until the 50-row artifact explicitly states what
   the 250-row run would decide
 
+## Selected Next Architecture Branch
+
+Branch name: `gan2026_section_claim_table_v0`.
+
+Decision: after completing and freezing the clean attribution branch, use the
+section-and-claim-table architecture as the next LLM-first comparison surface.
+The decision is recorded in
+`docs/research/gan2026_next_architecture_decision_2026-06-01.md`.
+
+Claim type: `llm_first` diagnostic candidate. The prediction-bearing component
+is the model-produced claim table plus model query selection. Deterministic code
+may validate schema and evidence, normalize scorer-compatible label grammar, do
+arithmetic over selected facts, and apply only the frozen clean scorer-facing
+policy.
+
+Next run surface: implement the new pipeline and run a 25-row validation smoke
+comparison on `gan2026_split_v1`. A 50-row run should wait until the 25-row
+artifact shows stable schema, reviewable exact evidence behavior, and
+interpretable component-localized failures.
+
 ## Bottom Line
 
 The next stage should not ask only how to improve the current structured LLM
