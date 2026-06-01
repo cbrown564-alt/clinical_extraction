@@ -143,10 +143,12 @@ def test_pipeline_registry_exposes_routine_llm_experiments() -> None:
         "hybrid_rules_candidates_llm_adjudicator",
         "llm_only_claim_table_selector",
         "llm_only_direct_labeler",
+        "llm_only_minimal_evidence_selector",
         "llm_only_structured_events",
     }
     assert specs["hybrid_rules_candidates_llm_adjudicator"].default_max_tokens == 1100
     assert specs["llm_only_claim_table_selector"].default_max_tokens == 1400
+    assert specs["llm_only_minimal_evidence_selector"].default_max_tokens == 900
 
 
 def _dummy_spec(tmp_path: Path, calls: dict[str, Any] | None = None) -> GanLlmPipelineCliSpec:
