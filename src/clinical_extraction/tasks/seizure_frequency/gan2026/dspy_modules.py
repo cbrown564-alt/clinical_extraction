@@ -416,6 +416,7 @@ def run_architecture2_split(
     temperature: float,
     max_tokens: int,
     mode: Literal["live", "prompt-only"],
+    dspy_cache: bool = True,
     reuse_raw_outputs: Mapping[int, str] | None = None,
     reuse_source: str | None = None,
     escalation_reason: str | None = None,
@@ -435,6 +436,7 @@ def run_architecture2_split(
     )
     metadata["architecture"] = "architecture_2_deterministic_candidates_llm_adjudicator"
     metadata["claim_type"] = "hybrid_llm_adjudicator"
+    metadata["dspy_cache"] = dspy_cache
     metadata["reuse_source"] = reuse_source
     metadata["escalation_reason"] = escalation_reason
     pipeline = Gan2026PipelineV1()
@@ -445,7 +447,7 @@ def run_architecture2_split(
                 model,
                 temperature=temperature,
                 max_tokens=max_tokens,
-                cache=True,
+                cache=dspy_cache,
                 num_retries=2,
             )
         )
@@ -685,6 +687,7 @@ def write_architecture2_report(
         f"- Temperature: `{metadata['temperature']}`",
         f"- Max tokens: `{metadata['max_tokens']}`",
         f"- Mode: `{metadata['mode']}`",
+        f"- DSPy cache enabled: `{metadata.get('dspy_cache')}`",
         f"- Reused raw model outputs: `{summary['reused_raw_outputs']}`",
         f"- Reuse source: `{metadata.get('reuse_source') or 'none'}`",
         "- Deterministic rule configuration: frozen V1 candidate generator before LLM "

@@ -367,9 +367,11 @@ def test_architecture2_prompt_only_scores_deterministic_and_recall(monkeypatch) 
         temperature=0.0,
         max_tokens=100,
         mode="prompt-only",
+        dspy_cache=False,
         escalation_reason="unit-test escalation reason",
     )
 
+    assert metadata["dspy_cache"] is False
     assert records[0]["parse_errors"] == ["not_run"]
     assert records[0]["candidate_recall"]["purist_category_recalled"] is True
     assert records[0]["scores"]["deterministic_top"]["purist_correct"] is True

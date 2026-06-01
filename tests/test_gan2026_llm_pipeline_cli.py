@@ -13,8 +13,6 @@ def test_general_llm_pipeline_cli_delegates_to_pipeline_spec(
     calls: dict[str, Any] = {}
     jsonl_path = tmp_path / "rows.jsonl"
     markdown_path = tmp_path / "report.md"
-    reuse_path = tmp_path / "reuse.jsonl"
-    reuse_path.write_text("{}", encoding="utf-8")
 
     monkeypatch.setattr(
         llm_pipeline_cli,
@@ -38,10 +36,6 @@ def test_general_llm_pipeline_cli_delegates_to_pipeline_spec(
     def write_report(rows, metadata, path, *, jsonl_path):
         calls["report"] = (rows, metadata, path, jsonl_path)
 
-    def load_reusable_raw_outputs(path):
-        calls["reuse_path"] = path
-        return {101: '{"prediction":"1 per week"}'}
-
     spec = GanLlmPipelineCliSpec(
         description="Run a dummy Gan LLM pipeline.",
         default_jsonl_path=jsonl_path,
@@ -49,30 +43,26 @@ def test_general_llm_pipeline_cli_delegates_to_pipeline_spec(
         run_split=run_split,
         write_jsonl=write_jsonl,
         write_report=write_report,
-        load_reusable_raw_outputs=load_reusable_raw_outputs,
     )
+    monkeypatch.setattr(llm_pipeline_cli, "pipeline_specs", lambda: {"dummy": spec})
 
     llm_pipeline_cli.run_cli(
-        spec,
         [
+            "--pipeline",
+            "dummy",
             "--limit",
             "2",
             "--mode",
             "prompt-only",
-            "--reuse-jsonl",
-            str(reuse_path),
             "--disable-dspy-cache",
         ],
     )
 
     assert calls["records"] == ["row-1", "row-2"]
-    assert calls["reuse_path"] == reuse_path
     assert calls["kwargs"]["split"] == "validation"
     assert calls["kwargs"]["split_manifest"] == "test_manifest_v1"
     assert calls["kwargs"]["mode"] == "prompt-only"
     assert calls["kwargs"]["dspy_cache"] is False
-    assert calls["kwargs"]["reuse_raw_outputs"] == {101: '{"prediction":"1 per week"}'}
-    assert calls["kwargs"]["reuse_source"] == str(reuse_path)
     assert calls["kwargs"]["progress_every"] == 10
     assert calls["kwargs"]["checkpoint_jsonl_path"] == jsonl_path
     assert calls["kwargs"]["checkpoint_report_path"] == markdown_path
@@ -86,5 +76,14 @@ def test_general_llm_pipeline_cli_delegates_to_pipeline_spec(
     assert capsys.readouterr().out.strip() == '{"purist_accuracy": 1.0}'
 
 
-def test_old_llm_pipeline_cli_spec_name_remains_compatible() -> None:
-    assert llm_pipeline_cli.LlmPipelineCliSpec is GanLlmPipelineCliSpec
+def test_pipeline_registry_exposes_routine_llm_experiments() -> None:
+    specs = llm_pipeline_cli.pipeline_specs()
+
+    assert set(specs) == {
+        "architecture2",
+        "llm-first",
+        "section-claim-table",
+        "structured",
+    }
+    assert specs["architecture2"].default_max_tokens == 1100
+    assert specs["section-claim-table"].default_max_tokens == 1400
