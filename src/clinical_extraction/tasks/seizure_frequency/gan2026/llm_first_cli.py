@@ -13,14 +13,14 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm_first import (
     write_report,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_pipeline_cli import (
-    LlmPipelineCliSpec,
+    GanLlmPipelineCliSpec,
     run_cli,
 )
 
 
 def main(argv: Sequence[str] | None = None) -> None:
     run_cli(
-        LlmPipelineCliSpec(
+        GanLlmPipelineCliSpec(
             description="Run the Gan 2026 LLM-first seizure-frequency extraction experiment.",
             default_jsonl_path=DEFAULT_JSONL_PATH,
             default_report_path=DEFAULT_REPORT_PATH,

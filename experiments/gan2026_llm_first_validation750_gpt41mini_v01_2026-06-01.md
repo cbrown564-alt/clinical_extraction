@@ -10,7 +10,7 @@ Hypothesis: a note-only DSPy extractor can produce the prediction-bearing Gan se
 
 Minimal change: add an LLM-first direct extraction runner. No deterministic V1 candidate diagnostics are provided to the model.
 
-Data surface: `validation` split, `gan2026_split_v1`, 580 rows.
+Data surface: `validation` split, `gan2026_split_v1`, 750 rows.
 Rare full-validation reason: 250-row validation-prefix result cleared the standard development gate at 0.9520 Purist with zero call or blocking parse failures; full validation is needed to verify the active >=0.9000 validation-split objective before any holdout or benchmark language.
 Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a side-car.
 
@@ -25,23 +25,23 @@ Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a
 - Max tokens: `900`
 - Mode: `live`
 - DSPy cache enabled: `True`
-- Reused raw model outputs: `550`
-- Reuse source: `experiments/gan2026_llm_first_validation250_gpt41mini_v01_2026-05-31.jsonl, experiments/gan2026_llm_first_validation750_gpt41mini_v01_2026-06-01.jsonl`
+- Reused raw model outputs: `610`
+- Reuse source: `experiments/gan2026_llm_first_validation750_gpt41mini_v01_2026-06-01.jsonl`
 - Optimizer: none
 - Deterministic rule configuration: none before prediction; deterministic code only repairs labels, validates evidence, and scores.
-- Git commit: `dcc8dd0`
+- Git commit: `4d03192`
 - Working tree note: `dirty/uncommitted local changes`
 - JSONL artifact: `experiments/gan2026_llm_first_validation750_gpt41mini_v01_2026-06-01.jsonl`
 
 ## Summary
 
-- Decision records: 559 / 580
+- Decision records: 709 / 750
 - Call failures: 0
-- Parse/schema/label issues: 21
-- Deterministic repair notes: 261
-- Exact evidence substrings: 525 / 580
-- Purist validation accuracy/micro F1 proxy: 0.7707 (447 / 580)
-- Pragmatic validation accuracy/micro F1 proxy: 0.8017 (465 / 580)
+- Parse/schema/label issues: 41
+- Deterministic repair notes: 311
+- Exact evidence substrings: 670 / 750
+- Purist validation accuracy/micro F1 proxy: 0.6733 (505 / 750)
+- Pragmatic validation accuracy/micro F1 proxy: 0.7253 (544 / 750)
 
 ## Rows
 
@@ -627,3 +627,173 @@ Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a
 | 13627 |  | 64 per 12 month | no | schema_validation_error: Input should be 'frequency', 'seizure_free', 'unknown', 'no_reference' or 'unresolved_multiple'; evidence_not_exact_substring |
 | 13635 |  | 47 per 7 month | no | schema_validation_error: Input should be 'frequency', 'seizure_free', 'unknown', 'no_reference' or 'unresolved_multiple'; evidence_not_exact_substring |
 | 13711 | multiple per week | 76 per 12 month | no |  |
+| 13721 | multiple per month | 77 per 12 month | no |  |
+| 13732 |  | 52 per 8 month | no | schema_validation_error: Input should be 'frequency', 'seizure_free', 'unknown', 'no_reference' or 'unresolved_multiple'; evidence_not_exact_substring |
+| 13843 |  | seizure free for multiple month | no | schema_validation_error: Input should be 'frequency', 'seizure_free', 'unknown', 'no_reference' or 'unresolved_multiple'; evidence_not_exact_substring |
+| 13858 | no seizure frequency reference | seizure free for multiple month | no |  |
+| 13889 | no seizure frequency reference | seizure free for multiple month | no |  |
+| 13893 |  | 2 per year | no | schema_validation_error: Input should be 'frequency', 'seizure_free', 'unknown', 'no_reference' or 'unresolved_multiple'; evidence_not_exact_substring |
+| 13922 | 2 per 3 month | unknown | no |  |
+| 14002 | seizure free for 2 month | unknown | no |  |
+| 14025 | 2 per 6 week | unknown | no |  |
+| 14029 | unknown | unknown | yes |  |
+| 14040 | unknown | unknown | yes |  |
+| 14076 | unknown | unknown | yes |  |
+| 14092 | 5 per 2 month | unknown | no |  |
+| 14096 | 5 per 2 month | unknown | no |  |
+| 14137 | 3 to 4 per 3 month | unknown | no |  |
+| 14146 |  | unknown | no | schema_validation_error: Input should be 'frequency', 'seizure_free', 'unknown', 'no_reference' or 'unresolved_multiple'; evidence_not_exact_substring |
+| 14187 | seizure free for multiple year | 2 to 3 per month | no | final_label_repaired: 'seizure free for multiple month' -> 'seizure free for multiple year' |
+| 14214 | seizure free for multiple year | 2 to 4 per month | no | final_label_repaired: 'seizure free for multiple month' -> 'seizure free for multiple year' |
+| 14250 | 2 per week | 2 per month | no |  |
+| 14282 | seizure free for multiple year | multiple per month | no | final_label_repaired: 'seizure free for 6 week' -> 'seizure free for multiple year' |
+| 14284 | 2 to 3 per week | 2 to 3 per month | no |  |
+| 14317 | seizure free for multiple year | 4 per 2 month | no | final_label_repaired: 'seizure free for multiple month' -> 'seizure free for multiple year'; evidence_not_exact_substring |
+| 14332 | seizure free for 2 month | 5 per 2 month | no | evidence_not_exact_substring |
+| 14335 | seizure free for multiple year | 3 to 4 per 2 month | no | final_label_repaired: 'seizure free for multiple month' -> 'seizure free for multiple year' |
+| 14383 | seizure free for 3 month | 3 to 4 per 3 month | no |  |
+| 14454 | seizure free for 2 month | 2 per 2 month | no |  |
+| 14524 | unknown | 2 per 6 month | no |  |
+| 14530 | seizure free for multiple year | 2 per 2 month | no | final_label_repaired: 'seizure free for multiple month' -> 'seizure free for multiple year' |
+| 14540 | seizure free for multiple year | 2 per 8 month | no | final_label_repaired: 'seizure free for multiple month' -> 'seizure free for multiple year' |
+| 14562 |  | 3 per 6 month | no | schema_validation_error: Input should be 'frequency', 'seizure_free', 'unknown', 'no_reference' or 'unresolved_multiple'; evidence_not_exact_substring |
+| 14567 | 3 per 4 month | 3 per 3 month | no | final_label_repaired: '3 seizures per 4 month' -> '3 per 4 month'; evidence_not_exact_substring |
+| 14581 | seizure free for multiple year | 2 per 3 month | no | final_label_repaired: 'seizure free for multiple month' -> 'seizure free for multiple year' |
+| 14587 | 2 per 3 month | 2 per 3 month | yes |  |
+| 14592 | 3 per 6 month | 3 per 5 month | yes |  |
+| 14611 |  | 2 per 4 month | no | schema_validation_error: Input should be 'frequency', 'seizure_free', 'unknown', 'no_reference' or 'unresolved_multiple'; evidence_not_exact_substring |
+| 14628 |  | 2 per 2 month | no | schema_validation_error: Input should be 'frequency', 'seizure_free', 'unknown', 'no_reference' or 'unresolved_multiple'; evidence_not_exact_substring |
+| 14635 | seizure free for multiple year | 5 per 4 month | no | final_label_repaired: 'seizure free for multiple month' -> 'seizure free for multiple year' |
+| 14645 | 1 per day | 2 per 6 month | no | final_label_repaired: '2 seizures in 6 month' -> '1 per day' |
+| 14662 | 3 per 4 month | 3 per 4 month | yes |  |
+| 14672 | seizure free for multiple year | 3 per 8 month | no | final_label_repaired: 'seizure free for multiple month' -> 'seizure free for multiple year' |
+| 14706 | 2 per 5 month | 2 per 5 month | yes |  |
+| 14765 | seizure free for 1 month | 1 per month | no |  |
+| 14806 | seizure free for multiple year | 1 per 2 month | no | final_label_repaired: 'seizure free for multiple month' -> 'seizure free for multiple year' |
+| 14810 | seizure free for multiple year | 1 per month | no | final_label_repaired: 'seizure free for multiple month' -> 'seizure free for multiple year' |
+| 14821 | seizure free for multiple year | 1 per month | no | final_label_repaired: 'seizure free for multiple month' -> 'seizure free for multiple year' |
+| 14872 | seizure free for multiple year | 1 per month | no | final_label_repaired: 'seizure free for 2 week' -> 'seizure free for multiple year' |
+| 14943 | seizure free for 2 month | 1 per 3 month | no |  |
+| 14949 | 1 per month | 1 per month | yes |  |
+| 14965 | seizure free for multiple year | 1 per 3 month | no | final_label_repaired: 'seizure free for multiple month' -> 'seizure free for multiple year' |
+| 14973 | seizure free for multiple year | 1 per month | no | final_label_repaired: 'seizure free for multiple month' -> 'seizure free for multiple year' |
+| 15004 | seizure free for multiple year | 1 per 3 month | no | final_label_repaired: 'seizure free for multiple month' -> 'seizure free for multiple year' |
+| 15012 | seizure free for multiple year | 1 per 2 month | no | final_label_repaired: 'seizure free for multiple month' -> 'seizure free for multiple year' |
+| 15021 | 1 per 3 month | 1 per 3 month | yes |  |
+| 15029 | seizure free for multiple year | 1 per 3 month | no | final_label_repaired: 'seizure free for multiple month' -> 'seizure free for multiple year' |
+| 15094 | 3 per year | 4 per 13 month | yes |  |
+| 15108 | 2 to 3 per month | 3 to 4 per 15 month | no |  |
+| 15127 | 4 per month | 5 per 13 month | no |  |
+| 15129 | 4 per year | 4 per 15 month | yes |  |
+| 15141 | 4 per month | 4 to 5 per 15 month | no | final_label_repaired: '3 or 4 per month' -> '4 per month' |
+| 15168 | multiple per day | multiple per 15 month | yes | evidence_not_exact_substring |
+| 15193 | no seizure frequency reference | multiple per 13 month | yes | final_label_repaired: 'brief absence from time to time' -> 'no seizure frequency reference'; evidence_not_exact_substring |
+| 15242 | unknown | multiple cluster per 15 month, multiple per cluster | no | final_label_repaired: 'occasional clusters' -> 'unknown' |
+| 15262 | unknown | multiple cluster per 13 month, multiple per cluster | no | final_label_repaired: 'occasional clusters of myoclonic jerks' -> 'unknown' |
+| 15267 |  | 3 per 14 month | no | schema_validation_error: Input should be 'frequency', 'seizure_free', 'unknown', 'no_reference' or 'unresolved_multiple'; evidence_not_exact_substring |
+| 15306 | 2 to 3 per month | 2 to 3 per 15 month | no |  |
+| 15317 | 2 to 3 per month | 2 to 3 per 15 month | no |  |
+| 15376 | 4 to 6 per day | 1 cluster per 2 week, 4 to 6 per cluster | no |  |
+| 15404 |  | 1 cluster per 4 month, 3 to 4 per cluster | no | schema_validation_error: Input should be 'frequency', 'seizure_free', 'unknown', 'no_reference' or 'unresolved_multiple'; evidence_not_exact_substring |
+| 15429 |  | 1 cluster per 2 month, 4 per cluster | no | schema_validation_error: Input should be 'frequency', 'seizure_free', 'unknown', 'no_reference' or 'unresolved_multiple'; evidence_not_exact_substring |
+| 15431 |  | 1 cluster per 4 month, 5 per cluster | no | schema_validation_error: Input should be 'frequency', 'seizure_free', 'unknown', 'no_reference' or 'unresolved_multiple'; evidence_not_exact_substring |
+| 15442 |  | 1 cluster per 4 day, 2 per cluster | no | schema_validation_error: Input should be 'frequency', 'seizure_free', 'unknown', 'no_reference' or 'unresolved_multiple'; evidence_not_exact_substring |
+| 15470 | multiple per day | 1 cluster per 5 day, multiple per cluster | no |  |
+| 15479 | multiple per day | 1 cluster per 4 to 5 day, 2 per cluster | no |  |
+| 15497 | no seizure frequency reference | 1 cluster per 4 to 5 day, 5 per cluster | no | final_label_repaired: '5 per 24 hours' -> 'no seizure frequency reference' |
+| 15503 | no seizure frequency reference | 1 cluster per 5 day, 3 to 4 per cluster | no | final_label_repaired: '3 to 4 per 24 hours' -> 'no seizure frequency reference' |
+| 15513 | 2 to 3 per day | 1 cluster per 4 to 5 day, 2 to 3 per cluster | no |  |
+| 15519 | no seizure frequency reference | 1 cluster per 4 day, 3 per cluster | no | final_label_repaired: '3 per 24 hours' -> 'no seizure frequency reference' |
+| 15529 | multiple per day | 1 cluster per 3 day, 4 per cluster | no |  |
+| 15593 |  | 1 cluster per 5 day, 2 to 4 per cluster | no | schema_validation_error: Input should be 'frequency', 'seizure_free', 'unknown', 'no_reference' or 'unresolved_multiple'; evidence_not_exact_substring |
+| 15614 | 3 per week | 3 per week | yes |  |
+| 15628 | multiple per week | multiple per week | yes | final_label_repaired: 'several times per week' -> 'multiple per week' |
+| 15639 | 2 per week | 2 per week | yes |  |
+| 15642 | 2 to 4 per week | 2 to 4 per week | yes |  |
+| 15650 | 3 to 4 per day | 3 to 4 per day | yes |  |
+| 15672 | multiple per day | 1 per day | no |  |
+| 15697 | 1 per day | 1 per day | yes |  |
+| 15715 | 1 per day | 1 per day | yes |  |
+| 15745 | 2 to 3 per week | 2 to 3 per week | yes |  |
+| 15766 | 4 per week | 4 per week | yes |  |
+| 15768 | 2 to 3 per week | 2 to 3 per week | yes |  |
+| 15771 | 3 per week | 3 per week | yes |  |
+| 15772 | no seizure frequency reference | 2 per week | no | final_label_repaired: '2 days per week' -> 'no seizure frequency reference' |
+| 15774 | 2 per week | 2 per week | yes |  |
+| 15783 | 2 to 3 per week | 2 to 3 per week | yes |  |
+| 15802 | 7 per week | 7 per week | yes |  |
+| 15831 | 2 to 4 per day | 2 to 4 per day | yes |  |
+| 15834 | 5 per week | 5 per week | yes |  |
+| 15964 | 11 per 2 month | 11 per 3 month | no |  |
+| 15965 | 8 per 2 month | 13 per 2 month | no |  |
+| 15966 | 5 per 3 month | 5 per 3 month | yes |  |
+| 15982 | 8 per month | 9 per 2 month | yes |  |
+| 15986 | 5 per month | 11 per 3 month | no |  |
+| 15992 | 3 to 4 per month | 7 per 2 month | yes |  |
+| 15997 | 8 per 3 month | 10 per 3 month | yes |  |
+| 16021 | 8 per 2 month | 9 per 3 month | no |  |
+| 16041 | 7 per 3 month | 9 per 3 month | yes |  |
+| 16084 | seizure free for 1 month | 8 per 4 month | no |  |
+| 16091 | 2 per month | 3 per 3 month | no |  |
+| 16097 | 6 per month | 17 per 4 month | yes |  |
+| 16107 | 4 per month | 8 per 3 month | no |  |
+| 16108 |  | 12 per 4 month | no | schema_validation_error: Input should be 'frequency', 'seizure_free', 'unknown', 'no_reference' or 'unresolved_multiple'; evidence_not_exact_substring |
+| 16132 |  | 15 per 3 month | no | schema_validation_error: Input should be 'frequency', 'seizure_free', 'unknown', 'no_reference' or 'unresolved_multiple'; evidence_not_exact_substring |
+| 16133 |  | 18 per 4 month | no | schema_validation_error: Input should be 'frequency', 'seizure_free', 'unknown', 'no_reference' or 'unresolved_multiple'; evidence_not_exact_substring |
+| 16161 | 7 per month | 18 per 3 month | yes |  |
+| 16162 | 6 per month | 11 per 3 month | no |  |
+| 16181 | 4 per month | 15 per 4 month | no |  |
+| 16195 | 6 per month | 16 per 4 month | no |  |
+| 16203 | 9 per 3 month | 9 per 3 month | yes |  |
+| 16204 | no seizure frequency reference | 5 per 3 month | no | final_label_repaired: '5 in 3 month' -> 'no seizure frequency reference' |
+| 16220 |  | 11 per 4 month | no | schema_validation_error: Input should be 'frequency', 'seizure_free', 'unknown', 'no_reference' or 'unresolved_multiple'; evidence_not_exact_substring |
+| 16324 |  | 10 per 3 month | no | schema_validation_error: Input should be 'frequency', 'seizure_free', 'unknown', 'no_reference' or 'unresolved_multiple'; evidence_not_exact_substring |
+| 16335 | 7 per 3 month | 7 per 3 month | yes |  |
+| 16356 | 1 per 4 day | 1 per 4 day | yes | final_label_repaired: '1 cluster every 4 days' -> '1 per 4 day' |
+| 16394 | 1 per 2 to 4 day | 1 per 2 to 4 day | yes | final_label_repaired: 'clusters every 2 to 4 days' -> '1 per 2 to 4 day' |
+| 16408 | 1 per 3 day | 1 per 3 day | yes | final_label_repaired: '1 per 3 days' -> '1 per 3 day' |
+| 16429 | 1 per day | 1 per 2 to 3 day | no | final_label_repaired: '2 to 3 per 3 days' -> '1 per day' |
+| 16432 | 1 per day | 1 per 2 day | no | final_label_repaired: 'approximately every two days' -> '1 per day' |
+| 16450 | 1 per day | 1 per multiple day | no | final_label_repaired: 'multiple per week' -> '1 per day' |
+| 16529 | 1 per 5 day | 1 per 5 day | yes | final_label_repaired: '1 cluster per 5 days' -> '1 per 5 day' |
+| 16557 | 1 per 2 to 3 day | 1 per 2 to 3 day | yes | final_label_repaired: '1 cluster every 2 to 3 days' -> '1 per 2 to 3 day' |
+| 16574 | unknown | 1 per 4 day | no | final_label_repaired: '1 cluster per 4 days' -> 'unknown' |
+| 16590 | unknown | 1 per 4 to 5 day | no | final_label_repaired: '1 cluster per 4 to 5 days' -> 'unknown' |
+| 16618 | unknown | 1 per 5 day | no | final_label_repaired: '1 cluster per 5 days' -> 'unknown' |
+| 16645 | 1 to 3 per 6 month | 5 per 7 month | yes |  |
+| 16674 |  | 7 per 6 month | no | schema_validation_error: Input should be 'frequency', 'seizure_free', 'unknown', 'no_reference' or 'unresolved_multiple'; evidence_not_exact_substring |
+| 16685 | 10 per 3 month | 10 per 3 month | yes |  |
+| 16697 | 3 per 6 month | 3 per 6 month | yes |  |
+| 16704 | unknown | 9 per 6 month | no |  |
+| 16714 | unknown | 5 per 6 month | no |  |
+| 16717 | 4 per 6 month | 5 per 6 month | yes |  |
+| 16719 | 1 per week | 7 per 6 month | no |  |
+| 16728 | unknown | 4 per 6 month | no |  |
+| 16750 | seizure free for multiple year | 6 per 7 month | no | final_label_repaired: 'seizure free for multiple month' -> 'seizure free for multiple year' |
+| 16757 | no seizure frequency reference | 13 per 6 month | no | final_label_repaired: '6 per 30 minutes' -> 'no seizure frequency reference' |
+| 16758 | 3 to 5 per 4 month | 9 per 5 month | no |  |
+| 16772 | 8 per 5 month | 9 per 5 month | yes |  |
+| 16774 |  | 19 per 7 month | no | schema_validation_error: Input should be 'frequency', 'seizure_free', 'unknown', 'no_reference' or 'unresolved_multiple'; evidence_not_exact_substring |
+| 16780 | unknown | 3 per 7 month | no |  |
+| 16824 | 11 per 4 month | 11 per 5 month | yes |  |
+| 16833 | unknown | 8 per 6 month | no |  |
+| 16839 | 4 per month | 9 per 4 month | no |  |
+| 16867 | 6 per 6 month | 6 per 7 month | no |  |
+| 16907 | 9 per 3 month | 9 per 6 month | yes |  |
+| 16938 | 2 per year | 2 per week | no | final_label_repaired: '2 per 2 months' -> '2 per year' |
+| 16947 | 4 per 2 month | 2 per week | no | final_label_repaired: '4 per 2 months' -> '4 per 2 month' |
+| 16961 | 3 per 3 month | 2 per week | no |  |
+| 16983 | 2 to 3 per week | 2 to 3 per week | yes |  |
+| 16990 | 4 to 5 per week | 4 to 5 per week | yes |  |
+| 17001 | 5 per week | 5 per week | yes |  |
+| 17003 | 3 to 4 per month | 3 to 4 per month | yes |  |
+| 17110 | 4 to 5 per week | 4 to 5 cluster per week, multiple per cluster | no |  |
+| 17135 | unknown | 5 cluster per month, multiple per cluster | no | final_label_repaired: 'clusters of absence seizures on five days each month' -> 'unknown' |
+| 17146 | no seizure frequency reference | 1 per day | no | final_label_repaired: '1 tonic-clonic seizure over the past six months' -> 'no seizure frequency reference' |
+| 17167 | no seizure frequency reference | 1 per week | no | final_label_repaired: '1 tonic-clonic seizure over the past 6 months' -> 'no seizure frequency reference' |
+| 17189 | 1 per 6 month | 1 per month | no |  |
+| 17200 | no seizure frequency reference | 1 per month | no | final_label_repaired: '1 tonic-clonic seizure over the past 6 months' -> 'no seizure frequency reference' |
+| 17201 | 4 per month | 4 per month | yes |  |
+| 17273 | 1 per 2 day | 1 per 2 day | yes |  |
+| 17279 | 1 per 4 to 5 week | 1 per 4 to 5 week | yes |  |
+| 17287 | 1 per 1 to 2 day | 1 per 1 to 2 day | yes |  |

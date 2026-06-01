@@ -12,14 +12,41 @@ def repair_decision_payload(payload: Any) -> Any:
         return payload
 
     repaired = dict(payload)
+    _repair_string_alias(repaired, "kind", _EVENT_KIND_ALIASES)
+    _repair_string_alias(repaired, "final_kind", _ANSWER_KIND_ALIASES)
     _repair_string_alias(repaired, "assertion_status", _ASSERTION_ALIASES)
     _repair_string_alias(repaired, "uncertainty", _UNCERTAINTY_ALIASES)
+    _repair_string_alias(repaired, "certainty", _CERTAINTY_ALIASES)
+    _repair_string_alias(repaired, "temporality", _TEMPORALITY_ALIASES)
     _repair_string_alias(repaired, "answer_kind", _ANSWER_KIND_ALIASES)
     _repair_numeric_confidence(repaired)
 
     normalized_rate = repaired.get("normalized_rate")
     if normalized_rate is not None and not isinstance(normalized_rate, str):
         repaired["normalized_rate"] = str(normalized_rate)
+    return repaired
+
+
+def repair_structured_extraction_payload(payload: Any) -> Any:
+    """Repair schema aliases in a structured extraction payload.
+
+    This intentionally repairs only output-shape aliases such as enum names and
+    numeric confidence. It does not repair Gan benchmark labels; that remains in
+    normalize.py so deterministic and LLM pipelines share the same label policy.
+    """
+
+    if not isinstance(payload, dict):
+        return payload
+
+    repaired = dict(payload)
+    events = repaired.get("events")
+    if isinstance(events, list):
+        repaired["events"] = [repair_decision_payload(event) for event in events]
+    selection = repaired.get("selection")
+    if isinstance(selection, dict):
+        repaired_selection = repair_decision_payload(selection)
+        repaired_selection.setdefault("confidence", "medium")
+        repaired["selection"] = repaired_selection
     return repaired
 
 
@@ -55,9 +82,50 @@ _UNCERTAINTY_ALIASES = {
     "unclear": "high",
 }
 
+_CERTAINTY_ALIASES = {
+    "clear": "certain",
+    "low": "certain",
+    "medium": "approximate",
+    "high": "uncertain",
+    "unclear": "unknown",
+}
+
+_TEMPORALITY_ALIASES = {
+    "active": "current",
+    "current/recent": "recent",
+    "ongoing": "current",
+    "past": "historical",
+    "remote": "historical",
+}
+
+_EVENT_KIND_ALIASES = {
+    "current frequency": "frequency_rate",
+    "direct frequency": "frequency_rate",
+    "frequency": "frequency_rate",
+    "frequency statement": "frequency_rate",
+    "historical": "last_event_only",
+    "historical event": "last_event_only",
+    "rate": "frequency_rate",
+    "cluster": "cluster_frequency",
+    "clusters": "cluster_frequency",
+    "cluster rate": "cluster_frequency",
+    "seizure-free": "seizure_free",
+    "seizure free": "seizure_free",
+    "last event": "last_event_only",
+    "last seizure": "last_event_only",
+    "unknown": "unknown_frequency",
+    "unknown frequency": "unknown_frequency",
+    "no reference": "no_reference",
+    "no seizure frequency reference": "no_reference",
+}
+
 _ANSWER_KIND_ALIASES = {
     "count": "frequency",
     "count and cluster": "frequency",
+    "cluster": "frequency",
+    "cluster frequency": "frequency",
+    "cluster_frequency": "frequency",
+    "cluster rate": "frequency",
     "count and time interval": "frequency",
     "count and time window": "frequency",
     "count and window": "frequency",
@@ -78,6 +146,10 @@ _ANSWER_KIND_ALIASES = {
     "extracted": "frequency",
     "extracted frequency": "frequency",
     "frequency change": "frequency",
+    "last event": "frequency",
+    "last-event-only": "frequency",
+    "last_event_only": "frequency",
+    "last seizure": "frequency",
     "multiple": "unresolved_multiple",
     "no reference": "no_reference",
     "no seizure frequency reference": "no_reference",

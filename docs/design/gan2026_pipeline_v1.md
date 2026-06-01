@@ -2,7 +2,10 @@
 
 ## Objective
 
-Build a hybrid deterministic-LLM pipeline that exceeds 0.9 purist F1 on Gan 2026 seizure-frequency extraction.
+Build an LLM-first Gan 2026 seizure-frequency extraction pipeline that reaches
+at least 0.9000 Purist F1 while using deterministic code only for validation,
+evidence checks, arithmetic, Gan-compatible normalization, benchmark-format
+repair, and scoring.
 
 LLM-backed experiments should follow the model policy in
 `docs/design/model_strategy.md`: GPT-4.1 mini is the default rapid-iteration
@@ -167,12 +170,17 @@ The final selector should explain clinically meaningful decisions, especially:
 
 ## Pipeline Hypothesis
 
-1. DSPy extracts all seizure-frequency events from the note.
-2. Deterministic rules normalize frequencies, cluster expressions, and date-derived rates.
-3. DSPy clinical reasoner groups or disambiguates events and selects the benchmark answer.
-4. Deterministic validation checks schema validity and evidence substring validity.
-5. Deterministic repair normalizes accepted-value formatting when clinical interpretation is unchanged.
-6. Gan-compatible evaluation reports purist and pragmatic metrics.
+1. DSPy extracts seizure-frequency facts from the note without deterministic V1
+   candidates in the prompt.
+2. DSPy clinical reasoning selects the prediction-bearing interpretation.
+3. Deterministic code validates schema validity and evidence substring validity.
+4. Deterministic code normalizes frequencies, cluster expressions, date-derived
+   rates, and accepted-value formatting when clinical interpretation is unchanged.
+5. Gan-compatible evaluation reports purist and pragmatic metrics.
+
+The frozen deterministic V1 rule stack remains a comparator and diagnostic
+source. It should not be the first-stage candidate generator for the LLM-first
+pipeline.
 
 The default early runtime model for the DSPy extractor and clinical reasoner is
 GPT-4.1 mini. Stronger or local models should be introduced as controlled
@@ -192,6 +200,40 @@ standard validation ladder from `docs/design/gan2026_split_protocol.md`:
 Full 750-row validation runs are rare and should be reserved for stable
 candidates or paper-facing comparisons where a 250-row slice is insufficient.
 The experiment artifact must state why the full validation surface is necessary.
+If a full run is needed, prefer raw-output reuse and checkpointing rather than
+duplicating already-cached model calls.
+
+## Shared LLM CLI Runner
+
+Gan LLM/DSPy pipeline CLIs should bind into the general runner in
+`src/clinical_extraction/tasks/seizure_frequency/gan2026/llm_pipeline_cli.py`.
+That module is not owned by the direct LLM-first implementation or by the staged
+structured extractor. It owns cross-pipeline concerns that should stay
+consistent across experiments:
+
+- split loading and optional validation-prefix limits
+- artifact-level raw-output reuse
+- DSPy cache enable/disable control
+- progress and checkpoint emission, defaulting to every 10 processed rows
+- recording rare full-validation escalation reasons
+
+Each concrete LLM pipeline should keep a thin `*_cli.py` binding that supplies a
+`GanLlmPipelineCliSpec` with its `run_split`, JSONL writer, report writer, default
+artifact paths, and raw-output reuse loader. This keeps new extractors, DSPy
+reasoners, and future hybrid architectures comparable without copying CLI
+behavior.
+
+## Shared Repair Boundaries
+
+Use `schema_repair.py` for model-output shape repair: JSON payload aliases,
+field aliases, selection wrappers, and schema compatibility for structured model
+responses.
+
+Use `normalize.py` for Gan-facing label repair: allowed label strings, frequency
+and date arithmetic, cluster expansion, selected-evidence benchmark formatting,
+and scorer-compatible sentinel handling. Pipelines may use LLM-extracted events
+for arithmetic repair, but that repair should remain bounded to extracted or
+selected evidence rather than introducing deterministic V1 candidates.
 
 ## Deterministic Rule Design
 

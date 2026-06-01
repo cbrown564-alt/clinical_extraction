@@ -196,6 +196,50 @@ def test_repair_prediction_label_with_evidence_aggregates_month_logs() -> None:
     )
 
 
+def test_repair_prediction_label_with_evidence_sums_month_colon_diary_counts() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "multiple per month",
+            (
+                "Seizures in 2014-2015: Mar: 12 days with more severe seizures "
+                "Apr: 7 days with more severe seizures May: 4 days with seizures "
+                "Jun: 10 days Jul: 1 days Aug: 5 days with seizures Sep: 3 days "
+                "with more severe seizures Oct: 4 days with seizures Nov: 4 days "
+                "Dec: 4 days Jan: 12 days Feb: 10 days."
+            ),
+        )
+        == "76 per 12 month"
+    )
+
+
+def test_repair_prediction_label_with_evidence_sums_sleep_awake_month_counts() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "6 per month",
+            "In March he had 3 in sleep and 2 while awake. "
+            "In May he had 3 in sleep and 3 while awake.",
+        )
+        == "11 per 2 month"
+    )
+
+
+def test_repair_prediction_label_with_evidence_sums_general_month_diaries() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "multiple per month",
+            "She has had a seizure so far this month, five in Aug, one in Jul and 5 in Jun",
+        )
+        == "12 per 4 month"
+    )
+    assert (
+        repair_prediction_label_with_evidence(
+            "6 per month",
+            "This month, she has had six convulsions; 0 were in December and 5 in November",
+        )
+        == "11 per 3 month"
+    )
+
+
 def test_repair_prediction_label_with_evidence_preserves_ranges_in_selected_window() -> None:
     assert (
         repair_prediction_label_with_evidence(
@@ -241,6 +285,45 @@ def test_repair_prediction_label_with_evidence_repairs_cluster_rate_only() -> No
             "he reports clusters of brief absence episodes every 4 weeks",
         )
         == "1 per 4 week"
+    )
+
+
+def test_repair_prediction_label_with_evidence_repairs_seizure_free_cluster_cycles() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "multiple per day",
+            "On occasions she is seizure-free for four to five consecutive days, "
+            "followed by a day with multiple events, typically two tonic seizures.",
+        )
+        == "1 cluster per 4 to 5 day, 2 per cluster"
+    )
+    assert (
+        repair_prediction_label_with_evidence(
+            "unknown",
+            "He may go five days without seizures, but when they happen he often "
+            "has them in batches, with 3 - 4 occurring within 24 hours.",
+        )
+        == "1 cluster per 5 day, 3 to 4 per cluster"
+    )
+
+
+def test_repair_prediction_label_with_evidence_repairs_event_days_per_week() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "3 days per week",
+            "His absence seizures are now occurring on three days of the week",
+        )
+        == "3 per week"
+    )
+
+
+def test_repair_prediction_label_with_evidence_repairs_daily_myoclonic_clusters() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "multiple per week",
+            "Since the head injury, she has experienced clusters of jumps almost daily",
+        )
+        == "1 per day"
     )
 
 
@@ -319,6 +402,334 @@ def test_repair_prediction_label_with_evidence_preserves_cluster_structure() -> 
             "each five absences in the morning.",
         )
         == "2 cluster per month, 5 per cluster"
+    )
+
+
+def test_repair_prediction_label_with_evidence_preserves_every_two_week_denominator() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "2 per month",
+            "The app logs indicate a regular pattern of seizures twice every two weeks.",
+        )
+        == "2 per 2 week"
+    )
+
+
+def test_repair_prediction_label_with_evidence_repairs_every_other_month() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "2 to 3 per year",
+            "Events are now occurring only every other month or so.",
+        )
+        == "1 per 2 month"
+    )
+
+
+def test_repair_prediction_label_with_evidence_repairs_count_this_year() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "less than 1 per month",
+            "5 or 7 epileptic spasms this year",
+        )
+        == "5 to 7 per year"
+    )
+
+
+def test_repair_prediction_label_with_evidence_repairs_count_past_fortnight() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "3 per fortnight",
+            "Over the past fortnight she describes three short episodes.",
+        )
+        == "3 per 2 week"
+    )
+
+
+def test_repair_prediction_label_with_evidence_repairs_slash_month() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "6 per month with clustering",
+            "Seizure days: six/30 this month, clustering after late practice.",
+        )
+        == "6 per month"
+    )
+
+
+def test_repair_prediction_label_with_evidence_repairs_monthly_shorthand() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "2 to 3 per month",
+            "The family reports abs 8 monthly over the past three months.",
+        )
+        == "8 per month"
+    )
+
+
+def test_repair_prediction_label_with_evidence_repairs_count_this_quarter() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "7 to 8 per quarter",
+            "seven to eight absence seizures this quarter",
+        )
+        == "7 to 8 per 3 month"
+    )
+
+
+def test_repair_prediction_label_with_evidence_repairs_interval_range() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "1 cluster every 3 to 4 days",
+            "intervals ranging three - four days between focal aware seizures",
+        )
+        == "1 per 3 to 4 day"
+    )
+
+
+def test_repair_prediction_label_with_evidence_repairs_single_count_over_window() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "3 events over 7 months",
+            "Seizure events on 06-03, 06-13, 09-23 as recorded in the patient diary",
+        )
+        == "3 per 7 month"
+    )
+
+
+def test_repair_prediction_label_with_evidence_repairs_up_to_count_in_bad_weeks() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "up to 7 per week",
+            (
+                "during flares he experiences multiple events, with a reported "
+                "frequency of up to seven in bad weeks"
+            ),
+        )
+        == "7 per week"
+    )
+
+
+def test_repair_prediction_label_with_evidence_repairs_cluster_on_multiple_days() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "multiple per month",
+            (
+                "Over the past month, the patient reports a cluster of short events "
+                "on multiple days, each beginning with a brief sense of disconnection"
+            ),
+        )
+        == "multiple cluster per month, multiple per cluster"
+    )
+
+
+def test_repair_prediction_label_with_evidence_repairs_recurrence_cluster_window() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "4 to 6 per day",
+            (
+                "He can sometimes go nearly two week without seizures, but when "
+                "they recur he tends to have several in one day, often between 4 and 6."
+            ),
+        )
+        == "1 cluster per 2 week, 4 to 6 per cluster"
+    )
+
+
+def test_repair_prediction_label_with_evidence_repairs_no_definite_events_window() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "unknown",
+            "no definite epileptic events documented in the past two months",
+        )
+        == "seizure free for 2 month"
+    )
+
+
+def test_repair_prediction_label_with_evidence_repairs_current_non_epileptic_events() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "unknown",
+            (
+                "Seizure-like episodes are currently non-epileptic in nature and "
+                "appear less troublesome."
+            ),
+        )
+        == "seizure free for multiple year"
+    )
+
+
+def test_repair_prediction_label_with_evidence_repairs_plural_daily_events() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "1 per day",
+            "They described daily brief events with preserved awareness.",
+        )
+        == "multiple per day"
+    )
+
+
+def test_repair_prediction_label_with_evidence_preserves_dozens_per_day() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "multiple per day",
+            "Petit mal occur on a near-daily basis, sometimes dozens in a day.",
+        )
+        == "multiple per day"
+    )
+
+
+def test_repair_prediction_label_with_evidence_does_not_count_daily_no_event_entries() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "seizure free for 4 month",
+            "The diary shows steady daily entries with no recorded spells suggestive of "
+            "seizure activity.",
+        )
+        == "seizure free for 4 month"
+    )
+
+
+def test_repair_prediction_label_with_evidence_repairs_monthly_cluster_multiple() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "1 cluster per month",
+            "events tend to gather into bursts roughly once each month, "
+            "with several episodes over a few days",
+        )
+        == "1 cluster per month, multiple per cluster"
+    )
+
+
+def test_repair_prediction_label_with_evidence_repairs_weekly_cluster_multiple() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "1 cluster per week",
+            "Weekly morning clusters reported; number per cluster not documented.",
+        )
+        == "1 cluster per week, multiple per cluster"
+    )
+
+
+def test_repair_prediction_label_with_evidence_repairs_quarter_cluster_multiple() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "2 clusters per quarter",
+            "Patient reports two clusters this quarter with several brief episodes.",
+        )
+        == "2 cluster per 3 month, multiple per cluster"
+    )
+
+
+def test_repair_prediction_label_with_evidence_repairs_weekly_cluster_count() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "1 cluster per week",
+            "cluster burden increased; now weekly, 2 - 3 per cluster",
+        )
+        == "1 cluster per week, 2 to 3 per cluster"
+    )
+
+
+def test_repair_prediction_label_with_evidence_repairs_grouped_weekly_clusters() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "multiple per week",
+            "events occurring on 3-4 nights per week, with several brief episodes "
+            "grouped together during the night",
+        )
+        == "3 to 4 cluster per week, multiple per cluster"
+    )
+
+
+def test_repair_prediction_label_with_evidence_repairs_several_fortnight_clusters() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "multiple per week",
+            "clusters arise on several evenings per fortnight, each cluster with about "
+            "five spells",
+        )
+        == "multiple cluster per 2 week, 5 per cluster"
+    )
+
+
+def test_repair_prediction_label_with_evidence_repairs_monthly_bursts() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "1 per month",
+            "brief bursts occurring roughly once a month, typically soon after waking",
+        )
+        == "1 cluster per month, multiple per cluster"
+    )
+
+
+def test_repair_prediction_label_with_evidence_repairs_cluster_days_size_unknown() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "2 cluster days per month",
+            "Seizure diary shows 2 cluster days this month; sizes unrecorded",
+        )
+        == "2 cluster per month, multiple per cluster"
+    )
+
+
+def test_repair_prediction_label_with_evidence_repairs_weekly_cluster_or_more() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "1 cluster per week",
+            "Weekly clusters, usually 6 or more events within ~2 h",
+        )
+        == "1 cluster per week, 6 per cluster"
+    )
+
+
+def test_repair_prediction_label_with_evidence_repairs_cluster_days_with_count() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "2 cluster days per month, 3 to 4 seizures per cluster",
+            "Cluster days twice this month; typically three - four seizures in 24 h",
+        )
+        == "2 cluster per month, 3 to 4 per cluster"
+    )
+
+
+def test_repair_prediction_label_with_evidence_repairs_cluster_times_month() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "3 per month",
+            "Morning clusters 3×/month; ~three - four events over 90 min",
+        )
+        == "3 cluster per month, 3 to 4 per cluster"
+    )
+
+
+def test_repair_prediction_label_with_evidence_repairs_quarterly_cluster_episode() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "1 cluster per 3 months",
+            "Quarterly clusters with one convulsions per episode",
+        )
+        == "1 cluster per 3 month, 1 per cluster"
+    )
+
+
+def test_repair_prediction_label_with_evidence_uses_clinic_date_for_year_to_date() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "5 per year",
+            "just five generalised tonic-clonic seizures documented this year to date",
+            context_text="Clinic Date: 24 February 2016",
+        )
+        == "5 per 2 month"
+    )
+
+
+def test_repair_prediction_label_with_evidence_uses_clinic_date_for_so_far_year() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "4 per year",
+            "four tonic seizures documented in 2015 so far",
+            context_text="Clinic Date: 24 January 2015",
+        )
+        == "4 per month"
     )
 
 
