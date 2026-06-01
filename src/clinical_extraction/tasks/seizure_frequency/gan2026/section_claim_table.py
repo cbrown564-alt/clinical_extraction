@@ -27,6 +27,119 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
 )
 
 PROMPT_VERSION = "gan2026_section_claim_table_v4"
+PROMPT_POLICY_TAXONOMY: list[dict[str, str]] = [
+    {
+        "policy_id": "sct_v4.schema.scalar_enum_output",
+        "controlled_variable": "prompt_schema_enum_scalar_policy",
+        "portability": "general",
+        "status": "active",
+        "description": (
+            "Prompt requires enum fields to be single schema values rather than lists or "
+            "free-text mixtures."
+        ),
+    },
+    {
+        "policy_id": "sct_v4.schema.strict_json_object",
+        "controlled_variable": "prompt_strict_json_object_policy",
+        "portability": "general",
+        "status": "active",
+        "description": "Prompt requires exactly one JSON object with no markdown wrapper.",
+    },
+    {
+        "policy_id": "sct_v4.evidence.exact_substring",
+        "controlled_variable": "prompt_exact_evidence_substring_policy",
+        "portability": "seizure_frequency",
+        "status": "active",
+        "description": (
+            "Prompt requires claim and final-query evidence to be copied as source substrings."
+        ),
+    },
+    {
+        "policy_id": "sct_v4.gan_label.parser_ready_surface",
+        "controlled_variable": "prompt_gan_parser_ready_label_policy",
+        "portability": "benchmark_format",
+        "status": "active",
+        "description": (
+            "Prompt bans prose and symbols in final_label and asks for Gan-parser-compatible "
+            "label syntax."
+        ),
+    },
+    {
+        "policy_id": "sct_v4.gan_label.interval_preservation",
+        "controlled_variable": "prompt_explicit_interval_preservation_policy",
+        "portability": "gan2026_specific",
+        "status": "active",
+        "description": (
+            "Prompt preserves explicit interval and range wording instead of rounding or "
+            "softening it."
+        ),
+    },
+    {
+        "policy_id": "sct_v4.gan_label.cluster_dual_axis",
+        "controlled_variable": "prompt_cluster_cadence_and_burden_policy",
+        "portability": "gan2026_specific",
+        "status": "active",
+        "description": (
+            "Prompt preserves both cluster cadence and per-cluster burden when both are stated."
+        ),
+    },
+    {
+        "policy_id": "sct_v4.selection.current_burden_precedence",
+        "controlled_variable": "prompt_current_burden_selection_policy",
+        "portability": "seizure_frequency",
+        "status": "active",
+        "description": (
+            "Prompt selects the highest current or recent seizure burden unless an overall "
+            "count is given."
+        ),
+    },
+    {
+        "policy_id": "sct_v4.selection.add_same_window_counts",
+        "controlled_variable": "prompt_same_window_count_addition_policy",
+        "portability": "gan2026_specific",
+        "status": "active",
+        "description": (
+            "Prompt adds exact counts across active semiologies in the same current window."
+        ),
+    },
+    {
+        "policy_id": "sct_v4.boundary.unknown_no_reference_seizure_free",
+        "controlled_variable": "prompt_boundary_answer_policy",
+        "portability": "seizure_frequency",
+        "status": "active",
+        "description": (
+            "Prompt separates unknown, no seizure frequency reference, and seizure-free "
+            "answers."
+        ),
+    },
+    {
+        "policy_id": "sct_v4.exclusion.proxy_or_conditional_frequency",
+        "controlled_variable": "prompt_proxy_conditional_exclusion_policy",
+        "portability": "seizure_frequency",
+        "status": "active",
+        "description": (
+            "Prompt excludes proxy, conditional, rescue-medication, and non-epileptic counts "
+            "unless they explicitly state current epileptic seizure burden."
+        ),
+    },
+    {
+        "policy_id": "sct_v4.gan_label.compact_interval_notation",
+        "controlled_variable": "prompt_compact_interval_notation_policy",
+        "portability": "gan2026_specific",
+        "status": "active",
+        "description": "Prompt maps compact interval notation such as q2-3wk to 1 per 2 to 3 week.",
+    },
+    {
+        "policy_id": "sct_v4.gan_label.maximum_burden",
+        "controlled_variable": "prompt_maximum_current_burden_policy",
+        "portability": "gan2026_specific",
+        "status": "active",
+        "description": (
+            "Prompt preserves explicit maximum current burden instead of converting it to "
+            "multiple."
+        ),
+    },
+]
 DEFAULT_JSONL_PATH = Path(
     "experiments/gan2026_section_claim_table_validation25_gpt41mini_v4_2026-06-01.jsonl"
 )
@@ -125,6 +238,7 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
         "prompt_version": PROMPT_VERSION,
         "task": "Gan 2026 section-and-claim-table LLM-first diagnostic extraction",
         "source_row_index": record.source_row_index,
+        "prompt_policy_taxonomy": PROMPT_POLICY_TAXONOMY,
         "instructions": [
             "Read the full clinical note and make a flat table of seizure-frequency claims.",
             "Do not use deterministic rule candidates; this input contains only the note.",
@@ -598,6 +712,8 @@ def write_report(
         f"- Reused raw model outputs: `{summary['reused_raw_outputs']}`",
         f"- Reuse source: `{metadata.get('reuse_source') or 'none'}`",
         "- Optimizer: none",
+        "- Prompt policy taxonomy: "
+        + ", ".join(f"`{policy_id}`" for policy_id in metadata["prompt_policy_ids"]),
         "- Deterministic rule configuration: none before prediction; deterministic code only "
         "validates, performs strict/frozen clean scorer-facing repair, and scores.",
         f"- Git commit: `{metadata['git_commit']}`",
@@ -1040,6 +1156,7 @@ def _run_metadata(
         "max_tokens": max_tokens,
         "pipeline_name": PROMPT_VERSION,
         "prompt_version": PROMPT_VERSION,
+        "prompt_policy_ids": [policy["policy_id"] for policy in PROMPT_POLICY_TAXONOMY],
         "dspy_version": getattr(dspy, "__version__", "unknown"),
         "split": split,
         "split_manifest": split_manifest,
