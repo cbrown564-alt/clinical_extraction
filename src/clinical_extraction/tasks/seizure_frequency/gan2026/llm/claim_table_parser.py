@@ -158,6 +158,7 @@ def _repair_claim_payload(claim: Mapping[str, Any]) -> dict[str, Any]:
     repaired = dict(claim)
     repaired.pop("evidence_start", None)
     repaired.pop("evidence_end", None)
+    repaired.pop("claim_schema", None)
     repaired["claim_type"] = _repair_enum_alias(
         repaired.get("claim_type"),
         {
