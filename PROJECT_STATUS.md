@@ -36,10 +36,11 @@ strict format repair, arithmetic repair, and named ablated modules.
 - The frozen clean policy is limited to table-backed scorer-facing families;
   upper-bound, temporal, diary, evidence-state, and cluster-reconstruction
   behavior stay out of the clean path as named modules.
-- `gan2026_section_claim_table_v0` has schema/pipeline/CLI plus a 25-row smoke:
-  21/25 structured, 73/75 exact claim evidence, raw/strict/clean Purist
-  9/16/18 of 25. Keep diagnostic: 4 parse/schema, 6 final-query/evidence, and
-  15 raw scorer-format failures block 50-row escalation.
+- `gan2026_section_claim_table_v0` schema/prompt tightening plus same-raw replay
+  removed parse/schema blockers on the 25-row smoke: 25/25 structured, 87/89
+  exact claim evidence, 23/25 selected evidence, raw/strict/clean Purist
+  12/20/22 of 25. Keep diagnostic: 2 evidence/final-query rows and 12 raw
+  scorer-format failures remain review gates before 50-row escalation.
 
 ## Key References
 
@@ -73,8 +74,8 @@ strict format repair, arithmetic repair, and named ablated modules.
 
 ### Now
 
-- Review the 25-row `gan2026_section_claim_table_v0` failure rows and tighten
-  schema/prompt guidance for remaining enum/list aliases and selected evidence.
+- Review the replayed `gan2026_section_claim_table_v0` failure details for the
+  remaining selected-evidence rows and raw scorer-format families.
 - Keep clean scorer-facing normalization separate from named deterministic
   modules in run attribution and claim language.
 
@@ -91,9 +92,7 @@ strict format repair, arithmetic repair, and named ablated modules.
   saved-output replays reported separately.
 - Use direct-citation row tables as the gate for clean-policy expansion.
 - Decide whether the section-and-claim branch earns a 50-row comparison from
-  the 25-row artifact; do not jump directly to 250 rows.
-- Re-run the same 25-row raw-output replay after schema/prompt tightening before
-  any new live 50-row comparison.
+  the repaired 25-row artifact; do not jump directly to 250 rows.
 
 ### Blocked
 
@@ -108,9 +107,12 @@ strict format repair, arithmetic repair, and named ablated modules.
 - 2026-06-01: Implemented `gan2026_section_claim_table_v0` with CLI/tests and a
   25-row validation smoke plus corrected no-call replay; branch remains
   diagnostic pending schema/prompt tightening.
+- 2026-06-01: Tightened section-claim-table enum/list prompt guidance and
+  schema-shape repair, added reviewable evidence/scorer-format failure details,
+  and replayed the same 25 raw outputs with 0 parse/schema blockers.
 
 ## Immediate Next Step
 
-Inspect the section-claim-table 25-row failure rows and update the prompt/schema
-repair boundary so enum/list aliases, selected evidence, and raw scorer-format
-failures are reviewable before deciding on any 50-row escalation.
+Review the section-claim-table failure-detail table and decide whether the
+remaining 2 evidence rows plus 12 raw scorer-format failures are acceptable for
+a live 50-row comparison, or require another prompt-only replay first.

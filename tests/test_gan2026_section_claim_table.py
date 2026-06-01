@@ -102,6 +102,8 @@ def test_parse_section_claim_table_json_repairs_common_model_shape_aliases() -> 
     payload = json.loads(_raw_claim_table())
     payload["claims"][0]["claim_type"] = ["frequency"]
     payload["claims"][0]["temporality"] = ["current"]
+    payload["claims"][1]["claim_type"] = ["frequency", "unknown_frequency"]
+    payload["claims"][1]["temporality"] = ["current", "recent"]
     payload["final_query"]["selected_claim_ids"] = "c1,c2"
 
     extraction, errors = parse_section_claim_table_json(
@@ -112,6 +114,8 @@ def test_parse_section_claim_table_json_repairs_common_model_shape_aliases() -> 
     assert extraction is not None
     assert extraction.claims[0].claim_type == "frequency"
     assert extraction.claims[0].temporality == "current"
+    assert extraction.claims[1].claim_type == "frequency"
+    assert extraction.claims[1].temporality == "current"
     assert extraction.final_query.selected_claim_ids == ["c1", "c2"]
     assert errors == []
 
@@ -187,6 +191,35 @@ def test_summarize_records_counts_claim_and_selected_evidence() -> None:
     assert summary["clean_scorer_facing_purist_correct"] == 1
 
 
+def test_evidence_summary_exposes_non_exact_selected_evidence_for_review() -> None:
+    payload = json.loads(_raw_claim_table())
+    payload["claims"][1]["evidence"] = "daily seizures historically"
+    payload["final_query"]["evidence"] = "two focal seizures monthly"
+
+    rows, _ = run_split(
+        [_record()],
+        split="validation",
+        split_manifest="gan2026_split_v1",
+        model="openai/gpt-4.1-mini",
+        temperature=0.0,
+        max_tokens=100,
+        mode="prompt-only",
+        dspy_cache=True,
+        reuse_raw_outputs={10: json.dumps(payload)},
+    )
+
+    evidence_summary = rows[0]["evidence_summary"]
+    assert evidence_summary["claim_evidence_valid"] == 1
+    assert evidence_summary["claim_evidence_invalid"] == [
+        {
+            "claim_id": "c2",
+            "evidence": "daily seizures historically",
+        }
+    ]
+    assert evidence_summary["selected_evidence_valid"] is False
+    assert evidence_summary["selected_evidence"] == "two focal seizures monthly"
+
+
 def test_write_report_includes_component_localized_failure_metadata(tmp_path: Path) -> None:
     rows, metadata = run_split(
         [_record()],
@@ -197,7 +230,7 @@ def test_write_report_includes_component_localized_failure_metadata(tmp_path: Pa
         max_tokens=100,
         mode="prompt-only",
         dspy_cache=True,
-        reuse_raw_outputs={10: _raw_claim_table()},
+        reuse_raw_outputs={10: _raw_claim_table("1 seizure every 2 days")},
     )
     report_path = tmp_path / "report.md"
 
@@ -206,6 +239,8 @@ def test_write_report_includes_component_localized_failure_metadata(tmp_path: Pa
     report = report_path.read_text(encoding="utf-8")
     assert "Gan 2026 Section Claim Table V0" in report
     assert "raw final-query score" in report
+    assert "Reviewable Failure Details" in report
+    assert "unparsable_label" in report
     assert "claim_extraction" in report
     assert "final_query" in report
     assert "scorer_format" in report
