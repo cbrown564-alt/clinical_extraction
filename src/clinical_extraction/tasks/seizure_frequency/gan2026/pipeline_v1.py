@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -13,6 +12,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.candidates import (
     RawCandidate,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanRecord
+from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic_selection import (
+    select_final_event as _select_final_event,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.label_parser import (
     FrequencyLabelKind,
     label_to_frequency_record,
@@ -123,8 +125,33 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.rules.seizure_free impo
     SEIZURE_FREE_SINCE_DATE_RULE,
     apply_seizure_free_rules,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.rules.temporal_selection import (
-    temporal_selection_rule_is_enabled,
+from clinical_extraction.tasks.seizure_frequency.gan2026.temporal import (
+    MONTH_NAME_PATTERN,
+    MONTH_YEAR_DATE_PATTERN,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.temporal import (
+    clinic_date as _clinic_date,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.temporal import (
+    full_date as _full_date,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.temporal import (
+    month_span as _month_span,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.temporal import (
+    month_span_floor as _month_span_floor,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.temporal import (
+    month_span_inclusive as _month_span_inclusive,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.temporal import (
+    month_span_with_terminal_partial as _month_span_with_terminal_partial,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.temporal import (
+    relative_note_date as _relative_note_date,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.temporal import (
+    year_month_date as _year_month_date,
 )
 
 _RawCandidate = RawCandidate
@@ -153,87 +180,6 @@ class NormalizedEvent(BaseModel):
     semantic_kind: FrequencyLabelKind
     monthly_frequency: float
     validation_errors: tuple[str, ...] = ()
-
-
-class SelectionScore(BaseModel):
-    model_config = ConfigDict(frozen=True)
-
-    semantic_priority: int
-    evidence_priority: int
-    monthly_frequency_priority: float
-    reason: str
-
-    def priority(self) -> SelectionPriority:
-        return SelectionPriority(
-            semantic=self.semantic_priority,
-            evidence=self.evidence_priority,
-            monthly_frequency=self.monthly_frequency_priority,
-        )
-
-
-class SelectionPriority(BaseModel):
-    model_config = ConfigDict(frozen=True)
-
-    semantic: int
-    evidence: int
-    monthly_frequency: float
-
-    def __lt__(self, other: object) -> bool:
-        if not isinstance(other, SelectionPriority):
-            return NotImplemented
-        return (
-            self.semantic,
-            self.evidence,
-            self.monthly_frequency,
-        ) < (
-            other.semantic,
-            other.evidence,
-            other.monthly_frequency,
-        )
-
-
-class SelectionCandidateScore(BaseModel):
-    model_config = ConfigDict(frozen=True)
-
-    event_id: str
-    score: SelectionScore
-    selected: bool = False
-
-
-class SelectionDecisionRecord(BaseModel):
-    model_config = ConfigDict(frozen=True)
-
-    event_id: str
-    final_label: str
-    final_kind: FrequencyLabelKind
-    monthly_frequency: float
-    evidence: str
-    rationale: str
-    validation_errors: tuple[str, ...] = ()
-    score: SelectionScore
-    priority: SelectionPriority
-
-
-class FinalSelection(BaseModel):
-    model_config = ConfigDict(frozen=True)
-
-    final_label: str
-    final_kind: FrequencyLabelKind
-    selected_event_ids: tuple[str, ...]
-    rationale: str
-    evidence: str
-    monthly_frequency: float
-    validation_errors: tuple[str, ...] = ()
-    selected_score: SelectionScore
-    selected_decision: SelectionDecisionRecord
-    selection_candidates: tuple[SelectionCandidateScore, ...]
-
-
-@dataclass(frozen=True)
-class _ParsedMonthDate:
-    year: int
-    month: int
-    day: int | None = None
 
 
 def _build_qualitative_improvement_unknown(
@@ -300,36 +246,6 @@ NUMBER_WORDS = {
 }
 
 NUMBER_WORD_PATTERN = "|".join(NUMBER_WORDS)
-MONTH_ABBREVIATIONS = {
-    "jan": 1,
-    "feb": 2,
-    "mar": 3,
-    "apr": 4,
-    "may": 5,
-    "jun": 6,
-    "jul": 7,
-    "aug": 8,
-    "sep": 9,
-    "oct": 10,
-    "nov": 11,
-    "dec": 12,
-}
-FULL_MONTHS = {
-    "january": 1,
-    "february": 2,
-    "march": 3,
-    "april": 4,
-    "may": 5,
-    "june": 6,
-    "july": 7,
-    "august": 8,
-    "september": 9,
-    "october": 10,
-    "november": 11,
-    "december": 12,
-}
-MONTH_NAME_PATTERN = "|".join([*FULL_MONTHS, *MONTH_ABBREVIATIONS])
-MONTH_YEAR_DATE_PATTERN = rf"(?:(?:{MONTH_NAME_PATTERN})|\d{{1,2}})\s*(?:[-/]\s*|\s+)\d{{4}}"
 NUMBER_VALUE_TOKEN = rf"(?:multiple|\d+|{NUMBER_WORD_PATTERN})"
 NUMBER_TOKEN = (
     rf"(?:{NUMBER_VALUE_TOKEN}(?:\s+(?:to|or)\s+{NUMBER_VALUE_TOKEN}|"
@@ -1447,386 +1363,6 @@ def _normalize_candidate(
         monthly_frequency=record.monthly_frequency,
         validation_errors=errors,
     )
-
-
-def _select_final_event(
-    candidate_events: list[CandidateEvent],
-    normalized_events: list[NormalizedEvent],
-    ablation_config: AblationConfig | None = None,
-) -> FinalSelection:
-    ablation_config = ablation_config or AblationConfig()
-    pairs = list(zip(candidate_events, normalized_events, strict=True))
-    scored_pairs = [
-        (event, normalized, _selection_score((event, normalized), ablation_config))
-        for event, normalized in pairs
-    ]
-    selected_event, selected_normalized, selected_score = max(
-        scored_pairs,
-        key=lambda scored_pair: scored_pair[2].priority(),
-    )
-    selected_rationale = _selection_rationale(selected_normalized)
-    selected_decision = SelectionDecisionRecord(
-        event_id=selected_event.event_id,
-        final_label=selected_normalized.normalized_label,
-        final_kind=selected_normalized.semantic_kind,
-        monthly_frequency=selected_normalized.monthly_frequency,
-        evidence=selected_event.evidence,
-        rationale=selected_rationale,
-        validation_errors=selected_normalized.validation_errors,
-        score=selected_score,
-        priority=selected_score.priority(),
-    )
-    return FinalSelection(
-        final_label=selected_normalized.normalized_label,
-        final_kind=selected_normalized.semantic_kind,
-        selected_event_ids=(selected_event.event_id,),
-        rationale=selected_rationale,
-        evidence=selected_event.evidence,
-        monthly_frequency=selected_normalized.monthly_frequency,
-        validation_errors=selected_normalized.validation_errors,
-        selected_score=selected_score,
-        selected_decision=selected_decision,
-        selection_candidates=tuple(
-            SelectionCandidateScore(
-                event_id=event.event_id,
-                score=score,
-                selected=event.event_id == selected_event.event_id,
-            )
-            for event, _normalized, score in scored_pairs
-        ),
-    )
-
-
-def _selection_score(
-    pair: tuple[CandidateEvent, NormalizedEvent],
-    ablation_config: AblationConfig | None = None,
-) -> SelectionScore:
-    ablation_config = ablation_config or AblationConfig()
-    event, normalized = pair
-    evidence = event.evidence.lower()
-    if normalized.semantic_kind is FrequencyLabelKind.FREQUENCY:
-        evidence_priority = _frequency_summary_priority(evidence)
-        return _ablatable_selection_score(
-            ablation_config,
-            semantic_priority=4,
-            evidence_priority=evidence_priority,
-            monthly_frequency_priority=normalized.monthly_frequency,
-            reason=(
-                "frequency_current_summary"
-                if evidence_priority > 0
-                else "frequency_monthly_rate"
-            ),
-        )
-    if normalized.semantic_kind is FrequencyLabelKind.UNRESOLVED_MULTIPLE:
-        if _is_specific_current_multiple_evidence(event.evidence):
-            return _ablatable_selection_score(
-                ablation_config,
-                semantic_priority=4,
-                evidence_priority=1,
-                monthly_frequency_priority=normalized.monthly_frequency,
-                reason="specific_current_multiple",
-            )
-        return _ablatable_selection_score(
-            ablation_config,
-            semantic_priority=3,
-            evidence_priority=0,
-            monthly_frequency_priority=0.0,
-            reason="generic_unresolved_multiple",
-        )
-    if normalized.semantic_kind is FrequencyLabelKind.SEIZURE_FREE:
-        if _is_current_seizure_free_evidence(evidence):
-            return _ablatable_selection_score(
-                ablation_config,
-                semantic_priority=5,
-                evidence_priority=0,
-                monthly_frequency_priority=0.0,
-                reason="current_seizure_free",
-            )
-        return _ablatable_selection_score(
-            ablation_config,
-            semantic_priority=2,
-            evidence_priority=0,
-            monthly_frequency_priority=0.0,
-            reason="generic_seizure_free",
-        )
-    if normalized.semantic_kind is FrequencyLabelKind.UNKNOWN:
-        if _is_trigger_conditioned_unknown_evidence(evidence):
-            return _ablatable_selection_score(
-                ablation_config,
-                semantic_priority=6,
-                evidence_priority=0,
-                monthly_frequency_priority=0.0,
-                reason="trigger_conditioned_unknown",
-            )
-        return _ablatable_selection_score(
-            ablation_config,
-            semantic_priority=1,
-            evidence_priority=0,
-            monthly_frequency_priority=0.0,
-            reason="generic_unknown",
-        )
-    return _ablatable_selection_score(
-        ablation_config,
-        semantic_priority=0,
-        evidence_priority=0,
-        monthly_frequency_priority=0.0,
-        reason="no_reference",
-    )
-
-
-def _ablatable_selection_score(
-    ablation_config: AblationConfig,
-    *,
-    semantic_priority: int,
-    evidence_priority: int,
-    monthly_frequency_priority: float,
-    reason: str,
-) -> SelectionScore:
-    if not temporal_selection_rule_is_enabled(reason, ablation_config):
-        return SelectionScore(
-            semantic_priority=0,
-            evidence_priority=0,
-            monthly_frequency_priority=0.0,
-            reason=f"{reason}_disabled",
-        )
-    return SelectionScore(
-        semantic_priority=semantic_priority,
-        evidence_priority=evidence_priority,
-        monthly_frequency_priority=monthly_frequency_priority,
-        reason=reason,
-    )
-
-
-def _selection_rationale(normalized: NormalizedEvent) -> str:
-    if normalized.semantic_kind is FrequencyLabelKind.FREQUENCY:
-        return "Selected the highest normalized current frequency candidate."
-    if normalized.semantic_kind is FrequencyLabelKind.UNRESOLVED_MULTIPLE:
-        return "Selected an unresolved multiple-frequency candidate."
-    if normalized.semantic_kind is FrequencyLabelKind.SEIZURE_FREE:
-        return "Selected the explicit seizure-free statement."
-    if normalized.semantic_kind is FrequencyLabelKind.UNKNOWN:
-        return "Selected seizure-frequency evidence that could not be converted to a rate."
-    return "No seizure-frequency evidence was found."
-
-
-def _is_specific_current_multiple_evidence(evidence: str) -> bool:
-    normalized = evidence.lower()
-    return (
-        "most weekdays" in normalized
-        or "most nights of the week" in normalized
-        or "several episodes per week" in normalized
-        or "multiple times in past week" in normalized
-        or "near-daily basis, sometimes dozens in a day" in normalized
-        or re.search(r"\boccur\s+several\s+times\s+(?:each|per)\s+week\b", normalized)
-        is not None
-        or re.search(r"\bon\s+most\s+days\b", normalized) is not None
-        or (
-            "several" in normalized and re.search(r"\blast\s+week\b", normalized) is not None
-        )
-    )
-
-
-def _frequency_summary_priority(evidence: str) -> int:
-    if (
-        "seizure days:" in evidence
-        or evidence.startswith("abs ")
-        or "in a typical month" in evidence
-        or "median inter-seizure interval" in evidence
-        or re.search(r"\bq(?:one|two|three|four|five|six|seven|eight|nine|\d)", evidence)
-        is not None
-    ):
-        return 2
-    return 0
-
-
-def _is_trigger_conditioned_unknown_evidence(evidence: str) -> bool:
-    return (
-        "only when significantly short on sleep" in evidence
-        or "perimenstrual only" in evidence
-        or evidence.startswith("better over the past")
-    )
-
-
-def _is_current_seizure_free_evidence(evidence: str) -> bool:
-    return (
-        re.search(r"\bseizure-free since \d{1,2}(?:[-/ ]|$)", evidence) is not None
-        or re.search(r"\bseizure-free interval since \d{1,2}(?:[-/ ]|$)", evidence)
-        is not None
-        or evidence.startswith("last seizure on")
-        or re.search(
-            r"\bno events for\s+(?:\d+|one|two|three|four|five|six|seven|"
-            r"eight|nine|ten|eleven|twelve)\s+months?\b",
-            evidence,
-        )
-        is not None
-        or "absence of events for over" in evidence
-        or "no occurrence of events suggestive of seizures" in evidence
-        or "no definite seizure events" in evidence
-        or "no seizures since last visit" in evidence
-        or "no events, warnings, or auras for over" in evidence
-        or "no spell-like events suggestive of seizures over the past" in evidence
-        or "seizure-free interval extends to" in evidence
-        or "drug-free remission since" in evidence
-        or "no focal clonic since" in evidence
-        or "sustained remission since" in evidence
-        or "prior cluster pattern resolved since" in evidence
-        or "recorded seizure rate at zero over the last" in evidence
-        or "seizure free for one and a half years" in evidence
-        or "not experiencing any seizures in one and a half years" in evidence
-        or "currently in long-term remission, having been seizure free for years" in evidence
-        or "has not experienced any seizures" in evidence
-        or evidence
-        in {"no events suggestive of seizures", "no recent events suggestive of seizures"}
-        or evidence == "sustained postoperative seizure freedom"
-        or evidence == "no recorded events since"
-        or evidence == "interval history negative for seizures"
-        or evidence == "durable seizure control"
-        or evidence == "seizure cessation following initiation of last asm"
-        or evidence == "steady run without clear seizures at present"
-    )
-
-
-def _clinic_date(text: str) -> _ParsedMonthDate | None:
-    match = re.search(
-        rf"\b(?:Clinic Date:|Sent:|Date:)\s*(?P<day>\d{{1,2}})\s+"
-        rf"(?P<month>{MONTH_NAME_PATTERN})\s+(?P<year>\d{{4}})\b",
-        text,
-        flags=re.IGNORECASE,
-    )
-    if match is None:
-        return None
-    return _ParsedMonthDate(
-        year=int(match.group("year")),
-        month=_month_number(match.group("month")),
-        day=int(match.group("day")),
-    )
-
-
-def _relative_note_date(value: str, anchor: _ParsedMonthDate | None) -> _ParsedMonthDate | None:
-    normalized = value.strip()
-    day_month = re.match(
-        rf"(?P<day>\d{{1,2}})[-/ ](?P<month>{MONTH_NAME_PATTERN})$",
-        normalized,
-        flags=re.IGNORECASE,
-    )
-    if day_month is not None and anchor is not None:
-        month = _month_number(day_month.group("month"))
-        year = anchor.year - 1 if month > anchor.month else anchor.year
-        return _ParsedMonthDate(year=year, month=month, day=int(day_month.group("day")))
-
-    month_year = re.match(
-        rf"(?P<month>{MONTH_NAME_PATTERN})[-/ ](?P<year>\d{{4}})$",
-        normalized,
-        flags=re.IGNORECASE,
-    )
-    if month_year is not None:
-        return _year_month_date(month_year.group("year"), month_year.group("month"))
-
-    numeric_or_named_month_year = re.match(
-        rf"(?P<month>(?:{MONTH_NAME_PATTERN})|\d{{1,2}})\s*[-/]\s*(?P<year>\d{{4}})$",
-        normalized,
-        flags=re.IGNORECASE,
-    )
-    if numeric_or_named_month_year is not None:
-        return _year_month_date(
-            numeric_or_named_month_year.group("year"),
-            numeric_or_named_month_year.group("month"),
-        )
-
-    month_only = re.match(
-        rf"(?P<month>{MONTH_NAME_PATTERN})$",
-        normalized,
-        flags=re.IGNORECASE,
-    )
-    if month_only is not None and anchor is not None:
-        month = _month_number(month_only.group("month"))
-        year = anchor.year - 1 if month > anchor.month else anchor.year
-        return _ParsedMonthDate(year=year, month=month)
-
-    return None
-
-
-def _full_date(value: str) -> _ParsedMonthDate | None:
-    normalized = value.strip()
-    numeric = re.match(
-        r"(?P<day>\d{1,2})/(?P<month>\d{1,2})/(?P<year>\d{4})$",
-        normalized,
-    )
-    if numeric is not None:
-        return _ParsedMonthDate(
-            year=int(numeric.group("year")),
-            month=int(numeric.group("month")),
-            day=int(numeric.group("day")),
-        )
-
-    day_named = re.match(
-        rf"(?P<day>\d{{1,2}})[-\s](?P<month>{MONTH_NAME_PATTERN})[-\s](?P<year>\d{{4}})$",
-        normalized,
-        flags=re.IGNORECASE,
-    )
-    if day_named is not None:
-        return _ParsedMonthDate(
-            year=int(day_named.group("year")),
-            month=_month_number(day_named.group("month")),
-            day=int(day_named.group("day")),
-        )
-    return None
-
-
-def _year_month_date(year: str, month: str) -> _ParsedMonthDate:
-    return _ParsedMonthDate(year=int(year), month=_month_number(month))
-
-
-def _month_number(value: str) -> int:
-    stripped = value.strip()
-    if stripped.isdigit():
-        return int(stripped)
-    normalized = stripped.lower()[:3]
-    return MONTH_ABBREVIATIONS[normalized]
-
-
-def _month_span(start: _ParsedMonthDate | None, end: _ParsedMonthDate | None) -> int | None:
-    if start is None or end is None:
-        return None
-    months = (end.year - start.year) * 12 + end.month - start.month
-    if months <= 0:
-        return None
-    return months
-
-
-def _month_span_floor(start: _ParsedMonthDate | None, end: _ParsedMonthDate | None) -> int | None:
-    months = _month_span(start, end)
-    if months is None:
-        return None
-    if start is None or end is None:
-        return None
-    if start.day is not None and end.day is not None and end.day < start.day:
-        months -= 1
-    return months if months > 0 else None
-
-
-def _month_span_with_terminal_partial(
-    start: _ParsedMonthDate | None, end: _ParsedMonthDate | None
-) -> int | None:
-    months = _month_span(start, end)
-    if months is None:
-        return None
-    if start is None or end is None:
-        return None
-    if start.day is not None and end.day is not None and end.day > start.day:
-        return months + 1
-    return months
-
-
-def _month_span_inclusive(
-    start: _ParsedMonthDate | None, end: _ParsedMonthDate | None
-) -> int | None:
-    if start is None or end is None:
-        return None
-    months = (end.year - start.year) * 12 + end.month - start.month
-    if months < 0:
-        return None
-    return months + 1
 
 
 def _rate_label(count: str, unit: str, denominator: str | None = None) -> str:
