@@ -97,6 +97,13 @@ ownership, and deterministic repair boundaries explicitly.
   rate hooks, temporal rate arithmetic, and medication/dose distractor filtering
   live behind the rate extraction module. Behavior is preserved; Ruff, mypy,
   focused deterministic tests, and full pytest are green.
+- Phase 5 has also extracted the remaining LLM structured-events semantic
+  repair families into `llm_structured_repair_families.py`. The structured
+  events runner now owns prompt/run/parse/report orchestration, while usual
+  interval, breakthrough-after-seizure-free, non-epileptic override, residual
+  jerk, post-change burst, dated-sequence, and elapsed-anchor repairs live in
+  one typed helper module. Behavior is preserved; Ruff, mypy, focused
+  structured-events tests, and full pytest are green.
 
 ## Key References
 
@@ -128,9 +135,8 @@ ownership, and deterministic repair boundaries explicitly.
 ### Now
 
 - Continue the codebase thermonuclear review Phase 5 behavior splits without
-  changing scorer behavior: next candidates are remaining LLM structured-events
-  repair-family splits, claim-table/hybrid report or parser ownership splits,
-  or other large-file ownership splits.
+  changing scorer behavior: next candidates are claim-table/hybrid parser or
+  report ownership splits, or other large-file ownership splits.
 - Design hybrid rules-candidates LLM adjudicator v0.2 as a conservative/targeted adjudicator with
   deterministic fallback and named overreach-family gates; repeat 25/50/250.
 - Design LLM-only claim-table selector v5 as claim-table plus constrained selector, with
@@ -234,10 +240,18 @@ ownership, and deterministic repair boundaries explicitly.
   `python -m mypy src`, `python -m pytest tests/test_gan2026_pipeline_v1.py -q`,
   and `python -m pytest -q` are green (`595 passed`, 11 third-party DSPy
   deprecation warnings).
+- 2026-06-01: Continued Phase 5 by extracting LLM structured-events semantic
+  repair families from `llm_only_structured_events.py` into
+  `llm_structured_repair_families.py`. The runner is now 1054 lines and the new
+  repair-family module is 646 lines. Verification: `python -m ruff check .`,
+  `python -m mypy src`,
+  `python -m pytest tests/test_gan2026_llm_only_structured_events.py -q`, and
+  `python -m pytest -q` are green (`595 passed`, 11 third-party DSPy
+  deprecation warnings).
 
 ## Immediate Next Step
 
 Continue the Phase 5 behavior-preserving splits from the remaining large
-behavior modules, preferably one of the remaining LLM structured-events
-repair families or a claim-table/hybrid ownership split before returning to
-the validation-only v0.2/v5 experiment cycle. Do not inspect holdout rows.
+behavior modules, preferably a claim-table/hybrid parser or report ownership
+split before returning to the validation-only v0.2/v5 experiment cycle. Do not
+inspect holdout rows.
