@@ -365,6 +365,45 @@ def test_format_preserving_repair_preserves_no_reference_sentinel() -> None:
     )
 
 
+@pytest.mark.parametrize(
+    ("raw", "expected"),
+    [
+        ("up to 4 per day", "4 per day"),
+        ("<= 4 per week", "4 per week"),
+        ("\u2264 6 to 7 per year", "6 to 7 per year"),
+        ("1 per month or less", "1 per month"),
+        ("12 to 30 per quarter", "12 to 30 per 3 month"),
+    ],
+)
+def test_format_preserving_repair_accepts_strict_benchmark_surface_forms(
+    raw: str,
+    expected: str,
+) -> None:
+    repaired = repair_prediction_label_format_preserving(raw)
+
+    assert repaired == expected
+    parse_label_bounds(repaired)
+
+
+@pytest.mark.parametrize(
+    "raw",
+    [
+        "1 cluster per week",
+        "1 cluster per 4 weeks",
+        "2 clusters per month, each five absences",
+    ],
+)
+def test_format_preserving_repair_leaves_cluster_only_labels_as_raw_failures(
+    raw: str,
+) -> None:
+    repaired = repair_prediction_label_format_preserving(raw)
+
+    assert "cluster" in repaired
+    assert repaired != "unknown"
+    with pytest.raises(ValueError):
+        label_to_frequency_record(repaired)
+
+
 def test_format_preserving_repair_does_not_apply_semantic_basic_fallbacks() -> None:
     assert repair_prediction_label("several per week") == "multiple per week"
     assert repair_prediction_label_format_preserving("several per week") == "several per week"

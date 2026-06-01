@@ -12,6 +12,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm_structured import (
     run_split,
     summarize_records,
     write_jsonl,
+    write_report,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import FrequencyLabelKind
 
@@ -168,6 +169,32 @@ def test_run_split_applies_repair_config_to_reused_raw_outputs(tmp_path: Path) -
     assert rows[0]["structured_record"]["selection"]["final_label"] == (
         "no seizure frequency reference"
     )
+
+
+def test_write_report_records_repair_config(tmp_path: Path) -> None:
+    rows, metadata = run_split(
+        [_record()],
+        split="validation",
+        split_manifest="gan2026_split_v1",
+        model="openai/gpt-4.1-mini",
+        temperature=0.0,
+        max_tokens=100,
+        mode="prompt-only",
+        dspy_cache=True,
+        reuse_raw_outputs={10: _raw_structured("2 per months")},
+        repair_config=StructuredRepairConfig(
+            basic_label_repair_format_only=True,
+            selected_evidence_repair=False,
+        ),
+    )
+    report_path = tmp_path / "report.md"
+
+    write_report(rows, metadata, report_path, jsonl_path=tmp_path / "rows.jsonl")
+
+    report = report_path.read_text(encoding="utf-8")
+    assert "- Repair policy: raw structured model selection plus strict format-preserving" in report
+    assert "`basic_label_repair_format_only=True`" in report
+    assert "`selected_evidence_repair=False`" in report
 
 
 def test_summary_tolerates_missing_structured_final_label() -> None:
