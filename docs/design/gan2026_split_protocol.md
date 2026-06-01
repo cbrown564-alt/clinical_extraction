@@ -64,6 +64,22 @@ Use this ladder for ordinary LLM/DSPy and hybrid architecture iteration:
    evaluation, producing a paper-facing ablation/comparison table, or resolving a
    high-impact uncertainty that the 250-row slice cannot answer.
 
+### Saturated Prefix Caveat
+
+The 25- and 50-row prefixes are primarily contract and early-signal surfaces.
+They are not strong enough to decide small metric deltas for candidates whose
+deterministic comparator, prompt family, or hybrid architecture has already been
+tuned close to saturation on those prefixes.
+
+For a near-saturated candidate, a clean 50-row run should usually unlock a
+250-row validation run rather than trigger small prompt, gate, or rule changes.
+Treat one or two regressions on the 50-row prefix as a row-review note unless
+they expose a systemic output-contract, evidence-validity, attribution, or
+semantic-boundary failure. The written reason for 250-row escalation should name
+the uncertainty the larger sample resolves, such as whether apparent
+deterministic-correct regressions persist beyond a saturated prefix or whether
+the LLM component produces enough corrections to justify its complexity.
+
 ### Test
 
 - Count: 450 rows.

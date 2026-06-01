@@ -57,6 +57,17 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Historical
 
+### `gan2026_hybrid_adjudicator_v02_validation50_live_2026-06-01`
+- Date/split: `2026-06-01`; `validation`; `50` rows.
+- Pipeline: `hybrid_rules_candidates_llm_adjudicator`; mode `live rules candidates then conservative LLM adjudicator`; replay `live`.
+- Model role: hybrid adjudicator over deterministic candidates; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `conservative_overreach_gates + deterministic_fallback`.
+- Primary metrics: adjudicator_pragmatic_correct=49, adjudicator_purist_correct=48, call_failures=0, changed_final_labels=3, deterministic_correct_to_adjudicator_wrong=2, deterministic_pragmatic_correct=50, deterministic_purist_correct=50, deterministic_wrong_to_adjudicator_correct=0, parse_failures=0, row_count=50.
+- Evidence validity: Deterministic candidate evidence 50/50 exact in component ablation; raw/gated adjudicator evidence not independently scored in this artifact.
+- Cache/reuse source: DSPy cache enabled; run recorded 0 reused raw outputs.
+- Claim language: Validation50 is output-contract clean but the prefix is saturated; 2 deterministic-correct Purist regressions are a row-review note, not enough evidence for a revise decision. Escalate to 250 rows before tuning gates.
+- Artifacts: `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation50_gpt41mini_v02_live_2026-06-01.jsonl`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation50_gpt41mini_v02_live_2026-06-01.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation50_v02_live_component_ablation_2026-06-01.json`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation50_v02_live_component_ablation_2026-06-01.md`.
+
 ### `gan2026_rules_only_v1_baseline_2026-05-31`
 - Date/split: `2026-05-31`; `validation+test`; `1200` rows.
 - Pipeline: `rules_only`; mode `rules_only_v1`; replay `analysis_only`.
