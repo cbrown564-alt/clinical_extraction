@@ -20,7 +20,7 @@ Use Gan 2026 as the first controlled extraction surface. Keep deterministic V1 f
 - Structured v0.5 reached 675/750 Purist = 0.9000 on full validation, but audit
   classified it as repair-heavy hybrid behavior rather than clean LLM-first.
 - LLM-only claim-table selector v4 reached 231/250 clean Purist after schema replay, but full validation collapsed to 528/750 clean Purist and 577/750 clean Pragmatic. Reject v4 for holdout; redesign v5 around cluster-axis preservation, boundary-state selection, and selector ablation.
-- Hybrid rules-candidates LLM adjudicator v0.1 reached 243/250 Purist and 244/250 Pragmatic on 250-row schema replay, then 680/750 Purist and 689/750 Pragmatic on full validation. It underperformed deterministic top on the same rows (697/750 Purist) because the adjudicator introduced 24 deterministic-correct regressions against 7 corrections. Revise before holdout.
+- Hybrid rules-candidates LLM adjudicator v0.1 reached 243/250 Purist and 244/250 Pragmatic on 250-row schema replay, then 680/750 Purist and 689/750 Pragmatic on full validation. It underperformed deterministic top on the same rows (697/750 Purist) because the adjudicator introduced 24 deterministic-correct regressions against 7 corrections. V0.2 is now designed as a conservative gated adjudicator with deterministic fallback; do not run its 25/50/250 ladder until the component-ablation artifact is generated with deterministic top, raw LLM, and gated-final conditions.
 - Routine LLM experiments use cache-first `gan2026-llm-experiment --pipeline ...`; saved-output replay is reserved for explicit offline artifact analysis.
 - Clean scorer-facing normalization is frozen unless direct-citation review justifies another family. Shared schema repair is alias-only; parser defaults belong to their task parser.
 - The codebase thermonuclear review follow-up is complete: the Gan package now has stable ownership boundaries under `contract/`, `deterministic/`, `selected_evidence/`, `llm/`, `hybrid/`, `reports/`, `experiments/`, and `cli/`, while preserving public contracts and scorer behavior.
@@ -38,7 +38,7 @@ Use Gan 2026 as the first controlled extraction surface. Keep deterministic V1 f
 ## Active Priorities
 
 1. Keep deterministic V1 frozen; put new deterministic behavior into named, ablated candidates.
-2. Enforce the architecture gate before the metric gate; semantic repair needs separate naming, ablation, and claim language.
+2. Enforce the architecture gate before the metric gate; semantic repair and hybrid overreach gates need separate naming, ablation, and claim language.
 3. Treat hybrid adjudicator v0.1 and LLM-only claim-table selector v4 as revise signals, not holdout candidates.
 4. Separate benchmark gold-normalization policy from clinical reasoning while preserving source-near traces.
 5. Keep runners cache-first and live-run oriented; move replay/retention analysis into explicit artifact-analysis modules.
@@ -47,12 +47,12 @@ Use Gan 2026 as the first controlled extraction surface. Keep deterministic V1 f
 
 ### Now
 
-- Design hybrid rules-candidates LLM adjudicator v0.2 as a conservative adjudicator with deterministic fallback and named overreach-family gates; run 25/50/250 only after ablations are ready.
-- Design LLM-only claim-table selector v5 as claim-table plus constrained selector, with cluster-axis and boundary-state fields; run 25/50/250 only after ablations are ready.
+- Generate a v0.2 prompt-only/smoke artifact and component-ablation report that separates deterministic top, raw LLM adjudicator, and conservative gated final before any 25/50/250 validation ladder.
+- Generate claim-table v5 component-ablation artifacts before any 25/50/250 validation ladder; v5 now uses claim-table plus constrained selector state with cluster-axis and boundary-state fields.
 
 ### Next
 
-- Add component ablations for hybrid v0.2 and claim-table v5: raw/model, strict/schema repair, deterministic fallback or selector, and clean scorer-facing policy.
+- Run claim-table v5 only after the raw/model, strict/schema repair, constrained-selector state, and clean scorer-facing policy ablations are ready.
 - Design LLM-replacement ablations for deterministic post-processing modules, reporting score, repair attribution, evidence validity, and replay variance.
 - Consolidate remaining saved-output replay helpers into dedicated artifact-analysis modules.
 - Extend named repair-mode metadata beyond structured-events where downstream repair layers blur raw, strict, clean, selected-evidence, and hybrid attribution.
@@ -65,6 +65,8 @@ Use Gan 2026 as the first controlled extraction surface. Keep deterministic V1 f
 ### Done Recently
 
 - 2026-06-01: Rejected LLM-only claim-table selector v4 for holdout after full validation fell to 528/750 clean Purist despite stronger 250-row schema-replay results.
+- 2026-06-01: Designed and implemented LLM-only claim-table selector v5 with explicit cluster-axis, boundary-state, and constrained-selector fields plus ablation-readiness metadata; no live ladder run was started.
+- 2026-06-01: Designed and implemented hybrid rules-candidates LLM adjudicator v0.2 as a conservative gated adjudicator with deterministic fallback, raw-vs-gated score reporting, and component-ablation conditions.
 - 2026-06-01: Completed hybrid rules-candidates LLM adjudicator v0.1 ladder and full-validation review; it clears 0.9000 in schema replay but regresses too many deterministic-correct rows to freeze.
 - 2026-06-01: Added cross-architecture component-ablation tooling and the cache-first `gan2026-llm-experiment --pipeline ...` CLI.
 - 2026-06-01: Restored green Ruff, mypy, and full pytest after schema-repair cleanup, broad-validation CLI gating, and task-neutral core-schema cleanup.
@@ -72,4 +74,4 @@ Use Gan 2026 as the first controlled extraction surface. Keep deterministic V1 f
 
 ## Immediate Next Step
 
-Return to the validation-only v0.2/v5 experiment cycle after defining the required ablations. Do not inspect holdout rows.
+Create the validation-only v0.2 ablation artifact first, then decide whether to run the 25-row live smoke. Do not inspect holdout rows.

@@ -33,7 +33,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.reports.hybrid_adjudica
     write_hybrid_rules_candidates_llm_adjudicator_report,
 )
 
-PROMPT_VERSION = "gan2026_final_selection_adjudicator_v0.4"
+PROMPT_VERSION = "gan2026_final_selection_adjudicator_v0.5_conservative"
 DEFAULT_DEVSET_PATH = Path("experiments/gan2026_v1_prompt_adjudicator_devset_2026-05-31.jsonl")
 DEFAULT_ADJUDICATOR_JSONL_PATH = Path(
     "experiments/gan2026_v1_dspy_adjudicator_devset_gpt41mini_2026-05-31.jsonl"
@@ -43,14 +43,16 @@ DEFAULT_ADJUDICATOR_REPORT_PATH = Path(
 )
 DEFAULT_HYBRID_RULES_CANDIDATES_LLM_ADJUDICATOR_JSONL_PATH = Path(
     "experiments/"
-    "gan2026_hybrid_rules_candidates_llm_adjudicator_validation25_gpt41mini_v01_"
+    "gan2026_hybrid_rules_candidates_llm_adjudicator_validation25_gpt41mini_v02_"
     "2026-06-01.jsonl"
 )
 DEFAULT_HYBRID_RULES_CANDIDATES_LLM_ADJUDICATOR_REPORT_PATH = Path(
     "experiments/"
-    "gan2026_hybrid_rules_candidates_llm_adjudicator_validation25_gpt41mini_v01_"
+    "gan2026_hybrid_rules_candidates_llm_adjudicator_validation25_gpt41mini_v02_"
     "2026-06-01.md"
 )
+
+BOUNDARY_FINAL_LABELS = frozenset({"unknown", "no seizure frequency reference"})
 
 
 class SeizureEventExtractor:
@@ -224,7 +226,8 @@ def build_hybrid_rules_candidates_llm_adjudicator_prompt_input(
             "Read the full note first, then adjudicate the deterministic candidate set.",
             (
                 "The deterministic generator is a high-recall retrieval layer, not the final "
-                "answer. Do not rubber-stamp candidate order."
+                "answer, but it is the fallback whenever your override is not directly "
+                "supported by candidate evidence."
             ),
             (
                 "Candidates are listed in stable event-id order, without deterministic scores. "
@@ -257,6 +260,16 @@ def build_hybrid_rules_candidates_llm_adjudicator_prompt_input(
                 "Use final_label copied from one candidate normalized_label whenever a "
                 "candidate supports the answer. Use unknown or no seizure frequency reference "
                 "only when no candidate supports a current frequency answer."
+            ),
+            (
+                "Conservative v0.2 policy: change the deterministic top candidate only when "
+                "you can name selected_event_ids whose evidence is an exact note substring "
+                "and whose normalized_label directly supports final_label."
+            ),
+            (
+                "Do not demote a deterministic frequency or seizure-free answer to unknown "
+                "or no seizure frequency reference unless every current/recent candidate is "
+                "rejected with evidence-specific rationale."
             ),
             (
                 "Populate accepted_event_ids and rejected_event_ids after reviewing each "
@@ -435,6 +448,11 @@ def run_hybrid_rules_candidates_llm_adjudicator_split(
         adjudicator_score = (
             _compare_label_to_record(record, decision.final_label) if decision else None
         )
+        conservative_gate = _conservative_adjudicator_gate(record, diagnostics, decision)
+        conservative_score = _compare_label_to_record(
+            record,
+            str(conservative_gate["final_label"]),
+        )
         candidate_recall = _candidate_recall(record, diagnostics)
         output_rows.append(
             {
@@ -459,8 +477,11 @@ def run_hybrid_rules_candidates_llm_adjudicator_split(
                 "candidate_recall": candidate_recall,
                 "scores": {
                     "deterministic_top": deterministic_score,
-                    "adjudicator": adjudicator_score,
+                    "raw_adjudicator": adjudicator_score,
+                    "conservative_adjudicator": conservative_score,
+                    "adjudicator": conservative_score,
                 },
+                "conservative_gate": conservative_gate,
                 "reference": {
                     "gold_label": record.gold_label,
                     "gold_label_kind": str(record.gold_label_kind),
@@ -512,6 +533,10 @@ def summarize_hybrid_rules_candidates_llm_adjudicator_records(
         for record in records
     )
     changed = sum(_hybrid_candidate_adjudicator_changed_final_label(record) for record in records)
+    raw_changed = sum(
+        _hybrid_candidate_adjudicator_changed_final_label(record, "raw_adjudicator")
+        for record in records
+    )
     improved = sum(
         _hybrid_candidate_adjudicator_changed_correctness(
             record,
@@ -547,8 +572,22 @@ def summarize_hybrid_rules_candidates_llm_adjudicator_records(
         "adjudicator_pragmatic_correct": adjudicator_pragmatic,
         "adjudicator_pragmatic_accuracy": round(adjudicator_pragmatic / count, 4) if count else 0.0,
         "changed_final_labels": changed,
+        "raw_changed_final_labels": raw_changed,
         "deterministic_wrong_to_adjudicator_correct": improved,
         "deterministic_correct_to_adjudicator_wrong": regressed,
+        "deterministic_fallbacks": sum(
+            bool((record.get("conservative_gate") or {}).get("used_deterministic_fallback"))
+            for record in records
+        ),
+        "overreach_gate_counts": dict(
+            sorted(
+                Counter(
+                    gate
+                    for record in records
+                    for gate in (record.get("conservative_gate") or {}).get("fired_gates", [])
+                ).items()
+            )
+        ),
     }
 
 
@@ -698,10 +737,100 @@ def _candidate_recall(record: Any, diagnostics: Mapping[str, Any]) -> dict[str, 
     }
 
 
-def _hybrid_candidate_adjudicator_changed_final_label(record: Mapping[str, Any]) -> bool:
+def _conservative_adjudicator_gate(
+    record: Any,
+    diagnostics: Mapping[str, Any],
+    decision: AdjudicatorDecisionRecord | None,
+) -> dict[str, Any]:
+    deterministic_final = diagnostics.get("final_selection") or {}
+    deterministic_label = str(deterministic_final.get("final_label", "unknown"))
+    if decision is None:
+        return _fallback_gate_payload(
+            deterministic_label,
+            fallback_reason="no_parseable_adjudicator_decision",
+            fired_gates=("adjudicator_output_missing_or_invalid",),
+        )
+
+    candidate_by_id = {
+        str(event.get("event_id")): event for event in diagnostics.get("candidate_events", [])
+    }
+    normalized_by_id = {
+        str(event.get("event_id")): event for event in diagnostics.get("normalized_events", [])
+    }
+    selected_ids = tuple(str(event_id) for event_id in decision.selected_event_ids)
+    selected_set = set(selected_ids)
+    accepted_set = {str(event_id) for event_id in decision.accepted_event_ids}
+    fired_gates: list[str] = []
+
+    if not selected_set.issubset(candidate_by_id):
+        fired_gates.append("candidate_membership_overreach")
+    if not selected_set.issubset(accepted_set):
+        fired_gates.append("accepted_subset_overreach")
+    if decision.final_label not in BOUNDARY_FINAL_LABELS and not selected_ids:
+        fired_gates.append("unsupported_empty_selection_overreach")
+    if decision.final_label in BOUNDARY_FINAL_LABELS:
+        deterministic_kind = str(deterministic_final.get("final_kind", ""))
+        deterministic_selected = deterministic_final.get("selected_event_ids") or []
+        if deterministic_kind in {"frequency", "seizure_free"} and deterministic_selected:
+            fired_gates.append("unsupported_boundary_demotion_overreach")
+    elif selected_ids:
+        selected_labels = {
+            normalized_by_id.get(event_id, {}).get("normalized_label") for event_id in selected_ids
+        }
+        if decision.final_label not in selected_labels:
+            fired_gates.append("label_support_overreach")
+
+    note_text = str(getattr(record, "note_text", ""))
+    for event_id in selected_ids:
+        evidence = candidate_by_id.get(event_id, {}).get("evidence")
+        if isinstance(evidence, str) and evidence and evidence in note_text:
+            continue
+        fired_gates.append("evidence_substring_overreach")
+        break
+
+    if fired_gates:
+        return _fallback_gate_payload(
+            deterministic_label,
+            fallback_reason="conservative_overreach_gate",
+            fired_gates=tuple(fired_gates),
+            raw_adjudicator_final_label=decision.final_label,
+        )
+    return {
+        "policy_version": "hybrid_adjudicator_conservative_v0.2",
+        "final_label": decision.final_label,
+        "used_deterministic_fallback": False,
+        "fallback_reason": None,
+        "fired_gates": [],
+        "raw_adjudicator_final_label": decision.final_label,
+        "deterministic_final_label": deterministic_label,
+    }
+
+
+def _fallback_gate_payload(
+    deterministic_label: str,
+    *,
+    fallback_reason: str,
+    fired_gates: Sequence[str],
+    raw_adjudicator_final_label: str | None = None,
+) -> dict[str, Any]:
+    return {
+        "policy_version": "hybrid_adjudicator_conservative_v0.2",
+        "final_label": deterministic_label,
+        "used_deterministic_fallback": True,
+        "fallback_reason": fallback_reason,
+        "fired_gates": list(fired_gates),
+        "raw_adjudicator_final_label": raw_adjudicator_final_label,
+        "deterministic_final_label": deterministic_label,
+    }
+
+
+def _hybrid_candidate_adjudicator_changed_final_label(
+    record: Mapping[str, Any],
+    adjudicator_score_name: str = "adjudicator",
+) -> bool:
     scores = record.get("scores") or {}
     deterministic = scores.get("deterministic_top") or {}
-    adjudicator = scores.get("adjudicator") or {}
+    adjudicator = scores.get(adjudicator_score_name) or {}
     return bool(adjudicator) and deterministic.get("final_label") != adjudicator.get("final_label")
 
 

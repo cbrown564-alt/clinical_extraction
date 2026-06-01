@@ -144,6 +144,7 @@ def condition_from_llm_rows(
     condition_rows = []
     for row in rows:
         prediction_label = _llm_prediction_label(row)
+        score_layer = _llm_score_layer(row)
         reference = row.get("reference") or {}
         comparison = row.get("comparison") or {}
         condition_rows.append(
@@ -151,13 +152,29 @@ def condition_from_llm_rows(
                 source_row_index=int(row["source_row_index"]),
                 prediction_label=prediction_label,
                 gold_label=str(reference.get("gold_label", "")),
-                purist_correct=bool(comparison.get("purist_correct")),
-                pragmatic_correct=bool(comparison.get("pragmatic_correct")),
-                evidence_valid=_optional_bool(row.get("evidence_valid")),
+                purist_correct=bool(
+                    comparison.get("purist_correct", score_layer.get("purist_correct", False))
+                ),
+                pragmatic_correct=bool(
+                    comparison.get(
+                        "pragmatic_correct",
+                        score_layer.get("pragmatic_correct", False),
+                    )
+                ),
+                evidence_valid=_optional_bool(
+                    row.get("evidence_valid")
+                    if "evidence_valid" in row
+                    else (row.get("evidence_summary") or {}).get("selected_evidence_valid")
+                ),
                 parse_or_validation_issues=tuple(
                     str(error) for error in row.get("parse_errors") or ()
                 ),
-                scorable=prediction_label is not None and not _has_unscorable_issue(row),
+                scorable=bool(
+                    score_layer.get(
+                        "scorable",
+                        prediction_label is not None and not _has_unscorable_issue(row),
+                    )
+                ),
             )
         )
     return _condition_from_spec(spec, condition_rows)
@@ -167,11 +184,12 @@ def condition_from_hybrid_rules_candidates_llm_adjudicator_rows(
     rows: Sequence[Mapping[str, Any]],
     *,
     artifact_path: str | None = None,
-) -> tuple[ConditionResult, ConditionResult]:
+) -> tuple[ConditionResult, ConditionResult, ConditionResult]:
     """Split hybrid candidate-adjudicator artifacts into component conditions."""
 
     deterministic_rows = []
-    adjudicator_rows = []
+    raw_adjudicator_rows = []
+    conservative_adjudicator_rows = []
     for row in rows:
         scores = row.get("scores") or {}
         reference = row.get("reference") or {}
@@ -184,13 +202,22 @@ def condition_from_hybrid_rules_candidates_llm_adjudicator_rows(
                 evidence_valid=_optional_bool(diagnostics.get("evidence_valid")),
             )
         )
-        adjudicator_rows.append(
+        raw_adjudicator_rows.append(
             _condition_row_from_score(
                 row,
-                scores.get("adjudicator") or {},
+                scores.get("raw_adjudicator") or scores.get("adjudicator") or {},
                 reference,
                 evidence_valid=None,
                 parse_errors=tuple(str(error) for error in row.get("parse_errors") or ()),
+            )
+        )
+        conservative_adjudicator_rows.append(
+            _condition_row_from_score(
+                row,
+                scores.get("conservative_adjudicator") or scores.get("adjudicator") or {},
+                reference,
+                evidence_valid=None,
+                parse_errors=_hybrid_gate_issues(row),
             )
         )
     return (
@@ -206,13 +233,30 @@ def condition_from_hybrid_rules_candidates_llm_adjudicator_rows(
         ),
         ConditionResult(
             architecture=Architecture.DETERMINISTIC_THEN_LLM,
-            name="llm_adjudicator_final",
+            name="raw_llm_adjudicator_final",
             component_role="prediction_bearing_adjudicator",
             prediction_source="hybrid rules-candidates LLM adjudicator saved adjudicator output",
             components_enabled=("deterministic candidate generator", "LLM adjudicator"),
+            components_disabled=("conservative overreach gates", "deterministic fallback"),
+            artifact_path=artifact_path,
+            rows=tuple(raw_adjudicator_rows),
+        ),
+        ConditionResult(
+            architecture=Architecture.DETERMINISTIC_THEN_LLM,
+            name="conservative_llm_adjudicator_final",
+            component_role="gated_prediction_bearing_adjudicator",
+            prediction_source=(
+                "hybrid rules-candidates LLM adjudicator after named overreach gates"
+            ),
+            components_enabled=(
+                "deterministic candidate generator",
+                "LLM adjudicator",
+                "conservative overreach gates",
+                "deterministic fallback",
+            ),
             components_disabled=(),
             artifact_path=artifact_path,
-            rows=tuple(adjudicator_rows),
+            rows=tuple(conservative_adjudicator_rows),
         ),
     )
 
@@ -488,6 +532,9 @@ def _score_label(label: str, gold_monthly_frequency: float) -> dict[str, Any]:
 
 
 def _llm_prediction_label(row: Mapping[str, Any]) -> str | None:
+    score_layer = _llm_score_layer(row)
+    if score_layer:
+        return _optional_str(score_layer.get("final_label"))
     decision = row.get("decision_record")
     if isinstance(decision, Mapping):
         return _optional_str(decision.get("final_label"))
@@ -496,7 +543,21 @@ def _llm_prediction_label(row: Mapping[str, Any]) -> str | None:
         selection = structured.get("selection")
         if isinstance(selection, Mapping):
             return _optional_str(selection.get("final_label"))
+        final_query = structured.get("final_query")
+        if isinstance(final_query, Mapping):
+            return _optional_str(final_query.get("final_label"))
     return None
+
+
+def _llm_score_layer(row: Mapping[str, Any]) -> Mapping[str, Any]:
+    score_layers = row.get("score_layers")
+    if not isinstance(score_layers, Mapping):
+        return {}
+    for layer in ("clean_scorer_facing", "strict_format", "raw"):
+        score_layer = score_layers.get(layer)
+        if isinstance(score_layer, Mapping):
+            return score_layer
+    return {}
 
 
 def _condition_from_spec(
@@ -550,6 +611,13 @@ def _optional_bool(value: Any) -> bool | None:
 
 def _optional_str(value: Any) -> str | None:
     return value if isinstance(value, str) else None
+
+
+def _hybrid_gate_issues(row: Mapping[str, Any]) -> tuple[str, ...]:
+    parse_errors = tuple(str(error) for error in row.get("parse_errors") or ())
+    gate = row.get("conservative_gate") or {}
+    fired = tuple(f"overreach_gate:{name}" for name in gate.get("fired_gates") or ())
+    return parse_errors + fired
 
 
 if __name__ == "__main__":

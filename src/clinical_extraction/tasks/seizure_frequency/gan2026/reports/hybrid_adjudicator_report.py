@@ -31,11 +31,13 @@ def write_hybrid_rules_candidates_llm_adjudicator_report(
         "## Experiment Unit",
         "",
         "Hypothesis: deterministic V1 can serve as a high-recall candidate generator, "
-        "while an LLM adjudicator makes the prediction-bearing semantic selection.",
+        "while an LLM adjudicator proposes semantic selection changes that pass named "
+        "overreach gates.",
         "",
-        "Prediction-bearing component: LLM final-selection adjudicator over unscored "
-        "deterministic candidate evidence. Deterministic code generates candidate labels, "
-        "validates output shape, applies existing label repair, and scores.",
+        "Prediction-bearing component: conservative gated adjudicator final label. The raw "
+        "LLM decision is retained, but deterministic V1 is the fallback when gate checks "
+        "find unsupported candidate membership, label support, evidence, empty selection, "
+        "or boundary-demotion overreach.",
         "",
         f"Data surface: `{metadata['split']}` split, `{metadata['split_manifest']}`, "
         f"{summary['examples']} rows.",
@@ -77,6 +79,9 @@ def write_hybrid_rules_candidates_llm_adjudicator_report(
         f"- Adjudicator Pragmatic: {summary['adjudicator_pragmatic_accuracy']:.4f} "
         f"({summary['adjudicator_pragmatic_correct']} / {summary['examples']})",
         f"- Changed final labels: {summary['changed_final_labels']}",
+        f"- Raw changed final labels before gates: {summary['raw_changed_final_labels']}",
+        f"- Deterministic fallbacks after gates: {summary['deterministic_fallbacks']}",
+        f"- Overreach gates: {summary['overreach_gate_counts']}",
         "- Deterministic-wrong to adjudicator-correct: "
         f"{summary['deterministic_wrong_to_adjudicator_correct']}",
         "- Deterministic-correct to adjudicator-wrong: "
@@ -84,20 +89,29 @@ def write_hybrid_rules_candidates_llm_adjudicator_report(
         "",
         "## Rows",
         "",
-        "| Row | Candidate recall | Deterministic | Adjudicator | Gold | "
-        "Det Purist | Adj Purist | Notes |",
-        "| ---: | --- | --- | --- | --- | --- | --- | --- |",
+        "| Row | Candidate recall | Deterministic | Raw LLM | Gated final | Gold | "
+        "Det Purist | Gated Purist | Notes |",
+        "| ---: | --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
     for record in records:
         deterministic = (record.get("scores") or {}).get("deterministic_top") or {}
-        adjudicator = (record.get("scores") or {}).get("adjudicator") or {}
+        raw_adjudicator = (record.get("scores") or {}).get("raw_adjudicator") or {}
+        adjudicator = (
+            (record.get("scores") or {}).get("conservative_adjudicator")
+            or (record.get("scores") or {}).get("adjudicator")
+            or {}
+        )
         recall = (record.get("candidate_recall") or {}).get("purist_category_recalled")
-        notes = "; ".join(str(error) for error in record.get("parse_errors") or [])
+        gate = record.get("conservative_gate") or {}
+        notes_parts = [str(error) for error in record.get("parse_errors") or []]
+        notes_parts.extend(str(gate_name) for gate_name in gate.get("fired_gates") or [])
+        notes = "; ".join(notes_parts)
         if record.get("call_error"):
             notes = f"{notes}; {record['call_error']}" if notes else str(record["call_error"])
         lines.append(
             f"| {record['source_row_index']} | {_yes_no(recall)} | "
             f"{deterministic.get('final_label', '')} | "
+            f"{raw_adjudicator.get('final_label', '') if raw_adjudicator else ''} | "
             f"{adjudicator.get('final_label', '') if adjudicator else ''} | "
             f"{record['reference']['gold_label']} | "
             f"{_yes_no(deterministic.get('purist_correct'))} | "

@@ -29,6 +29,22 @@ class SectionClaimRecord(BaseModel):
     evidence: str
     anchor_text: str | None = None
     raw_frequency: str | None = None
+    cluster_axis: Literal[
+        "none",
+        "cadence_only",
+        "burden_only",
+        "cadence_and_burden",
+        "vague_cluster",
+    ] = "none"
+    boundary_state: Literal[
+        "ordinary_frequency",
+        "seizure_free_interval",
+        "unknown_frequency",
+        "no_frequency_reference",
+        "non_epileptic_or_proxy",
+        "last_event_only",
+        "conditional_or_window_limited",
+    ] = "ordinary_frequency"
     temporality: Literal["current", "recent", "historical", "future", "unclear"]
     assertion_status: Literal["asserted", "negated", "historical", "hypothetical", "unknown"]
     semiology: str | None = None
@@ -41,6 +57,15 @@ class SectionClaimFinalQueryRecord(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     selected_claim_ids: list[str]
+    selector_decision: Literal[
+        "select_single_claim",
+        "combine_same_window_claims",
+        "preserve_cluster_axis",
+        "boundary_unknown",
+        "boundary_no_reference",
+        "boundary_seizure_free",
+        "unresolved_conflict",
+    ] = "select_single_claim"
     answer_kind: Literal[
         "frequency",
         "seizure_free",
@@ -48,6 +73,22 @@ class SectionClaimFinalQueryRecord(BaseModel):
         "no_reference",
         "unresolved_multiple",
     ]
+    cluster_axis: Literal[
+        "none",
+        "cadence_only",
+        "burden_only",
+        "cadence_and_burden",
+        "vague_cluster",
+    ] = "none"
+    boundary_state: Literal[
+        "ordinary_frequency",
+        "seizure_free_interval",
+        "unknown_frequency",
+        "no_frequency_reference",
+        "non_epileptic_or_proxy",
+        "last_event_only",
+        "conditional_or_window_limited",
+    ] = "ordinary_frequency"
     final_label: str | None = None
     raw_selected_frequency: str | None = None
     conversion_note: str | None = None
@@ -129,6 +170,22 @@ def _repair_claim_payload(claim: Mapping[str, Any]) -> dict[str, Any]:
             "non_seizure_event",
         },
     )
+    repaired["cluster_axis"] = _repair_enum_alias(
+        repaired.get("cluster_axis", "none"),
+        {"none", "cadence_only", "burden_only", "cadence_and_burden", "vague_cluster"},
+    )
+    repaired["boundary_state"] = _repair_enum_alias(
+        repaired.get("boundary_state", "ordinary_frequency"),
+        {
+            "ordinary_frequency",
+            "seizure_free_interval",
+            "unknown_frequency",
+            "no_frequency_reference",
+            "non_epileptic_or_proxy",
+            "last_event_only",
+            "conditional_or_window_limited",
+        },
+    )
     repaired["temporality"] = _repair_enum_alias(
         repaired.get("temporality"),
         {"current", "recent", "historical", "future", "unclear"},
@@ -166,6 +223,34 @@ def _repair_final_query_payload(final_query: Mapping[str, Any]) -> dict[str, Any
             "unknown",
             "no_reference",
             "unresolved_multiple",
+        },
+    )
+    repaired["selector_decision"] = _repair_enum_alias(
+        repaired.get("selector_decision", "select_single_claim"),
+        {
+            "select_single_claim",
+            "combine_same_window_claims",
+            "preserve_cluster_axis",
+            "boundary_unknown",
+            "boundary_no_reference",
+            "boundary_seizure_free",
+            "unresolved_conflict",
+        },
+    )
+    repaired["cluster_axis"] = _repair_enum_alias(
+        repaired.get("cluster_axis", "none"),
+        {"none", "cadence_only", "burden_only", "cadence_and_burden", "vague_cluster"},
+    )
+    repaired["boundary_state"] = _repair_enum_alias(
+        repaired.get("boundary_state", "ordinary_frequency"),
+        {
+            "ordinary_frequency",
+            "seizure_free_interval",
+            "unknown_frequency",
+            "no_frequency_reference",
+            "non_epileptic_or_proxy",
+            "last_event_only",
+            "conditional_or_window_limited",
         },
     )
     repaired["confidence"] = _repair_enum_alias(

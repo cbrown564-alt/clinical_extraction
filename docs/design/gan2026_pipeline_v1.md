@@ -228,6 +228,32 @@ defaults) and register them in the single CLI registry. They should not grow
 their own routine experiment CLIs. This keeps new extractors, DSPy reasoners,
 and future hybrid architectures comparable without copying CLI behavior.
 
+## Hybrid Rules-Candidates Adjudicator V0.2
+
+The `hybrid_rules_candidates_llm_adjudicator` v0.2 candidate is a conservative
+hybrid, not an LLM-first result. Deterministic V1 remains the candidate
+generator and deterministic fallback. The LLM may propose a different final
+selection only when its decision passes named overreach-family gates:
+
+- `candidate_membership_overreach`: selected IDs must exist in the candidate set.
+- `accepted_subset_overreach`: selected IDs must be accepted by the model.
+- `unsupported_empty_selection_overreach`: non-boundary labels need selected
+  candidate evidence.
+- `unsupported_boundary_demotion_overreach`: frequency or seizure-free
+  deterministic answers cannot be demoted to unknown/no-reference without
+  stronger candidate-level support.
+- `label_support_overreach`: non-boundary final labels must be supported by a
+  selected candidate normalized label.
+- `evidence_substring_overreach`: selected candidate evidence must remain an
+  exact note substring.
+
+Artifacts must preserve both the raw adjudicator score and the conservative
+gated score. Component ablations for this family must report at least:
+deterministic candidate-generator top, raw LLM adjudicator final, and
+conservative gated adjudicator final. Do not start the 25 -> 50 -> 250 validation
+ladder for v0.2 until those ablation conditions are produced alongside the run
+artifact.
+
 ## Shared Repair Boundaries
 
 Use `schema_repair.py` for model-output shape repair: JSON payload aliases,

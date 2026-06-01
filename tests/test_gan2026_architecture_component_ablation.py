@@ -55,6 +55,45 @@ def test_condition_from_llm_rows_accepts_direct_and_structured_artifacts() -> No
     assert condition.rows[1].prediction_label == "unknown"
 
 
+def test_condition_from_llm_rows_accepts_claim_table_score_layers() -> None:
+    condition = condition_from_llm_rows(
+        [
+            {
+                "source_row_index": 10,
+                "structured_record": {
+                    "final_query": {
+                        "final_label": "2 per month",
+                        "cluster_axis": "none",
+                        "boundary_state": "ordinary_frequency",
+                    }
+                },
+                "score_layers": {
+                    "clean_scorer_facing": {
+                        "final_label": "2 per month",
+                        "scorable": True,
+                        "purist_correct": True,
+                        "pragmatic_correct": True,
+                    }
+                },
+                "reference": {"gold_label": "2 per month"},
+                "evidence_summary": {"selected_evidence_valid": True},
+                "parse_errors": [],
+            }
+        ],
+        spec=ConditionSpec(
+            architecture=Architecture.LLM_THEN_DETERMINISTIC,
+            name="claim_table_v5_clean_scorer_facing",
+            component_role="claim_table_plus_constrained_selector",
+            prediction_source="saved claim-table JSONL",
+            components_enabled=("LLM claim table", "constrained selector", "clean scorer policy"),
+        ),
+    )
+
+    assert condition.rows[0].prediction_label == "2 per month"
+    assert condition.rows[0].purist_correct is True
+    assert condition.rows[0].evidence_valid is True
+
+
 def test_hybrid_conditions_split_deterministic_top_from_llm_adjudicator() -> None:
     source_rows = [
         {
@@ -70,18 +109,33 @@ def test_hybrid_conditions_split_deterministic_top_from_llm_adjudicator() -> Non
                     "purist_correct": True,
                     "pragmatic_correct": True,
                 },
+                "raw_adjudicator": {
+                    "final_label": "unknown",
+                    "purist_correct": False,
+                    "pragmatic_correct": False,
+                },
+                "conservative_adjudicator": {
+                    "final_label": "2 per month",
+                    "purist_correct": True,
+                    "pragmatic_correct": True,
+                },
             },
             "reference": {"gold_label": "2 per month", "gold_monthly_frequency": 2.0},
             "deterministic_diagnostics": {"evidence_valid": True},
+            "conservative_gate": {
+                "used_deterministic_fallback": False,
+                "fired_gates": [],
+            },
             "parse_errors": [],
         }
     ]
 
-    deterministic, adjudicator = condition_from_hybrid_rows(source_rows)
+    deterministic, raw_adjudicator, adjudicator = condition_from_hybrid_rows(source_rows)
 
     assert deterministic.architecture == Architecture.DETERMINISTIC_THEN_LLM
     assert deterministic.name == "deterministic_candidate_generator_top"
-    assert adjudicator.name == "llm_adjudicator_final"
+    assert raw_adjudicator.name == "raw_llm_adjudicator_final"
+    assert adjudicator.name == "conservative_llm_adjudicator_final"
     assert summarize_condition(adjudicator)["purist_accuracy"] == 1.0
     assert compare_condition_rows(deterministic, adjudicator)["wrong_to_correct"] == 1
 
