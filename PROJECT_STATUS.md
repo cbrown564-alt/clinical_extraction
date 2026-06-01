@@ -27,6 +27,10 @@ strict format repair, arithmetic repair, and named ablated modules.
   0.7600/0.7867 on its one locked-test Purist/Pragmatic evaluation.
 - Structured v0.5 reached 675/750 Purist = 0.9000 on full validation, but audit
   classified it as repair-heavy hybrid behavior rather than clean LLM-first.
+- The current report raises two generalisation questions: whether the
+  repair-heavy hybrid holds on the 450-row locked test split, and whether LLM
+  replacements for deterministic post-processing modules preserve validation
+  gains without adding hidden variance.
 - Clean attribution separates raw LLM selection, strict format repair, and
   frozen scorer-facing policy: 34/50 raw, 41/50 strict, 43/50 clean Purist.
 - The frozen clean policy is limited to table-backed scorer-facing families;
@@ -59,7 +63,10 @@ strict format repair, arithmetic repair, and named ablated modules.
    evidence, and scorer-format failures are reviewed.
 4. Separate benchmark gold-normalization policy from clinical reasoning while
    preserving source-near traces.
-5. Treat the clean scorer-facing policy as frozen unless a new direct-citation
+5. Make generalisation checks explicit: frozen-candidate holdout evaluation and
+   LLM-vs-deterministic module replacement ablations should be planned before
+   paper-facing claims.
+6. Treat the clean scorer-facing policy as frozen unless a new direct-citation
    review justifies another family.
 
 ## Work Board
@@ -75,6 +82,13 @@ strict format repair, arithmetic repair, and named ablated modules.
 
 - Keep upper-bound, diary, temporal, evidence-state, and cluster
   reconstruction behavior as named ablated modules.
+- Freeze a single repair-heavy hybrid candidate and run a locked-test evaluation
+  only once the protocol, artifacts, and no-retuning rule are recorded; compare
+  test drift against deterministic V1's 0.9293 validation to 0.7600 test drop.
+- Design LLM-replacement ablations for deterministic post-processing modules:
+  selected-evidence derivation first, then temporal/event-state modules, with
+  validation score, repair attribution, evidence validity, and variance across
+  saved-output replays reported separately.
 - Use direct-citation row tables as the gate for clean-policy expansion.
 - Decide whether the section-and-claim branch earns a 50-row comparison from
   the 25-row artifact; do not jump directly to 250 rows.
