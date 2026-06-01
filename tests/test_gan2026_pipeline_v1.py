@@ -1,5 +1,9 @@
 import pytest
 
+from clinical_extraction.tasks.seizure_frequency.gan2026 import (
+    deterministic_selection,
+    temporal,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
     GanRecord,
     load_records_with_monthly_frequency,
@@ -14,8 +18,12 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline_v1 import (
     CandidateKind,
     Gan2026PipelineV1,
     _candidate_event,
+    _clinic_date,
+    _month_span_floor,
     _normalize_candidate,
     _RawCandidate,
+    _relative_note_date,
+    _select_final_event,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.rule_metadata import (
     AblationConfig,
@@ -35,6 +43,23 @@ def _record(note_text: str, gold_label: str = "unknown") -> GanRecord:
         row_ok=True,
         raw={},
     )
+
+
+def test_pipeline_v1_uses_shared_temporal_helpers() -> None:
+    assert _clinic_date is temporal.clinic_date
+    assert _relative_note_date is temporal.relative_note_date
+    assert _month_span_floor is temporal.month_span_floor
+
+    clinic = _clinic_date("Clinic Date: 6 April 2019. No events since 10 July 2018.")
+    anchor = _relative_note_date("10 July", clinic)
+
+    assert clinic == temporal.ParsedMonthDate(year=2019, month=4, day=6)
+    assert anchor == temporal.ParsedMonthDate(year=2018, month=7, day=10)
+    assert _month_span_floor(anchor, clinic) == 8
+
+
+def test_pipeline_v1_uses_deterministic_selection_module() -> None:
+    assert _select_final_event is deterministic_selection.select_final_event
 
 
 def test_pipeline_preserves_existing_output_with_default_rule_metadata() -> None:
