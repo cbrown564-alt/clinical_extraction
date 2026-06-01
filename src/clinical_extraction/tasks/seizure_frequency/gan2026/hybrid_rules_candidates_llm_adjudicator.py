@@ -20,6 +20,10 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline_v1 import Gan2026PipelineV1
+from clinical_extraction.tasks.seizure_frequency.gan2026.reports import (
+    llm_model_metadata_lines,
+    write_markdown_report,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.run_metadata import (
     build_run_metadata,
 )
@@ -715,24 +719,19 @@ def write_hybrid_rules_candidates_llm_adjudicator_report(
         "",
         "## Model And Prompt Metadata",
         "",
-        f"- Architecture: `{metadata['architecture']}`",
-        f"- Claim type: `{metadata['claim_type']}`",
-        f"- DSPy version: `{metadata['dspy_version']}`",
-        f"- Runtime model display/API identifier: `{metadata['model']}`",
-        "- Provider/execution: hosted OpenAI via DSPy/LiteLLM",
-        "- Model role: final-selection adjudicator",
-        f"- Prompt/program version: `{metadata['prompt_version']}`",
-        f"- Temperature: `{metadata['temperature']}`",
-        f"- Max tokens: `{metadata['max_tokens']}`",
-        f"- Mode: `{metadata['mode']}`",
-        f"- DSPy cache enabled: `{metadata.get('dspy_cache')}`",
-        f"- Reused raw model outputs: `{summary['reused_raw_outputs']}`",
-        f"- Reuse source: `{metadata.get('reuse_source') or 'none'}`",
-        "- Deterministic rule configuration: frozen V1 candidate generator before LLM "
-        "adjudication.",
-        f"- Git commit: `{metadata['git_commit']}`",
-        f"- Working tree note: `{metadata['working_tree_note']}`",
-        f"- JSONL artifact: `{jsonl_path}`",
+        *llm_model_metadata_lines(
+            metadata,
+            jsonl_path,
+            model_role="final-selection adjudicator",
+            deterministic_rule_configuration=(
+                "frozen V1 candidate generator before LLM adjudication."
+            ),
+            summary=summary,
+            leading_lines=[
+                f"- Architecture: `{metadata['architecture']}`",
+                f"- Claim type: `{metadata['claim_type']}`",
+            ],
+        ),
         "",
         "## Summary",
         "",
@@ -777,8 +776,7 @@ def write_hybrid_rules_candidates_llm_adjudicator_report(
             f"{_yes_no(adjudicator.get('purist_correct')) if adjudicator else ''} | "
             f"{notes} |"
         )
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    write_markdown_report(path, lines)
 
 
 def write_adjudicator_report(
@@ -816,19 +814,12 @@ def write_adjudicator_report(
         "",
         "## Model And Prompt Metadata",
         "",
-        f"- DSPy version: `{metadata['dspy_version']}`",
-        f"- Runtime model display/API identifier: `{metadata['model']}`",
-        "- Provider/execution: hosted OpenAI via DSPy/LiteLLM",
-        "- Model role: final-selection adjudicator",
-        f"- Prompt/program version: `{metadata['prompt_version']}`",
-        f"- Temperature: `{metadata['temperature']}`",
-        f"- Max tokens: `{metadata['max_tokens']}`",
-        f"- Mode: `{metadata['mode']}`",
-        "- Optimizer: none",
-        "- Deterministic rule configuration: frozen V1 diagnostics from the dev-set JSONL",
-        f"- Git commit: `{metadata['git_commit']}`",
-        f"- Working tree note: `{metadata['working_tree_note']}`",
-        f"- JSONL artifact: `{jsonl_path}`",
+        *llm_model_metadata_lines(
+            metadata,
+            jsonl_path,
+            model_role="final-selection adjudicator",
+            deterministic_rule_configuration="frozen V1 diagnostics from the dev-set JSONL",
+        ),
         "",
         "## Summary",
         "",
@@ -866,8 +857,7 @@ def write_adjudicator_report(
             _interpret_run(summary),
         ]
     )
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    write_markdown_report(path, lines)
 
 
 def _compare_to_reference(
