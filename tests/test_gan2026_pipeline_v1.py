@@ -783,6 +783,21 @@ def test_pipeline_exposes_structured_selection_scores() -> None:
         "monthly_frequency_priority": 0.0,
         "reason": "trigger_conditioned_unknown",
     }
+    assert final_selection["selected_decision"] == {
+        "event_id": final_selection["selected_event_ids"][0],
+        "final_label": "unknown",
+        "final_kind": FrequencyLabelKind.UNKNOWN,
+        "monthly_frequency": 1000.0,
+        "evidence": "only when significantly short on sleep",
+        "rationale": "Selected seizure-frequency evidence that could not be converted to a rate.",
+        "validation_errors": [],
+        "score": final_selection["selected_score"],
+        "priority": {
+            "semantic": 6,
+            "evidence": 0,
+            "monthly_frequency": 0.0,
+        },
+    }
     assert final_selection["selection_candidates"]
     selected_score = next(
         score
