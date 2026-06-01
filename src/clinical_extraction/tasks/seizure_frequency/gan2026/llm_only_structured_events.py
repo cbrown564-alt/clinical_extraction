@@ -21,6 +21,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.label_parser import (
     label_to_frequency_record,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.labels import map_pragmatic, map_purist
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm_structured_events_report import (
+    write_report,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_structured_monthly_diary import (
     monthly_diary_label_from_events as _monthly_diary_label_from_events,
 )
@@ -50,10 +53,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label_clean_scorer_facing,
     repair_prediction_label_format_preserving,
     repair_prediction_label_with_evidence,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.reports import (
-    llm_model_metadata_lines,
-    write_markdown_report,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.run_metadata import (
     build_run_metadata,
@@ -749,127 +748,6 @@ def load_reusable_raw_outputs(path: Path) -> dict[int, str]:
         if isinstance(source_row_index, int) and isinstance(raw_output, str) and raw_output:
             reusable[source_row_index] = raw_output
     return reusable
-
-
-def write_report(
-    rows: Sequence[Mapping[str, Any]],
-    metadata: Mapping[str, Any],
-    path: Path,
-    *,
-    jsonl_path: Path,
-) -> None:
-    summary = metadata["summary"]
-    repair_mode = str(metadata.get("repair_mode") or "custom")
-    repair_config = metadata.get("repair_config") or {}
-    repair_config_items = ", ".join(
-        f"`{key}={value}`" for key, value in sorted(repair_config.items())
-    )
-    repair_policy = _repair_policy_description(repair_mode)
-    lines = [
-        "# Gan 2026 LLM-Structured Validation Run",
-        "",
-        f"Date: {metadata['date']}",
-        "",
-        "This is a validation development result on `gan2026_split_v1`. It is not a final "
-        "holdout or benchmark result.",
-        "",
-        "## Experiment Unit",
-        "",
-        "Hypothesis: a slim source-near event schema plus LLM clinical selection can reduce "
-        "direct note-to-label schema burden while keeping deterministic code limited to "
-        "Gan normalization, evidence validation, and scoring.",
-        "",
-        "Minimal change: add an LLM-only structured-events extractor and selector. No "
-        "deterministic V1 candidate diagnostics are provided to the model.",
-        "",
-        f"Data surface: `{metadata['split']}` split, `{metadata['split_manifest']}`, "
-        f"{summary['examples']} rows.",
-        (
-            f"Rare full-validation reason: {metadata['escalation_reason']}"
-            if metadata.get("escalation_reason")
-            else "Rare full-validation reason: not applicable for this run size."
-        ),
-        "Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a "
-        "side-car.",
-        "",
-        "## Model And Prompt Metadata",
-        "",
-        *llm_model_metadata_lines(
-            metadata,
-            jsonl_path,
-            model_role="LLM-only structured-events extractor and clinical selector",
-            deterministic_rule_configuration=(
-                "none before prediction; deterministic code only repairs labels selected "
-                "by the LLM, validates evidence, and scores."
-            ),
-            summary=summary,
-            extra_lines=[
-                f"- Repair mode: `{repair_mode}`",
-                f"- Repair policy: {repair_policy}.",
-                (
-                    f"- Repair config: {repair_config_items}"
-                    if repair_config_items
-                    else "- Repair config: none"
-                ),
-            ],
-        ),
-        "",
-        "## Summary",
-        "",
-        f"- Structured records: {summary['structured_records']} / {summary['examples']}",
-        f"- Call failures: {summary['call_failures']}",
-        f"- Parse/schema/label issues: {summary['parse_or_validation_failures']}",
-        f"- Deterministic repair notes: {summary['repair_notes']}",
-        f"- Exact selection evidence substrings: {summary['evidence_valid']} / "
-        f"{summary['examples']}",
-        f"- Purist validation accuracy/micro F1 proxy: {summary['purist_accuracy']:.4f} "
-        f"({summary['purist_correct']} / {summary['examples']})",
-        f"- Pragmatic validation accuracy/micro F1 proxy: {summary['pragmatic_accuracy']:.4f} "
-        f"({summary['pragmatic_correct']} / {summary['examples']})",
-        "",
-        "## Rows",
-        "",
-        "| Row | Final | Gold | Purist | Notes |",
-        "| ---: | --- | --- | --- | --- |",
-    ]
-    for row in rows:
-        record = row.get("structured_record") or {}
-        selection = record.get("selection") or {}
-        comparison = row.get("comparison") or {}
-        notes = "; ".join(row.get("parse_errors") or [])
-        if row.get("call_error"):
-            notes = f"{notes}; {row['call_error']}" if notes else str(row["call_error"])
-        if not row.get("evidence_valid"):
-            evidence_note = "evidence_not_exact_substring"
-            notes = f"{notes}; {evidence_note}" if notes else evidence_note
-        lines.append(
-            f"| {row['source_row_index']} | {selection.get('final_label', '')} | "
-            f"{row['reference']['gold_label']} | "
-            f"{'yes' if comparison.get('purist_correct') else 'no'} | {notes} |"
-        )
-    write_markdown_report(path, lines)
-
-
-def _repair_policy_description(repair_mode: str) -> str:
-    descriptions = {
-        "raw_model": "raw structured model selection with no deterministic final-label repair",
-        "strict_format": (
-            "raw structured model selection plus strict format-preserving basic label repair only"
-        ),
-        "clean_scorer_facing": (
-            "raw structured model selection plus clean scorer-facing Gan gold-normalization policy"
-        ),
-        "selected_evidence_derivation": (
-            "structured model selection plus selected-evidence derivation only"
-        ),
-        "hybrid_full_stack": (
-            "hybrid full deterministic repair stack after structured model selection"
-        ),
-    }
-    return descriptions.get(
-        repair_mode,
-        "custom deterministic repair families after structured model selection",
-    )
 
 
 def _normalize_event(
