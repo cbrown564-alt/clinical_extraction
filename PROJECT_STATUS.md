@@ -60,6 +60,8 @@ ownership, and deterministic repair boundaries explicitly.
   `gan2026-llm-experiment`, with `--pipeline` selection. DSPy cache is on by
   default; saved-output replay is reserved for explicit offline artifact
   analysis rather than normal experiment execution.
+- Shared schema repair is alias-only again; parser-owned defaults live with the
+  hybrid adjudicator parser, and the full suite is green at 586 tests.
 
 ## Key References
 
@@ -106,8 +108,6 @@ ownership, and deterministic repair boundaries explicitly.
 - Move or remove `core.schemas.SeizureEvent` so `core/` stays task-neutral.
 - Design LLM-replacement ablations for deterministic post-processing modules,
   reporting score, repair attribution, evidence validity, and replay variance.
-- Add a validation-ladder guard or warning to `llm_pipeline_cli.py` for broad
-  validation runs without an escalation reason.
 - Consolidate any remaining saved-output replay helpers into dedicated artifact
   analysis modules so pipeline runners stay cache-first and live-run oriented.
 - Do not run LLM-only claim-table selector beyond 250 rows until v5 passes the 25/50 ladder
@@ -144,6 +144,10 @@ ownership, and deterministic repair boundaries explicitly.
   `gan2026-llm-experiment --pipeline ...` CLI, including hybrid candidate adjudication, and
   removed artifact replay from the normal CLI surface in favor of DSPy cache
   reuse.
+- 2026-06-01: Restored green tests after the codebase thermonuclear review's
+  schema-repair finding: shared repair no longer adds parser-owned defaults,
+  hybrid adjudicator defaulting is explicit, and broad validation CLI runs now
+  require `--escalation-reason`.
 
 ## Immediate Next Step
 

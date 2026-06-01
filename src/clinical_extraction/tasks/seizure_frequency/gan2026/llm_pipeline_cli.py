@@ -170,6 +170,7 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
     )
     args = parser.parse_args(argv)
     spec = specs[args.pipeline]
+    _validate_validation_ladder(args, parser)
 
     records = load_records_for_split(args.split)
     if args.limit is not None:
@@ -196,6 +197,19 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
     spec.write_jsonl(rows, args.jsonl)
     spec.write_report(rows, metadata, args.markdown, jsonl_path=args.jsonl)
     print(json.dumps(metadata["summary"], sort_keys=True))
+
+
+def _validate_validation_ladder(
+    args: argparse.Namespace,
+    parser: argparse.ArgumentParser,
+) -> None:
+    if args.split != "validation" or args.escalation_reason:
+        return
+    if args.limit is None or args.limit > 250:
+        parser.error(
+            "validation runs above 250 rows require --escalation-reason; "
+            "use --limit 25, --limit 50, or --limit 250 for routine ladder runs"
+        )
 
 
 def main(argv: Sequence[str] | None = None) -> None:

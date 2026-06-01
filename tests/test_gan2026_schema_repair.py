@@ -38,6 +38,12 @@ def test_repair_decision_payload_handles_llm_answer_kind_variants() -> None:
         }
 
 
+def test_repair_decision_payload_does_not_add_parser_owned_defaults() -> None:
+    assert repair_decision_payload({"normalized_rate": None}) == {"normalized_rate": None}
+    assert repair_decision_payload({"uncertainty": None}) == {"uncertainty": None}
+    assert repair_decision_payload({}) == {}
+
+
 def test_repair_structured_extraction_payload_handles_cluster_final_kind_alias() -> None:
     payload = repair_structured_extraction_payload(
         {
