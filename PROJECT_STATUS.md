@@ -62,15 +62,14 @@ Treat deterministic rules as a frozen, ablatable comparator rather than an endle
   failures, 242/250 exact selection evidence substrings, and 0.9800 Purist
   accuracy / 0.9840 Pragmatic accuracy. This clears the 250-row development
   gate but is not a full validation-split claim.
-- A rare full-validation completion of the staged structured LLM-first pipeline
-  now reaches the active validation objective exactly: 750/750 validation rows,
-  675/750 Purist correct = 0.9000 Purist accuracy/micro-F1 proxy, 690/750
-  Pragmatic correct = 0.9200, 0 call failures, 0 parse/schema failures, and
-  714/750 exact selected-evidence substrings. This result used the standard
-  250-row gate first, then a rare documented 750-row escalation with 720 reused
-  raw outputs and 30 live continuation calls. Treat it as a successful
-  development artifact, but not yet a clean single-run paper-facing benchmark
-  reproduction.
+- A rare full-validation completion of the staged structured pipeline reached
+  the numeric validation threshold exactly: 750/750 validation rows, 675/750
+  Purist correct = 0.9000 Purist accuracy/micro-F1 proxy, 690/750 Pragmatic
+  correct = 0.9200, 0 call failures, 0 parse/schema failures, and 714/750 exact
+  selected-evidence substrings. The repair audit and decision retrospective now
+  classify this as a hybrid structured GPT-4.1 mini plus Gan-specific
+  post-processing development artifact, not a clean LLM-first objective
+  completion.
 - A v0.4 structured selector revision added explicit benchmark-window guidance:
   do not let current seizure-free status erase a recent countable last-event
   window, and select the most frequent current/recent seizure-like event rather
@@ -107,28 +106,35 @@ Treat deterministic rules as a frozen, ablatable comparator rather than an endle
 - Structured LLM-first 250-row standard-gate reparse: `experiments/gan2026_llm_structured_validation250_gpt41mini_v02_reparse_current_2026-06-01.md`
 - Structured LLM-first 720-row no-call replay: `experiments/gan2026_llm_structured_validation720_gpt41mini_v05_reparse_current2_2026-06-01.md`
 - Structured LLM-first rare 750-row completion: `experiments/gan2026_llm_structured_validation750_gpt41mini_v05_completion5_2026-06-01.md`
+- Structured LLM-first repair audit: `experiments/gan2026_llm_structured_validation750_v05_repair_audit_2026-06-01.md`
+- Structured LLM-first decision retrospective: `experiments/gan2026_llm_structured_decision_retrospective_2026-06-01.md`
+- Structured LLM-first repair ablation: `experiments/gan2026_llm_structured_validation750_v05_repair_ablation_2026-06-01.md`
 
 ## Active Priorities
 
 1. Keep deterministic V1 frozen as a controlled comparator; put any new deterministic changes into a separate, explicitly ablated candidate.
-2. Start validation-only LLM/DSPy work on residual reasoning families:
+2. Enforce the architecture gate before the metric gate: no result satisfies the
+   LLM-first objective if semantic-state-changing repair is included without
+   separate naming, ablation, and claim language.
+3. Start validation-only LLM/DSPy work on residual reasoning families:
    temporal/current-versus-historical selection, seizure-free versus unknown/no-reference assertions, trigger-conditioned events, semiology reconciliation, non-epileptic or EEG-only mapping, and cluster-detail interpretation.
-3. Use the 25/50/250 validation ladder for LLM/DSPy and hybrid architecture
+4. Use the 25/50/250 validation ladder for LLM/DSPy and hybrid architecture
    comparisons; do not run all 750 validation rows unless the experiment artifact
    states why the 250-row slice is insufficient. New LLM pipelines should use the
    general Gan LLM CLI runner instead of copying runner behavior.
-4. Use the mined ablation dev set as the seed surface for prompt, adjudicator, and error-taxonomy experiments.
-5. Maintain conservative benchmark language: the test split has been touched once for frozen-context evaluation and must not become a tuning surface.
+5. Use the mined ablation dev set as the seed surface for prompt, adjudicator, and error-taxonomy experiments.
+6. Maintain conservative benchmark language: the test split has been touched once for frozen-context evaluation and must not become a tuning surface.
 
 ## Work Board
 
 ### Now
 
-- Compare v0.2/v0.5 structured selector failures on the same 250-row and
-  full-validation development artifact, especially the 75 remaining Purist
-  misses, monthly diary aggregation, cluster-cycle evidence, seizure-free versus
-  last-event windows, and highest-frequency versus most-severe-subtype
-  selection.
+- Classify v0.5 repair families from the no-call ablation: keep
+  benchmark-format repairs separate from source-evidence arithmetic and
+  deterministic clinical-selection overrides.
+- Decide which high-concern families should be disabled for a clean LLM-first
+  selector claim versus promoted as explicit deterministic candidate modules
+  with separate ablations.
 - Keep the staged output contract: minimal source-near event facts first,
   deterministic normalization/validation second, and LLM clinical selection
   last. Avoid drifting back to a deterministic-candidate-first pipeline.
@@ -139,6 +145,11 @@ Treat deterministic rules as a frozen, ablatable comparator rather than an endle
 
 ### Next
 
+- Run a clean-architecture no-call replay with only accepted format-preserving
+  normalization enabled, then use that score as the LLM-first attribution
+  baseline.
+- Re-run the standard 25/50/250 ladder on the cleaned architecture before any
+  further 750-row validation claim.
 - Wrap or replace the final-selection tuple priority with an explicit decision record in candidate code if the dev-set experiment supports it.
 - Add paraphrase and adversarial tests for portable-rate expressions and seizure-free/no-event assertions.
 - Start a living notebook for loading, gold-label distribution, scoring, and failure slices.
@@ -241,12 +252,21 @@ Treat deterministic rules as a frozen, ablatable comparator rather than an endle
   `experiments/gan2026_llm_structured_validation750_gpt41mini_v05_completion5_2026-06-01.md`
   reports 675/750 Purist correct = 0.9000, 690/750 Pragmatic correct = 0.9200,
   714/750 exact selected-evidence substrings, and 720 reused raw outputs. This
-  satisfies the current development objective but should be followed by a clean
-  reproduction run before paper-facing benchmark language.
+  reached the numeric threshold, but the repair audit and decision retrospective
+  reclassify it as a repair-heavy hybrid development artifact whose LLM-only
+  contribution is not isolated.
+- 2026-06-01: Added the v0.5 repair audit correction path to the work board,
+  made structured-parser repair families configurable, added a no-call repair
+  ablation runner, and generated
+  `experiments/gan2026_llm_structured_validation750_v05_repair_ablation_2026-06-01.md`
+  over the 650 saved raw outputs from the audited artifact. Current-code replay
+  shows raw LLM final labels at 0.6062 Purist, basic repair at 0.7092,
+  selected-evidence repair at 0.8400, and the full current stack at 0.9046
+  Purist on that 650-row validation-development surface.
 
 ## Immediate Next Step
 
-Audit the 75 remaining Purist misses in the successful 750-row development
-artifact and separate model-selection failures from bounded normalization repair
-opportunities. The next broad validation run should be a clean reproduction or a
-controlled hybrid comparison, not another ad hoc continuation.
+Use the repair ablation to classify each repair family as benchmark-format
+normalization, source-evidence arithmetic, or deterministic clinical-selection
+override; then update v0.5 claim language and choose the clean-claim
+configuration for the next no-call replay.
