@@ -79,7 +79,7 @@ def test_build_prompt_input_excludes_gold_and_deterministic_candidates() -> None
     prompt = json.loads(build_prompt_input(_record()))
 
     assert prompt["prompt_version"] == PROMPT_VERSION
-    assert prompt["prompt_version"] == "gan2026_section_claim_table_v3"
+    assert prompt["prompt_version"] == "gan2026_section_claim_table_v4"
     assert prompt["note_text"] == _record().note_text
     assert prompt["claim_schema"]["claim_id"] == "stable string such as c1"
     assert "raw_selected_frequency" in prompt["final_query_schema"]
@@ -92,6 +92,13 @@ def test_build_prompt_input_excludes_gold_and_deterministic_candidates() -> None
     assert "An explicit current cluster cadence normally outranks" in json.dumps(prompt)
     assert "short subsequent seizure-free span does not by itself erase" in json.dumps(prompt)
     assert "several events across most months -> multiple per month" in json.dumps(prompt)
+    assert "Do not use historical as claim_type" in json.dumps(prompt)
+    assert "1 cluster per month, 6 to 7 per cluster" in json.dumps(prompt)
+    assert "six drop attacks plus two absence seizures over two months -> 8 per 2 month" in json.dumps(prompt)
+    assert "Rescue medication use frequency" in json.dumps(prompt)
+    assert "q2-3wk" in json.dumps(prompt)
+    assert "as many as seven in a week" in json.dumps(prompt)
+    assert "claim_type_note" not in prompt["claim_schema"]
     assert "gold_label" not in json.dumps(prompt)
     assert "candidate_events" not in prompt
     assert "deterministic_final_selection" not in prompt
@@ -182,7 +189,7 @@ def test_run_split_records_raw_strict_and_clean_scoring_layers() -> None:
     )
 
     row = rows[0]
-    assert metadata["pipeline_name"] == "gan2026_section_claim_table_v3"
+    assert metadata["pipeline_name"] == "gan2026_section_claim_table_v4"
     assert row["component_status"]["claim_extraction"] == "ok"
     assert row["score_layers"]["raw"]["scorable"] is False
     assert row["score_layers"]["strict_format"]["final_label"] == "most weekdays"
@@ -266,7 +273,7 @@ def test_write_report_includes_component_localized_failure_metadata(tmp_path: Pa
     write_report(rows, metadata, report_path, jsonl_path=tmp_path / "rows.jsonl")
 
     report = report_path.read_text(encoding="utf-8")
-    assert "Gan 2026 Section Claim Table V3" in report
+    assert "Gan 2026 Section Claim Table V4" in report
     assert "raw final-query score" in report
     assert "Reviewable Failure Details" in report
     assert "unparsable_label" in report
