@@ -22,8 +22,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.label_parser import (
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.labels import map_pragmatic, map_purist
 from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
-    evidence_describes_current_non_epileptic_events,
-    monthly_diary_label_from_text,
     repair_prediction_label,
     repair_prediction_label_clean_scorer_facing,
     repair_prediction_label_format_preserving,
@@ -38,6 +36,10 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.run_metadata import (
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.schema_repair import (
     repair_structured_extraction_payload,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.selected_evidence_derivation import (
+    evidence_describes_current_non_epileptic_events,
+    monthly_diary_label_from_text,
 )
 
 PROMPT_VERSION = "gan2026_llm_only_structured_events_v0.5"
