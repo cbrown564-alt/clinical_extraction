@@ -10,6 +10,9 @@ from enum import StrEnum
 from pathlib import Path
 from typing import Any
 
+from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_io import (
+    load_jsonl_rows,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
     DEFAULT_DATA_PATH,
     DEFAULT_SPLIT_MANIFEST_PATH,
@@ -358,8 +361,7 @@ def write_component_ablation_report(
 
 
 def load_jsonl(path: Path) -> list[dict[str, Any]]:
-    with path.open(encoding="utf-8") as handle:
-        return [json.loads(line) for line in handle if line.strip()]
+    return load_jsonl_rows(path)
 
 
 def main(argv: Sequence[str] | None = None) -> None:
