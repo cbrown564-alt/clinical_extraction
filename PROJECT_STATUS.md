@@ -75,6 +75,9 @@ ownership, and deterministic repair boundaries explicitly.
   bounds parsing, and monthly-frequency conversion now live in `label_parser.py`,
   while `normalize.py` remains the benchmark repair and scorer-facing
   normalization layer.
+- Phase 5 continued with a behavior-preserving clean scorer-facing gold-policy
+  extraction: Gan validation-only gold-normalization rules now live in
+  `gold_policy.py`, while `normalize.py` keeps the public repair API.
 
 ## Key References
 
@@ -106,8 +109,8 @@ ownership, and deterministic repair boundaries explicitly.
 ### Now
 
 - Continue the codebase thermonuclear review Phase 5 behavior splits without
-  changing scorer behavior: next candidates are benchmark repair/gold policy,
-  selected-evidence derivation, or temporal/date helpers.
+  changing scorer behavior: next candidates are selected-evidence derivation,
+  temporal/date helpers, or remaining benchmark-format repair helpers.
 - Design hybrid rules-candidates LLM adjudicator v0.2 as a conservative/targeted adjudicator with
   deterministic fallback and named overreach-family gates; repeat 25/50/250.
 - Design LLM-only claim-table selector v5 as claim-table plus constrained selector, with
@@ -186,10 +189,14 @@ ownership, and deterministic repair boundaries explicitly.
   extracting Gan label parsing into `label_parser.py` and updating production
   and test imports to use the new ownership boundary; Ruff, focused tests,
   mypy, and full pytest are green.
+- 2026-06-01: Continued Phase 5 by extracting the clean scorer-facing Gan
+  gold-normalization policy into `gold_policy.py`, keeping `normalize.py` as
+  the public repair wrapper and adding an ownership-boundary test; Ruff, mypy,
+  and full pytest are green.
 
 ## Immediate Next Step
 
 Continue the Phase 5 behavior-preserving split from `normalize.py`, preferably
-by extracting benchmark-format repair or clean scorer-facing gold policy before
+by extracting selected-evidence derivation or temporal/date helpers before
 returning to the validation-only v0.2/v5 experiment cycle. Do not inspect
 holdout rows.
