@@ -140,6 +140,13 @@ ownership, and deterministic repair boundaries explicitly.
   surface and is down to 798 lines. Behavior is preserved.
   Ruff, mypy, focused normalize/structured-events tests, and full pytest are
   green.
+- Phase 5 continued with selected-evidence cluster/window ownership splits:
+  `selected_evidence_cluster.py` now owns selected-evidence cluster-label
+  derivation, and `selected_evidence_window.py` owns count-over-window and
+  year-to-date elapsed-month derivation. `selected_evidence_derivation.py`
+  remains the public derivation surface and is down to 425 lines. Behavior is
+  preserved; Ruff, mypy, focused normalize/structured-events tests, and full
+  pytest are green.
 
 ## Key References
 
@@ -328,6 +335,14 @@ ownership, and deterministic repair boundaries explicitly.
   `selected_evidence_text.py`. The selected-evidence derivation module is now
   798 lines, down from 962. Verification: `python -m ruff check .`,
   `python -m mypy src`,
+  `python -m pytest tests/test_gan2026_normalize.py tests/test_gan2026_llm_only_structured_events.py -q`,
+  and `python -m pytest -q` are green (`595 passed`, 11 third-party DSPy
+  deprecation warnings).
+- 2026-06-01: Continued Phase 5 by extracting selected-evidence cluster-label
+  derivation into `selected_evidence_cluster.py` and count/window/year-to-date
+  derivation into `selected_evidence_window.py`. The public
+  `selected_evidence_derivation.py` surface is now 425 lines. Verification:
+  `python -m ruff check .`, `python -m mypy src`,
   `python -m pytest tests/test_gan2026_normalize.py tests/test_gan2026_llm_only_structured_events.py -q`,
   and `python -m pytest -q` are green (`595 passed`, 11 third-party DSPy
   deprecation warnings).
