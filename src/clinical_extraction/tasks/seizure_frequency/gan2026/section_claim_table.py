@@ -890,6 +890,8 @@ def _repair_section_claim_table_payload(payload: Any) -> Any:
 
 def _repair_claim_payload(claim: Mapping[str, Any]) -> dict[str, Any]:
     repaired = dict(claim)
+    repaired.pop("evidence_start", None)
+    repaired.pop("evidence_end", None)
     repaired["claim_type"] = _repair_enum_alias(
         repaired.get("claim_type"),
         {
@@ -932,10 +934,11 @@ def _repair_final_query_payload(final_query: Mapping[str, Any]) -> dict[str, Any
             for claim_id in selected_claim_ids
             if str(_unwrap_singleton(claim_id)).strip()
         ]
-    repaired["answer_kind"] = _repair_enum_alias(
+    repaired["answer_kind"] = _repair_answer_kind_alias(
         repaired.get("answer_kind"),
         {
             "frequency",
+            "cluster_frequency",
             "seizure_free",
             "unknown",
             "no_reference",
@@ -978,6 +981,17 @@ def _repair_enum_alias(value: Any, allowed: set[str]) -> Any:
                 return unwrapped
         return _unwrap_singleton(value)
     return _unwrap_singleton(value)
+
+
+def _repair_answer_kind_alias(value: Any, allowed: set[str]) -> Any:
+    repaired = _repair_enum_alias(value, allowed)
+    return _answer_kind_alias(repaired)
+
+
+def _answer_kind_alias(value: Any) -> Any:
+    if value == "cluster_frequency":
+        return "frequency"
+    return value
 
 
 def _repair_changes(score_layers: Mapping[str, Mapping[str, Any]]) -> list[dict[str, str]]:

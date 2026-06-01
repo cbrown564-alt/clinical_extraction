@@ -11,7 +11,7 @@ Hypothesis: a flat section-and-claim table can expose temporal, conflict, and ev
 Prediction-bearing component: model-produced claim rows plus model final query. Deterministic code validates structure and evidence, runs strict scorer-format repair and frozen clean scorer-facing policy, and scores each layer.
 
 Data surface: `validation` split, `gan2026_split_v1`, 250 rows.
-Escalation reason: v4 passed the 50-row architecture gate; this 250-row diagnostic tests whether the section-claim-table v4 family should be promoted, revised, or rejected before any larger validation run
+Escalation reason: resume attempt after the first v4 250-row diagnostic hung after checkpointing 220 rows; reuse the 220-row checkpoint to complete the intended 250-row diagnostic without changing prompt, scorer, or clean policy
 
 ## Model And Prompt Metadata
 
@@ -26,32 +26,32 @@ Escalation reason: v4 passed the 50-row architecture gate; this 250-row diagnost
 - Mode: `live`
 - DSPy cache enabled: `True`
 - Reused raw model outputs: `220`
-- Reuse source: `experiments/gan2026_section_claim_table_validation250_gpt41mini_v4_2026-06-01.jsonl, experiments/gan2026_section_claim_table_validation50_gpt41mini_v4_2026-06-01.jsonl`
+- Reuse source: `experiments/gan2026_section_claim_table_validation250_gpt41mini_v4_2026-06-01.jsonl`
 - Optimizer: none
 - Prompt policy taxonomy: `sct_v4.schema.scalar_enum_output`, `sct_v4.schema.strict_json_object`, `sct_v4.evidence.exact_substring`, `sct_v4.gan_label.parser_ready_surface`, `sct_v4.gan_label.interval_preservation`, `sct_v4.gan_label.cluster_dual_axis`, `sct_v4.selection.current_burden_precedence`, `sct_v4.selection.add_same_window_counts`, `sct_v4.boundary.unknown_no_reference_seizure_free`, `sct_v4.exclusion.proxy_or_conditional_frequency`, `sct_v4.gan_label.compact_interval_notation`, `sct_v4.gan_label.maximum_burden`
 - Deterministic rule configuration: none before prediction; deterministic code only validates, performs strict/frozen clean scorer-facing repair, and scores.
 - Git commit: `691903d`
 - Working tree note: `dirty/uncommitted local changes`
-- JSONL artifact: `experiments/gan2026_section_claim_table_validation250_gpt41mini_v4_2026-06-01.jsonl`
+- JSONL artifact: `experiments/gan2026_section_claim_table_validation250_gpt41mini_v4_resume_2026-06-01.jsonl`
 
 ## Summary
 
 - Structured claim-table records: 248 / 250
 - Call failures: 0
 - Parse/schema/label issues: 2
-- Exact claim evidence substrings: 593 / 601
+- Exact claim evidence substrings: 593 / 600
 - Exact selected final evidence substrings: 247 / 250
-- raw final-query score: Purist 0.9080 (227 / 250), Pragmatic 0.9360 (234 / 250)
-- Strict-format score: Purist 0.9160 (229 / 250), Pragmatic 0.9440 (236 / 250)
-- Frozen clean scorer-facing score: Purist 0.9200 (230 / 250), Pragmatic 0.9480 (237 / 250)
-- Rows changed by downstream repair layers: 33
+- raw final-query score: Purist 0.9040 (226 / 250), Pragmatic 0.9320 (233 / 250)
+- Strict-format score: Purist 0.9120 (228 / 250), Pragmatic 0.9400 (235 / 250)
+- Frozen clean scorer-facing score: Purist 0.9160 (229 / 250), Pragmatic 0.9440 (236 / 250)
+- Rows changed by downstream repair layers: 32
 
 ## Component Failure Slices
 
 | Component | Failures |
 | --- | ---: |
-| segmentation_sectioning | 2 |
-| claim_extraction | 10 |
+| segmentation_sectioning | 3 |
+| claim_extraction | 9 |
 | temporality_conflict | 0 |
 | final_query | 3 |
 | parse_schema | 2 |
@@ -74,16 +74,15 @@ Escalation reason: v4 passed the 50-row architecture gate; this 250-row diagnost
 | 4574 | claim evidence not exact (c3: No tongue biting or urinary incontinence reported) |  |  |
 | 4842 |  | missing_final_label | schema_validation_error: Extra inputs are not permitted |
 | 5210 | claim evidence not exact (c2: No episodes suggestive of absence, myoclonus, or nocturnal events) |  |  |
-| 5406 | claim evidence not exact (c4: No injuries, no tongue biting, and recovery is rapid when episodes occur, aligning with non-epileptic-like events rather than electroclinical seizures.) |  |  |
 | 5551 |  | unparsable_label: several per day (Unparsable label (raw: 'several per day' / normalized: 'several per day')) |  |
 
 ## Diagnostic Review
 
-Decision: revise before any larger validation run. This is a completed 250-row validation diagnostic, not a promotion signal.
+Decision: revise before any larger validation run. This is a successful 250-row validation diagnostic, not a promotion signal.
 
-Interpretation: v4 stays above the 0.9000 Purist development threshold, but the architecture gate is not clean enough for scale-up. This artifact has 248/250 structured records, 0 call failures, 2 parse/schema failures, 247/250 exact selected final evidence substrings, and 230/250 clean Purist. Raw-to-clean repair changes 33 rows and improves Purist from 227/250 to 230/250, so the score remains a mixed LLM-plus-format/clean-policy development result.
+Interpretation: v4 stays above the 0.9000 Purist development threshold, but the architecture gate is not clean enough for scale-up. The completed resume artifact has 248/250 structured records, 0 call failures, 2 parse/schema failures, 247/250 exact selected final evidence substrings, and 229/250 clean Purist. Raw-to-clean repair changes 32 rows and improves Purist from 226/250 to 229/250, so the score remains a mixed LLM-plus-format/clean-policy development result.
 
-Resume/retry note: a parallel resume artifact, `experiments/gan2026_section_claim_table_validation250_gpt41mini_v4_resume_2026-06-01.md`, completed with 229/250 clean Purist and 236/250 clean Pragmatic. Treat the one-row difference as retry variance in the live tail, not as a prompt or policy change.
+Retry variance note: a parallel completed artifact, `experiments/gan2026_section_claim_table_validation250_gpt41mini_v4_2026-06-01.md`, reached 230/250 clean Purist and 237/250 clean Pragmatic. Treat the one-row difference as retry variance in the live tail, not as a prompt or policy change.
 
 Main failure families: interval or denominator mismatch, cluster-axis handling, seizure-free versus unknown/no-reference boundary errors, two schema/parse failures, and a small number of evidence-exactness misses. The 50-row watch item persists: row 1046 collapses an uncertain count range to a point estimate. New misses add cluster count/per-cluster confusion, seizure-free boundary errors, and cadence denominator errors.
 
@@ -320,10 +319,10 @@ Next action: do row-level family review and targeted v5 prompt/schema revision o
 | 5040 | seizure free for 6 month | seizure free for 6 month | seizure free for 6 month | seizure free for 6 months | yes | yes |  |
 | 5082 | seizure free | seizure free for multiple year | seizure free for multiple year | seizure free for multiple month | yes | yes |  |
 | 5092 | seizure free for 6 month | seizure free for 6 month | seizure free for 6 month | seizure free for multiple month | yes | yes |  |
-| 5110 | seizure free for 3 month | seizure free for 3 month | seizure free for 3 month | seizure free for multiple month | yes | yes |  |
+| 5110 | no seizure frequency reference | no seizure frequency reference | no seizure frequency reference | seizure free for multiple month | no | no |  |
 | 5121 | no seizure frequency reference | no seizure frequency reference | no seizure frequency reference | seizure free for multiple month | no | no |  |
 | 5136 | seizure free | seizure free for multiple year | seizure free for multiple year | seizure free for multiple month | yes | yes |  |
-| 5141 | seizure free for 6 month | seizure free for 6 month | seizure free for 6 month | seizure free for multiple month | yes | yes |  |
+| 5141 | seizure free for 1 month | seizure free for 1 month | seizure free for 1 month | seizure free for multiple month | yes | yes |  |
 | 5197 | seizure free | seizure free for multiple year | seizure free for multiple year | seizure free for multiple month | yes | yes |  |
 | 5210 | seizure free | seizure free for multiple year | seizure free for multiple year | seizure free for multiple month | yes | yes | claim_extraction |
 | 5221 | seizure free for 1 year 9 month | seizure free for 1 year | seizure free for 1 year | seizure free for multiple month | yes | yes |  |
@@ -332,14 +331,14 @@ Next action: do row-level family review and targeted v5 prompt/schema revision o
 | 5345 | seizure free for 6 month | seizure free for 6 month | seizure free for 6 month | seizure free for multiple month | yes | yes |  |
 | 5351 | seizure free for 18 month | seizure free for 18 month | seizure free for 18 month | seizure free for 18 month | yes | yes |  |
 | 5379 | seizure free for 3 month | seizure free for 3 month | seizure free for 3 month | seizure free for multiple month | yes | yes |  |
-| 5406 | seizure free for 2 month | seizure free for 2 month | seizure free for 2 month | seizure free for multiple month | yes | yes | claim_extraction |
-| 5476 | 1 per 1 month | 1 per month | 1 per month | unknown | no | no |  |
+| 5406 | seizure free for 2 month | seizure free for 2 month | seizure free for 2 month | seizure free for multiple month | yes | yes |  |
+| 5476 | 1 per month | 1 per month | 1 per month | unknown | no | no |  |
 | 5490 | unknown | unknown | unknown | unknown | yes | yes | segmentation_sectioning |
-| 5491 | 2 per 6 week | 2 per 6 week | 2 per 6 week | unknown | no | no |  |
+| 5491 | unknown | unknown | unknown | unknown | yes | yes |  |
 | 5504 | unknown | unknown | unknown | unknown | yes | yes |  |
 | 5507 | unknown | unknown | unknown | unknown | yes | yes |  |
-| 5528 | 1 per month | 1 per month | 1 per month | 1 per month | yes | yes |  |
-| 5534 | 1 per 2 week | 1 per 2 week | 1 per 2 week | 1 per multiple month | no | no |  |
+| 5528 | no seizure frequency reference | no seizure frequency reference | no seizure frequency reference | 1 per month | no | no |  |
+| 5534 | 1 per 2 week | 1 per 2 week | 1 per 2 week | 1 per multiple month | no | no | segmentation_sectioning |
 | 5551 | several per day | several per day | multiple per day | multiple per day |  | yes | scorer_format |
 | 5567 | multiple per week | multiple per week | multiple per week | multiple per week | yes | yes |  |
 | 5584 | multiple per week | multiple per week | multiple per week | multiple per week | yes | yes |  |

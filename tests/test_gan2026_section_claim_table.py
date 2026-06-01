@@ -162,6 +162,37 @@ def test_parse_section_claim_table_json_repairs_common_model_shape_aliases() -> 
     assert errors == []
 
 
+def test_parse_section_claim_table_json_repairs_extra_evidence_offsets() -> None:
+    payload = json.loads(_raw_claim_table())
+    payload["claims"][0]["evidence_start"] = 0
+    payload["claims"][0]["evidence_end"] = 10
+
+    extraction, errors = parse_section_claim_table_json(
+        json.dumps(payload),
+        note_text=_record().note_text,
+    )
+
+    assert extraction is not None
+    assert extraction.claims[0].claim_type == "frequency"
+    assert errors == []
+
+
+def test_parse_section_claim_table_json_repairs_cluster_answer_kind_alias() -> None:
+    payload = json.loads(_raw_claim_table())
+    payload["claims"][0]["claim_type"] = "cluster_frequency"
+    payload["final_query"]["answer_kind"] = "cluster_frequency"
+
+    extraction, errors = parse_section_claim_table_json(
+        json.dumps(payload),
+        note_text=_record().note_text,
+    )
+
+    assert extraction is not None
+    assert extraction.claims[0].claim_type == "cluster_frequency"
+    assert extraction.final_query.answer_kind == "frequency"
+    assert errors == []
+
+
 def test_parse_section_claim_table_json_repairs_missing_final_query_rationale() -> None:
     payload = json.loads(_raw_claim_table("2 per month"))
     del payload["final_query"]["rationale"]

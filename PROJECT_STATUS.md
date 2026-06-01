@@ -23,30 +23,35 @@ format repair, arithmetic repair, and named ablated modules.
   0.7600/0.7867 on its one locked-test Purist/Pragmatic evaluation.
 - Structured v0.5 reached 675/750 Purist = 0.9000 on full validation, but audit
   classified it as repair-heavy hybrid behavior rather than clean LLM-first.
-- Clean attribution separates raw LLM selection, strict format repair, and
-  frozen scorer-facing policy: 34/50 raw, 41/50 strict, 43/50 clean Purist.
 - Section-claim-table v3 hit a revise-only 250-row result: 248/250 structured,
   217/250 raw Purist, 218/250 clean Purist, and 224/250 clean Pragmatic.
-- A research-drift audit found the project mostly aligned, with watches on prompt
-  taxonomy, hybrid repair claims, one core/task boundary leak, and CLI ladder
-  enforcement.
-- Section-claim-table v4 passed the 50-row architecture gate with 25-row output
-  reuse: 50/50 structured, 0 call/schema failures, 49/50 raw/clean Purist,
-  50/50 raw/clean Pragmatic, 50/50 selected evidence exact, and 132/135 claim
-  evidence exact.
-- The v4 50-row miss is row 1046, where the model collapsed the uncertain range
-  `3 or 5 seizures last month` to `5 per month` instead of the gold interval
-  `3 to 5 per month`; treat interval preservation under uncertainty as a 250-row
-  watch item, not a scorer-policy change.
+- Section-claim-table v4 completed its 250-row validation diagnostic: 248/250
+  structured, 0 call failures, 2 parse/schema failures, 226/250 raw Purist,
+  229/250 clean Purist, 236/250 clean Pragmatic, and 247/250 selected evidence
+  exact. It clears 0.9000 as a development diagnostic but is not a promotion
+  signal because 32 rows change downstream and failure families remain.
+- A retry variant differed by one row (230/250 clean Purist), so treat v4 as a
+  revise signal with small live-tail variance rather than a scale-up candidate.
+- A no-call schema replay of section-claim-table v4 repaired non-semantic output
+  shape issues: 250/250 structured, 0 parse/schema failures, 231/250 clean
+  Purist, and 238/250 clean Pragmatic. This improves the architecture gate but
+  does not change the revise decision because semantic failure families remain.
+- Architecture 2 (deterministic candidates + LLM adjudicator) now has a split-wide
+  runner and validation ladder artifacts. Its 250-row schema replay reached
+  243/250 Purist and 244/250 Pragmatic with 0 parse failures, candidate-set
+  Purist recall 246/250, and three deterministic-correct to adjudicator-wrong
+  regressions. It is the strongest current validation candidate but still needs
+  failure review and ablations before any holdout freeze.
 
 ## Key References
 
 - Protocol/control: `docs/design/gan2026_split_protocol.md`,
   `docs/design/data_contract.md`
 - Core code: `src/clinical_extraction/tasks/seizure_frequency/gan2026/section_claim_table.py`
-- Latest gated run: `experiments/gan2026_section_claim_table_validation50_gpt41mini_v4_2026-06-01.md`
+- Latest section-table run: `experiments/gan2026_section_claim_table_validation250_gpt41mini_v4_schema_replay_2026-06-01.md`
+- Latest Architecture 2 run: `experiments/gan2026_arch2_validation250_gpt41mini_v01_schema_replay_2026-06-01.md`
+- Latest Architecture 2 review: `experiments/gan2026_arch2_validation250_v01_failure_review_2026-06-01.md`
 - Latest v3 review: `experiments/gan2026_section_claim_table_validation250_v3_failure_review_2026-06-01.md`
-- Drift audit: `docs/research/gan2026_research_drift_audit_2026-06-01.md`
 
 ## Active Priorities
 
@@ -64,23 +69,27 @@ format repair, arithmetic repair, and named ablated modules.
 
 ### Now
 
-- Run one section-claim-table v4 250-row validation diagnostic with 50-row output
-  reuse, preserving the frozen clean scorer-facing policy.
+- Review Architecture 2 250-row failure families, especially candidate-recall
+  misses and adjudicator regressions, before any prompt/candidate change.
+- Review v4 250-row failure families and write a targeted v5 change hypothesis
+  before any semantic prompt/repair change.
 - Keep clean scorer-facing normalization separate from named deterministic
   modules in run attribution and claim language.
 
 ### Next
 
-- Review v4 250-row row-level failures before any prompt or repair change,
-  especially uncertain count ranges that may collapse intervals to maximum burden.
+- Implement a narrow v5 prompt/schema revision only after the failure-family
+  review names the intended behavior and ablation category.
+- Decide whether Architecture 2 should escalate to full validation after a
+  written 250-row review, or whether to first revise the adjudicator prompt for
+  broad-burden versus lower-count recent-event regressions.
 - Move or remove `core.schemas.SeizureEvent` so `core/` stays task-neutral.
 - Design LLM-replacement ablations for deterministic post-processing modules,
   reporting score, repair attribution, evidence validity, and replay variance.
 - Add a validation-ladder guard or warning to `llm_pipeline_cli.py` for broad
   validation runs without an escalation reason.
-- Use direct-citation row tables as the gate for clean-policy expansion.
-- Do not run section-claim-table beyond 250 rows until the v4 250-row diagnostic
-  has a written review and decision.
+- Do not run section-claim-table beyond 250 rows until v5 passes the 25/50 ladder
+  and a written decision justifies another 250-row diagnostic.
 
 ### Blocked
 
@@ -89,9 +98,14 @@ format repair, arithmetic repair, and named ablated modules.
 
 ### Done Recently
 
-- 2026-06-01: Ran and reviewed the section-claim-table v4 50-row validation
-  gate with 25-row reuse; the report records a pass decision for one 250-row
-  diagnostic, with row 1046 interval collapse as the main watch item.
+- 2026-06-01: Completed the section-claim-table v4 250-row validation diagnostic;
+  it reached 229/250 clean Purist but remains a revise signal due to parse/schema,
+  cluster-axis, seizure-free/unknown boundary, denominator, and repair-attribution
+  issues.
+- 2026-06-01: Added and ran the Architecture 2 split-wide candidate-adjudicator
+  harness through 25/50/250 validation; schema replay reached 243/250 Purist with
+  0 parse failures and identified candidate-recall misses plus three adjudicator
+  regressions as the next review surface.
 - 2026-06-01: Fixed the v4 schema-output blocker, added prompt-policy IDs, and
   reran the corrected 25-row smoke at 25/25 raw and clean Purist/Pragmatic.
 - 2026-06-01: Added a research-drift audit, completed the v2/v3 section-claim-table
@@ -99,6 +113,5 @@ format repair, arithmetic repair, and named ablated modules.
 
 ## Immediate Next Step
 
-Run one section-claim-table v4 250-row validation diagnostic with 50-row output
-reuse, then review row-level failures before any prompt, repair, policy, or
-scale-up decision.
+Review Architecture 2 250-row failure families and write the promote/revise
+decision before full-validation or holdout use; do not inspect holdout rows.

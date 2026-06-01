@@ -20,6 +20,12 @@ def repair_decision_payload(payload: Any) -> Any:
     _repair_string_alias(repaired, "temporality", _TEMPORALITY_ALIASES)
     _repair_string_alias(repaired, "answer_kind", _ANSWER_KIND_ALIASES)
     _repair_numeric_confidence(repaired)
+    _repair_nullable_string_fields(
+        repaired,
+        ("seizure_or_event_target", "window", "normalized_rate", "rationale"),
+    )
+    if repaired.get("uncertainty") is None:
+        repaired["uncertainty"] = "high"
 
     normalized_rate = repaired.get("normalized_rate")
     if normalized_rate is not None and not isinstance(normalized_rate, str):
@@ -53,7 +59,11 @@ def repair_structured_extraction_payload(payload: Any) -> Any:
 def _repair_string_alias(payload: dict[str, Any], key: str, aliases: dict[str, str]) -> None:
     value = payload.get(key)
     if isinstance(value, str):
-        payload[key] = aliases.get(value.strip().lower(), value)
+        normalized = value.strip().lower()
+        if key == "temporality" and normalized.startswith("since "):
+            payload[key] = "recent"
+        else:
+            payload[key] = aliases.get(normalized, value)
 
 
 def _repair_numeric_confidence(payload: dict[str, Any]) -> None:
@@ -68,11 +78,19 @@ def _repair_numeric_confidence(payload: dict[str, Any]) -> None:
         payload["confidence"] = "low"
 
 
+def _repair_nullable_string_fields(payload: dict[str, Any], keys: tuple[str, ...]) -> None:
+    for key in keys:
+        if payload.get(key) is None:
+            payload[key] = "unknown"
+
+
 _ASSERTION_ALIASES = {
     "present": "asserted",
     "positive": "asserted",
     "current": "asserted",
     "certain": "asserted",
+    "negative": "negated",
+    "unknown": "unclear",
 }
 
 _UNCERTAINTY_ALIASES = {
@@ -80,6 +98,7 @@ _UNCERTAINTY_ALIASES = {
     "certain": "low",
     "clear": "low",
     "unclear": "high",
+    "uncertain": "high",
 }
 
 _CERTAINTY_ALIASES = {
@@ -93,6 +112,7 @@ _CERTAINTY_ALIASES = {
 _TEMPORALITY_ALIASES = {
     "active": "current",
     "current/recent": "recent",
+    "current to recent": "recent",
     "ongoing": "current",
     "past": "historical",
     "remote": "historical",
