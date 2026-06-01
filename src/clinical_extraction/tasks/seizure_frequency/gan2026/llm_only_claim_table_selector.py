@@ -12,6 +12,10 @@ from typing import Any, Literal
 import dspy
 
 from clinical_extraction.core.evidence import evidence_is_substring
+from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_io import (
+    load_raw_outputs_by_source_index,
+    write_jsonl_rows,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.claim_table_parser import (
     SectionClaimTableExtractionRecord,
     parse_llm_only_claim_table_selector_json,
@@ -564,25 +568,11 @@ def summarize_records(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
 
 
 def write_jsonl(rows: Sequence[Mapping[str, Any]], path: Path) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", encoding="utf-8") as handle:
-        for row in rows:
-            handle.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
+    write_jsonl_rows(rows, path)
 
 
 def load_reusable_raw_outputs(path: Path) -> dict[int, str]:
-    reusable: dict[int, str] = {}
-    if not path.exists():
-        return reusable
-    for line in path.read_text(encoding="utf-8").splitlines():
-        if not line.strip():
-            continue
-        row = json.loads(line)
-        raw_output = row.get("raw_output")
-        source_row_index = row.get("source_row_index")
-        if isinstance(source_row_index, int) and isinstance(raw_output, str) and raw_output:
-            reusable[source_row_index] = raw_output
-    return reusable
+    return load_raw_outputs_by_source_index(path)
 
 
 def _score_layers(
@@ -823,4 +813,3 @@ def _run_metadata(
             "prompt_policy_ids": [policy["policy_id"] for policy in PROMPT_POLICY_TAXONOMY],
         },
     )
-
