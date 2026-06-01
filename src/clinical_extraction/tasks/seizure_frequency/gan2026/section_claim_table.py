@@ -131,6 +131,12 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "evidence substring, temporality, assertion status, semiology, and uncertainty."
             ),
             (
+                "For claim_type, temporality, assertion_status, uncertainty, answer_kind, "
+                "and confidence, return one scalar string from the schema enum, not a list. "
+                "If two enum values seem plausible, choose the best primary value and explain "
+                "the ambiguity in rationale."
+            ),
+            (
                 "Keep current/recent, historical, negated, no-reference, seizure-free, "
                 "last-event-only, and unclear-frequency statements as separate claim rows."
             ),
@@ -156,6 +162,10 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "seizure-frequency evidence."
             ),
             "Every evidence value must be an exact substring from the note when possible.",
+            (
+                "The final_query evidence must also be an exact substring from the note. "
+                "Prefer copying the selected claim evidence verbatim instead of paraphrasing it."
+            ),
             "Return exactly one JSON object with no markdown.",
         ],
         "claim_schema": {
@@ -523,6 +533,29 @@ def write_report(
     lines.extend(
         [
             "",
+            "## Reviewable Failure Details",
+            "",
+            "| Row | Evidence issues | Raw scorer-format issue | Parse/schema issue |",
+            "| ---: | --- | --- | --- |",
+        ]
+    )
+    for row in rows:
+        evidence_issue = _format_evidence_issue(row.get("evidence_summary") or {})
+        raw_issue = _format_raw_scorer_issue((row.get("score_layers") or {}).get("raw") or {})
+        parse_issue = "; ".join(
+            str(error)
+            for error in row.get("parse_errors") or []
+            if _has_blocking_parse_issue([error])
+        )
+        if evidence_issue or raw_issue or parse_issue:
+            lines.append(
+                f"| {row['source_row_index']} | {evidence_issue} | {raw_issue} | "
+                f"{parse_issue} |"
+            )
+
+    lines.extend(
+        [
+            "",
             "## Rows",
             "",
             "| Row | Raw | Strict | Clean | Gold | Raw Purist | Clean Purist | Notes |",
@@ -626,8 +659,30 @@ def _repair_section_claim_table_payload(payload: Any) -> Any:
 
 def _repair_claim_payload(claim: Mapping[str, Any]) -> dict[str, Any]:
     repaired = dict(claim)
-    for key in ["claim_type", "temporality", "assertion_status", "uncertainty"]:
-        repaired[key] = _unwrap_singleton(repaired.get(key))
+    repaired["claim_type"] = _repair_enum_alias(
+        repaired.get("claim_type"),
+        {
+            "frequency",
+            "cluster_frequency",
+            "seizure_free",
+            "last_event_only",
+            "unknown_frequency",
+            "no_reference",
+            "non_seizure_event",
+        },
+    )
+    repaired["temporality"] = _repair_enum_alias(
+        repaired.get("temporality"),
+        {"current", "recent", "historical", "future", "unclear"},
+    )
+    repaired["assertion_status"] = _repair_enum_alias(
+        repaired.get("assertion_status"),
+        {"asserted", "negated", "historical", "hypothetical", "unknown"},
+    )
+    repaired["uncertainty"] = _repair_enum_alias(
+        repaired.get("uncertainty"),
+        {"low", "medium", "high"},
+    )
     return repaired
 
 
@@ -646,8 +701,20 @@ def _repair_final_query_payload(final_query: Mapping[str, Any]) -> dict[str, Any
             for claim_id in selected_claim_ids
             if str(_unwrap_singleton(claim_id)).strip()
         ]
-    for key in ["answer_kind", "confidence"]:
-        repaired[key] = _unwrap_singleton(repaired.get(key))
+    repaired["answer_kind"] = _repair_enum_alias(
+        repaired.get("answer_kind"),
+        {
+            "frequency",
+            "seizure_free",
+            "unknown",
+            "no_reference",
+            "unresolved_multiple",
+        },
+    )
+    repaired["confidence"] = _repair_enum_alias(
+        repaired.get("confidence"),
+        {"low", "medium", "high"},
+    )
     return repaired
 
 
@@ -655,6 +722,16 @@ def _unwrap_singleton(value: Any) -> Any:
     if isinstance(value, list) and len(value) == 1:
         return value[0]
     return value
+
+
+def _repair_enum_alias(value: Any, allowed: set[str]) -> Any:
+    if isinstance(value, list):
+        for item in value:
+            unwrapped = _unwrap_singleton(item)
+            if isinstance(unwrapped, str) and unwrapped in allowed:
+                return unwrapped
+        return _unwrap_singleton(value)
+    return _unwrap_singleton(value)
 
 
 def _repair_changes(score_layers: Mapping[str, Mapping[str, Any]]) -> list[dict[str, str]]:
@@ -676,22 +753,36 @@ def _evidence_summary(
 ) -> dict[str, Any]:
     if extraction is None:
         return _empty_evidence_summary()
-    claim_validity = [
-        evidence_is_substring(note_text, claim.evidence) for claim in extraction.claims
-    ]
+    claim_validity = []
+    invalid_claim_evidence = []
+    for claim in extraction.claims:
+        valid = evidence_is_substring(note_text, claim.evidence)
+        claim_validity.append(valid)
+        if not valid:
+            invalid_claim_evidence.append(
+                {
+                    "claim_id": claim.claim_id,
+                    "evidence": claim.evidence,
+                }
+            )
     selected_valid = evidence_is_substring(note_text, extraction.final_query.evidence)
-    return {
+    summary: dict[str, Any] = {
         "claim_evidence_valid": sum(claim_validity),
         "claim_evidence_total": len(claim_validity),
+        "claim_evidence_invalid": invalid_claim_evidence,
         "selected_evidence_valid": selected_valid,
+        "selected_evidence": extraction.final_query.evidence,
     }
+    return summary
 
 
 def _empty_evidence_summary() -> dict[str, Any]:
     return {
         "claim_evidence_valid": 0,
         "claim_evidence_total": 0,
+        "claim_evidence_invalid": [],
         "selected_evidence_valid": False,
+        "selected_evidence": None,
     }
 
 
@@ -847,3 +938,38 @@ def _yes_no(value: Any) -> str:
     if value is False:
         return "no"
     return ""
+
+
+def _format_evidence_issue(evidence_summary: Mapping[str, Any]) -> str:
+    issues: list[str] = []
+    invalid_claims = evidence_summary.get("claim_evidence_invalid") or []
+    if invalid_claims:
+        issue_text = ", ".join(
+            f"{item.get('claim_id')}: {_markdown_table_cell(item.get('evidence'))}"
+            for item in invalid_claims
+        )
+        issues.append(f"claim evidence not exact ({issue_text})")
+    if evidence_summary.get("selected_evidence_valid") is False and evidence_summary.get(
+        "selected_evidence"
+    ):
+        issues.append(
+            "selected evidence not exact "
+            f"({_markdown_table_cell(evidence_summary.get('selected_evidence'))})"
+        )
+    return "; ".join(issues)
+
+
+def _format_raw_scorer_issue(raw_layer: Mapping[str, Any]) -> str:
+    if raw_layer.get("scorable"):
+        return ""
+    error = raw_layer.get("error")
+    label = raw_layer.get("final_label")
+    if not error:
+        return ""
+    if label:
+        return f"unparsable_label: {_markdown_table_cell(label)} ({error})"
+    return str(error)
+
+
+def _markdown_table_cell(value: Any) -> str:
+    return str(value).replace("|", "\\|").replace("\n", " ").strip()
