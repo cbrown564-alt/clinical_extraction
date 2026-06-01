@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_io import (
+    load_jsonl_rows,
     load_raw_outputs_by_source_index,
     write_jsonl_rows,
 )
@@ -31,6 +32,17 @@ def test_load_raw_outputs_by_source_index_filters_to_reusable_rows(tmp_path: Pat
     path.write_text("\n".join(json.dumps(row) for row in rows), encoding="utf-8")
 
     assert load_raw_outputs_by_source_index(path) == {10: "kept"}
+
+
+def test_load_jsonl_rows_skips_blank_lines(tmp_path: Path) -> None:
+    path = tmp_path / "rows.jsonl"
+    path.write_text(
+        json.dumps({"source_row_index": 1}) + "\n\n"
+        + json.dumps({"source_row_index": 2}) + "\n",
+        encoding="utf-8",
+    )
+
+    assert load_jsonl_rows(path) == [{"source_row_index": 1}, {"source_row_index": 2}]
 
 
 def test_load_raw_outputs_by_source_index_missing_file_returns_empty(

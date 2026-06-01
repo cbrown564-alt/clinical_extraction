@@ -181,6 +181,11 @@ ownership, and deterministic repair boundaries explicitly.
   `run_registry.py` keeps typed registry entries, JSONL parsing/writing, and
   artifact-path validation, while `run_registry_report.py` owns Markdown index
   rendering. Compatibility wrappers preserve the existing public import surface.
+- The codebase thermonuclear review continuation moved generic JSONL row
+  loading into shared `artifact_io.py`; component-ablation analysis now
+  delegates artifact reads to the shared helper while preserving its public
+  compatibility wrapper. Focused artifact/component tests, Ruff, mypy, and full
+  pytest are green.
 
 ## Key References
 
@@ -212,8 +217,8 @@ ownership, and deterministic repair boundaries explicitly.
 ### Now
 
 - Continue the codebase thermonuclear review without changing scorer behavior:
-  next candidates are artifact-analysis helpers, registry backfill, or other
-  ownership splits.
+  next candidates are registry backfill, artifact-retention policy tightening,
+  or other ownership splits.
 - Design hybrid rules-candidates LLM adjudicator v0.2 as a conservative/targeted adjudicator with
   deterministic fallback and named overreach-family gates; repeat 25/50/250.
 - Design LLM-only claim-table selector v5 as claim-table plus constrained selector, with

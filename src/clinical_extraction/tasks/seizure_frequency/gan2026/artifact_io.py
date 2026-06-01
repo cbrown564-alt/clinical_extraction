@@ -17,16 +17,20 @@ def write_jsonl_rows(rows: Sequence[Mapping[str, Any]], path: Path) -> None:
             handle.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
 
 
+def load_jsonl_rows(path: Path) -> list[dict[str, Any]]:
+    """Load non-empty rows from a newline-delimited JSON artifact."""
+
+    with path.open(encoding="utf-8") as handle:
+        return [json.loads(line) for line in handle if line.strip()]
+
+
 def load_raw_outputs_by_source_index(path: Path) -> dict[int, str]:
     """Load reusable raw model outputs from a prior row-oriented JSONL artifact."""
 
     reusable: dict[int, str] = {}
     if not path.exists():
         return reusable
-    for line in path.read_text(encoding="utf-8").splitlines():
-        if not line.strip():
-            continue
-        row = json.loads(line)
+    for row in load_jsonl_rows(path):
         raw_output = row.get("raw_output")
         source_row_index = row.get("source_row_index")
         if isinstance(source_row_index, int) and isinstance(raw_output, str) and raw_output:
