@@ -83,6 +83,10 @@ ownership, and deterministic repair boundaries explicitly.
   cluster derivation, and selected-evidence preference rules now live in
   `selected_evidence_derivation.py`, while `normalize.py` keeps the public
   benchmark repair API.
+- Phase 5 continued with a behavior-preserving benchmark-format prediction
+  repair extraction: prediction repair helper functions and rule tables now
+  live in `benchmark_prediction_repair.py`, while `normalize.py` remains the
+  public repair API and re-export compatibility layer.
 
 ## Key References
 
@@ -115,7 +119,7 @@ ownership, and deterministic repair boundaries explicitly.
 
 - Continue the codebase thermonuclear review Phase 5 behavior splits without
   changing scorer behavior: next candidates are temporal/date helpers,
-  remaining benchmark-format repair helpers, or deterministic final selection.
+  deterministic final selection, or remaining large-file ownership splits.
 - Design hybrid rules-candidates LLM adjudicator v0.2 as a conservative/targeted adjudicator with
   deterministic fallback and named overreach-family gates; repeat 25/50/250.
 - Design LLM-only claim-table selector v5 as claim-table plus constrained selector, with
@@ -202,10 +206,14 @@ ownership, and deterministic repair boundaries explicitly.
   `selected_evidence_derivation.py`; `normalize.py` still owns the public repair
   API and LLM structured-events imports the derivation helpers from the new
   module. Ruff, mypy, and full pytest are green.
+- 2026-06-01: Continued Phase 5 by extracting benchmark-format prediction
+  repair rule tables and helper functions into `benchmark_prediction_repair.py`;
+  `normalize.py` keeps public repair functions and compatibility re-exports.
+  Ruff, mypy, and full pytest are green.
 
 ## Immediate Next Step
 
 Continue the Phase 5 behavior-preserving split from `normalize.py`, preferably
-by extracting temporal/date helpers or remaining benchmark-format repair helpers
+by extracting temporal/date helpers or deterministic final-selection ownership
 before returning to the validation-only v0.2/v5 experiment cycle. Do not inspect
 holdout rows.
