@@ -168,6 +168,10 @@ ownership, and deterministic repair boundaries explicitly.
   public rate candidate extractor and is down to 864 lines. Behavior is
   preserved; focused deterministic tests, Ruff, mypy, and full pytest are
   green.
+- Phase 6 run-registry scaffolding has started: `run_registry.py` now defines
+  typed Gan 2026 registry entries with JSONL validation/round-tripping, and
+  `experiments/registry.jsonl` backfills the first canonical/high-signal runs
+  from the current deterministic, LLM-only, and hybrid decision trail.
 
 ## Key References
 
@@ -198,9 +202,9 @@ ownership, and deterministic repair boundaries explicitly.
 
 ### Now
 
-- Continue the codebase thermonuclear review Phase 5 behavior splits without
-  changing scorer behavior: next candidates are artifact-analysis helpers,
-  run-registry scaffolding, or other ownership splits.
+- Continue the codebase thermonuclear review without changing scorer behavior:
+  next candidates are artifact-analysis helpers, registry backfill/report
+  rendering, or other ownership splits.
 - Design hybrid rules-candidates LLM adjudicator v0.2 as a conservative/targeted adjudicator with
   deterministic fallback and named overreach-family gates; repeat 25/50/250.
 - Design LLM-only claim-table selector v5 as claim-table plus constrained selector, with
