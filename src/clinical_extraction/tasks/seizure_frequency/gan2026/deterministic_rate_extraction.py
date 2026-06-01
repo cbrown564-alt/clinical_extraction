@@ -23,6 +23,17 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic_frequency
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic_frequency_tokens import (
     rate_label as _rate_label,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic_rate_distractors import (
+    is_medication_or_dose_rate_distractor as _is_medication_or_dose_rate_distractor,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic_rate_terms import (
+    QUALIFIED_SEIZURE_TERMS,
+    SEIZURE_DESCRIPTOR_PHRASE,
+    SEIZURE_RATE_PHRASE,
+    SEIZURE_TERMS,
+    SEIZURE_TYPE_DESCRIPTOR,
+    WORD_TOKEN,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic_text import (
     clean_evidence as _clean_evidence,
 )
@@ -104,25 +115,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.temporal import (
 )
 
 _RawCandidate = RawCandidate
-
-WORD_TOKEN = r"[a-z][a-z\-‑–—]*"
-SEIZURE_TERMS = (
-    r"seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|"
-    r"myoclonics?|jerks?|auras?|status epilepticus"
-)
-QUALIFIED_SEIZURE_TERMS = rf"(?:{WORD_TOKEN}\s+){{0,4}}(?:{SEIZURE_TERMS})"
-SEIZURE_RATE_PHRASE = (
-    rf"(?:(?:tonic-clonic|myoclonic|convulsive|focal|absence|drop|epileptic|"
-    rf"impaired awareness|focal onset|petit mal|brief)\s+){{0,4}}(?:{SEIZURE_TERMS})"
-)
-SEIZURE_DESCRIPTOR_PHRASE = (
-    r"(?:tonic-clonic|myoclonic|convulsive|focal(?:\s+[a-z][a-z-]*){0,3}|"
-    r"absence|drop|epileptic|impaired awareness|focal onset|petit mal|simple partial)"
-)
-SEIZURE_TYPE_DESCRIPTOR = (
-    r"(?:focal\s+(?:non-motor|sensory|tonic|clonic|motor|aware|impaired-awareness|"
-    r"impaired\s+awareness)|tonic|atonic|myoclonic|absence|petit\s+mal)"
-)
 
 
 def _extract_distributed_count_candidates(text: str) -> list[_RawCandidate]:
@@ -870,24 +862,3 @@ def extract_rate_candidates(
             )
         )
     return candidates
-
-
-def _is_medication_or_dose_rate_distractor(match: re.Match[str], text: str) -> bool:
-    preceding = text[max(0, match.start() - 80) : match.start()].lower()
-    following = text[match.end() : match.end() + 80].lower()
-    surrounding = f"{preceding} {match.group(0).lower()} {following}"
-    dose_pattern = re.compile(
-        r"\b(?:dose|dosing|current treatment|current medication|medication|"
-        r"levetiracetam|lamotrigine|carbamazepine|brivaracetam|lacosamide|"
-        r"valproate|epilim|topiramate|zonisamide|sumatriptan)\b"
-        r".{0,80}(?:\b\d+\s*(?:mg|g|micrograms?|mcg|µg)\b|"
-        r"\b(?:mg|g|micrograms?|mcg|µg)\b)",
-        re.IGNORECASE,
-    )
-    if dose_pattern.search(surrounding):
-        return True
-    if re.search(r"\b(?:migraine|headache|prn)\b", surrounding) and re.search(
-        r"\bper\s+(?:day|week|month|year)\b", match.group(0), re.IGNORECASE
-    ):
-        return True
-    return False
