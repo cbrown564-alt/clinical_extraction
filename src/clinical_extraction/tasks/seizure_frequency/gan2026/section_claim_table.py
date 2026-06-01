@@ -26,12 +26,12 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label_format_preserving,
 )
 
-PROMPT_VERSION = "gan2026_section_claim_table_v0"
+PROMPT_VERSION = "gan2026_section_claim_table_v1"
 DEFAULT_JSONL_PATH = Path(
-    "experiments/gan2026_section_claim_table_validation25_gpt41mini_2026-06-01.jsonl"
+    "experiments/gan2026_section_claim_table_validation25_gpt41mini_v1_2026-06-01.jsonl"
 )
 DEFAULT_REPORT_PATH = Path(
-    "experiments/gan2026_section_claim_table_validation25_gpt41mini_2026-06-01.md"
+    "experiments/gan2026_section_claim_table_validation25_gpt41mini_v1_2026-06-01.md"
 )
 
 
@@ -74,6 +74,8 @@ class SectionClaimFinalQueryRecord(BaseModel):
         "unresolved_multiple",
     ]
     final_label: str | None = None
+    raw_selected_frequency: str | None = None
+    conversion_note: str | None = None
     evidence: str
     confidence: Literal["low", "medium", "high"]
     rationale: str
@@ -145,9 +147,35 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "Gan-facing answer. Record selected_claim_ids and a concise rationale."
             ),
             (
-                "The final_label may be a Gan-compatible label such as 1 per day, "
-                "2 to 3 per month, multiple per week, 1 cluster per week, "
-                "seizure free for 6 month, unknown, or no seizure frequency reference."
+                "Keep raw_selected_frequency source-near, but make final_label a parser-ready "
+                "Gan-compatible label such as 1 per day, 2 to 3 per month, "
+                "multiple per week, 1 per 2 day, 1 per 7 to 10 day, "
+                "2 per 2 week, 1 per 2 month, seizure free for 6 month, unknown, "
+                "or no seizure frequency reference."
+            ),
+            (
+                "Do not put inequality symbols, prose such as daily/yearly/bimonthly, "
+                "or phrases like every other week in final_label. Convert them to the "
+                "closest Gan label while preserving the selected clinical fact."
+            ),
+            (
+                "Preserve explicit intervals in final_label instead of rounding them: "
+                "every 3 to 4 weeks -> 1 per 3 to 4 week; twice every two weeks -> "
+                "2 per 2 week; once every seven to ten days -> 1 per 7 to 10 day."
+            ),
+            (
+                "In these Gan synthetic letters, bimonthly means every two months "
+                "unless the text explicitly says twice per month; use 1 per 2 month."
+            ),
+            (
+                "Do not emit a cluster final_label unless the selected claim truly states "
+                "cluster frequency with both cluster cadence and event burden. Vague "
+                "clustering around an ordinary rate should stay an ordinary frequency."
+            ),
+            (
+                "When a recent quantified event burden is followed by a short seizure-free "
+                "span, prefer the quantified recent burden for Gan-facing final_label unless "
+                "the note explicitly frames the patient as currently seizure-free overall."
             ),
             (
                 "If multiple current seizure semiologies are active, select the highest "
@@ -164,7 +192,8 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
             "Every evidence value must be an exact substring from the note when possible.",
             (
                 "The final_query evidence must also be an exact substring from the note. "
-                "Prefer copying the selected claim evidence verbatim instead of paraphrasing it."
+                "Copy the evidence field verbatim from one selected claim row instead of "
+                "paraphrasing it."
             ),
             "Return exactly one JSON object with no markdown.",
         ],
@@ -203,8 +232,14 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "no_reference",
                 "unresolved_multiple",
             ],
+            "raw_selected_frequency": (
+                "source-near selected frequency text before Gan label conversion, or null"
+            ),
             "final_label": (
                 "Gan-compatible label, or null if answer_kind implies unknown/no_reference"
+            ),
+            "conversion_note": (
+                "brief explanation of any source-near to Gan-compatible label conversion"
             ),
             "evidence": "exact note substring supporting the final answer",
             "confidence": ["low", "medium", "high"],
@@ -444,7 +479,7 @@ def write_report(
 ) -> None:
     summary = metadata["summary"]
     lines = [
-        "# Gan 2026 Section Claim Table V0",
+        f"# Gan 2026 Section Claim Table {metadata['prompt_version'].rsplit('_', 1)[-1].upper()}",
         "",
         f"Date: {metadata['date']}",
         "",

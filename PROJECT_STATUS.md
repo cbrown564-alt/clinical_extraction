@@ -32,18 +32,20 @@ strict format repair, arithmetic repair, and named ablated modules.
 - `gan2026_section_claim_table_v0` passed its 25-row gate for a live 50-row
   comparison, but the 50-row artifact remains diagnostic: 50/50 structured,
   173/176 exact claim evidence, 48/50 selected evidence, raw/strict/clean
-  Purist 25/38/43 of 50, and 20 raw scorer-format failures. Do not escalate to
-  250 before reviewing the 50-row failure families.
+  Purist 25/38/43 of 50, and 20 raw scorer-format failures. Failure review
+  kept v0 diagnostic and chose prompt/schema revision before any escalation.
+- `gan2026_section_claim_table_v1` fixed v0 raw-label collapse on 50 validation
+  rows: 50/50 structured, 151/153 exact claim evidence, 50/50 selected evidence,
+  50/50 raw scorable, and raw/strict/clean Purist 47/50. It is not 250-ready:
+  rows 187, 704, and 1165 expose prompt-fixable final-query conversions.
 
 ## Key References
 
 - Protocol/control: `docs/design/gan2026_split_protocol.md`,
   `docs/design/data_contract.md`
-- Framing/policy: `docs/research/contribution_thesis.md`,
-  `docs/research/gan2026_gold_normalization_policy_question_2026-06-01.md`,
-  `docs/research/gan2026_clean_policy_attribution_note_2026-06-01.md`,
-  `docs/research/gan2026_next_architecture_decision_2026-06-01.md`
-- Core code: `src/clinical_extraction/tasks/seizure_frequency/gan2026/llm_structured.py`
+- Framing/policy: `docs/research/contribution_thesis.md`, clean-policy note,
+  gold-normalization policy question, and next-architecture decision.
+- Core code: `src/clinical_extraction/tasks/seizure_frequency/gan2026/section_claim_table.py`
 - Current artifacts: clean-policy ladder, direct-citation rows, comparisons,
   and section-claim-table 25/50-row diagnostics under `experiments/`.
 
@@ -53,8 +55,7 @@ strict format repair, arithmetic repair, and named ablated modules.
    ablated candidates.
 2. Enforce the architecture gate before the metric gate; semantic-state-changing
    repair needs separate naming, ablation, and claim language.
-3. Keep `gan2026_section_claim_table_v0` diagnostic until the 50-row failure
-   families are reviewed.
+3. Keep section-claim-table 25/50 diagnostics ahead of any 250-row escalation.
 4. Separate benchmark gold-normalization policy from clinical reasoning while
    preserving source-near traces.
 5. Treat the clean scorer-facing policy as frozen unless a new direct-citation
@@ -64,9 +65,9 @@ strict format repair, arithmetic repair, and named ablated modules.
 
 ### Now
 
-- Review the 50-row `gan2026_section_claim_table_v0` failure families,
-  especially raw scorer-format labels, rows 212/665/790/959/1165, and the two
-  selected-evidence misses, before any 250-row escalation.
+- Make a small section-claim-table v2 prompt/schema revision for v1 50-row
+  misses: cluster cadence as ordinary frequency, `twice a month` as
+  `2 per month`, and preserving `5 to 7 per 3 week` instead of vague multiple.
 - Keep clean scorer-facing normalization separate from named deterministic
   modules in run attribution and claim language.
 
@@ -80,8 +81,8 @@ strict format repair, arithmetic repair, and named ablated modules.
   validation score, repair attribution, evidence validity, and variance across
   saved-output replays reported separately.
 - Use direct-citation row tables as the gate for clean-policy expansion.
-- Decide whether the section-and-claim branch needs prompt/schema revision or a
-  same-surface replay before a 250-row comparison.
+- Do not run section-claim-table 250 rows until a 50-row artifact passes the
+  documented decision gate.
 
 ### Blocked
 
@@ -91,14 +92,19 @@ strict format repair, arithmetic repair, and named ablated modules.
 ### Done Recently
 
 - 2026-06-01: Added structured LLM extraction, repair attribution audits,
-  direct-citation row tables, v0.2/v0.4 comparisons, clean scorer-facing policy
-  tests, and the living observatory notebook.
-- 2026-06-01: Implemented and tightened `gan2026_section_claim_table_v0`, then
-  promoted it from 25-row smoke to a live 50-row validation comparison; result
-  remains diagnostic, not 250-ready.
+  direct-citation row tables, clean scorer-facing policy tests, and the living
+  observatory notebook.
+- 2026-06-01: Implemented `gan2026_section_claim_table_v0`, ran 25/50-row
+  validation diagnostics, and reviewed 50-row failures in
+  `experiments/gan2026_section_claim_table_validation50_failure_review_2026-06-01.md`;
+  v0 stays diagnostic and v1 prompt/schema revision is next.
+- 2026-06-01: Implemented `gan2026_section_claim_table_v1` prompt/schema and ran
+  25/50-row validation diagnostics in
+  `experiments/gan2026_section_claim_table_validation50_gpt41mini_v1_2026-06-01.md`;
+  v1 fixed raw scorer-format collapse but needs a v2 final-query tweak before
+  250-row escalation.
 
 ## Immediate Next Step
 
-Review the section-claim-table 50-row failure table and decide whether to revise
-the prompt/schema for raw Gan-compatible labels and final-query edge cases, or
-to keep the branch as a diagnostic comparator without further escalation.
+Implement the section-claim-table v2 prompt/schema tweak for rows 187, 704, and
+1165, then rerun the 25/50 validation ladder before any 250-row escalation.
