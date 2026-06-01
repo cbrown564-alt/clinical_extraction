@@ -24,6 +24,48 @@ This is a validation development no-call replay over saved raw model outputs. It
 | K_elapsed_anchor | 0.9046 | 0.9200 | 0.6354 | 0.8631 | 0.9523 | 12 | 3 |
 | L_full_current_stack | 0.9046 | 0.9200 | 0.6354 | 0.8631 | 0.9523 | 0 | 0 |
 
+## Repair-Family Classification
+
+Use this classification for v0.5 claim language and for the next clean-architecture replay. The categories are claim categories, not assertions that every row in a family is harmless or harmful.
+
+| Family | Classification | Decision for clean LLM-first claim | Rationale |
+| --- | --- | --- | --- |
+| A_raw_llm_final_label_only | LLM selection baseline | Report as the raw attribution baseline | Uses the model's selected final label with no post-selection repair; it reached 394/650 Purist correct = 0.6062 on this saved-output validation-development surface. |
+| B_basic_gan_label_repair | Benchmark-format normalization, with exceptions | Keep only after narrowing to format-preserving rules; use the current whole-family score as an upper bound for clean format repair | Most changes are plural/unit/word-number/parser compatibility repairs, and the family adds 67 Purist-correct rows with no regressions. However examples such as `most weekdays -> no seizure frequency reference` and vague quantifier mapping are semantic enough that the next clean replay should split or audit this family before treating it as pure format repair. |
+| C_selected_evidence_repair | Source-evidence arithmetic plus semantic label replacement | Exclude from clean LLM-first score; report separately as selected-evidence deterministic repair | This family derives a new label from selected evidence and adds 88 Purist improvements with 3 regressions. Some changes are defensible arithmetic, but changes such as sentinel/frequency and different-frequency replacements mean deterministic code is doing prediction-bearing work. |
+| D_monthly_diary_arithmetic | Source-evidence arithmetic | Exclude from clean LLM-first score; candidate for explicit deterministic arithmetic module with its own ablation | It sums or reshapes diary/monthly evidence, adding 5 improvements and 4 regressions. The work is clinically meaningful extraction rather than scorer-only normalization. |
+| E_usual_interval_override | Deterministic clinical-selection override | Exclude from clean LLM-first score; only promote as an explicit candidate rule if retained | It changes unknown or brief-daily selections using event text interval logic. Even though the observed delta is small, it overrides the model's selected state. |
+| F_breakthrough_after_seizure_free | Deterministic clinical-selection override | Exclude from clean LLM-first score; candidate module only with ablation | It converts unknown/no-reference or cluster cases into count-over-prior-window labels using seizure-free duration and breakthrough-event logic, adding 6 improvements and 1 regression. |
+| G_non_epileptic_override | Deterministic clinical-selection override | Exclude from clean LLM-first score; candidate module only with ablation | It changes unknown/no-reference to seizure-free based on non-epileptic current-event logic. This is a semantic state change. |
+| H_residual_jerk_date_anchor | Deterministic clinical-selection override | Exclude from clean LLM-first score; candidate module only with ablation | It uses date anchors and event kind/semiology to convert residual jerks or clusters into count-over-window labels. |
+| I_post_change_burst | Deterministic clinical-selection override | Exclude from clean LLM-first score; candidate module only with ablation | It replaces seizure-free or high-frequency labels with post-change burst counts based on treatment/change chronology. |
+| J_dated_sequence | Deterministic clinical-selection override | Exclude from clean LLM-first score; candidate module only with ablation | It constructs count-over-window labels from dated event sequences and can override seizure-free or other frequency labels. |
+| K_elapsed_anchor | Deterministic clinical-selection override | Exclude from clean LLM-first score; candidate module only with ablation | It converts seizure-free or anchor-count contexts into elapsed-window frequencies, adding 12 improvements but also 3 regressions. |
+| L_full_current_stack | Repair-heavy hybrid stack | Do not use for LLM-first attribution | It matches K on this replay and should be described as GPT-4.1 mini structured extraction plus deterministic post-processing, not a clean LLM-first result. |
+
+## Claim And Next Configuration
+
+The v0.5 full-stack replay should be described as a validation-development hybrid diagnostic: structured GPT-4.1 mini extraction plus Gan-specific deterministic post-processing reached 588/650 Purist correct = 0.9046 on the saved-output replay surface. It should not be described as a clean LLM-first architecture result, a final holdout result, or a benchmark result.
+
+For the next no-call replay, use a clean-claim configuration that permits only raw model selection plus explicitly format-preserving benchmark normalization. With the current coarse switches, the closest executable configuration is:
+
+```python
+StructuredRepairConfig(
+    basic_label_repair=True,
+    selected_evidence_repair=False,
+    monthly_diary_repair=False,
+    usual_interval_repair=False,
+    breakthrough_repair=False,
+    non_epileptic_repair=False,
+    residual_jerk_repair=False,
+    post_change_burst_repair=False,
+    dated_sequence_repair=False,
+    elapsed_anchor_repair=False,
+)
+```
+
+Before claiming that replay as strictly format-only, split or audit `B_basic_gan_label_repair` so semantic fallback repairs and vague-quantifier remapping are either disabled or counted in a separate deterministic-repair condition. Conditions C-K are excluded from the clean LLM-first attribution path and can be promoted only as named deterministic candidate modules with separate ablations.
+
 ## Top Changed Rows
 
 ### B_basic_gan_label_repair
@@ -358,4 +400,3 @@ No final-label changes versus the previous condition.
 | dated_sequence | 48 | 0.7917 | 0.5417 | 0 | 0 |
 | row_ok_false | 32 | 1.0000 | 0.9062 | 0 | 0 |
 | purist_correct_exact_label_wrong | 175 | 1.0000 | 0.0000 | 0 | 0 |
-

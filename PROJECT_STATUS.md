@@ -70,6 +70,13 @@ Treat deterministic rules as a frozen, ablatable comparator rather than an endle
   classify this as a hybrid structured GPT-4.1 mini plus Gan-specific
   post-processing development artifact, not a clean LLM-first objective
   completion.
+- The v0.5 repair-family ablation is now classified for claim language:
+  raw LLM final-label selection is the attribution baseline; only narrowed,
+  format-preserving benchmark normalization belongs on the clean LLM-first path;
+  selected-evidence repair and monthly diary arithmetic are deterministic
+  source-evidence arithmetic; usual-interval, breakthrough, non-epileptic,
+  residual-jerk, post-change-burst, dated-sequence, and elapsed-anchor repairs
+  are deterministic clinical-selection overrides.
 - A v0.4 structured selector revision added explicit benchmark-window guidance:
   do not let current seizure-free status erase a recent countable last-event
   window, and select the most frequent current/recent seizure-like event rather
@@ -129,12 +136,9 @@ Treat deterministic rules as a frozen, ablatable comparator rather than an endle
 
 ### Now
 
-- Classify v0.5 repair families from the no-call ablation: keep
-  benchmark-format repairs separate from source-evidence arithmetic and
-  deterministic clinical-selection overrides.
-- Decide which high-concern families should be disabled for a clean LLM-first
-  selector claim versus promoted as explicit deterministic candidate modules
-  with separate ablations.
+- Split or audit `B_basic_gan_label_repair` into strictly format-preserving
+  normalization versus semantic fallback/vague-quantifier remapping, so the
+  clean replay does not smuggle semantic repair into an LLM-first claim.
 - Keep the staged output contract: minimal source-near event facts first,
   deterministic normalization/validation second, and LLM clinical selection
   last. Avoid drifting back to a deterministic-candidate-first pipeline.
@@ -145,9 +149,11 @@ Treat deterministic rules as a frozen, ablatable comparator rather than an endle
 
 ### Next
 
-- Run a clean-architecture no-call replay with only accepted format-preserving
-  normalization enabled, then use that score as the LLM-first attribution
-  baseline.
+- Run a clean-architecture no-call replay with raw model selection plus only
+  accepted format-preserving benchmark normalization. With current coarse
+  switches, the nearest executable config is `basic_label_repair=True` and all
+  other `StructuredRepairConfig` families disabled, but do not call it strictly
+  format-only until the basic family is split/audited.
 - Re-run the standard 25/50/250 ladder on the cleaned architecture before any
   further 750-row validation claim.
 - Wrap or replace the final-selection tuple priority with an explicit decision record in candidate code if the dev-set experiment supports it.
@@ -263,10 +269,15 @@ Treat deterministic rules as a frozen, ablatable comparator rather than an endle
   shows raw LLM final labels at 0.6062 Purist, basic repair at 0.7092,
   selected-evidence repair at 0.8400, and the full current stack at 0.9046
   Purist on that 650-row validation-development surface.
+- 2026-06-01: Classified the v0.5 repair-family ablation for claim language.
+  The clean LLM-first path is raw model selection plus strictly
+  format-preserving benchmark normalization only; selected-evidence repair,
+  monthly diary arithmetic, and all clinical-selection override families are
+  excluded from LLM-first attribution unless promoted as named deterministic
+  modules with separate ablations.
 
 ## Immediate Next Step
 
-Use the repair ablation to classify each repair family as benchmark-format
-normalization, source-evidence arithmetic, or deterministic clinical-selection
-override; then update v0.5 claim language and choose the clean-claim
-configuration for the next no-call replay.
+Split or audit the basic Gan label repair family so its format-preserving subset
+can be replayed cleanly; then run the no-call replay using raw model selection
+plus that accepted normalization subset as the LLM-first attribution baseline.
