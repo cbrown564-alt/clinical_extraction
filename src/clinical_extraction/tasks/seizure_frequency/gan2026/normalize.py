@@ -539,6 +539,24 @@ def _period_words(text: str) -> str:
     return re.sub(r"\bbimonthly\b", "1 per 2 month", text)
 
 
+def _strip_upper_bound_qualifier(text: str) -> str:
+    text = re.sub(
+        r"^(?:<=|\u2264|up to|at most|no more than)\s+"
+        r"(?=\d+(?:\s*to\s*\d+)?\s+per\s+)",
+        "",
+        text,
+    )
+    return re.sub(
+        r"\b(day|week|month|year)\s+or\s+less$",
+        r"\1",
+        text,
+    )
+
+
+def _normalize_quarter_period(text: str) -> str:
+    return re.sub(r"\bper\s+quarter\b", "per 3 month", text)
+
+
 def _inequality_to_multiple(text: str) -> str:
     text = re.sub(
         r"\b(?:at least|no less than|more than|over|greater than)\b\s*(\d+(?:\s*to\s*\d+)?)",
@@ -1969,6 +1987,16 @@ FORMAT_PRESERVING_BENCHMARK_REPAIR_STEPS = (
         apply=_period_words,
     ),
     BenchmarkRepairStep(
+        rule_id="benchmark_repair.strip_upper_bound_qualifier",
+        description="Drop explicit upper-bound qualifiers from otherwise parser-compatible rates.",
+        apply=_strip_upper_bound_qualifier,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.normalize_quarter_period",
+        description="Convert quarter denominators to the Gan-compatible 3 month window.",
+        apply=_normalize_quarter_period,
+    ),
+    BenchmarkRepairStep(
         rule_id="benchmark_repair.drop_prediction_format_noise",
         description="Drop event-word and approximation noise without vague remapping.",
         apply=_drop_prediction_format_noise,
@@ -1999,16 +2027,6 @@ FORMAT_PRESERVING_BENCHMARK_REPAIR_STEPS = (
         apply=_normalize_units,
     ),
     BenchmarkRepairStep(
-        rule_id="benchmark_repair.fix_cluster_block",
-        description="Repair cluster labels before final cluster normalization.",
-        apply=_fix_cluster_block,
-    ),
-    BenchmarkRepairStep(
-        rule_id="benchmark_repair.normalize_units_after_cluster",
-        description="Normalize units after cluster repair.",
-        apply=_normalize_units,
-    ),
-    BenchmarkRepairStep(
         rule_id="benchmark_repair.drop_per_one_first",
         description="Drop explicit per-one denominators.",
         apply=_drop_per_one,
@@ -2022,16 +2040,6 @@ FORMAT_PRESERVING_BENCHMARK_REPAIR_STEPS = (
         rule_id="benchmark_repair.compress_double_per_range",
         description="Compress double per-period ranges with matching denominators.",
         apply=_compress_double_per_range,
-    ),
-    BenchmarkRepairStep(
-        rule_id="benchmark_repair.normalize_cluster_label",
-        description="Normalize compact cluster-only labels.",
-        apply=_normalize_cluster_label,
-    ),
-    BenchmarkRepairStep(
-        rule_id="benchmark_repair.normalize_cluster_label2",
-        description="Normalize dual cluster and per-cluster labels.",
-        apply=_normalize_cluster_label2,
     ),
     BenchmarkRepairStep(
         rule_id="benchmark_repair.clean_prediction_extras",

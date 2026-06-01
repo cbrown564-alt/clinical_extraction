@@ -566,6 +566,17 @@ def write_report(
     jsonl_path: Path,
 ) -> None:
     summary = metadata["summary"]
+    repair_config = metadata.get("repair_config") or {}
+    repair_config_items = ", ".join(
+        f"`{key}={value}`" for key, value in sorted(repair_config.items())
+    )
+    repair_policy = (
+        "raw structured model selection plus strict format-preserving basic label repair only"
+        if repair_config.get("basic_label_repair")
+        and repair_config.get("basic_label_repair_format_only")
+        and not repair_config.get("selected_evidence_repair")
+        else "configured deterministic repair families after structured model selection"
+    )
     lines = [
         "# Gan 2026 LLM-Structured Validation Run",
         "",
@@ -609,6 +620,12 @@ def write_report(
         "- Optimizer: none",
         "- Deterministic rule configuration: none before prediction; deterministic code only "
         "repairs labels selected by the LLM, validates evidence, and scores.",
+        f"- Repair policy: {repair_policy}.",
+        (
+            f"- Repair config: {repair_config_items}"
+            if repair_config_items
+            else "- Repair config: none"
+        ),
         f"- Git commit: `{metadata['git_commit']}`",
         f"- Working tree note: `{metadata['working_tree_note']}`",
         f"- JSONL artifact: `{jsonl_path}`",
