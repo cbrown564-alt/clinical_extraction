@@ -38,7 +38,7 @@ DEFAULT_JSON_PATH = Path(
 def repair_ablation_ladder() -> list[tuple[str, StructuredRepairConfig]]:
     """Return the cumulative repair-family ladder from the v0.5 repair audit."""
 
-    off = {
+    off: dict[str, Any] = {
         "basic_label_repair": False,
         "basic_label_repair_format_only": False,
         "selected_evidence_repair": False,
@@ -52,13 +52,18 @@ def repair_ablation_ladder() -> list[tuple[str, StructuredRepairConfig]]:
         "elapsed_anchor_repair": False,
     }
     cumulative = dict(off)
-    ladder = [("A_raw_llm_final_label_only", StructuredRepairConfig(**cumulative))]
+    ladder = [
+        (
+            "A_raw_llm_final_label_only",
+            StructuredRepairConfig.for_mode("raw_model"),
+        )
+    ]
     cumulative["basic_label_repair"] = True
     cumulative["basic_label_repair_format_only"] = True
     ladder.append(
         (
             "B_format_preserving_basic_label_repair",
-            StructuredRepairConfig(**cumulative),
+            StructuredRepairConfig.for_mode("strict_format"),
         )
     )
     cumulative["basic_label_repair_format_only"] = False
@@ -115,6 +120,7 @@ def run_repair_ablation(
         conditions.append(
             {
                 "name": condition_name,
+                "repair_mode": repair_config.resolved_repair_mode,
                 "repair_config": asdict(repair_config),
                 "summary": _condition_summary(rows, previous_rows),
                 "top_changed_rows": _top_changed_rows(rows, previous_rows),
