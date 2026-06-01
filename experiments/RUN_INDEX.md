@@ -16,6 +16,18 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Claim language: Revise before any broader run or holdout: validation250 live underperformed deterministic top, made 8 gated label changes, introduced 2 deterministic-correct regressions, and produced 0 deterministic-wrong to gated-correct Purist corrections.
 - Artifacts: `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation250_gpt41mini_v02_live_2026-06-01.jsonl`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation250_gpt41mini_v02_live_2026-06-01.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation250_v02_live_component_ablation_2026-06-01.json`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation250_v02_live_component_ablation_2026-06-01.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation250_v02_audit_trail_interpretation_2026-06-01.md`.
 
+### `gan2026_hybrid_adjudicator_v02_synthetic_hard_case_component_stress_2026-06-01`
+- Date/split: `2026-06-01`; `synthetic_hard_cases`; `56` rows.
+- Pipeline: `hybrid_rules_candidates_llm_adjudicator`; mode `live synthetic hard-case component stress`; replay `live`.
+- Model role: hybrid adjudicator over deterministic candidates; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `conservative_overreach_gates + deterministic_fallback`.
+- Primary metrics: candidate_set_purist_recall=42, deterministic_correct_to_adjudicator_wrong=0, deterministic_purist_correct=39, gated_changed_labels=5, gated_purist_correct=42, parse_failures=5, raw_changed_labels=7, raw_correct_to_wrong=0, raw_purist_correct=44, raw_wrong_to_correct=5, row_count=56.
+- Evidence validity: Deterministic candidate evidence is carried from V1 diagnostics; raw/gated adjudicator evidence validity needs row-level review for schema-failing and boundary-demotion cases.
+- Cache/reuse source: DSPy cache enabled; run recorded 0 reused raw outputs.
+- Supersedes: `gan2026_hybrid_adjudicator_v02_saturated_surface_analysis_2026-06-01`.
+- Claim language: Reviewed synthetic hard-case component stress is diagnostic/revise-only: raw adjudicator corrected five deterministic misses with no Purist regressions, but conservative gates kept only three corrections; candidate recall was only 42/56 and five schema/validation failures remain.
+- Artifacts: `experiments/gan2026_hybrid_adjudicator_v02_synthetic_hard_cases_gpt41mini_live_2026-06-01.jsonl`, `experiments/gan2026_hybrid_adjudicator_v02_synthetic_hard_cases_gpt41mini_live_2026-06-01.md`, `experiments/gan2026_hybrid_adjudicator_v02_synthetic_hard_cases_component_stress_2026-06-01.json`, `experiments/gan2026_hybrid_adjudicator_v02_synthetic_hard_cases_component_stress_2026-06-01.md`.
+
 ### `gan2026_hybrid_adjudicator_v02_saturated_surface_analysis_2026-06-01`
 - Date/split: `2026-06-01`; `validation`; `250` rows.
 - Pipeline: `hybrid_rules_candidates_llm_adjudicator`; mode `validation hard-slice and selective-action analysis`; replay `analysis_only`.

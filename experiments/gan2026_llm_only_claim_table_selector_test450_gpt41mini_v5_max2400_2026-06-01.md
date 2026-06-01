@@ -10,8 +10,8 @@ Hypothesis: a flat section-and-claim table can expose temporal, conflict, and ev
 
 Prediction-bearing component: model-produced claim rows plus model final query. Deterministic code validates structure and evidence, runs strict scorer-format repair and frozen clean scorer-facing policy, and scores each layer.
 
-Data surface: `test` split, `gan2026_split_v1`, 150 rows.
-Escalation reason: Frozen test generalization audit after validation250 v5; candidate, prompt, model, scorer, split manifest, and repair layers fixed before test run. Inspect aggregate and predeclared scoring layers only; do not tune from test rows.
+Data surface: `test` split, `gan2026_split_v1`, 240 rows.
+Escalation reason: Frozen test generalization audit after validation250 v5; candidate, prompt, model, scorer, split manifest, and repair layers fixed before test run. Inspect aggregate and predeclared scoring layers only; do not tune from test rows. Resumed from partial 150-row artifact by reusing saved raw outputs.
 
 ## Model And Prompt Metadata
 
@@ -25,38 +25,38 @@ Escalation reason: Frozen test generalization audit after validation250 v5; cand
 - Max tokens: `2400`
 - Mode: `live`
 - DSPy cache enabled: `True`
-- Reused raw model outputs: `0`
-- Reuse source: `none`
+- Reused raw model outputs: `150`
+- Reuse source: `experiments/gan2026_llm_only_claim_table_selector_test450_gpt41mini_v5_max2400_2026-06-01.jsonl`
 - Optimizer: none
 - Prompt policy taxonomy: `sct_v5.schema.scalar_enum_output`, `sct_v5.schema.strict_json_object`, `sct_v5.evidence.exact_substring`, `sct_v5.gan_label.parser_ready_surface`, `sct_v5.gan_label.interval_preservation`, `sct_v5.gan_label.cluster_dual_axis`, `sct_v5.schema.cluster_axis_state`, `sct_v5.selection.current_burden_precedence`, `sct_v5.selection.add_same_window_counts`, `sct_v5.boundary.unknown_no_reference_seizure_free`, `sct_v5.schema.boundary_state`, `sct_v5.exclusion.proxy_or_conditional_frequency`, `sct_v5.gan_label.compact_interval_notation`, `sct_v5.gan_label.maximum_burden`, `sct_v5.selection.constrained_selector`
 - Required ablations before 25/50/250 ladder runs: `raw_model_claim_table`, `strict_schema_repair`, `constrained_selector_state`, `clean_scorer_facing_policy`
 - Deterministic rule configuration: none before prediction; deterministic code only validates, performs strict/frozen clean scorer-facing repair, and scores.
-- Git commit: `6a60a21`
+- Git commit: `0d4770d`
 - Working tree note: `clean`
 - JSONL artifact: `experiments/gan2026_llm_only_claim_table_selector_test450_gpt41mini_v5_max2400_2026-06-01.jsonl`
 
 ## Summary
 
-- Structured claim-table records: 150 / 150
+- Structured claim-table records: 240 / 240
 - Call failures: 0
 - Parse/schema/label issues: 0
-- Exact claim evidence substrings: 374 / 386
-- Exact selected final evidence substrings: 145 / 150
-- raw final-query score: Purist 0.8600 (129 / 150), Pragmatic 0.8600 (129 / 150)
-- Strict-format score: Purist 0.8667 (130 / 150), Pragmatic 0.8667 (130 / 150)
-- Frozen clean scorer-facing score: Purist 0.8733 (131 / 150), Pragmatic 0.8733 (131 / 150)
-- Rows changed by downstream repair layers: 25
+- Exact claim evidence substrings: 600 / 625
+- Exact selected final evidence substrings: 229 / 240
+- raw final-query score: Purist 0.8125 (195 / 240), Pragmatic 0.8125 (195 / 240)
+- Strict-format score: Purist 0.8167 (196 / 240), Pragmatic 0.8167 (196 / 240)
+- Frozen clean scorer-facing score: Purist 0.8208 (197 / 240), Pragmatic 0.8208 (197 / 240)
+- Rows changed by downstream repair layers: 38
 
 ## Component Failure Slices
 
 | Component | Failures |
 | --- | ---: |
-| segmentation_sectioning | 6 |
-| claim_extraction | 12 |
-| temporality_conflict | 3 |
-| final_query | 5 |
+| segmentation_sectioning | 11 |
+| claim_extraction | 23 |
+| temporality_conflict | 4 |
+| final_query | 11 |
 | parse_schema | 0 |
-| scorer_format | 9 |
+| scorer_format | 13 |
 
 ## Reviewable Failure Details
 
@@ -83,6 +83,21 @@ Escalation reason: Frozen test generalization audit after validation250 v5; cand
 | 5540 | claim evidence not exact (c2: On balance, given the near-absent recent activity (·virtually no events apart from the brief spell), I have not altered therapy today.) |  |  |
 | 5555 |  | unparsable_label: several per week (Unparsable label (raw: 'several per week' / normalized: 'several per week')) |  |
 | 5684 |  | unparsable_label: 1 cluster per 1 to 2 day (Unparsable cluster label: '1 cluster per 1 to 2 day') |  |
+| 6025 |  | unparsable_label: conditional_or_window_limited (Unparsable label (raw: 'conditional_or_window_limited' / normalized: 'conditional_or_window_limited')) |  |
+| 6387 |  | unparsable_label: 2 per travel event (Unparsable label (raw: '2 per travel event' / normalized: '2 per travel event')) |  |
+| 6909 |  | unparsable_label: 1 per 2 to 3 week, 3 per 3 month (Unparsable label (raw: '1 per 2 to 3 week, 3 per 3 month' / normalized: '1 per 2 to 3 week, 3 per 3 month')) |  |
+| 6979 | claim evidence not exact (c1: she has not kept a seizure diary recently and could not confidently recall the timing of her most recent episode, stating that it "might have been a while" but she wasn’t certain); selected evidence not exact (she has not kept a seizure diary recently and could not confidently recall the timing of her most recent episode, stating that it "might have been a while" but she wasn’t certain) |  |  |
+| 7005 | claim evidence not exact (c1: he believes there were two brief episodes in the last six months characterised by a sudden blank spell with loss of awareness for under a minute, c2: No emergency call activations logged on the device); selected evidence not exact (he believes there were two brief episodes in the last six months characterised by a sudden blank spell with loss of awareness for under a minute) |  |  |
+| 7328 |  | unparsable_label: occasional (Unparsable label (raw: 'occasional' / normalized: 'occasional')) |  |
+| 7386 | claim evidence not exact (c2: Over the past eight weeks, the patient reports ... two focal seizures with secondary impairment of awareness) |  |  |
+| 7783 | claim evidence not exact (c1: he reports that over the past three months there have been no witnessed events suggestive of attacks); selected evidence not exact (he reports that over the past three months there have been no witnessed events suggestive of attacks) |  |  |
+| 7892 | claim evidence not exact (c2: the carer keeps a diary and has noted several brief episodes of uncertainty about awareness that resolved spontaneously without escalation) |  |  |
+| 8135 | claim evidence not exact (c4: From the app logs and her diary: ... Jun: dose increase 07/06, thereafter 0; Jul: 0; Aug: 0; Sep: 0.) |  |  |
+| 8540 | claim evidence not exact (c1: he has been keeping a seizure diary and, over this interval, there have been no recorded or witnessed events suggestive of epileptic activity, c3: he has not described any blackouts, tongue biting, or unwitnessed nocturnal events); selected evidence not exact (he has been keeping a seizure diary and, over this interval, there have been no recorded or witnessed events suggestive of epileptic activity) |  |  |
+| 8624 | claim evidence not exact (c3: No auras, blackouts or witnessed episodes since) |  |  |
+| 8813 | claim evidence not exact (c1: the device dashboard from the past 90 days indicates no detected convulsive activity, summarised by the platform as “0% seizure activity recorded,” and his partner’s diary entries show no witnessed episodes in that period); selected evidence not exact (the device dashboard from the past 90 days indicates no detected convulsive activity, summarised by the platform as “0% seizure activity recorded,” and his partner’s diary entries show no witnessed episodes in that period) |  |  |
+| 8979 | claim evidence not exact (c1: seizure control has been stable since resection with no clinical events reported in the community, consistent with a sustained post-surgical absence of seizures) |  |  |
+| 9212 | claim evidence not exact (c1: he reports that since our last contact three months ago there have not been any episodes seen by others or described by himself suggestive of seizures); selected evidence not exact (he reports that since our last contact three months ago there have not been any episodes seen by others or described by himself suggestive of seizures) |  |  |
 
 ## Rows
 
@@ -238,3 +253,93 @@ Escalation reason: Frozen test generalization audit after validation250 v5; cand
 | 5708 | unknown | unknown | unknown | unknown | yes | yes |  |
 | 5764 | 3 per month | 3 per month | 3 per month | 3 per month | yes | yes |  |
 | 5766 | 1 per 3 to 4 week | 1 per 3 to 4 week | 1 per 3 to 4 week | multiple per week | no | no |  |
+| 5976 | unknown | unknown | unknown | unknown | yes | yes |  |
+| 6025 | conditional_or_window_limited | conditional_or_window_limited | conditional_or_window_limited | unknown |  |  | scorer_format |
+| 6028 | unknown | unknown | unknown | 1 per 3 months | no | no |  |
+| 6063 | 3 per 2 week | 3 per 2 week | 3 per 2 week | unknown | no | no | segmentation_sectioning |
+| 6073 | 1 per 3 to 4 week | 1 per 3 to 4 week | 1 per 3 to 4 week | 1 per 3 to 4 weeks | yes | yes |  |
+| 6164 | unknown | unknown | unknown | unknown | yes | yes |  |
+| 6216 | 5 per 6 week | 5 per 6 week | 5 per 6 week | 4 per 6 week | yes | yes |  |
+| 6252 | 2 to 4 per month | 2 to 4 per month | 2 to 4 per month | 2 to 4 per month | yes | yes |  |
+| 6288 | 2 per 10 week | 2 per 10 week | 2 per 10 week | 2 per 10 week | yes | yes |  |
+| 6296 | 3 per 4 month | 3 per 4 month | 3 per 4 month | 3 per 4 month | yes | yes |  |
+| 6303 | unknown | unknown | unknown | unknown | yes | yes | segmentation_sectioning |
+| 6330 | 2 per 3 month | 2 per 3 month | 2 per 3 month | multiple per month | no | no |  |
+| 6365 | 1 to 2 per day | 1 to 2 per day | 1 to 2 per day | unknown, 1 to 2 per cluster | no | no |  |
+| 6380 | unknown | unknown | unknown | unknown | yes | yes |  |
+| 6387 | 2 per travel event | 2 per travel | 2 per travel | unknown |  |  | scorer_format |
+| 6408 | unknown | unknown | unknown | unknown | yes | yes |  |
+| 6592 | unknown | unknown | unknown | unknown | yes | yes |  |
+| 6661 | 3 per 6 week | 3 per 6 week | 3 per 6 week | 0.5 per week | yes | yes |  |
+| 6763 | 1 per week | 1 per week | 1 per week | 1 per week | yes | yes | segmentation_sectioning |
+| 6775 | seizure free for 4 month | seizure free for 4 month | seizure free for 4 month | 1 per 5 month | no | no |  |
+| 6787 | 8 per 6 week | 8 per 6 week | 8 per 6 week | 8 per 6 week | yes | yes |  |
+| 6909 | 1 per 2 to 3 week, 3 per 3 month | 1 per 2 to 3 week, 3 per 3 month | 1 per 2 to 3 week, 3 per 3 month | 1 per 2 to 3 weeks |  |  | scorer_format |
+| 6929 | multiple per week | multiple per week | multiple per week | multiple per week | yes | yes |  |
+| 6930 | unknown | unknown | unknown | unknown | yes | yes |  |
+| 6976 | unknown | unknown | unknown | unknown | yes | yes |  |
+| 6979 | unknown | unknown | unknown | unknown | yes | yes | claim_extraction,final_query |
+| 6986 | unknown | unknown | unknown | unknown | yes | yes |  |
+| 7005 | 2 per 6 month | 2 per 6 month | 2 per 6 month | 2 per 6 month | yes | yes | claim_extraction,final_query |
+| 7047 | unknown | unknown | unknown | unknown | yes | yes |  |
+| 7061 | unknown | unknown | unknown | 2 per 6 week | no | no |  |
+| 7232 | 1 per 6 to 8 day | 1 per 6 to 8 day | 1 per 6 to 8 day | 6 to 8 cluster per month, multiple per cluster | yes | yes |  |
+| 7280 | 5 per month | 5 per month | 5 per month | 5 per month | yes | yes |  |
+| 7318 | 1 per 2 to 3 week | 1 per 2 to 3 week | 1 per 2 to 3 week | 1 per 2 to 3 week | yes | yes |  |
+| 7327 | 2 per 4 month | 2 per 4 month | 2 per 4 month | 2 per 4 months | yes | yes |  |
+| 7328 | occasional | occasional | occasional | unknown |  |  | scorer_format |
+| 7341 | unknown | unknown | unknown | unknown | yes | yes |  |
+| 7386 | 5 to 7 per 8 week | 5 to 7 per 8 week | 5 to 7 per 8 week | 7 per 8 week | yes | yes | claim_extraction |
+| 7393 | 1 per 2 to 3 week | 1 per 2 to 3 week | 1 per 2 to 3 week | unknown | no | no |  |
+| 7405 | 1 per 2 to 3 month | 1 per 2 to 3 month | 1 per 2 to 3 month | 1 per multiple months | no | no |  |
+| 7431 | 2 per 8 week | 2 per 8 week | 2 per 8 week | 1 per month | yes | yes |  |
+| 7670 | 1 per day | 1 per day | 1 per day | multiple per week | no | no |  |
+| 7688 | no seizure frequency reference | no seizure frequency reference | no seizure frequency reference | seizure free for 1 year | no | no |  |
+| 7708 | seizure free for 6 month | seizure free for 6 month | seizure free for 6 month | seizure free for multiple month | yes | yes |  |
+| 7712 | seizure free for 3 month | seizure free for 3 month | seizure free for 3 month | 2 per 3 month | no | no |  |
+| 7719 | seizure free for 4 month | seizure free for 4 month | seizure free for 4 month | seizure free for multiple month | yes | yes |  |
+| 7783 | seizure free for 3 month | seizure free for 3 month | seizure free for 3 month | seizure free for multiple month | yes | yes | claim_extraction,final_query |
+| 7816 | seizure free for 1 month | seizure free for 1 month | seizure free for 1 month | seizure free for multiple month | yes | yes |  |
+| 7863 | seizure free for 2 month | seizure free for 2 month | seizure free for 2 month | seizure free for multiple month | yes | yes |  |
+| 7884 | seizure free for 9 month | seizure free for 9 month | seizure free for 9 month | seizure free for multiple month | yes | yes | segmentation_sectioning |
+| 7892 | seizure free for 4 month | seizure free for 4 month | seizure free for 4 month | seizure free for multiple month | yes | yes | claim_extraction |
+| 7935 | 5 to 7 per 2 month | 5 to 7 per 2 month | 5 to 7 per 2 month | seizure free for multiple month | no | no |  |
+| 7958 | seizure free for 3 year | seizure free for 3 year | seizure free for 3 year | seizure free for multiple year | yes | yes |  |
+| 7987 | seizure free | seizure free for multiple year | seizure free for multiple year | seizure free for multiple month | yes | yes |  |
+| 7993 | 2 to 3 per 2 day | 2 to 3 per 2 day | 2 to 3 per 2 day | unknown, 2 to 3 per cluster | no | no |  |
+| 8109 | seizure free for 12 month | seizure free for 12 month | seizure free for 12 month | seizure free for 12 month | yes | yes |  |
+| 8116 | seizure free for 12 month | seizure free for 12 month | seizure free for 12 month | seizure free for 12 month | yes | yes |  |
+| 8127 | seizure free for 18 month | seizure free for 18 month | seizure free for 18 month | seizure free for 18 month | yes | yes |  |
+| 8135 | seizure free for 3 month | seizure free for 3 month | seizure free for 3 month | seizure free for multiple month | yes | yes | claim_extraction |
+| 8169 | seizure free for several month | seizure free for multiple year | seizure free for multiple year | seizure free for multiple month | yes | yes |  |
+| 8221 | seizure free for 3 month | seizure free for 3 month | seizure free for 3 month | seizure free for multiple month | yes | yes |  |
+| 8222 | no seizure frequency reference | no seizure frequency reference | no seizure frequency reference | seizure free for multiple month | no | no |  |
+| 8244 | seizure free for 9 month | seizure free for 9 month | seizure free for 9 month | seizure free for multiple month | yes | yes |  |
+| 8286 | no seizure frequency reference | no seizure frequency reference | no seizure frequency reference | seizure free for multiple month | no | no |  |
+| 8342 | seizure free for 9 month | seizure free for 9 month | seizure free for 9 month | seizure free for 9 month | yes | yes |  |
+| 8346 | seizure free for 6 month | seizure free for 6 month | seizure free for 6 month | seizure free for multiple month | yes | yes |  |
+| 8423 | seizure free for 10 week | seizure free for multiple year | seizure free for multiple year | seizure free for multiple month | yes | yes |  |
+| 8432 | 1 per 2 to 3 month | 1 per 2 to 3 month | 1 per 2 to 3 month | 1 per 2 to 3 month | yes | yes | segmentation_sectioning |
+| 8488 | seizure free for 6 month | seizure free for 6 month | seizure free for 6 month | seizure free for multiple month | yes | yes |  |
+| 8540 | seizure free for 3 month | seizure free for 3 month | seizure free for 3 month | seizure free for multiple month | yes | yes | claim_extraction,final_query |
+| 8624 | seizure free for 13 month | seizure free for 13 month | seizure free for 13 month | seizure free for 13 month | yes | yes | claim_extraction |
+| 8645 | no seizure frequency reference | no seizure frequency reference | no seizure frequency reference | seizure free for multiple month | no | no |  |
+| 8723 | seizure free for several week | seizure free for multiple year | seizure free for multiple year | seizure free for multiple month | yes | yes |  |
+| 8790 | seizure free for 8 week | seizure free for multiple year | seizure free for multiple year | seizure free for multiple month | yes | yes |  |
+| 8791 | seizure free for 6 week | seizure free for multiple year | seizure free for multiple year | seizure free for multiple month | yes | yes |  |
+| 8799 | seizure free | seizure free for multiple year | seizure free for multiple year | unknown | no | no |  |
+| 8813 | seizure free for 3 month | seizure free for 3 month | seizure free for 3 month | seizure free for multiple month | yes | yes | claim_extraction,final_query |
+| 8852 | seizure free for 8 month | seizure free for 8 month | seizure free for 8 month | seizure free for 8 month | yes | yes |  |
+| 8858 | seizure free | seizure free for multiple year | seizure free for multiple year | seizure free for multiple month | yes | yes |  |
+| 8954 | seizure free for 7 month | seizure free for 7 month | seizure free for 7 month | seizure free for 8 month | yes | yes |  |
+| 8957 | seizure free for 9 month | seizure free for 9 month | seizure free for 9 month | seizure free for 8 month | yes | yes |  |
+| 8979 | seizure free | seizure free for multiple year | seizure free for multiple year | seizure free for multiple year | yes | yes | claim_extraction |
+| 9014 | seizure free for 10 month | seizure free for 10 month | seizure free for 10 month | seizure free for 11 month | yes | yes | temporality_conflict |
+| 9065 | seizure free for 1 year 1 month | seizure free for 1 year | seizure free for 1 year | seizure free for 13 month | yes | yes |  |
+| 9109 | unknown | unknown | unknown | unknown | yes | yes |  |
+| 9114 | 1 per 4 to 6 week | 1 per 4 to 6 week | 1 per 4 to 6 week | 1 per 4 to 6 week | yes | yes |  |
+| 9147 | no seizure frequency reference | no seizure frequency reference | no seizure frequency reference | seizure free for multiple month | no | no |  |
+| 9179 | seizure free for 1 per 2 month | seizure free for multiple year | seizure free for multiple year | seizure free for multiple month | yes | yes |  |
+| 9189 | seizure free for an extended interval | seizure free for multiple year | seizure free for multiple year | seizure free for multiple month | yes | yes |  |
+| 9202 | no seizure frequency reference | no seizure frequency reference | no seizure frequency reference | seizure free for multiple month | no | no |  |
+| 9212 | no seizure frequency reference | no seizure frequency reference | no seizure frequency reference | seizure free for 3 months | no | no | claim_extraction,final_query |
