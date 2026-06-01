@@ -385,6 +385,59 @@ The program-synthesized rule-family architecture should run as a discipline
 layer alongside either of those candidates. It can prevent future deterministic
 improvements from becoming invisible semantic repair.
 
+## Selected Immediate Branch
+
+Branch name: `gan2026_clean_attribution_format50_v0`.
+
+Decision: complete the cleaned attribution condition before starting a new
+architecture family. This is a short diagnostic branch, not the next production
+architecture. It resolves whether the current staged structured model has enough
+raw selection signal under strict format-preserving repair to remain a useful
+comparator for the next architecture phase.
+
+Claim type: `diagnostic_probe` with an `llm_first` attribution baseline. The
+prediction-bearing component is the raw LLM structured clinical selection.
+Downstream code may only perform schema validation, evidence substring
+validation, Gan-compatible normalization that preserves the selected semantic
+state, and strict format-preserving benchmark repair.
+
+Comparator: the 25-row no-call strict-format replay documented in
+`experiments/gan2026_llm_structured_validation25_gpt41mini_v05_strict_format_replay2_2026-06-01.md`.
+
+Repair policy:
+
+- allowed: strict format-preserving repair for upper-bound forms, plural unit
+  canonicalization, and `per quarter` to `per 3 month`
+- disallowed: selected-evidence repair, monthly diary arithmetic, clinical
+  selection overrides, no-reference or seizure-free semantic conversion, and
+  cluster cadence conversion
+- cluster-only labels remain raw attribution failures unless a later branch
+  introduces a named cluster module with its own ablation
+
+Next run surface: validation prefix of 50 rows on `gan2026_split_v1`, preferably
+as a no-call replay if the required raw outputs are already present and
+compatible.
+
+The 50-row artifact must report:
+
+- raw model selection score and strict-format score
+- rows changed by strict-format repair
+- raw-wrong to strict-format-correct improvements
+- raw-correct to strict-format-wrong regressions
+- parse/schema failures, with cluster-only labels counted separately
+- exact selected-evidence substring count
+
+Stop condition:
+
+- promote the branch only as a comparator if 50-row failures are interpretable,
+  exact selected evidence remains adequate for row review, and strict-format
+  repair has no raw-correct regressions
+- pause and move to a new architecture family if failures are dominated by
+  semantic selection, cluster interpretation, temporal reasoning, or
+  seizure-free/no-reference reasoning
+- do not escalate to 250 rows until the 50-row artifact explicitly states what
+  the 250-row run would decide
+
 ## Bottom Line
 
 The next stage should not ask only how to improve the current structured LLM
