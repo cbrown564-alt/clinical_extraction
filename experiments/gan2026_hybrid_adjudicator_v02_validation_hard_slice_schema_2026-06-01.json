@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Gan 2026 Hybrid Adjudicator V0.2 Validation Hard Slices",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "artifact_kind",
+    "candidate",
+    "split",
+    "split_manifest",
+    "row_policy",
+    "slice_definitions",
+    "slices"
+  ],
+  "properties": {
+    "artifact_kind": {
+      "const": "gan2026_validation_hard_slices"
+    },
+    "candidate": {
+      "const": "hybrid_rules_candidates_llm_adjudicator_v0.2"
+    },
+    "split": {
+      "const": "validation"
+    },
+    "split_manifest": {
+      "const": "gan2026_split_v1"
+    },
+    "source_artifact": {
+      "type": ["string", "null"]
+    },
+    "row_policy": {
+      "type": "string"
+    },
+    "slice_definitions": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/slice_definition" }
+    },
+    "slices": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/slice" }
+    }
+  },
+  "$defs": {
+    "slice_definition": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["slice_name", "membership_rule", "primary_metric"],
+      "properties": {
+        "slice_name": { "type": "string" },
+        "membership_rule": { "type": "string" },
+        "primary_metric": { "type": "string" }
+      }
+    },
+    "slice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "slice_name",
+        "membership_rule",
+        "primary_metric",
+        "row_count",
+        "members"
+      ],
+      "properties": {
+        "slice_name": { "type": "string" },
+        "membership_rule": { "type": "string" },
+        "primary_metric": { "type": "string" },
+        "row_count": { "type": "integer", "minimum": 0 },
+        "members": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/member" }
+        }
+      }
+    },
+    "member": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_row_index",
+        "triggers",
+        "deterministic_label",
+        "raw_adjudicator_label",
+        "gated_label",
+        "gold_label"
+      ],
+      "properties": {
+        "source_row_index": { "type": "integer" },
+        "triggers": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "deterministic_label": { "type": ["string", "null"] },
+        "raw_adjudicator_label": { "type": ["string", "null"] },
+        "gated_label": { "type": ["string", "null"] },
+        "gold_label": { "type": "string" }
+      }
+    }
+  }
+}
