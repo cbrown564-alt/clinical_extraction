@@ -25,13 +25,15 @@ format repair, arithmetic repair, and named ablated modules.
   classified it as repair-heavy hybrid behavior rather than clean LLM-first.
 - Clean attribution separates raw LLM selection, strict format repair, and
   frozen scorer-facing policy: 34/50 raw, 41/50 strict, 43/50 clean Purist.
-- Section-claim-table v3 ran the 25/50 ladder: 25-row smoke was 25/25 raw and
-  clean Purist; live 50-row diagnostic was 49/50 structured and 49/50 raw/clean
-  Purist. A no-call non-semantic rationale repair replay reached 50/50
-  structured and 50/50 raw/clean Purist with 50/50 raw outputs reused.
-- Rows 187, 704, 869, and 1165 are fixed at the raw layer. The remaining v3
-  issue is a localized exact-evidence casing/span miss on row 243, not a
-  semantic-selection or schema-blocking failure.
+- Section-claim-table v3 passed the 50-row decision gate after the no-call
+  rationale-repair replay, then ran the 250-row validation diagnostic with the
+  first 50 raw outputs reused. The 250-row result is below target: 248/250
+  structured, 0 call failures, 217/250 raw Purist, 218/250 clean Purist, and
+  224/250 clean Pragmatic.
+- The v3 250-row artifact is a revise signal, not a promotion signal. Failure
+  families include cluster-burden under-selection, unknown/no-reference versus
+  seizure-free confusion, counted-window mismatches, two schema enum failures,
+  and persistent evidence exactness drift on a small slice.
 
 ## Key References
 
@@ -39,8 +41,8 @@ format repair, arithmetic repair, and named ablated modules.
   `docs/design/data_contract.md`
 - Framing/policy: `docs/research/contribution_thesis.md` and clean-policy notes.
 - Core code: `src/clinical_extraction/tasks/seizure_frequency/gan2026/section_claim_table.py`
-- Current artifacts: clean-policy ladder, direct-citation rows, comparisons,
-  and section-claim-table 25/50-row diagnostics under `experiments/`.
+- Current artifacts: clean-policy ladder, direct-citation rows, comparisons, and
+  section-claim-table 25/50/250-row diagnostics under `experiments/`.
 
 ## Active Priorities
 
@@ -48,7 +50,8 @@ format repair, arithmetic repair, and named ablated modules.
    ablated candidates.
 2. Enforce the architecture gate before the metric gate; semantic repair needs
    separate naming, ablation, and claim language.
-3. Keep section-claim-table 25/50 diagnostics ahead of 250-row escalation.
+3. Treat section-claim-table v3 as a 250-row diagnostic requiring row-family
+   review before any further scale-up or holdout talk.
 4. Separate benchmark gold-normalization policy from clinical reasoning while
    preserving source-near traces.
 5. Treat the clean scorer-facing policy as frozen unless a new direct-citation
@@ -58,21 +61,23 @@ format repair, arithmetic repair, and named ablated modules.
 
 ### Now
 
-- Decide whether the v3 50-row rationale-repair replay passes the documented
-  decision gate for a 250-row validation diagnostic, given the localized row 243
-  evidence exactness miss.
+- Review the v3 250-row misses by family and choose a narrow v4 change or reject
+  the section-claim-table direction for now.
 - Keep clean scorer-facing normalization separate from named deterministic
   modules in run attribution and claim language.
 
 ### Next
 
+- Build a row-family review for the v3 250-row misses: cluster burden,
+  unknown/no-reference/seizure-free boundaries, counted windows, schema enum
+  failures, and evidence exactness.
 - Design LLM-replacement ablations for deterministic post-processing modules,
   reporting score, repair attribution, evidence validity, and replay variance.
 - Freeze a single repair-heavy hybrid candidate for locked-test evaluation only
   once the protocol, artifacts, and no-retuning rule are recorded.
 - Use direct-citation row tables as the gate for clean-policy expansion.
-- Do not run section-claim-table 250 rows until a 50-row artifact passes the
-  documented decision gate.
+- Do not run section-claim-table beyond 250 rows until the 250-row failure
+  families are reviewed and a revised candidate passes the 25/50 gate again.
 
 ### Blocked
 
@@ -81,22 +86,21 @@ format repair, arithmetic repair, and named ablated modules.
 
 ### Done Recently
 
-- 2026-06-01: Wrote
-  `experiments/gan2026_section_claim_table_validation50_v3_review_2026-06-01.md`;
-  v3 fixed rows 187, 704, 869, and 1165 at the raw layer. A no-call
-  rationale-repair replay fixed row 763 as non-semantic schema repair and reached
-  50/50 raw/clean Purist.
-- 2026-06-01: Wrote
-  `experiments/gan2026_section_claim_table_validation50_v2_failure_review_2026-06-01.md`;
-  decision is a narrow v3 final-query priority prompt, still restarting at the
-  25-row validation smoke gate and not promoting v2 to 250 rows.
-- 2026-06-01: Implemented section-claim-table v2 and ran 25/50-row diagnostics;
-  v2 fixed row 704 but remains diagnostic.
+- 2026-06-01: Ran
+  `experiments/gan2026_section_claim_table_validation250_gpt41mini_v3_2026-06-01.md`
+  after accepting the v3 50-row rationale-repair replay as passing the decision
+  gate. The diagnostic completed with 0 call failures but only 218/250 clean
+  Purist, so v3 should be revised rather than promoted.
+- 2026-06-01: Wrote the v3 50-row review and no-call rationale-repair replay;
+  v3 fixed rows 187, 704, 869, and 1165 at the raw layer and passed the 250-row
+  decision gate.
+- 2026-06-01: Wrote the v2 failure review, then implemented section-claim-table
+  v3 and reran the 25/50 validation ladder.
 - 2026-06-01: Added structured LLM extraction, repair-attribution audits,
   direct-citation tables, clean-policy tests, v0/v1 diagnostics, and observatory.
 
 ## Immediate Next Step
 
-Make the 250-row decision explicitly: either accept the v3 50-row
-rationale-repair replay as passing the decision gate despite row 243's localized
-evidence exactness miss, or do one more prompt/repair iteration before scaling.
+Review the v3 250-row failure families and decide whether to make a narrow v4
+prompt/schema change, run a targeted no-call attribution replay, or reject this
+candidate in favor of another architecture.
