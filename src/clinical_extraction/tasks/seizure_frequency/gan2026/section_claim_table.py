@@ -26,12 +26,12 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label_format_preserving,
 )
 
-PROMPT_VERSION = "gan2026_section_claim_table_v1"
+PROMPT_VERSION = "gan2026_section_claim_table_v2"
 DEFAULT_JSONL_PATH = Path(
-    "experiments/gan2026_section_claim_table_validation25_gpt41mini_v1_2026-06-01.jsonl"
+    "experiments/gan2026_section_claim_table_validation25_gpt41mini_v2_2026-06-01.jsonl"
 )
 DEFAULT_REPORT_PATH = Path(
-    "experiments/gan2026_section_claim_table_validation25_gpt41mini_v1_2026-06-01.md"
+    "experiments/gan2026_section_claim_table_validation25_gpt41mini_v2_2026-06-01.md"
 )
 
 
@@ -164,6 +164,16 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "2 per 2 week; once every seven to ten days -> 1 per 7 to 10 day."
             ),
             (
+                "Preserve explicit counted ranges even when wording uses alternatives: "
+                "5 or 7 focal onset seizures in three weeks -> 5 to 7 per 3 week. "
+                "Do not soften a counted range to multiple."
+            ),
+            (
+                "Convert twice per ordinary calendar unit directly: twice a month -> "
+                "2 per month; twice a week -> 2 per week. Do not turn twice a month "
+                "into every two months."
+            ),
+            (
                 "In these Gan synthetic letters, bimonthly means every two months "
                 "unless the text explicitly says twice per month; use 1 per 2 month."
             ),
@@ -171,6 +181,12 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "Do not emit a cluster final_label unless the selected claim truly states "
                 "cluster frequency with both cluster cadence and event burden. Vague "
                 "clustering around an ordinary rate should stay an ordinary frequency."
+            ),
+            (
+                "Cluster cadence can be the ordinary Gan-facing frequency when a cluster "
+                "statement gives only timing, such as every seven to nine days -> "
+                "1 per 7 to 9 day. Use unknown only when the current cadence cannot be "
+                "converted."
             ),
             (
                 "When a recent quantified event burden is followed by a short seizure-free "
