@@ -154,6 +154,13 @@ ownership, and deterministic repair boundaries explicitly.
   orchestration surface and is down to 159 lines. Behavior is preserved;
   Ruff, mypy, focused normalize/structured-events tests, and full pytest are
   green.
+- Phase 5 continued with shared Gan artifact IO:
+  `artifact_io.py` now owns row-oriented JSONL writing and raw-output reuse
+  loading for routine LLM/hybrid artifacts. The direct-labeler,
+  structured-events, claim-table selector, and hybrid adjudicator runners keep
+  their public compatibility functions but no longer duplicate the IO logic.
+  Behavior is preserved; focused artifact/runner tests, Ruff, mypy, and full
+  pytest are green.
 
 ## Key References
 
@@ -252,6 +259,10 @@ ownership, and deterministic repair boundaries explicitly.
   repair-ablation outputs, with tests proving clean scorer-facing mode does not
   silently use the hybrid semantic repair stack; Ruff, mypy, and full pytest are
   green.
+- 2026-06-01: Continued Phase 5 consolidation by extracting shared Gan JSONL
+  artifact writing and raw-output reuse loading into `artifact_io.py`, leaving
+  runner public APIs stable; focused artifact/runner tests, Ruff, mypy, and full
+  pytest are green.
 - 2026-06-01: Began Phase 4 of the codebase thermonuclear review by extracting
   common Gan LLM run metadata into `run_metadata.py` and wiring direct-labeler,
   structured-events, claim-table selector, and hybrid adjudicator runners
