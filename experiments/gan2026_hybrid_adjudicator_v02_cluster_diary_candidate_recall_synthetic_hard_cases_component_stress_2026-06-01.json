@@ -1,0 +1,1873 @@
+{
+  "artifact_kind": "gan2026_hybrid_adjudicator_synthetic_hard_case_component_stress",
+  "candidate_revision": "cluster_diary_candidate_recall",
+  "comparisons": [
+    {
+      "baseline": "deterministic_candidate_generator_top",
+      "candidate": "raw_llm_adjudicator_final",
+      "changed_labels": 15,
+      "correct_to_wrong": 0,
+      "overlap": 56,
+      "wrong_to_correct": 13
+    },
+    {
+      "baseline": "deterministic_candidate_generator_top",
+      "candidate": "conservative_llm_adjudicator_final",
+      "changed_labels": 13,
+      "correct_to_wrong": 0,
+      "overlap": 56,
+      "wrong_to_correct": 11
+    }
+  ],
+  "conditions": [
+    {
+      "architecture": "deterministic_then_llm",
+      "artifact_path": "experiments/gan2026_hybrid_adjudicator_v02_cluster_diary_candidate_recall_synthetic_hard_cases_gpt41mini_live_2026-06-01.jsonl",
+      "component_role": "candidate_generator_topline",
+      "components_disabled": [
+        "LLM adjudicator"
+      ],
+      "components_enabled": [
+        "deterministic candidate generator"
+      ],
+      "name": "deterministic_candidate_generator_top",
+      "prediction_source": "hybrid rules-candidates LLM adjudicator deterministic diagnostics",
+      "rows": [
+        {
+          "evidence_valid": true,
+          "gold_label": "2 per month",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "2 per month",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900000
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "1 per 2 week",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "5 per week",
+          "purist_correct": false,
+          "scorable": true,
+          "source_row_index": 900001
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "seizure free for 6 month",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": false,
+          "prediction_label": "3 per week",
+          "purist_correct": false,
+          "scorable": true,
+          "source_row_index": 900002
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "4 per week",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "4 per week",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900003
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "1 per 3 month",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "1 per 3 month",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900004
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "6 per month",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "20 per month",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900005
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "1 per week",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "1 per week",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900006
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "2 to 3 per week",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "2 to 3 per week",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900007
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "1 per week",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "8 per week",
+          "purist_correct": false,
+          "scorable": true,
+          "source_row_index": 900008
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "2 per month",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "2 per month",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900009
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "3 per month",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "3 per month",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900010
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "4 per month",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "4 per month",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900011
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "1 per week",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "1 per week",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900012
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "2 per week",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "2 per week",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900013
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "2 per 1 month",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": false,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": false,
+          "scorable": true,
+          "source_row_index": 900014
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "1 per 4 to 5 week",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "1 per 4 to 5 week",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900015
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "unknown",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900016
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "unknown",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900017
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "no seizure frequency reference",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900018
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "unknown",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900019
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "no seizure frequency reference",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900020
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "unknown",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900021
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "unknown",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900022
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "no seizure frequency reference",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900023
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "1 cluster per 2 week, 3 per cluster",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": false,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": false,
+          "scorable": true,
+          "source_row_index": 900024
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "2 cluster per month, 5 per cluster",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": false,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": false,
+          "scorable": true,
+          "source_row_index": 900025
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "1 cluster per week, multiple per cluster",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": false,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": false,
+          "scorable": true,
+          "source_row_index": 900026
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "2 cluster per 6 week, 1 to 2 per cluster",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": false,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": false,
+          "scorable": true,
+          "source_row_index": 900027
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "unknown",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900028
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "6 per month",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "6 per month",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900029
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "unknown",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "1 per multiple week",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900030
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "1 cluster per month, 6 to 7 per cluster",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": false,
+          "prediction_label": "unknown",
+          "purist_correct": false,
+          "scorable": true,
+          "source_row_index": 900031
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "2 per month",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": false,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": false,
+          "scorable": true,
+          "source_row_index": 900032
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "8 per month",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "8 per 4 week",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900033
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "2 per month",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "12 per 6 month",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900034
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "3 per 2 week",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": false,
+          "prediction_label": "1 per month",
+          "purist_correct": false,
+          "scorable": true,
+          "source_row_index": 900035
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "10 to 15 per 1 year",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "10 to 15 per year",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900036
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "3 per month",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": false,
+          "prediction_label": "seizure free for multiple year",
+          "purist_correct": false,
+          "scorable": true,
+          "source_row_index": 900037
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "5 per 10 day",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "5 per 10 day",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900038
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "1 per day",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "30 per 30 day",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900039
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "1 per 2 week",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "1 per 2 week",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900040
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "1 per 2 to 3 week",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "1 per 2 to 3 week",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900041
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "1 per 7 to 9 day",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": false,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": false,
+          "scorable": true,
+          "source_row_index": 900042
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "2 to 3 per week",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "2 to 3 per week",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900043
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "unknown",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": false,
+          "prediction_label": "4 per day",
+          "purist_correct": false,
+          "scorable": true,
+          "source_row_index": 900044
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "1 per 2 day",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "1 per day",
+          "purist_correct": false,
+          "scorable": true,
+          "source_row_index": 900045
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "6 to 8 per 1 year",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "6 to 8 per year",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900046
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "1 per 4 to 5 week",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "1 per 4 to 5 week",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900047
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "no seizure frequency reference",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900048
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "no seizure frequency reference",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900049
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "no seizure frequency reference",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900050
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "no seizure frequency reference",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": false,
+          "prediction_label": "2 per week",
+          "purist_correct": false,
+          "scorable": true,
+          "source_row_index": 900051
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "no seizure frequency reference",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900052
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "no seizure frequency reference",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": false,
+          "prediction_label": "3 per week",
+          "purist_correct": false,
+          "scorable": true,
+          "source_row_index": 900053
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "no seizure frequency reference",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900054
+        },
+        {
+          "evidence_valid": true,
+          "gold_label": "no seizure frequency reference",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900055
+        }
+      ],
+      "summary": {
+        "evidence_rate": 1.0,
+        "evidence_rows": 56,
+        "evidence_valid": 56,
+        "parse_or_validation_issues": 0,
+        "pragmatic_accuracy": 0.75,
+        "pragmatic_correct": 42,
+        "purist_accuracy": 0.6964,
+        "purist_correct": 39,
+        "rows": 56,
+        "scorable_rows": 56
+      }
+    },
+    {
+      "architecture": "deterministic_then_llm",
+      "artifact_path": "experiments/gan2026_hybrid_adjudicator_v02_cluster_diary_candidate_recall_synthetic_hard_cases_gpt41mini_live_2026-06-01.jsonl",
+      "component_role": "prediction_bearing_adjudicator",
+      "components_disabled": [
+        "conservative overreach gates",
+        "deterministic fallback"
+      ],
+      "components_enabled": [
+        "deterministic candidate generator",
+        "LLM adjudicator"
+      ],
+      "name": "raw_llm_adjudicator_final",
+      "prediction_source": "hybrid rules-candidates LLM adjudicator saved adjudicator output",
+      "rows": [
+        {
+          "evidence_valid": null,
+          "gold_label": "2 per month",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "2 per month",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900000
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "1 per 2 week",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "1 per 2 week",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900001
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "seizure free for 6 month",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "seizure free for 6 month",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900002
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "4 per week",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "4 per week",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900003
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "1 per 3 month",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "1 per 3 month",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900004
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "6 per month",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "6 per month",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900005
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "1 per week",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "1 per week",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900006
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "2 to 3 per week",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "2 to 3 per week",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900007
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "1 per week",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": false,
+          "prediction_label": "1 per 8 month",
+          "purist_correct": false,
+          "scorable": true,
+          "source_row_index": 900008
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "2 per month",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "2 per month",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900009
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "3 per month",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "3 per month",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900010
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "4 per month",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "4 per month",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900011
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "1 per week",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "1 per week",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900012
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "2 per week",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "2 per week",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900013
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "2 per 1 month",
+          "parse_or_validation_issues": [
+            "schema_validation_error: Input should be 'asserted', 'negated', 'historical', 'hypothetical', 'unclear' or 'mixed'"
+          ],
+          "pragmatic_correct": false,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": false,
+          "scorable": true,
+          "source_row_index": 900014
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "1 per 4 to 5 week",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "1 per 4 to 5 week",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900015
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "unknown",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900016
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "unknown",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900017
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "no seizure frequency reference",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900018
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "unknown",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900019
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "no seizure frequency reference",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900020
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "unknown",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900021
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "unknown",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900022
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "no seizure frequency reference",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900023
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "1 cluster per 2 week, 3 per cluster",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "1 cluster per 2 week, 3 per cluster",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900024
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "2 cluster per month, 5 per cluster",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "2 cluster per month, 5 per cluster",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900025
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "1 cluster per week, multiple per cluster",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "1 cluster per week, multiple per cluster",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900026
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "2 cluster per 6 week, 1 to 2 per cluster",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "2 cluster per 6 week, 1 to 2 per cluster",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900027
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "unknown",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900028
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "6 per month",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "6 per month",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900029
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "unknown",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "1 per multiple week",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900030
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "1 cluster per month, 6 to 7 per cluster",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "1 cluster per month, 6 to 7 per cluster",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900031
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "2 per month",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "2 per month",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900032
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "8 per month",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "8 per 4 week",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900033
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "2 per month",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "12 per 6 month",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900034
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "3 per 2 week",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "3 per 2 week",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900035
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "10 to 15 per 1 year",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "10 to 15 per year",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900036
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "3 per month",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "3 per month",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900037
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "5 per 10 day",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "5 per 10 day",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900038
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "1 per day",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "30 per 30 day",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900039
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "1 per 2 week",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "1 per 2 week",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900040
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "1 per 2 to 3 week",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "1 per 2 to 3 week",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900041
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "1 per 7 to 9 day",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": false,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": false,
+          "scorable": true,
+          "source_row_index": 900042
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "2 to 3 per week",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "2 to 3 per week",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900043
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "unknown",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": false,
+          "prediction_label": "4 per day",
+          "purist_correct": false,
+          "scorable": true,
+          "source_row_index": 900044
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "1 per 2 day",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "1 per 2 day",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900045
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "6 to 8 per 1 year",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "6 to 8 per year",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900046
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "1 per 4 to 5 week",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "1 per 4 to 5 week",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900047
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "no seizure frequency reference",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900048
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "no seizure frequency reference",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900049
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "no seizure frequency reference",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900050
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "no seizure frequency reference",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "unknown",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900051
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "no seizure frequency reference",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900052
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "no seizure frequency reference",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900053
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "no seizure frequency reference",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900054
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "no seizure frequency reference",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900055
+        }
+      ],
+      "summary": {
+        "evidence_rate": null,
+        "evidence_rows": 0,
+        "evidence_valid": 0,
+        "parse_or_validation_issues": 1,
+        "pragmatic_accuracy": 0.9286,
+        "pragmatic_correct": 52,
+        "purist_accuracy": 0.9286,
+        "purist_correct": 52,
+        "rows": 56,
+        "scorable_rows": 56
+      }
+    },
+    {
+      "architecture": "deterministic_then_llm",
+      "artifact_path": "experiments/gan2026_hybrid_adjudicator_v02_cluster_diary_candidate_recall_synthetic_hard_cases_gpt41mini_live_2026-06-01.jsonl",
+      "component_role": "gated_prediction_bearing_adjudicator",
+      "components_disabled": [],
+      "components_enabled": [
+        "deterministic candidate generator",
+        "LLM adjudicator",
+        "conservative overreach gates",
+        "deterministic fallback"
+      ],
+      "name": "conservative_llm_adjudicator_final",
+      "prediction_source": "hybrid rules-candidates LLM adjudicator after named overreach gates",
+      "rows": [
+        {
+          "evidence_valid": null,
+          "gold_label": "2 per month",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "2 per month",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900000
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "1 per 2 week",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "1 per 2 week",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900001
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "seizure free for 6 month",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "seizure free for 6 month",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900002
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "4 per week",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "4 per week",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900003
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "1 per 3 month",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "1 per 3 month",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900004
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "6 per month",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "6 per month",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900005
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "1 per week",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "1 per week",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900006
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "2 to 3 per week",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "2 to 3 per week",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900007
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "1 per week",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": false,
+          "prediction_label": "1 per 8 month",
+          "purist_correct": false,
+          "scorable": true,
+          "source_row_index": 900008
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "2 per month",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "2 per month",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900009
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "3 per month",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "3 per month",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900010
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "4 per month",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "4 per month",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900011
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "1 per week",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "1 per week",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900012
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "2 per week",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "2 per week",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900013
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "2 per 1 month",
+          "parse_or_validation_issues": [
+            "schema_validation_error: Input should be 'asserted', 'negated', 'historical', 'hypothetical', 'unclear' or 'mixed'",
+            "overreach_gate:adjudicator_output_missing_or_invalid"
+          ],
+          "pragmatic_correct": false,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": false,
+          "scorable": true,
+          "source_row_index": 900014
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "1 per 4 to 5 week",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "1 per 4 to 5 week",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900015
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "unknown",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900016
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "unknown",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900017
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "no seizure frequency reference",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900018
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "unknown",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900019
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "no seizure frequency reference",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900020
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "unknown",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900021
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "unknown",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900022
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "no seizure frequency reference",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900023
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "1 cluster per 2 week, 3 per cluster",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "1 cluster per 2 week, 3 per cluster",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900024
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "2 cluster per month, 5 per cluster",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "2 cluster per month, 5 per cluster",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900025
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "1 cluster per week, multiple per cluster",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "1 cluster per week, multiple per cluster",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900026
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "2 cluster per 6 week, 1 to 2 per cluster",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "2 cluster per 6 week, 1 to 2 per cluster",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900027
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "unknown",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900028
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "6 per month",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "6 per month",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900029
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "unknown",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "1 per multiple week",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900030
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "1 cluster per month, 6 to 7 per cluster",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "1 cluster per month, 6 to 7 per cluster",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900031
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "2 per month",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "2 per month",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900032
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "8 per month",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "8 per 4 week",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900033
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "2 per month",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "12 per 6 month",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900034
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "3 per 2 week",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "3 per 2 week",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900035
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "10 to 15 per 1 year",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "10 to 15 per year",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900036
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "3 per month",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "3 per month",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900037
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "5 per 10 day",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "5 per 10 day",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900038
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "1 per day",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "30 per 30 day",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900039
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "1 per 2 week",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "1 per 2 week",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900040
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "1 per 2 to 3 week",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "1 per 2 to 3 week",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900041
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "1 per 7 to 9 day",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": false,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": false,
+          "scorable": true,
+          "source_row_index": 900042
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "2 to 3 per week",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "2 to 3 per week",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900043
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "unknown",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": false,
+          "prediction_label": "4 per day",
+          "purist_correct": false,
+          "scorable": true,
+          "source_row_index": 900044
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "1 per 2 day",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "1 per 2 day",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900045
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "6 to 8 per 1 year",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "6 to 8 per year",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900046
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "1 per 4 to 5 week",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "1 per 4 to 5 week",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900047
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "no seizure frequency reference",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900048
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "no seizure frequency reference",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900049
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "no seizure frequency reference",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900050
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "no seizure frequency reference",
+          "parse_or_validation_issues": [
+            "overreach_gate:unsupported_boundary_demotion_overreach"
+          ],
+          "pragmatic_correct": false,
+          "prediction_label": "2 per week",
+          "purist_correct": false,
+          "scorable": true,
+          "source_row_index": 900051
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "no seizure frequency reference",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900052
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "no seizure frequency reference",
+          "parse_or_validation_issues": [
+            "overreach_gate:unsupported_boundary_demotion_overreach"
+          ],
+          "pragmatic_correct": false,
+          "prediction_label": "3 per week",
+          "purist_correct": false,
+          "scorable": true,
+          "source_row_index": 900053
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "no seizure frequency reference",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900054
+        },
+        {
+          "evidence_valid": null,
+          "gold_label": "no seizure frequency reference",
+          "parse_or_validation_issues": [],
+          "pragmatic_correct": true,
+          "prediction_label": "no seizure frequency reference",
+          "purist_correct": true,
+          "scorable": true,
+          "source_row_index": 900055
+        }
+      ],
+      "summary": {
+        "evidence_rate": null,
+        "evidence_rows": 0,
+        "evidence_valid": 0,
+        "parse_or_validation_issues": 3,
+        "pragmatic_accuracy": 0.8929,
+        "pragmatic_correct": 50,
+        "purist_accuracy": 0.8929,
+        "purist_correct": 50,
+        "rows": 56,
+        "scorable_rows": 56
+      }
+    }
+  ],
+  "family_summaries": {
+    "cluster_dual_axis": {
+      "deterministic_purist_correct": 3,
+      "gated_correct_to_wrong": 0,
+      "gated_purist_correct": 8,
+      "gated_wrong_to_correct": 5,
+      "raw_correct_to_wrong": 0,
+      "raw_purist_correct": 8,
+      "raw_wrong_to_correct": 5,
+      "rows": 8
+    },
+    "diary_distributed_counts": {
+      "deterministic_purist_correct": 5,
+      "gated_correct_to_wrong": 0,
+      "gated_purist_correct": 8,
+      "gated_wrong_to_correct": 3,
+      "raw_correct_to_wrong": 0,
+      "raw_purist_correct": 8,
+      "raw_wrong_to_correct": 3,
+      "rows": 8
+    },
+    "proxy_distractor_context": {
+      "deterministic_purist_correct": 6,
+      "gated_correct_to_wrong": 0,
+      "gated_purist_correct": 6,
+      "gated_wrong_to_correct": 0,
+      "raw_correct_to_wrong": 0,
+      "raw_purist_correct": 8,
+      "raw_wrong_to_correct": 2,
+      "rows": 8
+    },
+    "seizure_free_boundary": {
+      "deterministic_purist_correct": 6,
+      "gated_correct_to_wrong": 0,
+      "gated_purist_correct": 6,
+      "gated_wrong_to_correct": 0,
+      "raw_correct_to_wrong": 0,
+      "raw_purist_correct": 6,
+      "raw_wrong_to_correct": 0,
+      "rows": 8
+    },
+    "shorthand_ranges": {
+      "deterministic_purist_correct": 5,
+      "gated_correct_to_wrong": 0,
+      "gated_purist_correct": 6,
+      "gated_wrong_to_correct": 1,
+      "raw_correct_to_wrong": 0,
+      "raw_purist_correct": 6,
+      "raw_wrong_to_correct": 1,
+      "rows": 8
+    },
+    "temporal_conflict": {
+      "deterministic_purist_correct": 6,
+      "gated_correct_to_wrong": 0,
+      "gated_purist_correct": 8,
+      "gated_wrong_to_correct": 2,
+      "raw_correct_to_wrong": 0,
+      "raw_purist_correct": 8,
+      "raw_wrong_to_correct": 2,
+      "rows": 8
+    },
+    "unknown_no_reference_boundary": {
+      "deterministic_purist_correct": 8,
+      "gated_correct_to_wrong": 0,
+      "gated_purist_correct": 8,
+      "gated_wrong_to_correct": 0,
+      "raw_correct_to_wrong": 0,
+      "raw_purist_correct": 8,
+      "raw_wrong_to_correct": 0,
+      "rows": 8
+    }
+  },
+  "row_policy": "Reviewed synthetic hard-case development panel; not validation, not holdout, and not a benchmark claim.",
+  "source_artifact": "experiments/gan2026_hybrid_adjudicator_v02_cluster_diary_candidate_recall_synthetic_hard_cases_gpt41mini_live_2026-06-01.jsonl",
+  "split": "synthetic_hard_cases",
+  "split_manifest": "gan2026_hybrid_adjudicator_v02_synthetic_hard_cases_2026-06-01"
+}

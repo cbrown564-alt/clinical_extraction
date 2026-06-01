@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from collections import Counter
 from collections.abc import Mapping, Sequence
@@ -54,6 +55,8 @@ DEFAULT_HYBRID_RULES_CANDIDATES_LLM_ADJUDICATOR_REPORT_PATH = Path(
 )
 
 BOUNDARY_FINAL_LABELS = frozenset({"unknown", "no seizure frequency reference"})
+CandidateRevision = Literal["frozen_v1", "cluster_diary_candidate_recall"]
+DEFAULT_CANDIDATE_REVISION: CandidateRevision = "frozen_v1"
 
 
 class SeizureEventExtractor:
@@ -221,6 +224,7 @@ def build_hybrid_rules_candidates_llm_adjudicator_prompt_input(
         "prompt_version": PROMPT_VERSION,
         "architecture": "gan2026_hybrid_rules_candidates_llm_adjudicator",
         "claim_type": "hybrid_llm_adjudicator",
+        "candidate_revision": diagnostics.get("candidate_revision", DEFAULT_CANDIDATE_REVISION),
         "task": "Gan 2026 seizure-frequency candidate adjudication",
         "source_row_index": record.source_row_index,
         "instructions": [
@@ -395,6 +399,7 @@ def run_hybrid_rules_candidates_llm_adjudicator_split(
     progress_every: int | None = None,
     checkpoint_jsonl_path: Path | None = None,
     checkpoint_report_path: Path | None = None,
+    candidate_revision: CandidateRevision = DEFAULT_CANDIDATE_REVISION,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Run the hybrid rules-candidates LLM-adjudicator pipeline over Gan records."""
 
@@ -412,6 +417,7 @@ def run_hybrid_rules_candidates_llm_adjudicator_split(
     metadata["dspy_cache"] = dspy_cache
     metadata["reuse_source"] = reuse_source
     metadata["escalation_reason"] = escalation_reason
+    metadata["candidate_revision"] = candidate_revision
     pipeline = Gan2026PipelineV1()
     program = DspyFinalSelectionAdjudicator()
     if mode == "live":
@@ -428,7 +434,11 @@ def run_hybrid_rules_candidates_llm_adjudicator_split(
     output_rows: list[dict[str, Any]] = []
     for record in records:
         deterministic_result = pipeline.run(record)
-        diagnostics = deterministic_result.diagnostics
+        diagnostics = apply_hybrid_candidate_revision(
+            deterministic_result.diagnostics,
+            note_text=record.note_text,
+            candidate_revision=candidate_revision,
+        )
         prompt_input_json = build_hybrid_rules_candidates_llm_adjudicator_prompt_input(
             record,
             diagnostics,
@@ -466,6 +476,7 @@ def run_hybrid_rules_candidates_llm_adjudicator_split(
                 "split_manifest": split_manifest,
                 "architecture": metadata["architecture"],
                 "claim_type": metadata["claim_type"],
+                "candidate_revision": candidate_revision,
                 "prompt_version": PROMPT_VERSION,
                 "prompt_input_json": prompt_input_json,
                 "raw_output": raw_output,
@@ -692,6 +703,270 @@ def _hybrid_rules_candidates_llm_adjudicator_candidate_events(
             }
         )
     return events
+
+
+def apply_hybrid_candidate_revision(
+    diagnostics: Mapping[str, Any],
+    *,
+    note_text: str,
+    candidate_revision: CandidateRevision = DEFAULT_CANDIDATE_REVISION,
+) -> dict[str, Any]:
+    """Apply opt-in hybrid candidate recall revisions outside frozen deterministic V1."""
+
+    revised = dict(diagnostics)
+    revised["candidate_revision"] = candidate_revision
+    if candidate_revision == "frozen_v1":
+        return revised
+    if candidate_revision != "cluster_diary_candidate_recall":
+        raise ValueError(f"Unknown hybrid candidate revision: {candidate_revision}")
+
+    candidate_events = [dict(event) for event in diagnostics.get("candidate_events", [])]
+    normalized_events = [dict(event) for event in diagnostics.get("normalized_events", [])]
+    existing_labels = {
+        str(event.get("normalized_label"))
+        for event in normalized_events
+        if event.get("normalized_label") is not None
+    }
+    existing_evidence = {
+        str(event.get("evidence")).lower()
+        for event in candidate_events
+        if event.get("evidence") is not None
+    }
+    additions = _cluster_diary_candidate_recall_events(
+        note_text,
+        start_index=len(candidate_events) + 1,
+        existing_labels=existing_labels,
+        existing_evidence=existing_evidence,
+    )
+    if not additions:
+        revised["candidate_events"] = candidate_events
+        revised["normalized_events"] = normalized_events
+        return revised
+
+    for candidate, normalized in additions:
+        candidate_events.append(candidate)
+        normalized_events.append(normalized)
+    revised["candidate_events"] = candidate_events
+    revised["normalized_events"] = normalized_events
+    revised["candidate_revision_additions"] = len(additions)
+    revised["candidate_revision_rule_ids"] = [
+        candidate["rule_id"] for candidate, _normalized in additions
+    ]
+    return revised
+
+
+def _cluster_diary_candidate_recall_events(
+    note_text: str,
+    *,
+    start_index: int,
+    existing_labels: set[str],
+    existing_evidence: set[str],
+) -> list[tuple[dict[str, Any], dict[str, Any]]]:
+    additions: list[tuple[dict[str, Any], dict[str, Any]]] = []
+    next_index = start_index
+    for label, evidence, kind, rule_id, match_groups in _cluster_diary_revision_candidates(
+        note_text
+    ):
+        evidence_key = evidence.lower()
+        if label in existing_labels and evidence_key in existing_evidence:
+            continue
+        event_id = f"event_{next_index}"
+        next_index += 1
+        candidate = _revision_candidate_event(
+            event_id=event_id,
+            kind=kind,
+            label=label,
+            evidence=evidence,
+            note_text=note_text,
+            rule_id=rule_id,
+            match_groups=match_groups,
+        )
+        normalized = _revision_normalized_event(event_id, label)
+        additions.append((candidate, normalized))
+        existing_labels.add(str(normalized["normalized_label"]))
+        existing_evidence.add(evidence_key)
+    return additions
+
+
+def _cluster_diary_revision_candidates(
+    note_text: str,
+) -> list[tuple[str, str, str, str, dict[str, str | None]]]:
+    candidates: list[tuple[str, str, str, str, dict[str, str | None]]] = []
+    candidates.extend(_dual_axis_cluster_candidates(note_text))
+    candidates.extend(_distributed_diary_candidates(note_text))
+    return candidates
+
+
+def _dual_axis_cluster_candidates(
+    note_text: str,
+) -> list[tuple[str, str, str, str, dict[str, str | None]]]:
+    pattern = re.compile(
+        r"\b(?P<count>\d+|multiple)\s+clusters?\s+per\s+"
+        r"(?:(?P<denominator>\d+)\s+)?(?P<unit>day|week|month|year)s?,\s+"
+        r"(?P<per_cluster>\d+(?:\s+to\s+\d+)?|multiple)\s+per\s+cluster\b",
+        re.IGNORECASE,
+    )
+    results = []
+    for match in pattern.finditer(note_text):
+        denominator = match.group("denominator")
+        period = f"{denominator} {match.group('unit')}" if denominator else match.group("unit")
+        label = (
+            f"{match.group('count')} cluster per {period}, "
+            f"{match.group('per_cluster')} per cluster"
+        ).lower()
+        results.append(
+            (
+                label,
+                match.group(0),
+                "cluster_frequency",
+                "hybrid.cluster_diary_candidate_recall.dual_axis_cluster_literal",
+                match.groupdict(),
+            )
+        )
+    return results
+
+
+def _distributed_diary_candidates(
+    note_text: str,
+) -> list[tuple[str, str, str, str, dict[str, str | None]]]:
+    results: list[tuple[str, str, str, str, dict[str, str | None]]] = []
+    month_counts = re.compile(
+        r"\b(?P<evidence>(?:(?:January|February|March|April|May|June|July|August|"
+        r"September|October|November|December)\s+\d+,\s*){2,}"
+        r"(?:January|February|March|April|May|June|July|August|September|October|"
+        r"November|December)\s+\d+)\b",
+        re.IGNORECASE,
+    )
+    for match in month_counts.finditer(note_text):
+        counts = [
+            int(value)
+            for value in re.findall(
+                r"\b(?:January|February|March|April|May|June|July|August|"
+                r"September|October|November|December)\s+(\d+)\b",
+                match.group("evidence"),
+                flags=re.IGNORECASE,
+            )
+        ]
+        if not counts:
+            continue
+        total = sum(counts)
+        months = len(counts)
+        label = _average_or_period_rate_label(total, months, "month")
+        results.append(
+            (
+                label,
+                match.group("evidence"),
+                "frequency_rate",
+                "hybrid.cluster_diary_candidate_recall.month_count_average",
+                {"total": str(total), "months": str(months)},
+            )
+        )
+
+    recent_period = re.compile(
+        r"\b(?P<evidence>(?P<count>\d+)\s+in\s+the\s+last\s+(?P<denominator>\d+)\s+"
+        r"(?P<unit>day|week|month|year)s?)\b",
+        re.IGNORECASE,
+    )
+    for match in recent_period.finditer(note_text):
+        label = (
+            f"{match.group('count')} per {match.group('denominator')} "
+            f"{match.group('unit').lower()}"
+        )
+        results.append(
+            (
+                label,
+                match.group("evidence"),
+                "frequency_rate",
+                "hybrid.cluster_diary_candidate_recall.last_period_count",
+                match.groupdict(),
+            )
+        )
+
+    across_months = re.compile(
+        r"\b(?P<evidence>(?P<count>\d+)\s+seizures?\s+across\s+"
+        r"(?P<months>(?:January|February|March|April|May|June|July|August|September|"
+        r"October|November|December)(?:,\s*|,\s*and\s+|\s+and\s+)"
+        r"(?:January|February|March|April|May|June|July|August|September|October|"
+        r"November|December)(?:(?:,\s*|,\s*and\s+|\s+and\s+)"
+        r"(?:January|February|March|April|May|June|July|August|September|October|"
+        r"November|December))*)\b)",
+        re.IGNORECASE,
+    )
+    for match in across_months.finditer(note_text):
+        month_count = len(
+            re.findall(
+                r"\b(?:January|February|March|April|May|June|July|August|September|"
+                r"October|November|December)\b",
+                match.group("months"),
+                flags=re.IGNORECASE,
+            )
+        )
+        if month_count <= 0:
+            continue
+        label = _average_or_period_rate_label(int(match.group("count")), month_count, "month")
+        results.append(
+            (
+                label,
+                match.group("evidence"),
+                "frequency_rate",
+                "hybrid.cluster_diary_candidate_recall.count_across_named_months",
+                {"count": match.group("count"), "months": str(month_count)},
+            )
+        )
+    return results
+
+
+def _average_or_period_rate_label(total: int, denominator: int, unit: str) -> str:
+    if denominator > 0 and total % denominator == 0:
+        return f"{total // denominator} per {unit}"
+    return f"{total} per {denominator} {unit}"
+
+
+def _revision_candidate_event(
+    *,
+    event_id: str,
+    kind: str,
+    label: str,
+    evidence: str,
+    note_text: str,
+    rule_id: str,
+    match_groups: Mapping[str, str | None],
+) -> dict[str, Any]:
+    start_char = note_text.find(evidence)
+    end_char = start_char + len(evidence) if start_char >= 0 else None
+    return {
+        "event_id": event_id,
+        "kind": kind,
+        "raw_value": label,
+        "evidence": evidence,
+        "start_char": start_char if start_char >= 0 else None,
+        "end_char": end_char,
+        "rule_id": rule_id,
+        "rule_group": "hybrid_candidate_recall",
+        "portability": "seizure_frequency",
+        "match_groups": dict(match_groups),
+    }
+
+
+def _revision_normalized_event(event_id: str, label: str) -> dict[str, Any]:
+    try:
+        record = label_to_frequency_record(label)
+        return {
+            "event_id": event_id,
+            "normalized_label": record.normalized_label,
+            "semantic_kind": str(record.kind),
+            "monthly_frequency": record.monthly_frequency,
+            "validation_errors": [],
+        }
+    except ValueError as exc:
+        unknown = label_to_frequency_record("unknown")
+        return {
+            "event_id": event_id,
+            "normalized_label": "unknown",
+            "semantic_kind": str(unknown.kind),
+            "monthly_frequency": unknown.monthly_frequency,
+            "validation_errors": [str(exc)],
+        }
 
 
 def _compare_label_to_record(record: Any, label: str) -> dict[str, Any]:
