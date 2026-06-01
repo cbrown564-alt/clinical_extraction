@@ -616,6 +616,97 @@ def _gold_policy_bimonthly(text: str) -> str:
     return text
 
 
+def _gold_policy_vague_quantity_explicit_denominator(text: str) -> str:
+    text = normalize_frequency_label(text)
+    vague = r"(?:several|multiple|many|few|a few)"
+    unit = r"(day|week|month|year)"
+    match = re.fullmatch(
+        rf"{vague}\s+(?:times?\s+)?(?:per|each|every)\s+{unit}s?",
+        text,
+    )
+    if match:
+        return f"multiple per {match.group(1)}"
+
+    match = re.fullmatch(rf"{vague}\s+times?\s+1\s+per\s+{unit}s?", text)
+    if match:
+        return f"multiple per {match.group(1)}"
+
+    match = re.fullmatch(
+        rf"{vague}\s+(?:in\s+)?(?:the\s+)?(?:past|last|this)\s+{unit}s?",
+        text,
+    )
+    if match:
+        return f"multiple per {match.group(1)}"
+    return text
+
+
+def _gold_policy_period_dialect_and_shorthand(text: str) -> str:
+    text = normalize_frequency_label(text)
+    interval = r"(?:\d+|one|two|three|four|five|six|seven|eight|nine|ten)"
+    interval_range = rf"{interval}(?:\s*(?:to|-|–|—)\s*{interval})?"
+
+    q_match = re.fullmatch(
+        rf"q\s*(?P<interval>{interval_range})\s*(?P<unit>d|day|wk|week|mo|month|yr|year)",
+        text,
+    )
+    if q_match:
+        unit = UNIT_SYNONYMS.get(q_match.group("unit"), q_match.group("unit"))
+        return _format_prediction_rate(
+            f"1 per {_words_to_numbers(q_match.group('interval'))}",
+            unit,
+        )
+
+    x_match = re.fullmatch(
+        rf"x\s*(?P<count>{interval})\s*(?:/|per\s+)(?P<unit>d|day|wk|week|mo|month|yr|year)",
+        text,
+    )
+    if x_match:
+        unit = UNIT_SYNONYMS.get(x_match.group("unit"), x_match.group("unit"))
+        return _format_prediction_rate(_words_to_numbers(x_match.group("count")), unit)
+    return text
+
+
+def _gold_policy_cluster_syntax_grammar(text: str) -> str:
+    text = normalize_frequency_label(text)
+    num = r"(?:multiple|\d+(?:\s*to\s*\d+)?)"
+    unit = r"(?:day|week|month|year)"
+
+    text = re.sub(r"\bcluster\s+days?\b", "cluster", text)
+    text = re.sub(r"\bper\s+cluster\s+days?\b", "per cluster", text)
+
+    match = re.fullmatch(
+        rf"(?P<count>{num})\s+cluster\s+per\s+"
+        rf"(?P<den>(?:\d+(?:\s*to\s*\d+)?\s+)?)"
+        rf"(?P<unit>{unit}),\s+(?P<per>{num})\s+per\s+cluster",
+        text,
+    )
+    if match:
+        denominator = (match.group("den") or "").strip()
+        den_text = f"{denominator} " if denominator and denominator != "1" else ""
+        return (
+            f"{match.group('count')} cluster per {den_text}{match.group('unit')}, "
+            f"{match.group('per')} per cluster"
+        )
+    return text
+
+
+def _gold_policy_single_total_window(text: str) -> str:
+    text = normalize_frequency_label(text)
+    match = re.fullmatch(
+        r"(?P<count>\d+(?:\s*to\s*\d+)?)\s+"
+        r"(?:in|over|during|for)\s+"
+        r"(?:(?:the\s+)?(?:past|last|this)\s+)?"
+        r"(?P<den>\d+(?:\s*to\s*\d+)?)\s+(?P<unit>day|week|month|year)s?",
+        text,
+    )
+    if match:
+        return _format_prediction_rate(
+            f"{match.group('count')} per {match.group('den')}",
+            match.group("unit"),
+        )
+    return text
+
+
 def _strip_upper_bound_qualifier(text: str) -> str:
     text = re.sub(
         r"^(?:<=|\u2264|up to|at most|no more than)\s+"
@@ -2183,6 +2274,42 @@ CLEAN_SCORER_FACING_GOLD_NORMALIZATION_RULES = (
         apply=_gold_policy_bimonthly,
         example="bimonthly",
         expected="1 per 2 month",
+    ),
+    _gold_normalization_policy_rule(
+        rule_id="gold_normalization_policy.vague_quantity_explicit_denominator",
+        description=(
+            "Map vague count words to Gan coarse labels only when the denominator is explicit."
+        ),
+        apply=_gold_policy_vague_quantity_explicit_denominator,
+        example="several per week",
+        expected="multiple per week",
+    ),
+    _gold_normalization_policy_rule(
+        rule_id="gold_normalization_policy.period_dialect_and_shorthand",
+        description=(
+            "Expand period dialects and terse seizure-frequency shorthand when count and "
+            "period are preserved."
+        ),
+        apply=_gold_policy_period_dialect_and_shorthand,
+        example="q1-2d",
+        expected="1 per 1 to 2 day",
+    ),
+    _gold_normalization_policy_rule(
+        rule_id="gold_normalization_policy.cluster_syntax_grammar",
+        description=(
+            "Normalize source-near cluster primitives into Gan cluster syntax when cadence "
+            "and per-cluster load are already present."
+        ),
+        apply=_gold_policy_cluster_syntax_grammar,
+        example="2 cluster days per month, 6 seizures per cluster day",
+        expected="2 cluster per month, 6 per cluster",
+    ),
+    _gold_normalization_policy_rule(
+        rule_id="gold_normalization_policy.single_total_window",
+        description="Rephrase one selected total count and explicit window into Gan syntax.",
+        apply=_gold_policy_single_total_window,
+        example="7 in past 3 months",
+        expected="7 per 3 month",
     ),
 )
 

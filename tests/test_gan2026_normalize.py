@@ -440,6 +440,54 @@ def test_clean_scorer_facing_gold_policy_normalizes_first_slice(
     parse_label_bounds(repaired)
 
 
+@pytest.mark.parametrize(
+    ("raw", "expected"),
+    [
+        ("several per week", "multiple per week"),
+        ("several last week", "multiple per week"),
+        ("several times each week", "multiple per week"),
+        ("multiple in past day", "multiple per day"),
+        ("q1-2d", "1 per 1 to 2 day"),
+        ("q two - three wk", "1 per 2 to 3 week"),
+        ("Xfour/wk", "4 per week"),
+        ("X7/mo", "7 per month"),
+        (
+            "2 cluster days per month, 6 seizures per cluster day",
+            "2 cluster per month, 6 per cluster",
+        ),
+        (
+            "1 cluster per week, 4 events per cluster",
+            "1 cluster per week, 4 per cluster",
+        ),
+        ("7 in past 3 months", "7 per 3 month"),
+        ("7 over 3 months", "7 per 3 month"),
+    ],
+)
+def test_clean_scorer_facing_gold_policy_normalizes_table_backed_families(
+    raw: str,
+    expected: str,
+) -> None:
+    repaired = repair_prediction_label_clean_scorer_facing(raw)
+
+    assert repaired == expected
+    parse_label_bounds(repaired)
+
+
+@pytest.mark.parametrize(
+    "raw",
+    [
+        "most weeks",
+        "several evenings per fortnight",
+        "bimonthly, twice per month",
+        "monthly clusters, typically 6 to 7 seizures over 24 h",
+    ],
+)
+def test_clean_scorer_facing_gold_policy_preserves_table_boundaries(raw: str) -> None:
+    assert repair_prediction_label_clean_scorer_facing(raw) == (
+        repair_prediction_label_format_preserving(raw)
+    )
+
+
 def test_clean_scorer_facing_gold_policy_trace_names_policy_layer() -> None:
     trace = repair_prediction_label_clean_scorer_facing_with_trace("most weekdays")
 
