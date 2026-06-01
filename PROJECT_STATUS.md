@@ -39,6 +39,11 @@ strict benchmark-format repair, arithmetic repair, and named ablated modules.
 - v0.2/v0.4 250-row error-family comparison found no reason to broaden v0.4
   selector guidance: v0.4 fixed 1 v0.2 miss but introduced 5 additional Purist
   misses; use clean table-backed scorer policy next.
+- The clean scorer-facing policy registry now includes the table-backed
+  validation families for vague quantity with explicit denominator, period
+  shorthand, cluster syntax grammar, and single total/window phrasing, with
+  boundary tests that keep upper-bound, temporal, diary, evidence-state, and
+  cluster-reconstruction behavior out of the clean path.
 
 ## Key References
 
@@ -70,12 +75,11 @@ strict benchmark-format repair, arithmetic repair, and named ablated modules.
 - Keep clean scorer-facing normalization separate from named deterministic
   modules in run attribution and claim language.
 - Use direct-citation row tables as the gate for any policy expansion.
-- Implement the table-backed clean scorer-facing policy families with tests.
+- Run a focused 25- or 50-row clean-policy comparison after the tested policy
+  slice lands.
 
 ### Next
 
-- Run a focused 25- or 50-row clean-policy comparison after the tested policy
-  slice lands.
 - Keep upper-bound, diary, temporal, evidence-state, and cluster
   reconstruction behavior as named ablated modules.
 - If useful, run a focused 25- or 50-row comparison for the selected next
@@ -94,8 +98,10 @@ strict benchmark-format repair, arithmetic repair, and named ablated modules.
 - 2026-06-01: Added the first clean scorer-facing gold-policy slice, validation
   direct-citation row tables, and v0.2/v0.4 error-family comparison; broader
   v0.4 selector guidance is rejected as the next step.
+- 2026-06-01: Implemented table-backed clean scorer-facing policy families with
+  tests; full suite passes (`560 passed`) and Ruff passes.
 
 ## Immediate Next Step
 
-Implement the table-backed clean scorer-facing families with tests; do not
-promote named semantic modules without ablation.
+Run the focused clean-policy comparison on the validation ladder; do not promote
+named semantic modules without ablation.
