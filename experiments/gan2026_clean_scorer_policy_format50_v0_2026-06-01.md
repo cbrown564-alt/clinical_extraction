@@ -1,0 +1,121 @@
+# Gan 2026 Clean Scorer Policy Format50 V0
+
+Date: 2026-06-01
+
+This is a validation development result on `gan2026_split_v1`. It is not a final holdout or benchmark result.
+
+## Experiment Unit
+
+Hypothesis: a slim source-near event schema plus LLM clinical selection can reduce direct note-to-label schema burden while keeping deterministic code limited to Gan normalization, evidence validation, and scoring.
+
+Minimal change: add an LLM-first structured event extractor and selector. No deterministic V1 candidate diagnostics are provided to the model.
+
+Data surface: `validation` split, `gan2026_split_v1`, 50 rows.
+Rare full-validation reason: No-call clean scorer-facing policy replay over saved v0.5 raw outputs; no new model calls.
+Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a side-car.
+
+## Model And Prompt Metadata
+
+- DSPy version: `3.2.1`
+- Runtime model display/API identifier: `openai/gpt-4.1-mini`
+- Provider/execution: hosted OpenAI via DSPy/LiteLLM
+- Model role: LLM-first structured event extractor and clinical selector
+- Prompt/program version: `gan2026_llm_structured_event_selector_v0.5`
+- Temperature: `0.0`
+- Max tokens: `0`
+- Mode: `prompt-only`
+- DSPy cache enabled: `True`
+- Reused raw model outputs: `50`
+- Reuse source: `experiments/gan2026_llm_structured_validation750_gpt41mini_v05_completion_2026-06-01.jsonl`
+- Optimizer: none
+- Deterministic rule configuration: none before prediction; deterministic code only repairs labels selected by the LLM, validates evidence, and scores.
+- Repair policy: raw structured model selection plus clean scorer-facing Gan gold-normalization policy.
+- Repair config: `basic_label_repair=True`, `basic_label_repair_format_only=True`, `breakthrough_repair=False`, `clean_scorer_facing_gold_policy=True`, `dated_sequence_repair=False`, `elapsed_anchor_repair=False`, `monthly_diary_repair=False`, `non_epileptic_repair=False`, `post_change_burst_repair=False`, `residual_jerk_repair=False`, `selected_evidence_repair=False`, `usual_interval_repair=False`
+- Git commit: `d00bd47`
+- Working tree note: `clean`
+- JSONL artifact: `experiments/gan2026_clean_scorer_policy_format50_v0_2026-06-01.jsonl`
+
+## Summary
+
+- Structured records: 50 / 50
+- Call failures: 0
+- Parse/schema/label issues: 0
+- Deterministic repair notes: 19
+- Exact selection evidence substrings: 50 / 50
+- Purist validation accuracy/micro F1 proxy: 0.8600 (43 / 50)
+- Pragmatic validation accuracy/micro F1 proxy: 0.9200 (46 / 50)
+
+## Diagnostic Comparison
+
+| Condition | Purist | Pragmatic | Parse/schema/label issues | Repair notes | Exact selected evidence |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Raw model selection | 0.6800 (34 / 50) | 0.7200 (36 / 50) | 10 | 0 | 50 / 50 |
+| Strict format-preserving | 0.8200 (41 / 50) | 0.8600 (43 / 50) | 3 | 17 | 50 / 50 |
+| Clean scorer-facing policy | 0.8600 (43 / 50) | 0.9200 (46 / 50) | 0 | 19 | 50 / 50 |
+
+Compared with the strict format-preserving replay, the clean scorer-facing policy
+adds the first tested Gan gold-normalization slice. It resolves the two
+cluster-label parse failures and the `most weekdays` parse failure without any
+new model calls.
+
+The replay does not promote additional policy families. The three bimonthly
+misses at rows `959`, `960`, and `987` remain wrong because the raw structured
+selection chose explicit monthly labels rather than a bare `bimonthly` surface,
+so the clean policy correctly did not override the model's selected clinical
+interpretation. Row `187` becomes parseable via cluster-name stripping but
+remains Purist-wrong against the more specific `1 per 7 to 9 day` gold label.
+
+## Rows
+
+| Row | Final | Gold | Purist | Notes |
+| ---: | --- | --- | --- | --- |
+| 10 | 4 per day | 4 per day | yes | final_label_repaired: 'up to 4 per day' -> '4 per day' |
+| 40 | 4 per week | 4 per week | yes | final_label_repaired: '≤ 4 per week' -> '4 per week' |
+| 79 | 6 to 7 per year | 6 to 7 per year | yes | final_label_repaired: '≤ 6 to 7 per year' -> '6 to 7 per year' |
+| 103 | 2 to 4 per year | 2 to 4 per year | yes |  |
+| 128 | 17 per month | 17 per month | yes |  |
+| 156 | 1 per 6 day | 1 per 6 day | yes | final_label_repaired: '1 per 6 days' -> '1 per 6 day' |
+| 180 | 1 per week | 1 per 7 day | yes |  |
+| 182 | 1 per 2 day | 1 per 2 day | yes | final_label_repaired: '1 per 2 days' -> '1 per 2 day' |
+| 187 | 1 per week | 1 per 7 to 9 day | no | final_label_repaired: '1 cluster per week' -> '1 per week' |
+| 190 | 1 per 4 week | 1 per 4 week | yes | final_label_repaired: '1 cluster per 4 weeks' -> '1 per 4 week' |
+| 198 | 1 per month | 1 per 4 week | yes |  |
+| 212 | 1 per month | 1 per 3 to 4 week | no |  |
+| 218 | 1 per 3 week | 1 per 3 week | yes | final_label_repaired: '1 per 3 weeks' -> '1 per 3 week' |
+| 243 | 1 per 4 month | 1 per 4 month | yes | final_label_repaired: '1 per 4 months' -> '1 per 4 month' |
+| 278 | multiple per week | multiple per week | yes |  |
+| 280 | multiple per day | multiple per day | yes |  |
+| 338 | multiple per month | multiple per month | yes |  |
+| 409 | 1 per month | 1 per month | yes | final_label_repaired: '1 per month or less' -> '1 per month' |
+| 419 | 2 per year | 2 per year | yes |  |
+| 446 | 2 per week | 2 per week | yes |  |
+| 466 | 21 to 28 per month | 21 to 28 per month | yes |  |
+| 467 | 9 per month | 9 per month | yes |  |
+| 531 | 12 to 30 per 3 month | 12 to 30 per 3 month | yes | final_label_repaired: '12 to 30 per quarter' -> '12 to 30 per 3 month' |
+| 598 | 1 per 8 month | 1 per 8 month | yes | final_label_repaired: '1 per 8 months' -> '1 per 8 month' |
+| 659 | 2 per 4 day | 2 per 4 day | yes | final_label_repaired: '2 per 4 days' -> '2 per 4 day' |
+| 665 | 2 per month | 2 per 2 week | no |  |
+| 678 | 2 per 4 month | 2 per 4 month | yes | final_label_repaired: '2 per 4 months' -> '2 per 4 month' |
+| 694 | 1 per week | 1 per week | yes |  |
+| 704 | 2 per month | 2 per month | yes |  |
+| 725 | 1 per day | 1 per day | yes |  |
+| 731 | 1 per day | 1 per day | yes |  |
+| 743 | multiple per week | multiple per week | yes |  |
+| 744 | multiple per week | multiple per week | yes | final_label_repaired: 'most weekdays' -> 'multiple per week' |
+| 763 | 1 per week | 1 per week | yes |  |
+| 790 | 1 per week | 1 per 7 to 10 day | no |  |
+| 816 | 1 per month | 1 per month | yes |  |
+| 849 | 1 per year | 1 per year | yes |  |
+| 854 | 1 per year | 1 per year | yes |  |
+| 869 | multiple per month | multiple per month | yes |  |
+| 891 | 1 per 2 day | 1 per 2 day | yes | final_label_repaired: '1 every other day' -> '1 per 2 day' |
+| 899 | 1 per 2 week | 1 per 2 week | yes | final_label_repaired: '1 per 2 weeks' -> '1 per 2 week' |
+| 959 | 2 per month | 1 per 2 month | no |  |
+| 960 | 2 to 3 per month | 1 per 2 month | no |  |
+| 978 | 1 per 2 month | 1 per 2 month | yes | final_label_repaired: '1 every 2 months' -> '1 per 2 month' |
+| 987 | 2 per month | 1 per 2 month | no |  |
+| 1030 | 1 to 3 per month | 1 to 3 per month | yes |  |
+| 1046 | 3 to 5 per month | 3 to 5 per month | yes |  |
+| 1070 | 3 to 4 per week | 3 to 4 per week | yes |  |
+| 1094 | 3 to 5 per week | 3 to 5 per week | yes |  |
+| 1165 | 5 to 7 per 3 week | 5 to 7 per 3 week | yes | final_label_repaired: '5 to 7 per 3 weeks' -> '5 to 7 per 3 week' |

@@ -14,12 +14,10 @@ Use Gan 2026 as the first controlled extraction surface. Keep data loading,
 label normalization, scoring, split discipline, and deterministic-rule behavior
 explicit before optimizing LLM or DSPy components.
 
-Deterministic V1 is frozen as a controlled comparator, not an expanding solution.
-New candidate work should stay LLM-first: model extraction and clinical
-selection produce the prediction-bearing interpretation; deterministic code is
-limited to schema validation, evidence validation, Gan-compatible normalization,
-strict benchmark-format repair, arithmetic repair, and explicitly ablated named
-modules.
+Deterministic V1 is frozen as a controlled comparator. New candidate work should
+stay LLM-first: model extraction and clinical selection produce the prediction,
+while deterministic code is limited to validation, Gan-compatible normalization,
+strict benchmark-format repair, arithmetic repair, and named ablated modules.
 
 ## Recent Context
 
@@ -29,16 +27,16 @@ modules.
   Purist/Pragmatic, but 0.7600/0.7867 on its one locked-test evaluation.
 - Structured v0.5 reached 675/750 Purist = 0.9000 on full validation, but audit
   classified it as repair-heavy hybrid behavior, not clean LLM-first completion.
-- Clean claim language now treats raw LLM final-label selection as the
-  attribution baseline. Only strict format-preserving benchmark normalization
-  belongs on the clean LLM-first path; selected-evidence repair, diary
-  arithmetic, cluster conversion, and clinical-selection overrides are named
-  deterministic modules.
-- Completed `gan2026_clean_attribution_format50_v0` as a no-call 50-row diagnostic: raw 34/50 Purist (0.6800), strict format-only 41/50 (0.8200), 17 surface repairs, 7 improvements, 0 regressions, 50/50 exact evidence, and 3 strict parse failures (2 cluster-only plus `most weekdays`).
-- Gold-normalization policy is now separated from strict format repair and named
-  semantic modules. The first tested clean scorer-facing slice covers
-  cluster-name stripping, vague weekday cadence, and Gan-specific `bimonthly`;
-  broader policy families remain documented but not implemented.
+- Clean claim language treats raw LLM final-label selection as the attribution
+  baseline; selected-evidence repair, diary arithmetic, cluster conversion, and
+  clinical-selection overrides are named deterministic modules.
+- `gan2026_clean_attribution_format50_v0`: raw 34/50 Purist (0.6800), strict
+  format-only 41/50 (0.8200), 17 surface repairs, 7 improvements, 0 regressions,
+  50/50 exact evidence, and 3 strict parse failures.
+- `gan2026_clean_scorer_policy_format50_v0`: clean scorer-facing policy reached
+  43/50 Purist (0.8600), 46/50 Pragmatic (0.9200), 0 parse failures, 50/50 exact
+  evidence. It resolves cluster/weekday parse failures but leaves bimonthly
+  model-selection misses unresolved.
 
 ## Key References
 
@@ -48,6 +46,7 @@ modules.
 - Core code: `src/clinical_extraction/tasks/seizure_frequency/gan2026/llm_structured.py`;
   observatory: `notebooks/gan2026_living_observatory.ipynb`
 - Current artifacts: `experiments/gan2026_clean_attribution_format50_v0_2026-06-01.md`,
+  `experiments/gan2026_clean_scorer_policy_format50_v0_2026-06-01.md`,
   `experiments/gan2026_llm_structured_decision_retrospective_2026-06-01.md`
 
 ## Active Priorities
@@ -70,9 +69,8 @@ modules.
 
 - Keep clean scorer-facing normalization separate from named deterministic
   modules in run attribution and claim language.
-- Use the new clean scorer-facing policy flag in a no-call replay or small
-  validation run before promoting any additional policy families.
 - Build direct-citation row tables before implementing any new policy family.
+- Decide the target for the next 25-/50-row focused comparison.
 
 ### Next
 
@@ -91,11 +89,11 @@ modules.
 
 - 2026-06-01: Added staged structured LLM extraction, repair-family attribution
   audit, strict format-only clean replay, and the living observatory notebook.
-- 2026-06-01: Settled and implemented the first tested clean scorer-facing
-  gold-policy slice while preserving separate structured-run attribution.
+- 2026-06-01: Implemented and replayed the first clean scorer-facing
+  gold-policy slice at 0.8600 Purist with no parse failures.
 
 ## Immediate Next Step
 
-Run a no-call clean-policy replay or focused validation comparison, then only
-add more scorer-facing policy families after direct-citation row tables confirm
-consistent Gan annotation behavior.
+Build direct-citation row tables for any candidate policy expansion or choose a
+focused 25-/50-row architecture comparison; do not add more scorer-facing policy
+families until row tables confirm consistent Gan annotation behavior.
