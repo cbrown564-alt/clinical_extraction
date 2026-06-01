@@ -5,7 +5,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.error_analysis import (
     build_row_error_record,
     summarize_row_errors,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import FrequencyLabelKind
+from clinical_extraction.tasks.seizure_frequency.gan2026.label_parser import FrequencyLabelKind
 
 
 def _record(

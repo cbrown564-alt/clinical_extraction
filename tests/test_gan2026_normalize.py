@@ -1,15 +1,17 @@
 import pytest
 
+from clinical_extraction.tasks.seizure_frequency.gan2026.label_parser import (
+    FrequencyLabelKind,
+    label_to_frequency_record,
+    label_to_monthly_frequency,
+    parse_label_bounds,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     BENCHMARK_REPAIR_RULES,
     BENCHMARK_REPAIR_STEPS,
     CLEAN_SCORER_FACING_GOLD_NORMALIZATION_RULES,
     FORMAT_PRESERVING_BENCHMARK_REPAIR_RULES,
     FORMAT_PRESERVING_BENCHMARK_REPAIR_STEPS,
-    FrequencyLabelKind,
-    label_to_frequency_record,
-    label_to_monthly_frequency,
-    parse_label_bounds,
     repair_prediction_label,
     repair_prediction_label_clean_scorer_facing,
     repair_prediction_label_clean_scorer_facing_with_trace,

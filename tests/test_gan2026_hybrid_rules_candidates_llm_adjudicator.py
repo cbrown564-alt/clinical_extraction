@@ -4,7 +4,7 @@ from pathlib import Path
 from clinical_extraction.tasks.seizure_frequency.gan2026 import (
     hybrid_rules_candidates_llm_adjudicator as hybrid,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import FrequencyLabelKind
+from clinical_extraction.tasks.seizure_frequency.gan2026.label_parser import FrequencyLabelKind
 
 PROMPT_VERSION = hybrid.PROMPT_VERSION
 AdjudicatorDecisionRecord = hybrid.AdjudicatorDecisionRecord

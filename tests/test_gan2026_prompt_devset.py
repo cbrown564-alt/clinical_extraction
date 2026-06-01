@@ -8,7 +8,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.ablation_analysis impor
     CHANGED_ROW_FIELDNAMES,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
-from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import FrequencyLabelKind
+from clinical_extraction.tasks.seizure_frequency.gan2026.label_parser import FrequencyLabelKind
 from clinical_extraction.tasks.seizure_frequency.gan2026.prompt_devset import (
     AblationChangedRow,
     build_development_examples,
