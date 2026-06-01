@@ -33,9 +33,14 @@ format repair, arithmetic repair, and named ablated modules.
 - A research-drift audit found the project mostly aligned, with watches on prompt
   taxonomy, hybrid repair claims, one core/task boundary leak, and CLI ladder
   enforcement.
-- Current section-claim-table v4 work has a schema-output blocker before the
-  25-row gate: the first 10-row live smoke artifact produced 10/10 schema parse
-  failures due to extra model-output fields.
+- Section-claim-table v4 now carries an explicit prompt-policy taxonomy in its
+  prompt payload and run metadata so Gan-facing prompt fixes are named,
+  categorized, and ablatable like controlled variables.
+- Section-claim-table v4 schema-output blocker is fixed. The corrected 25-row
+  validation smoke passed: 25/25 structured, 0 call/schema failures, 25/25 raw
+  and clean Purist/Pragmatic, 25/25 selected evidence exact, and 65/66 claim
+  evidence exact; one non-selected row-182 claim evidence mismatch remains
+  reviewable.
 
 ## Key References
 
@@ -43,6 +48,7 @@ format repair, arithmetic repair, and named ablated modules.
   `docs/design/data_contract.md`
 - Core code: `src/clinical_extraction/tasks/seizure_frequency/gan2026/section_claim_table.py`
 - Latest review: `experiments/gan2026_section_claim_table_validation250_v3_failure_review_2026-06-01.md`
+- Latest run: `experiments/gan2026_section_claim_table_validation25_gpt41mini_v4_2026-06-01.md`
 - Drift audit: `docs/research/gan2026_research_drift_audit_2026-06-01.md`
 
 ## Active Priorities
@@ -62,10 +68,8 @@ format repair, arithmetic repair, and named ablated modules.
 
 ### Now
 
-- Fix the section-claim-table v4 schema-output blocker from the 10-row smoke
-  artifact, then rerun the 25-row validation gate.
-- Add a prompt-policy taxonomy for section-claim-table v4 so prompt-level Gan
-  fixes are named like controlled variables.
+- Run and review the section-claim-table v4 50-row validation gate with 25-row
+  output reuse.
 - Keep clean scorer-facing normalization separate from named deterministic
   modules in run attribution and claim language.
 
@@ -77,8 +81,8 @@ format repair, arithmetic repair, and named ablated modules.
 - Design LLM-replacement ablations for deterministic post-processing modules,
   reporting score, repair attribution, evidence validity, and replay variance.
 - Use direct-citation row tables as the gate for clean-policy expansion.
-- Do not run section-claim-table beyond 250 rows until the 250-row failure
-  families are reviewed and a revised candidate passes the 25/50 gate again.
+- Do not run section-claim-table beyond 250 rows until v4 passes the 50-row gate
+  and a written decision gate justifies another 250-row diagnostic.
 
 ### Blocked
 
@@ -87,6 +91,13 @@ format repair, arithmetic repair, and named ablated modules.
 
 ### Done Recently
 
+- 2026-06-01: Fixed the v4 schema-output blocker by removing an output-tempting
+  schema note, reran the corrected 25-row validation smoke, and recorded a clean
+  25/25 raw and clean Purist/Pragmatic result with one non-selected claim
+  evidence exactness issue.
+- 2026-06-01: Added section-claim-table v4 prompt-policy IDs for schema, evidence,
+  Gan label formatting, cluster, selection, boundary, exclusion, and maximum-burden
+  prompt behavior.
 - 2026-06-01: Added a research-drift audit and turned the findings into board
   tasks: v4 schema blocker, prompt taxonomy, core-boundary cleanup, CLI ladder
   guard, and continued hybrid repair claim discipline.
@@ -96,5 +107,6 @@ format repair, arithmetic repair, and named ablated modules.
 
 ## Immediate Next Step
 
-Fix the section-claim-table v4 schema-output blocker, then rerun the 25-row
-validation gate before any further scale-up.
+Run the section-claim-table v4 50-row validation gate with 25-row output reuse,
+then review row-level failures before deciding whether another 250-row diagnostic
+is justified.

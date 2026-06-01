@@ -4,6 +4,7 @@ from pathlib import Path
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import FrequencyLabelKind
 from clinical_extraction.tasks.seizure_frequency.gan2026.section_claim_table import (
+    PROMPT_POLICY_TAXONOMY,
     PROMPT_VERSION,
     SectionClaimTableExtractionRecord,
     build_prompt_input,
@@ -94,7 +95,10 @@ def test_build_prompt_input_excludes_gold_and_deterministic_candidates() -> None
     assert "several events across most months -> multiple per month" in json.dumps(prompt)
     assert "Do not use historical as claim_type" in json.dumps(prompt)
     assert "1 cluster per month, 6 to 7 per cluster" in json.dumps(prompt)
-    assert "six drop attacks plus two absence seizures over two months -> 8 per 2 month" in json.dumps(prompt)
+    assert (
+        "six drop attacks plus two absence seizures over two months -> 8 per 2 month"
+        in json.dumps(prompt)
+    )
     assert "Rescue medication use frequency" in json.dumps(prompt)
     assert "q2-3wk" in json.dumps(prompt)
     assert "as many as seven in a week" in json.dumps(prompt)
@@ -102,6 +106,26 @@ def test_build_prompt_input_excludes_gold_and_deterministic_candidates() -> None
     assert "gold_label" not in json.dumps(prompt)
     assert "candidate_events" not in prompt
     assert "deterministic_final_selection" not in prompt
+
+
+def test_prompt_input_names_prompt_policies_as_controlled_variables() -> None:
+    prompt = json.loads(build_prompt_input(_record()))
+
+    policy_ids = {policy["policy_id"] for policy in prompt["prompt_policy_taxonomy"]}
+
+    assert prompt["prompt_policy_taxonomy"] == PROMPT_POLICY_TAXONOMY
+    assert "sct_v4.schema.scalar_enum_output" in policy_ids
+    assert "sct_v4.gan_label.interval_preservation" in policy_ids
+    assert "sct_v4.gan_label.cluster_dual_axis" in policy_ids
+    assert "sct_v4.selection.current_burden_precedence" in policy_ids
+    assert "sct_v4.boundary.unknown_no_reference_seizure_free" in policy_ids
+    assert all(policy["status"] == "active" for policy in prompt["prompt_policy_taxonomy"])
+    assert all(policy["controlled_variable"] for policy in prompt["prompt_policy_taxonomy"])
+    assert all(
+        policy["portability"]
+        in {"general", "seizure_frequency", "gan2026_specific", "benchmark_format"}
+        for policy in prompt["prompt_policy_taxonomy"]
+    )
 
 
 def test_parse_section_claim_table_json_validates_flat_claim_table() -> None:
@@ -190,6 +214,9 @@ def test_run_split_records_raw_strict_and_clean_scoring_layers() -> None:
 
     row = rows[0]
     assert metadata["pipeline_name"] == "gan2026_section_claim_table_v4"
+    assert metadata["prompt_policy_ids"] == [
+        policy["policy_id"] for policy in PROMPT_POLICY_TAXONOMY
+    ]
     assert row["component_status"]["claim_extraction"] == "ok"
     assert row["score_layers"]["raw"]["scorable"] is False
     assert row["score_layers"]["strict_format"]["final_label"] == "most weekdays"
