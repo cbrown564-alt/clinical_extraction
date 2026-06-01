@@ -57,6 +57,47 @@ def repair_prediction_label(
     return repair_prediction_label_with_trace(raw, ablation_config).final_label
 
 
+def repair_prediction_label_format_preserving(raw: str | None) -> str:
+    """Repair only scorer-format issues without semantic fallback/remapping.
+
+    This path is intended for clean LLM-first attribution replays. It preserves
+    parser-compatible casing, units, word numbers, event-word noise, and compact
+    rate syntax, but leaves vague quantities and unrecognized labels untouched.
+    """
+    return repair_prediction_label_format_preserving_with_trace(raw).final_label
+
+
+def repair_prediction_label_format_preserving_with_trace(raw: str | None) -> BenchmarkRepairTrace:
+    """Strict format-only prediction repair with traceable repair events."""
+    if raw is None:
+        return BenchmarkRepairTrace(
+            raw_label=None,
+            initial_label="no seizure frequency reference",
+            final_label="no seizure frequency reference",
+            events=(),
+        )
+    text = str(raw).strip().lower()
+    if text == "":
+        return BenchmarkRepairTrace(
+            raw_label=raw,
+            initial_label="no seizure frequency reference",
+            final_label="no seizure frequency reference",
+            events=(),
+        )
+    initial_label = text
+    text, events = apply_benchmark_repair_rules(
+        text,
+        FORMAT_PRESERVING_BENCHMARK_REPAIR_RULES,
+        AblationConfig(),
+    )
+    return BenchmarkRepairTrace(
+        raw_label=raw,
+        initial_label=initial_label,
+        final_label=text,
+        events=events,
+    )
+
+
 def repair_prediction_label_with_evidence(
     raw: str | None,
     evidence: str,
@@ -517,6 +558,11 @@ def _drop_prediction_noise(text: str) -> str:
     text = re.sub(r"\b(?:approximately|approx\.?|about|around|nearly|~)\b", "", text)
     text = re.sub(r"\b(?:a few|few|several)\b", "multiple", text)
     text = re.sub(r"\ba couple of\b", "2", text)
+    return _drop_prediction_format_noise(text)
+
+
+def _drop_prediction_format_noise(text: str) -> str:
+    text = re.sub(r"\b(?:approximately|approx\.?|about|around|nearly|~)\b", "", text)
     text = re.sub(r"\bseizures?\b(?!\s*[- ]?free)", "", text)
     text = re.sub(r"\b(?:episodes?|events?|attacks?|spells?|szs?)\b", "", text)
     text = re.sub(r"\b(?:of|the|a|an)\b", "", text)
@@ -1868,6 +1914,139 @@ BENCHMARK_REPAIR_STEPS = (
     ),
 )
 
+FORMAT_PRESERVING_BENCHMARK_REPAIR_STEPS = (
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.daypart_to_day",
+        description="Map night/morning/afternoon/evening denominators to day.",
+        apply=_daypart_to_day,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.unknown_no_reference",
+        description="Normalize explicit unknown and no-reference prediction phrases.",
+        apply=_normalize_unknown_no_reference,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.word_numbers",
+        description="Convert number words used in labels to digits.",
+        apply=_words_to_numbers,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.range_delimiters",
+        description="Normalize hyphenated numeric ranges to 'to'.",
+        apply=_normalize_ranges,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.once_twice_thrice",
+        description="Convert once/twice/thrice to numeric counts.",
+        apply=_once_twice_thrice,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.slash_per_forms",
+        description="Convert slash-per shorthand into count per period labels.",
+        apply=_slash_per_forms,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.x_times_forms",
+        description="Convert x/times shorthand into count per period labels.",
+        apply=_x_times_forms,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.drop_times_before_per",
+        description="Drop redundant times tokens before per.",
+        apply=_drop_times_before_per,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.every_each_forms",
+        description="Convert every/each period phrasing into count per period labels.",
+        apply=_every_each_forms,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.period_words",
+        description="Convert daily/weekly/monthly/yearly period words into per labels.",
+        apply=_period_words,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.drop_prediction_format_noise",
+        description="Drop event-word and approximation noise without vague remapping.",
+        apply=_drop_prediction_format_noise,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.normalize_units_first",
+        description="Normalize unit abbreviations and plurals.",
+        apply=_normalize_units,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.normalize_whitespace_first",
+        description="Normalize case, whitespace, and surrounding label text.",
+        apply=normalize_frequency_label,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.reorder_period_then_count",
+        description="Reorder period-then-count predictions into count-per-period labels.",
+        apply=_reorder_period_then_count,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.canonicalize_seizure_free",
+        description="Canonicalize seizure-free predictions into scorer-compatible labels.",
+        apply=_canonicalize_seizure_free,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.normalize_units_after_seizure_free",
+        description="Normalize units after seizure-free canonicalization.",
+        apply=_normalize_units,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.fix_cluster_block",
+        description="Repair cluster labels before final cluster normalization.",
+        apply=_fix_cluster_block,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.normalize_units_after_cluster",
+        description="Normalize units after cluster repair.",
+        apply=_normalize_units,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.drop_per_one_first",
+        description="Drop explicit per-one denominators.",
+        apply=_drop_per_one,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.cleanup_commas_first",
+        description="Clean comma spacing and normalize whitespace.",
+        apply=_cleanup_commas,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.compress_double_per_range",
+        description="Compress double per-period ranges with matching denominators.",
+        apply=_compress_double_per_range,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.normalize_cluster_label",
+        description="Normalize compact cluster-only labels.",
+        apply=_normalize_cluster_label,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.normalize_cluster_label2",
+        description="Normalize dual cluster and per-cluster labels.",
+        apply=_normalize_cluster_label2,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.clean_prediction_extras",
+        description="Drop trailing prediction extras that break scorer parsing.",
+        apply=_clean_prediction_extras,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.drop_per_one_final",
+        description="Drop per-one denominators after strict format repair.",
+        apply=_drop_per_one,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.cleanup_commas_final",
+        description="Clean comma spacing after strict format repair.",
+        apply=_cleanup_commas,
+    ),
+)
+
 BENCHMARK_REPAIR_RULES = tuple(
     benchmark_repair_rule(
         rule_id=step.rule_id,
@@ -1875,4 +2054,13 @@ BENCHMARK_REPAIR_RULES = tuple(
         apply=step.apply,
     )
     for step in BENCHMARK_REPAIR_STEPS
+)
+
+FORMAT_PRESERVING_BENCHMARK_REPAIR_RULES = tuple(
+    benchmark_repair_rule(
+        rule_id=step.rule_id,
+        description=step.description,
+        apply=step.apply,
+    )
+    for step in FORMAT_PRESERVING_BENCHMARK_REPAIR_STEPS
 )

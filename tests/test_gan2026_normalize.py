@@ -3,11 +3,14 @@ import pytest
 from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     BENCHMARK_REPAIR_RULES,
     BENCHMARK_REPAIR_STEPS,
+    FORMAT_PRESERVING_BENCHMARK_REPAIR_RULES,
+    FORMAT_PRESERVING_BENCHMARK_REPAIR_STEPS,
     FrequencyLabelKind,
     label_to_frequency_record,
     label_to_monthly_frequency,
     parse_label_bounds,
     repair_prediction_label,
+    repair_prediction_label_format_preserving,
     repair_prediction_label_with_evidence,
     repair_prediction_label_with_trace,
 )
@@ -342,6 +345,24 @@ def test_repair_prediction_label_repairs_event_description_per_window() -> None:
         repair_prediction_label("2 nocturnal generalised tonic-clonic seizures per 4 months")
         == "2 per 4 month"
     )
+
+
+def test_format_preserving_repair_keeps_units_and_event_word_cleanup() -> None:
+    assert repair_prediction_label_format_preserving("2 seizures per 4 months") == (
+        "2 per 4 month"
+    )
+    assert repair_prediction_label_format_preserving("1 every other day") == "1 per 2 day"
+
+
+def test_format_preserving_repair_does_not_apply_semantic_basic_fallbacks() -> None:
+    assert repair_prediction_label("several per week") == "multiple per week"
+    assert repair_prediction_label_format_preserving("several per week") == "several per week"
+    assert repair_prediction_label("a handful per month") == "no seizure frequency reference"
+    assert repair_prediction_label_format_preserving("a handful per month") == (
+        "handful per month"
+    )
+    assert repair_prediction_label("most weekdays") == "no seizure frequency reference"
+    assert repair_prediction_label_format_preserving("most weekdays") == "most weekdays"
 
 
 def test_repair_prediction_label_with_evidence_preserves_parseable_raw_label() -> None:
@@ -745,9 +766,14 @@ def test_repair_prediction_label_with_evidence_does_not_count_window_as_event_co
 
 def test_benchmark_repair_steps_are_valid_and_benchmark_format_only() -> None:
     validate_benchmark_repair_steps(BENCHMARK_REPAIR_STEPS)
+    validate_benchmark_repair_steps(FORMAT_PRESERVING_BENCHMARK_REPAIR_STEPS)
     validate_rule_registry(BENCHMARK_REPAIR_RULES)
+    validate_rule_registry(FORMAT_PRESERVING_BENCHMARK_REPAIR_RULES)
     assert BENCHMARK_REPAIR_STEPS
     assert BENCHMARK_REPAIR_RULES
+    assert FORMAT_PRESERVING_BENCHMARK_REPAIR_STEPS
+    assert FORMAT_PRESERVING_BENCHMARK_REPAIR_RULES
+    assert len(FORMAT_PRESERVING_BENCHMARK_REPAIR_STEPS) < len(BENCHMARK_REPAIR_STEPS)
     assert {
         (step.group, step.portability) for step in BENCHMARK_REPAIR_STEPS
     } == {(RuleGroup.BENCHMARK_REPAIR, Portability.BENCHMARK_FORMAT)}

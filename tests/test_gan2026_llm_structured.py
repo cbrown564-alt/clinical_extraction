@@ -254,6 +254,25 @@ def test_parse_structured_json_can_disable_selected_evidence_repair() -> None:
     ]
 
 
+def test_parse_structured_json_can_limit_basic_repair_to_format_preserving() -> None:
+    raw = _raw_structured("several per week")
+
+    extraction, _, errors = parse_structured_json(
+        raw,
+        repair_config=StructuredRepairConfig(
+            selected_evidence_repair=False,
+            basic_label_repair_format_only=True,
+        ),
+    )
+
+    assert extraction is not None
+    assert extraction.selection.final_label == "several per week"
+    assert errors == [
+        "unscorable_final_label: Unparsable label (raw: 'several per week' / "
+        "normalized: 'several per week')"
+    ]
+
+
 def test_parse_structured_json_can_disable_all_final_label_repairs() -> None:
     raw = _raw_structured("1 event 2 weeks ago")
 

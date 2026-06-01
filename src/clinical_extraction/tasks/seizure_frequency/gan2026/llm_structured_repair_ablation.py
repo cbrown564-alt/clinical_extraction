@@ -40,6 +40,7 @@ def repair_ablation_ladder() -> list[tuple[str, StructuredRepairConfig]]:
 
     off = {
         "basic_label_repair": False,
+        "basic_label_repair_format_only": False,
         "selected_evidence_repair": False,
         "monthly_diary_repair": False,
         "usual_interval_repair": False,
@@ -52,21 +53,30 @@ def repair_ablation_ladder() -> list[tuple[str, StructuredRepairConfig]]:
     }
     cumulative = dict(off)
     ladder = [("A_raw_llm_final_label_only", StructuredRepairConfig(**cumulative))]
+    cumulative["basic_label_repair"] = True
+    cumulative["basic_label_repair_format_only"] = True
+    ladder.append(
+        (
+            "B_format_preserving_basic_label_repair",
+            StructuredRepairConfig(**cumulative),
+        )
+    )
+    cumulative["basic_label_repair_format_only"] = False
+    ladder.append(("C_full_basic_gan_label_repair", StructuredRepairConfig(**cumulative)))
     for name, key in [
-        ("B_basic_gan_label_repair", "basic_label_repair"),
-        ("C_selected_evidence_repair", "selected_evidence_repair"),
-        ("D_monthly_diary_arithmetic", "monthly_diary_repair"),
-        ("E_usual_interval_override", "usual_interval_repair"),
-        ("F_breakthrough_after_seizure_free", "breakthrough_repair"),
-        ("G_non_epileptic_override", "non_epileptic_repair"),
-        ("H_residual_jerk_date_anchor", "residual_jerk_repair"),
-        ("I_post_change_burst", "post_change_burst_repair"),
-        ("J_dated_sequence", "dated_sequence_repair"),
-        ("K_elapsed_anchor", "elapsed_anchor_repair"),
+        ("D_selected_evidence_repair", "selected_evidence_repair"),
+        ("E_monthly_diary_arithmetic", "monthly_diary_repair"),
+        ("F_usual_interval_override", "usual_interval_repair"),
+        ("G_breakthrough_after_seizure_free", "breakthrough_repair"),
+        ("H_non_epileptic_override", "non_epileptic_repair"),
+        ("I_residual_jerk_date_anchor", "residual_jerk_repair"),
+        ("J_post_change_burst", "post_change_burst_repair"),
+        ("K_dated_sequence", "dated_sequence_repair"),
+        ("L_elapsed_anchor", "elapsed_anchor_repair"),
     ]:
         cumulative[key] = True
         ladder.append((name, StructuredRepairConfig(**cumulative)))
-    ladder.append(("L_full_current_stack", StructuredRepairConfig()))
+    ladder.append(("M_full_current_stack", StructuredRepairConfig()))
     return ladder
 
 
@@ -154,6 +164,40 @@ def write_ablation_report(result: Mapping[str, Any], path: Path, *, json_path: P
             f"{summary['pragmatic_accuracy']:.4f} | {summary['exact_label_accuracy']:.4f} | "
             f"{summary['semantic_kind_accuracy']:.4f} | {summary['evidence_rate']:.4f} | "
             f"{summary['improved_vs_previous']} | {summary['regressed_vs_previous']} |"
+        )
+    condition_by_name = {condition["name"]: condition for condition in result["conditions"]}
+    if "B_format_preserving_basic_label_repair" in condition_by_name:
+        raw = condition_by_name["A_raw_llm_final_label_only"]["summary"]
+        strict_basic = condition_by_name["B_format_preserving_basic_label_repair"]["summary"]
+        full_basic = condition_by_name["C_full_basic_gan_label_repair"]["summary"]
+        lines.extend(
+            [
+                "",
+                "## Basic Repair Split Interpretation",
+                "",
+                "The clean LLM-first attribution baseline is raw model selection plus "
+                "format-preserving basic label repair only. This condition keeps casing, "
+                "plural units, compact rate syntax, event-word cleanup, and directly "
+                "stated every/each-period phrasing, but excludes vague-quantity remapping, "
+                "semantic fallback to unknown/no-reference, impossible-denominator fallback, "
+                "and final catch-all coercion.",
+                "",
+                f"- Raw model selection: {raw['purist_correct']} / {raw['rows']} Purist "
+                f"correct = {raw['purist_accuracy']:.4f}.",
+                f"- Format-preserving basic repair: {strict_basic['purist_correct']} / "
+                f"{strict_basic['rows']} Purist correct = "
+                f"{strict_basic['purist_accuracy']:.4f}; "
+                f"{strict_basic['improved_vs_previous']} improved and "
+                f"{strict_basic['regressed_vs_previous']} regressed versus raw.",
+                f"- Full basic repair: {full_basic['purist_correct']} / {full_basic['rows']} "
+                f"Purist correct = {full_basic['purist_accuracy']:.4f}; this remains an "
+                "upper-bound diagnostic because it includes semantic fallback and "
+                "vague-quantity remapping.",
+                "",
+                "Use the format-preserving condition, not the full basic condition, for "
+                "clean LLM-first attribution. Treat the full basic condition as a named "
+                "deterministic repair module if it is retained.",
+            ]
         )
     lines.extend(["", "## Top Changed Rows", ""])
     for condition in result["conditions"][1:]:
