@@ -6,7 +6,7 @@ Last updated: 2026-06-01
 
 Build a Gan 2026 seizure-frequency extraction pipeline that can reach at least
 0.9000 Purist F1 on development surfaces while preserving transparent evidence
-trails, component-level ablations, and conservative benchmark language.
+trails, ablations, and conservative benchmark language.
 
 ## Current Strategy
 
@@ -36,6 +36,9 @@ strict benchmark-format repair, arithmetic repair, and named ablated modules.
 - `gan2026_clean_scorer_policy_format50_v0`: clean scorer-facing policy reached
   43/50 Purist (0.8600), 46/50 Pragmatic (0.9200), 0 parse failures, and 50/50
   exact evidence, while bimonthly model-selection misses remain unresolved.
+- v0.2/v0.4 250-row error-family comparison found no reason to broaden v0.4
+  selector guidance: v0.4 fixed 1 v0.2 miss but introduced 5 additional Purist
+  misses; use clean table-backed scorer policy next.
 
 ## Key References
 
@@ -43,9 +46,8 @@ strict benchmark-format repair, arithmetic repair, and named ablated modules.
 - Framing/policy: `docs/research/contribution_thesis.md`,
   `docs/research/gan2026_gold_normalization_policy_question_2026-06-01.md`
 - Core code: `src/clinical_extraction/tasks/seizure_frequency/gan2026/llm_structured.py`
-- Current artifacts: `experiments/gan2026_clean_attribution_format50_v0_2026-06-01.md`,
-  `experiments/gan2026_clean_scorer_policy_format50_v0_2026-06-01.md`,
-  `experiments/gan2026_direct_citation_policy_row_tables_2026-06-01.md`
+- Current artifacts: clean attribution, clean scorer policy, direct-citation row
+  tables, and v0.2/v0.4 comparison under `experiments/`.
 
 ## Active Priorities
 
@@ -68,13 +70,13 @@ strict benchmark-format repair, arithmetic repair, and named ablated modules.
 - Keep clean scorer-facing normalization separate from named deterministic
   modules in run attribution and claim language.
 - Use direct-citation row tables as the gate for any policy expansion.
-- Decide the target for the next 25-/50-row focused comparison.
+- Implement the table-backed clean scorer-facing policy families with tests.
 
 ### Next
 
-- Compare v0.2 and v0.4 error families before broader selector guidance.
-- If expanding policy, implement only table-backed clean scorer-facing families
-  first; keep upper-bound, diary, temporal, evidence-state, and cluster
+- Run a focused 25- or 50-row clean-policy comparison after the tested policy
+  slice lands.
+- Keep upper-bound, diary, temporal, evidence-state, and cluster
   reconstruction behavior as named ablated modules.
 - If useful, run a focused 25- or 50-row comparison for the selected next
   architecture before any 250-row escalation.
@@ -88,13 +90,12 @@ strict benchmark-format repair, arithmetic repair, and named ablated modules.
 ### Done Recently
 
 - 2026-06-01: Added staged structured LLM extraction, repair-family attribution
-  audit, strict format-only clean replay, and the living observatory notebook.
-- 2026-06-01: Implemented the first clean scorer-facing gold-policy slice
-  (0.8600 Purist, no parse failures) and added validation-only direct-citation
-  row tables separating clean policy candidates from named deterministic modules.
+  audit, strict format-only replay, and the living observatory notebook.
+- 2026-06-01: Added the first clean scorer-facing gold-policy slice, validation
+  direct-citation row tables, and v0.2/v0.4 error-family comparison; broader
+  v0.4 selector guidance is rejected as the next step.
 
 ## Immediate Next Step
 
-Choose whether to implement the table-backed clean scorer-facing families with
-tests or run the v0.2/v0.4 focused architecture comparison; do not promote named
-semantic modules without ablation.
+Implement the table-backed clean scorer-facing families with tests; do not
+promote named semantic modules without ablation.
