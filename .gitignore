@@ -1,4 +1,6 @@
 .DS_Store
+Thumbs.db
+Desktop.ini
 .env
 .venv/
 __pycache__/
@@ -15,4 +17,3 @@ build/
 experiments/**/predictions*.csv
 experiments/**/predictions*.json
 experiments/**/traces/
-

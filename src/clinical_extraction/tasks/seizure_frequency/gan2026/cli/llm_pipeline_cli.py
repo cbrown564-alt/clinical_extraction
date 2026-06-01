@@ -34,6 +34,7 @@ class PipelineRunFn(Protocol):
         max_tokens: int,
         mode: Literal["live", "prompt-only"],
         dspy_cache: bool,
+        api_base: str | None,
         escalation_reason: str | None,
         progress_every: int | None,
         checkpoint_jsonl_path: Path | None,
@@ -142,6 +143,14 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
     parser.add_argument("--jsonl", type=Path, default=spec.default_jsonl_path)
     parser.add_argument("--markdown", type=Path, default=spec.default_report_path)
     parser.add_argument("--model", default=spec.default_model)
+    parser.add_argument(
+        "--api-base",
+        default=None,
+        help=(
+            "Optional OpenAI-compatible API base URL for local providers such as Ollama; "
+            "recorded in run metadata."
+        ),
+    )
     parser.add_argument("--temperature", type=float, default=0.0)
     parser.add_argument("--max-tokens", type=int, default=spec.default_max_tokens)
     parser.add_argument("--mode", choices=("live", "prompt-only"), default="live")
@@ -183,6 +192,7 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
         max_tokens=args.max_tokens,
         mode=args.mode,
         dspy_cache=not args.disable_dspy_cache,
+        api_base=args.api_base,
         escalation_reason=args.escalation_reason,
         progress_every=progress_every,
         checkpoint_jsonl_path=args.jsonl,

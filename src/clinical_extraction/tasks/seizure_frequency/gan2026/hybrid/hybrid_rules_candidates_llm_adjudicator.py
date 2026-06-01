@@ -27,6 +27,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.hybrid.hybrid_adjudicat
     parse_decision_json,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.labels import map_pragmatic, map_purist
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline_v1 import Gan2026PipelineV1
 from clinical_extraction.tasks.seizure_frequency.gan2026.reports.hybrid_adjudicator_report import (
     write_adjudicator_report,
@@ -309,6 +310,7 @@ def run_adjudicator_devset(
     temperature: float,
     max_tokens: int,
     mode: Literal["live", "prompt-only"],
+    api_base: str | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     metadata = _run_metadata(
         examples,
@@ -316,16 +318,17 @@ def run_adjudicator_devset(
         temperature=temperature,
         max_tokens=max_tokens,
         mode=mode,
+        api_base=api_base,
     )
     program = DspyFinalSelectionAdjudicator()
     if mode == "live":
         dspy.configure(
-            lm=dspy.LM(
+            lm=build_dspy_lm(
                 model,
                 temperature=temperature,
                 max_tokens=max_tokens,
                 cache=False,
-                num_retries=2,
+                api_base=api_base,
             )
         )
 
@@ -385,6 +388,7 @@ def run_hybrid_rules_candidates_llm_adjudicator_split(
     max_tokens: int,
     mode: Literal["live", "prompt-only"],
     dspy_cache: bool = True,
+    api_base: str | None = None,
     reuse_raw_outputs: Mapping[int, str] | None = None,
     reuse_source: str | None = None,
     escalation_reason: str | None = None,
@@ -401,6 +405,7 @@ def run_hybrid_rules_candidates_llm_adjudicator_split(
         temperature=temperature,
         max_tokens=max_tokens,
         mode=mode,
+        api_base=api_base,
     )
     metadata["architecture"] = "hybrid_rules_candidates_llm_adjudicator"
     metadata["claim_type"] = "hybrid_llm_adjudicator"
@@ -411,12 +416,12 @@ def run_hybrid_rules_candidates_llm_adjudicator_split(
     program = DspyFinalSelectionAdjudicator()
     if mode == "live":
         dspy.configure(
-            lm=dspy.LM(
+            lm=build_dspy_lm(
                 model,
                 temperature=temperature,
                 max_tokens=max_tokens,
                 cache=dspy_cache,
-                num_retries=2,
+                api_base=api_base,
             )
         )
 
@@ -903,6 +908,7 @@ def _run_metadata(
     temperature: float,
     max_tokens: int,
     mode: str,
+    api_base: str | None = None,
 ) -> dict[str, Any]:
     split = sorted({str(example["split"]) for example in examples})
     split_manifest = sorted({str(example["split_manifest"]) for example in examples})
@@ -915,6 +921,7 @@ def _run_metadata(
         dspy_version=getattr(dspy, "__version__", "unknown"),
         split=", ".join(split),
         split_manifest=", ".join(split_manifest),
+        api_base=api_base,
     )
 
 
