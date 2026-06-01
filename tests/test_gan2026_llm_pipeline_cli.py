@@ -3,8 +3,8 @@ from typing import Any
 
 import pytest
 
-from clinical_extraction.tasks.seizure_frequency.gan2026 import llm_pipeline_cli
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm_pipeline_cli import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.cli import llm_pipeline_cli
+from clinical_extraction.tasks.seizure_frequency.gan2026.cli.llm_pipeline_cli import (
     GanLlmPipelineCliSpec,
 )
 
@@ -98,9 +98,7 @@ def test_general_llm_pipeline_cli_rejects_broad_validation_without_escalation(
     monkeypatch.setattr(llm_pipeline_cli, "pipeline_specs", lambda: {"dummy": spec})
 
     with pytest.raises(SystemExit) as exc_info:
-        llm_pipeline_cli.run_cli(
-            ["--pipeline", "dummy", "--mode", "prompt-only", "--limit", "251"]
-        )
+        llm_pipeline_cli.run_cli(["--pipeline", "dummy", "--mode", "prompt-only", "--limit", "251"])
 
     assert exc_info.value.code == 2
     assert "validation runs above 250 rows require --escalation-reason" in capsys.readouterr().err
@@ -132,9 +130,7 @@ def test_general_llm_pipeline_cli_allows_broad_validation_with_escalation(
         ]
     )
 
-    assert calls["kwargs"]["escalation_reason"] == (
-        "single justified validation ladder promotion"
-    )
+    assert calls["kwargs"]["escalation_reason"] == ("single justified validation ladder promotion")
 
 
 def test_pipeline_registry_exposes_routine_llm_experiments() -> None:

@@ -2,10 +2,12 @@ import json
 from datetime import date
 from pathlib import Path
 
-from clinical_extraction.tasks.seizure_frequency.gan2026 import llm_structured_temporal
+from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
+    FrequencyLabelKind,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
-from clinical_extraction.tasks.seizure_frequency.gan2026.label_parser import FrequencyLabelKind
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm_only_structured_events import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm import llm_structured_temporal
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_structured_events import (
     PROMPT_VERSION,
     StructuredExtractionRecord,
     StructuredRepairConfig,
@@ -551,9 +553,7 @@ def test_parse_structured_json_repairs_current_non_epileptic_event_selection() -
 
     assert extraction is not None
     assert extraction.selection.final_label == "seizure free for multiple year"
-    assert errors == [
-        "final_label_repaired: 'unknown' -> 'seizure free for multiple year'"
-    ]
+    assert errors == ["final_label_repaired: 'unknown' -> 'seizure free for multiple year'"]
 
 
 def test_parse_structured_json_aggregates_llm_monthly_diary_events_by_span() -> None:
@@ -733,9 +733,7 @@ def test_parse_structured_json_prefers_usual_interval_over_brief_daily_periods()
 
     assert extraction is not None
     assert extraction.selection.final_label == "1 per 2 to 3 day"
-    assert errors == [
-        "final_label_repaired: '1 per day' -> '1 per 2 to 3 day'"
-    ]
+    assert errors == ["final_label_repaired: '1 per day' -> '1 per 2 to 3 day'"]
 
 
 def test_parse_structured_json_monthly_diary_counts_cluster_and_last_events() -> None:
@@ -792,8 +790,7 @@ def test_parse_structured_json_monthly_diary_counts_cluster_and_last_events() ->
     assert extraction is not None
     assert extraction.selection.final_label == "5 per 7 month"
     assert errors == [
-        "final_label_repaired: '1 tonic seizure in February' -> "
-        "'no seizure frequency reference'",
+        "final_label_repaired: '1 tonic seizure in February' -> 'no seizure frequency reference'",
         "final_label_repaired: 'no seizure frequency reference' -> '5 per 7 month'",
     ]
 
@@ -902,9 +899,7 @@ def test_parse_structured_json_repairs_post_change_burst_before_seizure_free() -
 
     assert extraction is not None
     assert extraction.selection.final_label == "2 to 3 per 1 month"
-    assert errors == [
-        "final_label_repaired: 'seizure free for 1 month' -> '2 to 3 per 1 month'"
-    ]
+    assert errors == ["final_label_repaired: 'seizure free for 1 month' -> '2 to 3 per 1 month'"]
 
 
 def test_parse_structured_json_repairs_since_then_burst_using_clinic_date() -> None:
@@ -1003,9 +998,7 @@ def test_parse_structured_json_repairs_following_week_to_elapsed_month_window() 
 
     assert extraction is not None
     assert extraction.selection.final_label == "2 to 3 per 1 month"
-    assert errors == [
-        "final_label_repaired: '2 to 3 per week' -> '2 to 3 per 1 month'"
-    ]
+    assert errors == ["final_label_repaired: '2 to 3 per week' -> '2 to 3 per 1 month'"]
 
 
 def test_parse_structured_json_repairs_dated_first_second_sequence() -> None:
@@ -1274,9 +1267,7 @@ def test_parse_structured_json_repairs_recent_last_event_window_over_seizure_fre
 
     assert extraction is not None
     assert extraction.selection.final_label == "1 per 1 month"
-    assert errors == [
-        "final_label_repaired: 'seizure free for 1 month' -> '1 per 1 month'"
-    ]
+    assert errors == ["final_label_repaired: 'seizure free for 1 month' -> '1 per 1 month'"]
 
 
 def test_parse_structured_json_repairs_count_since_dated_last_event() -> None:
@@ -1324,9 +1315,7 @@ def test_parse_structured_json_repairs_count_since_dated_last_event() -> None:
 
     assert extraction is not None
     assert extraction.selection.final_label == "3 to 4 per 15 month"
-    assert errors == [
-        "final_label_repaired: '3 to 4 per day' -> '3 to 4 per 15 month'"
-    ]
+    assert errors == ["final_label_repaired: '3 to 4 per day' -> '3 to 4 per 15 month'"]
 
 
 def test_parse_structured_json_does_not_repair_perimenstrual_window_to_breakthrough_count() -> None:

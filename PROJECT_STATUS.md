@@ -186,13 +186,20 @@ ownership, and deterministic repair boundaries explicitly.
   delegates artifact reads to the shared helper while preserving its public
   compatibility wrapper. Focused artifact/component tests, Ruff, mypy, and full
   pytest are green.
+- Gan 2026 package reorganization now reflects decision
+  `docs/decisions/0004-gan2026-package-organization.md`: implementation
+  modules live under `contract/`, `deterministic/`, `selected_evidence/`,
+  `llm/`, `hybrid/`, `reports/`, `experiments/`, and `cli/`, while stable task
+  contracts such as `data.py`, `labels.py`, `evaluate.py`, `normalize.py`, and
+  `pipeline_v1.py` remain top-level. Behavior is preserved; full pytest, Ruff,
+  and mypy are green.
 
 ## Key References
 
 - Protocol/control: `docs/design/gan2026_split_protocol.md`,
   `docs/design/data_contract.md`
-- Core LLM-only code: `src/clinical_extraction/tasks/seizure_frequency/gan2026/llm_only_claim_table_selector.py`
-- Core hybrid code: `src/clinical_extraction/tasks/seizure_frequency/gan2026/hybrid_rules_candidates_llm_adjudicator.py`
+- Core LLM-only code: `src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_only_claim_table_selector.py`
+- Core hybrid code: `src/clinical_extraction/tasks/seizure_frequency/gan2026/hybrid/hybrid_rules_candidates_llm_adjudicator.py`
 - Latest LLM-only claim-table selector run: `experiments/gan2026_section_claim_table_validation250_gpt41mini_v4_schema_replay_2026-06-01.md`
 - Latest LLM-only claim-table selector full-validation review: `experiments/gan2026_section_claim_table_validation750_v4_interpretation_2026-06-01.md`
 - Latest hybrid rules-candidates LLM adjudicator run: `experiments/gan2026_arch2_validation250_gpt41mini_v01_schema_replay_2026-06-01.md`

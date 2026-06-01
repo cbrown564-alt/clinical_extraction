@@ -5,35 +5,36 @@ from pydantic import BaseModel, ConfigDict, Field
 from clinical_extraction.core.evidence import evidence_is_substring, locate_evidence
 from clinical_extraction.core.pipeline import PipelineResult
 from clinical_extraction.core.schemas import FinalExtraction
-from clinical_extraction.tasks.seizure_frequency.gan2026 import temporal
-from clinical_extraction.tasks.seizure_frequency.gan2026.candidates import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
+    FrequencyLabelKind,
+    label_to_frequency_record,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanRecord
+from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic import temporal
+from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.candidates import (
     CandidateKind,
     RawCandidate,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanRecord
-from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic_extraction import (
-    _extract_candidates,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic_selection import (
-    select_final_event as _select_final_event,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic_text import (
-    exact_evidence as _exact_evidence,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic_text import (
-    fallback_evidence as _fallback_evidence,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.label_parser import (
-    FrequencyLabelKind,
-    label_to_frequency_record,
+from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rule_metadata import (
+    AblationConfig,
+    Portability,
+    RuleGroup,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.rule_metadata import (
-    AblationConfig,
-    Portability,
-    RuleGroup,
+
+from .deterministic.deterministic_extraction import (
+    _extract_candidates,
+)
+from .deterministic.deterministic_selection import (
+    select_final_event as _select_final_event,
+)
+from .deterministic.deterministic_text import (
+    exact_evidence as _exact_evidence,
+)
+from .deterministic.deterministic_text import (
+    fallback_evidence as _fallback_evidence,
 )
 
 _RawCandidate = RawCandidate

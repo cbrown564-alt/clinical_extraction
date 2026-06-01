@@ -1,14 +1,25 @@
 import pytest
 
-from clinical_extraction.tasks.seizure_frequency.gan2026 import benchmark_prediction_repair
-from clinical_extraction.tasks.seizure_frequency.gan2026.gold_policy import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.contract import (
+    benchmark_prediction_repair,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.contract.gold_policy import (
     CLEAN_SCORER_FACING_GOLD_NORMALIZATION_RULES as GOLD_POLICY_RULES,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.label_parser import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     FrequencyLabelKind,
     label_to_frequency_record,
     label_to_monthly_frequency,
     parse_label_bounds,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rule_metadata import (
+    AblationConfig,
+    Portability,
+    RuleGroup,
+    validate_rule_registry,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rules import (
+    benchmark_repair,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     BENCHMARK_REPAIR_RULES,
@@ -23,15 +34,8 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label_with_evidence,
     repair_prediction_label_with_trace,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.rule_metadata import (
-    AblationConfig,
-    Portability,
-    RuleGroup,
-    validate_rule_registry,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.rules.benchmark_repair import (
-    validate_benchmark_repair_steps,
-)
+
+validate_benchmark_repair_steps = benchmark_repair.validate_benchmark_repair_steps
 
 
 @pytest.mark.parametrize(
@@ -357,9 +361,7 @@ def test_repair_prediction_label_repairs_event_description_per_window() -> None:
 
 
 def test_format_preserving_repair_keeps_units_and_event_word_cleanup() -> None:
-    assert repair_prediction_label_format_preserving("2 seizures per 4 months") == (
-        "2 per 4 month"
-    )
+    assert repair_prediction_label_format_preserving("2 seizures per 4 months") == ("2 per 4 month")
     assert repair_prediction_label_format_preserving("1 every other day") == "1 per 2 day"
 
 
@@ -417,9 +419,7 @@ def test_format_preserving_repair_does_not_apply_semantic_basic_fallbacks() -> N
     assert repair_prediction_label("several per week") == "multiple per week"
     assert repair_prediction_label_format_preserving("several per week") == "several per week"
     assert repair_prediction_label("a handful per month") == "no seizure frequency reference"
-    assert repair_prediction_label_format_preserving("a handful per month") == (
-        "handful per month"
-    )
+    assert repair_prediction_label_format_preserving("a handful per month") == ("handful per month")
     assert repair_prediction_label("most weekdays") == "no seizure frequency reference"
     assert repair_prediction_label_format_preserving("most weekdays") == "most weekdays"
 
@@ -507,12 +507,12 @@ def test_clean_scorer_facing_gold_policy_trace_names_policy_layer() -> None:
 
 def test_clean_scorer_facing_gold_policy_rules_have_dedicated_owner() -> None:
     assert CLEAN_SCORER_FACING_GOLD_NORMALIZATION_RULES is GOLD_POLICY_RULES
-    assert {
-        rule.group for rule in CLEAN_SCORER_FACING_GOLD_NORMALIZATION_RULES
-    } == {RuleGroup.GOLD_NORMALIZATION_POLICY}
-    assert {
-        rule.portability for rule in CLEAN_SCORER_FACING_GOLD_NORMALIZATION_RULES
-    } == {Portability.GAN2026_SPECIFIC}
+    assert {rule.group for rule in CLEAN_SCORER_FACING_GOLD_NORMALIZATION_RULES} == {
+        RuleGroup.GOLD_NORMALIZATION_POLICY
+    }
+    assert {rule.portability for rule in CLEAN_SCORER_FACING_GOLD_NORMALIZATION_RULES} == {
+        Portability.GAN2026_SPECIFIC
+    }
 
 
 @pytest.mark.parametrize(
@@ -831,8 +831,7 @@ def test_repair_prediction_label_with_evidence_repairs_several_fortnight_cluster
     assert (
         repair_prediction_label_with_evidence(
             "multiple per week",
-            "clusters arise on several evenings per fortnight, each cluster with about "
-            "five spells",
+            "clusters arise on several evenings per fortnight, each cluster with about five spells",
         )
         == "multiple cluster per 2 week, 5 per cluster"
     )
@@ -941,15 +940,14 @@ def test_benchmark_repair_steps_are_valid_and_benchmark_format_only() -> None:
     assert FORMAT_PRESERVING_BENCHMARK_REPAIR_STEPS
     assert FORMAT_PRESERVING_BENCHMARK_REPAIR_RULES
     assert len(FORMAT_PRESERVING_BENCHMARK_REPAIR_STEPS) < len(BENCHMARK_REPAIR_STEPS)
+    assert {(step.group, step.portability) for step in BENCHMARK_REPAIR_STEPS} == {
+        (RuleGroup.BENCHMARK_REPAIR, Portability.BENCHMARK_FORMAT)
+    }
+    assert {(rule.group, rule.portability) for rule in BENCHMARK_REPAIR_RULES} == {
+        (RuleGroup.BENCHMARK_REPAIR, Portability.BENCHMARK_FORMAT)
+    }
     assert {
-        (step.group, step.portability) for step in BENCHMARK_REPAIR_STEPS
-    } == {(RuleGroup.BENCHMARK_REPAIR, Portability.BENCHMARK_FORMAT)}
-    assert {
-        (rule.group, rule.portability) for rule in BENCHMARK_REPAIR_RULES
-    } == {(RuleGroup.BENCHMARK_REPAIR, Portability.BENCHMARK_FORMAT)}
-    assert {
-        (rule.group, rule.portability)
-        for rule in CLEAN_SCORER_FACING_GOLD_NORMALIZATION_RULES
+        (rule.group, rule.portability) for rule in CLEAN_SCORER_FACING_GOLD_NORMALIZATION_RULES
     } == {(RuleGroup.GOLD_NORMALIZATION_POLICY, Portability.GAN2026_SPECIFIC)}
 
 
@@ -983,12 +981,8 @@ def test_repair_prediction_label_trace_exposes_benchmark_repair_events() -> None
 def test_repair_prediction_label_respects_rule_id_ablation() -> None:
     trace = repair_prediction_label_with_trace(
         "about twice weekly",
-        AblationConfig(
-            disabled_rule_ids=frozenset({"benchmark_repair.once_twice_thrice"})
-        ),
+        AblationConfig(disabled_rule_ids=frozenset({"benchmark_repair.once_twice_thrice"})),
     )
 
     assert trace.final_label == "1 per week"
-    assert "benchmark_repair.once_twice_thrice" not in {
-        event.rule_id for event in trace.events
-    }
+    assert "benchmark_repair.once_twice_thrice" not in {event.rule_id for event in trace.events}

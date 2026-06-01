@@ -1,11 +1,13 @@
 from clinical_extraction.core.pipeline import PipelineResult
 from clinical_extraction.core.schemas import FinalExtraction
+from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
+    FrequencyLabelKind,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
-from clinical_extraction.tasks.seizure_frequency.gan2026.error_analysis import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.error_analysis import (
     build_row_error_record,
     summarize_row_errors,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.label_parser import FrequencyLabelKind
 
 
 def _record(

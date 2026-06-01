@@ -1,9 +1,11 @@
 import json
 from pathlib import Path
 
+from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
+    FrequencyLabelKind,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
-from clinical_extraction.tasks.seizure_frequency.gan2026.label_parser import FrequencyLabelKind
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm_only_direct_labeler import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_direct_labeler import (
     PROMPT_VERSION,
     LlmOnlyDirectLabelerDecisionRecord,
     build_prompt_input,

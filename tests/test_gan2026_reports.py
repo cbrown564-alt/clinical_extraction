@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.reports import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.reports.base import (
     llm_model_metadata_lines,
     write_markdown_report,
 )
