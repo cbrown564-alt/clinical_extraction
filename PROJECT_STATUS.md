@@ -14,29 +14,28 @@ Use Gan 2026 as the first controlled extraction surface. Keep data loading,
 label normalization, scoring, split discipline, and deterministic-rule behavior
 explicit before optimizing LLM or DSPy components.
 
-Deterministic V1 is frozen as a controlled comparator. New candidate work should
-stay LLM-first: model extraction and clinical selection produce the prediction,
-while deterministic code is limited to validation, Gan-compatible normalization,
-strict benchmark-format repair, arithmetic repair, and named ablated modules.
+Deterministic V1 is frozen as a comparator. New candidate work should stay
+LLM-first: model extraction and clinical selection produce the prediction, while
+deterministic code is limited to validation, Gan-compatible normalization,
+strict format repair, arithmetic repair, and named ablated modules.
 
 ## Recent Context
 
-- Locked split `gan2026_split_v1`: 300 train, 750 validation, 450 final holdout;
-  LLM/DSPy work escalates 25 -> 50 -> 250 validation rows, and test must not
-  become a tuning surface.
+- Locked split `gan2026_split_v1`: 300 train, 750 validation, 450 holdout;
+  LLM/DSPy work escalates 25 -> 50 -> 250 validation rows; test is not tuning.
 - Deterministic V1 is frozen as a comparator: 0.9293/0.9387 validation and
   0.7600/0.7867 on its one locked-test Purist/Pragmatic evaluation.
 - Structured v0.5 reached 675/750 Purist = 0.9000 on full validation, but audit
   classified it as repair-heavy hybrid behavior rather than clean LLM-first.
-- Clean attribution now separates raw LLM selection, strict format repair, and
-  frozen scorer-facing policy. The 50-row freeze ladder was 34/50 raw, 41/50
-  strict, 43/50 clean Purist, with 50/50 exact evidence and no clean regressions.
+- Clean attribution separates raw LLM selection, strict format repair, and
+  frozen scorer-facing policy: 34/50 raw, 41/50 strict, 43/50 clean Purist.
 - The frozen clean policy is limited to table-backed scorer-facing families;
   upper-bound, temporal, diary, evidence-state, and cluster-reconstruction
   behavior stay out of the clean path as named modules.
-- Next architecture comparison: `gan2026_section_claim_table_v0`, a flat
-  section-and-claim-table LLM-first diagnostic branch documented in
-  `docs/research/gan2026_next_architecture_decision_2026-06-01.md`.
+- `gan2026_section_claim_table_v0` has schema/pipeline/CLI plus a 25-row smoke:
+  21/25 structured, 73/75 exact claim evidence, raw/strict/clean Purist
+  9/16/18 of 25. Keep diagnostic: 4 parse/schema, 6 final-query/evidence, and
+  15 raw scorer-format failures block 50-row escalation.
 
 ## Key References
 
@@ -47,8 +46,8 @@ strict benchmark-format repair, arithmetic repair, and named ablated modules.
   `docs/research/gan2026_clean_policy_attribution_note_2026-06-01.md`,
   `docs/research/gan2026_next_architecture_decision_2026-06-01.md`
 - Core code: `src/clinical_extraction/tasks/seizure_frequency/gan2026/llm_structured.py`
-- Current artifacts: clean policy freeze ladder, direct-citation row tables, and
-  v0.2/v0.4 comparison under `experiments/`.
+- Current artifacts: clean-policy ladder, direct-citation rows, comparisons,
+  and section-claim-table 25-row smoke under `experiments/`.
 
 ## Active Priorities
 
@@ -56,8 +55,8 @@ strict benchmark-format repair, arithmetic repair, and named ablated modules.
    ablated candidates.
 2. Enforce the architecture gate before the metric gate; semantic-state-changing
    repair needs separate naming, ablation, and claim language.
-3. Build the next comparison as `gan2026_section_claim_table_v0`; start with a
-   25-row validation smoke run before any 50- or 250-row escalation.
+3. Keep `gan2026_section_claim_table_v0` diagnostic until the 25-row schema,
+   evidence, and scorer-format failures are reviewed.
 4. Separate benchmark gold-normalization policy from clinical reasoning while
    preserving source-near traces.
 5. Treat the clean scorer-facing policy as frozen unless a new direct-citation
@@ -67,10 +66,8 @@ strict benchmark-format repair, arithmetic repair, and named ablated modules.
 
 ### Now
 
-- Implement the `gan2026_section_claim_table_v0` pipeline as a flat claim table
-  plus model query selector.
-- Run the first 25-row validation smoke comparison only after report metadata
-  can separate claim extraction, final query, repair, and scorer failures.
+- Review the 25-row `gan2026_section_claim_table_v0` failure rows and tighten
+  schema/prompt guidance for remaining enum/list aliases and selected evidence.
 - Keep clean scorer-facing normalization separate from named deterministic
   modules in run attribution and claim language.
 
@@ -78,10 +75,11 @@ strict benchmark-format repair, arithmetic repair, and named ablated modules.
 
 - Keep upper-bound, diary, temporal, evidence-state, and cluster
   reconstruction behavior as named ablated modules.
-- Use direct-citation row tables as the gate for any future clean-policy
-  expansion.
+- Use direct-citation row tables as the gate for clean-policy expansion.
 - Decide whether the section-and-claim branch earns a 50-row comparison from
   the 25-row artifact; do not jump directly to 250 rows.
+- Re-run the same 25-row raw-output replay after schema/prompt tightening before
+  any new live 50-row comparison.
 
 ### Blocked
 
@@ -90,16 +88,15 @@ strict benchmark-format repair, arithmetic repair, and named ablated modules.
 
 ### Done Recently
 
-- 2026-06-01: Added staged structured LLM extraction, repair attribution audits,
-  strict replay, direct-citation row tables, v0.2/v0.4 comparison, and the
-  living observatory notebook.
-- 2026-06-01: Implemented and froze table-backed clean scorer-facing policy
-  families with tests; full suite passes (`560 passed`) and Ruff passes.
-- 2026-06-01: Selected `gan2026_section_claim_table_v0` as the next LLM-first
-  architecture comparison surface.
+- 2026-06-01: Added structured LLM extraction, repair attribution audits,
+  direct-citation row tables, v0.2/v0.4 comparisons, clean scorer-facing policy
+  tests, and the living observatory notebook.
+- 2026-06-01: Implemented `gan2026_section_claim_table_v0` with CLI/tests and a
+  25-row validation smoke plus corrected no-call replay; branch remains
+  diagnostic pending schema/prompt tightening.
 
 ## Immediate Next Step
 
-Implement the `gan2026_section_claim_table_v0` schema/pipeline and run a 25-row
-validation smoke comparison with component-localized failure reporting before
-any 50- or 250-row escalation.
+Inspect the section-claim-table 25-row failure rows and update the prompt/schema
+repair boundary so enum/list aliases, selected evidence, and raw scorer-format
+failures are reviewable before deciding on any 50-row escalation.
