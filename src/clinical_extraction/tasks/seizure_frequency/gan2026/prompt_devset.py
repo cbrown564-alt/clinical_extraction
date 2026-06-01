@@ -4,7 +4,7 @@ import argparse
 import csv
 import json
 from collections import Counter, defaultdict
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable, Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
@@ -333,7 +333,7 @@ def _lesson_type(row: AblationChangedRow) -> str:
     return "behavior_change"
 
 
-def _candidate_events(diagnostics: dict[str, Any]) -> list[dict[str, Any]]:
+def _candidate_events(diagnostics: Mapping[str, Any]) -> list[dict[str, Any]]:
     normalized_by_id = {
         event["event_id"]: event for event in diagnostics.get("normalized_events", [])
     }
@@ -357,7 +357,7 @@ def _candidate_events(diagnostics: dict[str, Any]) -> list[dict[str, Any]]:
     return events
 
 
-def _normalized_events(diagnostics: dict[str, Any]) -> list[dict[str, Any]]:
+def _normalized_events(diagnostics: Mapping[str, Any]) -> list[dict[str, Any]]:
     return [
         {
             "event_id": event.get("event_id"),

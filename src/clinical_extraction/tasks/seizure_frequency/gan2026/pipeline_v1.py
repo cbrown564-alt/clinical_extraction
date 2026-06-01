@@ -654,13 +654,17 @@ def _extract_rate_candidates(
         re.IGNORECASE,
     )
     for match in no_seizures_then_precursor_count.finditer(text):
-        count = _integer_number_token(match.group("count"))
-        if count is None:
+        precursor_count = _integer_number_token(match.group("count"))
+        if precursor_count is None:
             continue
         candidates.append(
             _RawCandidate(
                 kind=CandidateKind.FREQUENCY_RATE,
-                label=_rate_label(str(count * 2), match.group("unit"), match.group("denominator")),
+                label=_rate_label(
+                    str(precursor_count * 2),
+                    match.group("unit"),
+                    match.group("denominator"),
+                ),
                 evidence=_clean_evidence(match.group("evidence")),
             )
         )
@@ -1792,6 +1796,8 @@ def _month_span_floor(start: _ParsedMonthDate | None, end: _ParsedMonthDate | No
     months = _month_span(start, end)
     if months is None:
         return None
+    if start is None or end is None:
+        return None
     if start.day is not None and end.day is not None and end.day < start.day:
         months -= 1
     return months if months > 0 else None
@@ -1802,6 +1808,8 @@ def _month_span_with_terminal_partial(
 ) -> int | None:
     months = _month_span(start, end)
     if months is None:
+        return None
+    if start is None or end is None:
         return None
     if start.day is not None and end.day is not None and end.day > start.day:
         return months + 1

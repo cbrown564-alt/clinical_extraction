@@ -61,7 +61,8 @@ ownership, and deterministic repair boundaries explicitly.
   default; saved-output replay is reserved for explicit offline artifact
   analysis rather than normal experiment execution.
 - Shared schema repair is alias-only again; parser-owned defaults live with the
-  hybrid adjudicator parser, and the full suite is green at 586 tests.
+  hybrid adjudicator parser, `core.schemas` is task-neutral, and mypy is clean
+  across all 35 source files.
 
 ## Key References
 
@@ -105,7 +106,6 @@ ownership, and deterministic repair boundaries explicitly.
   LLM-only claim-table selector v5 before
   any holdout evaluation: raw/model, strict/schema repair, deterministic fallback
   or selector, and clean scorer-facing policy.
-- Move or remove `core.schemas.SeizureEvent` so `core/` stays task-neutral.
 - Design LLM-replacement ablations for deterministic post-processing modules,
   reporting score, repair attribution, evidence validity, and replay variance.
 - Consolidate any remaining saved-output replay helpers into dedicated artifact
@@ -148,6 +148,9 @@ ownership, and deterministic repair boundaries explicitly.
   schema-repair finding: shared repair no longer adds parser-owned defaults,
   hybrid adjudicator defaulting is explicit, and broad validation CLI runs now
   require `--escalation-reason`.
+- 2026-06-01: Removed unused seizure-specific schema types from `core.schemas`,
+  added a task-neutral core-schema invariant test, and reduced `python -m mypy src`
+  from 31 errors to clean.
 
 ## Immediate Next Step
 
