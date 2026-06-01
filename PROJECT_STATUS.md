@@ -127,6 +127,12 @@ ownership, and deterministic repair boundaries explicitly.
   runner keeps prompt/run/scoring orchestration and exposes the same report
   entry points. Behavior is preserved; focused hybrid tests, Ruff, mypy, and
   full pytest are green.
+- Phase 5 continued with an LLM structured-events report ownership split:
+  `llm_structured_events_report.py` now owns the Markdown report writer and
+  repair-policy report wording. The structured-events runner keeps prompt/run/
+  parse/scoring orchestration and exposes the same `write_report` entry point.
+  Behavior is preserved; Ruff, mypy, focused structured-events/CLI tests, and
+  full pytest are green.
 
 ## Key References
 
@@ -158,9 +164,8 @@ ownership, and deterministic repair boundaries explicitly.
 ### Now
 
 - Continue the codebase thermonuclear review Phase 5 behavior splits without
-  changing scorer behavior: next candidates are the remaining large LLM
-  structured-events runner, artifact-analysis helpers, or other ownership
-  splits.
+  changing scorer behavior: next candidates are artifact-analysis helpers,
+  selected-evidence derivation, or other ownership splits.
 - Design hybrid rules-candidates LLM adjudicator v0.2 as a conservative/targeted adjudicator with
   deterministic fallback and named overreach-family gates; repeat 25/50/250.
 - Design LLM-only claim-table selector v5 as claim-table plus constrained selector, with
@@ -302,10 +307,18 @@ ownership, and deterministic repair boundaries explicitly.
   `python -m pytest tests/test_gan2026_hybrid_rules_candidates_llm_adjudicator.py -q`,
   and `python -m pytest -q` are green (`595 passed`, 11 third-party DSPy
   deprecation warnings).
+- 2026-06-01: Continued Phase 5 by extracting the LLM structured-events report
+  writer from `llm_only_structured_events.py` into
+  `llm_structured_events_report.py`. The runner is now 932 lines and the report
+  module is 133 lines. Verification: `python -m ruff check .`,
+  `python -m mypy src`,
+  `python -m pytest tests/test_gan2026_llm_only_structured_events.py tests/test_gan2026_llm_pipeline_cli.py -q`,
+  and `python -m pytest -q` are green (`595 passed`, 11 third-party DSPy
+  deprecation warnings).
 
 ## Immediate Next Step
 
 Continue the Phase 5 behavior-preserving splits from the remaining large
-behavior modules, with the LLM structured-events runner or artifact-analysis
-helpers as likely next ownership splits before returning to the validation-only
-v0.2/v5 experiment cycle. Do not inspect holdout rows.
+behavior modules, with artifact-analysis helpers, selected-evidence derivation,
+or other ownership splits as likely next targets before returning to the
+validation-only v0.2/v5 experiment cycle. Do not inspect holdout rows.
