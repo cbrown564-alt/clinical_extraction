@@ -17,14 +17,18 @@ This is a reference map for future work. It is not a new benchmark claim.
 
 ## Verification State
 
-After the follow-up consolidation and Gan 2026 package reorganization:
+After the follow-up consolidation and Gan 2026 package reorganization, using
+macOS/Linux shell activation:
 
-```bash
+```shell
 source .venv/bin/activate
 python -m pytest -q
 python -m mypy src
 python -m ruff check .
 ```
+
+On Windows PowerShell, activate with `.\.venv\Scripts\Activate.ps1` before the
+same `python -m ...` commands.
 
 Current result:
 

@@ -28,6 +28,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.claim_table_parser 
     SectionClaimTableExtractionRecord,
     parse_llm_only_claim_table_selector_json,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label_clean_scorer_facing,
     repair_prediction_label_format_preserving,
@@ -492,6 +493,7 @@ def run_split(
     max_tokens: int,
     mode: Literal["live", "prompt-only"],
     dspy_cache: bool = True,
+    api_base: str | None = None,
     reuse_raw_outputs: Mapping[int, str] | None = None,
     reuse_source: str | None = None,
     escalation_reason: str | None = None,
@@ -508,6 +510,7 @@ def run_split(
         temperature=temperature,
         max_tokens=max_tokens,
         mode=mode,
+        api_base=api_base,
     )
     metadata["dspy_cache"] = dspy_cache
     metadata["reuse_source"] = reuse_source
@@ -515,12 +518,12 @@ def run_split(
     program = DspyLlmOnlyClaimTableSelector()
     if mode == "live":
         dspy.configure(
-            lm=dspy.LM(
+            lm=build_dspy_lm(
                 model,
                 temperature=temperature,
                 max_tokens=max_tokens,
                 cache=dspy_cache,
-                num_retries=2,
+                api_base=api_base,
             )
         )
 
@@ -870,6 +873,7 @@ def _run_metadata(
     temperature: float,
     max_tokens: int,
     mode: str,
+    api_base: str | None = None,
 ) -> dict[str, Any]:
     return build_run_metadata(
         mode=mode,
@@ -880,6 +884,7 @@ def _run_metadata(
         dspy_version=getattr(dspy, "__version__", "unknown"),
         split=split,
         split_manifest=split_manifest,
+        api_base=api_base,
         row_count=len(records),
         extra={
             "pipeline_name": PROMPT_VERSION,

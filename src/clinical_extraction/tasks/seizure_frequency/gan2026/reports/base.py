@@ -20,11 +20,17 @@ def llm_model_metadata_lines(
 ) -> list[str]:
     """Build the common model/provenance block for Gan LLM reports."""
 
+    api_base = metadata.get("api_base")
+    provider_execution = (
+        f"OpenAI-compatible endpoint via DSPy/LiteLLM: `{api_base}`"
+        if api_base
+        else "hosted OpenAI via DSPy/LiteLLM"
+    )
     lines = [
         *leading_lines,
         f"- DSPy version: `{metadata['dspy_version']}`",
         f"- Runtime model display/API identifier: `{metadata['model']}`",
-        "- Provider/execution: hosted OpenAI via DSPy/LiteLLM",
+        f"- Provider/execution: {provider_execution}",
         f"- Model role: {model_role}",
         f"- Prompt/program version: `{metadata['prompt_version']}`",
         f"- Temperature: `{metadata['temperature']}`",

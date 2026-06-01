@@ -31,6 +31,8 @@ and error analysis on a cheaper/faster model.
 Planned constraints:
 
 - run on a separate Windows laptop when that infrastructure is ready
+- route local model calls through the repo CLI with `--api-base` so endpoint
+  provenance is captured in run metadata and reports
 - treat the local run as a model-swap experiment against a frozen or clearly
   versioned pipeline
 - compare quality, latency, operational friction, and failure modes against the

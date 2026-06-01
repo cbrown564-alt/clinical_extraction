@@ -57,6 +57,8 @@ def test_general_llm_pipeline_cli_delegates_to_pipeline_spec(
             "--mode",
             "prompt-only",
             "--disable-dspy-cache",
+            "--api-base",
+            "http://localhost:11434/v1",
         ],
     )
 
@@ -65,6 +67,7 @@ def test_general_llm_pipeline_cli_delegates_to_pipeline_spec(
     assert calls["kwargs"]["split_manifest"] == "test_manifest_v1"
     assert calls["kwargs"]["mode"] == "prompt-only"
     assert calls["kwargs"]["dspy_cache"] is False
+    assert calls["kwargs"]["api_base"] == "http://localhost:11434/v1"
     assert calls["kwargs"]["progress_every"] == 10
     assert calls["kwargs"]["checkpoint_jsonl_path"] == jsonl_path
     assert calls["kwargs"]["checkpoint_report_path"] == markdown_path

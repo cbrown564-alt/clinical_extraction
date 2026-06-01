@@ -29,14 +29,17 @@ Inputs reviewed:
 - tests under `tests/`
 - artifact inventory under `experiments/`
 
-Checks run:
+Checks run with macOS/Linux shell activation:
 
-```bash
+```shell
 source .venv/bin/activate
 python -m ruff check .
 python -m pytest -q
 python -m mypy src
 ```
+
+On Windows PowerShell, activate with `.\.venv\Scripts\Activate.ps1` before the
+same `python -m ...` commands.
 
 Results:
 

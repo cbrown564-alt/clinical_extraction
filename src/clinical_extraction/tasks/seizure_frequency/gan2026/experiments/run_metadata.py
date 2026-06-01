@@ -19,6 +19,7 @@ def build_run_metadata(
     dspy_version: str,
     split: str,
     split_manifest: str,
+    api_base: str | None = None,
     row_count: int | None = None,
     extra: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
@@ -30,6 +31,7 @@ def build_run_metadata(
         "created_at_utc": created_at.isoformat(),
         "mode": mode,
         "model": model,
+        "api_base": api_base,
         "temperature": temperature,
         "max_tokens": max_tokens,
         "prompt_version": prompt_version,

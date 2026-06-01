@@ -37,6 +37,7 @@ Use Gan 2026 as the first controlled extraction surface. Keep deterministic V1 f
 - Latest LLM-only v4 run/review: `experiments/gan2026_section_claim_table_validation250_gpt41mini_v4_schema_replay_2026-06-01.md`, `experiments/gan2026_section_claim_table_validation750_v4_interpretation_2026-06-01.md`
 - Latest hybrid v0.1 run/reviews: `experiments/gan2026_arch2_validation250_gpt41mini_v01_schema_replay_2026-06-01.md`, `experiments/gan2026_arch2_validation250_v01_failure_review_2026-06-01.md`, `experiments/gan2026_arch2_validation750_v01_interpretation_2026-06-01.md`
 - Hybrid v0.2 artifacts: `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation25_gpt41mini_v02_prompt_only_2026-06-01.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation25_v02_prompt_only_component_ablation_2026-06-01.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation25_gpt41mini_v02_live_2026-06-01.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation25_v02_live_component_ablation_2026-06-01.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation50_gpt41mini_v02_live_2026-06-01.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation50_v02_live_component_ablation_2026-06-01.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation250_gpt41mini_v02_live_2026-06-01.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation250_v02_live_component_ablation_2026-06-01.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation250_v02_audit_trail_interpretation_2026-06-01.md`
+- Hybrid v0.2 saturated-surface plan: `experiments/gan2026_hybrid_adjudicator_v02_saturated_surface_evaluation_plan_2026-06-01.md`
 
 ## Active Priorities
 
@@ -50,7 +51,7 @@ Use Gan 2026 as the first controlled extraction surface. Keep deterministic V1 f
 
 ### Now
 
-- Design a saturated-surface evaluation plan for hybrid adjudicator v0.2: synthetic hard cases, validation hard slices aligned to deterministic dominant errors, selective-action metrics, and a possible frozen test generalization audit.
+- Implement the hybrid adjudicator v0.2 saturated-surface evaluation plan: synthetic hard-case schema/panel, validation hard-slice generator aligned to deterministic dominant errors, selective-action report, and frozen-test audit checklist.
 - Generate claim-table v5 component-ablation artifacts before any 25/50/250 validation ladder; v5 now uses claim-table plus constrained selector state with cluster-axis and boundary-state fields.
 
 ### Next
@@ -69,6 +70,7 @@ Use Gan 2026 as the first controlled extraction surface. Keep deterministic V1 f
 
 ### Done Recently
 
+- 2026-06-01: Added a hybrid adjudicator v0.2 saturated-surface evaluation plan covering synthetic hard cases, validation hard slices aligned to deterministic dominant errors, selective-action metrics, component-stress ablations, and frozen-test generalization audit criteria.
 - 2026-06-01: Added a durable intermediate-schema synthesis report comparing rules-only V1, structured-events v0.5, claim-table v5, and hybrid adjudicator v0.2, with schema rationales, experiment lessons, ablation findings, and open questions.
 - 2026-06-01: Added a hybrid adjudicator v0.2 audit-trail interpretation report: the LLM adds useful semantic dissent and review text, but not a trustworthy prediction-bearing final-selection layer on saturated validation250.
 - 2026-06-01: Added saturated-validation workflow docs/skill after the v0.2 validation250 run showed broad aggregate comparisons are low-information once deterministic top is near ceiling; future saturated candidates should use hard cases, hard slices, selective-action analysis, or frozen test generalization audits.
@@ -86,4 +88,4 @@ Use Gan 2026 as the first controlled extraction surface. Keep deterministic V1 f
 
 ## Immediate Next Step
 
-Create a v0.2 saturated-surface evaluation plan: generated hard cases, validation hard slices aligned to deterministic dominant errors, selective-action metrics, and criteria for a frozen test generalization audit. Do not inspect holdout rows unless the candidate and analysis policy are frozen first.
+Implement the v0.2 saturated-surface evaluation plan in `experiments/gan2026_hybrid_adjudicator_v02_saturated_surface_evaluation_plan_2026-06-01.md`: start with validation-only slice tooling and a selective-action report over existing v0.2 artifacts before any new hosted calls. Do not inspect holdout rows unless the candidate and analysis policy are frozen first.

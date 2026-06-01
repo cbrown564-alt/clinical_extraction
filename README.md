@@ -48,9 +48,9 @@ The project is designed around four paper-level claims:
 - Transparency requires intermediate schemas, evidence, rationale, error analysis, and ablation studies, not only final predictions.
 - Deterministic preprocessing and post-processing rules should be described as controlled experimental variables rather than hidden implementation details.
 
-See [docs/research/contribution_thesis.md](/Users/cobro/code/clinical-extraction/docs/research/contribution_thesis.md).
+See [docs/research/contribution_thesis.md](docs/research/contribution_thesis.md).
 
-See [docs/design/model_strategy.md](/Users/cobro/code/clinical-extraction/docs/design/model_strategy.md) for LLM model policy and required run metadata.
+See [docs/design/model_strategy.md](docs/design/model_strategy.md) for LLM model policy and required run metadata.
 
 ## Repository Layout
 
@@ -72,11 +72,36 @@ tests/                          Focused tests for data contracts and determinist
 
 Create and activate an environment, then install the package in editable mode:
 
-```bash
+macOS/Linux:
+
+```shell
 python -m venv .venv
 source .venv/bin/activate
-pip install -e ".[dev]"
-pytest
+python -m pip install -e ".[dev]"
+python -m pytest
+```
+
+Windows PowerShell:
+
+```powershell
+py -3.11 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -e ".[dev]"
+python -m pytest
 ```
 
 The first implementation milestone is to reproduce Gan-compatible data loading, label normalization, and evaluation locally before optimizing the DSPy pipeline.
+
+## Local Ollama Runs
+
+Ollama setup is intentionally separate from the repo setup. Once Ollama is
+running on a Windows laptop, use the LLM CLI's local endpoint flag so the run
+metadata records the model route:
+
+```powershell
+gan2026-llm-experiment --pipeline llm_only_claim_table_selector --mode live --limit 25 --model openai/qwen-model-name --api-base http://localhost:11434/v1
+```
+
+Use the exact local model name from `ollama list` in place of
+`qwen-model-name`. Keep early local runs small (`--limit 25`) until latency,
+format adherence, and endpoint behavior are known.

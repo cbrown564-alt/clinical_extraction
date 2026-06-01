@@ -10,7 +10,7 @@ Hypothesis: a flat section-and-claim table can expose temporal, conflict, and ev
 
 Prediction-bearing component: model-produced claim rows plus model final query. Deterministic code validates structure and evidence, runs strict scorer-format repair and frozen clean scorer-facing policy, and scores each layer.
 
-Data surface: `validation` split, `gan2026_split_v1`, 125 rows.
+Data surface: `validation` split, `gan2026_split_v1`, 250 rows.
 Escalation reason: not applicable for this run size.
 
 ## Model And Prompt Metadata
@@ -37,26 +37,26 @@ Escalation reason: not applicable for this run size.
 
 ## Summary
 
-- Structured claim-table records: 125 / 125
+- Structured claim-table records: 248 / 250
 - Call failures: 0
-- Parse/schema/label issues: 0
-- Exact claim evidence substrings: 270 / 273
-- Exact selected final evidence substrings: 125 / 125
-- raw final-query score: Purist 0.9200 (115 / 125), Pragmatic 0.9280 (116 / 125)
-- Strict-format score: Purist 0.9280 (116 / 125), Pragmatic 0.9360 (117 / 125)
-- Frozen clean scorer-facing score: Purist 0.9360 (117 / 125), Pragmatic 0.9440 (118 / 125)
-- Rows changed by downstream repair layers: 15
+- Parse/schema/label issues: 2
+- Exact claim evidence substrings: 567 / 574
+- Exact selected final evidence substrings: 246 / 250
+- raw final-query score: Purist 0.8920 (223 / 250), Pragmatic 0.9040 (226 / 250)
+- Strict-format score: Purist 0.8960 (224 / 250), Pragmatic 0.9080 (227 / 250)
+- Frozen clean scorer-facing score: Purist 0.9080 (227 / 250), Pragmatic 0.9200 (230 / 250)
+- Rows changed by downstream repair layers: 23
 
 ## Component Failure Slices
 
 | Component | Failures |
 | --- | ---: |
-| segmentation_sectioning | 5 |
-| claim_extraction | 3 |
+| segmentation_sectioning | 15 |
+| claim_extraction | 9 |
 | temporality_conflict | 1 |
-| final_query | 0 |
-| parse_schema | 0 |
-| scorer_format | 4 |
+| final_query | 4 |
+| parse_schema | 2 |
+| scorer_format | 8 |
 
 ## Reviewable Failure Details
 
@@ -68,6 +68,14 @@ Escalation reason: not applicable for this run size.
 | 1923 | claim evidence not exact (c2: Over the past six months he describes ... five epileptic spasms) |  |  |
 | 2166 |  | unparsable_label: frequent (Unparsable label (raw: 'frequent' / normalized: 'frequent')) |  |
 | 2609 |  | unparsable_label: 1 per night (Unparsable label (raw: '1 per night' / normalized: '1 per night')) |  |
+| 3532 | claim evidence not exact (c2: Frequency increased by ~20% after dose increase. This has been over a 3‑week observation window); selected evidence not exact (Frequency increased by ~20% after dose increase. This has been over a 3‑week observation window) |  |  |
+| 3766 |  | missing_final_label | schema_validation_error: Input should be 'frequency', 'cluster_frequency', 'seizure_free', 'last_event_only', 'unknown_frequency', 'no_reference' or 'non_seizure_event' |
+| 3774 | claim evidence not exact (c2: a recent work rota change with earlier starts appears to have coincided with two nocturnal events in the past quarter) |  |  |
+| 3849 | claim evidence not exact (c1: "Frequency currently described as \"sz x3/d\" on their seizure diary, with clustering on late shifts."); selected evidence not exact ("Frequency currently described as \"sz x3/d\" on their seizure diary, with clustering on late shifts.") |  |  |
+| 3988 | claim evidence not exact (c5: a rescue buccal midazolam plan remains in place for any prolonged event lasting more than 5 minutes, although this has not been required over the last year) |  |  |
+| 5379 |  | missing_final_label | schema_validation_error: Input should be 'frequency', 'seizure_free', 'unknown', 'no_reference' or 'unresolved_multiple' |
+| 5551 |  | unparsable_label: several per day (Unparsable label (raw: 'several per day' / normalized: 'several per day')) |  |
+| 5567 |  | unparsable_label: Several per week (Unparsable label (raw: 'several per week' / normalized: 'several per week')) |  |
 
 ## Rows
 
@@ -198,3 +206,128 @@ Escalation reason: not applicable for this run size.
 | 2765 | 1 per month | 1 per month | 1 per month | 1 per month | yes | yes |  |
 | 2776 | 1 per week | 1 per week | 1 per week | 1 per week | yes | yes |  |
 | 2789 | 1 per week | 1 per week | 1 per week | 1 per week | yes | yes |  |
+| 2812 | 1 per day | 1 per day | 1 per day | 1 per day | yes | yes |  |
+| 2822 | 1 per day | 1 per day | 1 per day | 1 per day | yes | yes |  |
+| 2824 | 1 per day | 1 per day | 1 per day | 1 per day | yes | yes |  |
+| 2877 | 2 per year | 2 per year | 2 per year | 2 per year | yes | yes |  |
+| 2887 | 2 per week | 2 per week | 2 per week | 2 per week | yes | yes |  |
+| 2907 | seizure free for 6 month | seizure free for 6 month | seizure free for 6 month | seizure free for 6 month | yes | yes |  |
+| 2932 | seizure free for 9 month | seizure free for 9 month | seizure free for 9 month | seizure free for 9 month | yes | yes |  |
+| 2938 | seizure free for 6 month | seizure free for 6 month | seizure free for 6 month | seizure free for 8 month | yes | yes |  |
+| 2965 | seizure free for 1 year 4 month | seizure free for 1 year | seizure free for 1 year | seizure free for 16 month | yes | yes |  |
+| 2992 | seizure free for 7 month | seizure free for 7 month | seizure free for 7 month | seizure free for 7 month | yes | yes |  |
+| 3015 | seizure free for 1 year | seizure free for 1 year | seizure free for 1 year | seizure free for 12 month | yes | yes |  |
+| 3048 | seizure free for 16 month | seizure free for 16 month | seizure free for 16 month | seizure free for 16 month | yes | yes |  |
+| 3058 | seizure free for 12 month | seizure free for 12 month | seizure free for 12 month | seizure free for 12 month | yes | yes |  |
+| 3082 | seizure free for 10 month | seizure free for 10 month | seizure free for 10 month | seizure free for 10 month | yes | yes |  |
+| 3095 | seizure free for 12 month | seizure free for 12 month | seizure free for 12 month | seizure free for 12 month | yes | yes |  |
+| 3113 | seizure free for 14 month | seizure free for 14 month | seizure free for 14 month | seizure free for 14 month | yes | yes | segmentation_sectioning |
+| 3118 | seizure free for 12 month | seizure free for 12 month | seizure free for 12 month | seizure free for multiple month | yes | yes |  |
+| 3137 | no seizure frequency reference | no seizure frequency reference | no seizure frequency reference | seizure free for multiple month | no | no |  |
+| 3224 | 1 cluster per month, 6 to 7 per cluster | 1 cluster per month, 6 to 7 per cluster | 1 cluster per month, 6 to 7 per cluster | 1 cluster per month, 6 to 7 per cluster | yes | yes |  |
+| 3242 | 1 cluster per month, 5 per cluster | 1 cluster per month, 5 per cluster | 1 cluster per month, 5 per cluster | 2 cluster per month, 5 per cluster | yes | yes |  |
+| 3261 | 1 cluster per month, 4 per cluster | 1 cluster per month, 4 per cluster | 1 cluster per month, 4 per cluster | 2 cluster per month, 4 per cluster | no | no |  |
+| 3262 | 2 cluster per month, 5 per cluster | 2 cluster per month, 5 per cluster | 2 cluster per month, 5 per cluster | 2 cluster per month, 5 per cluster | yes | yes |  |
+| 3281 | 8 per 30 day | 8 per 30 day | 8 per 30 day | 8 per month | yes | yes |  |
+| 3297 | 6 per 30 day | 6 per 30 day | 6 per 30 day | 6 per month | yes | yes |  |
+| 3325 | 3 per week | 3 per week | 3 per week | 3 per week | yes | yes |  |
+| 3356 | unknown | unknown | unknown | unknown | yes | yes |  |
+| 3371 | unknown | unknown | unknown | unknown | yes | yes |  |
+| 3436 | unknown | unknown | unknown | unknown | yes | yes |  |
+| 3468 | unknown | unknown | unknown | unknown | yes | yes |  |
+| 3469 | unknown | unknown | unknown | unknown | yes | yes |  |
+| 3482 | unknown | unknown | unknown | unknown | yes | yes |  |
+| 3493 | unknown | unknown | unknown | unknown | yes | yes |  |
+| 3507 | unknown | unknown | unknown | unknown | yes | yes |  |
+| 3512 | unknown | unknown | unknown | unknown | yes | yes |  |
+| 3528 | unknown | unknown | unknown | unknown | yes | yes |  |
+| 3532 | unknown | unknown | unknown | unknown | yes | yes | claim_extraction,final_query |
+| 3534 | no seizure frequency reference | no seizure frequency reference | no seizure frequency reference | unknown | yes | yes |  |
+| 3600 | unknown | unknown | unknown | unknown | yes | yes | segmentation_sectioning |
+| 3623 | unknown | unknown | unknown | 7 per week | no | no | segmentation_sectioning |
+| 3643 | 1 cluster per week, up to 7 per cluster | 1 cluster per week, up to 7 per cluster | 1 cluster per week, up to 7 per cluster | 7 per week | yes | yes |  |
+| 3681 | 9 per month | 9 per month | 9 per month | 9 per month | yes | yes |  |
+| 3682 | 6 per month | 6 per month | 6 per month | 6 per month | yes | yes |  |
+| 3710 | 5 per week | 5 per week | 5 per week | 5 per week | yes | yes |  |
+| 3753 | 1 per day | 1 per day | 1 per day | 1 per day | yes | yes |  |
+| 3766 | None | None | None | 8 per year |  |  | schema_validation_error: Input should be 'frequency', 'cluster_frequency', 'seizure_free', 'last_event_only', 'unknown_frequency', 'no_reference' or 'non_seizure_event'; claim_extraction,final_query,parse_schema,scorer_format |
+| 3774 | 9 per year | 9 per year | 9 per year | 9 per year | yes | yes | claim_extraction |
+| 3791 | 10 per 12 month | 10 per 12 month | 10 per 12 month | 10 per year | yes | yes |  |
+| 3801 | 9 per month | 9 per month | 9 per month | 9 per month | yes | yes |  |
+| 3806 | 6 per month | 6 per month | 6 per month | 6 per month | yes | yes |  |
+| 3827 | 7 per month | 7 per month | 7 per month | 7 per month | yes | yes |  |
+| 3846 | 2 per day | 2 per day | 2 per day | 2 per day | yes | yes |  |
+| 3849 | 3 per day | 3 per day | 3 per day | 3 per day | yes | yes | claim_extraction,final_query |
+| 3889 | 8 per year | 8 per year | 8 per year | 8 per year | yes | yes |  |
+| 3892 | 3 per year | 3 per year | 3 per year | 3 per year | yes | yes |  |
+| 3940 | 4 per week | 4 per week | 4 per week | 4 per week | yes | yes | segmentation_sectioning |
+| 3949 | 4 per week | 4 per week | 4 per week | 4 per week | yes | yes |  |
+| 3988 | 1 per week | 1 per week | 1 per week | multiple per week | no | no | claim_extraction |
+| 3995 | 1 per month | 1 per month | 1 per month | 1 per month | yes | yes |  |
+| 3999 | 1 per month | 1 per month | 1 per month | 1 per month | yes | yes |  |
+| 4022 | 8 per month | 8 per month | 8 per month | 8 per month | yes | yes |  |
+| 4026 | 1 per month | 1 per month | 1 per month | 1 per month | yes | yes |  |
+| 4092 | 1 per 2 to 3 week | 1 per 2 to 3 week | 1 per 2 to 3 week | 1 per 2 to 3 week | yes | yes |  |
+| 4100 | 1 per 2 to 3 week | 1 per 2 to 3 week | 1 per 2 to 3 week | 1 per 2 to 3 week | yes | yes |  |
+| 4110 | 1 per 1 to 2 day | 1 per 1 to 2 day | 1 per 1 to 2 day | 1 per 1 to 2 day | yes | yes |  |
+| 4116 | 1 per 1 to 2 day | 1 per 1 to 2 day | 1 per 1 to 2 day | 1 per 1 to 2 day | yes | yes |  |
+| 4173 | 1 per 2 week | 1 per 2 week | 1 per 2 week | 1 per 2 week | yes | yes | segmentation_sectioning |
+| 4243 | 1 per 2 to 3 week | 1 per 2 to 3 week | 1 per 2 to 3 week | 1 per 2 to 3 week | yes | yes | segmentation_sectioning |
+| 4258 | 4 per 7 day | 4 per 7 day | 4 per 7 day | 4 per week | yes | yes |  |
+| 4337 | 3 per 4 month | 3 per 4 month | 3 per 4 month | 3 per 3 month | no | no |  |
+| 4345 | 4 per month | 4 per month | 4 per month | 4 per month | yes | yes |  |
+| 4368 | 5 per 2 month | 5 per 2 month | 5 per 2 month | 5 per 2 month | yes | yes |  |
+| 4402 | 1 to 2 per month | 1 to 2 per month | 1 to 2 per month | 7 per 7 month | no | no |  |
+| 4410 | 1 per 2 to 3 month | 1 per 2 to 3 month | 1 per 2 to 3 month | 4 per 7 month | yes | yes | segmentation_sectioning |
+| 4478 | 19 per week | 19 per week | 19 per week | 19 per week | yes | yes |  |
+| 4480 | 3 to 5 per week | 3 to 5 per week | 3 to 5 per week | 3 to 5 per week | yes | yes |  |
+| 4496 | 7 to 8 per 3 month | 7 to 8 per 3 month | 7 to 8 per 3 month | 7 to 8 per 3 month | yes | yes |  |
+| 4562 | 1 per 6 week | 1 per 6 week | 1 per 6 week | 1 per 6 week | yes | yes |  |
+| 4563 | 1 per 4 month | 1 per 4 month | 1 per 4 month | 1 per 4 month | yes | yes |  |
+| 4574 | 1 per 4 week | 1 per 4 week | 1 per 4 week | 1 per 4 week | yes | yes |  |
+| 4592 | 1 per 2 month | 1 per 2 month | 1 per 2 month | 1 per 2 month | yes | yes |  |
+| 4597 | 1 per 3 week | 1 per 3 week | 1 per 3 week | 1 per 3 week | yes | yes |  |
+| 4624 | 1 per 3 to 4 day | 1 per 3 to 4 day | 1 per 3 to 4 day | 1 per 3 to 4 day | yes | yes |  |
+| 4631 | 1 per 14 to 21 day | 1 per 14 to 21 day | 1 per 14 to 21 day | 1 per 14 to 21 day | yes | yes |  |
+| 4690 | seizure free interval | seizure free for multiple year | seizure free for multiple year | multiple per day | no | no |  |
+| 4694 | unknown | unknown | unknown | multiple per day | yes | yes |  |
+| 4700 | unknown | unknown | unknown | multiple per day | yes | yes | segmentation_sectioning |
+| 4709 | unknown | unknown | unknown | multiple per day | yes | yes |  |
+| 4731 | unknown | unknown | unknown | unknown | yes | yes |  |
+| 4732 | unknown | unknown | unknown | unknown | yes | yes |  |
+| 4771 | multiple per month | multiple per month | multiple per month | unknown | yes | yes |  |
+| 4839 | seizure free for 4 month | seizure free for 4 month | seizure free for 4 month | seizure free for multiple month | yes | yes |  |
+| 4842 | seizure free | seizure free for multiple year | seizure free for multiple year | seizure free for multiple month | yes | yes |  |
+| 4910 | seizure free for 2 year | seizure free for 2 year | seizure free for 2 year | seizure free for 2 year | yes | yes | segmentation_sectioning |
+| 4919 | seizure free for 2 year | seizure free for 2 year | seizure free for 2 year | seizure free for 2 year | yes | yes |  |
+| 4926 | seizure free for 1 year | seizure free for 1 year | seizure free for 1 year | seizure free for 1 year | yes | yes |  |
+| 4951 | seizure free for 6 month | seizure free for 6 month | seizure free for 6 month | seizure free for multiple month | yes | yes |  |
+| 4956 | seizure free for 7 month | seizure free for 7 month | seizure free for 7 month | seizure free for 7 month | yes | yes |  |
+| 4992 | seizure free for 11 month | seizure free for 11 month | seizure free for 11 month | seizure free for 11 month | yes | yes |  |
+| 4994 | seizure free for 6 month | seizure free for 6 month | seizure free for 6 month | seizure free for 6 month | yes | yes |  |
+| 5040 | seizure free for 6 month | seizure free for 6 month | seizure free for 6 month | seizure free for 6 months | yes | yes |  |
+| 5082 | seizure free for 6 month | seizure free for 6 month | seizure free for 6 month | seizure free for multiple month | yes | yes |  |
+| 5092 | no seizure frequency reference | no seizure frequency reference | no seizure frequency reference | seizure free for multiple month | no | no |  |
+| 5110 | no seizure frequency reference | no seizure frequency reference | no seizure frequency reference | seizure free for multiple month | no | no |  |
+| 5121 | no seizure frequency reference | no seizure frequency reference | no seizure frequency reference | seizure free for multiple month | no | no |  |
+| 5136 | seizure free for 3 month | seizure free for 3 month | seizure free for 3 month | seizure free for multiple month | yes | yes |  |
+| 5141 | seizure free for 1.5 month | seizure free for 1.5 month | seizure free for 1.5 month | seizure free for multiple month | yes | yes |  |
+| 5197 | seizure free for 6 month | seizure free for 6 month | seizure free for 6 month | seizure free for multiple month | yes | yes |  |
+| 5210 | seizure free | seizure free for multiple year | seizure free for multiple year | seizure free for multiple month | yes | yes |  |
+| 5221 | seizure free for 1 year 9 month | seizure free for 1 year | seizure free for 1 year | seizure free for multiple month | yes | yes |  |
+| 5248 | seizure free | seizure free for multiple year | seizure free for multiple year | seizure free for multiple year | yes | yes |  |
+| 5331 | seizure free for 12 month | seizure free for 12 month | seizure free for 12 month | seizure free for 12 month | yes | yes |  |
+| 5345 | seizure free for 6 month | seizure free for 6 month | seizure free for 6 month | seizure free for multiple month | yes | yes |  |
+| 5351 | seizure free for 18 month | seizure free for 18 month | seizure free for 18 month | seizure free for 18 month | yes | yes |  |
+| 5379 | None | None | None | seizure free for multiple month |  |  | schema_validation_error: Input should be 'frequency', 'seizure_free', 'unknown', 'no_reference' or 'unresolved_multiple'; claim_extraction,final_query,parse_schema,scorer_format |
+| 5406 | seizure free for 2 month | seizure free for 2 month | seizure free for 2 month | seizure free for multiple month | yes | yes |  |
+| 5476 | unknown | unknown | unknown | unknown | yes | yes |  |
+| 5490 | unknown | unknown | unknown | unknown | yes | yes | segmentation_sectioning |
+| 5491 | 2 per 6 week | 2 per 6 week | 2 per 6 week | unknown | no | no |  |
+| 5504 | unknown | unknown | unknown | unknown | yes | yes |  |
+| 5507 | unknown | unknown | unknown | unknown | yes | yes |  |
+| 5528 | no seizure frequency reference | no seizure frequency reference | no seizure frequency reference | 1 per month | no | no |  |
+| 5534 | 1 per 2 week | 1 per 2 week | 1 per 2 week | 1 per multiple month | no | no |  |
+| 5551 | several per day | several per day | multiple per day | multiple per day |  | yes | scorer_format |
+| 5567 | Several per week | several per week | multiple per week | multiple per week |  | yes | scorer_format |
+| 5584 | multiple per week | multiple per week | multiple per week | multiple per week | yes | yes |  |
