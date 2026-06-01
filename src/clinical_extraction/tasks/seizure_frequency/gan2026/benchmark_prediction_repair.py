@@ -1,0 +1,800 @@
+from __future__ import annotations
+
+import re
+
+from clinical_extraction.tasks.seizure_frequency.gan2026 import label_parser as _labels
+from clinical_extraction.tasks.seizure_frequency.gan2026.rules.benchmark_repair import (
+    BenchmarkRepairStep,
+    benchmark_repair_rule,
+)
+
+normalize_frequency_label = _labels.normalize_frequency_label
+_parse_range = _labels._parse_range
+
+
+NUM_WORDS = {
+    "zero": "0",
+    "one": "1",
+    "two": "2",
+    "three": "3",
+    "four": "4",
+    "five": "5",
+    "six": "6",
+    "seven": "7",
+    "eight": "8",
+    "nine": "9",
+    "ten": "10",
+    "eleven": "11",
+    "twelve": "12",
+}
+UNIT_SYNONYMS = {
+    "d": "day",
+    "day": "day",
+    "days": "day",
+    "w": "week",
+    "wk": "week",
+    "wks": "week",
+    "week": "week",
+    "weeks": "week",
+    "mo": "month",
+    "mon": "month",
+    "mons": "month",
+    "mos": "month",
+    "month": "month",
+    "months": "month",
+    "y": "year",
+    "yr": "year",
+    "yr.": "year",
+    "yrs": "year",
+    "year": "year",
+    "years": "year",
+}
+ALLOWED_PREDICTION_PATTERNS = (
+    re.compile(r"^unknown$"),
+    re.compile(r"^no seizure frequency reference$"),
+    re.compile(
+        r"^seizure free for (?:multiple|\d+(?:\.\d+)?(?: to \d+(?:\.\d+)?)?) "
+        r"(?:month|year)$"
+    ),
+    re.compile(
+        r"^(?:multiple|\d+(?: to \d+)?) per "
+        r"(?:(?:multiple|\d+(?: to \d+)?) )?(?:day|week|month|year)$"
+    ),
+    re.compile(
+        r"^(?:multiple|\d+(?: to \d+)?) cluster per "
+        r"(?:(?:multiple|\d+(?: to \d+)?) )?(?:day|week|month|year), "
+        r"(?:multiple|\d+(?: to \d+)?) per cluster$"
+    ),
+    re.compile(r"^unknown, (?:multiple|\d+(?: to \d+)?) per cluster$"),
+)
+
+
+def _is_allowed_prediction_format(text: str) -> bool:
+    return any(pattern.match(text) for pattern in ALLOWED_PREDICTION_PATTERNS)
+
+
+def _normalize_unknown_no_reference(text: str) -> str:
+    no_reference_pattern = (
+        r"\bno (?:seizure )?(?:frequency|freq)"
+        r"(?: reference| info(?:rmation)?| mentioned| noted)?\b"
+    )
+    if re.search(
+        no_reference_pattern,
+        text,
+    ):
+        return "no seizure frequency reference"
+    if text.strip() == "unknown" or re.fullmatch(r"unknown\s*[,;:]*\s*", text):
+        return "unknown"
+    return text
+
+
+def _words_to_numbers(text: str) -> str:
+    return re.sub(
+        r"\b(" + "|".join(NUM_WORDS) + r")\b",
+        lambda match: NUM_WORDS[match.group(0)],
+        text,
+    )
+
+
+def _normalize_units(text: str) -> str:
+    unit_pattern = "|".join(map(re.escape, sorted(UNIT_SYNONYMS, key=len, reverse=True)))
+    text = re.sub(rf"\b({unit_pattern})\b", lambda m: UNIT_SYNONYMS[m.group(0)], text)
+    return re.sub(r"\b(day|week|month|year)s\b", r"\1", text)
+
+
+def _slash_per_forms(text: str) -> str:
+    unit_pattern = r"d|day|wk|wks?|week|mo|mon|mos|mons?|month|yr|yrs?|y|year"
+
+    def replace(match: re.Match[str]) -> str:
+        unit = UNIT_SYNONYMS.get(match.group("unit"), match.group("unit"))
+        return f"{match.group('num')} per {unit}"
+
+    return re.sub(
+        rf"(?P<num>\d+(?:\s*to\s*\d+)?)\s*/\s*(?P<unit>{unit_pattern})s?\b",
+        replace,
+        text,
+    )
+
+
+def _x_times_forms(text: str) -> str:
+    unit_pattern = r"d|day|wk|wks?|week|mo|mon|mos?|month|yr|yrs?|y|year"
+    text = re.sub(r"(?<=\d)\s*[x×]\s*(?=per\b|/)", " ", text)
+    text = re.sub(
+        rf"\bx\s*(\d+)\s*/\s*({unit_pattern})s?\b",
+        lambda match: f"{match.group(1)} per {UNIT_SYNONYMS.get(match.group(2), '')}",
+        text,
+    )
+    return re.sub(
+        r"(\d+(?:\s*to\s*\d+)?)\s*(?:x|times?)\s*"
+        r"(?=per\b|/|\b(?:daily|weekly|monthly|yearly|annually)\b)",
+        r"\1 ",
+        text,
+    )
+
+
+def _every_each_forms(text: str) -> str:
+    text = re.sub(r"\b\d+\s+(?=every\s+other\s+(day|week|month|year)\b)", "", text)
+    text = re.sub(r"\b\d+\s+(?=(?:every|each)\s+\d+\s*(day|week|month|year)s?\b)", "", text)
+    text = re.sub(r"\b(?:every|each)\s+other\s+(day|week|month|year)\b", r"1 per 2 \1", text)
+    text = re.sub(r"\b(?:every|each)\s+(\d+)\s*(day|week|month|year)s?\b", r"1 per \1 \2", text)
+    text = re.sub(r"\b(?:every|each)\s+(day|week|month|year)s?\b", r"1 per \1", text)
+    return re.sub(r"\bper\s+(?:each|every)\s+", "per ", text)
+
+
+def _period_words(text: str) -> str:
+    text = re.sub(
+        r"(\d+(?:\s*to\s*\d+)?|\bmultiple\b)?\s*\bweekly\b",
+        lambda match: (match.group(1) or "1") + " per week",
+        text,
+    )
+    text = re.sub(
+        r"(\d+(?:\s*to\s*\d+)?|\bmultiple\b)?\s*\bmonthly\b",
+        lambda match: (match.group(1) or "1") + " per month",
+        text,
+    )
+    text = re.sub(
+        r"(\d+(?:\s*to\s*\d+)?|\bmultiple\b)?\s*\bdaily\b",
+        lambda match: (match.group(1) or "1") + " per day",
+        text,
+    )
+    text = re.sub(r"\b(?:annually|yearly)\b", "1 per year", text)
+    text = re.sub(r"\bsemiweekly\b", "2 per week", text)
+    text = re.sub(r"\bbiweekly\b", "1 per 2 week", text)
+    text = re.sub(r"\bsemimonthly\b", "2 per month", text)
+    return re.sub(r"\bbimonthly\b", "1 per 2 month", text)
+
+
+def _strip_upper_bound_qualifier(text: str) -> str:
+    text = re.sub(
+        r"^(?:<=|\u2264|up to|at most|no more than)\s+"
+        r"(?=\d+(?:\s*to\s*\d+)?\s+per\s+)",
+        "",
+        text,
+    )
+    return re.sub(
+        r"\b(day|week|month|year)\s+or\s+less$",
+        r"\1",
+        text,
+    )
+
+
+def _normalize_quarter_period(text: str) -> str:
+    return re.sub(r"\bper\s+quarter\b", "per 3 month", text)
+
+
+def _inequality_to_multiple(text: str) -> str:
+    text = re.sub(
+        r"\b(?:at least|no less than|more than|over|greater than)\b\s*(\d+(?:\s*to\s*\d+)?)",
+        "multiple",
+        text,
+    )
+    text = re.sub(
+        r"\b(?:at most|no more than|less than|under|up to)\b\s*(\d+(?:\s*to\s*\d+)?)",
+        "multiple",
+        text,
+    )
+    text = re.sub(r"[≥>]\s*\d+(?:\s*to\s*\d+)?", "multiple", text)
+    return re.sub(r"[≤<]\s*\d+(?:\s*to\s*\d+)?", "multiple", text)
+
+
+def _drop_prediction_noise(text: str) -> str:
+    text = re.sub(r"\b(?:approximately|approx\.?|about|around|nearly|~)\b", "", text)
+    text = re.sub(r"\b(?:a few|few|several)\b", "multiple", text)
+    text = re.sub(r"\ba couple of\b", "2", text)
+    return _drop_prediction_format_noise(text)
+
+
+def _drop_prediction_format_noise(text: str) -> str:
+    normalized = normalize_frequency_label(text)
+    if normalized in {"unknown", "no seizure frequency reference"}:
+        return normalized
+    text = re.sub(r"\b(?:approximately|approx\.?|about|around|nearly|~)\b", "", text)
+    text = re.sub(r"\bseizures?\b(?!\s*[- ]?free)", "", text)
+    text = re.sub(r"\b(?:episodes?|events?|attacks?|spells?|szs?)\b", "", text)
+    text = re.sub(r"\b(?:of|the|a|an)\b", "", text)
+    return normalize_frequency_label(text)
+
+
+def _reorder_period_then_count(text: str) -> str:
+    if "cluster" in text:
+        return text
+    return re.sub(
+        r"\bper\s+(day|week|month|year)\s+(\d+(?:\s*to\s*\d+)?|multiple)\b",
+        r"\2 per \1",
+        text,
+    )
+
+
+def _canonicalize_seizure_free(text: str) -> str:
+    if (
+        "seizure free" not in text
+        and "seizure-free" not in text
+        and "sz free" not in text
+        and "sz-free" not in text
+    ):
+        return text
+    text = text.replace("seizure-free", "seizure free")
+    text = text.replace("sz free", "seizure free").replace("sz-free", "seizure free")
+    match = re.search(
+        r"seizure free(?:\s*for)?\s*"
+        r"(\d+(?:\.\d+)?(?:\s*to\s*\d+(?:\.\d+)?)?)\s*(month|year)s?\b",
+        text,
+    )
+    if match:
+        return f"seizure free for {match.group(1)} {match.group(2)}"
+    if re.search(r"seizure free since\b", text):
+        return "seizure free for multiple year"
+    return "seizure free for multiple year"
+
+
+def _fix_cluster_block(text: str) -> str:
+    if "cluster" not in text:
+        return text
+    text = re.sub(r"\bclusters\b", "cluster", text)
+    text = re.sub(
+        r"\bunknown\s+per\s+cluster\s+(\d+(?:\s*to\s*\d+)?)\b",
+        r"unknown, \1 per cluster",
+        text,
+    )
+    text = re.sub(
+        r"\bunknown\s+per\s+cluster\s*,\s*(\d+(?:\s*to\s*\d+)?|multiple)\b",
+        r"unknown, \1 per cluster",
+        text,
+    )
+    text = re.sub(r"\bunknown\s+per\s+cluster\b", "unknown, multiple per cluster", text)
+    text = re.sub(
+        r"\b(\d+(?:\s*to\s*\d+)?)\s*per\s*cluster\s*to\s*(\d+(?:\s*to\s*\d+)?)\s*per\s*cluster\b",
+        r"\1 to \2 per cluster",
+        text,
+    )
+    text = re.sub(
+        r"\b(cluster per (?:\d+(?:\s*to\s*\d+)?\s*)?(?:day|week|month|year))\s+"
+        r"(?=(?:\d+(?:\s*to\s*\d+)?|multiple)\s*per\s*cluster\b)",
+        r"\1, ",
+        text,
+    )
+    text = re.sub(
+        r"\b((?:\d+(?:\s*to\s*\d+)?|multiple)\s*per\s*cluster)\s*,\s*"
+        r"((?:\d+(?:\s*to\s*\d+)?|multiple)\s*)cluster\s*per\s*"
+        r"((?:\d+(?:\s*to\s*\d+)?\s*)?)(day|week|month|year)\b",
+        r"\2cluster per \3\4, \1",
+        text,
+    )
+    if "cluster per" in text and "per cluster" not in text and "unknown" not in text:
+        return "unknown"
+    return text
+
+
+def _drop_per_one(text: str) -> str:
+    return re.sub(r"\bper\s+1\s+(day|week|month|year)\b", r"per \1", text)
+
+
+def _cleanup_commas(text: str) -> str:
+    text = re.sub(r"\s*,\s*", ", ", text)
+    return normalize_frequency_label(text)
+
+
+def _compress_double_per_range(text: str) -> str:
+    pattern = re.compile(
+        r"\b(?P<a>(?:multiple|\d+(?:\s*to\s*\d+)?))\s*per\s*"
+        r"(?P<dena>(?:\d+(?:\s*to\s*\d+)?\s+)?)?(?P<unita>day|week|month|year)\s*to\s*"
+        r"(?P<b>(?:multiple|\d+(?:\s*to\s*\d+)?))\s*per\s*"
+        r"(?P<denb>(?:\d+(?:\s*to\s*\d+)?\s+)?)?(?P<unitb>day|week|month|year)\b"
+    )
+
+    def replace(match: re.Match[str]) -> str:
+        den_a = (match.group("dena") or "").strip() or "1"
+        den_b = (match.group("denb") or "").strip() or "1"
+        if match.group("unita") != match.group("unitb") or den_a != den_b:
+            return match.group(0)
+        left = match.group("a")
+        right = match.group("b")
+        if "multiple" in (left, right):
+            return f"multiple per {match.group('unita')}"
+        left_min, left_max = _parse_range(left)
+        right_min, right_max = _parse_range(right)
+        low = min(left_min, right_min)
+        high = max(left_max, right_max)
+        unit = match.group("unita")
+        return f"{low} per {unit}" if low == high else f"{low} to {high} per {unit}"
+
+    previous = None
+    while previous != text:
+        previous = text
+        text = pattern.sub(replace, text)
+    return text
+
+
+def _normalize_cluster_label(text: str) -> str:
+    stripped = re.sub(r"\bcluster\b", "", text.strip().lower()).strip()
+    match = re.match(
+        r"^(\d+(?:\s*to\s*\d+)?)\s*(?:per\s+)?(\d+(?:\s*to\s*\d+)?\s+)?(\w+)?$",
+        stripped,
+    )
+    if not match:
+        return text
+    number = match.group(1)
+    denominator = match.group(2)
+    unit = match.group(3)
+    if denominator and unit:
+        return f"{number} per {denominator.strip()} {unit}"
+    if unit:
+        return f"{number} per {unit}"
+    return f"{number} per month"
+
+
+def _normalize_cluster_label2(text: str) -> str:
+    text = text.replace("，", ",")
+    text = normalize_frequency_label(text)
+    num = r"\d+(?:\s*to\s*\d+)?"
+    unit = r"(?:day|week|month|year)s?"
+
+    dual = re.compile(
+        rf"^(?P<v1>{num})\s*(?:cluster\s+)?per\s+(?:(?P<v2>{num})\s+)?"
+        rf"(?P<unit>{unit})\s*,\s*(?P<v3>{num})\s+per\s+cluster$"
+    )
+    match = dual.match(text)
+    if match:
+        denominator = _omit_one(match.group("v2"))
+        unit_value = _singular_unit(match.group("unit"))
+        left = f"{match.group('v1')} cluster per "
+        left += f"{denominator} {unit_value}" if denominator else unit_value
+        return f"{left}, {match.group('v3')} per cluster"
+
+    cleaned = re.sub(rf"\b({num})\s+cluster\s+per\b", r"\1 per", text)
+    cleaned = re.sub(r"\bper\s+cluster\s+per\b", "per", cleaned)
+    single = re.compile(rf"^(?P<v1>{num})\s*per\s+(?:(?P<v2>{num})\s+)?(?P<unit>{unit})$")
+    match = single.match(cleaned)
+    if match:
+        denominator = _omit_one(match.group("v2"))
+        unit_value = _singular_unit(match.group("unit"))
+        return f"{match.group('v1')} per {denominator + ' ' if denominator else ''}{unit_value}"
+
+    cluster_only = re.compile(rf"^(?P<v1>{num})\s+per\s+cluster$")
+    match = cluster_only.match(text)
+    if match:
+        return f"unknown, {match.group('v1')} per cluster"
+    return text
+
+
+def _singular_unit(unit: str) -> str:
+    return unit[:-1] if unit.endswith("s") else unit
+
+
+def _omit_one(value: str | None) -> str | None:
+    if value is None:
+        return None
+    normalized = normalize_frequency_label(value)
+    return None if normalized == "1" else normalized
+
+
+def _clean_prediction_extras(text: str) -> str:
+    num = r"\d+(?:\s*to\s*\d+)?"
+    unit = r"(?:day|week|month|year)s?"
+    pattern = re.compile(
+        rf"^(?P<head>.*?\bper\s+{num}\s+year)\s+(?P<tail>{num}\s+month)\s*(?P<end>,?.*)$"
+    )
+    match = pattern.match(text)
+    if match:
+        end = match.group("end") or ""
+        return f"{match.group('head').rstrip()}{(' ' + end.strip()) if end.strip() else ''}".strip()
+
+    pattern = re.compile(
+        rf"^(?P<left>.*?\bper\s+(?:{num}\s+)?{unit})\s+to\s+"
+        rf"{num}\s+per\s+(?:{num}\s+)?{unit}\s*$"
+    )
+    match = pattern.match(text)
+    if match:
+        return match.group("left").strip()
+    return text
+
+
+def _fallback_prediction_repair(text: str) -> str:
+    if "unknown" in text:
+        match = re.search(r"(\d+(?:\s*to\s*\d+)?|multiple)\s*per\s*cluster", text)
+        return f"unknown, {match.group(1)} per cluster" if match else "unknown"
+    if "cluster" in text:
+        cluster_match = re.search(
+            r"(?P<count>(?:\d+(?:\s*to\s*\d+)?|multiple))\s*clusters?\s*per\s*"
+            r"(?P<den>(?:\d+(?:\s*to\s*\d+)?\s*)?)(?P<unit>day|week|month|year)",
+            text,
+        )
+        per_cluster_match = re.search(
+            r"(?P<pc>(?:\d+(?:\s*to\s*\d+)?|multiple))\s*per\s*cluster",
+            text,
+        )
+        if cluster_match and per_cluster_match:
+            denominator = (cluster_match.group("den") or "").strip()
+            unit = cluster_match.group("unit")
+            den_text = (denominator + " ").strip() if denominator and denominator != "1" else ""
+            return (
+                f"{cluster_match.group('count')} cluster per {den_text}{unit}, "
+                f"{per_cluster_match.group('pc')} per cluster"
+            )
+        return "unknown"
+
+    match = re.search(
+        r"(?P<num>(?:\d+(?:\s*to\s*\d+)?|multiple))\s*per\s*"
+        r"(?P<den>(?:\d+(?:\s*to\s*\d+)?\s*)?)(?P<unit>day|week|month|year)",
+        text,
+    )
+    if match:
+        denominator = (match.group("den") or "").strip()
+        unit = match.group("unit")
+        den_text = (denominator + " ").strip() if denominator and denominator != "1" else ""
+        return f"{match.group('num')} per {den_text}{unit}"
+
+    event_per_window = re.search(
+        r"(?P<num>(?:\d+(?:\s*to\s*\d+)?|multiple))\s+"
+        r"(?=(?:[a-z]+(?:-[a-z]+)?\s+){0,5}"
+        r"(?:seizure|attack|convulsion|spasm|mal|event|tonic))"
+        r".*?\bper\s+(?P<den>(?:\d+(?:\s*to\s*\d+)?\s*)?)"
+        r"(?P<unit>day|week|month|year)",
+        text,
+    )
+    if event_per_window:
+        denominator = (event_per_window.group("den") or "").strip()
+        unit = event_per_window.group("unit")
+        den_text = f"{denominator} " if denominator and denominator != "1" else ""
+        return f"{event_per_window.group('num')} per {den_text}{unit}"
+    return "no seizure frequency reference"
+
+
+def _daypart_to_day(text: str) -> str:
+    text = text.replace(" per night", " per day")
+    text = text.replace(" per morning", " per day")
+    text = text.replace(" per afternoon", " per day")
+    return text.replace(" per evening", " per day")
+
+
+def _normalize_ranges(text: str) -> str:
+    return re.sub(r"(\d+)\s*[-–—]\s*(\d+)", r"\1 to \2", text)
+
+
+def _once_twice_thrice(text: str) -> str:
+    text = re.sub(r"\bonce\b", "1", text)
+    text = re.sub(r"\btwice\b", "2", text)
+    return re.sub(r"\bthrice\b", "3", text)
+
+
+def _drop_times_before_per(text: str) -> str:
+    return re.sub(r"\btimes?\b(?=\s+per\b)", "", text)
+
+
+def _zero_period_to_unknown(text: str) -> str:
+    if re.search(r"\bper\s+0\s+(day|week|month|year)\b", text):
+        return "unknown"
+    return text
+
+
+def _fallback_if_disallowed(text: str) -> str:
+    return text if _is_allowed_prediction_format(text) else _fallback_prediction_repair(text)
+
+
+def _final_allowed_format_repair(text: str) -> str:
+    if _is_allowed_prediction_format(text):
+        return text
+    if text.startswith("seizure free"):
+        if re.search(r"\b(month|year)\b", text) is None:
+            return "seizure free for multiple year"
+    elif "per " in text and not re.search(r"\b(day|week|month|year)\b", text):
+        text = re.sub(r"per\s+\S+\b", "per month", text)
+    if not _is_allowed_prediction_format(text):
+        return "unknown"
+    return text
+
+
+BENCHMARK_REPAIR_STEPS = (
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.daypart_to_day",
+        description="Map night/morning/afternoon/evening denominators to day.",
+        apply=_daypart_to_day,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.unknown_no_reference",
+        description="Normalize common unknown and no-reference prediction phrases.",
+        apply=_normalize_unknown_no_reference,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.word_numbers",
+        description="Convert number words used in labels to digits.",
+        apply=_words_to_numbers,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.range_delimiters",
+        description="Normalize hyphenated numeric ranges to 'to'.",
+        apply=_normalize_ranges,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.once_twice_thrice",
+        description="Convert once/twice/thrice to numeric counts.",
+        apply=_once_twice_thrice,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.slash_per_forms",
+        description="Convert slash-per shorthand into count per period labels.",
+        apply=_slash_per_forms,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.x_times_forms",
+        description="Convert x/times shorthand into count per period labels.",
+        apply=_x_times_forms,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.drop_times_before_per",
+        description="Drop redundant times tokens before per.",
+        apply=_drop_times_before_per,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.every_each_forms",
+        description="Convert every/each period phrasing into count per period labels.",
+        apply=_every_each_forms,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.period_words",
+        description="Convert daily/weekly/monthly/yearly period words into per labels.",
+        apply=_period_words,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.inequality_to_multiple",
+        description="Map inequality phrases to multiple when scorer format lacks bounds.",
+        apply=_inequality_to_multiple,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.drop_prediction_noise",
+        description="Drop approximate and seizure-word noise from prediction labels.",
+        apply=_drop_prediction_noise,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.normalize_units_first",
+        description="Normalize unit abbreviations and plurals.",
+        apply=_normalize_units,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.normalize_whitespace_first",
+        description="Normalize case, whitespace, and surrounding label text.",
+        apply=normalize_frequency_label,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.reorder_period_then_count",
+        description="Reorder period-then-count predictions into count-per-period labels.",
+        apply=_reorder_period_then_count,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.canonicalize_seizure_free",
+        description="Canonicalize seizure-free predictions into scorer-compatible labels.",
+        apply=_canonicalize_seizure_free,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.normalize_units_after_seizure_free",
+        description="Normalize units after seizure-free canonicalization.",
+        apply=_normalize_units,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.fix_cluster_block",
+        description="Repair cluster labels before final cluster normalization.",
+        apply=_fix_cluster_block,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.normalize_units_after_cluster",
+        description="Normalize units after cluster repair.",
+        apply=_normalize_units,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.drop_per_one_first",
+        description="Drop explicit per-one denominators.",
+        apply=_drop_per_one,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.cleanup_commas_first",
+        description="Clean comma spacing and normalize whitespace.",
+        apply=_cleanup_commas,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.compress_double_per_range",
+        description="Compress double per-period ranges with matching denominators.",
+        apply=_compress_double_per_range,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.normalize_cluster_label",
+        description="Normalize compact cluster-only labels.",
+        apply=_normalize_cluster_label,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.normalize_cluster_label2",
+        description="Normalize dual cluster and per-cluster labels.",
+        apply=_normalize_cluster_label2,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.clean_prediction_extras",
+        description="Drop trailing prediction extras that break scorer parsing.",
+        apply=_clean_prediction_extras,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.zero_period_to_unknown",
+        description="Map impossible zero-period denominators to unknown.",
+        apply=_zero_period_to_unknown,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.fallback_if_disallowed",
+        description="Apply fallback repair when the label is outside accepted formats.",
+        apply=_fallback_if_disallowed,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.drop_per_one_final",
+        description="Drop per-one denominators after fallback repair.",
+        apply=_drop_per_one,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.cleanup_commas_final",
+        description="Clean comma spacing after fallback repair.",
+        apply=_cleanup_commas,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.final_allowed_format_repair",
+        description="Final accepted-format guard before returning a prediction label.",
+        apply=_final_allowed_format_repair,
+    ),
+)
+
+FORMAT_PRESERVING_BENCHMARK_REPAIR_STEPS = (
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.daypart_to_day",
+        description="Map night/morning/afternoon/evening denominators to day.",
+        apply=_daypart_to_day,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.unknown_no_reference",
+        description="Normalize explicit unknown and no-reference prediction phrases.",
+        apply=_normalize_unknown_no_reference,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.word_numbers",
+        description="Convert number words used in labels to digits.",
+        apply=_words_to_numbers,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.range_delimiters",
+        description="Normalize hyphenated numeric ranges to 'to'.",
+        apply=_normalize_ranges,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.once_twice_thrice",
+        description="Convert once/twice/thrice to numeric counts.",
+        apply=_once_twice_thrice,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.slash_per_forms",
+        description="Convert slash-per shorthand into count per period labels.",
+        apply=_slash_per_forms,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.x_times_forms",
+        description="Convert x/times shorthand into count per period labels.",
+        apply=_x_times_forms,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.drop_times_before_per",
+        description="Drop redundant times tokens before per.",
+        apply=_drop_times_before_per,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.every_each_forms",
+        description="Convert every/each period phrasing into count per period labels.",
+        apply=_every_each_forms,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.period_words",
+        description="Convert daily/weekly/monthly/yearly period words into per labels.",
+        apply=_period_words,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.strip_upper_bound_qualifier",
+        description="Drop explicit upper-bound qualifiers from otherwise parser-compatible rates.",
+        apply=_strip_upper_bound_qualifier,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.normalize_quarter_period",
+        description="Convert quarter denominators to the Gan-compatible 3 month window.",
+        apply=_normalize_quarter_period,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.drop_prediction_format_noise",
+        description="Drop event-word and approximation noise without vague remapping.",
+        apply=_drop_prediction_format_noise,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.normalize_units_first",
+        description="Normalize unit abbreviations and plurals.",
+        apply=_normalize_units,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.normalize_whitespace_first",
+        description="Normalize case, whitespace, and surrounding label text.",
+        apply=normalize_frequency_label,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.reorder_period_then_count",
+        description="Reorder period-then-count predictions into count-per-period labels.",
+        apply=_reorder_period_then_count,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.canonicalize_seizure_free",
+        description="Canonicalize seizure-free predictions into scorer-compatible labels.",
+        apply=_canonicalize_seizure_free,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.normalize_units_after_seizure_free",
+        description="Normalize units after seizure-free canonicalization.",
+        apply=_normalize_units,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.drop_per_one_first",
+        description="Drop explicit per-one denominators.",
+        apply=_drop_per_one,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.cleanup_commas_first",
+        description="Clean comma spacing and normalize whitespace.",
+        apply=_cleanup_commas,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.compress_double_per_range",
+        description="Compress double per-period ranges with matching denominators.",
+        apply=_compress_double_per_range,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.clean_prediction_extras",
+        description="Drop trailing prediction extras that break scorer parsing.",
+        apply=_clean_prediction_extras,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.drop_per_one_final",
+        description="Drop per-one denominators after strict format repair.",
+        apply=_drop_per_one,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.cleanup_commas_final",
+        description="Clean comma spacing after strict format repair.",
+        apply=_cleanup_commas,
+    ),
+)
+
+
+BENCHMARK_REPAIR_RULES = tuple(
+    benchmark_repair_rule(
+        rule_id=step.rule_id,
+        description=step.description,
+        apply=step.apply,
+    )
+    for step in BENCHMARK_REPAIR_STEPS
+)
+
+FORMAT_PRESERVING_BENCHMARK_REPAIR_RULES = tuple(
+    benchmark_repair_rule(
+        rule_id=step.rule_id,
+        description=step.description,
+        apply=step.apply,
+    )
+    for step in FORMAT_PRESERVING_BENCHMARK_REPAIR_STEPS
+)

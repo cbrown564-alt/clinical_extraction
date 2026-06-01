@@ -1,5 +1,6 @@
 import pytest
 
+from clinical_extraction.tasks.seizure_frequency.gan2026 import benchmark_prediction_repair
 from clinical_extraction.tasks.seizure_frequency.gan2026.gold_policy import (
     CLEAN_SCORER_FACING_GOLD_NORMALIZATION_RULES as GOLD_POLICY_RULES,
 )
@@ -950,6 +951,19 @@ def test_benchmark_repair_steps_are_valid_and_benchmark_format_only() -> None:
         (rule.group, rule.portability)
         for rule in CLEAN_SCORER_FACING_GOLD_NORMALIZATION_RULES
     } == {(RuleGroup.GOLD_NORMALIZATION_POLICY, Portability.GAN2026_SPECIFIC)}
+
+
+def test_benchmark_prediction_repair_owns_rule_tables() -> None:
+    assert BENCHMARK_REPAIR_STEPS is benchmark_prediction_repair.BENCHMARK_REPAIR_STEPS
+    assert BENCHMARK_REPAIR_RULES is benchmark_prediction_repair.BENCHMARK_REPAIR_RULES
+    assert (
+        FORMAT_PRESERVING_BENCHMARK_REPAIR_STEPS
+        is benchmark_prediction_repair.FORMAT_PRESERVING_BENCHMARK_REPAIR_STEPS
+    )
+    assert (
+        FORMAT_PRESERVING_BENCHMARK_REPAIR_RULES
+        is benchmark_prediction_repair.FORMAT_PRESERVING_BENCHMARK_REPAIR_RULES
+    )
 
 
 def test_repair_prediction_label_trace_exposes_benchmark_repair_events() -> None:
