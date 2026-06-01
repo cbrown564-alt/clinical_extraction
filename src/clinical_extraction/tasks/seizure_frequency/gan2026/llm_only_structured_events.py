@@ -27,6 +27,10 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label_format_preserving,
     repair_prediction_label_with_evidence,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.reports import (
+    llm_model_metadata_lines,
+    write_markdown_report,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.run_metadata import (
     build_run_metadata,
 )
@@ -748,30 +752,25 @@ def write_report(
         "",
         "## Model And Prompt Metadata",
         "",
-        f"- DSPy version: `{metadata['dspy_version']}`",
-        f"- Runtime model display/API identifier: `{metadata['model']}`",
-        "- Provider/execution: hosted OpenAI via DSPy/LiteLLM",
-        "- Model role: LLM-only structured-events extractor and clinical selector",
-        f"- Prompt/program version: `{metadata['prompt_version']}`",
-        f"- Temperature: `{metadata['temperature']}`",
-        f"- Max tokens: `{metadata['max_tokens']}`",
-        f"- Mode: `{metadata['mode']}`",
-        f"- DSPy cache enabled: `{metadata.get('dspy_cache')}`",
-        f"- Reused raw model outputs: `{summary['reused_raw_outputs']}`",
-        f"- Reuse source: `{metadata.get('reuse_source') or 'none'}`",
-        "- Optimizer: none",
-        "- Deterministic rule configuration: none before prediction; deterministic code only "
-        "repairs labels selected by the LLM, validates evidence, and scores.",
-        f"- Repair mode: `{repair_mode}`",
-        f"- Repair policy: {repair_policy}.",
-        (
-            f"- Repair config: {repair_config_items}"
-            if repair_config_items
-            else "- Repair config: none"
+        *llm_model_metadata_lines(
+            metadata,
+            jsonl_path,
+            model_role="LLM-only structured-events extractor and clinical selector",
+            deterministic_rule_configuration=(
+                "none before prediction; deterministic code only repairs labels selected "
+                "by the LLM, validates evidence, and scores."
+            ),
+            summary=summary,
+            extra_lines=[
+                f"- Repair mode: `{repair_mode}`",
+                f"- Repair policy: {repair_policy}.",
+                (
+                    f"- Repair config: {repair_config_items}"
+                    if repair_config_items
+                    else "- Repair config: none"
+                ),
+            ],
         ),
-        f"- Git commit: `{metadata['git_commit']}`",
-        f"- Working tree note: `{metadata['working_tree_note']}`",
-        f"- JSONL artifact: `{jsonl_path}`",
         "",
         "## Summary",
         "",
@@ -806,8 +805,7 @@ def write_report(
             f"{row['reference']['gold_label']} | "
             f"{'yes' if comparison.get('purist_correct') else 'no'} | {notes} |"
         )
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    write_markdown_report(path, lines)
 
 
 def _repair_policy_description(repair_mode: str) -> str:

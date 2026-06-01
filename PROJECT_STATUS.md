@@ -68,8 +68,8 @@ ownership, and deterministic repair boundaries explicitly.
   `selected_evidence_derivation`, `hybrid_full_stack`, and `custom`; run
   metadata, reports, and repair ablations expose the resolved mode.
 - The codebase thermonuclear review consolidation phase has started: shared
-  Git/Python run metadata now lives in a task-level helper used by the current
-  LLM-only and hybrid Gan runners.
+  Git/Python run metadata and common report-provenance rendering now live in
+  task-level helpers used by the current LLM-only and hybrid Gan runners.
 
 ## Key References
 
@@ -169,6 +169,11 @@ ownership, and deterministic repair boundaries explicitly.
   common Gan LLM run metadata into `run_metadata.py` and wiring direct-labeler,
   structured-events, claim-table selector, and hybrid adjudicator runners
   through it; focused tests, Ruff, mypy, and full pytest are green.
+- 2026-06-01: Continued the codebase thermonuclear review consolidation by
+  extracting common Gan LLM Markdown report provenance/write helpers into
+  `reports.py` and wiring direct-labeler, structured-events, claim-table
+  selector, and hybrid adjudicator reports through them; Ruff, mypy, and full
+  pytest are green.
 
 ## Immediate Next Step
 

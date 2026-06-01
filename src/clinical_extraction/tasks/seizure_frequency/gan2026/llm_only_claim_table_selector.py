@@ -23,6 +23,10 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label_clean_scorer_facing,
     repair_prediction_label_format_preserving,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.reports import (
+    llm_model_metadata_lines,
+    write_markdown_report,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.run_metadata import (
     build_run_metadata,
 )
@@ -705,26 +709,23 @@ def write_report(
         "",
         "## Model And Prompt Metadata",
         "",
-        f"- Pipeline: `{metadata['pipeline_name']}`",
-        f"- DSPy version: `{metadata['dspy_version']}`",
-        f"- Runtime model display/API identifier: `{metadata['model']}`",
-        "- Provider/execution: hosted OpenAI via DSPy/LiteLLM",
-        "- Model role: LLM-only direct-labeler claim extractor and final query selector",
-        f"- Prompt/program version: `{metadata['prompt_version']}`",
-        f"- Temperature: `{metadata['temperature']}`",
-        f"- Max tokens: `{metadata['max_tokens']}`",
-        f"- Mode: `{metadata['mode']}`",
-        f"- DSPy cache enabled: `{metadata.get('dspy_cache')}`",
-        f"- Reused raw model outputs: `{summary['reused_raw_outputs']}`",
-        f"- Reuse source: `{metadata.get('reuse_source') or 'none'}`",
-        "- Optimizer: none",
-        "- Prompt policy taxonomy: "
-        + ", ".join(f"`{policy_id}`" for policy_id in metadata["prompt_policy_ids"]),
-        "- Deterministic rule configuration: none before prediction; deterministic code only "
-        "validates, performs strict/frozen clean scorer-facing repair, and scores.",
-        f"- Git commit: `{metadata['git_commit']}`",
-        f"- Working tree note: `{metadata['working_tree_note']}`",
-        f"- JSONL artifact: `{jsonl_path}`",
+        *llm_model_metadata_lines(
+            metadata,
+            jsonl_path,
+            model_role="LLM-only direct-labeler claim extractor and final query selector",
+            deterministic_rule_configuration=(
+                "none before prediction; deterministic code only validates, performs "
+                "strict/frozen clean scorer-facing repair, and scores."
+            ),
+            summary=summary,
+            leading_lines=[f"- Pipeline: `{metadata['pipeline_name']}`"],
+            extra_before_deterministic=[
+                "- Prompt policy taxonomy: "
+                + ", ".join(
+                    f"`{policy_id}`" for policy_id in metadata["prompt_policy_ids"]
+                )
+            ],
+        ),
         "",
         "## Summary",
         "",
@@ -818,8 +819,7 @@ def write_report(
             f"{row['reference']['gold_label']} | {_yes_no(raw.get('purist_correct'))} | "
             f"{_yes_no(clean.get('purist_correct'))} | {notes} |"
         )
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    write_markdown_report(path, lines)
 
 
 def _score_layers(
