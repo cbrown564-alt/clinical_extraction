@@ -163,6 +163,9 @@ separate naming, tests, ablation, and claim language.
 
 ## Audit Plan
 
+Validation-only direct-citation row tables now live in
+`experiments/gan2026_direct_citation_policy_row_tables_2026-06-01.md`.
+
 1. Build a validation-only inventory of candidate normalization families:
    cluster cadence, vague weekday cadence, vague quantity words, bimonthly,
    less-than/upper-bound phrasing, seizure-free/no-event statements, and diary
