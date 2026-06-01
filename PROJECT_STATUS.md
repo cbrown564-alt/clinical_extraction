@@ -177,6 +177,10 @@ ownership, and deterministic repair boundaries explicitly.
   traceable under the repo. The JSONL registry remains canonical; the Markdown
   index is the human scan surface for current revise/reject/historical run
   decisions.
+- Phase 6 continued with a run-registry report ownership split:
+  `run_registry.py` keeps typed registry entries, JSONL parsing/writing, and
+  artifact-path validation, while `run_registry_report.py` owns Markdown index
+  rendering. Compatibility wrappers preserve the existing public import surface.
 
 ## Key References
 
@@ -208,8 +212,8 @@ ownership, and deterministic repair boundaries explicitly.
 ### Now
 
 - Continue the codebase thermonuclear review without changing scorer behavior:
-  next candidates are artifact-analysis helpers, registry backfill/report
-  rendering, or other ownership splits.
+  next candidates are artifact-analysis helpers, registry backfill, or other
+  ownership splits.
 - Design hybrid rules-candidates LLM adjudicator v0.2 as a conservative/targeted adjudicator with
   deterministic fallback and named overreach-family gates; repeat 25/50/250.
 - Design LLM-only claim-table selector v5 as claim-table plus constrained selector, with
@@ -279,6 +283,10 @@ ownership, and deterministic repair boundaries explicitly.
   artifact writing and raw-output reuse loading into `artifact_io.py`, leaving
   runner public APIs stable; focused artifact/runner tests, Ruff, mypy, and full
   pytest are green.
+- 2026-06-01: Continued Phase 6 by extracting run-registry Markdown rendering
+  into `run_registry_report.py`, leaving JSONL registry schema/validation in
+  `run_registry.py` and preserving compatibility wrappers. Focused registry
+  tests are green.
 - 2026-06-01: Began Phase 4 of the codebase thermonuclear review by extracting
   common Gan LLM run metadata into `run_metadata.py` and wiring direct-labeler,
   structured-events, claim-table selector, and hybrid adjudicator runners
