@@ -161,6 +161,13 @@ ownership, and deterministic repair boundaries explicitly.
   their public compatibility functions but no longer duplicate the IO logic.
   Behavior is preserved; focused artifact/runner tests, Ruff, mypy, and full
   pytest are green.
+- Phase 5 continued with deterministic rate helper ownership:
+  `deterministic_rate_terms.py` now owns rate-extraction seizure-term regex
+  vocabulary, and `deterministic_rate_distractors.py` owns medication/dose
+  rate distractor filtering. `deterministic_rate_extraction.py` remains the
+  public rate candidate extractor and is down to 864 lines. Behavior is
+  preserved; focused deterministic tests, Ruff, mypy, and full pytest are
+  green.
 
 ## Key References
 
