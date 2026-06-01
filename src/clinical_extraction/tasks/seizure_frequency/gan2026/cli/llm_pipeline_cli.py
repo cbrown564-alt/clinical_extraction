@@ -77,6 +77,7 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
     from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
         llm_only_claim_table_selector,
         llm_only_direct_labeler,
+        llm_only_minimal_evidence_selector,
         llm_only_structured_events,
     )
 
@@ -127,6 +128,15 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
             write_report=llm_only_structured_events.write_report,
         ),
         "llm_only_claim_table_selector": llm_only_claim_table_selector_spec,
+        "llm_only_minimal_evidence_selector": GanLlmPipelineCliSpec(
+            description="Run the Gan 2026 LLM-only minimal evidence-selector experiment.",
+            default_jsonl_path=llm_only_minimal_evidence_selector.DEFAULT_JSONL_PATH,
+            default_report_path=llm_only_minimal_evidence_selector.DEFAULT_REPORT_PATH,
+            run_split=llm_only_minimal_evidence_selector.run_split,
+            write_jsonl=llm_only_minimal_evidence_selector.write_jsonl,
+            write_report=llm_only_minimal_evidence_selector.write_report,
+            default_max_tokens=900,
+        ),
         "hybrid_rules_candidates_llm_adjudicator": (hybrid_rules_candidates_llm_adjudicator_spec),
     }
 
