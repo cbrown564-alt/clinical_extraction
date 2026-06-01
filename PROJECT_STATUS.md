@@ -48,6 +48,10 @@ modules.
   artifact, not clean LLM-first objective completion.
 - Repair-family ablation defines claim language: raw LLM final-label selection is the attribution baseline; only strict format-preserving benchmark normalization belongs on the clean LLM-first path. Selected-evidence repair, monthly diary arithmetic, and clinical-selection overrides are separate deterministic modules.
 - Strict format-preserving repair is separated from the prior full basic family. After sentinel-preservation fixes, replay over 650 saved v0.5 validation-development rows reports raw model selection at 394/650 Purist correct = 0.6062 and strict format-preserving repair at 413/650 = 0.6354, with 19 improvements and 0 regressions versus raw.
+- The cleaned v0.5 25-row strict-format smoke was stopped before the 50-row
+  ladder: no-call replay over saved raw outputs had 0 call failures and 25/25
+  exact evidence substrings, but only 17/25 Purist correct and 5
+  parse/scorer-format issues.
 - V0.4 structured selector guidance is diagnostic, not promoted: live 250-row development reached 0.9480 Purist/Pragmatic, and no-call reparse reached 0.9520 Purist and 0.9560 Pragmatic.
 
 ## Key References
@@ -62,6 +66,7 @@ modules.
 - Structured 250-row standard-gate reparse: `experiments/gan2026_llm_structured_validation250_gpt41mini_v02_reparse_current_2026-06-01.md`
 - Structured rare 750-row completion: `experiments/gan2026_llm_structured_validation750_gpt41mini_v05_completion5_2026-06-01.md`
 - Repair audit, retrospective, and ablations: `experiments/gan2026_llm_structured_validation750_v05_repair_audit_2026-06-01.md`, `experiments/gan2026_llm_structured_decision_retrospective_2026-06-01.md`, `experiments/gan2026_llm_structured_validation750_v05_repair_ablation_2026-06-01.md`, `experiments/gan2026_llm_structured_validation750_v05_basic_split_repair_ablation_2026-06-01.md`, `experiments/gan2026_llm_structured_validation750_v05_strict_format_regression_audit_2026-06-01.md`
+- Cleaned strict-format smoke: `experiments/gan2026_llm_structured_validation25_gpt41mini_v05_strict_format_smoke_2026-06-01.md`
 
 ## Active Priorities
 
@@ -82,10 +87,13 @@ modules.
 
 ### Now
 
-- Run the cleaned 25-row validation smoke with raw structured model selection plus `basic_label_repair=True`, `basic_label_repair_format_only=True`, and all later repair families disabled.
-- If the smoke is clean, continue the same attribution condition through the
-  50-row and 250-row ladder; stop for error-family inspection before any rare
-  750-row validation escalation.
+- Inspect and repair the strict-format attribution path before any 50-row
+  ladder escalation: decide whether `up to`, `<=`, `per quarter`, `or less`, and
+  cluster-label parsing are allowed benchmark-format normalization or named
+  semantic modules.
+- Add focused tests for the accepted strict-format cases and for cluster labels
+  that must remain raw attribution failures unless a named cluster module is
+  enabled.
 - Keep the staged output contract: minimal source-near event facts first,
   deterministic normalization/validation second, and LLM clinical selection last.
 
@@ -97,6 +105,9 @@ modules.
   labels, and stricter 25/50/250 gates before promoting a new branch.
 - Compare v0.2 and v0.4 structured-pipeline error families row-by-row before
   adopting selector guidance more broadly.
+- After strict-format behavior is tested, rerun the cleaned 25-row smoke and
+  continue to 50 rows only if parse/scorer-format issues are resolved without
+  semantic repair leakage.
 - Add paraphrase and adversarial tests for portable-rate expressions and seizure-free/no-event assertions.
 - Start a living notebook for loading, gold-label distribution, scoring, and failure slices.
 - Prepare controlled model-comparison scaffolding with exact model metadata in every run artifact.
@@ -125,11 +136,14 @@ modules.
   strict format-preserving repair from semantic repair families for claim
   language.
 - 2026-06-01: Fixed strict-format sentinel corruption and confirmed strict format-preserving repair improves over raw model selection with 0 regressions on the saved 650-row replay surface.
+- 2026-06-01: Ran the cleaned v0.5 25-row strict-format smoke; stopped before
+  50 rows because scorer-format issues and cluster-label behavior need explicit
+  policy/tests.
 - 2026-06-01: Replaced deterministic V1's implicit final-selection tuple key with
   an explicit `SelectionPriority` record and `selected_decision` diagnostic.
 
 ## Immediate Next Step
 
-Run the cleaned 25-row validation smoke with raw structured model selection plus
-strict format-preserving basic repair only, then inspect whether the remaining
-strict-format behavior is narrow enough before continuing to 50 and 250 rows.
+Classify the strict-format smoke failures and add focused tests before rerunning
+the 25-row cleaned attribution condition. Do not continue to 50 rows until the
+allowed format-only surface is explicit and cluster-label handling is named.
