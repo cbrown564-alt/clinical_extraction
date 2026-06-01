@@ -60,7 +60,12 @@ def write_report(
             leading_lines=[f"- Pipeline: `{metadata['pipeline_name']}`"],
             extra_before_deterministic=[
                 "- Prompt policy taxonomy: "
-                + ", ".join(f"`{policy_id}`" for policy_id in metadata["prompt_policy_ids"])
+                + ", ".join(f"`{policy_id}`" for policy_id in metadata["prompt_policy_ids"]),
+                "- Required ablations before 25/50/250 ladder runs: "
+                + ", ".join(
+                    f"`{name}`"
+                    for name in metadata.get("required_ablations_before_ladder_runs", ())
+                ),
             ],
         ),
         "",

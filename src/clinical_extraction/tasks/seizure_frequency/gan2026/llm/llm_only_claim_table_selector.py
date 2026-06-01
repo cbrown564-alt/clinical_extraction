@@ -36,10 +36,10 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.reports.claim_table_rep
     write_report,
 )
 
-PROMPT_VERSION = "gan2026_llm_only_claim_table_selector_v4"
+PROMPT_VERSION = "gan2026_llm_only_claim_table_selector_v5"
 PROMPT_POLICY_TAXONOMY: list[dict[str, str]] = [
     {
-        "policy_id": "sct_v4.schema.scalar_enum_output",
+        "policy_id": "sct_v5.schema.scalar_enum_output",
         "controlled_variable": "prompt_schema_enum_scalar_policy",
         "portability": "general",
         "status": "active",
@@ -49,14 +49,14 @@ PROMPT_POLICY_TAXONOMY: list[dict[str, str]] = [
         ),
     },
     {
-        "policy_id": "sct_v4.schema.strict_json_object",
+        "policy_id": "sct_v5.schema.strict_json_object",
         "controlled_variable": "prompt_strict_json_object_policy",
         "portability": "general",
         "status": "active",
         "description": "Prompt requires exactly one JSON object with no markdown wrapper.",
     },
     {
-        "policy_id": "sct_v4.evidence.exact_substring",
+        "policy_id": "sct_v5.evidence.exact_substring",
         "controlled_variable": "prompt_exact_evidence_substring_policy",
         "portability": "seizure_frequency",
         "status": "active",
@@ -65,7 +65,7 @@ PROMPT_POLICY_TAXONOMY: list[dict[str, str]] = [
         ),
     },
     {
-        "policy_id": "sct_v4.gan_label.parser_ready_surface",
+        "policy_id": "sct_v5.gan_label.parser_ready_surface",
         "controlled_variable": "prompt_gan_parser_ready_label_policy",
         "portability": "benchmark_format",
         "status": "active",
@@ -75,7 +75,7 @@ PROMPT_POLICY_TAXONOMY: list[dict[str, str]] = [
         ),
     },
     {
-        "policy_id": "sct_v4.gan_label.interval_preservation",
+        "policy_id": "sct_v5.gan_label.interval_preservation",
         "controlled_variable": "prompt_explicit_interval_preservation_policy",
         "portability": "gan2026_specific",
         "status": "active",
@@ -85,7 +85,7 @@ PROMPT_POLICY_TAXONOMY: list[dict[str, str]] = [
         ),
     },
     {
-        "policy_id": "sct_v4.gan_label.cluster_dual_axis",
+        "policy_id": "sct_v5.gan_label.cluster_dual_axis",
         "controlled_variable": "prompt_cluster_cadence_and_burden_policy",
         "portability": "gan2026_specific",
         "status": "active",
@@ -94,7 +94,17 @@ PROMPT_POLICY_TAXONOMY: list[dict[str, str]] = [
         ),
     },
     {
-        "policy_id": "sct_v4.selection.current_burden_precedence",
+        "policy_id": "sct_v5.schema.cluster_axis_state",
+        "controlled_variable": "prompt_cluster_axis_state_policy",
+        "portability": "seizure_frequency",
+        "status": "active",
+        "description": (
+            "Prompt requires each claim and final selector decision to expose whether cluster "
+            "cadence, per-cluster burden, both axes, or only vague clustering is present."
+        ),
+    },
+    {
+        "policy_id": "sct_v5.selection.current_burden_precedence",
         "controlled_variable": "prompt_current_burden_selection_policy",
         "portability": "seizure_frequency",
         "status": "active",
@@ -104,7 +114,7 @@ PROMPT_POLICY_TAXONOMY: list[dict[str, str]] = [
         ),
     },
     {
-        "policy_id": "sct_v4.selection.add_same_window_counts",
+        "policy_id": "sct_v5.selection.add_same_window_counts",
         "controlled_variable": "prompt_same_window_count_addition_policy",
         "portability": "gan2026_specific",
         "status": "active",
@@ -113,7 +123,7 @@ PROMPT_POLICY_TAXONOMY: list[dict[str, str]] = [
         ),
     },
     {
-        "policy_id": "sct_v4.boundary.unknown_no_reference_seizure_free",
+        "policy_id": "sct_v5.boundary.unknown_no_reference_seizure_free",
         "controlled_variable": "prompt_boundary_answer_policy",
         "portability": "seizure_frequency",
         "status": "active",
@@ -122,7 +132,18 @@ PROMPT_POLICY_TAXONOMY: list[dict[str, str]] = [
         ),
     },
     {
-        "policy_id": "sct_v4.exclusion.proxy_or_conditional_frequency",
+        "policy_id": "sct_v5.schema.boundary_state",
+        "controlled_variable": "prompt_boundary_state_policy",
+        "portability": "seizure_frequency",
+        "status": "active",
+        "description": (
+            "Prompt requires explicit boundary-state fields so unknown, no-reference, "
+            "seizure-free, proxy, last-event-only, and conditional/window-limited cases "
+            "remain inspectable before scoring."
+        ),
+    },
+    {
+        "policy_id": "sct_v5.exclusion.proxy_or_conditional_frequency",
         "controlled_variable": "prompt_proxy_conditional_exclusion_policy",
         "portability": "seizure_frequency",
         "status": "active",
@@ -132,14 +153,14 @@ PROMPT_POLICY_TAXONOMY: list[dict[str, str]] = [
         ),
     },
     {
-        "policy_id": "sct_v4.gan_label.compact_interval_notation",
+        "policy_id": "sct_v5.gan_label.compact_interval_notation",
         "controlled_variable": "prompt_compact_interval_notation_policy",
         "portability": "gan2026_specific",
         "status": "active",
         "description": "Prompt maps compact interval notation such as q2-3wk to 1 per 2 to 3 week.",
     },
     {
-        "policy_id": "sct_v4.gan_label.maximum_burden",
+        "policy_id": "sct_v5.gan_label.maximum_burden",
         "controlled_variable": "prompt_maximum_current_burden_policy",
         "portability": "gan2026_specific",
         "status": "active",
@@ -147,12 +168,28 @@ PROMPT_POLICY_TAXONOMY: list[dict[str, str]] = [
             "Prompt preserves explicit maximum current burden instead of converting it to multiple."
         ),
     },
+    {
+        "policy_id": "sct_v5.selection.constrained_selector",
+        "controlled_variable": "prompt_constrained_selector_policy",
+        "portability": "seizure_frequency",
+        "status": "active",
+        "description": (
+            "Prompt separates source-near claim extraction from a constrained final selector "
+            "decision over selected claims."
+        ),
+    },
+]
+REQUIRED_ABLATIONS_BEFORE_LADDER: list[str] = [
+    "raw_model_claim_table",
+    "strict_schema_repair",
+    "constrained_selector_state",
+    "clean_scorer_facing_policy",
 ]
 DEFAULT_JSONL_PATH = Path(
-    "experiments/gan2026_llm_only_claim_table_selector_validation25_gpt41mini_v4_2026-06-01.jsonl"
+    "experiments/gan2026_llm_only_claim_table_selector_validation25_gpt41mini_v5_2026-06-01.jsonl"
 )
 DEFAULT_REPORT_PATH = Path(
-    "experiments/gan2026_llm_only_claim_table_selector_validation25_gpt41mini_v4_2026-06-01.md"
+    "experiments/gan2026_llm_only_claim_table_selector_validation25_gpt41mini_v5_2026-06-01.md"
 )
 
 
@@ -192,6 +229,7 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
         "task": ("Gan 2026 LLM-only claim-table selector diagnostic extraction"),
         "source_row_index": record.source_row_index,
         "prompt_policy_taxonomy": PROMPT_POLICY_TAXONOMY,
+        "required_ablations_before_ladder_runs": REQUIRED_ABLATIONS_BEFORE_LADDER,
         "instructions": [
             "Read the full clinical note and make a flat table of seizure-frequency claims.",
             "Do not use deterministic rule candidates; this input contains only the note.",
@@ -215,8 +253,11 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "last-event-only, and unclear-frequency statements as separate claim rows."
             ),
             (
-                "After producing claim rows, run a final query over the table and select the "
-                "Gan-facing answer. Record selected_claim_ids and a concise rationale."
+                "After producing claim rows, run a constrained final selector over the table. "
+                "Choose selector_decision from the enum, copy selected_claim_ids, preserve "
+                "cluster_axis and boundary_state in final_query, then produce the Gan-facing "
+                "answer. Do not let final_label hide whether the answer came from cluster-axis "
+                "preservation or a boundary-state decision."
             ),
             (
                 "Keep raw_selected_frequency source-near, but make final_label a parser-ready "
@@ -252,7 +293,9 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
             (
                 "Do not emit a cluster final_label unless the selected claim truly states "
                 "cluster frequency with both cluster cadence and event burden. Vague "
-                "clustering around an ordinary rate should stay an ordinary frequency."
+                "clustering around an ordinary rate should stay an ordinary frequency. Mark "
+                "claim.cluster_axis and final_query.cluster_axis so the axis decision is "
+                "reviewable before scoring."
             ),
             (
                 "When the selected current claim states both cluster cadence and per-cluster "
@@ -312,7 +355,8 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "usable seizure-frequency evidence; seizure_free means definite epileptic "
                 "seizures are negated for a stated current interval; unknown means seizure "
                 "evidence exists but the frequency is vague, conditional, proxy-only, or not "
-                "convertible."
+                "convertible. Mark claim.boundary_state and final_query.boundary_state with "
+                "the reason rather than relying only on final_label."
             ),
             (
                 "Rescue medication use frequency, caregiver concern, falls, collapses, and "
@@ -359,6 +403,22 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
             "evidence": "exact note substring supporting this claim",
             "anchor_text": "short local anchor text, or null",
             "raw_frequency": "source-near frequency expression, or null",
+            "cluster_axis": [
+                "none",
+                "cadence_only",
+                "burden_only",
+                "cadence_and_burden",
+                "vague_cluster",
+            ],
+            "boundary_state": [
+                "ordinary_frequency",
+                "seizure_free_interval",
+                "unknown_frequency",
+                "no_frequency_reference",
+                "non_epileptic_or_proxy",
+                "last_event_only",
+                "conditional_or_window_limited",
+            ],
             "temporality": ["current", "recent", "historical", "future", "unclear"],
             "assertion_status": [
                 "asserted",
@@ -372,12 +432,37 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
         },
         "final_query_schema": {
             "selected_claim_ids": "claim IDs used to select the answer",
+            "selector_decision": [
+                "select_single_claim",
+                "combine_same_window_claims",
+                "preserve_cluster_axis",
+                "boundary_unknown",
+                "boundary_no_reference",
+                "boundary_seizure_free",
+                "unresolved_conflict",
+            ],
             "answer_kind": [
                 "frequency",
                 "seizure_free",
                 "unknown",
                 "no_reference",
                 "unresolved_multiple",
+            ],
+            "cluster_axis": [
+                "none",
+                "cadence_only",
+                "burden_only",
+                "cadence_and_burden",
+                "vague_cluster",
+            ],
+            "boundary_state": [
+                "ordinary_frequency",
+                "seizure_free_interval",
+                "unknown_frequency",
+                "no_frequency_reference",
+                "non_epileptic_or_proxy",
+                "last_event_only",
+                "conditional_or_window_limited",
             ],
             "raw_selected_frequency": (
                 "source-near selected frequency text before Gan label conversion, or null"
@@ -799,5 +884,6 @@ def _run_metadata(
         extra={
             "pipeline_name": PROMPT_VERSION,
             "prompt_policy_ids": [policy["policy_id"] for policy in PROMPT_POLICY_TAXONOMY],
+            "required_ablations_before_ladder_runs": REQUIRED_ABLATIONS_BEFORE_LADDER,
         },
     )

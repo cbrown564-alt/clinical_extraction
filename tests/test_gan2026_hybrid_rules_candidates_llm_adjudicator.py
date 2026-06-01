@@ -309,9 +309,11 @@ def test_build_hybrid_prompt_input_excludes_gold_and_scores() -> None:
     prompt = json.loads(build_hybrid_prompt_input(Record(), diagnostics))
 
     assert prompt["claim_type"] == "hybrid_llm_adjudicator"
+    assert prompt["prompt_version"] == "gan2026_final_selection_adjudicator_v0.5_conservative"
     assert prompt["candidate_events"][0]["normalized_label"] == "2 per month"
     assert "monthly_frequency" not in prompt["candidate_events"][0]
     assert "gold_label" not in json.dumps(prompt)
+    assert "Conservative v0.2 policy" in json.dumps(prompt)
 
 
 def test_hybrid_prompt_only_scores_deterministic_and_recall(monkeypatch) -> None:
@@ -384,17 +386,114 @@ def test_hybrid_prompt_only_scores_deterministic_and_recall(monkeypatch) -> None
     assert metadata["summary"]["candidate_purist_recall_rate"] == 1.0
 
 
+def test_hybrid_conservative_gate_falls_back_on_unsupported_llm_overreach(monkeypatch) -> None:
+    class Record:
+        source_row_index = 10
+        note_text = "Current seizure frequency is two per month."
+        gold_label = "2 per month"
+        gold_label_kind = FrequencyLabelKind.FREQUENCY
+        gold_monthly_frequency = 2.0
+        row_ok = True
+
+    class Result:
+        diagnostics = {
+            "candidate_events": [
+                {
+                    "event_id": "event_1",
+                    "kind": "frequency_rate",
+                    "raw_value": "2 per month",
+                    "evidence": "two per month",
+                    "rule_id": "rate.demo",
+                    "rule_group": "portable_rate_expressions",
+                    "portability": "seizure_frequency",
+                }
+            ],
+            "normalized_events": [
+                {
+                    "event_id": "event_1",
+                    "normalized_label": "2 per month",
+                    "semantic_kind": "frequency",
+                    "monthly_frequency": 2.0,
+                    "validation_errors": [],
+                }
+            ],
+            "final_selection": {
+                "final_label": "2 per month",
+                "final_kind": "frequency",
+                "selected_event_ids": ["event_1"],
+                "evidence": "two per month",
+                "monthly_frequency": 2.0,
+            },
+            "evidence_valid": True,
+        }
+
+    class Pipeline:
+        def run(self, _record):
+            return Result()
+
+    monkeypatch.setattr(
+        "clinical_extraction.tasks.seizure_frequency.gan2026.hybrid."
+        "hybrid_rules_candidates_llm_adjudicator.Gan2026PipelineV1",
+        lambda: Pipeline(),
+    )
+    raw_overreach = json.dumps(
+        {
+            "assertion_status": "unclear",
+            "temporality": "current",
+            "seizure_or_event_target": "seizures",
+            "window": "current",
+            "normalized_rate": "unknown",
+            "uncertainty": "high",
+            "accepted_event_ids": [],
+            "rejected_event_ids": ["event_1"],
+            "selected_event_ids": [],
+            "final_label": "unknown",
+            "rationale": "The rate is not clear enough.",
+        }
+    )
+
+    records, metadata = run_hybrid_split(
+        [Record()],
+        split="validation",
+        split_manifest="gan2026_split_v1",
+        model="openai/gpt-4.1-mini",
+        temperature=0.0,
+        max_tokens=100,
+        mode="prompt-only",
+        reuse_raw_outputs={10: raw_overreach},
+        reuse_source="unit-test",
+    )
+
+    gate = records[0]["conservative_gate"]
+    assert gate["used_deterministic_fallback"] is True
+    assert gate["final_label"] == "2 per month"
+    assert gate["raw_adjudicator_final_label"] == "unknown"
+    assert gate["fired_gates"] == ["unsupported_boundary_demotion_overreach"]
+    assert records[0]["scores"]["raw_adjudicator"]["final_label"] == "unknown"
+    assert records[0]["scores"]["adjudicator"]["final_label"] == "2 per month"
+    assert metadata["summary"]["deterministic_fallbacks"] == 1
+    assert metadata["summary"]["overreach_gate_counts"] == {
+        "unsupported_boundary_demotion_overreach": 1
+    }
+
+
 def test_summarize_hybrid_records_counts_changes() -> None:
     summary = summarize_hybrid_records(
         [
             {
                 "decision_record": {"final_label": "2 per month"},
                 "candidate_recall": {"purist_category_recalled": True},
+                "conservative_gate": {"used_deterministic_fallback": False, "fired_gates": []},
                 "scores": {
                     "deterministic_top": {
                         "final_label": "1 per day",
                         "purist_correct": False,
                         "pragmatic_correct": False,
+                    },
+                    "raw_adjudicator": {
+                        "final_label": "2 per month",
+                        "purist_correct": True,
+                        "pragmatic_correct": True,
                     },
                     "adjudicator": {
                         "final_label": "2 per month",

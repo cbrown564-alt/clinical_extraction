@@ -8,6 +8,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequenc
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_claim_table_selector import (
     PROMPT_POLICY_TAXONOMY,
     PROMPT_VERSION,
+    REQUIRED_ABLATIONS_BEFORE_LADDER,
     SectionClaimTableExtractionRecord,
     build_prompt_input,
     parse_llm_only_claim_table_selector_json,
@@ -48,6 +49,8 @@ def _raw_claim_table(final_label: str = "2 per months") -> str:
                     "evidence": "two focal seizures per month",
                     "anchor_text": "Present seizure frequency",
                     "raw_frequency": "two focal seizures per month",
+                    "cluster_axis": "none",
+                    "boundary_state": "ordinary_frequency",
                     "temporality": "current",
                     "assertion_status": "asserted",
                     "semiology": "focal seizures",
@@ -60,6 +63,8 @@ def _raw_claim_table(final_label: str = "2 per months") -> str:
                     "evidence": "daily seizures in 2020",
                     "anchor_text": "Past history",
                     "raw_frequency": "daily seizures",
+                    "cluster_axis": "none",
+                    "boundary_state": "ordinary_frequency",
                     "temporality": "historical",
                     "assertion_status": "historical",
                     "semiology": "seizures",
@@ -68,7 +73,10 @@ def _raw_claim_table(final_label: str = "2 per months") -> str:
             ],
             "final_query": {
                 "selected_claim_ids": ["c1"],
+                "selector_decision": "select_single_claim",
                 "answer_kind": "frequency",
+                "cluster_axis": "none",
+                "boundary_state": "ordinary_frequency",
                 "final_label": final_label,
                 "evidence": "two focal seizures per month",
                 "confidence": "high",
@@ -82,11 +90,19 @@ def test_build_prompt_input_excludes_gold_and_deterministic_candidates() -> None
     prompt = json.loads(build_prompt_input(_record()))
 
     assert prompt["prompt_version"] == PROMPT_VERSION
-    assert prompt["prompt_version"] == "gan2026_llm_only_claim_table_selector_v4"
+    assert prompt["prompt_version"] == "gan2026_llm_only_claim_table_selector_v5"
     assert prompt["note_text"] == _record().note_text
     assert prompt["claim_schema"]["claim_id"] == "stable string such as c1"
+    assert "cluster_axis" in prompt["claim_schema"]
+    assert "boundary_state" in prompt["claim_schema"]
+    assert "selector_decision" in prompt["final_query_schema"]
+    assert "cluster_axis" in prompt["final_query_schema"]
+    assert "boundary_state" in prompt["final_query_schema"]
     assert "raw_selected_frequency" in prompt["final_query_schema"]
     assert "conversion_note" in prompt["final_query_schema"]
+    assert prompt["required_ablations_before_ladder_runs"] == REQUIRED_ABLATIONS_BEFORE_LADDER
+    assert "constrained final selector" in json.dumps(prompt)
+    assert "Do not let final_label hide" in json.dumps(prompt)
     assert "1 per 7 to 10 day" in json.dumps(prompt)
     assert "bimonthly means every two months" in json.dumps(prompt)
     assert "Cluster cadence can be the ordinary Gan-facing frequency" in json.dumps(prompt)
@@ -116,11 +132,14 @@ def test_prompt_input_names_prompt_policies_as_controlled_variables() -> None:
     policy_ids = {policy["policy_id"] for policy in prompt["prompt_policy_taxonomy"]}
 
     assert prompt["prompt_policy_taxonomy"] == PROMPT_POLICY_TAXONOMY
-    assert "sct_v4.schema.scalar_enum_output" in policy_ids
-    assert "sct_v4.gan_label.interval_preservation" in policy_ids
-    assert "sct_v4.gan_label.cluster_dual_axis" in policy_ids
-    assert "sct_v4.selection.current_burden_precedence" in policy_ids
-    assert "sct_v4.boundary.unknown_no_reference_seizure_free" in policy_ids
+    assert "sct_v5.schema.scalar_enum_output" in policy_ids
+    assert "sct_v5.gan_label.interval_preservation" in policy_ids
+    assert "sct_v5.gan_label.cluster_dual_axis" in policy_ids
+    assert "sct_v5.schema.cluster_axis_state" in policy_ids
+    assert "sct_v5.selection.current_burden_precedence" in policy_ids
+    assert "sct_v5.boundary.unknown_no_reference_seizure_free" in policy_ids
+    assert "sct_v5.schema.boundary_state" in policy_ids
+    assert "sct_v5.selection.constrained_selector" in policy_ids
     assert all(policy["status"] == "active" for policy in prompt["prompt_policy_taxonomy"])
     assert all(policy["controlled_variable"] for policy in prompt["prompt_policy_taxonomy"])
     assert all(
@@ -138,7 +157,10 @@ def test_parse_llm_only_claim_table_selector_json_validates_flat_claim_table() -
 
     assert isinstance(extraction, SectionClaimTableExtractionRecord)
     assert extraction.claims[0].claim_id == "c1"
+    assert extraction.claims[0].cluster_axis == "none"
+    assert extraction.claims[0].boundary_state == "ordinary_frequency"
     assert extraction.final_query.selected_claim_ids == ["c1"]
+    assert extraction.final_query.selector_decision == "select_single_claim"
     assert errors == []
 
 
@@ -246,10 +268,11 @@ def test_run_split_records_raw_strict_and_clean_scoring_layers() -> None:
     )
 
     row = rows[0]
-    assert metadata["pipeline_name"] == "gan2026_llm_only_claim_table_selector_v4"
+    assert metadata["pipeline_name"] == "gan2026_llm_only_claim_table_selector_v5"
     assert metadata["prompt_policy_ids"] == [
         policy["policy_id"] for policy in PROMPT_POLICY_TAXONOMY
     ]
+    assert metadata["required_ablations_before_ladder_runs"] == REQUIRED_ABLATIONS_BEFORE_LADDER
     assert row["component_status"]["claim_extraction"] == "ok"
     assert row["score_layers"]["raw"]["scorable"] is False
     assert row["score_layers"]["strict_format"]["final_label"] == "most weekdays"
@@ -333,7 +356,8 @@ def test_write_report_includes_component_localized_failure_metadata(tmp_path: Pa
     write_report(rows, metadata, report_path, jsonl_path=tmp_path / "rows.jsonl")
 
     report = report_path.read_text(encoding="utf-8")
-    assert "Gan 2026 LLM-Only Claim Table Selector V4" in report
+    assert "Gan 2026 LLM-Only Claim Table Selector V5" in report
+    assert "Required ablations before 25/50/250 ladder runs" in report
     assert "raw final-query score" in report
     assert "Reviewable Failure Details" in report
     assert "unparsable_label" in report
