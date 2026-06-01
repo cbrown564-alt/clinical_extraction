@@ -86,10 +86,17 @@ ownership, and deterministic repair boundaries explicitly.
   pytest are green.
 - The deterministic extraction split has continued with small ownership
   modules for candidate pruning, note/evidence text handling, and Gan frequency
-  token/label formatting. `deterministic_extraction.py` still owns rule-family
-  orchestration and inline rate-discovery logic, but no longer owns generic
-  evidence cleanup, duplicate/contained-candidate pruning, or count/unit label
-  formatting.
+  token/label formatting. After the latest rate-discovery extraction,
+  `deterministic_extraction.py` owns rule-family orchestration but no longer
+  owns generic evidence cleanup, duplicate/contained-candidate pruning,
+  count/unit label formatting, or inline rate discovery.
+- Phase 5 extracted inline deterministic rate discovery into
+  `deterministic_rate_extraction.py`. `deterministic_extraction.py` is now a
+  compact rule-family orchestrator for cluster, seizure-free, rate, and unknown
+  candidates, while rate-specific regex discovery, diary rate hooks, shorthand
+  rate hooks, temporal rate arithmetic, and medication/dose distractor filtering
+  live behind the rate extraction module. Behavior is preserved; Ruff, mypy,
+  focused deterministic tests, and full pytest are green.
 
 ## Key References
 
@@ -121,9 +128,9 @@ ownership, and deterministic repair boundaries explicitly.
 ### Now
 
 - Continue the codebase thermonuclear review Phase 5 behavior splits without
-  changing scorer behavior: next candidates are extracting the inline rate
-  discovery from `deterministic_extraction.py`, remaining LLM structured-events
-  repair-family splits, or other large-file ownership splits.
+  changing scorer behavior: next candidates are remaining LLM structured-events
+  repair-family splits, claim-table/hybrid report or parser ownership splits,
+  or other large-file ownership splits.
 - Design hybrid rules-candidates LLM adjudicator v0.2 as a conservative/targeted adjudicator with
   deterministic fallback and named overreach-family gates; repeat 25/50/250.
 - Design LLM-only claim-table selector v5 as claim-table plus constrained selector, with
@@ -220,11 +227,17 @@ ownership, and deterministic repair boundaries explicitly.
   `python -m mypy src`, `python -m pytest tests/test_gan2026_pipeline_v1.py -q`,
   and `python -m pytest -q` are green (`595 passed`, 11 third-party DSPy
   deprecation warnings).
+- 2026-06-01: Continued Phase 5 by extracting inline deterministic rate
+  discovery from `deterministic_extraction.py` into
+  `deterministic_rate_extraction.py`. The extractor is now 283 lines and the
+  rate module is 893 lines. Verification: `python -m ruff check .`,
+  `python -m mypy src`, `python -m pytest tests/test_gan2026_pipeline_v1.py -q`,
+  and `python -m pytest -q` are green (`595 passed`, 11 third-party DSPy
+  deprecation warnings).
 
 ## Immediate Next Step
 
 Continue the Phase 5 behavior-preserving splits from the remaining large
-behavior modules, preferably by extracting the inline deterministic rate
-discovery from `deterministic_extraction.py` or one of the remaining LLM
-structured-events repair families before returning to the validation-only
-v0.2/v5 experiment cycle. Do not inspect holdout rows.
+behavior modules, preferably one of the remaining LLM structured-events
+repair families or a claim-table/hybrid ownership split before returning to
+the validation-only v0.2/v5 experiment cycle. Do not inspect holdout rows.
