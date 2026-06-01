@@ -4,6 +4,9 @@ from pathlib import Path
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     FrequencyLabelKind,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.experiments import (
+    synthetic_hard_case_component_stress as stress,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.hybrid import (
     hybrid_rules_candidates_llm_adjudicator as hybrid,
 )
@@ -314,6 +317,7 @@ def test_build_hybrid_prompt_input_excludes_gold_and_scores() -> None:
     assert "monthly_frequency" not in prompt["candidate_events"][0]
     assert "gold_label" not in json.dumps(prompt)
     assert "Conservative v0.2 policy" in json.dumps(prompt)
+    assert prompt["candidate_revision"] == "frozen_v1"
 
 
 def test_hybrid_prompt_only_scores_deterministic_and_recall(monkeypatch) -> None:
@@ -384,6 +388,43 @@ def test_hybrid_prompt_only_scores_deterministic_and_recall(monkeypatch) -> None
     assert records[0]["scores"]["deterministic_top"]["purist_correct"] is True
     assert metadata["escalation_reason"] == "unit-test escalation reason"
     assert metadata["summary"]["candidate_purist_recall_rate"] == 1.0
+
+
+def test_cluster_diary_candidate_recall_revision_recalls_failed_synthetic_rows() -> None:
+    target_case_ids = {
+        "v02_cluster_dual_axis_01",
+        "v02_cluster_dual_axis_02",
+        "v02_cluster_dual_axis_03",
+        "v02_cluster_dual_axis_04",
+        "v02_cluster_dual_axis_08",
+        "v02_diary_distributed_counts_01",
+        "v02_diary_distributed_counts_04",
+        "v02_diary_distributed_counts_06",
+    }
+    cases = [
+        case
+        for case in stress.load_synthetic_hard_cases(stress.DEFAULT_HARD_CASES_JSONL_PATH)
+        if case["case_id"] in target_case_ids
+    ]
+    records, metadata = run_hybrid_split(
+        stress.synthetic_records_from_cases(cases),
+        split=stress.SYNTHETIC_SPLIT_NAME,
+        split_manifest=stress.SYNTHETIC_SPLIT_MANIFEST,
+        model="openai/gpt-4.1-mini",
+        temperature=0.0,
+        max_tokens=100,
+        mode="prompt-only",
+        candidate_revision="cluster_diary_candidate_recall",
+    )
+
+    assert len(records) == len(target_case_ids)
+    assert metadata["candidate_revision"] == "cluster_diary_candidate_recall"
+    assert metadata["summary"]["candidate_purist_recall_rate"] == 1.0
+    for row in records:
+        assert row["candidate_revision"] == "cluster_diary_candidate_recall"
+        assert row["candidate_recall"]["purist_category_recalled"] is True
+        prompt = json.loads(row["prompt_input_json"])
+        assert prompt["candidate_revision"] == "cluster_diary_candidate_recall"
 
 
 def test_hybrid_conservative_gate_falls_back_on_unsupported_llm_overreach(monkeypatch) -> None:

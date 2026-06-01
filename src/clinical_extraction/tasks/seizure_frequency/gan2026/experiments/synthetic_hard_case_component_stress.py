@@ -45,6 +45,26 @@ DEFAULT_COMPONENT_REPORT_PATH = Path(
     "experiments/"
     "gan2026_hybrid_adjudicator_v02_synthetic_hard_cases_component_stress_2026-06-01.md"
 )
+DEFAULT_CLUSTER_DIARY_JSONL_PATH = Path(
+    "experiments/"
+    "gan2026_hybrid_adjudicator_v02_cluster_diary_candidate_recall_"
+    "synthetic_hard_cases_gpt41mini_live_2026-06-01.jsonl"
+)
+DEFAULT_CLUSTER_DIARY_REPORT_PATH = Path(
+    "experiments/"
+    "gan2026_hybrid_adjudicator_v02_cluster_diary_candidate_recall_"
+    "synthetic_hard_cases_gpt41mini_live_2026-06-01.md"
+)
+DEFAULT_CLUSTER_DIARY_COMPONENT_JSON_PATH = Path(
+    "experiments/"
+    "gan2026_hybrid_adjudicator_v02_cluster_diary_candidate_recall_"
+    "synthetic_hard_cases_component_stress_2026-06-01.json"
+)
+DEFAULT_CLUSTER_DIARY_COMPONENT_REPORT_PATH = Path(
+    "experiments/"
+    "gan2026_hybrid_adjudicator_v02_cluster_diary_candidate_recall_"
+    "synthetic_hard_cases_component_stress_2026-06-01.md"
+)
 
 
 def load_synthetic_hard_cases(path: Path) -> list[dict[str, Any]]:
@@ -133,6 +153,7 @@ def build_component_stress_result(
         {
             "artifact_kind": "gan2026_hybrid_adjudicator_synthetic_hard_case_component_stress",
             "source_artifact": artifact_path,
+            "candidate_revision": _candidate_revision_from_rows(rows),
             "row_policy": (
                 "Reviewed synthetic hard-case development panel; not validation, not holdout, "
                 "and not a benchmark claim."
@@ -155,6 +176,7 @@ def write_component_stress_report(result: Mapping[str, Any], path: Path) -> None
         f"- Split: `{result['split']}`",
         f"- Split manifest: `{result['split_manifest']}`",
         f"- Source artifact: `{result.get('source_artifact') or 'in-memory rows'}`",
+        f"- Candidate revision: `{result.get('candidate_revision', 'frozen_v1')}`",
         "",
         "## Component Summary",
         "",
@@ -218,6 +240,11 @@ def main(argv: Sequence[str] | None = None) -> None:
     parser.add_argument("--mode", choices=("live", "prompt-only"), default="live")
     parser.add_argument("--disable-dspy-cache", action="store_true")
     parser.add_argument("--progress-every", type=int, default=10)
+    parser.add_argument(
+        "--candidate-revision",
+        choices=("frozen_v1", "cluster_diary_candidate_recall"),
+        default="frozen_v1",
+    )
     args = parser.parse_args(argv)
 
     cases = load_synthetic_hard_cases(args.hard_cases_jsonl)
@@ -235,6 +262,7 @@ def main(argv: Sequence[str] | None = None) -> None:
         progress_every=args.progress_every if args.progress_every > 0 else None,
         checkpoint_jsonl_path=args.jsonl,
         checkpoint_report_path=args.markdown,
+        candidate_revision=args.candidate_revision,
     )
     enriched_rows = attach_hard_case_metadata(rows, cases)
     metadata["summary"] = metadata["summary"] | _hard_case_summary(enriched_rows)
@@ -273,11 +301,22 @@ def main(argv: Sequence[str] | None = None) -> None:
                 "jsonl": str(args.jsonl),
                 "component_json": str(args.component_json),
                 "component_markdown": str(args.component_markdown),
+                "candidate_revision": args.candidate_revision,
                 "summary": metadata["summary"],
             },
             sort_keys=True,
         )
     )
+
+
+def _candidate_revision_from_rows(rows: Sequence[Mapping[str, Any]]) -> str:
+    revisions = {
+        str(row.get("candidate_revision") or "frozen_v1")
+        for row in rows
+    }
+    if len(revisions) == 1:
+        return next(iter(revisions))
+    return ",".join(sorted(revisions))
 
 
 def _family_summaries(rows: Sequence[Mapping[str, Any]]) -> dict[str, dict[str, int]]:

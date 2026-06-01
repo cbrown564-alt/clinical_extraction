@@ -60,6 +60,7 @@ def write_hybrid_rules_candidates_llm_adjudicator_report(
             leading_lines=[
                 f"- Architecture: `{metadata['architecture']}`",
                 f"- Claim type: `{metadata['claim_type']}`",
+                f"- Candidate revision: `{metadata.get('candidate_revision', 'frozen_v1')}`",
             ],
         ),
         "",
