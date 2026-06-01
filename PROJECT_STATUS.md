@@ -78,12 +78,15 @@ Treat deterministic rules as a frozen, ablatable comparator rather than an endle
   residual-jerk, post-change-burst, dated-sequence, and elapsed-anchor repairs
   are deterministic clinical-selection overrides.
 - The basic Gan label-repair family has been split into a strict
-  format-preserving subset and the prior full basic family. On the 650 saved
-  v0.5 validation-development raw outputs, raw model selection reached 394/650
-  Purist correct = 0.6062, strict format-preserving basic repair reached 387/650
-  = 0.5954 with 19 improvements and 26 regressions versus raw, and full basic
-  repair reached 461/650 = 0.7092. The clean LLM-first attribution baseline is
-  therefore raw selection plus strict format-preserving repair, not the full
+  format-preserving subset and the prior full basic family. The initial
+  basic-split replay exposed 26 strict-format regressions caused by sentinel
+  corruption (`no seizure frequency reference` -> `no frequency reference`) on
+  `row_ok=False` no-reference rows. After preserving sentinels before event-word
+  cleanup, same-raw-output replay on the 650 saved v0.5 validation-development
+  rows reports raw model selection at 394/650 Purist correct = 0.6062 and
+  strict format-preserving repair at 413/650 = 0.6354, with 19 improvements and
+  0 regressions versus raw. The clean LLM-first attribution baseline is therefore
+  raw selection plus corrected strict format-preserving repair, not the full
   basic family.
 - A v0.4 structured selector revision added explicit benchmark-window guidance:
   do not let current seizure-free status erase a recent countable last-event
@@ -125,6 +128,8 @@ Treat deterministic rules as a frozen, ablatable comparator rather than an endle
 - Structured LLM-first decision retrospective: `experiments/gan2026_llm_structured_decision_retrospective_2026-06-01.md`
 - Structured LLM-first repair ablation: `experiments/gan2026_llm_structured_validation750_v05_repair_ablation_2026-06-01.md`
 - Structured LLM-first basic-split repair ablation: `experiments/gan2026_llm_structured_validation750_v05_basic_split_repair_ablation_2026-06-01.md`
+- Strict-format regression audit: `experiments/gan2026_llm_structured_validation750_v05_strict_format_regression_audit_2026-06-01.md`
+- Deterministic V1 candidate-selection code: `src/clinical_extraction/tasks/seizure_frequency/gan2026/pipeline_v1.py`
 
 ## Active Priorities
 
@@ -158,10 +163,6 @@ Treat deterministic rules as a frozen, ablatable comparator rather than an endle
 
 ### Next
 
-- Investigate the 26 strict-format regressions from the basic-split replay
-  before promoting the format-preserving subset as harmless benchmark
-  normalization.
-- Wrap or replace the final-selection tuple priority with an explicit decision record in candidate code if the dev-set experiment supports it.
 - Add paraphrase and adversarial tests for portable-rate expressions and seizure-free/no-event assertions.
 - Start a living notebook for loading, gold-label distribution, scoring, and failure slices.
 - Prepare controlled model-comparison scaffolding with exact model metadata in every run artifact.
@@ -258,6 +259,16 @@ Treat deterministic rules as a frozen, ablatable comparator rather than an endle
   the structured pipeline. Follow-on no-call and live continuations reached
   0.9083 Purist at 720 rows and exactly 0.9000 Purist at 750 validation rows,
   with 0 call failures and 0 parse/schema failures.
+- 2026-06-01: Investigated and fixed the 26 strict-format regressions from the
+  basic-split replay by preserving unknown/no-reference sentinels before
+  event-word cleanup. The no-call regression audit now shows corrected strict
+  format-preserving repair at 413/650 Purist correct = 0.6354, with 19
+  improvements and 0 regressions versus raw model selection.
+- 2026-06-01: Replaced deterministic V1's implicit final-selection tuple key
+  with an explicit `SelectionPriority` record and added a `selected_decision`
+  diagnostic record containing the winning event, label, evidence, score,
+  priority, and rationale. This preserves current candidate behavior while
+  making selection decisions easier to audit.
 - 2026-06-01: Recorded the successful rare structured LLM-first validation
   completion:
   `experiments/gan2026_llm_structured_validation750_gpt41mini_v05_completion5_2026-06-01.md`

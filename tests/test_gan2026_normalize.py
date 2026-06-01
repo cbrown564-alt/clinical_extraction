@@ -354,6 +354,17 @@ def test_format_preserving_repair_keeps_units_and_event_word_cleanup() -> None:
     assert repair_prediction_label_format_preserving("1 every other day") == "1 per 2 day"
 
 
+def test_format_preserving_repair_preserves_no_reference_sentinel() -> None:
+    assert (
+        repair_prediction_label_format_preserving("no seizure frequency reference")
+        == "no seizure frequency reference"
+    )
+    assert (
+        repair_prediction_label_format_preserving("no frequency mentioned")
+        == "no seizure frequency reference"
+    )
+
+
 def test_format_preserving_repair_does_not_apply_semantic_basic_fallbacks() -> None:
     assert repair_prediction_label("several per week") == "multiple per week"
     assert repair_prediction_label_format_preserving("several per week") == "several per week"

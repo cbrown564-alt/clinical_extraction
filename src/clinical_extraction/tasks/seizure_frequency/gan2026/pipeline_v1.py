@@ -161,11 +161,32 @@ class SelectionScore(BaseModel):
     monthly_frequency_priority: float
     reason: str
 
-    def sort_key(self) -> tuple[int, int, float]:
+    def priority(self) -> SelectionPriority:
+        return SelectionPriority(
+            semantic=self.semantic_priority,
+            evidence=self.evidence_priority,
+            monthly_frequency=self.monthly_frequency_priority,
+        )
+
+
+class SelectionPriority(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
+    semantic: int
+    evidence: int
+    monthly_frequency: float
+
+    def __lt__(self, other: object) -> bool:
+        if not isinstance(other, SelectionPriority):
+            return NotImplemented
         return (
-            self.semantic_priority,
-            self.evidence_priority,
-            self.monthly_frequency_priority,
+            self.semantic,
+            self.evidence,
+            self.monthly_frequency,
+        ) < (
+            other.semantic,
+            other.evidence,
+            other.monthly_frequency,
         )
 
 
@@ -175,6 +196,20 @@ class SelectionCandidateScore(BaseModel):
     event_id: str
     score: SelectionScore
     selected: bool = False
+
+
+class SelectionDecisionRecord(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
+    event_id: str
+    final_label: str
+    final_kind: FrequencyLabelKind
+    monthly_frequency: float
+    evidence: str
+    rationale: str
+    validation_errors: tuple[str, ...] = ()
+    score: SelectionScore
+    priority: SelectionPriority
 
 
 class FinalSelection(BaseModel):
@@ -188,6 +223,7 @@ class FinalSelection(BaseModel):
     monthly_frequency: float
     validation_errors: tuple[str, ...] = ()
     selected_score: SelectionScore
+    selected_decision: SelectionDecisionRecord
     selection_candidates: tuple[SelectionCandidateScore, ...]
 
 
@@ -1420,17 +1456,30 @@ def _select_final_event(
     ]
     selected_event, selected_normalized, selected_score = max(
         scored_pairs,
-        key=lambda scored_pair: scored_pair[2].sort_key(),
+        key=lambda scored_pair: scored_pair[2].priority(),
+    )
+    selected_rationale = _selection_rationale(selected_normalized)
+    selected_decision = SelectionDecisionRecord(
+        event_id=selected_event.event_id,
+        final_label=selected_normalized.normalized_label,
+        final_kind=selected_normalized.semantic_kind,
+        monthly_frequency=selected_normalized.monthly_frequency,
+        evidence=selected_event.evidence,
+        rationale=selected_rationale,
+        validation_errors=selected_normalized.validation_errors,
+        score=selected_score,
+        priority=selected_score.priority(),
     )
     return FinalSelection(
         final_label=selected_normalized.normalized_label,
         final_kind=selected_normalized.semantic_kind,
         selected_event_ids=(selected_event.event_id,),
-        rationale=_selection_rationale(selected_normalized),
+        rationale=selected_rationale,
         evidence=selected_event.evidence,
         monthly_frequency=selected_normalized.monthly_frequency,
         validation_errors=selected_normalized.validation_errors,
         selected_score=selected_score,
+        selected_decision=selected_decision,
         selection_candidates=tuple(
             SelectionCandidateScore(
                 event_id=event.event_id,

@@ -562,6 +562,9 @@ def _drop_prediction_noise(text: str) -> str:
 
 
 def _drop_prediction_format_noise(text: str) -> str:
+    normalized = normalize_frequency_label(text)
+    if normalized in {"unknown", "no seizure frequency reference"}:
+        return normalized
     text = re.sub(r"\b(?:approximately|approx\.?|about|around|nearly|~)\b", "", text)
     text = re.sub(r"\bseizures?\b(?!\s*[- ]?free)", "", text)
     text = re.sub(r"\b(?:episodes?|events?|attacks?|spells?|szs?)\b", "", text)
