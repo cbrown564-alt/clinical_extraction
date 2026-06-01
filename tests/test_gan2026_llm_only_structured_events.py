@@ -1,12 +1,18 @@
 import json
+from datetime import date
 from pathlib import Path
 
+from clinical_extraction.tasks.seizure_frequency.gan2026 import llm_structured_temporal
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.label_parser import FrequencyLabelKind
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_only_structured_events import (
     PROMPT_VERSION,
     StructuredExtractionRecord,
     StructuredRepairConfig,
+    _clinic_date,
+    _clinic_month_year,
+    _elapsed_months_from_nearest_event_date_precise,
+    _event_month_year,
     build_prompt_input,
     load_reusable_raw_outputs,
     parse_structured_json,
@@ -60,6 +66,21 @@ def _raw_structured(final_label: str | None = "2 per month") -> str:
             },
         }
     )
+
+
+def test_structured_events_uses_shared_temporal_helpers() -> None:
+    assert _clinic_date is llm_structured_temporal.clinic_date
+    assert _clinic_month_year is llm_structured_temporal.clinic_month_year
+    assert _event_month_year is llm_structured_temporal.event_month_year
+    assert (
+        _elapsed_months_from_nearest_event_date_precise
+        is llm_structured_temporal.elapsed_months_from_nearest_event_date_precise
+    )
+
+    note_text = "Clinic Date: 25 February 2022. His last event was on 30/Jan."
+    assert _clinic_date(note_text) == date(2022, 2, 25)
+    assert _clinic_month_year(note_text) == (2, 2022)
+    assert _event_month_year("last event in 05/2020", clinic_year=2022) == (5, 2020)
 
 
 def test_build_prompt_input_excludes_gold_and_deterministic_candidates() -> None:
