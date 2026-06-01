@@ -70,31 +70,11 @@ ownership, and deterministic repair boundaries explicitly.
 - The codebase thermonuclear review consolidation phase has started: shared
   Git/Python run metadata and common report-provenance rendering now live in
   task-level helpers used by the current LLM-only and hybrid Gan runners.
-- Phase 5 of the codebase thermonuclear review has started with a
-  behavior-preserving Gan label-parser extraction: label kind/record semantics,
-  bounds parsing, and monthly-frequency conversion now live in `label_parser.py`,
-  while `normalize.py` remains the benchmark repair and scorer-facing
-  normalization layer.
-- Phase 5 continued with a behavior-preserving clean scorer-facing gold-policy
-  extraction: Gan validation-only gold-normalization rules now live in
-  `gold_policy.py`, while `normalize.py` keeps the public repair API.
-- Phase 5 continued with a behavior-preserving selected-evidence derivation
-  extraction: source-near evidence-to-label derivation, monthly diary parsing,
-  cluster derivation, and selected-evidence preference rules now live in
-  `selected_evidence_derivation.py`, while `normalize.py` keeps the public
-  benchmark repair API.
-- Phase 5 continued with a behavior-preserving benchmark-format prediction
-  repair extraction: prediction repair helper functions and rule tables now
-  live in `benchmark_prediction_repair.py`, while `normalize.py` remains the
-  public repair API and re-export compatibility layer.
-- Phase 5 continued with a behavior-preserving temporal helper extraction:
-  deterministic V1 clinic-date parsing, relative note dates, and month-span
-  semantics now live in `temporal.py`, while `pipeline_v1.py` imports them under
-  its prior private names.
-- Phase 5 continued with a behavior-preserving deterministic final-selection
-  extraction: selection score models, priority logic, rationale text, and
-  temporal-selection ablation gates now live in `deterministic_selection.py`,
-  while `pipeline_v1.py` still owns extraction orchestration.
+- Phase 5 behavior-preserving splits have moved stable concepts out of the
+  largest files: Gan label parsing, clean gold policy, selected-evidence
+  derivation, benchmark prediction repair, deterministic temporal helpers,
+  deterministic final selection, and LLM structured-events temporal helpers.
+  Public repair/parser APIs remain in place; scorer behavior is unchanged.
 
 ## Key References
 
@@ -126,9 +106,9 @@ ownership, and deterministic repair boundaries explicitly.
 ### Now
 
 - Continue the codebase thermonuclear review Phase 5 behavior splits without
-  changing scorer behavior: next candidates are LLM structured-events temporal
-  helpers, remaining deterministic extractor ownership splits, or other
-  large-file ownership splits.
+  changing scorer behavior: next candidates are remaining deterministic
+  extractor ownership splits, LLM structured-events repair-family splits, or
+  other large-file ownership splits.
 - Design hybrid rules-candidates LLM adjudicator v0.2 as a conservative/targeted adjudicator with
   deterministic fallback and named overreach-family gates; repeat 25/50/250.
 - Design LLM-only claim-table selector v5 as claim-table plus constrained selector, with
@@ -203,33 +183,17 @@ ownership, and deterministic repair boundaries explicitly.
   `reports.py` and wiring direct-labeler, structured-events, claim-table
   selector, and hybrid adjudicator reports through them; Ruff, mypy, and full
   pytest are green.
-- 2026-06-01: Started Phase 5 of the codebase thermonuclear review by
-  extracting Gan label parsing into `label_parser.py` and updating production
-  and test imports to use the new ownership boundary; Ruff, focused tests,
-  mypy, and full pytest are green.
-- 2026-06-01: Continued Phase 5 by extracting the clean scorer-facing Gan
-  gold-normalization policy into `gold_policy.py`, keeping `normalize.py` as
-  the public repair wrapper and adding an ownership-boundary test; Ruff, mypy,
-  and full pytest are green.
-- 2026-06-01: Continued Phase 5 by extracting selected-evidence derivation into
-  `selected_evidence_derivation.py`; `normalize.py` still owns the public repair
-  API and LLM structured-events imports the derivation helpers from the new
-  module. Ruff, mypy, and full pytest are green.
-- 2026-06-01: Continued Phase 5 by extracting benchmark-format prediction
-  repair rule tables and helper functions into `benchmark_prediction_repair.py`;
-  `normalize.py` keeps public repair functions and compatibility re-exports.
-  Ruff, mypy, and full pytest are green.
-- 2026-06-01: Continued Phase 5 by extracting deterministic temporal helpers
-  into `temporal.py` and adding a pipeline ownership-boundary test for clinic
-  dates, relative dates, and month-span floor semantics. Ruff, mypy, and full
-  pytest are green.
-- 2026-06-01: Continued Phase 5 by extracting deterministic final-selection
-  scoring and diagnostics models into `deterministic_selection.py` and adding a
-  pipeline ownership-boundary test. Ruff, mypy, and full pytest are green.
+- 2026-06-01: Continued Phase 5 with behavior-preserving ownership splits:
+  `label_parser.py`, `gold_policy.py`, `selected_evidence_derivation.py`,
+  `benchmark_prediction_repair.py`, deterministic `temporal.py`,
+  `deterministic_selection.py`, and `llm_structured_temporal.py`. Each slice
+  added or preserved focused ownership-boundary tests; Ruff, mypy, and full
+  pytest are green after the latest slice.
 
 ## Immediate Next Step
 
 Continue the Phase 5 behavior-preserving splits from the remaining large
-behavior modules, preferably by extracting LLM structured-events temporal
-helpers or another deterministic extractor ownership slice before returning to
-the validation-only v0.2/v5 experiment cycle. Do not inspect holdout rows.
+behavior modules, preferably by extracting another deterministic extractor
+ownership slice or an LLM structured-events repair-family slice before
+returning to the validation-only v0.2/v5 experiment cycle. Do not inspect
+holdout rows.
