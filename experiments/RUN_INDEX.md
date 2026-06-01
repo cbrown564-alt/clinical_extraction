@@ -4,6 +4,17 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Revise
 
+### `gan2026_qwen36_35b_ollama_chat_setup_smoke_2026-06-01`
+- Date/split: `2026-06-01`; `validation`; `1` rows.
+- Pipeline: `llm_only_claim_table_selector`; mode `native Ollama chat setup smoke`; replay `live`.
+- Model role: local LLM-only claim-table selector; model `ollama_chat/qwen3.6:35b`.
+- Repair mode/config: `none; endpoint smoke before Qwen-specific schema repair`.
+- Primary metrics: call_failures=0, parse_schema_failures=1, row_count=1, structured_rows=0.
+- Evidence validity: No structured record; output-contract smoke only.
+- Cache/reuse source: DSPy cache disabled; native Ollama /api/chat smoke used think=false.
+- Claim language: Endpoint setup is unblocked through ollama_chat/qwen3.6:35b with think=false, but v5 is not ladder-ready for Qwen: validation1 returned a nonempty Python-style dict and final_selector shape, producing a schema parse failure. Do not treat this as model-quality evidence or start validation5/25 until prompt hardening or a named schema-repair ablation exists. Dedicated schema-contract risk note logged for future Qwen prompt/repair design.
+- Artifacts: `experiments/gan2026_qwen36_35b_ollama_chat_setup_smoke_2026-06-01.md`, `docs/research/gan2026_qwen_schema_contract_risk_2026-06-01.md`, `experiments/gan2026_llm_only_claim_table_selector_validation1_prompt_only_v5_2026-06-01.jsonl`, `experiments/gan2026_llm_only_claim_table_selector_validation1_prompt_only_v5_2026-06-01.md`, `experiments/gan2026_llm_only_claim_table_selector_validation1_qwen36_35b_v5_ollama_chat_smoke_2026-06-01.jsonl`, `experiments/gan2026_llm_only_claim_table_selector_validation1_qwen36_35b_v5_ollama_chat_smoke_2026-06-01.md`.
+
 ### `gan2026_hybrid_adjudicator_v02_validation250_live_2026-06-01`
 - Date/split: `2026-06-01`; `validation`; `250` rows.
 - Pipeline: `hybrid_rules_candidates_llm_adjudicator`; mode `live rules candidates then conservative LLM adjudicator`; replay `live`.

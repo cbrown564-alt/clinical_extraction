@@ -99,9 +99,12 @@ running on a Windows laptop, use the LLM CLI's local endpoint flag so the run
 metadata records the model route:
 
 ```powershell
-gan2026-llm-experiment --pipeline llm_only_claim_table_selector --mode live --limit 25 --model openai/qwen-model-name --api-base http://localhost:11434/v1
+gan2026-llm-experiment --pipeline llm_only_claim_table_selector --mode live --limit 1 --model ollama_chat/qwen3.6:35b --api-base http://localhost:11434 --disable-dspy-cache
 ```
 
-Use the exact local model name from `ollama list` in place of
-`qwen-model-name`. Keep early local runs small (`--limit 25`) until latency,
-format adherence, and endpoint behavior are known.
+Use Ollama's native LiteLLM route, `ollama_chat/...`, for Qwen reasoning models.
+The shared LM builder sends `think=false`; do not use the OpenAI-compatible
+`openai/...` plus `/v1` route for Qwen 3.6 because it can hide reasoning while
+leaving DSPy with empty structured output. Keep early local runs tiny
+(`--limit 1`, then `--limit 5`, then `--limit 25`) until latency, format
+adherence, and endpoint behavior are known.
