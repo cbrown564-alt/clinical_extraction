@@ -79,7 +79,7 @@ def test_build_prompt_input_excludes_gold_and_deterministic_candidates() -> None
     prompt = json.loads(build_prompt_input(_record()))
 
     assert prompt["prompt_version"] == PROMPT_VERSION
-    assert prompt["prompt_version"] == "gan2026_section_claim_table_v2"
+    assert prompt["prompt_version"] == "gan2026_section_claim_table_v3"
     assert prompt["note_text"] == _record().note_text
     assert prompt["claim_schema"]["claim_id"] == "stable string such as c1"
     assert "raw_selected_frequency" in prompt["final_query_schema"]
@@ -89,6 +89,9 @@ def test_build_prompt_input_excludes_gold_and_deterministic_candidates() -> None
     assert "Cluster cadence can be the ordinary Gan-facing frequency" in json.dumps(prompt)
     assert "twice a month -> 2 per month" in json.dumps(prompt)
     assert "5 or 7 focal onset seizures in three weeks -> 5 to 7 per 3 week" in json.dumps(prompt)
+    assert "An explicit current cluster cadence normally outranks" in json.dumps(prompt)
+    assert "short subsequent seizure-free span does not by itself erase" in json.dumps(prompt)
+    assert "several events across most months -> multiple per month" in json.dumps(prompt)
     assert "gold_label" not in json.dumps(prompt)
     assert "candidate_events" not in prompt
     assert "deterministic_final_selection" not in prompt
@@ -128,6 +131,24 @@ def test_parse_section_claim_table_json_repairs_common_model_shape_aliases() -> 
     assert errors == []
 
 
+def test_parse_section_claim_table_json_repairs_missing_final_query_rationale() -> None:
+    payload = json.loads(_raw_claim_table("2 per month"))
+    del payload["final_query"]["rationale"]
+
+    extraction, errors = parse_section_claim_table_json(
+        json.dumps(payload),
+        note_text=_record().note_text,
+    )
+
+    assert extraction is not None
+    assert extraction.final_query.rationale == "two focal seizures per month"
+    assert extraction.final_query.conversion_note == (
+        "Non-semantic schema repair: final_query.rationale was omitted, "
+        "so it was copied from final_query.evidence."
+    )
+    assert errors == []
+
+
 def test_run_split_does_not_score_schema_failures_as_no_reference() -> None:
     rows, metadata = run_split(
         [_record()],
@@ -161,7 +182,7 @@ def test_run_split_records_raw_strict_and_clean_scoring_layers() -> None:
     )
 
     row = rows[0]
-    assert metadata["pipeline_name"] == "gan2026_section_claim_table_v2"
+    assert metadata["pipeline_name"] == "gan2026_section_claim_table_v3"
     assert row["component_status"]["claim_extraction"] == "ok"
     assert row["score_layers"]["raw"]["scorable"] is False
     assert row["score_layers"]["strict_format"]["final_label"] == "most weekdays"
@@ -245,7 +266,7 @@ def test_write_report_includes_component_localized_failure_metadata(tmp_path: Pa
     write_report(rows, metadata, report_path, jsonl_path=tmp_path / "rows.jsonl")
 
     report = report_path.read_text(encoding="utf-8")
-    assert "Gan 2026 Section Claim Table V2" in report
+    assert "Gan 2026 Section Claim Table V3" in report
     assert "raw final-query score" in report
     assert "Reviewable Failure Details" in report
     assert "unparsable_label" in report

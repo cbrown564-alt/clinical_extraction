@@ -26,12 +26,12 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label_format_preserving,
 )
 
-PROMPT_VERSION = "gan2026_section_claim_table_v2"
+PROMPT_VERSION = "gan2026_section_claim_table_v3"
 DEFAULT_JSONL_PATH = Path(
-    "experiments/gan2026_section_claim_table_validation25_gpt41mini_v2_2026-06-01.jsonl"
+    "experiments/gan2026_section_claim_table_validation25_gpt41mini_v3_2026-06-01.jsonl"
 )
 DEFAULT_REPORT_PATH = Path(
-    "experiments/gan2026_section_claim_table_validation25_gpt41mini_v2_2026-06-01.md"
+    "experiments/gan2026_section_claim_table_validation25_gpt41mini_v3_2026-06-01.md"
 )
 
 
@@ -189,9 +189,28 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "converted."
             ),
             (
+                "An explicit current cluster cadence normally outranks an isolated lower-burden "
+                "recent subtype count with an assumed denominator. For example, if events tend "
+                "to cluster every seven to nine days and the note separately mentions two "
+                "recent nocturnal tonic-clonic seizures, choose 1 per 7 to 9 day unless the "
+                "note says the cadence is non-epileptic, historical, or not the Gan target."
+            ),
+            (
                 "When a recent quantified event burden is followed by a short seizure-free "
                 "span, prefer the quantified recent burden for Gan-facing final_label unless "
                 "the note explicitly frames the patient as currently seizure-free overall."
+            ),
+            (
+                "For Gan-style labels, a short subsequent seizure-free span does not by itself "
+                "erase a counted recent event range in the same current clinical interval. "
+                "Keep the counted range, such as 5 or 7 focal onset seizures in three weeks -> "
+                "5 to 7 per 3 week, unless the whole letter clearly makes seizure freedom the "
+                "overall current answer."
+            ),
+            (
+                "For vague but recurring monthly burden, use accepted category wording in "
+                "final_label: several events across most months -> multiple per month. Keep "
+                "phrases like several per month in raw_selected_frequency, not final_label."
             ),
             (
                 "If multiple current seizure semiologies are active, select the highest "
@@ -766,7 +785,22 @@ def _repair_final_query_payload(final_query: Mapping[str, Any]) -> dict[str, Any
         repaired.get("confidence"),
         {"low", "medium", "high"},
     )
+    if not repaired.get("rationale") and isinstance(repaired.get("evidence"), str):
+        repaired["rationale"] = repaired["evidence"]
+        repaired["conversion_note"] = _append_conversion_note(
+            repaired.get("conversion_note"),
+            (
+                "Non-semantic schema repair: final_query.rationale was omitted, "
+                "so it was copied from final_query.evidence."
+            ),
+        )
     return repaired
+
+
+def _append_conversion_note(existing: Any, note: str) -> str:
+    if isinstance(existing, str) and existing.strip():
+        return f"{existing.strip()} {note}"
+    return note
 
 
 def _unwrap_singleton(value: Any) -> Any:
