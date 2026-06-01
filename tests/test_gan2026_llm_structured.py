@@ -5,6 +5,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequenc
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_structured import (
     PROMPT_VERSION,
     StructuredExtractionRecord,
+    StructuredRepairConfig,
     build_prompt_input,
     load_reusable_raw_outputs,
     parse_structured_json,
@@ -141,6 +142,34 @@ def test_run_split_reuses_raw_outputs_without_new_call(tmp_path: Path) -> None:
     assert rows[0]["parse_errors"] == []
 
 
+def test_run_split_applies_repair_config_to_reused_raw_outputs(tmp_path: Path) -> None:
+    reuse_path = tmp_path / "prior.jsonl"
+    reuse_path.write_text(
+        json.dumps({"source_row_index": 10, "raw_output": _raw_structured("1 event 2 weeks ago")})
+        + "\n",
+        encoding="utf-8",
+    )
+
+    rows, metadata = run_split(
+        [_record()],
+        split="validation",
+        split_manifest="gan2026_split_v1",
+        model="openai/gpt-4.1-mini",
+        temperature=0.0,
+        max_tokens=100,
+        mode="prompt-only",
+        dspy_cache=True,
+        reuse_raw_outputs=load_reusable_raw_outputs(reuse_path),
+        reuse_source=str(reuse_path),
+        repair_config=StructuredRepairConfig(selected_evidence_repair=False),
+    )
+
+    assert metadata["repair_config"]["selected_evidence_repair"] is False
+    assert rows[0]["structured_record"]["selection"]["final_label"] == (
+        "no seizure frequency reference"
+    )
+
+
 def test_summary_tolerates_missing_structured_final_label() -> None:
     summary = summarize_records(
         [
@@ -207,6 +236,98 @@ def test_parse_structured_json_repairs_breakthrough_after_seizure_free_interval(
     assert errors == [
         "final_label_repaired: '1 event 2 weeks ago' -> 'no seizure frequency reference'",
         "final_label_repaired: 'no seizure frequency reference' -> '1 per 6 month'",
+    ]
+
+
+def test_parse_structured_json_can_disable_selected_evidence_repair() -> None:
+    raw = _raw_structured("1 event 2 weeks ago")
+
+    extraction, _, errors = parse_structured_json(
+        raw,
+        repair_config=StructuredRepairConfig(selected_evidence_repair=False),
+    )
+
+    assert extraction is not None
+    assert extraction.selection.final_label == "no seizure frequency reference"
+    assert errors == [
+        "final_label_repaired: '1 event 2 weeks ago' -> 'no seizure frequency reference'"
+    ]
+
+
+def test_parse_structured_json_can_disable_all_final_label_repairs() -> None:
+    raw = _raw_structured("1 event 2 weeks ago")
+
+    extraction, _, errors = parse_structured_json(
+        raw,
+        repair_config=StructuredRepairConfig(
+            basic_label_repair=False,
+            selected_evidence_repair=False,
+            monthly_diary_repair=False,
+            usual_interval_repair=False,
+            breakthrough_repair=False,
+            non_epileptic_repair=False,
+            residual_jerk_repair=False,
+            post_change_burst_repair=False,
+            dated_sequence_repair=False,
+            elapsed_anchor_repair=False,
+        ),
+    )
+
+    assert extraction is not None
+    assert extraction.selection.final_label == "1 event 2 weeks ago"
+    assert len(errors) == 1
+    assert errors[0].startswith("unscorable_final_label:")
+    assert "1 event 2 weeks ago" in errors[0]
+
+
+def test_parse_structured_json_can_disable_breakthrough_repair_family() -> None:
+    raw = json.dumps(
+        {
+            "events": [
+                {
+                    "event_id": "e1",
+                    "kind": "seizure_free",
+                    "raw_value": "seizure-free for 6 months",
+                    "applies_to": None,
+                    "time_window": "prior interval",
+                    "temporality": "historical",
+                    "assertion_status": "asserted",
+                    "evidence": "he was seizure-free for 6 months",
+                    "notes": None,
+                },
+                {
+                    "event_id": "e2",
+                    "kind": "last_event_only",
+                    "raw_value": "a focal impaired-awareness seizure occurred 2 Thursdays ago",
+                    "applies_to": "focal impaired-awareness seizure",
+                    "time_window": "2 Thursdays ago",
+                    "temporality": "recent",
+                    "assertion_status": "asserted",
+                    "evidence": "a focal impaired-awareness seizure occurred 2 Thursdays ago",
+                    "notes": None,
+                },
+            ],
+            "selection": {
+                "selected_event_ids": ["e2"],
+                "final_kind": "last_event_only",
+                "final_label": "1 event 2 weeks ago",
+                "evidence": "a focal impaired-awareness seizure occurred 2 Thursdays ago",
+                "confidence": "high",
+                "rationale": "A single recent breakthrough event after seizure freedom.",
+            },
+        }
+    )
+
+    extraction, _, errors = parse_structured_json(
+        raw,
+        note_text="Clinic Date: 10 August 2020",
+        repair_config=StructuredRepairConfig(breakthrough_repair=False),
+    )
+
+    assert extraction is not None
+    assert extraction.selection.final_label == "no seizure frequency reference"
+    assert errors == [
+        "final_label_repaired: '1 event 2 weeks ago' -> 'no seizure frequency reference'"
     ]
 
 

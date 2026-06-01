@@ -8,6 +8,7 @@ import subprocess
 import sys
 from collections import Counter
 from collections.abc import Mapping, Sequence
+from dataclasses import asdict, dataclass
 from datetime import UTC, date, datetime
 from pathlib import Path
 from typing import Any, Literal
@@ -22,6 +23,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     evidence_describes_current_non_epileptic_events,
     label_to_frequency_record,
     monthly_diary_label_from_text,
+    repair_prediction_label,
     repair_prediction_label_with_evidence,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.schema_repair import (
@@ -100,6 +102,22 @@ class NormalizedEventRecord(BaseModel):
     yearly_bounds: tuple[float, float] | None
     repair_applied: bool
     validation_errors: list[str]
+
+
+@dataclass(frozen=True)
+class StructuredRepairConfig:
+    """Controls deterministic repair families applied after structured LLM output."""
+
+    basic_label_repair: bool = True
+    selected_evidence_repair: bool = True
+    monthly_diary_repair: bool = True
+    usual_interval_repair: bool = True
+    breakthrough_repair: bool = True
+    non_epileptic_repair: bool = True
+    residual_jerk_repair: bool = True
+    post_change_burst_repair: bool = True
+    dated_sequence_repair: bool = True
+    elapsed_anchor_repair: bool = True
 
 
 class Gan2026StructuredExtractorSignature(dspy.Signature):
@@ -240,7 +258,9 @@ def parse_structured_json(
     raw_output: str,
     *,
     note_text: str | None = None,
+    repair_config: StructuredRepairConfig | None = None,
 ) -> tuple[StructuredExtractionRecord | None, list[NormalizedEventRecord], list[str]]:
+    repair_config = repair_config or StructuredRepairConfig()
     errors: list[str] = []
     try:
         payload = repair_structured_extraction_payload(json.loads(_extract_json_object(raw_output)))
@@ -260,80 +280,88 @@ def parse_structured_json(
         errors.append("unscorable_final_label: no selected event normalized to a Gan label")
         return extraction, normalized_events, errors
 
-    repaired_label = repair_prediction_label_with_evidence(
-        final_label,
-        extraction.selection.evidence,
-        context_text=note_text,
-    )
-    if repaired_label != final_label:
-        errors.append(f"final_label_repaired: {final_label!r} -> {repaired_label!r}")
-    monthly_diary_label = _monthly_diary_label_from_events(
-        extraction,
-        note_text=note_text,
-    )
-    if monthly_diary_label and monthly_diary_label != repaired_label:
-        errors.append(
-            f"final_label_repaired: {repaired_label!r} -> {monthly_diary_label!r}"
+    repaired_label = final_label
+    if repair_config.basic_label_repair and not repair_config.selected_evidence_repair:
+        repaired_label = _replace_repaired_label(
+            errors,
+            repaired_label,
+            repair_prediction_label(repaired_label),
         )
-        repaired_label = monthly_diary_label
-    usual_interval_label = _usual_interval_label_from_events(extraction, repaired_label)
-    if usual_interval_label and usual_interval_label != repaired_label:
-        errors.append(
-            f"final_label_repaired: {repaired_label!r} -> {usual_interval_label!r}"
+    if repair_config.selected_evidence_repair:
+        repaired_label = _replace_repaired_label(
+            errors,
+            repaired_label,
+            repair_prediction_label_with_evidence(
+                repaired_label,
+                extraction.selection.evidence,
+                context_text=note_text,
+            ),
         )
-        repaired_label = usual_interval_label
-    breakthrough_label = _breakthrough_label_from_events(extraction, repaired_label)
-    if breakthrough_label and breakthrough_label != repaired_label:
-        errors.append(
-            f"final_label_repaired: {repaired_label!r} -> {breakthrough_label!r}"
+    if repair_config.monthly_diary_repair:
+        monthly_diary_label = _monthly_diary_label_from_events(
+            extraction,
+            note_text=note_text,
         )
-        repaired_label = breakthrough_label
-    non_epileptic_label = _non_epileptic_label_from_events(extraction, repaired_label)
-    if non_epileptic_label and non_epileptic_label != repaired_label:
-        errors.append(
-            f"final_label_repaired: {repaired_label!r} -> {non_epileptic_label!r}"
+        if monthly_diary_label:
+            repaired_label = _replace_repaired_label(
+                errors, repaired_label, monthly_diary_label
+            )
+    if repair_config.usual_interval_repair:
+        usual_interval_label = _usual_interval_label_from_events(extraction, repaired_label)
+        if usual_interval_label:
+            repaired_label = _replace_repaired_label(
+                errors, repaired_label, usual_interval_label
+            )
+    if repair_config.breakthrough_repair:
+        breakthrough_label = _breakthrough_label_from_events(extraction, repaired_label)
+        if breakthrough_label:
+            repaired_label = _replace_repaired_label(
+                errors, repaired_label, breakthrough_label
+            )
+    if repair_config.non_epileptic_repair:
+        non_epileptic_label = _non_epileptic_label_from_events(extraction, repaired_label)
+        if non_epileptic_label:
+            repaired_label = _replace_repaired_label(
+                errors, repaired_label, non_epileptic_label
+            )
+    if repair_config.residual_jerk_repair:
+        residual_jerk_label = _residual_jerk_label_from_events(
+            extraction,
+            repaired_label,
+            note_text=note_text,
         )
-        repaired_label = non_epileptic_label
-    residual_jerk_label = _residual_jerk_label_from_events(
-        extraction,
-        repaired_label,
-        note_text=note_text,
-    )
-    if residual_jerk_label and residual_jerk_label != repaired_label:
-        errors.append(
-            f"final_label_repaired: {repaired_label!r} -> {residual_jerk_label!r}"
+        if residual_jerk_label:
+            repaired_label = _replace_repaired_label(
+                errors, repaired_label, residual_jerk_label
+            )
+    if repair_config.post_change_burst_repair:
+        post_change_label = _post_change_burst_label_from_events(
+            extraction,
+            repaired_label,
+            note_text=note_text,
         )
-        repaired_label = residual_jerk_label
-    post_change_label = _post_change_burst_label_from_events(
-        extraction,
-        repaired_label,
-        note_text=note_text,
-    )
-    if post_change_label and post_change_label != repaired_label:
-        errors.append(
-            f"final_label_repaired: {repaired_label!r} -> {post_change_label!r}"
+        if post_change_label:
+            repaired_label = _replace_repaired_label(errors, repaired_label, post_change_label)
+    if repair_config.dated_sequence_repair:
+        dated_sequence_label = _dated_sequence_label_from_events(
+            extraction,
+            repaired_label,
+            note_text=note_text,
         )
-        repaired_label = post_change_label
-    dated_sequence_label = _dated_sequence_label_from_events(
-        extraction,
-        repaired_label,
-        note_text=note_text,
-    )
-    if dated_sequence_label and dated_sequence_label != repaired_label:
-        errors.append(
-            f"final_label_repaired: {repaired_label!r} -> {dated_sequence_label!r}"
+        if dated_sequence_label:
+            repaired_label = _replace_repaired_label(
+                errors, repaired_label, dated_sequence_label
+            )
+    if repair_config.elapsed_anchor_repair:
+        elapsed_window_label = _elapsed_since_anchor_label_from_events(
+            extraction,
+            repaired_label,
+            note_text=note_text,
         )
-        repaired_label = dated_sequence_label
-    elapsed_window_label = _elapsed_since_anchor_label_from_events(
-        extraction,
-        repaired_label,
-        note_text=note_text,
-    )
-    if elapsed_window_label and elapsed_window_label != repaired_label:
-        errors.append(
-            f"final_label_repaired: {repaired_label!r} -> {elapsed_window_label!r}"
-        )
-        repaired_label = elapsed_window_label
+        if elapsed_window_label:
+            repaired_label = _replace_repaired_label(
+                errors, repaired_label, elapsed_window_label
+            )
     try:
         label_to_frequency_record(repaired_label)
     except ValueError as exc:
@@ -347,6 +375,12 @@ def parse_structured_json(
             }
         )
     return extraction, normalized_events, errors
+
+
+def _replace_repaired_label(errors: list[str], old_label: str, new_label: str) -> str:
+    if new_label != old_label:
+        errors.append(f"final_label_repaired: {old_label!r} -> {new_label!r}")
+    return new_label
 
 
 def run_split(
@@ -365,7 +399,9 @@ def run_split(
     progress_every: int | None = None,
     checkpoint_jsonl_path: Path | None = None,
     checkpoint_report_path: Path | None = None,
+    repair_config: StructuredRepairConfig | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    repair_config = repair_config or StructuredRepairConfig()
     reuse_raw_outputs = reuse_raw_outputs or {}
     metadata = _run_metadata(
         records,
@@ -379,6 +415,7 @@ def run_split(
     metadata["dspy_cache"] = dspy_cache
     metadata["reuse_source"] = reuse_source
     metadata["escalation_reason"] = escalation_reason
+    metadata["repair_config"] = asdict(repair_config)
     program = DspyStructuredExtractor()
     if mode == "live":
         dspy.configure(
@@ -405,7 +442,11 @@ def run_split(
                 call_error = f"{type(exc).__name__}: {exc}"
 
         extraction, normalized_events, parse_errors = (
-            parse_structured_json(raw_output, note_text=record.note_text)
+            parse_structured_json(
+                raw_output,
+                note_text=record.note_text,
+                repair_config=repair_config,
+            )
             if raw_output
             else (None, [], ["not_run"])
         )
@@ -431,6 +472,8 @@ def run_split(
                 "evidence_valid": evidence_valid,
                 "reference": {
                     "gold_label": record.gold_label,
+                    "gold_normalized_label": record.gold_normalized_label,
+                    "gold_label_kind": str(record.gold_label_kind),
                     "gold_monthly_frequency": record.gold_monthly_frequency,
                     "row_ok": record.row_ok,
                 },
