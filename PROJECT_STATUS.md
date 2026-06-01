@@ -22,6 +22,7 @@ Use Gan 2026 as the first controlled extraction surface. Keep deterministic V1 f
 - LLM-only claim-table selector v4 reached 231/250 clean Purist after schema replay, but full validation collapsed to 528/750 clean Purist and 577/750 clean Pragmatic. Reject v4 for holdout; redesign v5 around cluster-axis preservation, boundary-state selection, and selector ablation.
 - Hybrid rules-candidates LLM adjudicator v0.1 reached 243/250 Purist and 244/250 Pragmatic on 250-row schema replay, then 680/750 Purist and 689/750 Pragmatic on full validation. It underperformed deterministic top on the same rows (697/750 Purist) because the adjudicator introduced 24 deterministic-correct regressions against 7 corrections. V0.2 validation250 live was output-contract clean but low-information on a saturated surface: deterministic top was already 246/250 Purist and Pragmatic; raw adjudicator was 245/250 Purist and 246/250 Pragmatic; conservative gated final was 244/250 Purist and 245/250 Pragmatic. The follow-up saturated-surface analysis confirmed weak prediction-bearing utility: raw changes had 1 correction and 2 regressions; gated changes had 0 corrections and 2 regressions. Treat v0.2 as revise-only and switch future saturated comparisons to hard-case panels, validation hard slices, selective-action analysis, or frozen test generalization audits.
 - Routine LLM experiments use cache-first `gan2026-llm-experiment --pipeline ...`; saved-output replay is reserved for explicit offline artifact analysis.
+- Qwen 3.6/Ollama setup is partially scaffolded but not yet experiment-ready. The repo already has `--api-base` routing through the shared LLM CLI, DSPy/LiteLLM `api_base` wiring, report provenance for OpenAI-compatible endpoints, and a Windows Ollama runbook. Missing pieces are exact Qwen 3.6 model-tag policy, endpoint smoke verification, local run metadata/hardware notes, and first registered Qwen comparison artifacts.
 - Clean scorer-facing normalization is frozen unless direct-citation review justifies another family. Shared schema repair is alias-only; parser defaults belong to their task parser.
 - The codebase thermonuclear review follow-up is complete: the Gan package now has stable ownership boundaries under `contract/`, `deterministic/`, `selected_evidence/`, `llm/`, `hybrid/`, `reports/`, `experiments/`, and `cli/`, while preserving public contracts and scorer behavior.
 - Phase 6 run-registry scaffolding is active: `experiments/registry.jsonl` is canonical, and `experiments/RUN_INDEX.md` is the human scan surface.
@@ -32,6 +33,8 @@ Use Gan 2026 as the first controlled extraction surface. Keep deterministic V1 f
 - Package organization: `docs/decisions/0004-gan2026-package-organization.md`
 - Run registry: `experiments/registry.jsonl`, `experiments/RUN_INDEX.md`
 - Saturated validation workflow: `docs/design/gan2026_saturated_validation_protocol.md`
+- Local Ollama runbook: `docs/runbooks/windows_local_ollama.md`
+- Model strategy: `docs/design/model_strategy.md`
 - Review follow-up: `docs/research/codebase_thermonuclear_review_followup_2026-06-01.md`
 - Intermediate schema/rationale synthesis: `docs/research/gan2026_intermediate_schema_report_2026-06-01.md`
 - Latest LLM-only v4 run/review: `experiments/gan2026_section_claim_table_validation250_gpt41mini_v4_schema_replay_2026-06-01.md`, `experiments/gan2026_section_claim_table_validation750_v4_interpretation_2026-06-01.md`
@@ -53,6 +56,7 @@ Use Gan 2026 as the first controlled extraction surface. Keep deterministic V1 f
 
 - Manually review the drafted hybrid adjudicator v0.2 synthetic hard-case JSONL panel before any component-stress run; validation hard-slice generator and selective-action report are now in place.
 - Generate claim-table v5 component-ablation artifacts before any 25/50/250 validation ladder; v5 now uses claim-table plus constrained selector state with cluster-axis and boundary-state fields.
+- Prepare Qwen 3.6/Ollama local smoke path without broad validation: confirm Ollama install/server, pull the intended tag (`qwen3.6:35b` preferred for the planned strong-local comparison; `qwen3.6:27b` acceptable for hardware-constrained smoke), record `ollama list`, and run one direct endpoint check against `http://localhost:11434/api/chat` before using DSPy.
 
 ### Next
 
@@ -60,6 +64,9 @@ Use Gan 2026 as the first controlled extraction surface. Keep deterministic V1 f
 - Extend the saturated-surface tooling with component-stress ablations over the hard panels once the synthetic hard-case JSONL panel is label-reviewed.
 - Decide whether v0.2 needs stricter gate policy, a different adjudicator task, or rejection as added complexity over deterministic top; do not tune from locked-test row-level failures.
 - Design LLM-replacement ablations for deterministic post-processing modules, reporting score, repair attribution, evidence validity, and replay variance.
+- Harden Qwen 3.6 CLI/runbook support: replace placeholder `openai/qwen-model-name` examples with verified LiteLLM/DSPy model identifiers for Ollama, add a tiny local smoke command (`--limit 1` or `--limit 5`) before the routine `--limit 25` ladder, and document whether `openai/qwen3.6:35b` or an `ollama_chat/...` prefix is required in this environment.
+- Add local-model provenance capture for Qwen comparisons: include exact Ollama tag, model size/quantization if available, endpoint, machine/GPU/RAM notes, latency/throughput, context setting, cache state, and output-format failure counts in the experiment report or registry notes.
+- Register the first Qwen artifacts only after endpoint smoke passes: run prompt-only claim-table v5, then a live local Qwen 25-row validation smoke on the frozen candidate surface, add entries to `experiments/registry.jsonl`, regenerate `experiments/RUN_INDEX.md`, and compare against the matched GPT-4.1 mini baseline without changing holdout policy.
 - Consolidate remaining saved-output replay helpers into dedicated artifact-analysis modules.
 - Extend named repair-mode metadata beyond structured-events where downstream repair layers blur raw, strict, clean, selected-evidence, and hybrid attribution.
 
@@ -67,6 +74,7 @@ Use Gan 2026 as the first controlled extraction surface. Keep deterministic V1 f
 
 - Final benchmark-comparison language and further holdout analysis are blocked until replication comparability is explicit and locked-test discipline permits.
 - Do not run LLM-only claim-table selector beyond 250 rows until v5 passes the 25/50 ladder and a written decision justifies another 250-row diagnostic.
+- Qwen 3.6 local comparison is blocked until the exact Ollama model tag and DSPy/LiteLLM model identifier are verified on the target Windows machine; do not treat hosted GPT-4.1 mini runs and local Qwen runs as comparable unless endpoint, hardware, latency, repair, and cache metadata are recorded.
 
 ### Done Recently
 
