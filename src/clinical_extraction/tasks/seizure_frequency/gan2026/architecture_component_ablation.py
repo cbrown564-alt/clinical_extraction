@@ -81,7 +81,7 @@ def deterministic_conditions(
 ) -> list[ConditionResult]:
     """Build deterministic-only baseline and one-rule-group-disabled conditions."""
 
-    specs = [
+    specs: list[tuple[str, AblationConfig, tuple[str, ...]]] = [
         (
             "deterministic_all_rules",
             AblationConfig(),

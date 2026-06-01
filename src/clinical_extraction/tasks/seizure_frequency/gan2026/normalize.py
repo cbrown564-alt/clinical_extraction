@@ -401,6 +401,9 @@ def _pick_min(left: str | None, right: str | None, default: float | None = None)
         if default is None:
             raise ValueError("missing numeric bound")
         return default
+    if left is None:
+        assert right is not None
+        return float(right)
     if right is None:
         return float(left)
     return min(float(left), float(right))
@@ -411,6 +414,9 @@ def _pick_max(left: str | None, right: str | None, default: float | None = None)
         if default is None:
             raise ValueError("missing numeric bound")
         return default
+    if left is None:
+        assert right is not None
+        return float(right)
     if right is None:
         return float(left)
     return max(float(left), float(right))
@@ -1635,14 +1641,14 @@ def _cluster_label_from_selected_evidence(text: str) -> str | None:
 
     monthly_cluster = re.search(r"\bmonthly\s+clusters?\b", text)
     if monthly_cluster:
-        per_cluster = re.search(
+        monthly_per_cluster_match = re.search(
             r"\b(?P<count>\d+(?:\s*to\s*\d+)?)\s+"
             r"(?=(?:[a-z]+(?:-[a-z]+)?\s+){0,4}"
             r"(?:seizure|absence|attack|convulsion|spasm|event|mal))",
             text[monthly_cluster.end() :],
         )
-        if per_cluster:
-            return f"1 cluster per month, {per_cluster.group('count')} per cluster"
+        if monthly_per_cluster_match:
+            return f"1 cluster per month, {monthly_per_cluster_match.group('count')} per cluster"
         if _evidence_implies_multiple_per_cluster(text):
             return "1 cluster per month, multiple per cluster"
 

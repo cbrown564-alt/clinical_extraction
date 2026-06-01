@@ -2,11 +2,21 @@ from __future__ import annotations
 
 from collections import Counter
 from collections.abc import Callable, Mapping, Sequence
-from typing import Any
+from typing import Any, TypedDict
 
 from clinical_extraction.tasks.seizure_frequency.gan2026.labels import map_pragmatic, map_purist
 
 Mapper = Callable[[float], str]
+
+
+class _LabelMetrics(TypedDict):
+    label: str
+    tp: int
+    fp: int
+    fn: int
+    precision: float
+    recall: float
+    f1: float
 
 
 def convert_to_categories(values: Sequence[float], method: str = "purist") -> list[str]:
@@ -83,7 +93,7 @@ def _label_metrics(
     label: str,
     y_true: Sequence[str],
     y_pred: Sequence[str],
-) -> dict[str, float | str]:
+) -> _LabelMetrics:
     tp = sum(t == label and p == label for t, p in zip(y_true, y_pred, strict=True))
     fp = sum(t != label and p == label for t, p in zip(y_true, y_pred, strict=True))
     fn = sum(t == label and p != label for t, p in zip(y_true, y_pred, strict=True))

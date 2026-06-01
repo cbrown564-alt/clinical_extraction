@@ -39,6 +39,7 @@ DEFAULT_JSONL_PATH = Path(
 DEFAULT_REPORT_PATH = Path(
     "experiments/gan2026_llm_only_structured_events_validation_gpt41mini_2026-06-01.md"
 )
+MonthlyDiaryMonthKey = tuple[int, int | None]
 
 
 class StructuredEventRecord(BaseModel):
@@ -778,7 +779,7 @@ def _monthly_diary_label_from_events(
     *,
     note_text: str | None,
 ) -> str | None:
-    counts_by_month: dict[tuple[int, int] | tuple[int, None], int] = {}
+    counts_by_month: dict[MonthlyDiaryMonthKey, int] = {}
     for event in extraction.events:
         if event.kind not in {
             "frequency_rate",
@@ -816,7 +817,7 @@ def _monthly_diary_event_counts(
     event: StructuredEventRecord,
     *,
     note_text: str | None,
-) -> dict[tuple[int, int] | tuple[int, None], int]:
+) -> dict[MonthlyDiaryMonthKey, int]:
     text = _small_number_words_to_digits(
         next(
             (
@@ -838,7 +839,7 @@ def _monthly_diary_event_counts(
         r"nov(?:ember)?|dec(?:ember)?"
     )
     count_terms = r"\d+|no|zero|a|an"
-    counts: dict[tuple[int, int] | tuple[int, None], int] = {}
+    counts: dict[MonthlyDiaryMonthKey, int] = {}
 
     for match in re.finditer(
         rf"\b(?P<count>{count_terms})\s+"
@@ -892,9 +893,9 @@ def _monthly_diary_event_counts(
         return counts
 
     month_key = _monthly_diary_event_month(event)
-    count = _monthly_diary_event_count(event)
-    if month_key is not None and count is not None:
-        return {month_key: count}
+    event_count = _monthly_diary_event_count(event)
+    if month_key is not None and event_count is not None:
+        return {month_key: event_count}
     return {}
 
 
@@ -902,7 +903,7 @@ def _monthly_diary_month_key(
     month_text: str,
     year_text: str | None,
     event: StructuredEventRecord,
-) -> tuple[int, int] | tuple[int, None]:
+) -> MonthlyDiaryMonthKey:
     month = _month_number(month_text)
     if year_text:
         return month, int(year_text)
@@ -927,8 +928,8 @@ def _monthly_diary_this_month_count(text: str) -> int | None:
 
 def _monthly_diary_this_month_key(
     note_text: str | None,
-    existing_counts: Mapping[tuple[int, int] | tuple[int, None], int],
-) -> tuple[int, int] | tuple[int, None] | None:
+    existing_counts: Mapping[MonthlyDiaryMonthKey, int],
+) -> MonthlyDiaryMonthKey | None:
     clinic = _clinic_month_year(note_text or "")
     if clinic is not None:
         return clinic
@@ -1004,7 +1005,7 @@ def _interval_label_from_event_text(text: str) -> str | None:
 
 def _monthly_diary_event_month(
     event: StructuredEventRecord,
-) -> tuple[int, int] | tuple[int, None] | None:
+) -> tuple[int, int | None] | None:
     text = " ".join(part for part in (event.time_window, event.evidence, event.raw_value) if part)
     match = re.search(
         r"\b(?P<month>jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|"
@@ -1082,7 +1083,7 @@ def _monthly_diary_count_value(count_text: str) -> int:
 
 
 def _monthly_diary_span_months(
-    counts_by_month: Mapping[tuple[int, int] | tuple[int, None], int],
+    counts_by_month: Mapping[MonthlyDiaryMonthKey, int],
 ) -> int:
     keys = list(counts_by_month)
     if all(year is not None for _, year in keys):
@@ -1186,7 +1187,11 @@ def _residual_jerk_label_from_events(
     )
     if anchor is None and month_anchor is None:
         return None
-    months = _elapsed_months(month_anchor, clinic_month_year) if month_anchor else None
+    months = (
+        _elapsed_months(month_anchor, clinic_month_year)
+        if month_anchor is not None and clinic_month_year is not None
+        else None
+    )
     if months is None and anchor is not None and clinic is not None:
         months = max(1, ((clinic - anchor).days + 29) // 30)
     if months is None:

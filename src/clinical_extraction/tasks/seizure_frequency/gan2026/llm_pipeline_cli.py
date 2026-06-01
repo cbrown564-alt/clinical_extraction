@@ -47,6 +47,7 @@ class PipelineReportWriter(Protocol):
         rows: Sequence[Mapping[str, Any]],
         metadata: Mapping[str, Any],
         path: Path,
+        /,
         *,
         jsonl_path: Path,
     ) -> None: ...
