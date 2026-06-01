@@ -42,6 +42,22 @@ format repair, arithmetic repair, and named ablated modules.
   Purist recall 246/250, and three deterministic-correct to adjudicator-wrong
   regressions. It is the strongest current validation candidate but still needs
   failure review and ablations before any holdout freeze.
+- Architecture 2 full-validation schema replay reached 680/750 Purist and
+  689/750 Pragmatic with 0 parse failures, but it underperformed deterministic
+  top on the same rows (697/750 Purist) because the adjudicator had 24
+  deterministic-correct regressions against 7 corrections. Revise before
+  holdout; v0.1 is not a frozen test candidate.
+- Section-claim-table v4 full validation collapsed to 528/750 clean Purist and
+  577/750 clean Pragmatic. Reject v4 for holdout and redesign v5 around
+  cluster-axis preservation, boundary-state selection, and selector ablation.
+- Added unified component-ablation tooling for the three key architecture
+  families: deterministic-only, LLM-then-deterministic, and deterministic-then-LLM.
+  It normalizes deterministic replay and saved JSONL artifacts into shared
+  condition summaries for attribution, repair, and adjudicator comparisons.
+- Routine LLM experiments now use one cache-first CLI,
+  `gan2026-llm-experiment`, with `--pipeline` selection. DSPy cache is on by
+  default; saved-output replay is reserved for explicit offline artifact
+  analysis rather than normal experiment execution.
 
 ## Key References
 
@@ -49,8 +65,10 @@ format repair, arithmetic repair, and named ablated modules.
   `docs/design/data_contract.md`
 - Core code: `src/clinical_extraction/tasks/seizure_frequency/gan2026/section_claim_table.py`
 - Latest section-table run: `experiments/gan2026_section_claim_table_validation250_gpt41mini_v4_schema_replay_2026-06-01.md`
+- Latest section-table full-validation review: `experiments/gan2026_section_claim_table_validation750_v4_interpretation_2026-06-01.md`
 - Latest Architecture 2 run: `experiments/gan2026_arch2_validation250_gpt41mini_v01_schema_replay_2026-06-01.md`
 - Latest Architecture 2 review: `experiments/gan2026_arch2_validation250_v01_failure_review_2026-06-01.md`
+- Latest Architecture 2 full-validation review: `experiments/gan2026_arch2_validation750_v01_interpretation_2026-06-01.md`
 - Latest v3 review: `experiments/gan2026_section_claim_table_validation250_v3_failure_review_2026-06-01.md`
 
 ## Active Priorities
@@ -69,25 +87,25 @@ format repair, arithmetic repair, and named ablated modules.
 
 ### Now
 
-- Review Architecture 2 250-row failure families, especially candidate-recall
-  misses and adjudicator regressions, before any prompt/candidate change.
-- Review v4 250-row failure families and write a targeted v5 change hypothesis
-  before any semantic prompt/repair change.
+- Design Architecture 2 v0.2 as a conservative/targeted adjudicator with
+  deterministic fallback and named overreach-family gates; repeat 25/50/250.
+- Design section-claim-table v5 as claim-table plus constrained selector, with
+  cluster-axis and boundary-state fields; repeat 25/50/250.
 - Keep clean scorer-facing normalization separate from named deterministic
   modules in run attribution and claim language.
 
 ### Next
 
-- Implement a narrow v5 prompt/schema revision only after the failure-family
-  review names the intended behavior and ablation category.
-- Decide whether Architecture 2 should escalate to full validation after a
-  written 250-row review, or whether to first revise the adjudicator prompt for
-  broad-burden versus lower-count recent-event regressions.
+- Add component ablations for Architecture 2 v0.2 and section-table v5 before
+  any holdout evaluation: raw/model, strict/schema repair, deterministic fallback
+  or selector, and clean scorer-facing policy.
 - Move or remove `core.schemas.SeizureEvent` so `core/` stays task-neutral.
 - Design LLM-replacement ablations for deterministic post-processing modules,
   reporting score, repair attribution, evidence validity, and replay variance.
 - Add a validation-ladder guard or warning to `llm_pipeline_cli.py` for broad
   validation runs without an escalation reason.
+- Consolidate any remaining saved-output replay helpers into dedicated artifact
+  analysis modules so pipeline runners stay cache-first and live-run oriented.
 - Do not run section-claim-table beyond 250 rows until v5 passes the 25/50 ladder
   and a written decision justifies another 250-row diagnostic.
 
@@ -106,12 +124,24 @@ format repair, arithmetic repair, and named ablated modules.
   harness through 25/50/250 validation; schema replay reached 243/250 Purist with
   0 parse failures and identified candidate-recall misses plus three adjudicator
   regressions as the next review surface.
+- 2026-06-01: Ran full validation for Architecture 2 v0.1 and section-table v4.
+  Architecture 2 clears 0.9 after schema replay but underperforms deterministic
+  top; section-table v4 falls to 0.704 clean Purist and is rejected for holdout.
 - 2026-06-01: Fixed the v4 schema-output blocker, added prompt-policy IDs, and
   reran the corrected 25-row smoke at 25/25 raw and clean Purist/Pragmatic.
 - 2026-06-01: Added a research-drift audit, completed the v2/v3 section-claim-table
   ladder and review, and produced structured LLM repair-attribution artifacts.
+- 2026-06-01: Added cross-architecture component-ablation tooling with JSON and
+  Markdown outputs, covering deterministic rule-group ablations, saved LLM-first
+  or structured LLM artifacts, and Architecture 2 deterministic-top versus
+  adjudicator-final comparisons.
+- 2026-06-01: Consolidated routine Gan LLM experiments into one
+  `gan2026-llm-experiment --pipeline ...` CLI, including Architecture 2, and
+  removed artifact replay from the normal CLI surface in favor of DSPy cache
+  reuse.
 
 ## Immediate Next Step
 
-Review Architecture 2 250-row failure families and write the promote/revise
-decision before full-validation or holdout use; do not inspect holdout rows.
+Implement the next validation-only revision cycle: Architecture 2 v0.2
+conservative adjudication and section-table v5 constrained selection. Do not
+inspect holdout rows.

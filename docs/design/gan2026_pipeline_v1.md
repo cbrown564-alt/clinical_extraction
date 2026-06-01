@@ -200,28 +200,30 @@ standard validation ladder from `docs/design/gan2026_split_protocol.md`:
 Full 750-row validation runs are rare and should be reserved for stable
 candidates or paper-facing comparisons where a 250-row slice is insufficient.
 The experiment artifact must state why the full validation surface is necessary.
-If a full run is needed, prefer raw-output reuse and checkpointing rather than
-duplicating already-cached model calls.
+If a full run is needed, prefer the standard DSPy cache and checkpointing rather
+than duplicating already-cached model calls. Artifact replay should be reserved
+for explicit offline analyses of saved outputs, not routine experiment CLI runs.
 
-## Shared LLM CLI Runner
+## Single LLM Experiment CLI
 
-Gan LLM/DSPy pipeline CLIs should bind into the general runner in
+Routine Gan LLM/DSPy experiments should use the single CLI in
 `src/clinical_extraction/tasks/seizure_frequency/gan2026/llm_pipeline_cli.py`.
-That module is not owned by the direct LLM-first implementation or by the staged
-structured extractor. It owns cross-pipeline concerns that should stay
-consistent across experiments:
+Use the `gan2026-llm-experiment` console script, or run the module directly with
+`python -m clinical_extraction.tasks.seizure_frequency.gan2026.llm_pipeline_cli`.
+Use `--pipeline` to select the implementation (`llm-first`, `structured`,
+`section-claim-table`, or `architecture2`). The CLI owns cross-pipeline concerns
+that should stay consistent across experiments:
 
-- split loading and optional validation-prefix limits
-- artifact-level raw-output reuse
-- DSPy cache enable/disable control
+- pipeline selection, split loading, and optional validation-prefix limits
+- DSPy cache enable/disable control, defaulting to cache-on
 - progress and checkpoint emission, defaulting to every 10 processed rows
 - recording rare full-validation escalation reasons
 
-Each concrete LLM pipeline should keep a thin `*_cli.py` binding that supplies a
-`GanLlmPipelineCliSpec` with its `run_split`, JSONL writer, report writer, default
-artifact paths, and raw-output reuse loader. This keeps new extractors, DSPy
-reasoners, and future hybrid architectures comparable without copying CLI
-behavior.
+Concrete pipeline modules should expose library functions (`run_split`, JSONL
+writer, report writer, default artifact paths, model defaults, and token
+defaults) and register them in the single CLI registry. They should not grow
+their own routine experiment CLIs. This keeps new extractors, DSPy reasoners,
+and future hybrid architectures comparable without copying CLI behavior.
 
 ## Shared Repair Boundaries
 

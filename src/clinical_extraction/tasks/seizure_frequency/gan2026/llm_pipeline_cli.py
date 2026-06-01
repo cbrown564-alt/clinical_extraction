@@ -1,10 +1,9 @@
 """General CLI harness for Gan 2026 LLM-backed pipelines.
 
-This module is intentionally pipeline-agnostic: direct extractors, structured
-extractors, DSPy programs, and future hybrid LLM pipelines should bind into this
-runner by providing a small callback spec. Pipeline modules own extraction and
-report formatting; this module owns shared CLI concerns such as split loading,
-raw-output reuse, DSPy cache control, progress cadence, and checkpoint paths.
+This module is the single CLI surface for routine Gan 2026 LLM-backed
+experiments. Pipeline modules own extraction and report formatting; this module
+owns split loading, model/cache flags, progress cadence, checkpoint paths, and
+the pipeline registry.
 """
 
 from __future__ import annotations
@@ -35,8 +34,6 @@ class PipelineRunFn(Protocol):
         max_tokens: int,
         mode: Literal["live", "prompt-only"],
         dspy_cache: bool,
-        reuse_raw_outputs: Mapping[int, str],
-        reuse_source: str | None,
         escalation_reason: str | None,
         progress_every: int | None,
         checkpoint_jsonl_path: Path | None,
@@ -65,13 +62,69 @@ class GanLlmPipelineCliSpec:
     run_split: PipelineRunFn
     write_jsonl: Callable[[Sequence[Mapping[str, Any]], Path], None]
     write_report: PipelineReportWriter
-    load_reusable_raw_outputs: Callable[[Path], dict[int, str]]
     default_model: str = "openai/gpt-4.1-mini"
     default_max_tokens: int = 900
 
 
-def run_cli(spec: GanLlmPipelineCliSpec, argv: Sequence[str] | None = None) -> None:
-    parser = argparse.ArgumentParser(description=spec.description)
+def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
+    """Return routine LLM experiment pipelines exposed by the single CLI."""
+
+    from clinical_extraction.tasks.seizure_frequency.gan2026 import (
+        dspy_modules,
+        llm_first,
+        llm_structured,
+        section_claim_table,
+    )
+
+    return {
+        "llm-first": GanLlmPipelineCliSpec(
+            description="Run the Gan 2026 LLM-first seizure-frequency extraction experiment.",
+            default_jsonl_path=llm_first.DEFAULT_JSONL_PATH,
+            default_report_path=llm_first.DEFAULT_REPORT_PATH,
+            run_split=llm_first.run_split,
+            write_jsonl=llm_first.write_jsonl,
+            write_report=llm_first.write_report,
+        ),
+        "structured": GanLlmPipelineCliSpec(
+            description="Run the Gan 2026 structured LLM seizure-frequency extraction experiment.",
+            default_jsonl_path=llm_structured.DEFAULT_JSONL_PATH,
+            default_report_path=llm_structured.DEFAULT_REPORT_PATH,
+            run_split=llm_structured.run_split,
+            write_jsonl=llm_structured.write_jsonl,
+            write_report=llm_structured.write_report,
+        ),
+        "section-claim-table": GanLlmPipelineCliSpec(
+            description="Run the Gan 2026 section-and-claim-table LLM extraction experiment.",
+            default_jsonl_path=section_claim_table.DEFAULT_JSONL_PATH,
+            default_report_path=section_claim_table.DEFAULT_REPORT_PATH,
+            run_split=section_claim_table.run_split,
+            write_jsonl=section_claim_table.write_jsonl,
+            write_report=section_claim_table.write_report,
+            default_max_tokens=1400,
+        ),
+        "architecture2": GanLlmPipelineCliSpec(
+            description=(
+                "Run Gan 2026 Architecture 2: deterministic candidate generator "
+                "plus LLM adjudicator."
+            ),
+            default_jsonl_path=dspy_modules.DEFAULT_ARCH2_JSONL_PATH,
+            default_report_path=dspy_modules.DEFAULT_ARCH2_REPORT_PATH,
+            run_split=dspy_modules.run_architecture2_split,
+            write_jsonl=dspy_modules.write_architecture2_jsonl,
+            write_report=dspy_modules.write_architecture2_report,
+            default_max_tokens=1100,
+        ),
+    }
+
+
+def run_cli(argv: Sequence[str] | None = None) -> None:
+    specs = pipeline_specs()
+    pipeline_parser = argparse.ArgumentParser(add_help=False)
+    pipeline_parser.add_argument("--pipeline", choices=sorted(specs), required=True)
+    pipeline_args, _ = pipeline_parser.parse_known_args(argv)
+    spec = specs[pipeline_args.pipeline]
+
+    parser = argparse.ArgumentParser(description=spec.description, parents=[pipeline_parser])
     parser.add_argument("--split", choices=("train", "validation"), default="validation")
     parser.add_argument("--jsonl", type=Path, default=spec.default_jsonl_path)
     parser.add_argument("--markdown", type=Path, default=spec.default_report_path)
@@ -86,13 +139,6 @@ def run_cli(spec: GanLlmPipelineCliSpec, argv: Sequence[str] | None = None) -> N
         help="Disable DSPy/LiteLLM cache for new model calls.",
     )
     parser.add_argument(
-        "--reuse-jsonl",
-        type=Path,
-        action="append",
-        default=[],
-        help="Reuse raw model outputs from an existing JSONL artifact by source_row_index.",
-    )
-    parser.add_argument(
         "--escalation-reason",
         default=None,
         help="Reason for a rare broader validation run; recorded in the report.",
@@ -104,6 +150,7 @@ def run_cli(spec: GanLlmPipelineCliSpec, argv: Sequence[str] | None = None) -> N
         help="Emit progress and checkpoint artifacts every N processed rows. Use 0 to disable.",
     )
     args = parser.parse_args(argv)
+    spec = specs[args.pipeline]
 
     records = load_records_for_split(args.split)
     if args.limit is not None:
@@ -111,10 +158,6 @@ def run_cli(spec: GanLlmPipelineCliSpec, argv: Sequence[str] | None = None) -> N
 
     manifest = load_split_manifest()
     split_manifest = str(manifest.get("manifest_version", "gan2026_split_v1"))
-    reuse_raw_outputs: dict[int, str] = {}
-    for reuse_jsonl in args.reuse_jsonl:
-        reuse_raw_outputs.update(spec.load_reusable_raw_outputs(reuse_jsonl))
-    reuse_source = ", ".join(str(path) for path in args.reuse_jsonl) or None
     progress_every = args.progress_every if args.progress_every > 0 else None
 
     rows, metadata = spec.run_split(
@@ -126,8 +169,6 @@ def run_cli(spec: GanLlmPipelineCliSpec, argv: Sequence[str] | None = None) -> N
         max_tokens=args.max_tokens,
         mode=args.mode,
         dspy_cache=not args.disable_dspy_cache,
-        reuse_raw_outputs=reuse_raw_outputs,
-        reuse_source=reuse_source,
         escalation_reason=args.escalation_reason,
         progress_every=progress_every,
         checkpoint_jsonl_path=args.jsonl,
@@ -138,6 +179,9 @@ def run_cli(spec: GanLlmPipelineCliSpec, argv: Sequence[str] | None = None) -> N
     print(json.dumps(metadata["summary"], sort_keys=True))
 
 
-# Backward-compatible alias for the first pipeline bindings that imported the
-# old name while the shared runner was being split out.
-LlmPipelineCliSpec = GanLlmPipelineCliSpec
+def main(argv: Sequence[str] | None = None) -> None:
+    run_cli(argv)
+
+
+if __name__ == "__main__":
+    main()

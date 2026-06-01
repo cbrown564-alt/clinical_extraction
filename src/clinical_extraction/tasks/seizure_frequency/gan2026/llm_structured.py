@@ -2043,14 +2043,3 @@ def _git_output(args: Sequence[str]) -> str:
     except (subprocess.CalledProcessError, FileNotFoundError):
         return "unknown"
 
-
-def main(argv: Sequence[str] | None = None) -> None:
-    from clinical_extraction.tasks.seizure_frequency.gan2026.llm_structured_cli import (
-        main as cli_main,
-    )
-
-    cli_main(argv)
-
-
-if __name__ == "__main__":
-    main()
