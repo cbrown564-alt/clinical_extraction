@@ -67,6 +67,9 @@ ownership, and deterministic repair boundaries explicitly.
   `raw_model`, `strict_format`, `clean_scorer_facing`,
   `selected_evidence_derivation`, `hybrid_full_stack`, and `custom`; run
   metadata, reports, and repair ablations expose the resolved mode.
+- The codebase thermonuclear review consolidation phase has started: shared
+  Git/Python run metadata now lives in a task-level helper used by the current
+  LLM-only and hybrid Gan runners.
 
 ## Key References
 
@@ -162,6 +165,10 @@ ownership, and deterministic repair boundaries explicitly.
   repair-ablation outputs, with tests proving clean scorer-facing mode does not
   silently use the hybrid semantic repair stack; Ruff, mypy, and full pytest are
   green.
+- 2026-06-01: Began Phase 4 of the codebase thermonuclear review by extracting
+  common Gan LLM run metadata into `run_metadata.py` and wiring direct-labeler,
+  structured-events, claim-table selector, and hybrid adjudicator runners
+  through it; focused tests, Ruff, mypy, and full pytest are green.
 
 ## Immediate Next Step
 

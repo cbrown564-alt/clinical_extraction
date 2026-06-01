@@ -5,11 +5,9 @@ from __future__ import annotations
 import argparse
 import json
 import re
-import subprocess
 import sys
 from collections import Counter
 from collections.abc import Mapping, Sequence
-from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Literal
 
@@ -22,6 +20,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline_v1 import Gan2026PipelineV1
+from clinical_extraction.tasks.seizure_frequency.gan2026.run_metadata import (
+    build_run_metadata,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.schema_repair import (
     repair_decision_payload,
 )
@@ -1071,33 +1072,16 @@ def _run_metadata(
 ) -> dict[str, Any]:
     split = sorted({str(example["split"]) for example in examples})
     split_manifest = sorted({str(example["split_manifest"]) for example in examples})
-    return {
-        "date": datetime.now(UTC).date().isoformat(),
-        "created_at_utc": datetime.now(UTC).isoformat(),
-        "mode": mode,
-        "model": model,
-        "temperature": temperature,
-        "max_tokens": max_tokens,
-        "prompt_version": PROMPT_VERSION,
-        "dspy_version": getattr(dspy, "__version__", "unknown"),
-        "split": ", ".join(split),
-        "split_manifest": ", ".join(split_manifest),
-        "git_commit": _git_output(["git", "rev-parse", "--short", "HEAD"]),
-        "working_tree_note": _working_tree_note(),
-        "python": sys.version.split()[0],
-    }
-
-
-def _working_tree_note() -> str:
-    status = _git_output(["git", "status", "--short"])
-    return "clean" if status == "" else "dirty/uncommitted local changes"
-
-
-def _git_output(args: Sequence[str]) -> str:
-    try:
-        return subprocess.check_output(args, text=True, stderr=subprocess.DEVNULL).strip()
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        return "unknown"
+    return build_run_metadata(
+        mode=mode,
+        model=model,
+        temperature=temperature,
+        max_tokens=max_tokens,
+        prompt_version=PROMPT_VERSION,
+        dspy_version=getattr(dspy, "__version__", "unknown"),
+        split=", ".join(split),
+        split_manifest=", ".join(split_manifest),
+    )
 
 
 def _interpret_run(summary: Mapping[str, Any]) -> str:

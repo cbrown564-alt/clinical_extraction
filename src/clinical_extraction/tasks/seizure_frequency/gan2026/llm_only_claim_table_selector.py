@@ -3,11 +3,9 @@
 from __future__ import annotations
 
 import json
-import subprocess
 import sys
 from collections import Counter
 from collections.abc import Mapping, Sequence
-from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Literal
 
@@ -24,6 +22,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     label_to_frequency_record,
     repair_prediction_label_clean_scorer_facing,
     repair_prediction_label_format_preserving,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.run_metadata import (
+    build_run_metadata,
 )
 
 PROMPT_VERSION = "gan2026_llm_only_claim_table_selector_v4"
@@ -1166,36 +1167,21 @@ def _run_metadata(
     max_tokens: int,
     mode: str,
 ) -> dict[str, Any]:
-    return {
-        "date": datetime.now(UTC).date().isoformat(),
-        "created_at_utc": datetime.now(UTC).isoformat(),
-        "mode": mode,
-        "model": model,
-        "temperature": temperature,
-        "max_tokens": max_tokens,
-        "pipeline_name": PROMPT_VERSION,
-        "prompt_version": PROMPT_VERSION,
-        "prompt_policy_ids": [policy["policy_id"] for policy in PROMPT_POLICY_TAXONOMY],
-        "dspy_version": getattr(dspy, "__version__", "unknown"),
-        "split": split,
-        "split_manifest": split_manifest,
-        "row_count": len(records),
-        "git_commit": _git_output(["git", "rev-parse", "--short", "HEAD"]),
-        "working_tree_note": _working_tree_note(),
-        "python": sys.version.split()[0],
-    }
-
-
-def _working_tree_note() -> str:
-    status = _git_output(["git", "status", "--short"])
-    return "clean" if status == "" else "dirty/uncommitted local changes"
-
-
-def _git_output(args: Sequence[str]) -> str:
-    try:
-        return subprocess.check_output(args, text=True, stderr=subprocess.DEVNULL).strip()
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        return "unknown"
+    return build_run_metadata(
+        mode=mode,
+        model=model,
+        temperature=temperature,
+        max_tokens=max_tokens,
+        prompt_version=PROMPT_VERSION,
+        dspy_version=getattr(dspy, "__version__", "unknown"),
+        split=split,
+        split_manifest=split_manifest,
+        row_count=len(records),
+        extra={
+            "pipeline_name": PROMPT_VERSION,
+            "prompt_policy_ids": [policy["policy_id"] for policy in PROMPT_POLICY_TAXONOMY],
+        },
+    )
 
 
 def _yes_no(value: Any) -> str:
