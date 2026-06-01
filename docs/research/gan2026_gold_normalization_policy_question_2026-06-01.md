@@ -131,6 +131,15 @@ normalization preserves the selected clinical fact.
 | Cluster syntax grammar | Normalize source-near cluster primitives into Gan cluster syntax when cadence and per-cluster load are preserved. | `11118`: 2 cluster days/month, six in 24 h -> `2 cluster per month, 6 per cluster`; `10894`: weekly clusters, four events -> `1 cluster per week, 4 per cluster` |
 | Single already-totaled count/window | Rephrase a single selected total count and explicit window into Gan syntax. | `7 in past 3 months`-style source-near facts may become `7 per 3 month` without arithmetic if already totaled in the selected fact. |
 
+Implementation note: the first table-backed implementation follows these
+families rather than only the literal row examples. The vague-quantity rule also
+accepts adjacent vague count words such as `many`, `few`, and `a few` when the
+denominator is already explicit. The single total/window rule accepts `in`,
+`over`, `during`, and `for` as window prepositions when the selected expression
+already contains one total count and one explicit denominator. These are modest
+generalizations within the approved scorer-facing families, not permission to
+add new clean policy families without another direct-citation review.
+
 ### Named Deterministic Modules
 
 These transformations are not clean scorer-facing normalization because they

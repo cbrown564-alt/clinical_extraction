@@ -44,6 +44,9 @@ strict benchmark-format repair, arithmetic repair, and named ablated modules.
   shorthand, cluster syntax grammar, and single total/window phrasing, with
   boundary tests that keep upper-bound, temporal, diary, evidence-state, and
   cluster-reconstruction behavior out of the clean path.
+- The table-backed implementation intentionally generalizes within the approved
+  policy families only; treat the clean scorer-facing policy as frozen unless a
+  new direct-citation review justifies another family.
 
 ## Key References
 
@@ -67,6 +70,8 @@ strict benchmark-format repair, arithmetic repair, and named ablated modules.
    explicit and consistent.
 5. Maintain conservative benchmark language; the test split has been touched
    once and must not become a tuning surface.
+6. Freeze the clean scorer-facing policy before measuring impact; next work
+   should quantify attribution, not chase additional validation F1.
 
 ## Work Board
 
@@ -74,14 +79,16 @@ strict benchmark-format repair, arithmetic repair, and named ablated modules.
 
 - Keep clean scorer-facing normalization separate from named deterministic
   modules in run attribution and claim language.
-- Use direct-citation row tables as the gate for any policy expansion.
-- Run a focused 25- or 50-row clean-policy comparison after the tested policy
-  slice lands.
+- Freeze the current clean scorer-facing policy and run a focused 25- or 50-row
+  comparison that reports raw, strict format-only, and clean policy separately.
+- Use direct-citation row tables as the gate for any future policy expansion.
 
 ### Next
 
 - Keep upper-bound, diary, temporal, evidence-state, and cluster
   reconstruction behavior as named ablated modules.
+- Draft the short attribution note that explains why further score gains should
+  come from model selection/prompting or named ablations, not clean-policy creep.
 - If useful, run a focused 25- or 50-row comparison for the selected next
   architecture before any 250-row escalation.
 
@@ -100,8 +107,11 @@ strict benchmark-format repair, arithmetic repair, and named ablated modules.
   v0.4 selector guidance is rejected as the next step.
 - 2026-06-01: Implemented table-backed clean scorer-facing policy families with
   tests; full suite passes (`560 passed`) and Ruff passes.
+- 2026-06-01: Recorded that the implementation generalizes only within approved
+  scorer-facing families; next moves are freeze, ablate, and report attribution.
 
 ## Immediate Next Step
 
-Run the focused clean-policy comparison on the validation ladder; do not promote
-named semantic modules without ablation.
+Freeze the current clean scorer-facing policy, then run the focused clean-policy
+comparison on the validation ladder with raw, strict format-only, and clean
+policy results reported separately.
