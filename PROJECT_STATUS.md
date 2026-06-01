@@ -133,6 +133,13 @@ ownership, and deterministic repair boundaries explicitly.
   parse/scoring orchestration and exposes the same `write_report` entry point.
   Behavior is preserved; Ruff, mypy, focused structured-events/CLI tests, and
   full pytest are green.
+- Phase 5 continued with a selected-evidence derivation ownership split:
+  `selected_evidence_monthly_diary.py` now owns selected-evidence monthly diary
+  parsing, while `selected_evidence_text.py` owns shared text/rate formatting
+  helpers. `selected_evidence_derivation.py` remains the public derivation
+  surface and is down to 798 lines. Behavior is preserved.
+  Ruff, mypy, focused normalize/structured-events tests, and full pytest are
+  green.
 
 ## Key References
 
@@ -165,7 +172,7 @@ ownership, and deterministic repair boundaries explicitly.
 
 - Continue the codebase thermonuclear review Phase 5 behavior splits without
   changing scorer behavior: next candidates are artifact-analysis helpers,
-  selected-evidence derivation, or other ownership splits.
+  selected-evidence cluster/rate derivation, or other ownership splits.
 - Design hybrid rules-candidates LLM adjudicator v0.2 as a conservative/targeted adjudicator with
   deterministic fallback and named overreach-family gates; repeat 25/50/250.
 - Design LLM-only claim-table selector v5 as claim-table plus constrained selector, with
@@ -315,10 +322,19 @@ ownership, and deterministic repair boundaries explicitly.
   `python -m pytest tests/test_gan2026_llm_only_structured_events.py tests/test_gan2026_llm_pipeline_cli.py -q`,
   and `python -m pytest -q` are green (`595 passed`, 11 third-party DSPy
   deprecation warnings).
+- 2026-06-01: Continued Phase 5 by extracting selected-evidence monthly diary
+  parsing from `selected_evidence_derivation.py` into
+  `selected_evidence_monthly_diary.py`, with shared text/rate formatting in
+  `selected_evidence_text.py`. The selected-evidence derivation module is now
+  798 lines, down from 962. Verification: `python -m ruff check .`,
+  `python -m mypy src`,
+  `python -m pytest tests/test_gan2026_normalize.py tests/test_gan2026_llm_only_structured_events.py -q`,
+  and `python -m pytest -q` are green (`595 passed`, 11 third-party DSPy
+  deprecation warnings).
 
 ## Immediate Next Step
 
 Continue the Phase 5 behavior-preserving splits from the remaining large
-behavior modules, with artifact-analysis helpers, selected-evidence derivation,
-or other ownership splits as likely next targets before returning to the
-validation-only v0.2/v5 experiment cycle. Do not inspect holdout rows.
+behavior modules, with artifact-analysis helpers, selected-evidence cluster/rate
+derivation, or other ownership splits as likely next targets before returning to
+the validation-only v0.2/v5 experiment cycle. Do not inspect holdout rows.
