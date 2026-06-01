@@ -61,3 +61,31 @@ def test_write_markdown_report_creates_parent_and_trailing_newline(tmp_path: Pat
     write_markdown_report(report_path, ["# Title", "", "Body"])
 
     assert report_path.read_text(encoding="utf-8") == "# Title\n\nBody\n"
+
+
+def test_llm_model_metadata_lines_identify_native_ollama_chat_route() -> None:
+    metadata = {
+        "dspy_version": "3.2.1",
+        "model": "ollama_chat/qwen3.6:35b",
+        "api_base": "http://localhost:11434",
+        "prompt_version": "prompt_v1",
+        "temperature": 0.0,
+        "max_tokens": 1400,
+        "mode": "live",
+        "dspy_cache": False,
+        "git_commit": "abc123",
+        "working_tree_note": "dirty",
+    }
+
+    lines = llm_model_metadata_lines(
+        metadata,
+        Path("experiments/qwen.jsonl"),
+        model_role="local selector",
+        deterministic_rule_configuration="frozen",
+    )
+
+    assert (
+        "- Provider/execution: native Ollama chat endpoint via DSPy/LiteLLM: "
+        "`http://localhost:11434`"
+    ) in lines
+    assert "- Ollama Qwen thinking mode: `disabled` (`think=false`)" in lines
