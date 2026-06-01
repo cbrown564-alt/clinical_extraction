@@ -204,6 +204,16 @@ If a full run is needed, prefer the standard DSPy cache and checkpointing rather
 than duplicating already-cached model calls. Artifact replay should be reserved
 for explicit offline analyses of saved outputs, not routine experiment CLI runs.
 
+When validation is already saturated, the ladder changes purpose. A candidate
+that is competing against a near-ceiling deterministic top should not keep
+running broad validation250 aggregates to learn tiny deltas. Follow
+`docs/design/gan2026_saturated_validation_protocol.md`: construct synthetic
+hard cases, validation hard slices, adversarial/paraphrase panels,
+component-stress ablations, selective-action analyses, or a frozen test
+generalization audit. For hybrid adjudicators, the core question is whether the
+model makes high-precision corrections on deterministic failure modes, not
+whether it can avoid damaging a mostly easy validation prefix.
+
 ## Single LLM Experiment CLI
 
 Routine Gan LLM/DSPy experiments should use the single CLI in

@@ -201,6 +201,24 @@ def test_parse_llm_only_claim_table_selector_json_repairs_extra_evidence_offsets
     assert errors == []
 
 
+def test_parse_llm_only_claim_table_selector_json_repairs_nested_claim_schema_echo() -> None:
+    payload = json.loads(_raw_claim_table())
+    payload["claims"][0]["claim_schema"] = {
+        "claim_id": "c1",
+        "claim_type": "frequency",
+        "evidence": "two focal seizures per month",
+    }
+
+    extraction, errors = parse_llm_only_claim_table_selector_json(
+        json.dumps(payload),
+        note_text=_record().note_text,
+    )
+
+    assert extraction is not None
+    assert extraction.claims[0].claim_id == "c1"
+    assert errors == []
+
+
 def test_parse_llm_only_claim_table_selector_json_repairs_cluster_answer_kind_alias() -> None:
     payload = json.loads(_raw_claim_table())
     payload["claims"][0]["claim_type"] = "cluster_frequency"
