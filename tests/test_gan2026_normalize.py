@@ -3,6 +3,7 @@ import pytest
 from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     BENCHMARK_REPAIR_RULES,
     BENCHMARK_REPAIR_STEPS,
+    CLEAN_SCORER_FACING_GOLD_NORMALIZATION_RULES,
     FORMAT_PRESERVING_BENCHMARK_REPAIR_RULES,
     FORMAT_PRESERVING_BENCHMARK_REPAIR_STEPS,
     FrequencyLabelKind,
@@ -10,6 +11,8 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     label_to_monthly_frequency,
     parse_label_bounds,
     repair_prediction_label,
+    repair_prediction_label_clean_scorer_facing,
+    repair_prediction_label_clean_scorer_facing_with_trace,
     repair_prediction_label_format_preserving,
     repair_prediction_label_with_evidence,
     repair_prediction_label_with_trace,
@@ -413,6 +416,55 @@ def test_format_preserving_repair_does_not_apply_semantic_basic_fallbacks() -> N
     )
     assert repair_prediction_label("most weekdays") == "no seizure frequency reference"
     assert repair_prediction_label_format_preserving("most weekdays") == "most weekdays"
+
+
+@pytest.mark.parametrize(
+    ("raw", "expected"),
+    [
+        ("1 cluster per 4 weeks", "1 per 4 week"),
+        ("clusters every 4 days", "1 per 4 day"),
+        ("clusters every 2-4 days", "1 per 2 to 4 day"),
+        ("most weekdays", "multiple per week"),
+        ("brief absences occurring on most weekdays", "multiple per week"),
+        ("bimonthly", "1 per 2 month"),
+        ("bi-monthly", "1 per 2 month"),
+    ],
+)
+def test_clean_scorer_facing_gold_policy_normalizes_first_slice(
+    raw: str,
+    expected: str,
+) -> None:
+    repaired = repair_prediction_label_clean_scorer_facing(raw)
+
+    assert repaired == expected
+    parse_label_bounds(repaired)
+
+
+def test_clean_scorer_facing_gold_policy_trace_names_policy_layer() -> None:
+    trace = repair_prediction_label_clean_scorer_facing_with_trace("most weekdays")
+
+    assert trace.final_label == "multiple per week"
+    assert [event.rule_id for event in trace.events] == [
+        "gold_normalization_policy.vague_weekday_cadence"
+    ]
+    assert all(event.group is RuleGroup.GOLD_NORMALIZATION_POLICY for event in trace.events)
+    assert all(event.portability is Portability.GAN2026_SPECIFIC for event in trace.events)
+
+
+@pytest.mark.parametrize(
+    "raw",
+    [
+        "up to 4 per day",
+        "<= once per month",
+        "2 cluster per month, 6 per cluster",
+        "monthly clusters, typically 6 to 7 seizures over 24 h",
+        "bimonthly, twice per month",
+    ],
+)
+def test_clean_scorer_facing_gold_policy_leaves_named_modules_out(raw: str) -> None:
+    assert repair_prediction_label_clean_scorer_facing(raw) == (
+        repair_prediction_label_format_preserving(raw)
+    )
 
 
 def test_repair_prediction_label_with_evidence_preserves_parseable_raw_label() -> None:
@@ -819,6 +871,7 @@ def test_benchmark_repair_steps_are_valid_and_benchmark_format_only() -> None:
     validate_benchmark_repair_steps(FORMAT_PRESERVING_BENCHMARK_REPAIR_STEPS)
     validate_rule_registry(BENCHMARK_REPAIR_RULES)
     validate_rule_registry(FORMAT_PRESERVING_BENCHMARK_REPAIR_RULES)
+    validate_rule_registry(CLEAN_SCORER_FACING_GOLD_NORMALIZATION_RULES)
     assert BENCHMARK_REPAIR_STEPS
     assert BENCHMARK_REPAIR_RULES
     assert FORMAT_PRESERVING_BENCHMARK_REPAIR_STEPS
@@ -830,6 +883,10 @@ def test_benchmark_repair_steps_are_valid_and_benchmark_format_only() -> None:
     assert {
         (rule.group, rule.portability) for rule in BENCHMARK_REPAIR_RULES
     } == {(RuleGroup.BENCHMARK_REPAIR, Portability.BENCHMARK_FORMAT)}
+    assert {
+        (rule.group, rule.portability)
+        for rule in CLEAN_SCORER_FACING_GOLD_NORMALIZATION_RULES
+    } == {(RuleGroup.GOLD_NORMALIZATION_POLICY, Portability.GAN2026_SPECIFIC)}
 
 
 def test_repair_prediction_label_trace_exposes_benchmark_repair_events() -> None:

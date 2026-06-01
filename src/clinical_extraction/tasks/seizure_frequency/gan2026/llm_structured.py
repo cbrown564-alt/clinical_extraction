@@ -24,6 +24,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     label_to_frequency_record,
     monthly_diary_label_from_text,
     repair_prediction_label,
+    repair_prediction_label_clean_scorer_facing,
     repair_prediction_label_format_preserving,
     repair_prediction_label_with_evidence,
 )
@@ -111,6 +112,7 @@ class StructuredRepairConfig:
 
     basic_label_repair: bool = True
     basic_label_repair_format_only: bool = False
+    clean_scorer_facing_gold_policy: bool = False
     selected_evidence_repair: bool = True
     monthly_diary_repair: bool = True
     usual_interval_repair: bool = True
@@ -285,7 +287,9 @@ def parse_structured_json(
     repaired_label = final_label
     if repair_config.basic_label_repair and not repair_config.selected_evidence_repair:
         basic_repair = (
-            repair_prediction_label_format_preserving
+            repair_prediction_label_clean_scorer_facing
+            if repair_config.clean_scorer_facing_gold_policy
+            else repair_prediction_label_format_preserving
             if repair_config.basic_label_repair_format_only
             else repair_prediction_label
         )
@@ -571,11 +575,17 @@ def write_report(
         f"`{key}={value}`" for key, value in sorted(repair_config.items())
     )
     repair_policy = (
+        "raw structured model selection plus clean scorer-facing Gan gold-normalization policy"
+        if repair_config.get("basic_label_repair")
+        and repair_config.get("clean_scorer_facing_gold_policy")
+        and not repair_config.get("selected_evidence_repair")
+        else (
         "raw structured model selection plus strict format-preserving basic label repair only"
         if repair_config.get("basic_label_repair")
         and repair_config.get("basic_label_repair_format_only")
         and not repair_config.get("selected_evidence_repair")
         else "configured deterministic repair families after structured model selection"
+        )
     )
     lines = [
         "# Gan 2026 LLM-Structured Validation Run",

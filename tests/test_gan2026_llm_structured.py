@@ -197,6 +197,49 @@ def test_write_report_records_repair_config(tmp_path: Path) -> None:
     assert "`selected_evidence_repair=False`" in report
 
 
+def test_parse_structured_json_can_use_clean_scorer_facing_gold_policy() -> None:
+    raw = _raw_structured("most weekdays")
+
+    extraction, _, errors = parse_structured_json(
+        raw,
+        repair_config=StructuredRepairConfig(
+            selected_evidence_repair=False,
+            basic_label_repair_format_only=True,
+            clean_scorer_facing_gold_policy=True,
+        ),
+    )
+
+    assert extraction is not None
+    assert extraction.selection.final_label == "multiple per week"
+    assert errors == ["final_label_repaired: 'most weekdays' -> 'multiple per week'"]
+
+
+def test_write_report_names_clean_scorer_facing_gold_policy(tmp_path: Path) -> None:
+    rows, metadata = run_split(
+        [_record()],
+        split="validation",
+        split_manifest="gan2026_split_v1",
+        model="openai/gpt-4.1-mini",
+        temperature=0.0,
+        max_tokens=100,
+        mode="prompt-only",
+        dspy_cache=True,
+        reuse_raw_outputs={10: _raw_structured("most weekdays")},
+        repair_config=StructuredRepairConfig(
+            selected_evidence_repair=False,
+            basic_label_repair_format_only=True,
+            clean_scorer_facing_gold_policy=True,
+        ),
+    )
+    report_path = tmp_path / "report.md"
+
+    write_report(rows, metadata, report_path, jsonl_path=tmp_path / "rows.jsonl")
+
+    report = report_path.read_text(encoding="utf-8")
+    assert "- Repair policy: raw structured model selection plus clean scorer-facing" in report
+    assert "`clean_scorer_facing_gold_policy=True`" in report
+
+
 def test_summary_tolerates_missing_structured_final_label() -> None:
     summary = summarize_records(
         [

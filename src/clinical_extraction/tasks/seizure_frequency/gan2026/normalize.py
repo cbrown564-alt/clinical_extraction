@@ -1,11 +1,17 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Callable
 from dataclasses import dataclass
 from enum import StrEnum
 
 from clinical_extraction.tasks.seizure_frequency.gan2026.rule_metadata import (
     AblationConfig,
+    ExtractionContext,
+    Portability,
+    RuleExample,
+    RuleGroup,
+    RuleSpec,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.rules.benchmark_repair import (
     BenchmarkRepairStep,
@@ -65,6 +71,29 @@ def repair_prediction_label_format_preserving(raw: str | None) -> str:
     rate syntax, but leaves vague quantities and unrecognized labels untouched.
     """
     return repair_prediction_label_format_preserving_with_trace(raw).final_label
+
+
+def repair_prediction_label_clean_scorer_facing(raw: str | None) -> str:
+    """Apply clean Gan scorer-facing normalization after strict format repair."""
+    return repair_prediction_label_clean_scorer_facing_with_trace(raw).final_label
+
+
+def repair_prediction_label_clean_scorer_facing_with_trace(
+    raw: str | None,
+) -> BenchmarkRepairTrace:
+    """Strict format repair plus named Gan gold-normalization policy rules."""
+    strict_trace = repair_prediction_label_format_preserving_with_trace(raw)
+    text, policy_events = apply_benchmark_repair_rules(
+        strict_trace.final_label,
+        CLEAN_SCORER_FACING_GOLD_NORMALIZATION_RULES,
+        AblationConfig(),
+    )
+    return BenchmarkRepairTrace(
+        raw_label=raw,
+        initial_label=strict_trace.initial_label,
+        final_label=text,
+        events=(*strict_trace.events, *policy_events),
+    )
 
 
 def repair_prediction_label_format_preserving_with_trace(raw: str | None) -> BenchmarkRepairTrace:
@@ -537,6 +566,54 @@ def _period_words(text: str) -> str:
     text = re.sub(r"\bbiweekly\b", "1 per 2 week", text)
     text = re.sub(r"\bsemimonthly\b", "2 per month", text)
     return re.sub(r"\bbimonthly\b", "1 per 2 month", text)
+
+
+def _gold_policy_cluster_name_stripping(text: str) -> str:
+    text = normalize_frequency_label(text)
+    match = re.fullmatch(
+        r"clusters?\s+(?P<label>\d+(?:\s*to\s*\d+)?\s+per\s+"
+        r"(?:\d+(?:\s*to\s*\d+)?\s+)?(?:day|week|month|year))",
+        text,
+    )
+    if match:
+        return match.group("label")
+
+    match = re.fullmatch(
+        r"(?:(?P<count>\d+(?:\s*to\s*\d+)?)\s+)?clusters?\s+"
+        r"(?:every|per)\s+(?P<den>\d+(?:\s*to\s*\d+)?(?:\s+|-)?"
+        r"(?:day|week|month|year)s?)",
+        text,
+    )
+    if match:
+        count = match.group("count") or "1"
+        denominator = _normalize_period(_normalize_ranges(match.group("den").replace("-", " ")))
+        return f"{count} per {denominator}"
+
+    match = re.fullmatch(
+        r"(?P<count>\d+(?:\s*to\s*\d+)?)\s+clusters?\s+per\s+"
+        r"(?P<den>(?:\d+(?:\s*to\s*\d+)?\s+)?(?:day|week|month|year))",
+        text,
+    )
+    if match and "per cluster" not in text:
+        return f"{match.group('count')} per {match.group('den')}"
+    return text
+
+
+def _gold_policy_vague_weekday_cadence(text: str) -> str:
+    if re.search(r"\b(?:most|several|multiple)\s+weekdays\b", text):
+        return "multiple per week"
+    return text
+
+
+def _gold_policy_bimonthly(text: str) -> str:
+    if text == "bi-1 per month":
+        return "1 per 2 month"
+    if re.search(r"\bbi-?monthly\b", text) and not re.search(
+        r"\b(?:twice|2)\s+(?:per\s+)?month\b",
+        text,
+    ):
+        return "1 per 2 month"
+    return text
 
 
 def _strip_upper_bound_qualifier(text: str) -> str:
@@ -2055,6 +2132,57 @@ FORMAT_PRESERVING_BENCHMARK_REPAIR_STEPS = (
         rule_id="benchmark_repair.cleanup_commas_final",
         description="Clean comma spacing after strict format repair.",
         apply=_cleanup_commas,
+    ),
+)
+
+
+def _gold_normalization_policy_rule(
+    *,
+    rule_id: str,
+    description: str,
+    apply: Callable[[str], str],
+    example: str,
+    expected: str,
+) -> RuleSpec:
+    def build(match: re.Match[str], _context: ExtractionContext) -> str:
+        return apply(match.group("label"))
+
+    return RuleSpec(
+        rule_id=rule_id,
+        group=RuleGroup.GOLD_NORMALIZATION_POLICY,
+        portability=Portability.GAN2026_SPECIFIC,
+        description=description,
+        pattern=re.compile(r"\A(?P<label>.*)\Z", re.DOTALL),
+        build=build,
+        examples=(RuleExample(text=example, expected_label=expected),),
+        provenance="Gan 2026 validation-only gold-normalization policy review.",
+    )
+
+
+CLEAN_SCORER_FACING_GOLD_NORMALIZATION_RULES = (
+    _gold_normalization_policy_rule(
+        rule_id="gold_normalization_policy.cluster_name_stripping",
+        description=(
+            "Drop cluster wording for scorer-facing cadence labels when no within-cluster "
+            "event count is available."
+        ),
+        apply=_gold_policy_cluster_name_stripping,
+        example="clusters every 4 weeks",
+        expected="1 per 4 week",
+    ),
+    _gold_normalization_policy_rule(
+        rule_id="gold_normalization_policy.vague_weekday_cadence",
+        description="Map vague multi-weekday cadence to Gan's coarse multiple-per-week label.",
+        apply=_gold_policy_vague_weekday_cadence,
+        example="most weekdays",
+        expected="multiple per week",
+    ),
+    _gold_normalization_policy_rule(
+        rule_id="gold_normalization_policy.bimonthly",
+        description="Map bare bimonthly/bi-monthly to Gan's every-two-month convention.",
+        apply=_gold_policy_bimonthly,
+        example="bimonthly",
+        expected="1 per 2 month",
     ),
 )
 
