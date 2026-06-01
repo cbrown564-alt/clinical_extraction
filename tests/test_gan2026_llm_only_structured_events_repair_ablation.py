@@ -91,6 +91,8 @@ def test_run_repair_ablation_filters_to_rows_with_saved_raw_outputs(tmp_path: Pa
     raw_summary = result["conditions"][0]["summary"]
     basic_summary = result["conditions"][1]["summary"]
     full_basic_summary = result["conditions"][2]["summary"]
+    assert result["conditions"][0]["repair_mode"] == "raw_model"
+    assert result["conditions"][1]["repair_mode"] == "strict_format"
     assert raw_summary["rows"] == 1
     assert raw_summary["exact_label_accuracy"] == 0.0
     assert basic_summary["rows"] == 1

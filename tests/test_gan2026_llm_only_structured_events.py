@@ -182,16 +182,14 @@ def test_write_report_records_repair_config(tmp_path: Path) -> None:
         mode="prompt-only",
         dspy_cache=True,
         reuse_raw_outputs={10: _raw_structured("2 per months")},
-        repair_config=StructuredRepairConfig(
-            basic_label_repair_format_only=True,
-            selected_evidence_repair=False,
-        ),
+        repair_config=StructuredRepairConfig.for_mode("strict_format"),
     )
     report_path = tmp_path / "report.md"
 
     write_report(rows, metadata, report_path, jsonl_path=tmp_path / "rows.jsonl")
 
     report = report_path.read_text(encoding="utf-8")
+    assert "- Repair mode: `strict_format`" in report
     assert "- Repair policy: raw structured model selection plus strict format-preserving" in report
     assert "`basic_label_repair_format_only=True`" in report
     assert "`selected_evidence_repair=False`" in report
@@ -214,6 +212,28 @@ def test_parse_structured_json_can_use_clean_scorer_facing_gold_policy() -> None
     assert errors == ["final_label_repaired: 'most weekdays' -> 'multiple per week'"]
 
 
+def test_named_clean_scorer_mode_does_not_use_hybrid_semantic_repair() -> None:
+    raw = _raw_structured("most weekdays")
+
+    clean_extraction, _, clean_errors = parse_structured_json(
+        raw,
+        repair_config=StructuredRepairConfig.for_mode("clean_scorer_facing"),
+    )
+    hybrid_extraction, _, hybrid_errors = parse_structured_json(
+        raw,
+        repair_config=StructuredRepairConfig.for_mode("hybrid_full_stack"),
+    )
+
+    assert clean_extraction is not None
+    assert clean_extraction.selection.final_label == "multiple per week"
+    assert clean_errors == ["final_label_repaired: 'most weekdays' -> 'multiple per week'"]
+    assert hybrid_extraction is not None
+    assert hybrid_extraction.selection.final_label == "no seizure frequency reference"
+    assert hybrid_errors == [
+        "final_label_repaired: 'most weekdays' -> 'no seizure frequency reference'"
+    ]
+
+
 def test_write_report_names_clean_scorer_facing_gold_policy(tmp_path: Path) -> None:
     rows, metadata = run_split(
         [_record()],
@@ -225,17 +245,15 @@ def test_write_report_names_clean_scorer_facing_gold_policy(tmp_path: Path) -> N
         mode="prompt-only",
         dspy_cache=True,
         reuse_raw_outputs={10: _raw_structured("most weekdays")},
-        repair_config=StructuredRepairConfig(
-            selected_evidence_repair=False,
-            basic_label_repair_format_only=True,
-            clean_scorer_facing_gold_policy=True,
-        ),
+        repair_config=StructuredRepairConfig.for_mode("clean_scorer_facing"),
     )
     report_path = tmp_path / "report.md"
 
     write_report(rows, metadata, report_path, jsonl_path=tmp_path / "rows.jsonl")
 
     report = report_path.read_text(encoding="utf-8")
+    assert metadata["repair_mode"] == "clean_scorer_facing"
+    assert "- Repair mode: `clean_scorer_facing`" in report
     assert "- Repair policy: raw structured model selection plus clean scorer-facing" in report
     assert "`clean_scorer_facing_gold_policy=True`" in report
 

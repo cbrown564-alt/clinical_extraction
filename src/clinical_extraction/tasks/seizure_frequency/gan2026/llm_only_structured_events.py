@@ -40,6 +40,14 @@ DEFAULT_REPORT_PATH = Path(
     "experiments/gan2026_llm_only_structured_events_validation_gpt41mini_2026-06-01.md"
 )
 MonthlyDiaryMonthKey = tuple[int, int | None]
+StructuredRepairMode = Literal[
+    "raw_model",
+    "strict_format",
+    "clean_scorer_facing",
+    "selected_evidence_derivation",
+    "hybrid_full_stack",
+    "custom",
+]
 
 
 class StructuredEventRecord(BaseModel):
@@ -111,6 +119,7 @@ class NormalizedEventRecord(BaseModel):
 class StructuredRepairConfig:
     """Controls deterministic repair families applied after LLM-only structured-events output."""
 
+    repair_mode: StructuredRepairMode | None = None
     basic_label_repair: bool = True
     basic_label_repair_format_only: bool = False
     clean_scorer_facing_gold_policy: bool = False
@@ -123,6 +132,110 @@ class StructuredRepairConfig:
     post_change_burst_repair: bool = True
     dated_sequence_repair: bool = True
     elapsed_anchor_repair: bool = True
+
+    @classmethod
+    def for_mode(cls, mode: StructuredRepairMode) -> StructuredRepairConfig:
+        """Build one of the named repair modes used in run metadata and reports."""
+
+        if mode == "raw_model":
+            return cls(
+                repair_mode=mode,
+                basic_label_repair=False,
+                basic_label_repair_format_only=False,
+                clean_scorer_facing_gold_policy=False,
+                selected_evidence_repair=False,
+                monthly_diary_repair=False,
+                usual_interval_repair=False,
+                breakthrough_repair=False,
+                non_epileptic_repair=False,
+                residual_jerk_repair=False,
+                post_change_burst_repair=False,
+                dated_sequence_repair=False,
+                elapsed_anchor_repair=False,
+            )
+        if mode == "strict_format":
+            return cls(
+                repair_mode=mode,
+                basic_label_repair=True,
+                basic_label_repair_format_only=True,
+                clean_scorer_facing_gold_policy=False,
+                selected_evidence_repair=False,
+                monthly_diary_repair=False,
+                usual_interval_repair=False,
+                breakthrough_repair=False,
+                non_epileptic_repair=False,
+                residual_jerk_repair=False,
+                post_change_burst_repair=False,
+                dated_sequence_repair=False,
+                elapsed_anchor_repair=False,
+            )
+        if mode == "clean_scorer_facing":
+            return cls(
+                repair_mode=mode,
+                basic_label_repair=True,
+                basic_label_repair_format_only=True,
+                clean_scorer_facing_gold_policy=True,
+                selected_evidence_repair=False,
+                monthly_diary_repair=False,
+                usual_interval_repair=False,
+                breakthrough_repair=False,
+                non_epileptic_repair=False,
+                residual_jerk_repair=False,
+                post_change_burst_repair=False,
+                dated_sequence_repair=False,
+                elapsed_anchor_repair=False,
+            )
+        if mode == "selected_evidence_derivation":
+            return cls(
+                repair_mode=mode,
+                basic_label_repair=True,
+                basic_label_repair_format_only=False,
+                clean_scorer_facing_gold_policy=False,
+                selected_evidence_repair=True,
+                monthly_diary_repair=False,
+                usual_interval_repair=False,
+                breakthrough_repair=False,
+                non_epileptic_repair=False,
+                residual_jerk_repair=False,
+                post_change_burst_repair=False,
+                dated_sequence_repair=False,
+                elapsed_anchor_repair=False,
+            )
+        if mode == "hybrid_full_stack":
+            return cls(repair_mode=mode)
+        return cls(repair_mode=mode)
+
+    @property
+    def resolved_repair_mode(self) -> StructuredRepairMode:
+        """Return the named mode when flags match one; otherwise mark it custom."""
+
+        flags = self._flags()
+        for mode in (
+            "raw_model",
+            "strict_format",
+            "clean_scorer_facing",
+            "selected_evidence_derivation",
+            "hybrid_full_stack",
+        ):
+            if flags == StructuredRepairConfig.for_mode(mode)._flags():
+                return mode
+        return "custom"
+
+    def _flags(self) -> dict[str, bool]:
+        return {
+            "basic_label_repair": self.basic_label_repair,
+            "basic_label_repair_format_only": self.basic_label_repair_format_only,
+            "clean_scorer_facing_gold_policy": self.clean_scorer_facing_gold_policy,
+            "selected_evidence_repair": self.selected_evidence_repair,
+            "monthly_diary_repair": self.monthly_diary_repair,
+            "usual_interval_repair": self.usual_interval_repair,
+            "breakthrough_repair": self.breakthrough_repair,
+            "non_epileptic_repair": self.non_epileptic_repair,
+            "residual_jerk_repair": self.residual_jerk_repair,
+            "post_change_burst_repair": self.post_change_burst_repair,
+            "dated_sequence_repair": self.dated_sequence_repair,
+            "elapsed_anchor_repair": self.elapsed_anchor_repair,
+        }
 
 
 class Gan2026StructuredExtractorSignature(dspy.Signature):
@@ -453,6 +566,7 @@ def run_split(
     metadata["dspy_cache"] = dspy_cache
     metadata["reuse_source"] = reuse_source
     metadata["escalation_reason"] = escalation_reason
+    metadata["repair_mode"] = repair_config.resolved_repair_mode
     metadata["repair_config"] = asdict(repair_config)
     program = DspyStructuredExtractor()
     if mode == "live":
@@ -597,23 +711,12 @@ def write_report(
     jsonl_path: Path,
 ) -> None:
     summary = metadata["summary"]
+    repair_mode = str(metadata.get("repair_mode") or "custom")
     repair_config = metadata.get("repair_config") or {}
     repair_config_items = ", ".join(
         f"`{key}={value}`" for key, value in sorted(repair_config.items())
     )
-    repair_policy = (
-        "raw structured model selection plus clean scorer-facing Gan gold-normalization policy"
-        if repair_config.get("basic_label_repair")
-        and repair_config.get("clean_scorer_facing_gold_policy")
-        and not repair_config.get("selected_evidence_repair")
-        else (
-        "raw structured model selection plus strict format-preserving basic label repair only"
-        if repair_config.get("basic_label_repair")
-        and repair_config.get("basic_label_repair_format_only")
-        and not repair_config.get("selected_evidence_repair")
-        else "configured deterministic repair families after structured model selection"
-        )
-    )
+    repair_policy = _repair_policy_description(repair_mode)
     lines = [
         "# Gan 2026 LLM-Structured Validation Run",
         "",
@@ -657,6 +760,7 @@ def write_report(
         "- Optimizer: none",
         "- Deterministic rule configuration: none before prediction; deterministic code only "
         "repairs labels selected by the LLM, validates evidence, and scores.",
+        f"- Repair mode: `{repair_mode}`",
         f"- Repair policy: {repair_policy}.",
         (
             f"- Repair config: {repair_config_items}"
@@ -702,6 +806,28 @@ def write_report(
         )
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def _repair_policy_description(repair_mode: str) -> str:
+    descriptions = {
+        "raw_model": "raw structured model selection with no deterministic final-label repair",
+        "strict_format": (
+            "raw structured model selection plus strict format-preserving basic label repair only"
+        ),
+        "clean_scorer_facing": (
+            "raw structured model selection plus clean scorer-facing Gan gold-normalization policy"
+        ),
+        "selected_evidence_derivation": (
+            "structured model selection plus selected-evidence derivation only"
+        ),
+        "hybrid_full_stack": (
+            "hybrid full deterministic repair stack after structured model selection"
+        ),
+    }
+    return descriptions.get(
+        repair_mode,
+        "custom deterministic repair families after structured model selection",
+    )
 
 
 def _normalize_event(

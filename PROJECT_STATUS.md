@@ -63,6 +63,10 @@ ownership, and deterministic repair boundaries explicitly.
 - Shared schema repair is alias-only again; parser-owned defaults live with the
   hybrid adjudicator parser, `core.schemas` is task-neutral, and mypy is clean
   across all 35 source files.
+- LLM-only structured-events repair attribution now has named modes:
+  `raw_model`, `strict_format`, `clean_scorer_facing`,
+  `selected_evidence_derivation`, `hybrid_full_stack`, and `custom`; run
+  metadata, reports, and repair ablations expose the resolved mode.
 
 ## Key References
 
@@ -110,6 +114,9 @@ ownership, and deterministic repair boundaries explicitly.
   reporting score, repair attribution, evidence validity, and replay variance.
 - Consolidate any remaining saved-output replay helpers into dedicated artifact
   analysis modules so pipeline runners stay cache-first and live-run oriented.
+- Extend named repair-mode metadata beyond structured-events where downstream
+  repair layers can blur raw, strict, clean, selected-evidence, and hybrid
+  attribution.
 - Do not run LLM-only claim-table selector beyond 250 rows until v5 passes the 25/50 ladder
   and a written decision justifies another 250-row diagnostic.
 
@@ -151,6 +158,10 @@ ownership, and deterministic repair boundaries explicitly.
 - 2026-06-01: Removed unused seizure-specific schema types from `core.schemas`,
   added a task-neutral core-schema invariant test, and reduced `python -m mypy src`
   from 31 errors to clean.
+- 2026-06-01: Added named repair modes to the structured-events LLM path and
+  repair-ablation outputs, with tests proving clean scorer-facing mode does not
+  silently use the hybrid semantic repair stack; Ruff, mypy, and full pytest are
+  green.
 
 ## Immediate Next Step
 
