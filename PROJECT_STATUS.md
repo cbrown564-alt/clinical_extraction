@@ -77,6 +77,19 @@ ownership, and deterministic repair boundaries explicitly.
   LLM structured-events monthly-diary repair arithmetic now also has a dedicated
   helper module. Public repair/parser APIs remain in place; scorer behavior is
   unchanged.
+- Phase 5 also split deterministic V1 candidate extraction out of
+  `pipeline_v1.py` into `deterministic_extraction.py`. The pipeline shell now
+  owns schemas, run orchestration, candidate event materialization,
+  normalization, and final selection wiring, while the extracted module owns
+  deterministic regex/rule candidate discovery and evidence text helpers.
+  Behavior is preserved; Ruff, mypy, focused deterministic tests, and full
+  pytest are green.
+- The deterministic extraction split has continued with small ownership
+  modules for candidate pruning, note/evidence text handling, and Gan frequency
+  token/label formatting. `deterministic_extraction.py` still owns rule-family
+  orchestration and inline rate-discovery logic, but no longer owns generic
+  evidence cleanup, duplicate/contained-candidate pruning, or count/unit label
+  formatting.
 
 ## Key References
 
@@ -108,9 +121,9 @@ ownership, and deterministic repair boundaries explicitly.
 ### Now
 
 - Continue the codebase thermonuclear review Phase 5 behavior splits without
-  changing scorer behavior: next candidates are remaining deterministic
-  extractor ownership splits, remaining LLM structured-events repair-family
-  splits, or other large-file ownership splits.
+  changing scorer behavior: next candidates are extracting the inline rate
+  discovery from `deterministic_extraction.py`, remaining LLM structured-events
+  repair-family splits, or other large-file ownership splits.
 - Design hybrid rules-candidates LLM adjudicator v0.2 as a conservative/targeted adjudicator with
   deterministic fallback and named overreach-family gates; repeat 25/50/250.
 - Design LLM-only claim-table selector v5 as claim-table plus constrained selector, with
@@ -192,11 +205,26 @@ ownership, and deterministic repair boundaries explicitly.
   `llm_structured_monthly_diary.py`. Each slice added or preserved focused
   ownership-boundary tests; Ruff, mypy, and full pytest are green after the
   latest slice.
+- 2026-06-01: Continued Phase 5 by extracting deterministic V1 candidate
+  discovery from `pipeline_v1.py` into `deterministic_extraction.py`, keeping
+  compatibility re-exports for existing temporal-helper tests. Verification:
+  `python -m ruff check .`, `python -m mypy src`,
+  `python -m pytest tests/test_gan2026_pipeline_v1.py -q`, and
+  `python -m pytest -q` are green (`595 passed`, 11 third-party DSPy
+  deprecation warnings).
+- 2026-06-01: Continued Phase 5 by extracting deterministic helper ownership
+  from `deterministic_extraction.py` into `deterministic_text.py`,
+  `deterministic_candidate_pruning.py`, and
+  `deterministic_frequency_tokens.py`. The remaining extractor is 1191 lines,
+  down from 1440 after the prior split. Verification: `python -m ruff check .`,
+  `python -m mypy src`, `python -m pytest tests/test_gan2026_pipeline_v1.py -q`,
+  and `python -m pytest -q` are green (`595 passed`, 11 third-party DSPy
+  deprecation warnings).
 
 ## Immediate Next Step
 
 Continue the Phase 5 behavior-preserving splits from the remaining large
-behavior modules, preferably by extracting another deterministic extractor
-ownership slice or one of the remaining LLM structured-events repair families
-before returning to the validation-only v0.2/v5 experiment cycle. Do not
-inspect holdout rows.
+behavior modules, preferably by extracting the inline deterministic rate
+discovery from `deterministic_extraction.py` or one of the remaining LLM
+structured-events repair families before returning to the validation-only
+v0.2/v5 experiment cycle. Do not inspect holdout rows.
