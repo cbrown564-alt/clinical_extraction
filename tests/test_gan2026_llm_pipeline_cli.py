@@ -80,10 +80,10 @@ def test_pipeline_registry_exposes_routine_llm_experiments() -> None:
     specs = llm_pipeline_cli.pipeline_specs()
 
     assert set(specs) == {
-        "architecture2",
-        "llm-first",
-        "section-claim-table",
-        "structured",
+        "hybrid_rules_candidates_llm_adjudicator",
+        "llm_only_claim_table_selector",
+        "llm_only_direct_labeler",
+        "llm_only_structured_events",
     }
-    assert specs["architecture2"].default_max_tokens == 1100
-    assert specs["section-claim-table"].default_max_tokens == 1400
+    assert specs["hybrid_rules_candidates_llm_adjudicator"].default_max_tokens == 1100
+    assert specs["llm_only_claim_table_selector"].default_max_tokens == 1400

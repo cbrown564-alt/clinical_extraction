@@ -1,4 +1,4 @@
-"""LLM-first Gan 2026 seizure-frequency extraction experiments."""
+"""LLM-only direct-labeler Gan 2026 seizure-frequency extraction experiments."""
 
 from __future__ import annotations
 
@@ -28,13 +28,17 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.schema_repair import (
     repair_decision_payload,
 )
 
-PROMPT_VERSION = "gan2026_llm_first_direct_extractor_v0.1"
-DEFAULT_JSONL_PATH = Path("experiments/gan2026_llm_first_validation_gpt41mini_2026-05-31.jsonl")
-DEFAULT_REPORT_PATH = Path("experiments/gan2026_llm_first_validation_gpt41mini_2026-05-31.md")
+PROMPT_VERSION = "gan2026_llm_only_direct_labeler_v0.1"
+DEFAULT_JSONL_PATH = Path(
+    "experiments/gan2026_llm_only_direct_labeler_validation_gpt41mini_2026-05-31.jsonl"
+)
+DEFAULT_REPORT_PATH = Path(
+    "experiments/gan2026_llm_only_direct_labeler_validation_gpt41mini_2026-05-31.md"
+)
 
 
-class LlmFirstDecisionRecord(BaseModel):
-    """Traceable note-to-label decision emitted by the LLM-first extractor."""
+class LlmOnlyDirectLabelerDecisionRecord(BaseModel):
+    """Traceable note-to-label decision emitted by the LLM-only direct-labeler extractor."""
 
     model_config = ConfigDict(extra="forbid")
 
@@ -53,7 +57,7 @@ class LlmFirstDecisionRecord(BaseModel):
     rationale: str
 
 
-class Gan2026LlmFirstExtractorSignature(dspy.Signature):
+class Gan2026LlmOnlyDirectLabelerExtractorSignature(dspy.Signature):
     """Extract the Gan 2026 seizure-frequency answer directly from one note.
 
     Return exactly one JSON object with these keys: final_label, evidence,
@@ -76,23 +80,23 @@ class Gan2026LlmFirstExtractorSignature(dspy.Signature):
     )
 
 
-class DspyLlmFirstExtractor(dspy.Module):
+class DspyLlmOnlyDirectLabelerExtractor(dspy.Module):
     """DSPy note-to-label extractor with no deterministic candidate inputs."""
 
     def __init__(self) -> None:
         super().__init__()
-        self.predict = dspy.Predict(Gan2026LlmFirstExtractorSignature)
+        self.predict = dspy.Predict(Gan2026LlmOnlyDirectLabelerExtractorSignature)
 
     def forward(self, prompt_input_json: str) -> dspy.Prediction:
         return self.predict(prompt_input_json=prompt_input_json)
 
 
 def build_prompt_input(record: GanFrequencyRecord) -> str:
-    """Build the LLM-first prompt payload, excluding gold labels."""
+    """Build the LLM-only direct-labeler prompt payload, excluding gold labels."""
 
     payload = {
         "prompt_version": PROMPT_VERSION,
-        "task": "Gan 2026 seizure-frequency LLM-first extraction",
+        "task": "Gan 2026 seizure-frequency LLM-only direct-labeler extraction",
         "source_row_index": record.source_row_index,
         "instructions": [
             "Read the full clinical note and extract the current seizure-frequency answer.",
@@ -153,15 +157,19 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
     return json.dumps(payload, ensure_ascii=False, sort_keys=True)
 
 
-def parse_decision_json(raw_output: str) -> tuple[LlmFirstDecisionRecord | None, list[str]]:
+def parse_decision_json(
+    raw_output: str,
+) -> tuple[LlmOnlyDirectLabelerDecisionRecord | None, list[str]]:
     errors: list[str] = []
     try:
-        payload = repair_decision_payload(json.loads(_extract_json_object(raw_output)))
+        payload = _filter_decision_payload(
+            repair_decision_payload(json.loads(_extract_json_object(raw_output)))
+        )
     except json.JSONDecodeError as exc:
         return None, [f"invalid_json: {exc.msg}"]
 
     try:
-        decision = LlmFirstDecisionRecord.model_validate(payload)
+        decision = LlmOnlyDirectLabelerDecisionRecord.model_validate(payload)
     except ValidationError as exc:
         return None, [f"schema_validation_error: {exc.errors()[0]['msg']}"]
 
@@ -181,6 +189,15 @@ def parse_decision_json(raw_output: str) -> tuple[LlmFirstDecisionRecord | None,
         errors.append(f"unscorable_final_label: {exc}")
 
     return decision, errors
+
+
+def _filter_decision_payload(payload: Any) -> Any:
+    """Keep shared adjudicator repair fields out of direct-labeler validation."""
+
+    if not isinstance(payload, dict):
+        return payload
+    allowed = set(LlmOnlyDirectLabelerDecisionRecord.model_fields)
+    return {key: value for key, value in payload.items() if key in allowed}
 
 
 def run_split(
@@ -213,7 +230,7 @@ def run_split(
     metadata["dspy_cache"] = dspy_cache
     metadata["reuse_source"] = reuse_source
     metadata["escalation_reason"] = escalation_reason
-    program = DspyLlmFirstExtractor()
+    program = DspyLlmOnlyDirectLabelerExtractor()
     if mode == "live":
         dspy.configure(
             lm=dspy.LM(
@@ -382,7 +399,7 @@ def write_report(
         "seizure-frequency interpretation, while deterministic code is limited to label "
         "repair, evidence validation, and scoring.",
         "",
-        "Minimal change: add an LLM-first direct extraction runner. No deterministic V1 "
+        "Minimal change: add an LLM-only direct-labeler runner. No deterministic V1 "
         "candidate diagnostics are provided to the model.",
         "",
         f"Data surface: `{metadata['split']}` split, `{metadata['split_manifest']}`, "
@@ -400,7 +417,7 @@ def write_report(
         f"- DSPy version: `{metadata['dspy_version']}`",
         f"- Runtime model display/API identifier: `{metadata['model']}`",
         "- Provider/execution: hosted OpenAI via DSPy/LiteLLM",
-        "- Model role: LLM-first note-to-label extractor",
+        "- Model role: LLM-only direct-labeler note-to-label extractor",
         f"- Prompt/program version: `{metadata['prompt_version']}`",
         f"- Temperature: `{metadata['temperature']}`",
         f"- Max tokens: `{metadata['max_tokens']}`",
@@ -452,7 +469,7 @@ def write_report(
 
 def _compare_to_gold(
     record: GanFrequencyRecord,
-    decision: LlmFirstDecisionRecord,
+    decision: LlmOnlyDirectLabelerDecisionRecord,
 ) -> dict[str, Any]:
     predicted_record = label_to_frequency_record(decision.final_label)
     gold_purist = str(map_purist(record.gold_monthly_frequency))
@@ -539,4 +556,3 @@ def _git_output(args: Sequence[str]) -> str:
         return subprocess.check_output(args, text=True, stderr=subprocess.DEVNULL).strip()
     except (subprocess.CalledProcessError, FileNotFoundError):
         return "unknown"
-

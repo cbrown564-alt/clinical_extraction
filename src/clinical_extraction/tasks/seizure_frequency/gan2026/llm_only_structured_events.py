@@ -1,4 +1,4 @@
-"""Structured LLM-first Gan 2026 seizure-frequency extraction experiments."""
+"""LLM-only structured-events Gan 2026 seizure-frequency extraction experiments."""
 
 from __future__ import annotations
 
@@ -32,12 +32,12 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.schema_repair import (
     repair_structured_extraction_payload,
 )
 
-PROMPT_VERSION = "gan2026_llm_structured_event_selector_v0.5"
+PROMPT_VERSION = "gan2026_llm_only_structured_events_v0.5"
 DEFAULT_JSONL_PATH = Path(
-    "experiments/gan2026_llm_structured_validation_gpt41mini_2026-06-01.jsonl"
+    "experiments/gan2026_llm_only_structured_events_validation_gpt41mini_2026-06-01.jsonl"
 )
 DEFAULT_REPORT_PATH = Path(
-    "experiments/gan2026_llm_structured_validation_gpt41mini_2026-06-01.md"
+    "experiments/gan2026_llm_only_structured_events_validation_gpt41mini_2026-06-01.md"
 )
 
 
@@ -108,7 +108,7 @@ class NormalizedEventRecord(BaseModel):
 
 @dataclass(frozen=True)
 class StructuredRepairConfig:
-    """Controls deterministic repair families applied after structured LLM output."""
+    """Controls deterministic repair families applied after LLM-only structured-events output."""
 
     basic_label_repair: bool = True
     basic_label_repair_format_only: bool = False
@@ -156,11 +156,11 @@ class DspyStructuredExtractor(dspy.Module):
 
 
 def build_prompt_input(record: GanFrequencyRecord) -> str:
-    """Build the structured LLM-first prompt payload, excluding gold labels."""
+    """Build the LLM-only structured-events prompt payload, excluding gold labels."""
 
     payload = {
         "prompt_version": PROMPT_VERSION,
-        "task": "Gan 2026 LLM-first structured event extraction and clinical selection",
+        "task": "Gan 2026 LLM-only structured-events extraction and clinical selection",
         "source_row_index": record.source_row_index,
         "instructions": [
             "Read the full clinical note and extract source-near seizure-frequency facts.",
@@ -267,7 +267,9 @@ def parse_structured_json(
     repair_config = repair_config or StructuredRepairConfig()
     errors: list[str] = []
     try:
-        payload = repair_structured_extraction_payload(json.loads(_extract_json_object(raw_output)))
+        payload = _filter_structured_payload(
+            repair_structured_extraction_payload(json.loads(_extract_json_object(raw_output)))
+        )
     except json.JSONDecodeError as exc:
         return None, [], [f"invalid_json: {exc.msg}"]
 
@@ -386,6 +388,30 @@ def parse_structured_json(
             }
         )
     return extraction, normalized_events, errors
+
+
+def _filter_structured_payload(payload: Any) -> Any:
+    """Keep shared adjudicator repair fields out of structured-events validation."""
+
+    if not isinstance(payload, dict):
+        return payload
+    repaired = dict(payload)
+    event_fields = set(StructuredEventRecord.model_fields)
+    selection_fields = set(StructuredSelectionRecord.model_fields)
+    events = repaired.get("events")
+    if isinstance(events, list):
+        repaired["events"] = [
+            {key: value for key, value in event.items() if key in event_fields}
+            if isinstance(event, dict)
+            else event
+            for event in events
+        ]
+    selection = repaired.get("selection")
+    if isinstance(selection, dict):
+        repaired["selection"] = {
+            key: value for key, value in selection.items() if key in selection_fields
+        }
+    return repaired
 
 
 def _replace_repaired_label(errors: list[str], old_label: str, new_label: str) -> str:
@@ -601,7 +627,7 @@ def write_report(
         "direct note-to-label schema burden while keeping deterministic code limited to "
         "Gan normalization, evidence validation, and scoring.",
         "",
-        "Minimal change: add an LLM-first structured event extractor and selector. No "
+        "Minimal change: add an LLM-only structured-events extractor and selector. No "
         "deterministic V1 candidate diagnostics are provided to the model.",
         "",
         f"Data surface: `{metadata['split']}` split, `{metadata['split_manifest']}`, "
@@ -619,7 +645,7 @@ def write_report(
         f"- DSPy version: `{metadata['dspy_version']}`",
         f"- Runtime model display/API identifier: `{metadata['model']}`",
         "- Provider/execution: hosted OpenAI via DSPy/LiteLLM",
-        "- Model role: LLM-first structured event extractor and clinical selector",
+        "- Model role: LLM-only structured-events extractor and clinical selector",
         f"- Prompt/program version: `{metadata['prompt_version']}`",
         f"- Temperature: `{metadata['temperature']}`",
         f"- Max tokens: `{metadata['max_tokens']}`",
@@ -2042,4 +2068,3 @@ def _git_output(args: Sequence[str]) -> str:
         return subprocess.check_output(args, text=True, stderr=subprocess.DEVNULL).strip()
     except (subprocess.CalledProcessError, FileNotFoundError):
         return "unknown"
-

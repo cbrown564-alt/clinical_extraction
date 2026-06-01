@@ -1,4 +1,4 @@
-"""Section-and-claim-table Gan 2026 LLM-first diagnostic pipeline."""
+"""LLM-only claim-table selector for Gan 2026 seizure-frequency extraction."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ from pydantic import BaseModel, ConfigDict, ValidationError
 from clinical_extraction.core.evidence import evidence_is_substring
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.labels import map_pragmatic, map_purist
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm_structured import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm_only_structured_events import (
     _extract_json_object,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
@@ -26,7 +26,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label_format_preserving,
 )
 
-PROMPT_VERSION = "gan2026_section_claim_table_v4"
+PROMPT_VERSION = "gan2026_llm_only_claim_table_selector_v4"
 PROMPT_POLICY_TAXONOMY: list[dict[str, str]] = [
     {
         "policy_id": "sct_v4.schema.scalar_enum_output",
@@ -141,10 +141,10 @@ PROMPT_POLICY_TAXONOMY: list[dict[str, str]] = [
     },
 ]
 DEFAULT_JSONL_PATH = Path(
-    "experiments/gan2026_section_claim_table_validation25_gpt41mini_v4_2026-06-01.jsonl"
+    "experiments/gan2026_llm_only_claim_table_selector_validation25_gpt41mini_v4_2026-06-01.jsonl"
 )
 DEFAULT_REPORT_PATH = Path(
-    "experiments/gan2026_section_claim_table_validation25_gpt41mini_v4_2026-06-01.md"
+    "experiments/gan2026_llm_only_claim_table_selector_validation25_gpt41mini_v4_2026-06-01.md"
 )
 
 
@@ -195,7 +195,7 @@ class SectionClaimFinalQueryRecord(BaseModel):
 
 
 class SectionClaimTableExtractionRecord(BaseModel):
-    """Full section-claim-table extraction returned by the LLM."""
+    """Full llm-only-claim-table-selector extraction returned by the LLM."""
 
     model_config = ConfigDict(extra="forbid")
 
@@ -203,7 +203,7 @@ class SectionClaimTableExtractionRecord(BaseModel):
     final_query: SectionClaimFinalQueryRecord
 
 
-class Gan2026SectionClaimTableSignature(dspy.Signature):
+class Gan2026LlmOnlyClaimTableSelectorSignature(dspy.Signature):
     """Extract section-local seizure-frequency claims, then answer from the table."""
 
     prompt_input_json: str = dspy.InputField(
@@ -212,7 +212,7 @@ class Gan2026SectionClaimTableSignature(dspy.Signature):
             "gold labels and deterministic candidate diagnostics."
         )
     )
-    section_claim_table_json: str = dspy.OutputField(
+    llm_only_claim_table_selector_json: str = dspy.OutputField(
         desc=(
             "One strict JSON object with claims and final_query. Claims are source-near "
             "section-local facts; final_query selects the Gan-facing answer from them."
@@ -220,12 +220,12 @@ class Gan2026SectionClaimTableSignature(dspy.Signature):
     )
 
 
-class DspySectionClaimTableExtractor(dspy.Module):
-    """DSPy section-claim-table extractor with no deterministic candidate inputs."""
+class DspyLlmOnlyClaimTableSelector(dspy.Module):
+    """DSPy claim-table selector with no deterministic candidate inputs."""
 
     def __init__(self) -> None:
         super().__init__()
-        self.predict = dspy.Predict(Gan2026SectionClaimTableSignature)
+        self.predict = dspy.Predict(Gan2026LlmOnlyClaimTableSelectorSignature)
 
     def forward(self, prompt_input_json: str) -> dspy.Prediction:
         return self.predict(prompt_input_json=prompt_input_json)
@@ -236,7 +236,9 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
 
     payload = {
         "prompt_version": PROMPT_VERSION,
-        "task": "Gan 2026 section-and-claim-table LLM-first diagnostic extraction",
+        "task": (
+            "Gan 2026 LLM-only claim-table selector diagnostic extraction"
+        ),
         "source_row_index": record.source_row_index,
         "prompt_policy_taxonomy": PROMPT_POLICY_TAXONOMY,
         "instructions": [
@@ -444,16 +446,18 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
     return json.dumps(payload, ensure_ascii=False, sort_keys=True)
 
 
-def parse_section_claim_table_json(
+def parse_llm_only_claim_table_selector_json(
     raw_output: str,
     *,
     note_text: str | None = None,
 ) -> tuple[SectionClaimTableExtractionRecord | None, list[str]]:
-    """Parse and validate one raw section-claim-table model output."""
+    """Parse and validate one raw llm-only-claim-table-selector model output."""
 
     del note_text
     try:
-        payload = _repair_section_claim_table_payload(json.loads(_extract_json_object(raw_output)))
+        payload = _repair_llm_only_claim_table_selector_payload(
+            json.loads(_extract_json_object(raw_output))
+        )
     except json.JSONDecodeError as exc:
         return None, [f"invalid_json: {exc.msg}"]
     try:
@@ -505,7 +509,7 @@ def run_split(
     metadata["dspy_cache"] = dspy_cache
     metadata["reuse_source"] = reuse_source
     metadata["escalation_reason"] = escalation_reason
-    program = DspySectionClaimTableExtractor()
+    program = DspyLlmOnlyClaimTableSelector()
     if mode == "live":
         dspy.configure(
             lm=dspy.LM(
@@ -526,12 +530,12 @@ def run_split(
         if mode == "live" and not reused_raw_output:
             try:
                 prediction = program(prompt_input_json=prompt_input_json)
-                raw_output = str(prediction.section_claim_table_json)
+                raw_output = str(prediction.llm_only_claim_table_selector_json)
             except Exception as exc:  # pragma: no cover - exercised only with live APIs.
                 call_error = f"{type(exc).__name__}: {exc}"
 
         extraction, parse_errors = (
-            parse_section_claim_table_json(raw_output, note_text=record.note_text)
+            parse_llm_only_claim_table_selector_json(raw_output, note_text=record.note_text)
             if raw_output
             else (None, ["not_run"])
         )
@@ -672,8 +676,9 @@ def write_report(
     jsonl_path: Path,
 ) -> None:
     summary = metadata["summary"]
+    version = metadata["prompt_version"].rsplit("_", 1)[-1].upper()
     lines = [
-        f"# Gan 2026 Section Claim Table {metadata['prompt_version'].rsplit('_', 1)[-1].upper()}",
+        f"# Gan 2026 LLM-Only Claim Table Selector {version}",
         "",
         f"Date: {metadata['date']}",
         "",
@@ -703,7 +708,7 @@ def write_report(
         f"- DSPy version: `{metadata['dspy_version']}`",
         f"- Runtime model display/API identifier: `{metadata['model']}`",
         "- Provider/execution: hosted OpenAI via DSPy/LiteLLM",
-        "- Model role: LLM-first claim extractor and final query selector",
+        "- Model role: LLM-only direct-labeler claim extractor and final query selector",
         f"- Prompt/program version: `{metadata['prompt_version']}`",
         f"- Temperature: `{metadata['temperature']}`",
         f"- Max tokens: `{metadata['max_tokens']}`",
@@ -872,7 +877,7 @@ def _score_label(record: GanFrequencyRecord, label: str | None) -> dict[str, Any
     return result
 
 
-def _repair_section_claim_table_payload(payload: Any) -> Any:
+def _repair_llm_only_claim_table_selector_payload(payload: Any) -> Any:
     if not isinstance(payload, dict):
         return payload
     repaired = dict(payload)

@@ -2,17 +2,17 @@ import json
 from pathlib import Path
 
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
-from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import FrequencyLabelKind
-from clinical_extraction.tasks.seizure_frequency.gan2026.section_claim_table import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm_only_claim_table_selector import (
     PROMPT_POLICY_TAXONOMY,
     PROMPT_VERSION,
     SectionClaimTableExtractionRecord,
     build_prompt_input,
-    parse_section_claim_table_json,
+    parse_llm_only_claim_table_selector_json,
     run_split,
     summarize_records,
     write_report,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import FrequencyLabelKind
 
 
 def _record() -> GanFrequencyRecord:
@@ -80,7 +80,7 @@ def test_build_prompt_input_excludes_gold_and_deterministic_candidates() -> None
     prompt = json.loads(build_prompt_input(_record()))
 
     assert prompt["prompt_version"] == PROMPT_VERSION
-    assert prompt["prompt_version"] == "gan2026_section_claim_table_v4"
+    assert prompt["prompt_version"] == "gan2026_llm_only_claim_table_selector_v4"
     assert prompt["note_text"] == _record().note_text
     assert prompt["claim_schema"]["claim_id"] == "stable string such as c1"
     assert "raw_selected_frequency" in prompt["final_query_schema"]
@@ -128,8 +128,8 @@ def test_prompt_input_names_prompt_policies_as_controlled_variables() -> None:
     )
 
 
-def test_parse_section_claim_table_json_validates_flat_claim_table() -> None:
-    extraction, errors = parse_section_claim_table_json(
+def test_parse_llm_only_claim_table_selector_json_validates_flat_claim_table() -> None:
+    extraction, errors = parse_llm_only_claim_table_selector_json(
         _raw_claim_table(),
         note_text=_record().note_text,
     )
@@ -140,7 +140,7 @@ def test_parse_section_claim_table_json_validates_flat_claim_table() -> None:
     assert errors == []
 
 
-def test_parse_section_claim_table_json_repairs_common_model_shape_aliases() -> None:
+def test_parse_llm_only_claim_table_selector_json_repairs_common_model_shape_aliases() -> None:
     payload = json.loads(_raw_claim_table())
     payload["claims"][0]["claim_type"] = ["frequency"]
     payload["claims"][0]["temporality"] = ["current"]
@@ -148,7 +148,7 @@ def test_parse_section_claim_table_json_repairs_common_model_shape_aliases() -> 
     payload["claims"][1]["temporality"] = ["current", "recent"]
     payload["final_query"]["selected_claim_ids"] = "c1,c2"
 
-    extraction, errors = parse_section_claim_table_json(
+    extraction, errors = parse_llm_only_claim_table_selector_json(
         json.dumps(payload),
         note_text=_record().note_text,
     )
@@ -162,12 +162,12 @@ def test_parse_section_claim_table_json_repairs_common_model_shape_aliases() -> 
     assert errors == []
 
 
-def test_parse_section_claim_table_json_repairs_extra_evidence_offsets() -> None:
+def test_parse_llm_only_claim_table_selector_json_repairs_extra_evidence_offsets() -> None:
     payload = json.loads(_raw_claim_table())
     payload["claims"][0]["evidence_start"] = 0
     payload["claims"][0]["evidence_end"] = 10
 
-    extraction, errors = parse_section_claim_table_json(
+    extraction, errors = parse_llm_only_claim_table_selector_json(
         json.dumps(payload),
         note_text=_record().note_text,
     )
@@ -177,12 +177,12 @@ def test_parse_section_claim_table_json_repairs_extra_evidence_offsets() -> None
     assert errors == []
 
 
-def test_parse_section_claim_table_json_repairs_cluster_answer_kind_alias() -> None:
+def test_parse_llm_only_claim_table_selector_json_repairs_cluster_answer_kind_alias() -> None:
     payload = json.loads(_raw_claim_table())
     payload["claims"][0]["claim_type"] = "cluster_frequency"
     payload["final_query"]["answer_kind"] = "cluster_frequency"
 
-    extraction, errors = parse_section_claim_table_json(
+    extraction, errors = parse_llm_only_claim_table_selector_json(
         json.dumps(payload),
         note_text=_record().note_text,
     )
@@ -193,11 +193,11 @@ def test_parse_section_claim_table_json_repairs_cluster_answer_kind_alias() -> N
     assert errors == []
 
 
-def test_parse_section_claim_table_json_repairs_missing_final_query_rationale() -> None:
+def test_parse_llm_only_claim_table_selector_json_repairs_missing_final_query_rationale() -> None:
     payload = json.loads(_raw_claim_table("2 per month"))
     del payload["final_query"]["rationale"]
 
-    extraction, errors = parse_section_claim_table_json(
+    extraction, errors = parse_llm_only_claim_table_selector_json(
         json.dumps(payload),
         note_text=_record().note_text,
     )
@@ -244,7 +244,7 @@ def test_run_split_records_raw_strict_and_clean_scoring_layers() -> None:
     )
 
     row = rows[0]
-    assert metadata["pipeline_name"] == "gan2026_section_claim_table_v4"
+    assert metadata["pipeline_name"] == "gan2026_llm_only_claim_table_selector_v4"
     assert metadata["prompt_policy_ids"] == [
         policy["policy_id"] for policy in PROMPT_POLICY_TAXONOMY
     ]
@@ -331,7 +331,7 @@ def test_write_report_includes_component_localized_failure_metadata(tmp_path: Pa
     write_report(rows, metadata, report_path, jsonl_path=tmp_path / "rows.jsonl")
 
     report = report_path.read_text(encoding="utf-8")
-    assert "Gan 2026 Section Claim Table V4" in report
+    assert "Gan 2026 LLM-Only Claim Table Selector V4" in report
     assert "raw final-query score" in report
     assert "Reviewable Failure Details" in report
     assert "unparsable_label" in report

@@ -160,12 +160,12 @@ def condition_from_llm_rows(
     return _condition_from_spec(spec, condition_rows)
 
 
-def condition_from_architecture2_rows(
+def condition_from_hybrid_rules_candidates_llm_adjudicator_rows(
     rows: Sequence[Mapping[str, Any]],
     *,
     artifact_path: str | None = None,
 ) -> tuple[ConditionResult, ConditionResult]:
-    """Split Architecture 2 artifacts into generator-top and LLM-adjudicated conditions."""
+    """Split hybrid candidate-adjudicator artifacts into component conditions."""
 
     deterministic_rows = []
     adjudicator_rows = []
@@ -195,7 +195,7 @@ def condition_from_architecture2_rows(
             architecture=Architecture.DETERMINISTIC_THEN_LLM,
             name="deterministic_candidate_generator_top",
             component_role="candidate_generator_topline",
-            prediction_source="Architecture 2 deterministic diagnostics",
+            prediction_source="hybrid rules-candidates LLM adjudicator deterministic diagnostics",
             components_enabled=("deterministic candidate generator",),
             components_disabled=("LLM adjudicator",),
             artifact_path=artifact_path,
@@ -205,14 +205,13 @@ def condition_from_architecture2_rows(
             architecture=Architecture.DETERMINISTIC_THEN_LLM,
             name="llm_adjudicator_final",
             component_role="prediction_bearing_adjudicator",
-            prediction_source="Architecture 2 saved adjudicator output",
+            prediction_source="hybrid rules-candidates LLM adjudicator saved adjudicator output",
             components_enabled=("deterministic candidate generator", "LLM adjudicator"),
             components_disabled=(),
             artifact_path=artifact_path,
             rows=tuple(adjudicator_rows),
         ),
     )
-
 
 def summarize_condition(condition: ConditionResult) -> dict[str, Any]:
     rows = condition.rows
@@ -375,7 +374,13 @@ def main(argv: Sequence[str] | None = None) -> None:
     parser.add_argument("--manifest-path", type=Path, default=DEFAULT_SPLIT_MANIFEST_PATH)
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--llm-jsonl", type=Path, action="append", default=[])
-    parser.add_argument("--arch2-jsonl", type=Path, action="append", default=[])
+    parser.add_argument(
+        "--hybrid-rules-candidates-llm-adjudicator-jsonl",
+        dest="hybrid_candidate_adjudicator_jsonl",
+        type=Path,
+        action="append",
+        default=[],
+    )
     parser.add_argument("--json", type=Path, default=DEFAULT_JSON_PATH)
     parser.add_argument("--markdown", type=Path, default=DEFAULT_REPORT_PATH)
     args = parser.parse_args(argv)
@@ -401,11 +406,11 @@ def main(argv: Sequence[str] | None = None) -> None:
                 ),
             )
         )
-    for arch2_jsonl in args.arch2_jsonl:
+    for hybrid_candidate_adjudicator_jsonl in args.hybrid_candidate_adjudicator_jsonl:
         conditions.extend(
-            condition_from_architecture2_rows(
-                load_jsonl(arch2_jsonl),
-                artifact_path=str(arch2_jsonl),
+            condition_from_hybrid_rules_candidates_llm_adjudicator_rows(
+                load_jsonl(hybrid_candidate_adjudicator_jsonl),
+                artifact_path=str(hybrid_candidate_adjudicator_jsonl),
             )
         )
 

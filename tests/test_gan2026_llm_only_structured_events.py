@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm_structured import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm_only_structured_events import (
     PROMPT_VERSION,
     StructuredExtractionRecord,
     StructuredRepairConfig,

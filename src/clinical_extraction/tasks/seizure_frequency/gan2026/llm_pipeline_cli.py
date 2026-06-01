@@ -70,49 +70,68 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
     """Return routine LLM experiment pipelines exposed by the single CLI."""
 
     from clinical_extraction.tasks.seizure_frequency.gan2026 import (
-        dspy_modules,
-        llm_first,
-        llm_structured,
-        section_claim_table,
+        hybrid_rules_candidates_llm_adjudicator,
+        llm_only_claim_table_selector,
+        llm_only_direct_labeler,
+        llm_only_structured_events,
+    )
+
+    llm_only_claim_table_selector_spec = GanLlmPipelineCliSpec(
+        description="Run the Gan 2026 LLM-only claim-table selector experiment.",
+        default_jsonl_path=llm_only_claim_table_selector.DEFAULT_JSONL_PATH,
+        default_report_path=llm_only_claim_table_selector.DEFAULT_REPORT_PATH,
+        run_split=llm_only_claim_table_selector.run_split,
+        write_jsonl=llm_only_claim_table_selector.write_jsonl,
+        write_report=llm_only_claim_table_selector.write_report,
+        default_max_tokens=1400,
+    )
+    hybrid_rules_candidates_llm_adjudicator_spec = GanLlmPipelineCliSpec(
+        description=(
+            "Run the Gan 2026 hybrid rules-candidates LLM-adjudicator experiment."
+        ),
+        default_jsonl_path=(
+            hybrid_rules_candidates_llm_adjudicator
+            .DEFAULT_HYBRID_RULES_CANDIDATES_LLM_ADJUDICATOR_JSONL_PATH
+        ),
+        default_report_path=(
+            hybrid_rules_candidates_llm_adjudicator
+            .DEFAULT_HYBRID_RULES_CANDIDATES_LLM_ADJUDICATOR_REPORT_PATH
+        ),
+        run_split=(
+            hybrid_rules_candidates_llm_adjudicator
+            .run_hybrid_rules_candidates_llm_adjudicator_split
+        ),
+        write_jsonl=(
+            hybrid_rules_candidates_llm_adjudicator
+            .write_hybrid_rules_candidates_llm_adjudicator_jsonl
+        ),
+        write_report=(
+            hybrid_rules_candidates_llm_adjudicator
+            .write_hybrid_rules_candidates_llm_adjudicator_report
+        ),
+        default_max_tokens=1100,
     )
 
     return {
-        "llm-first": GanLlmPipelineCliSpec(
-            description="Run the Gan 2026 LLM-first seizure-frequency extraction experiment.",
-            default_jsonl_path=llm_first.DEFAULT_JSONL_PATH,
-            default_report_path=llm_first.DEFAULT_REPORT_PATH,
-            run_split=llm_first.run_split,
-            write_jsonl=llm_first.write_jsonl,
-            write_report=llm_first.write_report,
+        "llm_only_direct_labeler": GanLlmPipelineCliSpec(
+            description="Run the Gan 2026 LLM-only direct-labeler experiment.",
+            default_jsonl_path=llm_only_direct_labeler.DEFAULT_JSONL_PATH,
+            default_report_path=llm_only_direct_labeler.DEFAULT_REPORT_PATH,
+            run_split=llm_only_direct_labeler.run_split,
+            write_jsonl=llm_only_direct_labeler.write_jsonl,
+            write_report=llm_only_direct_labeler.write_report,
         ),
-        "structured": GanLlmPipelineCliSpec(
-            description="Run the Gan 2026 structured LLM seizure-frequency extraction experiment.",
-            default_jsonl_path=llm_structured.DEFAULT_JSONL_PATH,
-            default_report_path=llm_structured.DEFAULT_REPORT_PATH,
-            run_split=llm_structured.run_split,
-            write_jsonl=llm_structured.write_jsonl,
-            write_report=llm_structured.write_report,
+        "llm_only_structured_events": GanLlmPipelineCliSpec(
+            description="Run the Gan 2026 LLM-only structured-events experiment.",
+            default_jsonl_path=llm_only_structured_events.DEFAULT_JSONL_PATH,
+            default_report_path=llm_only_structured_events.DEFAULT_REPORT_PATH,
+            run_split=llm_only_structured_events.run_split,
+            write_jsonl=llm_only_structured_events.write_jsonl,
+            write_report=llm_only_structured_events.write_report,
         ),
-        "section-claim-table": GanLlmPipelineCliSpec(
-            description="Run the Gan 2026 section-and-claim-table LLM extraction experiment.",
-            default_jsonl_path=section_claim_table.DEFAULT_JSONL_PATH,
-            default_report_path=section_claim_table.DEFAULT_REPORT_PATH,
-            run_split=section_claim_table.run_split,
-            write_jsonl=section_claim_table.write_jsonl,
-            write_report=section_claim_table.write_report,
-            default_max_tokens=1400,
-        ),
-        "architecture2": GanLlmPipelineCliSpec(
-            description=(
-                "Run Gan 2026 Architecture 2: deterministic candidate generator "
-                "plus LLM adjudicator."
-            ),
-            default_jsonl_path=dspy_modules.DEFAULT_ARCH2_JSONL_PATH,
-            default_report_path=dspy_modules.DEFAULT_ARCH2_REPORT_PATH,
-            run_split=dspy_modules.run_architecture2_split,
-            write_jsonl=dspy_modules.write_architecture2_jsonl,
-            write_report=dspy_modules.write_architecture2_report,
-            default_max_tokens=1100,
+        "llm_only_claim_table_selector": llm_only_claim_table_selector_spec,
+        "hybrid_rules_candidates_llm_adjudicator": (
+            hybrid_rules_candidates_llm_adjudicator_spec
         ),
     }
 
