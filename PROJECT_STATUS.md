@@ -172,6 +172,11 @@ ownership, and deterministic repair boundaries explicitly.
   typed Gan 2026 registry entries with JSONL validation/round-tripping, and
   `experiments/registry.jsonl` backfills the first canonical/high-signal runs
   from the current deterministic, LLM-only, and hybrid decision trail.
+- Phase 6 now also renders `experiments/RUN_INDEX.md` from
+  `experiments/registry.jsonl` and validates that registry artifact paths are
+  traceable under the repo. The JSONL registry remains canonical; the Markdown
+  index is the human scan surface for current revise/reject/historical run
+  decisions.
 
 ## Key References
 

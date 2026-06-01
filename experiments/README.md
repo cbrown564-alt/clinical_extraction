@@ -3,10 +3,12 @@
 Store run outputs, metrics, row-level predictions, and experiment notes here.
 
 Prefer timestamped or named subdirectories. Keep enough metadata to reproduce the run.
-Use `experiments/registry.jsonl` as the durable index for canonical and
-high-signal runs. The registry does not replace raw artifacts; it records which
-artifact family is live, replayed, rejected, superseded, historical, or a revise
-signal. Backfill it selectively when a run affects project decisions.
+Use `experiments/registry.jsonl` as the durable machine-readable index for
+canonical and high-signal runs. Regenerate `experiments/RUN_INDEX.md` from that
+registry when entries change so humans can scan the same decisions without
+hand-reading JSONL. The registry does not replace raw artifacts; it records
+which artifact family is live, replayed, rejected, superseded, historical, or a
+revise signal. Backfill it selectively when a run affects project decisions.
 
 Use `data/Gan (2026)/splits/gan2026_split_v1.json` for Gan 2026 work. Ordinary
 development runs should report validation metrics. Train is reserved for DSPy GEPA
