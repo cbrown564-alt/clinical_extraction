@@ -25,12 +25,13 @@ format repair, arithmetic repair, and named ablated modules.
   classified it as repair-heavy hybrid behavior rather than clean LLM-first.
 - Clean attribution separates raw LLM selection, strict format repair, and
   frozen scorer-facing policy: 34/50 raw, 41/50 strict, 43/50 clean Purist.
-- Section-claim-table v2 ran the 25/50 ladder: 50/50 structured, 167/169 exact
-  claim evidence, 50/50 selected evidence, raw Purist 45/50, clean Purist 46/50.
-  It fixed row 704 but not rows 187 or 1165, so v2 is not 250-ready.
-- The v2 failure review localized rows 187 and 1165 to model final-query
-  priority errors and row 869 to raw parser-ready wording. A narrow v3
-  final-query priority prompt is justified before pausing for ablation work.
+- Section-claim-table v3 ran the 25/50 ladder: 25-row smoke was 25/25 raw and
+  clean Purist; live 50-row diagnostic was 49/50 structured and 49/50 raw/clean
+  Purist. A no-call non-semantic rationale repair replay reached 50/50
+  structured and 50/50 raw/clean Purist with 50/50 raw outputs reused.
+- Rows 187, 704, 869, and 1165 are fixed at the raw layer. The remaining v3
+  issue is a localized exact-evidence casing/span miss on row 243, not a
+  semantic-selection or schema-blocking failure.
 
 ## Key References
 
@@ -57,9 +58,9 @@ format repair, arithmetic repair, and named ablated modules.
 
 ### Now
 
-- Implement a narrow `gan2026_section_claim_table_v3` final-query priority
-  prompt and rerun the 25-row validation smoke gate; do not use deterministic
-  semantic selection or scorer-facing policy expansion to fix rows 187/1165.
+- Decide whether the v3 50-row rationale-repair replay passes the documented
+  decision gate for a 250-row validation diagnostic, given the localized row 243
+  evidence exactness miss.
 - Keep clean scorer-facing normalization separate from named deterministic
   modules in run attribution and claim language.
 
@@ -81,6 +82,11 @@ format repair, arithmetic repair, and named ablated modules.
 ### Done Recently
 
 - 2026-06-01: Wrote
+  `experiments/gan2026_section_claim_table_validation50_v3_review_2026-06-01.md`;
+  v3 fixed rows 187, 704, 869, and 1165 at the raw layer. A no-call
+  rationale-repair replay fixed row 763 as non-semantic schema repair and reached
+  50/50 raw/clean Purist.
+- 2026-06-01: Wrote
   `experiments/gan2026_section_claim_table_validation50_v2_failure_review_2026-06-01.md`;
   decision is a narrow v3 final-query priority prompt, still restarting at the
   25-row validation smoke gate and not promoting v2 to 250 rows.
@@ -91,6 +97,6 @@ format repair, arithmetic repair, and named ablated modules.
 
 ## Immediate Next Step
 
-Patch `gan2026_section_claim_table_v3` with the reviewed final-query priorities,
-then run the 25-row validation smoke gate and compare rows 187, 869, 1165, and
-704 before considering another 50-row diagnostic.
+Make the 250-row decision explicitly: either accept the v3 50-row
+rationale-repair replay as passing the decision gate despite row 243's localized
+evidence exactness miss, or do one more prompt/repair iteration before scaling.
