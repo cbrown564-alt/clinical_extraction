@@ -10,7 +10,7 @@ Hypothesis: a flat section-and-claim table can expose temporal, conflict, and ev
 
 Prediction-bearing component: model-produced claim rows plus model final query. Deterministic code validates structure and evidence, runs strict scorer-format repair and frozen clean scorer-facing policy, and scores each layer.
 
-Data surface: `validation` split, `gan2026_split_v1`, 100 rows.
+Data surface: `validation` split, `gan2026_split_v1`, 125 rows.
 Escalation reason: not applicable for this run size.
 
 ## Model And Prompt Metadata
@@ -37,15 +37,15 @@ Escalation reason: not applicable for this run size.
 
 ## Summary
 
-- Structured claim-table records: 100 / 100
+- Structured claim-table records: 125 / 125
 - Call failures: 0
 - Parse/schema/label issues: 0
-- Exact claim evidence substrings: 220 / 223
-- Exact selected final evidence substrings: 100 / 100
-- raw final-query score: Purist 0.9100 (91 / 100), Pragmatic 0.9200 (92 / 100)
-- Strict-format score: Purist 0.9100 (91 / 100), Pragmatic 0.9200 (92 / 100)
-- Frozen clean scorer-facing score: Purist 0.9200 (92 / 100), Pragmatic 0.9300 (93 / 100)
-- Rows changed by downstream repair layers: 14
+- Exact claim evidence substrings: 270 / 273
+- Exact selected final evidence substrings: 125 / 125
+- raw final-query score: Purist 0.9200 (115 / 125), Pragmatic 0.9280 (116 / 125)
+- Strict-format score: Purist 0.9280 (116 / 125), Pragmatic 0.9360 (117 / 125)
+- Frozen clean scorer-facing score: Purist 0.9360 (117 / 125), Pragmatic 0.9440 (118 / 125)
+- Rows changed by downstream repair layers: 15
 
 ## Component Failure Slices
 
@@ -56,7 +56,7 @@ Escalation reason: not applicable for this run size.
 | temporality_conflict | 1 |
 | final_query | 0 |
 | parse_schema | 0 |
-| scorer_format | 3 |
+| scorer_format | 4 |
 
 ## Reviewable Failure Details
 
@@ -67,6 +67,7 @@ Escalation reason: not applicable for this run size.
 | 1694 | claim evidence not exact (c2: She has been generally stable for several months prior to this cluster) |  |  |
 | 1923 | claim evidence not exact (c2: Over the past six months he describes ... five epileptic spasms) |  |  |
 | 2166 |  | unparsable_label: frequent (Unparsable label (raw: 'frequent' / normalized: 'frequent')) |  |
+| 2609 |  | unparsable_label: 1 per night (Unparsable label (raw: '1 per night' / normalized: '1 per night')) |  |
 
 ## Rows
 
@@ -172,3 +173,28 @@ Escalation reason: not applicable for this run size.
 | 2374 | 7 to 9 per month | 7 to 9 per month | 7 to 9 per month | 7 to 9 per month | yes | yes |  |
 | 2425 | 6 to 8 per 1 month | 6 to 8 per month | 6 to 8 per month | 6 to 8 per month | yes | yes |  |
 | 2427 | 3 to 5 per month | 3 to 5 per month | 3 to 5 per month | 3 to 5 per month | yes | yes |  |
+| 2435 | 5 to 7 per 2 week | 5 to 7 per 2 week | 5 to 7 per 2 week | 5 to 7 per 2 week | yes | yes |  |
+| 2437 | 2 to 3 per 2 month | 2 to 3 per 2 month | 2 to 3 per 2 month | 2 to 3 per 2 month | yes | yes |  |
+| 2440 | 5 to 7 per 2 month | 5 to 7 per 2 month | 5 to 7 per 2 month | 5 to 7 per 2 month | yes | yes |  |
+| 2456 | 6 to 7 per 2 week | 6 to 7 per 2 week | 6 to 7 per 2 week | 6 to 7 per 2 week | yes | yes |  |
+| 2459 | 7 to 9 per 2 week | 7 to 9 per 2 week | 7 to 9 per 2 week | 7 to 9 per 2 week | yes | yes |  |
+| 2487 | 2 to 3 per 3 month | 2 to 3 per 3 month | 2 to 3 per 3 month | 2 to 3 per 3 month | yes | yes |  |
+| 2513 | 2 to 3 per 2 week | 2 to 3 per 2 week | 2 to 3 per 2 week | 2 to 3 per 2 week | yes | yes |  |
+| 2541 | 8 to 9 per 2 week | 8 to 9 per 2 week | 8 to 9 per 2 week | 8 to 9 per 2 week | yes | yes |  |
+| 2548 | 5 to 6 per 2 month | 5 to 6 per 2 month | 5 to 6 per 2 month | 5 to 6 per 2 month | yes | yes |  |
+| 2554 | 1 to 10 per 2 month | 1 to 10 per 2 month | 1 to 10 per 2 month | 1 to 10 per 2 month | yes | yes |  |
+| 2558 | 3 to 4 per 2 month | 3 to 4 per 2 month | 3 to 4 per 2 month | 3 to 4 per 2 month | yes | yes |  |
+| 2609 | 1 per night | 1 per day | 1 per day | 1 per day |  | yes | scorer_format |
+| 2622 | 1 per day | 1 per day | 1 per day | 1 per day | yes | yes |  |
+| 2628 | 1 per day | 1 per day | 1 per day | 1 per day | yes | yes |  |
+| 2678 | 1 per day | 1 per day | 1 per day | 1 per day | yes | yes |  |
+| 2681 | 1 per day | 1 per day | 1 per day | 1 per day | yes | yes |  |
+| 2698 | 1 per 2 day | 1 per 2 day | 1 per 2 day | 1 per 2 day | yes | yes |  |
+| 2731 | 1 per 2 week | 1 per 2 week | 1 per 2 week | 1 per 2 week | yes | yes |  |
+| 2740 | 1 per month | 1 per month | 1 per month | 1 per month | yes | yes |  |
+| 2748 | 1 per month | 1 per month | 1 per month | 1 per month | yes | yes |  |
+| 2759 | 1 per month | 1 per month | 1 per month | 1 per month | yes | yes |  |
+| 2762 | 1 per month | 1 per month | 1 per month | 1 per month | yes | yes |  |
+| 2765 | 1 per month | 1 per month | 1 per month | 1 per month | yes | yes |  |
+| 2776 | 1 per week | 1 per week | 1 per week | 1 per week | yes | yes |  |
+| 2789 | 1 per week | 1 per week | 1 per week | 1 per week | yes | yes |  |

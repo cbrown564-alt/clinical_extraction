@@ -20,7 +20,7 @@ Use Gan 2026 as the first controlled extraction surface. Keep deterministic V1 f
 - Structured v0.5 reached 675/750 Purist = 0.9000 on full validation, but audit
   classified it as repair-heavy hybrid behavior rather than clean LLM-first.
 - LLM-only claim-table selector v4 reached 231/250 clean Purist after schema replay, but full validation collapsed to 528/750 clean Purist and 577/750 clean Pragmatic. Reject v4 for holdout; redesign v5 around cluster-axis preservation, boundary-state selection, and selector ablation.
-- Hybrid rules-candidates LLM adjudicator v0.1 reached 243/250 Purist and 244/250 Pragmatic on 250-row schema replay, then 680/750 Purist and 689/750 Pragmatic on full validation. It underperformed deterministic top on the same rows (697/750 Purist) because the adjudicator introduced 24 deterministic-correct regressions against 7 corrections. V0.2 is a conservative gated adjudicator with deterministic fallback. Validation250 live was output-contract clean but underperformed deterministic top: deterministic top was 246/250 Purist and Pragmatic; raw adjudicator was 245/250 Purist and 246/250 Pragmatic; conservative gated final was 244/250 Purist and 245/250 Pragmatic, with 8 gated label changes, 1 fallback, 2 deterministic-correct regressions, and 0 deterministic-wrong corrections. Treat v0.2 as revise-only before any broader validation or holdout.
+- Hybrid rules-candidates LLM adjudicator v0.1 reached 243/250 Purist and 244/250 Pragmatic on 250-row schema replay, then 680/750 Purist and 689/750 Pragmatic on full validation. It underperformed deterministic top on the same rows (697/750 Purist) because the adjudicator introduced 24 deterministic-correct regressions against 7 corrections. V0.2 validation250 live was output-contract clean but low-information on a saturated surface: deterministic top was already 246/250 Purist and Pragmatic; raw adjudicator was 245/250 Purist and 246/250 Pragmatic; conservative gated final was 244/250 Purist and 245/250 Pragmatic. Treat v0.2 as revise-only and switch future saturated comparisons to hard-case panels, validation hard slices, selective-action analysis, or frozen test generalization audits.
 - Routine LLM experiments use cache-first `gan2026-llm-experiment --pipeline ...`; saved-output replay is reserved for explicit offline artifact analysis.
 - Clean scorer-facing normalization is frozen unless direct-citation review justifies another family. Shared schema repair is alias-only; parser defaults belong to their task parser.
 - The codebase thermonuclear review follow-up is complete: the Gan package now has stable ownership boundaries under `contract/`, `deterministic/`, `selected_evidence/`, `llm/`, `hybrid/`, `reports/`, `experiments/`, and `cli/`, while preserving public contracts and scorer behavior.
@@ -31,17 +31,18 @@ Use Gan 2026 as the first controlled extraction surface. Keep deterministic V1 f
 - Protocol/control: `docs/design/gan2026_split_protocol.md`, `docs/design/data_contract.md`
 - Package organization: `docs/decisions/0004-gan2026-package-organization.md`
 - Run registry: `experiments/registry.jsonl`, `experiments/RUN_INDEX.md`
+- Saturated validation workflow: `docs/design/gan2026_saturated_validation_protocol.md`
 - Review follow-up: `docs/research/codebase_thermonuclear_review_followup_2026-06-01.md`
 - Intermediate schema/rationale synthesis: `docs/research/gan2026_intermediate_schema_report_2026-06-01.md`
 - Latest LLM-only v4 run/review: `experiments/gan2026_section_claim_table_validation250_gpt41mini_v4_schema_replay_2026-06-01.md`, `experiments/gan2026_section_claim_table_validation750_v4_interpretation_2026-06-01.md`
 - Latest hybrid v0.1 run/reviews: `experiments/gan2026_arch2_validation250_gpt41mini_v01_schema_replay_2026-06-01.md`, `experiments/gan2026_arch2_validation250_v01_failure_review_2026-06-01.md`, `experiments/gan2026_arch2_validation750_v01_interpretation_2026-06-01.md`
-- Hybrid v0.2 artifacts: `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation25_gpt41mini_v02_prompt_only_2026-06-01.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation25_v02_prompt_only_component_ablation_2026-06-01.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation25_gpt41mini_v02_live_2026-06-01.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation25_v02_live_component_ablation_2026-06-01.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation50_gpt41mini_v02_live_2026-06-01.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation50_v02_live_component_ablation_2026-06-01.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation250_gpt41mini_v02_live_2026-06-01.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation250_v02_live_component_ablation_2026-06-01.md`
+- Hybrid v0.2 artifacts: `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation25_gpt41mini_v02_prompt_only_2026-06-01.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation25_v02_prompt_only_component_ablation_2026-06-01.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation25_gpt41mini_v02_live_2026-06-01.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation25_v02_live_component_ablation_2026-06-01.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation50_gpt41mini_v02_live_2026-06-01.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation50_v02_live_component_ablation_2026-06-01.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation250_gpt41mini_v02_live_2026-06-01.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation250_v02_live_component_ablation_2026-06-01.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation250_v02_audit_trail_interpretation_2026-06-01.md`
 
 ## Active Priorities
 
 1. Keep deterministic V1 frozen; put new deterministic behavior into named, ablated candidates.
 2. Enforce the architecture gate before the metric gate; semantic repair and hybrid overreach gates need separate naming, ablation, and claim language.
-3. Treat hybrid adjudicator v0.1 and LLM-only claim-table selector v4 as revise signals, not holdout candidates.
+3. Treat saturated validation scores as low-information; prefer hard cases, hard slices, selective-action profiles, and frozen generalization audits over more broad validation250 aggregates.
 4. Separate benchmark gold-normalization policy from clinical reasoning while preserving source-near traces.
 5. Keep runners cache-first and live-run oriented; move replay/retention analysis into explicit artifact-analysis modules.
 
@@ -49,13 +50,14 @@ Use Gan 2026 as the first controlled extraction surface. Keep deterministic V1 f
 
 ### Now
 
-- Review hybrid adjudicator v0.2 validation250 changed-label rows before changing gates; validation250 live is revise-only because conservative gating did not produce net corrections over deterministic top.
+- Design a saturated-surface evaluation plan for hybrid adjudicator v0.2: synthetic hard cases, validation hard slices aligned to deterministic dominant errors, selective-action metrics, and a possible frozen test generalization audit.
 - Generate claim-table v5 component-ablation artifacts before any 25/50/250 validation ladder; v5 now uses claim-table plus constrained selector state with cluster-axis and boundary-state fields.
 
 ### Next
 
 - Run claim-table v5 only after the raw/model, strict/schema repair, constrained-selector state, and clean scorer-facing policy ablations are ready.
-- Decide whether v0.2 needs stricter gate policy, a different adjudicator task, or rejection as added complexity over deterministic top; do not escalate v0.2 to 750 rows or holdout without a written component-level rationale.
+- Build reusable hard-case and hard-slice tooling for saturated Gan 2026 candidates before spending more hosted calls on aggregate validation surfaces.
+- Decide whether v0.2 needs stricter gate policy, a different adjudicator task, or rejection as added complexity over deterministic top; do not tune from locked-test row-level failures.
 - Design LLM-replacement ablations for deterministic post-processing modules, reporting score, repair attribution, evidence validity, and replay variance.
 - Consolidate remaining saved-output replay helpers into dedicated artifact-analysis modules.
 - Extend named repair-mode metadata beyond structured-events where downstream repair layers blur raw, strict, clean, selected-evidence, and hybrid attribution.
@@ -68,7 +70,9 @@ Use Gan 2026 as the first controlled extraction surface. Keep deterministic V1 f
 ### Done Recently
 
 - 2026-06-01: Added a durable intermediate-schema synthesis report comparing rules-only V1, structured-events v0.5, claim-table v5, and hybrid adjudicator v0.2, with schema rationales, experiment lessons, ablation findings, and open questions.
-- 2026-06-01: Ran hybrid rules-candidates LLM adjudicator v0.2 validation250 live signal and component ablation: 250/250 decision records, 0 call failures, 0 parse/schema failures, deterministic top 246/250 Purist and Pragmatic, raw adjudicator 245/250 Purist and 246/250 Pragmatic, conservative gated final 244/250 Purist and 245/250 Pragmatic, 9 raw label changes, 8 gated label changes, 1 fallback, 2 deterministic-correct regressions, and 0 deterministic-wrong corrections; mark v0.2 revise-only before broader validation or holdout.
+- 2026-06-01: Added a hybrid adjudicator v0.2 audit-trail interpretation report: the LLM adds useful semantic dissent and review text, but not a trustworthy prediction-bearing final-selection layer on saturated validation250.
+- 2026-06-01: Added saturated-validation workflow docs/skill after the v0.2 validation250 run showed broad aggregate comparisons are low-information once deterministic top is near ceiling; future saturated candidates should use hard cases, hard slices, selective-action analysis, or frozen test generalization audits.
+- 2026-06-01: Ran hybrid rules-candidates LLM adjudicator v0.2 validation250 live signal and component ablation: 250/250 decision records, 0 call failures, 0 parse/schema failures, deterministic top 246/250 Purist and Pragmatic, raw adjudicator 245/250 Purist and 246/250 Pragmatic, conservative gated final 244/250 Purist and 245/250 Pragmatic, 9 raw label changes, 8 gated label changes, 1 fallback, 2 deterministic-correct regressions, and 0 deterministic-wrong corrections; mark v0.2 revise-only and do not treat broad validation250 as a useful next surface.
 - 2026-06-01: Ran hybrid rules-candidates LLM adjudicator v0.2 validation50 live signal and component ablation; treat as saturated-prefix diagnostic now superseded by validation250.
 - 2026-06-01: Rejected LLM-only claim-table selector v4 for holdout after full validation fell to 528/750 clean Purist despite stronger 250-row schema-replay results.
 - 2026-06-01: Ran hybrid rules-candidates LLM adjudicator v0.2 validation25 live smoke: 25/25 decision records, 0 call failures, 0 blocking parse/schema failures, 25/25 Purist/Pragmatic for deterministic and gated final, 0 raw/gated label changes, and 1 non-blocking final-label repair note.
@@ -82,4 +86,4 @@ Use Gan 2026 as the first controlled extraction surface. Keep deterministic V1 f
 
 ## Immediate Next Step
 
-Review hybrid adjudicator v0.2 validation250 changed-label rows and decide whether the next move is stricter gate design, a different adjudication task, or rejecting v0.2 as complexity that fails to beat deterministic top. Do not inspect holdout rows.
+Create a v0.2 saturated-surface evaluation plan: generated hard cases, validation hard slices aligned to deterministic dominant errors, selective-action metrics, and criteria for a frozen test generalization audit. Do not inspect holdout rows unless the candidate and analysis policy are frozen first.

@@ -624,23 +624,30 @@ V0.1 full validation schema replay:
 
 V0.2 validation250 live artifact:
 
-- Actually completed 230 rows in the saved report.
-- Decision records: 230/230.
+- Decision records: 250/250.
 - Call failures: 0.
 - Parse/schema/label issues: 0.
-- Candidate-set Purist recall proxy: 227/230 = 0.9870.
-- Deterministic top Purist: 227/230 = 0.9870.
-- Gated adjudicator Purist: 225/230 = 0.9783.
-- Changed final labels: 6.
+- Candidate-set Purist recall proxy: 246/250 = 0.9840.
+- Deterministic top Purist: 246/250 = 0.9840.
+- Raw adjudicator Purist: 245/250 = 0.9800.
+- Gated adjudicator Purist: 244/250 = 0.9760.
+- Raw changed final labels: 9.
+- Gated changed final labels: 8.
+- Deterministic fallbacks: 1.
 - Deterministic-wrong to adjudicator-correct: 0.
 - Deterministic-correct to adjudicator-wrong: 2.
 
 Interpretation:
 
 The conservative schema fixed output-contract risk but not the central utility
-problem. On saturated prefixes, the LLM has little room to improve deterministic
-top and still makes occasional harmful changes. The schema is still useful
-because it identifies the exact transition families where adjudication fails.
+problem. More importantly, the broad validation250 aggregate was itself a weak
+question once deterministic top was already 246/250 on a validation surface known
+to overfit relative to locked test. Future adjudicator work should not ask
+whether the LLM can improve a mostly easy saturated prefix. It should ask whether
+the LLM makes high-precision selective changes on deterministic dominant error
+modes, using synthetic hard cases, validation hard slices, adversarial/paraphrase
+panels, component-stress ablations, or a frozen test generalization audit under
+`docs/design/gan2026_saturated_validation_protocol.md`.
 
 ## Pros, Cons, And Research Implications By Schema
 
@@ -691,17 +698,22 @@ research claim:
 3. Add or run a selector ablation over v5 claims: model final query versus
    deterministic query over identical model claims.
 4. For hybrid adjudication, stop treating the LLM as a universal selector.
-   Define a short list of overreach families and test adjudication only there.
+   Define synthetic hard cases and validation hard slices for the deterministic
+   stack's dominant error modes, then measure changed-label precision,
+   wrong-to-correct, correct-to-wrong, fallback/abstention, and slice-level
+   performance.
 5. Keep reporting grouped attribution ladders for any repair stack. The clean
    endpoint and hybrid endpoint should always be separate.
-6. Do not inspect or tune on test rows. The V1 validation/test gap makes this
-   discipline especially important.
+6. Use locked test only as a frozen generalization audit with candidate,
+   prompts, gates, scorer, slice definitions, and inspection policy fixed before
+   the run. Do not tune from test row-level failures.
 
 ## Source Artifacts
 
 - `PROJECT_STATUS.md`
 - `docs/research/gan2026_current_pipeline_results_report_2026-06-01.md`
 - `docs/research/gan2026_next_architecture_decision_2026-06-01.md`
+- `docs/design/gan2026_saturated_validation_protocol.md`
 - `experiments/gan2026_v1_validation_ablation_2026-05-31.md`
 - `experiments/gan2026_v1_validation_error_analysis_2026-05-31.md`
 - `experiments/gan2026_v1_test_holdout_2026-05-31.md`
