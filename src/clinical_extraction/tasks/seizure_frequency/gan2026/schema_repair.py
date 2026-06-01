@@ -20,12 +20,6 @@ def repair_decision_payload(payload: Any) -> Any:
     _repair_string_alias(repaired, "temporality", _TEMPORALITY_ALIASES)
     _repair_string_alias(repaired, "answer_kind", _ANSWER_KIND_ALIASES)
     _repair_numeric_confidence(repaired)
-    _repair_nullable_string_fields(
-        repaired,
-        ("seizure_or_event_target", "window", "normalized_rate", "rationale"),
-    )
-    if repaired.get("uncertainty") is None:
-        repaired["uncertainty"] = "high"
 
     normalized_rate = repaired.get("normalized_rate")
     if normalized_rate is not None and not isinstance(normalized_rate, str):
@@ -76,12 +70,6 @@ def _repair_numeric_confidence(payload: dict[str, Any]) -> None:
         payload["confidence"] = "medium"
     else:
         payload["confidence"] = "low"
-
-
-def _repair_nullable_string_fields(payload: dict[str, Any], keys: tuple[str, ...]) -> None:
-    for key in keys:
-        if payload.get(key) is None:
-            payload[key] = "unknown"
 
 
 _ASSERTION_ALIASES = {

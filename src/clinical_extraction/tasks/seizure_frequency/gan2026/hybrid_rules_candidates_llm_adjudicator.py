@@ -312,7 +312,9 @@ def build_hybrid_rules_candidates_llm_adjudicator_prompt_input(
 def parse_decision_json(raw_output: str) -> tuple[AdjudicatorDecisionRecord | None, list[str]]:
     errors: list[str] = []
     try:
-        payload = repair_decision_payload(json.loads(_extract_json_object(raw_output)))
+        payload = _repair_adjudicator_required_fields(
+            repair_decision_payload(json.loads(_extract_json_object(raw_output)))
+        )
     except json.JSONDecodeError as exc:
         return None, [f"invalid_json: {exc.msg}"]
 
@@ -334,6 +336,21 @@ def parse_decision_json(raw_output: str) -> tuple[AdjudicatorDecisionRecord | No
         errors.append(f"unscorable_final_label: {exc}")
 
     return decision, errors
+
+
+def _repair_adjudicator_required_fields(payload: Any) -> Any:
+    """Apply adjudicator-owned defaults after shared alias-only repair."""
+
+    if not isinstance(payload, dict):
+        return payload
+
+    repaired = dict(payload)
+    for key in ("seizure_or_event_target", "window", "normalized_rate", "rationale"):
+        if repaired.get(key) is None:
+            repaired[key] = "unknown"
+    if repaired.get("uncertainty") is None:
+        repaired["uncertainty"] = "high"
+    return repaired
 
 
 def run_adjudicator_devset(
