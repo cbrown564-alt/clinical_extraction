@@ -11,7 +11,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm_structured_temporal
     month_number,
     small_number_words_to_digits,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.selected_evidence_derivation import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.selected_evidence_monthly_diary import (
     monthly_diary_label_from_text,
 )
 
