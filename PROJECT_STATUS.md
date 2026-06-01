@@ -74,7 +74,9 @@ ownership, and deterministic repair boundaries explicitly.
   largest files: Gan label parsing, clean gold policy, selected-evidence
   derivation, benchmark prediction repair, deterministic temporal helpers,
   deterministic final selection, and LLM structured-events temporal helpers.
-  Public repair/parser APIs remain in place; scorer behavior is unchanged.
+  LLM structured-events monthly-diary repair arithmetic now also has a dedicated
+  helper module. Public repair/parser APIs remain in place; scorer behavior is
+  unchanged.
 
 ## Key References
 
@@ -107,8 +109,8 @@ ownership, and deterministic repair boundaries explicitly.
 
 - Continue the codebase thermonuclear review Phase 5 behavior splits without
   changing scorer behavior: next candidates are remaining deterministic
-  extractor ownership splits, LLM structured-events repair-family splits, or
-  other large-file ownership splits.
+  extractor ownership splits, remaining LLM structured-events repair-family
+  splits, or other large-file ownership splits.
 - Design hybrid rules-candidates LLM adjudicator v0.2 as a conservative/targeted adjudicator with
   deterministic fallback and named overreach-family gates; repeat 25/50/250.
 - Design LLM-only claim-table selector v5 as claim-table plus constrained selector, with
@@ -186,14 +188,15 @@ ownership, and deterministic repair boundaries explicitly.
 - 2026-06-01: Continued Phase 5 with behavior-preserving ownership splits:
   `label_parser.py`, `gold_policy.py`, `selected_evidence_derivation.py`,
   `benchmark_prediction_repair.py`, deterministic `temporal.py`,
-  `deterministic_selection.py`, and `llm_structured_temporal.py`. Each slice
-  added or preserved focused ownership-boundary tests; Ruff, mypy, and full
-  pytest are green after the latest slice.
+  `deterministic_selection.py`, `llm_structured_temporal.py`, and
+  `llm_structured_monthly_diary.py`. Each slice added or preserved focused
+  ownership-boundary tests; Ruff, mypy, and full pytest are green after the
+  latest slice.
 
 ## Immediate Next Step
 
 Continue the Phase 5 behavior-preserving splits from the remaining large
 behavior modules, preferably by extracting another deterministic extractor
-ownership slice or an LLM structured-events repair-family slice before
-returning to the validation-only v0.2/v5 experiment cycle. Do not inspect
-holdout rows.
+ownership slice or one of the remaining LLM structured-events repair families
+before returning to the validation-only v0.2/v5 experiment cycle. Do not
+inspect holdout rows.
