@@ -17,6 +17,7 @@ Use Gan 2026 as the first controlled extraction surface. Keep deterministic V1 f
 - Locked split `gan2026_split_v1`: 300 train, 750 validation, 450 holdout. LLM/DSPy work escalates 25 -> 50 -> 250 validation rows; test is not tuning.
 - State-graph validation-cycle protocol is complete on validation-only/synthetic development surfaces. Validation50 oracle coverage is 47/50, with all 44 frequency golds representable and unresolved-multiple rows the prefix gap; projection Purist/Pragmatic F1 is 0.9600. The validation hard-slice union has oracle coverage 219/250 and projection Purist F1 0.9160. Row/family review found all 31 hard-slice missing-representability rows are unknown or unresolved-multiple boundary-state misses, while 34 additional rows are already representable but projected incorrectly. The first hosted graph-builder target should recover exact-evidence unknown/unresolved-multiple nodes, not emit final labels.
 - Hosted boundary-state graph-builder v0 completed the predeclared validation31 plus synthetic unknown8 live pass. Validation31 had 0 call failures, 30/31 schema-valid rows, 28/29 exact-evidence-valid nodes, and 10/31 representability-gain candidates; row 869 had the only schema/evidence miss. Synthetic unknown8 was schema-valid but emitted 0 nodes, so treat it as unknown-state prompt recall failure. Accepted-node replay on the 10 validation gain rows recovered graph representability on all 10 with 18 hosted nodes; unchanged projection still exactly matched only 6/10 labels, so use this as coverage evidence and keep projection/arbitration separate.
+- Projection/arbitration replay is complete over 42 saved validation graph rows: 38 validation hard-slice representable projection misses plus 4 accepted-node replay projection misses. Baseline exact matches were 0/42 on this miss-only surface; boundary-state priority fixed 17/42 with Purist F1 0.8571, seizure-free priority fixed 8/42, lowest-current-frequency fixed 3/42, and a gold-aware oracle reached 23/42 exact labels with 1.0000 Purist/Pragmatic F1. Treat this as diagnostic only: boundary-state priority has useful unknown/unresolved-multiple signal, while seizure-free duration projection remains a separate exact-label bottleneck.
 - Deterministic V1 is the frozen comparator: 0.9293/0.9387 validation and
   0.7600/0.7867 on its one locked-test Purist/Pragmatic evaluation.
 - Structured v0.5 reached 675/750 Purist = 0.9000 on full validation, but audit
@@ -47,6 +48,7 @@ Use Gan 2026 as the first controlled extraction surface. Keep deterministic V1 f
 - State-graph row/family review: `experiments/gan2026_clinical_frequency_state_graph_row_family_review_2026-06-02.md`
 - Hosted boundary-state graph-builder smoke: `experiments/gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_live_smoke_2026-06-02.md`
 - Hosted boundary-state graph-builder validation31/synthetic unknown8: `experiments/gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_validation31_synthetic_unknown8_interpretation_2026-06-02.md`
+- State-graph projection/arbitration ablation: `experiments/gan2026_hybrid_clinical_frequency_state_graph_projection_arbitration_ablation_2026-06-02.md`
 - Hybrid v0.2 saturated-surface plan: `experiments/gan2026_hybrid_adjudicator_v02_saturated_surface_evaluation_plan_2026-06-01.md`
 
 ## Active Priorities
@@ -61,11 +63,11 @@ Use Gan 2026 as the first controlled extraction surface. Keep deterministic V1 f
 
 ### Now
 
-- Design projection/arbitration ablations for the 34 validation hard-slice rows that are already graph-representable but projected incorrectly, plus the accepted-node replay projection misses.
+- Revise the unknown-state graph-builder prompt for the synthetic unknown8 stress rows, keeping exact-evidence unknown node construction separate from final-label projection.
+- Design a seizure-free duration projection ablation for rows where the graph has seizure-free states but exact Gan labels still collapse to the wrong duration.
 
 ### Next
 
-- Revise the unknown-state graph-builder prompt for synthetic unknown8 only after projection/arbitration replay clarifies whether graph coverage or projection policy is the active bottleneck.
 - Keep claim-table v5 and v0.2 schema/gate ablations available as comparators, but do not promote them ahead of the state-graph coverage cycle.
 - Design LLM-replacement ablations for deterministic post-processing modules, reporting score, repair attribution, evidence validity, and replay variance.
 - Consolidate remaining saved-output replay helpers into dedicated artifact-analysis modules.
@@ -78,6 +80,7 @@ Use Gan 2026 as the first controlled extraction surface. Keep deterministic V1 f
 
 ### Done Recently
 
+- 2026-06-02: Completed projection/arbitration ablation over saved state-graph artifacts. The replay surface contained 42 miss-only validation rows: 38 validation hard-slice rows already graph-representable but projected incorrectly, plus 4 accepted-node replay projection misses. Boundary-state priority was the strongest non-oracle policy with 17/42 exact matches and 0.8571 Purist F1; seizure-free priority fixed 8/42 and lowest-current-frequency fixed 3/42. The gold-aware oracle reached 23/42 exact labels and 1.0000 Purist/Pragmatic F1, showing that unknown/unresolved-multiple ordering is actionable but seizure-free duration projection remains separate. Added `experiments/gan2026_hybrid_clinical_frequency_state_graph_projection_arbitration_ablation_2026-06-02.md` and registry entry `gan2026_hybrid_clinical_frequency_state_graph_projection_arbitration_ablation_2026-06-02`.
 - 2026-06-02: Completed accepted-node graph replay for hosted boundary-builder gain candidates. The replay merged only schema-valid exact-evidence validation nodes from the 10 gain rows, excluding row 869 and all synthetic unknown stress rows. Baseline graph representability was 0/10 and replayed representability was 10/10 with 18 accepted hosted nodes; unchanged projection exactly matched 6/10 labels with 7 projection changes, confirming coverage gain while leaving projection/arbitration as the next separate ablation. Added `experiments/gan2026_hybrid_clinical_frequency_state_graph_accepted_boundary_nodes_replay_2026-06-02.md` and registry entry `gan2026_hybrid_clinical_frequency_state_graph_accepted_boundary_nodes_replay_2026-06-02`.
 - 2026-06-02: Completed the hosted `hybrid_clinical_frequency_state_graph` boundary-state builder validation31 plus synthetic unknown8 live pass. Validation31 had 0 call failures, 30/31 schema-valid rows, 28/29 exact-evidence-valid nodes, and 10/31 representability-gain candidates; row 869 had the only schema/evidence miss. Synthetic unknown8 was schema-valid but emitted no nodes on all 8 rows, so it remains prompt-recall signal only. Added `experiments/gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_validation31_synthetic_unknown8_interpretation_2026-06-02.md` and registry entry `gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_validation31_synthetic_unknown8_live_2026-06-02`; keep revise-only and do not promote projection F1.
 - 2026-06-02: Implemented the hosted boundary-state graph-builder diagnostic for `hybrid_clinical_frequency_state_graph`, including target-row selection for the 31 validation hard-slice missing-representability rows and 8 synthetic unknown stress rows, prompt/schema constraints that forbid final-label emission, exact-evidence validation, run artifacts, and registry entry. Live one-row GPT-4.1 mini smoke on row 338 was schema-valid with 0 call failures, 2/2 exact-evidence nodes, and 1/1 representability-gain candidate.
@@ -107,4 +110,4 @@ Use Gan 2026 as the first controlled extraction surface. Keep deterministic V1 f
 
 ## Immediate Next Step
 
-Design a projection-only replay/ablation over representable-but-projected-wrong validation rows, keeping accepted-node coverage and final-label arbitration as separately named components.
+Revise the boundary-state graph-builder prompt for synthetic unknown8 recall, measuring schema validity, exact-evidence unknown nodes, and representability gain without emitting final Gan labels.

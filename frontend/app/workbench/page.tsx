@@ -16,7 +16,7 @@ function WorkbenchInner() {
   const lastRun = useLastRun();
   const recordQuery = useRecord(split, sourceRowIndex);
 
-  const result = lastRun.data;
+  const result = lastRun;
   const diagnostics = result?.result.diagnostics;
   // Gold label from dataset record (if loaded) or from last pipeline run
   const goldLabel = recordQuery.data?.gold_label ?? result?.gold_label;

@@ -57,10 +57,8 @@ export function useRunNote() {
 }
 
 export function useLastRun() {
-  return useQuery<RunNoteResponse | undefined>({
-    queryKey: ["lastRun"],
-    enabled: false,
-  });
+  const queryClient = useQueryClient();
+  return queryClient.getQueryData<RunNoteResponse>(["lastRun"]);
 }
 
 export function usePipelineFamilies() {

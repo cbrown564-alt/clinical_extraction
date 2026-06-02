@@ -1,0 +1,215 @@
+{
+  "artifact_kind": "gan2026_state_graph_projection_arbitration_ablation",
+  "claim_language": "Diagnostic only. This replays named projection/arbitration variants over saved validation graph artifacts; it does not change scorer, graph construction, production projection policy, or holdout status.",
+  "date": "2026-06-02",
+  "pipeline_family": "hybrid_clinical_frequency_state_graph",
+  "projection_variants": {
+    "baseline_v0": "Existing gan2026_state_graph_projection_v0 policy.",
+    "boundary_state_priority": "Prioritize unknown/unresolved-multiple boundary-state nodes.",
+    "competing_frequency_uncertainty": "Emit unknown when multiple current frequency hypotheses compete.",
+    "lowest_current_frequency": "Select the lowest current concrete frequency node instead of the highest.",
+    "oracle_gold_node": "Gold-aware upper bound: select an exact gold node when present.",
+    "seizure_free_priority": "Prioritize seizure-free state nodes before concrete frequency nodes."
+  },
+  "row_count": 42,
+  "split": "validation_hard_slices",
+  "split_manifest": "gan2026_split_v1",
+  "summary": {
+    "failure_families": {
+      "frequency_arbitration": {
+        "baseline_exact": 0,
+        "best_non_oracle_exact": 3,
+        "best_non_oracle_variant": "lowest_current_frequency",
+        "oracle_exact": 5,
+        "rows": 5
+      },
+      "seizure_free_arbitration": {
+        "baseline_exact": 0,
+        "best_non_oracle_exact": 6,
+        "best_non_oracle_variant": "seizure_free_priority",
+        "oracle_exact": 7,
+        "rows": 25
+      },
+      "unknown_arbitration": {
+        "baseline_exact": 0,
+        "best_non_oracle_exact": 5,
+        "best_non_oracle_variant": "boundary_state_priority",
+        "oracle_exact": 5,
+        "rows": 6
+      },
+      "unresolved_multiple_arbitration": {
+        "baseline_exact": 0,
+        "best_non_oracle_exact": 6,
+        "best_non_oracle_variant": "boundary_state_priority",
+        "oracle_exact": 6,
+        "rows": 6
+      }
+    },
+    "row_best_non_oracle": {
+      "1317": [],
+      "1687": [
+        "boundary_state_priority"
+      ],
+      "278": [
+        "boundary_state_priority"
+      ],
+      "2907": [
+        "boundary_state_priority",
+        "seizure_free_priority"
+      ],
+      "2932": [
+        "boundary_state_priority",
+        "seizure_free_priority"
+      ],
+      "2938": [
+        "boundary_state_priority",
+        "seizure_free_priority"
+      ],
+      "2965": [
+        "boundary_state_priority",
+        "seizure_free_priority"
+      ],
+      "3082": [
+        "boundary_state_priority",
+        "seizure_free_priority"
+      ],
+      "3118": [],
+      "3137": [],
+      "3281": [
+        "lowest_current_frequency"
+      ],
+      "3371": [
+        "boundary_state_priority"
+      ],
+      "338": [
+        "boundary_state_priority",
+        "seizure_free_priority"
+      ],
+      "3469": [
+        "competing_frequency_uncertainty",
+        "boundary_state_priority"
+      ],
+      "3482": [
+        "boundary_state_priority"
+      ],
+      "3528": [
+        "boundary_state_priority"
+      ],
+      "3534": [
+        "boundary_state_priority"
+      ],
+      "3995": [
+        "lowest_current_frequency"
+      ],
+      "4026": [
+        "competing_frequency_uncertainty",
+        "lowest_current_frequency"
+      ],
+      "4116": [
+        "competing_frequency_uncertainty",
+        "lowest_current_frequency"
+      ],
+      "4592": [
+        "lowest_current_frequency"
+      ],
+      "4694": [
+        "boundary_state_priority",
+        "seizure_free_priority"
+      ],
+      "4839": [
+        "competing_frequency_uncertainty",
+        "boundary_state_priority",
+        "seizure_free_priority"
+      ],
+      "4842": [],
+      "4951": [],
+      "4992": [
+        "boundary_state_priority",
+        "seizure_free_priority"
+      ],
+      "5040": [],
+      "5082": [],
+      "5092": [],
+      "5110": [],
+      "5121": [],
+      "5136": [],
+      "5141": [],
+      "5197": [],
+      "5210": [],
+      "5221": [],
+      "5345": [],
+      "5351": [
+        "boundary_state_priority",
+        "seizure_free_priority"
+      ],
+      "5379": [],
+      "5406": [],
+      "5567": [
+        "boundary_state_priority"
+      ],
+      "744": [
+        "boundary_state_priority"
+      ]
+    },
+    "row_sources": {
+      "accepted_boundary_node_replay_projection_miss": 4,
+      "validation_hard_slice_representable_projection_miss": 38
+    },
+    "variants": {
+      "baseline_v0": {
+        "baseline_correct_to_variant_wrong": 0,
+        "baseline_wrong_to_variant_correct": 0,
+        "exact_matches": 0,
+        "pragmatic_accuracy": 0.619,
+        "pragmatic_f1": 0.619,
+        "purist_accuracy": 0.5714,
+        "purist_f1": 0.5714
+      },
+      "boundary_state_priority": {
+        "baseline_correct_to_variant_wrong": 0,
+        "baseline_wrong_to_variant_correct": 17,
+        "exact_matches": 17,
+        "pragmatic_accuracy": 0.881,
+        "pragmatic_f1": 0.881,
+        "purist_accuracy": 0.8571,
+        "purist_f1": 0.8571
+      },
+      "competing_frequency_uncertainty": {
+        "baseline_correct_to_variant_wrong": 0,
+        "baseline_wrong_to_variant_correct": 1,
+        "exact_matches": 1,
+        "pragmatic_accuracy": 0.5,
+        "pragmatic_f1": 0.5,
+        "purist_accuracy": 0.5,
+        "purist_f1": 0.5
+      },
+      "lowest_current_frequency": {
+        "baseline_correct_to_variant_wrong": 0,
+        "baseline_wrong_to_variant_correct": 3,
+        "exact_matches": 3,
+        "pragmatic_accuracy": 0.6905,
+        "pragmatic_f1": 0.6905,
+        "purist_accuracy": 0.6667,
+        "purist_f1": 0.6667
+      },
+      "oracle_gold_node": {
+        "baseline_correct_to_variant_wrong": 0,
+        "baseline_wrong_to_variant_correct": 23,
+        "exact_matches": 23,
+        "pragmatic_accuracy": 1.0,
+        "pragmatic_f1": 1.0,
+        "purist_accuracy": 1.0,
+        "purist_f1": 1.0
+      },
+      "seizure_free_priority": {
+        "baseline_correct_to_variant_wrong": 0,
+        "baseline_wrong_to_variant_correct": 8,
+        "exact_matches": 8,
+        "pragmatic_accuracy": 0.6905,
+        "pragmatic_f1": 0.6905,
+        "purist_accuracy": 0.6667,
+        "purist_f1": 0.6667
+      }
+    }
+  }
+}

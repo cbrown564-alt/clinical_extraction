@@ -1,6 +1,6 @@
 "use client";
 
-import { Play, Database, Settings2, FileText, GitCompare, AlertCircle } from "lucide-react";
+import { Play, Database, Settings2, FileText, GitCompare, AlertCircle, Ban } from "lucide-react";
 import { useConfigStore, useUiStore } from "@/lib/stores";
 import { useRunNote, useRules, useRecords, useRecord, usePipelineFamilies } from "@/lib/hooks";
 import type { PipelineFamily } from "@/lib/types";

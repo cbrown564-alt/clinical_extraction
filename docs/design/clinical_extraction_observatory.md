@@ -1,6 +1,6 @@
 # Clinical Extraction Observatory
 
-**Status:** Phase 1 in progress — backend complete, Workbench functional, polish ongoing  
+**Status:** Phase 1 complete — all Phase 1 features implemented; ready for Phase 2  
 **Last updated:** 2026-06-02  
 **Scope:** Frontend application for exploring, configuring, comparing, and understanding hybrid clinical-extraction pipelines.  
 **Backend dependency:** Reuses existing `clinical_extraction` package, JSONL artifacts, run registry, and split protocol without modification. Backend extensions are noted but deferred.
@@ -337,13 +337,17 @@ Any UI toggle state must serialise to a named config object that can be:
 - ✅ Attribution waterfall (currently deterministic-only; ready for hybrid/LLM attribution)
 - ✅ Gold label text display below note (available from dataset record or pipeline run)
 - ✅ React Query + Zustand data layer with typed API wrappers
+- ✅ **Ghost Gold overlay** — margin-styled box with match/mismatch colouring (green for match, coral for mismatch, gold when unknown)
+- ✅ **Rich hover cards** — Radix Tooltip floating cards showing rule ID, group, portability, and label for every highlighted span
+- ✅ **Pipeline family selector** — dynamically populated from `/pipeline-families`; all families visible with executable vs introspection-only badges; non-executable pipelines disabled at run time
+- ✅ **Diff mode (A vs B)** — toggle in config panel selects a second pipeline family; compare badge appears in header; URL-synced
+- ✅ **URL serialisation** — full config state (pipeline, split, row, note text, ablation toggles, stage, gold overlay, diff mode) serialised to query params and restored on load; shareable links
+- ✅ **Rule toggles in UI** — per-group and per-rule on/off toggles in the config panel with live visual feedback
 
-**Rudimentary / needs follow-up:**
-- 🟡 Ghost Gold overlay is a text box only; the full design (faint handwriting in margin, thin line pointing to correct span, match/mismatch colouring) is not yet implemented
-- 🟡 Hover cards are native `title` tooltips, not rich floating cards
-- 🟡 Only `rules_only` / `deterministic_v1` pipeline is selectable; LLM and hybrid pipelines are backend-ready but not wired in the UI
-- 🟡 Diff mode (A vs B) is not implemented
-- 🟡 No URL serialisation of config state yet
+**Rudimentary / deferred to Phase 2–4:**
+- 🟡 Thin line from Ghost Gold overlay pointing to the correct span (requires per-span gold evidence mapping)
+- 🟡 Side-by-side span diff visualization in the note surface (diff mode stores config B but does not yet render overlay diffs)
+- 🟡 LLM and hybrid pipelines are not yet executable via `/run/note` (backend uses `EXECUTABLE_PIPELINES` gate; requires DSPy LM setup)
 
 ### Phase 2: The Architect (Pipeline Composer)
 - React Flow canvas with draggable nodes.
