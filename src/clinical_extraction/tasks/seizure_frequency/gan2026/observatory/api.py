@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib
 import json
+import os
 from collections.abc import Iterable, Mapping, Sequence
 from pathlib import Path
 from typing import Any, Literal
@@ -64,6 +65,7 @@ PipelineFamily = Literal[
     "llm_only_claim_table_selector",
     "llm_only_direct_labeler",
     "llm_only_structured_events",
+    "llm_only_typed_adapter_reasoner",
     "hybrid_rules_candidates_llm_adjudicator",
 ]
 TEMPORAL_SELECTION_RULES = temporal_selection.TEMPORAL_SELECTION_RULES
@@ -72,6 +74,7 @@ PROMPT_MODULES = (
     "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_claim_table_selector",
     "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_direct_labeler",
     "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_structured_events",
+    "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_typed_adapter_reasoner",
     "clinical_extraction.tasks.seizure_frequency.gan2026.hybrid.hybrid_rules_candidates_llm_adjudicator",
 )
 
@@ -226,19 +229,39 @@ def create_app(
         limit: int | None = Query(default=None, ge=1),
     ) -> dict[str, Any]:
         entry = _registry_entry(settings, run_id)
-        selected_path = _select_artifact_path(
-            entry.to_json_record()["artifact_paths"],
+        record = entry.to_json_record()
+        selected_paths = _select_artifact_paths(
+            settings.repo_root,
+            record["artifact_paths"],
+            record.get("split"),
             artifact_path,
         )
-        resolved = _safe_repo_path(settings.repo_root, selected_path)
-        if not resolved.exists():
-            raise HTTPException(status_code=404, detail=f"Artifact not found: {selected_path}")
-        content = _load_artifact_content(resolved, limit=limit)
+        if not selected_paths:
+            return {
+                "run_id": run_id,
+                "artifact_paths": [],
+                "artifact_type": "none",
+                "content": [],
+                "note": "No JSONL artifacts available for this run",
+            }
+        all_content: list[Any] = []
+        for selected_path in selected_paths:
+            resolved = _safe_repo_path(settings.repo_root, selected_path)
+            if not resolved.exists():
+                continue
+            content = _load_artifact_content(resolved, limit=limit)
+            if isinstance(content, list):
+                all_content.extend(content)
+            else:
+                all_content.append(content)
+        # Re-apply limit after merging
+        if limit is not None:
+            all_content = all_content[:limit]
         return {
             "run_id": run_id,
-            "artifact_path": selected_path,
-            "artifact_type": resolved.suffix.lstrip(".") or "text",
-            "content": content,
+            "artifact_paths": selected_paths,
+            "artifact_type": "jsonl",
+            "content": all_content,
         }
 
     @app.get("/registry")
@@ -414,18 +437,37 @@ def _registry_entry(settings: ObservatorySettings, run_id: str) -> Any:
     raise HTTPException(status_code=404, detail=f"Unknown run_id: {run_id}")
 
 
-def _select_artifact_path(paths: Sequence[str], requested: str | None) -> str:
+def _select_artifact_paths(
+    repo_root: Path,
+    paths: Sequence[str],
+    split: str | None,
+    requested: str | None,
+) -> list[str]:
     if requested is not None:
         if requested not in paths:
             raise HTTPException(
                 status_code=404,
                 detail=f"Run does not reference artifact: {requested}",
             )
-        return requested
-    for path in paths:
-        if Path(path).suffix in {".jsonl", ".json"}:
-            return path
-    return paths[0]
+        return [requested]
+
+    jsonl_paths = [p for p in paths if Path(p).suffix == ".jsonl"]
+    if not jsonl_paths:
+        return []
+
+    # For validation+test splits, load all JSONL artifacts (they cover different splits)
+    if split and "+" in split and "test" in split:
+        return jsonl_paths
+
+    # Otherwise pick the largest JSONL by file size (handles multiple sizes of same split)
+    def _file_size(path: str) -> int:
+        try:
+            return os.path.getsize(_safe_repo_path(repo_root, path))
+        except Exception:
+            return 0
+
+    largest = max(jsonl_paths, key=_file_size)
+    return [largest]
 
 
 def _load_artifact_content(path: Path, *, limit: int | None) -> Any:

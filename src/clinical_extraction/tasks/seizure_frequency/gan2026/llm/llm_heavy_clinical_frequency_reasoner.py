@@ -41,7 +41,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label_with_evidence,
 )
 
-PROMPT_VERSION = "gan2026_llm_heavy_clinical_frequency_reasoner_v2"
+PROMPT_VERSION = "gan2026_llm_heavy_clinical_frequency_reasoner_v2_compact"
 PIPELINE_FAMILY = "llm_heavy_clinical_frequency_reasoner"
 SCORE_LAYER_NAMES = (
     "raw_llm",
@@ -51,10 +51,10 @@ SCORE_LAYER_NAMES = (
     "oracle_format_upper_bound",
 )
 DEFAULT_JSONL_PATH = Path(
-    "experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation25_gpt41mini_v2_2026-06-02.jsonl"
+    "experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation25_gpt41mini_v2_compact_2026-06-02.jsonl"
 )
 DEFAULT_REPORT_PATH = Path(
-    "experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation25_gpt41mini_v2_2026-06-02.md"
+    "experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation25_gpt41mini_v2_compact_2026-06-02.md"
 )
 
 
@@ -137,7 +137,7 @@ class LlmHeavyFinalAnswerRecord(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    raw_clinical_summary: str
+    raw_clinical_summary: str = ""
     raw_llm_final_label: str
     raw_llm_final_kind: Literal[
         "frequency",
@@ -153,7 +153,7 @@ class LlmHeavyFinalAnswerRecord(BaseModel):
     combined_rationale: str = ""
     rendering_operands: ClinicalQuantity | None = None
     arithmetic_trace: str = ""
-    final_rationale: str
+    final_rationale: str = ""
 
 
 class LlmHeavyExtractionRecord(BaseModel):
@@ -203,7 +203,8 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
             ),
             (
                 "Stage 1: extract all clinically relevant seizure-frequency events as "
-                "source-near records."
+                "source-near records. Omit administrative, medication, plan, and "
+                "no-reference events unless they are necessary for the final answer."
             ),
             (
                 "Stage 2: select the event or combination that determines the final clinical "
@@ -227,9 +228,8 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "value; do not concatenate, paraphrase, or merge evidence strings."
             ),
             (
-                "Put prose, semiology, clustering context, seizure-free distractors, and "
-                "clinical caveats in raw_clinical_summary, combined_rationale, or "
-                "final_rationale, not in raw_llm_final_label."
+                "Keep the output compact: no long rationales, no duplicate administrative "
+                "events, and no event whose evidence cannot be copied exactly from the note."
             ),
             (
                 "Render raw_llm_final_label as a parser-ready Gan label: use forms like "
@@ -242,6 +242,10 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "or seizure-free duration operands that justify raw_llm_final_label, and fill "
                 "final_answer.arithmetic_trace with a short source-near calculation such as "
                 "'two per month -> 2 per month' or '2 events over 16 months -> 1 per 8 month'."
+            ),
+            (
+                "Always include final_answer.selected_event_ids. It must exactly equal "
+                "selection.selected_event_ids, even when only one event is selected."
             ),
             (
                 "Do not rely on downstream deterministic selected-evidence arithmetic to fix "
@@ -260,6 +264,12 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
             (
                 "Do not let raw_llm_final_label hide cluster cadence, per-cluster burden, "
                 "seizure-free duration, or unresolved ambiguity."
+            ),
+            (
+                "Cluster cadence is not events-per-cluster. If selected evidence says events "
+                "cluster every N days, render one cluster occurrence per interval, such as "
+                "1 per 7 to 9 day, unless the same selected evidence states the number of "
+                "events within each cluster."
             ),
             (
                 "Return exactly one JSON object with top-level keys events, selection, and "
@@ -299,7 +309,7 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "seizure_free_duration_unit": ["day", "week", "month", "year", None],
             },
             "model_normalized_clinical_label": "model-owned clinical label, or null",
-            "notes": "brief explanation",
+            "notes": "short note, or empty string",
         },
         "selection_schema": {
             "selected_event_ids": "list of selected event ids",
@@ -325,10 +335,6 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
             "uncertainty_flags": "list of short uncertainty flags",
         },
         "final_answer_schema": {
-            "raw_clinical_summary": (
-                "source-near prose summary of the selected clinical interpretation; prose "
-                "and caveats belong here, not in raw_llm_final_label"
-            ),
             "raw_llm_final_label": (
                 "parser-ready model-rendered Gan-compatible label, unknown, or "
                 "no seizure frequency reference; no prose, inequality symbols, semiology, "
@@ -346,14 +352,8 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "exact copy of one selected event evidence value supporting the final answer; "
                 "if multiple events are selected, choose the prediction-bearing event here"
             ),
-            "selected_event_ids": "copy the selected event ids used for this answer",
-            "supporting_event_ids": (
-                "additional selected event ids that support context but whose evidence is "
-                "not copied into selected_evidence"
-            ),
-            "combined_rationale": (
-                "brief explanation of how multiple selected events interact; use an empty "
-                "string when one event directly determines the answer"
+            "selected_event_ids": (
+                "required; exact copy of selection.selected_event_ids; never omit"
             ),
             "rendering_operands": (
                 "same shape as clinical_quantity; the final-answer operands the model used "
@@ -363,7 +363,8 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "brief source-near arithmetic/rendering trace linking selected_evidence to "
                 "raw_llm_final_label"
             ),
-            "final_rationale": "brief scoring-facing rationale",
+            "raw_clinical_summary": "optional short source-near summary; use empty string",
+            "final_rationale": "optional short rationale; use empty string",
         },
         "score_layers_to_report": list(SCORE_LAYER_NAMES),
         "note_text": record.note_text,
@@ -618,7 +619,7 @@ def write_report(
     path.parent.mkdir(parents=True, exist_ok=True)
     summary = metadata.get("summary") or summarize_records(rows)
     outcome = str(summary.get("decision_0006_outcome", "revise"))
-    prompt_label = PROMPT_VERSION.rsplit("_", 1)[-1].upper()
+    prompt_label = _prompt_display_label()
     lines = [
         f"# Gan 2026 LLM-Heavy Clinical Frequency Reasoner {prompt_label}",
         "",
@@ -1058,6 +1059,12 @@ def _interpretation_text(outcome: str) -> str:
         "Revise before validation50 unless row review shows that all raw misses are "
         "predeclared benchmark-format conventions rather than arithmetic/rendering failures."
     )
+
+
+def _prompt_display_label() -> str:
+    prefix = "gan2026_llm_heavy_clinical_frequency_reasoner_"
+    label = PROMPT_VERSION.removeprefix(prefix)
+    return label.upper().replace("_", " ")
 
 
 def _layer_summary(rows: Sequence[Mapping[str, Any]], layer: str) -> dict[str, Any]:

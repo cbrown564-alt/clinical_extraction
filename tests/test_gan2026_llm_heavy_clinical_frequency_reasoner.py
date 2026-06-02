@@ -129,12 +129,16 @@ def test_build_prompt_input_excludes_gold_and_deterministic_candidates() -> None
     assert "deterministic_final_selection" not in prompt
     final_answer_schema = prompt["final_answer_schema"]
     assert "raw_clinical_summary" in final_answer_schema
-    assert "supporting_event_ids" in final_answer_schema
-    assert "combined_rationale" in final_answer_schema
     assert "rendering_operands" in final_answer_schema
     assert "arithmetic_trace" in final_answer_schema
+    assert "selected_event_ids" in final_answer_schema
     assert "parser-ready" in final_answer_schema["raw_llm_final_label"]
     assert "downstream deterministic selected-evidence arithmetic" in json.dumps(prompt)
+    assert "Always include final_answer.selected_event_ids" in json.dumps(prompt)
+    assert "Omit administrative, medication, plan, and no-reference events" in json.dumps(
+        prompt
+    )
+    assert "Cluster cadence is not events-per-cluster" in json.dumps(prompt)
     assert "exact copy of one selected event evidence value" in final_answer_schema[
         "selected_evidence"
     ]
@@ -166,6 +170,36 @@ def test_parse_llm_heavy_reasoner_json_flags_selected_event_trace_mismatch() -> 
 
     assert extraction is not None
     assert "selected_event_trace: final_answer ids differ from selection ids" in errors
+
+
+def test_parse_llm_heavy_reasoner_json_accepts_compact_final_answer() -> None:
+    payload = json.loads(_raw_reasoner("2 per month"))
+    payload["final_answer"] = {
+        "raw_llm_final_label": "2 per month",
+        "raw_llm_final_kind": "frequency",
+        "raw_llm_monthly_frequency": 2.0,
+        "selected_evidence": "two focal seizures per month",
+        "selected_event_ids": ["sf-1"],
+        "rendering_operands": {
+            "occurrences_low": 2,
+            "occurrences_high": 2,
+            "period_low": 1,
+            "period_high": 1,
+            "period_unit": "month",
+        },
+        "arithmetic_trace": "two focal seizures per month -> 2 per month",
+    }
+
+    extraction, errors = parse_llm_heavy_reasoner_json(
+        json.dumps(payload),
+        note_text=_record().note_text,
+    )
+
+    assert extraction is not None
+    assert extraction.final_answer.selected_event_ids == ["sf-1"]
+    assert extraction.final_answer.raw_clinical_summary == ""
+    assert extraction.final_answer.final_rationale == ""
+    assert errors == []
 
 
 def test_parse_llm_heavy_reasoner_json_flags_concatenated_selected_evidence() -> None:
@@ -311,6 +345,6 @@ def test_load_reusable_raw_outputs_and_write_report(tmp_path: Path) -> None:
 
     assert summary["selected_evidence_valid"] == 1
     report = report_path.read_text(encoding="utf-8")
-    assert "LLM-Heavy Clinical Frequency Reasoner V2" in report
+    assert "LLM-Heavy Clinical Frequency Reasoner V2 COMPACT" in report
     assert "Decision 0006 outcome" in report
     assert "`format_only`" in report
