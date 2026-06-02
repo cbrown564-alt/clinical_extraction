@@ -10,8 +10,10 @@ from __future__ import annotations
 
 import argparse
 import json
+import time
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Literal, Protocol
 
@@ -193,6 +195,8 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
     split_manifest = str(manifest.get("manifest_version", "gan2026_split_v1"))
     progress_every = args.progress_every if args.progress_every > 0 else None
 
+    run_started_at = datetime.now(UTC)
+    run_started_monotonic = time.perf_counter()
     rows, metadata = spec.run_split(
         records,
         split=args.split,
@@ -207,6 +211,12 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
         progress_every=progress_every,
         checkpoint_jsonl_path=args.jsonl,
         checkpoint_report_path=args.markdown,
+    )
+    _attach_run_timing(
+        metadata,
+        started_at=run_started_at,
+        elapsed_seconds=time.perf_counter() - run_started_monotonic,
+        row_count=len(rows),
     )
     spec.write_jsonl(rows, args.jsonl)
     spec.write_report(rows, metadata, args.markdown, jsonl_path=args.jsonl)
@@ -224,6 +234,25 @@ def _validate_validation_ladder(
             "validation runs above 250 rows require --escalation-reason; "
             "use --limit 25, --limit 50, or --limit 250 for routine ladder runs"
         )
+
+
+def _attach_run_timing(
+    metadata: dict[str, Any],
+    *,
+    started_at: datetime,
+    elapsed_seconds: float,
+    row_count: int,
+) -> None:
+    """Attach wall-clock timing captured by the shared CLI harness."""
+
+    finished_at = datetime.now(UTC)
+    elapsed = round(elapsed_seconds, 3)
+    metadata["run_started_at_utc"] = started_at.isoformat()
+    metadata["run_finished_at_utc"] = finished_at.isoformat()
+    metadata["elapsed_seconds"] = elapsed
+    metadata["elapsed_minutes"] = round(elapsed / 60, 3)
+    metadata["rows_per_second"] = round(row_count / elapsed_seconds, 6) if elapsed_seconds else None
+    metadata["seconds_per_row"] = round(elapsed_seconds / row_count, 3) if row_count else None
 
 
 def main(argv: Sequence[str] | None = None) -> None:

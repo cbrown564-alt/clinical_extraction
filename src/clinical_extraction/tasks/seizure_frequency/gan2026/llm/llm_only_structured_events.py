@@ -19,6 +19,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser i
     label_to_frequency_record,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.schema_repair import (
+    parse_json_payload_with_schema_repair,
     repair_structured_extraction_payload,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
@@ -432,10 +433,12 @@ def parse_structured_json(
     repair_config: StructuredRepairConfig | None = None,
 ) -> tuple[StructuredExtractionRecord | None, list[NormalizedEventRecord], list[str]]:
     repair_config = repair_config or StructuredRepairConfig()
-    errors: list[str] = []
     try:
+        raw_payload, errors = parse_json_payload_with_schema_repair(
+            _extract_json_object(raw_output)
+        )
         payload = _filter_structured_payload(
-            repair_structured_extraction_payload(json.loads(_extract_json_object(raw_output)))
+            repair_structured_extraction_payload(raw_payload)
         )
     except json.JSONDecodeError as exc:
         return None, [], [f"invalid_json: {exc.msg}"]
@@ -689,6 +692,7 @@ def summarize_records(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     call_failures = sum(bool(row.get("call_error")) for row in rows)
     reused_raw_outputs = sum(bool(row.get("reused_raw_output")) for row in rows)
     parse_failures = sum(_has_blocking_parse_issue(row.get("parse_errors")) for row in rows)
+    json_dialect_repairs = sum(_has_json_dialect_repair(row.get("parse_errors")) for row in rows)
     repair_notes = sum(_has_repair_note(row.get("parse_errors")) for row in rows)
     purist_correct = sum(bool((row.get("comparison") or {}).get("purist_correct")) for row in rows)
     pragmatic_correct = sum(
@@ -708,6 +712,7 @@ def summarize_records(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         "call_failures": call_failures,
         "reused_raw_outputs": reused_raw_outputs,
         "parse_or_validation_failures": parse_failures,
+        "json_dialect_repairs": json_dialect_repairs,
         "repair_notes": repair_notes,
         "evidence_valid": evidence_valid,
         "purist_correct": purist_correct,
@@ -873,6 +878,10 @@ def _has_blocking_parse_issue(errors: Any) -> bool:
 
 def _has_repair_note(errors: Any) -> bool:
     return any(str(error).startswith("final_label_repaired:") for error in errors or [])
+
+
+def _has_json_dialect_repair(errors: Any) -> bool:
+    return any(str(error).startswith("json_dialect_repaired:") for error in errors or [])
 
 
 def _extract_json_object(raw_output: str) -> str:
