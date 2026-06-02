@@ -46,11 +46,20 @@ projection, invariance, and arbitration ablations.
 - Clean scorer-facing normalization is frozen unless direct-citation review justifies another family. Shared schema repair is alias-only; parser defaults belong to their task parser.
 - Named repair-mode metadata is now shared beyond structured-events: claim-table score layers, hybrid adjudicator score layers, repair ablations, and component-ablation rows expose stable attribution metadata for raw, strict, clean, selected-evidence, deterministic, and hybrid gated modes.
 - Package ownership boundaries are now stable under `contract/`, `deterministic/`, `selected_evidence/`, `llm/`, `hybrid/`, `reports/`, `experiments/`, and `cli/`. Phase 6 run-registry scaffolding is active: `experiments/registry.jsonl` is canonical and `experiments/RUN_INDEX.md` is the human scan surface.
+- The first saved-output LLM-replacement ablation replay is complete on the
+  LLM-heavy v1 validation250 artifact. Raw and format-only Purist stayed
+  188/250, selected-evidence arithmetic rose to 219/250 with 32 raw-wrong to
+  correct changes and one raw-correct regression, and benchmark alignment rose
+  to 204/250 with 16 raw-wrong to correct changes. This confirms
+  selected-evidence arithmetic as the main deterministic replacement target
+  before any v2 prompt work, while decision 0005 records that arbitrary
+  benchmark conventions may remain better as named deterministic adapters than
+  overloaded prompt instructions.
 
 ## Key References
 
 - Protocol/control: `docs/design/gan2026_split_protocol.md`, `docs/design/data_contract.md`, `docs/research/contribution_thesis.md`
-- Package organization: `docs/decisions/0004-gan2026-package-organization.md`
+- Package/attribution decisions: `docs/decisions/0004-gan2026-package-organization.md`, `docs/decisions/0005-benchmark-format-rules-vs-llm-clinical-reasoning.md`
 - Run registry: `experiments/registry.jsonl`, `experiments/RUN_INDEX.md`
 - Generalization gap: `experiments/gan2026_generalization_gap_research_report_2026-06-02.md`
 - State-graph protocol and row review: `experiments/gan2026_clinical_frequency_state_graph_protocol_2026-06-02.md`, `experiments/gan2026_clinical_frequency_state_graph_row_family_review_2026-06-02.md`
@@ -59,7 +68,8 @@ projection, invariance, and arbitration ablations.
 - Graph-gated duration selection: `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_graph_gated_v2_2026-06-02.md`
 - Next-task review: `experiments/gan2026_next_task_review_month_bucket_gate_and_llm_heavy_v1_2026-06-02.md`
 - LLM-heavy alternative: `experiments/gan2026_llm_heavy_extraction_protocol_2026-06-02.md`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_v0_validation25_error_analysis_2026-06-02.md`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation250_gpt41mini_v1_2026-06-02.md`
-- LLM-replacement ablations: `experiments/gan2026_llm_replacement_postprocessing_ablation_design_2026-06-02.md`
+- LLM-replacement ablations: `experiments/gan2026_llm_replacement_postprocessing_ablation_design_2026-06-02.md`, `experiments/gan2026_llm_replacement_postprocessing_ablation_interpretation_2026-06-02.md`
+- Saved-output replacement replay: `experiments/gan2026_llm_replacement_postprocessing_ablation_validation250_v0_2026-06-02.md`
 - Full retrospective: `docs/research/gan2026_full_research_retrospective_2026-06-02.md`
 - Retrospective HTML/PDF: `docs/research/gan2026_full_research_retrospective_2026-06-02.html`, `docs/research/gan2026_full_research_retrospective_2026-06-02.pdf`
 - Prior LLM/hybrid comparators: `experiments/gan2026_section_claim_table_validation750_v4_interpretation_2026-06-01.md`, `experiments/gan2026_arch2_validation750_v01_interpretation_2026-06-01.md`, `experiments/gan2026_hybrid_adjudicator_v02_selective_action_report_2026-06-01.md`
@@ -76,15 +86,14 @@ projection, invariance, and arbitration ablations.
 
 ### Now
 
-- Implement the saved-output LLM-replacement ablation runner for deterministic
-  post-processing layers, starting with no-call validation artifacts and the
-  predeclared reporting schema.
+- Decide the validation25 LLM-owned replacement experiment for
+  selected-evidence arithmetic/rendering, using the saved-output ablation as the
+  pre-v2 gate.
 
 ### Next
 
-- Run the replacement-ablation replay before any
-  `llm_heavy_clinical_frequency_reasoner_v2` prompt work; use validation25 only
-  if the no-call replay identifies a specific LLM-owned replacement target.
+- Record the validation25 stop rule and inspection policy for the selected
+  replacement target before touching `llm_heavy_clinical_frequency_reasoner_v2`.
 - Keep claim-table v5 and v0.2 schema/gate ablations available as comparators, but do not promote them ahead of the state-graph coverage cycle.
 - Redesign `llm_heavy_clinical_frequency_reasoner_v2` only after the graph-gate
   and replacement-ablation plans are recorded; start any v2 at validation25.
@@ -96,6 +105,21 @@ projection, invariance, and arbitration ablations.
 
 ### Done Recently
 
+- 2026-06-02: Added decision 0005 on benchmark-format rules versus LLM clinical
+  reasoning. The note records that conventions such as bimonthly mapping and
+  exact cluster rendering are often arbitrary gold-label choices rather than
+  clinically important failures, and that teaching the model these conventions
+  must be ablated for instruction overload and simple-row regressions before
+  replacing explicit deterministic adapters.
+- 2026-06-02: Implemented `llm_replacement_postprocessing_ablation` and ran the
+  first no-call replay against the saved LLM-heavy v1 validation250 artifact.
+  The runner emitted JSONL, JSON, Markdown, and registry/index metadata. The
+  replay keeps raw/format-only Purist at 188/250, selected-evidence arithmetic
+  at 219/250, benchmark alignment/full-stack at 204/250, selected evidence exact
+  at 230/250, and trace mismatches at 9/250. It identifies
+  selected-evidence arithmetic/rendering as the next LLM-owned replacement
+  target and records a short interpretation note for v2 planning; no scorer,
+  prompt, production policy, or holdout behavior changed.
 - 2026-06-02: Recorded the LLM-replacement post-processing ablation design. The
   plan predeclares replacement targets for format/schema repair,
   selected-evidence arithmetic, benchmark alignment, state-graph node sources,
@@ -145,6 +169,6 @@ projection, invariance, and arbitration ablations.
 
 ## Immediate Next Step
 
-Implement the saved-output replacement-ablation runner for deterministic
-post-processing layers, then run the first no-call validation replay before any
-LLM-heavy v2 prompt work.
+Write the validation25 selected-evidence arithmetic/rendering replacement
+decision and stop rule, then only proceed to `llm_heavy_clinical_frequency_reasoner_v2`
+if that decision supports a live LLM-owned replacement smoke.

@@ -52,6 +52,18 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Claim language: Diagnostic validation-cycle broad-regression replay. Gated v1 preserves 18/18 enriched duration corrections, adds hidden-family regression accounting, and leaves four wrong-to-wrong regression changes concentrated in cluster/diary plus temporal-conflict rows, including one unknown-boundary row; no production policy is promoted.
 - Artifacts: `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_broad_regression_v1_2026-06-02.jsonl`, `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_broad_regression_v1_2026-06-02.json`, `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_broad_regression_v1_2026-06-02.md`.
 
+### `gan2026_llm_replacement_postprocessing_ablation_validation250_2026-06-02`
+- Date/split: `2026-06-02`; `validation`; `250` rows.
+- Pipeline: `llm_replacement_postprocessing_ablation`; mode `saved-output no-call post-processing replacement ablation`; replay `saved_output_replay`.
+- Model role: analysis-only deterministic post-processing replacement replay; model `none; saved outputs only`.
+- Repair mode/config: `raw_llm + format_only + selected_evidence_arithmetic + benchmark_aligned`.
+- Primary metrics: benchmark_aligned_adapter_purist_correct=204, condition_rows=1250, format_only_repair_purist_correct=188, full_stack_purist_correct=204, raw_model_selected_label_purist_correct=188, reused_raw_output_rows=50, row_count=250, selected_evidence_arithmetic_only_purist_correct=219.
+- Evidence validity: Reports selected-evidence exactness, event/node evidence validity, and selected-event trace mismatches for each replacement condition.
+- Cache/reuse source: experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation250_gpt41mini_v1_2026-06-02.jsonl.
+- Supersedes: `gan2026_llm_replacement_postprocessing_ablation_design_2026-06-02`.
+- Claim language: Diagnostic saved-output replay only. No hosted calls, prompt changes, scorer changes, production projection policy changes, or holdout behavior changes are made.
+- Artifacts: `experiments/gan2026_llm_replacement_postprocessing_ablation_validation250_v0_2026-06-02.jsonl`, `experiments/gan2026_llm_replacement_postprocessing_ablation_validation250_v0_2026-06-02.json`, `experiments/gan2026_llm_replacement_postprocessing_ablation_validation250_v0_2026-06-02.md`.
+
 ### `gan2026_llm_replacement_postprocessing_ablation_design_2026-06-02`
 - Date/split: `2026-06-02`; `validation_hard_slices_planned`; `250` rows.
 - Pipeline: `llm_replacement_postprocessing_ablation`; mode `LLM-replacement deterministic post-processing ablation design`; replay `analysis_only`.
