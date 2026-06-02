@@ -49,3 +49,17 @@ export function fetchPipelineFamilies() {
     "/pipeline-families"
   );
 }
+
+export function fetchRegistry() {
+  return fetchJson<import("./types").RegistryResponse>("/registry");
+}
+
+export function fetchArtifact(runId: string, artifactPath?: string, limit?: number) {
+  const params = new URLSearchParams();
+  if (artifactPath) params.set("artifact_path", artifactPath);
+  if (limit !== undefined) params.set("limit", String(limit));
+  const query = params.toString();
+  return fetchJson<import("./types").ArtifactResponse>(
+    `/artifacts/${runId}${query ? "?" + query : ""}`
+  );
+}
