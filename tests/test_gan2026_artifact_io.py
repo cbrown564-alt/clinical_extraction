@@ -3,9 +3,11 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis.replay_io import (
+    load_raw_outputs_by_source_index,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     load_jsonl_rows,
-    load_raw_outputs_by_source_index,
     write_jsonl_rows,
 )
 

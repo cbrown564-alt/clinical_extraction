@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis import (
     claim_table_component_ablation,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_claim_table_selector import (

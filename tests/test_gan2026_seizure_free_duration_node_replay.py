@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis import (
+    seizure_free_duration_node_replay,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     label_to_frequency_record,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments import (
-    seizure_free_duration_node_replay,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.state_graph import (
     ClinicalFrequencyStateGraph,
     EvidenceSpan,
