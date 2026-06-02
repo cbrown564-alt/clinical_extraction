@@ -354,6 +354,41 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Reject
 
+### `gan2026_llm_structured_v05_full_validation_2026-06-01`
+- Date/split: `2026-06-01`; `validation`; `750` rows.
+- Pipeline: `llm_structured_events`; mode `live/cache-first structured v0.5 full-validation completion`; replay `cache_first`.
+- Model role: LLM-first structured event extractor and clinical selector; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `v0.5 structured-event selector plus large deterministic post-LLM repair stack`.
+- Primary metrics: call_failures=0, deterministic_repair_notes=481, exact_selection_evidence_substrings=714, parse_schema_label_issues=0, pragmatic_correct=690, purist_correct=675, row_count=750, structured_records=750.
+- Evidence validity: Exact selection evidence substrings 714/750; evidence exactness does not establish final repaired-label attribution.
+- Cache/reuse source: Reused 720 raw model outputs from the validation ladder; live calls only for rows 721-750.
+- Supersedes: `gan2026_llm_first_direct_extractor_validation750_2026-06-01`.
+- Claim language: Reached 675/750 Purist on validation, but retrospective/audit reject it as a clean LLM-first result because deterministic semantic repair became prediction-bearing.
+- Artifacts: `experiments/gan2026_llm_structured_validation750_gpt41mini_v05_completion5_2026-06-01.jsonl`, `experiments/gan2026_llm_structured_validation750_gpt41mini_v05_completion5_2026-06-01.md`, `experiments/gan2026_llm_structured_decision_retrospective_2026-06-01.md`.
+
+### `gan2026_llm_first_direct_extractor_validation750_2026-06-01`
+- Date/split: `2026-06-01`; `validation`; `750` rows.
+- Pipeline: `llm_first_direct_extractor`; mode `live direct extraction validation ladder through rare full validation`; replay `cache_first`.
+- Model role: LLM-first note-to-label extractor; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `deterministic code limited to label repair, evidence validation, and scoring`.
+- Primary metrics: decision_records=709, exact_evidence_substrings=670, parse_schema_label_issues=41, pragmatic_correct=544, purist_correct=505, row_count=750.
+- Evidence validity: Exact evidence substrings 670/750; 41 parse/schema/label issues.
+- Cache/reuse source: DSPy cache; full validation reused 610 raw model outputs.
+- Claim language: Validation development result only. Full validation reached 505/750 Purist, rejecting direct note-to-label extraction as the active LLM-first path.
+- Artifacts: `experiments/gan2026_llm_first_validation25_gpt41mini_2026-05-31.jsonl`, `experiments/gan2026_llm_first_validation25_gpt41mini_2026-05-31.md`, `experiments/gan2026_llm_first_validation25_gpt41mini_v02_2026-05-31.jsonl`, `experiments/gan2026_llm_first_validation25_gpt41mini_v02_2026-05-31.md`, `experiments/gan2026_llm_first_validation250_gpt41mini_v01_2026-05-31.jsonl`, `experiments/gan2026_llm_first_validation250_gpt41mini_v01_2026-05-31.md`, `experiments/gan2026_llm_first_validation750_gpt41mini_v01_2026-06-01.jsonl`, `experiments/gan2026_llm_first_validation750_gpt41mini_v01_2026-06-01.md`.
+
+### `gan2026_claim_table_v5_validation250_test450_generalization_audit_2026-06-01`
+- Date/split: `2026-06-01`; `validation+test`; `700` rows.
+- Pipeline: `llm_only_claim_table_selector`; mode `v5 max-token validation250 followed by frozen locked-test generalization audit`; replay `cache_first`.
+- Model role: LLM-only direct-labeler claim extractor and final query selector; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `strict_schema_repair + frozen clean scorer-facing policy; no deterministic candidates before prediction`.
+- Primary metrics: test_clean_pragmatic_correct=320, test_clean_purist_correct=301, test_exact_selected_final_evidence=418, test_parse_failures=5, test_raw_purist_correct=293, test_row_count=450, test_strict_purist_correct=294, test_structured_records=445.
+- Evidence validity: Locked-test audit reports 1145/1188 exact claim evidence substrings and 418/450 exact selected-final evidence substrings; do not tune from test rows.
+- Cache/reuse source: DSPy cache enabled; test450 resumed from 150 saved raw outputs.
+- Supersedes: `gan2026_claim_table_v4_validation750_2026-06-01`.
+- Claim language: Frozen generalization audit for claim-table v5. Test clean Purist was 301/450, so the path remains a comparator/failure-analysis artifact, not an active promoted candidate.
+- Artifacts: `experiments/gan2026_llm_only_claim_table_selector_validation250_gpt41mini_v5_max2400_2026-06-01.jsonl`, `experiments/gan2026_llm_only_claim_table_selector_validation250_gpt41mini_v5_max2400_2026-06-01.md`, `experiments/gan2026_llm_only_claim_table_selector_validation250_v5_max2400_component_ablation_2026-06-01.json`, `experiments/gan2026_llm_only_claim_table_selector_validation250_v5_max2400_component_ablation_2026-06-01.md`, `experiments/gan2026_llm_only_claim_table_selector_test450_gpt41mini_v5_max2400_2026-06-01.jsonl`, `experiments/gan2026_llm_only_claim_table_selector_test450_gpt41mini_v5_max2400_2026-06-01.md`.
+
 ### `gan2026_claim_table_v4_validation750_2026-06-01`
 - Date/split: `2026-06-01`; `validation`; `750` rows.
 - Pipeline: `llm_only_claim_table_selector`; mode `prompt-only`; replay `cache_first`.
@@ -392,6 +427,18 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Claim language: Frozen comparator-only generalization audit. Do not tune v0.2 gates, prompts, candidate generation, or repair policy from locked-test behavior; use the state-graph validation cycle for new development.
 - Artifacts: `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation750_gpt41mini_v02_cluster_diary_candidate_recall_live_2026-06-02.jsonl`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation750_gpt41mini_v02_cluster_diary_candidate_recall_live_2026-06-02.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_test450_gpt41mini_v02_cluster_diary_candidate_recall_live_2026-06-02.jsonl`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_test450_gpt41mini_v02_cluster_diary_candidate_recall_live_2026-06-02.md`, `experiments/gan2026_generalization_gap_research_report_2026-06-02.md`.
 
+### `gan2026_llm_structured_v05_attribution_repair_ladder650_2026-06-01`
+- Date/split: `2026-06-01`; `validation`; `650` rows.
+- Pipeline: `llm_structured_events`; mode `saved-output repair-family attribution ladder over structured v0.5 outputs`; replay `saved_output_replay`.
+- Model role: analysis-only attribution and deterministic repair-family replay; model `none; saved openai/gpt-4.1-mini outputs only`.
+- Repair mode/config: `raw_model_selection + strict_format + frozen_clean_policy + named deterministic semantic repair families`.
+- Primary metrics: clean_policy_purist_correct=438, full_stack_pragmatic_correct=598, full_stack_purist_correct=588, raw_purist_correct=394, row_count=650, selected_evidence_repair_purist_correct=546, strict_format_purist_correct=413.
+- Evidence validity: Saved-output replay keeps exact selection evidence at 619/650 from the audited source; repair-family attribution separates evidence validity from final-label ownership.
+- Cache/reuse source: Saved raw output source: experiments/gan2026_llm_structured_validation750_gpt41mini_v05_completion_2026-06-01.jsonl.
+- Supersedes: `gan2026_llm_structured_v05_full_validation_2026-06-01`.
+- Claim language: Backfilled attribution ladder. Clean attribution ends at 438/650 Purist under frozen clean policy; full 588/650 stack is hybrid deterministic post-processing, not clean LLM-first success.
+- Artifacts: `experiments/gan2026_llm_structured_validation750_v05_repair_audit_2026-06-01.md`, `experiments/gan2026_llm_structured_validation750_v05_repair_ablation_2026-06-01.json`, `experiments/gan2026_llm_structured_validation750_v05_repair_ablation_2026-06-01.md`, `experiments/gan2026_llm_structured_validation750_v05_basic_split_repair_ablation_2026-06-01.json`, `experiments/gan2026_llm_structured_validation750_v05_basic_split_repair_ablation_2026-06-01.md`, `experiments/gan2026_llm_structured_validation750_v05_strict_format_regression_audit_2026-06-01.json`, `experiments/gan2026_llm_structured_validation750_v05_strict_format_regression_audit_2026-06-01.csv`, `experiments/gan2026_llm_structured_validation750_v05_strict_format_regression_audit_2026-06-01.md`, `experiments/gan2026_clean_policy_freeze_ladder650_v0_2026-06-01.json`, `experiments/gan2026_clean_policy_freeze_ladder650_v0_2026-06-01.md`, `experiments/gan2026_grouped_attribution_repair_ladder650_v0_2026-06-01.json`, `experiments/gan2026_grouped_attribution_repair_ladder650_v0_2026-06-01.md`, `experiments/gan2026_combined_attribution_repair_ladder650_v0_2026-06-01.json`, `experiments/gan2026_combined_attribution_repair_ladder650_v0_2026-06-01.md`.
+
 ### `gan2026_hybrid_adjudicator_v02_validation50_live_2026-06-01`
 - Date/split: `2026-06-01`; `validation`; `50` rows.
 - Pipeline: `hybrid_rules_candidates_llm_adjudicator`; mode `live rules candidates then conservative LLM adjudicator`; replay `live`.
@@ -403,6 +450,17 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Claim language: Validation50 is output-contract clean but the prefix is saturated; 2 deterministic-correct Purist regressions are a row-review note, not enough evidence for a revise decision. Escalate to 250 rows before tuning gates.
 - Artifacts: `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation50_gpt41mini_v02_live_2026-06-01.jsonl`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation50_gpt41mini_v02_live_2026-06-01.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation50_v02_live_component_ablation_2026-06-01.json`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation50_v02_live_component_ablation_2026-06-01.md`.
 
+### `gan2026_rules_only_v1_test_holdout_2026-05-31`
+- Date/split: `2026-05-31`; `test`; `450` rows.
+- Pipeline: `rules_only`; mode `locked-test holdout evaluation of frozen rules_only_v1`; replay `analysis_only`.
+- Model role: deterministic comparator; model `none`.
+- Repair mode/config: `deterministic_v1; no test-row tuning or row-level text inspection`.
+- Primary metrics: rows=450, test_pragmatic_f1=0.7867, test_purist_f1=0.76, validation_purist_f1_context=0.9293.
+- Evidence validity: Aggregate holdout report; no test row-level debugging allowed.
+- Supersedes: `gan2026_rules_only_v1_baseline_2026-05-31`.
+- Claim language: Final holdout result for frozen deterministic V1 only; useful as generalization context, not a benchmark-comparable paper claim or tuning surface.
+- Artifacts: `experiments/gan2026_v1_test_holdout_2026-05-31.md`.
+
 ### `gan2026_rules_only_v1_baseline_2026-05-31`
 - Date/split: `2026-05-31`; `validation+test`; `1200` rows.
 - Pipeline: `rules_only`; mode `rules_only_v1`; replay `analysis_only`.
@@ -412,3 +470,13 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: Report-level deterministic evidence summary.
 - Claim language: Frozen rules_only_v1 comparator; aggregate locked-test context is historical, not a tuning surface.
 - Artifacts: `experiments/gan2026_v1_deterministic_baseline_2026-05-31.md`.
+
+### `gan2026_dspy_adjudicator_devset_v04_2026-05-31`
+- Date/split: `2026-05-31`; `validation_devset`; `16` rows.
+- Pipeline: `dspy_final_selection_adjudicator`; mode `live validation-only dev-set adjudicator run`; replay `live`.
+- Model role: final-selection adjudicator over deterministic V1 diagnostics; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `frozen deterministic V1 diagnostics; no scorer or split-policy change`.
+- Primary metrics: call_failures=0, parse_failures=0, pragmatic_correct=12, purist_correct=9, row_count=16.
+- Evidence validity: Uses deterministic V1 candidate diagnostics from validation-mined dev set; no locked-test row failures inspected.
+- Claim language: Early validation-only DSPy adjudicator diagnostic. Kept as lineage for later hybrid adjudicator work; not a promoted candidate or benchmark result.
+- Artifacts: `experiments/gan2026_v1_prompt_adjudicator_devset_2026-05-31.jsonl`, `experiments/gan2026_v1_prompt_adjudicator_devset_2026-05-31.md`, `experiments/gan2026_v1_dspy_adjudicator_devset_gpt41mini_v04_2026-05-31.jsonl`, `experiments/gan2026_v1_dspy_adjudicator_devset_gpt41mini_v04_2026-05-31.md`.

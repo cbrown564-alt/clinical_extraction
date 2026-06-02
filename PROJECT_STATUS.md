@@ -55,11 +55,16 @@ projection, invariance, and arbitration ablations.
   before any v2 prompt work, while decision 0005 records that arbitrary
   benchmark conventions may remain better as named deterministic adapters than
   overloaded prompt instructions.
+- Decision 0006 now gates `llm_heavy_clinical_frequency_reasoner_v2` on a
+  validation25 LLM-owned selected-evidence arithmetic/rendering smoke. The smoke
+  must keep deterministic arithmetic as a side-car, require exact selected
+  evidence and zero trace mismatches, and reject escalation if the model still
+  needs deterministic semantic replacement to clear the target.
 
 ## Key References
 
 - Protocol/control: `docs/design/gan2026_split_protocol.md`, `docs/design/data_contract.md`, `docs/research/contribution_thesis.md`
-- Package/attribution decisions: `docs/decisions/0004-gan2026-package-organization.md`, `docs/decisions/0005-benchmark-format-rules-vs-llm-clinical-reasoning.md`
+- Package/attribution decisions: `docs/decisions/0004-gan2026-package-organization.md`, `docs/decisions/0005-benchmark-format-rules-vs-llm-clinical-reasoning.md`, `docs/decisions/0006-validation25-llm-owned-selected-evidence-rendering-smoke.md`
 - Run registry: `experiments/registry.jsonl`, `experiments/RUN_INDEX.md`
 - Generalization gap: `experiments/gan2026_generalization_gap_research_report_2026-06-02.md`
 - State-graph protocol and row review: `experiments/gan2026_clinical_frequency_state_graph_protocol_2026-06-02.md`, `experiments/gan2026_clinical_frequency_state_graph_row_family_review_2026-06-02.md`
@@ -86,14 +91,16 @@ projection, invariance, and arbitration ablations.
 
 ### Now
 
-- Decide the validation25 LLM-owned replacement experiment for
-  selected-evidence arithmetic/rendering, using the saved-output ablation as the
-  pre-v2 gate.
+- Implement and run the validation25
+  `llm_heavy_clinical_frequency_reasoner_v2` selected-evidence
+  arithmetic/rendering smoke under decision 0006, with deterministic arithmetic
+  reported only as a side-car.
 
 ### Next
 
-- Record the validation25 stop rule and inspection policy for the selected
-  replacement target before touching `llm_heavy_clinical_frequency_reasoner_v2`.
+- Escalate the v2 selected-evidence rendering smoke to validation50 only if it
+  passes the decision 0006 output-contract, evidence, trace, raw-score, and
+  deterministic-gap stop rules.
 - Keep claim-table v5 and v0.2 schema/gate ablations available as comparators, but do not promote them ahead of the state-graph coverage cycle.
 - Redesign `llm_heavy_clinical_frequency_reasoner_v2` only after the graph-gate
   and replacement-ablation plans are recorded; start any v2 at validation25.
@@ -105,6 +112,12 @@ projection, invariance, and arbitration ablations.
 
 ### Done Recently
 
+- 2026-06-02: Added decision 0006, which predeclares the validation25
+  LLM-owned selected-evidence arithmetic/rendering smoke for
+  `llm_heavy_clinical_frequency_reasoner_v2`. It requires parser-ready raw model
+  labels, exact selected evidence, auditable operands, zero selected-event trace
+  mismatches, and a small deterministic-arithmetic gap before any validation50
+  escalation.
 - 2026-06-02: Added decision 0005 on benchmark-format rules versus LLM clinical
   reasoning. The note records that conventions such as bimonthly mapping and
   exact cluster rendering are often arbitrary gold-label choices rather than
@@ -169,6 +182,7 @@ projection, invariance, and arbitration ablations.
 
 ## Immediate Next Step
 
-Write the validation25 selected-evidence arithmetic/rendering replacement
-decision and stop rule, then only proceed to `llm_heavy_clinical_frequency_reasoner_v2`
-if that decision supports a live LLM-owned replacement smoke.
+Implement the v2 validation25 selected-evidence arithmetic/rendering smoke from
+decision 0006, run it cache-first on `validation` rows 1-25, and record the raw
+model-owned versus deterministic side-car attribution before any validation50
+escalation.
