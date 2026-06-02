@@ -112,6 +112,67 @@ def test_accepted_boundary_node_replay_filters_non_gain_and_parse_error_rows() -
     assert metadata["summary"]["coverage"]["accepted_boundary_rows"] == 1
 
 
+def test_accepted_boundary_node_replay_can_target_synthetic_unknown_surface() -> None:
+    records = [
+        _record(
+            source_row_index=900016,
+            note_text="Seizures continue but frequency is unclear.",
+            gold_label="unknown",
+        ),
+        _record(
+            source_row_index=3507,
+            note_text="The current frequency remains unclear after review.",
+            gold_label="unknown",
+        ),
+    ]
+    synthetic_row = {
+        **_boundary_row(
+            source_row_index=900016,
+            gold_label="unknown",
+            nodes=[
+                {
+                    "semantic_kind": "unknown",
+                    "node_normalized_label": "unknown",
+                    "evidence": "frequency is unclear",
+                    "temporality": "current",
+                    "assertion_status": "asserted",
+                    "certainty": "high",
+                    "rationale": "Frequency is explicitly unclear.",
+                }
+            ],
+        ),
+        "surface_role": "synthetic_unknown_stress",
+    }
+    validation_row = _boundary_row(
+        source_row_index=3507,
+        gold_label="unknown",
+        nodes=[
+            {
+                "semantic_kind": "unknown",
+                "node_normalized_label": "unknown",
+                "evidence": "current frequency remains unclear",
+                "temporality": "current",
+                "assertion_status": "asserted",
+                "certainty": "high",
+                "rationale": "Frequency is explicitly unclear.",
+            }
+        ],
+    )
+
+    rows, metadata = boundary_state_graph_replay.run_accepted_boundary_node_replay(
+        records,
+        [validation_row, synthetic_row],
+        split="synthetic_hard_cases",
+        split_manifest="synthetic_manifest",
+        source_artifact="synthetic_boundary.jsonl",
+        accepted_surface_role="synthetic_unknown_stress",
+    )
+
+    assert [row["source_row_index"] for row in rows] == [900016]
+    assert metadata["accepted_surface_role"] == "synthetic_unknown_stress"
+    assert metadata["summary"]["coverage"]["representability_gains"] == 1
+
+
 def test_accepted_boundary_node_replay_writes_report(tmp_path) -> None:
     record = _record(
         source_row_index=3507,

@@ -28,6 +28,7 @@ projection, invariance, and arbitration ablations.
 - Hosted boundary-state graph-builder work recovered useful unknown/unresolved-multiple coverage: validation31 produced 10/31 representability-gain candidates; synthetic unknown8 v1 produced 8/8 schema-valid, exact-evidence-valid unknown nodes. Accepted-node replay recovered representability on all 10 validation gain rows, but unchanged projection exactly matched only 6/10 labels.
 - Projection remains separate from node construction. Boundary-state priority fixed 17/42 miss-only projection rows; seizure-free duration work showed node coverage can be high while unchanged projection stays at 0/18 exact duration labels.
 - The latest duration-selection diagnostic over 18 replayed seizure-free duration graphs recovered 18/18 exact duration labels with replay-only `month_bucket_duration_selection`. This is validation-only output-surface analysis, not scorer normalization or production projection promotion.
+- Accepted synthetic unknown8 v1 boundary nodes have now been replayed for coverage accounting only: baseline representability was 0/8 and diagnostic merge representability was 8/8; unchanged projection still missed one row, keeping projection/arbitration separate.
 - Routine LLM experiments use cache-first `gan2026-llm-experiment --pipeline ...`; saved-output replay is reserved for explicit offline artifact analysis.
 - Clean scorer-facing normalization is frozen unless direct-citation review justifies another family. Shared schema repair is alias-only; parser defaults belong to their task parser.
 - Named repair-mode metadata is now shared beyond structured-events: claim-table score layers, hybrid adjudicator score layers, repair ablations, and component-ablation rows expose stable attribution metadata for raw, strict, clean, selected-evidence, deterministic, and hybrid gated modes.
@@ -56,11 +57,10 @@ projection, invariance, and arbitration ablations.
 
 ### Now
 
-- Replay accepted synthetic unknown8 v1 nodes into a diagnostic graph merge only if needed for coverage accounting; keep projection, scoring, and production policy out of scope.
+- Decide whether `month_bucket_duration_selection` is only a diagnostic oracle-style selector or the seed for a separately named projection ablation.
 
 ### Next
 
-- Decide whether `month_bucket_duration_selection` is only a diagnostic oracle-style selector or the seed for a separately named projection ablation.
 - Keep claim-table v5 and v0.2 schema/gate ablations available as comparators, but do not promote them ahead of the state-graph coverage cycle.
 - Design LLM-replacement ablations for deterministic post-processing modules, reporting score, repair attribution, evidence validity, and replay variance.
 
@@ -71,6 +71,7 @@ projection, invariance, and arbitration ablations.
 
 ### Done Recently
 
+- 2026-06-02: Replayed accepted synthetic unknown8 v1 boundary nodes into a diagnostic graph merge for coverage accounting only; coverage recovered to 8/8 while projection/scoring policy remained out of scope.
 - 2026-06-02: Completed the state-graph coverage, projection, boundary-state, and seizure-free duration diagnostic cycle through validation-only replay artifacts. Key result: coverage and duration-node construction are promising, but projection/arbitration remains the current bottleneck and no production policy is promoted.
 - 2026-06-02: Extended shared named repair-mode metadata from structured-events into claim-table score layers, hybrid adjudicator score layers, repair-family ablations, and component-ablation row attribution.
 - 2026-06-02: Consolidated saved-output replay and artifact-ablation helpers into `gan2026/artifact_analysis`, leaving compatibility wrappers under `experiments/` and moving raw-output replay loading out of generic artifact writing helpers.
@@ -80,4 +81,4 @@ projection, invariance, and arbitration ablations.
 
 ## Immediate Next Step
 
-Replay accepted synthetic unknown8 v1 nodes into a diagnostic graph merge only if coverage accounting needs it; keep projection, scoring, and production policy out of scope.
+Decide whether `month_bucket_duration_selection` remains a diagnostic oracle-style selector or becomes the seed for a separately named projection ablation; keep scorer normalization and production projection policy unchanged until that decision is documented.
