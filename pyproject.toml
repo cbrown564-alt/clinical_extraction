@@ -12,13 +12,16 @@ license = { text = "Proprietary" }
 authors = [{ name = "Clinical Extraction Contributors" }]
 dependencies = [
   "dspy>=2.5.0",
+  "fastapi>=0.111.0",
   "pydantic>=2.7.0",
   "pandas>=2.2.0",
   "jupyter>=1.0.0",
+  "uvicorn>=0.30.0",
 ]
 
 [project.scripts]
 gan2026-llm-experiment = "clinical_extraction.tasks.seizure_frequency.gan2026.cli.llm_pipeline_cli:main"
+clinical-extraction-observatory = "clinical_extraction.tasks.seizure_frequency.gan2026.observatory.server:main"
 
 [project.optional-dependencies]
 dev = [
