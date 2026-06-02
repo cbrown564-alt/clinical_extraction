@@ -62,7 +62,6 @@ projection, invariance, and arbitration ablations.
 - Decide whether `month_bucket_duration_selection` is only a diagnostic oracle-style selector or the seed for a separately named projection ablation.
 - Keep claim-table v5 and v0.2 schema/gate ablations available as comparators, but do not promote them ahead of the state-graph coverage cycle.
 - Design LLM-replacement ablations for deterministic post-processing modules, reporting score, repair attribution, evidence validity, and replay variance.
-- Consolidate remaining saved-output replay helpers into dedicated artifact-analysis modules.
 - Extend named repair-mode metadata beyond structured-events where downstream repair layers blur raw, strict, clean, selected-evidence, and hybrid attribution.
 
 ### Blocked
@@ -73,6 +72,7 @@ projection, invariance, and arbitration ablations.
 ### Done Recently
 
 - 2026-06-02: Completed the state-graph coverage, projection, boundary-state, and seizure-free duration diagnostic cycle through validation-only replay artifacts. Key result: coverage and duration-node construction are promising, but projection/arbitration remains the current bottleneck and no production policy is promoted.
+- 2026-06-02: Consolidated saved-output replay and artifact-ablation helpers into `gan2026/artifact_analysis`, leaving compatibility wrappers under `experiments/` and moving raw-output replay loading out of generic artifact writing helpers.
 - 2026-06-02: Completed the hybrid v0.2 `cluster_diary_candidate_recall` frozen generalization audit. The result moved new development away from final-label prompt/gate tuning and toward validation-only semantic-state graph diagnostics.
 - 2026-06-01: Completed the v0.2 hybrid adjudicator development cycle through validation25/50/250, saturated-surface analysis, synthetic hard-case component stress, row-level failure review, and named candidate-recall revision.
 - 2026-06-01: Added intermediate-schema synthesis, saturated-validation workflow, cache-first LLM experiment CLI, cross-architecture component-ablation tooling, package-organization cleanup, and restored green Ruff, mypy, and full pytest after schema-repair and ownership-boundary work.

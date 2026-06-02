@@ -324,10 +324,15 @@ Important modules:
 - `experiments/run_metadata.py`
 - `experiments/run_registry.py`
 - `experiments/run_registry_report.py`
-- `experiments/architecture_component_ablation.py`
 - `experiments/ablation_analysis.py`
 - `experiments/prompt_devset.py`
 - `experiments/error_analysis.py`
+- `artifact_analysis/architecture_component_ablation.py`
+- `artifact_analysis/claim_table_component_ablation.py`
+- `artifact_analysis/projection_arbitration_ablation.py`
+- `artifact_analysis/boundary_state_graph_replay.py`
+- `artifact_analysis/seizure_free_duration_node_replay.py`
+- `artifact_analysis/seizure_free_duration_projection_ablation.py`
 
 Artifacts:
 
@@ -337,8 +342,9 @@ Artifacts:
 
 What changed:
 
-- Shared row-oriented JSONL writing and raw-output reuse loading moved into
-  `artifact_io.py`.
+- Shared row-oriented JSONL writing moved into `artifact_io.py`; raw-output
+  reuse loading and saved-output replay analyses now live under
+  `artifact_analysis/`.
 - Run registry entries are typed, JSONL-backed, validate duplicate IDs and
   artifact paths, and render to a Markdown index.
 - Component-ablation tooling now normalizes rules-only, LLM-only, and hybrid

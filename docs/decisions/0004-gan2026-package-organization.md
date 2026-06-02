@@ -20,6 +20,8 @@ attribution boundaries visible:
 - `hybrid`: pipelines where deterministic rules and LLM components both perform
   semantic work.
 - `reports`: Markdown/report rendering and shared report helpers.
+- `artifact_analysis`: saved-output replay, component ablations, graph replay,
+  and other offline analyses of existing artifacts.
 - `experiments`: artifact I/O, run metadata, run registry, ablations, prompt
   devset generation, and error-analysis utilities.
 - `cli`: routine experiment command modules.

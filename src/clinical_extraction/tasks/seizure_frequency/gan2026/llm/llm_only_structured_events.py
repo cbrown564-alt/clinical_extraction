@@ -15,6 +15,9 @@ import dspy
 from pydantic import BaseModel, ConfigDict, ValidationError
 
 from clinical_extraction.core.evidence import evidence_is_substring
+from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis.replay_io import (
+    load_raw_outputs_by_source_index,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     label_to_frequency_record,
 )
@@ -23,7 +26,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.schema_repair 
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
-    load_raw_outputs_by_source_index,
     write_jsonl_rows,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_metadata import (

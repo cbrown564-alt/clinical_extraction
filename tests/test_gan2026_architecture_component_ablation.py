@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis import (
     architecture_component_ablation as component_ablation,
 )
 
