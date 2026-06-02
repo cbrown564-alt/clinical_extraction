@@ -10,12 +10,20 @@ export default function Home() {
         Interactive lens for hybrid clinical-extraction pipelines. Inspect,
         compare, and understand stage-by-stage extraction.
       </p>
-      <Link
-        href="/workbench"
-        className="rounded-md bg-deterministic px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-deterministic/90"
-      >
-        Open the Workbench
-      </Link>
+      <div className="flex items-center gap-3">
+        <Link
+          href="/workbench"
+          className="rounded-md bg-deterministic px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-deterministic/90"
+        >
+          Open the Workbench
+        </Link>
+        <Link
+          href="/architect"
+          className="rounded-md border border-hybrid bg-hybrid/10 px-6 py-3 text-sm font-medium text-hybrid transition-colors hover:bg-hybrid/20"
+        >
+          Open the Architect
+        </Link>
+      </div>
     </main>
   );
 }

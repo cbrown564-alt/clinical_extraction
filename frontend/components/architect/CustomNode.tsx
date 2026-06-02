@@ -1,8 +1,8 @@
 "use client";
 
 import { memo } from "react";
-import { Handle, Position, type NodeProps } from "@xyflow/react";
-import type { ArchitectNodeConfig, NodeFamily } from "@/lib/types";
+import { Handle, Position, type NodeProps, type Node } from "@xyflow/react";
+import type { NodeFamily } from "@/lib/types";
 import { useArchitectStore } from "@/lib/stores";
 
 const familyColors: Record<NodeFamily, { bg: string; border: string; text: string; ring: string }> = {
@@ -26,9 +26,16 @@ const familyColors: Record<NodeFamily, { bg: string; border: string; text: strin
   },
 };
 
-function CustomNodeComponent({ id, data, selected }: NodeProps<ArchitectNodeConfig>) {
+interface CustomNodeData extends Record<string, unknown> {
+  family: NodeFamily;
+  label: string;
+}
+
+type CustomNodeType = Node<CustomNodeData, "custom">;
+
+function CustomNodeComponent({ id, data, selected }: NodeProps<CustomNodeType>) {
   const setSelectedNodeId = useArchitectStore((s) => s.setSelectedNodeId);
-  const colors = familyColors[data.family ?? "rules_only"];
+  const colors = familyColors[(data.family as NodeFamily) ?? "rules_only"];
 
   return (
     <div
@@ -39,14 +46,14 @@ function CustomNodeComponent({ id, data, selected }: NodeProps<ArchitectNodeConf
     >
       <Handle type="target" position={Position.Left} className="!bg-muted !w-2.5 !h-2.5" />
       <div className={`text-[11px] font-semibold uppercase tracking-wider ${colors.text}`}>
-        {data.label}
+        {data.label as string}
       </div>
       <div className="mt-1 text-[10px] text-muted font-mono capitalize">
-        {data.family.replace("_", " ")}
+        {(data.family as string).replace("_", " ")}
       </div>
       {/* Activity ring indicator */}
       <div className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-surface border border-border shadow-sm">
-        <div className={`h-2 w-2 rounded-full ${data.family === "rules_only" ? "bg-deterministic" : data.family === "llm_only" ? "bg-llm" : "bg-hybrid"}`} />
+        <div className={`h-2 w-2 rounded-full ${(data.family as string) === "rules_only" ? "bg-deterministic" : (data.family as string) === "llm_only" ? "bg-llm" : "bg-hybrid"}`} />
       </div>
       <Handle type="source" position={Position.Right} className="!bg-muted !w-2.5 !h-2.5" />
     </div>
