@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import * as Tooltip from "@radix-ui/react-tooltip";
 import type { CandidateEvent, FinalSelection, HighlightSpan } from "@/lib/types";
 
 interface NoteRendererProps {
@@ -10,6 +11,7 @@ interface NoteRendererProps {
   activeStage: string;
   goldOverlay?: boolean;
   goldLabel?: string;
+  predictedLabel?: string;
 }
 
 function unescapeText(text: string): string {
@@ -63,6 +65,7 @@ function getSpansForStage(
           label: c.raw_value ?? c.evidence,
           ruleId: c.rule_id,
           ruleGroup: c.rule_group,
+          portability: c.portability,
           tooltip: `${c.rule_id} (${c.rule_group ?? "unknown"})`,
         });
       }
@@ -79,6 +82,7 @@ function getSpansForStage(
           label: c.raw_value ?? c.evidence,
           ruleId: c.rule_id,
           ruleGroup: c.rule_group,
+          portability: c.portability,
           tooltip: `Normalised: ${c.raw_value ?? c.evidence}`,
         });
       }
@@ -204,6 +208,55 @@ function formatNoteAsLetter(text: string): React.ReactNode {
   });
 }
 
+function SpanTooltip({
+  span,
+  children,
+}: {
+  span: HighlightSpan;
+  children: React.ReactNode;
+}) {
+  return (
+    <Tooltip.Provider delayDuration={150}>
+      <Tooltip.Root>
+        <Tooltip.Trigger asChild>{children}</Tooltip.Trigger>
+        <Tooltip.Portal>
+          <Tooltip.Content
+            side="top"
+            align="start"
+            sideOffset={6}
+            className="z-50 max-w-xs rounded-lg border border-border bg-surface px-3 py-2.5 shadow-lg"
+          >
+            <div className="space-y-1">
+              {span.ruleId && (
+                <div className="flex items-center gap-2">
+                  <span className="rounded-md bg-deterministic/10 px-1.5 py-0.5 font-mono text-[10px] font-medium text-deterministic">
+                    {span.ruleId}
+                  </span>
+                  {span.ruleGroup && (
+                    <span className="text-[10px] text-muted uppercase tracking-wide">
+                      {span.ruleGroup}
+                    </span>
+                  )}
+                </div>
+              )}
+              <p className="text-xs font-medium text-foreground">{span.label}</p>
+              {span.portability && (
+                <p className="text-[10px] text-muted">
+                  Portability: {" "}
+                  <span className="font-medium text-foreground">
+                    {span.portability}
+                  </span>
+                </p>
+              )}
+            </div>
+            <Tooltip.Arrow className="fill-border" />
+          </Tooltip.Content>
+        </Tooltip.Portal>
+      </Tooltip.Root>
+    </Tooltip.Provider>
+  );
+}
+
 export default function NoteRenderer({
   text,
   candidates,
@@ -211,6 +264,7 @@ export default function NoteRenderer({
   activeStage,
   goldOverlay,
   goldLabel,
+  predictedLabel,
 }: NoteRendererProps) {
   const cleanText = useMemo(() => unescapeText(text), [text]);
 
@@ -220,6 +274,11 @@ export default function NoteRenderer({
   );
 
   const segments = useMemo(() => buildSegments(cleanText, spans), [cleanText, spans]);
+
+  const goldMatch = useMemo(() => {
+    if (!goldLabel || !predictedLabel) return undefined;
+    return goldLabel.trim().toLowerCase() === predictedLabel.trim().toLowerCase();
+  }, [goldLabel, predictedLabel]);
 
   if (!cleanText) {
     return (
@@ -234,6 +293,17 @@ export default function NoteRenderer({
     );
   }
 
+  // Ghost gold overlay styling
+  const goldOverlayClasses =
+    goldMatch === true
+      ? "border-success/30 bg-success/5 text-success/80"
+      : goldMatch === false
+      ? "border-error/30 bg-error/5 text-error/80"
+      : "border-gold-ghost/30 bg-gold-ghost/5 text-gold-ghost/80";
+
+  const goldIcon =
+    goldMatch === true ? "✓" : goldMatch === false ? "✗" : "◆";
+
   // When no highlights, render formatted letter
   if (spans.length === 0) {
     return (
@@ -242,10 +312,16 @@ export default function NoteRenderer({
           {formatNoteAsLetter(cleanText)}
         </div>
         {goldOverlay && goldLabel && (
-          <div className="mt-8 rounded-lg border border-gold-ghost/30 bg-gold-ghost/5 p-4">
-            <p className="text-sm font-mono text-gold-ghost/80">
-              <span className="font-semibold">Gold label:</span> {goldLabel}
+          <div className={`mt-8 rounded-lg border ${goldOverlayClasses} p-4`}>
+            <p className="text-sm font-mono">
+              <span className="font-semibold">{goldIcon} Gold label:</span>{" "}
+              {goldLabel}
             </p>
+            {goldMatch === false && predictedLabel && (
+              <p className="mt-1 text-xs font-mono opacity-80">
+                Predicted: {predictedLabel}
+              </p>
+            )}
           </div>
         )}
       </div>
@@ -275,11 +351,10 @@ export default function NoteRenderer({
           const primary = seg.spans[0];
           const kindClass = kindToClass(primary.kind);
 
-          return (
+          const highlighted = (
             <mark
               key={i}
               className={`span-highlight ${kindClass}`}
-              title={primary.tooltip}
             >
               {content.split("\n").map((line, j, arr) => (
                 <span key={j}>
@@ -289,14 +364,31 @@ export default function NoteRenderer({
               ))}
             </mark>
           );
+
+          // Wrap in rich tooltip if we have rule metadata
+          if (primary.ruleId || primary.tooltip) {
+            return (
+              <SpanTooltip key={i} span={primary}>
+                {highlighted}
+              </SpanTooltip>
+            );
+          }
+
+          return highlighted;
         })}
       </div>
 
       {goldOverlay && goldLabel && (
-        <div className="mt-8 rounded-lg border border-gold-ghost/30 bg-gold-ghost/5 p-4">
-          <p className="text-sm font-mono text-gold-ghost/80">
-            <span className="font-semibold">Gold label:</span> {goldLabel}
+        <div className={`mt-8 rounded-lg border ${goldOverlayClasses} p-4`}>
+          <p className="text-sm font-mono">
+            <span className="font-semibold">{goldIcon} Gold label:</span>{" "}
+            {goldLabel}
           </p>
+          {goldMatch === false && predictedLabel && (
+            <p className="mt-1 text-xs font-mono opacity-80">
+              Predicted: {predictedLabel}
+            </p>
+          )}
         </div>
       )}
     </div>

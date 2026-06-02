@@ -110,6 +110,7 @@ export interface HighlightSpan {
   label: string;
   ruleId?: string;
   ruleGroup?: string | null;
+  portability?: string | null;
   tooltip?: string;
 }
 

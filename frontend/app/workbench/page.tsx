@@ -1,14 +1,17 @@
 "use client";
 
+import { Suspense } from "react";
 import NoteRenderer from "@/components/workbench/NoteRenderer";
 import StageNavigator from "@/components/workbench/StageNavigator";
 import PipelineConfigPanel from "@/components/workbench/PipelineConfigPanel";
 import { useUiStore, useConfigStore } from "@/lib/stores";
-import { useLastRun, useRecord } from "@/lib/hooks";
-import { Microscope, Activity } from "lucide-react";
+import { useLastRun, useRecord, useWorkbenchUrlSync } from "@/lib/hooks";
+import { Microscope, Activity, GitCompare } from "lucide-react";
 
-export default function WorkbenchPage() {
-  const { activeStage, goldOverlay } = useUiStore();
+function WorkbenchInner() {
+  useWorkbenchUrlSync();
+
+  const { activeStage, goldOverlay, showDiff } = useUiStore();
   const { noteText, split, sourceRowIndex } = useConfigStore();
   const lastRun = useLastRun();
   const recordQuery = useRecord(split, sourceRowIndex);
@@ -41,6 +44,12 @@ export default function WorkbenchPage() {
           </div>
         </div>
         <div className="flex items-center gap-4 text-xs">
+          {showDiff && (
+            <div className="flex items-center gap-1.5 rounded-md bg-hybrid/10 px-2 py-0.5 border border-hybrid/20">
+              <GitCompare className="h-3.5 w-3.5 text-hybrid" />
+              <span className="font-medium text-hybrid">Compare mode</span>
+            </div>
+          )}
           <div className="flex items-center gap-1.5">
             <Activity className="h-3.5 w-3.5 text-muted" />
             <span className="text-muted">Stage:</span>
@@ -81,6 +90,7 @@ export default function WorkbenchPage() {
               activeStage={activeStage}
               goldOverlay={goldOverlay}
               goldLabel={goldLabel}
+              predictedLabel={result?.result.output.final_value}
             />
           </div>
         </div>
@@ -98,5 +108,19 @@ export default function WorkbenchPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function WorkbenchPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex h-screen items-center justify-center bg-background text-muted">
+        <div className="text-center">
+          <p className="text-lg font-medium">Loading workbench…</p>
+        </div>
+      </div>
+    }>
+      <WorkbenchInner />
+    </Suspense>
   );
 }
