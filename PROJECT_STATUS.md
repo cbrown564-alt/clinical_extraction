@@ -27,7 +27,7 @@ projection, invariance, and arbitration ablations.
 - State-graph validation diagnostics are the active research cycle. Validation50 oracle coverage is 47/50, projection Purist/Pragmatic F1 is 0.9600, and the validation hard-slice union has oracle coverage 219/250 with projection Purist F1 0.9160.
 - Hosted boundary-state graph-builder work recovered useful unknown/unresolved-multiple coverage: validation31 produced 10/31 representability-gain candidates; synthetic unknown8 v1 produced 8/8 schema-valid, exact-evidence-valid unknown nodes. Accepted-node replay recovered representability on all 10 validation gain rows, but unchanged projection exactly matched only 6/10 labels.
 - Projection remains separate from node construction. Boundary-state priority fixed 17/42 miss-only projection rows; seizure-free duration work showed node coverage can be high while unchanged projection stays at 0/18 exact duration labels.
-- The latest duration-selection diagnostic over 18 replayed seizure-free duration graphs recovered 18/18 exact duration labels with replay-only `month_bucket_duration_selection`. This is validation-only output-surface analysis, not scorer normalization or production projection promotion.
+- The duration-selection decision is documented: replay-only `month_bucket_duration_selection` is now the seed for a separately named projection ablation, not scorer normalization or production projection promotion.
 - Accepted synthetic unknown8 v1 boundary nodes have now been replayed for coverage accounting only: baseline representability was 0/8 and diagnostic merge representability was 8/8; unchanged projection still missed one row, keeping projection/arbitration separate.
 - Routine LLM experiments use cache-first `gan2026-llm-experiment --pipeline ...`; saved-output replay is reserved for explicit offline artifact analysis.
 - Clean scorer-facing normalization is frozen unless direct-citation review justifies another family. Shared schema repair is alias-only; parser defaults belong to their task parser.
@@ -42,7 +42,7 @@ projection, invariance, and arbitration ablations.
 - Generalization gap: `experiments/gan2026_generalization_gap_research_report_2026-06-02.md`
 - State-graph protocol and row review: `experiments/gan2026_clinical_frequency_state_graph_protocol_2026-06-02.md`, `experiments/gan2026_clinical_frequency_state_graph_row_family_review_2026-06-02.md`
 - Boundary-state graph-builder: `experiments/gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_validation31_synthetic_unknown8_interpretation_2026-06-02.md`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_synthetic_unknown8_v1_unknown_recall_gpt41mini_live_2026-06-02.md`
-- Projection and duration diagnostics: `experiments/gan2026_hybrid_clinical_frequency_state_graph_projection_arbitration_ablation_2026-06-02.md`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_projection_ablation_2026-06-02.md`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_node_replay_2026-06-02.md`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_enriched_projection_replay_2026-06-02.md`
+- Projection and duration diagnostics: `experiments/gan2026_hybrid_clinical_frequency_state_graph_projection_arbitration_ablation_2026-06-02.md`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_projection_ablation_2026-06-02.md`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_node_replay_2026-06-02.md`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_enriched_projection_replay_2026-06-02.md`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_month_bucket_duration_selection_decision_2026-06-02.md`
 - Prior LLM/hybrid comparators: `experiments/gan2026_section_claim_table_validation750_v4_interpretation_2026-06-01.md`, `experiments/gan2026_arch2_validation750_v01_interpretation_2026-06-01.md`, `experiments/gan2026_hybrid_adjudicator_v02_selective_action_report_2026-06-01.md`
 
 ## Active Priorities
@@ -57,7 +57,7 @@ projection, invariance, and arbitration ablations.
 
 ### Now
 
-- Decide whether `month_bucket_duration_selection` is only a diagnostic oracle-style selector or the seed for a separately named projection ablation.
+- Design `gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v0` with predeclared hard-slice gains and regression panels.
 
 ### Next
 
@@ -72,6 +72,7 @@ projection, invariance, and arbitration ablations.
 ### Done Recently
 
 - 2026-06-02: Replayed accepted synthetic unknown8 v1 boundary nodes into a diagnostic graph merge for coverage accounting only; coverage recovered to 8/8 while projection/scoring policy remained out of scope.
+- 2026-06-02: Decided that replay-only `month_bucket_duration_selection` becomes a separately named projection-ablation seed; scorer normalization and production projection policy remain unchanged.
 - 2026-06-02: Completed the state-graph coverage, projection, boundary-state, and seizure-free duration diagnostic cycle through validation-only replay artifacts. Key result: coverage and duration-node construction are promising, but projection/arbitration remains the current bottleneck and no production policy is promoted.
 - 2026-06-02: Extended shared named repair-mode metadata from structured-events into claim-table score layers, hybrid adjudicator score layers, repair-family ablations, and component-ablation row attribution.
 - 2026-06-02: Consolidated saved-output replay and artifact-ablation helpers into `gan2026/artifact_analysis`, leaving compatibility wrappers under `experiments/` and moving raw-output replay loading out of generic artifact writing helpers.
@@ -81,4 +82,4 @@ projection, invariance, and arbitration ablations.
 
 ## Immediate Next Step
 
-Decide whether `month_bucket_duration_selection` remains a diagnostic oracle-style selector or becomes the seed for a separately named projection ablation; keep scorer normalization and production projection policy unchanged until that decision is documented.
+Design `gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v0` as a validation-only projection/arbitration ablation with explicit regression checks; keep scorer normalization and production projection policy unchanged.
