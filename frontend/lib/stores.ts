@@ -25,9 +25,13 @@ interface ConfigState {
   pipeline: PipelineFamily;
   noteText: string;
   ablationConfig: AblationConfigPayload;
+  split: string | null;
+  sourceRowIndex: number | null;
   setPipeline: (p: PipelineFamily) => void;
   setNoteText: (t: string) => void;
   setAblationConfig: (a: AblationConfigPayload) => void;
+  setSplit: (s: string | null) => void;
+  setSourceRowIndex: (i: number | null) => void;
   toggleRuleGroup: (group: string) => void;
   toggleRuleId: (ruleId: string) => void;
 }
@@ -36,9 +40,13 @@ export const useConfigStore = create<ConfigState>((set) => ({
   pipeline: "rules_only",
   noteText: "",
   ablationConfig: {},
+  split: null,
+  sourceRowIndex: null,
   setPipeline: (pipeline) => set({ pipeline }),
   setNoteText: (noteText) => set({ noteText }),
   setAblationConfig: (ablationConfig) => set({ ablationConfig }),
+  setSplit: (split) => set({ split, sourceRowIndex: null }),
+  setSourceRowIndex: (sourceRowIndex) => set({ sourceRowIndex }),
   toggleRuleGroup: (group) =>
     set((s) => {
       const current = new Set(s.ablationConfig.enabled_groups ?? []);

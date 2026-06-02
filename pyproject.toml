@@ -21,6 +21,7 @@ dependencies = [
 
 [project.scripts]
 gan2026-llm-experiment = "clinical_extraction.tasks.seizure_frequency.gan2026.cli.llm_pipeline_cli:main"
+gan2026-state-graph-diagnostics = "clinical_extraction.tasks.seizure_frequency.gan2026.experiments.state_graph_diagnostics:main"
 clinical-extraction-observatory = "clinical_extraction.tasks.seizure_frequency.gan2026.observatory.server:main"
 
 [project.optional-dependencies]

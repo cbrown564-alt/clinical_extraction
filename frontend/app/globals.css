@@ -33,32 +33,47 @@ body {
 .note-text {
   font-family: var(--font-serif), Georgia, "Times New Roman", serif;
   font-size: 16px;
-  line-height: 1.6;
+  line-height: 1.65;
   color: #1a1a1a;
 }
 
-/* Highlight spans */
+/* Highlight spans — light background tint + matching underline */
 .span-highlight {
-  position: relative;
-  border-left: 3px solid transparent;
-  padding-left: 6px;
-  margin-left: -9px;
   transition: background-color 150ms ease, opacity 200ms ease;
+  border-radius: 2px;
+  padding: 1px 0;
 }
 
 .span-highlight--deterministic {
-  border-left-color: var(--color-deterministic);
-  background-color: rgba(42, 111, 111, 0.06);
+  background-color: rgba(42, 111, 111, 0.10);
+  text-decoration: underline;
+  text-decoration-color: rgba(42, 111, 111, 0.55);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
 }
 
 .span-highlight--llm {
-  border-left-color: var(--color-llm);
-  background-color: rgba(217, 119, 6, 0.06);
+  background-color: rgba(217, 119, 6, 0.10);
+  text-decoration: underline;
+  text-decoration-color: rgba(217, 119, 6, 0.55);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
 }
 
 .span-highlight--repair {
-  border-left-color: var(--color-error);
-  background-color: rgba(224, 122, 95, 0.06);
+  background-color: rgba(224, 122, 95, 0.10);
+  text-decoration: underline;
+  text-decoration-color: rgba(224, 122, 95, 0.55);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.span-highlight--gold {
+  background-color: rgba(212, 175, 55, 0.10);
+  text-decoration: underline;
+  text-decoration-color: rgba(212, 175, 55, 0.55);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
 }
 
 .span-highlight--dim {
@@ -67,16 +82,21 @@ body {
 
 /* Scrollbar styling */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
   background: #d1d5db;
-  border-radius: 4px;
+  border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #9ca3af;
+}
+
+/* Selection color */
+::selection {
+  background: rgba(42, 111, 111, 0.15);
 }

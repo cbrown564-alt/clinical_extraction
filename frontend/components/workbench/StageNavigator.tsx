@@ -44,7 +44,14 @@ export default function StageNavigator({ diagnostics }: StageNavigatorProps) {
   };
 
   return (
-    <div className="flex h-full flex-col gap-3 overflow-y-auto pr-1">
+    <div className="flex h-full flex-col gap-2.5 overflow-y-auto pr-1">
+      <div className="flex items-center gap-2 border-b border-border pb-2">
+        <div className="h-2 w-2 rounded-full bg-deterministic" />
+        <h3 className="text-xs font-semibold uppercase tracking-widest text-muted">
+          Stage Navigator
+        </h3>
+      </div>
+
       {STAGES.map((stage) => (
         <StageCard
           key={stage.id}
@@ -57,39 +64,41 @@ export default function StageNavigator({ diagnostics }: StageNavigatorProps) {
           onToggleExpand={() => toggleExpand(stage.id)}
           badge={
             stage.id === "extract"
-              ? `${candidates.length} candidates`
+              ? `${candidates.length} candidate${candidates.length !== 1 ? "s" : ""}`
               : stage.id === "normalise"
-              ? `${normalized.length} events`
+              ? `${normalized.length} event${normalized.length !== 1 ? "s" : ""}`
               : stage.id === "select"
               ? finalSelection.final_label
               : undefined
           }
           badgeColor={
             stage.id === "select"
-              ? "bg-deterministic/10 text-deterministic"
-              : undefined
+              ? "bg-deterministic/10 text-deterministic border border-deterministic/20"
+              : "bg-surface-raised text-muted border border-border"
           }
         >
           {stage.id === "extract" && (
             <div className="space-y-2">
               {candidates.length === 0 ? (
-                <p className="text-xs text-muted">No candidates extracted.</p>
+                <p className="text-xs text-muted italic">No candidates extracted.</p>
               ) : (
                 candidates.map((c) => (
                   <div
                     key={c.event_id}
-                    className="rounded border border-border bg-surface-raised p-2 text-xs"
+                    className="rounded-lg border border-border bg-surface-raised/60 p-2.5 text-xs transition-colors hover:bg-surface-raised"
                   >
-                    <div className="flex items-center gap-2">
-                      <span className="rounded bg-deterministic/10 px-1.5 py-0.5 font-mono text-deterministic">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="rounded-md bg-deterministic/10 px-1.5 py-0.5 font-mono text-[10px] font-medium text-deterministic">
                         {c.rule_id}
                       </span>
-                      <span className="text-muted">{c.rule_group}</span>
+                      <span className="text-[10px] text-muted uppercase tracking-wide">
+                        {c.rule_group}
+                      </span>
                     </div>
-                    <p className="mt-1 font-medium text-foreground">
+                    <p className="font-medium text-foreground leading-relaxed">
                       {c.raw_value ?? c.evidence}
                     </p>
-                    <p className="text-muted">“{c.evidence}”</p>
+                    <p className="mt-0.5 text-muted italic">“{c.evidence}”</p>
                   </div>
                 ))
               )}
@@ -99,23 +108,23 @@ export default function StageNavigator({ diagnostics }: StageNavigatorProps) {
           {stage.id === "normalise" && (
             <div className="space-y-2">
               {normalized.length === 0 ? (
-                <p className="text-xs text-muted">No normalized events.</p>
+                <p className="text-xs text-muted italic">No normalized events.</p>
               ) : (
                 normalized.map((n) => (
                   <div
                     key={n.event_id}
-                    className="rounded border border-border bg-surface-raised p-2 text-xs"
+                    className="rounded-lg border border-border bg-surface-raised/60 p-2.5 text-xs transition-colors hover:bg-surface-raised"
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-medium text-foreground">
                         {n.normalized_label}
                       </span>
-                      <span className="rounded bg-surface px-1.5 py-0.5 font-mono text-muted">
+                      <span className="rounded-md bg-surface px-2 py-0.5 font-mono text-[10px] text-muted border border-border">
                         {n.semantic_kind}
                       </span>
                     </div>
                     {n.validation_errors.length > 0 && (
-                      <p className="mt-1 text-error">
+                      <p className="mt-1.5 text-error text-[11px]">
                         {n.validation_errors.join("; ")}
                       </p>
                     )}
@@ -127,30 +136,30 @@ export default function StageNavigator({ diagnostics }: StageNavigatorProps) {
 
           {stage.id === "select" && (
             <div className="space-y-3 text-xs">
-              <div className="rounded border border-deterministic/20 bg-deterministic/5 p-2">
-                <p className="font-semibold text-deterministic">
+              <div className="rounded-lg border border-deterministic/20 bg-deterministic/5 p-3">
+                <p className="font-semibold text-deterministic text-sm">
                   {finalSelection.final_label}
                 </p>
-                <p className="mt-1 text-muted">{finalSelection.rationale}</p>
+                <p className="mt-1 text-muted leading-relaxed">{finalSelection.rationale}</p>
               </div>
               <AttributionWaterfall diagnostics={diagnostics} />
             </div>
           )}
 
           {stage.id === "score" && (
-            <div className="text-xs text-muted">
-              <p>
-                Evidence valid:{" "}
+            <div className="space-y-2 text-xs">
+              <div className="flex items-center justify-between rounded-lg border border-border bg-surface-raised/60 p-2.5">
+                <span className="text-muted">Evidence valid</span>
                 <span
-                  className={
+                  className={`rounded-md px-2 py-0.5 font-medium ${
                     diagnostics?.evidence_valid
-                      ? "text-success"
-                      : "text-error"
-                  }
+                      ? "bg-success/10 text-success"
+                      : "bg-error/10 text-error"
+                  }`}
                 >
                   {diagnostics?.evidence_valid ? "Yes" : "No"}
                 </span>
-              </p>
+              </div>
             </div>
           )}
         </StageCard>

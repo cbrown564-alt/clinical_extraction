@@ -33,3 +33,13 @@ export function fetchRules() {
 export function fetchHealth() {
   return fetchJson<{ status: string }>("/health");
 }
+
+export function fetchRecords(split: string) {
+  return fetchJson<import("./types").SplitRecordsResponse>(`/records/${split}`);
+}
+
+export function fetchRecord(split: string, sourceRowIndex: number) {
+  return fetchJson<import("./types").FullRecordResponse>(
+    `/records/${split}/${sourceRowIndex}`
+  );
+}
