@@ -1,6 +1,6 @@
 # Clinical Extraction Observatory
 
-**Status:** Phase 2 complete — all Phase 2 features implemented; ready for Phase 3  
+**Status:** Phase 2 complete — all Phase 2 features and refinements implemented; ready for Phase 3  
 **Last updated:** 2026-06-02  
 **Scope:** Frontend application for exploring, configuring, comparing, and understanding hybrid clinical-extraction pipelines.  
 **Backend dependency:** Reuses existing `clinical_extraction` package, JSONL artifacts, run registry, and split protocol without modification. Backend extensions are noted but deferred.
@@ -355,7 +355,7 @@ Any UI toggle state must serialise to a named config object that can be:
 **Implemented:**
 - ✅ **Unified trace model** — `PipelineTrace` normalises deterministic, hybrid, and LLM-only outputs into a single stage-oriented representation (Extract → Normalise → Select → Repair → Score).
 - ✅ **Trace adapters** — `adaptDeterministicTrace`, `adaptHybridTrace`, `adaptLLMTrace` convert backend responses and artifact rows into the unified trace format.
-- ✅ **Specimen selector** — split + row picker (same dataset loader as Workbench) plus free-form note text input.
+- ✅ **Specimen selector** — split + row picker (same dataset loader as Workbench) plus a dedicated "Paste custom note" modal with textarea.
 - ✅ **Pipeline family selector** — all families from `/pipeline-families`; deterministic families run live, LLM/hybrid families auto-load replay artifacts from `/registry` + `/artifacts/{run_id}`.
 - ✅ **Replay row picker** — for non-deterministic families, a dropdown lists available pre-recorded rows from the loaded artifact; selecting a row fetches the note text and renders the full trace.
 - ✅ **Stage strip** — horizontal navigator showing all 5 stages with active-state colouring and item counts; clicking switches the active stage.
@@ -367,16 +367,19 @@ Any UI toggle state must serialise to a named config object that can be:
   - *Repair*: list of repair changes, before/after diff.
   - *Score*: match/mismatch badge, predicted vs gold side-by-side, evidence-valid flag.
 - ✅ **Collapsible JSON tree** — `JsonTree` component renders arbitrary metadata as an expandable colour-coded tree (strings green, numbers blue, booleans purple, objects/arrays collapsible).
-- ✅ **Rule toggles** — compact per-group toggle chips in the control bar for deterministic runs; disabled groups are struck-through.
+- ✅ **Rule toggles** — collapsible `RuleConfigPanel` with full group names, per-rule on/off toggles, portability badges, and regex previews in a readable grid.
 - ✅ **Live execution** — deterministic pipelines call `/run/note` with the current `AblationConfig`; results populate the trace immediately and highlight changes in the note.
+- ✅ **Two-tier control bar** — Tier 1: specimen selection + pipeline family + mode badge; Tier 2: collapsible rule config + large context-aware primary action + error display.
+- ✅ **Explicit run mode** — "Live run" badge for deterministic families; "Replay from artifact" badge for LLM/hybrid. Dataset picker hidden in replay mode; replay row picker shown instead.
+- ✅ **Redesigned stage strip** — inactive stages look clickable but de-emphasised; active stages get stronger colour coding, shadow, and count badges; hover states on all interactive stages.
 
 **Next refinement — Control bar UI/UX review:**
-- 🔧 **Specimen input pattern** — the free-form text box is confusing: it displays the entire clinical letter in a single-line input, which is illegible and duplicates the proper note viewer below. Replace with a clear "Load from dataset" flow (split → row) and a separate, explicit "Paste custom note" action that opens a modal or expands a textarea. Do not show the full note text in the control bar.
-- 🔧 **Visual hierarchy** — the control bar tries to do too many distinct things in one horizontal strip (pipeline selector, dataset picker, note input, run button, rule toggles, error display, reset). Split into two logical tiers: (1) specimen selection + pipeline family, (2) config/run controls that appear contextually below.
-- 🔧 **Deterministic rule toggles** — the compact chips are illegible (`date duratio...`, `portable rat...`). Replace with a collapsible **Config Drawer** or **Rule Panel** that opens below the control tier, showing full group names and per-rule toggles in a readable grid.
-- 🔧 **LLM/hybrid replay flow** — when a non-deterministic family is selected, the dataset row picker is irrelevant (only replay rows work). Disable or hide the dataset selector in replay mode; show only the replay artifact + row picker. Make the mode switch explicit: "Live run" vs "Replay from artifact".
-- 🔧 **Run/Load button placement** — the primary action should be large, clearly labelled, and context-aware: "Run deterministic pipeline" or "Load replay row". It should not compete with rule toggles for horizontal space.
-- 🔧 **Stage strip clarity** — inactive stages currently look disabled/greyed out; they should look clickable but de-emphasised. Add hover states and clearer active-stage colour coding.
+- ✅ **Specimen input pattern** — replaced the single-line note text input with a clear "Load from dataset" flow (split → row) and a separate "Paste custom note" modal with a textarea. The full note text is no longer shown in the control bar.
+- ✅ **Visual hierarchy** — split the control bar into two logical tiers: (1) specimen selection + pipeline family, (2) config/run controls that appear contextually below.
+- ✅ **Deterministic rule toggles** — replaced compact chips with a collapsible `RuleConfigPanel` showing full group names and per-rule toggles in a readable grid.
+- ✅ **LLM/hybrid replay flow** — dataset selector is hidden in replay mode; only the replay artifact + row picker is shown. Mode switch is explicit via "Live run" vs "Replay from artifact" badges.
+- ✅ **Run/Load button placement** — primary action is now large, clearly labelled, and context-aware ("Run deterministic pipeline" or "Select a replay row above to load"), no longer competing with rule toggles for horizontal space.
+- ✅ **Stage strip clarity** — inactive stages look clickable but de-emphasised; active stages have stronger colour coding, shadow, and count badges; hover states added to all interactive stages.
 
 **Rudimentary / deferred to Phase 3–5:**
 - 🟡 Side-by-side A/B trace comparison (compare two configs on the same note).
