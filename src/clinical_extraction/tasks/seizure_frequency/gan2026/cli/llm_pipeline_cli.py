@@ -75,6 +75,7 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
         hybrid_rules_candidates_llm_adjudicator,
     )
     from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
+        llm_heavy_clinical_frequency_reasoner,
         llm_only_claim_table_selector,
         llm_only_direct_labeler,
         llm_only_structured_events,
@@ -128,6 +129,17 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
         ),
         "llm_only_claim_table_selector": llm_only_claim_table_selector_spec,
         "hybrid_rules_candidates_llm_adjudicator": (hybrid_rules_candidates_llm_adjudicator_spec),
+        "llm_heavy_clinical_frequency_reasoner": GanLlmPipelineCliSpec(
+            description=(
+                "Run the Gan 2026 LLM-heavy clinical frequency reasoner schema smoke."
+            ),
+            default_jsonl_path=llm_heavy_clinical_frequency_reasoner.DEFAULT_JSONL_PATH,
+            default_report_path=llm_heavy_clinical_frequency_reasoner.DEFAULT_REPORT_PATH,
+            run_split=llm_heavy_clinical_frequency_reasoner.run_split,
+            write_jsonl=llm_heavy_clinical_frequency_reasoner.write_jsonl,
+            write_report=llm_heavy_clinical_frequency_reasoner.write_report,
+            default_max_tokens=1800,
+        ),
     }
 
 

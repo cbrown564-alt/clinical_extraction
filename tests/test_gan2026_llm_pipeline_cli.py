@@ -141,12 +141,14 @@ def test_pipeline_registry_exposes_routine_llm_experiments() -> None:
 
     assert set(specs) == {
         "hybrid_rules_candidates_llm_adjudicator",
+        "llm_heavy_clinical_frequency_reasoner",
         "llm_only_claim_table_selector",
         "llm_only_direct_labeler",
         "llm_only_structured_events",
     }
     assert specs["hybrid_rules_candidates_llm_adjudicator"].default_max_tokens == 1100
     assert specs["llm_only_claim_table_selector"].default_max_tokens == 1400
+    assert specs["llm_heavy_clinical_frequency_reasoner"].default_max_tokens == 1800
 
 
 def _dummy_spec(tmp_path: Path, calls: dict[str, Any] | None = None) -> GanLlmPipelineCliSpec:
