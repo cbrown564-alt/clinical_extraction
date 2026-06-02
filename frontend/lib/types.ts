@@ -311,3 +311,51 @@ export interface LLMArtifactRow {
     gold_label: string;
   };
 }
+
+// ── Observatory (Phase 3) ──
+
+export interface RowScore {
+  predictedCategory: string;
+  goldCategory: string;
+  puristCorrect: boolean;
+  pragmaticCorrect: boolean;
+  predictedLabel: string;
+  goldLabel: string;
+  split?: string;
+}
+
+export interface CategoryMetrics {
+  tp: number;
+  fp: number;
+  fn: number;
+  precision: number;
+  recall: number;
+  f1: number;
+  support: number;
+}
+
+export interface RunSummary {
+  runId: string;
+  pipelineFamily: string;
+  split: string;
+  rowCount: number;
+  date: string;
+  decision: string;
+  puristAccuracy: number;
+  pragmaticAccuracy: number;
+  puristF1: number;
+  pragmaticF1: number;
+  confusionMatrix: Map<string, Map<string, number>>;
+  perCategoryMetrics: Record<string, CategoryMetrics>;
+  validationMetrics?: {
+    puristAccuracy: number;
+    pragmaticAccuracy: number;
+    rowCount: number;
+  };
+  testMetrics?: {
+    puristAccuracy: number;
+    pragmaticAccuracy: number;
+    rowCount: number;
+  };
+  rows: RowScore[];
+}
