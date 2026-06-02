@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any, Literal
 
 import dspy
-from pydantic import BaseModel, ConfigDict, ValidationError
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from clinical_extraction.core.evidence import evidence_is_substring
 from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis.replay_io import (
@@ -41,7 +41,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label_with_evidence,
 )
 
-PROMPT_VERSION = "gan2026_llm_heavy_clinical_frequency_reasoner_v0"
+PROMPT_VERSION = "gan2026_llm_heavy_clinical_frequency_reasoner_v1"
 PIPELINE_FAMILY = "llm_heavy_clinical_frequency_reasoner"
 SCORE_LAYER_NAMES = (
     "raw_llm",
@@ -51,10 +51,10 @@ SCORE_LAYER_NAMES = (
     "oracle_format_upper_bound",
 )
 DEFAULT_JSONL_PATH = Path(
-    "experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation25_gpt41mini_v0_2026-06-02.jsonl"
+    "experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation25_gpt41mini_v1_2026-06-02.jsonl"
 )
 DEFAULT_REPORT_PATH = Path(
-    "experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation25_gpt41mini_v0_2026-06-02.md"
+    "experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation25_gpt41mini_v1_2026-06-02.md"
 )
 
 
@@ -137,6 +137,7 @@ class LlmHeavyFinalAnswerRecord(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
+    raw_clinical_summary: str
     raw_llm_final_label: str
     raw_llm_final_kind: Literal[
         "frequency",
@@ -148,6 +149,8 @@ class LlmHeavyFinalAnswerRecord(BaseModel):
     raw_llm_monthly_frequency: float | None = None
     selected_evidence: str
     selected_event_ids: list[str]
+    supporting_event_ids: list[str] = Field(default_factory=list)
+    combined_rationale: str = ""
     final_rationale: str
 
 
@@ -214,11 +217,31 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "as distinct states."
             ),
             (
-                "For every event and the final answer, copy evidence as an exact substring "
-                "from the note when possible."
+                "For every event, copy evidence as an exact substring from the note. For "
+                "final_answer.selected_evidence, copy exactly one selected event evidence "
+                "value; do not concatenate, paraphrase, or merge evidence strings."
             ),
             (
-                "Do not let the final label hide cluster cadence, per-cluster burden, "
+                "Put prose, semiology, clustering context, seizure-free distractors, and "
+                "clinical caveats in raw_clinical_summary, combined_rationale, or "
+                "final_rationale, not in raw_llm_final_label."
+            ),
+            (
+                "Render raw_llm_final_label as a parser-ready Gan label: use forms like "
+                "4 per day, 1 per 7 to 9 day, 2 to 4 per year, multiple per week, "
+                "seizure free for 6 month, unknown, or no seizure frequency reference."
+            ),
+            (
+                "Convert upper bounds and inequalities into the selected count without "
+                "inequality symbols: <= four per week -> 4 per week; up to twice per week "
+                "-> 2 per week; <= once per month -> 1 per month."
+            ),
+            (
+                "When a current quantified non-tonic-clonic seizure frequency is selected, "
+                "do not let a seizure-free tonic-clonic distractor overwrite the final label."
+            ),
+            (
+                "Do not let raw_llm_final_label hide cluster cadence, per-cluster burden, "
                 "seizure-free duration, or unresolved ambiguity."
             ),
             (
@@ -285,9 +308,14 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
             "uncertainty_flags": "list of short uncertainty flags",
         },
         "final_answer_schema": {
+            "raw_clinical_summary": (
+                "source-near prose summary of the selected clinical interpretation; prose "
+                "and caveats belong here, not in raw_llm_final_label"
+            ),
             "raw_llm_final_label": (
-                "model-rendered Gan-compatible label, unknown, or "
-                "no seizure frequency reference"
+                "parser-ready model-rendered Gan-compatible label, unknown, or "
+                "no seizure frequency reference; no prose, inequality symbols, semiology, "
+                "cluster modifiers, or explanatory clauses"
             ),
             "raw_llm_final_kind": [
                 "frequency",
@@ -297,8 +325,19 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "unresolved_multiple",
             ],
             "raw_llm_monthly_frequency": "model-estimated monthly frequency or null",
-            "selected_evidence": "exact note substring supporting the final answer",
+            "selected_evidence": (
+                "exact copy of one selected event evidence value supporting the final answer; "
+                "if multiple events are selected, choose the prediction-bearing event here"
+            ),
             "selected_event_ids": "copy the selected event ids used for this answer",
+            "supporting_event_ids": (
+                "additional selected event ids that support context but whose evidence is "
+                "not copied into selected_evidence"
+            ),
+            "combined_rationale": (
+                "brief explanation of how multiple selected events interact; use an empty "
+                "string when one event directly determines the answer"
+            ),
             "final_rationale": "brief scoring-facing rationale",
         },
         "score_layers_to_report": list(SCORE_LAYER_NAMES),
@@ -344,6 +383,13 @@ def parse_llm_heavy_reasoner_json(
         errors.append(f"final_answer: unknown selected_event_ids {missing_final_ids!r}")
     if extraction.final_answer.selected_event_ids != extraction.selection.selected_event_ids:
         errors.append("selected_event_trace: final_answer ids differ from selection ids")
+    selected_event_evidence = {
+        event.evidence
+        for event in extraction.events
+        if event.event_id in extraction.final_answer.selected_event_ids
+    }
+    if extraction.final_answer.selected_evidence not in selected_event_evidence:
+        errors.append("evidence: selected evidence is not one selected event evidence value")
     if note_text is not None:
         invalid_events = [
             event.event_id
@@ -538,7 +584,7 @@ def write_report(
     path.parent.mkdir(parents=True, exist_ok=True)
     summary = metadata.get("summary") or summarize_records(rows)
     lines = [
-        "# Gan 2026 LLM-Heavy Clinical Frequency Reasoner V0",
+        "# Gan 2026 LLM-Heavy Clinical Frequency Reasoner V1",
         "",
         f"- JSONL: `{jsonl_path}`",
         f"- Pipeline family: `{PIPELINE_FAMILY}`",
@@ -586,7 +632,7 @@ def write_report(
             "",
             "## Interpretation",
             "",
-            "This v0 artifact is a schema/prompt smoke surface. It should not be promoted "
+            "This v1 artifact is a schema/prompt smoke surface. It should not be promoted "
             "from diagnostic status until validation50 and hard-slice behavior show high "
             "schema validity, exact selected evidence, stable selected-event traces, and "
             "competitive raw or format-only layers.",
@@ -723,11 +769,17 @@ def _evidence_summary(
         if not evidence_is_substring(note_text, event.evidence)
     ]
     selected_valid = evidence_is_substring(note_text, extraction.final_answer.selected_evidence)
+    selected_event_evidence_valid = extraction.final_answer.selected_evidence in {
+        event.evidence
+        for event in extraction.events
+        if event.event_id in extraction.final_answer.selected_event_ids
+    }
     return {
         "event_evidence_valid": len(extraction.events) - len(invalid_events),
         "event_evidence_total": len(extraction.events),
         "event_evidence_invalid": invalid_events,
         "selected_evidence_valid": selected_valid,
+        "selected_event_evidence_valid": selected_event_evidence_valid,
         "selected_evidence": extraction.final_answer.selected_evidence,
     }
 
@@ -738,6 +790,7 @@ def _empty_evidence_summary() -> dict[str, Any]:
         "event_evidence_total": 0,
         "event_evidence_invalid": [],
         "selected_evidence_valid": False,
+        "selected_event_evidence_valid": False,
         "selected_evidence": None,
     }
 
@@ -781,6 +834,9 @@ def _component_status(
         status["event_extraction"] = "fail"
         status["evidence_exactness"] = "fail"
     if not evidence_summary.get("selected_evidence_valid"):
+        status["final_schema_rendering"] = "fail"
+        status["evidence_exactness"] = "fail"
+    if not evidence_summary.get("selected_event_evidence_valid"):
         status["final_schema_rendering"] = "fail"
         status["evidence_exactness"] = "fail"
     if not score_layers["raw_llm"].get("scorable"):
@@ -837,6 +893,10 @@ def _repair_event_payload(event: Any) -> Any:
     else:
         repaired.setdefault("certainty", repaired.pop("confidence", "medium"))
     repaired.setdefault("clinical_quantity", {})
+    if isinstance(repaired["clinical_quantity"], dict):
+        repaired["clinical_quantity"] = _repair_clinical_quantity_payload(
+            repaired["clinical_quantity"]
+        )
     if repaired.get("assertion_status") == "unknown":
         repaired["assertion_status"] = "uncertain"
     return {
@@ -865,20 +925,40 @@ def _repair_selection_payload(selection: Any) -> Any:
 
 def _repair_final_answer_payload(final_answer: Any) -> Any:
     repaired = dict(final_answer)
+    repaired = repair_decision_payload(repaired)
     _repair_scalar_list_alias(repaired, "raw_llm_final_kind")
+    if repaired.get("raw_llm_final_kind") == "cluster_frequency":
+        repaired["raw_llm_final_kind"] = "frequency"
     if "raw_llm_final_label" not in repaired and "final_label" in repaired:
         repaired["raw_llm_final_label"] = repaired["final_label"]
     if "raw_llm_final_kind" not in repaired and "final_kind" in repaired:
         repaired["raw_llm_final_kind"] = repaired["final_kind"]
     if "selected_evidence" not in repaired and "evidence" in repaired:
         repaired["selected_evidence"] = repaired["evidence"]
+    repaired.setdefault("raw_clinical_summary", repaired.get("clinical_summary", ""))
     repaired.setdefault("raw_llm_monthly_frequency", None)
+    repaired.setdefault("supporting_event_ids", [])
+    repaired.setdefault("combined_rationale", "")
     repaired.setdefault("final_rationale", repaired.get("rationale", ""))
     return {
         key: value
         for key, value in repaired.items()
         if key in LlmHeavyFinalAnswerRecord.model_fields
     }
+
+
+def _repair_clinical_quantity_payload(quantity: dict[str, Any]) -> dict[str, Any]:
+    repaired = dict(quantity)
+    for key in ("period_unit", "cluster_period_unit", "seizure_free_duration_unit", "vague_count"):
+        _repair_scalar_list_alias(repaired, key)
+    for key in ("period_unit", "cluster_period_unit", "seizure_free_duration_unit"):
+        if repaired.get(key) not in {"day", "week", "month", "year", None}:
+            repaired[key] = None
+    if repaired.get("vague_count") == "many":
+        repaired["vague_count"] = "multiple"
+    if repaired.get("vague_count") in {"most days", "several"}:
+        repaired["vague_count"] = "multiple"
+    return repaired
 
 
 def _repair_scalar_list_alias(payload: dict[str, Any], key: str) -> None:

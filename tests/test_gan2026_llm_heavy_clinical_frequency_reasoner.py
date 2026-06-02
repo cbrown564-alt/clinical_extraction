@@ -87,11 +87,14 @@ def _raw_reasoner(final_label: str = "2 per months") -> str:
                 "uncertainty_flags": [],
             },
             "final_answer": {
+                "raw_clinical_summary": "Current quantified focal-seizure rate.",
                 "raw_llm_final_label": final_label,
                 "raw_llm_final_kind": "frequency",
                 "raw_llm_monthly_frequency": 2.0,
                 "selected_evidence": "two focal seizures per month",
                 "selected_event_ids": ["sf-1"],
+                "supporting_event_ids": [],
+                "combined_rationale": "",
                 "final_rationale": "The final label renders the selected current event.",
             },
         }
@@ -116,6 +119,15 @@ def test_build_prompt_input_excludes_gold_and_deterministic_candidates() -> None
     assert "gold_label" not in json.dumps(prompt)
     assert "candidate_events" not in prompt
     assert "deterministic_final_selection" not in prompt
+    final_answer_schema = prompt["final_answer_schema"]
+    assert "raw_clinical_summary" in final_answer_schema
+    assert "supporting_event_ids" in final_answer_schema
+    assert "combined_rationale" in final_answer_schema
+    assert "parser-ready" in final_answer_schema["raw_llm_final_label"]
+    assert "exact copy of one selected event evidence value" in final_answer_schema[
+        "selected_evidence"
+    ]
+    assert "<= four per week -> 4 per week" in json.dumps(prompt)
 
 
 def test_parse_llm_heavy_reasoner_json_repairs_schema_aliases() -> None:
@@ -145,6 +157,59 @@ def test_parse_llm_heavy_reasoner_json_flags_selected_event_trace_mismatch() -> 
     assert "selected_event_trace: final_answer ids differ from selection ids" in errors
 
 
+def test_parse_llm_heavy_reasoner_json_flags_concatenated_selected_evidence() -> None:
+    payload = json.loads(_raw_reasoner("2 per month"))
+    payload["events"].append(
+        {
+            "event_id": "sf-3",
+            "kind": "frequency_rate",
+            "applies_to": "seizures",
+            "raw_phrase": "Past history included daily seizures in 2020",
+            "evidence": "Past history included daily seizures in 2020",
+            "assertion_status": "asserted",
+            "temporality": "historical",
+            "certainty": "high",
+            "clinical_quantity": {},
+            "model_normalized_clinical_label": "1 per day",
+            "notes": "Historical only.",
+        }
+    )
+    payload["selection"]["selected_event_ids"] = ["sf-1", "sf-3"]
+    payload["final_answer"]["selected_event_ids"] = ["sf-1", "sf-3"]
+    payload["final_answer"]["selected_evidence"] = (
+        "two focal seizures per month; Past history included daily seizures in 2020"
+    )
+
+    extraction, errors = parse_llm_heavy_reasoner_json(
+        json.dumps(payload),
+        note_text=_record().note_text,
+    )
+
+    assert extraction is not None
+    assert "evidence: selected evidence is not one selected event evidence value" in errors
+
+
+def test_parse_llm_heavy_reasoner_json_repairs_nonsemantic_quantity_aliases() -> None:
+    payload = json.loads(_raw_reasoner("multiple per month"))
+    quantity = payload["events"][0]["clinical_quantity"]
+    quantity["vague_count"] = "several"
+    quantity["period_unit"] = ["month"]
+    quantity["cluster_period_unit"] = "hour"
+    payload["final_answer"]["raw_llm_final_kind"] = "cluster_frequency"
+
+    extraction, errors = parse_llm_heavy_reasoner_json(
+        json.dumps(payload),
+        note_text=_record().note_text,
+    )
+
+    assert extraction is not None
+    assert extraction.events[0].clinical_quantity.vague_count == "multiple"
+    assert extraction.events[0].clinical_quantity.period_unit == "month"
+    assert extraction.events[0].clinical_quantity.cluster_period_unit is None
+    assert extraction.final_answer.raw_llm_final_kind == "frequency"
+    assert errors == []
+
+
 def test_run_split_records_llm_heavy_score_layers() -> None:
     rows, metadata = run_split(
         [_record()],
@@ -160,8 +225,12 @@ def test_run_split_records_llm_heavy_score_layers() -> None:
 
     row = rows[0]
     assert metadata["pipeline_family"] == PIPELINE_FAMILY
+    assert metadata["prompt_version"] == PROMPT_VERSION
     assert metadata["schema_smoke_stop_rule"]["schema_valid_rows_minimum"] == "24/25"
     assert metadata["repair_mode_layers"]["raw_llm"]["repair_family"] == "none"
+    assert row["structured_record"]["final_answer"]["raw_clinical_summary"] == (
+        "Current quantified focal-seizure rate."
+    )
     assert row["structured_record"]["final_answer"]["raw_llm_final_label"] == "twice per month"
     assert row["component_status"]["event_extraction"] == "ok"
     assert row["component_status"]["selected_event_trace"] == "ok"
@@ -223,5 +292,5 @@ def test_load_reusable_raw_outputs_and_write_report(tmp_path: Path) -> None:
 
     assert summary["selected_evidence_valid"] == 1
     report = report_path.read_text(encoding="utf-8")
-    assert "LLM-Heavy Clinical Frequency Reasoner V0" in report
+    assert "LLM-Heavy Clinical Frequency Reasoner V1" in report
     assert "`format_only`" in report
