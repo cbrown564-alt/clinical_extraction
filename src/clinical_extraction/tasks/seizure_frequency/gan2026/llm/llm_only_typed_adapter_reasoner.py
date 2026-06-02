@@ -500,6 +500,10 @@ def write_report(
         "",
         "- Surface: `validation25` under `gan2026_split_v1`.",
         (
+            f"- Current artifact rows: `{summary.get('examples', 0)}`. Runs above 25 rows "
+            "are diagnostic only unless separately promoted."
+        ),
+        (
             "- Primary question: can typed DSPy output plus scoped JSONAdapter reduce "
             "schema/parser/rendering failures while preserving LLM-owned clinical "
             "interpretation?"

@@ -1,0 +1,71 @@
+{
+  "adapter_parse_failures": 0,
+  "arithmetic_trace_present": 38,
+  "benchmark_aligned_purist_correct": 43,
+  "call_failures": 0,
+  "event_evidence_total": 85,
+  "event_evidence_valid": 79,
+  "failure_taxonomy_counts": {
+    "no raw failure": 39,
+    "parser/schema issue": 3,
+    "wrong arithmetic/rendering": 2,
+    "wrong selected fact": 6
+  },
+  "format_only_purist_correct": 45,
+  "issue_tag_counts": {
+    "benchmark_adapter_changed_label": 8,
+    "clean_raw_correct": 28,
+    "event_evidence_not_exact": 5,
+    "evidence_exactness_failure": 5,
+    "format_only_changed_label": 7,
+    "missing_arithmetic_trace": 12,
+    "missing_rendering_operands": 1,
+    "raw_label_not_parser_compatible": 5,
+    "raw_label_wrong_purist": 3,
+    "selected_evidence_not_exact": 5,
+    "sidecar_rescue": 7
+  },
+  "primary_family_counts": {
+    "clean_raw_correct": 29,
+    "evidence_copying_failure": 5,
+    "llm_rendering_or_arithmetic_gap": 2,
+    "parser_ready_label_failure": 3,
+    "selected_fact_or_semantic_gap": 1,
+    "trace_contract_gap": 10
+  },
+  "raw_purist_correct": 42,
+  "raw_scorable": 45,
+  "raw_wrong_rows": [
+    10,
+    40,
+    190,
+    446,
+    743,
+    960,
+    987,
+    1165
+  ],
+  "rendering_operands_present": 49,
+  "row_count": 50,
+  "selected_event_trace_mismatches": 0,
+  "selected_evidence_arithmetic_purist_correct": 49,
+  "selected_evidence_failure_rows": [
+    40,
+    79,
+    103,
+    409,
+    446
+  ],
+  "selected_evidence_valid": 45,
+  "sidecar_rescue_rows": [
+    10,
+    40,
+    190,
+    446,
+    743,
+    960,
+    987
+  ],
+  "source_jsonl": "experiments/gan2026_llm_only_typed_adapter_reasoner_validation50_gpt41mini_v0_diagnostic_2026-06-02.jsonl",
+  "structured_records": 50
+}

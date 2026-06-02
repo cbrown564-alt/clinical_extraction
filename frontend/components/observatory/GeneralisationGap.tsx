@@ -7,7 +7,7 @@ interface GeneralisationGapProps {
   summaries: RunSummary[];
 }
 
-function formatPct(n: number): string {
+function fmt(n: number): string {
   return `${(n * 100).toFixed(1)}%`;
 }
 
@@ -18,7 +18,11 @@ const FAMILY_LABELS: Record<string, string> = {
   llm_replacement_postprocessing_ablation: "LLM Repl",
   hybrid_rules_candidates_llm_adjudicator: "Hybrid",
   hybrid_clinical_frequency_state_graph: "Hybrid Graph",
+  llm_only_structured_events: "LLM Struct",
+  llm_only_direct_labeler: "LLM Direct",
 };
+
+const TICKS = [0, 0.25, 0.5, 0.75, 1.0];
 
 export default function GeneralisationGap({ summaries }: GeneralisationGapProps) {
   const paired = summaries.filter((s) => s.validationMetrics && s.testMetrics);
@@ -45,8 +49,11 @@ export default function GeneralisationGap({ summaries }: GeneralisationGapProps)
     );
   }
 
+  // Find the widest label to keep bars aligned
+  const maxLabelWidth = 160;
+
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <div className="flex items-center gap-2">
         <Mountain className="h-4 w-4 text-muted" />
         <h3 className="text-xs font-semibold uppercase tracking-widest text-muted">
@@ -57,103 +64,114 @@ export default function GeneralisationGap({ summaries }: GeneralisationGapProps)
         </span>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        {paired.map((summary) => {
-          const val = summary.validationMetrics!;
-          const test = summary.testMetrics!;
-          const puristGap = val.puristAccuracy - test.puristAccuracy;
-          const pragmaticGap = val.pragmaticAccuracy - test.pragmaticAccuracy;
-          const familyLabel = FAMILY_LABELS[summary.pipelineFamily] ?? summary.pipelineFamily;
+      <div className="rounded-lg border border-border bg-surface p-5">
+        {/* Legend */}
+        <div className="flex items-center justify-end gap-4 mb-4">
+          <div className="flex items-center gap-1.5">
+            <div className="h-2.5 w-2.5 rounded-sm bg-[hsl(220,60%,45%)]" />
+            <span className="text-[10px] text-muted uppercase tracking-wider">Validation</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="h-2.5 w-2.5 rounded-sm bg-[hsl(25,75%,45%)]" />
+            <span className="text-[10px] text-muted uppercase tracking-wider">Test</span>
+          </div>
+        </div>
 
-          return (
-            <div key={summary.runId} className="rounded-lg border border-border bg-surface p-4">
-              <div className="mb-3 flex items-center justify-between">
-                <div>
-                  <div className="text-[10px] font-semibold uppercase tracking-wider text-muted">
+        {/* Chart rows */}
+        <div className="space-y-4">
+          {paired.map((summary) => {
+            const val = summary.validationMetrics!;
+            const test = summary.testMetrics!;
+            const puristGap = val.puristAccuracy - test.puristAccuracy;
+            const pragmaticGap = val.pragmaticAccuracy - test.pragmaticAccuracy;
+            const familyLabel = FAMILY_LABELS[summary.pipelineFamily] ?? summary.pipelineFamily;
+            const variant = summary.runId
+              .replace(/^gan2026_/, "")
+              .replace(/_2026-.*$/, "");
+
+            return (
+              <div key={summary.runId} className="group">
+                {/* Label row */}
+                <div className="flex items-baseline gap-2 mb-1">
+                  <span
+                    className="text-[11px] font-semibold text-foreground shrink-0 truncate"
+                    style={{ width: maxLabelWidth }}
+                    title={variant}
+                  >
                     {familyLabel}
-                  </div>
-                  <div className="text-[11px] font-medium text-foreground">
-                    {summary.runId.replace(/^gan2026_/, "").replace(/_2026-.*$/, "")}
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-[9px] text-muted">Val rows</div>
-                  <div className="text-[11px] font-mono">{val.rowCount}</div>
-                  <div className="text-[9px] text-muted">Test rows</div>
-                  <div className="text-[11px] font-mono">{test.rowCount}</div>
-                </div>
-              </div>
-
-              {/* Purist */}
-              <div className="mb-4 space-y-1.5">
-                <div className="flex items-center justify-between text-[10px] text-muted">
-                  <span className="font-medium text-foreground">Purist Accuracy</span>
-                  <span className="rounded bg-error/10 px-1 py-0 text-[9px] font-medium text-error">
-                    Gap {formatPct(puristGap)}
+                  </span>
+                  <span className="text-[10px] text-muted truncate">{variant}</span>
+                  <span className="ml-auto text-[10px] font-mono text-error">
+                    Δ {fmt(puristGap)}
+                    <span className="text-muted ml-1">({fmt(pragmaticGap)} pragm.)</span>
                   </span>
                 </div>
-                <div className="flex h-7 items-center gap-0">
-                  <div
-                    className="flex h-full items-center justify-center rounded-l bg-deterministic/15 text-[10px] font-semibold text-deterministic border-y border-l border-deterministic/25"
-                    style={{ width: `${Math.min(val.puristAccuracy * 100, 45)}%` }}
-                  >
-                    {formatPct(val.puristAccuracy)}
-                  </div>
-                  <div
-                    className="flex h-full items-center justify-center bg-error/10 text-[9px] font-medium text-error border-y border-error/20"
-                    style={{ width: `${Math.max(puristGap * 100, 2)}%` }}
-                  >
-                    {puristGap > 0.03 ? formatPct(puristGap) : ""}
-                  </div>
-                  <div
-                    className="flex h-full items-center justify-center rounded-r bg-llm/15 text-[10px] font-semibold text-llm border-y border-r border-llm/25"
-                    style={{ width: `${Math.min(test.puristAccuracy * 100, 45)}%` }}
-                  >
-                    {formatPct(test.puristAccuracy)}
-                  </div>
-                </div>
-                <div className="flex justify-between text-[9px] text-muted">
-                  <span>Validation</span>
-                  <span>Test</span>
-                </div>
-              </div>
 
-              {/* Pragmatic */}
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between text-[10px] text-muted">
-                  <span className="font-medium text-foreground">Pragmatic Accuracy</span>
-                  <span className="rounded bg-error/10 px-1 py-0 text-[9px] font-medium text-error">
-                    Gap {formatPct(pragmaticGap)}
-                  </span>
-                </div>
-                <div className="flex h-7 items-center gap-0">
-                  <div
-                    className="flex h-full items-center justify-center rounded-l bg-deterministic/15 text-[10px] font-semibold text-deterministic border-y border-l border-deterministic/25"
-                    style={{ width: `${Math.min(val.pragmaticAccuracy * 100, 45)}%` }}
-                  >
-                    {formatPct(val.pragmaticAccuracy)}
+                {/* Bars */}
+                <div className="flex items-center" style={{ marginLeft: maxLabelWidth }}>
+                  <div className="flex-1 relative">
+                    {/* Track line */}
+                    <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-px bg-border" />
+
+                    {/* Validation bar */}
+                    <div className="relative h-5 mb-1">
+                      <div
+                        className="absolute left-0 top-0 h-full rounded-sm bg-[hsl(220,60%,45%)]/80 flex items-center justify-end pr-1.5"
+                        style={{ width: `${val.puristAccuracy * 100}%` }}
+                      >
+                        {val.puristAccuracy >= 0.18 && (
+                          <span className="text-[9px] font-semibold text-white">{fmt(val.puristAccuracy)}</span>
+                        )}
+                      </div>
+                      {val.puristAccuracy < 0.18 && (
+                        <span className="absolute text-[9px] font-semibold text-[hsl(220,60%,45%)] ml-1" style={{ left: `${val.puristAccuracy * 100}%` }}>
+                          {fmt(val.puristAccuracy)}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Test bar */}
+                    <div className="relative h-5">
+                      <div
+                        className="absolute left-0 top-0 h-full rounded-sm bg-[hsl(25,75%,45%)]/80 flex items-center justify-end pr-1.5"
+                        style={{ width: `${test.puristAccuracy * 100}%` }}
+                      >
+                        {test.puristAccuracy >= 0.18 && (
+                          <span className="text-[9px] font-semibold text-white">{fmt(test.puristAccuracy)}</span>
+                        )}
+                      </div>
+                      {test.puristAccuracy < 0.18 && (
+                        <span className="absolute text-[9px] font-semibold text-[hsl(25,75%,45%)] ml-1" style={{ left: `${test.puristAccuracy * 100}%` }}>
+                          {fmt(test.puristAccuracy)}
+                        </span>
+                      )}
+                    </div>
                   </div>
-                  <div
-                    className="flex h-full items-center justify-center bg-error/10 text-[9px] font-medium text-error border-y border-error/20"
-                    style={{ width: `${Math.max(pragmaticGap * 100, 2)}%` }}
-                  >
-                    {pragmaticGap > 0.03 ? formatPct(pragmaticGap) : ""}
-                  </div>
-                  <div
-                    className="flex h-full items-center justify-center rounded-r bg-llm/15 text-[10px] font-semibold text-llm border-y border-r border-llm/25"
-                    style={{ width: `${Math.min(test.pragmaticAccuracy * 100, 45)}%` }}
-                  >
-                    {formatPct(test.pragmaticAccuracy)}
-                  </div>
-                </div>
-                <div className="flex justify-between text-[9px] text-muted">
-                  <span>Validation</span>
-                  <span>Test</span>
                 </div>
               </div>
+            );
+          })}
+        </div>
+
+        {/* X-axis */}
+        <div className="flex items-center mt-4" style={{ marginLeft: maxLabelWidth }}>
+          <div className="flex-1 relative">
+            <div className="h-px bg-border" />
+            <div className="flex justify-between mt-1">
+              {TICKS.map((t) => (
+                <div key={t} className="flex flex-col items-center">
+                  <div className="h-1 w-px bg-border" />
+                  <span className="text-[9px] font-mono text-muted mt-0.5">{fmt(t)}</span>
+                </div>
+              ))}
             </div>
-          );
-        })}
+          </div>
+        </div>
+
+        {/* Axis label */}
+        <div className="flex justify-center mt-1" style={{ marginLeft: maxLabelWidth }}>
+          <span className="text-[9px] uppercase tracking-widest text-muted">Purist Accuracy</span>
+        </div>
       </div>
     </div>
   );

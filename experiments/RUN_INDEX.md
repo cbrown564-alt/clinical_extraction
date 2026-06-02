@@ -376,6 +376,18 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Reject
 
+### `gan2026_llm_only_typed_adapter_reasoner_v0_validation50_diagnostic_2026-06-02`
+- Date/split: `2026-06-02`; `validation`; `50` rows.
+- Pipeline: `llm_only_typed_adapter_reasoner`; mode `live validation50 typed DSPy JSONAdapter diagnostic plus saved-output row-level error analysis`; replay `cache_first`.
+- Model role: LLM-only typed DSPy event extraction, clinical selection, and parser-ready final-label renderer; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `typed DSPy JSONAdapter outputs with raw_llm, format_only, selected_evidence_arithmetic, benchmark_aligned, and oracle_format_upper_bound layers; deterministic arithmetic and benchmark alignment remain side-cars`.
+- Primary metrics: adapter_parse_failures=0, arithmetic_trace_present=38, benchmark_aligned_purist_correct=43, call_failures=0, event_evidence_total=85, event_evidence_valid=79, format_only_purist_correct=45, parse_failures=0, raw_llm_pragmatic_correct=42, raw_llm_purist_correct=42, raw_llm_scorable=45, rendering_operands_present=49, row_count=50, selected_event_trace_mismatches=0, selected_evidence_arithmetic_pragmatic_correct=49, selected_evidence_arithmetic_purist_correct=49, selected_evidence_arithmetic_raw_wrong_to_correct=7, selected_evidence_valid=45, structured_records=50.
+- Evidence validity: Selected evidence exact 45/50; event evidence exact 79/85; selected-event trace mismatches 0/50.
+- Cache/reuse source: DSPy cache enabled; no saved raw-output reuse for the validation50 diagnostic. Error analysis reuses the saved validation50 JSONL only.
+- Supersedes: `gan2026_llm_only_typed_adapter_reasoner_v0_validation25_live_2026-06-02`.
+- Claim language: User-approved validation50 diagnostic after failed validation25 gate. Reject promotion: typed JSONAdapter/schema reliability is strong, but raw model-owned labels, exact selected evidence, and arithmetic traces are not clean enough; selected-evidence arithmetic is a deterministic side-car, not LLM-only success.
+- Artifacts: `experiments/gan2026_llm_only_typed_adapter_reasoner_validation50_gpt41mini_v0_diagnostic_2026-06-02.jsonl`, `experiments/gan2026_llm_only_typed_adapter_reasoner_validation50_gpt41mini_v0_diagnostic_2026-06-02.md`, `experiments/gan2026_llm_only_typed_adapter_reasoner_validation50_error_analysis_2026-06-02.csv`, `experiments/gan2026_llm_only_typed_adapter_reasoner_validation50_error_analysis_2026-06-02.json`, `experiments/gan2026_llm_only_typed_adapter_reasoner_validation50_error_analysis_2026-06-02.md`.
+
 ### `gan2026_llm_only_typed_adapter_reasoner_v0_validation25_live_2026-06-02`
 - Date/split: `2026-06-02`; `validation`; `25` rows.
 - Pipeline: `llm_only_typed_adapter_reasoner`; mode `live validation25 typed DSPy JSONAdapter architecture smoke`; replay `cache_first`.
