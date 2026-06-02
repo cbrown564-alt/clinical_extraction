@@ -72,6 +72,13 @@ DURATION_PROJECTION_VARIANTS: tuple[DurationProjectionVariant, ...] = (
         ),
     ),
     DurationProjectionVariant(
+        name="month_bucket_duration_selection",
+        description=(
+            "Prefer broad month-bucket seizure-free nodes over competing numeric-month "
+            "or broad-year nodes, preserving plural numeric-month labels for diagnostics."
+        ),
+    ),
+    DurationProjectionVariant(
         name="oracle_exact_seizure_free_node",
         description="Gold-aware upper bound: select an exact seizure-free gold node when present.",
     ),
@@ -83,21 +90,37 @@ def run_seizure_free_duration_ablation(
     *,
     split: str,
     split_manifest: str,
+    graph_key: str = "graph",
+    artifact_kind: str = "gan2026_state_graph_seizure_free_duration_projection_ablation",
+    report_title: str = "Gan 2026 State-Graph Seizure-Free Duration Projection Ablation",
+    claim_language: str | None = None,
+    source_artifact_override: str | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Run duration-focused variants over seizure-free graph projection misses."""
 
-    rows = [_duration_row(row) for row in ablation_rows if _is_duration_surface(row)]
+    rows = [
+        _duration_row(
+            row,
+            graph_key=graph_key,
+            source_artifact_override=source_artifact_override,
+        )
+        for row in ablation_rows
+        if _is_duration_surface(row, graph_key=graph_key)
+    ]
     metadata = {
-        "artifact_kind": "gan2026_state_graph_seizure_free_duration_projection_ablation",
+        "artifact_kind": artifact_kind,
         "date": "2026-06-02",
         "pipeline_family": "hybrid_clinical_frequency_state_graph",
         "split": split,
         "split_manifest": split_manifest,
         "row_count": len(rows),
+        "graph_key": graph_key,
+        "report_title": report_title,
         "projection_variants": {
             variant.name: variant.description for variant in DURATION_PROJECTION_VARIANTS
         },
-        "claim_language": (
+        "claim_language": claim_language
+        or (
             "Diagnostic only. This replays duration-selection policies over saved "
             "validation graph artifacts where the gold label is seizure-free and "
             "at least one usable seizure-free graph node exists. It does not change "
@@ -123,8 +146,12 @@ def write_duration_ablation_report(
     json_path: Path,
 ) -> None:
     summary = metadata["summary"]
+    title = metadata.get(
+        "report_title",
+        "Gan 2026 State-Graph Seizure-Free Duration Projection Ablation",
+    )
     lines = [
-        "# Gan 2026 State-Graph Seizure-Free Duration Projection Ablation",
+        f"# {title}",
         "",
         "Diagnostic only: this is validation-cycle replay over saved graph artifacts, "
         "not a benchmark result and not a projection-policy promotion.",
@@ -136,6 +163,7 @@ def write_duration_ablation_report(
         f"- Split: `{metadata['split']}`",
         f"- Split manifest: `{metadata['split_manifest']}`",
         f"- Rows: {metadata['row_count']}",
+        f"- Graph field: `{metadata.get('graph_key', 'graph')}`",
         f"- JSONL artifact: `{jsonl_path}`",
         f"- Summary JSON: `{json_path}`",
         "",
@@ -166,6 +194,16 @@ def write_duration_ablation_report(
             f"{stats['baseline_wrong_to_variant_correct']} | "
             f"{stats['baseline_correct_to_variant_wrong']} | "
             f"{stats['selected_seizure_free_rows']} |"
+        )
+    if "month_bucket_duration_selection" in summary["variants"]:
+        lines.extend(
+            [
+                "",
+                "`month_bucket_duration_selection` is a diagnostic output-surface "
+                "variant. It prefers broad month-bucket nodes over numeric-month "
+                "or broad-year conflicts and preserves plural numeric-month labels; "
+                "it does not change scorer normalization or production projection.",
+            ]
         )
 
     lines.extend(
@@ -204,15 +242,20 @@ def write_duration_ablation_report(
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
-def _is_duration_surface(row: Mapping[str, Any]) -> bool:
+def _is_duration_surface(row: Mapping[str, Any], *, graph_key: str) -> bool:
     if row.get("gold_label_kind") != FrequencyLabelKind.SEIZURE_FREE.value:
         return False
-    graph = ClinicalFrequencyStateGraph.model_validate(row["graph"])
+    graph = ClinicalFrequencyStateGraph.model_validate(row[graph_key])
     return bool(_usable_seizure_free_nodes(graph))
 
 
-def _duration_row(row: Mapping[str, Any]) -> dict[str, Any]:
-    graph = ClinicalFrequencyStateGraph.model_validate(row["graph"])
+def _duration_row(
+    row: Mapping[str, Any],
+    *,
+    graph_key: str,
+    source_artifact_override: str | None,
+) -> dict[str, Any]:
+    graph = ClinicalFrequencyStateGraph.model_validate(row[graph_key])
     gold_label = str(row["gold_normalized_label"])
     seizure_free_nodes = _usable_seizure_free_nodes(graph)
     variant_results = {
@@ -227,11 +270,12 @@ def _duration_row(row: Mapping[str, Any]) -> dict[str, Any]:
     ]
     return {
         "source_row_index": int(row["source_row_index"]),
-        "source": str(row["source"]),
-        "source_artifact": str(row["source_artifact"]),
+        "source": str(row.get("source") or row.get("split") or "unknown"),
+        "source_artifact": source_artifact_override or str(row.get("source_artifact") or ""),
+        "graph_key": graph_key,
         "gold_normalized_label": gold_label,
         "gold_duration": _duration_record(gold_label),
-        "baseline_projection_label": str(row.get("baseline_projection_label", "")),
+        "baseline_projection_label": _baseline_projection_label(row),
         "failure_mode": _failure_mode(
             baseline=variant_results["baseline_v0"],
             exact_gold_nodes=exact_gold_nodes,
@@ -279,6 +323,20 @@ def _project_duration_variant(
             seizure_free_nodes,
             key=lambda node: (_numeric_duration_sort_key(node), node.node_id),
         )
+    elif variant_name == "month_bucket_duration_selection":
+        selected = max(
+            seizure_free_nodes,
+            key=lambda node: (_month_bucket_duration_sort_key(node), node.node_id),
+        )
+        return _projection_from_node(
+            selected,
+            rationale=(
+                "Projected with diagnostic seizure-free duration policy "
+                "month_bucket_duration_selection."
+            ),
+            policy_name="gan2026_state_graph_projection_ablation_month_bucket_duration_selection",
+            final_label_override=_month_bucket_diagnostic_label(selected),
+        )
     elif variant_name == "oracle_exact_seizure_free_node":
         exact_nodes = [
             node for node in seizure_free_nodes if node.normalized_label == gold_normalized_label
@@ -302,8 +360,9 @@ def _projection_from_node(
     *,
     rationale: str,
     policy_name: str,
+    final_label_override: str | None = None,
 ) -> GanGraphProjection:
-    record = label_to_frequency_record(node.normalized_label or "unknown")
+    record = label_to_frequency_record(final_label_override or node.normalized_label or "unknown")
     return GanGraphProjection(
         final_label=record.normalized_label,
         final_kind=record.kind,
@@ -431,6 +490,29 @@ def _numeric_duration_sort_key(node: StateGraphNode) -> tuple[int, float]:
     return int(duration["numeric"]), float(duration["months"])
 
 
+def _month_bucket_duration_sort_key(node: StateGraphNode) -> tuple[int, int, float]:
+    duration = _duration_record(node.normalized_label or "")
+    is_broad_month = (
+        duration["known"] and not duration["numeric"] and duration["unit"] == "month"
+    )
+    is_numeric_month = (
+        duration["known"] and duration["numeric"] and duration["unit"] == "month"
+    )
+    return int(is_broad_month), int(is_numeric_month), -float(duration["months"])
+
+
+def _month_bucket_diagnostic_label(node: StateGraphNode) -> str | None:
+    duration = _duration_record(node.normalized_label or "")
+    if (
+        duration["numeric"]
+        and duration["unit"] == "month"
+        and duration["amount"] is not None
+        and int(duration["amount"]) != 1
+    ):
+        return f"seizure free for {duration['amount']} months"
+    return None
+
+
 def _duration_record(label: str) -> dict[str, Any]:
     match = re.search(
         r"\bseizure free for (?P<amount>\d+|multiple) "
@@ -476,19 +558,35 @@ def _duration_months(amount: int, unit: str) -> float:
 
 def main(argv: Sequence[str] | None = None) -> None:
     from . import projection_arbitration_ablation
+    from .artifact_io import load_jsonl_rows
 
     parser = argparse.ArgumentParser(
         description="Replay Gan 2026 seizure-free duration projection ablations."
     )
+    parser.add_argument("--source-jsonl", type=Path)
+    parser.add_argument("--graph-key", default="graph")
+    parser.add_argument("--artifact-kind")
+    parser.add_argument("--report-title")
+    parser.add_argument("--source-artifact-override")
     parser.add_argument("--jsonl", type=Path, default=DEFAULT_JSONL_PATH)
     parser.add_argument("--json", type=Path, default=DEFAULT_JSON_PATH)
     parser.add_argument("--markdown", type=Path, default=DEFAULT_REPORT_PATH)
     args = parser.parse_args(argv)
 
+    if args.source_jsonl:
+        source_rows = load_jsonl_rows(args.source_jsonl)
+    else:
+        source_rows = projection_arbitration_ablation.load_default_ablation_rows()
     rows, metadata = run_seizure_free_duration_ablation(
-        projection_arbitration_ablation.load_default_ablation_rows(),
+        source_rows,
         split="validation_hard_slices",
         split_manifest="gan2026_split_v1",
+        graph_key=args.graph_key,
+        artifact_kind=args.artifact_kind
+        or "gan2026_state_graph_seizure_free_duration_projection_ablation",
+        report_title=args.report_title
+        or "Gan 2026 State-Graph Seizure-Free Duration Projection Ablation",
+        source_artifact_override=args.source_artifact_override,
     )
     write_jsonl_rows(rows, args.jsonl)
     write_duration_ablation_json(metadata, args.json)
@@ -500,6 +598,24 @@ def main(argv: Sequence[str] | None = None) -> None:
         json_path=args.json,
     )
     print(json.dumps(metadata["summary"], sort_keys=True))
+
+
+def _baseline_projection_label(row: Mapping[str, Any]) -> str:
+    value = row.get("baseline_projection_label")
+    if value is not None:
+        return str(value)
+    projection = row.get("baseline_projection")
+    if isinstance(projection, Mapping):
+        return str(projection.get("final_label") or "")
+    projection = row.get("replayed_projection")
+    if isinstance(projection, Mapping):
+        return str(projection.get("final_label") or "")
+    variant_results = row.get("variant_results")
+    if isinstance(variant_results, Mapping):
+        baseline = variant_results.get("baseline_v0")
+        if isinstance(baseline, Mapping):
+            return str(baseline.get("final_label") or "")
+    return ""
 
 
 if __name__ == "__main__":

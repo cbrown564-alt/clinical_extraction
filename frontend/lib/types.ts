@@ -152,35 +152,162 @@ export interface PipelineFamiliesResponse {
 
 // ── Architect (Phase 2) ──
 
-export type ArchitectNodeType =
-  | "extractor"
-  | "normaliser"
-  | "selector"
-  | "repair"
-  | "scorer";
+export type TraceStage = "extract" | "normalise" | "select" | "repair" | "score";
 
-export type NodeFamily = "rules_only" | "llm_only" | "hybrid";
-
-export interface ArchitectNodeConfig {
+export interface TraceItem {
   id: string;
-  type: ArchitectNodeType;
-  label: string;
-  family: NodeFamily;
-  pipelineFamily?: PipelineFamily;
-  ablationConfig?: AblationConfigPayload;
-  x: number;
-  y: number;
+  kind: string;
+  rawValue: string;
+  normalizedValue?: string;
+  evidence: string;
+  startChar: number | null;
+  endChar: number | null;
+  ruleId?: string;
+  ruleGroup?: string | null;
+  portability?: string | null;
+  metadata?: Record<string, unknown>;
 }
 
-export interface ArchitectEdgeConfig {
-  id: string;
-  source: string;
-  target: string;
+export interface StageExtract {
+  items: TraceItem[];
 }
 
-export interface SavedArchitecture {
-  name: string;
+export interface StageNormalise {
+  items: TraceItem[];
+}
+
+export interface StageSelect {
+  finalLabel: string;
+  rationale: string;
+  evidence: string;
+  monthlyFrequency?: number;
+  selectedIds?: string[];
+  rejectedIds?: string[];
+}
+
+export interface StageRepair {
+  changes: string[];
+  beforeLabel?: string;
+  afterLabel?: string;
+}
+
+export interface StageScore {
+  predictedLabel: string;
+  goldLabel: string;
+  match: boolean;
+  evidenceValid: boolean;
+}
+
+export interface PipelineTrace {
   pipelineFamily: PipelineFamily;
-  nodes: ArchitectNodeConfig[];
-  ablationConfig: AblationConfigPayload;
+  noteText: string;
+  goldLabel: string;
+  sourceRowIndex: number;
+  split: string;
+  extract: StageExtract;
+  normalise: StageNormalise;
+  select: StageSelect;
+  repair?: StageRepair;
+  score: StageScore;
+}
+
+// ── Artifact / Registry ──
+
+export interface RegistryEntry {
+  run_id: string;
+  pipeline_family: string;
+  date: string;
+  row_count: number;
+  artifact_paths: string[];
+  mode?: string;
+  model?: string;
+  model_role?: string;
+}
+
+export interface RegistryResponse {
+  registry_path: string;
+  runs: RegistryEntry[];
+}
+
+export interface ArtifactResponse {
+  run_id: string;
+  artifact_path: string;
+  artifact_type: string;
+  content: unknown[];
+}
+
+// ── Hybrid artifact row ──
+
+export interface HybridArtifactRow {
+  source_row_index: number;
+  split: string;
+  deterministic_diagnostics: {
+    candidate_events: CandidateEvent[];
+    normalized_events: NormalizedEvent[];
+    final_selection: FinalSelection;
+    evidence_valid: boolean;
+  };
+  decision_record: {
+    final_label: string;
+    rationale: string;
+    evidence: string;
+    accepted_event_ids: string[];
+    rejected_event_ids: string[];
+    temporality: string;
+    uncertainty: string;
+    normalized_rate: string;
+  };
+  reference: {
+    gold_label: string;
+  };
+  scores?: Record<string, unknown>;
+}
+
+// ── LLM artifact row ──
+
+export interface LLMClaim {
+  claim_id: string;
+  claim_type: string;
+  evidence: string;
+  raw_frequency: string | null;
+  temporality: string;
+  assertion_status: string;
+  uncertainty: string;
+  anchor_text: string;
+  section: string | null;
+  semiology: string | null;
+}
+
+export interface LLMFinalQuery {
+  final_label: string | null;
+  answer_kind: string;
+  evidence: string;
+  rationale: string;
+  confidence: string;
+  conversion_note: string | null;
+  raw_selected_frequency: string | null;
+  selected_claim_ids: string;
+}
+
+export interface LLMArtifactRow {
+  source_row_index: number;
+  split: string;
+  structured_record: {
+    claims: LLMClaim[];
+    final_query: LLMFinalQuery;
+  };
+  repair_changes: string[];
+  evidence_summary: {
+    selected_evidence: string;
+    selected_evidence_valid: boolean;
+  };
+  score_layers: Record<string, {
+    final_label: string;
+    purist_correct?: boolean;
+    pragmatic_correct?: boolean;
+    scorable?: boolean;
+  }>;
+  reference: {
+    gold_label: string;
+  };
 }

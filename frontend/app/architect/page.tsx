@@ -1,18 +1,11 @@
 "use client";
 
 import { Suspense } from "react";
-import dynamic from "next/dynamic";
 import { Workflow } from "lucide-react";
-import Palette from "@/components/architect/Palette";
-import NodeDrawer from "@/components/architect/NodeDrawer";
-import ConfigExporter from "@/components/architect/ConfigExporter";
-import ComparisonBar from "@/components/architect/ComparisonBar";
-
-// React Flow must be loaded client-side only
-const PipelineCanvas = dynamic(
-  () => import("@/components/architect/PipelineCanvas"),
-  { ssr: false }
-);
+import TraceControls from "@/components/architect/TraceControls";
+import StageStrip from "@/components/architect/StageStrip";
+import StageInspector from "@/components/architect/StageInspector";
+import ArchitectNoteRenderer from "@/components/architect/ArchitectNoteRenderer";
 
 function ArchitectInner() {
   return (
@@ -34,17 +27,32 @@ function ArchitectInner() {
             </div>
           </div>
         </div>
-        <ConfigExporter />
       </header>
 
-      {/* Comparison bar */}
-      <ComparisonBar />
+      {/* Controls */}
+      <TraceControls />
 
-      {/* Main workspace */}
+      {/* Stage strip */}
+      <StageStrip />
+
+      {/* Main content: Note + Inspector */}
       <div className="flex flex-1 overflow-hidden">
-        <Palette />
-        <PipelineCanvas />
-        <NodeDrawer />
+        {/* Left — Note */}
+        <div className="flex w-[55%] flex-col border-r border-border">
+          <div className="flex items-center justify-between border-b border-border bg-surface-raised/50 px-5 py-2">
+            <span className="text-[11px] font-semibold uppercase tracking-widest text-muted">
+              Specimen
+            </span>
+          </div>
+          <div className="flex-1 overflow-y-auto p-6">
+            <ArchitectNoteRenderer />
+          </div>
+        </div>
+
+        {/* Right — Stage Inspector */}
+        <div className="flex w-[45%] flex-col bg-surface">
+          <StageInspector />
+        </div>
       </div>
     </div>
   );
