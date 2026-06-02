@@ -40,6 +40,7 @@ const FAMILY_LABELS: Record<string, string> = {
   rules_only: "Rules",
   llm_only_claim_table_selector: "LLM Claim",
   llm_heavy_clinical_frequency_reasoner: "LLM Heavy",
+  llm_replacement_postprocessing_ablation: "LLM Repl",
   hybrid_rules_candidates_llm_adjudicator: "Hybrid",
   hybrid_clinical_frequency_state_graph: "Hybrid Graph",
 };
@@ -102,7 +103,7 @@ export default function RunLadder({ summaries }: RunLadderProps) {
                 </div>
 
                 {/* Run ID */}
-                <div className="text-[11px] font-medium text-foreground leading-tight line-clamp-2">
+                <div className="text-[11px] font-medium text-foreground leading-tight truncate">
                   {summary.runId.replace(/^gan2026_/, "").replace(/_2026-.*$/, "")}
                 </div>
 

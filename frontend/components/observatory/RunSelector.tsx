@@ -24,6 +24,7 @@ const FAMILY_LABELS: Record<string, string> = {
   llm_only_direct_labeler: "LLM Direct",
   llm_only_structured_events: "LLM Events",
   llm_heavy_clinical_frequency_reasoner: "LLM Heavy",
+  llm_replacement_postprocessing_ablation: "LLM Repl",
   hybrid_rules_candidates_llm_adjudicator: "Hybrid",
   hybrid_clinical_frequency_state_graph: "Hybrid Graph",
 };
@@ -32,6 +33,7 @@ const FAMILY_ORDER = [
   "rules_only",
   "llm_only_claim_table_selector",
   "llm_heavy_clinical_frequency_reasoner",
+  "llm_replacement_postprocessing_ablation",
   "hybrid_rules_candidates_llm_adjudicator",
   "hybrid_clinical_frequency_state_graph",
 ];
@@ -285,11 +287,12 @@ export default function RunSelector({
                 allSelected
                   ? "bg-deterministic border-deterministic"
                   : someSelected
-                  ? "bg-deterministic/50 border-deterministic"
+                  ? "bg-surface border-deterministic"
                   : "border-border bg-surface"
               }`}
             >
-              {(allSelected || someSelected) && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}
+              {allSelected && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}
+              {!allSelected && someSelected && <div className="h-2 w-2 rounded-sm bg-deterministic" />}
             </div>
           </button>
           <SortButton k="family" label="Family" />
@@ -335,11 +338,12 @@ export default function RunSelector({
                           familySelected
                             ? "bg-deterministic border-deterministic"
                             : familySome
-                            ? "bg-deterministic/50 border-deterministic"
+                            ? "bg-surface border-deterministic"
                             : "border-border bg-surface"
                         }`}
                       >
-                        {(familySelected || familySome) && <Check className="h-2 w-2 text-white" strokeWidth={3} />}
+                        {familySelected && <Check className="h-2 w-2 text-white" strokeWidth={3} />}
+                        {!familySelected && familySome && <div className="h-1.5 w-1.5 rounded-sm bg-deterministic" />}
                       </div>
                     </button>
                     <span className={`rounded px-1.5 py-0.5 text-[10px] font-semibold border ${familyColorClass(family)}`}>

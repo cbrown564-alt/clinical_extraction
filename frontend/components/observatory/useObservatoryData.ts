@@ -7,6 +7,11 @@ import type { RegistryEntry, RowScore, RunSummary, CategoryMetrics } from "@/lib
 
 const STORAGE_KEY = "observatory-selected-runs";
 
+function normalizeCategory(cat: string): string {
+  if (!cat || cat === "unknown" || cat === "None") return "seizure_freq_unknown";
+  return cat;
+}
+
 const PURIST_CATEGORIES = [
   "currently_no_seizure",
   "seizure_freq_unknown",
@@ -32,8 +37,8 @@ function extractRowScore(row: unknown): RowScore | null {
     if (adjudicator) {
       const ref = r.reference as Record<string, unknown> | undefined;
       return {
-        predictedCategory: String(adjudicator.predicted_purist_category ?? "unknown"),
-        goldCategory: String(adjudicator.gold_purist_category ?? "unknown"),
+        predictedCategory: normalizeCategory(String(adjudicator.predicted_purist_category)),
+        goldCategory: normalizeCategory(String(adjudicator.gold_purist_category)),
         puristCorrect: Boolean(adjudicator.purist_correct),
         pragmaticCorrect: Boolean(adjudicator.pragmatic_correct),
         predictedLabel: String(adjudicator.final_label ?? "unknown"),
@@ -43,17 +48,20 @@ function extractRowScore(row: unknown): RowScore | null {
     }
   }
 
-  // LLM format
+  // LLM format (claim table / direct labeler / structured events)
   const scoreLayers = r.score_layers as Record<string, unknown> | undefined;
   if (scoreLayers) {
     const layer =
       (scoreLayers.clean_scorer_facing as Record<string, unknown> | undefined) ||
-      (scoreLayers.strict_format as Record<string, unknown> | undefined);
+      (scoreLayers.strict_format as Record<string, unknown> | undefined) ||
+      (scoreLayers.benchmark_aligned as Record<string, unknown> | undefined) ||
+      (scoreLayers.format_only as Record<string, unknown> | undefined) ||
+      (scoreLayers.raw_llm as Record<string, unknown> | undefined);
     if (layer) {
       const ref = r.reference as Record<string, unknown> | undefined;
       return {
-        predictedCategory: String(layer.predicted_purist_category ?? "unknown"),
-        goldCategory: String(layer.gold_purist_category ?? "unknown"),
+        predictedCategory: normalizeCategory(String(layer.predicted_purist_category)),
+        goldCategory: normalizeCategory(String(layer.gold_purist_category)),
         puristCorrect: Boolean(layer.purist_correct),
         pragmaticCorrect: Boolean(layer.pragmatic_correct),
         predictedLabel: String(layer.final_label ?? "unknown"),
@@ -68,14 +76,39 @@ function extractRowScore(row: unknown): RowScore | null {
   const puristGold = r.purist_gold_category as string | undefined;
   if (puristPredicted && puristGold) {
     return {
-      predictedCategory: puristPredicted,
-      goldCategory: puristGold,
+      predictedCategory: normalizeCategory(puristPredicted),
+      goldCategory: normalizeCategory(puristGold),
       puristCorrect: puristPredicted === puristGold,
       pragmaticCorrect:
         (r.pragmatic_predicted_category as string | undefined) ===
         (r.pragmatic_gold_category as string | undefined),
       predictedLabel: String(r.prediction_label ?? "unknown"),
       goldLabel: String(r.gold_label ?? "unknown"),
+      split: String(r.split ?? ""),
+    };
+  }
+
+  // Replacement post-processing ablation format (flat schema)
+  const flatPuristCorrect = r.purist_correct as boolean | undefined;
+  const flatPragmaticCorrect = r.pragmatic_correct as boolean | undefined;
+  const flatFinalLabel = r.final_label as string | undefined;
+  const flatGoldLabel = r.gold_label as string | undefined;
+  const flatPuristTransition = r.purist_category_transition as string | undefined;
+  if (flatPuristCorrect !== undefined && flatFinalLabel !== undefined && flatGoldLabel !== undefined) {
+    let predictedCategory = "unknown";
+    let goldCategory = "unknown";
+    if (flatPuristTransition && flatPuristTransition.includes("->")) {
+      const [from, to] = flatPuristTransition.split("->");
+      goldCategory = from === "None" ? "unknown" : from;
+      predictedCategory = to === "None" ? "unknown" : to;
+    }
+    return {
+      predictedCategory: normalizeCategory(predictedCategory),
+      goldCategory: normalizeCategory(goldCategory),
+      puristCorrect: Boolean(flatPuristCorrect),
+      pragmaticCorrect: Boolean(flatPragmaticCorrect),
+      predictedLabel: flatFinalLabel,
+      goldLabel: flatGoldLabel,
       split: String(r.split ?? ""),
     };
   }
@@ -268,6 +301,44 @@ export function useObservatoryData() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(selectedRunIds)));
     }
   }, [selectedRunIds]);
+
+  // Auto-fetch artifacts for selected runs that aren't loaded yet
+  useEffect(() => {
+    for (const runId of selectedRunIds) {
+      if (summaries.has(runId) || loadingRuns.has(runId)) continue;
+      const entry = runs.find((r) => r.run_id === runId);
+      if (!entry) continue;
+      const jsonlPath = entry.artifact_paths.find((p) => p.endsWith(".jsonl"));
+      if (!jsonlPath) {
+        setRunErrors((prev) => new Map(prev).set(runId, "No JSONL artifact"));
+        continue;
+      }
+
+      setLoadingRuns((prev) => {
+        if (prev.has(runId)) return prev;
+        const next = new Set(prev);
+        next.add(runId);
+        return next;
+      });
+
+      fetchArtifact(runId, jsonlPath)
+        .then((artifact) => {
+          const summary = computeSummary(entry, artifact.content as unknown[]);
+          setSummaries((prev) => new Map(prev).set(runId, summary));
+        })
+        .catch((err) => {
+          setRunErrors((prev) => new Map(prev).set(runId, String(err)));
+        })
+        .finally(() => {
+          setLoadingRuns((prev) => {
+            const next = new Set(prev);
+            next.delete(runId);
+            return next;
+          });
+        });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedRunIds, runs]);
 
   const toggleRun = useCallback(
     async (runId: string) => {

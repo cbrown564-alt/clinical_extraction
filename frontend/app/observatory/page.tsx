@@ -82,8 +82,15 @@ function ObservatoryInner() {
                   <div className="text-[9px] font-semibold uppercase tracking-wider text-muted">
                     Selected Runs
                   </div>
-                  <div className="mt-1 text-xl font-semibold text-foreground">
-                    {selectedSummaries.length}
+                  <div className="mt-1 flex items-baseline gap-1.5">
+                    <span className="text-xl font-semibold text-foreground">
+                      {selectedSummaries.length}
+                    </span>
+                    {selectedRunIds.size > selectedSummaries.length && (
+                      <span className="text-[10px] text-muted">
+                        ({selectedRunIds.size - selectedSummaries.length} loading)
+                      </span>
+                    )}
                   </div>
                 </div>
                 <div className="rounded-lg border border-border bg-surface p-3">
