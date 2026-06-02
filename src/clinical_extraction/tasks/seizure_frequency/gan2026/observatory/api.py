@@ -267,6 +267,41 @@ def create_app(
     def prompts() -> dict[str, Any]:
         return {"prompts": [_prompt_payload(module_name) for module_name in PROMPT_MODULES]}
 
+    @app.get("/records/{split_name}")
+    def records(split_name: str) -> dict[str, Any]:
+        records = _load_split_records(settings, split_name)
+        return {
+            "split": split_name,
+            "count": len(records),
+            "records": [
+                {
+                    "source_row_index": r.source_row_index,
+                    "gold_label": r.gold_label,
+                    "gold_reference": r.gold_reference,
+                    "row_ok": r.row_ok,
+                    "note_preview": r.note_text[:200].replace("\n", " "),
+                }
+                for r in records
+            ],
+        }
+
+    @app.get("/records/{split_name}/{source_row_index}")
+    def record(split_name: str, source_row_index: int) -> dict[str, Any]:
+        records = _load_split_records(settings, split_name)
+        for r in records:
+            if r.source_row_index == source_row_index:
+                return {
+                    "split": split_name,
+                    "source_row_index": r.source_row_index,
+                    "gold_label": r.gold_label,
+                    "gold_reference": r.gold_reference,
+                    "row_ok": r.row_ok,
+                    "note_text": r.note_text,
+                    "labels_match_all_categories": r.labels_match_all_categories,
+                    "quotes_ok_all_categories": r.quotes_ok_all_categories,
+                }
+        raise HTTPException(status_code=404, detail=f"Record {source_row_index} not found in split {split_name}")
+
     return app
 
 

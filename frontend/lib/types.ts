@@ -106,3 +106,28 @@ export interface HighlightSpan {
   ruleGroup?: string | null;
   tooltip?: string;
 }
+
+export interface SplitRecord {
+  source_row_index: number;
+  gold_label: string;
+  gold_reference: string;
+  row_ok: boolean;
+  note_preview: string;
+}
+
+export interface SplitRecordsResponse {
+  split: string;
+  count: number;
+  records: SplitRecord[];
+}
+
+export interface FullRecordResponse {
+  split: string;
+  source_row_index: number;
+  gold_label: string;
+  gold_reference: string;
+  row_ok: boolean;
+  note_text: string;
+  labels_match_all_categories: boolean;
+  quotes_ok_all_categories: boolean;
+}

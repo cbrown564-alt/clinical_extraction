@@ -1,0 +1,47 @@
+{
+  "artifact_kind": "gan2026_clinical_frequency_state_graph_diagnostics",
+  "claim_language": "Architecture/diagnostic development result only. Oracle coverage, projection F1, and graph errors are separate signals; this is not a benchmark result and does not change scorer or holdout policy.",
+  "date": "2026-06-02",
+  "graph_builder": "deterministic_oracle_span_harvester_v0",
+  "pipeline_family": "hybrid_clinical_frequency_state_graph",
+  "projection_policy": "gan2026_state_graph_projection_v0",
+  "row_count": 25,
+  "split": "validation",
+  "split_manifest": "gan2026_split_v1",
+  "summary": {
+    "missing_by_gold_kind": {
+      "unresolved_multiple": 1
+    },
+    "oracle_coverage": {
+      "by_gold_kind": {
+        "frequency": {
+          "representable": 22,
+          "representable_rate": 1.0,
+          "total": 22
+        },
+        "unresolved_multiple": {
+          "representable": 2,
+          "representable_rate": 0.6667,
+          "total": 3
+        }
+      },
+      "missing_count": 1,
+      "missing_source_row_indices": [
+        338
+      ],
+      "representable_count": 24,
+      "representable_rate": 0.96,
+      "row_count": 25
+    },
+    "projection": {
+      "exact_label_matches": 23,
+      "pragmatic_accuracy": 0.96,
+      "pragmatic_f1": 0.96,
+      "purist_accuracy": 0.96,
+      "purist_f1": 0.96,
+      "rows_with_competing_hypotheses": 2,
+      "rows_with_graph_errors": 0
+    }
+  },
+  "surface_note": "Validation prefix of 25 rows for state-graph coverage diagnostics."
+}

@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 from collections.abc import Sequence
 from enum import StrEnum
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -108,6 +109,29 @@ def build_state_graph(
         competing_hypothesis_node_ids=_competing_hypothesis_ids(nodes),
         missing_variable_flags=_missing_variable_flags(nodes),
         metadata={"candidate_count": len(candidates)},
+    )
+
+
+def build_state_graph_from_atomic_claims(
+    note_text: str,
+    claims: Sequence[dict[str, Any]],
+    *,
+    source_row_index: int | None = None,
+    graph_builder: str = "llm_atomic_claim_graph_builder_v0",
+) -> ClinicalFrequencyStateGraph:
+    """Build graph nodes from atomic claim rows after exact-evidence gating."""
+
+    nodes = [
+        _node_from_atomic_claim(index=index, claim=claim, note_text=note_text)
+        for index, claim in enumerate(claims, start=1)
+    ]
+    return ClinicalFrequencyStateGraph(
+        source_row_index=source_row_index,
+        nodes=tuple(nodes),
+        competing_hypothesis_node_ids=_competing_hypothesis_ids(nodes),
+        missing_variable_flags=_missing_variable_flags(nodes),
+        graph_builder=graph_builder,
+        metadata={"claim_count": len(claims)},
     )
 
 
@@ -264,6 +288,73 @@ def _node_from_candidate(
         rule_id=candidate.rule_id,
         graph_errors=errors,
     )
+
+
+def _node_from_atomic_claim(
+    *,
+    index: int,
+    claim: dict[str, Any],
+    note_text: str,
+) -> StateGraphNode:
+    evidence_text = str(claim.get("evidence") or "")
+    span = locate_evidence(note_text, evidence_text) if evidence_text else None
+    start_char, end_char = span if span else (None, None)
+    errors: list[str] = []
+    if span is None:
+        errors.append("atomic_claim_evidence_not_exact")
+
+    normalized_label = _atomic_claim_label(claim)
+    try:
+        label_record = label_to_frequency_record(normalized_label)
+    except ValueError as exc:
+        label_record = label_to_frequency_record("unknown")
+        normalized_label = "unknown"
+        errors.append(str(exc))
+
+    return StateGraphNode(
+        node_id=f"llm-sg-{index:03d}",
+        kind=_atomic_graph_kind(str(claim.get("kind") or claim.get("claim_type") or "")),
+        normalized_label=normalized_label,
+        semantic_kind=label_record.kind,
+        monthly_frequency=label_record.monthly_frequency,
+        evidence=EvidenceSpan(text=evidence_text, start_char=start_char, end_char=end_char),
+        assertion_status=str(claim.get("assertion_status") or "unknown"),
+        temporality=str(claim.get("temporality") or "unclear"),
+        certainty="certain" if span is not None else "unknown",
+        applies_to=_optional_text(claim.get("applies_to") or claim.get("semiology")),
+        rule_id=str(claim.get("rule_id") or "llm.atomic_claim"),
+        graph_errors=tuple(errors),
+    )
+
+
+def _atomic_claim_label(claim: dict[str, Any]) -> str:
+    raw_label = claim.get("normalized_label") or claim.get("final_label")
+    kind = str(claim.get("kind") or claim.get("claim_type") or "")
+    if raw_label:
+        return repair_prediction_label(str(raw_label))
+    if kind == "no_reference":
+        return "no seizure frequency reference"
+    return "unknown"
+
+
+def _atomic_graph_kind(kind: str) -> GraphNodeKind:
+    return {
+        "frequency_rate": GraphNodeKind.FREQUENCY_RATE,
+        "frequency": GraphNodeKind.FREQUENCY_RATE,
+        "cluster_frequency": GraphNodeKind.CLUSTER_FREQUENCY,
+        "seizure_free": GraphNodeKind.SEIZURE_FREE,
+        "last_event_only": GraphNodeKind.LAST_EVENT_ONLY,
+        "unknown_frequency": GraphNodeKind.UNKNOWN_FREQUENCY,
+        "unknown": GraphNodeKind.UNKNOWN_FREQUENCY,
+        "no_reference": GraphNodeKind.NO_REFERENCE,
+    }.get(kind, GraphNodeKind.UNKNOWN_FREQUENCY)
+
+
+def _optional_text(value: Any) -> str | None:
+    if value is None:
+        return None
+    text = str(value).strip()
+    return text or None
 
 
 def _graph_kind(candidate_kind: CandidateKind) -> GraphNodeKind:

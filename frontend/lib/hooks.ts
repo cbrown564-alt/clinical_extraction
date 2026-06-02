@@ -5,7 +5,7 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import { runNote, fetchRules, fetchHealth } from "./api";
+import { runNote, fetchRules, fetchHealth, fetchRecords, fetchRecord } from "./api";
 import type { RunNoteResponse } from "./types";
 
 export function useHealth() {
@@ -22,6 +22,24 @@ export function useRules() {
     queryKey: ["rules"],
     queryFn: fetchRules,
     staleTime: Infinity,
+  });
+}
+
+export function useRecords(split: string | null) {
+  return useQuery({
+    queryKey: ["records", split],
+    queryFn: () => fetchRecords(split!),
+    enabled: !!split,
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
+export function useRecord(split: string | null, sourceRowIndex: number | null) {
+  return useQuery({
+    queryKey: ["record", split, sourceRowIndex],
+    queryFn: () => fetchRecord(split!, sourceRowIndex!),
+    enabled: !!split && sourceRowIndex !== null,
+    staleTime: 5 * 60 * 1000,
   });
 }
 

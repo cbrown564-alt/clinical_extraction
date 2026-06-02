@@ -8,6 +8,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.state_graph import (
     GraphNodeKind,
     ProjectionPolicy,
     build_state_graph,
+    build_state_graph_from_atomic_claims,
     graph_invariance_signature,
     oracle_coverage_summary,
     project_graph_to_gan,
@@ -112,6 +113,33 @@ def test_oracle_coverage_summary_reports_gold_representability() -> None:
     assert summary.by_gold_kind[FrequencyLabelKind.FREQUENCY.value]["representable"] == 1
     assert summary.by_gold_kind[FrequencyLabelKind.NO_REFERENCE.value]["representable"] == 1
     assert summary.missing_source_row_indices == (2,)
+
+
+def test_llm_atomic_claim_graph_builder_requires_exact_evidence_for_certainty() -> None:
+    graph = build_state_graph_from_atomic_claims(
+        "Current frequency: two focal seizures per week.",
+        [
+            {
+                "kind": "frequency_rate",
+                "evidence": "two focal seizures per week",
+                "normalized_label": "2 per week",
+                "assertion_status": "asserted",
+                "temporality": "current",
+            },
+            {
+                "kind": "frequency_rate",
+                "evidence": "paraphrased two weekly seizures",
+                "normalized_label": "2 per week",
+                "assertion_status": "asserted",
+                "temporality": "current",
+            },
+        ],
+    )
+
+    assert graph.nodes[0].certainty == "certain"
+    assert graph.nodes[0].evidence_start is not None
+    assert graph.nodes[1].certainty == "unknown"
+    assert graph.nodes[1].graph_errors == ("atomic_claim_evidence_not_exact",)
 
 
 def _frequency_record(

@@ -1,0 +1,13 @@
+{
+  "artifact_kind": "gan2026_clinical_frequency_state_graph_counterfactual_invariance",
+  "date": "2026-06-02",
+  "order_invariant_count": 50,
+  "order_invariant_rate": 1.0,
+  "paraphrase_invariant_count": 49,
+  "paraphrase_invariant_rate": 0.98,
+  "paraphrase_policy": "Narrow deterministic rewrite: seizure(s) -> event(s). Failures are diagnostic of lexical dependence, not model generalization.",
+  "row_count": 50,
+  "split": "validation",
+  "split_manifest": "gan2026_split_v1",
+  "surface_note": "Validation-derived counterfactual panel over first 50 validation rows; no test rows, no hosted calls. Scores graph invariance, not final-label accuracy."
+}
