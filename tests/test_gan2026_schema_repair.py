@@ -1,7 +1,17 @@
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.schema_repair import (
+    parse_json_payload_with_schema_repair,
     repair_decision_payload,
     repair_structured_extraction_payload,
 )
+
+
+def test_parse_json_payload_with_schema_repair_handles_python_literal_dialect() -> None:
+    payload, notes = parse_json_payload_with_schema_repair(
+        "{'events': [{'notes': None}], 'selection': {'confidence': 'high'}}"
+    )
+
+    assert payload == {"events": [{"notes": None}], "selection": {"confidence": "high"}}
+    assert notes == ["json_dialect_repaired: python_literal"]
 
 
 def test_repair_decision_payload_handles_common_schema_aliases() -> None:

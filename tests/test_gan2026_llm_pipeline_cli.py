@@ -72,12 +72,17 @@ def test_general_llm_pipeline_cli_delegates_to_pipeline_spec(
     assert calls["kwargs"]["checkpoint_jsonl_path"] == jsonl_path
     assert calls["kwargs"]["checkpoint_report_path"] == markdown_path
     assert calls["jsonl"] == ([{"source_row_index": 101}], jsonl_path)
-    assert calls["report"] == (
-        [{"source_row_index": 101}],
-        {"summary": {"purist_accuracy": 1.0}},
-        markdown_path,
-        jsonl_path,
-    )
+    report_rows, report_metadata, report_path, report_jsonl_path = calls["report"]
+    assert report_rows == [{"source_row_index": 101}]
+    assert report_path == markdown_path
+    assert report_jsonl_path == jsonl_path
+    assert report_metadata["summary"] == {"purist_accuracy": 1.0}
+    assert report_metadata["run_started_at_utc"].endswith("+00:00")
+    assert report_metadata["run_finished_at_utc"].endswith("+00:00")
+    assert report_metadata["elapsed_seconds"] >= 0.0
+    assert report_metadata["elapsed_minutes"] >= 0.0
+    assert report_metadata["rows_per_second"] is not None
+    assert report_metadata["seconds_per_row"] >= 0.0
     assert capsys.readouterr().out.strip() == '{"purist_accuracy": 1.0}'
 
 

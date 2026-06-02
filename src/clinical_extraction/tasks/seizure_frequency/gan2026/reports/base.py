@@ -46,6 +46,17 @@ def llm_model_metadata_lines(
     if summary is not None and "reused_raw_outputs" in summary:
         lines.append(f"- Reused raw model outputs: `{summary['reused_raw_outputs']}`")
         lines.append(f"- Reuse source: `{metadata.get('reuse_source') or 'none'}`")
+    if "elapsed_seconds" in metadata:
+        lines.extend(
+            [
+                f"- Run started UTC: `{metadata.get('run_started_at_utc')}`",
+                f"- Run finished UTC: `{metadata.get('run_finished_at_utc')}`",
+                f"- Wall-clock elapsed: `{metadata.get('elapsed_seconds')}` seconds "
+                f"(`{metadata.get('elapsed_minutes')}` minutes)",
+                f"- Throughput: `{metadata.get('rows_per_second')}` rows/sec "
+                f"(`{metadata.get('seconds_per_row')}` sec/row)",
+            ]
+        )
     lines.extend(
         [
             "- Optimizer: none",
