@@ -10,9 +10,11 @@ component ablations, split discipline, and conservative benchmark language.
 
 ## Current Strategy
 
-Keep frozen comparators stable while revising the two predeclared architecture
-candidates after their matched validation25 smoke comparison. The live matched
-report is
+Keep frozen comparators stable while revising the predeclared architecture
+candidates after their matched validation25 smoke comparison. The hybrid
+source-id and temporality contract replay is
+`experiments/gan2026_hybrid_parallel_state_candidate_reasoner_validation25_gpt41mini_v0_contract_fix_replay_2026-06-03.md`;
+the matched comparison baseline remains
 `experiments/gan2026_predeclared_architecture_matched_validation25_comparison_2026-06-03.md`.
 
 ## Guardrails
@@ -40,11 +42,12 @@ report is
 
 ## Active Priorities
 
-1. Repair the `hybrid_parallel_state_candidate_reasoner` source-id provenance
-   contract before any validation50 escalation.
-2. Revise `llm_heavy_evidence_selection_with_deterministic_adapters` selected
+1. Revise `llm_heavy_evidence_selection_with_deterministic_adapters` selected
    evidence, operand completeness, and raw parser-label grammar as a Decision
    0007 diagnostic.
+2. Triage the remaining hybrid selected-evidence exactness defect before
+   treating validation50 as cleanly earned, despite the repaired source-trace
+   gate.
 3. Preserve attribution language: hybrid for semantic deterministic
    participation; LLM-heavy only for deterministic rendering from
    model-selected facts and operands.
@@ -53,21 +56,17 @@ report is
 
 ### Now
 
-- Fix hybrid selected-source id normalization/instructions so adjudicator output
-  uses valid `det:`, `graph:`, `llm:`, or `synth:` provenance ids.
-- Fix the hybrid LLM-candidate temporality enum edge case that caused one
-  validation25 schema failure.
-- Decide whether source-id repair is format-only enough to rerun validation25
-  without changing clinical selection behavior.
+- For LLM-heavy Decision 0007, triage exact-evidence failures, missing operands,
+  wrong selected clinical fact/operand rows, and raw parser-label grammar.
+- Review the one remaining hybrid selected-evidence exactness failure from the
+  contract-fix replay before validation50 escalation.
 
 ### Next
 
-- For LLM-heavy Decision 0007, triage exact-evidence failures, missing operands,
-  wrong selected clinical fact/operand rows, and raw parser-label grammar.
-- Rerun matched validation25 only after the hybrid provenance fix and LLM-heavy
-  targeted contract fixes are explicit.
+- Rerun matched validation25 only after LLM-heavy targeted contract fixes are
+  explicit.
 - Promote neither candidate to validation50 until its smoke gate passes without
-  source-trace or selected-evidence defects.
+  selected-evidence defects.
 - Keep Qwen/minimal-evidence-selector transfer as a secondary lane after the
   architecture smokes clarify the output contract.
 
@@ -80,6 +79,11 @@ report is
 
 ### Done Recently
 
+- 2026-06-03: Repaired `hybrid_parallel_state_candidate_reasoner`
+  source-id provenance and LLM-candidate `future` temporality schema handling.
+  Live validation25 plus replay now has 25/25 source ids valid, 25/25
+  structured LLM-candidate records, 0 parse/schema failures, 24/25 selected
+  evidence exact, and `promote_to_50` smoke outcome, pending evidence review.
 - 2026-06-03: Ran live matched validation25 smokes for
   `llm_heavy_evidence_selection_with_deterministic_adapters` and
   `hybrid_parallel_state_candidate_reasoner`, exposed the hybrid candidate
@@ -92,6 +96,5 @@ report is
 
 ## Immediate Next Step
 
-Patch the hybrid source-id provenance contract, then rerun validation25 only if
-the change is format-only and preserves the matched-row clinical selection
-surface.
+Triage the LLM-heavy Decision 0007 contract failures, then compare against the
+hybrid contract-fix replay before any validation50 escalation.
