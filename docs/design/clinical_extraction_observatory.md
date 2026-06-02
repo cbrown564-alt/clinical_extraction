@@ -1,7 +1,7 @@
 # Clinical Extraction Observatory
 
 **Status:** Phase 3 complete — all Phase 3 features implemented; ready for Phase 4  
-**Last updated:** 2026-06-02  
+**Last updated:** 2026-06-02 (post-fix: artifact loading + gap chart redesign)  
 **Scope:** Frontend application for exploring, configuring, comparing, and understanding hybrid clinical-extraction pipelines.  
 **Backend dependency:** Reuses existing `clinical_extraction` package, JSONL artifacts, run registry, and split protocol without modification. Backend extensions are noted but deferred.
 
@@ -281,7 +281,7 @@ The backend reuses the existing `clinical_extraction` package exactly. No scorin
 |--------|------|---------|
 | `POST` | `/run/note` | Run any configured pipeline on a single note; return full `PipelineResult` diagnostics |
 | `POST` | `/run/ablation` | Run a batch with a specific `AblationConfig` against a split |
-| `GET` | `/artifacts/{run_id}` | Serve a JSONL artifact from `experiments/` |
+| `GET` | `/artifacts/{run_id}` | Serve JSONL artifact(s) from `experiments/`. Auto-selects: largest `.jsonl` by file size for single-split runs; merges all `.jsonl`s for `validation+test` runs. Returns empty `content: []` if no JSONL exists. |
 | `GET` | `/registry` | Index of all runs from `experiments/registry.jsonl` |
 | `GET` | `/splits/{split_name}` | Row indices and metadata for a split manifest |
 | `GET` | `/rules` | Inventory of all deterministic rules with metadata |
@@ -395,12 +395,13 @@ Any UI toggle state must serialise to a named config object that can be:
 - ✅ **Registry indexing** — `/registry` endpoint consumed; all runs listed and selectable by pipeline family.
 - ✅ **Run Ladder** — horizontal trajectory cards showing Purist/Pragmatic accuracy and F1 per run; saturation badge for validation surfaces ≥250 rows with pragmatic accuracy ≥95%.
 - ✅ **Confusion Matrix** — merged heatmap across selected runs with color intensity (green diagonal, coral off-diagonal); clickable cells expand a side panel showing up to 50 example rows (predicted label vs gold label).
-- ✅ **Generalisation Gap** — gorge visualisation for runs that contain both validation and test rows; shows Purist and Pragmatic accuracy cliffs with the gap highlighted in coral.
+- ✅ **Generalisation Gap** — horizontal grouped bar chart for runs with both validation and test rows. Each run is a row with two bars (validation in steel blue, test in amber) extending from 0 to accuracy. X-axis ticks at 0%, 25%, 50%, 75%, 100% with "Purist Accuracy" label. Gap (Δ) shown as monospace annotation inline with the row label. Scientific, rigorous typography; no decorative clutter.
 - ✅ **Run Selector** — family-grouped chips with decision badges (accept/reject/revise), row counts, and JSONL availability indicators.
 
 **Data consumed:**
 - `experiments/registry.jsonl` — canonical run log
 - `experiments/*.jsonl` — per-run artifacts parsed client-side for scores, confusion matrices, and validation/test splits
+- **Artifact schema variants handled:** `scores.adjudicator` (hybrid), `score_layers.*` (LLM claim table / direct labeler / structured events), `comparison` + `decision_record` (LLM first direct extractor), flat ablation schema (`purist_predicted_category` + `purist_gold_category`), and replacement post-processing ablation (`purist_correct` + `purist_category_transition`).
 
 **Rudimentary / deferred to Phase 4–5:**
 - 🟡 Confusion-matrix cell mosaics currently show label strings; linking to full note cards and stage-by-stage autopsy traces requires Workbench integration.

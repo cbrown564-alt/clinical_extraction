@@ -1,28 +1,19 @@
 # Project Status
 
-Last updated: 2026-06-02
+Last updated: 2026-06-03
 
 ## Active Objective
 
 Build a Gan 2026 seizure-frequency extraction pipeline that can reach at least
-0.9000 Purist F1 on development surfaces while preserving transparent evidence
-trails, component ablations, split discipline, and conservative benchmark
-language.
+0.9000 Purist F1 on development surfaces while preserving evidence trails,
+component ablations, split discipline, and conservative benchmark language.
 
 ## Current Strategy
 
-Keep frozen comparators stable, and spend the next development cycle on the two
-predeclared optimal architecture candidates:
-
-- `hybrid_parallel_state_candidate_reasoner`
-- `llm_heavy_evidence_selection_with_deterministic_adapters`
-
-Both are specified in
-`docs/design/gan2026_optimal_architectures_2026-06-02.md`.
-
-Hybrid tests candidate-recall and graph-representability rescue. LLM-heavy
-tests Decision 0007: model-owned clinical selection with deterministic
-mechanical adapters.
+Keep frozen comparators stable while revising the two predeclared architecture
+candidates after their matched validation25 smoke comparison. The live matched
+report is
+`experiments/gan2026_predeclared_architecture_matched_validation25_comparison_2026-06-03.md`.
 
 ## Guardrails
 
@@ -38,24 +29,22 @@ mechanical adapters.
   frozen-audit evidence.
 - Keep semantic repair, graph projection, scorer normalization, deterministic
   adapters, and production policy separately named and ablated.
-- Use typed DSPy outputs with scoped `JSONAdapter` for new LLM/DSPy
-  architectures unless a run is explicitly an opaque-string comparator.
+- Use typed DSPy outputs with scoped `JSONAdapter` for new LLM/DSPy architectures.
 
 ## Context Links
 
-- The full research history and reference map now live in
-  `docs/research/gan2026_project_history_log_2026-06-02.md`.
-- Current synthesis: `docs/research/gan2026_full_research_retrospective_2026-06-02.md`,
-  `experiments/gan2026_hybrid_llm_deterministic_boundary_report_2026-06-02.md`,
-  `docs/decisions/0007-llm-heavy-clinical-selection-deterministic-adapters.md`.
+- Reference map: `docs/research/gan2026_project_history_log_2026-06-02.md`.
+- Synthesis: `docs/research/gan2026_full_research_retrospective_2026-06-02.md`.
+- Boundary: `experiments/gan2026_hybrid_llm_deterministic_boundary_report_2026-06-02.md`.
+- Policy: `docs/decisions/0007-llm-heavy-clinical-selection-deterministic-adapters.md`.
 
 ## Active Priorities
 
-1. Run a matched validation25 comparison of the two predeclared architecture
-   candidates before any broad validation run.
-2. Measure candidate-recall rescue, graph-representability rescue,
-   deterministic-correct regressions, selected-evidence exactness, selected
-   operand completeness, adapter gains, and adapter regressions.
+1. Repair the `hybrid_parallel_state_candidate_reasoner` source-id provenance
+   contract before any validation50 escalation.
+2. Revise `llm_heavy_evidence_selection_with_deterministic_adapters` selected
+   evidence, operand completeness, and raw parser-label grammar as a Decision
+   0007 diagnostic.
 3. Preserve attribution language: hybrid for semantic deterministic
    participation; LLM-heavy only for deterministic rendering from
    model-selected facts and operands.
@@ -64,51 +53,45 @@ mechanical adapters.
 
 ### Now
 
-- Implement the validation25 smoke for
-  `hybrid_parallel_state_candidate_reasoner`, including deterministic-top,
-  state-graph projection, LLM-candidate, raw adjudicator, and adapter layers.
-- Implement the validation25 smoke for
-  `llm_heavy_evidence_selection_with_deterministic_adapters`, including typed
-  selected fact/evidence/operand output and mechanical adapter layers.
-- Add the shared comparison report that evaluates both smokes on matched rows
-  with rescue/regression and attribution metrics.
+- Fix hybrid selected-source id normalization/instructions so adjudicator output
+  uses valid `det:`, `graph:`, `llm:`, or `synth:` provenance ids.
+- Fix the hybrid LLM-candidate temporality enum edge case that caused one
+  validation25 schema failure.
+- Decide whether source-id repair is format-only enough to rerun validation25
+  without changing clinical selection behavior.
 
 ### Next
 
-- Review the Workstream B rule-ownership matrix before changing any adapter,
-  prompt instruction, projection rule, or deterministic fallback.
-- If the LLM-heavy smoke fails, triage in this order: wrong selected clinical
-  fact, exact-evidence failure, missing operands, adapter rendering bug, raw
-  parser-label grammar.
-- If the hybrid smoke fails, triage in this order: deterministic recall miss
-  not rescued, graph representability not used, LLM candidate evidence
-  non-exact, deterministic-correct regression, gate/adjudicator overreach.
-- After the matched validation25 report, decide whether either candidate earns
-  validation50, needs a targeted hard-slice panel, or should be rejected.
+- For LLM-heavy Decision 0007, triage exact-evidence failures, missing operands,
+  wrong selected clinical fact/operand rows, and raw parser-label grammar.
+- Rerun matched validation25 only after the hybrid provenance fix and LLM-heavy
+  targeted contract fixes are explicit.
+- Promote neither candidate to validation50 until its smoke gate passes without
+  source-trace or selected-evidence defects.
 - Keep Qwen/minimal-evidence-selector transfer as a secondary lane after the
   architecture smokes clarify the output contract.
 
 ### Blocked
 
 - Final benchmark-comparison language and further holdout analysis are blocked
-  until replication comparability is explicit and locked-test discipline
-  permits.
-- Qwen 3.6 full v5 claim-table validation ladder remains blocked until
-  `ollama_chat/qwen3.6:35b` produces strict schema-compatible v5 output, or a
-  named Qwen schema-repair ablation is designed and reported separately.
+  until replication comparability and locked-test discipline permit them.
+- Qwen 3.6 full v5 validation ladder remains blocked until strict
+  schema-compatible output or a named Qwen schema-repair ablation exists.
 
-### Backlog
+### Done Recently
 
-- Consolidate remaining saved-output replay helpers into artifact-analysis
-  modules.
-- Extend saturated-surface tooling over reviewed hard panels.
-- Compare minimal evidence selector against claim-table v5 after local-model
-  transfer is unblocked.
-- Revisit claim-table v5 only as a comparator, not as the active architecture.
+- 2026-06-03: Ran live matched validation25 smokes for
+  `llm_heavy_evidence_selection_with_deterministic_adapters` and
+  `hybrid_parallel_state_candidate_reasoner`, exposed the hybrid candidate
+  through the shared CLI, and wrote the matched comparison report. Neither
+  candidate earned validation50.
+- 2026-06-02: Implemented
+  `llm_heavy_evidence_selection_with_deterministic_adapters` scaffolding:
+  typed selected fact/evidence/operand DSPy outputs, Decision 0007 mechanical
+  adapter score layers, validation25 report gate, and shared CLI exposure.
 
 ## Immediate Next Step
 
-Start with `hybrid_parallel_state_candidate_reasoner`: scaffold the matched
-validation25 smoke so it can emit deterministic-top, state-graph projection,
-LLM-candidate, raw adjudicator, adapted adjudicator, rescue, and regression
-layers on the same rows.
+Patch the hybrid source-id provenance contract, then rerun validation25 only if
+the change is format-only and preserves the matched-row clinical selection
+surface.

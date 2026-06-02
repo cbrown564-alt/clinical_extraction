@@ -145,7 +145,9 @@ def test_pipeline_registry_exposes_routine_llm_experiments() -> None:
     specs = llm_pipeline_cli.pipeline_specs()
 
     assert set(specs) == {
+        "hybrid_parallel_state_candidate_reasoner",
         "hybrid_rules_candidates_llm_adjudicator",
+        "llm_heavy_evidence_selection_with_deterministic_adapters",
         "llm_heavy_clinical_frequency_reasoner",
         "llm_only_claim_table_selector",
         "llm_only_direct_labeler",
@@ -153,7 +155,12 @@ def test_pipeline_registry_exposes_routine_llm_experiments() -> None:
         "llm_only_structured_events",
         "llm_only_typed_adapter_reasoner",
     }
+    assert specs["hybrid_parallel_state_candidate_reasoner"].default_max_tokens == 1800
     assert specs["hybrid_rules_candidates_llm_adjudicator"].default_max_tokens == 1100
+    assert (
+        specs["llm_heavy_evidence_selection_with_deterministic_adapters"].default_max_tokens
+        == 1800
+    )
     assert specs["llm_only_claim_table_selector"].default_max_tokens == 1400
     assert specs["llm_heavy_clinical_frequency_reasoner"].default_max_tokens == 1800
     assert specs["llm_only_minimal_evidence_selector"].default_max_tokens == 900
