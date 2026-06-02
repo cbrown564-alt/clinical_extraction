@@ -52,6 +52,18 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Claim language: Diagnostic validation-cycle broad-regression replay. Gated v1 preserves 18/18 enriched duration corrections, adds hidden-family regression accounting, and leaves four wrong-to-wrong regression changes concentrated in cluster/diary plus temporal-conflict rows, including one unknown-boundary row; no production policy is promoted.
 - Artifacts: `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_broad_regression_v1_2026-06-02.jsonl`, `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_broad_regression_v1_2026-06-02.json`, `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_broad_regression_v1_2026-06-02.md`.
 
+### `gan2026_llm_replacement_postprocessing_ablation_design_2026-06-02`
+- Date/split: `2026-06-02`; `validation_hard_slices_planned`; `250` rows.
+- Pipeline: `llm_replacement_postprocessing_ablation`; mode `LLM-replacement deterministic post-processing ablation design`; replay `analysis_only`.
+- Model role: analysis-only replacement-ablation planner for deterministic post-processing ownership; model `none`.
+- Repair mode/config: `planning only; no scorer, projection, graph-builder, prompt, or holdout change`.
+- Primary metrics: planned_conditions=11, replacement_targets=6, required_report_families=6, validation_surface_max_rows=250.
+- Evidence validity: Design requires every replay to report selected-evidence exactness, event/node evidence exactness, selected-event trace mismatches, selected-node source, and rows dropped for non-exact evidence.
+- Cache/reuse source: No hosted calls; design derived from project retrospective, LLM-heavy v1 validation250 failure families, state-graph diagnostics, and existing repair-attribution conventions.
+- Supersedes: `gan2026_llm_heavy_clinical_frequency_reasoner_v1_validation250_live_2026-06-02`, `gan2026_state_graph_projection_ablation_month_bucket_duration_selection_graph_gated_v2_2026-06-02`.
+- Claim language: Diagnostic design only. Predeclares replacement ablations for deterministic post-processing modules before LLM-heavy v2 prompt work; no scorer, prompt, production projection policy, or holdout behavior changed.
+- Artifacts: `experiments/gan2026_llm_replacement_postprocessing_ablation_design_2026-06-02.md`.
+
 ### `gan2026_llm_heavy_clinical_frequency_reasoner_v1_validation250_live_2026-06-02`
 - Date/split: `2026-06-02`; `validation`; `250` rows.
 - Pipeline: `llm_heavy_clinical_frequency_reasoner`; mode `live validation250 diagnostic scale-up after validation50 gate`; replay `cache_first`.

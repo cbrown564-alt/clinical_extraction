@@ -1,9 +1,11 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchRegistry, fetchArtifact } from "@/lib/api";
 import type { RegistryEntry, RowScore, RunSummary, CategoryMetrics } from "@/lib/types";
+
+const STORAGE_KEY = "observatory-selected-runs";
 
 const PURIST_CATEGORIES = [
   "currently_no_seizure",
@@ -161,16 +163,111 @@ function computeSummary(entry: RegistryEntry, rows: unknown[]): RunSummary {
   return summary;
 }
 
+/** Parse a run ID into a human-readable variant string. */
+export function parseRunVariant(runId: string, family: string): string {
+  // Remove date suffix
+  let s = runId.replace(/_2026-\d{2}-\d{2}$/, "");
+  
+  // Try to extract the part between family and split/date
+  const familyPattern = family.replace(/_/g, "[_-]");
+  const m = s.match(new RegExp(`gan2026[_-]?(?:${familyPattern})[_-]?(.*?)_(?:validation|test|synthetic)`));
+  if (m && m[1]) return m[1];
+  
+  // Fallback: remove prefix
+  s = s.replace(/^gan2026_/, "");
+  return s || runId;
+}
+
+/** Extract split size from run metadata for sorting. */
+export function parseSplitSize(split: string): number {
+  if (split.includes("test")) return 10000;
+  if (split.includes("750")) return 750;
+  if (split.includes("250")) return 250;
+  if (split.includes("50")) return 50;
+  if (split.includes("25")) return 25;
+  if (split.includes("hard")) return 15;
+  if (split.includes("synthetic")) return 5;
+  return 0;
+}
+
+function getDefaultSelections(runs: RegistryEntry[]): Set<string> {
+  // Prefer: validation+test runs, then largest validation runs per family
+  const selected = new Set<string>();
+  
+  // 1. Select all validation+test runs
+  for (const run of runs) {
+    if (run.split?.includes("validation+test") || run.split?.includes("test")) {
+      if (run.artifact_paths.some((p) => p.endsWith(".jsonl"))) {
+        selected.add(run.run_id);
+      }
+    }
+  }
+  
+  // 2. For each family, select the largest pure validation run
+  const byFamily = new Map<string, RegistryEntry[]>();
+  for (const run of runs) {
+    if (!run.artifact_paths.some((p) => p.endsWith(".jsonl"))) continue;
+    const list = byFamily.get(run.pipeline_family) ?? [];
+    list.push(run);
+    byFamily.set(run.pipeline_family, list);
+  }
+  
+  for (const [, familyRuns] of byFamily) {
+    const validationRuns = familyRuns.filter(
+      (r) => r.split === "validation" && !selected.has(r.run_id)
+    );
+    if (validationRuns.length > 0) {
+      // Pick largest by row count
+      const best = validationRuns.reduce((a, b) => (a.row_count > b.row_count ? a : b));
+      selected.add(best.run_id);
+    }
+  }
+  
+  // Cap at 6 to avoid overwhelming the UI
+  if (selected.size > 6) {
+    const arr = Array.from(selected);
+    return new Set(arr.slice(0, 6));
+  }
+  
+  return selected;
+}
+
 export function useObservatoryData() {
   const { data: registryData, isLoading: registryLoading } = useQuery({
     queryKey: ["registry"],
     queryFn: fetchRegistry,
   });
 
+  const runs = registryData?.runs ?? [];
+
   const [selectedRunIds, setSelectedRunIds] = useState<Set<string>>(new Set());
   const [summaries, setSummaries] = useState<Map<string, RunSummary>>(new Map());
   const [loadingRuns, setLoadingRuns] = useState<Set<string>>(new Set());
   const [runErrors, setRunErrors] = useState<Map<string, string>>(new Map());
+
+  // Auto-select defaults on first load
+  useEffect(() => {
+    if (runs.length === 0) return;
+    const saved = typeof window !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null;
+    if (saved) {
+      try {
+        const ids = JSON.parse(saved) as string[];
+        setSelectedRunIds(new Set(ids));
+        return;
+      } catch {
+        // ignore
+      }
+    }
+    const defaults = getDefaultSelections(runs);
+    setSelectedRunIds(defaults);
+  }, [runs.length > 0]);
+
+  // Persist selections
+  useEffect(() => {
+    if (typeof window !== "undefined" && selectedRunIds.size > 0) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(selectedRunIds)));
+    }
+  }, [selectedRunIds]);
 
   const toggleRun = useCallback(
     async (runId: string) => {
@@ -186,13 +283,12 @@ export function useObservatoryData() {
 
       // If not already loaded, fetch it
       if (!summaries.has(runId) && !loadingRuns.has(runId)) {
-        const entry = registryData?.runs.find((r) => r.run_id === runId);
+        const entry = runs.find((r) => r.run_id === runId);
         if (!entry) return;
 
-        // Find JSONL artifact path
         const jsonlPath = entry.artifact_paths.find((p) => p.endsWith(".jsonl"));
         if (!jsonlPath) {
-          setRunErrors((prev) => new Map(prev).set(runId, "No JSONL artifact found"));
+          setRunErrors((prev) => new Map(prev).set(runId, "No JSONL artifact"));
           return;
         }
 
@@ -212,7 +308,38 @@ export function useObservatoryData() {
         }
       }
     },
-    [registryData, summaries, loadingRuns]
+    [runs, summaries, loadingRuns]
+  );
+
+  const selectRuns = useCallback(
+    (runIds: string[]) => {
+      setSelectedRunIds(new Set(runIds));
+      for (const runId of runIds) {
+        if (!summaries.has(runId) && !loadingRuns.has(runId)) {
+          const entry = runs.find((r) => r.run_id === runId);
+          if (!entry) continue;
+          const jsonlPath = entry.artifact_paths.find((p) => p.endsWith(".jsonl"));
+          if (!jsonlPath) continue;
+          setLoadingRuns((prev) => new Set(prev).add(runId));
+          fetchArtifact(runId, jsonlPath)
+            .then((artifact) => {
+              const summary = computeSummary(entry, artifact.content as unknown[]);
+              setSummaries((prev) => new Map(prev).set(runId, summary));
+            })
+            .catch((err) => {
+              setRunErrors((prev) => new Map(prev).set(runId, String(err)));
+            })
+            .finally(() => {
+              setLoadingRuns((prev) => {
+                const next = new Set(prev);
+                next.delete(runId);
+                return next;
+              });
+            });
+        }
+      }
+    },
+    [runs, summaries, loadingRuns]
   );
 
   const selectedSummaries = useMemo(() => {
@@ -224,6 +351,10 @@ export function useObservatoryData() {
     return result;
   }, [selectedRunIds, summaries]);
 
+  const hasTestData = useMemo(() => {
+    return selectedSummaries.some((s) => s.testMetrics);
+  }, [selectedSummaries]);
+
   return {
     registry: registryData,
     registryLoading,
@@ -232,5 +363,8 @@ export function useObservatoryData() {
     loadingRuns,
     runErrors,
     toggleRun,
+    selectRuns,
+    hasTestData,
+    runs,
   };
 }

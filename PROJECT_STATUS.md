@@ -59,6 +59,7 @@ projection, invariance, and arbitration ablations.
 - Graph-gated duration selection: `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_graph_gated_v2_2026-06-02.md`
 - Next-task review: `experiments/gan2026_next_task_review_month_bucket_gate_and_llm_heavy_v1_2026-06-02.md`
 - LLM-heavy alternative: `experiments/gan2026_llm_heavy_extraction_protocol_2026-06-02.md`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_v0_validation25_error_analysis_2026-06-02.md`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation250_gpt41mini_v1_2026-06-02.md`
+- LLM-replacement ablations: `experiments/gan2026_llm_replacement_postprocessing_ablation_design_2026-06-02.md`
 - Full retrospective: `docs/research/gan2026_full_research_retrospective_2026-06-02.md`
 - Retrospective HTML/PDF: `docs/research/gan2026_full_research_retrospective_2026-06-02.html`, `docs/research/gan2026_full_research_retrospective_2026-06-02.pdf`
 - Prior LLM/hybrid comparators: `experiments/gan2026_section_claim_table_validation750_v4_interpretation_2026-06-01.md`, `experiments/gan2026_arch2_validation750_v01_interpretation_2026-06-01.md`, `experiments/gan2026_hybrid_adjudicator_v02_selective_action_report_2026-06-01.md`
@@ -75,11 +76,15 @@ projection, invariance, and arbitration ablations.
 
 ### Now
 
-- Design LLM-replacement ablations for deterministic post-processing modules,
-  reporting score, repair attribution, evidence validity, and replay variance.
+- Implement the saved-output LLM-replacement ablation runner for deterministic
+  post-processing layers, starting with no-call validation artifacts and the
+  predeclared reporting schema.
 
 ### Next
 
+- Run the replacement-ablation replay before any
+  `llm_heavy_clinical_frequency_reasoner_v2` prompt work; use validation25 only
+  if the no-call replay identifies a specific LLM-owned replacement target.
 - Keep claim-table v5 and v0.2 schema/gate ablations available as comparators, but do not promote them ahead of the state-graph coverage cycle.
 - Redesign `llm_heavy_clinical_frequency_reasoner_v2` only after the graph-gate
   and replacement-ablation plans are recorded; start any v2 at validation25.
@@ -91,6 +96,12 @@ projection, invariance, and arbitration ablations.
 
 ### Done Recently
 
+- 2026-06-02: Recorded the LLM-replacement post-processing ablation design. The
+  plan predeclares replacement targets for format/schema repair,
+  selected-evidence arithmetic, benchmark alignment, state-graph node sources,
+  projection/arbitration, and deterministic fallback; every replay must report
+  score, repair attribution, evidence validity, replay variance, and hard-slice
+  breakdown before LLM-heavy v2 prompt work resumes.
 - 2026-06-02: Implemented and replayed graph-gated
   `month_bucket_duration_selection_graph_gated_v2` against the same 250-row
   validation hard-slice surface. The gate preserved 18/18 enriched duration
@@ -134,6 +145,6 @@ projection, invariance, and arbitration ablations.
 
 ## Immediate Next Step
 
-Design LLM-replacement ablations for deterministic post-processing modules,
-reporting score, repair attribution, evidence validity, and replay variance
-for each layer before any LLM-heavy v2 prompt work.
+Implement the saved-output replacement-ablation runner for deterministic
+post-processing layers, then run the first no-call validation replay before any
+LLM-heavy v2 prompt work.
