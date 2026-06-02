@@ -8,7 +8,7 @@ import {
 } from "@tanstack/react-query";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { runNote, fetchRules, fetchHealth, fetchRecords, fetchRecord, fetchPipelineFamilies } from "./api";
-import type { RunNoteResponse, PipelineFamily, AblationConfigPayload } from "./types";
+import type { RunNoteResponse, PipelineFamily, AblationConfigPayload, ActiveStage } from "./types";
 import { useConfigStore, useUiStore } from "./stores";
 
 export function useHealth() {

@@ -1,0 +1,45 @@
+{
+  "artifact_kind": "gan2026_accepted_boundary_nodes_graph_replay",
+  "claim_language": "Diagnostic graph replay only. Accepted hosted nodes are merged for coverage analysis; projection and arbitration policy are unchanged and remain separate ablation targets.",
+  "date": "2026-06-02",
+  "graph_builder": "deterministic_oracle_span_harvester_v0 + accepted_boundary_state_nodes_v0",
+  "pipeline_family": "hybrid_clinical_frequency_state_graph",
+  "projection_policy": "gan2026_state_graph_projection_v0",
+  "row_count": 10,
+  "source_artifact": "experiments/gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_validation31_gpt41mini_live_2026-06-02.jsonl",
+  "split": "validation_hard_slices",
+  "split_manifest": "gan2026_split_v1",
+  "summary": {
+    "coverage": {
+      "accepted_boundary_rows": 10,
+      "accepted_hosted_nodes": 18,
+      "accepted_rows_by_gold_kind": {
+        "unknown": 8,
+        "unresolved_multiple": 2
+      },
+      "baseline_representable_rows": 0,
+      "replayed_representable_rows": 10,
+      "representability_gain_source_row_indices": [
+        338,
+        1317,
+        3507,
+        3512,
+        3528,
+        3532,
+        3600,
+        4694,
+        5476,
+        5490
+      ],
+      "representability_gains": 10
+    },
+    "projection": {
+      "changed_from_baseline": 7,
+      "exact_label_matches": 6,
+      "pragmatic_accuracy": 0.9,
+      "pragmatic_f1": 0.9,
+      "purist_accuracy": 0.9,
+      "purist_f1": 0.9
+    }
+  }
+}
