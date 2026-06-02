@@ -1,0 +1,19 @@
+{"adjudicator_purist_accuracy_so_far": 0.96, "candidate_purist_recall_rate_so_far": 0.96, "processed": 25, "reused_raw_outputs": 0, "total": 450}
+{"adjudicator_purist_accuracy_so_far": 0.86, "candidate_purist_recall_rate_so_far": 0.86, "processed": 50, "reused_raw_outputs": 0, "total": 450}
+{"adjudicator_purist_accuracy_so_far": 0.88, "candidate_purist_recall_rate_so_far": 0.88, "processed": 75, "reused_raw_outputs": 0, "total": 450}
+{"adjudicator_purist_accuracy_so_far": 0.88, "candidate_purist_recall_rate_so_far": 0.88, "processed": 100, "reused_raw_outputs": 0, "total": 450}
+{"adjudicator_purist_accuracy_so_far": 0.88, "candidate_purist_recall_rate_so_far": 0.88, "processed": 125, "reused_raw_outputs": 0, "total": 450}
+{"adjudicator_purist_accuracy_so_far": 0.84, "candidate_purist_recall_rate_so_far": 0.8467, "processed": 150, "reused_raw_outputs": 0, "total": 450}
+{"adjudicator_purist_accuracy_so_far": 0.8229, "candidate_purist_recall_rate_so_far": 0.8343, "processed": 175, "reused_raw_outputs": 0, "total": 450}
+{"adjudicator_purist_accuracy_so_far": 0.8, "candidate_purist_recall_rate_so_far": 0.815, "processed": 200, "reused_raw_outputs": 0, "total": 450}
+{"adjudicator_purist_accuracy_so_far": 0.7778, "candidate_purist_recall_rate_so_far": 0.7911, "processed": 225, "reused_raw_outputs": 0, "total": 450}
+{"adjudicator_purist_accuracy_so_far": 0.768, "candidate_purist_recall_rate_so_far": 0.78, "processed": 250, "reused_raw_outputs": 0, "total": 450}
+{"adjudicator_purist_accuracy_so_far": 0.7455, "candidate_purist_recall_rate_so_far": 0.7564, "processed": 275, "reused_raw_outputs": 0, "total": 450}
+{"adjudicator_purist_accuracy_so_far": 0.7467, "candidate_purist_recall_rate_so_far": 0.76, "processed": 300, "reused_raw_outputs": 0, "total": 450}
+{"adjudicator_purist_accuracy_so_far": 0.7538, "candidate_purist_recall_rate_so_far": 0.7662, "processed": 325, "reused_raw_outputs": 0, "total": 450}
+{"adjudicator_purist_accuracy_so_far": 0.76, "candidate_purist_recall_rate_so_far": 0.7771, "processed": 350, "reused_raw_outputs": 0, "total": 450}
+{"adjudicator_purist_accuracy_so_far": 0.76, "candidate_purist_recall_rate_so_far": 0.7787, "processed": 375, "reused_raw_outputs": 0, "total": 450}
+{"adjudicator_purist_accuracy_so_far": 0.7525, "candidate_purist_recall_rate_so_far": 0.78, "processed": 400, "reused_raw_outputs": 0, "total": 450}
+{"adjudicator_purist_accuracy_so_far": 0.7576, "candidate_purist_recall_rate_so_far": 0.7859, "processed": 425, "reused_raw_outputs": 0, "total": 450}
+{"adjudicator_purist_accuracy_so_far": 0.7622, "candidate_purist_recall_rate_so_far": 0.7978, "processed": 450, "reused_raw_outputs": 0, "total": 450}
+{"jsonl": "experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_test450_gpt41mini_v02_cluster_diary_candidate_recall_live_2026-06-02.jsonl", "markdown": "experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_test450_gpt41mini_v02_cluster_diary_candidate_recall_live_2026-06-02.md", "summary": {"adjudicator_pragmatic_accuracy": 0.7844, "adjudicator_pragmatic_correct": 353, "adjudicator_purist_accuracy": 0.7622, "adjudicator_purist_correct": 343, "call_failures": 0, "candidate_purist_recall": 359, "candidate_purist_recall_rate": 0.7978, "changed_final_labels": 29, "decision_records": 448, "deterministic_correct_to_adjudicator_wrong": 9, "deterministic_fallbacks": 11, "deterministic_pragmatic_accuracy": 0.7867, "deterministic_pragmatic_correct": 354, "deterministic_purist_accuracy": 0.7622, "deterministic_purist_correct": 343, "deterministic_wrong_to_adjudicator_correct": 9, "examples": 450, "overreach_gate_counts": {"adjudicator_output_missing_or_invalid": 2, "label_support_overreach": 3, "unsupported_boundary_demotion_overreach": 5, "unsupported_empty_selection_overreach": 1}, "parse_or_validation_failures": 2, "raw_changed_final_labels": 38, "reused_raw_outputs": 0}}
