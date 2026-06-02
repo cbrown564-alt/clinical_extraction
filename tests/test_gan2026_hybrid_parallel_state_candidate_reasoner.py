@@ -111,6 +111,7 @@ def test_prompt_inputs_exclude_gold_and_include_parallel_sources() -> None:
     assert adjudicator_prompt["deterministic_candidates"]
     assert adjudicator_prompt["state_graph_nodes"]
     assert adjudicator_prompt["llm_candidates"][0]["candidate_id"] == "llm-1"
+    assert adjudicator_prompt["llm_candidates"][0]["source_id"] == "llm:llm-1"
 
 
 def test_parse_adjudicator_repairs_label_and_checks_source_ids() -> None:
@@ -137,11 +138,47 @@ def test_parse_adjudicator_flags_unknown_source_id() -> None:
     assert "selected_source_ids: unknown ids ['llm:missing']" in errors
 
 
+def test_parse_adjudicator_canonicalizes_unprefixed_source_ids() -> None:
+    decision, errors = parse_adjudicator_json(
+        _adjudicator_raw("2 per month").replace("llm:llm-1", "llm-1"),
+        allowed_source_ids={"det:event_1", "graph:sg-001", "llm:llm-1"},
+        note_text=_record().note_text,
+    )
+
+    assert decision is not None
+    assert decision.selected_source_ids == ["llm:llm-1"]
+    assert errors == ["selected_source_ids_repaired: 'llm-1' -> 'llm:llm-1'"]
+
+
 def test_parse_llm_candidate_json_validates_exact_evidence() -> None:
     packet, errors = parse_llm_candidate_json(_llm_candidate_raw(), note_text=_record().note_text)
 
     assert packet is not None
     assert packet.selection.selected_candidate_ids == ["llm-1"]
+    assert errors == []
+
+
+def test_parse_llm_candidate_json_accepts_future_temporality() -> None:
+    payload = json.loads(_llm_candidate_raw())
+    payload["candidates"].append(
+        {
+            "candidate_id": "llm-2",
+            "kind": "unknown_frequency",
+            "applies_to": "focal seizures",
+            "evidence": "No tonic-clonic seizures for one year",
+            "raw_value": "if seizures increase",
+            "temporality": "future",
+            "assertion_status": "hypothetical",
+            "normalized_label": "unknown",
+            "confidence": "low",
+            "rationale": "Future contingency is not the selected current state.",
+        }
+    )
+
+    packet, errors = parse_llm_candidate_json(json.dumps(payload), note_text=_record().note_text)
+
+    assert packet is not None
+    assert packet.candidates[1].temporality == "future"
     assert errors == []
 
 

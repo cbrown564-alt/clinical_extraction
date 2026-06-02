@@ -87,7 +87,7 @@ class HybridLlmCandidate(BaseModel):
     applies_to: str | None = None
     evidence: str
     raw_value: str
-    temporality: Literal["current", "recent", "historical", "unclear"]
+    temporality: Literal["current", "recent", "historical", "future", "unclear"]
     assertion_status: Literal["asserted", "negated", "hypothetical", "uncertain"]
     normalized_label: str | None = None
     confidence: Literal["high", "medium", "low"]
@@ -227,7 +227,7 @@ def build_llm_candidate_prompt_input(record: GanFrequencyRecord) -> str:
             "applies_to": "seizure type or clinical target, or null",
             "evidence": "exact note substring",
             "raw_value": "source-near frequency/state phrase",
-            "temporality": ["current", "recent", "historical", "unclear"],
+            "temporality": ["current", "recent", "historical", "future", "unclear"],
             "assertion_status": ["asserted", "negated", "hypothetical", "uncertain"],
             "normalized_label": "model-rendered Gan label, unknown, no-reference, or null",
             "confidence": ["high", "medium", "low"],
@@ -380,6 +380,11 @@ def parse_adjudicator_json(
     except ValueError as exc:
         errors.append(f"unscorable_final_label: {exc}")
     if allowed_source_ids is not None:
+        decision, source_id_repairs = _canonicalize_decision_source_ids(
+            decision,
+            allowed_source_ids,
+        )
+        errors.extend(source_id_repairs)
         unknown = [
             source_id
             for source_id in [*decision.selected_source_ids, *decision.supporting_source_ids]
@@ -748,11 +753,20 @@ def _component_inputs(
         "state_graph_projection": graph["projection"],
         "state_graph_nodes": graph["nodes"],
         "llm_candidates": (
-            [candidate.model_dump() for candidate in llm_packet.candidates] if llm_packet else []
+            [_llm_candidate_row(candidate) for candidate in llm_packet.candidates]
+            if llm_packet
+            else []
         ),
         "llm_candidate_selection": (
             llm_packet.selection.model_dump() if llm_packet else None
         ),
+    }
+
+
+def _llm_candidate_row(candidate: HybridLlmCandidate) -> dict[str, Any]:
+    return {
+        **candidate.model_dump(),
+        "source_id": f"llm:{candidate.candidate_id}",
     }
 
 
@@ -800,7 +814,8 @@ def _allowed_source_ids(component_inputs: Mapping[str, Any]) -> set[str]:
     }
     source_ids.update(row["source_id"] for row in component_inputs.get("state_graph_nodes") or [])
     source_ids.update(
-        f"llm:{row['candidate_id']}" for row in component_inputs.get("llm_candidates") or []
+        row.get("source_id", f"llm:{row['candidate_id']}")
+        for row in component_inputs.get("llm_candidates") or []
     )
     return source_ids
 
@@ -1239,6 +1254,58 @@ def _source_type_from_id(source_id: str) -> str:
     if str(source_id).startswith("llm:"):
         return "llm_candidate"
     return "adjudicator_synthesis"
+
+
+def _canonicalize_decision_source_ids(
+    decision: HybridParallelAdjudicatorDecision,
+    allowed_source_ids: set[str],
+) -> tuple[HybridParallelAdjudicatorDecision, list[str]]:
+    selected_ids, selected_repairs = _canonicalize_source_id_list(
+        decision.selected_source_ids,
+        allowed_source_ids,
+    )
+    supporting_ids, supporting_repairs = _canonicalize_source_id_list(
+        decision.supporting_source_ids,
+        allowed_source_ids,
+    )
+    if not selected_repairs and not supporting_repairs:
+        return decision, []
+    return (
+        decision.model_copy(
+            update={
+                "selected_source_ids": selected_ids,
+                "supporting_source_ids": supporting_ids,
+            }
+        ),
+        [*selected_repairs, *supporting_repairs],
+    )
+
+
+def _canonicalize_source_id_list(
+    source_ids: Sequence[str],
+    allowed_source_ids: set[str],
+) -> tuple[list[str], list[str]]:
+    canonical_ids: list[str] = []
+    repairs: list[str] = []
+    for source_id in source_ids:
+        canonical = _canonicalize_source_id(str(source_id), allowed_source_ids)
+        canonical_ids.append(canonical)
+        if canonical != source_id:
+            repairs.append(f"selected_source_ids_repaired: {source_id!r} -> {canonical!r}")
+    return canonical_ids, repairs
+
+
+def _canonicalize_source_id(source_id: str, allowed_source_ids: set[str]) -> str:
+    if source_id in allowed_source_ids or source_id.startswith("synth:") or ":" in source_id:
+        return source_id
+    matches = [
+        candidate
+        for candidate in (f"det:{source_id}", f"graph:{source_id}", f"llm:{source_id}")
+        if candidate in allowed_source_ids
+    ]
+    if len(matches) == 1:
+        return matches[0]
+    return source_id
 
 
 def _has_blocking_parse_issue(row: Mapping[str, Any]) -> bool:
