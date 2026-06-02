@@ -6,7 +6,7 @@ import StageNavigator from "@/components/workbench/StageNavigator";
 import PipelineConfigPanel from "@/components/workbench/PipelineConfigPanel";
 import { useUiStore, useConfigStore } from "@/lib/stores";
 import { useLastRun, useRecord, useWorkbenchUrlSync } from "@/lib/hooks";
-import { Microscope, Activity, GitCompare } from "lucide-react";
+import { Activity, GitCompare } from "lucide-react";
 
 function WorkbenchInner() {
   useWorkbenchUrlSync();
@@ -22,18 +22,12 @@ function WorkbenchInner() {
   const goldLabel = recordQuery.data?.gold_label ?? result?.gold_label;
 
   return (
-    <div className="flex h-screen flex-col bg-background">
+    <div className="flex h-full flex-col bg-background">
       {/* Header */}
       <header className="flex items-center justify-between border-b border-border bg-surface px-5 py-2.5 shadow-sm z-10">
         <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-deterministic/10">
-            <Microscope className="h-4 w-4 text-deterministic" />
-          </div>
           <div>
-            <h1 className="text-sm font-semibold text-foreground leading-tight">
-              Clinical Extraction Observatory
-            </h1>
-            <div className="flex items-center gap-2 mt-0.5">
+            <div className="flex items-center gap-2">
               <span className="rounded bg-surface-raised px-1.5 py-0 text-[10px] font-medium uppercase tracking-wider text-muted border border-border">
                 Workbench
               </span>
@@ -114,7 +108,7 @@ function WorkbenchInner() {
 export default function WorkbenchPage() {
   return (
     <Suspense fallback={
-      <div className="flex h-screen items-center justify-center bg-background text-muted">
+      <div className="flex h-full items-center justify-center bg-background text-muted">
         <div className="text-center">
           <p className="text-lg font-medium">Loading workbench…</p>
         </div>
