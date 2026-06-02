@@ -1,7 +1,7 @@
 "use client";
 
 import { create } from "zustand";
-import type { ActiveStage, AblationConfigPayload, PipelineFamily } from "./types";
+import type { ActiveStage, AblationConfigPayload, ArchitectNodeConfig, ArchitectEdgeConfig, PipelineFamily, SavedArchitecture } from "./types";
 
 interface UiState {
   activeStage: ActiveStage;
@@ -114,4 +114,76 @@ export const useConfigStore = create<ConfigState>((set) => ({
             ablationConfig: toggleRuleIdInConfig(s.ablationConfig, ruleId),
           }
     ),
+}));
+
+// ── Architect store ──
+
+const DEFAULT_NODES: ArchitectNodeConfig[] = [
+  { id: "extract", type: "extractor", label: "Extract", family: "rules_only", pipelineFamily: "rules_only", x: 100, y: 200 },
+  { id: "normalise", type: "normaliser", label: "Normalise", family: "rules_only", pipelineFamily: "rules_only", x: 300, y: 200 },
+  { id: "select", type: "selector", label: "Select", family: "rules_only", pipelineFamily: "rules_only", x: 500, y: 200 },
+  { id: "repair", type: "repair", label: "Repair", family: "rules_only", pipelineFamily: "rules_only", x: 700, y: 200 },
+  { id: "score", type: "scorer", label: "Score", family: "rules_only", pipelineFamily: "rules_only", x: 900, y: 200 },
+];
+
+const DEFAULT_EDGES: ArchitectEdgeConfig[] = [
+  { id: "e1", source: "extract", target: "normalise" },
+  { id: "e2", source: "normalise", target: "select" },
+  { id: "e3", source: "select", target: "repair" },
+  { id: "e4", source: "repair", target: "score" },
+];
+
+interface ArchitectState {
+  nodes: ArchitectNodeConfig[];
+  edges: ArchitectEdgeConfig[];
+  selectedNodeId: string | null;
+  compareMode: boolean;
+  configA: SavedArchitecture | null;
+  configB: SavedArchitecture | null;
+  activeConfigLabel: "a" | "b";
+  setNodes: (nodes: ArchitectNodeConfig[]) => void;
+  setEdges: (edges: ArchitectEdgeConfig[]) => void;
+  updateNode: (id: string, patch: Partial<ArchitectNodeConfig>) => void;
+  setSelectedNodeId: (id: string | null) => void;
+  toggleCompareMode: () => void;
+  saveConfig: (label: "a" | "b", name: string, pipelineFamily: PipelineFamily, ablation: AblationConfigPayload) => void;
+  loadConfig: (label: "a" | "b") => void;
+  setActiveConfigLabel: (label: "a" | "b") => void;
+  resetCanvas: () => void;
+}
+
+export const useArchitectStore = create<ArchitectState>((set, get) => ({
+  nodes: DEFAULT_NODES,
+  edges: DEFAULT_EDGES,
+  selectedNodeId: null,
+  compareMode: false,
+  configA: null,
+  configB: null,
+  activeConfigLabel: "a",
+  setNodes: (nodes) => set({ nodes }),
+  setEdges: (edges) => set({ edges }),
+  updateNode: (id, patch) =>
+    set((s) => ({
+      nodes: s.nodes.map((n) => (n.id === id ? { ...n, ...patch } : n)),
+    })),
+  setSelectedNodeId: (id) => set({ selectedNodeId: id }),
+  toggleCompareMode: () => set((s) => ({ compareMode: !s.compareMode })),
+  saveConfig: (label, name, pipelineFamily, ablation) =>
+    set((s) => {
+      const saved: SavedArchitecture = {
+        name,
+        pipelineFamily,
+        nodes: s.nodes.map((n) => ({ ...n })),
+        ablationConfig: ablation,
+      };
+      return label === "a" ? { configA: saved } : { configB: saved };
+    }),
+  loadConfig: (label) => {
+    const cfg = label === "a" ? get().configA : get().configB;
+    if (cfg) {
+      set({ nodes: cfg.nodes.map((n) => ({ ...n })) });
+    }
+  },
+  setActiveConfigLabel: (label) => set({ activeConfigLabel: label }),
+  resetCanvas: () => set({ nodes: DEFAULT_NODES.map((n) => ({ ...n })), edges: DEFAULT_EDGES.map((e) => ({ ...e })) }),
 }));
