@@ -58,7 +58,14 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline_v1 import Gan2026PipelineV1
 
-PipelineFamily = Literal["rules_only", "deterministic_v1"]
+PipelineFamily = Literal[
+    "rules_only",
+    "deterministic_v1",
+    "llm_only_claim_table_selector",
+    "llm_only_direct_labeler",
+    "llm_only_structured_events",
+    "hybrid_rules_candidates_llm_adjudicator",
+]
 TEMPORAL_SELECTION_RULES = temporal_selection.TEMPORAL_SELECTION_RULES
 
 PROMPT_MODULES = (
@@ -67,6 +74,9 @@ PROMPT_MODULES = (
     "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_structured_events",
     "clinical_extraction.tasks.seizure_frequency.gan2026.hybrid.hybrid_rules_candidates_llm_adjudicator",
 )
+
+# Families that can actually be executed via /run/note and /run/ablation
+EXECUTABLE_PIPELINES: set[str] = {"rules_only", "deterministic_v1"}
 
 
 class ObservatorySettings(BaseModel):
@@ -263,6 +273,26 @@ def create_app(
             "rules": [_rule_payload(spec) for spec in specs],
         }
 
+    @app.get("/pipeline-families")
+    def pipeline_families() -> dict[str, Any]:
+        families: list[dict[str, Any]] = [
+            {
+                "value": "rules_only",
+                "label": "Deterministic V1",
+                "executable": True,
+                "kind": "rules_only",
+            },
+            {
+                "value": "deterministic_v1",
+                "label": "Deterministic V1 (alias)",
+                "executable": True,
+                "kind": "rules_only",
+            },
+        ]
+        for module_name in PROMPT_MODULES:
+            families.append(_llm_family_payload(module_name))
+        return {"families": families}
+
     @app.get("/prompts")
     def prompts() -> dict[str, Any]:
         return {"prompts": [_prompt_payload(module_name) for module_name in PROMPT_MODULES]}
@@ -355,10 +385,11 @@ def _request_record(request: RunNoteRequest) -> GanRecord:
 
 
 def _require_supported_pipeline(pipeline: str) -> None:
-    if pipeline not in {"rules_only", "deterministic_v1"}:
+    if pipeline not in EXECUTABLE_PIPELINES:
         raise HTTPException(
             status_code=400,
-            detail="Only deterministic Gan2026PipelineV1 is currently supported by this endpoint.",
+            detail=f"Pipeline {pipeline!r} is not yet executable via the Observatory API. "
+            f"Supported: {sorted(EXECUTABLE_PIPELINES)}.",
         )
 
 
@@ -454,6 +485,20 @@ def _prompt_payload(module_name: str) -> dict[str, Any]:
             for policy in taxonomy
             if isinstance(policy, Mapping) and "policy_id" in policy
         ],
+    }
+
+
+def _llm_family_payload(module_name: str) -> dict[str, Any]:
+    module = importlib.import_module(module_name)
+    prompt_version = getattr(module, "PROMPT_VERSION", module_name.rsplit(".", maxsplit=1)[-1])
+    # Derive family value from module name (last segment)
+    family_value = module_name.rsplit(".", maxsplit=1)[-1]
+    kind = "llm_only" if "llm_only" in module_name else "hybrid"
+    return {
+        "value": family_value,
+        "label": prompt_version,
+        "executable": False,
+        "kind": kind,
     }
 
 

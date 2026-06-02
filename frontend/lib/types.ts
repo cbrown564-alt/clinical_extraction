@@ -88,7 +88,13 @@ export interface AblationConfigPayload {
   disabled_rule_ids?: string[];
 }
 
-export type PipelineFamily = "rules_only" | "deterministic_v1";
+export type PipelineFamily =
+  | "rules_only"
+  | "deterministic_v1"
+  | "llm_only_claim_table_selector"
+  | "llm_only_direct_labeler"
+  | "llm_only_structured_events"
+  | "hybrid_rules_candidates_llm_adjudicator";
 
 export type ActiveStage =
   | "raw"
@@ -130,4 +136,15 @@ export interface FullRecordResponse {
   note_text: string;
   labels_match_all_categories: boolean;
   quotes_ok_all_categories: boolean;
+}
+
+export interface PipelineFamilyItem {
+  value: PipelineFamily;
+  label: string;
+  executable: boolean;
+  kind: "rules_only" | "llm_only" | "hybrid";
+}
+
+export interface PipelineFamiliesResponse {
+  families: PipelineFamilyItem[];
 }

@@ -4,17 +4,19 @@ import NoteRenderer from "@/components/workbench/NoteRenderer";
 import StageNavigator from "@/components/workbench/StageNavigator";
 import PipelineConfigPanel from "@/components/workbench/PipelineConfigPanel";
 import { useUiStore, useConfigStore } from "@/lib/stores";
-import { useLastRun } from "@/lib/hooks";
+import { useLastRun, useRecord } from "@/lib/hooks";
 import { Microscope, Activity } from "lucide-react";
 
 export default function WorkbenchPage() {
   const { activeStage, goldOverlay } = useUiStore();
-  const { noteText } = useConfigStore();
+  const { noteText, split, sourceRowIndex } = useConfigStore();
   const lastRun = useLastRun();
+  const recordQuery = useRecord(split, sourceRowIndex);
 
   const result = lastRun.data;
   const diagnostics = result?.result.diagnostics;
-  const goldLabel = result?.gold_label;
+  // Gold label from dataset record (if loaded) or from last pipeline run
+  const goldLabel = recordQuery.data?.gold_label ?? result?.gold_label;
 
   return (
     <div className="flex h-screen flex-col bg-background">
