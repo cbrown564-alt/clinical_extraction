@@ -31,8 +31,16 @@ and error analysis on a cheaper/faster model.
 Planned constraints:
 
 - run on a separate Windows laptop when that infrastructure is ready
-- route local model calls through the repo CLI with `--api-base` so endpoint
-  provenance is captured in run metadata and reports
+- route local model calls through the repo CLI with LiteLLM's native
+  `ollama_chat/qwen3.6:35b` model identifier and `--api-base
+  http://localhost:11434`, so endpoint provenance is captured in run metadata
+  and reports
+- keep Qwen thinking mode disabled for extraction runs; the shared DSPy LM
+  builder sends `extra_body={"think": False}` for `ollama_chat/...` models
+- avoid Ollama's OpenAI-compatible `/v1/chat/completions` route for Qwen
+  reasoning models, because hidden reasoning can leave the final assistant
+  content empty and create parse failures rather than meaningful model-quality
+  evidence
 - treat the local run as a model-swap experiment against a frozen or clearly
   versioned pipeline
 - compare quality, latency, operational friction, and failure modes against the

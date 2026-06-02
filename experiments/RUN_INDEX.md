@@ -267,6 +267,28 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Claim language: Architecture scaffold only, not a benchmark result. Next results must separate graph coverage, projection, invariance, and arbitration effects.
 - Artifacts: `experiments/gan2026_clinical_frequency_state_graph_protocol_2026-06-02.md`.
 
+### `gan2026_qwen36_35b_ollama_chat_setup_smoke_2026-06-01`
+- Date/split: `2026-06-01`; `validation`; `1` rows.
+- Pipeline: `llm_only_claim_table_selector`; mode `native Ollama chat setup smoke`; replay `live`.
+- Model role: local LLM-only claim-table selector; model `ollama_chat/qwen3.6:35b`.
+- Repair mode/config: `none; endpoint smoke before Qwen-specific schema repair`.
+- Primary metrics: call_failures=0, parse_schema_failures=1, row_count=1, structured_rows=0.
+- Evidence validity: No structured record; output-contract smoke only.
+- Cache/reuse source: DSPy cache disabled; native Ollama /api/chat smoke used think=false.
+- Claim language: Endpoint setup is unblocked through ollama_chat/qwen3.6:35b with think=false, but v5 is not ladder-ready for Qwen: validation1 returned a nonempty Python-style dict and final_selector shape, producing a schema parse failure. Do not treat this as model-quality evidence or start validation5/25 until prompt hardening or a named schema-repair ablation exists. Dedicated schema-contract risk note logged for future Qwen prompt/repair design.
+- Artifacts: `experiments/gan2026_qwen36_35b_ollama_chat_setup_smoke_2026-06-01.md`, `docs/research/gan2026_qwen_schema_contract_risk_2026-06-01.md`, `experiments/gan2026_llm_only_claim_table_selector_validation1_prompt_only_v5_2026-06-01.jsonl`, `experiments/gan2026_llm_only_claim_table_selector_validation1_prompt_only_v5_2026-06-01.md`, `experiments/gan2026_llm_only_claim_table_selector_validation1_qwen36_35b_v5_ollama_chat_smoke_2026-06-01.jsonl`, `experiments/gan2026_llm_only_claim_table_selector_validation1_qwen36_35b_v5_ollama_chat_smoke_2026-06-01.md`.
+
+### `gan2026_minimal_evidence_selector_validation25_gpt41mini_v0_2026-06-01`
+- Date/split: `2026-06-01`; `validation`; `25` rows.
+- Pipeline: `llm_only_minimal_evidence_selector`; mode `live minimal answer plus supporting_facts contract`; replay `live`.
+- Model role: hosted LLM-only minimal evidence selector baseline; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `minimal alias/shape repair available; strict_format + frozen_clean_scorer_facing scoring`.
+- Primary metrics: answer_evidence_valid=24, call_failures=0, clean_pragmatic_correct=16, clean_purist_correct=16, derived_state_complete=25, invalid_json_failures=0, minimal_records=25, parse_schema_failures=0, raw_pragmatic_correct=2, raw_purist_correct=2, raw_scorable=2, review_projection_complete=25, row_count=25, strict_format_purist_correct=15, supporting_fact_evidence_total=50, supporting_fact_evidence_valid=49.
+- Evidence validity: Answer evidence exact in 24/25 rows; supporting-fact evidence exact in 49/50 facts. Row 243 used a non-exact answer/supporting evidence substring.
+- Cache/reuse source: DSPy cache enabled; run recorded 0 reused raw outputs; first-device OpenAI/LiteLLM smoke passed from .env before run.
+- Claim language: Hosted simplified-contract baseline is output-contract clean with no JSON/schema failures and no alias repairs, but raw source-near answers are mostly scorer-unparsable; frozen clean scorer-facing score is 16/25 Purist and Pragmatic. Use as matched GPT-4.1 mini transfer baseline for Qwen minimal-contract validation, not holdout evidence.
+- Artifacts: `experiments/gan2026_llm_only_minimal_evidence_selector_validation25_v0_2026-06-01.jsonl`, `experiments/gan2026_llm_only_minimal_evidence_selector_validation25_v0_2026-06-01.md`.
+
 ### `gan2026_hybrid_adjudicator_v02_validation250_live_2026-06-01`
 - Date/split: `2026-06-01`; `validation`; `250` rows.
 - Pipeline: `hybrid_rules_candidates_llm_adjudicator`; mode `live rules candidates then conservative LLM adjudicator`; replay `live`.
@@ -354,6 +376,18 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Reject
 
+### `gan2026_llm_only_typed_adapter_reasoner_v0_validation25_live_2026-06-02`
+- Date/split: `2026-06-02`; `validation`; `25` rows.
+- Pipeline: `llm_only_typed_adapter_reasoner`; mode `live validation25 typed DSPy JSONAdapter architecture smoke`; replay `cache_first`.
+- Model role: LLM-only typed DSPy event extraction, clinical selection, and parser-ready final-label renderer; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `typed DSPy JSONAdapter outputs with raw_llm, format_only, selected_evidence_arithmetic, benchmark_aligned, and oracle_format_upper_bound layers; deterministic arithmetic and benchmark alignment are side-cars`.
+- Primary metrics: adapter_parse_failures=0, arithmetic_trace_present=17, benchmark_aligned_purist_correct=22, call_failures=0, event_evidence_total=38, event_evidence_valid=31, format_only_purist_correct=24, parse_failures=0, raw_llm_pragmatic_correct=22, raw_llm_purist_correct=22, raw_llm_scorable=22, rendering_operands_present=25, row_count=25, selected_event_trace_mismatches=0, selected_evidence_arithmetic_pragmatic_correct=25, selected_evidence_arithmetic_purist_correct=25, selected_evidence_arithmetic_raw_wrong_to_correct=3, selected_evidence_valid=19, structured_records=25.
+- Evidence validity: Selected evidence exact 19/25; event evidence exact 31/38; selected-event trace mismatches 0/25.
+- Cache/reuse source: DSPy cache enabled; no saved raw-output reuse for this typed JSONAdapter smoke.
+- Supersedes: `gan2026_dspy_adapter_architecture_report_2026-06-02`.
+- Claim language: Typed-adapter LLM-only architecture smoke only. The scoped JSONAdapter and typed DSPy outputs produced 25/25 structured records with no adapter parse failures, but selected evidence exactness, parser-ready raw label rendering, and arithmetic traces miss the validation25 gate; selected-evidence arithmetic remains a deterministic side-car, not LLM-only success.
+- Artifacts: `experiments/gan2026_dspy_adapter_architecture_report_2026-06-02.md`, `experiments/gan2026_llm_only_typed_adapter_reasoner_validation25_gpt41mini_v0_2026-06-02.jsonl`, `experiments/gan2026_llm_only_typed_adapter_reasoner_validation25_gpt41mini_v0_2026-06-02.md`.
+
 ### `gan2026_llm_heavy_clinical_frequency_reasoner_v2_validation25_live_2026-06-02`
 - Date/split: `2026-06-02`; `validation`; `25` rows.
 - Pipeline: `llm_heavy_clinical_frequency_reasoner`; mode `live validation25 decision-0006 selected-evidence arithmetic/rendering smoke`; replay `cache_first`.
@@ -389,18 +423,6 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Supersedes: `gan2026_llm_heavy_clinical_frequency_reasoner_v2_validation25_error_analysis_2026-06-02`.
 - Claim language: Validation25 development smoke rejects validation50 escalation under decision 0006. Compact schema fixed the prior truncation/missing-selected-event-id failures with 25/25 structured records, but raw parser compatibility, selected evidence exactness, and model-owned rendering remain below stop rules; selected-evidence arithmetic is a deterministic side-car, not LLM-heavy success.
 - Artifacts: `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_v2_compact_validation25_predeclaration_2026-06-02.md`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation25_gpt41mini_v2_compact_2026-06-02.jsonl`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation25_gpt41mini_v2_compact_2026-06-02.md`.
-
-### `gan2026_llm_only_typed_adapter_reasoner_v0_validation25_live_2026-06-02`
-- Date/split: `2026-06-02`; `validation`; `25` rows.
-- Pipeline: `llm_only_typed_adapter_reasoner`; mode `live validation25 typed DSPy JSONAdapter architecture smoke`; replay `cache_first`.
-- Model role: LLM-only typed DSPy event extraction, clinical selection, and parser-ready final-label renderer; model `openai/gpt-4.1-mini`.
-- Repair mode/config: `typed DSPy JSONAdapter outputs with raw_llm, format_only, selected_evidence_arithmetic, benchmark_aligned, and oracle_format_upper_bound layers; deterministic arithmetic and benchmark alignment are side-cars`.
-- Primary metrics: adapter_parse_failures=0, arithmetic_trace_present=17, benchmark_aligned_purist_correct=22, call_failures=0, event_evidence_total=38, event_evidence_valid=31, format_only_purist_correct=24, parse_failures=0, raw_llm_pragmatic_correct=22, raw_llm_purist_correct=22, raw_llm_scorable=22, rendering_operands_present=25, row_count=25, selected_event_trace_mismatches=0, selected_evidence_arithmetic_pragmatic_correct=25, selected_evidence_arithmetic_purist_correct=25, selected_evidence_arithmetic_raw_wrong_to_correct=3, selected_evidence_valid=19, structured_records=25.
-- Evidence validity: Selected evidence exact 19/25; event evidence exact 31/38; selected-event trace mismatches 0/25.
-- Cache/reuse source: DSPy cache enabled; no saved raw-output reuse for this typed JSONAdapter smoke.
-- Supersedes: `gan2026_dspy_adapter_architecture_report_2026-06-02`.
-- Claim language: Typed-adapter LLM-only architecture smoke only. The scoped JSONAdapter and typed DSPy outputs produced 25/25 structured records with no adapter parse failures, but selected evidence exactness, parser-ready raw label rendering, and arithmetic traces miss the validation25 gate; selected-evidence arithmetic remains a deterministic side-car, not LLM-only success.
-- Artifacts: `experiments/gan2026_dspy_adapter_architecture_report_2026-06-02.md`, `experiments/gan2026_llm_only_typed_adapter_reasoner_validation25_gpt41mini_v0_2026-06-02.jsonl`, `experiments/gan2026_llm_only_typed_adapter_reasoner_validation25_gpt41mini_v0_2026-06-02.md`.
 
 ### `gan2026_llm_structured_v05_full_validation_2026-06-01`
 - Date/split: `2026-06-01`; `validation`; `750` rows.
