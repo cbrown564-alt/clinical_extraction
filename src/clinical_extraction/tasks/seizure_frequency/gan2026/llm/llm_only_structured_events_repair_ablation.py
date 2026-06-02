@@ -18,6 +18,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
     load_records_for_split,
     load_split_manifest,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.repair_modes import (
+    repair_mode_metadata,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_structured_events import (
     StructuredRepairConfig,
     load_reusable_raw_outputs,
@@ -121,6 +124,7 @@ def run_repair_ablation(
             {
                 "name": condition_name,
                 "repair_mode": repair_config.resolved_repair_mode,
+                "repair_mode_metadata": repair_mode_metadata(repair_config.resolved_repair_mode),
                 "repair_config": asdict(repair_config),
                 "summary": _condition_summary(rows, previous_rows),
                 "top_changed_rows": _top_changed_rows(rows, previous_rows),

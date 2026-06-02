@@ -22,6 +22,10 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequenc
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     write_jsonl_rows,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.repair_modes import (
+    repair_mode_layers,
+    repair_mode_metadata,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_metadata import (
     build_run_metadata,
 )
@@ -517,6 +521,9 @@ def run_split(
     metadata["dspy_cache"] = dspy_cache
     metadata["reuse_source"] = reuse_source
     metadata["escalation_reason"] = escalation_reason
+    metadata["repair_mode_layers"] = repair_mode_layers(
+        ("raw_model", "strict_format", "clean_scorer_facing")
+    )
     program = DspyLlmOnlyClaimTableSelector()
     if mode == "live":
         dspy.configure(
@@ -578,6 +585,9 @@ def run_split(
                 "evidence_summary": evidence_summary,
                 "score_layers": score_layers,
                 "repair_changes": repair_changes,
+                "repair_mode_layers": repair_mode_layers(
+                    ("raw_model", "strict_format", "clean_scorer_facing")
+                ),
                 "reference": {
                     "gold_label": record.gold_label,
                     "gold_normalized_label": record.gold_normalized_label,
@@ -668,9 +678,13 @@ def _score_layers(
     strict_label = repair_prediction_label_format_preserving(raw_label) if raw_label else None
     clean_label = repair_prediction_label_clean_scorer_facing(raw_label) if raw_label else None
     return {
-        "raw": _score_label(record, raw_label),
-        "strict_format": _score_label(record, strict_label),
-        "clean_scorer_facing": _score_label(record, clean_label),
+        "raw": _score_label(record, raw_label, repair_mode="raw_model"),
+        "strict_format": _score_label(record, strict_label, repair_mode="strict_format"),
+        "clean_scorer_facing": _score_label(
+            record,
+            clean_label,
+            repair_mode="clean_scorer_facing",
+        ),
     }
 
 
@@ -686,8 +700,17 @@ def _raw_final_label(extraction: SectionClaimTableExtractionRecord | None) -> st
     return None
 
 
-def _score_label(record: GanFrequencyRecord, label: str | None) -> dict[str, Any]:
-    result: dict[str, Any] = {"final_label": label, "scorable": False}
+def _score_label(
+    record: GanFrequencyRecord,
+    label: str | None,
+    *,
+    repair_mode: str,
+) -> dict[str, Any]:
+    result: dict[str, Any] = {
+        "final_label": label,
+        "scorable": False,
+        "repair_mode_metadata": repair_mode_metadata(repair_mode),
+    }
     if not label:
         result["error"] = "missing_final_label"
         return result

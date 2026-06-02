@@ -30,6 +30,7 @@ projection, invariance, and arbitration ablations.
 - The latest duration-selection diagnostic over 18 replayed seizure-free duration graphs recovered 18/18 exact duration labels with replay-only `month_bucket_duration_selection`. This is validation-only output-surface analysis, not scorer normalization or production projection promotion.
 - Routine LLM experiments use cache-first `gan2026-llm-experiment --pipeline ...`; saved-output replay is reserved for explicit offline artifact analysis.
 - Clean scorer-facing normalization is frozen unless direct-citation review justifies another family. Shared schema repair is alias-only; parser defaults belong to their task parser.
+- Named repair-mode metadata is now shared beyond structured-events: claim-table score layers, hybrid adjudicator score layers, repair ablations, and component-ablation rows expose stable attribution metadata for raw, strict, clean, selected-evidence, deterministic, and hybrid gated modes.
 - Package ownership boundaries are now stable under `contract/`, `deterministic/`, `selected_evidence/`, `llm/`, `hybrid/`, `reports/`, `experiments/`, and `cli/`. Phase 6 run-registry scaffolding is active: `experiments/registry.jsonl` is canonical and `experiments/RUN_INDEX.md` is the human scan surface.
 
 ## Key References
@@ -62,7 +63,6 @@ projection, invariance, and arbitration ablations.
 - Decide whether `month_bucket_duration_selection` is only a diagnostic oracle-style selector or the seed for a separately named projection ablation.
 - Keep claim-table v5 and v0.2 schema/gate ablations available as comparators, but do not promote them ahead of the state-graph coverage cycle.
 - Design LLM-replacement ablations for deterministic post-processing modules, reporting score, repair attribution, evidence validity, and replay variance.
-- Extend named repair-mode metadata beyond structured-events where downstream repair layers blur raw, strict, clean, selected-evidence, and hybrid attribution.
 
 ### Blocked
 
@@ -72,6 +72,7 @@ projection, invariance, and arbitration ablations.
 ### Done Recently
 
 - 2026-06-02: Completed the state-graph coverage, projection, boundary-state, and seizure-free duration diagnostic cycle through validation-only replay artifacts. Key result: coverage and duration-node construction are promising, but projection/arbitration remains the current bottleneck and no production policy is promoted.
+- 2026-06-02: Extended shared named repair-mode metadata from structured-events into claim-table score layers, hybrid adjudicator score layers, repair-family ablations, and component-ablation row attribution.
 - 2026-06-02: Consolidated saved-output replay and artifact-ablation helpers into `gan2026/artifact_analysis`, leaving compatibility wrappers under `experiments/` and moving raw-output replay loading out of generic artifact writing helpers.
 - 2026-06-02: Completed the hybrid v0.2 `cluster_diary_candidate_recall` frozen generalization audit. The result moved new development away from final-label prompt/gate tuning and toward validation-only semantic-state graph diagnostics.
 - 2026-06-01: Completed the v0.2 hybrid adjudicator development cycle through validation25/50/250, saturated-surface analysis, synthetic hard-case component stress, row-level failure review, and named candidate-recall revision.

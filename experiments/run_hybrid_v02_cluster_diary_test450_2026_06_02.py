@@ -13,7 +13,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.hybrid import (
     hybrid_rules_candidates_llm_adjudicator as hybrid,
 )
 
-
 JSONL_PATH = Path(
     "experiments/"
     "gan2026_hybrid_rules_candidates_llm_adjudicator_test450_gpt41mini_v02_"

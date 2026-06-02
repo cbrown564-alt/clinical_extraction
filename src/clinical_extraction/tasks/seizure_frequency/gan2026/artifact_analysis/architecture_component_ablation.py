@@ -27,6 +27,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rule_meta
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     load_jsonl_rows,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.repair_modes import (
+    repair_mode_metadata,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.labels import map_pragmatic, map_purist
 from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline_v1 import Gan2026PipelineV1
 
@@ -65,6 +68,7 @@ class ConditionRow:
     evidence_valid: bool | None = None
     parse_or_validation_issues: tuple[str, ...] = ()
     scorable: bool = True
+    repair_mode_metadata: Mapping[str, Any] | None = None
 
 
 @dataclass(frozen=True)
@@ -115,6 +119,7 @@ def deterministic_conditions(
                     record,
                     prediction_label,
                     evidence_valid=bool(diagnostics.get("evidence_valid")),
+                    repair_mode="deterministic_candidate_top",
                 )
             )
         conditions.append(
@@ -175,6 +180,7 @@ def condition_from_llm_rows(
                         prediction_label is not None and not _has_unscorable_issue(row),
                     )
                 ),
+                repair_mode_metadata=_row_repair_mode_metadata(row, score_layer),
             )
         )
     return _condition_from_spec(spec, condition_rows)
@@ -477,6 +483,7 @@ def _condition_row_from_label(
     label: str,
     *,
     evidence_valid: bool | None,
+    repair_mode: str | None = None,
 ) -> ConditionRow:
     score = _score_label(label, record.gold_monthly_frequency)
     return ConditionRow(
@@ -488,6 +495,7 @@ def _condition_row_from_label(
         evidence_valid=evidence_valid,
         parse_or_validation_issues=tuple(score["errors"]),
         scorable=score["scorable"],
+        repair_mode_metadata=repair_mode_metadata(repair_mode) if repair_mode else None,
     )
 
 
@@ -508,6 +516,7 @@ def _condition_row_from_score(
         evidence_valid=evidence_valid,
         parse_or_validation_issues=parse_errors,
         scorable=bool(score.get("scorable", score.get("final_label") is not None)),
+        repair_mode_metadata=_score_repair_mode_metadata(score),
     )
 
 
@@ -558,6 +567,29 @@ def _llm_score_layer(row: Mapping[str, Any]) -> Mapping[str, Any]:
         if isinstance(score_layer, Mapping):
             return score_layer
     return {}
+
+
+def _row_repair_mode_metadata(
+    row: Mapping[str, Any],
+    score_layer: Mapping[str, Any],
+) -> Mapping[str, Any] | None:
+    metadata = _score_repair_mode_metadata(score_layer)
+    if metadata:
+        return metadata
+    repair_mode = row.get("repair_mode")
+    if isinstance(repair_mode, str):
+        return repair_mode_metadata(repair_mode)
+    return None
+
+
+def _score_repair_mode_metadata(score: Mapping[str, Any]) -> Mapping[str, Any] | None:
+    metadata = score.get("repair_mode_metadata")
+    if isinstance(metadata, Mapping):
+        return dict(metadata)
+    repair_mode = score.get("repair_mode")
+    if isinstance(repair_mode, str):
+        return repair_mode_metadata(repair_mode)
+    return None
 
 
 def _condition_from_spec(
