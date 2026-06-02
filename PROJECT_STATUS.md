@@ -72,11 +72,27 @@ projection, invariance, and arbitration ablations.
   otherwise-correct rows copied invalid non-selected administrative evidence,
   and 1 row converted cluster cadence into events-per-cluster. The analysis
   confirms there was no deterministic selected-evidence arithmetic rescue gap.
+- `llm_heavy_clinical_frequency_reasoner_v2_compact` fixed the prior
+  truncation/schema family on validation25: 25/25 structured, 0 parse/schema
+  failures, 0 selected-event trace mismatches. It still rejects validation50
+  escalation under decision 0006: raw labels were 23/25 scorable and 22/25
+  Purist, selected evidence was exact 22/25, rendering operands/traces were
+  24/25, and deterministic selected-evidence arithmetic corrected 3 raw-wrong
+  rows. Remaining issues are parser-ready rendering, exact selected-evidence
+  copying, row 187 cluster-cadence semantics, and an empty no-reference case.
 - DSPy adapter research now points to a separate architecture rather than a v2
   patch. `llm_only_typed_adapter_reasoner` should test typed DSPy output fields
   with scoped `JSONAdapter` use, preserving v2 as the prompt/schema redesign
   path and keeping raw model-owned labels distinct from deterministic side-car
   arithmetic or benchmark adapters.
+- `llm_only_typed_adapter_reasoner_v0` is now scaffolded and rejected on its
+  predeclared validation25 smoke. The typed `JSONAdapter` substrate succeeded
+  mechanically with 25/25 structured outputs, 0 adapter parse failures, 0 call
+  failures, and 0 selected-event trace mismatches, but raw labels were only
+  22/25 scorable, selected evidence was exact 19/25, event evidence exactness
+  was 31/38, arithmetic traces were present 17/25, and deterministic
+  selected-evidence arithmetic corrected 3 raw-wrong rows. This is useful
+  adapter evidence but not a validation50 promotion.
 
 ## Key References
 
@@ -92,7 +108,8 @@ projection, invariance, and arbitration ablations.
 - LLM-heavy alternative: `experiments/gan2026_llm_heavy_extraction_protocol_2026-06-02.md`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_v0_validation25_error_analysis_2026-06-02.md`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation250_gpt41mini_v1_2026-06-02.md`
 - LLM-heavy v2 decision smoke: `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation25_gpt41mini_v2_2026-06-02.md`
 - LLM-heavy v2 error analysis: `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_v2_validation25_error_analysis_2026-06-02.md`
-- Typed DSPy adapter architecture: `experiments/gan2026_dspy_adapter_architecture_report_2026-06-02.md`
+- LLM-heavy v2 compact rerun: `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_v2_compact_validation25_predeclaration_2026-06-02.md`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation25_gpt41mini_v2_compact_2026-06-02.md`
+- Typed DSPy adapter architecture: `experiments/gan2026_dspy_adapter_architecture_report_2026-06-02.md`, `experiments/gan2026_llm_only_typed_adapter_reasoner_validation25_gpt41mini_v0_2026-06-02.md`
 - LLM-replacement ablations: `experiments/gan2026_llm_replacement_postprocessing_ablation_design_2026-06-02.md`, `experiments/gan2026_llm_replacement_postprocessing_ablation_interpretation_2026-06-02.md`
 - Saved-output replacement replay: `experiments/gan2026_llm_replacement_postprocessing_ablation_validation250_v0_2026-06-02.md`
 - Full retrospective: `docs/research/gan2026_full_research_retrospective_2026-06-02.md`
@@ -111,13 +128,13 @@ projection, invariance, and arbitration ablations.
 
 ### Now
 
-- Revise the v2 output contract/prompt for compact structured JSON, mandatory
-  `final_answer.selected_event_ids`, rendering operands/arithmetic trace, exact
-  selected evidence, administrative-event suppression, and cluster-cadence
-  semantics; rerun only a validation25 smoke after the revision is predeclared.
-- Scaffold `llm_only_typed_adapter_reasoner` as a separate adapter-specific
-  architecture with typed DSPy outputs and scoped `JSONAdapter`, then run only a
-  predeclared validation25 smoke.
+- If returning to v2, do a saved-output row-level review of
+  `v2_compact` before any new prompt change; focus on rows 182, 187, 243, 280,
+  and 338 and keep deterministic selected-evidence arithmetic side-car only.
+- For typed-adapter work, do row-level artifact review before any v1 revision;
+  focus on the 6 selected-evidence exactness failures, 3 raw parser-incompatible
+  labels, and missing arithmetic traces without adding deterministic semantic
+  replacement to the primary score layer.
 
 ### Next
 
@@ -135,6 +152,25 @@ projection, invariance, and arbitration ablations.
 
 ### Done Recently
 
+- 2026-06-02: Scaffolded and ran
+  `llm_only_typed_adapter_reasoner_v0` as the separate DSPy `JSONAdapter`
+  architecture requested by the adapter report. The live validation25 smoke
+  used typed DSPy outputs with scoped `dspy.context(lm=..., adapter=JSONAdapter())`
+  and produced 25/25 structured outputs, 0 adapter parse failures, 0 call
+  failures, and 0 selected-event trace mismatches. It rejects validation50
+  escalation because raw labels were 22/25 scorable, selected evidence was exact
+  19/25, event evidence was exact 31/38, arithmetic traces were present 17/25,
+  raw model-owned Purist was 22/25, and the 25/25 selected-evidence arithmetic
+  score depended on a deterministic side-car with 3 raw-wrong corrections.
+- 2026-06-02: Predeclared, implemented, and ran
+  `llm_heavy_clinical_frequency_reasoner_v2_compact` validation25. The compact
+  contract fixed the rejected v2 schema/truncation family with 25/25 structured
+  outputs and 0 parse/schema failures, but decision 0006 still rejects
+  validation50 escalation: raw model-owned Purist was 22/25, raw labels were
+  23/25 scorable, selected evidence was exact 22/25, rendering operands/traces
+  were 24/25, and deterministic selected-evidence arithmetic reached 25/25 only
+  as a side-car with 3 raw-wrong corrections. Registry/index entries now point
+  to the predeclaration, JSONL, and report.
 - 2026-06-02: Implemented and ran
   `llm_heavy_clinical_frequency_reasoner_v2` validation25 under decision 0006.
   The report records raw, format-only, selected-evidence-arithmetic,
@@ -226,8 +262,6 @@ projection, invariance, and arbitration ablations.
 
 ## Immediate Next Step
 
-Draft the smallest v2 revision that shortens the JSON contract enough to avoid
-truncation/schema misses, makes `final_answer.selected_event_ids` hard to omit,
-suppresses administrative no-reference event copying, and clarifies that
-cluster cadence is not events-per-cluster unless selected evidence says so;
-predeclare the revised validation25 rerun before making new calls.
+Scaffold `llm_only_typed_adapter_reasoner` as the separate DSPy `JSONAdapter`
+architecture already specified in the adapter report, then predeclare and run
+only its validation25 smoke.

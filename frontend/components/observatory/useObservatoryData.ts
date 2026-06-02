@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchRegistry, fetchArtifact } from "@/lib/api";
+import { fetchRegistry } from "@/lib/api";
 import type { RegistryEntry, RowScore, RunSummary, CategoryMetrics } from "@/lib/types";
 
 const STORAGE_KEY = "observatory-selected-runs";
@@ -69,6 +69,22 @@ function extractRowScore(row: unknown): RowScore | null {
         split: String(r.split ?? ""),
       };
     }
+  }
+
+  // LLM first direct extractor format (comparison + decision_record)
+  const comparison = r.comparison as Record<string, unknown> | undefined;
+  if (comparison) {
+    const decision = r.decision_record as Record<string, unknown> | undefined;
+    const ref = r.reference as Record<string, unknown> | undefined;
+    return {
+      predictedCategory: normalizeCategory(String(comparison.predicted_purist_category)),
+      goldCategory: normalizeCategory(String(comparison.gold_purist_category)),
+      puristCorrect: Boolean(comparison.purist_correct),
+      pragmaticCorrect: Boolean(comparison.pragmatic_correct),
+      predictedLabel: String(decision?.final_label ?? "unknown"),
+      goldLabel: String(ref?.gold_label ?? "unknown"),
+      split: String(r.split ?? ""),
+    };
   }
 
   // Ablation / deterministic format
@@ -302,6 +318,30 @@ export function useObservatoryData() {
     }
   }, [selectedRunIds]);
 
+  // Fetch with timeout helper
+  const fetchArtifactWithTimeout = useCallback(
+    async (runId: string, path?: string, timeoutMs = 30000) => {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), timeoutMs);
+      try {
+        const url = path
+          ? `/api/artifacts/${runId}?artifact_path=${encodeURIComponent(path)}`
+          : `/api/artifacts/${runId}`;
+        const res = await fetch(url, { signal: controller.signal });
+        clearTimeout(timeout);
+        if (!res.ok) {
+          const text = await res.text();
+          throw new Error(`HTTP ${res.status}: ${text}`);
+        }
+        return res.json() as Promise<{ content: unknown[] }>;
+      } catch (err) {
+        clearTimeout(timeout);
+        throw err;
+      }
+    },
+    []
+  );
+
   // Auto-fetch artifacts for selected runs that aren't loaded yet
   useEffect(() => {
     for (const runId of selectedRunIds) {
@@ -320,10 +360,16 @@ export function useObservatoryData() {
         next.add(runId);
         return next;
       });
+      setRunErrors((prev) => {
+        if (!prev.has(runId)) return prev;
+        const next = new Map(prev);
+        next.delete(runId);
+        return next;
+      });
 
-      Promise.all(jsonlPaths.map((path) => fetch(`/api/artifacts/${runId}?artifact_path=${encodeURIComponent(path)}`).then(r => r.json())))
-        .then((artifacts) => {
-          const allRows = (artifacts as Array<{content: unknown[]}>).flatMap((a) => a.content);
+      fetchArtifactWithTimeout(runId)
+        .then((artifact) => {
+          const allRows = artifact.content;
           const summary = computeSummary(entry, allRows);
           setSummaries((prev) => new Map(prev).set(runId, summary));
         })
@@ -339,7 +385,7 @@ export function useObservatoryData() {
         });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedRunIds, runs]);
+  }, [selectedRunIds, runs, fetchArtifactWithTimeout]);
 
   const toggleRun = useCallback(
     async (runId: string) => {
@@ -353,7 +399,7 @@ export function useObservatoryData() {
         return next;
       });
 
-      // If not already loaded, fetch all JSONL artifacts
+      // If not already loaded, fetch artifact
       if (!summaries.has(runId) && !loadingRuns.has(runId)) {
         const entry = runs.find((r) => r.run_id === runId);
         if (!entry) return;
@@ -365,9 +411,15 @@ export function useObservatoryData() {
         }
 
         setLoadingRuns((prev) => new Set(prev).add(runId));
+        setRunErrors((prev) => {
+          if (!prev.has(runId)) return prev;
+          const next = new Map(prev);
+          next.delete(runId);
+          return next;
+        });
         try {
-          const artifacts = await Promise.all(jsonlPaths.map((path) => fetch(`/api/artifacts/${runId}?artifact_path=${encodeURIComponent(path)}`).then(r => r.json())));
-          const allRows = (artifacts as Array<{content: unknown[]}>).flatMap((a) => a.content);
+          const artifact = await fetchArtifactWithTimeout(runId);
+          const allRows = artifact.content;
           const summary = computeSummary(entry, allRows);
           setSummaries((prev) => new Map(prev).set(runId, summary));
         } catch (err) {
@@ -381,7 +433,7 @@ export function useObservatoryData() {
         }
       }
     },
-    [runs, summaries, loadingRuns]
+    [runs, summaries, loadingRuns, fetchArtifactWithTimeout]
   );
 
   const selectRuns = useCallback(
@@ -394,9 +446,15 @@ export function useObservatoryData() {
           const jsonlPaths = entry.artifact_paths.filter((p) => p.endsWith(".jsonl"));
           if (jsonlPaths.length === 0) continue;
           setLoadingRuns((prev) => new Set(prev).add(runId));
-          Promise.all(jsonlPaths.map((path) => fetch(`/api/artifacts/${runId}?artifact_path=${encodeURIComponent(path)}`).then(r => r.json())))
-            .then((artifacts) => {
-              const allRows = (artifacts as Array<{content: unknown[]}>).flatMap((a) => a.content);
+          setRunErrors((prev) => {
+            if (!prev.has(runId)) return prev;
+            const next = new Map(prev);
+            next.delete(runId);
+            return next;
+          });
+          fetchArtifactWithTimeout(runId)
+            .then((artifact) => {
+              const allRows = artifact.content;
               const summary = computeSummary(entry, allRows);
               setSummaries((prev) => new Map(prev).set(runId, summary));
             })
@@ -413,7 +471,7 @@ export function useObservatoryData() {
         }
       }
     },
-    [runs, summaries, loadingRuns]
+    [runs, summaries, loadingRuns, fetchArtifactWithTimeout]
   );
 
   const selectedSummaries = useMemo(() => {
