@@ -43,3 +43,9 @@ export function fetchRecord(split: string, sourceRowIndex: number) {
     `/records/${split}/${sourceRowIndex}`
   );
 }
+
+export function fetchPipelineFamilies() {
+  return fetchJson<import("./types").PipelineFamiliesResponse>(
+    "/pipeline-families"
+  );
+}

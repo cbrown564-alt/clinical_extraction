@@ -1,6 +1,6 @@
 # Clinical Extraction Observatory
 
-**Status:** Phase 1 implemented (Workbench frontend scaffold + core components)  
+**Status:** Phase 1 in progress — backend complete, Workbench functional, polish ongoing  
 **Last updated:** 2026-06-02  
 **Scope:** Frontend application for exploring, configuring, comparing, and understanding hybrid clinical-extraction pipelines.  
 **Backend dependency:** Reuses existing `clinical_extraction` package, JSONL artifacts, run registry, and split protocol without modification. Backend extensions are noted but deferred.
@@ -68,11 +68,15 @@ The interface should feel like a high-end scientific instrument: clean, authorit
 
 **Interaction design:**
 - As the user clicks through stages (`Extract` → `Normalize` → `Select` → `Repair` → `Score`), the note text animates highlights to show exactly which spans were touched at that stage.
-- Each extracted span gets a subtle left-border colour:
-  - Steel teal for deterministic rules.
-  - Warm amber for LLM-generated.
-  - Coral for repair-modified.
-- Hovering a span reveals a floating card: rule ID, match groups, portability badge, normalised value, and rationale.
+- Each extracted span is highlighted with a **light background tint + matching underline** in the stage's colour:
+  - **Extract** → steel teal (`deterministic`)
+  - **Normalise** → slate blue (`deterministic-alt`)
+  - **Select** → purple (`hybrid`)
+  - **Score** → moss green (`success`)
+  - Warm amber for LLM-generated spans (future).
+  - Coral for repair-modified spans (future).
+- Hovering a span reveals its tooltip (rule ID, label) via native `title`.
+- Full floating cards with rule ID, match groups, portability badge, and rationale are deferred.
 - **Attribution waterfall:** For the final selected span, a horizontal stacked bar shows semantic ownership (`deterministic_extraction` | `llm_adjudication` | `format_repair` | `benchmark_normalisation`).
 - **Diff mode:** Toggle a second configuration. Changed spans pulse; unchanged spans dim. Divergence at a specific stage is called out with a stage-level badge.
 
@@ -282,6 +286,8 @@ The backend reuses the existing `clinical_extraction` package exactly. No scorin
 | `GET` | `/splits/{split_name}` | Row indices and metadata for a split manifest |
 | `GET` | `/rules` | Inventory of all deterministic rules with metadata |
 | `GET` | `/prompts` | Inventory of prompt versions and policy taxonomies |
+| `GET` | `/records/{split_name}` | Lightweight list of all records in a split (index, gold label, preview) |
+| `GET` | `/records/{split_name}/{source_row_index}` | Full record for a single row (note text, gold label, metadata) |
 
 **Data sources:**
 - `experiments/registry.jsonl` — canonical run log
@@ -321,10 +327,23 @@ Any UI toggle state must serialise to a named config object that can be:
 
 ### Phase 1: The Specimen (Single-Note Workbench)
 **Goal:** A powerful internal debugging and demo tool.
-- Build `NoteRenderer` with evidence span overlays.
-- Implement deterministic V1 and one LLM architecture as selectable.
-- Stage navigator with hover-to-highlight and attribution waterfall.
-- Ghost Gold overlay.
+
+**Implemented:**
+- ✅ FastAPI backend scaffold (`create_app`) with all Phase 1 endpoints
+- ✅ Next.js 16 frontend scaffold under `frontend/` with Tailwind CSS
+- ✅ `NoteRenderer` with evidence span overlays, formal-letter formatting, and `\n` unescaping
+- ✅ Stage navigator with expandable cards, active-stage accent bars, and stage-specific highlight colours
+- ✅ Dataset loading workflow — split selector + row picker loads real Gan 2026 records
+- ✅ Attribution waterfall (currently deterministic-only; ready for hybrid/LLM attribution)
+- ✅ Gold label text display below note (available from dataset record or pipeline run)
+- ✅ React Query + Zustand data layer with typed API wrappers
+
+**Rudimentary / needs follow-up:**
+- 🟡 Ghost Gold overlay is a text box only; the full design (faint handwriting in margin, thin line pointing to correct span, match/mismatch colouring) is not yet implemented
+- 🟡 Hover cards are native `title` tooltips, not rich floating cards
+- 🟡 Only `rules_only` / `deterministic_v1` pipeline is selectable; LLM and hybrid pipelines are backend-ready but not wired in the UI
+- 🟡 Diff mode (A vs B) is not implemented
+- 🟡 No URL serialisation of config state yet
 
 ### Phase 2: The Architect (Pipeline Composer)
 - React Flow canvas with draggable nodes.
