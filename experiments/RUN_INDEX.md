@@ -28,6 +28,18 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Claim language: Diagnostic validation-cycle projection ablation. It fixes the intended 18-row duration surface but causes 27 already-correct validation hard-slice regressions, so it is not promoted as a production projection policy; next work should design a gated/narrow policy.
 - Artifacts: `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v0_2026-06-02.jsonl`, `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v0_2026-06-02.json`, `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v0_2026-06-02.md`.
 
+### `gan2026_state_graph_projection_ablation_month_bucket_duration_selection_broad_regression_v1_2026-06-02`
+- Date/split: `2026-06-02`; `validation_hard_slices`; `250` rows.
+- Pipeline: `hybrid_clinical_frequency_state_graph`; mode `gated month-bucket duration-selection broad regression panel`; replay `analysis_only`.
+- Model role: diagnostic gated month-bucket duration projection replay with hard-slice family regression accounting; model `none; saved validation graph artifacts reused`.
+- Repair mode/config: `gated diagnostic month_bucket_duration_selection_v1 projection variant plus hidden-family regression tags; no scorer, graph-builder, production projection-policy, or holdout change`.
+- Primary metrics: all_rows_changed_labels=22, already_correct_regressions=0, cluster_or_diary_changed_labels=4, frequency_with_seizure_free_node_changes=0, regression_changed_labels=4, regression_rows=232, seizure_free_overreach_changed_labels=3, target_exact_duration_corrections=18, target_exact_duration_regressions=0, target_rows=18, temporal_conflict_changed_labels=4, unknown_no_reference_boundary_changes=1.
+- Evidence validity: Selected-node evidence was exact-offset valid for 18/18 target rows and 232/232 regression rows.
+- Cache/reuse source: Saved seizure-free duration node replay JSONL and validation hard-slice state-graph diagnostics; no hosted calls.
+- Supersedes: `gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v1_2026-06-02`.
+- Claim language: Diagnostic validation-cycle broad-regression replay. Gated v1 preserves 18/18 enriched duration corrections, adds hidden-family regression accounting, and leaves four wrong-to-wrong regression changes concentrated in cluster/diary plus temporal-conflict rows, including one unknown-boundary row; no production policy is promoted.
+- Artifacts: `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_broad_regression_v1_2026-06-02.jsonl`, `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_broad_regression_v1_2026-06-02.json`, `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_broad_regression_v1_2026-06-02.md`.
+
 ### `gan2026_llm_heavy_clinical_frequency_reasoner_v1_validation250_live_2026-06-02`
 - Date/split: `2026-06-02`; `validation`; `250` rows.
 - Pipeline: `llm_heavy_clinical_frequency_reasoner`; mode `live validation250 diagnostic scale-up after validation50 gate`; replay `cache_first`.

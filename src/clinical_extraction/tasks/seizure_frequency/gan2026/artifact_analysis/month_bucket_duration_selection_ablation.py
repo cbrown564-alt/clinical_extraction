@@ -6,7 +6,7 @@ import argparse
 import json
 import re
 from collections import Counter
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
@@ -197,6 +197,17 @@ def write_month_bucket_ablation_report(
             f"{summary['regression']['selected_evidence_valid_rows']}/"
             f"{summary['regression']['rows']}",
             "",
+            "## Regression Family Tags",
+            "",
+            "| Family | Rows | Changed labels |",
+            "| --- | ---: | ---: |",
+        ]
+    )
+    for tag, stats in sorted(summary["regression_family_tags"].items()):
+        lines.append(f"| `{tag}` | {stats['rows']} | {stats['changed_labels']} |")
+    lines.extend(
+        [
+            "",
             "## Regression Tags",
             "",
             "| Tag | Rows | Changed labels |",
@@ -382,6 +393,7 @@ def _regression_tags(
         FrequencyLabelKind.UNRESOLVED_MULTIPLE.value,
     }:
         tags.append("unknown_no_reference_boundary")
+    tags.extend(str(tag) for tag in row.get("validation_hard_slice_memberships", []))
     return sorted(tags)
 
 
@@ -435,6 +447,10 @@ def _summary(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
             ),
         },
         "regression_tags": _tag_summary(regression_rows),
+        "regression_family_tags": _tag_summary(
+            regression_rows,
+            tag_filter=_is_validation_family_tag,
+        ),
     }
 
 
@@ -449,14 +465,39 @@ def _surface_summary(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     }
 
 
-def _tag_summary(rows: Sequence[Mapping[str, Any]]) -> dict[str, dict[str, int]]:
-    tags = Counter(tag for row in rows for tag in row["regression_tags"])
+def _tag_summary(
+    rows: Sequence[Mapping[str, Any]],
+    *,
+    tag_filter: Callable[[str], bool] | None = None,
+) -> dict[str, dict[str, int]]:
+    tags = Counter(
+        tag
+        for row in rows
+        for tag in row["regression_tags"]
+        if tag_filter is None or tag_filter(tag)
+    )
     changed = Counter(
-        tag for row in rows if row["label_changed"] for tag in row["regression_tags"]
+        tag
+        for row in rows
+        if row["label_changed"]
+        for tag in row["regression_tags"]
+        if tag_filter is None or tag_filter(tag)
     )
     return {
         tag: {"rows": tags[tag], "changed_labels": changed[tag]}
         for tag in sorted(tags)
+    }
+
+
+def _is_validation_family_tag(tag: str) -> bool:
+    return tag in {
+        "candidate_absent_or_weak",
+        "cluster_or_diary",
+        "deterministic_miss",
+        "seizure_free_overreach",
+        "shorthand_interval_range",
+        "temporal_conflict",
+        "unknown_no_reference_boundary",
     }
 
 

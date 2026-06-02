@@ -27,7 +27,15 @@ projection, invariance, and arbitration ablations.
 - State-graph validation diagnostics are the active research cycle. Validation50 oracle coverage is 47/50, projection Purist/Pragmatic F1 is 0.9600, and the validation hard-slice union has oracle coverage 219/250 with projection Purist F1 0.9160.
 - Hosted boundary-state graph-builder work recovered useful unknown/unresolved-multiple coverage: validation31 produced 10/31 representability-gain candidates; synthetic unknown8 v1 produced 8/8 schema-valid, exact-evidence-valid unknown nodes. Accepted-node replay recovered representability on all 10 validation gain rows, but unchanged projection exactly matched only 6/10 labels.
 - Projection remains separate from node construction. Boundary-state priority fixed 17/42 miss-only projection rows; seizure-free duration work showed node coverage can be high while unchanged projection stays at 0/18 exact duration labels.
-- Month-bucket duration-selection ablations are complete through gated v1. v0 fixed 18/18 enriched duration target rows but caused 27 already-correct regressions; gated v1 preserved the 18/18 target corrections while reducing regression-panel changes to 4/232, with 0 already-correct and 0 frequency-with-seizure-free regressions. It remains revise-only pending a broader enriched-node regression panel.
+- Month-bucket duration-selection ablations are complete through gated v1 and a
+  broader hard-slice family regression panel. v0 fixed 18/18 enriched duration
+  target rows but caused 27 already-correct regressions; gated v1 preserved the
+  18/18 target corrections while reducing regression-panel changes to 4/232,
+  with 0 already-correct and 0 frequency-with-seizure-free regressions. The
+  broad regression replay adds hidden-family accounting: the four remaining
+  changes are all cluster/diary plus temporal-conflict rows, three overlap
+  seizure-free-overreach, and one is an unknown/no-reference boundary row. It
+  remains revise-only; no production projection policy is promoted.
 - A strong LLM-heavy alternative is now required and protocolized: `llm_heavy_clinical_frequency_reasoner` makes the model responsible for extraction, clinical normalization proposal, aggregation/selection, and final schema representation, while deterministic code validates, scores, and applies named benchmark-alignment adapters only.
 - `llm_heavy_clinical_frequency_reasoner_v1` passed the validation50 output-contract gate but failed validation250 as an LLM-heavy final-label candidate. Validation50 was 50/50 structured, 48/50 selected evidence exact, and 41/50 raw Purist. Validation250 was 237/250 structured, 230/250 selected evidence exact, 188/250 raw Purist, and 219/250 selected-evidence-arithmetic Purist; the arithmetic layer remains attribution-diagnostic only.
 - Accepted synthetic unknown8 v1 boundary nodes have now been replayed for coverage accounting only: baseline representability was 0/8 and diagnostic merge representability was 8/8; unchanged projection still missed one row, keeping projection/arbitration separate.
@@ -44,7 +52,7 @@ projection, invariance, and arbitration ablations.
 - Generalization gap: `experiments/gan2026_generalization_gap_research_report_2026-06-02.md`
 - State-graph protocol and row review: `experiments/gan2026_clinical_frequency_state_graph_protocol_2026-06-02.md`, `experiments/gan2026_clinical_frequency_state_graph_row_family_review_2026-06-02.md`
 - Boundary-state graph-builder: `experiments/gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_validation31_synthetic_unknown8_interpretation_2026-06-02.md`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_synthetic_unknown8_v1_unknown_recall_gpt41mini_live_2026-06-02.md`
-- Projection and duration diagnostics: `experiments/gan2026_hybrid_clinical_frequency_state_graph_projection_arbitration_ablation_2026-06-02.md`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_projection_ablation_2026-06-02.md`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_node_replay_2026-06-02.md`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_enriched_projection_replay_2026-06-02.md`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_month_bucket_duration_selection_decision_2026-06-02.md`, `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v0_2026-06-02.md`, `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v1_2026-06-02.md`
+- Projection and duration diagnostics: `experiments/gan2026_hybrid_clinical_frequency_state_graph_projection_arbitration_ablation_2026-06-02.md`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_projection_ablation_2026-06-02.md`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_node_replay_2026-06-02.md`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_enriched_projection_replay_2026-06-02.md`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_month_bucket_duration_selection_decision_2026-06-02.md`, `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v0_2026-06-02.md`, `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v1_2026-06-02.md`, `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_broad_regression_v1_2026-06-02.md`
 - LLM-heavy alternative: `experiments/gan2026_llm_heavy_extraction_protocol_2026-06-02.md`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_v0_validation25_error_analysis_2026-06-02.md`
 - Full retrospective: `docs/research/gan2026_full_research_retrospective_2026-06-02.md`
 - Retrospective HTML/PDF: `docs/research/gan2026_full_research_retrospective_2026-06-02.html`, `docs/research/gan2026_full_research_retrospective_2026-06-02.pdf`
@@ -62,7 +70,11 @@ projection, invariance, and arbitration ablations.
 
 ### Now
 
-- Design a broader enriched-node regression panel before any duration projection policy promotion.
+- Review the four remaining changed rows from
+  `gan2026_state_graph_projection_ablation_month_bucket_duration_selection_broad_regression_v1_2026-06-02`
+  and decide whether a narrower projection gate can block the unknown-boundary
+  and seizure-free-overreach changes without losing the 18/18 duration target
+  corrections.
 - Review `llm_heavy_clinical_frequency_reasoner_v1` validation250 failure families before another LLM-heavy prompt revision; do not escalate this version further.
 
 ### Next
@@ -77,6 +89,14 @@ projection, invariance, and arbitration ablations.
 
 ### Done Recently
 
+- 2026-06-02: Completed the broader hard-slice family regression replay for
+  gated `month_bucket_duration_selection_v1`. It preserved 18/18 enriched
+  duration corrections and 0 exact-duration regressions; the 232-row regression
+  panel had 4 changed labels, 0 already-correct regressions, 0
+  frequency-with-seizure-free changes, and hidden-family accounting showing all
+  four changes in cluster/diary plus temporal-conflict rows, with one
+  unknown/no-reference boundary change. Decision remains revise-only; no
+  scorer, graph-builder, production projection, or holdout change.
 - 2026-06-02: Completed full row-level error analysis for `llm_heavy_clinical_frequency_reasoner_v0` validation25. Key finding: raw LLM labels are 0/25 scorable, format-only is 10/25 Purist correct, selected-evidence arithmetic is 23/25 but attribution-invalid for LLM-heavy promotion, and benchmark alignment regresses 10 rows relative to arithmetic. Decision remains revise-only before validation50.
 - 2026-06-02: Ran `llm_heavy_clinical_frequency_reasoner_v1` validation50 and validation250. Validation50 passed the output-contract gate after non-semantic alias repair, but validation250 rejected promotion: 13 parse/schema failures, 9 selected-event trace mismatches, raw/format-only Purist 188/250, benchmark-aligned Purist 204/250, and selected-evidence-arithmetic Purist 219/250 as diagnostic-only evidence-selection signal.
 - 2026-06-02: Rendered the full research retrospective as a print-ready editorial HTML page and 16-page A4 PDF for iPad reading/markup; added a reusable renderer script.
@@ -97,4 +117,7 @@ projection, invariance, and arbitration ablations.
 
 ## Immediate Next Step
 
-Review `llm_heavy_clinical_frequency_reasoner_v1` validation250 failure families, especially parse/schema tail failures, selected-event trace mismatches, and raw-label errors relative to selected-evidence arithmetic. Keep the broader enriched-node regression panel as the state-graph projection follow-up.
+Review the four changed rows in the gated month-bucket broad-regression panel,
+then review `llm_heavy_clinical_frequency_reasoner_v1` validation250 failure
+families, especially parse/schema tail failures, selected-event trace
+mismatches, and raw-label errors relative to selected-evidence arithmetic.

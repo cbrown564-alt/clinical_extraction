@@ -56,6 +56,10 @@ def test_month_bucket_ablation_reports_target_gains_and_regression_cost() -> Non
                     "graph": already_correct_graph.model_dump(mode="json"),
                     "projection": {"final_label": "2 per month"},
                     "projection_exact_label_match": True,
+                    "validation_hard_slice_memberships": [
+                        "cluster_or_diary",
+                        "temporal_conflict",
+                    ],
                 }
             ],
             split="validation_hard_slices",
@@ -66,12 +70,18 @@ def test_month_bucket_ablation_reports_target_gains_and_regression_cost() -> Non
     assert metadata["summary"]["target"]["exact_duration_corrections"] == 1
     assert metadata["summary"]["regression"]["already_correct_regressions"] == 1
     assert metadata["summary"]["all_rows"]["changed_labels"] == 2
+    assert metadata["summary"]["regression_family_tags"] == {
+        "cluster_or_diary": {"rows": 1, "changed_labels": 1},
+        "temporal_conflict": {"rows": 1, "changed_labels": 1},
+    }
     assert rows[0]["month_bucket_projection"]["final_label"] == (
         "seizure free for multiple month"
     )
     assert rows[1]["regression_tags"] == [
         "already_projection_correct",
+        "cluster_or_diary",
         "frequency_with_seizure_free_node",
+        "temporal_conflict",
     ]
 
 
