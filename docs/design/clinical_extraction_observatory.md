@@ -1,6 +1,6 @@
 # Clinical Extraction Observatory
 
-**Status:** Phase 2 complete — all Phase 2 features and refinements implemented; ready for Phase 3  
+**Status:** Phase 3 complete — all Phase 3 features implemented; ready for Phase 4  
 **Last updated:** 2026-06-02  
 **Scope:** Frontend application for exploring, configuring, comparing, and understanding hybrid clinical-extraction pipelines.  
 **Backend dependency:** Reuses existing `clinical_extraction` package, JSONL artifacts, run registry, and split protocol without modification. Backend extensions are noted but deferred.
@@ -389,10 +389,23 @@ Any UI toggle state must serialise to a named config object that can be:
 - 🟡 Export trace as JSON or Markdown report.
 
 ### Phase 3: The Observatory (Corpus & Ladder)
-- Index `experiments/registry.jsonl` and existing JSONL artifacts.
-- Run ladder visualisation with saturation indicators.
-- Confusion matrix heatmap with expandable cell mosaics.
-- Generalisation Gap gorge visualisation.
+**Goal:** Aggregate results across validation prefixes and locked test. Surface the generalisation gap and saturation state.
+
+**Implemented:**
+- ✅ **Registry indexing** — `/registry` endpoint consumed; all runs listed and selectable by pipeline family.
+- ✅ **Run Ladder** — horizontal trajectory cards showing Purist/Pragmatic accuracy and F1 per run; saturation badge for validation surfaces ≥250 rows with pragmatic accuracy ≥95%.
+- ✅ **Confusion Matrix** — merged heatmap across selected runs with color intensity (green diagonal, coral off-diagonal); clickable cells expand a side panel showing up to 50 example rows (predicted label vs gold label).
+- ✅ **Generalisation Gap** — gorge visualisation for runs that contain both validation and test rows; shows Purist and Pragmatic accuracy cliffs with the gap highlighted in coral.
+- ✅ **Run Selector** — family-grouped chips with decision badges (accept/reject/revise), row counts, and JSONL availability indicators.
+
+**Data consumed:**
+- `experiments/registry.jsonl` — canonical run log
+- `experiments/*.jsonl` — per-run artifacts parsed client-side for scores, confusion matrices, and validation/test splits
+
+**Rudimentary / deferred to Phase 4–5:**
+- 🟡 Confusion-matrix cell mosaics currently show label strings; linking to full note cards and stage-by-stage autopsy traces requires Workbench integration.
+- 🟡 Generalisation Gap error-family colouring (temporal conflict, seizure-free boundary, etc.) requires standardised error taxonomy tagging (see §9).
+- 🟡 Run Ladder hover metadata (model, prompt version, git commit) is available in registry but not yet rendered in tooltips.
 
 ### Phase 4: The Laboratory (Rules & Ablations)
 - Rule inventory with live simulation.

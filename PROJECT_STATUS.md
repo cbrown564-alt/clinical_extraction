@@ -27,14 +27,13 @@ projection, invariance, and arbitration ablations.
 - State-graph validation diagnostics are the active research cycle. Validation50 oracle coverage is 47/50, projection Purist/Pragmatic F1 is 0.9600, and the validation hard-slice union has oracle coverage 219/250 with projection Purist F1 0.9160.
 - Hosted boundary-state graph-builder work recovered useful unknown/unresolved-multiple coverage: validation31 produced 10/31 representability-gain candidates; synthetic unknown8 v1 produced 8/8 schema-valid, exact-evidence-valid unknown nodes. Accepted-node replay recovered representability on all 10 validation gain rows, but unchanged projection exactly matched only 6/10 labels.
 - Projection remains separate from node construction. Boundary-state priority fixed 17/42 miss-only projection rows; seizure-free duration work showed node coverage can be high while unchanged projection stays at 0/18 exact duration labels.
-- Month-bucket duration-selection ablations are complete through gated v1 and a
-  broader hard-slice family regression panel. v0 fixed 18/18 enriched duration
-  target rows but caused 27 already-correct regressions; gated v1 preserved the
-  18/18 target corrections while reducing regression-panel changes to 4/232,
-  with 0 already-correct and 0 frequency-with-seizure-free regressions. The
-  four remaining changes are all cluster/diary plus temporal-conflict rows.
-  A row-tag gate could block them without losing 18/18 target corrections, but
-  this remains revise-only until a graph-metadata gate is ablated.
+- Month-bucket duration-selection ablations are complete through graph-gated
+  v2. v0 fixed 18/18 enriched duration target rows but caused 27
+  already-correct regressions; gated v1 preserved the 18/18 target corrections
+  while leaving 4/232 regression-panel changes. Graph-gated v2 uses graph
+  metadata instead of validation row tags, preserves 18/18 target corrections,
+  and leaves 0/232 broad-regression label changes. It remains a validation-only
+  diagnostic and is not production projection policy.
 - A strong LLM-heavy alternative is now required and protocolized: `llm_heavy_clinical_frequency_reasoner` makes the model responsible for extraction, clinical normalization proposal, aggregation/selection, and final schema representation, while deterministic code validates, scores, and applies named benchmark-alignment adapters only.
 - `llm_heavy_clinical_frequency_reasoner_v1` passed the validation50 output-contract gate but failed validation250 as an LLM-heavy final-label candidate. Validation50 was 50/50 structured, 48/50 selected evidence exact, and 41/50 raw Purist. Validation250 was 237/250 structured, 230/250 selected evidence exact, 188/250 raw Purist, and 219/250 selected-evidence-arithmetic Purist; the arithmetic layer remains attribution-diagnostic only.
 - The next-task review found LLM-heavy v1 failure families in schema enum drift,
@@ -57,6 +56,7 @@ projection, invariance, and arbitration ablations.
 - State-graph protocol and row review: `experiments/gan2026_clinical_frequency_state_graph_protocol_2026-06-02.md`, `experiments/gan2026_clinical_frequency_state_graph_row_family_review_2026-06-02.md`
 - Boundary-state graph-builder: `experiments/gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_validation31_synthetic_unknown8_interpretation_2026-06-02.md`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_synthetic_unknown8_v1_unknown_recall_gpt41mini_live_2026-06-02.md`
 - Projection and duration diagnostics: `experiments/gan2026_hybrid_clinical_frequency_state_graph_projection_arbitration_ablation_2026-06-02.md`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_projection_ablation_2026-06-02.md`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_node_replay_2026-06-02.md`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_enriched_projection_replay_2026-06-02.md`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_month_bucket_duration_selection_decision_2026-06-02.md`, `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v0_2026-06-02.md`, `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v1_2026-06-02.md`, `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_broad_regression_v1_2026-06-02.md`
+- Graph-gated duration selection: `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_graph_gated_v2_2026-06-02.md`
 - Next-task review: `experiments/gan2026_next_task_review_month_bucket_gate_and_llm_heavy_v1_2026-06-02.md`
 - LLM-heavy alternative: `experiments/gan2026_llm_heavy_extraction_protocol_2026-06-02.md`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_v0_validation25_error_analysis_2026-06-02.md`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation250_gpt41mini_v1_2026-06-02.md`
 - Full retrospective: `docs/research/gan2026_full_research_retrospective_2026-06-02.md`
@@ -75,9 +75,6 @@ projection, invariance, and arbitration ablations.
 
 ### Now
 
-- Design and run a diagnostic graph-metadata gate for month-bucket duration
-  projection. It should use graph features, not validation row tags, and replay
-  against the same broad regression panel before any projection-policy claim.
 - Design LLM-replacement ablations for deterministic post-processing modules,
   reporting score, repair attribution, evidence validity, and replay variance.
 
@@ -94,6 +91,14 @@ projection, invariance, and arbitration ablations.
 
 ### Done Recently
 
+- 2026-06-02: Implemented and replayed graph-gated
+  `month_bucket_duration_selection_graph_gated_v2` against the same 250-row
+  validation hard-slice surface. The gate preserved 18/18 enriched duration
+  corrections, left 0/232 broad-regression label changes, and blocked 46
+  month-bucket replacements using graph metadata (`active_boundary_state_node`
+  and `selected_rule_not_duration_normalization_v0`). This remains
+  validation-only diagnostic evidence; no scorer, graph-builder, production
+  projection policy, or holdout behavior changed.
 - 2026-06-02: Completed the next-task review for the month-bucket broad
   regression rows and LLM-heavy v1 validation250 failures. A row-tag gate can
   block all four residual month-bucket changes without losing the 18 target
@@ -129,7 +134,6 @@ projection, invariance, and arbitration ablations.
 
 ## Immediate Next Step
 
-Implement a diagnostic graph-metadata gate for month-bucket duration selection
-and replay it against the broad regression panel; keep the claim language
-validation-only and separate from scorer normalization, graph construction, and
-production projection policy.
+Design LLM-replacement ablations for deterministic post-processing modules,
+reporting score, repair attribution, evidence validity, and replay variance
+for each layer before any LLM-heavy v2 prompt work.

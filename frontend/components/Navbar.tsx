@@ -7,6 +7,7 @@ import { Microscope } from "lucide-react";
 const navItems = [
   { href: "/workbench", label: "Workbench", color: "deterministic" },
   { href: "/architect", label: "Architect", color: "hybrid" },
+  { href: "/observatory", label: "Observatory", color: "llm" },
 ] as const;
 
 export default function Navbar() {
@@ -37,7 +38,9 @@ export default function Navbar() {
                   active
                     ? item.color === "deterministic"
                       ? "bg-deterministic/10 text-deterministic border-deterministic/20"
-                      : "bg-hybrid/10 text-hybrid border-hybrid/20"
+                      : item.color === "hybrid"
+                      ? "bg-hybrid/10 text-hybrid border-hybrid/20"
+                      : "bg-llm/10 text-llm border-llm/20"
                     : "text-muted border-transparent hover:bg-surface-raised hover:text-foreground"
                 }`}
               >

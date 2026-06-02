@@ -69,6 +69,21 @@ DEFAULT_V1_REPORT_PATH = Path(
     "gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v1_"
     "2026-06-02.md"
 )
+DEFAULT_GRAPH_GATED_JSONL_PATH = Path(
+    "experiments/"
+    "gan2026_state_graph_projection_ablation_month_bucket_duration_selection_graph_gated_v2_"
+    "2026-06-02.jsonl"
+)
+DEFAULT_GRAPH_GATED_JSON_PATH = Path(
+    "experiments/"
+    "gan2026_state_graph_projection_ablation_month_bucket_duration_selection_graph_gated_v2_"
+    "2026-06-02.json"
+)
+DEFAULT_GRAPH_GATED_REPORT_PATH = Path(
+    "experiments/"
+    "gan2026_state_graph_projection_ablation_month_bucket_duration_selection_graph_gated_v2_"
+    "2026-06-02.md"
+)
 
 
 def run_month_bucket_duration_selection_ablation(
@@ -119,9 +134,7 @@ def run_month_bucket_duration_selection_ablation(
         "split_manifest": split_manifest,
         "row_count": len(rows),
         "projection_policy": (
-            "gan2026_state_graph_projection_ablation_month_bucket_duration_selection"
-            if policy_variant == "v0"
-            else "gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v1"
+            _projection_policy_name(policy_variant)
         ),
         "policy_variant": policy_variant,
         "claim_language": (
@@ -205,6 +218,23 @@ def write_month_bucket_ablation_report(
     )
     for tag, stats in sorted(summary["regression_family_tags"].items()):
         lines.append(f"| `{tag}` | {stats['rows']} | {stats['changed_labels']} |")
+    if summary.get("graph_gate"):
+        lines.extend(
+            [
+                "",
+                "## Graph Metadata Gate",
+                "",
+                f"- Blocked month-bucket replacements: "
+                f"{summary['graph_gate']['blocked_rows']}",
+                "",
+                "| Graph flag | Rows |",
+                "| --- | ---: |",
+            ]
+        )
+        for flag, stats in sorted(summary["graph_gate"].items()):
+            if flag == "blocked_rows":
+                continue
+            lines.append(f"| `{flag}` | {stats['rows']} |")
     lines.extend(
         [
             "",
@@ -258,7 +288,11 @@ def _ablation_row(
 ) -> dict[str, Any]:
     graph = ClinicalFrequencyStateGraph.model_validate(row[graph_key])
     baseline = _baseline_projection(row, graph)
-    month_bucket = _month_bucket_projection(graph, baseline=baseline, policy_variant=policy_variant)
+    month_bucket, graph_gate = _month_bucket_projection(
+        graph,
+        baseline=baseline,
+        policy_variant=policy_variant,
+    )
     gold = str(row["gold_normalized_label"])
     label_changed = baseline.final_label != month_bucket.final_label
     selected_evidence_valid = _selected_evidence_valid(graph, month_bucket)
@@ -278,6 +312,7 @@ def _ablation_row(
         "selected_evidence_valid": selected_evidence_valid,
         "seizure_free_node_count": len(_usable_seizure_free_nodes(graph)),
         "regression_tags": _regression_tags(row, graph, baseline),
+        "graph_gate": graph_gate,
     }
 
 
@@ -306,17 +341,34 @@ def _month_bucket_projection(
     *,
     baseline: GanGraphProjection,
     policy_variant: str,
-) -> GanGraphProjection:
+) -> tuple[GanGraphProjection, dict[str, Any]]:
+    empty_gate = {"blocked": False, "flags": [], "selected_node_ids": []}
     if not _usable_seizure_free_nodes(graph):
-        return _projection_with_policy_name(baseline, policy_variant)
+        return _projection_with_policy_name(baseline, policy_variant), empty_gate
     candidate = _project_duration_variant(
         "month_bucket_duration_selection",
         graph,
         gold_normalized_label="",
     )
     if policy_variant == "gated_v1":
-        return _gated_month_bucket_projection(baseline, candidate)
-    return candidate
+        return _gated_month_bucket_projection(baseline, candidate), empty_gate
+    if policy_variant == "graph_gated_v2":
+        graph_gate = _graph_metadata_gate(graph, candidate)
+        if graph_gate["blocked"]:
+            return _projection_with_policy_name(baseline, policy_variant), graph_gate
+        return (
+            candidate.model_copy(
+                update={
+                    "projection_policy": _projection_policy_name(policy_variant),
+                    "rationale": (
+                        "Projected with diagnostic month-bucket duration policy "
+                        "graph_gated_v2."
+                    ),
+                }
+            ),
+            graph_gate,
+        )
+    return candidate, empty_gate
 
 
 def _gated_month_bucket_projection(
@@ -343,14 +395,60 @@ def _projection_with_policy_name(
     projection: GanGraphProjection,
     policy_variant: str,
 ) -> GanGraphProjection:
-    suffix = "" if policy_variant == "v0" else "_v1"
     return projection.model_copy(
-        update={
-            "projection_policy": (
-                "gan2026_state_graph_projection_ablation_month_bucket_duration_selection"
-                f"{suffix}"
-            )
+        update={"projection_policy": _projection_policy_name(policy_variant)}
+    )
+
+
+def _projection_policy_name(policy_variant: str) -> str:
+    if policy_variant == "v0":
+        return "gan2026_state_graph_projection_ablation_month_bucket_duration_selection"
+    return (
+        "gan2026_state_graph_projection_ablation_month_bucket_duration_selection_"
+        f"{policy_variant}"
+    )
+
+
+def _graph_metadata_gate(
+    graph: ClinicalFrequencyStateGraph,
+    candidate: GanGraphProjection,
+) -> dict[str, Any]:
+    selected = _selected_nodes(graph, candidate)
+    flags: list[str] = []
+    if _has_active_boundary_state_node(graph):
+        flags.append("active_boundary_state_node")
+    if not selected or not all(
+        node.rule_id.startswith("seizure_free_duration_node_normalization_v0.")
+        for node in selected
+    ):
+        flags.append("selected_rule_not_duration_normalization_v0")
+    return {
+        "blocked": bool(flags),
+        "flags": sorted(flags),
+        "selected_node_ids": [node.node_id for node in selected],
+    }
+
+
+def _selected_nodes(
+    graph: ClinicalFrequencyStateGraph,
+    projection: GanGraphProjection,
+) -> list[Any]:
+    nodes = {node.node_id: node for node in graph.nodes}
+    return [nodes[node_id] for node_id in projection.selected_node_ids if node_id in nodes]
+
+
+def _has_active_boundary_state_node(graph: ClinicalFrequencyStateGraph) -> bool:
+    return any(
+        node.semantic_kind
+        in {
+            FrequencyLabelKind.UNKNOWN,
+            FrequencyLabelKind.NO_REFERENCE,
+            FrequencyLabelKind.UNRESOLVED_MULTIPLE,
         }
+        and node.assertion_status == "asserted"
+        and node.temporality == "current"
+        and not node.graph_errors
+        for node in graph.nodes
     )
 
 
@@ -451,6 +549,7 @@ def _summary(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
             regression_rows,
             tag_filter=_is_validation_family_tag,
         ),
+        "graph_gate": _graph_gate_summary(rows),
     }
 
 
@@ -486,6 +585,22 @@ def _tag_summary(
     return {
         tag: {"rows": tags[tag], "changed_labels": changed[tag]}
         for tag in sorted(tags)
+    }
+
+
+def _graph_gate_summary(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
+    gate_rows = [row for row in rows if row.get("graph_gate")]
+    blocked = [
+        row for row in gate_rows if bool(row.get("graph_gate", {}).get("blocked"))
+    ]
+    flags = Counter(
+        flag
+        for row in blocked
+        for flag in row.get("graph_gate", {}).get("flags", [])
+    )
+    return {
+        "blocked_rows": len(blocked),
+        **{flag: {"rows": flags[flag]} for flag in sorted(flags)},
     }
 
 
@@ -545,8 +660,36 @@ def main(argv: Sequence[str] | None = None) -> None:
     parser.add_argument("--jsonl", type=Path, default=DEFAULT_JSONL_PATH)
     parser.add_argument("--json", type=Path, default=DEFAULT_JSON_PATH)
     parser.add_argument("--markdown", type=Path, default=DEFAULT_REPORT_PATH)
-    parser.add_argument("--policy-variant", choices=("v0", "gated_v1"), default="v0")
+    parser.add_argument(
+        "--policy-variant",
+        choices=("v0", "gated_v1", "graph_gated_v2"),
+        default="v0",
+    )
     args = parser.parse_args(argv)
+    if args.policy_variant == "gated_v1":
+        args.jsonl = DEFAULT_V1_JSONL_PATH if args.jsonl == DEFAULT_JSONL_PATH else args.jsonl
+        args.json = DEFAULT_V1_JSON_PATH if args.json == DEFAULT_JSON_PATH else args.json
+        args.markdown = (
+            DEFAULT_V1_REPORT_PATH
+            if args.markdown == DEFAULT_REPORT_PATH
+            else args.markdown
+        )
+    elif args.policy_variant == "graph_gated_v2":
+        args.jsonl = (
+            DEFAULT_GRAPH_GATED_JSONL_PATH
+            if args.jsonl == DEFAULT_JSONL_PATH
+            else args.jsonl
+        )
+        args.json = (
+            DEFAULT_GRAPH_GATED_JSON_PATH
+            if args.json == DEFAULT_JSON_PATH
+            else args.json
+        )
+        args.markdown = (
+            DEFAULT_GRAPH_GATED_REPORT_PATH
+            if args.markdown == DEFAULT_REPORT_PATH
+            else args.markdown
+        )
 
     target_rows, regression_rows = load_default_surfaces(
         target_jsonl=args.target_jsonl,
