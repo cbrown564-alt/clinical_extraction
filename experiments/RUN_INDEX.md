@@ -28,6 +28,18 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Claim language: Diagnostic validation-cycle projection ablation. It fixes the intended 18-row duration surface but causes 27 already-correct validation hard-slice regressions, so it is not promoted as a production projection policy; next work should design a gated/narrow policy.
 - Artifacts: `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v0_2026-06-02.jsonl`, `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v0_2026-06-02.json`, `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v0_2026-06-02.md`.
 
+### `gan2026_llm_heavy_clinical_frequency_reasoner_v1_validation250_live_2026-06-02`
+- Date/split: `2026-06-02`; `validation`; `250` rows.
+- Pipeline: `llm_heavy_clinical_frequency_reasoner`; mode `live validation250 diagnostic scale-up after validation50 gate`; replay `cache_first`.
+- Model role: LLM-heavy extraction, clinical selection, and scoring-schema renderer; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `v1 prompt/schema plus non-semantic enum/unit alias repair; benchmark-aligned layer remains side-car and selected-evidence arithmetic remains diagnostic attribution only`.
+- Primary metrics: benchmark_aligned_purist_correct=204, call_failures=0, event_evidence_total=535, event_evidence_valid=508, format_only_purist_correct=188, parse_failures=13, raw_llm_pragmatic_correct=195, raw_llm_purist_correct=188, raw_llm_scorable=213, row_count=250, selected_event_trace_mismatches=9, selected_evidence_arithmetic_pragmatic_correct=225, selected_evidence_arithmetic_purist_correct=219, selected_evidence_valid=230, structured_records=237.
+- Evidence validity: Selected evidence exact 230/250; event evidence exact 508/535; nine selected-event trace mismatches and 13 parse/schema failures remain.
+- Cache/reuse source: Reused validation50 v1 raw outputs for the first 50 rows and ran rows 51-250 live with DSPy cache enabled.
+- Supersedes: `gan2026_llm_heavy_clinical_frequency_reasoner_v1_validation50_live_2026-06-02`.
+- Claim language: Validation250 rejects promotion of v1 as an LLM-heavy final-label candidate: raw/format-only Purist is 188/250 and the stronger 219/250 selected-evidence arithmetic layer is attribution-diagnostic, not LLM-heavy success.
+- Artifacts: `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation250_gpt41mini_v1_2026-06-02.jsonl`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation250_gpt41mini_v1_2026-06-02.md`.
+
 ### `gan2026_llm_heavy_clinical_frequency_reasoner_v0_validation25_schema_smoke_2026-06-02`
 - Date/split: `2026-06-02`; `validation`; `25` rows.
 - Pipeline: `llm_heavy_clinical_frequency_reasoner`; mode `live validation25 followed by saved-output schema replay after scalar-list shape repair`; replay `schema_replay`.
@@ -307,6 +319,18 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Artifacts: `experiments/gan2026_section_claim_table_validation750_gpt41mini_v4_2026-06-01.jsonl`, `experiments/gan2026_section_claim_table_validation750_gpt41mini_v4_2026-06-01.md`, `experiments/gan2026_section_claim_table_validation750_v4_interpretation_2026-06-01.md`.
 
 ## Historical
+
+### `gan2026_llm_heavy_clinical_frequency_reasoner_v1_validation50_live_2026-06-02`
+- Date/split: `2026-06-02`; `validation`; `50` rows.
+- Pipeline: `llm_heavy_clinical_frequency_reasoner`; mode `live validation50 output-contract gate with first 25 rows reused after alias repair`; replay `cache_first`.
+- Model role: LLM-heavy extraction, clinical selection, and scoring-schema renderer; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `v1 prompt/schema plus non-semantic enum/unit alias repair; score layers raw_llm, format_only, selected_evidence_arithmetic, benchmark_aligned, oracle_format_upper_bound`.
+- Primary metrics: benchmark_aligned_purist_correct=45, call_failures=0, event_evidence_total=125, event_evidence_valid=120, format_only_purist_correct=41, parse_failures=0, raw_llm_purist_correct=41, raw_llm_scorable=45, row_count=50, selected_event_trace_mismatches=1, selected_evidence_arithmetic_purist_correct=48, selected_evidence_valid=48, structured_records=50.
+- Evidence validity: Selected evidence exact 48/50; event evidence exact 120/125; one selected-event trace mismatch.
+- Cache/reuse source: Reused first 25 raw outputs from the interrupted validation50 checkpoint, then ran rows 26-50 live with DSPy cache enabled.
+- Supersedes: `gan2026_llm_heavy_clinical_frequency_reasoner_v0_validation25_error_analysis_2026-06-02`.
+- Claim language: Validation50 passed the v1 output-contract gate, but raw/format-only Purist was only 41/50; escalation to validation250 was diagnostic, not promotional.
+- Artifacts: `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation50_gpt41mini_v1_2026-06-02.jsonl`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation50_gpt41mini_v1_2026-06-02.md`.
 
 ### `gan2026_hybrid_adjudicator_v02_cluster_diary_candidate_recall_generalization_audit_2026-06-02`
 - Date/split: `2026-06-02`; `validation+test`; `1200` rows.

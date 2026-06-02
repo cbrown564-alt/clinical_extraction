@@ -29,7 +29,7 @@ projection, invariance, and arbitration ablations.
 - Projection remains separate from node construction. Boundary-state priority fixed 17/42 miss-only projection rows; seizure-free duration work showed node coverage can be high while unchanged projection stays at 0/18 exact duration labels.
 - Month-bucket duration-selection ablations are complete through gated v1. v0 fixed 18/18 enriched duration target rows but caused 27 already-correct regressions; gated v1 preserved the 18/18 target corrections while reducing regression-panel changes to 4/232, with 0 already-correct and 0 frequency-with-seizure-free regressions. It remains revise-only pending a broader enriched-node regression panel.
 - A strong LLM-heavy alternative is now required and protocolized: `llm_heavy_clinical_frequency_reasoner` makes the model responsible for extraction, clinical normalization proposal, aggregation/selection, and final schema representation, while deterministic code validates, scores, and applies named benchmark-alignment adapters only.
-- `llm_heavy_clinical_frequency_reasoner_v0` is implemented and registered. Its validation25 GPT-4.1 mini schema smoke produced 24/25 schema-valid rows after scalar-list shape replay, but selected evidence exactness was only 18/25 and raw LLM scorer format was 0/25 scorable. Full error analysis shows the high 23/25 selected-evidence-arithmetic layer is diagnostic-only because it depends on deterministic derivation over model-selected evidence. Decision: revise prompt/schema before validation50.
+- `llm_heavy_clinical_frequency_reasoner_v1` passed the validation50 output-contract gate but failed validation250 as an LLM-heavy final-label candidate. Validation50 was 50/50 structured, 48/50 selected evidence exact, and 41/50 raw Purist. Validation250 was 237/250 structured, 230/250 selected evidence exact, 188/250 raw Purist, and 219/250 selected-evidence-arithmetic Purist; the arithmetic layer remains attribution-diagnostic only.
 - Accepted synthetic unknown8 v1 boundary nodes have now been replayed for coverage accounting only: baseline representability was 0/8 and diagnostic merge representability was 8/8; unchanged projection still missed one row, keeping projection/arbitration separate.
 - Routine LLM experiments use cache-first `gan2026-llm-experiment --pipeline ...`; saved-output replay is reserved for explicit offline artifact analysis.
 - Clean scorer-facing normalization is frozen unless direct-citation review justifies another family. Shared schema repair is alias-only; parser defaults belong to their task parser.
@@ -46,6 +46,7 @@ projection, invariance, and arbitration ablations.
 - Boundary-state graph-builder: `experiments/gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_validation31_synthetic_unknown8_interpretation_2026-06-02.md`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_synthetic_unknown8_v1_unknown_recall_gpt41mini_live_2026-06-02.md`
 - Projection and duration diagnostics: `experiments/gan2026_hybrid_clinical_frequency_state_graph_projection_arbitration_ablation_2026-06-02.md`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_projection_ablation_2026-06-02.md`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_node_replay_2026-06-02.md`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_enriched_projection_replay_2026-06-02.md`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_month_bucket_duration_selection_decision_2026-06-02.md`, `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v0_2026-06-02.md`, `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v1_2026-06-02.md`
 - LLM-heavy alternative: `experiments/gan2026_llm_heavy_extraction_protocol_2026-06-02.md`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_v0_validation25_error_analysis_2026-06-02.md`
+- Full retrospective: `docs/research/gan2026_full_research_retrospective_2026-06-02.md`
 - Prior LLM/hybrid comparators: `experiments/gan2026_section_claim_table_validation750_v4_interpretation_2026-06-01.md`, `experiments/gan2026_arch2_validation750_v01_interpretation_2026-06-01.md`, `experiments/gan2026_hybrid_adjudicator_v02_selective_action_report_2026-06-01.md`
 
 ## Active Priorities
@@ -61,7 +62,7 @@ projection, invariance, and arbitration ablations.
 ### Now
 
 - Design a broader enriched-node regression panel before any duration projection policy promotion.
-- Revise `llm_heavy_clinical_frequency_reasoner_v0` selected-evidence and raw-label rendering before validation50: require final selected evidence to be one exact event evidence substring and make the model render parser-ready raw labels without depending on selected-evidence arithmetic.
+- Review `llm_heavy_clinical_frequency_reasoner_v1` validation250 failure families before another LLM-heavy prompt revision; do not escalate this version further.
 
 ### Next
 
@@ -76,6 +77,9 @@ projection, invariance, and arbitration ablations.
 ### Done Recently
 
 - 2026-06-02: Completed full row-level error analysis for `llm_heavy_clinical_frequency_reasoner_v0` validation25. Key finding: raw LLM labels are 0/25 scorable, format-only is 10/25 Purist correct, selected-evidence arithmetic is 23/25 but attribution-invalid for LLM-heavy promotion, and benchmark alignment regresses 10 rows relative to arithmetic. Decision remains revise-only before validation50.
+- 2026-06-02: Ran `llm_heavy_clinical_frequency_reasoner_v1` validation50 and validation250. Validation50 passed the output-contract gate after non-semantic alias repair, but validation250 rejected promotion: 13 parse/schema failures, 9 selected-event trace mismatches, raw/format-only Purist 188/250, benchmark-aligned Purist 204/250, and selected-evidence-arithmetic Purist 219/250 as diagnostic-only evidence-selection signal.
+- 2026-06-02: Implemented `llm_heavy_clinical_frequency_reasoner_v1` prompt/schema fixes from the validation25 error analysis: exact selected-event evidence contract, parser-ready final-label guidance with inequality examples, seizure-free distractor warning, `raw_clinical_summary`, multi-event rationale fields, and shape-only quantity alias repair.
+- 2026-06-02: Added full research retrospective synthesizing rules-only, structured-events, claim-table, hybrid adjudicator, state-graph, and LLM-heavy work against the core contribution thesis.
 - 2026-06-02: Implemented and ran `llm_heavy_clinical_frequency_reasoner_v0` validation25 schema smoke with raw, format-only, selected-evidence arithmetic, benchmark-aligned, and oracle-format score layers. Saved-output schema replay reached 24/25 structured rows and 0 selected-event trace mismatches, but selected evidence exactness was 18/25 and raw LLM scorable was 0/25; registered as revise-only before validation50.
 - 2026-06-02: Added `gan2026_llm_heavy_extraction_protocol_2026-06-02.md`, defining the required LLM-heavy research track where the model owns extraction, normalization proposal, aggregation/selection, and final schema representation; deterministic behavior is limited to validation, scoring, and named benchmark adapters.
 - 2026-06-02: Completed gated `month_bucket_duration_selection_v1`: preserved 18/18 target duration corrections and removed v0's already-correct and frequency-with-seizure-free regressions; 4/232 wrong-to-wrong regression changes remain, so no production policy is promoted.
@@ -91,4 +95,4 @@ projection, invariance, and arbitration ablations.
 
 ## Immediate Next Step
 
-Revise `llm_heavy_clinical_frequency_reasoner_v0` evidence/raw-label contract from the validation25 smoke: selected evidence must copy exactly one selected event evidence substring, and raw final labels should be parser-ready without selected-evidence arithmetic. Keep the broader enriched-node regression panel as the state-graph projection follow-up.
+Review `llm_heavy_clinical_frequency_reasoner_v1` validation250 failure families, especially parse/schema tail failures, selected-event trace mismatches, and raw-label errors relative to selected-evidence arithmetic. Keep the broader enriched-node regression panel as the state-graph projection follow-up.
