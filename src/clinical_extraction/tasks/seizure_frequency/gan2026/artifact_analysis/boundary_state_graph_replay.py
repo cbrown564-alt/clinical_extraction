@@ -22,6 +22,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
 from clinical_extraction.tasks.seizure_frequency.gan2026.evaluate import (
     evaluate_predictions,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.experiments import (
+    synthetic_hard_case_component_stress as hard_cases,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     load_jsonl_rows,
     write_jsonl_rows,
@@ -56,6 +59,26 @@ DEFAULT_REPORT_PATH = Path(
     "gan2026_hybrid_clinical_frequency_state_graph_accepted_boundary_nodes_replay_"
     "2026-06-02.md"
 )
+DEFAULT_SYNTHETIC_BOUNDARY_BUILDER_JSONL_PATH = Path(
+    "experiments/"
+    "gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_synthetic_unknown8_"
+    "v1_unknown_recall_gpt41mini_live_2026-06-02.jsonl"
+)
+DEFAULT_SYNTHETIC_JSONL_PATH = Path(
+    "experiments/"
+    "gan2026_hybrid_clinical_frequency_state_graph_synthetic_unknown8_"
+    "accepted_boundary_nodes_replay_2026-06-02.jsonl"
+)
+DEFAULT_SYNTHETIC_JSON_PATH = Path(
+    "experiments/"
+    "gan2026_hybrid_clinical_frequency_state_graph_synthetic_unknown8_"
+    "accepted_boundary_nodes_replay_2026-06-02.json"
+)
+DEFAULT_SYNTHETIC_REPORT_PATH = Path(
+    "experiments/"
+    "gan2026_hybrid_clinical_frequency_state_graph_synthetic_unknown8_"
+    "accepted_boundary_nodes_replay_2026-06-02.md"
+)
 
 
 def run_accepted_boundary_node_replay(
@@ -65,11 +88,15 @@ def run_accepted_boundary_node_replay(
     split: str,
     split_manifest: str,
     source_artifact: str,
+    accepted_surface_role: str = "validation_boundary_missing",
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Merge accepted validation boundary-builder nodes and replay graph diagnostics."""
 
     records_by_source = {record.source_row_index: record for record in records}
-    accepted_rows = _accepted_boundary_rows(boundary_rows)
+    accepted_rows = _accepted_boundary_rows(
+        boundary_rows,
+        accepted_surface_role=accepted_surface_role,
+    )
     replay_rows: list[dict[str, Any]] = []
     for boundary_row in accepted_rows:
         source_row_index = int(boundary_row["source_row_index"])
@@ -91,6 +118,7 @@ def run_accepted_boundary_node_replay(
         "split_manifest": split_manifest,
         "row_count": len(replay_rows),
         "source_artifact": source_artifact,
+        "accepted_surface_role": accepted_surface_role,
         "graph_builder": (
             "deterministic_oracle_span_harvester_v0 + accepted_boundary_state_nodes_v0"
         ),
@@ -179,13 +207,15 @@ def write_replay_report(
 
 def _accepted_boundary_rows(
     rows: Sequence[Mapping[str, Any]],
+    *,
+    accepted_surface_role: str,
 ) -> list[Mapping[str, Any]]:
     accepted = [
         row
         for row in rows
         if bool(row.get("representability_gain_candidate"))
         and not row.get("parse_errors")
-        and str(row.get("surface_role") or "") == "validation_boundary_missing"
+        and str(row.get("surface_role") or "") == accepted_surface_role
     ]
     return sorted(accepted, key=lambda row: int(row["source_row_index"]))
 
@@ -405,10 +435,35 @@ def _node_represents_gold(record: GanFrequencyRecord, node: StateGraphNode) -> b
     return node.normalized_label == record.gold_normalized_label
 
 
-def _load_records() -> tuple[list[GanFrequencyRecord], str]:
+def _load_records(
+    *,
+    surface: str,
+    hard_cases_jsonl: Path,
+) -> tuple[list[GanFrequencyRecord], str, str]:
+    if surface == "synthetic_unknown_stress":
+        cases = hard_cases.load_synthetic_hard_cases(hard_cases_jsonl)
+        records = [
+            record
+            for record in hard_cases.synthetic_records_from_cases(cases)
+            if record.source_row_index
+            in {
+                900016,
+                900017,
+                900019,
+                900021,
+                900022,
+                900028,
+                900030,
+                900044,
+            }
+        ]
+        return records, hard_cases.SYNTHETIC_SPLIT_NAME, hard_cases.SYNTHETIC_SPLIT_MANIFEST
+
     records = load_records_for_split("validation")
     manifest = load_split_manifest()
-    return records, str(manifest.get("manifest_version", "gan2026_split_v1"))
+    return records, "validation_hard_slices", str(
+        manifest.get("manifest_version", "gan2026_split_v1")
+    )
 
 
 def main(argv: Sequence[str] | None = None) -> None:
@@ -420,19 +475,42 @@ def main(argv: Sequence[str] | None = None) -> None:
         type=Path,
         default=DEFAULT_BOUNDARY_BUILDER_JSONL_PATH,
     )
+    parser.add_argument(
+        "--surface",
+        choices=("validation_boundary_missing", "synthetic_unknown_stress"),
+        default="validation_boundary_missing",
+    )
+    parser.add_argument(
+        "--hard-cases-jsonl",
+        type=Path,
+        default=hard_cases.DEFAULT_HARD_CASES_JSONL_PATH,
+    )
     parser.add_argument("--jsonl", type=Path, default=DEFAULT_JSONL_PATH)
     parser.add_argument("--json", type=Path, default=DEFAULT_JSON_PATH)
     parser.add_argument("--markdown", type=Path, default=DEFAULT_REPORT_PATH)
     args = parser.parse_args(argv)
+    if args.surface == "synthetic_unknown_stress":
+        if args.boundary_builder_jsonl == DEFAULT_BOUNDARY_BUILDER_JSONL_PATH:
+            args.boundary_builder_jsonl = DEFAULT_SYNTHETIC_BOUNDARY_BUILDER_JSONL_PATH
+        if args.jsonl == DEFAULT_JSONL_PATH:
+            args.jsonl = DEFAULT_SYNTHETIC_JSONL_PATH
+        if args.json == DEFAULT_JSON_PATH:
+            args.json = DEFAULT_SYNTHETIC_JSON_PATH
+        if args.markdown == DEFAULT_REPORT_PATH:
+            args.markdown = DEFAULT_SYNTHETIC_REPORT_PATH
 
-    records, split_manifest = _load_records()
+    records, split, split_manifest = _load_records(
+        surface=args.surface,
+        hard_cases_jsonl=args.hard_cases_jsonl,
+    )
     boundary_rows = load_jsonl_rows(args.boundary_builder_jsonl)
     rows, metadata = run_accepted_boundary_node_replay(
         records,
         boundary_rows,
-        split="validation_hard_slices",
+        split=split,
         split_manifest=split_manifest,
         source_artifact=str(args.boundary_builder_jsonl),
+        accepted_surface_role=args.surface,
     )
     write_jsonl_rows(rows, args.jsonl)
     write_replay_json(metadata, args.json)
