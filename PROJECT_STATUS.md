@@ -60,6 +60,23 @@ projection, invariance, and arbitration ablations.
   must keep deterministic arithmetic as a side-car, require exact selected
   evidence and zero trace mismatches, and reject escalation if the model still
   needs deterministic semantic replacement to clear the target.
+- The v2 validation25 smoke is complete and rejected for validation50
+  escalation under decision 0006. Calls succeeded 25/25 and raw model-owned
+  Purist was 21/25 with no deterministic selected-evidence arithmetic gap, but
+  only 22/25 rows were structured/scorable, selected-evidence exact,
+  rendering-operands present, and arithmetic-trace present. The next revision
+  should fix output-contract compactness/exact evidence and the row 187
+  selected-fact error before any broader run.
+- V2 row-level error analysis narrows the revision target: 2 rows omitted
+  `final_answer.selected_event_ids`, 1 row truncated into invalid JSON, 2
+  otherwise-correct rows copied invalid non-selected administrative evidence,
+  and 1 row converted cluster cadence into events-per-cluster. The analysis
+  confirms there was no deterministic selected-evidence arithmetic rescue gap.
+- DSPy adapter research now points to a separate architecture rather than a v2
+  patch. `llm_only_typed_adapter_reasoner` should test typed DSPy output fields
+  with scoped `JSONAdapter` use, preserving v2 as the prompt/schema redesign
+  path and keeping raw model-owned labels distinct from deterministic side-car
+  arithmetic or benchmark adapters.
 
 ## Key References
 
@@ -73,6 +90,9 @@ projection, invariance, and arbitration ablations.
 - Graph-gated duration selection: `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_graph_gated_v2_2026-06-02.md`
 - Next-task review: `experiments/gan2026_next_task_review_month_bucket_gate_and_llm_heavy_v1_2026-06-02.md`
 - LLM-heavy alternative: `experiments/gan2026_llm_heavy_extraction_protocol_2026-06-02.md`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_v0_validation25_error_analysis_2026-06-02.md`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation250_gpt41mini_v1_2026-06-02.md`
+- LLM-heavy v2 decision smoke: `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation25_gpt41mini_v2_2026-06-02.md`
+- LLM-heavy v2 error analysis: `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_v2_validation25_error_analysis_2026-06-02.md`
+- Typed DSPy adapter architecture: `experiments/gan2026_dspy_adapter_architecture_report_2026-06-02.md`
 - LLM-replacement ablations: `experiments/gan2026_llm_replacement_postprocessing_ablation_design_2026-06-02.md`, `experiments/gan2026_llm_replacement_postprocessing_ablation_interpretation_2026-06-02.md`
 - Saved-output replacement replay: `experiments/gan2026_llm_replacement_postprocessing_ablation_validation250_v0_2026-06-02.md`
 - Full retrospective: `docs/research/gan2026_full_research_retrospective_2026-06-02.md`
@@ -91,15 +111,18 @@ projection, invariance, and arbitration ablations.
 
 ### Now
 
-- Implement and run the validation25
-  `llm_heavy_clinical_frequency_reasoner_v2` selected-evidence
-  arithmetic/rendering smoke under decision 0006, with deterministic arithmetic
-  reported only as a side-car.
+- Revise the v2 output contract/prompt for compact structured JSON, mandatory
+  `final_answer.selected_event_ids`, rendering operands/arithmetic trace, exact
+  selected evidence, administrative-event suppression, and cluster-cadence
+  semantics; rerun only a validation25 smoke after the revision is predeclared.
+- Scaffold `llm_only_typed_adapter_reasoner` as a separate adapter-specific
+  architecture with typed DSPy outputs and scoped `JSONAdapter`, then run only a
+  predeclared validation25 smoke.
 
 ### Next
 
-- Escalate the v2 selected-evidence rendering smoke to validation50 only if it
-  passes the decision 0006 output-contract, evidence, trace, raw-score, and
+- Reconsider validation50 only after a revised v2 validation25 smoke passes the
+  decision 0006 output-contract, evidence, trace, raw-score, and
   deterministic-gap stop rules.
 - Keep claim-table v5 and v0.2 schema/gate ablations available as comparators, but do not promote them ahead of the state-graph coverage cycle.
 - Redesign `llm_heavy_clinical_frequency_reasoner_v2` only after the graph-gate
@@ -112,6 +135,27 @@ projection, invariance, and arbitration ablations.
 
 ### Done Recently
 
+- 2026-06-02: Implemented and ran
+  `llm_heavy_clinical_frequency_reasoner_v2` validation25 under decision 0006.
+  The report records raw, format-only, selected-evidence-arithmetic,
+  benchmark-aligned, and oracle-format layers; selected evidence was exact
+  22/25, selected-event trace mismatches were 0/25, raw Purist was 21/25, and
+  deterministic selected-evidence arithmetic corrected 0 raw-wrong rows. The
+  run rejects validation50 escalation because structured/scorable outputs,
+  selected evidence, rendering operands, and arithmetic traces were only 22/25.
+- 2026-06-02: Completed row-level error analysis for the rejected v2
+  validation25 smoke. Six rows require attention: two missing
+  `final_answer.selected_event_ids`, one invalid JSON truncation, two invalid
+  non-selected administrative evidence events, and one true cluster-cadence
+  selected-fact/semantics miss. The analysis keeps the result rejected and
+  points the next prompt/schema revision at compactness and cluster semantics,
+  not deterministic arithmetic replacement.
+- 2026-06-02: Added the DSPy adapter architecture report. It records that the
+  current repo uses opaque JSON-string DSPy outputs under the default adapter,
+  recommends a separate `llm_only_typed_adapter_reasoner` architecture with
+  typed outputs and scoped `JSONAdapter`, and preserves
+  `llm_heavy_clinical_frequency_reasoner_v2` as a distinct prompt/schema
+  redesign path.
 - 2026-06-02: Added decision 0006, which predeclares the validation25
   LLM-owned selected-evidence arithmetic/rendering smoke for
   `llm_heavy_clinical_frequency_reasoner_v2`. It requires parser-ready raw model
@@ -182,7 +226,8 @@ projection, invariance, and arbitration ablations.
 
 ## Immediate Next Step
 
-Implement the v2 validation25 selected-evidence arithmetic/rendering smoke from
-decision 0006, run it cache-first on `validation` rows 1-25, and record the raw
-model-owned versus deterministic side-car attribution before any validation50
-escalation.
+Draft the smallest v2 revision that shortens the JSON contract enough to avoid
+truncation/schema misses, makes `final_answer.selected_event_ids` hard to omit,
+suppresses administrative no-reference event copying, and clarifies that
+cluster cadence is not events-per-cluster unless selected evidence says so;
+predeclare the revised validation25 rerun before making new calls.

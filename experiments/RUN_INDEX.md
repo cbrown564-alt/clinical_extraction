@@ -354,6 +354,30 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Reject
 
+### `gan2026_llm_heavy_clinical_frequency_reasoner_v2_validation25_live_2026-06-02`
+- Date/split: `2026-06-02`; `validation`; `25` rows.
+- Pipeline: `llm_heavy_clinical_frequency_reasoner`; mode `live validation25 decision-0006 selected-evidence arithmetic/rendering smoke`; replay `cache_first`.
+- Model role: LLM-heavy extraction, selected evidence, model-owned arithmetic/rendering, and scoring-schema renderer; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `v2 prompt/schema with model-owned rendering_operands and arithmetic_trace; deterministic selected-evidence arithmetic remains side-car only`.
+- Primary metrics: arithmetic_trace_present=22, benchmark_aligned_purist_correct=21, deterministic_arithmetic_raw_wrong_to_correct=0, event_evidence_total=53, event_evidence_valid=51, format_only_purist_correct=21, parse_failures=3, raw_llm_pragmatic_correct=22, raw_llm_purist_correct=21, raw_llm_scorable=22, rendering_operands_present=22, row_count=25, selected_event_trace_mismatches=0, selected_evidence_arithmetic_pragmatic_correct=22, selected_evidence_arithmetic_purist_correct=21, selected_evidence_valid=22, structured_records=22.
+- Evidence validity: Selected evidence exact 22/25; event evidence exact 51/53; selected-event trace mismatches 0/25.
+- Cache/reuse source: DSPy cache enabled; no saved raw-output reuse for this v2 prompt run.
+- Supersedes: `gan2026_llm_replacement_postprocessing_ablation_validation250_2026-06-02`, `gan2026_llm_heavy_clinical_frequency_reasoner_v1_validation250_live_2026-06-02`.
+- Claim language: Validation25 development smoke rejects validation50 escalation under decision 0006: raw model-owned Purist is 21/25 with zero deterministic arithmetic gap, but structured/scorable labels, selected evidence exactness, rendering operands, and arithmetic traces are only 22/25.
+- Artifacts: `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation25_gpt41mini_v2_2026-06-02.jsonl`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation25_gpt41mini_v2_2026-06-02.md`.
+
+### `gan2026_llm_heavy_clinical_frequency_reasoner_v2_validation25_error_analysis_2026-06-02`
+- Date/split: `2026-06-02`; `validation`; `25` rows.
+- Pipeline: `llm_heavy_clinical_frequency_reasoner`; mode `saved-output row-level error analysis of decision-0006 validation25 smoke`; replay `analysis_only`.
+- Model role: analysis-only row-level reviewer for v2 validation25 output-contract and label failures; model `none; saved openai/gpt-4.1-mini outputs only`.
+- Repair mode/config: `analysis only over raw_llm, format_only, selected_evidence_arithmetic, and benchmark_aligned layers; no scorer/parser/prompt change`.
+- Primary metrics: analysis_rows=6, invalid_json_truncation=1, missing_required_final_answer_field=2, nonselected_event_evidence_not_exact=2, raw_llm_purist_correct=21, selected_event_trace_mismatches=0, selected_evidence_arithmetic_purist_correct=21, wrong_selected_fact_or_cluster_semantics=1.
+- Evidence validity: Classifies 2 invalid non-selected event-evidence rows; selected-answer evidence failures are attributable to the 3 blocking parse/schema rows.
+- Cache/reuse source: experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation25_gpt41mini_v2_2026-06-02.jsonl.
+- Supersedes: `gan2026_llm_heavy_clinical_frequency_reasoner_v2_validation25_live_2026-06-02`.
+- Claim language: Analysis confirms no validation50 escalation: failure is mainly compactness/output contract, with one true cluster-cadence selected-fact/semantics error and zero deterministic-arithmetic rescue gap.
+- Artifacts: `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_v2_validation25_error_analysis_2026-06-02.md`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_v2_validation25_error_analysis_2026-06-02.csv`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_v2_validation25_error_analysis_2026-06-02.json`.
+
 ### `gan2026_llm_structured_v05_full_validation_2026-06-01`
 - Date/split: `2026-06-01`; `validation`; `750` rows.
 - Pipeline: `llm_structured_events`; mode `live/cache-first structured v0.5 full-validation completion`; replay `cache_first`.

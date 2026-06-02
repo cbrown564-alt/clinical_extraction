@@ -95,6 +95,14 @@ def _raw_reasoner(final_label: str = "2 per months") -> str:
                 "selected_event_ids": ["sf-1"],
                 "supporting_event_ids": [],
                 "combined_rationale": "",
+                "rendering_operands": {
+                    "occurrences_low": 2,
+                    "occurrences_high": 2,
+                    "period_low": 1,
+                    "period_high": 1,
+                    "period_unit": "month",
+                },
+                "arithmetic_trace": "two focal seizures per month -> 2 per month",
                 "final_rationale": "The final label renders the selected current event.",
             },
         }
@@ -123,7 +131,10 @@ def test_build_prompt_input_excludes_gold_and_deterministic_candidates() -> None
     assert "raw_clinical_summary" in final_answer_schema
     assert "supporting_event_ids" in final_answer_schema
     assert "combined_rationale" in final_answer_schema
+    assert "rendering_operands" in final_answer_schema
+    assert "arithmetic_trace" in final_answer_schema
     assert "parser-ready" in final_answer_schema["raw_llm_final_label"]
+    assert "downstream deterministic selected-evidence arithmetic" in json.dumps(prompt)
     assert "exact copy of one selected event evidence value" in final_answer_schema[
         "selected_evidence"
     ]
@@ -226,12 +237,18 @@ def test_run_split_records_llm_heavy_score_layers() -> None:
     row = rows[0]
     assert metadata["pipeline_family"] == PIPELINE_FAMILY
     assert metadata["prompt_version"] == PROMPT_VERSION
-    assert metadata["schema_smoke_stop_rule"]["schema_valid_rows_minimum"] == "24/25"
+    assert metadata["schema_smoke_stop_rule"]["schema_valid_rows_minimum"] == "25/25"
+    assert (
+        metadata["schema_smoke_stop_rule"]["deterministic_arithmetic_gap_maximum"] == "5 rows"
+    )
     assert metadata["repair_mode_layers"]["raw_llm"]["repair_family"] == "none"
     assert row["structured_record"]["final_answer"]["raw_clinical_summary"] == (
         "Current quantified focal-seizure rate."
     )
     assert row["structured_record"]["final_answer"]["raw_llm_final_label"] == "twice per month"
+    assert row["structured_record"]["final_answer"]["arithmetic_trace"] == (
+        "two focal seizures per month -> 2 per month"
+    )
     assert row["component_status"]["event_extraction"] == "ok"
     assert row["component_status"]["selected_event_trace"] == "ok"
     assert row["score_layers"]["raw_llm"]["scorable"] is False
@@ -248,6 +265,8 @@ def test_run_split_records_llm_heavy_score_layers() -> None:
     assert metadata["summary"]["structured_records"] == 1
     assert metadata["summary"]["format_only_purist_correct"] == 1
     assert metadata["summary"]["selected_event_trace_mismatches"] == 0
+    assert metadata["summary"]["rendering_operands_present"] == 1
+    assert metadata["summary"]["arithmetic_trace_present"] == 1
 
 
 def test_run_split_prompt_only_writes_not_run_records() -> None:
@@ -292,5 +311,6 @@ def test_load_reusable_raw_outputs_and_write_report(tmp_path: Path) -> None:
 
     assert summary["selected_evidence_valid"] == 1
     report = report_path.read_text(encoding="utf-8")
-    assert "LLM-Heavy Clinical Frequency Reasoner V1" in report
+    assert "LLM-Heavy Clinical Frequency Reasoner V2" in report
+    assert "Decision 0006 outcome" in report
     assert "`format_only`" in report
