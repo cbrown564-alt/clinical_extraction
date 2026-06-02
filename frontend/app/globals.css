@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-background: #faf9f7;
+  --color-foreground: #1a1a1a;
+  --color-muted: #6b7280;
+  --color-deterministic: #2a6f6f;
+  --color-deterministic-alt: #4a6fa5;
+  --color-llm: #d97706;
+  --color-llm-alt: #f59e0b;
+  --color-hybrid: #7c3aed;
+  --color-error: #e07a5f;
+  --color-error-alt: #f4a261;
+  --color-success: #81b29a;
+  --color-gold-ghost: #d4af37;
+  --color-surface: #ffffff;
+  --color-surface-raised: #f3f2f0;
+  --color-border: #e5e4e2;
+
+  --font-serif: var(--font-source-serif);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  line-height: 1.4;
+}
+
+/* Clinical note typography */
+.note-text {
+  font-family: var(--font-serif), Georgia, "Times New Roman", serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #1a1a1a;
+}
+
+/* Highlight spans */
+.span-highlight {
+  position: relative;
+  border-left: 3px solid transparent;
+  padding-left: 6px;
+  margin-left: -9px;
+  transition: background-color 150ms ease, opacity 200ms ease;
+}
+
+.span-highlight--deterministic {
+  border-left-color: var(--color-deterministic);
+  background-color: rgba(42, 111, 111, 0.06);
+}
+
+.span-highlight--llm {
+  border-left-color: var(--color-llm);
+  background-color: rgba(217, 119, 6, 0.06);
+}
+
+.span-highlight--repair {
+  border-left-color: var(--color-error);
+  background-color: rgba(224, 122, 95, 0.06);
+}
+
+.span-highlight--dim {
+  opacity: 0.25;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
