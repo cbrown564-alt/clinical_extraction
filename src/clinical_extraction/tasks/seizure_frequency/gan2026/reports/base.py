@@ -21,11 +21,13 @@ def llm_model_metadata_lines(
     """Build the common model/provenance block for Gan LLM reports."""
 
     api_base = metadata.get("api_base")
-    provider_execution = (
-        f"OpenAI-compatible endpoint via DSPy/LiteLLM: `{api_base}`"
-        if api_base
-        else "hosted OpenAI via DSPy/LiteLLM"
-    )
+    model = str(metadata.get("model", ""))
+    if model.startswith("ollama_chat/"):
+        provider_execution = f"native Ollama chat endpoint via DSPy/LiteLLM: `{api_base}`"
+    elif api_base:
+        provider_execution = f"OpenAI-compatible endpoint via DSPy/LiteLLM: `{api_base}`"
+    else:
+        provider_execution = "hosted OpenAI via DSPy/LiteLLM"
     lines = [
         *leading_lines,
         f"- DSPy version: `{metadata['dspy_version']}`",
@@ -39,9 +41,22 @@ def llm_model_metadata_lines(
     ]
     if "dspy_cache" in metadata:
         lines.append(f"- DSPy cache enabled: `{metadata.get('dspy_cache')}`")
+    if model.startswith("ollama_chat/"):
+        lines.append("- Ollama Qwen thinking mode: `disabled` (`think=false`)")
     if summary is not None and "reused_raw_outputs" in summary:
         lines.append(f"- Reused raw model outputs: `{summary['reused_raw_outputs']}`")
         lines.append(f"- Reuse source: `{metadata.get('reuse_source') or 'none'}`")
+    if "elapsed_seconds" in metadata:
+        lines.extend(
+            [
+                f"- Run started UTC: `{metadata.get('run_started_at_utc')}`",
+                f"- Run finished UTC: `{metadata.get('run_finished_at_utc')}`",
+                f"- Wall-clock elapsed: `{metadata.get('elapsed_seconds')}` seconds "
+                f"(`{metadata.get('elapsed_minutes')}` minutes)",
+                f"- Throughput: `{metadata.get('rows_per_second')}` rows/sec "
+                f"(`{metadata.get('seconds_per_row')}` sec/row)",
+            ]
+        )
     lines.extend(
         [
             "- Optimizer: none",
@@ -50,7 +65,7 @@ def llm_model_metadata_lines(
             *extra_lines,
             f"- Git commit: `{metadata['git_commit']}`",
             f"- Working tree note: `{metadata['working_tree_note']}`",
-            f"- JSONL artifact: `{jsonl_path}`",
+            f"- JSONL artifact: `{jsonl_path.as_posix()}`",
         ]
     )
     return lines

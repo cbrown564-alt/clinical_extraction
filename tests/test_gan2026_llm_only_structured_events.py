@@ -108,6 +108,26 @@ def test_parse_structured_json_repairs_schema_aliases_and_normalizes_selected_la
     assert errors == []
 
 
+def test_parse_structured_json_records_python_literal_json_dialect_repair() -> None:
+    raw = (
+        "{'events': [{'event_id': 'e1', 'kind': 'frequency_rate', "
+        "'raw_value': 'two seizures per month', 'applies_to': 'seizures', "
+        "'time_window': 'present', 'temporality': 'current', "
+        "'assertion_status': 'asserted', 'evidence': 'two seizures per month', "
+        "'notes': None}], 'selection': {'selected_event_ids': ['e1'], "
+        "'final_kind': 'frequency', 'final_label': '2 per month', "
+        "'evidence': 'two seizures per month', 'confidence': 'high', "
+        "'rationale': 'The note states the present seizure frequency.'}}"
+    )
+
+    extraction, normalized_events, errors = parse_structured_json(raw)
+
+    assert extraction is not None
+    assert extraction.selection.final_label == "2 per month"
+    assert normalized_events[0].normalized_label == "2 per month"
+    assert errors == ["json_dialect_repaired: python_literal"]
+
+
 def test_parse_structured_json_can_compute_final_label_from_selected_event() -> None:
     extraction, normalized_events, errors = parse_structured_json(_raw_structured(None))
 
@@ -297,6 +317,25 @@ def test_summary_tolerates_missing_structured_final_label() -> None:
 
     assert summary["parse_or_validation_failures"] == 1
     assert summary["final_labels"] == {}
+
+
+def test_summary_counts_json_dialect_repairs_without_counting_them_as_failures() -> None:
+    summary = summarize_records(
+        [
+            {
+                "structured_record": {"selection": {"final_label": "2 per month"}},
+                "parse_errors": ["json_dialect_repaired: python_literal"],
+                "call_error": None,
+                "reused_raw_output": False,
+                "comparison": {"purist_correct": True, "pragmatic_correct": True},
+                "evidence_valid": True,
+            }
+        ]
+    )
+
+    assert summary["parse_or_validation_failures"] == 0
+    assert summary["json_dialect_repairs"] == 1
+    assert summary["repair_notes"] == 0
 
 
 def test_parse_structured_json_repairs_breakthrough_after_seizure_free_interval() -> None:

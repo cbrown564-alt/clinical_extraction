@@ -80,6 +80,7 @@ def write_report(
         f"- Structured records: {summary['structured_records']} / {summary['examples']}",
         f"- Call failures: {summary['call_failures']}",
         f"- Parse/schema/label issues: {summary['parse_or_validation_failures']}",
+        f"- JSON dialect repairs: {summary.get('json_dialect_repairs', 0)}",
         f"- Deterministic repair notes: {summary['repair_notes']}",
         f"- Exact selection evidence substrings: {summary['evidence_valid']} / "
         f"{summary['examples']}",

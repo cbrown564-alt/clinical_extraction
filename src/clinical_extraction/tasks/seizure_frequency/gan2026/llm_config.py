@@ -6,6 +6,8 @@ from typing import Any
 
 import dspy
 
+OLLAMA_CHAT_PREFIX = "ollama_chat/"
+
 
 def build_dspy_lm(
     model: str,
@@ -24,6 +26,10 @@ def build_dspy_lm(
         "cache": cache,
         "num_retries": num_retries,
     }
+    if model.startswith(OLLAMA_CHAT_PREFIX):
+        kwargs["api_base"] = (api_base or "http://localhost:11434").removesuffix("/v1")
+        kwargs["extra_body"] = {"think": False}
+        return dspy.LM(model, **kwargs)
     if api_base:
         kwargs["api_base"] = api_base
     return dspy.LM(model, **kwargs)

@@ -2,7 +2,27 @@
 
 from __future__ import annotations
 
+import ast
+import json
 from typing import Any
+
+
+def parse_json_payload_with_schema_repair(raw_payload: str) -> tuple[Any, list[str]]:
+    """Parse model JSON, allowing explicit non-semantic JSON dialect repair.
+
+    Some local models emit Python literal syntax for otherwise valid structured
+    objects, for example single-quoted keys and `None`. Treating that as a
+    schema repair keeps the clinical payload unchanged while making its impact
+    visible in run artifacts.
+    """
+
+    try:
+        return json.loads(raw_payload), []
+    except json.JSONDecodeError as json_error:
+        try:
+            return ast.literal_eval(raw_payload), ["json_dialect_repaired: python_literal"]
+        except (SyntaxError, ValueError):
+            raise json_error from None
 
 
 def repair_decision_payload(payload: Any) -> Any:

@@ -61,3 +61,63 @@ def test_write_markdown_report_creates_parent_and_trailing_newline(tmp_path: Pat
     write_markdown_report(report_path, ["# Title", "", "Body"])
 
     assert report_path.read_text(encoding="utf-8") == "# Title\n\nBody\n"
+
+
+def test_llm_model_metadata_lines_identify_native_ollama_chat_route() -> None:
+    metadata = {
+        "dspy_version": "3.2.1",
+        "model": "ollama_chat/qwen3.6:35b",
+        "api_base": "http://localhost:11434",
+        "prompt_version": "prompt_v1",
+        "temperature": 0.0,
+        "max_tokens": 1400,
+        "mode": "live",
+        "dspy_cache": False,
+        "git_commit": "abc123",
+        "working_tree_note": "dirty",
+    }
+
+    lines = llm_model_metadata_lines(
+        metadata,
+        Path("experiments/qwen.jsonl"),
+        model_role="local selector",
+        deterministic_rule_configuration="frozen",
+    )
+
+    assert (
+        "- Provider/execution: native Ollama chat endpoint via DSPy/LiteLLM: "
+        "`http://localhost:11434`"
+    ) in lines
+    assert "- Ollama Qwen thinking mode: `disabled` (`think=false`)" in lines
+
+
+def test_llm_model_metadata_lines_include_run_timing_when_available() -> None:
+    metadata = {
+        "dspy_version": "3.2.1",
+        "model": "ollama_chat/qwen3.6:35b",
+        "api_base": "http://localhost:11434",
+        "prompt_version": "prompt_v1",
+        "temperature": 0.0,
+        "max_tokens": 5000,
+        "mode": "live",
+        "git_commit": "abc123",
+        "working_tree_note": "dirty",
+        "run_started_at_utc": "2026-06-02T00:14:40+00:00",
+        "run_finished_at_utc": "2026-06-02T05:43:58+00:00",
+        "elapsed_seconds": 19758.0,
+        "elapsed_minutes": 329.3,
+        "rows_per_second": 0.012653,
+        "seconds_per_row": 79.032,
+    }
+
+    lines = llm_model_metadata_lines(
+        metadata,
+        Path("experiments/qwen.jsonl"),
+        model_role="local selector",
+        deterministic_rule_configuration="frozen",
+    )
+
+    assert "- Run started UTC: `2026-06-02T00:14:40+00:00`" in lines
+    assert "- Run finished UTC: `2026-06-02T05:43:58+00:00`" in lines
+    assert "- Wall-clock elapsed: `19758.0` seconds (`329.3` minutes)" in lines
+    assert "- Throughput: `0.012653` rows/sec (`79.032` sec/row)" in lines

@@ -10,8 +10,10 @@ from __future__ import annotations
 
 import argparse
 import json
+import time
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Literal, Protocol
 
@@ -78,6 +80,7 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
         llm_heavy_clinical_frequency_reasoner,
         llm_only_claim_table_selector,
         llm_only_direct_labeler,
+        llm_only_minimal_evidence_selector,
         llm_only_structured_events,
         llm_only_typed_adapter_reasoner,
     )
@@ -129,6 +132,15 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
             write_report=llm_only_structured_events.write_report,
         ),
         "llm_only_claim_table_selector": llm_only_claim_table_selector_spec,
+        "llm_only_minimal_evidence_selector": GanLlmPipelineCliSpec(
+            description="Run the Gan 2026 LLM-only minimal evidence-selector experiment.",
+            default_jsonl_path=llm_only_minimal_evidence_selector.DEFAULT_JSONL_PATH,
+            default_report_path=llm_only_minimal_evidence_selector.DEFAULT_REPORT_PATH,
+            run_split=llm_only_minimal_evidence_selector.run_split,
+            write_jsonl=llm_only_minimal_evidence_selector.write_jsonl,
+            write_report=llm_only_minimal_evidence_selector.write_report,
+            default_max_tokens=900,
+        ),
         "hybrid_rules_candidates_llm_adjudicator": (hybrid_rules_candidates_llm_adjudicator_spec),
         "llm_heavy_clinical_frequency_reasoner": GanLlmPipelineCliSpec(
             description=(
@@ -207,6 +219,8 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
     split_manifest = str(manifest.get("manifest_version", "gan2026_split_v1"))
     progress_every = args.progress_every if args.progress_every > 0 else None
 
+    run_started_at = datetime.now(UTC)
+    run_started_monotonic = time.perf_counter()
     rows, metadata = spec.run_split(
         records,
         split=args.split,
@@ -221,6 +235,12 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
         progress_every=progress_every,
         checkpoint_jsonl_path=args.jsonl,
         checkpoint_report_path=args.markdown,
+    )
+    _attach_run_timing(
+        metadata,
+        started_at=run_started_at,
+        elapsed_seconds=time.perf_counter() - run_started_monotonic,
+        row_count=len(rows),
     )
     spec.write_jsonl(rows, args.jsonl)
     spec.write_report(rows, metadata, args.markdown, jsonl_path=args.jsonl)
@@ -238,6 +258,25 @@ def _validate_validation_ladder(
             "validation runs above 250 rows require --escalation-reason; "
             "use --limit 25, --limit 50, or --limit 250 for routine ladder runs"
         )
+
+
+def _attach_run_timing(
+    metadata: dict[str, Any],
+    *,
+    started_at: datetime,
+    elapsed_seconds: float,
+    row_count: int,
+) -> None:
+    """Attach wall-clock timing captured by the shared CLI harness."""
+
+    finished_at = datetime.now(UTC)
+    elapsed = round(elapsed_seconds, 3)
+    metadata["run_started_at_utc"] = started_at.isoformat()
+    metadata["run_finished_at_utc"] = finished_at.isoformat()
+    metadata["elapsed_seconds"] = elapsed
+    metadata["elapsed_minutes"] = round(elapsed / 60, 3)
+    metadata["rows_per_second"] = round(row_count / elapsed_seconds, 6) if elapsed_seconds else None
+    metadata["seconds_per_row"] = round(elapsed_seconds / row_count, 3) if row_count else None
 
 
 def main(argv: Sequence[str] | None = None) -> None:
