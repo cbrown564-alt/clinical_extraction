@@ -308,8 +308,8 @@ export function useObservatoryData() {
       if (summaries.has(runId) || loadingRuns.has(runId)) continue;
       const entry = runs.find((r) => r.run_id === runId);
       if (!entry) continue;
-      const jsonlPath = entry.artifact_paths.find((p) => p.endsWith(".jsonl"));
-      if (!jsonlPath) {
+      const jsonlPaths = entry.artifact_paths.filter((p) => p.endsWith(".jsonl"));
+      if (jsonlPaths.length === 0) {
         setRunErrors((prev) => new Map(prev).set(runId, "No JSONL artifact"));
         continue;
       }
@@ -321,9 +321,10 @@ export function useObservatoryData() {
         return next;
       });
 
-      fetchArtifact(runId, jsonlPath)
-        .then((artifact) => {
-          const summary = computeSummary(entry, artifact.content as unknown[]);
+      Promise.all(jsonlPaths.map((path) => fetch(`/api/artifacts/${runId}?artifact_path=${encodeURIComponent(path)}`).then(r => r.json())))
+        .then((artifacts) => {
+          const allRows = (artifacts as Array<{content: unknown[]}>).flatMap((a) => a.content);
+          const summary = computeSummary(entry, allRows);
           setSummaries((prev) => new Map(prev).set(runId, summary));
         })
         .catch((err) => {
@@ -352,21 +353,22 @@ export function useObservatoryData() {
         return next;
       });
 
-      // If not already loaded, fetch it
+      // If not already loaded, fetch all JSONL artifacts
       if (!summaries.has(runId) && !loadingRuns.has(runId)) {
         const entry = runs.find((r) => r.run_id === runId);
         if (!entry) return;
 
-        const jsonlPath = entry.artifact_paths.find((p) => p.endsWith(".jsonl"));
-        if (!jsonlPath) {
+        const jsonlPaths = entry.artifact_paths.filter((p) => p.endsWith(".jsonl"));
+        if (jsonlPaths.length === 0) {
           setRunErrors((prev) => new Map(prev).set(runId, "No JSONL artifact"));
           return;
         }
 
         setLoadingRuns((prev) => new Set(prev).add(runId));
         try {
-          const artifact = await fetchArtifact(runId, jsonlPath);
-          const summary = computeSummary(entry, artifact.content as unknown[]);
+          const artifacts = await Promise.all(jsonlPaths.map((path) => fetch(`/api/artifacts/${runId}?artifact_path=${encodeURIComponent(path)}`).then(r => r.json())));
+          const allRows = (artifacts as Array<{content: unknown[]}>).flatMap((a) => a.content);
+          const summary = computeSummary(entry, allRows);
           setSummaries((prev) => new Map(prev).set(runId, summary));
         } catch (err) {
           setRunErrors((prev) => new Map(prev).set(runId, String(err)));
@@ -389,12 +391,13 @@ export function useObservatoryData() {
         if (!summaries.has(runId) && !loadingRuns.has(runId)) {
           const entry = runs.find((r) => r.run_id === runId);
           if (!entry) continue;
-          const jsonlPath = entry.artifact_paths.find((p) => p.endsWith(".jsonl"));
-          if (!jsonlPath) continue;
+          const jsonlPaths = entry.artifact_paths.filter((p) => p.endsWith(".jsonl"));
+          if (jsonlPaths.length === 0) continue;
           setLoadingRuns((prev) => new Set(prev).add(runId));
-          fetchArtifact(runId, jsonlPath)
-            .then((artifact) => {
-              const summary = computeSummary(entry, artifact.content as unknown[]);
+          Promise.all(jsonlPaths.map((path) => fetch(`/api/artifacts/${runId}?artifact_path=${encodeURIComponent(path)}`).then(r => r.json())))
+            .then((artifacts) => {
+              const allRows = (artifacts as Array<{content: unknown[]}>).flatMap((a) => a.content);
+              const summary = computeSummary(entry, allRows);
               setSummaries((prev) => new Map(prev).set(runId, summary));
             })
             .catch((err) => {

@@ -41,7 +41,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label_with_evidence,
 )
 
-PROMPT_VERSION = "gan2026_llm_heavy_clinical_frequency_reasoner_v1"
+PROMPT_VERSION = "gan2026_llm_heavy_clinical_frequency_reasoner_v2"
 PIPELINE_FAMILY = "llm_heavy_clinical_frequency_reasoner"
 SCORE_LAYER_NAMES = (
     "raw_llm",
@@ -51,10 +51,10 @@ SCORE_LAYER_NAMES = (
     "oracle_format_upper_bound",
 )
 DEFAULT_JSONL_PATH = Path(
-    "experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation25_gpt41mini_v1_2026-06-02.jsonl"
+    "experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation25_gpt41mini_v2_2026-06-02.jsonl"
 )
 DEFAULT_REPORT_PATH = Path(
-    "experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation25_gpt41mini_v1_2026-06-02.md"
+    "experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation25_gpt41mini_v2_2026-06-02.md"
 )
 
 
@@ -151,6 +151,8 @@ class LlmHeavyFinalAnswerRecord(BaseModel):
     selected_event_ids: list[str]
     supporting_event_ids: list[str] = Field(default_factory=list)
     combined_rationale: str = ""
+    rendering_operands: ClinicalQuantity | None = None
+    arithmetic_trace: str = ""
     final_rationale: str
 
 
@@ -207,7 +209,10 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "Stage 2: select the event or combination that determines the final clinical "
                 "seizure-frequency state."
             ),
-            "Stage 3: render your selected answer into the scoring-facing schema.",
+            (
+                "Stage 3: render your selected answer into the scoring-facing schema and "
+                "show the operands you used for the final label."
+            ),
             (
                 "The model owns extraction, clinical normalization proposal, aggregation, "
                 "selection, and final schema rendering."
@@ -230,6 +235,18 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "Render raw_llm_final_label as a parser-ready Gan label: use forms like "
                 "4 per day, 1 per 7 to 9 day, 2 to 4 per year, multiple per week, "
                 "seizure free for 6 month, unknown, or no seizure frequency reference."
+            ),
+            (
+                "The final label must be your own rendering of the selected evidence. Fill "
+                "final_answer.rendering_operands with the count, period, cluster, vague-count, "
+                "or seizure-free duration operands that justify raw_llm_final_label, and fill "
+                "final_answer.arithmetic_trace with a short source-near calculation such as "
+                "'two per month -> 2 per month' or '2 events over 16 months -> 1 per 8 month'."
+            ),
+            (
+                "Do not rely on downstream deterministic selected-evidence arithmetic to fix "
+                "raw_llm_final_label. If the note says 'twice every 4 days', raw_llm_final_label "
+                "should already be '2 per 4 day'."
             ),
             (
                 "Convert upper bounds and inequalities into the selected count without "
@@ -337,6 +354,14 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
             "combined_rationale": (
                 "brief explanation of how multiple selected events interact; use an empty "
                 "string when one event directly determines the answer"
+            ),
+            "rendering_operands": (
+                "same shape as clinical_quantity; the final-answer operands the model used "
+                "to render raw_llm_final_label from selected_evidence"
+            ),
+            "arithmetic_trace": (
+                "brief source-near arithmetic/rendering trace linking selected_evidence to "
+                "raw_llm_final_label"
             ),
             "final_rationale": "brief scoring-facing rationale",
         },
@@ -553,6 +578,12 @@ def summarize_records(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
             )
             for row in rows
         ),
+        "rendering_operands_present": sum(
+            int(_has_rendering_operands(row.get("structured_record"))) for row in rows
+        ),
+        "arithmetic_trace_present": sum(
+            int(_has_arithmetic_trace(row.get("structured_record"))) for row in rows
+        ),
         "component_failures": dict(sorted(component_failures.items())),
         "repair_changed_rows": sum(bool(row.get("repair_changes")) for row in rows),
     }
@@ -560,6 +591,9 @@ def summarize_records(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         layer_summary = _layer_summary(rows, layer)
         for key, value in layer_summary.items():
             summary[f"{layer}_{key}"] = value
+    side_car_deltas = _side_car_deltas(rows)
+    summary.update(side_car_deltas)
+    summary["decision_0006_outcome"] = _decision_0006_outcome(summary)
     return summary
 
 
@@ -583,8 +617,10 @@ def write_report(
 
     path.parent.mkdir(parents=True, exist_ok=True)
     summary = metadata.get("summary") or summarize_records(rows)
+    outcome = str(summary.get("decision_0006_outcome", "revise"))
+    prompt_label = PROMPT_VERSION.rsplit("_", 1)[-1].upper()
     lines = [
-        "# Gan 2026 LLM-Heavy Clinical Frequency Reasoner V1",
+        f"# Gan 2026 LLM-Heavy Clinical Frequency Reasoner {prompt_label}",
         "",
         f"- JSONL: `{jsonl_path}`",
         f"- Pipeline family: `{PIPELINE_FAMILY}`",
@@ -594,9 +630,10 @@ def write_report(
         f"- Model: `{metadata.get('model')}`",
         f"- Mode: `{metadata.get('mode')}`",
         (
-            "- Claim language: LLM-heavy validation development result; "
-            "benchmark-aligned layer is side-car."
+            "- Claim language: LLM-heavy validation development result; deterministic "
+            "selected-evidence arithmetic and benchmark-aligned layers are side-cars."
         ),
+        f"- Decision 0006 outcome: `{outcome}`",
         "",
         "## Smoke Summary",
         "",
@@ -607,6 +644,14 @@ def write_report(
         f"- Parse/schema failures: {summary.get('parse_or_validation_failures', 0)}",
         (
             f"- Selected evidence valid: {summary.get('selected_evidence_valid', 0)}/"
+            f"{summary.get('examples', 0)}"
+        ),
+        (
+            f"- Rendering operands present: {summary.get('rendering_operands_present', 0)}/"
+            f"{summary.get('examples', 0)}"
+        ),
+        (
+            f"- Arithmetic/rendering traces present: {summary.get('arithmetic_trace_present', 0)}/"
             f"{summary.get('examples', 0)}"
         ),
         (
@@ -630,12 +675,36 @@ def write_report(
     lines.extend(
         [
             "",
+            "## Decision 0006 Stop Rules",
+            "",
+            (
+                f"- Raw parser-compatible labels: {summary.get('raw_llm_scorable', 0)}/"
+                f"{summary.get('examples', 0)}"
+            ),
+            (
+                f"- Raw model-owned Purist: {summary.get('raw_llm_purist_correct', 0)}/"
+                f"{summary.get('examples', 0)}"
+            ),
+            (
+                "- Deterministic selected-evidence arithmetic raw-wrong to correct: "
+                f"{summary.get('selected_evidence_arithmetic_raw_wrong_to_correct', 0)}"
+            ),
+            (
+                "- Deterministic selected-evidence arithmetic raw-correct to wrong: "
+                f"{summary.get('selected_evidence_arithmetic_raw_correct_to_wrong', 0)}"
+            ),
+            "",
+            "## Row Review",
+            "",
+            *_row_review_lines(rows),
+            "",
+            "## Failure Taxonomy",
+            "",
+            *_failure_taxonomy_lines(rows),
+            "",
             "## Interpretation",
             "",
-            "This v1 artifact is a schema/prompt smoke surface. It should not be promoted "
-            "from diagnostic status until validation50 and hard-slice behavior show high "
-            "schema validity, exact selected evidence, stable selected-event traces, and "
-            "competitive raw or format-only layers.",
+            _interpretation_text(outcome),
             "",
         ]
     )
@@ -841,7 +910,154 @@ def _component_status(
         status["evidence_exactness"] = "fail"
     if not score_layers["raw_llm"].get("scorable"):
         status["scorer_format"] = "fail"
+    if (
+        extraction.final_answer.rendering_operands is None
+        or not extraction.final_answer.arithmetic_trace
+    ):
+        status["final_schema_rendering"] = "fail"
     return status
+
+
+def _has_rendering_operands(structured_record: Any) -> bool:
+    if not isinstance(structured_record, Mapping):
+        return False
+    final_answer = structured_record.get("final_answer")
+    if not isinstance(final_answer, Mapping):
+        return False
+    operands = final_answer.get("rendering_operands")
+    if not isinstance(operands, Mapping):
+        return False
+    return any(value is not None for value in operands.values())
+
+
+def _has_arithmetic_trace(structured_record: Any) -> bool:
+    if not isinstance(structured_record, Mapping):
+        return False
+    final_answer = structured_record.get("final_answer")
+    if not isinstance(final_answer, Mapping):
+        return False
+    trace = final_answer.get("arithmetic_trace")
+    return isinstance(trace, str) and bool(trace.strip())
+
+
+def _side_car_deltas(rows: Sequence[Mapping[str, Any]]) -> dict[str, int]:
+    raw_wrong_to_correct = 0
+    raw_correct_to_wrong = 0
+    for row in rows:
+        layers = row.get("score_layers") or {}
+        raw = layers.get("raw_llm") or {}
+        arithmetic = layers.get("selected_evidence_arithmetic") or {}
+        raw_correct = bool(raw.get("purist_correct"))
+        arithmetic_correct = bool(arithmetic.get("purist_correct"))
+        if not raw_correct and arithmetic_correct:
+            raw_wrong_to_correct += 1
+        if raw_correct and not arithmetic_correct:
+            raw_correct_to_wrong += 1
+    return {
+        "selected_evidence_arithmetic_raw_wrong_to_correct": raw_wrong_to_correct,
+        "selected_evidence_arithmetic_raw_correct_to_wrong": raw_correct_to_wrong,
+    }
+
+
+def _decision_0006_outcome(summary: Mapping[str, Any]) -> str:
+    examples = int(summary.get("examples", 0))
+    if examples == 0:
+        return "reject"
+    blocking_reject = any(
+        (
+            int(summary.get("structured_records", 0)) < examples,
+            int(summary.get("raw_llm_scorable", 0)) < 24,
+            int(summary.get("selected_evidence_valid", 0)) < 23,
+            int(summary.get("selected_event_trace_mismatches", 0)) > 0,
+            int(summary.get("selected_evidence_arithmetic_raw_wrong_to_correct", 0)) > 5,
+            int(summary.get("rendering_operands_present", 0)) < examples,
+            int(summary.get("arithmetic_trace_present", 0)) < examples,
+        )
+    )
+    if blocking_reject:
+        return "reject"
+    if int(summary.get("raw_llm_purist_correct", 0)) >= 20:
+        return "promote_to_50"
+    return "revise"
+
+
+def _row_review_lines(rows: Sequence[Mapping[str, Any]]) -> list[str]:
+    lines: list[str] = []
+    for row in rows:
+        layers = row.get("score_layers") or {}
+        raw = layers.get("raw_llm") or {}
+        arithmetic = layers.get("selected_evidence_arithmetic") or {}
+        if raw.get("purist_correct") and arithmetic.get("purist_correct"):
+            continue
+        if raw.get("purist_correct") and not arithmetic.get("purist_correct"):
+            status = "side-car regression"
+        elif not raw.get("purist_correct") and arithmetic.get("purist_correct"):
+            status = "side-car correction"
+        else:
+            status = "raw miss"
+        lines.append(
+            "- "
+            f"{row.get('source_row_index')}: {status}; "
+            f"gold `{((row.get('reference') or {}).get('gold_normalized_label'))}`; "
+            f"raw `{raw.get('final_label')}`; "
+            f"selected-evidence arithmetic `{arithmetic.get('final_label')}`; "
+            f"taxonomy `{_failure_family(row)}`"
+        )
+    if not lines:
+        return ["- No raw misses or selected-evidence side-car regressions."]
+    return lines
+
+
+def _failure_taxonomy_lines(rows: Sequence[Mapping[str, Any]]) -> list[str]:
+    counts = Counter(_failure_family(row) for row in rows)
+    return [f"- `{family}`: {count}" for family, count in sorted(counts.items())]
+
+
+def _failure_family(row: Mapping[str, Any]) -> str:
+    if _has_blocking_parse_issue(row.get("parse_errors")):
+        return "parser/schema issue"
+    evidence_summary = row.get("evidence_summary") or {}
+    if not evidence_summary.get("selected_evidence_valid"):
+        return "wrong selected fact"
+    if any(
+        str(error).startswith("selected_event_trace:") for error in row.get("parse_errors") or []
+    ):
+        return "wrong selected fact"
+    layers = row.get("score_layers") or {}
+    raw = layers.get("raw_llm") or {}
+    arithmetic = layers.get("selected_evidence_arithmetic") or {}
+    benchmark = layers.get("benchmark_aligned") or {}
+    if not raw.get("scorable"):
+        return "parser/schema issue"
+    if not raw.get("purist_correct") and arithmetic.get("purist_correct"):
+        return "wrong arithmetic/rendering"
+    if not raw.get("purist_correct") and benchmark.get("purist_correct"):
+        return "benchmark-format convention"
+    if not raw.get("purist_correct"):
+        return "wrong selected fact"
+    if raw.get("purist_correct") and not arithmetic.get("purist_correct"):
+        return "side-car regression"
+    return "no raw failure"
+
+
+def _interpretation_text(outcome: str) -> str:
+    if outcome == "promote_to_50":
+        return (
+            "The decision-0006 validation25 smoke passes its predeclared stop rules. "
+            "Escalation to validation50 is allowed, with deterministic arithmetic still "
+            "reported only as a side-car."
+        )
+    if outcome == "reject":
+        return (
+            "The decision-0006 validation25 smoke fails at least one hard stop rule. "
+            "Do not escalate this v2 prompt to validation50; revise the prompt/schema or "
+            "keep selected-evidence arithmetic as an explicit deterministic component."
+        )
+    return (
+        "The decision-0006 validation25 smoke is interpretable but not promotable. "
+        "Revise before validation50 unless row review shows that all raw misses are "
+        "predeclared benchmark-format conventions rather than arithmetic/rendering failures."
+    )
 
 
 def _layer_summary(rows: Sequence[Mapping[str, Any]], layer: str) -> dict[str, Any]:
@@ -939,6 +1155,13 @@ def _repair_final_answer_payload(final_answer: Any) -> Any:
     repaired.setdefault("raw_llm_monthly_frequency", None)
     repaired.setdefault("supporting_event_ids", [])
     repaired.setdefault("combined_rationale", "")
+    if isinstance(repaired.get("rendering_operands"), dict):
+        repaired["rendering_operands"] = _repair_clinical_quantity_payload(
+            repaired["rendering_operands"]
+        )
+    if "rendering_operands" not in repaired:
+        repaired["rendering_operands"] = None
+    repaired.setdefault("arithmetic_trace", "")
     repaired.setdefault("final_rationale", repaired.get("rationale", ""))
     return {
         key: value
@@ -1037,8 +1260,12 @@ def _run_metadata(
             "pipeline_family": PIPELINE_FAMILY,
             "score_layers_to_report": list(SCORE_LAYER_NAMES),
             "schema_smoke_stop_rule": {
-                "schema_valid_rows_minimum": "24/25",
-                "selected_evidence_exactness_minimum": "22/25",
+                "schema_valid_rows_minimum": "25/25",
+                "raw_parser_compatible_minimum": "24/25",
+                "selected_evidence_exactness_minimum": "23/25",
+                "selected_event_trace_mismatches_maximum": "0/25",
+                "raw_model_owned_purist_minimum": "20/25",
+                "deterministic_arithmetic_gap_maximum": "5 rows",
             },
         },
     )
