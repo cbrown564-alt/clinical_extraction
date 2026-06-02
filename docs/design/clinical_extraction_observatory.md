@@ -1,6 +1,6 @@
 # Clinical Extraction Observatory
 
-**Status:** Phase 1 complete — all Phase 1 features implemented; ready for Phase 2  
+**Status:** Phase 2 complete — all Phase 2 features implemented; ready for Phase 3  
 **Last updated:** 2026-06-02  
 **Scope:** Frontend application for exploring, configuring, comparing, and understanding hybrid clinical-extraction pipelines.  
 **Backend dependency:** Reuses existing `clinical_extraction` package, JSONL artifacts, run registry, and split protocol without modification. Backend extensions are noted but deferred.
@@ -350,10 +350,31 @@ Any UI toggle state must serialise to a named config object that can be:
 - 🟡 LLM and hybrid pipelines are not yet executable via `/run/note` (backend uses `EXECUTABLE_PIPELINES` gate; requires DSPy LM setup)
 
 ### Phase 2: The Architect (Pipeline Composer)
-- React Flow canvas with draggable nodes.
-- Wire `AblationConfig` toggles to UI.
-- Architecture comparison mode (A vs B).
-- Export named config to JSON.
+**Goal:** Visually compose, configure, and compare pipeline architectures.
+
+**Implemented:**
+- ✅ React Flow canvas (`@xyflow/react`) with 5 draggable pipeline nodes: Extract → Normalise → Select → Repair → Score.
+- ✅ Color-coded nodes by family: `rules_only` (steel teal), `llm_only` (amber), `hybrid` (purple).
+- ✅ Activity ring indicator on each node showing its family.
+- ✅ Animated data-flow edges between stages.
+- ✅ Palette sidebar with draggable node types grouped by family.
+- ✅ **Node drawer** — clicking any node opens a configuration panel with:
+  - Component family selector (Deterministic / LLM / Hybrid).
+  - Pipeline implementation dropdown (populated from `/pipeline-families`).
+  - Per-group rule toggles (enabled/disabled groups).
+  - Per-rule toggles (disabled rule IDs).
+  - All toggles wired to `AblationConfig` on the node.
+- ✅ **Architecture comparison mode (A vs B)** — toggle compare mode, save two architectures as Config A and Config B, switch between them, load either into the canvas.
+- ✅ **Export named config to JSON** — "Copy JSON" and "Export Config" buttons in the header; serialises the full node graph with family, pipeline family, and ablation config per node.
+- ✅ URL-routed page at `/architect` with back navigation to home and link from landing page.
+- ✅ Background, Controls, and MiniMap on the canvas; MiniMap node colours match family palette.
+
+**Rudimentary / deferred to Phase 3–5:**
+- 🟡 Ghost path preview on hover (previewing ablation before committing).
+- 🟡 Edge thickness proportional to candidate/event flow (requires backend telemetry).
+- 🟡 Red pulse on edges for validation errors (requires per-edge diagnostics).
+- 🟡 True drag-and-drop from palette to canvas to create new pipeline structures (currently palette is illustrative; canvas has fixed default nodes that can be repositioned).
+- 🟡 Real-time ablation simulation (requires `/run/ablation` integration and result caching).
 
 ### Phase 3: The Observatory (Corpus & Ladder)
 - Index `experiments/registry.jsonl` and existing JSONL artifacts.

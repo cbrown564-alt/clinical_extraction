@@ -13,7 +13,6 @@ export default function ComparisonBar() {
   const saveConfig = useArchitectStore((s) => s.saveConfig);
   const loadConfig = useArchitectStore((s) => s.loadConfig);
   const setActiveConfigLabel = useArchitectStore((s) => s.setActiveConfigLabel);
-  const nodes = useArchitectStore((s) => s.nodes);
   const ablationConfig = useConfigStore((s) => s.ablationConfig);
   const pipeline = useConfigStore((s) => s.pipeline);
 

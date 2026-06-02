@@ -11,6 +11,7 @@ import {
   addEdge,
   type Connection,
   type Edge,
+  type Node,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import CustomNode from "./CustomNode";
@@ -22,22 +23,21 @@ export default function PipelineCanvas() {
   const storeNodes = useArchitectStore((s) => s.nodes);
   const storeEdges = useArchitectStore((s) => s.edges);
   const updateNode = useArchitectStore((s) => s.updateNode);
-  const setNodes = useArchitectStore((s) => s.setNodes);
   const setEdges = useArchitectStore((s) => s.setEdges);
 
-  const initialNodes = useMemo(
+  const initialNodes: Node[] = useMemo(
     () =>
       storeNodes.map((n) => ({
         id: n.id,
         type: "custom",
         position: { x: n.x, y: n.y },
-        data: n,
+        data: n as unknown as Record<string, unknown>,
         draggable: true,
       })),
     [storeNodes]
   );
 
-  const initialEdges = useMemo(
+  const initialEdges: Edge[] = useMemo(
     () =>
       storeEdges.map((e) => ({
         id: e.id,
@@ -54,19 +54,22 @@ export default function PipelineCanvas() {
 
   const onConnect = useCallback(
     (connection: Connection) => {
-      const newEdge: Edge = {
-        ...connection,
-        id: `e-${connection.source}-${connection.target}`,
-        animated: true,
-        style: { stroke: "#9ca3af", strokeWidth: 2 },
-      };
-      setEdgesState((eds) => addEdge(newEdge, eds));
+      const newEdge = addEdge(
+        {
+          ...connection,
+          id: `e-${connection.source}-${connection.target}`,
+          animated: true,
+          style: { stroke: "#9ca3af", strokeWidth: 2 },
+        } as Edge,
+        edges
+      );
+      setEdgesState(newEdge);
       setEdges([
         ...storeEdges,
-        { id: newEdge.id, source: newEdge.source, target: newEdge.target },
+        { id: connection.source + "-" + connection.target, source: connection.source!, target: connection.target! },
       ]);
     },
-    [setEdgesState, setEdges, storeEdges]
+    [edges, setEdgesState, setEdges, storeEdges]
   );
 
   const onNodeDragStop = useCallback(
