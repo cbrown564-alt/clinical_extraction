@@ -52,6 +52,14 @@ body {
   text-underline-offset: 3px;
 }
 
+.span-highlight--deterministic-alt {
+  background-color: rgba(74, 111, 165, 0.10);
+  text-decoration: underline;
+  text-decoration-color: rgba(74, 111, 165, 0.55);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
 .span-highlight--llm {
   background-color: rgba(217, 119, 6, 0.10);
   text-decoration: underline;
@@ -64,6 +72,22 @@ body {
   background-color: rgba(224, 122, 95, 0.10);
   text-decoration: underline;
   text-decoration-color: rgba(224, 122, 95, 0.55);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.span-highlight--hybrid {
+  background-color: rgba(124, 58, 237, 0.10);
+  text-decoration: underline;
+  text-decoration-color: rgba(124, 58, 237, 0.55);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.span-highlight--success {
+  background-color: rgba(129, 178, 154, 0.10);
+  text-decoration: underline;
+  text-decoration-color: rgba(129, 178, 154, 0.55);
   text-decoration-thickness: 2px;
   text-underline-offset: 3px;
 }

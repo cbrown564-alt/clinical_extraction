@@ -53,7 +53,7 @@ function getSpansForStage(
     return spans;
   }
 
-  if (activeStage === "extract" || activeStage === "normalise") {
+  if (activeStage === "extract") {
     for (const c of candidates) {
       if (c.start_char != null && c.end_char != null) {
         spans.push({
@@ -69,7 +69,23 @@ function getSpansForStage(
     }
   }
 
-  if (activeStage === "select" || activeStage === "score") {
+  if (activeStage === "normalise") {
+    for (const c of candidates) {
+      if (c.start_char != null && c.end_char != null) {
+        spans.push({
+          start: c.start_char,
+          end: c.end_char,
+          kind: "deterministic-alt",
+          label: c.raw_value ?? c.evidence,
+          ruleId: c.rule_id,
+          ruleGroup: c.rule_group,
+          tooltip: `Normalised: ${c.raw_value ?? c.evidence}`,
+        });
+      }
+    }
+  }
+
+  if (activeStage === "select") {
     const fs = finalSelection;
     let start = fs.start_char ?? -1;
     let end = fs.end_char ?? -1;
@@ -84,14 +100,57 @@ function getSpansForStage(
       spans.push({
         start,
         end,
-        kind: "deterministic",
+        kind: "hybrid",
         label: fs.final_label,
         tooltip: `Selected: ${fs.final_label}`,
       });
     }
   }
 
+  if (activeStage === "score") {
+    const fs = finalSelection;
+    let start = fs.start_char ?? -1;
+    let end = fs.end_char ?? -1;
+    if (start < 0 || end <= start) {
+      const idx = text.indexOf(fs.evidence);
+      if (idx >= 0) {
+        start = idx;
+        end = idx + fs.evidence.length;
+      }
+    }
+    if (start >= 0 && end > start) {
+      spans.push({
+        start,
+        end,
+        kind: "success",
+        label: fs.final_label,
+        tooltip: `Scored: ${fs.final_label}`,
+      });
+    }
+  }
+
   return spans;
+}
+
+function kindToClass(kind: HighlightSpan["kind"]): string {
+  switch (kind) {
+    case "deterministic":
+      return "span-highlight--deterministic";
+    case "deterministic-alt":
+      return "span-highlight--deterministic-alt";
+    case "llm":
+      return "span-highlight--llm";
+    case "repair":
+      return "span-highlight--repair";
+    case "hybrid":
+      return "span-highlight--hybrid";
+    case "success":
+      return "span-highlight--success";
+    case "gold":
+      return "span-highlight--gold";
+    default:
+      return "";
+  }
 }
 
 function formatNoteAsLetter(text: string): React.ReactNode {
@@ -214,19 +273,12 @@ export default function NoteRenderer({
           }
 
           const primary = seg.spans[0];
-          const kindClass =
-            primary.kind === "deterministic"
-              ? "span-highlight--deterministic"
-              : primary.kind === "llm"
-              ? "span-highlight--llm"
-              : primary.kind === "repair"
-              ? "span-highlight--repair"
-              : "";
+          const kindClass = kindToClass(primary.kind);
 
           return (
             <mark
               key={i}
-              className={`span-highlight ${kindClass} rounded-sm`}
+              className={`span-highlight ${kindClass}`}
               title={primary.tooltip}
             >
               {content.split("\n").map((line, j, arr) => (

@@ -16,6 +16,7 @@ Use Gan 2026 as the first controlled extraction surface. Keep deterministic V1 f
 
 - Locked split `gan2026_split_v1`: 300 train, 750 validation, 450 holdout. LLM/DSPy work escalates 25 -> 50 -> 250 validation rows; test is not tuning.
 - State-graph validation-cycle protocol is complete on validation-only/synthetic development surfaces. Validation50 oracle coverage is 47/50, with all 44 frequency golds representable and unresolved-multiple rows the prefix gap; projection Purist/Pragmatic F1 is 0.9600. The validation hard-slice union has oracle coverage 219/250 and projection Purist F1 0.9160. Row/family review found all 31 hard-slice missing-representability rows are unknown or unresolved-multiple boundary-state misses, while 34 additional rows are already representable but projected incorrectly. The first hosted graph-builder target should recover exact-evidence unknown/unresolved-multiple nodes, not emit final labels.
+- Hosted boundary-state graph-builder v0 smoke is implemented and live-smoked on the first validation hard-slice missing-representability row. The one-row GPT-4.1 mini run was schema-valid, had 0 call failures, produced 2/2 exact-evidence nodes, emitted no final Gan label, and recovered a representability-gain candidate. Next scale is the predeclared 31 validation missing-representability rows plus the 8 synthetic unknown stress rows, still node-construction only.
 - Deterministic V1 is the frozen comparator: 0.9293/0.9387 validation and
   0.7600/0.7867 on its one locked-test Purist/Pragmatic evaluation.
 - Structured v0.5 reached 675/750 Purist = 0.9000 on full validation, but audit
@@ -44,6 +45,7 @@ Use Gan 2026 as the first controlled extraction surface. Keep deterministic V1 f
 - Generalization-gap report: `experiments/gan2026_generalization_gap_research_report_2026-06-02.md`
 - State-graph protocol: `experiments/gan2026_clinical_frequency_state_graph_protocol_2026-06-02.md`
 - State-graph row/family review: `experiments/gan2026_clinical_frequency_state_graph_row_family_review_2026-06-02.md`
+- Hosted boundary-state graph-builder smoke: `experiments/gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_live_smoke_2026-06-02.md`
 - Hybrid v0.2 saturated-surface plan: `experiments/gan2026_hybrid_adjudicator_v02_saturated_surface_evaluation_plan_2026-06-01.md`
 
 ## Active Priorities
@@ -58,11 +60,11 @@ Use Gan 2026 as the first controlled extraction surface. Keep deterministic V1 f
 
 ### Now
 
-- Design the first hosted `hybrid_clinical_frequency_state_graph` builder run over the 31 validation hard-slice missing-representability rows, with the 8 synthetic unknown rows as stress-only, exact-evidence-gated node construction, and no final-label emission.
+- Run the hosted `hybrid_clinical_frequency_state_graph` boundary-state builder over all 31 validation hard-slice missing-representability rows, then replay the 8 synthetic unknown rows as stress-only. Report schema validity, exact-evidence validity, and representability-gain candidates; do not emit final labels or promote projection F1.
 
 ### Next
 
-- After hosted boundary-state construction, replay deterministic projection and separately design projection/arbitration ablations for the 34 representable projection misses.
+- After the 31-row hosted boundary-state construction pass, merge accepted exact-evidence nodes into a diagnostic graph replay and separately design projection/arbitration ablations for the 34 representable projection misses.
 - Keep claim-table v5 and v0.2 schema/gate ablations available as comparators, but do not promote them ahead of the state-graph coverage cycle.
 - Design LLM-replacement ablations for deterministic post-processing modules, reporting score, repair attribution, evidence validity, and replay variance.
 - Consolidate remaining saved-output replay helpers into dedicated artifact-analysis modules.
@@ -75,6 +77,7 @@ Use Gan 2026 as the first controlled extraction surface. Keep deterministic V1 f
 
 ### Done Recently
 
+- 2026-06-02: Implemented the hosted boundary-state graph-builder diagnostic for `hybrid_clinical_frequency_state_graph`, including target-row selection for the 31 validation hard-slice missing-representability rows and 8 synthetic unknown stress rows, prompt/schema constraints that forbid final-label emission, exact-evidence validation, run artifacts, and registry entry. Live one-row GPT-4.1 mini smoke on row 338 was schema-valid with 0 call failures, 2/2 exact-evidence nodes, and 1/1 representability-gain candidate.
 - 2026-06-02: Completed row/family review of the state-graph diagnostics. The validation hard-slice union has 31 missing-representability rows: 20 unknown and 11 unresolved-multiple, all overlapping seizure-free overreach/boundary-state tags; 34 other rows are already representable but projected incorrectly. Added `experiments/gan2026_clinical_frequency_state_graph_row_family_review_2026-06-02.md` and set the next hosted run target to exact-evidence unknown/unresolved-multiple node construction, not final-label adjudication.
 - 2026-06-02: Completed all tasks in the clinical-frequency state-graph protocol. Added a state-graph diagnostics runner and CLI, ran oracle coverage/projection diagnostics on validation25, validation50, the reviewed synthetic hard-case panel, and the validation hard-slice union; added exact-evidence-gated LLM atomic-claim graph rows from saved validation25 claim-table output; generated a validation50 counterfactual invariance panel; added family-aware validation grouping. Main result: ordinary frequency spans are covered well on validation prefixes, but unknown and unresolved-multiple representability plus synthetic hard-case span absence remain the next bottleneck.
 - 2026-06-02: Started the `hybrid_clinical_frequency_state_graph` cycle with graph schemas, a deterministic high-recall span harvester scaffold, projection policy, counterfactual invariance signature, oracle coverage summary, and focused tests. Added `experiments/gan2026_clinical_frequency_state_graph_protocol_2026-06-02.md` and froze hybrid v0.2 `cluster_diary_candidate_recall` as comparator-only after the generalization audit.
@@ -101,4 +104,4 @@ Use Gan 2026 as the first controlled extraction surface. Keep deterministic V1 f
 
 ## Immediate Next Step
 
-Write the hosted graph-builder run spec for exact-evidence unknown/unresolved-multiple node construction on the 31 validation hard-slice missing-representability rows, then run the smallest live smoke that validates schema and evidence before any projection replay.
+Run the 31-row hosted boundary-state graph-builder pass on validation hard-slice missing-representability rows, then summarize schema validity, exact-evidence validity, and representability-gain candidates before any projection replay.

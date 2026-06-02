@@ -100,7 +100,7 @@ export type ActiveStage =
 export interface HighlightSpan {
   start: number;
   end: number;
-  kind: "deterministic" | "llm" | "repair" | "gold";
+  kind: "deterministic" | "deterministic-alt" | "llm" | "repair" | "hybrid" | "success" | "gold";
   label: string;
   ruleId?: string;
   ruleGroup?: string | null;
