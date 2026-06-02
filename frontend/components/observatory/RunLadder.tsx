@@ -8,8 +8,7 @@ interface RunLadderProps {
 }
 
 function isSaturated(summary: RunSummary): boolean {
-  // Validation surfaces with > 250 rows and near-ceiling pragmatic accuracy
-  const isValidation = summary.split.includes("validation") && !summary.split.includes("test");
+  const isValidation = summary.split === "validation";
   return isValidation && summary.rowCount >= 250 && summary.pragmaticAccuracy >= 0.95;
 }
 
@@ -19,12 +18,12 @@ function formatPct(n: number): string {
 
 function familyColorClass(family: string): string {
   if (family.includes("rules_only") || family.includes("deterministic")) {
-    return "border-deterministic/30 bg-deterministic/5";
+    return "border-deterministic/25 bg-deterministic/5";
   }
   if (family.includes("hybrid")) {
-    return "border-hybrid/30 bg-hybrid/5";
+    return "border-hybrid/25 bg-hybrid/5";
   }
-  return "border-llm/30 bg-llm/5";
+  return "border-llm/25 bg-llm/5";
 }
 
 function familyTextClass(family: string): string {
@@ -37,12 +36,20 @@ function familyTextClass(family: string): string {
   return "text-llm";
 }
 
+const FAMILY_LABELS: Record<string, string> = {
+  rules_only: "Rules",
+  llm_only_claim_table_selector: "LLM Claim",
+  llm_heavy_clinical_frequency_reasoner: "LLM Heavy",
+  hybrid_rules_candidates_llm_adjudicator: "Hybrid",
+  hybrid_clinical_frequency_state_graph: "Hybrid Graph",
+};
+
 export default function RunLadder({ summaries }: RunLadderProps) {
   if (summaries.length === 0) {
     return (
       <div className="flex items-center gap-2 text-muted">
         <Rocket className="h-4 w-4" />
-        <span className="text-xs">Select runs above to populate the ladder.</span>
+        <span className="text-xs">Select runs to populate the ladder.</span>
       </div>
     );
   }
@@ -57,37 +64,36 @@ export default function RunLadder({ summaries }: RunLadderProps) {
         <h3 className="text-xs font-semibold uppercase tracking-widest text-muted">
           Run Ladder
         </h3>
+        <span className="text-[10px] text-muted">
+          {ordered.length} run{ordered.length > 1 ? "s" : ""} · sorted by size
+        </span>
       </div>
 
       <div className="flex items-stretch gap-3 overflow-x-auto pb-2">
         {ordered.map((summary) => {
           const saturated = isSaturated(summary);
+          const familyLabel = FAMILY_LABELS[summary.pipelineFamily] ?? summary.pipelineFamily;
+
           return (
             <div
               key={summary.runId}
-              className={`relative flex min-w-[220px] flex-col rounded-lg border p-3 transition-all ${familyColorClass(
+              className={`relative flex min-w-[200px] max-w-[260px] flex-1 flex-col rounded-lg border p-3 transition-all ${familyColorClass(
                 summary.pipelineFamily
-              )} ${saturated ? "shadow-sm" : ""}`}
+              )} ${saturated ? "ring-1 ring-success/30" : ""}`}
             >
               {saturated && (
                 <div className="pointer-events-none absolute inset-0 rounded-lg bg-gradient-to-br from-success/5 to-transparent" />
               )}
 
-              <div className="relative z-10 space-y-2">
+              <div className="relative z-10 flex flex-1 flex-col gap-2">
+                {/* Top row: family + badge */}
                 <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <div className="text-[10px] font-semibold uppercase tracking-wider text-muted">
-                      {summary.pipelineFamily.replace(/_/g, " ")}
-                    </div>
-                    <div className="text-[11px] font-medium text-foreground leading-tight">
-                      {summary.runId.length > 35
-                        ? summary.runId.slice(0, 35) + "…"
-                        : summary.runId}
-                    </div>
-                  </div>
+                  <span className={`text-[10px] font-semibold uppercase tracking-wider ${familyTextClass(summary.pipelineFamily)}`}>
+                    {familyLabel}
+                  </span>
                   {saturated && (
                     <span
-                      className="shrink-0 rounded-full bg-success/15 px-1.5 py-0.5 text-[9px] font-medium text-success"
+                      className="shrink-0 rounded bg-success/12 px-1.5 py-0 text-[9px] font-medium text-success"
                       title="Saturated surface — low information content"
                     >
                       Saturated
@@ -95,17 +101,21 @@ export default function RunLadder({ summaries }: RunLadderProps) {
                   )}
                 </div>
 
-                <div className="flex items-center gap-2 text-[10px] text-muted">
-                  <span className="rounded bg-surface-raised px-1 py-0.5 border border-border">
-                    {summary.split}
-                  </span>
-                  <span>{summary.rowCount} rows</span>
-                  <span className="rounded bg-surface-raised px-1 py-0.5 border border-border capitalize">
-                    {summary.decision}
-                  </span>
+                {/* Run ID */}
+                <div className="text-[11px] font-medium text-foreground leading-tight line-clamp-2">
+                  {summary.runId.replace(/^gan2026_/, "").replace(/_2026-.*$/, "")}
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
+                {/* Meta row */}
+                <div className="flex items-center gap-1.5 text-[10px] text-muted">
+                  <span className="rounded bg-surface-raised px-1 py-0 border border-border">
+                    {summary.split}
+                  </span>
+                  <span>{summary.rowCount.toLocaleString()} rows</span>
+                </div>
+
+                {/* Metrics */}
+                <div className="mt-auto grid grid-cols-2 gap-2">
                   <div className="rounded bg-surface p-2 border border-border">
                     <div className="text-[9px] uppercase tracking-wider text-muted">Purist</div>
                     <div className={`text-sm font-semibold ${familyTextClass(summary.pipelineFamily)}`}>
