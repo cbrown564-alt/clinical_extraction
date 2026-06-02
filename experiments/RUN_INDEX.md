@@ -4,6 +4,17 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Revise
 
+### `gan2026_clinical_frequency_state_graph_protocol_2026-06-02`
+- Date/split: `2026-06-02`; `validation protocol`; `0` rows.
+- Pipeline: `hybrid_clinical_frequency_state_graph`; mode `protocol and deterministic scaffold`; replay `analysis_only`.
+- Model role: diagnostic graph scaffold; model `none`.
+- Repair mode/config: `graph_oracle_coverage + deterministic_projection + counterfactual_invariance`.
+- Primary metrics: scaffold_tests=5.
+- Evidence validity: Graph nodes are tested for exact evidence offsets; no corpus run yet.
+- Supersedes: `gan2026_hybrid_adjudicator_v02_cluster_diary_candidate_recall_generalization_audit_2026-06-02`.
+- Claim language: Architecture scaffold only, not a benchmark result. Next results must separate graph coverage, projection, invariance, and arbitration effects.
+- Artifacts: `experiments/gan2026_clinical_frequency_state_graph_protocol_2026-06-02.md`.
+
 ### `gan2026_hybrid_adjudicator_v02_validation250_live_2026-06-01`
 - Date/split: `2026-06-01`; `validation`; `250` rows.
 - Pipeline: `hybrid_rules_candidates_llm_adjudicator`; mode `live rules candidates then conservative LLM adjudicator`; replay `live`.
@@ -104,6 +115,18 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Artifacts: `experiments/gan2026_section_claim_table_validation750_gpt41mini_v4_2026-06-01.jsonl`, `experiments/gan2026_section_claim_table_validation750_gpt41mini_v4_2026-06-01.md`, `experiments/gan2026_section_claim_table_validation750_v4_interpretation_2026-06-01.md`.
 
 ## Historical
+
+### `gan2026_hybrid_adjudicator_v02_cluster_diary_candidate_recall_generalization_audit_2026-06-02`
+- Date/split: `2026-06-02`; `validation+test`; `1200` rows.
+- Pipeline: `hybrid_rules_candidates_llm_adjudicator`; mode `frozen generalization audit with cluster_diary_candidate_recall`; replay `live`.
+- Model role: hybrid adjudicator over deterministic candidates; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `cluster_diary_candidate_recall + conservative_overreach_gates + deterministic_fallback`.
+- Primary metrics: test_candidate_set_purist_recall=359, test_correct_to_wrong=9, test_deterministic_purist_correct=343, test_gated_pragmatic_correct=353, test_gated_purist_correct=343, test_wrong_to_correct=9, validation_candidate_set_purist_recall=707, validation_deterministic_purist_correct=697, validation_gated_pragmatic_correct=686, validation_gated_purist_correct=677.
+- Evidence validity: Aggregate and slice-level locked-test audit only; no test row text inspection for tuning.
+- Cache/reuse source: DSPy cache enabled; validation/test artifacts recorded 0 reused raw outputs.
+- Supersedes: `gan2026_hybrid_adjudicator_v02_cluster_diary_candidate_recall_synthetic_hard_case_component_stress_2026-06-01`.
+- Claim language: Frozen comparator-only generalization audit. Do not tune v0.2 gates, prompts, candidate generation, or repair policy from locked-test behavior; use the state-graph validation cycle for new development.
+- Artifacts: `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation750_gpt41mini_v02_cluster_diary_candidate_recall_live_2026-06-02.jsonl`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation750_gpt41mini_v02_cluster_diary_candidate_recall_live_2026-06-02.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_test450_gpt41mini_v02_cluster_diary_candidate_recall_live_2026-06-02.jsonl`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_test450_gpt41mini_v02_cluster_diary_candidate_recall_live_2026-06-02.md`, `experiments/gan2026_generalization_gap_research_report_2026-06-02.md`.
 
 ### `gan2026_hybrid_adjudicator_v02_validation50_live_2026-06-01`
 - Date/split: `2026-06-01`; `validation`; `50` rows.

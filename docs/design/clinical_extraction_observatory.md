@@ -1,6 +1,6 @@
 # Clinical Extraction Observatory
 
-**Status:** Planning document  
+**Status:** Phase 1 implemented (Workbench frontend scaffold + core components)  
 **Last updated:** 2026-06-02  
 **Scope:** Frontend application for exploring, configuring, comparing, and understanding hybrid clinical-extraction pipelines.  
 **Backend dependency:** Reuses existing `clinical_extraction` package, JSONL artifacts, run registry, and split protocol without modification. Backend extensions are noted but deferred.
