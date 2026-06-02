@@ -73,6 +73,10 @@ def test_condition_from_llm_rows_accepts_claim_table_score_layers() -> None:
                         "scorable": True,
                         "purist_correct": True,
                         "pragmatic_correct": True,
+                        "repair_mode_metadata": {
+                            "repair_mode": "clean_scorer_facing",
+                            "repair_family": "clean_scorer_facing_gold_policy",
+                        },
                     }
                 },
                 "reference": {"gold_label": "2 per month"},
@@ -92,6 +96,8 @@ def test_condition_from_llm_rows_accepts_claim_table_score_layers() -> None:
     assert condition.rows[0].prediction_label == "2 per month"
     assert condition.rows[0].purist_correct is True
     assert condition.rows[0].evidence_valid is True
+    assert condition.rows[0].repair_mode_metadata is not None
+    assert condition.rows[0].repair_mode_metadata["repair_mode"] == "clean_scorer_facing"
 
 
 def test_hybrid_conditions_split_deterministic_top_from_llm_adjudicator() -> None:
@@ -113,11 +119,19 @@ def test_hybrid_conditions_split_deterministic_top_from_llm_adjudicator() -> Non
                     "final_label": "unknown",
                     "purist_correct": False,
                     "pragmatic_correct": False,
+                    "repair_mode_metadata": {
+                        "repair_mode": "raw_hybrid_adjudicator",
+                        "repair_family": "hybrid_adjudicator_label_repair",
+                    },
                 },
                 "conservative_adjudicator": {
                     "final_label": "2 per month",
                     "purist_correct": True,
                     "pragmatic_correct": True,
+                    "repair_mode_metadata": {
+                        "repair_mode": "conservative_hybrid_adjudicator",
+                        "repair_family": "hybrid_overreach_gates_and_deterministic_fallback",
+                    },
                 },
             },
             "reference": {"gold_label": "2 per month", "gold_monthly_frequency": 2.0},
@@ -138,6 +152,14 @@ def test_hybrid_conditions_split_deterministic_top_from_llm_adjudicator() -> Non
     assert adjudicator.name == "conservative_llm_adjudicator_final"
     assert summarize_condition(adjudicator)["purist_accuracy"] == 1.0
     assert compare_condition_rows(deterministic, adjudicator)["wrong_to_correct"] == 1
+    assert raw_adjudicator.rows[0].repair_mode_metadata is not None
+    assert raw_adjudicator.rows[0].repair_mode_metadata["repair_mode"] == (
+        "raw_hybrid_adjudicator"
+    )
+    assert adjudicator.rows[0].repair_mode_metadata is not None
+    assert adjudicator.rows[0].repair_mode_metadata["repair_mode"] == (
+        "conservative_hybrid_adjudicator"
+    )
 
 
 def test_report_and_jsonl_helpers(tmp_path: Path) -> None:

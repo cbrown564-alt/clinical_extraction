@@ -28,6 +28,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequenc
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     write_jsonl_rows,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.repair_modes import (
+    repair_mode_metadata,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_metadata import (
     build_run_metadata,
 )
@@ -608,6 +611,7 @@ def run_split(
     metadata["reuse_source"] = reuse_source
     metadata["escalation_reason"] = escalation_reason
     metadata["repair_mode"] = repair_config.resolved_repair_mode
+    metadata["repair_mode_metadata"] = repair_mode_metadata(repair_config.resolved_repair_mode)
     metadata["repair_config"] = asdict(repair_config)
     program = DspyStructuredExtractor()
     if mode == "live":

@@ -330,7 +330,10 @@ def create_app(
                     "labels_match_all_categories": r.labels_match_all_categories,
                     "quotes_ok_all_categories": r.quotes_ok_all_categories,
                 }
-        raise HTTPException(status_code=404, detail=f"Record {source_row_index} not found in split {split_name}")
+        raise HTTPException(
+            status_code=404,
+            detail=f"Record {source_row_index} not found in split {split_name}",
+        )
 
     return app
 

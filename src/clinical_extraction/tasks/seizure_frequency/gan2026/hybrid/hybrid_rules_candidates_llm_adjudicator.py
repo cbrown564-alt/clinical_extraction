@@ -22,6 +22,10 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser i
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     write_jsonl_rows,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.repair_modes import (
+    repair_mode_layers,
+    repair_mode_metadata,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_metadata import (
     build_run_metadata,
 )
@@ -420,6 +424,13 @@ def run_hybrid_rules_candidates_llm_adjudicator_split(
     metadata["reuse_source"] = reuse_source
     metadata["escalation_reason"] = escalation_reason
     metadata["candidate_revision"] = candidate_revision
+    metadata["repair_mode_layers"] = repair_mode_layers(
+        (
+            "deterministic_candidate_top",
+            "raw_hybrid_adjudicator",
+            "conservative_hybrid_adjudicator",
+        )
+    )
     pipeline = Gan2026PipelineV1()
     program = DspyFinalSelectionAdjudicator()
     if mode == "live":
@@ -461,14 +472,22 @@ def run_hybrid_rules_candidates_llm_adjudicator_split(
         deterministic_score = _compare_label_to_record(
             record,
             str(diagnostics["final_selection"]["final_label"]),
+            repair_mode="deterministic_candidate_top",
         )
         adjudicator_score = (
-            _compare_label_to_record(record, decision.final_label) if decision else None
+            _compare_label_to_record(
+                record,
+                decision.final_label,
+                repair_mode="raw_hybrid_adjudicator",
+            )
+            if decision
+            else None
         )
         conservative_gate = _conservative_adjudicator_gate(record, diagnostics, decision)
         conservative_score = _compare_label_to_record(
             record,
             str(conservative_gate["final_label"]),
+            repair_mode="conservative_hybrid_adjudicator",
         )
         candidate_recall = _candidate_recall(record, diagnostics)
         output_rows.append(
@@ -499,6 +518,13 @@ def run_hybrid_rules_candidates_llm_adjudicator_split(
                     "conservative_adjudicator": conservative_score,
                     "adjudicator": conservative_score,
                 },
+                "repair_mode_layers": repair_mode_layers(
+                    (
+                        "deterministic_candidate_top",
+                        "raw_hybrid_adjudicator",
+                        "conservative_hybrid_adjudicator",
+                    )
+                ),
                 "conservative_gate": conservative_gate,
                 "reference": {
                     "gold_label": record.gold_label,
@@ -971,8 +997,17 @@ def _revision_normalized_event(event_id: str, label: str) -> dict[str, Any]:
         }
 
 
-def _compare_label_to_record(record: Any, label: str) -> dict[str, Any]:
-    result: dict[str, Any] = {"final_label": label, "scorable": False}
+def _compare_label_to_record(
+    record: Any,
+    label: str,
+    *,
+    repair_mode: str = "custom",
+) -> dict[str, Any]:
+    result: dict[str, Any] = {
+        "final_label": label,
+        "scorable": False,
+        "repair_mode_metadata": repair_mode_metadata(repair_mode),
+    }
     try:
         predicted_record = label_to_frequency_record(label)
     except ValueError as exc:

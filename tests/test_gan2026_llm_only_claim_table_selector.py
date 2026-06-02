@@ -291,10 +291,25 @@ def test_run_split_records_raw_strict_and_clean_scoring_layers() -> None:
         policy["policy_id"] for policy in PROMPT_POLICY_TAXONOMY
     ]
     assert metadata["required_ablations_before_ladder_runs"] == REQUIRED_ABLATIONS_BEFORE_LADDER
+    assert metadata["repair_mode_layers"]["raw_model"]["repair_family"] == "none"
+    assert metadata["repair_mode_layers"]["strict_format"]["repair_family"] == (
+        "format_preserving_label_repair"
+    )
+    assert metadata["repair_mode_layers"]["clean_scorer_facing"]["repair_family"] == (
+        "clean_scorer_facing_gold_policy"
+    )
     assert row["component_status"]["claim_extraction"] == "ok"
     assert row["score_layers"]["raw"]["scorable"] is False
+    assert row["score_layers"]["raw"]["repair_mode_metadata"]["repair_mode"] == "raw_model"
     assert row["score_layers"]["strict_format"]["final_label"] == "most weekdays"
+    assert row["score_layers"]["strict_format"]["repair_mode_metadata"]["repair_mode"] == (
+        "strict_format"
+    )
     assert row["score_layers"]["clean_scorer_facing"]["final_label"] == "multiple per week"
+    assert row["score_layers"]["clean_scorer_facing"]["repair_mode_metadata"]["repair_mode"] == (
+        "clean_scorer_facing"
+    )
+    assert row["repair_mode_layers"]["clean_scorer_facing"]["semantic_selection_owner"] == "llm"
     assert row["repair_changes"] == [
         {
             "layer": "clean_scorer_facing",
