@@ -1,6 +1,6 @@
 "use client";
 
-import { Play, Database, Settings2, FileText, GitCompare, AlertCircle, Ban } from "lucide-react";
+import { Play, Database, Settings2, FileText, GitCompare, AlertCircle, Ban, Loader2 } from "lucide-react";
 import { useConfigStore, useUiStore } from "@/lib/stores";
 import { useRunNote, useRules, useRecords, useRecord, usePipelineFamilies } from "@/lib/hooks";
 import type { PipelineFamily } from "@/lib/types";
@@ -206,12 +206,20 @@ export default function PipelineConfigPanel() {
         disabled={runNote.isPending || !noteText.trim() || !isExecutable}
         className="flex w-full items-center justify-center gap-2 rounded-lg bg-deterministic px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-deterministic/90 hover:shadow disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
       >
-        <Play className="h-4 w-4" />
-        {runNote.isPending
-          ? "Running pipeline…"
-          : !isExecutable
-          ? "Pipeline not executable"
-          : "Run Pipeline"}
+        {runNote.isPending ? (
+          <Loader2 className="h-4 w-4 shrink-0 animate-spin" />
+        ) : !isExecutable ? (
+          <Ban className="h-4 w-4 shrink-0" />
+        ) : (
+          <Play className="h-4 w-4 shrink-0" />
+        )}
+        <span className="truncate">
+          {runNote.isPending
+            ? "Running pipeline…"
+            : !isExecutable
+            ? "Pipeline not executable"
+            : "Run Pipeline"}
+        </span>
       </button>
 
       {runNote.isError && (

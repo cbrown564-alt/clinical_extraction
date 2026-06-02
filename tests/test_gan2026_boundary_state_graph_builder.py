@@ -47,6 +47,9 @@ def test_boundary_state_builder_prompt_forbids_final_label_emission() -> None:
     assert payload["prompt_version"] == boundary_state_graph_builder.PROMPT_VERSION
     assert payload["allowed_node_semantic_kinds"] == ["unknown", "unresolved_multiple"]
     assert "Do not emit a final Gan label" in payload["instructions"]
+    assert "top_level" not in payload["output_schema"]
+    assert "top_level" in payload["forbidden_output_keys"]
+    assert "seizures continue but frequency is unclear" in payload["unknown_state_examples"]
     assert "final_label" not in payload["output_schema"]["node"].values()
 
 

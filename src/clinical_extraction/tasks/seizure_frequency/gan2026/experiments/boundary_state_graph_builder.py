@@ -33,7 +33,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_metadat
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
-PROMPT_VERSION = "gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_v0"
+PROMPT_VERSION = "gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_v1_unknown_recall"
 DEFAULT_JSONL_PATH = Path(
     "experiments/"
     "gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_smoke_2026-06-02.jsonl"
@@ -156,22 +156,49 @@ def build_prompt_input(record: GanFrequencyRecord, *, surface_role: str) -> str:
         "surface_role": surface_role,
         "source_row_index": record.source_row_index,
         "allowed_node_semantic_kinds": ["unknown", "unresolved_multiple"],
+        "forbidden_output_keys": [
+            "final_label",
+            "gold_label",
+            "prediction",
+            "projection",
+            "selected_node_ids",
+            "top_level",
+        ],
         "instructions": (
             "Construct only candidate clinical frequency state-graph nodes for "
             "unknown or unresolved_multiple boundary states. Do not emit a final "
             "Gan label, do not choose the best answer, and do not adjudicate "
-            "projection. Every evidence value must be an exact substring copied "
-            "from the note. Use unknown when seizure-frequency evidence exists "
-            "but is not convertible. Use unresolved_multiple only when the text "
-            "states a recurring multiple/vague count with a recoverable time "
-            "unit such as day, week, month, or year. Separate no-reference from "
-            "unknown in the rationale."
+            "projection. Return one JSON object whose root keys are exactly "
+            "nodes and no_reference_vs_unknown_rationale; never wrap the object "
+            "inside top_level. Every evidence value must be an exact substring "
+            "copied from the note. Use unknown when patient seizure occurrence "
+            "or seizure frequency is present but not convertible: unclear "
+            "frequency, cannot estimate how often, no reliable count, rare but "
+            "unmapped, worsening frequency without count, clusters with no "
+            "seizure count, or typical frequency not known. Use "
+            "unresolved_multiple only when the text states a recurring multiple "
+            "or vague count with a single recoverable time unit such as day, "
+            "week, month, or year. Separate no-reference from unknown in the "
+            "rationale."
         ),
+        "unknown_state_examples": [
+            "seizures continue but frequency is unclear",
+            "cannot estimate how often they happen",
+            "seizures occur with missed doses",
+            "without a reliable count",
+            "rare nocturnal seizures",
+            "no count of seizures within the cluster is available",
+            "uncertain number of seizures",
+            "typical frequency is not known",
+        ],
         "output_schema": {
-            "top_level": {
-                "nodes": "list of boundary-state graph nodes",
-                "no_reference_vs_unknown_rationale": "short rationale or null",
-            },
+            "type": "object",
+            "required_root_keys": [
+                "nodes",
+                "no_reference_vs_unknown_rationale",
+            ],
+            "nodes": "list of boundary-state graph nodes at the JSON root",
+            "no_reference_vs_unknown_rationale": "short rationale or null at the JSON root",
             "node": {
                 "semantic_kind": "unknown or unresolved_multiple",
                 "node_normalized_label": (
