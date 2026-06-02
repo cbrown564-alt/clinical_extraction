@@ -4,6 +4,30 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Revise
 
+### `gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v1_2026-06-02`
+- Date/split: `2026-06-02`; `validation_hard_slices`; `250` rows.
+- Pipeline: `hybrid_clinical_frequency_state_graph`; mode `gated month-bucket duration-selection projection ablation v1`; replay `analysis_only`.
+- Model role: diagnostic gated month-bucket duration projection replay over enriched target graphs plus validation hard-slice regression panel; model `none; saved validation graph artifacts reused`.
+- Repair mode/config: `gated diagnostic month_bucket_duration_selection_v1 projection variant only; no scorer, graph-builder, production projection-policy, or holdout change`.
+- Primary metrics: all_rows_changed_labels=22, already_correct_regressions=0, frequency_with_seizure_free_node_changes=0, regression_changed_labels=4, regression_rows=232, target_exact_duration_corrections=18, target_exact_duration_regressions=0, target_rows=18, unknown_no_reference_boundary_changes=1.
+- Evidence validity: Selected-node evidence was exact-offset valid for 18/18 target rows and 232/232 regression rows.
+- Cache/reuse source: Saved seizure-free duration node replay JSONL and validation hard-slice state-graph diagnostics; no hosted calls.
+- Supersedes: `gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v0_2026-06-02`.
+- Claim language: Diagnostic validation-cycle projection ablation. Gating preserves the 18/18 target corrections while removing v0 already-correct and frequency-with-seizure-free regressions; four wrong-to-wrong regression changes remain, so this is the best revise-only seed, not production policy.
+- Artifacts: `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v1_2026-06-02.jsonl`, `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v1_2026-06-02.json`, `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v1_2026-06-02.md`.
+
+### `gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v0_2026-06-02`
+- Date/split: `2026-06-02`; `validation_hard_slices`; `250` rows.
+- Pipeline: `hybrid_clinical_frequency_state_graph`; mode `month-bucket duration-selection projection ablation v0`; replay `analysis_only`.
+- Model role: diagnostic month-bucket duration projection replay over enriched target graphs plus validation hard-slice regression panel; model `none; saved validation graph artifacts reused`.
+- Repair mode/config: `diagnostic month_bucket_duration_selection projection variant only; no scorer, graph-builder, production projection-policy, or holdout change`.
+- Primary metrics: all_rows_changed_labels=55, already_correct_regressions=27, frequency_with_seizure_free_node_changes=19, regression_changed_labels=37, regression_rows=232, target_exact_duration_corrections=18, target_exact_duration_regressions=0, target_rows=18, unknown_no_reference_boundary_changes=2.
+- Evidence validity: Selected-node evidence was exact-offset valid for 18/18 target rows and 232/232 regression rows.
+- Cache/reuse source: Saved seizure-free duration node replay JSONL and validation hard-slice state-graph diagnostics; no hosted calls.
+- Supersedes: `gan2026_hybrid_clinical_frequency_state_graph_month_bucket_duration_selection_decision_2026-06-02`.
+- Claim language: Diagnostic validation-cycle projection ablation. It fixes the intended 18-row duration surface but causes 27 already-correct validation hard-slice regressions, so it is not promoted as a production projection policy; next work should design a gated/narrow policy.
+- Artifacts: `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v0_2026-06-02.jsonl`, `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v0_2026-06-02.json`, `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v0_2026-06-02.md`.
+
 ### `gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_projection_ablation_2026-06-02`
 - Date/split: `2026-06-02`; `validation_hard_slices`; `25` rows.
 - Pipeline: `hybrid_clinical_frequency_state_graph`; mode `seizure-free duration projection ablation over saved state graphs`; replay `analysis_only`.

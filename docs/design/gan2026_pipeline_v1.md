@@ -7,6 +7,18 @@ at least 0.9000 Purist F1 while using deterministic code only for validation,
 evidence checks, arithmetic, Gan-compatible normalization, benchmark-format
 repair, and scoring.
 
+For the stronger LLM-heavy alternative where the model owns extraction,
+normalization proposal, aggregation/selection, and final schema representation,
+see:
+
+```text
+experiments/gan2026_llm_heavy_extraction_protocol_2026-06-02.md
+```
+
+That protocol is intentionally more radical than the current state-graph
+diagnostics and should be treated as a required research-track candidate, not a
+minor variant of the deterministic graph pipeline.
+
 LLM-backed experiments should follow the model policy in
 `docs/design/model_strategy.md`: GPT-4.1 mini is the default rapid-iteration
 model, Qwen 3.6:35b is reserved for later local strong-reasoning experiments
