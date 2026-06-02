@@ -1,0 +1,59 @@
+{
+  "arithmetic_wrong_rows": [
+    531
+  ],
+  "benchmark_regressions_vs_arithmetic": [
+    10,
+    40,
+    79,
+    156,
+    187,
+    190,
+    212,
+    409,
+    446,
+    659
+  ],
+  "deterministic_v1_purist_correct": 25,
+  "event_evidence_total": 47,
+  "event_evidence_valid": 42,
+  "failure_family_counts": {
+    "contract_ok_on_format_layer": 8,
+    "event_evidence_not_exact": 1,
+    "raw_label_requires_arithmetic": 8,
+    "schema_failure": 1,
+    "selected_evidence_arithmetic_wrong": 1,
+    "selected_evidence_not_exact": 6
+  },
+  "layer_metrics": {
+    "benchmark_aligned": {
+      "pragmatic_correct": 13,
+      "purist_correct": 13,
+      "scorable": 24
+    },
+    "format_only": {
+      "pragmatic_correct": 10,
+      "purist_correct": 10,
+      "scorable": 11
+    },
+    "oracle_format_upper_bound": {
+      "pragmatic_correct": 10,
+      "purist_correct": 10,
+      "scorable": 11
+    },
+    "raw_llm": {
+      "pragmatic_correct": 0,
+      "purist_correct": 0,
+      "scorable": 0
+    },
+    "selected_evidence_arithmetic": {
+      "pragmatic_correct": 23,
+      "purist_correct": 23,
+      "scorable": 24
+    }
+  },
+  "parse_or_validation_failures": 1,
+  "row_count": 25,
+  "selected_evidence_valid": 18,
+  "structured_records": 24
+}

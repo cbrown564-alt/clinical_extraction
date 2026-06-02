@@ -28,6 +28,30 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Claim language: Diagnostic validation-cycle projection ablation. It fixes the intended 18-row duration surface but causes 27 already-correct validation hard-slice regressions, so it is not promoted as a production projection policy; next work should design a gated/narrow policy.
 - Artifacts: `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v0_2026-06-02.jsonl`, `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v0_2026-06-02.json`, `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v0_2026-06-02.md`.
 
+### `gan2026_llm_heavy_clinical_frequency_reasoner_v0_validation25_schema_smoke_2026-06-02`
+- Date/split: `2026-06-02`; `validation`; `25` rows.
+- Pipeline: `llm_heavy_clinical_frequency_reasoner`; mode `live validation25 followed by saved-output schema replay after scalar-list shape repair`; replay `schema_replay`.
+- Model role: LLM-heavy extraction, clinical selection, and scoring-schema renderer; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `raw_llm + format_only + selected_evidence_arithmetic + benchmark_aligned + oracle_format_upper_bound layers; scalar-list schema repair only`.
+- Primary metrics: benchmark_aligned_purist_correct=13, format_only_purist_correct=10, raw_llm_scorable=0, row_count=25, schema_valid_rows=24, selected_event_trace_mismatches=0, selected_evidence_arithmetic_purist_correct=23, selected_evidence_valid=18.
+- Evidence validity: Event evidence 42/47 exact; selected evidence 18/25 exact, below the Stage A 22/25 stop rule.
+- Cache/reuse source: DSPy cache enabled for the initial live run; saved raw outputs replayed after non-semantic scalar-list schema repair.
+- Supersedes: `gan2026_llm_heavy_extraction_protocol_2026-06-02`.
+- Claim language: LLM-heavy validation development smoke only. Schema validity reaches the 24/25 minimum after shape replay, but selected evidence exactness and raw LLM scorer format fail the Stage A stop rule; revise prompt/schema before validation50.
+- Artifacts: `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation25_gpt41mini_v0_2026-06-02.jsonl`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation25_gpt41mini_v0_2026-06-02.md`, `experiments/gan2026_llm_heavy_extraction_protocol_2026-06-02.md`.
+
+### `gan2026_llm_heavy_clinical_frequency_reasoner_v0_validation25_error_analysis_2026-06-02`
+- Date/split: `2026-06-02`; `validation`; `25` rows.
+- Pipeline: `llm_heavy_clinical_frequency_reasoner`; mode `row-level error analysis of validation25 schema smoke`; replay `analysis_only`.
+- Model role: LLM-heavy extraction, clinical selection, and scoring-schema renderer; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `analysis over raw_llm, format_only, selected_evidence_arithmetic, benchmark_aligned, and oracle_format_upper_bound layers`.
+- Primary metrics: benchmark_aligned_purist_correct=13, benchmark_regressions_vs_arithmetic=10, deterministic_v1_same_rows_purist_correct=25, event_evidence_total=47, event_evidence_valid=42, format_only_purist_correct=10, raw_llm_scorable=0, selected_evidence_arithmetic_purist_correct=23, selected_evidence_valid=18, structured_records=24.
+- Evidence validity: Selected evidence exactness 18/25 and event evidence exactness 42/47; selected-event traces had 0 mismatches.
+- Cache/reuse source: No new hosted calls; analysis uses saved validation25 JSONL and deterministic V1 same-row comparator.
+- Supersedes: `gan2026_llm_heavy_clinical_frequency_reasoner_v0_validation25_schema_smoke_2026-06-02`.
+- Claim language: Full validation-development error analysis. High selected-evidence arithmetic score is diagnostic only because raw LLM labels are 0/25 scorable and the best layer depends on deterministic derivation over selected evidence; revise before validation50.
+- Artifacts: `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_v0_validation25_error_analysis_2026-06-02.md`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_v0_validation25_error_analysis_2026-06-02.csv`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_v0_validation25_error_analysis_2026-06-02.json`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation25_gpt41mini_v0_2026-06-02.jsonl`.
+
 ### `gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_projection_ablation_2026-06-02`
 - Date/split: `2026-06-02`; `validation_hard_slices`; `25` rows.
 - Pipeline: `hybrid_clinical_frequency_state_graph`; mode `seizure-free duration projection ablation over saved state graphs`; replay `analysis_only`.
