@@ -149,3 +149,38 @@ export interface PipelineFamilyItem {
 export interface PipelineFamiliesResponse {
   families: PipelineFamilyItem[];
 }
+
+// ── Architect (Phase 2) ──
+
+export type ArchitectNodeType =
+  | "extractor"
+  | "normaliser"
+  | "selector"
+  | "repair"
+  | "scorer";
+
+export type NodeFamily = "rules_only" | "llm_only" | "hybrid";
+
+export interface ArchitectNodeConfig {
+  id: string;
+  type: ArchitectNodeType;
+  label: string;
+  family: NodeFamily;
+  pipelineFamily?: PipelineFamily;
+  ablationConfig?: AblationConfigPayload;
+  x: number;
+  y: number;
+}
+
+export interface ArchitectEdgeConfig {
+  id: string;
+  source: string;
+  target: string;
+}
+
+export interface SavedArchitecture {
+  name: string;
+  pipelineFamily: PipelineFamily;
+  nodes: ArchitectNodeConfig[];
+  ablationConfig: AblationConfigPayload;
+}
