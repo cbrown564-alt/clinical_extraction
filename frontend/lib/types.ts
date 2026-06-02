@@ -222,6 +222,8 @@ export interface RegistryEntry {
   mode?: string;
   model?: string;
   model_role?: string;
+  split?: string;
+  decision?: string;
 }
 
 export interface RegistryResponse {

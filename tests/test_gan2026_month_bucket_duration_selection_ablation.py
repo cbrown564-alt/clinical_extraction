@@ -206,10 +206,132 @@ def test_gated_month_bucket_preserves_already_correct_numeric_month_surface() ->
     assert metadata["summary"]["regression"]["already_correct_regressions"] == 0
 
 
+def test_graph_gated_month_bucket_requires_duration_normalizer_node() -> None:
+    target_graph = ClinicalFrequencyStateGraph(
+        source_row_index=7,
+        nodes=(
+            _node("sg-001", "seizure free for multiple year", GraphNodeKind.SEIZURE_FREE),
+            _node(
+                "duration-sg-002",
+                "seizure free for multiple month",
+                GraphNodeKind.SEIZURE_FREE,
+                rule_id=(
+                    "seizure_free_duration_node_normalization_v0."
+                    "since_without_date_boundary"
+                ),
+                certainty="medium",
+            ),
+        ),
+    )
+    regression_graph = ClinicalFrequencyStateGraph(
+        source_row_index=8,
+        nodes=(
+            _node("sg-001", "seizure free for multiple year", GraphNodeKind.SEIZURE_FREE),
+            _node(
+                "sg-002",
+                "seizure free for 6 month",
+                GraphNodeKind.SEIZURE_FREE,
+                rule_id="seizure_free.since_date",
+            ),
+        ),
+    )
+
+    rows, metadata = (
+        month_bucket_duration_selection_ablation.run_month_bucket_duration_selection_ablation(
+            [
+                {
+                    "source_row_index": 7,
+                    "gold_normalized_label": "seizure free for multiple month",
+                    "gold_label_kind": "seizure_free",
+                    "gold_monthly_frequency": 0.0,
+                    "replayed_graph": target_graph.model_dump(mode="json"),
+                    "baseline_projection": {"final_label": "seizure free for multiple year"},
+                }
+            ],
+            [
+                {
+                    "source_row_index": 8,
+                    "gold_normalized_label": "seizure free for 6 month",
+                    "gold_label_kind": "seizure_free",
+                    "gold_monthly_frequency": 0.0,
+                    "graph": regression_graph.model_dump(mode="json"),
+                    "projection": {"final_label": "seizure free for multiple year"},
+                    "projection_exact_label_match": False,
+                }
+            ],
+            split="validation_hard_slices",
+            split_manifest="gan2026_split_v1",
+            policy_variant="graph_gated_v2",
+        )
+    )
+
+    assert rows[0]["month_bucket_projection"]["final_label"] == (
+        "seizure free for multiple month"
+    )
+    assert rows[0]["graph_gate"]["blocked"] is False
+    assert rows[1]["month_bucket_projection"]["final_label"] == (
+        "seizure free for multiple year"
+    )
+    assert rows[1]["graph_gate"] == {
+        "blocked": True,
+        "flags": ["selected_rule_not_duration_normalization_v0"],
+        "selected_node_ids": ["sg-002"],
+    }
+    assert metadata["summary"]["graph_gate"] == {
+        "blocked_rows": 1,
+        "selected_rule_not_duration_normalization_v0": {"rows": 1},
+    }
+
+
+def test_graph_gated_month_bucket_records_boundary_state_risk() -> None:
+    graph = ClinicalFrequencyStateGraph(
+        source_row_index=9,
+        nodes=(
+            _node("sg-001", "seizure free for multiple year", GraphNodeKind.SEIZURE_FREE),
+            _node(
+                "duration-sg-002",
+                "seizure free for 6 month",
+                GraphNodeKind.SEIZURE_FREE,
+                rule_id="seizure_free_duration_node_normalization_v0.dated_since_interval",
+                certainty="medium",
+            ),
+            _node("sg-003", "unknown", GraphNodeKind.UNKNOWN_FREQUENCY),
+        ),
+    )
+
+    rows, _metadata = (
+        month_bucket_duration_selection_ablation.run_month_bucket_duration_selection_ablation(
+            [],
+            [
+                {
+                    "source_row_index": 9,
+                    "gold_normalized_label": "unknown",
+                    "gold_label_kind": "unknown",
+                    "gold_monthly_frequency": 1000.0,
+                    "graph": graph.model_dump(mode="json"),
+                    "projection": {"final_label": "seizure free for multiple year"},
+                    "projection_exact_label_match": False,
+                }
+            ],
+            split="validation_hard_slices",
+            split_manifest="gan2026_split_v1",
+            policy_variant="graph_gated_v2",
+        )
+    )
+
+    assert rows[0]["month_bucket_projection"]["final_label"] == (
+        "seizure free for multiple year"
+    )
+    assert rows[0]["graph_gate"]["flags"] == ["active_boundary_state_node"]
+
+
 def _node(
     node_id: str,
     label: str,
     kind: GraphNodeKind,
+    *,
+    rule_id: str = "unknown",
+    certainty: str = "certain",
 ) -> StateGraphNode:
     parsed = label_to_frequency_record(label)
     return StateGraphNode(
@@ -219,4 +341,6 @@ def _node(
         semantic_kind=parsed.kind,
         monthly_frequency=parsed.monthly_frequency,
         evidence=EvidenceSpan(text=label, start_char=0, end_char=len(label)),
+        certainty=certainty,
+        rule_id=rule_id,
     )
