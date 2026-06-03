@@ -40,16 +40,8 @@ def project_final_label_from_selected_evidence(
 
     projected = source_label
     if not raw_fallback:
-        projected = repair_prediction_label_with_evidence(
-            source_label,
-            selected_evidence,
-            context_text=context_text,
-        )
-        if projected != source_label:
-            families.append("selected_evidence_projection")
-
-        clean = repair_prediction_label_clean_scorer_facing(projected)
-        if clean != projected:
+        clean = repair_prediction_label_clean_scorer_facing(source_label)
+        if clean != source_label:
             families.append("clean_scorer_facing_policy")
         projected = clean
 
@@ -57,6 +49,18 @@ def project_final_label_from_selected_evidence(
     if weekday and projected != weekday:
         projected = repair_prediction_label(weekday)
         families.append("selected_evidence_vague_weekday_policy")
+    elif not raw_fallback and (
+        not _is_vague_frequency_label(projected)
+        or _has_specific_selected_evidence_numeric_policy(selected_evidence)
+    ):
+        evidence_projected = repair_prediction_label_with_evidence(
+            projected,
+            selected_evidence,
+            context_text=context_text,
+        )
+        if evidence_projected != projected:
+            projected = evidence_projected
+            families.append(_selected_evidence_projection_family(selected_evidence))
 
     return FinalLabelProjection(projected, tuple(families), source_label)
 
@@ -65,3 +69,36 @@ def _vague_weekday_label_from_selected_evidence(evidence: str) -> str | None:
     if re.search(r"\b(?:most|several|multiple)\s+weekdays\b", evidence.lower()):
         return "multiple per week"
     return None
+
+
+def _selected_evidence_projection_family(evidence: str) -> str:
+    normalized = evidence.lower()
+    if re.search(r"\bbimonthly\b", normalized):
+        return "selected_evidence_bimonthly_policy"
+    if re.search(r"(?:≤|<=|\bup to\b|\bat most\b|\bno more than\b)", normalized):
+        return "selected_evidence_upper_bound_policy"
+    if re.search(r"\bevery\s+other\s+(?:day|week|month|year)s?\b", normalized):
+        return "selected_evidence_every_other_interval"
+    if re.search(
+        r"\bcurrently\s+(?:reporting|reports?|describes?)\s+monthly\s+seizures?\b",
+        normalized,
+    ):
+        return "selected_evidence_current_monthly_precedence"
+    return "selected_evidence_projection"
+
+
+def _is_vague_frequency_label(label: str) -> bool:
+    return bool(re.fullmatch(r"multiple\s+per\s+(?:day|week|month|year|shift)", label))
+
+
+def _has_specific_selected_evidence_numeric_policy(evidence: str) -> bool:
+    normalized = evidence.lower()
+    return bool(
+        re.search(r"(?:≤|<=|\bup to\b|\bat most\b|\bno more than\b)", normalized)
+        or re.search(r"\bbimonthly\b", normalized)
+        or re.search(r"\bevery\s+other\s+(?:day|week|month|year)s?\b", normalized)
+        or re.search(
+            r"\bcurrently\s+(?:reporting|reports?|describes?)\s+monthly\s+seizures?\b",
+            normalized,
+        )
+    )

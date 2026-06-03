@@ -17,10 +17,10 @@ outputs reaches 697/750 Purist (0.9293) and 704/750 Pragmatic (0.9387), with
 750/750 exact selected evidence, 750/750 valid source ids, 0
 deterministic-correct regressions, and 136/750 safety-floor fallbacks.
 
-Durable artifacts: validation interpretation at
-`experiments/gan2026_hybrid_parallel_state_candidate_reasoner_validation750_safety_floor_interpretation_2026-06-03.md`
-and frozen-test audit plan at
-`docs/research/gan2026_frozen_test_audit_plan_2026-06-03.md`.
+Durable artifacts: hybrid validation interpretation,
+`docs/research/gan2026_frozen_test_audit_plan_2026-06-03.md`, and Decision
+0007 final-projection replay
+`experiments/gan2026_llm_heavy_evidence_selection_with_deterministic_adapters_validation50_gpt41mini_v1_final_projected_replay_2026-06-03.md`.
 
 Attribution caveat: this is a hybrid deterministic-safety-floor development
 result, not an LLM-first result and not a benchmark or holdout claim. For the
@@ -50,17 +50,16 @@ explicit, ablated post-processing layer over selected labels/evidence.
    holdout execution or row-level inspection.
 3. Use component-stress/error analysis to decide whether LLM/graph overrides can
    improve beyond the deterministic safety floor without regressions.
-4. Advance Decision 0007 as the primary LLM-heavy lane: implement and ablate
-   explicit post-processing for raw-correct adapter fallback, bimonthly,
-   weekday/vague frequency conventions, current-state precedence, and
-   every-other-day selected-evidence repair.
+4. Advance Decision 0007 as the primary LLM-heavy lane with explicit,
+   separately ablated final-projection families.
 
 ## Work Board
 
 ### Now
 
-- Run a Decision 0007 validation50 no-call replay/report with the implemented
-  `final_projected_label` layer, then decide whether to predeclare validation250.
+- Decide whether to predeclare Decision 0007 validation250 with
+  `final_projected_label`, including an explicit stop rule and attribution
+  language for deterministic projection families.
 
 ### Next
 
@@ -78,33 +77,25 @@ explicit, ablated post-processing layer over selected labels/evidence.
 
 ### Done Recently
 
-- 2026-06-03: Triaged the 53 remaining validation750 Purist misses and built the validation hard-slice/component-stress artifact at `experiments/gan2026_validation_53_purist_misses_component_stress_2026-06-03.md`.
-- 2026-06-03: Reviewed the safety-floor change, fixed stale full-validation
-  report gate language (`promote_to_50` on a 750-row artifact), and drafted the
-  frozen-test audit plan with predeclared aggregate/slice inspection policy.
-- 2026-06-03: Added deterministic safety-floor final policy to
-  `hybrid_parallel_state_candidate_reasoner` and replayed the full validation750
-  live outputs. Final replay reached 697/750 Purist (0.9293), 704/750 Pragmatic
-  (0.9387), 750/750 exact selected evidence, 750/750 valid source ids, 0
-  deterministic-correct regressions, and 136/750 safety-floor fallbacks.
-- 2026-06-03: Ran hybrid validation50, validation250, and full validation750
-  live escalations. The ungated live full-validation adapted layer reached
-  669/750 Purist (0.8920), motivating the deterministic safety-floor replay.
-- 2026-06-03: Ran LLM-heavy Decision 0007 validation25/50 contract work. The
-  validation50 run had 50/50 structured outputs and 44/50 mechanical-adapter
-  Purist before post-processing, motivating a primary-lane repair/ablation
-  cycle rather than rejection.
-- 2026-06-03: Promoted LLM-heavy Decision 0007 to the primary LLM-heavy lane
-  after validation50 error analysis showed healthy typed outputs and mostly
-  repairable label-processing failures. Comprehensive analysis:
+- 2026-06-03: Generated Decision 0007 validation50 no-call final-projection
+  replay from saved GPT-4.1 mini outputs. `final_projected_label` reached 50/50
+  Purist and 50/50 Pragmatic, with 50/50 reused raw outputs, 50/50 scorable
+  final labels, and projection-family counts recorded in
+  `experiments/gan2026_llm_heavy_evidence_selection_with_deterministic_adapters_validation50_gpt41mini_v1_final_projected_replay_2026-06-03.md`.
+- 2026-06-03: Triaged the 53 remaining validation750 Purist misses in
+  `experiments/gan2026_validation_53_purist_misses_component_stress_2026-06-03.md`
+  and drafted the frozen-test audit plan.
+- 2026-06-03: Added deterministic safety-floor final policy to the hybrid
+  reasoner and replayed validation750 live outputs to 697/750 Purist (0.9293),
+  704/750 Pragmatic (0.9387), 0 deterministic-correct regressions, and 136/750
+  safety-floor fallbacks.
+- 2026-06-03: Promoted Decision 0007 to the primary LLM-heavy lane after
+  validation50 showed 50/50 structured outputs, 44/50 mechanical-adapter Purist,
+  and mostly repairable label-processing failures. Analysis:
   `experiments/gan2026_decision0007_validation50_comprehensive_error_analysis_2026-06-03.md`.
-- 2026-06-03: Implemented the reusable selected-evidence final-label projection
-  layer for Decision 0007. Same-output validation50 replay projects 50/50
-  Purist and 50/50 Pragmatic from the saved live artifact, with 50/50 scorable
-  projected labels.
 
 ## Immediate Next Step
 
-Generate a durable no-call validation50 replay artifact for Decision 0007
-`final_projected_label`, including repair-family counts and raw/mechanical/final
-ablation metrics, before any broader validation run.
+Draft or reject a predeclared Decision 0007 validation250 plan that names the
+`final_projected_label` families, expected learning value, row-inspection
+policy, and promotion/rejection criteria before any broader validation run.
