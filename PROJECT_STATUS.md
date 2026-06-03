@@ -10,13 +10,17 @@ component ablations, split discipline, and conservative benchmark language.
 
 ## Current Strategy
 
-Keep frozen comparators stable while revising the predeclared architecture
-candidates after their repaired matched validation25 smoke comparison. The
-current comparison artifact is
-`experiments/gan2026_repaired_architecture_matched_validation25_comparison_2026-06-03.md`.
-The first validation50 escalation was LLM-heavy Decision 0007 v1; interpretation
-is
-`experiments/gan2026_llm_heavy_decision0007_v1_validation50_interpretation_2026-06-03.md`.
+The current leading development candidate is
+`hybrid_parallel_state_candidate_reasoner` with a deterministic safety-floor
+final policy. Full validation750 no-call replay of the live GPT-4.1 mini
+outputs reaches 697/750 Purist (0.9293) and 704/750 Pragmatic (0.9387), with
+750/750 exact selected evidence, 750/750 valid source ids, and 0
+deterministic-correct regressions. Interpretation:
+`experiments/gan2026_hybrid_parallel_state_candidate_reasoner_validation750_safety_floor_interpretation_2026-06-03.md`.
+
+Attribution caveat: this is a hybrid deterministic-safety-floor development
+result, not an LLM-first result. LLM-heavy Decision 0007 v1 remains a revise
+lane after its validation50 failure rows.
 
 ## Guardrails
 
@@ -36,31 +40,33 @@ is
 
 ## Active Priorities
 
-1. Revise LLM-heavy v1 before validation250: bimonthly operands, weekday/vague
-   frequency operands, `≤ N` upper-bound semantics, evidence contiguity, and
-   raw-correct adapter fallback.
-2. Decide whether hybrid validation50 should run as the robustness lane, given
-   LLM-heavy validation50 failed its promotion stop rule.
-3. Preserve attribution language: hybrid for semantic deterministic
-   participation; LLM-heavy only for deterministic rendering from
-   model-selected facts and operands.
-4. Treat no-call replays as contract diagnostics, not fresh live
-   evidence.
+1. Preserve attribution language for the achieved result: hybrid
+   deterministic-safety-floor, validation development only.
+2. Prepare a frozen-test audit plan only after candidate code, scorer, model,
+   repair policy, and inspection policy are frozen.
+3. Use component-stress/error analysis to decide whether LLM/graph overrides can
+   improve beyond the deterministic safety floor without regressions.
+4. Keep LLM-heavy v1 as a separate revise lane: bimonthly operands,
+   weekday/vague frequency operands, `≤ N` upper-bound semantics, evidence
+   contiguity, and raw-correct adapter fallback.
 
 ## Work Board
 
 ### Now
 
-- Triage LLM-heavy validation50 failure rows `10`, `743`, `744`, `763`, `816`,
-  `959`, and `987` before any validation250 escalation.
-- Decide whether to run hybrid validation50 now or first repair the LLM-heavy
-  validation50 contract.
+- Freeze and review the hybrid deterministic-safety-floor validation750
+  artifact for claim language and final-test readiness.
+- Triage the 53 remaining validation750 Purist misses only for error taxonomy
+  and component-stress design, not further broad-validation tuning.
 
 ### Next
 
-- Run hybrid validation50 only with its own predeclaration and stop rule.
+- Draft a frozen-test audit plan with predeclared aggregate/slice inspection
+  policy before any holdout run.
+- Decide whether to add a selective LLM/graph override gate on hard slices, with
+  deterministic safety floor preserved.
 - Keep Qwen/minimal-evidence-selector transfer as a secondary lane after the
-  architecture smokes clarify the output contract.
+  safety-floor candidate is frozen.
 
 ### Blocked
 
@@ -71,6 +77,16 @@ is
 
 ### Done Recently
 
+- 2026-06-03: Added deterministic safety-floor final policy to
+  `hybrid_parallel_state_candidate_reasoner` and replayed the full validation750
+  live outputs. Final replay reached 697/750 Purist (0.9293), 704/750 Pragmatic
+  (0.9387), 750/750 exact selected evidence, 750/750 valid source ids, 0
+  deterministic-correct regressions, and 136/750 safety-floor fallbacks. This
+  satisfies the >0.9000 validation development objective with hybrid
+  deterministic-safety attribution.
+- 2026-06-03: Ran hybrid validation50, validation250, and full validation750
+  live escalations. The ungated live full-validation adapted layer reached only
+  669/750 Purist (0.8920), motivating the deterministic safety-floor replay.
 - 2026-06-03: Predeclared and ran LLM-heavy Decision 0007 v1 validation50.
   Live run had 50/50 structured outputs, 0 call/adapter parse failures, 47/50
   selected evidence exact, 44/50 raw Purist, 44/50 mechanical-adapter Purist,
@@ -117,6 +133,5 @@ is
 
 ## Immediate Next Step
 
-Triage the LLM-heavy validation50 failure rows and choose whether the next live
-spend should be hybrid validation50 or an LLM-heavy v2 validation25 repair
-smoke.
+Run a thermonuclear/code-quality review of the safety-floor change and draft the
+frozen-test audit plan before any holdout execution.

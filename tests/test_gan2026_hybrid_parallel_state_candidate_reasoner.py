@@ -85,6 +85,20 @@ def _adjudicator_raw(final_label: str = "twice per month") -> str:
     )
 
 
+def _seizure_free_overreach_adjudicator_raw() -> str:
+    return json.dumps(
+        {
+            "final_label": "seizure free for 1 year",
+            "final_kind": "seizure_free",
+            "selected_source_ids": ["llm:llm-1"],
+            "selected_source_types": ["llm_candidate"],
+            "selected_evidence": "No tonic-clonic seizures for one year",
+            "confidence": "high",
+            "rationale": "The LLM candidate says the patient is seizure free.",
+        }
+    )
+
+
 def test_prompt_inputs_exclude_gold_and_include_parallel_sources() -> None:
     candidate_prompt = json.loads(build_llm_candidate_prompt_input(_record()))
     rows, _metadata = run_split(
@@ -291,6 +305,32 @@ def test_run_split_records_required_smoke_layers() -> None:
     assert row["diagnostics"]["selected_source_provenance_counts"] == {"llm_candidate": 1}
     assert metadata["summary"]["structured_adjudicator_records"] == 1
     assert metadata["summary"]["selected_evidence_exact"] == 1
+    assert metadata["summary"]["deterministic_correct_regressions"] == 0
+
+
+def test_run_split_deterministic_safety_floor_blocks_llm_only_low_state() -> None:
+    rows, metadata = run_split(
+        [_record()],
+        split="validation",
+        split_manifest="gan2026_split_v1",
+        model="openai/gpt-4.1-mini",
+        temperature=0.0,
+        max_tokens=100,
+        mode="prompt-only",
+        reuse_llm_candidate_outputs={22: _llm_candidate_raw("seizure free for 1 year")},
+        reuse_adjudicator_outputs={22: _seizure_free_overreach_adjudicator_raw()},
+    )
+
+    row = rows[0]
+    assert row["decision_repairs"] == ["deterministic_safety_floor_fallback"]
+    assert row["structured_adjudicator_record"]["final_label"] == "2 per month"
+    assert row["structured_adjudicator_record"]["selected_source_types"] == [
+        "deterministic_candidate",
+    ]
+    assert row["score_layers"]["hybrid_adjudicator_with_adapters"]["final_label"] == (
+        "2 per month"
+    )
+    assert row["diagnostics"]["deterministic_correct_regression"] is False
     assert metadata["summary"]["deterministic_correct_regressions"] == 0
 
 
