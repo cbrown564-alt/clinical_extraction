@@ -1,0 +1,287 @@
+{
+  "artifact_kind": "gan2026_component_projection_followup_panel",
+  "by_component": {
+    "boundary_state_priority": 17,
+    "claim_table_final_query": 38,
+    "competing_frequency_uncertainty": 1,
+    "graph_gated_month_bucket_duration": 250,
+    "hybrid_adjudicator_raw": 61,
+    "llm_candidate_selector_raw": 61,
+    "llm_heavy_selected_fact": 95,
+    "state_graph_projection": 131
+  },
+  "by_first_failure_owner": {
+    "candidate_generation": 78,
+    "deterministic_adapter": 1,
+    "evidence_selection": 1,
+    "llm_clinical_selection": 36,
+    "none": 239,
+    "operand_exposure": 18,
+    "projection": 19,
+    "projection_policy": 152,
+    "schema_or_parse": 1,
+    "typed_state_representation": 109
+  },
+  "by_hidden_family": {
+    "already_projection_correct": 181,
+    "benchmark_format_convention": 133,
+    "candidate_absent_or_weak": 4,
+    "cluster_burden": 149,
+    "cluster_or_diary": 207,
+    "competing_semiologies": 302,
+    "current_vs_historical": 401,
+    "deterministic_miss": 4,
+    "diary_or_log_aggregation": 85,
+    "frequency_with_seizure_free_node": 19,
+    "numeric_seizure_free_duration": 20,
+    "rate_bucket_or_denominator": 219,
+    "seizure_free_duration": 194,
+    "seizure_free_overreach": 53,
+    "shorthand_interval_range": 51,
+    "temporal_conflict": 196,
+    "uncertainty_or_ambiguity": 133,
+    "unclassified": 83,
+    "unknown_boundary": 117,
+    "unknown_no_reference_boundary": 45
+  },
+  "by_hidden_family_first_failure_owner": {
+    "already_projection_correct": {
+      "none": 181
+    },
+    "benchmark_format_convention": {
+      "candidate_generation": 16,
+      "deterministic_adapter": 1,
+      "evidence_selection": 1,
+      "llm_clinical_selection": 6,
+      "none": 24,
+      "operand_exposure": 6,
+      "projection": 3,
+      "projection_policy": 49,
+      "schema_or_parse": 1,
+      "typed_state_representation": 26
+    },
+    "candidate_absent_or_weak": {
+      "projection_policy": 4
+    },
+    "cluster_burden": {
+      "candidate_generation": 20,
+      "deterministic_adapter": 1,
+      "evidence_selection": 1,
+      "llm_clinical_selection": 4,
+      "none": 48,
+      "operand_exposure": 6,
+      "projection": 1,
+      "projection_policy": 42,
+      "schema_or_parse": 1,
+      "typed_state_representation": 25
+    },
+    "cluster_or_diary": {
+      "none": 161,
+      "projection_policy": 46
+    },
+    "competing_semiologies": {
+      "candidate_generation": 39,
+      "llm_clinical_selection": 19,
+      "none": 86,
+      "operand_exposure": 8,
+      "projection": 9,
+      "projection_policy": 74,
+      "typed_state_representation": 67
+    },
+    "current_vs_historical": {
+      "candidate_generation": 33,
+      "deterministic_adapter": 1,
+      "evidence_selection": 1,
+      "llm_clinical_selection": 28,
+      "none": 164,
+      "operand_exposure": 17,
+      "projection": 10,
+      "projection_policy": 93,
+      "schema_or_parse": 1,
+      "typed_state_representation": 53
+    },
+    "deterministic_miss": {
+      "projection_policy": 4
+    },
+    "diary_or_log_aggregation": {
+      "candidate_generation": 5,
+      "deterministic_adapter": 1,
+      "evidence_selection": 1,
+      "llm_clinical_selection": 12,
+      "none": 35,
+      "operand_exposure": 1,
+      "projection_policy": 28,
+      "schema_or_parse": 1,
+      "typed_state_representation": 1
+    },
+    "frequency_with_seizure_free_node": {
+      "none": 18,
+      "projection_policy": 1
+    },
+    "numeric_seizure_free_duration": {
+      "none": 13,
+      "projection_policy": 7
+    },
+    "rate_bucket_or_denominator": {
+      "candidate_generation": 29,
+      "deterministic_adapter": 1,
+      "evidence_selection": 1,
+      "llm_clinical_selection": 5,
+      "none": 73,
+      "operand_exposure": 7,
+      "projection": 5,
+      "projection_policy": 55,
+      "schema_or_parse": 1,
+      "typed_state_representation": 42
+    },
+    "seizure_free_duration": {
+      "candidate_generation": 35,
+      "llm_clinical_selection": 15,
+      "none": 50,
+      "operand_exposure": 10,
+      "projection": 11,
+      "projection_policy": 43,
+      "typed_state_representation": 30
+    },
+    "seizure_free_overreach": {
+      "none": 15,
+      "projection_policy": 38
+    },
+    "shorthand_interval_range": {
+      "none": 40,
+      "projection_policy": 11
+    },
+    "temporal_conflict": {
+      "none": 157,
+      "projection_policy": 39
+    },
+    "uncertainty_or_ambiguity": {
+      "candidate_generation": 36,
+      "deterministic_adapter": 1,
+      "llm_clinical_selection": 15,
+      "none": 20,
+      "operand_exposure": 9,
+      "projection": 9,
+      "projection_policy": 41,
+      "typed_state_representation": 2
+    },
+    "unclassified": {
+      "candidate_generation": 2,
+      "llm_clinical_selection": 6,
+      "none": 41,
+      "projection": 3,
+      "projection_policy": 13,
+      "typed_state_representation": 18
+    },
+    "unknown_boundary": {
+      "candidate_generation": 28,
+      "llm_clinical_selection": 15,
+      "none": 18,
+      "operand_exposure": 9,
+      "projection": 9,
+      "projection_policy": 38
+    },
+    "unknown_no_reference_boundary": {
+      "none": 6,
+      "projection_policy": 39
+    }
+  },
+  "by_panel_role": {
+    "changed_row": 166,
+    "context": 56,
+    "gated_projection_regression": 232,
+    "gated_projection_target": 18,
+    "schema_near_or_projection_miss": 160,
+    "typed_operand_incomplete": 22
+  },
+  "claim_boundary": "Frozen validation-development follow-up panel over saved RQ2/RQ4 artifacts; no scorer, prompt, model, projection-policy, or holdout change.",
+  "component_outcomes": {
+    "boundary_state_priority": {
+      "correct_to_wrong": 0,
+      "exact_evidence": 17,
+      "rows": 17,
+      "wrong_to_correct": 17
+    },
+    "claim_table_final_query": {
+      "correct_to_wrong": 0,
+      "exact_evidence": 38,
+      "rows": 38,
+      "wrong_to_correct": 0
+    },
+    "competing_frequency_uncertainty": {
+      "correct_to_wrong": 0,
+      "exact_evidence": 1,
+      "rows": 1,
+      "wrong_to_correct": 1
+    },
+    "graph_gated_month_bucket_duration": {
+      "correct_to_wrong": 0,
+      "exact_evidence": 250,
+      "rows": 250,
+      "wrong_to_correct": 18
+    },
+    "hybrid_adjudicator_raw": {
+      "correct_to_wrong": 8,
+      "exact_evidence": 61,
+      "rows": 61,
+      "wrong_to_correct": 0
+    },
+    "llm_candidate_selector_raw": {
+      "correct_to_wrong": 49,
+      "exact_evidence": 61,
+      "rows": 61,
+      "wrong_to_correct": 7
+    },
+    "llm_heavy_selected_fact": {
+      "correct_to_wrong": 0,
+      "exact_evidence": 94,
+      "rows": 95,
+      "wrong_to_correct": 0
+    },
+    "state_graph_projection": {
+      "correct_to_wrong": 84,
+      "exact_evidence": 125,
+      "rows": 131,
+      "wrong_to_correct": 0
+    }
+  },
+  "date": "2026-06-04",
+  "gated_projection_panels": {
+    "graph_gated_month_bucket_duration": {
+      "changed_regression_rows": 0,
+      "correct_to_wrong": 0,
+      "regression_rows": 232,
+      "target_rows": 18,
+      "wrong_to_correct": 18
+    }
+  },
+  "panel_row_count": 654,
+  "predeclared_slices": {
+    "candidate_generation_rescue": {
+      "component_focus": "candidate generation",
+      "membership_rule": "Atlas row is Purist-wrong and first_failure_owner is candidate_generation.",
+      "primary_metric": "Candidate-recall rescue rate before final-label promotion; final policy keeps the deterministic safety floor unless a rescue is predeclared and ablated.",
+      "row_count": 44
+    },
+    "candidate_generation_unknown_seizure_free_boundary": {
+      "component_focus": "candidate generation",
+      "membership_rule": "Atlas row is Purist-wrong, first_failure_owner is candidate_generation, and hidden_families includes unknown_boundary or seizure_free_duration.",
+      "primary_metric": "Boundary-state recall without converting uncertain seizure-free language into a prediction-bearing deterministic repair.",
+      "row_count": 26
+    },
+    "projection_arbitration": {
+      "component_focus": "graph/final projection",
+      "membership_rule": "Atlas row is Purist-wrong and first_failure_owner is projection or final_projection.",
+      "primary_metric": "Projection-variant correction precision, mechanical-correct to projected-wrong regressions, and selected-evidence/source trace validity.",
+      "row_count": 11
+    },
+    "projection_unknown_seizure_free_arbitration": {
+      "component_focus": "graph/final projection",
+      "membership_rule": "Atlas row is Purist-wrong, first_failure_owner is projection or final_projection, and hidden_families includes unknown_boundary, seizure_free_duration, or current_vs_historical.",
+      "primary_metric": "Unknown/seizure-free/current-vs-historical arbitration precision with no broad validation retuning.",
+      "row_count": 6
+    }
+  },
+  "source_row_count": 371,
+  "split_manifest": "gan2026_split_v1"
+}
