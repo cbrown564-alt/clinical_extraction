@@ -3,7 +3,7 @@
 import { useArchitectStore } from "@/lib/stores";
 import JsonTree from "./JsonTree";
 import type { TraceStage, TraceItem } from "@/lib/types";
-import { GitBranch, Layers, Settings2, Wrench, Award, AlertCircle, CheckCircle } from "lucide-react";
+import { GitBranch, Layers, Settings2, Wrench, Award, AlertCircle, CheckCircle, Quote } from "lucide-react";
 
 const stageMeta: Record<
   TraceStage,
@@ -11,35 +11,57 @@ const stageMeta: Record<
 > = {
   extract: {
     label: "Extract",
-    icon: <GitBranch className="h-4 w-4" />,
+    icon: <GitBranch className="h-3.5 w-3.5" />,
     color: "text-deterministic",
     desc: "Raw candidate events found in the note by extraction rules or LLM claims.",
   },
   normalise: {
     label: "Normalise",
-    icon: <Layers className="h-4 w-4" />,
+    icon: <Layers className="h-3.5 w-3.5" />,
     color: "text-deterministic-alt",
     desc: "Candidates converted to normalised labels with semantic kinds and monthly frequencies.",
   },
   select: {
     label: "Select",
-    icon: <Settings2 className="h-4 w-4" />,
+    icon: <Settings2 className="h-3.5 w-3.5" />,
     color: "text-hybrid",
     desc: "The pipeline chooses a single final label from the normalised candidates.",
   },
   repair: {
     label: "Repair",
-    icon: <Wrench className="h-4 w-4" />,
+    icon: <Wrench className="h-3.5 w-3.5" />,
     color: "text-llm",
     desc: "Format repair and benchmark-normalisation adjustments.",
   },
   score: {
     label: "Score",
-    icon: <Award className="h-4 w-4" />,
+    icon: <Award className="h-3.5 w-3.5" />,
     color: "text-success",
     desc: "Comparison of predicted label against gold reference.",
   },
 };
+
+function stageEvidence(stage: TraceStage, trace: NonNullable<ReturnType<typeof useArchitectStore.getState>["trace"]>): string | null {
+  switch (stage) {
+    case "extract": {
+      const first = trace.extract.items[0];
+      return first?.evidence ?? null;
+    }
+    case "normalise": {
+      const first = trace.normalise.items[0];
+      return first?.evidence ?? null;
+    }
+    case "select":
+      return trace.select.evidence || null;
+    case "repair": {
+      const changes = trace.repair?.changes ?? [];
+      if (changes.length === 0) return "No repair changes applied.";
+      return changes[0];
+    }
+    case "score":
+      return trace.select.evidence || null;
+  }
+}
 
 function ItemCard({ item }: { item: TraceItem }) {
   const hasSpan = item.startChar !== null && item.endChar !== null;
@@ -69,7 +91,7 @@ function ItemCard({ item }: { item: TraceItem }) {
       )}
       {item.evidence && (
         <div className="text-[11px] text-muted italic border-l-2 border-border pl-2">
-          “{item.evidence}”
+          "{item.evidence}"
         </div>
       )}
       {item.metadata && Object.keys(item.metadata).length > 0 && (
@@ -85,6 +107,7 @@ export default function StageInspector() {
   const trace = useArchitectStore((s) => s.trace);
   const activeStage = useArchitectStore((s) => s.activeStage);
   const meta = stageMeta[activeStage];
+  const evidenceQuote = trace ? stageEvidence(activeStage, trace) : null;
 
   if (!trace) {
     return (
@@ -99,13 +122,21 @@ export default function StageInspector() {
 
   return (
     <div className="flex h-full flex-col">
-      {/* Header */}
-      <div className="shrink-0 border-b border-border bg-surface px-4 py-3">
+      {/* Compact header */}
+      <div className="shrink-0 border-b border-border bg-surface px-4 py-2">
         <div className="flex items-center gap-2">
           <div className={meta.color}>{meta.icon}</div>
-          <h3 className={`text-sm font-semibold ${meta.color}`}>{meta.label}</h3>
+          <h3 className={`text-xs font-semibold ${meta.color}`}>{meta.label}</h3>
+          <span className="text-[10px] text-muted">{meta.desc}</span>
         </div>
-        <p className="mt-0.5 text-[11px] text-muted">{meta.desc}</p>
+        {evidenceQuote && (
+          <div className="mt-1 flex items-start gap-1.5 rounded bg-surface-raised/50 pl-2 pr-2 py-1 border-l-2 border-border">
+            <Quote className="mt-0.5 h-3 w-3 shrink-0 text-muted" />
+            <span className="text-[10px] italic text-muted leading-snug truncate">
+              {evidenceQuote}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Content */}
@@ -155,7 +186,7 @@ export default function StageInspector() {
             </div>
             <div className="rounded-lg border border-border bg-surface p-3 space-y-1">
               <div className="text-[11px] font-semibold uppercase tracking-wide text-muted">Evidence</div>
-              <div className="text-sm text-foreground italic">“{trace.select.evidence}”</div>
+              <div className="text-sm text-foreground italic">"{trace.select.evidence}"</div>
             </div>
             {trace.select.selectedIds && trace.select.selectedIds.length > 0 && (
               <div className="rounded-lg border border-border bg-surface p-3">

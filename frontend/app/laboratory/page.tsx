@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useState, useMemo, useCallback } from "react";
-import { FlaskConical, Search, Grid3X3, Network, FileCode } from "lucide-react";
+import { Search, Grid3X3, Network, FileCode } from "lucide-react";
 import { useRules, useRunAblation } from "@/lib/hooks";
 import { useLaboratoryStore } from "@/lib/stores";
 import RuleInventory from "@/components/laboratory/RuleInventory";
@@ -65,25 +65,31 @@ function LaboratoryInner() {
 
   return (
     <div className="flex h-full flex-col bg-background">
-      {/* Header */}
-      <header className="flex items-center justify-between border-b border-border bg-surface px-5 py-2.5 shadow-sm z-10">
-        <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-deterministic-alt/10">
-            <FlaskConical className="h-4 w-4 text-deterministic-alt" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="rounded bg-surface-raised px-1.5 py-0 text-[10px] font-medium uppercase tracking-wider text-muted border border-border">
-                Laboratory
-              </span>
-              <span className="text-[10px] text-muted">Phase 4 — Rules &amp; Ablations</span>
-            </div>
-          </div>
+      {/* Tabs */}
+      <div className="flex items-center justify-between border-b border-border bg-surface px-4">
+        <div className="flex items-center gap-1">
+          <TabButton
+            active={activeTab === "inventory"}
+            onClick={() => setActiveTab("inventory")}
+            icon={<Grid3X3 className="h-3.5 w-3.5" />}
+            label="Rule Inventory"
+          />
+          <TabButton
+            active={activeTab === "matrix"}
+            onClick={() => setActiveTab("matrix")}
+            icon={<Network className="h-3.5 w-3.5" />}
+            label="Co-Fire Matrix"
+          />
+          <TabButton
+            active={activeTab === "prompts"}
+            onClick={() => setActiveTab("prompts")}
+            icon={<FileCode className="h-3.5 w-3.5" />}
+            label="Prompt Diff"
+          />
         </div>
-
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 rounded-md bg-surface-raised px-2.5 py-1 border border-border">
-            <span className="text-[10px] text-muted">Active rules:</span>
+          <div className="flex items-center gap-1.5 rounded-md bg-surface-raised px-2 py-1 border border-border">
+            <span className="text-[10px] text-muted">Active:</span>
             <span className="text-[11px] font-semibold text-deterministic">
               {enabledCount}
             </span>
@@ -96,28 +102,6 @@ function LaboratoryInner() {
             Reset all
           </button>
         </div>
-      </header>
-
-      {/* Tabs */}
-      <div className="flex items-center gap-1 border-b border-border bg-surface px-5">
-        <TabButton
-          active={activeTab === "inventory"}
-          onClick={() => setActiveTab("inventory")}
-          icon={<Grid3X3 className="h-3.5 w-3.5" />}
-          label="Rule Inventory"
-        />
-        <TabButton
-          active={activeTab === "matrix"}
-          onClick={() => setActiveTab("matrix")}
-          icon={<Network className="h-3.5 w-3.5" />}
-          label="Co-Fire Matrix"
-        />
-        <TabButton
-          active={activeTab === "prompts"}
-          onClick={() => setActiveTab("prompts")}
-          icon={<FileCode className="h-3.5 w-3.5" />}
-          label="Prompt Diff"
-        />
       </div>
 
       {/* Content */}
