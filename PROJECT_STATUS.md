@@ -43,12 +43,23 @@ regressions, and 14/14 changed rows with exact evidence and valid source ids.
 This is a valid frozen holdout first readout, but still hybrid deterministic
 safety-floor evidence, not LLM-first, production-policy, benchmark-comparable,
 or tuning evidence.
+Post-hoc component-evidence interpretation is recorded in
+`experiments/gan2026_selective_safety_floor_gate_v0_component_evidence_audit_2026-06-03.md`:
+the frozen-test gain is attribution-valid for a hybrid selective-action audit,
+with sidecar gains separated from deterministic projection and safety-floor
+fallback, but residual holdout first-failure ownership remains an
+instrumentation gap.
 
 Attribution caveat: this is a hybrid deterministic-safety-floor development
 result, not an LLM-first result and not a benchmark or holdout claim. Decision
 0007 remains the primary LLM-heavy design lane, but v1 validation250 was
-rejected; fixed atlas slices now point next toward candidate-generation rescue
-and projection arbitration before another broad architecture or multi-agent run.
+rejected. The `llm_only_typed_operations_reasoner` validation25 live smoke
+also remains revise-only: v0 produced 22/25 structured records, 16/25 selected
+evidence valid, and 19/25 typed-graph Purist; v0 contract-fix improved schema
+stability to 24/25 structured and selected-evidence arithmetic to 22/25 Purist,
+but selected evidence was still only 17/25 valid and typed-graph projection was
+18/25 Purist. Do not escalate until exact-evidence copying and typed
+operation-to-graph projection are fixed on validation.
 
 ## Guardrails
 
@@ -84,20 +95,17 @@ and projection arbitration before another broad architecture or multi-agent run.
 
 ### Now
 
-- Apply the component evidence audit contract to the next candidate branch:
-  either post-hoc final-evaluation interpretation of the
-  `selective_safety_floor_gate_v0` frozen audit or the validation25
-  typed-operations smoke.
+- Revise `llm_only_typed_operations_reasoner` before any validation50
+  escalation: fix exact evidence copying for inequality/brief-phrase rows and
+  improve typed operation-to-graph projection so selected-evidence arithmetic
+  gains are not lost in the graph side-car.
 
 ### Next
 
 - If iterating on Decision 0007, focus on selected-fact and operand completeness
   only after slice targets and stop rules are predeclared.
-- Run a validation25 typed-operations smoke for
-  `llm_only_typed_operations_reasoner`: event count, time window, denominator,
-  cluster size, seizure-free duration, temporal anchor, semiology grouping,
-  uncertainty type, and selected evidence ID are now typed outputs, with a
-  model-derived state-node graph projection side-car.
+- After typed-operations exact-evidence and graph projection repairs, rerun only
+  validation25 before considering validation50.
 - If doing row-level review of the `selective_safety_floor_gate_v0` holdout,
   treat it only as post-hoc final-evaluation analysis; any fix must start a new
   validation-cycle candidate.
@@ -116,6 +124,20 @@ and projection arbitration before another broad architecture or multi-agent run.
 
 ### Done Recently
 
+- 2026-06-03: Ran `llm_only_typed_operations_reasoner` validation25 live smoke.
+  Initial v0: 22/25 structured records, 3 parse/schema failures, 16/25 selected
+  evidence valid, 19/25 typed-graph Purist, and one raw-correct-to-graph-wrong
+  regression. Added v0 contract-fix prompt/output constraints and raised the
+  default token budget to 2400; contract-fix run improved to 24/25 structured
+  and 0 raw-correct-to-graph-wrong regressions, but selected evidence remained
+  17/25 valid and typed-graph Purist was 18/25. Decision: revise, do not
+  escalate.
+- 2026-06-03: Applied the component evidence audit contract to the
+  `selective_safety_floor_gate_v0` validation/test artifacts. The report
+  preserves the hybrid deterministic-safety-floor attribution, separates
+  projection from LLM sidecar gains, confirms 14/14 frozen-test changed rows
+  with exact evidence and valid source ids, and records first-failure ownership
+  for residual holdout misses as an instrumentation gap.
 - 2026-06-03: Added the component evidence attribution architecture, Decision
   0008 promotion contract, and Gan 2026 component evidence audit runbook. Also
   created local Codex skills for repeatable component-evidence and LLM-delta
@@ -157,7 +179,5 @@ and projection arbitration before another broad architecture or multi-agent run.
 
 ## Immediate Next Step
 
-Choose the next branch of work: post-hoc final-evaluation interpretation of the
-`selective_safety_floor_gate_v0` holdout readout, or continue with the
-validation25 typed-operations smoke. Do not tune from locked-test row-level
-behavior.
+Repair the typed-operations evidence-copy and graph-projection contract, then
+rerun validation25 only. Do not tune from locked-test row-level behavior.

@@ -1,7 +1,9 @@
 "use client";
 
-import { useMemo } from "react";
-import { Check, X, Info } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Info, AlertTriangle, ChevronDown, ChevronRight } from "lucide-react";
+import * as Switch from "@radix-ui/react-switch";
+import * as Collapsible from "@radix-ui/react-collapsible";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import type { RulePayload, AblationConfigPayload } from "@/lib/types";
 
@@ -23,12 +25,25 @@ function portabilityBadgeColor(p: string | null): string {
   return "bg-muted/10 text-muted";
 }
 
-function groupBorderColor(group: string): string {
-  if (group.includes("rate")) return "border-deterministic-alt/30";
-  if (group.includes("temporal")) return "border-success/30";
-  if (group.includes("diary")) return "border-hybrid/30";
-  if (group.includes("repair")) return "border-muted/30";
-  return "border-border";
+function groupColor(group: string): string {
+  if (group.includes("rate")) return "#4a6fa5";
+  if (group.includes("temporal")) return "#81b29a";
+  if (group.includes("diary")) return "#7c3aed";
+  if (group.includes("cluster")) return "#d97706";
+  if (group.includes("seizure_free")) return "#2a6f6f";
+  if (group.includes("repair")) return "#9ca3af";
+  return "#6b7280";
+}
+
+function groupIcon(group: string): string {
+  if (group.includes("rate")) return "⚡";
+  if (group.includes("temporal")) return "🕐";
+  if (group.includes("diary")) return "📓";
+  if (group.includes("cluster")) return "🔀";
+  if (group.includes("seizure_free")) return "✓";
+  if (group.includes("repair")) return "🔧";
+  if (group.includes("shorthand")) return "⌨";
+  return "◆";
 }
 
 interface RuleInventoryProps {
@@ -47,6 +62,21 @@ export default function RuleInventory({
   const grouped = useMemo(() => groupRules(rules), [rules]);
   const groups = Array.from(grouped.keys()).sort();
 
+  const enabledGroups = new Set(ablationConfig.enabled_groups ?? groups);
+  const disabledIds = new Set(ablationConfig.disabled_rule_ids ?? []);
+
+  // Track which groups are expanded; default all open
+  const [openGroups, setOpenGroups] = useState<Set<string>>(new Set(groups));
+
+  const toggleGroupOpen = (group: string) => {
+    setOpenGroups((prev) => {
+      const next = new Set(prev);
+      if (next.has(group)) next.delete(group);
+      else next.add(group);
+      return next;
+    });
+  };
+
   if (rules.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border bg-surface py-12 text-center">
@@ -56,142 +86,223 @@ export default function RuleInventory({
   }
 
   return (
-    <Tooltip.Provider delayDuration={200}>
-      <div className="space-y-4">
+    <Tooltip.Provider delayDuration={150}>
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
         {groups.map((group) => {
-          const groupRules = grouped.get(group) ?? [];
-          const groupEnabled = ablationConfig.enabled_groups
-            ? ablationConfig.enabled_groups.includes(group)
-            : true;
+          const groupRulesList = grouped.get(group) ?? [];
+          const groupEnabled = enabledGroups.has(group);
+          const groupColorValue = groupColor(group);
+          const activeInGroup = groupRulesList.filter(
+            (r) => !disabledIds.has(r.rule_id)
+          ).length;
+          const isOpen = openGroups.has(group);
 
           return (
-            <div
+            <Collapsible.Root
               key={group}
-              className={`rounded-xl border ${groupBorderColor(group)} bg-surface p-4`}
+              open={isOpen}
+              onOpenChange={() => toggleGroupOpen(group)}
+              className={`rounded-xl border bg-surface overflow-hidden transition-all ${
+                groupEnabled
+                  ? "border-border shadow-sm"
+                  : "border-border/40 opacity-70"
+              }`}
             >
-              <div className="flex items-center justify-between mb-3">
-                <button
-                  onClick={() => onToggleGroup(group)}
-                  className="flex items-center gap-2 text-sm font-semibold text-foreground hover:text-deterministic transition-colors"
+              {/* Group header — always visible */}
+              <div
+                className="relative flex items-center gap-3 px-4 py-3 cursor-pointer select-none"
+                style={{
+                  backgroundColor: groupEnabled ? `${groupColorValue}06` : undefined,
+                }}
+              >
+                {/* Color accent bar */}
+                <div
+                  className="absolute left-0 top-0 bottom-0 w-1"
+                  style={{ backgroundColor: groupEnabled ? groupColorValue : "#d1d5db" }}
+                />
+
+                {/* Expand/collapse chevron */}
+                <Collapsible.Trigger asChild>
+                  <button
+                    className="flex items-center justify-center h-6 w-6 rounded-md hover:bg-black/5 transition-colors shrink-0"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleGroupOpen(group);
+                    }}
+                  >
+                    {isOpen ? (
+                      <ChevronDown className="h-4 w-4 text-muted" />
+                    ) : (
+                      <ChevronRight className="h-4 w-4 text-muted" />
+                    )}
+                  </button>
+                </Collapsible.Trigger>
+
+                {/* Icon */}
+                <span className="text-base shrink-0">{groupIcon(group)}</span>
+
+                {/* Group info */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <h3
+                      className={`text-sm font-bold truncate ${
+                        groupEnabled ? "text-foreground" : "text-muted line-through"
+                      }`}
+                    >
+                      {group.replace(/_/g, " ")}
+                    </h3>
+                    {!groupEnabled && (
+                      <span className="rounded bg-muted/10 px-1.5 py-0 text-[9px] font-medium text-muted uppercase tracking-wide shrink-0">
+                        Off
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className="text-[10px] text-muted">
+                      {groupRulesList.length} rules
+                    </span>
+                    <span className="text-[10px] text-border">·</span>
+                    <span
+                      className={`text-[10px] font-medium ${
+                        groupEnabled && activeInGroup === groupRulesList.length
+                          ? "text-success"
+                          : groupEnabled && activeInGroup > 0
+                          ? "text-llm"
+                          : "text-muted"
+                      }`}
+                    >
+                      {groupEnabled ? activeInGroup : 0} / {groupRulesList.length} active
+                    </span>
+                  </div>
+                </div>
+
+                {/* Group toggle switch */}
+                <Switch.Root
+                  checked={groupEnabled}
+                  onCheckedChange={() => onToggleGroup(group)}
+                  className="relative h-5 w-9 rounded-full bg-muted/30 data-[state=checked]:bg-success transition-colors outline-none focus:ring-2 focus:ring-success/30 shrink-0"
                 >
-                  {groupEnabled ? (
-                    <Check className="h-3.5 w-3.5 text-success" />
-                  ) : (
-                    <X className="h-3.5 w-3.5 text-error" />
-                  )}
-                  <span className={groupEnabled ? "" : "line-through text-muted"}>
-                    {group.replace(/_/g, " ")}
-                  </span>
-                </button>
-                <span className="text-[10px] text-muted">
-                  {groupRules.length} rule{groupRules.length !== 1 ? "s" : ""}
-                </span>
+                  <Switch.Thumb className="block h-4 w-4 rounded-full bg-white shadow-sm transition-transform data-[state=checked]:translate-x-4 translate-x-0.5" />
+                </Switch.Root>
               </div>
 
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                {groupRules.map((rule) => {
-                  const disabled = ablationConfig.disabled_rule_ids?.includes(rule.rule_id) ?? false;
-                  const globallyOff = !groupEnabled;
-                  const inactive = globallyOff || disabled;
+              {/* Collapsible rule list */}
+              <Collapsible.Content>
+                <div className="border-t border-border/50">
+                  {groupRulesList.map((rule, idx) => {
+                    const ruleDisabled = disabledIds.has(rule.rule_id);
+                    const ruleActive = groupEnabled && !ruleDisabled;
 
-                  return (
-                    <Tooltip.Root key={rule.rule_id}>
-                      <Tooltip.Trigger asChild>
-                        <button
-                          onClick={() => onToggleRule(rule.rule_id)}
-                          disabled={globallyOff}
-                          className={`flex flex-col gap-1 rounded-lg border px-3 py-2.5 text-left transition-all ${
-                            inactive
-                              ? "border-border/40 bg-surface-raised/30 opacity-60"
-                              : "border-border bg-surface hover:border-deterministic/40 hover:shadow-sm"
-                          }`}
-                        >
-                          <div className="flex items-center gap-1.5">
-                            <span
-                              className={`rounded px-1 py-0 text-[10px] font-mono font-medium ${
-                                inactive
-                                  ? "bg-muted/10 text-muted"
-                                  : "bg-deterministic/10 text-deterministic"
-                              }`}
-                            >
-                              {rule.rule_id}
-                            </span>
-                            <span
-                              className={`rounded px-1 py-0 text-[9px] font-medium uppercase tracking-wide ${portabilityBadgeColor(rule.portability)}`}
-                            >
-                              {rule.portability?.replace(/_/g, " ") ?? "unknown"}
-                            </span>
-                          </div>
-                          <span
-                            className={`text-[11px] leading-snug ${
-                              inactive ? "text-muted" : "text-foreground"
+                    return (
+                      <Tooltip.Root key={rule.rule_id}>
+                        <Tooltip.Trigger asChild>
+                          <div
+                            className={`flex items-start gap-3 px-4 py-2.5 transition-colors ${
+                              idx !== groupRulesList.length - 1
+                                ? "border-b border-border/30"
+                                : ""
+                            } ${
+                              ruleActive
+                                ? "bg-surface hover:bg-surface-raised/40"
+                                : "bg-surface-raised/20 opacity-50"
                             }`}
                           >
-                            {rule.description}
-                          </span>
-                          {rule.regex_preview && (
-                            <span className="text-[10px] font-mono text-muted truncate">
-                              {rule.regex_preview.slice(0, 50)}
-                              {rule.regex_preview.length > 50 ? "…" : ""}
-                            </span>
-                          )}
-                        </button>
-                      </Tooltip.Trigger>
-                      <Tooltip.Portal>
-                        <Tooltip.Content
-                          side="top"
-                          sideOffset={6}
-                          className="z-50 max-w-sm rounded-lg border border-border bg-surface px-3 py-2 shadow-lg"
-                        >
-                          <div className="space-y-1.5">
-                            <div className="flex items-center gap-2">
-                              <span className="text-[10px] font-mono font-semibold text-deterministic">
-                                {rule.rule_id}
-                              </span>
-                              <span
-                                className={`rounded px-1 py-0 text-[9px] font-medium uppercase tracking-wide ${portabilityBadgeColor(rule.portability)}`}
+                            {/* Rule toggle */}
+                            <Switch.Root
+                              checked={ruleActive}
+                              onCheckedChange={() => onToggleRule(rule.rule_id)}
+                              disabled={!groupEnabled}
+                              className="relative h-4 w-7 rounded-full bg-muted/30 data-[state=checked]:bg-deterministic disabled:opacity-30 transition-colors outline-none focus:ring-2 focus:ring-deterministic/30 shrink-0 mt-0.5"
+                            >
+                              <Switch.Thumb className="block h-3 w-3 rounded-full bg-white shadow-sm transition-transform data-[state=checked]:translate-x-3 translate-x-0.5" />
+                            </Switch.Root>
+
+                            {/* Rule content */}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <span className="text-[11px] font-mono font-semibold text-deterministic">
+                                  {rule.rule_id}
+                                </span>
+                                <span
+                                  className={`rounded px-1 py-0 text-[9px] font-medium uppercase tracking-wide ${portabilityBadgeColor(rule.portability)}`}
+                                >
+                                  {rule.portability?.replace(/_/g, " ") ?? "unknown"}
+                                </span>
+                                {rule.has_exclusions && (
+                                  <AlertTriangle className="h-3 w-3 text-error shrink-0" />
+                                )}
+                              </div>
+                              <p
+                                className={`text-[12px] leading-snug mt-0.5 ${
+                                  ruleActive ? "text-foreground" : "text-muted"
+                                }`}
                               >
-                                {rule.portability?.replace(/_/g, " ") ?? "unknown"}
-                              </span>
+                                {rule.description}
+                              </p>
+                              {rule.regex_preview && (
+                                <code className="block mt-1 text-[10px] font-mono text-muted truncate">
+                                  {rule.regex_preview}
+                                </code>
+                              )}
                             </div>
-                            <p className="text-[11px] text-foreground">{rule.description}</p>
-                            {rule.regex_preview && (
-                              <code className="block rounded bg-surface-raised px-1.5 py-0.5 text-[10px] font-mono text-muted">
-                                {rule.regex_preview}
-                              </code>
-                            )}
-                            {rule.has_exclusions && (
-                              <div className="flex items-center gap-1 text-[10px] text-error">
-                                <Info className="h-3 w-3" />
-                                Has exclusion patterns
-                              </div>
-                            )}
-                            {rule.examples && rule.examples.length > 0 && (
-                              <div className="border-t border-border pt-1.5 mt-1">
-                                <p className="text-[9px] font-semibold uppercase tracking-wide text-muted mb-1">
-                                  Examples
-                                </p>
-                                <div className="space-y-1">
-                                  {rule.examples.slice(0, 2).map((ex, i) => (
-                                    <div key={i} className="text-[10px] text-foreground">
-                                      <span className="text-muted">“{ex.text}”</span>
-                                      {ex.expected_label && (
-                                        <span className="text-success"> → {ex.expected_label}</span>
-                                      )}
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
                           </div>
-                          <Tooltip.Arrow className="fill-surface" />
-                        </Tooltip.Content>
-                      </Tooltip.Portal>
-                    </Tooltip.Root>
-                  );
-                })}
-              </div>
-            </div>
+                        </Tooltip.Trigger>
+                        <Tooltip.Portal>
+                          <Tooltip.Content
+                            side="top"
+                            sideOffset={6}
+                            className="z-50 max-w-md rounded-lg border border-border bg-surface px-3 py-2 shadow-lg"
+                          >
+                            <div className="space-y-1.5">
+                              <div className="flex items-center gap-2">
+                                <span className="text-[10px] font-mono font-semibold text-deterministic">
+                                  {rule.rule_id}
+                                </span>
+                                <span
+                                  className={`rounded px-1 py-0 text-[9px] font-medium uppercase tracking-wide ${portabilityBadgeColor(rule.portability)}`}
+                                >
+                                  {rule.portability?.replace(/_/g, " ") ?? "unknown"}
+                                </span>
+                              </div>
+                              <p className="text-[11px] text-foreground">{rule.description}</p>
+                              {rule.regex_preview && (
+                                <code className="block rounded bg-surface-raised px-1.5 py-0.5 text-[10px] font-mono text-muted break-all">
+                                  {rule.regex_preview}
+                                </code>
+                              )}
+                              {rule.has_exclusions && (
+                                <div className="flex items-center gap-1 text-[10px] text-error">
+                                  <Info className="h-3 w-3" />
+                                  Has exclusion patterns
+                                </div>
+                              )}
+                              {rule.examples && rule.examples.length > 0 && (
+                                <div className="border-t border-border pt-1.5 mt-1">
+                                  <p className="text-[9px] font-semibold uppercase tracking-wide text-muted mb-1">
+                                    Examples
+                                  </p>
+                                  <div className="space-y-1">
+                                    {rule.examples.slice(0, 2).map((ex, i) => (
+                                      <div key={i} className="text-[10px] text-foreground">
+                                        <span className="text-muted">“{ex.text}”</span>
+                                        {ex.expected_label && (
+                                          <span className="text-success"> → {ex.expected_label}</span>
+                                        )}
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                            <Tooltip.Arrow className="fill-surface" />
+                          </Tooltip.Content>
+                        </Tooltip.Portal>
+                      </Tooltip.Root>
+                    );
+                  })}
+                </div>
+              </Collapsible.Content>
+            </Collapsible.Root>
           );
         })}
       </div>

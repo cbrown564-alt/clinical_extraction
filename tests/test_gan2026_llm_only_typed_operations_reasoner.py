@@ -116,6 +116,11 @@ def test_build_typed_operations_inputs_exposes_required_operands_without_gold() 
     assert "semiology_grouping" in operand_fields
     assert "uncertainty_type" in operand_fields
     assert "selected_evidence_id" in operand_fields
+    assert "Do not add any keys other than operations, selection, and final_answer" in str(inputs)
+    assert "DOB" in inputs["output_contract"]["forbidden_extra_keys"]
+    assert "selected_evidence_id" in inputs["output_contract"]["rendering_operands_rule"]
+    assert "\\u" in inputs["output_contract"]["evidence_copy_rule"]["forbidden"]
+    assert "control characters" in inputs["output_contract"]["evidence_copy_rule"]["forbidden"]
     assert "gold_label" not in str(inputs)
     assert "deterministic candidates" not in str(inputs)
 

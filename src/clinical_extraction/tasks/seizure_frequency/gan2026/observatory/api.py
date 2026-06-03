@@ -74,7 +74,7 @@ PROMPT_MODULES = (
     "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_claim_table_selector",
     "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_direct_labeler",
     "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_structured_events",
-    "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_typed_adapter_reasoner",
+    "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_minimal_evidence_selector",
     "clinical_extraction.tasks.seizure_frequency.gan2026.hybrid.hybrid_rules_candidates_llm_adjudicator",
 )
 
