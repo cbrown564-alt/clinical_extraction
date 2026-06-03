@@ -264,6 +264,12 @@ def build_typed_inputs(record: GanFrequencyRecord) -> dict[str, Any]:
                 "cadence."
             ),
             (
+                "For cluster_frequency, set cluster.cluster_answer_axis to "
+                "cluster_cadence when the scorer-facing answer is the cadence of "
+                "clusters, such as one cluster every four weeks. Use event_burden "
+                "only when the answer must include events per cluster."
+            ),
+            (
                 "Keep clinical_kind consistent with the non-null operand family used "
                 "for rendering: frequency facts need frequency operands, cluster "
                 "cadence facts need cluster operands, and seizure-free facts need "
@@ -323,6 +329,13 @@ def build_typed_inputs(record: GanFrequencyRecord) -> dict[str, Any]:
                 ),
                 "seizure_free": "requires seizure-free duration operands",
             },
+            "cluster_axis_contract": {
+                "cluster_cadence": "render as bare cadence label, e.g. 1 per 4 week",
+                "event_burden": (
+                    "render cluster syntax with events per cluster, e.g. "
+                    "1 cluster per 4 week, 2 per cluster"
+                ),
+            },
             "vague_count_contract": {
                 "terms": ["multiple", "many", "several"],
                 "target_field": "operands.frequency.vague_count",
@@ -347,6 +360,8 @@ def build_typed_inputs(record: GanFrequencyRecord) -> dict[str, Any]:
 
 def prediction_to_extraction(
     prediction: Any,
+    *,
+    note_text: str | None = None,
 ) -> tuple[LlmHeavyEvidenceSelectionRecord | None, list[str]]:
     """Validate a DSPy typed prediction into the local extraction record."""
 
@@ -358,6 +373,8 @@ def prediction_to_extraction(
                 "raw_model_answer": prediction.raw_model_answer,
             }
         )
+        if note_text is not None:
+            extraction = _repair_evidence_copy_artifacts(extraction, note_text)
     except (AttributeError, TypeError, ValidationError) as exc:
         return None, [f"adapter_parse_or_validation_error: {exc}"]
     return extraction, []
@@ -474,7 +491,9 @@ def run_split(
             except Exception as exc:  # pragma: no cover - live API path.
                 call_error = f"{type(exc).__name__}: {exc}"
         extraction, adapter_errors = (
-            prediction_to_extraction(prediction) if prediction is not None else (None, ["not_run"])
+            prediction_to_extraction(prediction, note_text=record.note_text)
+            if prediction is not None
+            else (None, ["not_run"])
         )
         parse_errors = [
             *adapter_errors,
@@ -735,6 +754,12 @@ def _cluster_adapter(operands: ClusterOperands | None) -> MechanicalAdapterResul
         operands.cluster_period_high,
         operands.cluster_period_unit,
     )
+    if operands.cluster_answer_axis == "cluster_cadence":
+        return MechanicalAdapterResult(
+            f"{clusters} per {period}",
+            ("cluster_cadence_rendering",),
+            True,
+        )
     if operands.events_per_cluster_low is None:
         per_cluster = "multiple"
     else:
@@ -1003,6 +1028,89 @@ def _raw_output_from_extraction(extraction: LlmHeavyEvidenceSelectionRecord | No
     if extraction is None:
         return ""
     return json.dumps(extraction.model_dump(), sort_keys=True)
+
+
+def _repair_evidence_copy_artifacts(
+    extraction: LlmHeavyEvidenceSelectionRecord,
+    note_text: str,
+) -> LlmHeavyEvidenceSelectionRecord:
+    selected_evidence = _repair_evidence_text_if_source_exact(
+        extraction.selected_fact.evidence,
+        note_text,
+    )
+    raw_selected_evidence = _repair_evidence_text_if_source_exact(
+        extraction.raw_model_answer.selected_evidence,
+        note_text,
+    )
+    seizure_free = extraction.operands.seizure_free
+    if seizure_free is not None:
+        seizure_free = seizure_free.model_copy(
+            update={
+                "seizure_free_evidence": _repair_optional_evidence_text_if_source_exact(
+                    seizure_free.seizure_free_evidence,
+                    note_text,
+                ),
+                "last_event_evidence": _repair_optional_evidence_text_if_source_exact(
+                    seizure_free.last_event_evidence,
+                    note_text,
+                ),
+            }
+        )
+    return extraction.model_copy(
+        update={
+            "selected_fact": extraction.selected_fact.model_copy(
+                update={"evidence": selected_evidence}
+            ),
+            "raw_model_answer": extraction.raw_model_answer.model_copy(
+                update={"selected_evidence": raw_selected_evidence}
+            ),
+            "operands": extraction.operands.model_copy(update={"seizure_free": seizure_free}),
+        }
+    )
+
+
+def _repair_optional_evidence_text_if_source_exact(
+    evidence: str | None,
+    note_text: str,
+) -> str | None:
+    if evidence is None:
+        return None
+    return _repair_evidence_text_if_source_exact(evidence, note_text)
+
+
+def _repair_evidence_text_if_source_exact(evidence: str, note_text: str) -> str:
+    if evidence_is_substring(note_text, evidence):
+        return evidence
+    repaired = _replace_common_escaped_inequality_artifacts(evidence)
+    if repaired != evidence and evidence_is_substring(note_text, repaired):
+        return repaired
+    case_repaired = _repair_case_only_evidence_copy(repaired, note_text)
+    if case_repaired != repaired:
+        return case_repaired
+    return evidence
+
+
+def _repair_case_only_evidence_copy(evidence: str, note_text: str) -> str:
+    start = note_text.lower().find(evidence.lower())
+    if start < 0:
+        return evidence
+    return note_text[start : start + len(evidence)]
+
+
+def _replace_common_escaped_inequality_artifacts(text: str) -> str:
+    replacements = {
+        "\x0264": "≤",
+        "\x0260;": "≤",
+        "\x0260": "≤",
+        "\x026#8804;": "≤",
+        "\\u2264": "≤",
+        "&le;": "≤",
+        "&#8804;": "≤",
+        "&#x2264;": "≤",
+    }
+    for before, after in replacements.items():
+        text = text.replace(before, after)
+    return text
 
 
 def _range_label(low: float, high: float | None) -> str:

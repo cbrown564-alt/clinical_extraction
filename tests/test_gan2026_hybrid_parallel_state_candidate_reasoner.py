@@ -150,11 +150,71 @@ def test_parse_adjudicator_canonicalizes_unprefixed_source_ids() -> None:
     assert errors == ["selected_source_ids_repaired: 'llm-1' -> 'llm:llm-1'"]
 
 
+def test_parse_adjudicator_repairs_source_types_from_source_ids() -> None:
+    payload = json.loads(_adjudicator_raw("2 per month"))
+    payload["selected_source_ids"] = ["det:event_1", "graph:sg-001", "llm:llm-1", "llm:llm-2"]
+    payload["selected_source_types"] = [
+        "deterministic_candidate",
+        "state_graph_node",
+        "llm_candidate",
+    ]
+
+    decision, errors = parse_adjudicator_json(
+        json.dumps(payload),
+        allowed_source_ids={"det:event_1", "graph:sg-001", "llm:llm-1", "llm:llm-2"},
+        note_text=_record().note_text,
+    )
+
+    assert decision is not None
+    assert decision.selected_source_types == [
+        "deterministic_candidate",
+        "state_graph_node",
+        "llm_candidate",
+        "llm_candidate",
+    ]
+    assert errors == ["selected_source_types_repaired_from_source_ids"]
+
+
+def test_parse_adjudicator_repairs_case_only_selected_evidence_copy() -> None:
+    payload = json.loads(_adjudicator_raw("2 per month"))
+    payload["selected_evidence"] = "current seizure frequency is two focal seizures per month"
+
+    decision, errors = parse_adjudicator_json(
+        json.dumps(payload),
+        allowed_source_ids={"llm:llm-1"},
+        note_text=_record().note_text,
+    )
+
+    assert decision is not None
+    assert decision.selected_evidence == (
+        "Current seizure frequency is two focal seizures per month"
+    )
+    assert errors == []
+
+
 def test_parse_llm_candidate_json_validates_exact_evidence() -> None:
     packet, errors = parse_llm_candidate_json(_llm_candidate_raw(), note_text=_record().note_text)
 
     assert packet is not None
     assert packet.selection.selected_candidate_ids == ["llm-1"]
+    assert errors == []
+
+
+def test_parse_llm_candidate_json_repairs_case_only_evidence_copy() -> None:
+    raw = _llm_candidate_raw().replace(
+        "two focal seizures per month",
+        "current seizure frequency is two focal seizures per month",
+    )
+
+    packet, errors = parse_llm_candidate_json(raw, note_text=_record().note_text)
+
+    assert packet is not None
+    assert packet.candidates[0].evidence == (
+        "Current seizure frequency is two focal seizures per month"
+    )
+    assert packet.selection.selected_evidence == (
+        "Current seizure frequency is two focal seizures per month"
+    )
     assert errors == []
 
 
@@ -179,6 +239,19 @@ def test_parse_llm_candidate_json_accepts_future_temporality() -> None:
 
     assert packet is not None
     assert packet.candidates[1].temporality == "future"
+    assert errors == []
+
+
+def test_parse_llm_candidate_json_repairs_historical_assertion_status() -> None:
+    payload = json.loads(_llm_candidate_raw())
+    payload["candidates"][0]["assertion_status"] = "historical"
+    payload["candidates"][0]["temporality"] = "historical"
+
+    packet, errors = parse_llm_candidate_json(json.dumps(payload), note_text=_record().note_text)
+
+    assert packet is not None
+    assert packet.candidates[0].assertion_status == "asserted"
+    assert packet.candidates[0].temporality == "historical"
     assert errors == []
 
 
