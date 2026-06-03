@@ -28,6 +28,12 @@ DEFAULT_OUTPUT_JSON_PATH = Path(
 DEFAULT_REPORT_PATH = Path(
     "docs/research/gan2026_hidden_family_first_failure_atlas_2026-06-03.md"
 )
+DEFAULT_HARD_SLICE_JSON_PATH = Path(
+    "experiments/gan2026_atlas_candidate_generation_projection_hard_slices_2026-06-03.json"
+)
+DEFAULT_HARD_SLICE_REPORT_PATH = Path(
+    "experiments/gan2026_atlas_candidate_generation_projection_hard_slices_2026-06-03.md"
+)
 
 ATLAS_FIELDNAMES = (
     "artifact_name",
@@ -46,6 +52,57 @@ ATLAS_FIELDNAMES = (
     "deterministic_correct",
     "oracle_candidate_presence",
     "oracle_graph_representability",
+)
+
+ATLAS_HARD_SLICE_DEFINITIONS: tuple[dict[str, str], ...] = (
+    {
+        "slice_name": "candidate_generation_rescue",
+        "component_focus": "candidate generation",
+        "membership_rule": (
+            "Atlas row is Purist-wrong and first_failure_owner is candidate_generation."
+        ),
+        "primary_metric": (
+            "Candidate-recall rescue rate before final-label promotion; final policy keeps the "
+            "deterministic safety floor unless a rescue is predeclared and ablated."
+        ),
+    },
+    {
+        "slice_name": "candidate_generation_unknown_seizure_free_boundary",
+        "component_focus": "candidate generation",
+        "membership_rule": (
+            "Atlas row is Purist-wrong, first_failure_owner is candidate_generation, and "
+            "hidden_families includes unknown_boundary or seizure_free_duration."
+        ),
+        "primary_metric": (
+            "Boundary-state recall without converting uncertain seizure-free language into a "
+            "prediction-bearing deterministic repair."
+        ),
+    },
+    {
+        "slice_name": "projection_arbitration",
+        "component_focus": "graph/final projection",
+        "membership_rule": (
+            "Atlas row is Purist-wrong and first_failure_owner is projection or "
+            "final_projection."
+        ),
+        "primary_metric": (
+            "Projection-variant correction precision, mechanical-correct to projected-wrong "
+            "regressions, and selected-evidence/source trace validity."
+        ),
+    },
+    {
+        "slice_name": "projection_unknown_seizure_free_arbitration",
+        "component_focus": "graph/final projection",
+        "membership_rule": (
+            "Atlas row is Purist-wrong, first_failure_owner is projection or final_projection, "
+            "and hidden_families includes unknown_boundary, seizure_free_duration, or "
+            "current_vs_historical."
+        ),
+        "primary_metric": (
+            "Unknown/seizure-free/current-vs-historical arbitration precision with no broad "
+            "validation retuning."
+        ),
+    },
 )
 
 
@@ -258,6 +315,135 @@ def write_atlas_json(summary: Mapping[str, Any], path: Path) -> None:
     path.write_text(json.dumps(summary, ensure_ascii=False, indent=2, sort_keys=True) + "\n")
 
 
+def load_atlas_csv(path: Path) -> list[dict[str, Any]]:
+    with path.open(newline="", encoding="utf-8") as handle:
+        return [dict(row) for row in csv.DictReader(handle)]
+
+
+def build_atlas_hard_slice_manifest(
+    rows: Sequence[Mapping[str, Any]],
+    *,
+    source_atlas_csv: str | None = None,
+) -> dict[str, Any]:
+    """Build reproducible atlas-derived hard slices for the next diagnostic experiment."""
+
+    slices = []
+    for definition in ATLAS_HARD_SLICE_DEFINITIONS:
+        members = [
+            _hard_slice_member(row)
+            for row in rows
+            if _belongs_to_atlas_hard_slice(row, definition["slice_name"])
+        ]
+        slices.append(
+            {
+                **definition,
+                "row_count": len(members),
+                "members": sorted(members, key=lambda row: row["source_row_index"]),
+            }
+        )
+
+    return {
+        "artifact_kind": "gan2026_atlas_candidate_generation_projection_hard_slices",
+        "date": "2026-06-03",
+        "source_atlas_csv": source_atlas_csv,
+        "source_policy": (
+            "Validation-development atlas rows only; no locked-test row-level inspection and "
+            "no hosted model calls."
+        ),
+        "split_manifest": "gan2026_split_v1",
+        "candidate_context": "hybrid_parallel_state_candidate_reasoner deterministic safety floor",
+        "claim_language": (
+            "Diagnostic validation-cycle hard-slice manifest, not a benchmark or holdout claim."
+        ),
+        "stop_rule": (
+            "Promote only if candidate-generation rescues or projection-arbitration changes are "
+            "high precision on these fixed slices, preserve evidence/source traces, and introduce "
+            "no deterministic-correct regressions under the safety-floor final policy."
+        ),
+        "slices": slices,
+    }
+
+
+def write_atlas_hard_slice_manifest(manifest: Mapping[str, Any], path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True) + "\n")
+
+
+def write_atlas_hard_slice_report(manifest: Mapping[str, Any], path: Path) -> None:
+    lines = [
+        "# Gan 2026 Atlas Candidate-Generation And Projection Hard-Slice Predeclaration",
+        "",
+        "This is a validation-development predeclaration derived from the hidden-family and "
+        "first-failure atlas. It fixes slice membership before any candidate-generation rescue "
+        "or projection-arbitration change is run.",
+        "",
+        f"- Date: `{manifest['date']}`",
+        f"- Split manifest: `{manifest['split_manifest']}`",
+        f"- Source atlas CSV: `{manifest.get('source_atlas_csv') or 'in-memory rows'}`",
+        f"- Candidate context: `{manifest['candidate_context']}`",
+        f"- Claim language: {manifest['claim_language']}",
+        "",
+        "## Hypothesis",
+        "",
+        "The remaining validation misses are dominated by two separable mechanisms: absent or "
+        "weak candidate generation, and projection/arbitration over already representable "
+        "clinical states. A useful next experiment should improve one named mechanism on fixed "
+        "validation hard slices while keeping the deterministic safety-floor final policy.",
+        "",
+        "## Slice Manifest",
+        "",
+        "| Slice | Focus | Rows | Primary metric |",
+        "| --- | --- | ---: | --- |",
+    ]
+    for slice_record in manifest["slices"]:
+        lines.append(
+            f"| `{slice_record['slice_name']}` | {slice_record['component_focus']} | "
+            f"{slice_record['row_count']} | {slice_record['primary_metric']} |"
+        )
+
+    lines.extend(
+        [
+            "",
+            "## Experiment Unit",
+            "",
+            "- Minimal change: add only candidate-generation rescue or projection-arbitration "
+            "variants, not a broad prompt/schema/scorer rewrite.",
+            "- Surface: fixed validation hard slices in this manifest; no train or locked-test "
+            "inspection.",
+            "- Comparator: current `hybrid_parallel_state_candidate_reasoner` deterministic "
+            "safety-floor replay.",
+            "- Required ablations: deterministic top, candidate-generation rescue sidecar, "
+            "baseline graph projection, projection-arbitration variant, and final safety-floor "
+            "policy.",
+            "- Required counts: slice-level Purist/Pragmatic, wrong-to-correct, "
+            "correct-to-wrong, deterministic-correct regressions, evidence exactness, source-id "
+            "validity, fallback rate, and changed-label precision.",
+            "",
+            "## Stop Rule",
+            "",
+            str(manifest["stop_rule"]),
+            "",
+            "## Slice Definitions",
+            "",
+        ]
+    )
+    for slice_record in manifest["slices"]:
+        lines.extend(
+            [
+                f"### {slice_record['slice_name']}",
+                "",
+                f"- Rows: {slice_record['row_count']}",
+                f"- Membership: {slice_record['membership_rule']}",
+                f"- Component focus: {slice_record['component_focus']}",
+                f"- Primary metric: {slice_record['primary_metric']}",
+                "",
+            ]
+        )
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(lines), encoding="utf-8")
+
+
 def write_atlas_report(
     rows: Sequence[Mapping[str, Any]],
     summary: Mapping[str, Any],
@@ -353,6 +539,64 @@ def _family_by_first_failure(rows: Sequence[Mapping[str, Any]]) -> dict[str, dic
     return {family: dict(counter) for family, counter in sorted(counters.items())}
 
 
+def _belongs_to_atlas_hard_slice(row: Mapping[str, Any], slice_name: str) -> bool:
+    if _bool_value(row.get("purist_correct")):
+        return False
+    owner = str(row.get("first_failure_owner") or "")
+    families = set(_families(row))
+    if slice_name == "candidate_generation_rescue":
+        return owner == "candidate_generation"
+    if slice_name == "candidate_generation_unknown_seizure_free_boundary":
+        return owner == "candidate_generation" and bool(
+            families & {"unknown_boundary", "seizure_free_duration"}
+        )
+    if slice_name == "projection_arbitration":
+        return owner in {"projection", "final_projection"}
+    if slice_name == "projection_unknown_seizure_free_arbitration":
+        return owner in {"projection", "final_projection"} and bool(
+            families & {"unknown_boundary", "seizure_free_duration", "current_vs_historical"}
+        )
+    raise ValueError(f"Unknown atlas hard slice: {slice_name}")
+
+
+def _hard_slice_member(row: Mapping[str, Any]) -> dict[str, Any]:
+    return {
+        "source_row_index": int(row["source_row_index"]),
+        "artifact_name": row.get("artifact_name") or "",
+        "split": row.get("split") or "",
+        "primary_layer": row.get("primary_layer") or "",
+        "gold_label": row.get("gold_label") or "",
+        "predicted_label": row.get("predicted_label") or "",
+        "hidden_families": _families(row),
+        "first_failure_owner": row.get("first_failure_owner") or "",
+        "first_failure_reason": row.get("first_failure_reason") or "",
+        "evidence_exact": _optional_bool(row.get("evidence_exact")),
+        "selected_operand_complete": _optional_bool(row.get("selected_operand_complete")),
+        "deterministic_correct": _optional_bool(row.get("deterministic_correct")),
+        "oracle_candidate_presence": _optional_bool(row.get("oracle_candidate_presence")),
+        "oracle_graph_representability": _optional_bool(row.get("oracle_graph_representability")),
+    }
+
+
+def _families(row: Mapping[str, Any]) -> list[str]:
+    value = row.get("hidden_families") or ""
+    if isinstance(value, str):
+        return [family for family in value.split(";") if family]
+    return [str(family) for family in value if family]
+
+
+def _bool_value(value: Any) -> bool:
+    if isinstance(value, bool):
+        return value
+    return str(value).strip().lower() == "true"
+
+
+def _optional_bool(value: Any) -> bool | str:
+    if value in {None, ""}:
+        return ""
+    return _bool_value(value)
+
+
 def _has_any(text: str, *needles: str) -> bool:
     return any(needle in text for needle in needles)
 
@@ -415,6 +659,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--csv", type=Path, default=DEFAULT_OUTPUT_CSV_PATH)
     parser.add_argument("--json", type=Path, default=DEFAULT_OUTPUT_JSON_PATH)
     parser.add_argument("--report", type=Path, default=DEFAULT_REPORT_PATH)
+    parser.add_argument("--hard-slice-json", type=Path, default=None)
+    parser.add_argument("--hard-slice-report", type=Path, default=None)
     args = parser.parse_args(argv)
 
     rows = build_atlas_rows(args.artifacts, primary_layer=args.primary_layer, data_path=args.data)
@@ -422,6 +668,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     write_atlas_csv(rows, args.csv)
     write_atlas_json(summary, args.json)
     write_atlas_report(rows, summary, args.report, csv_path=args.csv, json_path=args.json)
+    if args.hard_slice_json or args.hard_slice_report:
+        manifest = build_atlas_hard_slice_manifest(rows, source_atlas_csv=str(args.csv))
+        if args.hard_slice_json:
+            write_atlas_hard_slice_manifest(manifest, args.hard_slice_json)
+        if args.hard_slice_report:
+            write_atlas_hard_slice_report(manifest, args.hard_slice_report)
     return 0
 
 

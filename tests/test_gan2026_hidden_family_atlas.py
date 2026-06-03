@@ -91,3 +91,68 @@ def test_summarize_atlas_rows_counts_family_owner_pairs() -> None:
     assert summary["family_by_first_failure"]["unknown_boundary"] == {
         "llm_clinical_selection": 1
     }
+
+
+def test_build_atlas_hard_slice_manifest_fixes_candidate_and_projection_slices() -> None:
+    manifest = hidden_family_atlas.build_atlas_hard_slice_manifest(
+        [
+            {
+                "artifact_name": "hybrid.jsonl",
+                "source_row_index": "10",
+                "split": "validation",
+                "primary_layer": "hybrid_adjudicator_with_adapters",
+                "gold_label": "unknown",
+                "predicted_label": "seizure free for multiple year",
+                "purist_correct": "False",
+                "hidden_families": "unknown_boundary;seizure_free_duration",
+                "first_failure_owner": "candidate_generation",
+                "first_failure_reason": "gold state absent from candidate set",
+                "evidence_exact": "True",
+                "deterministic_correct": "False",
+                "oracle_candidate_presence": "False",
+                "oracle_graph_representability": "False",
+            },
+            {
+                "artifact_name": "hybrid.jsonl",
+                "source_row_index": "20",
+                "split": "validation",
+                "primary_layer": "hybrid_adjudicator_with_adapters",
+                "gold_label": "unknown",
+                "predicted_label": "seizure free for multiple year",
+                "purist_correct": "False",
+                "hidden_families": "unknown_boundary;current_vs_historical",
+                "first_failure_owner": "projection",
+                "first_failure_reason": "gold appears representable but projection is wrong",
+                "evidence_exact": "True",
+                "deterministic_correct": "False",
+                "oracle_candidate_presence": "True",
+                "oracle_graph_representability": "True",
+            },
+            {
+                "artifact_name": "hybrid.jsonl",
+                "source_row_index": "30",
+                "split": "validation",
+                "primary_layer": "hybrid_adjudicator_with_adapters",
+                "gold_label": "1 per month",
+                "predicted_label": "1 per month",
+                "purist_correct": "True",
+                "hidden_families": "rate_bucket_or_denominator",
+                "first_failure_owner": "none",
+            },
+        ],
+        source_atlas_csv="atlas.csv",
+    )
+
+    slices = {slice_["slice_name"]: slice_ for slice_ in manifest["slices"]}
+
+    assert slices["candidate_generation_rescue"]["row_count"] == 1
+    assert slices["candidate_generation_rescue"]["members"][0]["source_row_index"] == 10
+    assert (
+        slices["candidate_generation_unknown_seizure_free_boundary"]["members"][0][
+            "oracle_candidate_presence"
+        ]
+        is False
+    )
+    assert slices["projection_arbitration"]["row_count"] == 1
+    assert slices["projection_unknown_seizure_free_arbitration"]["row_count"] == 1
+    assert manifest["source_atlas_csv"] == "atlas.csv"
