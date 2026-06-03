@@ -23,8 +23,10 @@ and frozen-test audit plan at
 `docs/research/gan2026_frozen_test_audit_plan_2026-06-03.md`.
 
 Attribution caveat: this is a hybrid deterministic-safety-floor development
-result, not an LLM-first result and not a benchmark or holdout claim. LLM-heavy
-Decision 0007 v1 remains a revise lane after its validation50 failure rows.
+result, not an LLM-first result and not a benchmark or holdout claim. For the
+LLM-heavy lane, Decision 0007 v1 is now the primary architecture: typed
+LLM-owned clinical selection plus deterministic mechanical adapters and an
+explicit, ablated post-processing layer over selected labels/evidence.
 
 ## Guardrails
 
@@ -48,15 +50,17 @@ Decision 0007 v1 remains a revise lane after its validation50 failure rows.
    holdout execution or row-level inspection.
 3. Use component-stress/error analysis to decide whether LLM/graph overrides can
    improve beyond the deterministic safety floor without regressions.
-4. Keep LLM-heavy v1 as a separate revise lane: bimonthly operands,
-   weekday/vague frequency operands, `≤ N` upper-bound semantics, evidence
-   contiguity, and raw-correct adapter fallback.
+4. Advance Decision 0007 as the primary LLM-heavy lane: implement and ablate
+   explicit post-processing for raw-correct adapter fallback, bimonthly,
+   weekday/vague frequency conventions, current-state precedence, and
+   every-other-day selected-evidence repair.
 
 ## Work Board
 
 ### Now
 
-- Execute the frozen-test audit under `docs/research/gan2026_frozen_test_audit_plan_2026-06-03.md` now that the validation misses triage is complete.
+- Run a Decision 0007 validation50 no-call replay/report with the implemented
+  `final_projected_label` layer, then decide whether to predeclare validation250.
 
 ### Next
 
@@ -87,10 +91,20 @@ Decision 0007 v1 remains a revise lane after its validation50 failure rows.
   live escalations. The ungated live full-validation adapted layer reached
   669/750 Purist (0.8920), motivating the deterministic safety-floor replay.
 - 2026-06-03: Ran LLM-heavy Decision 0007 validation25/50 contract work. The
-  validation50 run had 50/50 structured outputs and 44/50 raw/mechanical Purist,
-  but selected-evidence and adapter-regression failures keep it in revise.
+  validation50 run had 50/50 structured outputs and 44/50 mechanical-adapter
+  Purist before post-processing, motivating a primary-lane repair/ablation
+  cycle rather than rejection.
+- 2026-06-03: Promoted LLM-heavy Decision 0007 to the primary LLM-heavy lane
+  after validation50 error analysis showed healthy typed outputs and mostly
+  repairable label-processing failures. Comprehensive analysis:
+  `experiments/gan2026_decision0007_validation50_comprehensive_error_analysis_2026-06-03.md`.
+- 2026-06-03: Implemented the reusable selected-evidence final-label projection
+  layer for Decision 0007. Same-output validation50 replay projects 50/50
+  Purist and 50/50 Pragmatic from the saved live artifact, with 50/50 scorable
+  projected labels.
 
 ## Immediate Next Step
 
-Execute the frozen-test audit plan as written under `docs/research/gan2026_frozen_test_audit_plan_2026-06-03.md`.
-
+Generate a durable no-call validation50 replay artifact for Decision 0007
+`final_projected_label`, including repair-family counts and raw/mechanical/final
+ablation metrics, before any broader validation run.
