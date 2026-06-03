@@ -53,13 +53,19 @@ instrumentation gap.
 Attribution caveat: this is a hybrid deterministic-safety-floor development
 result, not an LLM-first result and not a benchmark or holdout claim. Decision
 0007 remains the primary LLM-heavy design lane, but v1 validation250 was
-rejected. The `llm_only_typed_operations_reasoner` validation25 live smoke
-also remains revise-only: v0 produced 22/25 structured records, 16/25 selected
-evidence valid, and 19/25 typed-graph Purist; v0 contract-fix improved schema
-stability to 24/25 structured and selected-evidence arithmetic to 22/25 Purist,
-but selected evidence was still only 17/25 valid and typed-graph projection was
-18/25 Purist. Do not escalate until exact-evidence copying and typed
-operation-to-graph projection are fixed on validation.
+rejected. The `llm_only_typed_operations_reasoner` validation25 repair pass
+remains revise-only but is cleaner after source-checked evidence-copy repair,
+selected-operation graph projection repair, and a 4800-token default budget.
+The max4800 live smoke in
+`experiments/gan2026_llm_only_typed_operations_reasoner_validation25_gpt41mini_v3_max4800_2026-06-03.md`
+had no truncation warnings, 25/25 structured records, 22/25 selected evidence
+valid, 25/25 selected-evidence arithmetic Purist, and 23/25 typed-operation
+graph Purist. A no-call replay after generalized evidence-artifact cleanup and
+graph-label precedence repair is recorded in
+`experiments/gan2026_llm_only_typed_operations_reasoner_validation25_max4800_no_call_replay_2026-06-03.md`:
+25/25 selected evidence valid, 24/25 typed-operation graph Purist, and 25/25
+typed-operation graph Pragmatic. Do not escalate until row 598's
+word-number/period graph rendering miss is fixed on validation.
 
 ## Guardrails
 
@@ -95,17 +101,16 @@ operation-to-graph projection are fixed on validation.
 
 ### Now
 
-- Revise `llm_only_typed_operations_reasoner` before any validation50
-  escalation: fix exact evidence copying for inequality/brief-phrase rows and
-  improve typed operation-to-graph projection so selected-evidence arithmetic
-  gains are not lost in the graph side-car.
+- Finish `llm_only_typed_operations_reasoner` validation25 cleanup before any
+  validation50 escalation: row 598 still projects `1 per month` from evidence
+  stating `1 per eight months`.
 
 ### Next
 
 - If iterating on Decision 0007, focus on selected-fact and operand completeness
   only after slice targets and stop rules are predeclared.
-- After typed-operations exact-evidence and graph projection repairs, rerun only
-  validation25 before considering validation50.
+- After the remaining typed-operations validation25 cleanup, rerun only
+  validation25 at the 4800-token budget before considering validation50.
 - If doing row-level review of the `selective_safety_floor_gate_v0` holdout,
   treat it only as post-hoc final-evaluation analysis; any fix must start a new
   validation-cycle candidate.
@@ -124,6 +129,23 @@ operation-to-graph projection are fixed on validation.
 
 ### Done Recently
 
+- 2026-06-03: Repaired `llm_only_typed_operations_reasoner` evidence-copy and
+  graph-projection sidecars, raised the typed-operations default max token
+  budget to 4800, and reran validation25 live with no truncation warnings.
+  Result:
+  `experiments/gan2026_llm_only_typed_operations_reasoner_validation25_gpt41mini_v3_max4800_2026-06-03.md`
+  reached 25/25 structured, 22/25 selected evidence valid, 25/25
+  selected-evidence arithmetic Purist, and 23/25 typed-operation graph Purist.
+  Decision: revise, do not escalate.
+- 2026-06-03: Generalized semantically-neutral evidence artifact cleanup for
+  inequality/control-character copy artifacts and source Gan note mojibake, fixed
+  typed-operation graph label precedence so bad model-normalized labels cannot
+  outrank parseable raw phrases or complete operands, and reclassified
+  `typed_operation_graph_projection` as deterministic semantic graph projection.
+  Saved-output replay:
+  `experiments/gan2026_llm_only_typed_operations_reasoner_validation25_max4800_no_call_replay_2026-06-03.md`
+  reached 25/25 selected evidence valid, 24/25 typed-operation graph Purist, and
+  25/25 typed-operation graph Pragmatic. Decision: revise, do not escalate.
 - 2026-06-03: Ran `llm_only_typed_operations_reasoner` validation25 live smoke.
   Initial v0: 22/25 structured records, 3 parse/schema failures, 16/25 selected
   evidence valid, 19/25 typed-graph Purist, and one raw-correct-to-graph-wrong
@@ -179,5 +201,6 @@ operation-to-graph projection are fixed on validation.
 
 ## Immediate Next Step
 
-Repair the typed-operations evidence-copy and graph-projection contract, then
-rerun validation25 only. Do not tune from locked-test row-level behavior.
+Fix the residual typed-operations validation25 graph-rendering miss on row 598
+(`1 per eight months` projected as `1 per month`), then rerun validation25 only
+at max_tokens=4800. Do not tune from locked-test row-level behavior.

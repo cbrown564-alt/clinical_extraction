@@ -4,6 +4,30 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Revise
 
+### `gan2026_llm_only_typed_operations_reasoner_v3_max4800_validation25_live_2026-06-03`
+- Date/split: `2026-06-03`; `validation`; `25` rows.
+- Pipeline: `llm_only_typed_operations_reasoner`; mode `live validation25 typed-operations evidence-copy, graph-projection, and max4800 smoke`; replay `cache_first`.
+- Model role: LLM-only typed operation extraction, operation selection, model-owned final rendering, and graph-overlay sidecar; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `source-checked evidence-copy repair for escaped inequality artifacts; selected current/recent operation graph projection; selected-evidence arithmetic graph fallback; max_tokens=4800`.
+- Primary metrics: call_failures=0, event_evidence_total=37, event_evidence_valid=34, format_only_purist_correct=20, max_tokens=4800, parse_failures=0, raw_llm_purist_correct=15, raw_llm_scorable=15, row_count=25, selected_evidence_arithmetic_purist_correct=25, selected_evidence_valid=22, selected_operation_trace_mismatches=0, structured_records=25, truncation_warnings=0, typed_graph_raw_correct_to_wrong=1, typed_graph_raw_wrong_to_correct=9, typed_operation_graph_projection_purist_correct=23, typed_operation_graph_projection_scorable=25.
+- Evidence validity: Selected evidence exact 22/25; event evidence exact 34/37; selected-operation trace mismatches 0/25. Remaining typed-graph misses are row 446 invalid selected evidence and row 467 operand-to-graph rendering.
+- Cache/reuse source: DSPy cache enabled; no saved raw-output reuse. The CLI default max token budget for this pipeline is now 4800.
+- Superseded by: `gan2026_llm_only_typed_operations_reasoner_v3_max4800_no_call_replay_2026-06-03`.
+- Claim language: Validation25 development smoke only. The 4800-token budget removed truncation warnings. This live artifact is superseded for deterministic replay interpretation by the no-call replay after generalized evidence-artifact cleanup and graph-label precedence repair.
+- Artifacts: `experiments/gan2026_llm_only_typed_operations_reasoner_validation25_gpt41mini_v3_max4800_2026-06-03.jsonl`, `experiments/gan2026_llm_only_typed_operations_reasoner_validation25_gpt41mini_v3_max4800_2026-06-03.md`.
+
+### `gan2026_llm_only_typed_operations_reasoner_v3_max4800_no_call_replay_2026-06-03`
+- Date/split: `2026-06-03`; `validation`; `25` rows.
+- Pipeline: `llm_only_typed_operations_reasoner`; mode `saved-output no-call replay after evidence artifact and graph-label precedence repair`; replay `saved_output_replay`.
+- Model role: analysis-only replay of LLM-only typed operation extraction, selection, final rendering, and graph-overlay sidecar; model `none; saved openai/gpt-4.1-mini max4800 outputs`.
+- Repair mode/config: `No-call replay using generalized semantically-neutral evidence artifact cleanup, source-note mojibake cleanup, typed graph label precedence fix, and typed_operation_graph_projection semantic repair metadata.`.
+- Primary metrics: event_evidence_total=37, event_evidence_valid=37, format_only_purist_correct=20, parse_failures=0, raw_llm_purist_correct=15, raw_llm_scorable=15, row_count=25, selected_evidence_arithmetic_purist_correct=25, selected_evidence_valid=25, selected_operation_trace_mismatches=0, structured_records=25, typed_operation_graph_projection_pragmatic_correct=25, typed_operation_graph_projection_purist_correct=24, typed_operation_graph_projection_scorable=25.
+- Evidence validity: Selected evidence exact 25/25; event evidence exact 37/37; selected-operation trace mismatches 0/25.
+- Cache/reuse source: experiments/gan2026_llm_only_typed_operations_reasoner_validation25_gpt41mini_v3_max4800_2026-06-03.jsonl.
+- Supersedes: `gan2026_llm_only_typed_operations_reasoner_v3_max4800_validation25_live_2026-06-03`.
+- Claim language: Saved-output replay only: no hosted calls, prompt changes, scorer changes, split changes, or holdout behavior changes. Row 446 and row 467 deterministic replay bugs are fixed; row 598 remains a Purist graph-rendering miss, so revise before validation50.
+- Artifacts: `experiments/gan2026_llm_only_typed_operations_reasoner_validation25_max4800_no_call_replay_2026-06-03.jsonl`, `experiments/gan2026_llm_only_typed_operations_reasoner_validation25_max4800_no_call_replay_2026-06-03.md`.
+
 ### `gan2026_llm_heavy_evidence_selection_decision0007_validation25_contract_triage_2026-06-03`
 - Date/split: `2026-06-03`; `validation`; `25` rows.
 - Pipeline: `llm_heavy_evidence_selection_with_deterministic_adapters`; mode `saved-output Decision 0007 validation25 contract triage`; replay `analysis_only`.

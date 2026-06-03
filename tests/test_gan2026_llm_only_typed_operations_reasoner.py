@@ -1,6 +1,12 @@
 from pathlib import Path
 from types import SimpleNamespace
 
+import pytest
+
+from clinical_extraction.core.evidence import (
+    clean_semantically_neutral_text_artifacts,
+    repair_evidence_text_if_source_exact,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     FrequencyLabelKind,
 )
@@ -152,6 +158,182 @@ def test_validate_typed_operations_flags_evidence_id_mismatch() -> None:
     )
 
     assert "selection: selected_evidence_id is not selected operation evidence_id" in errors
+
+
+def test_prediction_to_extraction_repairs_source_checked_inequality_evidence() -> None:
+    prediction = _prediction("4 per day")
+    prediction.operations[0]["evidence"] = (
+        "observed frequency is noted as \\u2264 four per day"
+    )
+    prediction.selection["selected_evidence"] = prediction.operations[0]["evidence"]
+    prediction.final_answer["selected_evidence"] = prediction.operations[0]["evidence"]
+    note_text = "observed frequency is noted as ≤ four per day"
+
+    extraction, errors = reasoner.prediction_to_extraction(prediction, note_text=note_text)
+
+    assert errors == []
+    assert extraction is not None
+    assert extraction.operations[0].evidence == note_text
+    assert extraction.selection.selected_evidence == note_text
+    assert extraction.final_answer.selected_evidence == note_text
+    assert reasoner.validate_typed_operations_extraction(extraction, note_text=note_text) == []
+
+
+def test_prediction_to_extraction_repairs_control_character_inequality_evidence() -> None:
+    prediction = _prediction("2 per week")
+    prediction.operations[0]["evidence"] = "overall frequency has been \x0b twice per week"
+    prediction.selection["selected_evidence"] = prediction.operations[0]["evidence"]
+    prediction.final_answer["selected_evidence"] = prediction.operations[0]["evidence"]
+    note_text = "overall frequency has been ≤ twice per week"
+
+    extraction, errors = reasoner.prediction_to_extraction(prediction, note_text=note_text)
+
+    assert errors == []
+    assert extraction is not None
+    assert extraction.operations[0].evidence == note_text
+    assert reasoner.validate_typed_operations_extraction(extraction, note_text=note_text) == []
+
+
+@pytest.mark.parametrize(
+    ("artifact", "expected"),
+    [
+        ("\x0264 four per day", "≤ four per day"),
+        ("\x026#8804; 6 to 7 per year", "≤ 6 to 7 per year"),
+        ("\x00b two or four per year", "≤ two or four per year"),
+        ("\x0b once per month", "≤ once per month"),
+        ("\x1c twice per week", "≤ twice per week"),
+        ("\\u2264 four per week", "≤ four per week"),
+        ("&le; four per week", "≤ four per week"),
+        ("&#8804; four per week", "≤ four per week"),
+        ("&#x2264; four per week", "≤ four per week"),
+    ],
+)
+def test_semantically_neutral_inequality_artifacts_are_cleaned_by_default(
+    artifact: str,
+    expected: str,
+) -> None:
+    assert clean_semantically_neutral_text_artifacts(artifact) == expected
+    assert repair_evidence_text_if_source_exact(artifact, expected) == expected
+
+
+def test_graph_projection_uses_selected_evidence_arithmetic_for_selected_operation() -> None:
+    prediction = _prediction("no seizure frequency reference")
+    prediction.operations[0]["evidence"] = "up to four seizures per week"
+    prediction.operations[0]["raw_phrase"] = "up to four seizures per week"
+    prediction.operations[0]["model_normalized_clinical_label"] = (
+        "no seizure frequency reference"
+    )
+    prediction.selection["selected_evidence"] = "up to four seizures per week"
+    prediction.final_answer["selected_evidence"] = "up to four seizures per week"
+    prediction.final_answer["raw_llm_final_label"] = "no seizure frequency reference"
+    prediction.final_answer["raw_llm_monthly_frequency"] = None
+    note_text = "Current diary records up to four seizures per week."
+
+    extraction, errors = reasoner.prediction_to_extraction(prediction, note_text=note_text)
+
+    assert extraction is not None
+    assert errors == []
+    graph_bundle = reasoner.typed_operation_graph_overlay(
+        extraction,
+        source_row_index=42,
+        note_text=note_text,
+    )
+
+    assert graph_bundle["projection"]["final_label"] == "4 per week"
+    assert graph_bundle["projection"]["selected_node_ids"] == ["op:op-1"]
+
+
+def test_graph_projection_prefers_parseable_raw_phrase_over_bad_model_label() -> None:
+    prediction = _prediction("9 per month")
+    prediction.operations[0]["evidence"] = "Current average frequency is 9 per month"
+    prediction.operations[0]["raw_phrase"] = "9 per month"
+    prediction.operations[0]["model_normalized_clinical_label"] = (
+        "focal onset seizure frequency"
+    )
+    prediction.operations[0]["operands"]["event_count_low"] = 9
+    prediction.operations[0]["operands"]["event_count_high"] = 9
+    prediction.operations[0]["operands"]["time_window_low"] = 1
+    prediction.operations[0]["operands"]["time_window_high"] = 1
+    prediction.operations[0]["operands"]["time_window_unit"] = "month"
+    prediction.operations[0]["operands"]["denominator_count"] = 1
+    prediction.operations[0]["operands"]["denominator_unit"] = "month"
+    prediction.selection["selected_evidence"] = prediction.operations[0]["evidence"]
+    prediction.final_answer["selected_evidence"] = prediction.operations[0]["evidence"]
+    prediction.final_answer["raw_llm_final_label"] = "9 per month"
+    note_text = prediction.operations[0]["evidence"]
+
+    extraction, errors = reasoner.prediction_to_extraction(prediction, note_text=note_text)
+
+    assert extraction is not None
+    assert errors == []
+    graph_bundle = reasoner.typed_operation_graph_overlay(
+        extraction,
+        source_row_index=42,
+        note_text=note_text,
+    )
+
+    assert graph_bundle["nodes"][0]["normalized_label"] == "9 per month"
+    assert graph_bundle["projection"]["final_label"] == "9 per month"
+
+
+def test_graph_projection_uses_complete_operands_before_no_reference_fallback() -> None:
+    prediction = _prediction("9 per month")
+    prediction.operations[0]["evidence"] = "Current average frequency is nine events monthly"
+    prediction.operations[0]["raw_phrase"] = "focal onset seizure frequency"
+    prediction.operations[0]["model_normalized_clinical_label"] = (
+        "focal onset seizure frequency"
+    )
+    prediction.operations[0]["operands"]["event_count_low"] = 9
+    prediction.operations[0]["operands"]["event_count_high"] = 9
+    prediction.operations[0]["operands"]["time_window_low"] = 1
+    prediction.operations[0]["operands"]["time_window_high"] = 1
+    prediction.operations[0]["operands"]["time_window_unit"] = "month"
+    prediction.operations[0]["operands"]["denominator_count"] = 1
+    prediction.operations[0]["operands"]["denominator_unit"] = "month"
+    prediction.selection["selected_evidence"] = prediction.operations[0]["evidence"]
+    prediction.final_answer["selected_evidence"] = prediction.operations[0]["evidence"]
+    note_text = prediction.operations[0]["evidence"]
+
+    extraction, errors = reasoner.prediction_to_extraction(prediction, note_text=note_text)
+
+    assert extraction is not None
+    assert errors == []
+    graph_bundle = reasoner.typed_operation_graph_overlay(
+        extraction,
+        source_row_index=42,
+        note_text=note_text,
+    )
+
+    assert graph_bundle["nodes"][0]["normalized_label"] == "9 per month"
+    assert graph_bundle["projection"]["final_label"] == "9 per month"
+
+
+def test_graph_projection_treats_selected_recent_frequency_as_projection_candidate() -> None:
+    prediction = _prediction("1 per 3 weeks")
+    prediction.operations[0]["evidence"] = (
+        "Over the past three months, they have stabilised at seizures every 3 weeks"
+    )
+    prediction.operations[0]["raw_phrase"] = "seizures every 3 weeks"
+    prediction.operations[0]["temporality"] = "recent"
+    prediction.operations[0]["model_normalized_clinical_label"] = "1 per 3 weeks"
+    prediction.selection["selected_evidence"] = prediction.operations[0]["evidence"]
+    prediction.final_answer["selected_evidence"] = prediction.operations[0]["evidence"]
+    prediction.final_answer["raw_llm_final_label"] = "1 per 3 weeks"
+    note_text = prediction.operations[0]["evidence"]
+
+    extraction, errors = reasoner.prediction_to_extraction(prediction, note_text=note_text)
+
+    assert extraction is not None
+    assert errors == []
+    graph_bundle = reasoner.typed_operation_graph_overlay(
+        extraction,
+        source_row_index=42,
+        note_text=note_text,
+    )
+
+    assert graph_bundle["nodes"][0]["temporality"] == "current"
+    assert graph_bundle["projection"]["final_label"] == "1 per 3 week"
+    assert graph_bundle["projection"]["selected_node_ids"] == ["op:op-1"]
 
 
 def test_run_split_records_typed_operations_and_graph_projection(monkeypatch) -> None:

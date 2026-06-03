@@ -12,8 +12,14 @@ from typing import Any, Literal
 import dspy
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
-from clinical_extraction.core.evidence import evidence_is_substring, locate_evidence
+from clinical_extraction.core.evidence import (
+    clean_semantically_neutral_text_artifacts,
+    evidence_is_substring,
+    locate_evidence,
+    repair_evidence_text_if_source_exact,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
+    FrequencyLabelKind,
     label_to_frequency_record,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
@@ -337,6 +343,8 @@ def build_typed_operations_inputs(record: GanFrequencyRecord) -> dict[str, Any]:
 
 def prediction_to_extraction(
     prediction: Any,
+    *,
+    note_text: str | None = None,
 ) -> tuple[TypedOperationsExtractionRecord | None, list[str]]:
     """Validate a DSPy typed prediction into the local extraction record."""
 
@@ -350,6 +358,8 @@ def prediction_to_extraction(
         )
     except (AttributeError, TypeError, ValidationError) as exc:
         return None, [f"typed_operations_parse_or_validation_error: {exc}"]
+    if note_text is not None:
+        extraction = _repair_typed_operations_evidence_copy(extraction, note_text)
     return extraction, []
 
 
@@ -409,6 +419,43 @@ def validate_typed_operations_extraction(
         if not evidence_is_substring(note_text, extraction.final_answer.selected_evidence):
             errors.append("evidence: invalid selected evidence")
     return errors
+
+
+def _repair_typed_operations_evidence_copy(
+    extraction: TypedOperationsExtractionRecord,
+    note_text: str,
+) -> TypedOperationsExtractionRecord:
+    operation_updates = [
+        operation.model_copy(
+            update={
+                "evidence": repair_evidence_text_if_source_exact(operation.evidence, note_text)
+            }
+        )
+        for operation in extraction.operations
+    ]
+    selection = extraction.selection.model_copy(
+        update={
+            "selected_evidence": repair_evidence_text_if_source_exact(
+                extraction.selection.selected_evidence,
+                note_text,
+            )
+        }
+    )
+    final_answer = extraction.final_answer.model_copy(
+        update={
+            "selected_evidence": repair_evidence_text_if_source_exact(
+                extraction.final_answer.selected_evidence,
+                note_text,
+            )
+        }
+    )
+    return extraction.model_copy(
+        update={
+            "operations": operation_updates,
+            "selection": selection,
+            "final_answer": final_answer,
+        }
+    )
 
 
 def typed_operation_graph_overlay(
@@ -488,7 +535,9 @@ def run_split(
             except Exception as exc:  # pragma: no cover - live API only.
                 call_error = f"{type(exc).__name__}: {exc}"
         extraction, adapter_errors = (
-            prediction_to_extraction(prediction) if prediction is not None else (None, ["not_run"])
+            prediction_to_extraction(prediction, note_text=record.note_text)
+            if prediction is not None
+            else (None, ["not_run"])
         )
         parse_errors = [
             *adapter_errors,
@@ -681,7 +730,19 @@ def _build_graph_from_typed_operations(
     nodes: list[StateGraphNode] = []
     if extraction is not None:
         for index, operation in enumerate(extraction.operations, start=1):
-            node = _node_from_operation(index, operation, note_text=note_text)
+            selected_projection_label = _selected_projection_label(
+                extraction,
+                operation,
+                note_text=note_text,
+            )
+            node = _node_from_operation(
+                index,
+                operation,
+                note_text=note_text,
+                selected_projection_label=selected_projection_label,
+                is_selected=operation.operation_id
+                in extraction.final_answer.selected_event_ids,
+            )
             if node is not None:
                 nodes.append(node)
     return ClinicalFrequencyStateGraph(
@@ -699,8 +760,14 @@ def _node_from_operation(
     operation: TypedOperationRecord,
     *,
     note_text: str,
+    selected_projection_label: str | None = None,
+    is_selected: bool = False,
 ) -> StateGraphNode | None:
-    label = _operation_label(operation)
+    label = _operation_label(
+        operation,
+        note_text=note_text,
+        selected_projection_label=selected_projection_label,
+    )
     if not label:
         return None
     try:
@@ -722,21 +789,189 @@ def _node_from_operation(
             end_char=end_char,
         ),
         assertion_status=operation.assertion_status,
-        temporality=operation.temporality,
+        temporality=_graph_temporality(operation, is_selected=is_selected),
         certainty=operation.certainty,
         applies_to=operation.operands.semiology_grouping,
         rule_id=f"llm_typed_operation.{index}",
     )
 
 
-def _operation_label(operation: TypedOperationRecord) -> str | None:
+def _operation_label(
+    operation: TypedOperationRecord,
+    *,
+    note_text: str,
+    selected_projection_label: str | None = None,
+) -> str | None:
+    raw_label_candidates = [
+        operation.raw_phrase,
+        selected_projection_label,
+        _label_from_frequency_operands(operation),
+        operation.model_normalized_clinical_label,
+    ]
+    sentinel_label: str | None = None
+    for raw_label in raw_label_candidates:
+        if not raw_label:
+            continue
+        raw_label = clean_semantically_neutral_text_artifacts(raw_label)
+        label = repair_prediction_label_with_evidence(
+            raw_label,
+            operation.evidence,
+            context_text=note_text,
+        )
+        if not _is_scorable_label(label):
+            continue
+        if _is_sentinel_fallback_for_operation(label, operation):
+            sentinel_label = sentinel_label or label
+            continue
+        return label
+    if sentinel_label is not None:
+        return sentinel_label
+    if selected_projection_label:
+        selected_projection_label = clean_semantically_neutral_text_artifacts(
+            selected_projection_label
+        )
+        if _is_scorable_label(selected_projection_label):
+            return selected_projection_label
     if operation.model_normalized_clinical_label:
-        return repair_prediction_label_format_preserving(operation.model_normalized_clinical_label)
+        return repair_prediction_label_format_preserving(
+            clean_semantically_neutral_text_artifacts(operation.model_normalized_clinical_label)
+        )
     if operation.operation_kind == "unknown_frequency":
         return "unknown"
     if operation.operation_kind == "no_reference":
         return "no seizure frequency reference"
     return None
+
+
+def _label_from_frequency_operands(operation: TypedOperationRecord) -> str | None:
+    if operation.operation_kind not in {"frequency_rate", "cluster_frequency"}:
+        return None
+    operands = operation.operands
+    count = _operand_count_label(operands.event_count_low, operands.event_count_high)
+    if count is None:
+        return None
+    period = _operand_period_label(
+        operands.denominator_count,
+        operands.denominator_unit,
+        operands.time_window_low,
+        operands.time_window_high,
+        operands.time_window_unit,
+    )
+    if period is None:
+        return None
+    return f"{count} per {period}"
+
+
+def _operand_count_label(low: float | None, high: float | None) -> str | None:
+    if low is None and high is None:
+        return None
+    if low is None or low == 0:
+        return _format_operand_number(high)
+    if high is None or high == low:
+        return _format_operand_number(low)
+    return f"{_format_operand_number(low)} to {_format_operand_number(high)}"
+
+
+def _operand_period_label(
+    denominator_count: float | None,
+    denominator_unit: str | None,
+    time_window_low: float | None,
+    time_window_high: float | None,
+    time_window_unit: str | None,
+) -> str | None:
+    if denominator_unit and denominator_unit != "window":
+        count = denominator_count if denominator_count not in (None, 0) else 1
+        unit = _format_operand_unit(denominator_unit)
+        if unit is None:
+            return None
+        if count == 1:
+            return unit
+        return f"{_format_operand_number(count)} {unit}"
+    if time_window_unit and time_window_unit != "window":
+        low = time_window_low
+        high = time_window_high
+        unit = _format_operand_unit(time_window_unit)
+        if low is None or unit is None:
+            return None
+        if high is None or high == low:
+            count = _format_operand_number(low)
+        else:
+            count = f"{_format_operand_number(low)} to {_format_operand_number(high)}"
+        if count == "1":
+            return unit
+        return f"{count} {unit}"
+    return None
+
+
+def _format_operand_unit(unit: str | None) -> str | None:
+    if unit in {"day", "week", "month", "year"}:
+        return unit
+    return None
+
+
+def _format_operand_number(value: float | None) -> str | None:
+    if value is None:
+        return None
+    if float(value).is_integer():
+        return str(int(value))
+    return str(value)
+
+
+def _selected_projection_label(
+    extraction: TypedOperationsExtractionRecord,
+    operation: TypedOperationRecord,
+    *,
+    note_text: str,
+) -> str | None:
+    if operation.operation_id not in extraction.final_answer.selected_event_ids:
+        return None
+    raw_label = extraction.final_answer.raw_llm_final_label
+    if not raw_label:
+        return None
+    format_label = repair_prediction_label_format_preserving(raw_label)
+    return repair_prediction_label_with_evidence(
+        format_label,
+        extraction.final_answer.selected_evidence,
+        context_text=note_text,
+    )
+
+
+def _is_scorable_label(label: str | None) -> bool:
+    if not label:
+        return False
+    try:
+        label_to_frequency_record(label)
+    except ValueError:
+        return False
+    return True
+
+
+def _is_sentinel_fallback_for_operation(
+    label: str,
+    operation: TypedOperationRecord,
+) -> bool:
+    try:
+        frequency_record = label_to_frequency_record(label)
+    except ValueError:
+        return False
+    if operation.operation_kind == "unknown_frequency":
+        return False
+    if operation.operation_kind == "no_reference":
+        return False
+    return frequency_record.kind in {
+        FrequencyLabelKind.UNKNOWN,
+        FrequencyLabelKind.NO_REFERENCE,
+    }
+
+
+def _graph_temporality(operation: TypedOperationRecord, *, is_selected: bool) -> str:
+    if (
+        is_selected
+        and operation.operation_kind in {"frequency_rate", "cluster_frequency"}
+        and operation.temporality in {"current", "recent"}
+    ):
+        return "current"
+    return operation.temporality
 
 
 def _graph_node_kind(operation_kind: str) -> GraphNodeKind:

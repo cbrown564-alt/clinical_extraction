@@ -78,6 +78,16 @@ REPAIR_MODE_METADATA: Mapping[str, Mapping[str, Any]] = {
         "deterministic_semantic_repair": False,
         "scorer_facing": True,
     },
+    "typed_operation_graph_projection": {
+        "repair_mode": "typed_operation_graph_projection",
+        "attribution_source": "llm_typed_operations_plus_deterministic_graph_projection",
+        "repair_family": "typed_operation_graph_projection",
+        "semantic_selection_owner": (
+            "llm_operation_selection_then_deterministic_graph_projection"
+        ),
+        "deterministic_semantic_repair": True,
+        "scorer_facing": True,
+    },
     "hybrid_full_stack": {
         "repair_mode": "hybrid_full_stack",
         "attribution_source": "raw_llm_output_plus_all_deterministic_repair_families",

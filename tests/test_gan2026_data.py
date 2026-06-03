@@ -34,6 +34,14 @@ def test_load_records_exposes_gold_label_and_quality_flags() -> None:
     assert first.quotes_ok_all_categories is True
 
 
+def test_load_records_cleans_semantically_neutral_raw_note_artifacts() -> None:
+    records = load_records(DATA_PATH)
+    raw_artifact_record = records[206]
+
+    assert "\x9d" not in raw_artifact_record.note_text
+    assert '" reasonable adjustments already discussed' in raw_artifact_record.note_text
+
+
 def test_load_records_with_monthly_frequency_matches_author_parser_for_gold_labels() -> None:
     records = load_records_with_monthly_frequency(DATA_PATH)
 
