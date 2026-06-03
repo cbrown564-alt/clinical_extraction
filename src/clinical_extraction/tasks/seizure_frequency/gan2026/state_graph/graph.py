@@ -168,9 +168,100 @@ def _candidate_nodes(note_text: str, candidates: Sequence[RawCandidate]) -> list
 def _state_graph_candidates(note_text: str) -> list[RawCandidate]:
     candidates = [
         *deterministic_extraction._extract_candidates(note_text),
+        *_acd_projection_policy_candidates(note_text),
         *_partial_seizure_free_candidates(note_text),
     ]
     return _dedupe_overlapping_candidates(candidates)
+
+
+def _acd_projection_policy_candidates(note_text: str) -> list[RawCandidate]:
+    candidates: list[RawCandidate] = []
+    candidates.extend(_acd_unknown_projection_candidates(note_text))
+    candidates.extend(_acd_previous_month_current_month_zero_candidates(note_text))
+    candidates.extend(_acd_summary_rate_candidates(note_text))
+    return candidates
+
+
+def _acd_unknown_projection_candidates(note_text: str) -> list[RawCandidate]:
+    patterns = (
+        (
+            "projection_policy.acd_003.vague_count_without_denominator",
+            re.compile(
+                r"\b(?P<evidence>occasional\s+(?:\w+\s+){0,3}"
+                r"(?:seizures?|events?|episodes?))\b",
+                re.IGNORECASE,
+            ),
+        ),
+        (
+            "projection_policy.acd_004.conditional_only_trigger",
+            re.compile(
+                r"\b(?P<evidence>(?:seizures?|events?|episodes?)\s+"
+                r"(?:happen|occur|occurring|occurred)\s+"
+                r"(?:exclusively\s+)?(?:only\s+)?"
+                r"(?:when|after|if)\s+[^.]*?\bonly\b[^.]*)",
+                re.IGNORECASE,
+            ),
+        ),
+        (
+            "projection_policy.acd_005.relative_only_trend",
+            re.compile(
+                r"\b(?P<evidence>frequency\s+"
+                r"(?:increased|decreased|improved|worsened)\s+"
+                r"(?:by\s+)?(?:about\s+|approximately\s+|~)?\d+\s*%[^.]*)",
+                re.IGNORECASE,
+            ),
+        ),
+    )
+    candidates: list[RawCandidate] = []
+    for rule_id, pattern in patterns:
+        candidates.extend(
+            RawCandidate(
+                kind=CandidateKind.UNKNOWN_FREQUENCY,
+                label="unknown",
+                evidence=match.group("evidence"),
+                rule_id=rule_id,
+            )
+            for match in pattern.finditer(note_text)
+        )
+    return candidates
+
+
+def _acd_previous_month_current_month_zero_candidates(note_text: str) -> list[RawCandidate]:
+    pattern = re.compile(
+        r"\b(?P<evidence>(?:several|handful|few|multiple)\s+"
+        r"(?:\w+\s+){0,4}(?:seizures?|events?|episodes?)\s+"
+        r"(?:during|in)\s+the\s+previous\s+month)\b"
+        r"(?=.{0,220}\b(?:current|this)\s+month\s+to\s+date\b"
+        r".{0,120}\bno\s+(?:events?|seizures?|episodes?)\b)",
+        re.IGNORECASE | re.DOTALL,
+    )
+    return [
+        RawCandidate(
+            kind=CandidateKind.FREQUENCY_RATE,
+            label="multiple per month",
+            evidence=match.group("evidence"),
+            rule_id="projection_policy.acd_009.previous_month_active_rate",
+        )
+        for match in pattern.finditer(note_text)
+    ]
+
+
+def _acd_summary_rate_candidates(note_text: str) -> list[RawCandidate]:
+    pattern = re.compile(
+        r"\b(?P<evidence>(?:at\s+present,\s+)?"
+        r"(?:his|her|their|the)\s+typical\s+pattern\s+is\s+"
+        r"(?:a\s+)?(?:\w+\s+){0,4}(?:seizure|event|episode)\s+monthly)\b",
+        re.IGNORECASE,
+    )
+    return [
+        RawCandidate(
+            kind=CandidateKind.FREQUENCY_RATE,
+            label="1 per month",
+            evidence=match.group("evidence"),
+            rule_id="projection_policy.acd_008.explicit_summary_rate",
+        )
+        for match in pattern.finditer(note_text)
+    ]
 
 
 def _partial_seizure_free_candidates(note_text: str) -> list[RawCandidate]:
@@ -269,7 +360,7 @@ def _node_from_candidate(
     evidence = exact_evidence(note_text, candidate.evidence)
     span = locate_evidence(note_text, evidence)
     start_char, end_char = span if span else (None, None)
-    normalized_label = repair_prediction_label(candidate.label)
+    normalized_label = _normalized_candidate_label(candidate)
     errors: tuple[str, ...] = ()
     try:
         label_record = label_to_frequency_record(normalized_label)
@@ -288,6 +379,12 @@ def _node_from_candidate(
         rule_id=candidate.rule_id,
         graph_errors=errors,
     )
+
+
+def _normalized_candidate_label(candidate: RawCandidate) -> str:
+    if candidate.rule_id == "seizure_free.no_definite_events":
+        return str(candidate.label or "unknown")
+    return repair_prediction_label(candidate.label)
 
 
 def _node_from_atomic_claim(
