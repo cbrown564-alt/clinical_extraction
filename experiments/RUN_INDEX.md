@@ -4,6 +4,18 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Revise
 
+### `gan2026_llm_heavy_evidence_selection_decision0007_validation25_contract_triage_2026-06-03`
+- Date/split: `2026-06-03`; `validation`; `25` rows.
+- Pipeline: `llm_heavy_evidence_selection_with_deterministic_adapters`; mode `saved-output Decision 0007 validation25 contract triage`; replay `analysis_only`.
+- Model role: analysis-only reviewer for selected evidence, operand completeness, raw parser-label grammar, and cluster-axis failure slices; model `none; saved outputs only`.
+- Repair mode/config: `analysis only; proposed v1 prompt/schema contract without scorer, split, adapter, or gate changes`.
+- Primary metrics: adapted_miss_rows=10,128,187,190,280,446, exact_evidence_failure_rows=10,40,79,103,409,446, missing_operand_rows=128, raw_parser_label_scorable=0, row_count=25, wrong_fact_or_operand_rows=187,190,280.
+- Evidence validity: Identified exact-evidence escaping failures on rows 10, 40, 79, 103, 409, and 446; later v1 reduced these to rows 10, 40, and 446.
+- Cache/reuse source: Saved-output row review of the v0 Decision 0007 validation25 smoke; no hosted calls.
+- Superseded by: `gan2026_llm_heavy_evidence_selection_decision0007_v1_validation25_live_2026-06-03`.
+- Claim language: Analysis-only triage predeclared a v1 prompt/schema revision. It did not change scorer, split, adapter, gate, or holdout behavior.
+- Artifacts: `experiments/gan2026_llm_heavy_decision0007_validation25_contract_triage_2026-06-03.md`.
+
 ### `gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v1_2026-06-02`
 - Date/split: `2026-06-02`; `validation_hard_slices`; `250` rows.
 - Pipeline: `hybrid_clinical_frequency_state_graph`; mode `gated month-bucket duration-selection projection ablation v1`; replay `analysis_only`.
@@ -375,6 +387,18 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Artifacts: `experiments/gan2026_section_claim_table_validation250_gpt41mini_v4_schema_replay_2026-06-01.jsonl`, `experiments/gan2026_section_claim_table_validation250_gpt41mini_v4_schema_replay_2026-06-01.md`.
 
 ## Reject
+
+### `gan2026_llm_heavy_evidence_selection_decision0007_v1_validation25_live_2026-06-03`
+- Date/split: `2026-06-03`; `validation`; `25` rows.
+- Pipeline: `llm_heavy_evidence_selection_with_deterministic_adapters`; mode `live validation25 Decision 0007 v1 selected-fact and operand contract smoke`; replay `live`.
+- Model role: LLM-owned clinical fact, evidence, temporal state, raw parser label, and operands; deterministic code mechanically renders selected operands; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `v1 prompt/schema-only contract: exact Unicode evidence copying, clinical-kind/operand consistency, vague-count guidance, and parser-ready raw-label grammar; scorer, split, adapter, and gate unchanged`.
+- Primary metrics: adapter_parse_failures=0, benchmark_convention_adapter_purist_correct=23, call_failures=0, format_only_repair_purist_correct=25, mechanical_adapter_label_pragmatic_correct=24, mechanical_adapter_label_purist_correct=23, mechanical_adapter_raw_correct_to_wrong=2, mechanical_adapter_raw_wrong_to_correct=0, operand_complete_rows=25, raw_model_parser_label_purist_correct=25, raw_model_parser_label_scorable=25, row_count=25, selected_evidence_valid=22, selected_fact_trace_mismatches=0, structured_records=25.
+- Evidence validity: Selected evidence exact 22/25; selected fact trace mismatches 0/25. Remaining failures are special-character evidence escaping on rows 10, 40, and 446.
+- Cache/reuse source: DSPy cache disabled for the live v1 smoke; no saved raw-output reuse.
+- Supersedes: `gan2026_llm_heavy_evidence_selection_decision0007_validation25_contract_triage_2026-06-03`.
+- Claim language: Decision 0007 validation25 development smoke only. V1 fixes raw parser-label grammar and operand completeness, but promotion remains rejected because selected evidence exactness is 22/25 and the mechanical adapter regresses two raw-correct cluster-cadence rows.
+- Artifacts: `experiments/gan2026_llm_heavy_evidence_selection_with_deterministic_adapters_validation25_gpt41mini_v1_2026-06-03.jsonl`, `experiments/gan2026_llm_heavy_evidence_selection_with_deterministic_adapters_validation25_gpt41mini_v1_2026-06-03.md`.
 
 ### `gan2026_llm_only_typed_adapter_reasoner_v0_validation50_diagnostic_2026-06-02`
 - Date/split: `2026-06-02`; `validation`; `50` rows.

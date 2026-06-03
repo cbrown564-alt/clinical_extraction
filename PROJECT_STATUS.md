@@ -16,6 +16,8 @@ source-id and temporality contract replay is
 `experiments/gan2026_hybrid_parallel_state_candidate_reasoner_validation25_gpt41mini_v0_contract_fix_replay_2026-06-03.md`;
 the matched comparison baseline remains
 `experiments/gan2026_predeclared_architecture_matched_validation25_comparison_2026-06-03.md`.
+The LLM-heavy Decision 0007 v1 smoke is
+`experiments/gan2026_llm_heavy_evidence_selection_with_deterministic_adapters_validation25_gpt41mini_v1_2026-06-03.md`.
 
 ## Guardrails
 
@@ -33,18 +35,11 @@ the matched comparison baseline remains
   adapters, and production policy separately named and ablated.
 - Use typed DSPy outputs with scoped `JSONAdapter` for new LLM/DSPy architectures.
 
-## Context Links
-
-- Reference map: `docs/research/gan2026_project_history_log_2026-06-02.md`.
-- Synthesis: `docs/research/gan2026_full_research_retrospective_2026-06-02.md`.
-- Boundary: `experiments/gan2026_hybrid_llm_deterministic_boundary_report_2026-06-02.md`.
-- Policy: `docs/decisions/0007-llm-heavy-clinical-selection-deterministic-adapters.md`.
-
 ## Active Priorities
 
-1. Revise `llm_heavy_evidence_selection_with_deterministic_adapters` selected
-   evidence, operand completeness, and raw parser-label grammar as a Decision
-   0007 diagnostic.
+1. Decide the LLM-heavy Decision 0007 next repair: special-character evidence
+   exactness on rows `10`, `40`, `446` and cluster-cadence mechanical-adapter
+   regressions on rows `187`, `190`.
 2. Triage the remaining hybrid selected-evidence exactness defect before
    treating validation50 as cleanly earned, despite the repaired source-trace
    gate.
@@ -56,8 +51,9 @@ the matched comparison baseline remains
 
 ### Now
 
-- For LLM-heavy Decision 0007, triage exact-evidence failures, missing operands,
-  wrong selected clinical fact/operand rows, and raw parser-label grammar.
+- For LLM-heavy Decision 0007, review whether the primary layer should be raw
+  model parser labels after v1 reached 25/25 raw Purist, or whether the
+  mechanical adapter needs a cluster-cadence rendering fix before another smoke.
 - Review the one remaining hybrid selected-evidence exactness failure from the
   contract-fix replay before validation50 escalation.
 
@@ -72,29 +68,35 @@ the matched comparison baseline remains
 
 ### Blocked
 
-- Final benchmark-comparison language and further holdout analysis are blocked
-  until replication comparability and locked-test discipline permit them.
+- Benchmark language and holdout analysis are blocked until replication
+  comparability and locked-test discipline permit them.
 - Qwen 3.6 full v5 validation ladder remains blocked until strict
   schema-compatible output or a named Qwen schema-repair ablation exists.
 
 ### Done Recently
 
+- 2026-06-03: Ran live LLM-heavy Decision 0007 v1 validation25 smoke: 25/25
+  structured, 0 parse/call
+  failures, 25/25 raw parser labels scorable and Purist. Gate still rejects:
+  selected evidence exact is 22/25 and the mechanical adapter regresses
+  raw-correct cluster-cadence rows `187`, `190`.
+- 2026-06-03: Implemented the LLM-heavy Decision 0007 v1 prompt/schema
+  contract: exact Unicode evidence copying, clinical-kind/operand consistency,
+  vague-count operands, parser-ready raw-label grammar, and v1 artifact paths.
+- 2026-06-03: Completed LLM-heavy Decision 0007 validation25 contract triage.
+  It identified exact-evidence escaping, operand-kind inconsistency,
+  cluster-axis/vague-count issues, and 0/25 parser-ready raw labels.
 - 2026-06-03: Repaired `hybrid_parallel_state_candidate_reasoner`
   source-id provenance and LLM-candidate `future` temporality schema handling.
-  Live validation25 plus replay now has 25/25 source ids valid, 25/25
-  structured LLM-candidate records, 0 parse/schema failures, 24/25 selected
-  evidence exact, and `promote_to_50` smoke outcome, pending evidence review.
+  Replay now has 25/25 source ids valid, 25/25 structured LLM-candidate records,
+  0 parse/schema failures, 24/25 selected evidence exact, and
+  `promote_to_50`, pending evidence review.
 - 2026-06-03: Ran live matched validation25 smokes for
   `llm_heavy_evidence_selection_with_deterministic_adapters` and
-  `hybrid_parallel_state_candidate_reasoner`, exposed the hybrid candidate
-  through the shared CLI, and wrote the matched comparison report. Neither
-  candidate earned validation50.
-- 2026-06-02: Implemented
-  `llm_heavy_evidence_selection_with_deterministic_adapters` scaffolding:
-  typed selected fact/evidence/operand DSPy outputs, Decision 0007 mechanical
-  adapter score layers, validation25 report gate, and shared CLI exposure.
+  `hybrid_parallel_state_candidate_reasoner`; neither earned validation50.
 
 ## Immediate Next Step
 
-Triage the LLM-heavy Decision 0007 contract failures, then compare against the
-hybrid contract-fix replay before any validation50 escalation.
+Review the LLM-heavy primary-layer contract: preserve raw parser-label success
+while fixing evidence escaping and cluster-cadence adapter regressions before
+any matched comparison or validation50 escalation.

@@ -68,20 +68,38 @@ def _prediction(raw_label: str = "multiple per week") -> SimpleNamespace:
 
 def test_build_typed_inputs_exposes_decision_0007_contract() -> None:
     inputs = reasoner.build_typed_inputs(_record())
+    instructions = " ".join(inputs["task_instructions"])
+    contract = inputs["output_contract"]
 
     assert inputs["note_text"] == _record().note_text
-    assert inputs["output_contract"]["pipeline_family"] == reasoner.PIPELINE_FAMILY
-    assert inputs["output_contract"]["typed_output_schema_version"] == (
-        reasoner.TYPED_OUTPUT_SCHEMA_VERSION
-    )
-    assert inputs["output_contract"]["top_level_outputs"] == [
+    assert contract["pipeline_family"] == reasoner.PIPELINE_FAMILY
+    assert contract["prompt_version"].endswith("_v1")
+    assert contract["typed_output_schema_version"] == reasoner.TYPED_OUTPUT_SCHEMA_VERSION
+    assert contract["typed_output_schema_version"] == "selected_fact_operands_v1"
+    assert contract["top_level_outputs"] == [
         "selected_fact",
         "operands",
         "raw_model_answer",
     ]
-    assert "model selects the clinical fact" in " ".join(inputs["task_instructions"])
+    assert "model selects the clinical fact" in instructions
+    assert "Unicode inequality symbols" in instructions
+    assert "HTML entities" in instructions
+    assert "no prefixes, underscores, plural units" in instructions
+    assert contract["raw_parser_label_grammar"]["frequency"] == (
+        "N per D unit or N to M per D to E unit"
+    )
+    assert "multiple per unit" in contract["raw_parser_label_grammar"]["vague_frequency"]
+    assert contract["evidence_copy_contract"]["preserve_unicode"] is True
+    assert contract["clinical_kind_operand_consistency"]["frequency"] == (
+        "total seizure burden, even when the note mentions clustering"
+    )
     assert "gold_label" not in str(inputs)
     assert "candidate_events" not in str(inputs)
+
+
+def test_default_artifact_paths_are_v1_contract_outputs() -> None:
+    assert "gpt41mini_v1" in str(reasoner.DEFAULT_JSONL_PATH)
+    assert "gpt41mini_v1" in str(reasoner.DEFAULT_REPORT_PATH)
 
 
 def test_mechanical_adapter_renders_from_selected_frequency_operands() -> None:
