@@ -1,0 +1,53 @@
+{
+  "artifact_kind": "gan2026_rq1_rq2_component_control_matrix",
+  "by_condition": {
+    "candidate_conditioned_evidence_only": {
+      "component_task": "evidence_selection",
+      "overload_condition": false,
+      "rows": 125,
+      "source_rows": 115
+    },
+    "candidate_only": {
+      "component_task": "candidate_generation",
+      "overload_condition": false,
+      "rows": 125,
+      "source_rows": 115
+    },
+    "candidate_plus_evidence": {
+      "component_task": "candidate_generation+evidence_selection",
+      "overload_condition": true,
+      "rows": 125,
+      "source_rows": 115
+    },
+    "candidate_plus_evidence_plus_projection": {
+      "component_task": "candidate_generation+evidence_selection+projection",
+      "overload_condition": true,
+      "rows": 125,
+      "source_rows": 115
+    },
+    "evidence_plus_projection": {
+      "component_task": "evidence_selection+projection",
+      "overload_condition": true,
+      "rows": 125,
+      "source_rows": 115
+    },
+    "gold_query_evidence_only": {
+      "component_task": "evidence_selection",
+      "overload_condition": false,
+      "rows": 125,
+      "source_rows": 115
+    },
+    "projection_only": {
+      "component_task": "projection",
+      "overload_condition": false,
+      "rows": 125,
+      "source_rows": 115
+    }
+  },
+  "claim_boundary": "Pre-call matrix for isolated and paired-task overload controls. Rows record prompt/schema obligations but do not contain fresh model outputs.",
+  "condition_count": 7,
+  "date": "2026-06-04",
+  "matrix_row_count": 875,
+  "source_row_count": 115,
+  "split_manifest": "gan2026_split_v1"
+}

@@ -1,0 +1,74 @@
+{
+  "artifact_kind": "gan2026_rq1_rq2_single_task_control_panels",
+  "by_panel_id": {
+    "balanced_validation50": {
+      "first_failure_owner_counts": {
+        "": 50
+      },
+      "gold_kind_counts": {
+        "frequency": 20,
+        "no_reference": 6,
+        "seizure_free": 8,
+        "unknown": 8,
+        "unresolved_multiple": 8
+      },
+      "hidden_family_counts": {
+        "benchmark_format_convention": 9,
+        "cluster_burden": 24,
+        "competing_semiologies": 43,
+        "current_vs_historical": 49,
+        "diary_or_log_aggregation": 47,
+        "rate_bucket_or_denominator": 38,
+        "seizure_free_duration": 10,
+        "uncertainty_or_ambiguity": 19,
+        "unknown_boundary": 7
+      },
+      "rows": 50,
+      "source_rows": 50
+    },
+    "hidden_family_hard_panel": {
+      "first_failure_owner_counts": {
+        "candidate_generation": 44,
+        "deterministic_adapter": 1,
+        "final_projection": 2,
+        "llm_clinical_selection": 2,
+        "operand_exposure": 1,
+        "projection": 9,
+        "projection_policy": 4,
+        "typed_state_representation": 12
+      },
+      "gold_kind_counts": {
+        "frequency": 35,
+        "seizure_free": 3,
+        "unknown": 22,
+        "unresolved_multiple": 15
+      },
+      "hidden_family_counts": {
+        "benchmark_format_convention": 24,
+        "candidate_absent_or_weak": 4,
+        "cluster_burden": 18,
+        "cluster_or_diary": 12,
+        "competing_semiologies": 37,
+        "current_vs_historical": 39,
+        "deterministic_miss": 4,
+        "diary_or_log_aggregation": 8,
+        "rate_bucket_or_denominator": 32,
+        "seizure_free_duration": 27,
+        "seizure_free_overreach": 11,
+        "shorthand_interval_range": 1,
+        "temporal_conflict": 10,
+        "uncertainty_or_ambiguity": 26,
+        "unclassified": 4,
+        "unknown_boundary": 20,
+        "unknown_no_reference_boundary": 14
+      },
+      "rows": 75,
+      "source_rows": 75
+    }
+  },
+  "claim_boundary": "Frozen validation-development panels for RQ1/RQ2 single-task controls; no locked-test row-level use and no model-performance claim.",
+  "date": "2026-06-04",
+  "panel_row_count": 125,
+  "source_row_count": 115,
+  "split_manifest": "gan2026_split_v1"
+}
