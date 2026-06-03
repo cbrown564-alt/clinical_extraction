@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from clinical_extraction.core.evidence import clean_semantically_neutral_text_artifacts
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     FrequencyLabelKind,
     label_to_frequency_record,
@@ -43,7 +44,7 @@ def load_records(path: Path = DEFAULT_DATA_PATH) -> list[GanRecord]:
         records.append(
             GanRecord(
                 source_row_index=int(row["source_row_index"]),
-                note_text=str(row["clinic_date"]),
+                note_text=clean_semantically_neutral_text_artifacts(str(row["clinic_date"])),
                 gold_label=_first_value(frequency_check["seizure_frequency_number"]),
                 gold_reference=_last_value(frequency_check["reference"]),
                 labels_match_all_categories=bool(row["labels_match_all_categories"]),

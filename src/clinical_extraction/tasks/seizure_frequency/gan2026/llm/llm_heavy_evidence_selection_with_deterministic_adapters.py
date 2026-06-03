@@ -14,7 +14,12 @@ from typing import Any, Literal
 import dspy
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
-from clinical_extraction.core.evidence import evidence_is_substring
+from clinical_extraction.core.evidence import (
+    clean_semantically_neutral_text_artifacts,
+    evidence_is_substring,
+    repair_case_only_evidence_copy,
+    repair_evidence_text_if_source_exact,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     write_jsonl_rows,
@@ -1348,38 +1353,15 @@ def _repair_optional_evidence_text_if_source_exact(
 
 
 def _repair_evidence_text_if_source_exact(evidence: str, note_text: str) -> str:
-    if evidence_is_substring(note_text, evidence):
-        return evidence
-    repaired = _replace_common_escaped_inequality_artifacts(evidence)
-    if repaired != evidence and evidence_is_substring(note_text, repaired):
-        return repaired
-    case_repaired = _repair_case_only_evidence_copy(repaired, note_text)
-    if case_repaired != repaired:
-        return case_repaired
-    return evidence
+    return repair_evidence_text_if_source_exact(evidence, note_text)
 
 
 def _repair_case_only_evidence_copy(evidence: str, note_text: str) -> str:
-    start = note_text.lower().find(evidence.lower())
-    if start < 0:
-        return evidence
-    return note_text[start : start + len(evidence)]
+    return repair_case_only_evidence_copy(evidence, note_text)
 
 
 def _replace_common_escaped_inequality_artifacts(text: str) -> str:
-    replacements = {
-        "\x0264": "≤",
-        "\x0260;": "≤",
-        "\x0260": "≤",
-        "\x026#8804;": "≤",
-        "\\u2264": "≤",
-        "&le;": "≤",
-        "&#8804;": "≤",
-        "&#x2264;": "≤",
-    }
-    for before, after in replacements.items():
-        text = text.replace(before, after)
-    return text
+    return clean_semantically_neutral_text_artifacts(text)
 
 
 def _range_label(low: float, high: float | None) -> str:
