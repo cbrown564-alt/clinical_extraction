@@ -33,9 +33,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label_format_preserving,
 )
 
-PROMPT_VERSION = "gan2026_llm_heavy_evidence_selection_deterministic_adapters_v0"
+PROMPT_VERSION = "gan2026_llm_heavy_evidence_selection_deterministic_adapters_v1"
 PIPELINE_FAMILY = "llm_heavy_evidence_selection_with_deterministic_adapters"
-TYPED_OUTPUT_SCHEMA_VERSION = "selected_fact_operands_v0"
+TYPED_OUTPUT_SCHEMA_VERSION = "selected_fact_operands_v1"
 SCORE_LAYER_NAMES = (
     "raw_model_parser_label",
     "raw_model_clinical_selection",
@@ -47,12 +47,12 @@ PRIMARY_SCORE_LAYER = "mechanical_adapter_label"
 DEFAULT_JSONL_PATH = Path(
     "experiments/"
     "gan2026_llm_heavy_evidence_selection_with_deterministic_adapters_validation25_"
-    "gpt41mini_v0_2026-06-02.jsonl"
+    "gpt41mini_v1_2026-06-03.jsonl"
 )
 DEFAULT_REPORT_PATH = Path(
     "experiments/"
     "gan2026_llm_heavy_evidence_selection_with_deterministic_adapters_validation25_"
-    "gpt41mini_v0_2026-06-02.md"
+    "gpt41mini_v1_2026-06-03.md"
 )
 
 
@@ -251,6 +251,36 @@ def build_typed_inputs(record: GanFrequencyRecord) -> dict[str, Any]:
                 "operands for cluster cadence and events per cluster; seizure-free "
                 "operands for duration rendering."
             ),
+            (
+                "Copy evidence exactly from the source note, preserving Unicode "
+                "inequality symbols and punctuation; do not emit HTML entities, "
+                "control-character encodings, escaped mathematical symbols, or "
+                "normalized substitutes inside evidence fields."
+            ),
+            (
+                "Set clinical_kind to frequency for total seizure burden such as "
+                "17 per month even when the note mentions clustering; use "
+                "cluster_frequency only when the selected answer is itself a cluster "
+                "cadence."
+            ),
+            (
+                "Keep clinical_kind consistent with the non-null operand family used "
+                "for rendering: frequency facts need frequency operands, cluster "
+                "cadence facts need cluster operands, and seizure-free facts need "
+                "seizure-free operands."
+            ),
+            (
+                "For vague counts such as multiple, many, or several, populate "
+                "frequency.vague_count unless the note states an exact count."
+            ),
+            (
+                "raw_model_answer.raw_model_parser_label must use parser-ready Gan "
+                "grammar: N per D unit; N to M per D to E unit; multiple per unit; "
+                "seizure free for D unit; unknown; or no seizure frequency reference. "
+                "Use no prefixes, underscores, plural units, prose modifiers, or "
+                "cluster tags unless a side-car cluster syntax test explicitly asks "
+                "for them."
+            ),
             "Return typed fields, not an opaque JSON string payload.",
         ],
         "output_contract": {
@@ -278,6 +308,39 @@ def build_typed_inputs(record: GanFrequencyRecord) -> dict[str, Any]:
             "selected_fact_trace_rule": (
                 "raw_model_answer.selected_evidence must equal selected_fact.evidence"
             ),
+            "evidence_copy_contract": {
+                "preserve_unicode": True,
+                "forbid_html_entities": True,
+                "forbid_control_character_encodings": True,
+                "forbid_normalized_symbol_substitutes": True,
+            },
+            "clinical_kind_operand_consistency": {
+                "frequency": (
+                    "total seizure burden, even when the note mentions clustering"
+                ),
+                "cluster_frequency": (
+                    "cluster cadence only when the selected answer is a cluster cadence"
+                ),
+                "seizure_free": "requires seizure-free duration operands",
+            },
+            "vague_count_contract": {
+                "terms": ["multiple", "many", "several"],
+                "target_field": "operands.frequency.vague_count",
+                "rule": "use vague_count unless the note states an exact count",
+            },
+            "raw_parser_label_grammar": {
+                "frequency": "N per D unit or N to M per D to E unit",
+                "vague_frequency": "multiple per unit",
+                "seizure_free": "seizure free for D unit",
+                "sentinels": ["unknown", "no seizure frequency reference"],
+                "forbidden": [
+                    "prefixes",
+                    "underscores",
+                    "plural units",
+                    "prose modifiers",
+                    "cluster tags outside explicit side-car tests",
+                ],
+            },
         },
     }
 
