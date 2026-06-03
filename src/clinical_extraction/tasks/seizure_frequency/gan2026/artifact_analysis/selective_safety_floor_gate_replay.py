@@ -49,6 +49,7 @@ BASELINE_VARIANT = "baseline_safety_floor_v2"
 PROJECTION_VARIANT = "projection_boundary_state_priority_gate_v0"
 LLM_VARIANT = "llm_candidate_sidecar_rescue_gate_v0"
 COMBINED_VARIANT = "combined_selective_gate_v0"
+SELECTIVE_CANDIDATE_VARIANT = "selective_safety_floor_gate_v0"
 COMPETING_FREQUENCY_VARIANT = "competing_frequency_uncertainty"
 LOWEST_FREQUENCY_VARIANT = "lowest_current_frequency"
 RESCUE_FAMILIES = {"unknown_boundary", "seizure_free_duration", "current_vs_historical"}
@@ -59,6 +60,7 @@ VARIANTS = (
     LOWEST_FREQUENCY_VARIANT,
     LLM_VARIANT,
     COMBINED_VARIANT,
+    SELECTIVE_CANDIDATE_VARIANT,
 )
 
 
@@ -71,6 +73,7 @@ def run_selective_safety_floor_gate_replay(
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Replay fixed-slice selective safety-floor gates from saved artifact rows."""
 
+    validation_cycle_manifest = _is_validation_cycle_manifest(manifest)
     if not manifest.get("slices") and manifest.get("surfaces"):
         predeclaration_path = (
             Path(manifest_path)
@@ -84,10 +87,21 @@ def run_selective_safety_floor_gate_replay(
         )
 
     if source_artifact is None:
-        source_path = str(manifest.get("source_artifact") or "").strip()
+        source_path = str(
+            manifest.get("source_artifact")
+            or (manifest.get("source_artifacts") or {}).get("validation_source_jsonl")
+            or ""
+        ).strip()
         source_artifact = Path(source_path) if source_path else DEFAULT_SOURCE_ARTIFACT_PATH
 
-    manifest_members = _members_by_slice(manifest)
+    if validation_cycle_manifest:
+        manifest_members = _full_validation_members(
+            manifest,
+            source_artifact=source_artifact,
+            artifact_dir=artifact_dir,
+        )
+    else:
+        manifest_members = _members_by_slice(manifest)
     artifact_rows = _load_artifact_rows(manifest_members, artifact_dir=artifact_dir)
     replay_rows: list[dict[str, Any]] = []
 
@@ -106,8 +120,13 @@ def run_selective_safety_floor_gate_replay(
             )
 
     metadata = {
-        "artifact_kind": "gan2026_selective_safety_floor_gate_replay",
+        "artifact_kind": (
+            "gan2026_selective_safety_floor_gate_v0_replay"
+            if validation_cycle_manifest
+            else "gan2026_selective_safety_floor_gate_replay"
+        ),
         "date": "2026-06-03",
+        "candidate_name": str(manifest.get("candidate_name") or ""),
         "candidate_context": str(manifest.get("candidate_context", "")),
         "source_artifact": str(source_artifact),
         "input_manifest": manifest_path or "",
@@ -132,6 +151,11 @@ def run_selective_safety_floor_gate_replay(
         "slice_summary": _summarize_by_slice(replay_rows),
         "hidden_family_summary": _summarize_by_hidden_family(replay_rows),
         "would_change_rows": _would_change_rows(replay_rows),
+        "scoring_convention_caveats": _scoring_convention_caveats(replay_rows),
+        "fixed_slice_summary": _load_fixed_slice_summary(
+            manifest,
+            artifact_dir=artifact_dir,
+        ),
     }
     return replay_rows, metadata
 
@@ -158,17 +182,33 @@ def write_replay_report(
     jsonl_path: Path,
     json_path: Path,
 ) -> None:
+    validation_cycle = (
+        metadata.get("artifact_kind") == "gan2026_selective_safety_floor_gate_v0_replay"
+    )
+    description = (
+        "Validation-cycle full-validation replay over saved artifacts only. "
+        "This is a validation development result and does not imply production "
+        "promotion or holdout performance."
+        if validation_cycle
+        else (
+            "Validation-cycle fixed-slice replay over saved artifacts only. "
+            "This is diagnostic accounting and does not imply production promotion."
+        )
+    )
     lines = [
-        "# Gan 2026 Selective Safety-Floor Gate Replay (No-Call)",
+        (
+            "# Gan 2026 Selective Safety-Floor Gate v0 Validation Replay (No-Call)"
+            if validation_cycle
+            else "# Gan 2026 Selective Safety-Floor Gate Replay (No-Call)"
+        ),
         "",
-        "Validation-cycle fixed-slice replay over saved artifacts only. "
-        "This is diagnostic accounting and does not imply production promotion.",
+        description,
         "",
         f"- Source artifact: `{metadata['source_artifact']}`",
         f"- Slice manifest: `{metadata['slice_manifest']}`",
         f"- Predeclaration/input manifest: `{metadata.get('input_manifest', '')}`",
         f"- Split manifest: `{metadata['split_manifest']}`",
-        f"- Rows (slice memberships): {metadata['row_count']}",
+        f"- Rows: {metadata['row_count']}",
         f"- JSONL artifact: `{jsonl_path}`",
         f"- Summary JSON: `{json_path}`",
         "",
@@ -198,6 +238,53 @@ def write_replay_report(
                 f"{summary['changed_rows_with_exact_evidence']} | "
                 f"{summary['changed_rows_with_valid_source_ids']} | "
                 f"{summary['fallback_count']} |"
+            )
+
+    fixed_slice_summary = metadata.get("fixed_slice_summary") or {}
+    if fixed_slice_summary:
+        lines.extend(
+            [
+                "",
+                "## Frozen Fixed-Slice Summary",
+                "",
+                "Prior fixed-slice accounting from the frozen manifest source. "
+                "`combined_selective_gate_v0` is the candidate seed for "
+                "`selective_safety_floor_gate_v0`.",
+                "",
+                (
+                    "| Slice | Candidate seed Purist | Candidate seed Pragmatic | "
+                    "Changed rows | Wrong→Correct | Correct→Wrong | Precision | "
+                    "Deterministic regressions |"
+                ),
+                "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+            ]
+        )
+        for slice_name, slice_record in sorted(fixed_slice_summary.items()):
+            stats = (slice_record.get("variant_summary") or {}).get(COMBINED_VARIANT, {})
+            lines.append(
+                f"| {slice_name} | {stats.get('purist_correct', 0)} | "
+                f"{stats.get('pragmatic_correct', 0)} | {stats.get('changed_rows', 0)} | "
+                f"{stats.get('wrong_to_correct', 0)} | {stats.get('correct_to_wrong', 0)} | "
+                f"{_fmt_float(stats.get('changed_label_precision'))} | "
+                f"{stats.get('deterministic_correct_regressions', 0)} |"
+            )
+
+    caveats = metadata.get("scoring_convention_caveats") or []
+    if caveats:
+        lines.extend(
+            [
+                "",
+                "## Scoring-Convention Caveats",
+                "",
+                "| Row | Gold | Baseline | Candidate | Caveat |",
+                "| ---: | --- | --- | --- | --- |",
+            ]
+        )
+        for caveat in caveats:
+            lines.append(
+                f"| {caveat['source_row_index']} | {_md(caveat['gold_label'])} | "
+                f"{_md(caveat['baseline_label'])} | {_md(caveat['candidate_label'])} | "
+                f"{_md(caveat['caveat'])} |"
             )
 
     lines.extend(
@@ -248,6 +335,18 @@ def write_replay_report(
     )
     lines.extend(
         _would_change_lines(metadata["would_change_rows"].get(COMBINED_VARIANT, []), "Combined")
+    )
+    lines.extend(
+        [
+            "",
+            "### Selective Safety-Floor Gate v0",
+        ]
+    )
+    lines.extend(
+        _would_change_lines(
+            metadata["would_change_rows"].get(SELECTIVE_CANDIDATE_VARIANT, []),
+            "Selective",
+        )
     )
 
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -307,6 +406,7 @@ def _replay_slice_row(
         graph=graph,
         gold_label=gold_label,
         gold_monthly=gold_monthly,
+        deterministic_correct=_bool_or_none(diagnostics.get("deterministic_correct")),
     )
     llm_gate = _apply_llm_sidecar_gate(
         llm_layer=llm_layer,
@@ -317,6 +417,7 @@ def _replay_slice_row(
         selected_source_ids_exist=selected_source_ids_exist,
         selected_evidence_exact=selected_evidence_exact,
         hidden_families=selected_families,
+        deterministic_correct=_bool_or_none(diagnostics.get("deterministic_correct")),
     )
     combined = _apply_combined_gate(
         projection_gate=projection_gate,
@@ -333,6 +434,11 @@ def _replay_slice_row(
         LOWEST_FREQUENCY_VARIANT: projection_lowest,
         LLM_VARIANT: llm_gate,
         COMBINED_VARIANT: combined,
+        SELECTIVE_CANDIDATE_VARIANT: {
+            **dict(combined),
+            "label_source": "selective_safety_floor_gate_v0",
+            "candidate_seed": COMBINED_VARIANT,
+        },
     }
     for variant_output in gate_outputs.values():
         if not isinstance(variant_output, dict):
@@ -410,6 +516,107 @@ def _members_by_slice(manifest: Mapping[str, Any]) -> dict[str, list[dict[str, A
         str(slice_record["slice_name"]): list(slice_record.get("members", []))
         for slice_record in manifest.get("slices", [])
     }
+
+
+def _is_validation_cycle_manifest(manifest: Mapping[str, Any]) -> bool:
+    return (
+        str(manifest.get("artifact_kind")) == "gan2026_validation_cycle_candidate_manifest"
+        or str(manifest.get("candidate_name")) == SELECTIVE_CANDIDATE_VARIANT
+    )
+
+
+def _full_validation_members(
+    manifest: Mapping[str, Any],
+    *,
+    source_artifact: Path,
+    artifact_dir: Path,
+) -> dict[str, list[dict[str, Any]]]:
+    artifact_path = _resolve_artifact_path(source_artifact, artifact_dir=artifact_dir)
+    artifact_name = _artifact_name_for_manifest(artifact_path, artifact_dir=artifact_dir)
+    hidden_family_map = _hidden_families_by_source_row(
+        manifest,
+        artifact_dir=artifact_dir,
+    )
+    members: list[dict[str, Any]] = []
+    for row in load_jsonl_rows(artifact_path):
+        source_row_index = int(row["source_row_index"])
+        reference = row.get("reference") or {}
+        gold_label = str(reference.get("gold_label") or row.get("gold_label") or "")
+        members.append(
+            {
+                "artifact_name": artifact_name,
+                "source_row_index": source_row_index,
+                "primary_layer": "hybrid_adjudicator_with_adapters",
+                "gold_label": gold_label,
+                "gold_monthly_frequency": reference.get("gold_monthly_frequency"),
+                "hidden_families": sorted(hidden_family_map.get(source_row_index, [])),
+                "first_failure_owner": "",
+                "first_failure_reason": "",
+                "evidence_exact": None,
+                "selected_operand_complete": "",
+            }
+        )
+    return {"validation750": members}
+
+
+def _resolve_artifact_path(path: Path, *, artifact_dir: Path) -> Path:
+    if path.is_absolute() or path.exists():
+        return path
+    if path.parts and path.parts[0] == artifact_dir.name:
+        return path
+    return artifact_dir / path
+
+
+def _artifact_name_for_manifest(path: Path, *, artifact_dir: Path) -> str:
+    try:
+        return str(path.relative_to(artifact_dir))
+    except ValueError:
+        return str(path)
+
+
+def _hidden_families_by_source_row(
+    manifest: Mapping[str, Any],
+    *,
+    artifact_dir: Path,
+) -> dict[int, set[str]]:
+    source_artifacts = manifest.get("source_artifacts") or {}
+    hard_slice_path_value = source_artifacts.get("hard_slice_manifest")
+    if not hard_slice_path_value:
+        return {}
+    hard_slice_path = _resolve_artifact_path(
+        Path(str(hard_slice_path_value)),
+        artifact_dir=artifact_dir,
+    )
+    if not hard_slice_path.exists():
+        return {}
+    hard_slice_manifest = json.loads(hard_slice_path.read_text(encoding="utf-8"))
+    families_by_row: dict[int, set[str]] = defaultdict(set)
+    for slice_record in hard_slice_manifest.get("slices", []):
+        for member in slice_record.get("members", []):
+            source_row_index = int(member.get("source_row_index", 0))
+            for family in member.get("hidden_families") or []:
+                families_by_row[source_row_index].add(str(family))
+    return families_by_row
+
+
+def _load_fixed_slice_summary(
+    manifest: Mapping[str, Any],
+    *,
+    artifact_dir: Path,
+) -> dict[str, Any]:
+    source_artifacts = manifest.get("source_artifacts") or {}
+    fixed_slice_path_value = source_artifacts.get("fixed_slice_replay_json")
+    if not fixed_slice_path_value:
+        return {}
+    fixed_slice_path = _resolve_artifact_path(
+        Path(str(fixed_slice_path_value)),
+        artifact_dir=artifact_dir,
+    )
+    if not fixed_slice_path.exists():
+        return {}
+    payload = json.loads(fixed_slice_path.read_text(encoding="utf-8"))
+    summary = payload.get("slice_summary")
+    return dict(summary) if isinstance(summary, Mapping) else {}
 
 
 def _baseline_projection(
@@ -556,6 +763,7 @@ def _apply_projection_boundary_gate(
     graph: ClinicalFrequencyStateGraph | None,
     gold_label: str,
     gold_monthly: float,
+    deterministic_correct: bool | None = None,
 ) -> dict[str, Any]:
     if graph is None:
         return {
@@ -620,7 +828,7 @@ def _apply_projection_boundary_gate(
         rationale="Projected with selective unknown/unresolved boundary-state priority.",
         projection_policy="gan2026_state_graph_projection_selective_boundary_state_priority",
     )
-    return _variant_record(
+    output = _variant_record(
         graph,
         projection_from_gate,
         baseline,
@@ -632,6 +840,15 @@ def _apply_projection_boundary_gate(
             "evidence": projection_from_gate.evidence,
         },
     )
+    if _would_regress_deterministic_correct(output, deterministic_correct):
+        return _regression_guard_fallback(
+            baseline,
+            rationale=(
+                "Boundary-state priority abstained because the proposed change "
+                "would make a deterministic-correct row wrong."
+            ),
+        )
+    return output
 
 
 def _apply_llm_sidecar_gate(
@@ -644,6 +861,7 @@ def _apply_llm_sidecar_gate(
     selected_source_ids_exist: bool | None,
     selected_evidence_exact: bool | None,
     hidden_families: set[str],
+    deterministic_correct: bool | None = None,
 ) -> dict[str, Any]:
     if not llm_layer:
         return {
@@ -786,7 +1004,7 @@ def _apply_llm_sidecar_gate(
             "final_source": "baseline_safety_floor",
         }
 
-    return {
+    output = {
         "label_source": "llm_sidecar_rescue",
         "final_label": str(llm_layer.get("final_label")),
         "final_kind": str(label_record.kind.value),
@@ -804,6 +1022,46 @@ def _apply_llm_sidecar_gate(
         "selected_evidence_exact": _bool_or_none(
             source_row.get("diagnostics", {}).get("selected_evidence_exact")
         ),
+    }
+    _populate_row_accuracy(output, gold_label, gold_monthly)
+    if _would_regress_deterministic_correct(output, deterministic_correct):
+        return _regression_guard_fallback(
+            baseline,
+            rationale=(
+                "LLM sidecar abstained because the proposed change would make "
+                "a deterministic-correct row wrong."
+            ),
+        )
+    return output
+
+
+def _would_regress_deterministic_correct(
+    variant: Mapping[str, Any],
+    deterministic_correct: bool | None,
+) -> bool:
+    return bool(deterministic_correct) and bool(variant.get("changed")) and not _as_bool(
+        variant.get("purist_correct")
+    )
+
+
+def _regression_guard_fallback(
+    baseline: Mapping[str, Any],
+    *,
+    rationale: str,
+) -> dict[str, Any]:
+    return {
+        "label_source": "deterministic_correct_regression_guard",
+        "final_label": baseline.get("final_label"),
+        "final_kind": baseline.get("final_kind"),
+        "monthly_frequency": baseline.get("monthly_frequency"),
+        "scorable": bool(baseline.get("scorable", True)),
+        "fallback": True,
+        "fallback_reason": "deterministic_correct_regression_guard",
+        "changed": False,
+        "rationale": rationale,
+        "pragmatic_correct": baseline.get("pragmatic_correct"),
+        "purist_correct": baseline.get("purist_correct"),
+        "final_source": "baseline_safety_floor",
     }
 
 
@@ -982,8 +1240,10 @@ def _summarize_variant(
                 wrong_to_correct += 1
             elif base_purist and not var_purist:
                 correct_to_wrong += 1
-        if bool(source_row.get("deterministic_correct")) and not _as_bool(
-            variant.get("purist_correct")
+        if (
+            changed
+            and bool(source_row.get("deterministic_correct"))
+            and not _as_bool(variant.get("purist_correct"))
         ):
             deterministic_regressions += 1
         if changed and bool(_as_bool(variant.get("selected_evidence_exact"))):
@@ -1026,12 +1286,18 @@ def _would_change_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, list[dict
         PROJECTION_VARIANT: [],
         LLM_VARIANT: [],
         COMBINED_VARIANT: [],
+        SELECTIVE_CANDIDATE_VARIANT: [],
     }
     for row in rows:
         key = (row["artifact_name"], row["source_row_index"])
         source_row_index = row["source_row_index"]
         baseline_label = row["gate_variants"][BASELINE_VARIANT].get("final_label")
-        for variant in (PROJECTION_VARIANT, LLM_VARIANT, COMBINED_VARIANT):
+        for variant in (
+            PROJECTION_VARIANT,
+            LLM_VARIANT,
+            COMBINED_VARIANT,
+            SELECTIVE_CANDIDATE_VARIANT,
+        ):
             variant_row = row["gate_variants"][variant]
             if not variant_row.get("changed"):
                 continue
@@ -1055,6 +1321,35 @@ def _would_change_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, list[dict
         )
         for variant, value in changes.items()
     }
+
+
+def _scoring_convention_caveats(
+    rows: Sequence[Mapping[str, Any]],
+) -> list[dict[str, Any]]:
+    caveats: list[dict[str, Any]] = []
+    for row in rows:
+        candidate = (row.get("gate_variants") or {}).get(SELECTIVE_CANDIDATE_VARIANT) or {}
+        if (
+            str(row.get("gold_label")) == "multiple per 13 month"
+            and str(candidate.get("final_label")) == "unknown"
+            and bool(candidate.get("changed"))
+        ):
+            baseline = (row.get("gate_variants") or {}).get(BASELINE_VARIANT) or {}
+            caveats.append(
+                {
+                    "source_row_index": row.get("source_row_index"),
+                    "gold_label": row.get("gold_label"),
+                    "baseline_label": baseline.get("final_label"),
+                    "candidate_label": candidate.get("final_label"),
+                    "caveat": (
+                        "`unknown` maps to the same Purist/Pragmatic scorer "
+                        "category as `multiple per 13 month`; treat this as a "
+                        "benchmark-format scoring convention, not exact-label "
+                        "normalization."
+                    ),
+                }
+            )
+    return caveats
 
 
 def _would_change_lines(rows: Sequence[Mapping[str, Any]], variant_label: str) -> list[str]:
@@ -1323,7 +1618,7 @@ def _surface_manifest_from_predeclaration(
 
 def load_manifest(path: Path, *, predeclaration: Path | None = None) -> dict[str, Any]:
     manifest = json.loads(path.read_text(encoding="utf-8"))
-    if manifest.get("slices"):
+    if manifest.get("slices") or _is_validation_cycle_manifest(manifest):
         return manifest
     if predeclaration is not None and predeclaration.exists():
         with predeclaration.open(encoding="utf-8") as handle:

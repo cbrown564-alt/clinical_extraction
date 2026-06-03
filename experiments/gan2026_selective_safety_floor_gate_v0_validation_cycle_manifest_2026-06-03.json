@@ -1,0 +1,153 @@
+{
+  "artifact_kind": "gan2026_validation_cycle_candidate_manifest",
+  "candidate_name": "selective_safety_floor_gate_v0",
+  "candidate_seed": "combined_selective_gate_v0",
+  "date": "2026-06-03",
+  "split_manifest": "gan2026_split_v1",
+  "development_surface": "validation_only",
+  "planned_mode": "no_call_replay_over_saved_validation_artifacts",
+  "claim_language": "Validation-cycle hybrid selective-action candidate; not a benchmark, holdout, production-policy, or LLM-first claim.",
+  "decision": "freeze_as_separate_validation_cycle_candidate_seed",
+  "source_artifacts": {
+    "validation_source_jsonl": "experiments/gan2026_hybrid_parallel_state_candidate_reasoner_validation750_gpt41mini_v0_deterministic_safety_floor_v2_replay_2026-06-03.jsonl",
+    "fixed_slice_replay_json": "experiments/gan2026_selective_safety_floor_gate_replay_2026-06-03.json",
+    "fixed_slice_replay_jsonl": "experiments/gan2026_selective_safety_floor_gate_replay_2026-06-03.jsonl",
+    "fixed_slice_replay_report": "experiments/gan2026_selective_safety_floor_gate_replay_2026-06-03.md",
+    "gate_predeclaration_json": "experiments/gan2026_selective_safety_floor_gate_predeclaration_2026-06-03.json",
+    "hard_slice_manifest": "experiments/gan2026_atlas_candidate_generation_projection_hard_slices_2026-06-03.json",
+    "split_manifest_path": "data/Gan (2026)/splits/gan2026_split_v1.json"
+  },
+  "frozen_candidate_policy": {
+    "prediction_bearing_layer": "selective_safety_floor_gate_v0",
+    "baseline_layer": "baseline_safety_floor_v2",
+    "component_layers": [
+      "projection_boundary_state_priority_gate_v0",
+      "llm_candidate_sidecar_rescue_gate_v0",
+      "combined_selective_gate_v0"
+    ],
+    "gate_order": [
+      "baseline_safety_floor_v2",
+      "projection_boundary_state_priority_gate_v0",
+      "llm_candidate_sidecar_rescue_gate_v0_if_projection_did_not_change_row"
+    ],
+    "preserve_baseline_label": true,
+    "locked_test_allowed": false
+  },
+  "gate_definitions": {
+    "projection_boundary_state_priority_gate_v0": {
+      "fires_only_if": [
+        "saved state-graph data contain an asserted current unknown or unresolved boundary-state node",
+        "boundary-state projection is scorable",
+        "selected evidence is exact",
+        "selected source ids are valid",
+        "row is not made wrong from a deterministic-correct baseline"
+      ],
+      "attribution": "deterministic semantic arbitration, not normalization and not LLM-first"
+    },
+    "llm_candidate_sidecar_rescue_gate_v0": {
+      "fires_only_if": [
+        "llm_candidate_selector_raw is scorable after the frozen label-normalization path used by the replay",
+        "sidecar selected evidence is exact",
+        "selected source ids are valid",
+        "row belongs to frozen rescue families unknown_boundary, seizure_free_duration, or current_vs_historical",
+        "projection gate did not already change the row",
+        "row is not made wrong from a deterministic-correct baseline"
+      ],
+      "attribution": "hybrid clinical selection under deterministic safety-floor constraints, not LLM-first",
+      "frozen_rescue_families": [
+        "unknown_boundary",
+        "seizure_free_duration",
+        "current_vs_historical"
+      ]
+    }
+  },
+  "frozen_scorer_and_repair_policy": {
+    "primary_scoring_contract": [
+      "Gan 2026 Purist category correctness",
+      "Gan 2026 Pragmatic category correctness"
+    ],
+    "changed_label_accounting_against": "baseline_safety_floor_v2",
+    "require_exact_evidence_for_changed_rows": true,
+    "require_valid_source_ids_for_changed_rows": true,
+    "forbidden_changes": [
+      "scorer normalization",
+      "semantic repair",
+      "deterministic adapter",
+      "prompt",
+      "schema",
+      "model",
+      "graph-building",
+      "source-artifact regeneration",
+      "split membership",
+      "slice membership",
+      "gate order",
+      "fallback behavior"
+    ],
+    "change_policy": "If any forbidden change is required, stop and write a new validation-cycle manifest."
+  },
+  "validation_replay_surface": {
+    "allowed_surfaces": [
+      "full validation750 aggregate over saved source artifact",
+      "fixed hard-slice summaries using frozen hard-slice manifest",
+      "unique-source-row and duplicate-membership accounting",
+      "hidden-family summaries from frozen atlas labels",
+      "row-level would-change tables for validation rows only"
+    ],
+    "forbidden_surfaces": [
+      "train rows",
+      "locked-test row-level behavior",
+      "locked-test aggregate under this manifest"
+    ]
+  },
+  "required_reporting": [
+    "row count and unique source-row count",
+    "Purist correct and Pragmatic correct",
+    "changed rows versus baseline_safety_floor_v2",
+    "wrong-to-correct and correct-to-wrong transitions",
+    "deterministic-correct regressions",
+    "changed-label precision",
+    "exact-evidence count for changed rows",
+    "valid-source-id count for changed rows",
+    "fallback or abstention count",
+    "hidden-family summaries",
+    "row-level validation-only would-change tables",
+    "explicit callout for non-obvious prediction/scorer/gold relationships including unknown versus multiple per 13 month"
+  ],
+  "inspection_policy": {
+    "validation_row_level_allowed_for": [
+      "rows changed by selective_safety_floor_gate_v0",
+      "rows changed by an individual component gate",
+      "deterministic-correct regressions",
+      "correct-to-wrong transitions",
+      "changed rows without exact evidence or valid source ids",
+      "fallbacks or abstentions whose reason affects promotion language",
+      "known unknown versus multiple per 13 month scoring-convention row"
+    ],
+    "locked_test_row_level_allowed": false,
+    "locked_test_requirement": "Any locked-test use requires a separate frozen-test audit plan."
+  },
+  "stop_rules": {
+    "promote_within_validation_cycle_if_all": [
+      "0 deterministic-correct regressions",
+      "correct-to-wrong transitions are 0 or fully explained as scorer-equivalent nonsemantic changes",
+      "changed-label precision remains at least 0.95 on fixed hard slices",
+      "every changed row has exact evidence and valid source ids",
+      "projection and LLM-sidecar contributions remain separately attributable",
+      "known scoring-convention caveat is documented row by row",
+      "replay report preserves baseline and component-layer accounting"
+    ],
+    "revise_if_any": [
+      "improvements concentrate in a Gan-specific convention rather than a reusable boundary-state or clinical-selection mechanism",
+      "LLM sidecar mostly abstains outside the already inspected hard slices",
+      "candidate improves fixed slices but does not produce interpretable full-validation changed-label accounting",
+      "candidate depends on ambiguous source provenance or weak sidecar normalization"
+    ],
+    "reject_if_any": [
+      "any deterministic-correct row becomes wrong without an explicitly accepted scorer-equivalent explanation",
+      "any changed row lacks exact evidence or valid source ids",
+      "any gate uses gold labels, oracle correctness, or locked-test behavior",
+      "a scorer, repair, graph, prompt, schema, model, or source-artifact change is required to reproduce the result under this manifest"
+    ]
+  },
+  "locked_test_policy": "Out of scope. A future holdout run requires a separate frozen-test audit plan and a new freeze."
+}

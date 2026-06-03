@@ -154,6 +154,7 @@ def test_pipeline_registry_exposes_routine_llm_experiments() -> None:
         "llm_only_minimal_evidence_selector",
         "llm_only_structured_events",
         "llm_only_typed_adapter_reasoner",
+        "llm_only_typed_operations_reasoner",
     }
     assert specs["hybrid_parallel_state_candidate_reasoner"].default_max_tokens == 1800
     assert specs["hybrid_rules_candidates_llm_adjudicator"].default_max_tokens == 1100
@@ -165,6 +166,7 @@ def test_pipeline_registry_exposes_routine_llm_experiments() -> None:
     assert specs["llm_heavy_clinical_frequency_reasoner"].default_max_tokens == 1800
     assert specs["llm_only_minimal_evidence_selector"].default_max_tokens == 900
     assert specs["llm_only_typed_adapter_reasoner"].default_max_tokens == 1800
+    assert specs["llm_only_typed_operations_reasoner"].default_max_tokens == 1800
 
 
 def _dummy_spec(tmp_path: Path, calls: dict[str, Any] | None = None) -> GanLlmPipelineCliSpec:

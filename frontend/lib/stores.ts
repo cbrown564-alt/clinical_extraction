@@ -147,6 +147,34 @@ interface ArchitectState {
   reset: () => void;
 }
 
+// ── Laboratory store ──
+
+interface LaboratoryState {
+  ablationConfig: AblationConfigPayload;
+  toggleRuleGroup: (group: string) => void;
+  toggleRuleId: (ruleId: string) => void;
+  setAblationConfig: (config: AblationConfigPayload) => void;
+}
+
+export const useLaboratoryStore = create<LaboratoryState>((set) => ({
+  ablationConfig: {},
+  toggleRuleGroup: (group) =>
+    set((s) => {
+      const current = new Set(s.ablationConfig.enabled_groups ?? []);
+      if (current.has(group)) current.delete(group);
+      else current.add(group);
+      return { ablationConfig: { ...s.ablationConfig, enabled_groups: Array.from(current) } };
+    }),
+  toggleRuleId: (ruleId) =>
+    set((s) => {
+      const current = new Set(s.ablationConfig.disabled_rule_ids ?? []);
+      if (current.has(ruleId)) current.delete(ruleId);
+      else current.add(ruleId);
+      return { ablationConfig: { ...s.ablationConfig, disabled_rule_ids: Array.from(current) } };
+    }),
+  setAblationConfig: (ablationConfig) => set({ ablationConfig }),
+}));
+
 export const useArchitectStore = create<ArchitectState>((set) => ({
   noteText: "",
   split: null,

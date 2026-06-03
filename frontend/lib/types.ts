@@ -361,3 +361,58 @@ export interface RunSummary {
   };
   rows: RowScore[];
 }
+
+// ── Laboratory (Phase 4) ──
+
+export interface RunAblationResponse {
+  split: string;
+  pipeline: string;
+  row_count: number;
+  ablation_config: AblationConfigPayload;
+  summary: {
+    total: number;
+    purist: {
+      accuracy: number;
+      f1: number;
+      precision: number;
+      recall: number;
+      per_label: Record<string, CategoryMetrics>;
+    };
+    pragmatic: {
+      accuracy: number;
+      f1: number;
+      precision: number;
+      recall: number;
+      per_label: Record<string, CategoryMetrics>;
+    };
+  };
+  rows: Array<{
+    source_row_index: number;
+    prediction_label: string;
+    gold_label: string;
+    purist_predicted_category: string;
+    purist_gold_category: string;
+    pragmatic_predicted_category: string;
+    pragmatic_gold_category: string;
+    evidence_valid: boolean;
+  }>;
+}
+
+export interface PromptPolicy {
+  policy_id: string;
+  controlled_variable: string;
+  portability: string;
+  status: string;
+  description: string;
+}
+
+export interface PromptPayload {
+  module: string;
+  prompt_version: string;
+  policy_taxonomy: PromptPolicy[];
+  policy_ids: string[];
+}
+
+export interface PromptsResponse {
+  prompts: PromptPayload[];
+}

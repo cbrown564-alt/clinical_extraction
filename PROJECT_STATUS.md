@@ -40,6 +40,15 @@ LLM sidecar rescue second. This is not production promotion. The freeze is only
 for a named validation candidate because the fixed slices showed high-precision
 rescues, 0 deterministic-correct regressions, exact evidence, and valid source
 ids, while remaining narrow, no-call, and validation-derived.
+The frozen manifest is
+`experiments/gan2026_selective_safety_floor_gate_v0_validation_cycle_manifest_2026-06-03.md`
+with machine-readable JSON alongside it.
+The validation750 no-call replay is recorded in
+`experiments/gan2026_selective_safety_floor_gate_v0_validation750_replay_2026-06-03.md`
+and `.json`/`.jsonl`: `selective_safety_floor_gate_v0` reaches 708/750
+Purist (0.9440) and 715/750 Pragmatic (0.9533), with 21 changed rows, 11
+wrong-to-correct, 0 correct-to-wrong, 0 deterministic-correct regressions, and
+21/21 changed rows with exact evidence and valid source ids.
 
 Attribution caveat: this is a hybrid deterministic-safety-floor development
 result, not an LLM-first result and not a benchmark or holdout claim. Decision
@@ -80,17 +89,22 @@ and projection arbitration before another broad architecture or multi-agent run.
 
 ### Now
 
-- Freeze a named `selective_safety_floor_gate_v0` validation-cycle candidate
-  manifest from the fixed-slice replay before any broad validation replay.
+- Decide whether to write a separate frozen-test audit plan for
+  `selective_safety_floor_gate_v0`; do not run locked test from the validation
+  manifest.
 
 ### Next
 
 - If iterating on Decision 0007, focus on selected-fact and operand completeness
   only after slice targets and stop rules are predeclared.
-- Implement the typed-operations target as the next LLM-heavy lane (leveraging the `llm_only_structured_events` design pattern): extract event count, time window, denominator, cluster size, seizure-free duration, temporal anchor, semiology grouping, uncertainty type, and selected evidence ID, then overlay the state-node graph to transparently select the best set of facts for the target scoring policy or clinical clarity.
-- Replay the frozen selective gate candidate over validation with unchanged
-  source artifacts, gate order, scorer, and inspection policy; keep locked test
-  untouched unless a separate frozen-test plan is written first.
+- Run a validation25 typed-operations smoke for
+  `llm_only_typed_operations_reasoner`: event count, time window, denominator,
+  cluster size, seizure-free duration, temporal anchor, semiology grouping,
+  uncertainty type, and selected evidence ID are now typed outputs, with a
+  model-derived state-node graph projection side-car.
+- If freezing `selective_safety_floor_gate_v0` for holdout, write a new
+  frozen-test audit plan that fixes candidate, source artifacts, gate order,
+  scorer, slice definitions, and inspection policy before any locked-test read.
 - Keep Qwen/minimal-evidence-selector transfer as a secondary lane after the safety-floor candidate is frozen.
 
 ### Backlog
@@ -104,6 +118,30 @@ and projection arbitration before another broad architecture or multi-agent run.
 
 ### Done Recently
 
+- 2026-06-03: Ran the frozen validation-only no-call replay for
+  `selective_safety_floor_gate_v0`:
+  `experiments/gan2026_selective_safety_floor_gate_v0_validation750_replay_2026-06-03.md`,
+  `.json`, and `.jsonl`. The candidate improves the safety-floor baseline from
+  697/750 to 708/750 Purist and 704/750 to 715/750 Pragmatic, with 21 changed
+  rows, 11 wrong-to-correct, 0 correct-to-wrong, 1.0000 changed-label
+  precision, 0 deterministic-correct regressions, and 21/21 changed rows with
+  exact evidence and valid source ids. The report explicitly calls out row
+  15193: `unknown` scores in the same Purist/Pragmatic category as
+  `multiple per 13 month`, so that rescue remains a benchmark-format caveat,
+  not exact-label normalization.
+- 2026-06-03: Implemented the typed-operations LLM-heavy lane scaffold:
+  `llm_only_typed_operations_reasoner`, registered in the shared
+  `gan2026-llm-experiment` CLI. It uses scoped DSPy `JSONAdapter`, extracts the
+  typed operands requested in the work board, validates selected evidence IDs
+  and exact evidence, and projects a graph built only from model-extracted
+  operation nodes. Targeted tests and prompt-hygiene coverage are in place; no
+  live validation smoke has been run yet.
+- 2026-06-03: Wrote the frozen `selective_safety_floor_gate_v0`
+  validation-cycle manifest:
+  `experiments/gan2026_selective_safety_floor_gate_v0_validation_cycle_manifest_2026-06-03.md`
+  and `.json`. It freezes candidate name, source artifacts, gate order,
+  scorer/repair policy, validation-only inspection policy, required reporting,
+  and promote/revise/reject stop rules; locked test remains out of scope.
 - 2026-06-03: Interpreted the selective safety-floor fixed-slice replay as
   strong enough to seed a separately frozen validation-cycle candidate, not
   strong enough for production promotion or holdout language.
@@ -134,6 +172,7 @@ and projection arbitration before another broad architecture or multi-agent run.
 
 ## Immediate Next Step
 
-Write the frozen `selective_safety_floor_gate_v0` validation-cycle manifest:
-candidate name, gate order, source artifacts, unchanged scorer/repair policy,
-inspection policy, and stop rules for a validation-only replay.
+Choose the next branch of work: write a frozen-test audit plan for
+`selective_safety_floor_gate_v0`, or continue with the validation25
+typed-operations smoke. Locked test remains blocked until a new frozen-test plan
+exists.

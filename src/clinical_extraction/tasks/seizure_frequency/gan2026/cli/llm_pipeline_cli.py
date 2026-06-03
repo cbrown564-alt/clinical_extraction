@@ -85,6 +85,7 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
         llm_only_minimal_evidence_selector,
         llm_only_structured_events,
         llm_only_typed_adapter_reasoner,
+        llm_only_typed_operations_reasoner,
     )
 
     llm_only_claim_table_selector_spec = GanLlmPipelineCliSpec(
@@ -191,6 +192,17 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
             run_split=llm_only_typed_adapter_reasoner.run_split,
             write_jsonl=llm_only_typed_adapter_reasoner.write_jsonl,
             write_report=llm_only_typed_adapter_reasoner.write_report,
+            default_max_tokens=1800,
+        ),
+        "llm_only_typed_operations_reasoner": GanLlmPipelineCliSpec(
+            description=(
+                "Run the Gan 2026 LLM-only typed operations and graph overlay smoke."
+            ),
+            default_jsonl_path=llm_only_typed_operations_reasoner.DEFAULT_JSONL_PATH,
+            default_report_path=llm_only_typed_operations_reasoner.DEFAULT_REPORT_PATH,
+            run_split=llm_only_typed_operations_reasoner.run_split,
+            write_jsonl=llm_only_typed_operations_reasoner.write_jsonl,
+            write_report=llm_only_typed_operations_reasoner.write_report,
             default_max_tokens=1800,
         ),
     }

@@ -7,7 +7,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { runNote, fetchRules, fetchHealth, fetchRecords, fetchRecord, fetchPipelineFamilies } from "./api";
+import { runNote, fetchRules, fetchHealth, fetchRecords, fetchRecord, fetchPipelineFamilies, runAblation, fetchPrompts } from "./api";
 import type { RunNoteResponse, PipelineFamily, AblationConfigPayload, ActiveStage } from "./types";
 import { useConfigStore, useUiStore } from "./stores";
 
@@ -66,6 +66,20 @@ export function usePipelineFamilies() {
     queryKey: ["pipelineFamilies"],
     queryFn: fetchPipelineFamilies,
     staleTime: Infinity,
+  });
+}
+
+export function usePrompts() {
+  return useQuery({
+    queryKey: ["prompts"],
+    queryFn: fetchPrompts,
+    staleTime: Infinity,
+  });
+}
+
+export function useRunAblation() {
+  return useMutation({
+    mutationFn: runAblation,
   });
 }
 
