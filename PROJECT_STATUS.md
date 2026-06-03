@@ -63,20 +63,23 @@ and projection arbitration before another broad architecture or multi-agent run.
    projection, and LLM clinical-selection hard slices before any broad rerun.
 4. Keep Decision 0007 alive as the LLM-heavy lane, but do not escalate v1 until
    selected-fact and operand failures have a targeted validation-cycle plan.
+5. Answer the critical research questions for each candidate before promotion:
+   - For each clinical subproblem, can the system show which component solves it, under what evidence constraints, with what regression risk, and on which distribution?
+   - Which clinically meaningful decisions can the LLM make more robustly than deterministic rules under exact-evidence and regression constraints?
+   - When the LLM changes the deterministic answer, how often is that change correct?
 
 ## Work Board
 
 ### Now
 
-- Implement the predeclared selective safety-floor no-call replay:
-  `projection_boundary_state_priority_gate_v0`,
-  `llm_candidate_sidecar_rescue_gate_v0`, and `combined_selective_gate_v0`
-  over the fixed atlas validation slices.
+- Interpret the selective safety-floor fixed-slice replay and decide whether it
+  remains diagnostic or becomes a separately frozen validation-cycle candidate.
 
 ### Next
 
 - If iterating on Decision 0007, focus on selected-fact and operand completeness
   only after slice targets and stop rules are predeclared.
+- Implement the typed-operations target as the next LLM-heavy lane (leveraging the `llm_only_structured_events` design pattern): extract event count, time window, denominator, cluster size, seizure-free duration, temporal anchor, semiology grouping, uncertainty type, and selected evidence ID, then overlay the state-node graph to transparently select the best set of facts for the target scoring policy or clinical clarity.
 - If the selective gate replay clears fixed-slice accounting, decide whether to
   freeze a separate validation-cycle candidate or keep the gate diagnostic.
 - Keep Qwen/minimal-evidence-selector transfer as a secondary lane after the safety-floor candidate is frozen.
@@ -92,6 +95,20 @@ and projection arbitration before another broad architecture or multi-agent run.
 
 ### Done Recently
 
+- 2026-06-03: Implemented and generated the predeclared selective safety-floor
+  no-call replay over the fixed atlas validation slices:
+  `experiments/gan2026_selective_safety_floor_gate_replay_2026-06-03.md`,
+  `.json`, and `.jsonl`. The replay reports
+  `projection_boundary_state_priority_gate_v0`,
+  `llm_candidate_sidecar_rescue_gate_v0`, and `combined_selective_gate_v0`
+  against `baseline_safety_floor_v2`, with changed-label precision,
+  wrong-to-correct, correct-to-wrong, deterministic-correct regressions,
+  evidence exactness, source-id validity, and fallback counts. On fixed
+  projection slices, projection gate rescues 5/11 and 4/6 Purist misses; on
+  fixed candidate-generation slices, the LLM sidecar rescues 6/44 and 6/26; the
+  combined gate records 0 deterministic-correct regressions across all 87 slice
+  memberships. Treat as validation-cycle diagnostic accounting, not production
+  promotion.
 - 2026-06-03: Predeclared the selective safety-floor gate design in
   `experiments/gan2026_selective_safety_floor_gate_predeclaration_2026-06-03.md`
   and JSON manifest. The first implementation target is a no-call replay that
