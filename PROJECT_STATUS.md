@@ -87,19 +87,21 @@ escalation. Targeted failure analysis is recorded in
 Decision: pause `typed_operations_v0`; any future work should be a
 simplified-schema redesign/ablation, not an in-place repair pass.
 
-Simplified-schema ablation has moved from A1 to A2 and produced an early stop
-signal. A1 `llm_only_simplified_selected_state_reasoner` validation25 passed
+Simplified-schema ablation has moved from A1 to A2. A1
+`llm_only_simplified_selected_state_reasoner` validation25 passed
 structure/evidence gates and reached 23/25 selected-evidence arithmetic Purist.
-A2 `llm_only_sparse_operands_selected_state_reasoner` is now implemented and
-recorded in
-`experiments/gan2026_llm_only_sparse_operands_selected_state_reasoner_validation25_gpt41mini_v0_2026-06-03.md`
-with `.jsonl`: 25/25 structured, 23/25 exact selected evidence, 0 trace
-mismatches, selected-evidence arithmetic 23/25 Purist, but sparse-operand
-adapter 21/25 Purist with 2 selected-evidence-correct to operand-wrong
-regressions. Interpretation: sparse operands are useful diagnostic fields, but
-the adapter cannot escalate to validation50 until boundary/permission handling
-prevents clusters and `multiple` wording from becoming numeric clinical
-selectors.
+A2 `llm_only_sparse_operands_selected_state_reasoner` initially reached 23/25
+selected-evidence arithmetic Purist but only 21/25 sparse-operand adapter
+Purist because rows 190 and 280 over-numericized cluster/`multiple` evidence.
+The v1 boundary fix now prevents sparse operands from narrowing unresolved
+`multiple` wording or cluster cadence without per-cluster load. Saved-output
+validation25 replay is recorded in
+`experiments/gan2026_llm_only_sparse_operands_selected_state_reasoner_validation25_v1_boundaryfix_no_call_replay_2026-06-03.md`
+with `.jsonl`: 25/25 structured, 23/25 exact selected evidence,
+selected-evidence arithmetic 23/25 Purist, sparse-operand adapter 23/25 Purist,
+0 boundary failures, and 0 selected-evidence-correct to adapter-wrong
+regressions. Remaining misses are row 187 interval/window selection and row 278
+selected-evidence arithmetic on unresolved `multiple`.
 
 ## Guardrails
 
@@ -135,19 +137,18 @@ selectors.
 
 ### Now
 
-- Review A2 sparse-operand validation25 failures and implement a predeclared
-  boundary/permission fix or A3 boundary-tag ablation before any A2 validation50.
-  Rows 190 and 280 show sparse operands over-numericizing cluster/`multiple`
-  evidence; row 187 remains an interval/window selection miss.
+- Decide the next simplified-schema escalation surface: either run an A1 versus
+  A2 v1 boundary-fix validation50 comparison, or first build the hard-slice
+  stress panel for row 187 interval/window selection and row 278 unresolved
+  `multiple`.
 - Keep the current `typed_operations_v0` lane paused; do not run validation750
   or another broad repair rerun for it.
 
 ### Next
 
-- After the A2/A3 boundary fix passes validation25 without selected-evidence
-  correct-to-adapter-wrong regressions, run an A1 versus safer A2/A3 validation50
-  comparison. Do not run validation250 until the 50-row and hard-slice results
-  name the specific hypothesis being decided.
+- Run the A1 versus A2 v1 boundary-fix validation50 comparison once the
+  escalation hypothesis is named. Do not run validation250 until the 50-row and
+  hard-slice results name the specific hypothesis being decided.
 - Build a fixed hard-slice stress panel for interval/window selection,
   unresolved `multiple`, cluster-frequency wording, medication/proxy rates,
   perimenstrual-only windows, and compact `/hour` rates before any broad
@@ -177,6 +178,16 @@ selectors.
 
 ### Done Recently
 
+- 2026-06-03: Implemented A2 v1 boundary/permission handling for
+  `llm_only_sparse_operands_selected_state_reasoner`: sparse operands now defer
+  cluster cadence without per-cluster load and unresolved `multiple` wording to
+  selected-evidence arithmetic instead of forcing numeric counts. Added focused
+  regression tests and replayed the original A2 validation25 outputs with no new
+  model calls:
+  `experiments/gan2026_llm_only_sparse_operands_selected_state_reasoner_validation25_v1_boundaryfix_no_call_replay_2026-06-03.md`
+  / `.jsonl`. Result: sparse-operand adapter improved from 21/25 to 23/25
+  Purist with 0 selected-evidence-correct to adapter-wrong regressions. This is
+  validation-cycle adapter evidence only, not promotion evidence.
 - 2026-06-03: Implemented A2
   `llm_only_sparse_operands_selected_state_reasoner` as a separate DSPy
   `JSONAdapter` candidate with one selected state, exact selected evidence,

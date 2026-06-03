@@ -1,7 +1,7 @@
 # Clinical Extraction Observatory
 
 **Status:** Phase 4 complete — all Phase 4 features implemented  
-**Last updated:** 2026-06-03 (Phase 4 implementation complete; rule inventory redesigned; regex highlighter added; prompt diff data-structure audit in §9.7)  
+**Last updated:** 2026-06-03 (UI polish pass: headers removed, controls consolidated, letter spacing tightened, stage icons updated, rule inventory masonry layout; prompt diff data-structure audit in §9.7)  
 **Scope:** Frontend application for exploring, configuring, comparing, and understanding hybrid clinical-extraction pipelines.  
 **Backend dependency:** Reuses existing `clinical_extraction` package, JSONL artifacts, run registry, and split protocol without modification. Backend extensions are noted but deferred.
 
@@ -394,6 +394,20 @@ Any UI toggle state must serialise to a named config object that can be:
 - ✅ **Transition Matrix** — Select run A and run B from currently selected Observatory runs. Filter transitions: A wrong B right, A right B wrong, both wrong, both right. Cards show both predictions, gold label, and status badge ("B fixes A", "B regresses A", etc.). Row index preserved for alignment.
 - ✅ **Navigation** — Navbar updated with Laboratory and Gallery links. Colour-coded badges: deterministic-alt for Laboratory, error for Gallery.
 - ✅ **Root layout fix** — `QueryClientProvider` moved into root `layout.tsx` so all pages (including Gallery) prerender correctly.
+
+**UI polish pass (2026-06-03):**
+- ✅ **Removed duplicative page headers** from all four views (Workbench, Observatory, Laboratory, Gallery). Page context now lives in the navbar and inline content controls.
+- ✅ **Consolidated Workbench TraceControls** from two tiers (~88px) into a single 36px row. Run button anchored to the far right; Rules button immediately left of it.
+- ✅ **Compressed StageStrip** — removed decorative connector lines, reduced padding, moved evidence quote into StageInspector header.
+- ✅ **Compressed StageInspector header and SpecimenMeta bar.**
+- ✅ **Removed Observatory debug info block.**
+- ✅ **Relocated header actions** — active rules count, errors count, and reset buttons moved into content control bars ( Laboratory tab bar, Gallery error distribution bar).
+- ✅ **Tightened clinical letter spacing** — font 16px→15px, line-height 1.65→1.55, outer padding `p-8`→`p-5`, paragraph margins `mb-4`→`mb-3`, header/closing blocks reduced.
+- ✅ **Updated stage icons** for semantic clarity: Extract (`Highlighter`), Normalise (`Scale`), Select (`Target`), Repair (`Wrench`), Score (`Trophy`).
+- ✅ **Removed gold overlay toggle button** — redundant with gold label already shown in SpecimenMeta.
+- ✅ **Fixed RuleInventory group expand/collapse** — eliminated double-toggle bug in Radix Collapsible.Trigger.
+- ✅ **Switched RuleInventory to CSS Columns masonry layout** — collapsed groups reflow naturally; cards no longer leave blank rigid grid cells.
+- ✅ **Made collapsed rule group cards visually minimal** — lighter border, reduced padding, no shadow, translucent background.
 
 **Rudimentary / deferred to Phase 5:**
 - 🟡 Real-time ablation simulation caching (§9.5) — each simulation is a fresh request.

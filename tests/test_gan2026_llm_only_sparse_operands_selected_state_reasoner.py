@@ -160,6 +160,49 @@ def test_sparse_operand_adapter_ignores_operands_for_unknown_state(monkeypatch) 
     assert rows[0]["score_layers"]["sparse_operand_adapter"]["final_label"] == "unknown"
 
 
+def test_sparse_operand_adapter_defers_cluster_cadence_without_per_cluster_load() -> None:
+    prediction = _prediction("clusters every 4 weeks")
+    prediction.selected_state["selected_evidence"] = (
+        "At present he reports clusters of brief absence episodes every 4 weeks, "
+        "usually over 1-2 days."
+    )
+    prediction.selected_state["raw_source_phrase"] = (
+        "clusters of brief absence episodes every 4 weeks"
+    )
+    prediction.selected_state["selected_operation_kind"] = "cluster_frequency"
+    prediction.selected_state["operands"] = {
+        **prediction.selected_state["operands"],
+        "count_low": 1,
+        "count_high": 2,
+        "period_count_low": 4,
+        "period_unit": "week",
+    }
+    extraction, adapter_errors = reasoner.prediction_to_extraction(prediction)
+
+    assert extraction is not None
+    assert adapter_errors == []
+    assert reasoner._sparse_operand_adapter_label(extraction) is None
+
+
+def test_sparse_operand_adapter_defers_unresolved_multiple_to_selected_evidence() -> None:
+    prediction = _prediction("multiple per day")
+    prediction.selected_state["selected_evidence"] = (
+        "In the 24 hours prior to clinic he experienced multiple seizures in past day."
+    )
+    prediction.selected_state["raw_source_phrase"] = "multiple seizures in past day"
+    prediction.selected_state["operands"] = {
+        **prediction.selected_state["operands"],
+        "count_low": 2,
+        "period_count_low": 1,
+        "period_unit": "day",
+    }
+    extraction, adapter_errors = reasoner.prediction_to_extraction(prediction)
+
+    assert extraction is not None
+    assert adapter_errors == []
+    assert reasoner._sparse_operand_adapter_label(extraction) is None
+
+
 def test_write_report_records_sparse_operands_scope(tmp_path: Path) -> None:
     rows, metadata = reasoner.run_split(
         [_record()],
