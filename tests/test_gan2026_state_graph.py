@@ -73,6 +73,115 @@ def test_projection_solver_can_emit_uncertain_when_competing_hypotheses_remain()
     assert projection.selected_node_ids == ("sg-001", "sg-002")
 
 
+def test_acd_003_vague_count_with_denominator_projects_to_multiple_bucket() -> None:
+    graph = build_state_graph("The diary records several focal seizures last month.")
+
+    projection = project_graph_to_gan(graph)
+
+    assert projection.final_label == "multiple per month"
+    assert projection.rationale == (
+        "Projected the graph from a projection-compatible vague count with denominator."
+    )
+
+
+def test_acd_003_vague_count_without_denominator_projects_unknown() -> None:
+    graph = build_state_graph("Current seizure burden is occasional events.")
+
+    projection = project_graph_to_gan(graph)
+
+    assert projection.final_label == "unknown"
+    assert projection.rationale == (
+        "Projected unknown because a vague count adjective lacks a calendar denominator."
+    )
+
+
+def test_acd_004_conditional_only_occurrence_projects_unknown() -> None:
+    graph = build_state_graph("Seizures happen when perimenstrual only (days -2 to +2).")
+
+    projection = project_graph_to_gan(graph)
+
+    assert projection.final_label == "unknown"
+    assert projection.rationale == (
+        "Projected unknown because a conditional-only trigger does not quantify cadence."
+    )
+
+
+def test_acd_005_relative_only_change_projects_unknown() -> None:
+    graph = build_state_graph("Frequency increased by about 50% after dose reduction.")
+
+    projection = project_graph_to_gan(graph)
+
+    assert projection.final_label == "unknown"
+    assert projection.rationale == (
+        "Projected unknown because a relative-only trend lacks an absolute current rate."
+    )
+
+
+def test_acd_006_diary_date_listing_projects_summed_span() -> None:
+    graph = build_state_graph("Seizure events on 03-07, 03-27, 05-15, 05-19, 05-24.")
+
+    projection = project_graph_to_gan(graph)
+
+    assert projection.final_label == "5 per 2 month"
+    assert projection.rationale == "Projected the graph from a diary date listing."
+
+
+def test_acd_007_non_epileptic_events_project_seizure_free_month_bucket() -> None:
+    graph = build_state_graph(
+        "There have been no definite seizure events. Two recent Emergency Department "
+        "presentations were primarily for light-headedness and anxiety."
+    )
+
+    projection = project_graph_to_gan(graph)
+
+    assert projection.final_label == "seizure free for multiple month"
+    assert projection.rationale == (
+        "Projected seizure freedom because recent events were triaged as non-epileptic."
+    )
+
+
+def test_acd_008_explicit_summary_rate_overrides_long_period_calculation() -> None:
+    graph = build_state_graph(
+        "Only seven focal impaired-awareness seizures reported so far this year. "
+        "At present, his typical pattern is a focal seizure monthly."
+    )
+
+    projection = project_graph_to_gan(graph)
+
+    assert projection.final_label == "1 per month"
+    assert projection.rationale == (
+        "Projected the explicit current summary rate over a derived long-period average."
+    )
+
+
+def test_acd_009_previous_month_active_rate_beats_current_month_to_date_zero() -> None:
+    graph = build_state_graph(
+        "There were a handful of short focal events during the previous month. "
+        "In the current month to date, no events have been recorded."
+    )
+
+    projection = project_graph_to_gan(graph)
+
+    assert projection.final_label == "multiple per month"
+    assert projection.rationale == (
+        "Projected the previous-month active rate over a current-month-to-date zero count."
+    )
+
+
+def test_acd_010_recent_major_relapse_overrides_minor_interictal_rate() -> None:
+    graph = build_state_graph(
+        "Yesterday he experienced three tonic-clonic seizures yesterday. "
+        "He describes interictal brief auras occurring approximately once or twice per week."
+    )
+
+    projection = project_graph_to_gan(graph)
+
+    assert projection.final_label == "3 per day"
+    assert projection.rationale == (
+        "Projected the recent major-semiology relapse over lower-severity interictal rates."
+    )
+
+
 def test_counterfactual_invariance_signature_ignores_surface_order_and_writing() -> None:
     original = build_state_graph(
         "Current frequency: two seizures per week. "

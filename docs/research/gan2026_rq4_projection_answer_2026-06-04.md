@@ -2,62 +2,159 @@
 
 Date: 2026-06-04
 
-Status: Final answer for validation-development component mechanics.
+Status: final validation-development answer for LLM component mechanics. This is
+not a holdout-transfer, production, or benchmark-comparable claim.
 
 ## Answer
 
-This report establishes the final projection answer for the validation-development split (`gan2026_split_v1`). By analyzing the follow-up panel and the first-failure attributions, we isolate the specific mechanisms that make projection successful and separate them from broad, regressive projection methods.
+RQ4 is answered for saved validation-development replay:
 
-The final RQ4 answer is:
-1. **Gated Projection Rules are Highly Precise**:
-   - `boundary_state_priority` (unknown/unresolved-multiple graph states) achieved **17 W->C (Wrong to Correct) wins with exactly 0 C->W regressions**.
-   - `graph_gated_month_bucket_duration` (seizure-free duration mapping) achieved **18 W->C wins with exactly 0 C->W regressions**.
-   - Both components prove that gating projection under explicit conditions achieves 100% precision.
-2. **Broad Graph Projection is Unsafe**:
-   - Replacing the baseline projection logic with the general `state_graph_projection` caused **84 C->W regressions and 0 W->C wins** in the follow-up panel. 
-   - General graph traversal lacks a reliable policy for sorting out stale, current, historical, and competing semiology nodes, causing it to over-select historical or inactive events.
-3. **Projection Policy is the Core Bottleneck**:
-   - The first-failure ownership analysis shows that **152 failures** are owned by `projection_policy` (lack of rule mapping for ambiguous clinical states) rather than candidate or evidence extraction components.
-   - We resolved this bottleneck by implementing the **ACD-001 through ACD-010 decisions** in the ambiguous case log, defining explicit mappings for vague cadence, conditional triggers, relative trends, diary dates, non-epileptic symptoms, summary overrides, and multi-semiology relapses.
+```text
+Projection works when it is narrow, gated, and metadata-explicit. Broad graph
+projection and unconstrained LLM label projection are negative results.
+```
 
-The practical pipeline recommendation is:
-- **Lock the deterministic top candidate** as the primary projection substrate.
-- **Deploy gated projection rules** (`boundary_state_priority` and `graph_gated_month_bucket_duration`) under strict metadata preconditions.
-- **Utilize the ACD-001 through ACD-010 mapping rules** to resolve clinical ambiguities at the scorer-facing layer, keeping the underlying LLM representations source-near and clinically faithful.
+The 2026-06-04 follow-up panel is decisive. Two gated projection policies show
+high-precision selective value:
 
-## Supporting Evidence
+- `boundary_state_priority`: 17 panel rows, 17 W->C, 0 C->W, 17 exact-evidence
+  rows.
+- `graph_gated_month_bucket_duration`: 250 panel rows, 18 W->C target
+  corrections, 0 C->W, 250 exact-evidence rows, and 0 changed labels across
+  its 232-row regression panel.
 
-The conclusions are backed by validation replay matrices and the **2026-06-04 follow-up panel** (654 panel rows over 371 source rows):
-- [gan2026_component_projection_followup_panel_2026-06-04.md](file:///Users/cobro/code/clinical-extraction/experiments/gan2026_component_projection_followup_panel_2026-06-04.md)
-- [gan2026_target_rows_inspection.md](file:///Users/cobro/code/clinical-extraction/docs/research/gan2026_target_rows_inspection.md)
-- [gan2026_ambiguous_case_decision_log.md](file:///Users/cobro/code/clinical-extraction/docs/research/gan2026_ambiguous_case_decision_log.md)
+Broad replacement policies fail the component question:
 
-### Component Outcomes
+- `state_graph_projection`: 131 panel rows, 0 W->C, 84 C->W.
+- `hybrid_adjudicator_raw`: 61 panel rows, 0 W->C, 8 C->W.
+- `llm_candidate_selector_raw`: 61 panel rows, 7 W->C, 49 C->W.
 
-| Component | Panel rows | W->C | C->W | Exact evidence rate | Rationale |
+Projection policy is the largest remaining first-failure owner in the panel:
+152 rows, including 93 `current_vs_historical`, 74 `competing_semiologies`, 55
+`rate_bucket_or_denominator`, 49 `benchmark_format_convention`, 43
+`seizure_free_duration`, 42 `cluster_burden`, 41 `uncertainty_or_ambiguity`, 39
+`unknown_no_reference_boundary`, and 38 `unknown_boundary` rows.
+
+## Claim Boundary
+
+Supporting artifacts:
+
+- `docs/research/gan2026_llm_component_mechanics_protocol_2026-06-03.md`
+- `docs/research/gan2026_llm_component_mechanics_error_analysis_2026-06-03.md`
+- `experiments/gan2026_component_projection_followup_panel_2026-06-04.md`
+- `docs/research/gan2026_ambiguous_case_decision_log.md`
+- `docs/research/gan2026_acd_projection_policy_predeclaration_2026-06-04.md`
+- `experiments/gan2026_rq4_projection_decision_matrix_2026-06-03.jsonl`
+
+All evidence comes from saved validation artifacts under `gan2026_split_v1`.
+Locked holdout rows were not used for this answer. The ACD projection policies
+are validation-development policy decisions; future holdout-facing use still
+requires a frozen predeclared audit.
+
+## LLM/Projection Component Trade-Offs
+
+| Component | Panel rows | W->C | C->W | Exact evidence | Interpretation |
 | --- | ---: | ---: | ---: | ---: | --- |
-| `boundary_state_priority` | 17 | 17 | 0 | 100% | Resolves unknown/unresolved-multiple graph states with 0 regressions. |
-| `graph_gated_month_bucket_duration` | 250 | 18 | 0 | 100% | Corrects seizure-free duration mapping with 0 regressions. |
-| `state_graph_projection` | 131 | 0 | 84 | 95.4% | Broad graph projection causes severe regressions. |
+| `boundary_state_priority` | 17 | 17 | 0 | 17 | Strong narrow projection gate for boundary/unresolved states. |
+| `graph_gated_month_bucket_duration` | 250 | 18 | 0 | 250 | Strong narrow duration gate with regression panel. |
+| `competing_frequency_uncertainty` | 1 | 1 | 0 | 1 | Promising but too small for a broad claim. |
+| `claim_table_final_query` | 38 | 0 | 0 | 38 | Diagnostic selected-state surface. |
+| `llm_heavy_selected_fact` | 95 | 0 | 0 | 94 | Diagnostic selected-fact surface. |
+| `hybrid_adjudicator_raw` | 61 | 0 | 8 | 61 | Exact evidence but unsafe label projection. |
+| `llm_candidate_selector_raw` | 61 | 7 | 49 | 61 | Selective rescues overwhelmed by regressions. |
+| `state_graph_projection` | 131 | 0 | 84 | 125 | Negative broad replacement result. |
 
-### Failure Owners and Hidden Families
+## Deterministic Baseline Role
 
-The 152 `projection_policy` failures are distributed across several critical clinical hidden families:
-- **`seizure_free_overreach` (38 rows owned by `projection_policy`)**: The model incorrectly projects seizure freedom. Fixed by **ACD-009** (previous month active rate priority) and **ACD-007** (non-epileptic symptoms exclusion).
-- **`unknown_no_reference_boundary` (39 rows owned by `projection_policy`)**: The model incorrectly assumes a rate where the frequency is unquantified. Fixed by **ACD-004** (conditional-only triggers map to `unknown`).
-- **`temporal_conflict` (39 rows owned by `projection_policy`)**: Blending current and historical events. Fixed by **ACD-010** (prioritizing major relapsed rates).
+The deterministic top candidate remains the safety floor and regression-risk
+reference. The RQ4 answer is not that deterministic projection is the research
+solution; it is that LLM/graph projection should only spend the safety floor
+under explicit metadata gates with exact evidence and changed-row accounting.
+
+## Row-Level Mechanism Examples
+
+`source_row_index=278`, gold `multiple per week`: boundary-state priority
+correctly projects active recurring seizure burden instead of stale
+seizure-free overreach. Projection owns the conversion from source-near
+"multiple times per week" to Gan-compatible syntax.
+
+`source_row_index=338`, gold `multiple per month`: the policy selects the
+active cluster/frequency state rather than treating competing context as
+non-decisive.
+
+`source_row_index=744`, gold `multiple per week`: the gated projection chooses
+the most-weekday absence pattern over a lower or stale frequency node.
+
+`source_row_index=3118`, `3137`, `4839`, `4842`, and `4951`: the
+month-bucket-duration gate maps seizure-free duration states to `seizure free
+for multiple month` without changing the 232-row regression panel.
+
+`source_row_index=1695`, gold `multiple per month`: the LLM selected exact
+zero-current-month evidence, but projection policy must prioritize the previous
+month's active burden over a short current-month zero window. This is captured
+by ACD-009.
+
+`source_row_index=1363`, gold `3 per day`: multi-semiology projection must
+prioritize recent major relapsed events over minor baseline auras. This is
+captured by ACD-010.
+
+## Hidden-Family Readout
+
+Projection policy is most visible in these families:
+
+- `current_vs_historical`: 93 projection-policy rows.
+- `competing_semiologies`: 74 projection-policy rows.
+- `rate_bucket_or_denominator`: 55 projection-policy rows.
+- `benchmark_format_convention`: 49 projection-policy rows.
+- `cluster_or_diary`: 46 projection-policy rows.
+- `seizure_free_duration`: 43 projection-policy rows.
+- `cluster_burden`: 42 projection-policy rows.
+- `uncertainty_or_ambiguity`: 41 projection-policy rows.
+- `temporal_conflict`: 39 projection-policy rows.
+- `unknown_no_reference_boundary`: 39 projection-policy rows.
+- `unknown_boundary`: 38 projection-policy rows.
+- `seizure_free_overreach`: 38 projection-policy rows.
+
+The ACD decision log now records stable interpretation rules for the recurring
+projection ambiguities. ACD-001 and ACD-002 classify projection-compatible
+phrases such as `multiple times per week` and `multiple per shift`. The
+predeclared production projection-policy scope covers ACD-003 through ACD-010:
+vague count adjectives, conditional-only triggers, relative-only trends, diary
+date lists, non-epileptic events, qualitative summary overrides,
+previous-month/current-month aggregation, and multi-semiology severity
+prioritization.
 
 ## Transfer Confidence
 
-| Finding | Development confidence | Holdout-transfer confidence | Rationale |
+| Finding | Development confidence | Holdout-transfer confidence | Reason |
 | --- | --- | --- | --- |
-| Gated projection rules achieve 100% precision. | High | Moderate-to-high | Preconditions (e.g. presence of duration or boundary nodes) are explicitly checked, minimizing overfit. |
-| Broad state-graph projection causes regressions. | High | High | General graph traversal consistently picks stale/historical nodes over current ones. |
-| Projection policy issues dominate overall errors. | High | High | The mismatch between messy clinical language and strict benchmark labels is a general challenge. |
+| Gated projection policies have high precision on target validation slices. | High | Moderate | Gates are explicit, but target rows come from validation-cycle diagnostics. |
+| Broad state-graph projection is unsafe. | High | Moderate-to-high | Regressions are severe and mechanistically plausible. |
+| Projection policy is the dominant remaining bottleneck. | High | Moderate | The hidden-family pattern is broad, but still validation-derived. |
+
+## Metadata/Instrumentation Gaps
+
+- Gated policies act only when the relevant graph node or selected state already
+  exists; missing-node construction belongs to RQ1/RQ3.
+- ACD policies need changed-row exact-evidence and deterministic-correct
+  regression accounting before any holdout-facing use.
+- Claim-table and selected-fact projection surfaces need same-row validation750
+  source-id instrumentation before promotion.
+- Rendering of a fixed selected state remains RQ5.
 
 ## Decision
 
-1. **Substrate**: Use the deterministic top candidate as the baseline.
-2. **Selective Gates**: Retain `boundary_state_priority` and `graph_gated_month_bucket_duration` as gated projection modules under explicit graph metadata checks.
-3. **ACD Normalization**: Standardise projection normalization using the **ACD-001 through ACD-010 mapping rules** to reconcile natural language ambiguity (e.g., vague count words, conditional-only, bimonthly) to the scorer surface.
-4. **Next Component**: Move to RQ5 (deterministic compilation/rendering). With projection policies defined, the final task is ensuring the selected state translates cleanly into a Gan-compatible output.
+RQ4 is answered for validation development:
+
+- Accept `boundary_state_priority` and `graph_gated_month_bucket_duration` as
+  high-precision gated projection mechanisms for their named slices.
+- Reject broad `state_graph_projection` and unconstrained LLM label projection
+  as replacement projection policies.
+- Treat ACD-003 through ACD-010 as predeclared validation-development projection
+  policies, not benchmark claims.
+
+## Next Action
+
+Move to RQ5: deterministic compilation/rendering from fixed selected states and
+explicit projection-policy decisions into Gan-compatible labels, with semantic
+drift checks and ablatable ACD policy accounting.

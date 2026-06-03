@@ -2,102 +2,179 @@
 
 Date: 2026-06-04
 
-Status: Final synthesis report for validation-development component mechanics.
+Status: final validation-development synthesis for RQ1, RQ2, and RQ4. This is
+not a holdout-transfer, production, or benchmark-comparable claim.
 
-## Executive Summary
+## Answer
 
-This synthesis report integrates the final answers for **RQ1** (candidate discovery), **RQ2** (evidence selection), and **RQ4** (projection) on the validation-development split (`gan2026_split_v1`). By evaluating the components on the **2026-06-04 follow-up panel** (654 panel rows over 371 source rows) and cataloguing ambiguous case decisions (**ACD-001 through ACD-010**), we establish a clear architectural path forward:
+The component mechanics follow-up panel converts the RQ1/RQ2/RQ4 reset into
+three final validation-development answers:
 
-1. **Broad LLM Reasoning is Regressive**:
-   - Allowing the LLM to perform unconstrained, end-to-end extraction, selection, and projection causes severe regressions.
-   - Raw candidate selection (`llm_candidate_selector_raw`) regressed **49 baseline-correct rows**, and broad graph projection (`state_graph_projection`) regressed **84 baseline-correct rows**.
-2. **Gated Projection Rules are Highly Precise**:
-   - Gating projection logic under explicit graph metadata checks achieves 100% precision.
-   - `boundary_state_priority` achieved **17/17 correct corrections with 0 regressions**.
-   - `graph_gated_month_bucket_duration` achieved **18/18 correct corrections with 0 regressions**.
-3. **Projection Policy is the Dominant Failure Owner**:
-   - Over **40% of incorrect validation rows (152 rows)** fail due to `projection_policy` (lack of clear mapping rules for clinically ambiguous text) rather than LLM candidate generation or evidence selection.
-   - Standardising mapping rules (e.g. vague cadence, conditional triggers, relative trends, non-epileptic symptoms, summary overrides) via **ACD decisions** resolves this bottleneck.
+1. RQ1 candidate generation: the useful LLM role is selective proposal of
+   boundary, uncertainty, seizure-free, and competing-state candidates. Broad
+   LLM candidate generation is unsafe because candidate burden and C->W
+   regressions overwhelm selective rescues.
+2. RQ2 evidence selection: LLMs are strong exact-evidence locators, but unsafe
+   broad clinical selectors. Exact text often exists before the system has the
+   typed state needed to decide currentness, denominator, cluster axis,
+   seizure-free duration, or uncertainty.
+3. RQ4 projection: projection succeeds only when gated by explicit metadata and
+   exact evidence. Broad graph projection and unconstrained LLM label projection
+   are negative results.
 
-**Core Recommendation**: Transition the pipeline from a broad, unconstrained LLM reasoner to a **hybrid, policy-gated architecture**:
-- Lock deterministic rules as the baseline substrate.
-- Deploy the LLM sidecar selectively to propose candidates on boundary-uncertainty slices (78 rows).
-- Deploy the hybrid adjudicator strictly to locate exact evidence substrings and source IDs, blocking it from altering labels.
-- Normalise raw extracted clinical facts to final benchmark labels using the gated graph policies and the **ACD decision log**.
+The deterministic system remains the fixed comparator, safety floor, and
+substrate for future work. It is not the research answer for RQ1/RQ2/RQ4.
 
-## Source-Backed Outcomes (2026-06-04 Panel)
+## Source-Backed Panel Readout
 
-| Component | Panel rows | W->C | C->W | Exact evidence rate | Key findings |
+Primary panel:
+`experiments/gan2026_component_projection_followup_panel_2026-06-04.md`
+
+The panel is a frozen validation-development replay over saved RQ2/RQ4
+artifacts:
+
+- 654 panel rows.
+- 371 represented source rows.
+- Split manifest: `gan2026_split_v1`.
+- No scorer, prompt, model, projection-policy, or holdout change.
+
+| Component | Rows | W->C | C->W | Exact evidence | Synthesis role |
 | --- | ---: | ---: | ---: | ---: | --- |
-| `boundary_state_priority` | 17 | 17 | 0 | 100% | Resolves unknown/unresolved-multiple graph states; 0 regressions. |
-| `graph_gated_month_bucket_duration` | 250 | 18 | 0 | 100% | Corrects seizure-free duration mapping; 0 regressions. |
-| `llm_heavy_selected_fact` | 95 | 0 | 0 | 98.9% | Strong diagnostic facts, but lacks source ID traces. |
-| `claim_table_final_query` | 38 | 0 | 0 | 100% | Strong diagnostic query spans; excellent exactness. |
-| `hybrid_adjudicator_raw` | 61 | 0 | 8 | 100% | Finds exact text but regresses 8 baseline-correct rows. |
-| `llm_candidate_selector_raw` | 61 | 7 | 49 | 98.3% | Heavy regressions; unconstrained selection is unsafe. |
-| `state_graph_projection` | 131 | 0 | 84 | 95.4% | Broad graph projection causes severe regressions. |
+| `boundary_state_priority` | 17 | 17 | 0 | 17 | Accepted gated projection mechanism. |
+| `graph_gated_month_bucket_duration` | 250 | 18 | 0 | 250 | Accepted gated duration projection mechanism. |
+| `competing_frequency_uncertainty` | 1 | 1 | 0 | 1 | Diagnostic only; too small for broad claim. |
+| `claim_table_final_query` | 38 | 0 | 0 | 38 | Diagnostic selected-state/evidence surface. |
+| `llm_heavy_selected_fact` | 95 | 0 | 0 | 94 | Diagnostic selected-fact surface. |
+| `hybrid_adjudicator_raw` | 61 | 0 | 8 | 61 | Evidence locator only; label changes blocked. |
+| `llm_candidate_selector_raw` | 61 | 7 | 49 | 61 | Selective rescue signal, rejected as broad selector. |
+| `state_graph_projection` | 131 | 0 | 84 | 125 | Rejected broad replacement projection. |
 
-## Row-Level Clinical Mechanisms
+First-failure ownership in the panel:
 
-A systematic review of 16 target validation rows (documented in [gan2026_target_rows_inspection.md](file:///Users/cobro/code/clinical-extraction/docs/research/gan2026_target_rows_inspection.md)) isolates the clinical scenarios behind these results:
+| Owner | Rows | Interpretation |
+| --- | ---: | --- |
+| `projection_policy` | 152 | Largest remaining bottleneck; mapping source-near states to Gan labels. |
+| `typed_state_representation` | 109 | Schema lacks currentness, denominator, cluster, duration, or uncertainty fields. |
+| `candidate_generation` | 78 | Boundary/uncertainty candidates still need selective LLM proposal. |
+| `llm_clinical_selection` | 36 | LLM sometimes chooses the wrong clinical fact from exact text. |
+| `projection` | 19 | Projection mechanics beyond named policy gaps. |
+| `operand_exposure` | 18 | Selected evidence lacks complete computable operands. |
+| `evidence_selection` | 1 | Pure text-location failure is rare in this panel. |
 
-### 1. Conditional-Only Occurrences (ACD-004)
-- **Rows**: 3356, 3371, 3468, 3469, 3482
-- **Scenario**: Note describes seizures occurring exclusively under specific triggers (e.g. "when perimenstrual only (days -3 to +3)" or "exclusively after nights of curtailed sleep").
-- **LLM Success/Failure**: The LLM extracts the exact trigger text but is forced by the schema to project a rate (e.g., 2 per 6 weeks), leading to F1 failure.
-- **Resolution**: Map conditional triggers to `unknown` if no rate is quantified.
+## RQ1 Final Answer
 
-### 2. Relative-Only Changes (ACD-005) and Qualitative Improvement
-- **Rows**: 3528, 3534
-- **Scenario**: Note describes comparative trends only (e.g. "frequency increased by 50%" or "better control over past seven months").
-- **LLM Success/Failure**: The LLM extracts the relative trends but is unable to project an absolute rate, resulting in overreach.
-- **Resolution**: Map to `unknown` (or `no reference`).
+See:
+`docs/research/gan2026_rq1_candidate_discovery_answer_2026-06-04.md`
 
-### 3. Non-Epileptic or Uncertain Events (ACD-007)
-- **Row**: 3137
-- **Scenario**: Patient has "no definite seizure events" but attended the ED twice for somatic/dissociative symptoms (light-headedness, anxiety) resolved without intervention.
-- **LLM Success/Failure**: The raw LLM selector treats ED presentations as active seizures, resulting in regression.
-- **Resolution**: Project to `seizure free` if triage confirms symptoms were non-epileptic.
+The LLM component is useful when the note contains a tempting deterministic
+state plus a competing uncertainty or boundary state. Examples include
+conditional sleep-deprivation-only events (`3356`), breakthrough/stress
+competition against seizure-free duration (`6077`), and device-log clusters
+without counts (`10266`).
 
-### 4. Summary Overrides (ACD-008)
-- **Row**: 2748
-- **Scenario**: Note contains both a long-term count ("seven seizures so far this year") and an explicit rate assessment ("typical pattern is a focal seizure monthly").
-- **LLM Success/Failure**: The adapter attempts to calculate the mathematical average (~0.7 per month), causing a benchmark mismatch.
-- **Resolution**: Prioritize explicit clinician summary statements ("monthly" -> `1 per month`) over calculated ratios.
+The LLM component is not a broad generator. In the RQ1 matrix,
+`llm_candidate_selector_raw` recalled 642/739 represented rows with 0.985 exact
+evidence, but produced 2,126 candidates and missed 94 rows recalled by
+`deterministic_candidates_all`. In the follow-up panel, raw LLM selection has 7
+W->C and 49 C->W changes.
 
-### 5. Temporal Aggregation (ACD-009)
-- **Row**: 1695
-- **Scenario**: Note written on July 27 reports "a handful of events during the previous month" and "current month to date: no events".
-- **LLM Success/Failure**: The LLM overreaches to project seizure freedom based on the current month's zero events.
-- **Resolution**: Prioritize the previous month's active rate (`multiple per month`) unless long-term (3+ months) seizure freedom is established.
+Decision: keep LLM candidate generation as a selective rescue proposer under
+strict evidence, burden, and metadata gates.
 
-### 6. Multi-Semiology Prioritization (ACD-010)
-- **Rows**: 1165, 1363
-- **Scenario**: Patient has minor interictal auras (1-2 per week) but experienced an acute relapse of major events (3 tonic-clonic seizures yesterday).
-- **LLM Success/Failure**: The LLM selects the minor aura rate, losing the critical clinical relapsed event frequency.
-- **Resolution**: Prioritize the frequency of the major relapsed convulsive/impaired-awareness events (`3 per day`).
+## RQ2 Final Answer
 
-## Architectural Recommendations
+See:
+`docs/research/gan2026_rq2_evidence_selection_answer_2026-06-04.md`
 
-The findings outline a strict hybrid model for clinical extraction:
+Evidence location is mostly not the failure. The panel has only one row owned
+by pure `evidence_selection`. The broader RQ2 matrix shows the hybrid
+adjudicator can attach 750/750 exact evidence spans and 750/750 valid source
+ids on validation750, but label-changing use regresses deterministic-correct
+rows.
 
-```mermaid
-graph TD
-    A[Clinical Note] --> B[Deterministic Master Candidates]
-    A --> C[Selective LLM Candidate Sidecar]
-    C -->|Rescue Only| B
-    B --> D[Hybrid Adjudicator]
-    D -->|Exact Substring Match| E[Selected Evidence & Source IDs]
-    E --> F[Gated Graph Policies]
-    E --> G[ACD Normalization Log]
-    F -->|boundary_state_priority & month_bucket_duration| H[Scorer-Facing Normalized Label]
-    G -->|ACD-001 to ACD-010 Rules| H
-```
+The failure mode is exact evidence without a complete clinical state:
 
-- **Candidate Phase**: Deterministic candidates provide the broad 96.7% recall substrate. The LLM sidecar is used only as a selective rescue proposer for boundary-uncertainty slices (78 rows).
-- **Selection Phase**: The hybrid adjudicator acts as a pure evidence locator, attaching exact spans and source IDs to deterministic nodes while blocking unconstrained label changes.
-- **Projection Phase**: Standardised clinical ambiguities are resolved at the final layer using the ACD decision rules and gated policies.
+- local no-event phrases over-selected against previous-month active burden
+  (`1695`);
+- cluster evidence selected but cluster axis or per-cluster burden lost (`1317`,
+  `1706`, `3261`);
+- exact rate evidence selected but projected to `unknown` through uncertainty
+  overreach (`190`, `2822`, `3623`);
+- denominator/window or diary aggregation missing from selected operands.
+
+Decision: use LLM evidence components as source-grounded evidence locators,
+while blocking unconstrained label changes.
+
+## RQ4 Final Answer
+
+See:
+`docs/research/gan2026_rq4_projection_answer_2026-06-04.md`
+
+Projection is the dominant bottleneck and the clearest positive result. The
+accepted mechanisms are narrow:
+
+- `boundary_state_priority`: 17/17 W->C, 0 C->W.
+- `graph_gated_month_bucket_duration`: 18/18 target corrections, 0 C->W, 0
+  changed labels on the 232-row regression panel.
+
+The rejected broad mechanisms are also clear:
+
+- `state_graph_projection`: 84 C->W and 0 W->C in the panel.
+- `hybrid_adjudicator_raw`: 8 C->W and 0 W->C in the panel.
+- `llm_candidate_selector_raw`: 49 C->W despite 7 W->C.
+
+The ACD decision log stabilizes projection policy for recurring ambiguous
+representations. ACD-001 and ACD-002 classify projection-compatible phrases.
+ACD-003 through ACD-010 are predeclared validation-development projection
+policies for vague count adjectives, conditional-only triggers, relative-only
+trends, diary date lists, non-epileptic events, qualitative summary overrides,
+previous-month/current-month aggregation, and multi-semiology severity
+prioritization.
+
+Decision: accept only gated projection mechanisms with exact evidence and
+changed-row accounting; reject broad graph or LLM projection replacement.
+
+## Row-Level Mechanism Map
+
+| Row | Gold | Mechanism | Component lesson |
+| ---: | --- | --- | --- |
+| 3356 | `unknown` | Conditional sleep-deprivation-only events. | LLM candidate proposal should preserve uncertainty; projection maps conditional-only to `unknown`. |
+| 338 | `multiple per month` | Active cluster/frequency state competes with non-decisive context. | Boundary projection can recover when state exists. |
+| 1165 | `5 to 7 per 3 week` | Recent travel-related focal cluster followed by seizure-free weeks. | Projection must preserve the recent counted window. |
+| 1317 | `unknown, multiple per cluster` | Multiple events in a day without cadence. | Evidence/schema can be near-correct while adapter/projection misses benchmark shape. |
+| 1363 | `3 per day` | Major tonic-clonic relapse competes with minor aura rate. | Projection policy must prioritize major relapsed semiology. |
+| 1695 | `multiple per month` | Previous month active burden plus current month to date zero. | Short no-event window is not seizure freedom. |
+| 2748 | `1 per month` | Clinician summary conflicts with derived long-period average. | Projection should prefer explicit current summary. |
+| 3137 | `seizure free for multiple month` | No definite seizures; non-epileptic ED symptoms. | Candidate/evidence should preserve triage; projection maps to seizure-free. |
+
+## Transfer Confidence
+
+| Finding | Development confidence | Holdout-transfer confidence | Reason |
+| --- | --- | --- | --- |
+| Broad LLM/graph replacement is unsafe. | High | Moderate-to-high | Regressions are severe and mechanistically coherent. |
+| LLM evidence location is strong. | High | Moderate | Exact evidence/source-id gates are simple, but replay is validation-only. |
+| LLM candidate generation has selective boundary value. | Moderate | Low-to-moderate | Validation-derived slices need a frozen stress check. |
+| Gated projection policies are useful. | High | Moderate | Precision is strong on target panels, but target panels are validation-derived. |
+| Projection policy dominates remaining failures. | High | Moderate | Hidden-family breadth is strong, but still development evidence. |
+
+## Decision
+
+RQ1, RQ2, and RQ4 are answered for validation-development component mechanics.
+They are not holdout-transfer answers.
+
+The architecture direction is:
+
+- deterministic/state-graph candidates as fixed substrate and safety floor;
+- selective LLM candidate rescue for boundary/uncertainty states only;
+- LLM evidence adjudication as exact span/source-id support only;
+- gated projection policies with explicit metadata, exact evidence, and
+  changed-row accounting;
+- no broad LLM or graph replacement policy.
 
 ## Next Action
 
-With the component mechanics of RQ1, RQ2, and RQ4 understood, the active question moves to **RQ5 (Deterministic Compilation/Rendering)**. The final task is ensuring the selected state translates cleanly into a Gan-compatible output without semantic drift.
+Move to RQ5: deterministic compilation/rendering from fixed selected states and
+projection-policy decisions into Gan-compatible output. The RQ5 protocol should
+hold candidate/evidence/projection state fixed and measure semantic drift,
+benchmark-format rendering, exact evidence retention, and ACD-policy
+ablatability.
