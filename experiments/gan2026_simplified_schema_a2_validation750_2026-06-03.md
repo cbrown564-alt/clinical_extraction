@@ -1,0 +1,259 @@
+# Gan 2026 LLM-Only Sparse Operands Selected State Reasoner
+
+- JSONL: `/Users/cobro/code/clinical-extraction/experiments/gan2026_simplified_schema_a2_validation750_2026-06-03.jsonl`
+- Architecture: `llm_only_sparse_operands_selected_state_reasoner`
+- Prompt/program version: `gan2026_llm_only_sparse_operands_selected_state_reasoner_v1_boundaryfix`
+- Typed output schema version: `sparse_operands_selected_state_v0`
+- Split: `validation` / `gan2026_split_v1`
+- Rows: 750
+- Model: `openai/gpt-4.1-mini`
+- Mode: `live`
+- Claim language: LLM-only sparse-operands validation development result; format, selected-evidence, and operand rendering are separate adapter layers.
+
+## A2 Target
+
+- one selected clinical state.
+- Exact selected evidence.
+- Sparse nullable operands for selected count, interval, cluster, or duration.
+- No operation graph projection.
+
+## Smoke Summary
+
+- Structured records: 749/750
+- Parse/schema failures: 1
+- Selected evidence valid: 728/750
+- Selected-state trace mismatches: 9
+- Sparse operand boundary failures: 0
+
+## Score Layers
+
+- `raw_llm`: scorable 461, Purist 342/750 (0.4560), Pragmatic 370/750 (0.4933)
+- `format_only`: scorable 491, Purist 365/750 (0.4867), Pragmatic 397/750 (0.5293)
+- `selected_evidence_arithmetic`: scorable 749, Purist 569/750 (0.7587), Pragmatic 606/750 (0.8080)
+- `sparse_operand_adapter`: scorable 749, Purist 551/750 (0.7347), Pragmatic 606/750 (0.8080)
+
+## Adapter Delta
+
+- Sparse operand adapter selected-evidence wrong to correct: 19
+- Sparse operand adapter selected-evidence correct to wrong: 37
+
+## Row Review
+
+- 187: gold `1 per 7 to 9 day`; selected-evidence `no seizure frequency reference`; sparse-operands `no seizure frequency reference`
+- 212: gold `1 per 3 to 4 week`; selected-evidence `1 per 3 to 4 week`; sparse-operands `3 to 4 per 1 week`
+- 816: gold `1 per month`; selected-evidence `4 per 10 month`; sparse-operands `4 per 1 year`
+- 1030: gold `1 to 3 per month`; selected-evidence `1 per month`; sparse-operands `1 per month`
+- 1573: gold `11 per week`; selected-evidence `5 to 6 per week`; sparse-operands `11 per 1 week`
+- 1695: gold `multiple per month`; selected-evidence `no seizure frequency reference`; sparse-operands `3 to 5 per 1 month`
+- 1880: gold `8 per 2 month`; selected-evidence `multiple per week`; sparse-operands `multiple per week`
+- 2023: gold `5 per month`; selected-evidence `no seizure frequency reference`; sparse-operands `5 per 1 month`
+- 3242: gold `2 cluster per month, 5 per cluster`; selected-evidence `2 cluster per month, multiple per cluster`; sparse-operands `2 cluster per month, multiple per cluster`
+- 3261: gold `2 cluster per month, 4 per cluster`; selected-evidence `2 cluster per month, multiple per cluster`; sparse-operands `2 cluster per month, multiple per cluster`
+- 3262: gold `2 cluster per month, 5 per cluster`; selected-evidence `2 cluster per month, multiple per cluster`; sparse-operands `2 cluster per month, multiple per cluster`
+- 3371: gold `unknown`; selected-evidence `seizure free for multiple year`; sparse-operands `seizure free for 8 week`
+- 3534: gold `unknown`; selected-evidence `seizure free for 7 month`; sparse-operands `seizure free for 7 month`
+- 3681: gold `9 per month`; selected-evidence `9 per month`; sparse-operands `9 per 3 month`
+- 4337: gold `3 per 3 month`; selected-evidence `no seizure frequency reference`; sparse-operands `3 per 10 month`
+- 4410: gold `4 per 7 month`; selected-evidence `4 per 7 month`; sparse-operands `1 per 1 month`
+- 4592: gold `1 per 2 month`; selected-evidence `no seizure frequency reference`; sparse-operands `1 per 2 month`
+- 4624: gold `1 per 3 to 4 day`; selected-evidence `no seizure frequency reference`; sparse-operands `2 per 1 month`
+- 5092: gold `seizure free for multiple month`; selected-evidence `no seizure frequency reference`; sparse-operands `no seizure frequency reference`
+- 5136: gold `seizure free for multiple month`; selected-evidence `no seizure frequency reference`; sparse-operands `seizure free for 3 month`
+- 5406: gold `seizure free for multiple month`; selected-evidence `no seizure frequency reference`; sparse-operands `no seizure frequency reference`
+- 5491: gold `unknown`; selected-evidence `no seizure frequency reference`; sparse-operands `2 per 6 week`
+- 5534: gold `1 per multiple month`; selected-evidence `1 per 14 day`; sparse-operands `1 per 14 day`
+- 5696: gold `3 per 4 month`; selected-evidence `4 per 4 month`; sparse-operands `3 per 4 month`
+- 5763: gold `2 per month`; selected-evidence `2 per 3 month`; sparse-operands `6 per 3 month`
+- 5827: gold `multiple per week`; selected-evidence `no seizure frequency reference`; sparse-operands `2 per 8 week`
+- 5837: gold `2 cluster per 3 week, multiple per cluster`; selected-evidence `multiple per month`; sparse-operands `multiple per month`
+- 5995: gold `1 per 3 months`; selected-evidence `1 to 3 per month`; sparse-operands `1 to 3 per month`
+- 6065: gold `5 per month`; selected-evidence `3 to 5 per month`; sparse-operands `3 to 5 per 1 month`
+- 6077: gold `unknown`; selected-evidence `1 per 8 month`; sparse-operands `1 per 8 month`
+- 6094: gold `3 per month`; selected-evidence `no seizure frequency reference`; sparse-operands `5 per 6 to 8 week`
+- 6131: gold `unknown`; selected-evidence `seizure free for multiple year`; sparse-operands `seizure free for 12 month`
+- 6180: gold `multiple per week`; selected-evidence `multiple per week`; sparse-operands `3 to 7 per 1 week`
+- 6209: gold `multiple per day`; selected-evidence `multiple per day`; sparse-operands `2 to 3 per 1 month`
+- 6244: gold `unknown`; selected-evidence `2 per week`; sparse-operands `2 per 1 week`
+- 6368: gold `unknown`; selected-evidence `multiple per day`; sparse-operands `3 per 6 week`
+- 6509: gold `1 per week`; selected-evidence `multiple per multiple day`; sparse-operands `multiple per multiple day`
+- 6571: gold `unknown`; selected-evidence `seizure free for multiple year`; sparse-operands `seizure free for 3 month`
+- 6889: gold `multiple per week`; selected-evidence `2 per 6 month`; sparse-operands `2 per 6 month`
+- 7168: gold `unknown`; selected-evidence `2 per year`; sparse-operands `2 per 1 year`
+- 7195: gold `unknown`; selected-evidence `1 per month`; sparse-operands `1 per month`
+- 7196: gold `1 per week`; selected-evidence `multiple per 6 week`; sparse-operands `multiple per 6 week`
+- 7401: gold `2 cluster per 6 week, 1 to 2 per cluster`; selected-evidence `unknown`; sparse-operands `unknown`
+- 7409: gold `unknown`; selected-evidence `no seizure frequency reference`; sparse-operands `1 per 1 week`
+- 7475: gold `2 per 6 month`; selected-evidence `2 per 2 month`; sparse-operands `2 per 6 month`
+- 7615: gold `3 to 7 per month`; selected-evidence `no seizure frequency reference`; sparse-operands `no seizure frequency reference`
+- 7859: gold `unknown`; selected-evidence `seizure free for multiple year`; sparse-operands `seizure free for multiple year`
+- 8400: gold `seizure free for multiple month`; selected-evidence `no seizure frequency reference`; sparse-operands `no seizure frequency reference`
+- 8808: gold `seizure free for 10 month`; selected-evidence `None`; sparse-operands `None`
+- 9103: gold `unknown`; selected-evidence `no seizure frequency reference`; sparse-operands `1 to 3 per 12 to 52 week`
+- 9238: gold `seizure free for multiple month`; selected-evidence `no seizure frequency reference`; sparse-operands `no seizure frequency reference`
+- 9496: gold `6 per 12 month`; selected-evidence `6 per 12 month`; sparse-operands `0 to 2 per 1 month`
+- 9937: gold `1 cluster per month, multiple per cluster`; selected-evidence `no seizure frequency reference`; sparse-operands `no seizure frequency reference`
+- 9943: gold `1 cluster per 4 to 5 week, multiple per cluster`; selected-evidence `1 per 4 to 5 week`; sparse-operands `1 per 4 to 5 week`
+- 10097: gold `3 cluster per month, multiple per cluster`; selected-evidence `3 per month`; sparse-operands `3 per month`
+- 10237: gold `4 cluster per month, multiple per cluster`; selected-evidence `unknown`; sparse-operands `unknown`
+- 10245: gold `3 cluster per month, multiple per cluster`; selected-evidence `unknown`; sparse-operands `unknown`
+- 10434: gold `multiple cluster per week, 2 to 3 per cluster`; selected-evidence `multiple per week`; sparse-operands `multiple per week`
+- 10630: gold `multiple cluster per 2 week, 5 per cluster`; selected-evidence `unknown`; sparse-operands `unknown`
+- 10673: gold `1 cluster per month, multiple per cluster`; selected-evidence `multiple per month`; sparse-operands `multiple per month`
+- 10677: gold `1 cluster per month, multiple per cluster`; selected-evidence `1 cluster per month, multiple per cluster`; sparse-operands `1 per 1 month`
+- 10965: gold `2 cluster per month, 4 to 5 per cluster`; selected-evidence `unknown`; sparse-operands `unknown`
+- 10967: gold `3 cluster per month, 4 to 5 per cluster`; selected-evidence `unknown`; sparse-operands `unknown`
+- 11216: gold `unknown`; selected-evidence `seizure free for multiple year`; sparse-operands `seizure free for 124 day`
+- 11254: gold `unknown`; selected-evidence `1 per 3 month`; sparse-operands `1 per 3 month`
+- 11259: gold `unknown`; selected-evidence `seizure free for 3 month`; sparse-operands `seizure free for 3 month`
+- 11272: gold `unknown`; selected-evidence `seizure free for 3 month`; sparse-operands `seizure free for 3 month`
+- 11282: gold `unknown`; selected-evidence `seizure free for 3 month`; sparse-operands `seizure free for 3 month`
+- 11337: gold `unknown`; selected-evidence `1 per 2 month`; sparse-operands `1 per 2 month`
+- 11389: gold `unknown`; selected-evidence `1 per 2 month`; sparse-operands `1 per 2 month`
+- 11463: gold `no seizure frequency reference`; selected-evidence `1 per day`; sparse-operands `1 per day`
+- 11824: gold `no seizure frequency reference`; selected-evidence `1 per day`; sparse-operands `1 per day`
+- 12127: gold `multiple per week`; selected-evidence `1 per week`; sparse-operands `1 per week`
+- 12130: gold `multiple per week`; selected-evidence `3 per year`; sparse-operands `3 per 1 year`
+- 12139: gold `multiple per week`; selected-evidence `3 per year`; sparse-operands `3 per 1 year`
+- 12145: gold `multiple per week`; selected-evidence `3 per year`; sparse-operands `3 per 1 year`
+- 12218: gold `1 per day`; selected-evidence `multiple per day`; sparse-operands `multiple per day`
+- 12236: gold `1 per day`; selected-evidence `unknown`; sparse-operands `unknown`
+- 12246: gold `1 to 2 per day`; selected-evidence `multiple per day`; sparse-operands `multiple per day`
+- 12378: gold `4 per day`; selected-evidence `unknown`; sparse-operands `4 per 2 month`
+- 12383: gold `4 per day`; selected-evidence `unknown`; sparse-operands `4 per 2 month`
+- 12412: gold `2 per day`; selected-evidence `unknown`; sparse-operands `2 per 1 day`
+- 12468: gold `1 per day`; selected-evidence `1 per day`; sparse-operands `4 per 1 year`
+- 12484: gold `3 to 4 per day`; selected-evidence `1 cluster per month, multiple per cluster`; sparse-operands `1 to 2 per 1 year`
+- 12502: gold `4 per day`; selected-evidence `1 to 2 per year`; sparse-operands `1 to 2 per 1 month`
+- 12506: gold `4 per day`; selected-evidence `1 to 2 per year`; sparse-operands `1 to 2 per 1 month`
+- 12537: gold `1 per day`; selected-evidence `13 per 6 month`; sparse-operands `13 per 6 month`
+- 12548: gold `1 per day`; selected-evidence `13 per 6 month`; sparse-operands `1 to 3 per 1 year`
+- 12551: gold `1 per day`; selected-evidence `12 per 6 month`; sparse-operands `1 to 2 per 1 year`
+- 12556: gold `1 per day`; selected-evidence `2 to 3 per 6 month`; sparse-operands `2 to 3 per 1 week`
+- 12562: gold `1 per day`; selected-evidence `3 to 4 per 6 month`; sparse-operands `3 to 4 per 1 week`
+- 12573: gold `1 per day`; selected-evidence `12 per 6 month`; sparse-operands `1 to 2 per 1 month`
+- 12584: gold `1 per week`; selected-evidence `1 per 3 month`; sparse-operands `1 per 3 month`
+- 12641: gold `1 per day`; selected-evidence `1 to 2 per week`; sparse-operands `1 to 2 per 1 week`
+- 12665: gold `1 per day`; selected-evidence `1 to 2 per month`; sparse-operands `1 to 2 per 1 month`
+- 12667: gold `1 per day`; selected-evidence `1 to 2 per month`; sparse-operands `1 to 2 per 1 month`
+- 12676: gold `1 per day`; selected-evidence `1 per day`; sparse-operands `1 to 2 per 1 year`
+- 12679: gold `1 per day`; selected-evidence `1 to 2 per month`; sparse-operands `1 to 2 per 1 month`
+- 12749: gold `3 to 4 per day`; selected-evidence `2 per month`; sparse-operands `2 per 1 month`
+- 12788: gold `6 per 4 month`; selected-evidence `6 per 4 month`; sparse-operands `6 per 1 year`
+- 12810: gold `5 per 2 month`; selected-evidence `5 per 2 month`; sparse-operands `5 per 1 year`
+- 12823: gold `9 per month`; selected-evidence `9 per month`; sparse-operands `9 per 1 year`
+- 12827: gold `5 per 5 month`; selected-evidence `5 per 5 month`; sparse-operands `5 per 1 year`
+- 12835: gold `4 per month`; selected-evidence `4 per month`; sparse-operands `4 per 24 week`
+- 12877: gold `10 per 4 month`; selected-evidence `10 per 4 month`; sparse-operands `10 per 1 year`
+- 12882: gold `7 per 4 month`; selected-evidence `7 per 4 month`; sparse-operands `7 per 1 to 2 month`
+- 12949: gold `9 per 6 month`; selected-evidence `9 per 6 month`; sparse-operands `9 per 1 year`
+- 12950: gold `7 per 3 month`; selected-evidence `7 per 3 month`; sparse-operands `7 per 1 year`
+- 12963: gold `unknown`; selected-evidence `no seizure frequency reference`; sparse-operands `2 to 5 per 1 year`
+- 13008: gold `4 per month`; selected-evidence `4 per month`; sparse-operands `4 per 1 year`
+- 13051: gold `2 per 8 month`; selected-evidence `unknown`; sparse-operands `1 per 3 week`
+- 13058: gold `2 per 7 month`; selected-evidence `unknown`; sparse-operands `1 per 3 week`
+- 13114: gold `1 per year`; selected-evidence `no seizure frequency reference`; sparse-operands `1 per 14 day`
+- 13122: gold `3 per year`; selected-evidence `unknown`; sparse-operands `unknown`
+- 13149: gold `3 per year`; selected-evidence `no seizure frequency reference`; sparse-operands `3 per 2 week`
+- 13178: gold `1 per 6 month`; selected-evidence `1 per month`; sparse-operands `1 per 6 month`
+- 13190: gold `1 per 5 month`; selected-evidence `seizure free for 5 month`; sparse-operands `seizure free for 5 month`
+- 13209: gold `1 per 8 month`; selected-evidence `1 per 8 week`; sparse-operands `1 per 8 week`
+- 13267: gold `2 per 5 month`; selected-evidence `no seizure frequency reference`; sparse-operands `1 per 5 month`
+- 13290: gold `4 per 6 month`; selected-evidence `unknown`; sparse-operands `2 per 1 week`
+- 13843: gold `seizure free for multiple month`; selected-evidence `no seizure frequency reference`; sparse-operands `no seizure frequency reference`
+- 13858: gold `seizure free for multiple month`; selected-evidence `unknown`; sparse-operands `unknown`
+- 13889: gold `seizure free for multiple month`; selected-evidence `no seizure frequency reference`; sparse-operands `no seizure frequency reference`
+- 14025: gold `unknown`; selected-evidence `no seizure frequency reference`; sparse-operands `2 per 6 week`
+- 14137: gold `unknown`; selected-evidence `3 to 4 per 3 month`; sparse-operands `3 to 4 per 3 month`
+- 14187: gold `2 to 3 per month`; selected-evidence `seizure free for multiple year`; sparse-operands `seizure free for multiple year`
+- 14214: gold `2 to 4 per month`; selected-evidence `seizure free for multiple year`; sparse-operands `seizure free for multiple year`
+- 14250: gold `2 per month`; selected-evidence `seizure free for multiple year`; sparse-operands `2 per 1 week`
+- 14282: gold `multiple per month`; selected-evidence `seizure free for multiple year`; sparse-operands `seizure free for 5 week`
+- 14284: gold `2 to 3 per month`; selected-evidence `2 to 3 per week`; sparse-operands `2 to 3 per 1 week`
+- 14317: gold `4 per 2 month`; selected-evidence `seizure free for multiple year`; sparse-operands `seizure free for 2 month`
+- 14332: gold `5 per 2 month`; selected-evidence `seizure free for multiple year`; sparse-operands `seizure free for multiple year`
+- 14335: gold `3 to 4 per 2 month`; selected-evidence `seizure free for multiple year`; sparse-operands `seizure free for 8 week`
+- 14383: gold `3 to 4 per 3 month`; selected-evidence `seizure free for multiple year`; sparse-operands `seizure free for 3 month`
+- 14454: gold `2 per 2 month`; selected-evidence `seizure free for multiple year`; sparse-operands `seizure free for 2 month`
+- 14524: gold `2 per 6 month`; selected-evidence `unknown`; sparse-operands `unknown`
+- 14530: gold `2 per 2 month`; selected-evidence `no seizure frequency reference`; sparse-operands `2 per 3 month`
+- 14540: gold `2 per 8 month`; selected-evidence `seizure free for multiple year`; sparse-operands `seizure free for 6 week`
+- 14562: gold `3 per 6 month`; selected-evidence `seizure free for 1 month`; sparse-operands `seizure free for 1 month`
+- 14567: gold `3 per 3 month`; selected-evidence `3 per 4 month`; sparse-operands `3 per 4 month`
+- 14581: gold `2 per 3 month`; selected-evidence `seizure free for multiple year`; sparse-operands `seizure free for 2 month`
+- 14592: gold `3 per 5 month`; selected-evidence `no seizure frequency reference`; sparse-operands `3 per 6 month`
+- 14611: gold `2 per 4 month`; selected-evidence `no seizure frequency reference`; sparse-operands `2 per 5 month`
+- 14628: gold `2 per 2 month`; selected-evidence `no seizure frequency reference`; sparse-operands `2 per 2 month`
+- 14635: gold `5 per 4 month`; selected-evidence `seizure free for multiple year`; sparse-operands `seizure free for multiple year`
+- 14645: gold `2 per 6 month`; selected-evidence `no seizure frequency reference`; sparse-operands `2 per 6 month`
+- 14672: gold `3 per 8 month`; selected-evidence `seizure free for multiple year`; sparse-operands `seizure free for multiple year`
+- 14765: gold `1 per month`; selected-evidence `seizure free for 1 month`; sparse-operands `seizure free for 1 month`
+- 14806: gold `1 per 2 month`; selected-evidence `seizure free for 1 month`; sparse-operands `seizure free for 1 month`
+- 14810: gold `1 per month`; selected-evidence `seizure free for multiple year`; sparse-operands `seizure free for 4 week`
+- 14821: gold `1 per month`; selected-evidence `seizure free for multiple year`; sparse-operands `seizure free for 3 week`
+- 14872: gold `1 per month`; selected-evidence `seizure free for multiple year`; sparse-operands `seizure free for 2 week`
+- 14943: gold `1 per 3 month`; selected-evidence `seizure free for multiple year`; sparse-operands `seizure free for multiple year`
+- 14965: gold `1 per 3 month`; selected-evidence `seizure free for multiple year`; sparse-operands `seizure free for multiple year`
+- 14973: gold `1 per month`; selected-evidence `seizure free for 1 month`; sparse-operands `seizure free for 23 day`
+- 15004: gold `1 per 3 month`; selected-evidence `seizure free for 2 month`; sparse-operands `seizure free for 2 month`
+- 15012: gold `1 per 2 month`; selected-evidence `seizure free for 2 month`; sparse-operands `seizure free for 2 month`
+- 15029: gold `1 per 3 month`; selected-evidence `seizure free for 3 month`; sparse-operands `seizure free for 3 month`
+- 15108: gold `3 to 4 per 15 month`; selected-evidence `seizure free for multiple year`; sparse-operands `seizure free for 12 month`
+- 15127: gold `5 per 13 month`; selected-evidence `4 per year`; sparse-operands `4 per 1 month`
+- 15141: gold `4 to 5 per 15 month`; selected-evidence `4 per month`; sparse-operands `3 to 4 per 1 month`
+- 15168: gold `multiple per 15 month`; selected-evidence `seizure free for 1 year`; sparse-operands `seizure free for 1 year`
+- 15193: gold `multiple per 13 month`; selected-evidence `seizure free for 1 year`; sparse-operands `seizure free for 1 year`
+- 15242: gold `multiple cluster per 15 month, multiple per cluster`; selected-evidence `unknown`; sparse-operands `unknown`
+- 15262: gold `multiple cluster per 13 month, multiple per cluster`; selected-evidence `unknown`; sparse-operands `unknown`
+- 15267: gold `3 per 14 month`; selected-evidence `seizure free for 13 month`; sparse-operands `seizure free for 13 month`
+- 15306: gold `2 to 3 per 15 month`; selected-evidence `seizure free for multiple year`; sparse-operands `seizure free for 15 month`
+- 15317: gold `2 to 3 per 15 month`; selected-evidence `seizure free for multiple year`; sparse-operands `seizure free for 15 month`
+- 15376: gold `1 cluster per 2 week, 4 to 6 per cluster`; selected-evidence `1 cluster per 2 week, 4 to 6 per cluster`; sparse-operands `4 to 6 per 1 day`
+- 15404: gold `1 cluster per 4 month, 3 to 4 per cluster`; selected-evidence `unknown`; sparse-operands `unknown`
+- 15429: gold `1 cluster per 2 month, 4 per cluster`; selected-evidence `unknown`; sparse-operands `unknown`
+- 15431: gold `1 cluster per 4 month, 5 per cluster`; selected-evidence `unknown`; sparse-operands `unknown`
+- 15470: gold `1 cluster per 5 day, multiple per cluster`; selected-evidence `multiple per day`; sparse-operands `multiple per day`
+- 15519: gold `1 cluster per 4 day, 3 per cluster`; selected-evidence `unknown`; sparse-operands `unknown`
+- 15628: gold `multiple per week`; selected-evidence `multiple per week`; sparse-operands `3 to 7 per 1 week`
+- 15964: gold `11 per 3 month`; selected-evidence `11 per 2 month`; sparse-operands `5 to 6 per 1 month`
+- 15986: gold `11 per 3 month`; selected-evidence `11 per 2 month`; sparse-operands `10 per 1 month`
+- 15997: gold `10 per 3 month`; selected-evidence `10 per 2 month`; sparse-operands `3 to 5 per 1 month`
+- 16021: gold `9 per 3 month`; selected-evidence `9 per 2 month`; sparse-operands `3 to 5 per 1 month`
+- 16041: gold `9 per 3 month`; selected-evidence `9 per 2 month`; sparse-operands `7 per 1 month`
+- 16084: gold `8 per 4 month`; selected-evidence `8 per 4 month`; sparse-operands `4 per 1 month`
+- 16097: gold `17 per 4 month`; selected-evidence `17 per 4 month`; sparse-operands `1 to 6 per 1 month`
+- 16107: gold `8 per 3 month`; selected-evidence `8 per 3 month`; sparse-operands `4 per 1 month`
+- 16162: gold `11 per 3 month`; selected-evidence `11 per 3 month`; sparse-operands `6 per 1 month`
+- 16181: gold `15 per 4 month`; selected-evidence `15 per 4 month`; sparse-operands `4 per 1 month`
+- 16195: gold `16 per 4 month`; selected-evidence `16 per 4 month`; sparse-operands `6 per 1 month`
+- 16203: gold `9 per 3 month`; selected-evidence `8 per 2 month`; sparse-operands `3 to 5 per 1 month`
+- 16432: gold `1 per 2 day`; selected-evidence `1 per day`; sparse-operands `1 per 2 day`
+- 16450: gold `1 per multiple day`; selected-evidence `1 per day`; sparse-operands `1 per 3 to 7 day`
+- 16574: gold `1 per 4 day`; selected-evidence `unknown`; sparse-operands `unknown`
+- 16590: gold `1 per 4 to 5 day`; selected-evidence `unknown`; sparse-operands `unknown`
+- 16645: gold `5 per 7 month`; selected-evidence `4 per 2 month`; sparse-operands `4 per 2 month`
+- 16674: gold `7 per 6 month`; selected-evidence `7 per 3 month`; sparse-operands `4 per 1 month`
+- 16685: gold `10 per 3 month`; selected-evidence `9 per 2 month`; sparse-operands `9 per 2 month`
+- 16704: gold `9 per 6 month`; selected-evidence `multiple per month`; sparse-operands `multiple per month`
+- 16714: gold `5 per 6 month`; selected-evidence `5 per 3 month`; sparse-operands `5 per 3 month`
+- 16717: gold `5 per 6 month`; selected-evidence `no seizure frequency reference`; sparse-operands `5 per 6 month`
+- 16719: gold `7 per 6 month`; selected-evidence `1 per week`; sparse-operands `1 per 1 week`
+- 16728: gold `4 per 6 month`; selected-evidence `no seizure frequency reference`; sparse-operands `4 per 6 month`
+- 16750: gold `6 per 7 month`; selected-evidence `4 per month`; sparse-operands `4 per 1 month`
+- 16757: gold `13 per 6 month`; selected-evidence `multiple per month`; sparse-operands `multiple per month`
+- 16758: gold `9 per 5 month`; selected-evidence `multiple per month`; sparse-operands `multiple per month`
+- 16774: gold `19 per 7 month`; selected-evidence `5 to 6 per month`; sparse-operands `3 to 6 per 1 month`
+- 16780: gold `3 per 7 month`; selected-evidence `unknown`; sparse-operands `unknown`
+- 16824: gold `11 per 5 month`; selected-evidence `10 per 2 month`; sparse-operands `1 to 7 per 3 to 7 month`
+- 16833: gold `8 per 6 month`; selected-evidence `no seizure frequency reference`; sparse-operands `5 per 1 month`
+- 16839: gold `9 per 4 month`; selected-evidence `no seizure frequency reference`; sparse-operands `no seizure frequency reference`
+- 16867: gold `6 per 7 month`; selected-evidence `6 per 3 month`; sparse-operands `3 per 1 month`
+- 16907: gold `9 per 6 month`; selected-evidence `no seizure frequency reference`; sparse-operands `no seizure frequency reference`
+- 16938: gold `2 per week`; selected-evidence `2 per year`; sparse-operands `2 per 2 month`
+- 16947: gold `2 per week`; selected-evidence `4 per year`; sparse-operands `4 per 2 month`
+- 16961: gold `2 per week`; selected-evidence `1 per 3 month`; sparse-operands `3 per 3 month`
+- 17110: gold `4 to 5 cluster per week, multiple per cluster`; selected-evidence `4 to 5 per week`; sparse-operands `4 to 5 per 1 week`
+- 17135: gold `5 cluster per month, multiple per cluster`; selected-evidence `1 cluster per month, multiple per cluster`; sparse-operands `1 cluster per month, multiple per cluster`
+- 17146: gold `1 per day`; selected-evidence `1 per 6 month`; sparse-operands `1 per 6 month`
+- 17167: gold `1 per week`; selected-evidence `1 per 6 month`; sparse-operands `1 per 6 month`
+- 17189: gold `1 per month`; selected-evidence `no seizure frequency reference`; sparse-operands `1 per 6 month`
+- 17200: gold `1 per month`; selected-evidence `1 per 6 month`; sparse-operands `1 per 6 month`

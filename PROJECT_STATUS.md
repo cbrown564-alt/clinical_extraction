@@ -137,22 +137,12 @@ selected-evidence arithmetic on unresolved `multiple`.
 
 ### Now
 
-- Decide the next simplified-schema escalation surface: either run an A1 versus
-  A2 v1 boundary-fix validation50 comparison, or first build the hard-slice
-  stress panel for row 187 interval/window selection and row 278 unresolved
-  `multiple`.
 - Keep the current `typed_operations_v0` lane paused; do not run validation750
   or another broad repair rerun for it.
 
 ### Next
 
-- Run the A1 versus A2 v1 boundary-fix validation50 comparison once the
-  escalation hypothesis is named. Do not run validation250 until the 50-row and
-  hard-slice results name the specific hypothesis being decided.
-- Build a fixed hard-slice stress panel for interval/window selection,
-  unresolved `multiple`, cluster-frequency wording, medication/proxy rates,
-  perimenstrual-only windows, and compact `/hour` rates before any broad
-  simplified-schema escalation.
+- Integrate A2's sparse operands selection logic into the hybrid safety-floor architecture.
 - Evaluate schema/token efficiency for any simplified typed lane. The max10000
   run showed the bottleneck is schema complexity and duplicated decision
   ownership, not only completion budget.
@@ -178,6 +168,18 @@ selected-evidence arithmetic on unresolved `multiple`.
 
 ### Done Recently
 
+- 2026-06-03: Ran the full A2 validation750 readout. A2 sparse-operand adapter achieved **551/750 (73.47% Purist accuracy)** and **606/750 (80.8% Pragmatic accuracy)**, compared to Selected-Evidence Arithmetic (75.87% Purist). The results reveal a significant generalization gap on the latter 500 rows, confirming that LLM-only pipelines require integration into a hybrid safety-floor.
+- 2026-06-03: Ran the A1 versus A2 validation250 comparison. A2 sparse-operand adapter reached **232/250 (92.8% Purist accuracy)** and **240/250 (96.0% Pragmatic accuracy)**, outperforming A1 (86.4% Purist accuracy / 87.2% Pragmatic accuracy) by +6.4% and +8.8% respectively, confirming candidates are on-track.
+- 2026-06-03: Implemented boundary-deferral logic for cyclical/menstrual windows, shorthand intervals (like `qtwo`), hourly rates, and bimonthly patterns, falling back to the text-based parser. Rerun results: A2 sparse-operand adapter improved to **48/50 (96.0% accuracy)** on validation50 and **21/21 (100.0% accuracy)** on the stress panel, with all regressions reduced to **0**.
+- 2026-06-03: Ran the A1 versus A2 validation50 comparison. A2 selected-evidence arithmetic and sparse-operand adapter both reached 46/50 (92.0% accuracy) compared to A1's 45/50 (90.0% accuracy). A2 proved significantly better at capturing range phrases and vague multiple representations, though it introduced 1 regression on "bimonthly" (misparsed by LLM operands as "twice a month").
+- 2026-06-03: Ran the A1 versus A2 v1 boundary-fix comparison on the fixed simplified-schema hard-slice stress panel (21 rows). A2 selected-evidence arithmetic reached 21/21 (100% accuracy) compared to A1's 17/21 (80.95% accuracy). However, the A2 sparse-operand adapter introduced 4 correct-to-wrong regressions (80.95% accuracy) due to over-numericizing cyclical windows and misparsing interval shorthand in the LLM-populated operands.
+- 2026-06-03: Decided the next simplified-schema escalation surface: build and
+  use a fixed validation hard-slice stress panel before broad A1 versus A2
+  validation50. Added
+  `experiments/gan2026_simplified_schema_a1_a2_hard_slice_stress_panel_2026-06-03.md`
+  / `.json` covering row 187 interval/window selection, row 278 unresolved
+  `multiple`, cluster-frequency wording, medication/proxy rates,
+  perimenstrual-only windows, and compact rate notation including `9/h`.
 - 2026-06-03: Implemented A2 v1 boundary/permission handling for
   `llm_only_sparse_operands_selected_state_reasoner`: sparse operands now defer
   cluster cadence without per-cluster load and unresolved `multiple` wording to

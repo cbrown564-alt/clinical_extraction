@@ -14,12 +14,17 @@ function fmt(n: number): string {
 const FAMILY_LABELS: Record<string, string> = {
   rules_only: "Rules",
   llm_only_claim_table_selector: "LLM Claim",
+  llm_only_structured_events: "LLM Events",
+  llm_only_minimal_evidence_selector: "LLM Minimal",
+  llm_only_typed_adapter_reasoner: "LLM Typed Adapter",
+  llm_only_typed_operations_reasoner: "LLM Typed Ops",
+  llm_first_direct_extractor: "LLM Direct",
   llm_heavy_clinical_frequency_reasoner: "LLM Heavy",
+  llm_heavy_evidence_selection_with_deterministic_adapters: "LLM Heavy+Det",
   llm_replacement_postprocessing_ablation: "LLM Repl",
   hybrid_rules_candidates_llm_adjudicator: "Hybrid",
   hybrid_clinical_frequency_state_graph: "Hybrid Graph",
-  llm_only_structured_events: "LLM Struct",
-  llm_only_direct_labeler: "LLM Direct",
+  dspy_final_selection_adjudicator: "DSPY Adjudicator",
 };
 
 const TICKS = [0, 0.25, 0.5, 0.75, 1.0];

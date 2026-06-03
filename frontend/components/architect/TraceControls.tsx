@@ -23,32 +23,30 @@ import {
   useRunNote,
 } from "@/lib/hooks";
 import { fetchRegistry, fetchArtifact, fetchRecord } from "@/lib/api";
-import {
-  adaptDeterministicTrace,
-  adaptHybridTrace,
-  adaptLLMTrace,
-} from "@/lib/traceAdapter";
-import type { PipelineFamily, HybridArtifactRow, LLMArtifactRow } from "@/lib/types";
+import { adaptDeterministicTrace, adaptTrace, isReplaySupported } from "@/lib/traceAdapter";
+import type { PipelineFamily } from "@/lib/types";
 import RuleConfigPanel from "./RuleConfigPanel";
 
 const SPLITS = ["train", "validation", "test"];
 
-function isDeterministicFamily(family: PipelineFamily): boolean {
-  return family === "rules_only" || family === "deterministic_v1";
+function isDeterministicFamily(family: string): boolean {
+  return family === "rules_only" || family.includes("deterministic");
 }
 
-function isHybridFamily(family: PipelineFamily): boolean {
-  return family === "hybrid_rules_candidates_llm_adjudicator";
+function isHybridFamily(family: string): boolean {
+  return family.includes("hybrid");
 }
 
-function isLLMFamily(family: PipelineFamily): boolean {
+function isLLMFamily(family: string): boolean {
   return family.startsWith("llm_only");
 }
 
+function isLiveFamily(family: string): boolean {
+  return isDeterministicFamily(family);
+}
+
 function familyKindLabel(family: PipelineFamily): string {
-  if (isDeterministicFamily(family)) return "Live";
-  if (isHybridFamily(family)) return "Replay";
-  if (isLLMFamily(family)) return "Replay";
+  if (isLiveFamily(family)) return "Live";
   return "Replay";
 }
 
@@ -83,7 +81,7 @@ export default function TraceControls() {
   const [showCustomNoteModal, setShowCustomNoteModal] = useState(false);
   const [customNoteDraft, setCustomNoteDraft] = useState("");
 
-  const isLive = isDeterministicFamily(pipelineFamily);
+  const isLive = isLiveFamily(pipelineFamily);
   const isReplay = !isLive;
 
   // When dataset record loads, update note text
@@ -108,14 +106,21 @@ export default function TraceControls() {
       setError(null);
       try {
         const registry = await fetchRegistry();
-        const matchingRun = registry.runs.find(
-          (r) => r.pipeline_family === pipelineFamily
+        // Find all runs for this family that have JSONL artifacts
+        const matchingRuns = registry.runs.filter(
+          (r) =>
+            r.pipeline_family === pipelineFamily &&
+            r.artifact_paths.some((p) => p.endsWith(".jsonl"))
         );
-        if (!matchingRun) {
+        if (matchingRuns.length === 0) {
           setError(`No replay artifact found for ${pipelineFamily}`);
           setIsLoading(false);
           return;
         }
+        // Prefer the run with the most rows (largest corpus)
+        const matchingRun = matchingRuns.reduce((a, b) =>
+          (a.row_count || 0) > (b.row_count || 0) ? a : b
+        );
         const jsonlPath = matchingRun.artifact_paths.find((p) =>
           p.endsWith(".jsonl")
         );
@@ -211,12 +216,12 @@ export default function TraceControls() {
         setReplayRowIndex(rowIndex);
 
         let trace;
-        if (isHybridFamily(pipelineFamily)) {
-          trace = adaptHybridTrace(row as HybridArtifactRow, record);
-        } else if (isLLMFamily(pipelineFamily)) {
-          trace = adaptLLMTrace(row as LLMArtifactRow, record);
+        if (isReplaySupported(pipelineFamily)) {
+          trace = adaptTrace(row, pipelineFamily, record);
         } else {
-          throw new Error("Unsupported replay family");
+          setError(`Replay not yet supported for ${pipelineFamily}. The artifact format for this family is not yet mapped to the trace viewer.`);
+          setIsLoading(false);
+          return;
         }
         setTrace(trace);
       } catch (e) {

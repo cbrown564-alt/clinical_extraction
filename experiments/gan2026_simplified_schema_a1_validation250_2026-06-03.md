@@ -1,0 +1,235 @@
+# Gan 2026 LLM-Only Simplified Selected State Reasoner V0
+
+- JSONL: `/Users/cobro/code/clinical-extraction/experiments/gan2026_simplified_schema_a1_validation250_2026-06-03.jsonl`
+- Architecture: `llm_only_simplified_selected_state_reasoner`
+- Prompt/program version: `gan2026_llm_only_simplified_selected_state_reasoner_v0`
+- Typed output schema version: `simplified_selected_state_v0`
+- Split: `validation` / `gan2026_split_v1`
+- Rows: 250
+- Model: `openai/gpt-4.1-mini`
+- Mode: `live`
+- Claim language: LLM-only selection-only validation development result; format-only and selected-evidence arithmetic are deterministic adapter layers.
+
+## A1 Target
+
+- one selected clinical state.
+- Exact selected evidence.
+- No graph projection.
+
+## Smoke Summary
+
+- Structured records: 248/250
+- Parse/schema failures: 2
+- Selected evidence valid: 244/250
+- Selected-state trace mismatches: 0
+
+## Score Layers
+
+- `raw_llm`: scorable 68, Purist 53/250 (0.2120), Pragmatic 53/250 (0.2120)
+- `format_only`: scorable 100, Purist 83/250 (0.3320), Pragmatic 84/250 (0.3360)
+- `selected_evidence_arithmetic`: scorable 248, Purist 216/250 (0.8640), Pragmatic 218/250 (0.8720)
+
+## Adapter Delta
+
+- Selected-evidence arithmetic raw-wrong to correct: 163
+- Selected-evidence arithmetic raw-correct to wrong: 0
+
+## Row Review
+
+- 10: gold `4 per day`; raw `≤ four per day`; selected-evidence `4 per day`
+- 40: gold `4 per week`; raw `≤ four seizures per week`; selected-evidence `4 per week`
+- 79: gold `6 to 7 per year`; raw `≤ 6 to 7 per year`; selected-evidence `6 to 7 per year`
+- 103: gold `2 to 4 per year`; raw `≤ two or four per year`; selected-evidence `2 to 4 per year`
+- 156: gold `1 per 6 day`; raw `every 6 days`; selected-evidence `1 per 6 day`
+- 182: gold `1 per 2 day`; raw `every 2 days`; selected-evidence `1 per 2 day`
+- 187: gold `1 per 7 to 9 day`; raw `2 nocturnal generalised tonic–clonic seizures in interval`; selected-evidence `no seizure frequency reference`
+- 190: gold `1 per 4 week`; raw `clusters of brief absence episodes every 4 weeks`; selected-evidence `1 per 4 week`
+- 198: gold `1 per 4 week`; raw `seizures every 4 weeks`; selected-evidence `1 per 4 week`
+- 212: gold `1 per 3 to 4 week`; raw `every 3 - 4 weeks`; selected-evidence `1 per 3 to 4 week`
+- 218: gold `1 per 3 week`; raw `seizures every 3 weeks`; selected-evidence `1 per 3 week`
+- 278: gold `multiple per week`; raw `multiple times in past week`; selected-evidence `1 per week`
+- 338: gold `multiple per month`; raw `many convulsions in past month`; selected-evidence `no seizure frequency reference`
+- 409: gold `1 per month`; raw `≤ once per month`; selected-evidence `1 per month`
+- 419: gold `2 per year`; raw `approximately twice per year`; selected-evidence `2 per year`
+- 446: gold `2 per week`; raw `≤ twice per week`; selected-evidence `2 per week`
+- 466: gold `21 to 28 per month`; raw `21 to 28 seizures per month`; selected-evidence `21 to 28 per month`
+- 531: gold `12 to 30 per 3 month`; raw `12 to 30 per quarter`; selected-evidence `12 to 30 per 3 month`
+- 598: gold `1 per 8 month`; raw `1 per eight months`; selected-evidence `1 per 8 month`
+- 659: gold `2 per 4 day`; raw `twice every 4 days`; selected-evidence `2 per 4 day`
+- 665: gold `2 per 2 week`; raw `twice every two weeks`; selected-evidence `2 per 2 week`
+- 694: gold `1 per week`; raw `once a week`; selected-evidence `1 per week`
+- 704: gold `2 per month`; raw `twice a month`; selected-evidence `2 per month`
+- 725: gold `1 per day`; raw `daily`; selected-evidence `1 per day`
+- 731: gold `1 per day`; raw `daily brief episodes`; selected-evidence `1 per day`
+- 743: gold `multiple per week`; raw `most shifts`; selected-evidence `no seizure frequency reference`
+- 744: gold `multiple per week`; raw `brief absences most weekdays, one generalised tonic–clonic seizure in last eight weeks`; selected-evidence `no seizure frequency reference`
+- 763: gold `1 per week`; raw `weekly`; selected-evidence `1 per week`
+- 790: gold `1 per 7 to 10 day`; raw `roughly once every seven to ten days`; selected-evidence `1 per 7 to 10 day`
+- 816: gold `1 per month`; raw `monthly seizures`; selected-evidence `1 per month`
+- 849: gold `1 per year`; raw `yearly seizures`; selected-evidence `1 per year`
+- 854: gold `1 per year`; raw `roughly yearly`; selected-evidence `1 per year`
+- 869: gold `multiple per month`; raw `several events spread across most months`; selected-evidence `multiple per day`
+- 891: gold `1 per 2 day`; raw `seizures every other day`; selected-evidence `1 per 2 day`
+- 899: gold `1 per 2 week`; raw `seizures every other week`; selected-evidence `1 per 2 week`
+- 959: gold `1 per 2 month`; raw `bimonthly`; selected-evidence `1 per 2 month`
+- 960: gold `1 per 2 month`; raw `bimonthly seizures`; selected-evidence `1 per 2 month`
+- 978: gold `1 per 2 month`; raw `focal impaired-awareness events every other month`; selected-evidence `1 per 2 month`
+- 987: gold `1 per 2 month`; raw `bimonthly seizures`; selected-evidence `1 per 2 month`
+- 1030: gold `1 to 3 per month`; raw `one or three seizures last month`; selected-evidence `1 per month`
+- 1046: gold `3 to 5 per month`; raw `3 to 5 seizures per month`; selected-evidence `3 to 5 per month`
+- 1070: gold `3 to 4 per week`; raw `3 or 4 seizures last week`; selected-evidence `no seizure frequency reference`
+- 1094: gold `3 to 5 per week`; raw `3 to 5 seizures last week`; selected-evidence `no seizure frequency reference`
+- 1165: gold `5 to 7 per 3 week`; raw `5 or 7 focal onset seizures in three weeks`; selected-evidence `7 per 3 week`
+- 1171: gold `7 to 9 per 3 week`; raw `7 to 9 focal onset seizures in three weeks`; selected-evidence `9 per 3 week`
+- 1207: gold `21 to 28 per 3 month`; raw `21 to 28 epileptic spasms in three months`; selected-evidence `21 to 28 per 3 month`
+- 1223: gold `3 to 4 per week`; raw `3 or 4 focal impaired awareness seizures this week`; selected-evidence `no seizure frequency reference`
+- 1249: gold `2 to 4 per week`; raw `2 or 4 focal impaired awareness seizures this week`; selected-evidence `2 to 4 per week`
+- 1281: gold `5 to 7 per year`; raw `5 or 7 epileptic spasms this year`; selected-evidence `5 to 7 per 10 month`
+- 1357: gold `1 per day`; raw `1 tonic-clonic seizure yesterday`; selected-evidence `1 per day`
+- 1363: gold `3 per day`; raw `3 tonic-clonic seizures yesterday`; selected-evidence `1 per day`
+- 1454: gold `7 per week`; raw `1 tonic-clonic and 6 petit mal in last week`; selected-evidence `7 per week`
+- 1486: gold `3 per month`; raw `multiple per month`; selected-evidence `2 per month`
+- 1573: gold `11 per week`; raw `11 focal seizures in last week`; selected-evidence `no seizure frequency reference`
+- 1591: gold `11 per month`; raw `11 seizures in last month`; selected-evidence `5 per month`
+- 1596: gold `12 per week`; raw `five drop attacks and seven petit mal in last week`; selected-evidence `12 per week`
+- 1597: gold `12 per month`; raw `multiple per month`; selected-evidence `12 per month`
+- 1636: gold `5 per month`; raw `two drop attacks and three petit mal in last month`; selected-evidence `5 per month`
+- 1640: gold `5 per week`; raw `multiple per week`; selected-evidence `5 per week`
+- 1687: gold `multiple per week`; raw `several focal seizures last week`; selected-evidence `multiple per day`
+- 1694: gold `1 cluster per 2 week, 3 per cluster`; raw `3 seizures in past fortnight`; selected-evidence `3 per 2 week`
+- 1695: gold `multiple per month`; raw `a handful of short focal events during the previous month`; selected-evidence `no seizure frequency reference`
+- 1706: gold `multiple cluster per month, multiple per cluster`; raw `cluster of short events on multiple days`; selected-evidence `multiple cluster per month, multiple per cluster`
+- 1707: gold `multiple per week`; raw `brief cluster of events occurring on multiple days within the past week`; selected-evidence `unknown`
+- 1772: gold `11 per 6 month`; raw `two drop attacks and nine absence seizures in the past six months`; selected-evidence `11 per 6 month`
+- 1773: gold `11 per 3 month`; raw `multiple per month`; selected-evidence `11 per 3 month`
+- 1790: gold `8 per 4 month`; raw `multiple per month`; selected-evidence `8 per 4 month`
+- 1794: gold `8 per 2 month`; raw `six drop attacks and two absence seizures in the past two months`; selected-evidence `8 per 2 month`
+- 1866: gold `8 per 2 month`; raw `one drop attacks and seven absence seizures in the past two months`; selected-evidence `8 per 2 month`
+- 1880: gold `8 per 2 month`; raw `multiple per month`; selected-evidence `3 cluster per month, multiple per cluster`
+- 1887: gold `4 per 3 month`; raw `multiple per month`; selected-evidence `4 per 3 month`
+- 1914: gold `7 per 3 month`; raw `2 drop attacks and 5 tonic-clonic in 3 months`; selected-evidence `7 per 3 month`
+- 1922: gold `7 per 3 month`; raw `2 drop attacks and 5 convulsions in 3 months`; selected-evidence `7 per 3 month`
+- 1923: gold `7 per 6 month`; raw `two drop attacks and five epileptic spasms in the past six months`; selected-evidence `7 per 6 month`
+- 1979: gold `6 per 2 month`; raw `multiple per month`; selected-evidence `3 per 2 month`
+- 1980: gold `6 per 3 month`; raw `3 focal onset seizures and 3 focal epileptic spasms in the past three months`; selected-evidence `6 per 3 month`
+- 2023: gold `5 per month`; raw `multiple per month`; selected-evidence `multiple per month`
+- 2080: gold `multiple per month`; raw `a few events in the preceding month`; selected-evidence `multiple per day`
+- 2094: gold `multiple per month`; raw `several absence seizures in the past month`; selected-evidence `no seizure frequency reference`
+- 2114: gold `multiple per month`; raw `several myoclonic in the past month`; selected-evidence `no seizure frequency reference`
+- 2149: gold `unknown`; raw `occasional tonic-clonic over last year`; selected-evidence `no seizure frequency reference`
+- 2166: gold `unknown`; raw `frequent petit mal`; selected-evidence `no seizure frequency reference`
+- 2228: gold `3 to 5 per 2 week`; raw `3 or 5 seizures in the last two weeks`; selected-evidence `3 to 5 per 2 week`
+- 2233: gold `6 to 7 per 2 month`; raw `6 or 7 seizures in the last two months`; selected-evidence `6 to 7 per 2 month`
+- 2245: gold `7 to 8 per 3 week`; raw `7 to 8 seizures in the last three weeks`; selected-evidence `7 to 8 per 3 week`
+- 2259: gold `6 to 8 per 3 month`; raw `6 to 8 seizures per 3 months`; selected-evidence `6 to 8 per 3 month`
+- 2354: gold `6 to 7 per week`; raw `6 to 7 myoclonic per week`; selected-evidence `no seizure frequency reference`
+- 2369: gold `3 to 4 per month`; raw `3 to 4 seizures per month`; selected-evidence `3 to 4 per month`
+- 2374: gold `7 to 9 per month`; raw `7 to 9 seizures per month`; selected-evidence `7 to 9 per month`
+- 2425: gold `6 to 8 per month`; raw `six or eight petit mal over the past month`; selected-evidence `6 to 8 per month`
+- 2427: gold `3 to 5 per month`; raw `3 or 5 tonic-clonic seizures per month`; selected-evidence `5 per month`
+- 2435: gold `5 to 7 per 2 week`; raw `5 to 7 seizures in 2 weeks`; selected-evidence `5 to 7 per 2 week`
+- 2437: gold `2 to 3 per 2 month`; raw `2 to 3 seizures per 2 months`; selected-evidence `2 to 3 per 2 month`
+- 2440: gold `5 to 7 per 2 month`; raw `5 to 7 seizures in 2 months`; selected-evidence `5 to 7 per 2 month`
+- 2456: gold `6 to 7 per 2 week`; raw `six to seven seizures during the last two weeks`; selected-evidence `6 to 7 per 2 week`
+- 2459: gold `7 to 9 per 2 week`; raw `7 to 9 seizures in last two weeks`; selected-evidence `7 to 9 per 2 week`
+- 2487: gold `2 to 3 per 3 month`; raw `two to three seizures during the last three months`; selected-evidence `2 to 3 per 3 month`
+- 2513: gold `2 to 3 per 2 week`; raw `2 to 3 drop attacks in last two weeks`; selected-evidence `2 to 3 per 2 week`
+- 2541: gold `8 to 9 per 2 week`; raw `8 to 9 drop attacks in last two weeks`; selected-evidence `8 to 9 per 2 week`
+- 2548: gold `5 to 6 per 2 month`; raw `five to six focal automatisms during the last two months`; selected-evidence `no seizure frequency reference`
+- 2554: gold `1 to 10 per 2 month`; raw `1 - 10 focal aware seizures during the last two months`; selected-evidence `1 to 10 per 2 month`
+- 2558: gold `3 to 4 per 2 month`; raw `3 to 4 focal impaired awareness seizures during the last two months`; selected-evidence `3 to 4 per 2 month`
+- 2609: gold `1 per day`; raw `once per night on average for the past three months`; selected-evidence `1 per day`
+- 2622: gold `1 per day`; raw `seizures every night`; selected-evidence `1 per day`
+- 2628: gold `1 per day`; raw `seizures every night`; selected-evidence `1 per day`
+- 2678: gold `1 per day`; raw `tonic-clonic every night`; selected-evidence `1 per day`
+- 2681: gold `1 per day`; raw `1 absence seizure every night`; selected-evidence `1 per day`
+- 2698: gold `1 per 2 day`; raw `myoclonic every other day`; selected-evidence `1 per 2 day`
+- 2731: gold `1 per 2 week`; raw `1 absence seizure every other week`; selected-evidence `1 per 2 week`
+- 2740: gold `1 per month`; raw `complex partial seizure monthly`; selected-evidence `1 per month`
+- 2759: gold `1 per month`; raw `simple partial seizure monthly`; selected-evidence `1 per month`
+- 2762: gold `1 per month`; raw `focal cognitive monthly`; selected-evidence `1 per month`
+- 2765: gold `1 per month`; raw `focal onset seizure monthly`; selected-evidence `1 per month`
+- 2776: gold `1 per week`; raw `weekly drop attack`; selected-evidence `1 per week`
+- 2789: gold `1 per week`; raw `convulsion weekly`; selected-evidence `1 per week`
+- 2812: gold `1 per day`; raw `daily drop attack`; selected-evidence `1 per day`
+- 2822: gold `1 per day`; raw `daily myoclonic jerks`; selected-evidence `1 per day`
+- 2824: gold `1 per day`; raw `tonic-clonic daily`; selected-evidence `1 per day`
+- 2887: gold `2 per week`; raw `twice a week`; selected-evidence `2 per week`
+- 2992: gold `seizure free for 7 month`; raw `no further events since 19-May-2024`; selected-evidence `no seizure frequency reference`
+- 3058: gold `seizure free for 12 month`; raw `No events for twelve months`; selected-evidence `no seizure frequency reference`
+- 3082: gold `seizure free for 10 month`; raw `No events for 10 months`; selected-evidence `no seizure frequency reference`
+- 3095: gold `seizure free for 12 month`; raw `no events for twelve months`; selected-evidence `no seizure frequency reference`
+- 3118: gold `seizure free for multiple month`; raw `No seizures since last visit`; selected-evidence `no seizure frequency reference`
+- 3224: gold `1 cluster per month, 6 to 7 per cluster`; raw `Monthly clusters, typically 6 to 7 seizures over 24 h`; selected-evidence `1 cluster per month, 6 to 7 per cluster`
+- 3242: gold `2 cluster per month, 5 per cluster`; raw `None`; selected-evidence `None`
+- 3261: gold `2 cluster per month, 4 per cluster`; raw `two clusters this month; each ≈four absences in the morning`; selected-evidence `2 cluster per month, 4 per cluster`
+- 3262: gold `2 cluster per month, 5 per cluster`; raw `None`; selected-evidence `None`
+- 3297: gold `6 per month`; raw `six per 30 days`; selected-evidence `6 per month`
+- 3325: gold `3 per week`; raw `About three seizure days per week`; selected-evidence `3 per week`
+- 3356: gold `unknown`; raw `brief generalised tonic–clonic seizures after nights of curtailed sleep`; selected-evidence `no seizure frequency reference`
+- 3371: gold `unknown`; raw `focal impaired awareness seizures only when significantly short on sleep; outside of nights with curtailed rest, no events have occurred in the past eight weeks`; selected-evidence `no seizure frequency reference`
+- 3436: gold `unknown`; raw `events cluster shortly after early-morning arousal`; selected-evidence `unknown`
+- 3468: gold `unknown`; raw `perimenstrual only (days -2 to +2)`; selected-evidence `no seizure frequency reference`
+- 3469: gold `unknown`; raw `seizures perimenstrual only`; selected-evidence `no seizure frequency reference`
+- 3482: gold `unknown`; raw `seizures perimenstrual only`; selected-evidence `no seizure frequency reference`
+- 3493: gold `unknown`; raw `seizure clustering around menstrual period`; selected-evidence `unknown`
+- 3507: gold `unknown`; raw `frequency reduced by 0.3 after dose increase`; selected-evidence `1 per day`
+- 3512: gold `unknown`; raw `~20% increase in frequency after dose increase`; selected-evidence `no seizure frequency reference`
+- 3528: gold `unknown`; raw `increased frequency of brief morning jerks and absences`; selected-evidence `no seizure frequency reference`
+- 3532: gold `unknown`; raw `increased frequency after dose increase`; selected-evidence `no seizure frequency reference`
+- 3534: gold `unknown`; raw `Better over the past seven months`; selected-evidence `no seizure frequency reference`
+- 3623: gold `7 per week`; raw `up to seven in bad weeks`; selected-evidence `7 per week`
+- 3643: gold `7 per week`; raw `clusters occurring up to 7 in bad weeks`; selected-evidence `7 per week`
+- 3710: gold `5 per week`; raw `TC 5 per week`; selected-evidence `5 per week`
+- 3766: gold `8 per year`; raw `TC X8/yr`; selected-evidence `8 per year`
+- 3791: gold `10 per year`; raw `TC ×ten/yr`; selected-evidence `10 per year`
+- 3801: gold `9 per month`; raw `sz ×nine/mo`; selected-evidence `9 per month`
+- 3806: gold `6 per month`; raw `six per month`; selected-evidence `6 per month`
+- 3827: gold `7 per month`; raw `sz X7/mo`; selected-evidence `7 per month`
+- 3889: gold `8 per year`; raw `sz 8/yr`; selected-evidence `8 per year`
+- 3949: gold `4 per week`; raw `sz Xfour/wk on average over the last 8 weeks`; selected-evidence `no seizure frequency reference`
+- 3988: gold `multiple per week`; raw `several times per week`; selected-evidence `multiple per week`
+- 3995: gold `1 per month`; raw `abs monthly`; selected-evidence `1 per month`
+- 3999: gold `1 per month`; raw `abs monthly`; selected-evidence `1 per month`
+- 4022: gold `8 per month`; raw `abs 8 monthly`; selected-evidence `8 per month`
+- 4026: gold `1 per month`; raw `roughly one brief absence episode in a typical month`; selected-evidence `no seizure frequency reference`
+- 4092: gold `1 per 2 to 3 week`; raw `qtwo - threewk`; selected-evidence `1 per 2 to 3 week`
+- 4100: gold `1 per 2 to 3 week`; raw `q2 - 3wk`; selected-evidence `1 per 2 to 3 week`
+- 4110: gold `1 per 1 to 2 day`; raw `q1 - 2d`; selected-evidence `1 per 1 to 2 day`
+- 4116: gold `1 per 1 to 2 day`; raw `qone to twod occurrence on workdays`; selected-evidence `1 per 1 to 2 day`
+- 4173: gold `1 per 2 week`; raw `roughly once in a fortnight`; selected-evidence `no seizure frequency reference`
+- 4243: gold `1 per 2 to 3 week`; raw `every two to three weeks`; selected-evidence `1 per 2 to 3 week`
+- 4258: gold `4 per week`; raw `4 per 7`; selected-evidence `4 per week`
+- 4337: gold `3 per 3 month`; raw `multiple per month`; selected-evidence `multiple per month`
+- 4345: gold `4 per month`; raw `multiple per month`; selected-evidence `multiple per month`
+- 4368: gold `5 per 2 month`; raw `multiple per month`; selected-evidence `multiple per month`
+- 4402: gold `7 per 7 month`; raw `multiple per month`; selected-evidence `7 per 7 month`
+- 4410: gold `4 per 7 month`; raw `multiple per month`; selected-evidence `4 per 7 month`
+- 4478: gold `19 per week`; raw `nineteen episodes in past week`; selected-evidence `no seizure frequency reference`
+- 4480: gold `3 to 5 per week`; raw `multiple per week`; selected-evidence `multiple per week`
+- 4496: gold `7 to 8 per 3 month`; raw `7 to 8 absence seizures this quarter`; selected-evidence `7 to 8 per 3 month`
+- 4562: gold `1 per 6 week`; raw `median inter-seizure interval ≈ six weeks`; selected-evidence `1 per 6 week`
+- 4563: gold `1 per 4 month`; raw `median inter-seizure interval ≈ four months`; selected-evidence `1 per 4 month`
+- 4574: gold `1 per 4 week`; raw `median inter-seizure interval ≈ four weeks`; selected-evidence `no seizure frequency reference`
+- 4592: gold `1 per 2 month`; raw `median inter-seizure interval ≈ two months`; selected-evidence `1 per 2 month`
+- 4597: gold `1 per 3 week`; raw `Median inter-seizure interval ≈ three weeks`; selected-evidence `1 per 3 week`
+- 4624: gold `1 per 3 to 4 day`; raw `two focal impaired-awareness events per month`; selected-evidence `no seizure frequency reference`
+- 4631: gold `1 per 14 to 21 day`; raw `intervals ranging 14 - 21 days`; selected-evidence `1 per 14 to 21 day`
+- 4690: gold `multiple per day`; raw `frequent electrographic seizures (~ten/h)`; selected-evidence `no seizure frequency reference`
+- 4694: gold `multiple per day`; raw `~9 per hour`; selected-evidence `no seizure frequency reference`
+- 4700: gold `multiple per day`; raw `~4 per hour`; selected-evidence `no seizure frequency reference`
+- 4709: gold `multiple per day`; raw `~6 per hour`; selected-evidence `no seizure frequency reference`
+- 4731: gold `unknown`; raw `seizures happen rare`; selected-evidence `no seizure frequency reference`
+- 4732: gold `unknown`; raw `occasional, often clustering around travel days or after disrupted sleep`; selected-evidence `unknown`
+- 4919: gold `seizure free for 2 year`; raw `Free of seizures for 2 year`; selected-evidence `no seizure frequency reference`
+- 5092: gold `seizure free for multiple month`; raw `No clinical seizures observed`; selected-evidence `no seizure frequency reference`
+- 5379: gold `seizure free for multiple month`; raw `approximately 1 seizure per 6 months`; selected-evidence `1 per 6 month`
+- 5406: gold `seizure free for multiple month`; raw `no definite epileptic events documented in past two months`; selected-evidence `no seizure frequency reference`
+- 5476: gold `unknown`; raw `sporadic epileptic spasms this year`; selected-evidence `no seizure frequency reference`
+- 5491: gold `unknown`; raw `sporadic jerks this year`; selected-evidence `no seizure frequency reference`
+- 5504: gold `unknown`; raw `sporadic jerks this year`; selected-evidence `no seizure frequency reference`
+- 5528: gold `1 per month`; raw `single very brief event last month`; selected-evidence `1 per month`
+- 5534: gold `1 per multiple month`; raw `1 per several months`; selected-evidence `1 per multiple month`
+- 5551: gold `multiple per day`; raw `several episodes per day with occasional generalised breakthroughs`; selected-evidence `multiple per day`
+- 5567: gold `multiple per week`; raw `Several episodes per week`; selected-evidence `multiple per week`
+- 5584: gold `multiple per week`; raw `several episodes per week`; selected-evidence `multiple per week`

@@ -1,0 +1,213 @@
+{
+  "artifact_kind": "gan2026_simplified_schema_a1_a2_hard_slice_stress_panel",
+  "date": "2026-06-03",
+  "split": "validation",
+  "split_manifest": "gan2026_split_v1",
+  "claim_language": "Validation-cycle stress-panel predeclaration for simplified-schema A1/A2 development; not a benchmark, holdout, production-policy, or broad validation result.",
+  "decision": {
+    "next_surface": "hard_slice_stress_panel_before_validation50",
+    "rationale": "A1 and A2 v1 both reached 23/25 on validation25, with remaining failures concentrated in interval/window selection and unresolved multiple handling. A fixed hard-slice panel should test those mechanisms and adjacent failure families before a broad validation50 comparison.",
+    "validation50_escalation_gate": "Run A1 versus A2 v1 on validation50 only after this panel names which failure family the validation50 comparison is meant to decide."
+  },
+  "candidate_context": {
+    "a1": "llm_only_simplified_selected_state_reasoner",
+    "a2": "llm_only_sparse_operands_selected_state_reasoner v1 boundary fix",
+    "known_validation25_misses": [187, 278],
+    "known_a2_boundary_repair_rows": [190, 280]
+  },
+  "primary_metrics": [
+    "selected_evidence_exact",
+    "selected_evidence_arithmetic_purist",
+    "sparse_operand_adapter_purist",
+    "selected_evidence_correct_to_sparse_operand_wrong",
+    "boundary_failure_count",
+    "structured_record_count"
+  ],
+  "slices": [
+    {
+      "slice_name": "interval_window_selection",
+      "hypothesis": "The simplified schema must select the current cadence/window phrase rather than an interval narrative or unrelated event count.",
+      "rows": [187, 4092, 2245],
+      "failure_to_watch": "selected evidence omits the cadence window or chooses interval/event-count wording that cannot be normalized."
+    },
+    {
+      "slice_name": "unresolved_multiple",
+      "hypothesis": "Unresolved multiple wording should remain multiple when the evidence does not license a concrete count.",
+      "rows": [278, 280, 338],
+      "failure_to_watch": "adapter narrows multiple to one or another concrete count without textual permission."
+    },
+    {
+      "slice_name": "cluster_frequency_wording",
+      "hypothesis": "Cluster cadence should not be treated as per-seizure load unless the evidence gives a per-cluster burden.",
+      "rows": [190, 1706, 4771],
+      "failure_to_watch": "sparse operands over-numericize cluster cadence or promote vague cluster timing to a concrete seizure frequency."
+    },
+    {
+      "slice_name": "medication_or_proxy_rate",
+      "hypothesis": "Dose changes, adherence, triggers, and proxy percentages are context unless they directly state seizure-frequency rate.",
+      "rows": [3507, 3512, 3532, 5996, 6029],
+      "failure_to_watch": "model converts medication dose, percent change, missed-dose trigger, or illness trigger into a seizure-frequency label."
+    },
+    {
+      "slice_name": "perimenstrual_only_window",
+      "hypothesis": "Perimenstrual-only windows should remain unknown unless the text states an actual seizure count or cadence.",
+      "rows": [3468, 3469, 3482, 3493],
+      "failure_to_watch": "model converts a bounded menstrual-risk window into a month/week seizure rate."
+    },
+    {
+      "slice_name": "compact_rate_notation",
+      "hypothesis": "Compact shorthand and high-rate notation should be parsed when the seizure target is explicit.",
+      "rows": [3940, 3949, 4092, 9815],
+      "failure_to_watch": "model misses compact notation such as xfour/wk, qtwo-threewk, or approximately 9 per hour."
+    }
+  ],
+  "rows": [
+    {
+      "source_row_index": 187,
+      "gold_label": "1 per 7 to 9 day",
+      "gold_reference": "every seven to nine days",
+      "slice_names": ["interval_window_selection"],
+      "why_in_panel": "Known A1/A2 validation25 miss: selected an interval event count instead of the current every seven to nine days cadence."
+    },
+    {
+      "source_row_index": 278,
+      "gold_label": "multiple per week",
+      "gold_reference": "multiple times in past week",
+      "slice_names": ["unresolved_multiple"],
+      "why_in_panel": "Known A1/A2 validation25 miss: selected-evidence arithmetic narrowed unresolved multiple wording to one per week."
+    },
+    {
+      "source_row_index": 190,
+      "gold_label": "1 per 4 week",
+      "gold_reference": "every 4 weeks",
+      "slice_names": ["cluster_frequency_wording"],
+      "why_in_panel": "A2 v1 boundary-fix anchor: cluster cadence without per-cluster burden should not be over-numericized."
+    },
+    {
+      "source_row_index": 280,
+      "gold_label": "multiple per day",
+      "gold_reference": "multiple seizures in past day",
+      "slice_names": ["unresolved_multiple"],
+      "why_in_panel": "A2 v1 boundary-fix anchor for unresolved multiple wording over a 24-hour window."
+    },
+    {
+      "source_row_index": 338,
+      "gold_label": "multiple per month",
+      "gold_reference": "many convulsions in past month",
+      "slice_names": ["unresolved_multiple"],
+      "why_in_panel": "Validation25 A1 selected-evidence miss; tests many/multiple wording over a month window."
+    },
+    {
+      "source_row_index": 4092,
+      "gold_label": "1 per 2 to 3 week",
+      "gold_reference": "qtwo - threewk",
+      "slice_names": ["interval_window_selection", "compact_rate_notation"],
+      "why_in_panel": "Compact interval notation with a current frequency estimate."
+    },
+    {
+      "source_row_index": 2245,
+      "gold_label": "7 to 8 per 3 week",
+      "gold_reference": "about 7 to 8 seizures in the last three weeks",
+      "slice_names": ["interval_window_selection"],
+      "why_in_panel": "Windowed interval count with range; tests count/window preservation."
+    },
+    {
+      "source_row_index": 1706,
+      "gold_label": "multiple cluster per month, multiple per cluster",
+      "gold_reference": "several focal seizures last month",
+      "slice_names": ["cluster_frequency_wording"],
+      "why_in_panel": "Cluster-burden wording where the schema must keep cluster cadence and per-cluster load distinct."
+    },
+    {
+      "source_row_index": 4771,
+      "gold_label": "unknown",
+      "gold_reference": "clusters during certain weeks",
+      "slice_names": ["cluster_frequency_wording"],
+      "why_in_panel": "Vague cluster timing should stay unknown rather than being converted to a concrete rate."
+    },
+    {
+      "source_row_index": 3507,
+      "gold_label": "unknown",
+      "gold_reference": "Frequency reduced by 0.3 after dose increase",
+      "slice_names": ["medication_or_proxy_rate"],
+      "why_in_panel": "Medication-response proxy value is not an absolute seizure-frequency rate."
+    },
+    {
+      "source_row_index": 3512,
+      "gold_label": "unknown",
+      "gold_reference": "Frequency increased by approx 20% after dose increase",
+      "slice_names": ["medication_or_proxy_rate"],
+      "why_in_panel": "Percent change after medication dose increase should not become a frequency label."
+    },
+    {
+      "source_row_index": 3532,
+      "gold_label": "unknown",
+      "gold_reference": "Frequency increased by approx 20% after dose increase",
+      "slice_names": ["medication_or_proxy_rate"],
+      "why_in_panel": "Diary/proxy percent-change wording with confounding night shifts; not an absolute rate."
+    },
+    {
+      "source_row_index": 5996,
+      "gold_label": "unknown",
+      "gold_reference": "Seizures with missed ASM doses",
+      "slice_names": ["medication_or_proxy_rate"],
+      "why_in_panel": "Trigger/adherence context should not be normalized as a frequency."
+    },
+    {
+      "source_row_index": 6029,
+      "gold_label": "unknown",
+      "gold_reference": "Seizures during intercurrent illness",
+      "slice_names": ["medication_or_proxy_rate"],
+      "why_in_panel": "Illness-trigger context should remain unknown without a rate."
+    },
+    {
+      "source_row_index": 3468,
+      "gold_label": "unknown",
+      "gold_reference": "Seizures happen when perimenstrual only (days -2 to +2)",
+      "slice_names": ["perimenstrual_only_window"],
+      "why_in_panel": "Bounded risk window without count/cadence."
+    },
+    {
+      "source_row_index": 3469,
+      "gold_label": "unknown",
+      "gold_reference": "Seizures happen when perimenstrual only (days -3 to +3)",
+      "slice_names": ["perimenstrual_only_window"],
+      "why_in_panel": "Perimenstrual-only window with peer corroboration but no actual rate."
+    },
+    {
+      "source_row_index": 3482,
+      "gold_label": "unknown",
+      "gold_reference": "Seizures happen when perimenstrual only (days -3 to +3)",
+      "slice_names": ["perimenstrual_only_window"],
+      "why_in_panel": "Cyclical window language should not be treated as monthly seizure frequency."
+    },
+    {
+      "source_row_index": 3493,
+      "gold_label": "unknown",
+      "gold_reference": "Seizures happen when perimenstrual only (days -3 to +3)",
+      "slice_names": ["perimenstrual_only_window"],
+      "why_in_panel": "Perimenstrual-only target for current-vs-trigger distinction."
+    },
+    {
+      "source_row_index": 3940,
+      "gold_label": "4 per week",
+      "gold_reference": "sz xfour/wk",
+      "slice_names": ["compact_rate_notation"],
+      "why_in_panel": "Compact shorthand should parse to four per week when tied to current seizure burden."
+    },
+    {
+      "source_row_index": 3949,
+      "gold_label": "4 per week",
+      "gold_reference": "sz Xfour/wk",
+      "slice_names": ["compact_rate_notation", "perimenstrual_only_window"],
+      "why_in_panel": "Compact rate appears alongside perimenstrual exacerbation; selected state should preserve the explicit average rate."
+    },
+    {
+      "source_row_index": 9815,
+      "gold_label": "multiple per day",
+      "gold_reference": "Electrographic focal clonic frequent on EEG (approx 9/h)",
+      "slice_names": ["compact_rate_notation"],
+      "why_in_panel": "Approximately 9 per hour is a compact high-rate notation tied to electrographic focal clonic events."
+    }
+  ]
+}
