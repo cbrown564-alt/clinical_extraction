@@ -204,15 +204,12 @@ class Gan2026LlmOnlyClaimTableSelectorSignature(dspy.Signature):
     """Extract section-local seizure-frequency claims, then answer from the table."""
 
     prompt_input_json: str = dspy.InputField(
-        desc=(
-            "JSON containing one clinical note and task instructions. It intentionally omits "
-            "gold labels and deterministic candidate diagnostics."
-        )
+        desc="JSON containing one clinical note, task instructions, and output schemas."
     )
     llm_only_claim_table_selector_json: str = dspy.OutputField(
         desc=(
             "One strict JSON object with claims and final_query. Claims are source-near "
-            "section-local facts; final_query selects the Gan-facing answer from them."
+            "section-local facts; final_query selects the final answer from them."
         )
     )
 
@@ -235,11 +232,8 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
         "prompt_version": PROMPT_VERSION,
         "task": ("Gan 2026 LLM-only claim-table selector diagnostic extraction"),
         "source_row_index": record.source_row_index,
-        "prompt_policy_taxonomy": PROMPT_POLICY_TAXONOMY,
-        "required_ablations_before_ladder_runs": REQUIRED_ABLATIONS_BEFORE_LADDER,
         "instructions": [
             "Read the full clinical note and make a flat table of seizure-frequency claims.",
-            "Do not use deterministic rule candidates; this input contains only the note.",
             (
                 "Each claim should stay source-near: preserve its local section or text zone, "
                 "evidence substring, temporality, assertion status, semiology, and uncertainty."
@@ -262,82 +256,69 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
             (
                 "After producing claim rows, run a constrained final selector over the table. "
                 "Choose selector_decision from the enum, copy selected_claim_ids, preserve "
-                "cluster_axis and boundary_state in final_query, then produce the Gan-facing "
+                "cluster_axis and boundary_state in final_query, then produce the final "
                 "answer. Do not let final_label hide whether the answer came from cluster-axis "
                 "preservation or a boundary-state decision."
             ),
             (
-                "Keep raw_selected_frequency source-near, but make final_label a parser-ready "
-                "Gan-compatible label such as 1 per day, 2 to 3 per month, "
-                "multiple per week, 1 per 2 day, 1 per 7 to 10 day, "
-                "2 per 2 week, 1 per 2 month, seizure free for 6 month, unknown, "
-                "or no seizure frequency reference."
+                "Keep raw_selected_frequency source-near, but make final_label a normalized "
+                "answer using one of these forms: count or range per denominator; multiple "
+                "per denominator; cluster cadence with optional per-cluster burden; "
+                "seizure-free duration; unknown; or no seizure frequency reference."
             ),
             (
                 "Do not put inequality symbols, prose such as daily/yearly/bimonthly, "
                 "or phrases like every other week in final_label. Convert them to the "
-                "closest Gan label while preserving the selected clinical fact."
+                "closest normalized label while preserving the selected clinical fact."
             ),
             (
-                "Preserve explicit intervals in final_label instead of rounding them: "
-                "every 3 to 4 weeks -> 1 per 3 to 4 week; twice every two weeks -> "
-                "2 per 2 week; once every seven to ten days -> 1 per 7 to 10 day."
+                "Preserve explicit intervals in final_label instead of rounding them. "
+                "For interval wording, use one occurrence over the stated interval unless "
+                "the source states a different count over that same interval."
             ),
             (
-                "Preserve explicit counted ranges even when wording uses alternatives: "
-                "5 or 7 focal onset seizures in three weeks -> 5 to 7 per 3 week. "
-                "Do not soften a counted range to multiple."
+                "Preserve explicit counted ranges over their stated window. Do not soften "
+                "a counted range to multiple."
             ),
             (
-                "Convert twice per ordinary calendar unit directly: twice a month -> "
-                "2 per month; twice a week -> 2 per week. Do not turn twice a month "
-                "into every two months."
-            ),
-            (
-                "In these Gan synthetic letters, bimonthly means every two months "
-                "unless the text explicitly says twice per month; use 1 per 2 month."
+                "Interpret ordinary calendar-unit wording directly: twice per unit means "
+                "two occurrences per that unit, while every other unit means one occurrence "
+                "per two units."
             ),
             (
                 "Do not emit a cluster final_label unless the selected claim truly states "
                 "cluster frequency with both cluster cadence and event burden. Vague "
                 "clustering around an ordinary rate should stay an ordinary frequency. Mark "
-                "claim.cluster_axis and final_query.cluster_axis so the axis decision is "
-                "reviewable before scoring."
+                "claim.cluster_axis and final_query.cluster_axis so the axis decision is explicit."
             ),
             (
                 "When the selected current claim states both cluster cadence and per-cluster "
-                "burden, preserve both parts in final_label: one cluster each month with six "
-                "to seven seizures in a cluster -> 1 cluster per month, 6 to 7 per cluster. "
-                "Do not flatten this to 6 to 7 per day, multiple per month, or 1 per day."
+                "burden, preserve both parts in final_label. Do not flatten per-cluster burden "
+                "into an ordinary rate unless the source explicitly gives that ordinary rate."
             ),
             (
-                "Cluster cadence can be the ordinary Gan-facing frequency when a cluster "
-                "statement gives only timing, such as every seven to nine days -> "
-                "1 per 7 to 9 day. Use unknown only when the current cadence cannot be "
-                "converted."
+                "Cluster cadence can be the ordinary frequency when a cluster statement gives "
+                "only timing. Use unknown only when the current cadence cannot be converted."
             ),
             (
                 "An explicit current cluster cadence normally outranks an isolated lower-burden "
-                "recent subtype count with an assumed denominator. For example, if events tend "
-                "to cluster every seven to nine days and the note separately mentions two "
-                "recent nocturnal tonic-clonic seizures, choose 1 per 7 to 9 day unless the "
-                "note says the cadence is non-epileptic, historical, or not the Gan target."
+                "recent subtype count with an assumed denominator, unless the note says the "
+                "cadence is non-epileptic, historical, or not the seizure-frequency target."
             ),
             (
                 "When a recent quantified event burden is followed by a short seizure-free "
-                "span, prefer the quantified recent burden for Gan-facing final_label unless "
+                "span, prefer the quantified recent burden for final_label unless "
                 "the note explicitly frames the patient as currently seizure-free overall."
             ),
             (
-                "For Gan-style labels, a short subsequent seizure-free span does not by itself "
+                "A short subsequent seizure-free span does not by itself "
                 "erase a counted recent event range in the same current clinical interval. "
-                "Keep the counted range, such as 5 or 7 focal onset seizures in three weeks -> "
-                "5 to 7 per 3 week, unless the whole letter clearly makes seizure freedom the "
+                "Keep the counted range unless the whole letter clearly makes seizure freedom the "
                 "overall current answer."
             ),
             (
                 "For vague but recurring monthly burden, use accepted category wording in "
-                "final_label: several events across most months -> multiple per month. Keep "
+                "final_label. Keep "
                 "phrases like several per month in raw_selected_frequency, not final_label."
             ),
             (
@@ -346,8 +327,7 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
             ),
             (
                 "If multiple active seizure semiologies have exact counts in the same current "
-                "window, add the counts and preserve the shared denominator in final_label: "
-                "six drop attacks plus two absence seizures over two months -> 8 per 2 month. "
+                "window, add the counts and preserve the shared denominator in final_label. "
                 "Do not omit a semiology or soften an exact total to multiple."
             ),
             (
@@ -381,7 +361,7 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
             ),
             (
                 "Use unknown when seizures or seizure-like events are discussed but current "
-                "frequency cannot be converted to a Gan-compatible rate."
+                "frequency cannot be converted to a normalized rate."
             ),
             (
                 "Use no seizure frequency reference only when the note contains no usable "
@@ -472,14 +452,10 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "conditional_or_window_limited",
             ],
             "raw_selected_frequency": (
-                "source-near selected frequency text before Gan label conversion, or null"
+                "source-near selected frequency text before label normalization, or null"
             ),
-            "final_label": (
-                "Gan-compatible label, or null if answer_kind implies unknown/no_reference"
-            ),
-            "conversion_note": (
-                "brief explanation of any source-near to Gan-compatible label conversion"
-            ),
+            "final_label": "normalized label, or null if answer_kind implies unknown/no_reference",
+            "conversion_note": "brief explanation of any source-near label normalization",
             "evidence": "exact note substring supporting the final answer",
             "confidence": ["low", "medium", "high"],
             "rationale": "brief reason for choosing these claim rows",

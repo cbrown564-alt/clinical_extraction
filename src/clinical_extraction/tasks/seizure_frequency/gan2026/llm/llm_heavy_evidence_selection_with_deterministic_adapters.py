@@ -199,7 +199,7 @@ class Gan2026LlmHeavyEvidenceSelectionSignature(dspy.Signature):
 
     note_text: str = dspy.InputField(desc="Full Gan 2026 note text.")
     task_instructions: list[str] = dspy.InputField(
-        desc="Decision 0007 clinical-selection and operand-exposure instructions."
+        desc="Clinical-selection and operand-exposure instructions."
     )
     output_contract: dict[str, Any] = dspy.InputField(
         desc="Typed selected-fact, evidence, and operand contract."
@@ -208,10 +208,10 @@ class Gan2026LlmHeavyEvidenceSelectionSignature(dspy.Signature):
         desc="Model-owned selected clinical fact packet with exact evidence."
     )
     operands: SelectedOperands = dspy.OutputField(
-        desc="Typed operands used by deterministic mechanical adapters."
+        desc="Typed operands supporting the rendered final label."
     )
     raw_model_answer: RawModelClinicalAnswer = dspy.OutputField(
-        desc="Diagnostic raw parser-facing model label and selected evidence."
+        desc="Diagnostic model-rendered label and selected evidence."
     )
 
 
@@ -237,20 +237,16 @@ class DspyLlmHeavyEvidenceSelectionReasoner(dspy.Module):
 
 
 def build_typed_inputs(record: GanFrequencyRecord) -> dict[str, Any]:
-    """Build typed DSPy inputs without gold labels or deterministic candidates."""
+    """Build typed DSPy inputs for the clinical note."""
 
     return {
         "note_text": record.note_text,
         "task_instructions": [
-            "Read only the clinical note; do not use deterministic candidates or gold labels.",
+            "Read only the clinical note.",
             (
-                "Decision 0007 boundary: the model selects the clinical fact, exact "
-                "evidence, temporal state, assertion status, competing fact summary, "
-                "and operands."
-            ),
-            (
-                "Deterministic code will only render parser-ready labels from those "
-                "selected operands. It must not choose a different clinical fact."
+                "Select the clinical fact, exact evidence, temporal state, assertion "
+                "status, competing fact summary, and typed operands needed to render "
+                "the final label."
             ),
             "Copy selected_fact.evidence and raw_model_answer.selected_evidence exactly.",
             (
@@ -272,7 +268,7 @@ def build_typed_inputs(record: GanFrequencyRecord) -> dict[str, Any]:
             ),
             (
                 "For cluster_frequency, set cluster.cluster_answer_axis to "
-                "cluster_cadence when the scorer-facing answer is the cadence of "
+                "cluster_cadence when the final answer is the cadence of "
                 "clusters, such as one cluster every four weeks. Use event_burden "
                 "only when the answer must include events per cluster."
             ),
@@ -289,12 +285,12 @@ def build_typed_inputs(record: GanFrequencyRecord) -> dict[str, Any]:
             (
                 "For explicit upper-bound evidence such as ≤ twice per week, up to "
                 "four per day, or at most one per month, it is acceptable to populate "
-                "only frequency.occurrences_high and render the scorer-facing label "
+                "only frequency.occurrences_high and render the final label "
                 "as the upper value, as long as selected_fact.evidence preserves the "
                 "full upper-bound statement exactly."
             ),
             (
-                "raw_model_answer.raw_model_parser_label must use parser-ready Gan "
+                "raw_model_answer.raw_model_parser_label must use normalized label "
                 "grammar: N per D unit; N to M per D to E unit; multiple per unit; "
                 "seizure free for D unit; unknown; or no seizure frequency reference. "
                 "Use no prefixes, underscores, plural units, prose modifiers, or "
@@ -316,14 +312,6 @@ def build_typed_inputs(record: GanFrequencyRecord) -> dict[str, Any]:
                 "unknown_frequency",
                 "no_reference",
                 "unresolved_multiple",
-            ],
-            "adapter_families": [
-                "parser_ready_label_grammar",
-                "arithmetic_from_selected_operands",
-                "total_window_rendering",
-                "seizure_free_duration",
-                "cluster_syntax_rendering",
-                "benchmark_convention_adapter",
             ],
             "selected_fact_trace_rule": (
                 "raw_model_answer.selected_evidence must equal selected_fact.evidence"
@@ -364,7 +352,7 @@ def build_typed_inputs(record: GanFrequencyRecord) -> dict[str, Any]:
                     "the explicit upper-bound statement"
                 ),
             },
-            "raw_parser_label_grammar": {
+            "raw_label_grammar": {
                 "frequency": "N per D unit or N to M per D to E unit",
                 "vague_frequency": "multiple per unit",
                 "seizure_free": "seizure free for D unit",

@@ -304,15 +304,12 @@ class Gan2026StructuredExtractorSignature(dspy.Signature):
     """
 
     prompt_input_json: str = dspy.InputField(
-        desc=(
-            "JSON containing one clinical note and task instructions. It intentionally omits "
-            "gold labels and deterministic candidate diagnostics."
-        )
+        desc="JSON containing one clinical note, task instructions, and output schemas."
     )
     structured_json: str = dspy.OutputField(
         desc=(
             "One strict JSON object with events and selection. Events are source-near facts; "
-            "selection chooses the clinically appropriate Gan answer from those events."
+            "selection chooses the clinically appropriate answer from those events."
         )
     )
 
@@ -337,9 +334,8 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
         "source_row_index": record.source_row_index,
         "instructions": [
             "Read the full clinical note and extract source-near seizure-frequency facts.",
-            "Do not use deterministic rule candidates; this input contains only the note.",
             (
-                "Return events as slim clinical facts, not fully normalized benchmark records. "
+                "Return events as slim clinical facts, not fully normalized answer records. "
                 "Use raw_value for the text's stated rate, duration, last-event statement, or "
                 "unknown/no-reference cue."
             ),
@@ -367,13 +363,13 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "clinically most severe subtype count."
             ),
             (
-                "Selection final_label may be a Gan-compatible label such as 1 per day, "
+                "Selection final_label may be a normalized label such as 1 per day, "
                 "2 to 3 per month, multiple per week, 1 cluster per week, "
                 "seizure free for 6 month, unknown, or no seizure frequency reference."
             ),
             (
                 "If the selected event has a countable raw_value, prefer putting the source "
-                "expression in raw_value and a concise Gan-compatible label in final_label."
+                "expression in raw_value and a concise normalized label in final_label."
             ),
             (
                 "When the note says a last event occurred on a date and the patient has "
@@ -421,7 +417,7 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "no_reference",
                 "unresolved_multiple",
             ],
-            "final_label": "Gan-compatible label, or null if not directly countable",
+            "final_label": "normalized label, or null if not directly countable",
             "evidence": "exact note substring supporting the final selection",
             "confidence": ["low", "medium", "high"],
             "rationale": "brief clinical reason for selecting these events",

@@ -104,7 +104,7 @@ def _cluster_cadence_prediction() -> SimpleNamespace:
     )
 
 
-def test_build_typed_inputs_exposes_decision_0007_contract() -> None:
+def test_build_typed_inputs_exposes_clinical_selection_contract() -> None:
     inputs = reasoner.build_typed_inputs(_record())
     instructions = " ".join(inputs["task_instructions"])
     contract = inputs["output_contract"]
@@ -119,16 +119,16 @@ def test_build_typed_inputs_exposes_decision_0007_contract() -> None:
         "operands",
         "raw_model_answer",
     ]
-    assert "model selects the clinical fact" in instructions
+    assert "Select the clinical fact" in instructions
     assert "Unicode inequality symbols" in instructions
     assert "HTML entities" in instructions
     assert "occurrences_high" in instructions
     assert "full upper-bound statement exactly" in instructions
     assert "no prefixes, underscores, plural units" in instructions
-    assert contract["raw_parser_label_grammar"]["frequency"] == (
+    assert contract["raw_label_grammar"]["frequency"] == (
         "N per D unit or N to M per D to E unit"
     )
-    assert "multiple per unit" in contract["raw_parser_label_grammar"]["vague_frequency"]
+    assert "multiple per unit" in contract["raw_label_grammar"]["vague_frequency"]
     assert contract["evidence_copy_contract"]["preserve_unicode"] is True
     assert contract["upper_bound_contract"]["evidence_required"] is True
     assert "≤" in contract["upper_bound_contract"]["allowed_cues"]

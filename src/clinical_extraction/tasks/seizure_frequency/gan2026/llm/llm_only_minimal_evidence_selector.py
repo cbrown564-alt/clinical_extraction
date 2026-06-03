@@ -116,10 +116,7 @@ class Gan2026MinimalEvidenceSelectorSignature(dspy.Signature):
     """Select the Gan seizure-frequency answer using a minimal evidence contract."""
 
     prompt_input_json: str = dspy.InputField(
-        desc=(
-            "JSON containing one clinical note and minimal schema instructions. It omits "
-            "gold labels, deterministic candidates, and rich claim-table selector state."
-        )
+        desc="JSON containing one clinical note, minimal instructions, and output schema."
     )
     minimal_evidence_selector_json: str = dspy.OutputField(
         desc="One strict JSON object with answer and supporting_facts."
@@ -144,7 +141,6 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
         "prompt_version": PROMPT_VERSION,
         "task": "Gan 2026 minimal evidence selector for seizure frequency",
         "source_row_index": record.source_row_index,
-        "prompt_policy_taxonomy": PROMPT_POLICY_TAXONOMY,
         "instructions": [
             "Read the full clinical note.",
             (

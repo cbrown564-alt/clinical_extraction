@@ -170,7 +170,7 @@ class Gan2026LlmHeavyReasonerSignature(dspy.Signature):
     """Run an LLM-heavy three-stage clinical frequency reasoner."""
 
     prompt_input_json: str = dspy.InputField(
-        desc="JSON containing one Gan 2026 note, task instructions, and output schemas."
+        desc="JSON containing one clinical note, task instructions, and output schemas."
     )
     llm_heavy_reasoner_json: str = dspy.OutputField(
         desc="One strict JSON object with events, selection, and final_answer."
@@ -189,18 +189,15 @@ class DspyLlmHeavyReasoner(dspy.Module):
 
 
 def build_prompt_input(record: GanFrequencyRecord) -> str:
-    """Build the LLM-heavy prompt payload without gold or deterministic candidates."""
+    """Build the LLM-heavy prompt payload."""
 
     payload = {
         "prompt_version": PROMPT_VERSION,
         "pipeline_family": PIPELINE_FAMILY,
-        "task": "Gan 2026 LLM-heavy clinical frequency reasoner",
+        "task": "Clinical seizure-frequency reasoner",
         "source_row_index": record.source_row_index,
         "instructions": [
-            (
-                "Read the full note. Do not use deterministic candidates; this input contains "
-                "only the note."
-            ),
+            "Read the full note.",
             (
                 "Stage 1: extract all clinically relevant seizure-frequency events as "
                 "source-near records. Omit administrative, medication, plan, and "
@@ -211,7 +208,7 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "seizure-frequency state."
             ),
             (
-                "Stage 3: render your selected answer into the scoring-facing schema and "
+                "Stage 3: render your selected answer into the requested schema and "
                 "show the operands you used for the final label."
             ),
             (
@@ -232,7 +229,7 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "events, and no event whose evidence cannot be copied exactly from the note."
             ),
             (
-                "Render raw_llm_final_label as a parser-ready Gan label: use forms like "
+                "Render raw_llm_final_label as a normalized label using forms like "
                 "4 per day, 1 per 7 to 9 day, 2 to 4 per year, multiple per week, "
                 "seizure free for 6 month, unknown, or no seizure frequency reference."
             ),
@@ -240,22 +237,19 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "The final label must be your own rendering of the selected evidence. Fill "
                 "final_answer.rendering_operands with the count, period, cluster, vague-count, "
                 "or seizure-free duration operands that justify raw_llm_final_label, and fill "
-                "final_answer.arithmetic_trace with a short source-near calculation such as "
-                "'two per month -> 2 per month' or '2 events over 16 months -> 1 per 8 month'."
+                "final_answer.arithmetic_trace with a short source-near calculation."
             ),
             (
                 "Always include final_answer.selected_event_ids. It must exactly equal "
                 "selection.selected_event_ids, even when only one event is selected."
             ),
             (
-                "Do not rely on downstream deterministic selected-evidence arithmetic to fix "
-                "raw_llm_final_label. If the note says 'twice every 4 days', raw_llm_final_label "
-                "should already be '2 per 4 day'."
+                "Render raw_llm_final_label directly from the selected evidence; do not rely "
+                "on a later field to reinterpret the selected fact."
             ),
             (
                 "Convert upper bounds and inequalities into the selected count without "
-                "inequality symbols: <= four per week -> 4 per week; up to twice per week "
-                "-> 2 per week; <= once per month -> 1 per month."
+                "inequality symbols while preserving the selected denominator."
             ),
             (
                 "When a current quantified non-tonic-clonic seizure frequency is selected, "
@@ -266,10 +260,9 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "seizure-free duration, or unresolved ambiguity."
             ),
             (
-                "Cluster cadence is not events-per-cluster. If selected evidence says events "
-                "cluster every N days, render one cluster occurrence per interval, such as "
-                "1 per 7 to 9 day, unless the same selected evidence states the number of "
-                "events within each cluster."
+                "Cluster cadence is not events-per-cluster. If selected evidence gives only "
+                "cluster timing, render one cluster occurrence per stated interval unless the "
+                "same selected evidence states the number of events within each cluster."
             ),
             (
                 "Return exactly one JSON object with top-level keys events, selection, and "
@@ -336,7 +329,7 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
         },
         "final_answer_schema": {
             "raw_llm_final_label": (
-                "parser-ready model-rendered Gan-compatible label, unknown, or "
+                "normalized model-rendered label, unknown, or "
                 "no seizure frequency reference; no prose, inequality symbols, semiology, "
                 "cluster modifiers, or explanatory clauses"
             ),
@@ -366,7 +359,6 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
             "raw_clinical_summary": "optional short source-near summary; use empty string",
             "final_rationale": "optional short rationale; use empty string",
         },
-        "score_layers_to_report": list(SCORE_LAYER_NAMES),
         "note_text": record.note_text,
     }
     return json.dumps(payload, ensure_ascii=False, sort_keys=True)

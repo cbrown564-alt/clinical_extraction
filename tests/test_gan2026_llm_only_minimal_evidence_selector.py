@@ -65,7 +65,8 @@ def test_build_prompt_input_exposes_minimal_contract_without_rich_selector_state
 
     assert prompt["prompt_version"] == minimal_selector.PROMPT_VERSION
     assert prompt["prompt_version"] == "gan2026_llm_only_minimal_evidence_selector_v2"
-    assert prompt["prompt_policy_taxonomy"] == minimal_selector.PROMPT_POLICY_TAXONOMY
+    assert "prompt_policy_taxonomy" not in prompt
+    assert minimal_selector.PROMPT_POLICY_TAXONOMY
     assert prompt["answer_schema"]["answer_text"] == "source-near selected answer text"
     assert "final_label" not in prompt["answer_schema"]
     assert prompt["supporting_fact_schema"]["fact_id"] == "stable string such as f1"

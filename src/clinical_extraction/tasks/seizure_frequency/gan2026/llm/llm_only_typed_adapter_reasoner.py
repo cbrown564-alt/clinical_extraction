@@ -150,7 +150,7 @@ class Gan2026TypedAdapterReasonerSignature(dspy.Signature):
         desc="Model-owned event selection and clinical aggregation decision."
     )
     final_answer: TypedGanFinalAnswer = dspy.OutputField(
-        desc="Parser-ready model-owned final Gan label and selected evidence."
+        desc="Normalized final label and selected evidence."
     )
 
 
@@ -176,7 +176,7 @@ class DspyTypedAdapterReasoner(dspy.Module):
 
 
 def build_typed_adapter_inputs(record: GanFrequencyRecord) -> dict[str, Any]:
-    """Build typed DSPy inputs without gold labels or deterministic candidates."""
+    """Build typed DSPy inputs for the clinical note."""
 
     return {
         "note_text": record.note_text,
@@ -184,8 +184,8 @@ def build_typed_adapter_inputs(record: GanFrequencyRecord) -> dict[str, Any]:
             "Extract source-near seizure-frequency facts only from the note.",
             "Copy every evidence string as an exact substring from the note.",
             "Select the prediction-bearing current/recent clinical frequency state.",
-            "Render raw_llm_final_label as a parser-ready Gan label owned by the model.",
-            "Keep deterministic selected-evidence arithmetic as a side-car, not a rescue.",
+            "Render raw_llm_final_label as a normalized label.",
+            "Keep rendering operands consistent with the selected evidence and final label.",
             "Return typed fields, not an opaque JSON string payload.",
         ],
         "output_contract": {
