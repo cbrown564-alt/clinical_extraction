@@ -11,6 +11,40 @@ This is a research-control report, not a benchmark claim. Its purpose is to
 stop broad architecture proliferation and convert the existing experiment base
 into a sequence of clean questions that can be answered one at a time.
 
+## Correction After RQ1/RQ2/RQ4 Diagnostic Reports
+
+The first pass at RQ1, RQ2, and RQ4 fell into a subtler version of the same
+validation trap this retrospective was meant to avoid. The reports correctly
+stopped chasing whole-pipeline F1, but they still allowed the validation-tuned
+deterministic rule set to win the component question by default:
+
+- RQ1 concluded that the deterministic candidate set was the best broad
+  candidate substrate.
+- RQ2 concluded that deterministic top evidence was the safest default
+  evidence-bearing substrate.
+- RQ4 concluded that deterministic top was the best broad projection substrate.
+
+Those are not meaningful research answers. The deterministic rules were
+hand-crafted through validation development, showed a large generalization gap
+on the locked test surface, and are expected to be brittle on genuinely new
+clinical distributions. Reconfirming that they perform well on the validation
+surface mostly measures our prior tuning, not the mechanics of the task.
+
+Those three reports should therefore be treated as diagnostic baseline audits,
+not completed research-question answers. Their useful content is the row-level
+evidence about where LLM components expose, select, or project useful clinical
+state, especially when they diverge from deterministic behavior. Their
+deterministic-default conclusions should not move the project forward to RQ5.
+
+The reset objective is:
+
+```text
+Take deterministic candidate selection and deterministic precedence decisions
+off the table as answers. Use them only as frozen comparators, safety floors, or
+failure-slice definers. Answer the RQs by studying LLM component mechanics:
+what each LLM component tried to do, which rows it helped or harmed, and why.
+```
+
 ## Executive Position
 
 The project has enough architectural diversity and experiment evidence to stop
@@ -20,7 +54,7 @@ have been achieved by deterministic comparators and hybrid safety-floor policies
 while LLM-only and typed-schema lanes show strong component signals but weak or
 unstable end-to-end generalization.
 
-The next phase should answer component questions under strict attribution:
+The next phase should answer LLM component questions under strict attribution:
 
 - candidate discovery;
 - evidence selection;
@@ -33,11 +67,12 @@ The next phase should answer component questions under strict attribution:
 - abstention and ambiguity;
 - gold/scorer validity.
 
-The end-to-end assembly problem should be postponed. The project should first
-build high confidence about which component is best at each clinical subproblem,
-under which evidence constraints, with what regression risk, on which
-distribution. A later assembly phase can combine the strongest proven components
-into the best hybrid system.
+The end-to-end assembly problem and deterministic/LLM blending problem should
+be postponed. The project should first build high confidence about which LLM
+component is most useful at each clinical subproblem, under which evidence
+constraints, with what regression risk, on which distribution. A later assembly
+phase can decide how to combine those LLM components with the frozen
+deterministic comparator or safety floor.
 
 ## Why The Focus Must Change
 
@@ -66,9 +101,20 @@ Find a new architecture that improves total validation F1.
 It is:
 
 ```text
-Answer one named component question completely enough that future architecture
+Answer one named LLM component question deeply enough that future architecture
 assembly can rely on it.
 ```
+
+The question is also no longer:
+
+```text
+Does the full deterministic rule set still perform best on validation?
+```
+
+That answer is already known and low-information. Deterministic artifacts may
+define baseline rows, regression risk, and comparison surfaces, but they cannot
+be promoted as the answer to RQ1, RQ2, RQ3, or RQ4 unless the active question is
+explicitly about deterministic rules.
 
 ## Retrospective Against The PDF Pathways
 
@@ -157,7 +203,7 @@ Do not start a new architecture or broad validation run whose main purpose is to
 raise total Purist or Pragmatic F1. Broad validation is allowed only when a
 predeclared component answer requires a larger distribution check.
 
-### Rule 3: Component Metrics First
+### Rule 3: LLM Component Metrics First
 
 Each question must define component-level outcomes before any run:
 
@@ -169,6 +215,11 @@ Each question must define component-level outcomes before any run:
 - rendering accuracy given a fixed selected state;
 - changed-label precision and correct-to-wrong rate for selective LLM action;
 - cost, latency, parse failure, token budget, and retry rate for efficiency.
+
+For RQ1-RQ4, the primary table must compare LLM components or LLM schemas. The
+deterministic system is allowed only as a frozen comparator, safety floor,
+failure-slice source, or oracle-gap reference. "The deterministic selector is
+best" is not a valid stop rule.
 
 ### Rule 4: Fixed Surfaces And Paired Comparisons
 
@@ -190,24 +241,47 @@ Each question should end in one of four states:
 - negative result;
 - blocked by missing instrumentation or data.
 
+### Rule 7: Row-Level Mechanism Before Aggregates
+
+An RQ1-RQ4 answer must include row-level mechanism analysis before any aggregate
+decision. The report must inspect representative wins, losses, and ambiguous
+cases for each LLM component and explain:
+
+- what the LLM appeared to attend to;
+- whether the selected evidence was clinically decisive or merely substring
+  present;
+- which state attribute was right or wrong;
+- whether the failure was generation, evidence selection, state representation,
+  projection, rendering, or scoring;
+- whether the behavior looks like a transferable mechanism or a validation
+  artifact.
+
+Aggregate counts are supporting evidence. They are not the answer.
+
 ## The Research Questions
 
 ### RQ1. Candidate Discovery
 
-Question: Which component produces the best candidate set for seizure-frequency
-state: high gold-state recall, exact evidence, rich useful metadata, and bounded
-candidate count?
+Question: Which LLM component or schema produces the most useful
+seizure-frequency candidates: high gold-state recall, exact evidence, rich
+useful metadata, bounded candidate count, and row-level mechanisms that plausibly
+transfer beyond the validation-shaped deterministic rules?
 
 Why it matters: if the correct state is absent, selection, projection, and
 rendering cannot recover it.
 
-Candidate components to compare:
+LLM candidate components to compare:
 
-- frozen deterministic candidates;
 - LLM source-near event extraction;
 - LLM missing-candidate proposer over deterministic misses;
+- raw LLM candidate selector;
+- LLM selected-state or selected-evidence candidates;
+- claim-table candidate extraction;
 - graph boundary-node builders;
 - union candidates with verifier gates.
+
+Frozen deterministic candidates are the comparator and miss-slice source, not a
+candidate answer.
 
 Primary metrics:
 
@@ -227,27 +301,34 @@ Evidence surfaces:
 - synthetic stress panel for missing-candidate phenomena;
 - later, frozen/blinded audit only after the component protocol is fixed.
 
-Current answer: not answered. Existing evidence says constrained adjudication is
-candidate-recall-limited, but not which generator produces the best candidate
-set.
+Current answer: reset to not answered. The first-pass RQ1 report is a useful
+diagnostic baseline audit, but it answered "does the validation-tuned
+deterministic candidate set remain strong?" rather than "which LLM candidate
+generator is mechanistically useful?"
 
-Recommended next action: make RQ1 the first active question.
+Recommended next action: re-run RQ1 as an LLM candidate-mechanics analysis over
+same-row artifacts and selected failure slices. Lead with row examples where LLM
+candidate generation wins, loses, or creates burden, then summarize by hidden
+family.
 
 ### RQ2. Evidence Selection
 
-Question: Given the note and/or candidate set, which component best selects the
-prediction-bearing evidence span?
+Question: Given the note and/or a fixed candidate set, which LLM component best
+selects prediction-bearing evidence, and why does that evidence help or fail
+when projected into a clinical frequency state?
 
 Why it matters: many LLM runs show selected-evidence signal even when final
 labels fail. This should be isolated from rendering and projection.
 
-Candidate components to compare:
+LLM evidence components to compare:
 
-- deterministic selected evidence from `rules_only_v1`;
 - LLM selected evidence from simplified selected-state schemas;
 - typed-operation selected evidence;
 - claim-table evidence;
 - hybrid sidecar selected evidence.
+
+Deterministic selected evidence is the frozen baseline and evidence-shape
+contrast, not the default answer.
 
 Primary metrics:
 
@@ -258,9 +339,11 @@ Primary metrics:
 - evidence precision on changed rows;
 - evidence invalid/missing failure rate.
 
-Current answer: partly answered. LLMs can often select useful evidence, but
-cross-family evidence-selection reliability has not been cleanly compared as its
-own question.
+Current answer: reset to not answered. The first-pass RQ2 report showed that
+some LLM layers can produce exact/source-traced evidence, but it collapsed the
+answer back into deterministic label safety. The open question is which LLM
+evidence selector finds clinically decisive evidence by hidden family and which
+attribute errors prevent that evidence from becoming a correct state.
 
 ### RQ3. Clinical State Representation
 
@@ -297,21 +380,24 @@ duplicated. The best positive schema is not yet known.
 
 ### RQ4. Projection
 
-Question: Given a fixed candidate/state representation, which projection policy
-best selects the current benchmark-relevant state?
+Question: Given fixed LLM-produced candidates, evidence, or state objects, which
+LLM or graph-assisted projection policy best selects the current
+benchmark-relevant state, and on which row mechanisms does it succeed or fail?
 
 Why it matters: projection is now one of the clearest bottlenecks. Graph
 representability is insufficient if the projection policy cannot choose the
 right state without oracle help.
 
-Candidate projectors:
+LLM/projection components to compare:
 
-- deterministic precedence policy;
 - graph projection;
 - LLM projection over fixed exact-evidence nodes;
 - pairwise ranking/tournament;
 - selective projection with abstention;
 - oracle projection upper bound.
+
+Deterministic precedence is the frozen comparator and regression-risk baseline,
+not an eligible projection answer.
 
 Primary metrics:
 
@@ -322,8 +408,11 @@ Primary metrics:
 - contradiction sensitivity;
 - oracle gap.
 
-Current answer: not answered. Existing work identifies projection failures but
-does not yet benchmark projection as a standalone component.
+Current answer: reset to not answered. The first-pass RQ4 report rejected broad
+graph replacement and reselected deterministic top. That is a baseline-safety
+finding, not an LLM projection answer. RQ4 remains open until it explains which
+LLM or graph-assisted projection mechanisms handle current-versus-historical,
+competing semiology, boundary, duration, denominator, and cluster rows.
 
 ### RQ5. Deterministic Compilation And Rendering
 
@@ -455,10 +544,10 @@ most persistent hard-row families.
 
 ## Recommended Question Order
 
-1. RQ1 Candidate Discovery.
-2. RQ2 Evidence Selection.
-3. RQ4 Projection.
-4. RQ3 Clinical State Representation.
+1. RQ1 LLM Candidate Discovery.
+2. RQ2 LLM Evidence Selection.
+3. RQ4 LLM/Graph-Assisted Projection.
+4. RQ3 LLM Clinical State Representation.
 5. RQ5 Deterministic Compilation And Rendering.
 6. RQ6 Selective LLM Value.
 7. RQ7 Generalization By Hidden Family.
@@ -470,29 +559,32 @@ RQ7 should be reported inside every question, but it is also listed separately
 because a final generalization synthesis will be needed after the first several
 component questions are answered.
 
-## First Question Protocol: RQ1 Candidate Discovery
+## Restart Protocol: RQ1 LLM Candidate Discovery
 
-The next active research question should be RQ1.
+The next active research question should return to RQ1, but with deterministic
+candidate selection off the table as an answer.
 
 Predeclared claim boundary:
 
 ```text
-We are not evaluating end-to-end F1. We are evaluating which component exposes
-the gold-relevant clinical state as an evidence-valid candidate with useful
-metadata and acceptable candidate burden.
+We are not evaluating end-to-end F1, and we are not asking whether the
+validation-tuned deterministic candidate set is strong. We are evaluating which
+LLM component exposes the gold-relevant clinical state as an evidence-valid
+candidate with useful metadata, acceptable burden, and a row-level mechanism
+that plausibly transfers.
 ```
 
 Minimum report table:
 
-| Component | Surface | Gold-state recall | Exact evidence | Candidate burden | Metadata completeness | Hidden-family failures |
-| --- | --- | ---: | ---: | ---: | ---: | --- |
+| LLM component | Surface | Gold-state recall | Exact evidence | Candidate burden | Metadata completeness | Mechanism summary | Hidden-family failures |
+| --- | --- | ---: | ---: | ---: | ---: | --- | --- |
 
 Minimum row-level fields:
 
 - source row index;
 - gold label;
 - hidden-family tags;
-- candidate component;
+- LLM component or schema;
 - candidate id;
 - candidate evidence;
 - evidence exact/source-near/invalid/missing;
@@ -505,14 +597,20 @@ Minimum row-level fields:
 - cluster fields;
 - seizure-free duration fields;
 - whether candidate matches gold state under the active policy;
-- first missing attribute if it does not.
+- first missing attribute if it does not;
+- deterministic baseline status for context only;
+- row-level mechanism note explaining what the LLM tried to do and why it was
+  useful, harmful, or ambiguous.
 
 Acceptable experiments:
 
 - artifact replay over saved validation outputs;
-- hard-slice candidate-recall analysis;
+- hard-slice candidate-recall analysis where deterministic misses define the
+  slice but cannot win the answer;
 - a small LLM missing-candidate proposer test on predeclared deterministic-miss
   rows with exact-evidence verifier gates;
+- same-row comparison among LLM sidecar, selected-state, selected-evidence, and
+  claim-table candidate views;
 - synthetic stress rows only to test specific candidate-discovery mechanisms.
 
 Disallowed experiments for RQ1:
@@ -520,13 +618,16 @@ Disallowed experiments for RQ1:
 - new whole-pipeline architecture;
 - broad validation750 final-label run;
 - prompt patches judged mainly by total Purist F1;
+- concluding that deterministic candidates are the best candidate generator;
 - any locked-test row-level tuning.
 
 Completion criterion:
 
-RQ1 is answered when the report can state which candidate generator has the best
-recall/precision/metadata/candidate-burden trade-off by hidden family, and what
-instrumentation or experiment is still missing before assembly work.
+RQ1 is answered when the report can state which LLM candidate generator has the
+best recall/precision/metadata/candidate-burden trade-off by hidden family,
+backed by row-level examples that explain the mechanism. If no LLM generator is
+useful enough, the answer is a negative result about LLM candidate generation,
+not a promotion of deterministic candidates.
 
 ## Implications For The Repo
 
@@ -535,9 +636,9 @@ Purist F1" as the active objective. That objective was useful, but it now pulls
 the work toward aggregate optimization. The active objective should become:
 
 ```text
-Answer the Gan 2026 component research questions one at a time, starting with
-candidate discovery, under exact-evidence, attribution, hidden-family, and
-split-discipline constraints.
+Answer the Gan 2026 LLM component research questions one at a time, restarting
+with LLM candidate discovery, under exact-evidence, row-level mechanism,
+attribution, hidden-family, and split-discipline constraints.
 ```
 
 Every future experiment artifact should name:
@@ -548,6 +649,9 @@ Every future experiment artifact should name:
 - fixed input surface;
 - component metric;
 - hidden-family stratification;
+- deterministic baseline role, limited to comparator, safety floor, miss-slice
+  source, or oracle-gap reference;
+- row-level mechanism examples;
 - whether the experiment is diagnostic, development evidence, or promotion
   evidence.
 
@@ -555,8 +659,9 @@ Every future experiment artifact should name:
 
 The project is ready to become more scientific by becoming narrower. The next
 phase should deliberately ignore overall F1 unless a specific component question
-requires it as a secondary sanity check. The correct research move is to build a
-library of high-certainty answers:
+requires it as a secondary sanity check. It should also stop asking the
+deterministic rule set to prove itself on the validation surface. The correct
+research move is to build a library of high-certainty LLM component answers:
 
 - who finds the right candidates;
 - who selects the right evidence;

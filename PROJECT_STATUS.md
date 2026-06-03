@@ -8,43 +8,48 @@ Answer the Gan 2026 seizure-frequency component research questions one at a
 time under exact-evidence, attribution, hidden-family, and split-discipline
 constraints.
 
-RQ1 candidate discovery is answered for saved validation replay as a
-development-control question, not as a holdout-transfer claim. The active
-question is now RQ2 evidence selection.
+The first-pass RQ1 candidate discovery, RQ2 evidence selection, and RQ4
+projection reports are now classified as diagnostic baseline audits, not
+completed research-question answers. They fell back to "the validation-tuned
+deterministic selector/top candidate is safest," which is already known and not
+the scientific question. The active work returns to RQ1/RQ2/RQ4 LLM component
+mechanics before any move to RQ5 deterministic compilation and rendering.
 
 ## Current Strategy
 
 Use saved artifacts as research instruments for clean component questions
 instead of chasing whole-pipeline validation F1. End-to-end assembly comes later.
+Deterministic rules are frozen comparators, safety floors, and miss-slice
+definers, not eligible answers for RQ1-RQ4.
 
-Important context:
-
-- Hybrid deterministic safety-floor validation evidence reached 697/750 Purist
-  and 704/750 Pragmatic with exact evidence and no deterministic-correct
-  regressions; this remains hybrid development evidence, not an LLM-first or
-  benchmark claim.
-- `selective_safety_floor_gate_v0` produced a frozen local audit: test450 moved
-  from 343/450 to 351/450 Purist, with 14 changed rows, 8 wrong-to-correct, 0
-  correct-to-wrong, and 14/14 exact changed-row evidence.
-- `typed_operations_v0` and A2 sparse operands are paused as broad candidates,
-  but their artifacts remain useful for schema and adapter questions.
+Important context: hybrid deterministic safety-floor validation evidence reached
+697/750 Purist and 704/750 Pragmatic with exact evidence and no
+deterministic-correct regressions; this remains development evidence, not an
+LLM-first or benchmark claim. The frozen local `selective_safety_floor_gate_v0`
+audit improved test450 from 343/450 to 351/450 Purist with 0 C->W, but
+benchmark-comparable language remains blocked.
 
 ## Active Question
 
-RQ2. Evidence Selection
+RQ1/RQ2/RQ4 Reset. LLM Component Mechanics
 
-Question: Given the note and/or a fixed candidate set, which component best
-selects the prediction-bearing evidence span?
+Question: Which LLM components generate useful candidates, select clinically
+decisive evidence, and project the correct current benchmark-relevant state, and
+why do they help or fail on specific rows and hidden families?
 
-Status: active next question. Prior LLM selected-evidence runs are promising,
-but evidence selection has not yet been cleanly compared as its own component
-question.
+Status: active reset. The RQ1/RQ2/RQ4 artifacts remain useful as source-backed
+matrices, but their deterministic-default conclusions are downgraded. The next
+report should inspect row-level LLM wins, losses, and ambiguous cases before
+making any aggregate claim.
 
-RQ1 answer:
-`docs/research/gan2026_rq1_candidate_discovery_answer_2026-06-03.md`
-
-RQ1 matrix:
-`experiments/gan2026_rq1_candidate_discovery_matrix_2026-06-03.md`
+Diagnostic artifacts to reuse: RQ1 answer/matrix,
+`docs/research/gan2026_rq1_candidate_discovery_answer_2026-06-03.md` and
+`experiments/gan2026_rq1_candidate_discovery_matrix_2026-06-03.md`; RQ2
+answer/matrix,
+`docs/research/gan2026_rq2_evidence_selection_answer_2026-06-03.md` and
+`experiments/gan2026_rq2_evidence_selection_matrix_2026-06-03.md`; RQ4
+answer/matrix, `docs/research/gan2026_rq4_projection_answer_2026-06-03.md` and
+`experiments/gan2026_rq4_projection_decision_matrix_2026-06-03.md`.
 
 ## Guardrails
 
@@ -53,48 +58,41 @@ RQ1 matrix:
   tuning.
 - `rules_only_v1` remains the frozen transparent comparator.
 - Treat saturated aggregate validation scores as low-information.
+- Do not treat "deterministic top still wins" as an RQ1-RQ4 answer.
 - Before promotion or LLM-superiority language, apply Decision 0008: component
   evidence matrix, exact changed-row evidence, LLM delta accounting,
   deterministic-correct regression accounting, and hidden-family breakdown.
-- Broad validation or frozen-test work must answer the active question, not
-  maximize total score.
-- Any holdout-facing use of the RQ1 conclusion needs a predeclared
-  boundary/uncertainty stress check or must keep the claim validation-only.
-
-## Key Artifacts
-
-- RQ retrospective:
-  `docs/research/gan2026_research_question_retrospective_2026-06-03.md`
-- RQ1 protocol:
-  `docs/research/gan2026_rq1_candidate_discovery_protocol_2026-06-03.md`
-- RQ1 answer:
-  `docs/research/gan2026_rq1_candidate_discovery_answer_2026-06-03.md`
-- Component evidence contract:
-  `docs/design/component_evidence_attribution_architecture.md`
-- Hidden-family atlas:
-  `docs/research/gan2026_hidden_family_first_failure_atlas_2026-06-03.md`
-- Candidate-promotion decision:
-  `docs/decisions/0008-component-evidence-contract-for-candidate-promotion.md`
+- Broad validation or frozen-test work must answer the active component
+  question, not maximize total score.
+- Any holdout-facing use of LLM component conclusions needs a frozen
+  predeclared audit or must keep the claim validation-only.
 
 ## Work Board
 
 ### Now
 
-- Design the RQ2 evidence-selection protocol using deterministic all-candidates
-  or state-graph nodes as the fixed candidate substrate.
+- Rewrite the active protocol around LLM candidate/evidence/projection mechanics
+  with deterministic components limited to comparator, safety floor, miss-slice
+  source, or oracle-gap reference.
+- Reuse the RQ1/RQ2/RQ4 matrices to select representative row-level LLM wins,
+  losses, and ambiguous cases by hidden family.
+- Explain what each LLM component tried to do, what clinical attribute it got
+  right or wrong, and whether the behavior is plausibly transferable.
 
 ### Next
 
-- Compare selected evidence across deterministic, LLM selected-state/evidence,
-  typed-operation, claim-table, and hybrid sidecar artifacts.
-- Keep the LLM missing-candidate proposer as an optional RQ1 follow-up only if
-  fixed-candidate evidence selection reveals missing candidates still dominate.
+- Produce revised RQ1/RQ2/RQ4 answer reports or a combined LLM-mechanics
+  synthesis that explicitly supersedes the deterministic-default conclusions.
+- Only after LLM candidate/evidence/projection mechanics are understood, return
+  to RQ5 compiler/rendering over fixed selected states.
 
 ### Backlog
 
-- RQ4 projection-only benchmark over fixed candidates/states.
 - RQ3 schema comparison using selected evidence, sparse operands, typed
   operations, claim table, state graph, and possible boundary tags.
+- RQ5 deterministic compilation/rendering over fixed selected states/evidence.
+- Preserve RQ4 diagnostic graph policies for a future frozen gated projection
+  audit: boundary-state priority and graph-gated month-bucket duration.
 - RQ9 abstention/coverage-accuracy protocol.
 - RQ10 gold/scorer ambiguity audit.
 
@@ -107,9 +105,22 @@ RQ1 matrix:
 
 ### Done Recently
 
-- 2026-06-03: Wrote and tightened the RQ1 answer report. RQ1 is answered for
-  saved validation replay only: deterministic all-candidates/state-graph nodes
-  are the best broad substrates, while the LLM sidecar is a selective rescue
-  hypothesis that still needs anti-overfit stress testing.
-- 2026-06-03: Built the RQ1 candidate-discovery matrix from saved validation
-  artifacts: 5,442 candidate rows across 750 source rows.
+- 2026-06-03: Reset RQ1/RQ2/RQ4 interpretation. The answer reports and matrices
+  are retained as diagnostic artifacts, but their deterministic-default
+  conclusions are not accepted as meaningful research-question answers. Active
+  work returns to LLM component mechanics and row-level error analysis.
+- 2026-06-03: First-pass RQ4 projection diagnostic: deterministic top remained
+  safest on validation replay (697/750 Purist), broad state-graph projection
+  regressed (655/750, 49 changed labels, 0 W->C, 42 C->W), and narrow graph
+  policies looked diagnostic for boundary-state and seizure-free-duration
+  surfaces. This does not answer LLM projection mechanics. Artifacts:
+  `docs/research/gan2026_rq4_projection_answer_2026-06-03.md` and
+  `experiments/gan2026_rq4_projection_decision_matrix_2026-06-03.md`.
+- 2026-06-03: First-pass RQ2 evidence-selection diagnostic: hybrid adjudicator
+  evidence was 750/750 exact/source-id-valid, but its four changed labels were
+  all deterministic-correct regressions. This supports row-level LLM evidence
+  analysis, not deterministic-default completion.
+- 2026-06-03: First-pass RQ1 candidate-discovery diagnostic: deterministic
+  all-candidates/state-graph nodes were strong validation substrates, while the
+  LLM sidecar remained a selective rescue signal. This must be reworked as an
+  LLM candidate-mechanics question.
