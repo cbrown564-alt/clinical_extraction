@@ -2,6 +2,13 @@
 
 Date: 2026-06-03
 
+Supersession note, 2026-06-03: this report is retained as a diagnostic baseline
+audit, not a completed RQ1 research answer. Its deterministic-default conclusion
+falls into the validation-tuned selector trap described in
+`docs/research/gan2026_research_question_retrospective_2026-06-03.md` and is
+superseded by
+`docs/research/gan2026_llm_component_mechanics_synthesis_2026-06-03.md`.
+
 Status: answered for saved validation replay as a development question; not yet
 answered as a holdout-transfer or benchmark-comparable claim.
 

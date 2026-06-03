@@ -51,6 +51,16 @@ answer/matrix,
 answer/matrix, `docs/research/gan2026_rq4_projection_answer_2026-06-03.md` and
 `experiments/gan2026_rq4_projection_decision_matrix_2026-06-03.md`.
 
+Active reset protocol:
+`docs/research/gan2026_llm_component_mechanics_protocol_2026-06-03.md`
+
+Active reset synthesis:
+`docs/research/gan2026_llm_component_mechanics_synthesis_2026-06-03.md`
+
+Active row-level mechanism artifact:
+`experiments/gan2026_llm_component_mechanics_rows_2026-06-03.md` and
+`experiments/gan2026_llm_component_mechanics_rows_2026-06-03.jsonl`
+
 ## Guardrails
 
 - Split `gan2026_split_v1` is locked: 300 train, 750 validation, 450 holdout.
@@ -71,18 +81,12 @@ answer/matrix, `docs/research/gan2026_rq4_projection_answer_2026-06-03.md` and
 
 ### Now
 
-- Rewrite the active protocol around LLM candidate/evidence/projection mechanics
-  with deterministic components limited to comparator, safety floor, miss-slice
-  source, or oracle-gap reference.
-- Reuse the RQ1/RQ2/RQ4 matrices to select representative row-level LLM wins,
-  losses, and ambiguous cases by hidden family.
-- Explain what each LLM component tried to do, what clinical attribute it got
-  right or wrong, and whether the behavior is plausibly transferable.
+- Use the row-level mechanism artifact to write the next deeper error-analysis
+  narrative: candidate-generation mechanics, evidence-selection mechanics, and
+  projection mechanics by hidden family.
 
 ### Next
 
-- Produce revised RQ1/RQ2/RQ4 answer reports or a combined LLM-mechanics
-  synthesis that explicitly supersedes the deterministic-default conclusions.
 - Only after LLM candidate/evidence/projection mechanics are understood, return
   to RQ5 compiler/rendering over fixed selected states.
 
@@ -109,6 +113,15 @@ answer/matrix, `docs/research/gan2026_rq4_projection_answer_2026-06-03.md` and
   are retained as diagnostic artifacts, but their deterministic-default
   conclusions are not accepted as meaningful research-question answers. Active
   work returns to LLM component mechanics and row-level error analysis.
+- 2026-06-03: Added the LLM component mechanics restart protocol and synthesis.
+  The synthesis identifies narrow LLM rescue mechanisms for boundary/uncertainty
+  candidates, high exact-evidence but weak state projection, and selective graph
+  projection gains for boundary and duration mechanisms. It explicitly
+  supersedes the deterministic-default conclusions in first-pass RQ1/RQ2/RQ4.
+- 2026-06-03: Built the compact LLM component mechanics artifact:
+  195 mechanism rows over 111 source rows, covering LLM candidate wins/losses,
+  candidate burden, exact-evidence-but-wrong-state rows, changed W->C/C->W rows,
+  graph projection W->C/C->W rows, and schema-near projection misses.
 - 2026-06-03: First-pass RQ4 projection diagnostic: deterministic top remained
   safest on validation replay (697/750 Purist), broad state-graph projection
   regressed (655/750, 49 changed labels, 0 W->C, 42 C->W), and narrow graph
