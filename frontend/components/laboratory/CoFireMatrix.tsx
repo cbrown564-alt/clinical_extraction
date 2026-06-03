@@ -22,8 +22,8 @@ function getGroupColor(group: string): string {
 
 export default function CoFireMatrix() {
   const rulesQuery = useRules();
-  const rules = rulesQuery.data?.rules ?? [];
-  const groups = rulesQuery.data?.groups ?? [];
+  const rules = useMemo(() => rulesQuery.data?.rules ?? [], [rulesQuery.data?.rules]);
+  const groups = useMemo(() => rulesQuery.data?.groups ?? [], [rulesQuery.data?.groups]);
 
   const matrix = useMemo(() => {
     const groupRules = new Map<string, typeof rules>();

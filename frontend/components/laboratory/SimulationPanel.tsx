@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Play, Loader2, AlertCircle, CheckCircle, XCircle, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { Play, Loader2, AlertCircle, CheckCircle, XCircle } from "lucide-react";
 import type { RunAblationResponse } from "@/lib/types";
 
 interface SimulationPanelProps {

@@ -323,6 +323,178 @@ def test_validation_cycle_manifest_replays_full_saved_validation_artifact(
     assert rows[0]["gate_variants"][replay.SELECTIVE_CANDIDATE_VARIANT]["final_label"] == "unknown"
 
 
+def test_full_artifact_slice_name_can_label_frozen_test_surface(tmp_path: Path) -> None:
+    artifact_path = tmp_path / "artifact.jsonl"
+    artifact_path.write_text(
+        _jsonl(
+            {
+                "source_row_index": 31,
+                "reference": {
+                    "gold_label": "unknown",
+                    "gold_label_kind": "unknown",
+                    "gold_monthly_frequency": 1000.0,
+                },
+                "score_layers": {
+                    "hybrid_adjudicator_with_adapters": {
+                        "final_label": "seizure free for multiple year",
+                        "purist_correct": False,
+                        "pragmatic_correct": False,
+                        "scorable": True,
+                    },
+                    "llm_candidate_selector_raw": {
+                        "final_label": "unknown",
+                        "purist_correct": True,
+                        "pragmatic_correct": True,
+                        "scorable": True,
+                    },
+                },
+                "component_inputs": {"state_graph_nodes": []},
+                "diagnostics": {
+                    "deterministic_correct": False,
+                    "selected_evidence_exact": True,
+                    "selected_source_ids_exist": True,
+                },
+                "llm_candidate_prompt_input_json": json.dumps(
+                    {"note_text": "The current picture is unclear and variable."}
+                ),
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    rows, metadata = replay.run_selective_safety_floor_gate_replay(
+        {
+            "artifact_kind": "gan2026_validation_cycle_candidate_manifest",
+            "candidate_name": "selective_safety_floor_gate_v0",
+            "split_manifest": "gan2026_split_v1",
+            "source_artifacts": {"validation_source_jsonl": "artifact.jsonl"},
+        },
+        artifact_dir=tmp_path,
+        manifest_path="candidate_manifest.json",
+        full_artifact_slice_name="test450",
+    )
+
+    assert rows[0]["slice_name"] == "test450"
+    assert metadata["slice_summary"]["test450"]["rows"] == 1
+    assert "gold_kind:unknown" in metadata["predeclared_test_slice_summary"]
+    assert "text_marker:current_state" in metadata["predeclared_test_slice_summary"]
+    assert "text_marker:ambiguity" in metadata["predeclared_test_slice_summary"]
+
+
+def test_frozen_test_report_suppresses_row_level_readout(tmp_path: Path) -> None:
+    report_path = tmp_path / "report.md"
+    row = {
+        "slice_name": "test450",
+        "artifact_name": "artifact.jsonl",
+        "source_row_index": 31,
+        "gold_label": "unknown",
+        "gold_label_kind": "unknown",
+        "baseline_label": "seizure free for multiple year",
+        "deterministic_correct": False,
+        "predeclared_text_markers": {"current_state": True},
+        "gate_variants": {
+            replay.BASELINE_VARIANT: {
+                "final_label": "seizure free for multiple year",
+                "purist_correct": False,
+                "pragmatic_correct": False,
+                "changed": False,
+                "fallback": False,
+            },
+            replay.PROJECTION_VARIANT: {
+                "final_label": "seizure free for multiple year",
+                "purist_correct": False,
+                "pragmatic_correct": False,
+                "changed": False,
+                "fallback": True,
+            },
+            replay.COMPETING_FREQUENCY_VARIANT: {
+                "final_label": "seizure free for multiple year",
+                "purist_correct": False,
+                "pragmatic_correct": False,
+                "changed": False,
+                "fallback": True,
+            },
+            replay.LOWEST_FREQUENCY_VARIANT: {
+                "final_label": "seizure free for multiple year",
+                "purist_correct": False,
+                "pragmatic_correct": False,
+                "changed": False,
+                "fallback": True,
+            },
+            replay.LLM_VARIANT: {
+                "final_label": "unknown",
+                "purist_correct": True,
+                "pragmatic_correct": True,
+                "changed": True,
+                "fallback": False,
+                "selected_evidence_exact": True,
+                "selected_source_ids_exist": True,
+            },
+            replay.COMBINED_VARIANT: {
+                "final_label": "unknown",
+                "purist_correct": True,
+                "pragmatic_correct": True,
+                "changed": True,
+                "fallback": False,
+                "selected_evidence_exact": True,
+                "selected_source_ids_exist": True,
+            },
+            replay.SELECTIVE_CANDIDATE_VARIANT: {
+                "final_label": "unknown",
+                "purist_correct": True,
+                "pragmatic_correct": True,
+                "changed": True,
+                "fallback": False,
+                "selected_evidence_exact": True,
+                "selected_source_ids_exist": True,
+            },
+        },
+    }
+    metadata = {
+        "artifact_kind": "gan2026_selective_safety_floor_gate_v0_replay",
+        "source_artifact": "artifact.jsonl",
+        "slice_manifest": "candidate_manifest.json",
+        "input_manifest": "candidate_manifest.json",
+        "split_manifest": "gan2026_split_v1",
+        "row_count": 1,
+        "slice_summary": replay._summarize_by_slice([row]),
+        "predeclared_test_slice_summary": replay._summarize_predeclared_test_slices([row]),
+        "hidden_family_summary": {},
+        "would_change_rows": {
+            replay.PROJECTION_VARIANT: [],
+            replay.LLM_VARIANT: [{"source_row_index": 31}],
+            replay.COMBINED_VARIANT: [{"source_row_index": 31}],
+            replay.SELECTIVE_CANDIDATE_VARIANT: [{"source_row_index": 31}],
+        },
+        "scoring_convention_caveats": [
+            {
+                "source_row_index": 31,
+                "gold_label": "unknown",
+                "baseline_label": "seizure free for multiple year",
+                "candidate_label": "unknown",
+                "caveat": "unit caveat",
+            }
+        ],
+    }
+
+    replay.write_replay_report(
+        [row],
+        metadata,
+        report_path,
+        jsonl_path=tmp_path / "rows.jsonl",
+        json_path=tmp_path / "summary.json",
+        frozen_test_audit=True,
+    )
+
+    text = report_path.read_text(encoding="utf-8")
+    assert "Frozen-Test Audit First Readout" in text
+    assert "Predeclared Test Slice Summary" in text
+    assert "Would-Change Rows" not in text
+    assert "| Row | Slice | Gold | Baseline | Variant | Families | Why |" not in text
+    assert "Scoring-Convention Caveats" not in text
+    assert " 31 " not in text
+
+
 def test_load_manifest_preserves_validation_cycle_manifest_without_predeclaration(
     tmp_path: Path,
 ) -> None:

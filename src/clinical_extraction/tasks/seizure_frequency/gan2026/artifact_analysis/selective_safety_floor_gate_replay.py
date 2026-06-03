@@ -70,6 +70,7 @@ def run_selective_safety_floor_gate_replay(
     source_artifact: Path | None = None,
     artifact_dir: Path = Path("experiments"),
     manifest_path: str | None = None,
+    full_artifact_slice_name: str = "validation750",
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Replay fixed-slice selective safety-floor gates from saved artifact rows."""
 
@@ -99,6 +100,7 @@ def run_selective_safety_floor_gate_replay(
             manifest,
             source_artifact=source_artifact,
             artifact_dir=artifact_dir,
+            slice_name=full_artifact_slice_name,
         )
     else:
         manifest_members = _members_by_slice(manifest)
@@ -149,6 +151,7 @@ def run_selective_safety_floor_gate_replay(
         ),
         "predeclaration_manifest": str(manifest.get("predeclaration_manifest") or ""),
         "slice_summary": _summarize_by_slice(replay_rows),
+        "predeclared_test_slice_summary": _summarize_predeclared_test_slices(replay_rows),
         "hidden_family_summary": _summarize_by_hidden_family(replay_rows),
         "would_change_rows": _would_change_rows(replay_rows),
         "scoring_convention_caveats": _scoring_convention_caveats(replay_rows),
@@ -181,25 +184,38 @@ def write_replay_report(
     *,
     jsonl_path: Path,
     json_path: Path,
+    frozen_test_audit: bool = False,
 ) -> None:
     validation_cycle = (
         metadata.get("artifact_kind") == "gan2026_selective_safety_floor_gate_v0_replay"
     )
-    description = (
-        "Validation-cycle full-validation replay over saved artifacts only. "
-        "This is a validation development result and does not imply production "
-        "promotion or holdout performance."
-        if validation_cycle
-        else (
-            "Validation-cycle fixed-slice replay over saved artifacts only. "
-            "This is diagnostic accounting and does not imply production promotion."
+    if frozen_test_audit:
+        description = (
+            "Frozen-test first readout over saved holdout artifacts only. "
+            "This report intentionally suppresses row-level locked-test details; "
+            "it is a hybrid deterministic-safety-floor generalization audit, "
+            "not an LLM-first or benchmark-comparable claim."
         )
-    )
+    else:
+        description = (
+            "Validation-cycle full-validation replay over saved artifacts only. "
+            "This is a validation development result and does not imply production "
+            "promotion or holdout performance."
+            if validation_cycle
+            else (
+                "Validation-cycle fixed-slice replay over saved artifacts only. "
+                "This is diagnostic accounting and does not imply production promotion."
+            )
+        )
     lines = [
         (
-            "# Gan 2026 Selective Safety-Floor Gate v0 Validation Replay (No-Call)"
-            if validation_cycle
-            else "# Gan 2026 Selective Safety-Floor Gate Replay (No-Call)"
+            "# Gan 2026 Selective Safety-Floor Gate v0 Frozen-Test Audit First Readout (No-Call)"
+            if frozen_test_audit
+            else (
+                "# Gan 2026 Selective Safety-Floor Gate v0 Validation Replay (No-Call)"
+                if validation_cycle
+                else "# Gan 2026 Selective Safety-Floor Gate Replay (No-Call)"
+            )
         ),
         "",
         description,
@@ -270,7 +286,7 @@ def write_replay_report(
             )
 
     caveats = metadata.get("scoring_convention_caveats") or []
-    if caveats:
+    if caveats and not frozen_test_audit:
         lines.extend(
             [
                 "",
@@ -287,67 +303,86 @@ def write_replay_report(
                 f"{_md(caveat['caveat'])} |"
             )
 
-    lines.extend(
-        [
-            "",
-            "## Hidden-Family Summary",
-            "",
-            "| Slice | Family | Variant | Changed rows | Wrong→Correct | Correct→Wrong | "
-            "Precision | Deterministic regressions |",
-            "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: |",
-        ]
-    )
-    for slice_name, families in sorted(metadata["hidden_family_summary"].items()):
-        for family, variants in sorted(families.items()):
-            for variant, stats in sorted(variants.items()):
-                lines.append(
-                    f"| {slice_name} | {family} | {variant} | {stats['changed_rows']} | "
-                    f"{stats['wrong_to_correct']} | {stats['correct_to_wrong']} | "
-                    f"{_fmt_float(stats['changed_label_precision'])} | "
-                    f"{stats['deterministic_correct_regressions']} |"
-                )
-
-    lines.extend(
-        [
-            "",
-            "## Would-Change Rows",
-            "",
-            "### Projection Boundary-State Priority",
-        ]
-    )
-    lines.extend(
-        _would_change_lines(metadata["would_change_rows"].get(PROJECTION_VARIANT, []), "Projection")
-    )
-    lines.extend(
-        [
-            "",
-            "### LLM Candidate Sidecar Rescue",
-        ]
-    )
-    lines.extend(
-        _would_change_lines(metadata["would_change_rows"].get(LLM_VARIANT, []), "LLM sidecar")
-    )
-    lines.extend(
-        [
-            "",
-            "### Combined Selective Gate",
-        ]
-    )
-    lines.extend(
-        _would_change_lines(metadata["would_change_rows"].get(COMBINED_VARIANT, []), "Combined")
-    )
-    lines.extend(
-        [
-            "",
-            "### Selective Safety-Floor Gate v0",
-        ]
-    )
-    lines.extend(
-        _would_change_lines(
-            metadata["would_change_rows"].get(SELECTIVE_CANDIDATE_VARIANT, []),
-            "Selective",
+    if frozen_test_audit:
+        lines.extend(_predeclared_test_slice_lines(metadata))
+        lines.extend(
+            [
+                "",
+                "## Row-Level Inspection Boundary",
+                "",
+                "Row-level locked-test details are intentionally omitted from this "
+                "first readout. Any later row-level review is post-hoc final-evaluation "
+                "analysis and must not drive tuning of this candidate.",
+            ]
         )
-    )
+    else:
+        lines.extend(
+            [
+                "",
+                "## Hidden-Family Summary",
+                "",
+                "| Slice | Family | Variant | Changed rows | Wrong→Correct | Correct→Wrong | "
+                "Precision | Deterministic regressions |",
+                "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: |",
+            ]
+        )
+        for slice_name, families in sorted(metadata["hidden_family_summary"].items()):
+            for family, variants in sorted(families.items()):
+                for variant, stats in sorted(variants.items()):
+                    lines.append(
+                        f"| {slice_name} | {family} | {variant} | {stats['changed_rows']} | "
+                        f"{stats['wrong_to_correct']} | {stats['correct_to_wrong']} | "
+                        f"{_fmt_float(stats['changed_label_precision'])} | "
+                        f"{stats['deterministic_correct_regressions']} |"
+                    )
+
+        lines.extend(
+            [
+                "",
+                "## Would-Change Rows",
+                "",
+                "### Projection Boundary-State Priority",
+            ]
+        )
+        lines.extend(
+            _would_change_lines(
+                metadata["would_change_rows"].get(PROJECTION_VARIANT, []), "Projection"
+            )
+        )
+        lines.extend(
+            [
+                "",
+                "### LLM Candidate Sidecar Rescue",
+            ]
+        )
+        lines.extend(
+            _would_change_lines(
+                metadata["would_change_rows"].get(LLM_VARIANT, []), "LLM sidecar"
+            )
+        )
+        lines.extend(
+            [
+                "",
+                "### Combined Selective Gate",
+            ]
+        )
+        lines.extend(
+            _would_change_lines(
+                metadata["would_change_rows"].get(COMBINED_VARIANT, []), "Combined"
+            )
+        )
+        lines.extend(
+            [
+                "",
+                "### Selective Safety-Floor Gate v0",
+            ]
+        )
+        lines.extend(
+            _would_change_lines(
+                metadata["would_change_rows"].get(SELECTIVE_CANDIDATE_VARIANT, []),
+                "Selective",
+            )
+        )
 
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -459,6 +494,11 @@ def _replay_slice_row(
         "source_row_index": source_row_index,
         "primary_layer": str(member["primary_layer"]),
         "gold_label": gold_label,
+        "gold_label_kind": str(
+            (source_row.get("reference") or {}).get("gold_label_kind")
+            or member.get("gold_label_kind")
+            or ""
+        ),
         "gold_monthly_frequency": gold_monthly,
         "baseline_label": baseline["final_label"],
         "selected_evidence_exact": _bool_or_none(selected_evidence_exact),
@@ -475,6 +515,7 @@ def _replay_slice_row(
         "graph_node_count": len(graph.nodes) if graph is not None else 0,
         "gate_variants": gate_outputs,
         "selected_source_provenance": source_provenance,
+        "predeclared_text_markers": _predeclared_text_markers(source_row),
     }
 
 
@@ -530,6 +571,7 @@ def _full_validation_members(
     *,
     source_artifact: Path,
     artifact_dir: Path,
+    slice_name: str = "validation750",
 ) -> dict[str, list[dict[str, Any]]]:
     artifact_path = _resolve_artifact_path(source_artifact, artifact_dir=artifact_dir)
     artifact_name = _artifact_name_for_manifest(artifact_path, artifact_dir=artifact_dir)
@@ -556,7 +598,7 @@ def _full_validation_members(
                 "selected_operand_complete": "",
             }
         )
-    return {"validation750": members}
+    return {slice_name: members}
 
 
 def _resolve_artifact_path(path: Path, *, artifact_dir: Path) -> Path:
@@ -1206,6 +1248,167 @@ def _summarize_by_hidden_family(rows: Sequence[Mapping[str, Any]]) -> dict[str, 
     return out
 
 
+def _summarize_predeclared_test_slices(
+    rows: Sequence[Mapping[str, Any]],
+) -> dict[str, Any]:
+    slice_rows: dict[str, list[Mapping[str, Any]]] = defaultdict(list)
+    for row in rows:
+        for slice_name in _predeclared_test_slice_names(row):
+            slice_rows[slice_name].append(row)
+    return {
+        slice_name: {
+            "rows": len(members),
+            "unique_source_rows": len({row["source_row_index"] for row in members}),
+            "variant_summary": {
+                variant: _summarize_variant(members, variant) for variant in VARIANTS
+            },
+        }
+        for slice_name, members in sorted(slice_rows.items())
+    }
+
+
+def _predeclared_test_slice_names(row: Mapping[str, Any]) -> list[str]:
+    names = ["all_test_rows"]
+    gold_kind = str(row.get("gold_label_kind") or "").strip() or "missing"
+    gold_label = str(row.get("gold_label") or "").lower()
+    markers = row.get("predeclared_text_markers") or {}
+    gate_variants = row.get("gate_variants") or {}
+
+    names.append(f"gold_kind:{gold_kind}")
+
+    try:
+        label_record = label_to_frequency_record(str(row.get("gold_label") or ""))
+        if label_record.kind is FrequencyLabelKind.FREQUENCY:
+            if "multiple" in gold_label:
+                names.append("label_form:vague_or_multiple")
+            else:
+                names.append("label_form:numeric_rate")
+        if label_record.kind is FrequencyLabelKind.UNRESOLVED_MULTIPLE:
+            names.append("label_form:vague_or_multiple")
+        if label_record.kind is FrequencyLabelKind.SEIZURE_FREE:
+            monthly = float(label_record.monthly_frequency)
+            if monthly == 0.0 and _seizure_free_duration_months(gold_label) >= 12:
+                names.append("seizure_free_duration:one_year_or_longer")
+            else:
+                names.append("seizure_free_duration:shorter_than_one_year")
+    except Exception:
+        pass
+
+    if gold_kind in {"unknown", "no_reference"}:
+        names.append(f"boundary:{gold_kind}")
+
+    projection = gate_variants.get(PROJECTION_VARIANT) or {}
+    llm_sidecar = gate_variants.get(LLM_VARIANT) or {}
+    projection_fired = bool(projection.get("changed"))
+    llm_fired = bool(llm_sidecar.get("changed"))
+    names.append("projection_gate:fired" if projection_fired else "projection_gate:abstained")
+    names.append("llm_sidecar_gate:fired" if llm_fired else "llm_sidecar_gate:abstained")
+    if not projection_fired and not llm_fired:
+        names.append("sidecars:both_abstained")
+
+    for marker_name, present in sorted(markers.items()):
+        if present:
+            names.append(f"text_marker:{marker_name}")
+    return names
+
+
+def _seizure_free_duration_months(label: str) -> float:
+    pieces = label.split()
+    for index, piece in enumerate(pieces):
+        if piece.isdigit() and index + 1 < len(pieces):
+            value = float(piece)
+            unit = pieces[index + 1]
+            if unit.startswith("year"):
+                return value * 12
+            if unit.startswith("month"):
+                return value
+    if "multiple year" in label:
+        return 24
+    if "multiple month" in label:
+        return 6
+    return 0
+
+
+def _predeclared_text_markers(source_row: Mapping[str, Any]) -> dict[str, bool]:
+    text = _source_note_text(source_row).lower()
+    marker_groups = {
+        "current_state": ("current", "currently", "now", "at present", "ongoing"),
+        "historical_or_negated": (
+            "previously",
+            "history of",
+            "denies",
+            "no",
+            "last",
+            "free of",
+        ),
+        "cluster_language": ("cluster", "clusters", "clustered", "per cluster"),
+        "ambiguity": (
+            "uncertain",
+            "unclear",
+            "not clear",
+            "difficult to quantify",
+            "variable",
+        ),
+    }
+    return {
+        group_name: any(marker in text for marker in markers)
+        for group_name, markers in marker_groups.items()
+    }
+
+
+def _source_note_text(source_row: Mapping[str, Any]) -> str:
+    for field_name in ("llm_candidate_prompt_input_json", "adjudicator_prompt_input_json"):
+        raw_value = source_row.get(field_name)
+        if not isinstance(raw_value, str) or not raw_value.strip():
+            continue
+        try:
+            payload = json.loads(raw_value)
+        except json.JSONDecodeError:
+            continue
+        note_text = payload.get("note_text")
+        if isinstance(note_text, str):
+            return note_text
+    return ""
+
+
+def _predeclared_test_slice_lines(metadata: Mapping[str, Any]) -> list[str]:
+    slice_summary = metadata.get("predeclared_test_slice_summary") or {}
+    if not slice_summary:
+        return []
+    lines = [
+        "",
+        "## Predeclared Test Slice Summary",
+        "",
+        "| Slice | Variant | Rows | Purist correct | Pragmatic correct | "
+        "Changed rows | Wrong→Correct | Correct→Wrong | Precision | "
+        "Deterministic regressions | Evidence-exact changed | Source-id valid changed |",
+        "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+    ]
+    for slice_name, slice_record in sorted(slice_summary.items()):
+        variant_summary = slice_record.get("variant_summary") or {}
+        for variant in (
+            SELECTIVE_CANDIDATE_VARIANT,
+            BASELINE_VARIANT,
+            PROJECTION_VARIANT,
+            LLM_VARIANT,
+            COMBINED_VARIANT,
+        ):
+            stats = variant_summary.get(variant) or {}
+            lines.append(
+                "| "
+                f"{_md(slice_name)} | {variant} | "
+                f"{stats.get('rows', 0)} | {stats.get('purist_correct', 0)} | "
+                f"{stats.get('pragmatic_correct', 0)} | "
+                f"{stats.get('changed_rows', 0)} | {stats.get('wrong_to_correct', 0)} | "
+                f"{stats.get('correct_to_wrong', 0)} | "
+                f"{_fmt_float(stats.get('changed_label_precision'))} | "
+                f"{stats.get('deterministic_correct_regressions', 0)} | "
+                f"{stats.get('changed_rows_with_exact_evidence', 0)} | "
+                f"{stats.get('changed_rows_with_valid_source_ids', 0)} |"
+            )
+    return lines
+
+
 def _summarize_variant(
     rows: Sequence[Mapping[str, Any]],
     variant_name: str,
@@ -1516,6 +1719,8 @@ def main(argv: Sequence[str] | None = None) -> None:
     parser.add_argument("--jsonl", type=Path, default=DEFAULT_JSONL_PATH)
     parser.add_argument("--json", type=Path, default=DEFAULT_JSON_PATH)
     parser.add_argument("--markdown", type=Path, default=DEFAULT_REPORT_PATH)
+    parser.add_argument("--full-artifact-slice-name", default="validation750")
+    parser.add_argument("--frozen-test-audit", action="store_true")
     args = parser.parse_args(argv)
 
     manifest = load_manifest(args.manifest, predeclaration=args.predeclaration)
@@ -1524,6 +1729,7 @@ def main(argv: Sequence[str] | None = None) -> None:
         source_artifact=args.source_artifact,
         artifact_dir=args.artifact_dir,
         manifest_path=str(args.manifest),
+        full_artifact_slice_name=args.full_artifact_slice_name,
     )
     write_replay_jsonl(rows, args.jsonl)
     json_metadata = {"rows": list(rows), **metadata, "artifact_kind": metadata["artifact_kind"]}
@@ -1534,6 +1740,7 @@ def main(argv: Sequence[str] | None = None) -> None:
         args.markdown,
         jsonl_path=args.jsonl,
         json_path=args.json,
+        frozen_test_audit=args.frozen_test_audit,
     )
     print(json.dumps(metadata["slice_summary"], sort_keys=True))
 
