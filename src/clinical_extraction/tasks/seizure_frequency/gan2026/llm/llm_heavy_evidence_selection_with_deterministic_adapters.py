@@ -34,6 +34,11 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label_format_preserving,
 )
 
+from ..selected_evidence.final_label_projection import (
+    FinalLabelProjection,
+    project_final_label_from_selected_evidence,
+)
+
 PROMPT_VERSION = "gan2026_llm_heavy_evidence_selection_deterministic_adapters_v1"
 PIPELINE_FAMILY = "llm_heavy_evidence_selection_with_deterministic_adapters"
 TYPED_OUTPUT_SCHEMA_VERSION = "selected_fact_operands_v1"
@@ -43,8 +48,9 @@ SCORE_LAYER_NAMES = (
     "format_only_repair",
     "mechanical_adapter_label",
     "benchmark_convention_adapter",
+    "final_projected_label",
 )
-PRIMARY_SCORE_LAYER = "mechanical_adapter_label"
+PRIMARY_SCORE_LAYER = "final_projected_label"
 DEFAULT_JSONL_PATH = Path(
     "experiments/"
     "gan2026_llm_heavy_evidence_selection_with_deterministic_adapters_validation25_"
@@ -456,6 +462,25 @@ def mechanical_adapter_label(
     return MechanicalAdapterResult(None, (), False, f"unsupported_kind:{kind}")
 
 
+def final_projected_label(
+    extraction: LlmHeavyEvidenceSelectionRecord | None,
+    mechanical: MechanicalAdapterResult,
+    *,
+    context_text: str | None = None,
+) -> FinalLabelProjection:
+    """Project the final label from model-selected evidence and adapted labels."""
+
+    selected_evidence = ""
+    if extraction is not None:
+        selected_evidence = extraction.selected_fact.evidence
+    return project_final_label_from_selected_evidence(
+        raw_label=_raw_model_label(extraction),
+        mechanical_label=mechanical.final_label,
+        selected_evidence=selected_evidence,
+        context_text=context_text,
+    )
+
+
 def run_split(
     records: Sequence[GanFrequencyRecord],
     *,
@@ -521,7 +546,12 @@ def run_split(
             *validate_typed_extraction(extraction, note_text=record.note_text),
         ]
         mechanical = mechanical_adapter_label(extraction)
-        score_layers = _score_layers(record, extraction, mechanical)
+        projection = final_projected_label(
+            extraction,
+            mechanical,
+            context_text=record.note_text,
+        )
+        score_layers = _score_layers(record, extraction, mechanical, projection)
         rows.append(
             {
                 "source_row_index": record.source_row_index,
@@ -538,6 +568,11 @@ def run_split(
                 "structured_record": extraction.model_dump() if extraction else None,
                 "evidence_summary": _evidence_summary(record.note_text, extraction),
                 "mechanical_adapter": mechanical.as_dict(),
+                "final_projection": {
+                    "final_label": projection.final_label,
+                    "projection_families": list(projection.projection_families),
+                    "source_label": projection.source_label,
+                },
                 "component_status": _component_status(
                     extraction=extraction,
                     parse_errors=parse_errors,
@@ -649,7 +684,7 @@ def write_report(
         f"- Rows: {summary.get('examples', 0)}",
         f"- Model: `{metadata.get('model')}`",
         f"- Mode: `{metadata.get('mode')}`",
-        f"- Primary adapted layer: `{PRIMARY_SCORE_LAYER}`",
+        f"- Primary score layer: `{PRIMARY_SCORE_LAYER}`",
         f"- Decision 0007 outcome: `{outcome}`",
         "",
         "## Predeclared Smoke",
@@ -698,6 +733,11 @@ def write_report(
             (
                 f"- Adapted-label Purist: "
                 f"{summary.get('mechanical_adapter_label_purist_correct', 0)}/"
+                f"{summary.get('examples', 0)}"
+            ),
+            (
+                f"- Final projected-label Purist: "
+                f"{summary.get('final_projected_label_purist_correct', 0)}/"
                 f"{summary.get('examples', 0)}"
             ),
             (
@@ -838,6 +878,7 @@ def _score_layers(
     record: GanFrequencyRecord,
     extraction: LlmHeavyEvidenceSelectionRecord | None,
     mechanical: MechanicalAdapterResult,
+    projection: FinalLabelProjection,
 ) -> dict[str, dict[str, Any]]:
     raw_label = _raw_model_label(extraction)
     format_label = repair_prediction_label_format_preserving(raw_label) if raw_label else None
@@ -868,6 +909,11 @@ def _score_layers(
             record,
             benchmark_label,
             repair_mode="benchmark_convention_adapter",
+        ),
+        "final_projected_label": heavy_reasoner._score_label(
+            record,
+            projection.final_label,
+            repair_mode="final_projected_label",
         ),
     }
 
@@ -1196,6 +1242,7 @@ def _emit_progress_checkpoint(
         "call_failures": metadata["summary"]["call_failures"],
         "adapter_parse_failures": metadata["summary"]["adapter_parse_failures"],
         "mechanical_adapter_scorable": metadata["summary"]["mechanical_adapter_label_scorable"],
+        "final_projected_scorable": metadata["summary"]["final_projected_label_scorable"],
     }
     print(json.dumps(progress, sort_keys=True), file=sys.stderr, flush=True)
 

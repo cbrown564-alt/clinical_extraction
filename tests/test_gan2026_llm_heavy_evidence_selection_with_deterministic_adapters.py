@@ -303,6 +303,187 @@ def test_cluster_cadence_adapter_renders_bare_frequency_axis() -> None:
     assert adapted.operand_complete is True
 
 
+def test_final_projection_falls_back_to_raw_label_when_operands_incomplete() -> None:
+    prediction = _prediction("multiple per shift")
+    prediction.selected_fact["evidence"] = (
+        "Daniel Harris reports that these episodes crop up most shifts, especially "
+        "during the busiest part of service."
+    )
+    prediction.selected_fact["raw_value"] = "most shifts"
+    prediction.raw_model_answer["selected_evidence"] = prediction.selected_fact["evidence"]
+    prediction.operands["frequency"] = {
+        "occurrences_low": None,
+        "occurrences_high": None,
+        "denominator_low": None,
+        "denominator_high": None,
+        "denominator_unit": None,
+        "vague_count": "multiple",
+    }
+    extraction, errors = reasoner.prediction_to_extraction(prediction)
+
+    assert extraction is not None
+    assert errors == []
+
+    mechanical = reasoner.mechanical_adapter_label(extraction)
+    projected = reasoner.final_projected_label(
+        extraction,
+        mechanical,
+        context_text="Daniel Harris reports that these episodes crop up most shifts.",
+    )
+
+    assert mechanical.final_label is None
+    assert projected.final_label == "multiple per shift"
+    assert projected.projection_families == ("raw_label_fallback",)
+
+
+def test_final_projection_repairs_bimonthly_from_selected_evidence() -> None:
+    prediction = _prediction("2 per 1 month")
+    prediction.selected_fact["evidence"] = "This patient reports bimonthly seizures."
+    prediction.selected_fact["raw_value"] = "bimonthly seizures"
+    prediction.raw_model_answer["selected_evidence"] = prediction.selected_fact["evidence"]
+    prediction.operands["frequency"] = {
+        "occurrences_low": 2,
+        "occurrences_high": 2,
+        "denominator_low": 1,
+        "denominator_high": 1,
+        "denominator_unit": "month",
+        "vague_count": None,
+    }
+    extraction, errors = reasoner.prediction_to_extraction(prediction)
+
+    assert extraction is not None
+    assert errors == []
+
+    projected = reasoner.final_projected_label(
+        extraction,
+        reasoner.mechanical_adapter_label(extraction),
+    )
+
+    assert projected.final_label == "1 per 2 month"
+    assert projected.projection_families == ("selected_evidence_projection",)
+
+
+def test_final_projection_repairs_every_other_day_from_selected_evidence() -> None:
+    prediction = _prediction("3 to 4 per 6 week")
+    prediction.selected_fact["evidence"] = (
+        "These have become frequent, with seizures every other day."
+    )
+    prediction.selected_fact["raw_value"] = "1 per 2 days"
+    prediction.raw_model_answer["selected_evidence"] = prediction.selected_fact["evidence"]
+    prediction.operands["frequency"] = {
+        "occurrences_low": 3,
+        "occurrences_high": 4,
+        "denominator_low": 6,
+        "denominator_high": 6,
+        "denominator_unit": "week",
+        "vague_count": None,
+    }
+    extraction, errors = reasoner.prediction_to_extraction(prediction)
+
+    assert extraction is not None
+    assert errors == []
+
+    projected = reasoner.final_projected_label(
+        extraction,
+        reasoner.mechanical_adapter_label(extraction),
+    )
+
+    assert projected.final_label == "1 per 2 day"
+    assert projected.projection_families == ("selected_evidence_projection",)
+
+
+def test_final_projection_prefers_current_monthly_state_over_year_to_date_count() -> None:
+    prediction = _prediction("4 per 1 year")
+    prediction.selected_fact["evidence"] = (
+        "Currently reporting monthly seizures, typically brief focal-onset episodes "
+        "with rapid recovery as described by the family. Since commencing ketogenic "
+        "diet therapy, the family notes a marked reduction in seizure frequency with "
+        "only four brief seizures recorded in 2017 so far."
+    )
+    prediction.selected_fact["raw_value"] = "4 per year"
+    prediction.raw_model_answer["selected_evidence"] = prediction.selected_fact["evidence"]
+    prediction.operands["frequency"] = {
+        "occurrences_low": 4,
+        "occurrences_high": 4,
+        "denominator_low": 1,
+        "denominator_high": 1,
+        "denominator_unit": "year",
+        "vague_count": None,
+    }
+    extraction, errors = reasoner.prediction_to_extraction(prediction)
+
+    assert extraction is not None
+    assert errors == []
+
+    projected = reasoner.final_projected_label(
+        extraction,
+        reasoner.mechanical_adapter_label(extraction),
+    )
+
+    assert projected.final_label == "1 per month"
+    assert projected.projection_families == ("selected_evidence_projection",)
+
+
+def test_final_projection_applies_vague_weekday_benchmark_policy() -> None:
+    prediction = _prediction("3 to 5 per 7 day")
+    prediction.selected_fact["evidence"] = (
+        "Over the past two months she reports brief absences occurring on most "
+        "weekdays, often clustering around late afternoon."
+    )
+    prediction.selected_fact["raw_value"] = "most weekdays"
+    prediction.raw_model_answer["selected_evidence"] = prediction.selected_fact["evidence"]
+    prediction.operands["frequency"] = {
+        "occurrences_low": 3,
+        "occurrences_high": 5,
+        "denominator_low": 7,
+        "denominator_high": 7,
+        "denominator_unit": "day",
+        "vague_count": None,
+    }
+    extraction, errors = reasoner.prediction_to_extraction(prediction)
+
+    assert extraction is not None
+    assert errors == []
+
+    projected = reasoner.final_projected_label(
+        extraction,
+        reasoner.mechanical_adapter_label(extraction),
+    )
+
+    assert projected.final_label == "multiple per week"
+    assert projected.projection_families == ("selected_evidence_vague_weekday_policy",)
+
+
+def test_final_projection_prefers_stabilised_current_rate_over_prior_rate() -> None:
+    prediction = _prediction("1 per 3 week")
+    prediction.selected_fact["evidence"] = (
+        "Prior to these changes, seizures occurred once every two to three days. "
+        "Over the past three months, they have stabilised at seizures every 3 weeks "
+        "by the patient’s report."
+    )
+    prediction.selected_fact["raw_value"] = "1 seizure every 3 weeks"
+    prediction.raw_model_answer["selected_evidence"] = prediction.selected_fact["evidence"]
+    prediction.operands["frequency"] = {
+        "occurrences_low": 1,
+        "occurrences_high": 1,
+        "denominator_low": 3,
+        "denominator_high": 3,
+        "denominator_unit": "week",
+        "vague_count": None,
+    }
+    extraction, errors = reasoner.prediction_to_extraction(prediction)
+
+    assert extraction is not None
+    assert errors == []
+
+    projected = reasoner.final_projected_label(
+        extraction,
+        reasoner.mechanical_adapter_label(extraction),
+    )
+
+    assert projected.final_label == "1 per 3 week"
+
+
 def test_run_split_reports_primary_mechanical_adapter_layer(monkeypatch) -> None:
     class StubProgram:
         def __call__(self, **kwargs):
@@ -322,7 +503,7 @@ def test_run_split_reports_primary_mechanical_adapter_layer(monkeypatch) -> None
 
     assert metadata["architecture"] == reasoner.PIPELINE_FAMILY
     assert metadata["claim_type"] == "llm_heavy_clinical_selection_with_deterministic_adapters"
-    assert metadata["primary_score_layer"] == "mechanical_adapter_label"
+    assert metadata["primary_score_layer"] == "final_projected_label"
     assert metadata["dspy_adapter"] == "JSONAdapter"
     assert metadata["typed_output_schema_version"] == reasoner.TYPED_OUTPUT_SCHEMA_VERSION
     assert metadata["summary"]["structured_records"] == 1
@@ -331,6 +512,7 @@ def test_run_split_reports_primary_mechanical_adapter_layer(monkeypatch) -> None
     assert rows[0]["pipeline_family"] == reasoner.PIPELINE_FAMILY
     assert rows[0]["score_layers"]["raw_model_parser_label"]["final_label"] == "multiple per week"
     assert rows[0]["score_layers"]["mechanical_adapter_label"]["final_label"] == "3 per 6 week"
+    assert rows[0]["score_layers"]["final_projected_label"]["final_label"] == "3 per 6 week"
     assert rows[0]["mechanical_adapter"]["adapter_families"] == [
         "arithmetic_from_selected_operands"
     ]
@@ -352,4 +534,4 @@ def test_write_report_records_decision_0007_validation25_gate(tmp_path: Path) ->
     text = report.read_text(encoding="utf-8")
     assert "LLM-heavy clinical selection with deterministic mechanical adapters" in text
     assert "Surface: `validation25` under `gan2026_split_v1`" in text
-    assert "Primary adapted layer: `mechanical_adapter_label`" in text
+    assert "Primary score layer: `final_projected_label`" in text

@@ -73,6 +73,21 @@ def early_rate_label_from_selected_evidence(text: str) -> str | None:
     every_other = re.search(rf"\bevery\s+other\s+(?P<unit>{_UNIT})\b", text)
     if every_other:
         return _format_prediction_rate("1 per 2", every_other.group("unit"))
+    if re.search(
+        r"\bcurrently\s+(?:reporting|reports?|describes?)\s+monthly\s+seizures?\b",
+        text,
+    ):
+        return _format_prediction_rate("1", "month")
+    stabilized_every = re.search(
+        rf"\b(?:stabili[sz]ed|stable)\s+at\s+(?:seizures?\s+)?every\s+"
+        rf"(?P<count>{_COUNT})\s+(?P<unit>{_UNIT})s?\b",
+        text,
+    )
+    if stabilized_every:
+        return _format_prediction_rate(
+            f"1 per {stabilized_every.group('count')}",
+            stabilized_every.group("unit"),
+        )
     no_definite_recent = re.search(
         r"\bno\s+definite\s+epileptic\s+events?\b.*\b(?:past|last|this)\s+"
         rf"(?:(?P<count>\d+)\s+)?(?P<unit>{_UNIT})s?\b",
