@@ -204,7 +204,7 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
     spec = specs[pipeline_args.pipeline]
 
     parser = argparse.ArgumentParser(description=spec.description, parents=[pipeline_parser])
-    parser.add_argument("--split", choices=("train", "validation"), default="validation")
+    parser.add_argument("--split", choices=("train", "validation", "test"), default="validation")
     parser.add_argument("--jsonl", type=Path, default=spec.default_jsonl_path)
     parser.add_argument("--markdown", type=Path, default=spec.default_report_path)
     parser.add_argument("--model", default=spec.default_model)

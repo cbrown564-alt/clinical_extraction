@@ -56,11 +56,7 @@ Decision 0007 v1 remains a revise lane after its validation50 failure rows.
 
 ### Now
 
-- Choose between a frozen-test audit under
-  `docs/research/gan2026_frozen_test_audit_plan_2026-06-03.md` and validation
-  hard-slice/component-stress work on the 53 remaining Purist misses.
-- Triage the 53 remaining validation750 Purist misses only for error taxonomy
-  and component-stress design, not further broad-validation tuning.
+- Execute the frozen-test audit under `docs/research/gan2026_frozen_test_audit_plan_2026-06-03.md` now that the validation misses triage is complete.
 
 ### Next
 
@@ -78,6 +74,7 @@ Decision 0007 v1 remains a revise lane after its validation50 failure rows.
 
 ### Done Recently
 
+- 2026-06-03: Triaged the 53 remaining validation750 Purist misses and built the validation hard-slice/component-stress artifact at `experiments/gan2026_validation_53_purist_misses_component_stress_2026-06-03.md`.
 - 2026-06-03: Reviewed the safety-floor change, fixed stale full-validation
   report gate language (`promote_to_50` on a 750-row artifact), and drafted the
   frozen-test audit plan with predeclared aggregate/slice inspection policy.
@@ -95,6 +92,5 @@ Decision 0007 v1 remains a revise lane after its validation50 failure rows.
 
 ## Immediate Next Step
 
-Either execute the frozen-test audit plan as written, or build the validation
-hard-slice/component-stress artifact for the 53 remaining Purist misses before
-any new broad validation tuning.
+Execute the frozen-test audit plan as written under `docs/research/gan2026_frozen_test_audit_plan_2026-06-03.md`.
+

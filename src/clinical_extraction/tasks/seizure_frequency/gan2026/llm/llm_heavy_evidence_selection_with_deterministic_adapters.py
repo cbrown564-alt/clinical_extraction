@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 import sys
 from collections import Counter
 from collections.abc import Mapping, Sequence
@@ -280,6 +281,13 @@ def build_typed_inputs(record: GanFrequencyRecord) -> dict[str, Any]:
                 "frequency.vague_count unless the note states an exact count."
             ),
             (
+                "For explicit upper-bound evidence such as ≤ twice per week, up to "
+                "four per day, or at most one per month, it is acceptable to populate "
+                "only frequency.occurrences_high and render the scorer-facing label "
+                "as the upper value, as long as selected_fact.evidence preserves the "
+                "full upper-bound statement exactly."
+            ),
+            (
                 "raw_model_answer.raw_model_parser_label must use parser-ready Gan "
                 "grammar: N per D unit; N to M per D to E unit; multiple per unit; "
                 "seizure free for D unit; unknown; or no seizure frequency reference. "
@@ -340,6 +348,15 @@ def build_typed_inputs(record: GanFrequencyRecord) -> dict[str, Any]:
                 "terms": ["multiple", "many", "several"],
                 "target_field": "operands.frequency.vague_count",
                 "rule": "use vague_count unless the note states an exact count",
+            },
+            "upper_bound_contract": {
+                "evidence_required": True,
+                "allowed_cues": ["≤", "<=", "up to", "at most", "no more than"],
+                "operand_rule": (
+                    "frequency.occurrences_high without occurrences_low may render "
+                    "as the upper value only when selected_fact.evidence preserves "
+                    "the explicit upper-bound statement"
+                ),
             },
             "raw_parser_label_grammar": {
                 "frequency": "N per D unit or N to M per D to E unit",
@@ -419,7 +436,11 @@ def mechanical_adapter_label(
         return MechanicalAdapterResult(None, (), False, "missing_extraction")
     kind = extraction.selected_fact.clinical_kind
     if kind == "frequency":
-        return _frequency_adapter(extraction.operands.frequency)
+        return _frequency_adapter(
+            extraction.operands.frequency,
+            evidence_text=extraction.selected_fact.evidence,
+            raw_value=extraction.selected_fact.raw_value,
+        )
     if kind == "cluster_frequency":
         return _cluster_adapter(extraction.operands.cluster)
     if kind in {"seizure_free", "last_event_only"}:
@@ -705,7 +726,12 @@ def write_report(
     path.write_text("\n".join(lines), encoding="utf-8")
 
 
-def _frequency_adapter(operands: FrequencyOperands | None) -> MechanicalAdapterResult:
+def _frequency_adapter(
+    operands: FrequencyOperands | None,
+    *,
+    evidence_text: str = "",
+    raw_value: str = "",
+) -> MechanicalAdapterResult:
     if operands is None:
         return MechanicalAdapterResult(None, (), False, "missing_frequency_operands")
     if operands.vague_count and operands.denominator_unit:
@@ -720,12 +746,23 @@ def _frequency_adapter(operands: FrequencyOperands | None) -> MechanicalAdapterR
                 ("arithmetic_from_selected_operands",),
                 True,
             )
-    if (
-        operands.occurrences_low is None
-        or operands.denominator_low is None
-        or operands.denominator_unit is None
-    ):
+    if operands.denominator_low is None or operands.denominator_unit is None:
         return MechanicalAdapterResult(None, (), False, "incomplete_frequency_operands")
+    if operands.occurrences_low is None:
+        if operands.occurrences_high is None or not _has_upper_bound_cue(
+            " ".join((evidence_text, raw_value))
+        ):
+            return MechanicalAdapterResult(None, (), False, "incomplete_frequency_operands")
+        period = _period_label(
+            operands.denominator_low,
+            operands.denominator_high,
+            operands.denominator_unit,
+        )
+        return MechanicalAdapterResult(
+            f"{_number_label(operands.occurrences_high)} per {period}",
+            ("upper_bound_from_selected_operands",),
+            True,
+        )
     count = _range_label(operands.occurrences_low, operands.occurrences_high)
     period = _period_label(
         operands.denominator_low,
@@ -736,6 +773,16 @@ def _frequency_adapter(operands: FrequencyOperands | None) -> MechanicalAdapterR
         f"{count} per {period}",
         ("arithmetic_from_selected_operands",),
         True,
+    )
+
+
+def _has_upper_bound_cue(text: str) -> bool:
+    normalized = text.lower()
+    return bool(
+        re.search(
+            r"(≤|<=|<\s*=?|up to|at most|no more than|not more than|maximum of|max(?:imum)?\b)",
+            normalized,
+        )
     )
 
 
