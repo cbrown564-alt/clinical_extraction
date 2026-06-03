@@ -587,6 +587,7 @@ def summarize_records(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     """Summarize hybrid parallel validation-smoke rows."""
 
     count = len(rows)
+    split_names = {str(row.get("split")) for row in rows if row.get("split") is not None}
     component_failures = Counter(
         component
         for row in rows
@@ -595,6 +596,7 @@ def summarize_records(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     )
     summary: dict[str, Any] = {
         "examples": count,
+        "split": next(iter(split_names)) if len(split_names) == 1 else "mixed",
         "structured_llm_candidate_records": sum(
             bool(row.get("structured_llm_candidate_record")) for row in rows
         ),
@@ -1202,6 +1204,7 @@ def _run_gate_outcome(summary: Mapping[str, Any]) -> str:
     examples = int(summary.get("examples", 0))
     if examples == 0:
         return "reject"
+    split = str(summary.get("split") or "")
     blocking = any(
         (
             int(summary.get("call_failures", 0)) > 0,
@@ -1213,6 +1216,8 @@ def _run_gate_outcome(summary: Mapping[str, Any]) -> str:
     )
     if blocking:
         return "reject"
+    if split == "test":
+        return "locked_test_generalization_audit_result"
     if examples >= 750:
         return "full_validation_development_result"
     if examples >= 250:
