@@ -1,7 +1,7 @@
 # Clinical Extraction Observatory
 
 **Status:** Phase 4 complete — all Phase 4 features implemented  
-**Last updated:** 2026-06-03 (Phase 4: Laboratory + Gallery + Prompt Diff)  
+**Last updated:** 2026-06-03 (Phase 4 implementation complete; rule inventory redesigned; regex highlighter added; prompt diff data-structure audit in §9.7)  
 **Scope:** Frontend application for exploring, configuring, comparing, and understanding hybrid clinical-extraction pipelines.  
 **Backend dependency:** Reuses existing `clinical_extraction` package, JSONL artifacts, run registry, and split protocol without modification. Backend extensions are noted but deferred.
 
@@ -413,14 +413,16 @@ Any UI toggle state must serialise to a named config object that can be:
 
 **Implemented:**
 - ✅ **Laboratory page (`/laboratory`)** — Three-tab layout: Rule Inventory, Co-Fire Matrix, Prompt Diff.
-- ✅ **Rule inventory** — Filterable card grid of every rule with search, group filter, and portability filter. Each card shows rule ID, portability badge, description, and regex preview. Rich Radix Tooltips show full examples, exclusion flags, and regex. Group-level toggles (enabled/disabled) with visual strike-through. Per-rule on/off toggles with inactive state when group is disabled.
-- ✅ **Live ablation simulation** — Right-hand simulation panel calls `/run/ablation` with the current `AblationConfig`. Supports split selection and optional row limit. Displays purist/pragmatic accuracy and F1, per-label F1 breakdown with color-coded severity, and top error transitions (gold → predicted) sorted by frequency.
-- ✅ **Rule co-fire matrix** — SVG-based group×group matrix. Diagonal cells show rule count per group (coloured by group). Off-diagonal cells show shared portability levels between groups, with opacity encoding strength. No D3 dependency; pure SVG with overflow scroll.
-- ✅ **Prompt variant diff viewer** — Side-by-side policy taxonomy diff between any two prompt modules. Shows policies as rows with `NEW`, `CHG`, `removed`, or `same` status. Baseline/compare selectors. Portability badges per policy. Controlled variable and description shown for each policy.
+- ✅ **Rule inventory** — Two-column collapsible group cards. Each group has a color-coded left accent bar, emoji icon, group name, rule count, and active fraction. Groups expand/collapse via chevron. Per-rule rows have Switch toggles, rule ID, portability badge, description, and an inline regex highlighter. Inactive rules fade to 50% opacity.
+- ✅ **Regex syntax highlighter** — Custom tokenizer component (`RegexHighlighter`) color-codes regex elements: groups (purple), character classes (amber), quantifiers (teal), alternations (blue), escapes (coral), literals (near-black), anchors (gray). Named groups `(?P<name>)` extracted as purple badge chips above the regex body. Long regexes (>120 chars or >6 alternations) collapse to `max-height: 80px` with a gradient fade and "Show full regex" toggle. Natural text wrapping via `white-space: pre-wrap` — no forced line breaks at every `|`.
+- ✅ **Live ablation simulation** — Right-hand simulation panel calls `/run/ablation` with the current `AblationConfig`. Supports split selection and optional row limit. Displays purist/pragmatic accuracy and F1, per-label F1 breakdown with horizontal bars and color-coded severity, and top error transitions with proportional bars.
+- ✅ **Rule co-fire matrix** — SVG-based group×group matrix with 72px cells, rotated -45° column labels, and shortened group names. Diagonal cells show rule count per group (coloured by group). Off-diagonal cells show shared portability levels between groups, with opacity encoding strength. No D3 dependency; pure SVG with overflow scroll.
+- ✅ **Prompt variant diff viewer** — Side-by-side policy taxonomy diff between any two prompt modules. Shows policies as rows with `NEW`, `CHG`, `removed`, or `same` status. Baseline/compare selectors annotated with policy counts (`(15 policies)` vs `(no policies)`). Modules without policy taxonomies show a clear warning banner instead of a meaningless empty diff. Default selection prefers modules that actually have policies.
 - ✅ **Error Gallery page (`/gallery`)** — Two-tab layout: Error Gallery and Transition Matrix.
 - ✅ **Error Gallery** — Filters: all / purist wrong / pragmatic wrong / both wrong / purist-only wrong, plus category filter. Specimen cards show run ID, gold vs predicted labels, category transition, purist/pragmatic correctness badges, and a 4-dot mini stage trace (extract → normalise → select → score with divergence highlighted).
 - ✅ **Transition Matrix** — Select run A and run B from currently selected Observatory runs. Filter transitions: A wrong B right, A right B wrong, both wrong, both right. Cards show both predictions, gold label, and status badge ("B fixes A", "B regresses A", etc.). Row index preserved for alignment.
 - ✅ **Navigation** — Navbar updated with Laboratory and Gallery links. Colour-coded badges: deterministic-alt for Laboratory, error for Gallery.
+- ✅ **Root layout fix** — `QueryClientProvider` moved into root `layout.tsx` so all pages (including Gallery) prerender correctly.
 
 **Rudimentary / deferred to Phase 5:**
 - 🟡 Real-time ablation simulation caching (§9.5) — each simulation is a fresh request.
@@ -428,6 +430,7 @@ Any UI toggle state must serialise to a named config object that can be:
 - 🟡 Error taxonomy tree with severity sparklines (§9.2) — requires backend error-family tagging.
 - 🟡 Confusion-matrix cell mosaic linking to Workbench autopsy traces — requires cross-view routing.
 - 🟡 Ghost path preview when hovering ablation toggles (§5.1) — deferred to Architect view enhancement.
+- 🟡 **Prompt diff data model** — See §9.7 for a full audit. The current policy-taxonomy diff works for modules that define `PROMPT_POLICY_TAXONOMY`, but most LLM modules do not. A richer diff (template text, system prompts, schema constraints, temperature, model role) would require a new backend data contract.
 
 ### Phase 5: The Review (Paper-Ready Export)
 - Exportable component ablation tables.
@@ -448,6 +451,20 @@ The following are *not* required for Phase 1–2 but are noted for future backen
 4. **LLM prompt template registry.** Prompts are currently embedded in Python modules. A registry endpoint (or a YAML/JSON prompt manifest) would let the Architect view list variants without importing Python.
 5. **Real-time ablation simulation caching.** Running a full validation ablation on every toggle is expensive. A lightweight result-cache keyed by `AblationConfig` hash would make the Rule Laboratory responsive.
 6. **Cross-run diff at the record level.** The Error Gallery's transition matrix needs to align records across two JSONL artifacts by `source_row_index`. This is trivial if both artifacts include stable indices; it should be enforced as an output contract.
+
+7. **Prompt diff data structure — audit and desired future state.** *(Added 2026-06-03)*
+
+   **What we want:** The Prompt Diff viewer should be able to compare *any* two LLM or hybrid pipeline configurations and surface meaningful, structured differences: system prompt text, user prompt template, output schema constraints, model parameters (temperature, max_tokens), model role description, example selections (few-shot vs zero-shot), and repair policies. This would turn prompt engineering from opaque version comparison into transparent code review.
+
+   **What we're currently capable of doing:** The backend `/prompts` endpoint imports Python modules via `PROMPT_MODULES` and extracts two optional attributes: `PROMPT_VERSION` (a string label) and `PROMPT_POLICY_TAXONOMY` (a list of policy dicts with `policy_id`, `controlled_variable`, `portability`, `status`, `description`). Only two modules in the entire repo currently define `PROMPT_POLICY_TAXONOMY`: `llm_only_claim_table_selector` (15 policies) and `llm_only_minimal_evidence_selector` (3 policies). All other modules return empty policy arrays, making the diff viewer show a meaningless "everything removed / everything added" result. The backend was updated during Phase 4 to include `llm_only_minimal_evidence_selector` in `PROMPT_MODULES`, but this only gives us 2 comparable modules out of 5+ pipeline families.
+
+   **What would need to change in other parts of the repo:**
+   - **Prompt module contract:** Every LLM/hybrid module would need to adopt a structured metadata convention. Options:
+     1. *Lightweight:* Require every prompt module to expose `PROMPT_POLICY_TAXONOMY` with at least a few high-level policy tags (schema shape, evidence policy, boundary handling, etc.). This is what claim_table_selector already does; it would need to be backfilled to direct_labeler, structured_events, typed_adapter_reasoner, and the hybrid adjudicator.
+     2. *Medium:* Add `SYSTEM_PROMPT`, `USER_PROMPT_TEMPLATE`, `OUTPUT_SCHEMA`, and `MODEL_CONFIG` constants to each module. The backend would expose these via `/prompts` and the frontend would render unified diffs of the actual template text.
+     3. *Heavy:* Extract all prompt metadata into a YAML/JSON manifest (e.g., `prompts/manifest.yaml`) that lives outside Python code. Modules would reference their manifest entry by ID. This decouples prompt versioning from code imports and makes the Observatory backend a thin file-server rather than a Python module importer.
+   - **Scoping decision:** Option 1 is the minimum viable fix. Option 2 is the most useful for transparency (users want to see the actual prompt text, not just abstract policy tags). Option 3 is the most maintainable long-term but requires the largest refactor.
+   - **Frontend implication:** If Option 2 or 3 is adopted, the Prompt Diff viewer would need new diff modes: a "Policy taxonomy" tab (current), a "Template text" tab (unified diff of system/user prompts), and a "Schema constraints" tab (before/after JSON schemas).
 
 **Decision:** None of the above blocks initial development. The frontend should be built against the *current* artifact schemas, and backend extensions should be added only when a specific UI pattern proves impossible without them.
 

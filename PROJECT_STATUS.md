@@ -63,9 +63,19 @@ valid, 25/25 selected-evidence arithmetic Purist, and 23/25 typed-operation
 graph Purist. A no-call replay after generalized evidence-artifact cleanup and
 graph-label precedence repair is recorded in
 `experiments/gan2026_llm_only_typed_operations_reasoner_validation25_max4800_no_call_replay_2026-06-03.md`:
-25/25 selected evidence valid, 24/25 typed-operation graph Purist, and 25/25
-typed-operation graph Pragmatic. Do not escalate until row 598's
-word-number/period graph rendering miss is fixed on validation.
+25/25 selected evidence valid, 25/25 typed-operation graph Purist, and 25/25
+typed-operation graph Pragmatic after selected labels and complete operands
+were made to outrank loose raw-phrase repair. This is still a validation25
+saved-output replay, not promotion evidence. Validation50 live escalation is
+recorded in
+`experiments/gan2026_llm_only_typed_operations_reasoner_validation50_gpt41mini_v0_contractfix_max4800_2026-06-03.md`:
+49/50 structured records, 48/50 selected evidence valid, 47/50
+selected-evidence arithmetic Purist, and 47/50 typed-operation graph Purist.
+Interpretation changed after review: treat this as evidence that the 4800-token
+budget is too tight for the current schema depth, not as a reason to patch row
+103 locally. Short-term plan is performance-first: increase max_tokens to 10000,
+run validation250, assess performance, then scale to validation750 with
+comprehensive schema/error tracking before token/schema-efficiency ablations.
 
 ## Guardrails
 
@@ -101,16 +111,23 @@ word-number/period graph rendering miss is fixed on validation.
 
 ### Now
 
-- Finish `llm_only_typed_operations_reasoner` validation25 cleanup before any
-  validation50 escalation: row 598 still projects `1 per month` from evidence
-  stating `1 per eight months`.
+- Run `llm_only_typed_operations_reasoner` validation250 live with
+  `max_tokens=10000`, using the current schema and prompt unchanged except for
+  the larger completion budget. Assess performance first; do not patch row 103
+  or other validation50 tails before this run.
 
 ### Next
 
-- If iterating on Decision 0007, focus on selected-fact and operand completeness
-  only after slice targets and stop rules are predeclared.
-- After the remaining typed-operations validation25 cleanup, rerun only
-  validation25 at the 4800-token budget before considering validation50.
+- If validation250 is promising, run validation750 with comprehensive evaluation:
+  schema/call tracking, exact-evidence tracking, raw/format/arithmetic/graph
+  attribution layers, row-level error analysis, and failure-family summaries.
+- After validation750, evaluate the cost/benefit of the current typed schema
+  depth and 10000-token budget. Then run ablations that remove or simplify
+  schema pieces until performance/token efficiency is better balanced.
+- Keep local-LLM transfer in mind for the ablation phase: smaller local models
+  are likely slower and more fragile under excessive schema complexity, so
+  schema/token efficiency should become a named objective after the
+  performance-first validation250/750 readout.
 - If doing row-level review of the `selective_safety_floor_gate_v0` holdout,
   treat it only as post-hoc final-evaluation analysis; any fix must start a new
   validation-cycle candidate.
@@ -140,12 +157,24 @@ word-number/period graph rendering miss is fixed on validation.
 - 2026-06-03: Generalized semantically-neutral evidence artifact cleanup for
   inequality/control-character copy artifacts and source Gan note mojibake, fixed
   typed-operation graph label precedence so bad model-normalized labels cannot
-  outrank parseable raw phrases or complete operands, and reclassified
+  outrank parseable raw phrases or complete operands, fixed row 598's
+  `1 per eight months` window rendering miss by prioritizing selected labels and
+  complete operands before loose raw-phrase repair, and reclassified
   `typed_operation_graph_projection` as deterministic semantic graph projection.
   Saved-output replay:
   `experiments/gan2026_llm_only_typed_operations_reasoner_validation25_max4800_no_call_replay_2026-06-03.md`
-  reached 25/25 selected evidence valid, 24/25 typed-operation graph Purist, and
-  25/25 typed-operation graph Pragmatic. Decision: revise, do not escalate.
+  reached 25/25 selected evidence valid, 25/25 typed-operation graph Purist, and
+  25/25 typed-operation graph Pragmatic. Decision: validation25 cleanup is
+  complete; validation50 needs predeclared stop rules before any run.
+- 2026-06-03: Ran `llm_only_typed_operations_reasoner` validation50 live at
+  max_tokens=4800 with predeclared stop rules. Result:
+  `experiments/gan2026_llm_only_typed_operations_reasoner_validation50_gpt41mini_v0_contractfix_max4800_2026-06-03.md`
+  reached 49/50 structured records, 48/50 selected evidence valid, 47/50
+  selected-evidence arithmetic Purist, and 47/50 typed-operation graph Purist.
+  Follow-up interpretation: row 103 likely reflects insufficient completion
+  budget for the current schema depth, so the next step is not a local schema
+  repair. Increase max_tokens to 10000 and run validation250, then scale to
+  validation750 with full diagnostics if performance warrants it.
 - 2026-06-03: Ran `llm_only_typed_operations_reasoner` validation25 live smoke.
   Initial v0: 22/25 structured records, 3 parse/schema failures, 16/25 selected
   evidence valid, 19/25 typed-graph Purist, and one raw-correct-to-graph-wrong
@@ -201,6 +230,7 @@ word-number/period graph rendering miss is fixed on validation.
 
 ## Immediate Next Step
 
-Fix the residual typed-operations validation25 graph-rendering miss on row 598
-(`1 per eight months` projected as `1 per month`), then rerun validation25 only
-at max_tokens=4800. Do not tune from locked-test row-level behavior.
+Run `llm_only_typed_operations_reasoner` validation250 with max_tokens=10000 and
+record raw, format-only, selected-evidence arithmetic, typed-graph projection,
+schema/call, and evidence-exactness metrics. Do not tune from locked-test
+row-level behavior.

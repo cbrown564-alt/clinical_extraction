@@ -27,7 +27,7 @@
 - `raw_llm`: scorable 15, Purist 15/25 (0.6000), Pragmatic 15/25 (0.6000)
 - `format_only`: scorable 21, Purist 20/25 (0.8000), Pragmatic 20/25 (0.8000)
 - `selected_evidence_arithmetic`: scorable 25, Purist 25/25 (1.0000), Pragmatic 25/25 (1.0000)
-- `typed_operation_graph_projection`: scorable 25, Purist 24/25 (0.9600), Pragmatic 25/25 (1.0000)
+- `typed_operation_graph_projection`: scorable 25, Purist 25/25 (1.0000), Pragmatic 25/25 (1.0000)
 
 ## Row Review
 
@@ -41,4 +41,3 @@
 - 446: gold `2 per week`; raw `up to twice per week`; typed graph `2 per week`
 - 466: gold `21 to 28 per month`; raw `21 to 28 seizures per month`; typed graph `21 to 28 per month`
 - 531: gold `12 to 30 per 3 month`; raw `12 to 30 seizures per quarter`; typed graph `12 to 30 per 3 month`
-- 598: gold `1 per 8 month`; raw `1 per 8 month`; typed graph `1 per month`
