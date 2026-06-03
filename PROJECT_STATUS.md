@@ -23,12 +23,21 @@ validation250 rejection
 `experiments/gan2026_llm_heavy_evidence_selection_with_deterministic_adapters_validation250_gpt41mini_v1_live_2026-06-03.md`,
 and hidden-family/first-failure atlas
 `docs/research/gan2026_hidden_family_first_failure_atlas_2026-06-03.md`.
+The atlas-derived hard-slice predeclaration is fixed in
+`experiments/gan2026_atlas_candidate_generation_projection_hard_slices_2026-06-03.md`
+and JSON manifest
+`experiments/gan2026_atlas_candidate_generation_projection_hard_slices_2026-06-03.json`.
+The no-call fixed-slice diagnostic is recorded in
+`experiments/gan2026_atlas_candidate_generation_projection_hard_slice_diagnostic_2026-06-03.md`.
+Regenerate it with `gan2026-atlas-hard-slice-diagnostic`; the standard report
+now includes automated "Rows That Would Change" tables plus a required
+after-generation human interpretation note.
 
 Attribution caveat: this is a hybrid deterministic-safety-floor development
 result, not an LLM-first result and not a benchmark or holdout claim. Decision
 0007 remains the primary LLM-heavy design lane, but v1 validation250 was
-rejected; the atlas points next toward candidate-generation and projection
-hard-slice work before another broad architecture or multi-agent run.
+rejected; fixed atlas slices now point next toward candidate-generation rescue
+and projection arbitration before another broad architecture or multi-agent run.
 
 ## Guardrails
 
@@ -59,14 +68,12 @@ hard-slice work before another broad architecture or multi-agent run.
 
 ### Now
 
-- Design the next diagnostic experiment from the atlas: candidate-generation
-  rescue plus projection hard slices, with deterministic safety floor preserved.
+- Design the selective safety-floor gate from the fixed-slice diagnostic:
+  candidate-generation sidecar action should be narrow, and projection
+  arbitration should focus on boundary-state priority.
 
 ### Next
 
-- Convert the atlas owner/family counts into reproducible slice manifests for
-  candidate-generation, unknown/seizure-free boundary, and projection failures.
-- Decide whether to add a selective LLM/graph override gate on hard slices, with deterministic safety floor preserved.
 - If iterating on Decision 0007, focus on selected-fact and operand completeness
   only after slice targets and stop rules are predeclared.
 - Keep Qwen/minimal-evidence-selector transfer as a secondary lane after the safety-floor candidate is frozen.
@@ -82,6 +89,21 @@ hard-slice work before another broad architecture or multi-agent run.
 
 ### Done Recently
 
+- 2026-06-03: Ran the atlas hard-slice no-call diagnostic over saved validation
+  artifacts: 87 slice memberships / 55 unique source rows. Candidate-generation
+  slices showed 6 saved LLM-candidate sidecar rescues among 8 scorable sidecars
+  (44-row broad slice; same 6 on the 26-row unknown/seizure-free boundary
+  subset). Projection-arbitration slices showed boundary-state priority
+  correcting 9/11 projection memberships where 9 rows had saved graph replay,
+  and 6/6 on the unknown/seizure-free/current-vs-historical projection subset.
+  Treat as revise/design signal, not promotion. The diagnostic generator now
+  emits row-level "would change" tables and marks the post-hoc interpretation
+  section as required before any implementation predeclaration.
+- 2026-06-03: Predeclared atlas-derived hard slices for the next diagnostic
+  experiment and added reusable manifest/report generation in
+  `hidden_family_atlas.py`. Fixed slices: candidate-generation rescue (44),
+  candidate-generation unknown/seizure-free boundary (26), projection
+  arbitration (11), and projection unknown/seizure-free arbitration (6).
 - 2026-06-03: Built a reusable hidden-family/first-failure atlas module and
   generated `docs/research/gan2026_hidden_family_first_failure_atlas_2026-06-03.md`
   over Decision 0007 validation250 plus hybrid safety-floor validation750.
@@ -107,6 +129,8 @@ hard-slice work before another broad architecture or multi-agent run.
 
 ## Immediate Next Step
 
-Predeclare an atlas-driven hard-slice experiment for candidate-generation rescue
-and projection arbitration; keep the multi-agent pipeline in backlog until the
-slice manifest shows which subtask each call would own.
+Predeclare the smallest candidate change suggested by the diagnostic: a
+selective validation-only gate that can expose LLM candidate-generation sidecar
+rescues and boundary-state projection priority as ablated variants, while
+leaving the final deterministic safety-floor policy unchanged until regression
+accounting clears the fixed slices.
