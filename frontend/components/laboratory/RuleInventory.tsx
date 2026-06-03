@@ -88,7 +88,7 @@ export default function RuleInventory({
 
   return (
     <Tooltip.Provider delayDuration={150}>
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+      <div className="columns-1 xl:columns-2 gap-4">
         {groups.map((group) => {
           const groupRulesList = grouped.get(group) ?? [];
           const groupEnabled = enabledGroups.has(group);
@@ -99,21 +99,31 @@ export default function RuleInventory({
           const isOpen = openGroups.has(group);
 
           return (
+            <div key={group} className="break-inside-avoid mb-4">
             <Collapsible.Root
-              key={group}
               open={isOpen}
               onOpenChange={() => toggleGroupOpen(group)}
-              className={`rounded-xl border bg-surface overflow-hidden transition-all ${
-                groupEnabled
-                  ? "border-border shadow-sm"
-                  : "border-border/40 opacity-70"
+              className={`overflow-hidden transition-all ${
+                isOpen
+                  ? `rounded-xl border bg-surface ${
+                      groupEnabled
+                        ? "border-border shadow-sm"
+                        : "border-border/40 opacity-70"
+                    }`
+                  : `rounded-lg border bg-surface/60 ${
+                      groupEnabled
+                        ? "border-border/40"
+                        : "border-border/30 opacity-60"
+                    }`
               }`}
             >
               {/* Group header — always visible */}
               <div
-                className="relative flex items-center gap-3 px-4 py-3 cursor-pointer select-none"
+                className={`relative flex items-center gap-3 cursor-pointer select-none ${
+                  isOpen ? "px-4 py-3" : "px-3 py-2"
+                }`}
                 style={{
-                  backgroundColor: groupEnabled ? `${groupColorValue}06` : undefined,
+                  backgroundColor: groupEnabled && isOpen ? `${groupColorValue}06` : undefined,
                 }}
               >
                 {/* Color accent bar */}
@@ -298,6 +308,7 @@ export default function RuleInventory({
                 </div>
               </Collapsible.Content>
             </Collapsible.Root>
+            </div>
           );
         })}
       </div>

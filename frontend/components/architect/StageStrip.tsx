@@ -1,15 +1,15 @@
 "use client";
 
-import { GitBranch, Layers, Settings2, Wrench, Award, CheckCircle, XCircle } from "lucide-react";
+import { Highlighter, Scale, Target, Wrench, Trophy, CheckCircle, XCircle } from "lucide-react";
 import { useArchitectStore } from "@/lib/stores";
 import type { TraceStage } from "@/lib/types";
 
 const stages: { id: TraceStage; label: string; icon: React.ReactNode }[] = [
-  { id: "extract", label: "Extract", icon: <GitBranch className="h-3 w-3" /> },
-  { id: "normalise", label: "Normalise", icon: <Layers className="h-3 w-3" /> },
-  { id: "select", label: "Select", icon: <Settings2 className="h-3 w-3" /> },
+  { id: "extract", label: "Extract", icon: <Highlighter className="h-3 w-3" /> },
+  { id: "normalise", label: "Normalise", icon: <Scale className="h-3 w-3" /> },
+  { id: "select", label: "Select", icon: <Target className="h-3 w-3" /> },
   { id: "repair", label: "Repair", icon: <Wrench className="h-3 w-3" /> },
-  { id: "score", label: "Score", icon: <Award className="h-3 w-3" /> },
+  { id: "score", label: "Score", icon: <Trophy className="h-3 w-3" /> },
 ];
 
 function activeColor(stage: TraceStage): string {

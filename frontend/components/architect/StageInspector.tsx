@@ -3,7 +3,7 @@
 import { useArchitectStore } from "@/lib/stores";
 import JsonTree from "./JsonTree";
 import type { TraceStage, TraceItem } from "@/lib/types";
-import { GitBranch, Layers, Settings2, Wrench, Award, AlertCircle, CheckCircle, Quote } from "lucide-react";
+import { Highlighter, Scale, Target, Wrench, Trophy, AlertCircle, CheckCircle, Quote } from "lucide-react";
 
 const stageMeta: Record<
   TraceStage,
@@ -11,19 +11,19 @@ const stageMeta: Record<
 > = {
   extract: {
     label: "Extract",
-    icon: <GitBranch className="h-3.5 w-3.5" />,
+    icon: <Highlighter className="h-3.5 w-3.5" />,
     color: "text-deterministic",
     desc: "Raw candidate events found in the note by extraction rules or LLM claims.",
   },
   normalise: {
     label: "Normalise",
-    icon: <Layers className="h-3.5 w-3.5" />,
+    icon: <Scale className="h-3.5 w-3.5" />,
     color: "text-deterministic-alt",
     desc: "Candidates converted to normalised labels with semantic kinds and monthly frequencies.",
   },
   select: {
     label: "Select",
-    icon: <Settings2 className="h-3.5 w-3.5" />,
+    icon: <Target className="h-3.5 w-3.5" />,
     color: "text-hybrid",
     desc: "The pipeline chooses a single final label from the normalised candidates.",
   },
@@ -35,7 +35,7 @@ const stageMeta: Record<
   },
   score: {
     label: "Score",
-    icon: <Award className="h-3.5 w-3.5" />,
+    icon: <Trophy className="h-3.5 w-3.5" />,
     color: "text-success",
     desc: "Comparison of predicted label against gold reference.",
   },

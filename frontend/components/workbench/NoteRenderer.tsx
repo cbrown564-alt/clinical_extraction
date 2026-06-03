@@ -201,7 +201,7 @@ function formatNoteAsLetter(text: string): React.ReactNode {
       return (
         <div
           key={i}
-          className="mb-6 border-b border-border pb-4 text-sm leading-relaxed text-muted"
+          className="mb-4 border-b border-border pb-3 text-sm leading-relaxed text-muted"
         >
           {lines.map((line, j) => (
             <div key={j}>{line.trim()}</div>
@@ -212,7 +212,7 @@ function formatNoteAsLetter(text: string): React.ReactNode {
 
     if (isClosing) {
       return (
-        <div key={i} className="mt-8 text-sm text-muted">
+        <div key={i} className="mt-6 text-sm text-muted">
           {lines.map((line, j) => (
             <div key={j}>{line.trim()}</div>
           ))}
@@ -221,7 +221,7 @@ function formatNoteAsLetter(text: string): React.ReactNode {
     }
 
     return (
-      <p key={i} className="mb-4">
+      <p key={i} className="mb-3">
         {lines.map((line, j) => (
           <span key={j}>
             {line.trim()}
@@ -332,12 +332,12 @@ export default function NoteRenderer({
   // When no highlights, render formatted letter
   if (spans.length === 0) {
     return (
-      <div className="relative rounded-xl border border-border bg-surface p-8 shadow-sm">
+      <div className="relative rounded-xl border border-border bg-surface p-5 shadow-sm">
         <div className="note-text text-foreground">
           {formatNoteAsLetter(cleanText)}
         </div>
         {goldOverlay && goldLabel && (
-          <div className={`mt-8 rounded-lg border ${goldOverlayClasses} p-4`}>
+          <div className={`mt-6 rounded-lg border ${goldOverlayClasses} p-3`}>
             <p className="text-sm font-mono">
               <span className="font-semibold">{goldIcon} Gold label:</span>{" "}
               {goldLabel}
@@ -355,7 +355,7 @@ export default function NoteRenderer({
 
   // With highlights: split into segments and wrap highlighted portions
   return (
-    <div className="relative rounded-xl border border-border bg-surface p-8 shadow-sm">
+    <div className="relative rounded-xl border border-border bg-surface p-5 shadow-sm">
       <div className="note-text text-foreground">
         {segments.map((seg, i) => {
           const content = cleanText.slice(seg.start, seg.end);
@@ -404,7 +404,7 @@ export default function NoteRenderer({
       </div>
 
       {goldOverlay && goldLabel && (
-        <div className={`mt-8 rounded-lg border ${goldOverlayClasses} p-4`}>
+        <div className={`mt-6 rounded-lg border ${goldOverlayClasses} p-3`}>
           <p className="text-sm font-mono">
             <span className="font-semibold">{goldIcon} Gold label:</span>{" "}
             {goldLabel}
