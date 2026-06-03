@@ -11,13 +11,12 @@ component ablations, split discipline, and conservative benchmark language.
 ## Current Strategy
 
 Keep frozen comparators stable while revising the predeclared architecture
-candidates after their matched validation25 smoke comparison. The hybrid
-source-id and temporality contract replay is
-`experiments/gan2026_hybrid_parallel_state_candidate_reasoner_validation25_gpt41mini_v0_contract_fix_replay_2026-06-03.md`;
-the matched comparison baseline remains
-`experiments/gan2026_predeclared_architecture_matched_validation25_comparison_2026-06-03.md`.
-The LLM-heavy Decision 0007 v1 smoke is
-`experiments/gan2026_llm_heavy_evidence_selection_with_deterministic_adapters_validation25_gpt41mini_v1_2026-06-03.md`.
+candidates after their repaired matched validation25 smoke comparison. The
+current comparison artifact is
+`experiments/gan2026_repaired_architecture_matched_validation25_comparison_2026-06-03.md`.
+The first validation50 escalation was LLM-heavy Decision 0007 v1; interpretation
+is
+`experiments/gan2026_llm_heavy_decision0007_v1_validation50_interpretation_2026-06-03.md`.
 
 ## Guardrails
 
@@ -37,32 +36,29 @@ The LLM-heavy Decision 0007 v1 smoke is
 
 ## Active Priorities
 
-1. Decide the LLM-heavy Decision 0007 next repair: special-character evidence
-   exactness on rows `10`, `40`, `446` and cluster-cadence mechanical-adapter
-   regressions on rows `187`, `190`.
-2. Triage the remaining hybrid selected-evidence exactness defect before
-   treating validation50 as cleanly earned, despite the repaired source-trace
-   gate.
+1. Revise LLM-heavy v1 before validation250: bimonthly operands, weekday/vague
+   frequency operands, `≤ N` upper-bound semantics, evidence contiguity, and
+   raw-correct adapter fallback.
+2. Decide whether hybrid validation50 should run as the robustness lane, given
+   LLM-heavy validation50 failed its promotion stop rule.
 3. Preserve attribution language: hybrid for semantic deterministic
    participation; LLM-heavy only for deterministic rendering from
    model-selected facts and operands.
+4. Treat no-call replays as contract diagnostics, not fresh live
+   evidence.
 
 ## Work Board
 
 ### Now
 
-- For LLM-heavy Decision 0007, review whether the primary layer should be raw
-  model parser labels after v1 reached 25/25 raw Purist, or whether the
-  mechanical adapter needs a cluster-cadence rendering fix before another smoke.
-- Review the one remaining hybrid selected-evidence exactness failure from the
-  contract-fix replay before validation50 escalation.
+- Triage LLM-heavy validation50 failure rows `10`, `743`, `744`, `763`, `816`,
+  `959`, and `987` before any validation250 escalation.
+- Decide whether to run hybrid validation50 now or first repair the LLM-heavy
+  validation50 contract.
 
 ### Next
 
-- Rerun matched validation25 only after LLM-heavy targeted contract fixes are
-  explicit.
-- Promote neither candidate to validation50 until its smoke gate passes without
-  selected-evidence defects.
+- Run hybrid validation50 only with its own predeclaration and stop rule.
 - Keep Qwen/minimal-evidence-selector transfer as a secondary lane after the
   architecture smokes clarify the output contract.
 
@@ -75,6 +71,30 @@ The LLM-heavy Decision 0007 v1 smoke is
 
 ### Done Recently
 
+- 2026-06-03: Predeclared and ran LLM-heavy Decision 0007 v1 validation50.
+  Live run had 50/50 structured outputs, 0 call/adapter parse failures, 47/50
+  selected evidence exact, 44/50 raw Purist, 44/50 mechanical-adapter Purist,
+  and 1 raw-correct-to-adapter-wrong regression. No-call replay raises
+  selected evidence to 49/50, but the run fails the predeclared promotion rule;
+  revise before validation250.
+- 2026-06-03: Ran fresh live matched validation25 for repaired LLM-heavy and
+  hybrid candidates, then replayed saved outputs through narrow contract
+  repairs. LLM-heavy live reached 25/25 raw and adapted Purist with 24/25
+  selected evidence exact; replay fixes row `409` malformed `≤` evidence to
+  25/25. Hybrid live reached 25/25 selected evidence exact, 25/25 source ids
+  valid, and 25/25 adapted Purist with two LLM-candidate schema failures;
+  replay fixes `assertion_status=historical` to 25/25 structured candidates.
+- 2026-06-03: Repaired the remaining hybrid selected-evidence exactness defect
+  with source-checked case-only evidence canonicalization and source-type
+  provenance repair. No-call replay now has 25/25 selected evidence exact,
+  25/25 source ids valid, 25/25 hybrid-adjudicator Purist, and
+  `promote_to_50`.
+- 2026-06-03: Implemented the LLM-heavy Decision 0007 targeted contract fixes:
+  source-checked repair for malformed `≤` evidence-copy artifacts and
+  cluster-cadence adapter rendering as bare cadence labels. No-call replay of
+  v1 saved outputs now has 25/25 selected evidence exact, 25/25 mechanical
+  adapter Purist, 0 adapter regressions, and
+  `promote_to_validation50_allowed_by_gate`.
 - 2026-06-03: Ran live LLM-heavy Decision 0007 v1 validation25 smoke: 25/25
   structured, 0 parse/call
   failures, 25/25 raw parser labels scorable and Purist. Gate still rejects:
@@ -97,6 +117,6 @@ The LLM-heavy Decision 0007 v1 smoke is
 
 ## Immediate Next Step
 
-Review the LLM-heavy primary-layer contract: preserve raw parser-label success
-while fixing evidence escaping and cluster-cadence adapter regressions before
-any matched comparison or validation50 escalation.
+Triage the LLM-heavy validation50 failure rows and choose whether the next live
+spend should be hybrid validation50 or an LLM-heavy v2 validation25 repair
+smoke.

@@ -66,6 +66,44 @@ def _prediction(raw_label: str = "multiple per week") -> SimpleNamespace:
     )
 
 
+def _cluster_cadence_prediction() -> SimpleNamespace:
+    return SimpleNamespace(
+        selected_fact={
+            "fact_id": "cluster-1",
+            "clinical_kind": "cluster_frequency",
+            "applies_to": "absence episodes",
+            "evidence": "clusters of brief absence episodes every 4 weeks",
+            "raw_value": "clusters of brief absence episodes every 4 weeks",
+            "temporality": "current",
+            "assertion_status": "asserted",
+            "competing_fact_summary": "",
+            "rationale": "The selected answer is the cadence of clusters.",
+            "benchmark_caveat_flags": ["cluster_axis"],
+        },
+        operands={
+            "frequency": None,
+            "cluster": {
+                "clusters_low": 1,
+                "clusters_high": 1,
+                "cluster_period_low": 4,
+                "cluster_period_high": 4,
+                "cluster_period_unit": "week",
+                "events_per_cluster_low": None,
+                "events_per_cluster_high": None,
+                "cluster_answer_axis": "cluster_cadence",
+            },
+            "seizure_free": None,
+        },
+        raw_model_answer={
+            "raw_model_parser_label": "1 per 4 week",
+            "raw_model_final_kind": "cluster_frequency",
+            "selected_evidence": "clusters of brief absence episodes every 4 weeks",
+            "confidence": "high",
+            "clinical_rationale": "The note states the cadence directly.",
+        },
+    )
+
+
 def test_build_typed_inputs_exposes_decision_0007_contract() -> None:
     inputs = reasoner.build_typed_inputs(_record())
     instructions = " ".join(inputs["task_instructions"])
@@ -113,6 +151,98 @@ def test_mechanical_adapter_renders_from_selected_frequency_operands() -> None:
 
     assert adapted.final_label == "3 per 6 week"
     assert adapted.adapter_families == ("arithmetic_from_selected_operands",)
+    assert adapted.operand_complete is True
+
+
+def test_prediction_to_extraction_repairs_source_checked_unicode_evidence_copy() -> None:
+    prediction = _prediction("4 per day")
+    prediction.selected_fact["evidence"] = (
+        "On the accommodation logs, the observed frequency is noted as \x0264 four "
+        "per day, with variable clustering."
+    )
+    prediction.selected_fact["raw_value"] = "\x0264 four per day"
+    prediction.raw_model_answer["selected_evidence"] = prediction.selected_fact["evidence"]
+    note_text = (
+        "On the accommodation logs, the observed frequency is noted as ≤ four "
+        "per day, with variable clustering."
+    )
+
+    extraction, errors = reasoner.prediction_to_extraction(
+        prediction,
+        note_text=note_text,
+    )
+
+    assert errors == []
+    assert extraction is not None
+    assert extraction.selected_fact.evidence == (
+        "On the accommodation logs, the observed frequency is noted as ≤ four "
+        "per day, with variable clustering."
+    )
+    assert reasoner.validate_typed_extraction(extraction, note_text=note_text) == []
+
+
+def test_prediction_to_extraction_repairs_numeric_entity_inequality_artifact() -> None:
+    prediction = _prediction("1 per month")
+    prediction.selected_fact["evidence"] = "events have reduced to \x026#8804; once per month"
+    prediction.selected_fact["raw_value"] = "\x026#8804; once per month"
+    prediction.raw_model_answer["selected_evidence"] = prediction.selected_fact["evidence"]
+    note_text = "events have reduced to ≤ once per month"
+
+    extraction, errors = reasoner.prediction_to_extraction(
+        prediction,
+        note_text=note_text,
+    )
+
+    assert errors == []
+    assert extraction is not None
+    assert extraction.selected_fact.evidence == "events have reduced to ≤ once per month"
+    assert reasoner.validate_typed_extraction(extraction, note_text=note_text) == []
+
+
+def test_prediction_to_extraction_repairs_case_only_evidence_copy() -> None:
+    prediction = _prediction("1 per year")
+    prediction.selected_fact["evidence"] = "she reports yearly seizures"
+    prediction.raw_model_answer["selected_evidence"] = "she reports yearly seizures"
+
+    extraction, errors = reasoner.prediction_to_extraction(
+        prediction,
+        note_text="She reports yearly seizures",
+    )
+
+    assert errors == []
+    assert extraction is not None
+    assert extraction.selected_fact.evidence == "She reports yearly seizures"
+    assert extraction.raw_model_answer.selected_evidence == "She reports yearly seizures"
+
+
+def test_prediction_to_extraction_leaves_unmatched_evidence_copy_artifact_invalid() -> None:
+    prediction = _prediction("4 per day")
+    prediction.selected_fact["evidence"] = "frequency is \x0264 four per day"
+    prediction.raw_model_answer["selected_evidence"] = prediction.selected_fact["evidence"]
+
+    extraction, errors = reasoner.prediction_to_extraction(
+        prediction,
+        note_text="frequency is fewer than four per day",
+    )
+
+    assert errors == []
+    assert extraction is not None
+    assert reasoner.validate_typed_extraction(extraction, note_text="other text") == [
+        "evidence: invalid selected_fact evidence",
+        "evidence: invalid raw_model_answer selected evidence",
+    ]
+
+
+def test_cluster_cadence_adapter_renders_bare_frequency_axis() -> None:
+    extraction, errors = reasoner.prediction_to_extraction(_cluster_cadence_prediction())
+
+    assert extraction is not None
+    assert errors == []
+
+    adapted = reasoner.mechanical_adapter_label(extraction)
+
+    assert adapted.final_label == "1 per 4 week"
+    assert adapted.adapter_families == ("cluster_cadence_rendering",)
     assert adapted.operand_complete is True
 
 

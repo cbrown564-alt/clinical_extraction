@@ -323,6 +323,8 @@ def parse_llm_candidate_json(
         packet = HybridLlmCandidatePacket.model_validate(payload)
     except ValidationError as exc:
         return None, [f"schema_validation_error: {exc.errors()[0]['msg']}"]
+    if note_text is not None:
+        packet = _repair_llm_candidate_evidence_copy(packet, note_text)
 
     errors: list[str] = []
     candidate_ids = {candidate.candidate_id for candidate in packet.candidates}
@@ -393,7 +395,23 @@ def parse_adjudicator_json(
         if unknown:
             errors.append(f"selected_source_ids: unknown ids {unknown!r}")
     if len(decision.selected_source_types) != len(decision.selected_source_ids):
-        errors.append("selected_source_types: length differs from selected_source_ids")
+        decision = decision.model_copy(
+            update={
+                "selected_source_types": [
+                    _source_type_from_id(source_id) for source_id in decision.selected_source_ids
+                ]
+            }
+        )
+        errors.append("selected_source_types_repaired_from_source_ids")
+    if note_text is not None:
+        decision = decision.model_copy(
+            update={
+                "selected_evidence": _repair_case_only_evidence_copy(
+                    decision.selected_evidence,
+                    note_text,
+                )
+            }
+        )
     if note_text is not None and not evidence_is_substring(note_text, decision.selected_evidence):
         errors.append("evidence: invalid selected evidence")
     return decision, errors
@@ -1195,6 +1213,8 @@ def _repair_candidate_payload(candidate: Any) -> Any:
         repaired["candidate_id"] = repaired["event_id"]
     if "raw_value" not in repaired and "raw_phrase" in repaired:
         repaired["raw_value"] = repaired["raw_phrase"]
+    if repaired.get("assertion_status") == "historical":
+        repaired["assertion_status"] = "asserted"
     repaired.setdefault("raw_value", repaired.get("evidence", ""))
     repaired.setdefault("confidence", "medium")
     repaired.setdefault("rationale", "")
@@ -1244,6 +1264,44 @@ def _repair_adjudicator_payload(payload: Any) -> Any:
         for key, value in repaired.items()
         if key in HybridParallelAdjudicatorDecision.model_fields
     }
+
+
+def _repair_llm_candidate_evidence_copy(
+    packet: HybridLlmCandidatePacket,
+    note_text: str,
+) -> HybridLlmCandidatePacket:
+    candidate_updates = []
+    for candidate in packet.candidates:
+        candidate_updates.append(
+            candidate.model_copy(
+                update={
+                    "evidence": _repair_case_only_evidence_copy(candidate.evidence, note_text)
+                }
+            )
+        )
+    selection = packet.selection.model_copy(
+        update={
+            "selected_evidence": _repair_case_only_evidence_copy(
+                packet.selection.selected_evidence,
+                note_text,
+            )
+        }
+    )
+    return packet.model_copy(
+        update={
+            "candidates": candidate_updates,
+            "selection": selection,
+        }
+    )
+
+
+def _repair_case_only_evidence_copy(evidence: str, note_text: str) -> str:
+    if evidence_is_substring(note_text, evidence):
+        return evidence
+    start = note_text.lower().find(evidence.lower())
+    if start < 0:
+        return evidence
+    return note_text[start : start + len(evidence)]
 
 
 def _source_type_from_id(source_id: str) -> str:
