@@ -6,6 +6,7 @@ import * as Switch from "@radix-ui/react-switch";
 import * as Collapsible from "@radix-ui/react-collapsible";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import type { RulePayload, AblationConfigPayload } from "@/lib/types";
+import RegexHighlighter from "./RegexHighlighter";
 
 function groupRules(rules: RulePayload[]) {
   const map = new Map<string, RulePayload[]>();
@@ -240,9 +241,9 @@ export default function RuleInventory({
                                 {rule.description}
                               </p>
                               {rule.regex_preview && (
-                                <code className="block mt-1 text-[10px] font-mono text-muted truncate">
-                                  {rule.regex_preview}
-                                </code>
+                                <div className="mt-1.5">
+                                  <RegexHighlighter pattern={rule.regex_preview} />
+                                </div>
                               )}
                             </div>
                           </div>
@@ -266,9 +267,9 @@ export default function RuleInventory({
                               </div>
                               <p className="text-[11px] text-foreground">{rule.description}</p>
                               {rule.regex_preview && (
-                                <code className="block rounded bg-surface-raised px-1.5 py-0.5 text-[10px] font-mono text-muted break-all">
-                                  {rule.regex_preview}
-                                </code>
+                                <div className="mt-1">
+                                  <RegexHighlighter pattern={rule.regex_preview} />
+                                </div>
                               )}
                               {rule.has_exclusions && (
                                 <div className="flex items-center gap-1 text-[10px] text-error">

@@ -803,9 +803,9 @@ def _operation_label(
     selected_projection_label: str | None = None,
 ) -> str | None:
     raw_label_candidates = [
-        operation.raw_phrase,
         selected_projection_label,
         _label_from_frequency_operands(operation),
+        operation.raw_phrase,
         operation.model_normalized_clinical_label,
     ]
     sentinel_label: str | None = None

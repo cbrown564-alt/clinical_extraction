@@ -308,6 +308,39 @@ def test_graph_projection_uses_complete_operands_before_no_reference_fallback() 
     assert graph_bundle["projection"]["final_label"] == "9 per month"
 
 
+def test_graph_projection_uses_window_operands_before_raw_phrase_repair() -> None:
+    prediction = _prediction("1 per 8 month")
+    prediction.operations[0]["evidence"] = (
+        "patient has self-reported seizure frequency averaging 1 per eight months"
+    )
+    prediction.operations[0]["raw_phrase"] = "seizure frequency averaging 1 per eight months"
+    prediction.operations[0]["model_normalized_clinical_label"] = "1 per 8 month"
+    prediction.operations[0]["operands"]["event_count_low"] = 1
+    prediction.operations[0]["operands"]["event_count_high"] = 1
+    prediction.operations[0]["operands"]["time_window_low"] = 8
+    prediction.operations[0]["operands"]["time_window_high"] = 8
+    prediction.operations[0]["operands"]["time_window_unit"] = "month"
+    prediction.operations[0]["operands"]["denominator_count"] = 1
+    prediction.operations[0]["operands"]["denominator_unit"] = "window"
+    prediction.selection["selected_evidence"] = prediction.operations[0]["evidence"]
+    prediction.final_answer["selected_evidence"] = prediction.operations[0]["evidence"]
+    prediction.final_answer["raw_llm_final_label"] = "1 per 8 month"
+    note_text = prediction.operations[0]["evidence"]
+
+    extraction, errors = reasoner.prediction_to_extraction(prediction, note_text=note_text)
+
+    assert extraction is not None
+    assert errors == []
+    graph_bundle = reasoner.typed_operation_graph_overlay(
+        extraction,
+        source_row_index=598,
+        note_text=note_text,
+    )
+
+    assert graph_bundle["nodes"][0]["normalized_label"] == "1 per 8 month"
+    assert graph_bundle["projection"]["final_label"] == "1 per 8 month"
+
+
 def test_graph_projection_treats_selected_recent_frequency_as_projection_candidate() -> None:
     prediction = _prediction("1 per 3 weeks")
     prediction.operations[0]["evidence"] = (
