@@ -509,9 +509,14 @@ def run_split(
             if adjudicator_raw_output
             else (None, ["not_run"])
         )
+        decision, decision_repairs = _apply_deterministic_safety_floor(
+            component_inputs,
+            decision,
+        )
         score_layers = _score_layers(record, deterministic, graph, llm_packet, decision)
         analysis_layers = _analysis_layers(record, deterministic, graph)
         diagnostics = _diagnostics(record, component_inputs, llm_packet, decision)
+        diagnostics["decision_repairs"] = decision_repairs
         component_status = _component_status(
             deterministic=deterministic,
             graph=graph,
@@ -544,6 +549,7 @@ def run_split(
                 "llm_candidate_parse_errors": llm_candidate_parse_errors,
                 "adjudicator_parse_errors": adjudicator_parse_errors,
                 "parse_errors": [*llm_candidate_parse_errors, *adjudicator_parse_errors],
+                "decision_repairs": decision_repairs,
                 "structured_llm_candidate_record": (
                     llm_packet.model_dump() if llm_packet else None
                 ),
@@ -849,16 +855,7 @@ def _score_layers(
     graph_label = (graph["projection"] or {}).get("final_label")
     llm_label = llm_packet.selection.final_label if llm_packet else None
     raw_adjudicator_label = decision.final_label if decision else None
-    format_label = (
-        repair_prediction_label_format_preserving(raw_adjudicator_label)
-        if raw_adjudicator_label
-        else None
-    )
-    adapted_label = (
-        repair_prediction_label_with_evidence(format_label, decision.selected_evidence)
-        if decision and format_label
-        else None
-    )
+    adapted_label = _adapted_decision_label(decision)
     return {
         "deterministic_top_candidate": _score_label(
             record,
@@ -891,6 +888,72 @@ def _score_layers(
             repair_mode="adapter_only_sidecar_from_adjudicator_selection",
         ),
     }
+
+
+def _uses_deterministic_safety_floor(decision: HybridParallelAdjudicatorDecision) -> bool:
+    return decision.rationale.startswith("Deterministic safety-floor fallback:")
+
+
+def _adapted_decision_label(decision: HybridParallelAdjudicatorDecision | None) -> str | None:
+    if decision is None:
+        return None
+    format_label = repair_prediction_label_format_preserving(decision.final_label)
+    if _uses_deterministic_safety_floor(decision):
+        return format_label
+    return repair_prediction_label_with_evidence(format_label, decision.selected_evidence)
+
+
+def _apply_deterministic_safety_floor(
+    component_inputs: Mapping[str, Any],
+    decision: HybridParallelAdjudicatorDecision | None,
+) -> tuple[HybridParallelAdjudicatorDecision | None, list[str]]:
+    """Keep the deterministic top candidate as the prediction-bearing safety floor."""
+
+    if decision is None:
+        return None, []
+    deterministic_top = component_inputs.get("deterministic_top") or {}
+    deterministic_label = deterministic_top.get("final_label")
+    if not deterministic_label:
+        return decision, []
+    repaired_decision_label = repair_prediction_label_with_evidence(
+        repair_prediction_label_format_preserving(decision.final_label),
+        decision.selected_evidence,
+    )
+    if repaired_decision_label == deterministic_label:
+        return decision, []
+
+    selected_source_ids, selected_source_types = _deterministic_source_trace(component_inputs)
+    if not selected_source_ids:
+        return decision, []
+    fallback = decision.model_copy(
+        update={
+            "final_label": str(deterministic_label),
+            "final_kind": str(deterministic_top.get("final_kind") or "frequency"),
+            "selected_source_ids": selected_source_ids,
+            "selected_source_types": selected_source_types,
+            "selected_evidence": str(
+                deterministic_top.get("evidence") or decision.selected_evidence
+            ),
+            "confidence": "medium",
+            "rationale": (
+                "Deterministic safety-floor fallback: the adjudicator's repaired "
+                "answer disagreed with the deterministic top candidate, so the "
+                "transparent deterministic prediction remains prediction-bearing."
+            ),
+            "supporting_source_ids": list(decision.selected_source_ids),
+        }
+    )
+    return fallback, ["deterministic_safety_floor_fallback"]
+
+
+def _deterministic_source_trace(component_inputs: Mapping[str, Any]) -> tuple[list[str], list[str]]:
+    source_ids: list[str] = []
+    source_types: list[str] = []
+    deterministic_top = component_inputs.get("deterministic_top") or {}
+    for event_id in deterministic_top.get("selected_event_ids") or []:
+        source_ids.append(f"det:{event_id}")
+        source_types.append("deterministic_candidate")
+    return source_ids, source_types
 
 
 def _analysis_layers(
@@ -941,14 +1004,7 @@ def _diagnostics(
     )
     adapted_correct = _layer_correct_from_label(
         record,
-        (
-            repair_prediction_label_with_evidence(
-                repair_prediction_label_format_preserving(decision.final_label),
-                decision.selected_evidence,
-            )
-            if decision
-            else None
-        ),
+        _adapted_decision_label(decision),
     )
     llm_candidate_correct = _layer_correct_from_label(
         record,
