@@ -1,6 +1,6 @@
 # Project Status
 
-Last updated: 2026-06-03
+Last updated: 2026-06-04
 
 ## Active Objective
 
@@ -8,58 +8,40 @@ Answer the Gan 2026 seizure-frequency component research questions one at a
 time under exact-evidence, attribution, hidden-family, and split-discipline
 constraints.
 
-The first-pass RQ1 candidate discovery, RQ2 evidence selection, and RQ4
-projection reports are now classified as diagnostic baseline audits, not
-completed research-question answers. They fell back to "the validation-tuned
-deterministic selector/top candidate is safest," which is already known and not
-the scientific question. The active work returns to RQ1/RQ2/RQ4 LLM component
-mechanics before any move to RQ5 deterministic compilation and rendering.
+The first-pass RQ1/RQ2/RQ4 reports are diagnostic baseline audits, not completed
+answers. They fell back to the already-known deterministic safety answer; active
+work now isolates LLM component mechanics before any move to RQ5.
 
 ## Current Strategy
 
-Use saved artifacts as research instruments for clean component questions
-instead of chasing whole-pipeline validation F1. End-to-end assembly comes later.
-Deterministic rules are frozen comparators, safety floors, and miss-slice
-definers, not eligible answers for RQ1-RQ4.
+Use saved artifacts as research instruments for clean component questions, not
+whole-pipeline validation F1. Deterministic rules are frozen comparators, safety
+floors, and miss-slice definers, not eligible answers for RQ1-RQ4.
 
-Important context: hybrid deterministic safety-floor validation evidence reached
-697/750 Purist and 704/750 Pragmatic with exact evidence and no
-deterministic-correct regressions; this remains development evidence, not an
-LLM-first or benchmark claim. The frozen local `selective_safety_floor_gate_v0`
-audit improved test450 from 343/450 to 351/450 Purist with 0 C->W, but
-benchmark-comparable language remains blocked.
+Important context: hybrid safety-floor validation reached 697/750 Purist and
+704/750 Pragmatic; local frozen `selective_safety_floor_gate_v0` improved
+test450 from 343/450 to 351/450 Purist with 0 C->W. These remain development
+or local-audit evidence, not LLM-first or benchmark claims.
 
 ## Active Question
 
 RQ1/RQ2/RQ4 Reset. LLM Component Mechanics
 
-Question: Which LLM components generate useful candidates, select clinically
-decisive evidence, and project the correct current benchmark-relevant state, and
-why do they help or fail on specific rows and hidden families?
+Question: Which LLM components generate useful candidates, select decisive
+evidence, and project the correct current benchmark-relevant state, and why do
+they help or fail on specific rows and hidden families?
 
-Status: active reset. The RQ1/RQ2/RQ4 artifacts remain useful as source-backed
-matrices, but their deterministic-default conclusions are downgraded. The next
-report should inspect row-level LLM wins, losses, and ambiguous cases before
-making any aggregate claim.
+Status: active reset. The first-pass RQ1/RQ2/RQ4 reports and matrices remain
+diagnostic sources, but their deterministic-default conclusions are downgraded.
 
-Diagnostic artifacts to reuse: RQ1 answer/matrix,
-`docs/research/gan2026_rq1_candidate_discovery_answer_2026-06-03.md` and
-`experiments/gan2026_rq1_candidate_discovery_matrix_2026-06-03.md`; RQ2
-answer/matrix,
-`docs/research/gan2026_rq2_evidence_selection_answer_2026-06-03.md` and
-`experiments/gan2026_rq2_evidence_selection_matrix_2026-06-03.md`; RQ4
-answer/matrix, `docs/research/gan2026_rq4_projection_answer_2026-06-03.md` and
-`experiments/gan2026_rq4_projection_decision_matrix_2026-06-03.md`.
-
-Active reset protocol:
+Core artifacts:
 `docs/research/gan2026_llm_component_mechanics_protocol_2026-06-03.md`
-
-Active reset synthesis:
 `docs/research/gan2026_llm_component_mechanics_synthesis_2026-06-03.md`
-
-Active row-level mechanism artifact:
 `experiments/gan2026_llm_component_mechanics_rows_2026-06-03.md` and
 `experiments/gan2026_llm_component_mechanics_rows_2026-06-03.jsonl`
+`docs/research/gan2026_llm_component_mechanics_error_analysis_2026-06-03.md`
+`docs/research/gan2026_llm_component_interpretation_policy_and_controlled_experiments_2026-06-03.md`
+`docs/research/gan2026_ambiguous_case_decision_log.md`
 
 ## Guardrails
 
@@ -76,17 +58,27 @@ Active row-level mechanism artifact:
   question, not maximize total score.
 - Any holdout-facing use of LLM component conclusions needs a frozen
   predeclared audit or must keep the claim validation-only.
+- Do not penalize projection-compatible phrases, faithful ambiguous facts, or
+  multiple plausible candidates by default. Assign first-failure ownership
+  before calling a row an LLM component failure.
 
 ## Work Board
 
 ### Now
 
-- Use the row-level mechanism artifact to write the next deeper error-analysis
-  narrative: candidate-generation mechanics, evidence-selection mechanics, and
-  projection mechanics by hidden family.
+- Run the frozen follow-up component-projection panel with the interpretation
+  policy applied: propagate hidden-family tags through RQ2/RQ4 rows, add
+  first-failure-owner labels, and predeclare gated projection slices plus
+  regression panels.
+- Catalogue recurring ambiguous representation cases in
+  `docs/research/gan2026_ambiguous_case_decision_log.md` and make firm
+  projection/ownership decisions before treating them as component failures.
 
 ### Next
 
+- If the frozen panel remains confounded, run controlled single-task experiments
+  for candidate generation, evidence selection, projection, schema
+  representation, and combined-task ablations before returning to RQ5.
 - Only after LLM candidate/evidence/projection mechanics are understood, return
   to RQ5 compiler/rendering over fixed selected states.
 
@@ -109,31 +101,14 @@ Active row-level mechanism artifact:
 
 ### Done Recently
 
-- 2026-06-03: Reset RQ1/RQ2/RQ4 interpretation. The answer reports and matrices
-  are retained as diagnostic artifacts, but their deterministic-default
-  conclusions are not accepted as meaningful research-question answers. Active
-  work returns to LLM component mechanics and row-level error analysis.
-- 2026-06-03: Added the LLM component mechanics restart protocol and synthesis.
-  The synthesis identifies narrow LLM rescue mechanisms for boundary/uncertainty
-  candidates, high exact-evidence but weak state projection, and selective graph
-  projection gains for boundary and duration mechanisms. It explicitly
-  supersedes the deterministic-default conclusions in first-pass RQ1/RQ2/RQ4.
-- 2026-06-03: Built the compact LLM component mechanics artifact:
-  195 mechanism rows over 111 source rows, covering LLM candidate wins/losses,
-  candidate burden, exact-evidence-but-wrong-state rows, changed W->C/C->W rows,
-  graph projection W->C/C->W rows, and schema-near projection misses.
-- 2026-06-03: First-pass RQ4 projection diagnostic: deterministic top remained
-  safest on validation replay (697/750 Purist), broad state-graph projection
-  regressed (655/750, 49 changed labels, 0 W->C, 42 C->W), and narrow graph
-  policies looked diagnostic for boundary-state and seizure-free-duration
-  surfaces. This does not answer LLM projection mechanics. Artifacts:
-  `docs/research/gan2026_rq4_projection_answer_2026-06-03.md` and
-  `experiments/gan2026_rq4_projection_decision_matrix_2026-06-03.md`.
-- 2026-06-03: First-pass RQ2 evidence-selection diagnostic: hybrid adjudicator
-  evidence was 750/750 exact/source-id-valid, but its four changed labels were
-  all deterministic-correct regressions. This supports row-level LLM evidence
-  analysis, not deterministic-default completion.
-- 2026-06-03: First-pass RQ1 candidate-discovery diagnostic: deterministic
-  all-candidates/state-graph nodes were strong validation substrates, while the
-  LLM sidecar remained a selective rescue signal. This must be reworked as an
-  LLM candidate-mechanics question.
+- 2026-06-04: Created the running ambiguous-case decision log with initial firm
+  decisions for `multiple times per week` and `multiple per shift`; added the
+  catalogue task to the active work board so recurring representation cases get
+  explicit projection and ownership policy.
+- 2026-06-03: Cemented interpretation policy for the reset: projection-compatible
+  clinical phrases, faithful ambiguous facts, and multiple plausible candidates
+  are not LLM failures by default; added controlled experiment plan and deeper
+  mechanism error analysis.
+- 2026-06-03: Reset RQ1/RQ2/RQ4 interpretation and added the restart protocol,
+  synthesis, and compact row artifact: 195 mechanism rows over 111 source rows.
+  First-pass RQ reports remain source matrices but are downgraded as answers.
