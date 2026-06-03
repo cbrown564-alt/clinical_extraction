@@ -27,8 +27,49 @@ const PURIST_CATEGORIES = [
   "seizure_frequent",
 ];
 
+function extractEvidence(r: Record<string, unknown>): string | undefined {
+  // Try multiple evidence paths across artifact formats
+  const decision = r.decision_record as Record<string, unknown> | undefined;
+  if (decision?.evidence) return String(decision.evidence);
+
+  const diag = r.deterministic_diagnostics as Record<string, unknown> | undefined;
+  const finalSel = diag?.final_selection as Record<string, unknown> | undefined;
+  if (finalSel?.evidence) return String(finalSel.evidence);
+
+  const sr = r.structured_record as Record<string, unknown> | undefined;
+  const fq = sr?.final_query as Record<string, unknown> | undefined;
+  if (fq?.evidence) return String(fq.evidence);
+
+  const evSum = r.evidence_summary as Record<string, unknown> | undefined;
+  if (evSum?.selected_evidence) return String(evSum.selected_evidence);
+
+  if (r.selected_evidence) return String(r.selected_evidence);
+  if (r.evidence) return String(r.evidence);
+
+  return undefined;
+}
+
+function extractRationale(r: Record<string, unknown>): string | undefined {
+  const decision = r.decision_record as Record<string, unknown> | undefined;
+  if (decision?.rationale) return String(decision.rationale);
+
+  const sr = r.structured_record as Record<string, unknown> | undefined;
+  const fq = sr?.final_query as Record<string, unknown> | undefined;
+  if (fq?.rationale) return String(fq.rationale);
+
+  const diag = r.deterministic_diagnostics as Record<string, unknown> | undefined;
+  const finalSel = diag?.final_selection as Record<string, unknown> | undefined;
+  if (finalSel?.rationale) return String(finalSel.rationale);
+
+  if (r.rationale) return String(r.rationale);
+
+  return undefined;
+}
+
 function extractRowScore(row: unknown): RowScore | null {
   const r = row as Record<string, unknown>;
+  const evidence = extractEvidence(r);
+  const rationale = extractRationale(r);
 
   // Hybrid format
   const scores = r.scores as Record<string, unknown> | undefined;
@@ -44,6 +85,8 @@ function extractRowScore(row: unknown): RowScore | null {
         predictedLabel: String(adjudicator.final_label ?? "unknown"),
         goldLabel: String(ref?.gold_label ?? "unknown"),
         split: String(r.split ?? ""),
+        evidence,
+        rationale,
       };
     }
   }
@@ -67,6 +110,8 @@ function extractRowScore(row: unknown): RowScore | null {
         predictedLabel: String(layer.final_label ?? "unknown"),
         goldLabel: String(ref?.gold_label ?? "unknown"),
         split: String(r.split ?? ""),
+        evidence,
+        rationale,
       };
     }
   }
@@ -84,6 +129,8 @@ function extractRowScore(row: unknown): RowScore | null {
       predictedLabel: String(decision?.final_label ?? "unknown"),
       goldLabel: String(ref?.gold_label ?? "unknown"),
       split: String(r.split ?? ""),
+      evidence,
+      rationale,
     };
   }
 
@@ -101,6 +148,8 @@ function extractRowScore(row: unknown): RowScore | null {
       predictedLabel: String(r.prediction_label ?? "unknown"),
       goldLabel: String(r.gold_label ?? "unknown"),
       split: String(r.split ?? ""),
+      evidence,
+      rationale,
     };
   }
 
@@ -126,6 +175,8 @@ function extractRowScore(row: unknown): RowScore | null {
       predictedLabel: flatFinalLabel,
       goldLabel: flatGoldLabel,
       split: String(r.split ?? ""),
+      evidence,
+      rationale,
     };
   }
 

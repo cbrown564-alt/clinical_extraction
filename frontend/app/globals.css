@@ -100,6 +100,14 @@ body {
   text-underline-offset: 3px;
 }
 
+.span-highlight--no-reference {
+  background-color: rgba(107, 114, 128, 0.14);
+  text-decoration: underline;
+  text-decoration-color: rgba(107, 114, 128, 0.50);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
 .span-highlight--dim {
   opacity: 0.25;
 }

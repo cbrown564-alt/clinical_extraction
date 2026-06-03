@@ -57,16 +57,39 @@ function getSpansForStage(
 
   if (activeStage === "extract") {
     for (const c of candidates) {
-      if (c.start_char != null && c.end_char != null) {
+      let start = c.start_char ?? -1;
+      let end = c.end_char ?? -1;
+
+      // Fallback: search for evidence text when char spans are missing
+      if ((start < 0 || end <= start) && c.evidence && text) {
+        const exactPos = text.indexOf(c.evidence);
+        if (exactPos >= 0) {
+          start = exactPos;
+          end = exactPos + c.evidence.length;
+        } else {
+          const lowerText = text.toLowerCase();
+          const lowerEvidence = c.evidence.toLowerCase();
+          const ciPos = lowerText.indexOf(lowerEvidence);
+          if (ciPos >= 0) {
+            start = ciPos;
+            end = ciPos + c.evidence.length;
+          }
+        }
+      }
+
+      if (start >= 0 && end > start) {
+        const isNoReference = c.kind === "no_reference";
         spans.push({
-          start: c.start_char,
-          end: c.end_char,
-          kind: "deterministic",
+          start,
+          end,
+          kind: isNoReference ? "no-reference" : "deterministic",
           label: c.raw_value ?? c.evidence,
           ruleId: c.rule_id,
           ruleGroup: c.rule_group,
           portability: c.portability,
-          tooltip: `${c.rule_id} (${c.rule_group ?? "unknown"})`,
+          tooltip: isNoReference
+            ? `No reference · ${c.rule_id}`
+            : `${c.rule_id} (${c.rule_group ?? "unknown"})`,
         });
       }
     }
@@ -152,6 +175,8 @@ function kindToClass(kind: HighlightSpan["kind"]): string {
       return "span-highlight--success";
     case "gold":
       return "span-highlight--gold";
+    case "no-reference":
+      return "span-highlight--no-reference";
     default:
       return "";
   }

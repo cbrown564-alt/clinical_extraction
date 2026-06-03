@@ -114,6 +114,23 @@ export function adaptHybridTrace(
   };
 }
 
+function findEvidenceSpan(noteText: string, evidence: string): { start: number; end: number } | null {
+  if (!evidence || !noteText) return null;
+  // Exact match first
+  const exactPos = noteText.indexOf(evidence);
+  if (exactPos >= 0) {
+    return { start: exactPos, end: exactPos + evidence.length };
+  }
+  // Case-insensitive fallback
+  const lowerNote = noteText.toLowerCase();
+  const lowerEvidence = evidence.toLowerCase();
+  const ciPos = lowerNote.indexOf(lowerEvidence);
+  if (ciPos >= 0) {
+    return { start: ciPos, end: ciPos + evidence.length };
+  }
+  return null;
+}
+
 export function adaptLLMTrace(
   row: LLMArtifactRow,
   record: FullRecordResponse
@@ -126,12 +143,10 @@ export function adaptLLMTrace(
     const evidence = claim.evidence;
     let startChar: number | null = null;
     let endChar: number | null = null;
-    if (evidence && record.note_text) {
-      const pos = record.note_text.indexOf(evidence);
-      if (pos >= 0) {
-        startChar = pos;
-        endChar = pos + evidence.length;
-      }
+    const span = evidence ? findEvidenceSpan(record.note_text, evidence) : null;
+    if (span) {
+      startChar = span.start;
+      endChar = span.end;
     }
     return {
       id: claim.claim_id || `claim_${idx}`,

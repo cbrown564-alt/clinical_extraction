@@ -106,7 +106,7 @@ export type ActiveStage =
 export interface HighlightSpan {
   start: number;
   end: number;
-  kind: "deterministic" | "deterministic-alt" | "llm" | "repair" | "hybrid" | "success" | "gold";
+  kind: "deterministic" | "deterministic-alt" | "llm" | "repair" | "hybrid" | "success" | "gold" | "no-reference";
   label: string;
   ruleId?: string;
   ruleGroup?: string | null;
@@ -324,6 +324,8 @@ export interface RowScore {
   predictedLabel: string;
   goldLabel: string;
   split?: string;
+  evidence?: string;
+  rationale?: string;
 }
 
 export interface CategoryMetrics {
