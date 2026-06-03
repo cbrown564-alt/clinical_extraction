@@ -203,7 +203,7 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
             run_split=llm_only_typed_operations_reasoner.run_split,
             write_jsonl=llm_only_typed_operations_reasoner.write_jsonl,
             write_report=llm_only_typed_operations_reasoner.write_report,
-            default_max_tokens=1800,
+            default_max_tokens=2400,
         ),
     }
 

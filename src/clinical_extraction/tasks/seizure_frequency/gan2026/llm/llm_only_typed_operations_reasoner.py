@@ -42,7 +42,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.state_graph import (
     project_graph_to_gan,
 )
 
-PROMPT_VERSION = "gan2026_llm_only_typed_operations_reasoner_v0"
+PROMPT_VERSION = "gan2026_llm_only_typed_operations_reasoner_v0_contractfix"
 PIPELINE_FAMILY = "llm_only_typed_operations_reasoner"
 TYPED_OUTPUT_SCHEMA_VERSION = "typed_operations_v0"
 SCORE_LAYER_NAMES = (
@@ -52,10 +52,10 @@ SCORE_LAYER_NAMES = (
     "typed_operation_graph_projection",
 )
 DEFAULT_JSONL_PATH = Path(
-    "experiments/gan2026_llm_only_typed_operations_reasoner_validation25_gpt41mini_v0_2026-06-03.jsonl"
+    "experiments/gan2026_llm_only_typed_operations_reasoner_validation25_gpt41mini_v0_contractfix_2026-06-03.jsonl"
 )
 DEFAULT_REPORT_PATH = Path(
-    "experiments/gan2026_llm_only_typed_operations_reasoner_validation25_gpt41mini_v0_2026-06-03.md"
+    "experiments/gan2026_llm_only_typed_operations_reasoner_validation25_gpt41mini_v0_contractfix_2026-06-03.md"
 )
 
 
@@ -246,6 +246,20 @@ def build_typed_operations_inputs(record: GanFrequencyRecord) -> dict[str, Any]:
                 "unresolved-multiple states distinct."
             ),
             "Return typed fields, not a string payload.",
+            "Do not add any keys other than operations, selection, and final_answer.",
+            (
+                "Do not copy note headers, patient identifiers, DOB fields, hospital "
+                "numbers, NHS numbers, or letter boilerplate into typed output keys."
+            ),
+            (
+                "Copy evidence using the exact visible characters from the note; do "
+                "not emit escaped Unicode, HTML entities, backslash escapes, or control "
+                "characters inside evidence strings."
+            ),
+            (
+                "If final_answer.rendering_operands is present, include the same "
+                "selected_evidence_id field required on operation operands."
+            ),
         ],
         "output_contract": {
             "prompt_version": PROMPT_VERSION,
@@ -290,6 +304,32 @@ def build_typed_operations_inputs(record: GanFrequencyRecord) -> dict[str, Any]:
             "trace_rule": (
                 "final_answer.selected_event_ids must equal selection.selected_operation_ids; "
                 "selection.selected_evidence_id must name one selected operation evidence_id"
+            ),
+            "top_level_output_rule": (
+                "Do not add any keys other than operations, selection, and final_answer."
+            ),
+            "forbidden_extra_keys": [
+                "DOB",
+                "Hospital No",
+                "NHS No",
+                "No",
+                "clinic_date",
+                "patient_name",
+                "letter_text",
+            ],
+            "evidence_copy_rule": {
+                "required": "copy exact visible substrings from note_text",
+                "forbidden": [
+                    "\\u",
+                    "\\x",
+                    "HTML entities",
+                    "control characters",
+                    "normalized mathematical symbols",
+                ],
+            },
+            "rendering_operands_rule": (
+                "When final_answer.rendering_operands is non-null, it must include "
+                "selected_evidence_id and that value must match a selected operation evidence_id."
             ),
         },
     }

@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { Play, Loader2, AlertCircle, CheckCircle, XCircle } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Play, Loader2, AlertCircle, CheckCircle, XCircle, Zap, BarChart3, Layers } from "lucide-react";
 import type { RunAblationResponse } from "@/lib/types";
+import { useLaboratoryStore } from "@/lib/stores";
 
 interface SimulationPanelProps {
   onSimulate: (split: string, limit?: number) => void;
@@ -19,25 +20,78 @@ export default function SimulationPanel({
 }: SimulationPanelProps) {
   const [split, setSplit] = useState("validation");
   const [limit, setLimit] = useState<string>("");
+  const { ablationConfig } = useLaboratoryStore();
 
   const handleRun = () => {
     const n = limit.trim() ? parseInt(limit, 10) : undefined;
     onSimulate(split, n);
   };
 
+  const configSummary = useMemo(() => {
+    const enabledGroups = ablationConfig.enabled_groups;
+    const disabledRules = ablationConfig.disabled_rule_ids;
+    return {
+      hasCustomConfig: !!enabledGroups || !!disabledRules,
+      groupCount: enabledGroups?.length,
+      disabledCount: disabledRules?.length,
+    };
+  }, [ablationConfig]);
+
   return (
-    <div className="space-y-5">
-      <div>
-        <h3 className="text-xs font-semibold uppercase tracking-wide text-muted mb-3">
-          Live Ablation Simulation
-        </h3>
+    <div className="space-y-6">
+      {/* Configuration Preview */}
+      <div className="rounded-xl border border-border bg-surface p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <Layers className="h-3.5 w-3.5 text-deterministic-alt" />
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-muted">
+            Current Configuration
+          </h3>
+        </div>
+        <div className="space-y-2">
+          {!configSummary.hasCustomConfig ? (
+            <div className="flex items-center gap-2 text-[11px] text-muted">
+              <CheckCircle className="h-3.5 w-3.5 text-success shrink-0" />
+              All rules active (default configuration)
+            </div>
+          ) : (
+            <>
+              {configSummary.groupCount !== undefined && (
+                <div className="flex items-center gap-2 text-[11px]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-deterministic shrink-0" />
+                  <span className="text-muted">Active groups:</span>
+                  <span className="font-mono text-foreground">{configSummary.groupCount}</span>
+                </div>
+              )}
+              {configSummary.disabledCount !== undefined && configSummary.disabledCount > 0 && (
+                <div className="flex items-center gap-2 text-[11px]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-error shrink-0" />
+                  <span className="text-muted">Disabled rules:</span>
+                  <span className="font-mono text-error">{configSummary.disabledCount}</span>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Run Controls */}
+      <div className="rounded-xl border border-border bg-surface p-4">
+        <div className="flex items-center gap-2 mb-4">
+          <Zap className="h-3.5 w-3.5 text-llm" />
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-muted">
+            Run Simulation
+          </h3>
+        </div>
+
         <div className="space-y-3">
           <div>
-            <label className="block text-[10px] font-medium text-muted mb-1">Split</label>
+            <label className="block text-[10px] font-semibold text-foreground mb-1.5">
+              Dataset split
+            </label>
             <select
               value={split}
               onChange={(e) => setSplit(e.target.value)}
-              className="w-full rounded-lg border border-border bg-surface px-2.5 py-1.5 text-xs text-foreground focus:outline-none"
+              className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-deterministic/30"
             >
               <option value="validation">validation</option>
               <option value="validation25">validation25</option>
@@ -48,33 +102,33 @@ export default function SimulationPanel({
           </div>
 
           <div>
-            <label className="block text-[10px] font-medium text-muted mb-1">
-              Limit (optional)
+            <label className="block text-[10px] font-semibold text-foreground mb-1.5">
+              Row limit <span className="text-muted font-normal">(optional)</span>
             </label>
             <input
               type="number"
               value={limit}
               onChange={(e) => setLimit(e.target.value)}
-              placeholder="e.g. 50"
+              placeholder="All rows"
               min={1}
-              className="w-full rounded-lg border border-border bg-surface px-2.5 py-1.5 text-xs text-foreground placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-deterministic/30"
+              className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-xs text-foreground placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-deterministic/30"
             />
           </div>
 
           <button
             onClick={handleRun}
             disabled={isSimulating}
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-deterministic px-3 py-2 text-xs font-semibold text-white shadow-sm hover:bg-deterministic/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-deterministic px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-deterministic/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors mt-2"
           >
             {isSimulating ? (
               <>
-                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                Running…
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Running against {split}…
               </>
             ) : (
               <>
-                <Play className="h-3.5 w-3.5" />
-                Simulate against {split}
+                <Play className="h-4 w-4" />
+                Run simulation
               </>
             )}
           </button>
@@ -82,55 +136,65 @@ export default function SimulationPanel({
       </div>
 
       {error && (
-        <div className="rounded-lg border border-error/20 bg-error/5 px-3 py-2.5">
+        <div className="rounded-xl border border-error/20 bg-error/5 px-4 py-3">
           <div className="flex items-start gap-2">
-            <AlertCircle className="h-3.5 w-3.5 text-error shrink-0 mt-0.5" />
-            <div className="text-[11px] text-error">{error}</div>
+            <AlertCircle className="h-4 w-4 text-error shrink-0 mt-0.5" />
+            <div className="text-[11px] text-error leading-relaxed">{error}</div>
           </div>
         </div>
       )}
 
       {result && (
-        <div className="space-y-3">
+        <div className="space-y-4">
           <div className="flex items-center gap-2">
-            <CheckCircle className="h-3.5 w-3.5 text-success" />
-            <span className="text-[11px] font-semibold text-foreground">
-              Simulation complete
+            <BarChart3 className="h-3.5 w-3.5 text-success" />
+            <span className="text-xs font-semibold uppercase tracking-wide text-muted">
+              Results
             </span>
-            <span className="text-[10px] text-muted ml-auto">
-              {result.row_count} rows
+            <span className="ml-auto text-[10px] text-muted">
+              {result.row_count} rows · {result.split}
             </span>
           </div>
 
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-3">
             <ScoreCard
-              label="Purist Accuracy"
-              value={result.summary.purist.accuracy}
+              label="Purist"
+              accuracy={result.summary.purist.accuracy}
               f1={result.summary.purist.f1}
+              color="deterministic"
             />
             <ScoreCard
-              label="Pragmatic Accuracy"
-              value={result.summary.pragmatic.accuracy}
+              label="Pragmatic"
+              accuracy={result.summary.pragmatic.accuracy}
               f1={result.summary.pragmatic.f1}
+              color="success"
             />
           </div>
 
-          <div className="rounded-lg border border-border bg-surface p-3">
-            <h4 className="text-[10px] font-semibold uppercase tracking-wide text-muted mb-2">
+          <div className="rounded-xl border border-border bg-surface p-4">
+            <h4 className="text-[10px] font-semibold uppercase tracking-wide text-muted mb-3">
               Per-label F1
             </h4>
-            <div className="space-y-1 max-h-[200px] overflow-y-auto">
+            <div className="space-y-1.5 max-h-[220px] overflow-y-auto">
               {Object.entries(result.summary.purist.per_label)
+                .filter(([, m]) => m.support > 0)
                 .sort((a, b) => b[1].support - a[1].support)
                 .map(([label, metrics]) => (
                   <div key={label} className="flex items-center gap-2">
-                    <span className="w-1 h-1 rounded-full bg-muted shrink-0" />
-                    <span className="flex-1 text-[10px] font-mono text-foreground truncate">
-                      {label}
+                    <div className="w-16 text-[10px] font-mono text-foreground truncate">
+                      {label.replace("seizure_freq_", "")}
+                    </div>
+                    <div className="flex-1 h-1.5 rounded-full bg-surface-raised overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-deterministic/60"
+                        style={{ width: `${Math.max(metrics.f1 * 100, 2)}%` }}
+                      />
+                    </div>
+                    <span className="text-[10px] text-muted w-8 text-right">
+                      n={metrics.support}
                     </span>
-                    <span className="text-[10px] text-muted">n={metrics.support}</span>
                     <span
-                      className={`text-[10px] font-mono font-medium ${
+                      className={`text-[10px] font-mono font-medium w-8 text-right ${
                         metrics.f1 >= 0.8
                           ? "text-success"
                           : metrics.f1 >= 0.5
@@ -145,7 +209,6 @@ export default function SimulationPanel({
             </div>
           </div>
 
-          {/* Error family shifts (approximated from row transitions) */}
           <ErrorFamilyShifts rows={result.rows} />
         </div>
       )}
@@ -155,18 +218,37 @@ export default function SimulationPanel({
 
 function ScoreCard({
   label,
-  value,
+  accuracy,
   f1,
+  color,
 }: {
   label: string;
-  value: number;
+  accuracy: number;
   f1: number;
+  color: "deterministic" | "success";
 }) {
+  const colorClass =
+    color === "deterministic" ? "text-deterministic" : "text-success";
+  const barColor =
+    color === "deterministic" ? "bg-deterministic/20" : "bg-success/20";
+
   return (
-    <div className="rounded-lg border border-border bg-surface p-2.5">
-      <div className="text-[9px] font-medium uppercase tracking-wide text-muted">{label}</div>
-      <div className="mt-1 text-lg font-semibold text-foreground">{(value * 100).toFixed(1)}%</div>
-      <div className="text-[10px] text-muted">F1 {(f1 * 100).toFixed(1)}%</div>
+    <div className="rounded-xl border border-border bg-surface p-3">
+      <div className="text-[9px] font-semibold uppercase tracking-wide text-muted mb-1">
+        {label}
+      </div>
+      <div className={`text-xl font-bold ${colorClass}`}>
+        {(accuracy * 100).toFixed(1)}%
+      </div>
+      <div className="mt-1.5 flex items-center gap-2">
+        <div className={`flex-1 h-1 rounded-full ${barColor}`}>
+          <div
+            className={`h-full rounded-full ${colorClass.replace("text-", "bg-")}`}
+            style={{ width: `${Math.max(f1 * 100, 2)}%` }}
+          />
+        </div>
+        <span className="text-[10px] text-muted">F1 {(f1 * 100).toFixed(0)}%</span>
+      </div>
     </div>
   );
 }
@@ -187,39 +269,48 @@ function ErrorFamilyShifts({
 
   if (errors.length === 0) {
     return (
-      <div className="rounded-lg border border-success/20 bg-success/5 px-3 py-2.5">
+      <div className="rounded-xl border border-success/20 bg-success/5 px-4 py-3">
         <div className="flex items-center gap-2">
-          <CheckCircle className="h-3.5 w-3.5 text-success" />
+          <CheckCircle className="h-4 w-4 text-success" />
           <span className="text-[11px] text-success font-medium">Zero errors — all rows correct</span>
         </div>
       </div>
     );
   }
 
-  // Categorise transitions
   const transitions = new Map<string, number>();
   for (const row of errors) {
     const key = `${row.purist_gold_category} → ${row.purist_predicted_category}`;
     transitions.set(key, (transitions.get(key) ?? 0) + 1);
   }
 
-  const sortedTransitions = Array.from(transitions.entries()).sort((a, b) => b[1] - a[1]).slice(0, 8);
+  const sortedTransitions = Array.from(transitions.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8);
+
+  const maxCount = sortedTransitions[0]?.[1] ?? 1;
 
   return (
-    <div className="rounded-lg border border-border bg-surface p-3">
-      <h4 className="text-[10px] font-semibold uppercase tracking-wide text-muted mb-2">
+    <div className="rounded-xl border border-border bg-surface p-4">
+      <h4 className="text-[10px] font-semibold uppercase tracking-wide text-muted mb-3">
         Top Error Transitions ({errors.length} errors)
       </h4>
-      <div className="space-y-1">
+      <div className="space-y-2">
         {sortedTransitions.map(([transition, count]) => {
           const [from, to] = transition.split(" → ");
           return (
-            <div key={transition} className="flex items-center gap-2 text-[10px]">
-              <XCircle className="h-3 w-3 text-error shrink-0" />
-              <span className="text-muted truncate">{from}</span>
-              <span className="text-border">→</span>
-              <span className="text-foreground truncate">{to}</span>
-              <span className="ml-auto font-mono text-muted">{count}</span>
+            <div key={transition} className="flex items-center gap-2">
+              <XCircle className="h-3.5 w-3.5 text-error shrink-0" />
+              <span className="text-[10px] font-mono text-muted w-24 truncate">{from.replace("seizure_freq_", "")}</span>
+              <span className="text-[10px] text-border">→</span>
+              <span className="text-[10px] font-mono text-foreground w-24 truncate">{to.replace("seizure_freq_", "")}</span>
+              <div className="flex-1 h-1.5 rounded-full bg-surface-raised overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-error/60"
+                  style={{ width: `${Math.max((count / maxCount) * 100, 3)}%` }}
+                />
+              </div>
+              <span className="text-[10px] font-mono text-muted w-5 text-right">{count}</span>
             </div>
           );
         })}

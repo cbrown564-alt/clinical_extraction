@@ -20,6 +20,17 @@ function getGroupColor(group: string): string {
   return "#6b7280";
 }
 
+function shortenGroupName(group: string): string {
+  return group
+    .replace(/_/g, " ")
+    .replace(/benchmark /i, "")
+    .replace(/selection /i, "sel. ")
+    .replace(/seizure[-_ ]?free/i, "sz-free")
+    .replace(/portable /i, "")
+    .replace(/rules?/i, "")
+    .trim();
+}
+
 export default function CoFireMatrix() {
   const rulesQuery = useRules();
   const rules = useMemo(() => rulesQuery.data?.rules ?? [], [rulesQuery.data?.rules]);
@@ -80,78 +91,93 @@ export default function CoFireMatrix() {
     );
   }
 
-  const cellSize = 48;
-  const padding = 120;
-  const size = groups.length * cellSize + padding;
+  const cellSize = 72;
+  const labelPad = 180;
+  const topPad = 140;
+  const size = groups.length * cellSize + labelPad;
+  const svgHeight = groups.length * cellSize + topPad;
 
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
-        <Info className="h-3.5 w-3.5 text-muted" />
+        <Info className="h-3.5 w-3.5 text-muted shrink-0" />
         <p className="text-[11px] text-muted">
           This matrix shows rule-group relationships by shared portability levels.
           Darker cells indicate more shared portability classes between groups.
+          Diagonal shows rule count per group.
         </p>
       </div>
 
-      <div className="overflow-auto">
-        <svg width={size} height={size} className="block">
+      <div className="overflow-auto rounded-xl border border-border bg-surface">
+        <svg width={size} height={svgHeight} className="block">
           {/* Row labels */}
           {groups.map((g, i) => (
-            <text
-              key={`row-${g}`}
-              x={padding - 8}
-              y={padding + i * cellSize + cellSize / 2 + 4}
-              textAnchor="end"
-              className="text-[10px] font-medium"
-              fill={getGroupColor(g)}
-            >
-              {g.replace(/_/g, " ")}
-            </text>
+            <g key={`row-${g}`}>
+              <text
+                x={labelPad - 12}
+                y={topPad + i * cellSize + cellSize / 2 + 4}
+                textAnchor="end"
+                className="text-[11px] font-semibold"
+                fill={getGroupColor(g)}
+              >
+                {shortenGroupName(g)}
+              </text>
+              {/* Color dot */}
+              <circle
+                cx={labelPad - 6}
+                cy={topPad + i * cellSize + cellSize / 2}
+                r={3}
+                fill={getGroupColor(g)}
+              />
+            </g>
           ))}
 
-          {/* Column labels */}
+          {/* Column labels — rotated -45° */}
           {groups.map((g, i) => (
-            <text
+            <g
               key={`col-${g}`}
-              x={padding + i * cellSize + cellSize / 2}
-              y={padding - 8}
-              textAnchor="middle"
-              className="text-[10px] font-medium"
-              fill={getGroupColor(g)}
+              transform={`translate(${labelPad + i * cellSize + cellSize / 2}, ${topPad - 16}) rotate(-45)`}
             >
-              {g.replace(/_/g, " ")}
-            </text>
+              <text
+                x={0}
+                y={0}
+                textAnchor="start"
+                className="text-[11px] font-semibold"
+                fill={getGroupColor(g)}
+              >
+                {shortenGroupName(g)}
+              </text>
+            </g>
           ))}
 
           {/* Cells */}
           {matrix.map((cell, idx) => {
             const i = groups.indexOf(cell.groupA);
             const j = groups.indexOf(cell.groupB);
-            const maxShared = 4; // approximate max portability levels
+            const maxShared = 4;
             const intensity = Math.min(cell.sharedPortability / maxShared, 1);
             const fillColor =
               i === j
                 ? cell.colorA
-                : `rgba(42, 111, 111, ${0.05 + intensity * 0.35})`;
+                : `rgba(42, 111, 111, ${0.04 + intensity * 0.28})`;
 
             return (
               <g key={idx}>
                 <rect
-                  x={padding + j * cellSize + 1}
-                  y={padding + i * cellSize + 1}
+                  x={labelPad + j * cellSize + 1}
+                  y={topPad + i * cellSize + 1}
                   width={cellSize - 2}
                   height={cellSize - 2}
-                  rx={4}
+                  rx={6}
                   fill={fillColor}
                   stroke="rgba(0,0,0,0.04)"
                 />
                 {i === j && (
                   <text
-                    x={padding + j * cellSize + cellSize / 2}
-                    y={padding + i * cellSize + cellSize / 2 + 4}
+                    x={labelPad + j * cellSize + cellSize / 2}
+                    y={topPad + i * cellSize + cellSize / 2 + 5}
                     textAnchor="middle"
-                    className="text-[9px] font-semibold"
+                    className="text-[12px] font-bold"
                     fill="white"
                   >
                     {cell.totalRulesA}
@@ -159,11 +185,11 @@ export default function CoFireMatrix() {
                 )}
                 {i !== j && cell.sharedPortability > 0 && (
                   <text
-                    x={padding + j * cellSize + cellSize / 2}
-                    y={padding + i * cellSize + cellSize / 2 + 3}
+                    x={labelPad + j * cellSize + cellSize / 2}
+                    y={topPad + i * cellSize + cellSize / 2 + 4}
                     textAnchor="middle"
-                    className="text-[9px] font-medium"
-                    fill={`rgba(42, 111, 111, ${0.4 + intensity * 0.6})`}
+                    className="text-[11px] font-semibold"
+                    fill={`rgba(42, 111, 111, ${0.5 + intensity * 0.5})`}
                   >
                     {cell.sharedPortability}
                   </text>
@@ -175,10 +201,10 @@ export default function CoFireMatrix() {
       </div>
 
       {/* Legend */}
-      <div className="flex items-center gap-4 text-[10px] text-muted">
+      <div className="flex items-center gap-6 text-[10px] text-muted">
         <div className="flex items-center gap-1.5">
           <div className="h-3 w-3 rounded bg-deterministic/20" />
-          <span>Shared portability</span>
+          <span>Shared portability levels</span>
         </div>
         <div className="flex items-center gap-1.5">
           <div className="h-3 w-3 rounded bg-deterministic" />
