@@ -360,7 +360,10 @@ def test_final_projection_repairs_bimonthly_from_selected_evidence() -> None:
     )
 
     assert projected.final_label == "1 per 2 month"
-    assert projected.projection_families == ("selected_evidence_projection",)
+    assert projected.projection_families == (
+        "clean_scorer_facing_policy",
+        "selected_evidence_bimonthly_policy",
+    )
 
 
 def test_final_projection_repairs_every_other_day_from_selected_evidence() -> None:
@@ -389,7 +392,7 @@ def test_final_projection_repairs_every_other_day_from_selected_evidence() -> No
     )
 
     assert projected.final_label == "1 per 2 day"
-    assert projected.projection_families == ("selected_evidence_projection",)
+    assert projected.projection_families == ("selected_evidence_every_other_interval",)
 
 
 def test_final_projection_prefers_current_monthly_state_over_year_to_date_count() -> None:
@@ -421,7 +424,10 @@ def test_final_projection_prefers_current_monthly_state_over_year_to_date_count(
     )
 
     assert projected.final_label == "1 per month"
-    assert projected.projection_families == ("selected_evidence_projection",)
+    assert projected.projection_families == (
+        "clean_scorer_facing_policy",
+        "selected_evidence_current_monthly_precedence",
+    )
 
 
 def test_final_projection_applies_vague_weekday_benchmark_policy() -> None:
@@ -452,6 +458,69 @@ def test_final_projection_applies_vague_weekday_benchmark_policy() -> None:
 
     assert projected.final_label == "multiple per week"
     assert projected.projection_families == ("selected_evidence_vague_weekday_policy",)
+
+
+def test_final_projection_preserves_vague_multiple_labels() -> None:
+    prediction = _prediction("multiple per week")
+    prediction.selected_fact["evidence"] = (
+        "These events have been occurring multiple times in past week, including "
+        "two episodes witnessed by a friend."
+    )
+    prediction.selected_fact["raw_value"] = "multiple per week"
+    prediction.raw_model_answer["selected_evidence"] = prediction.selected_fact["evidence"]
+    prediction.operands["frequency"] = {
+        "occurrences_low": None,
+        "occurrences_high": None,
+        "denominator_low": 1,
+        "denominator_high": 1,
+        "denominator_unit": "week",
+        "vague_count": "multiple",
+    }
+    extraction, errors = reasoner.prediction_to_extraction(prediction)
+
+    assert extraction is not None
+    assert errors == []
+
+    projected = reasoner.final_projected_label(
+        extraction,
+        reasoner.mechanical_adapter_label(extraction),
+    )
+
+    assert projected.final_label == "multiple per week"
+    assert projected.projection_families == ("clean_scorer_facing_policy",)
+
+
+def test_final_projection_repairs_explicit_upper_bound_despite_vague_operand() -> None:
+    prediction = _prediction("multiple per day")
+    prediction.selected_fact["evidence"] = (
+        "On the accommodation logs, the observed frequency is noted as ≤ four per day, "
+        "with variable clustering."
+    )
+    prediction.selected_fact["raw_value"] = "\x0264 four per day"
+    prediction.raw_model_answer["selected_evidence"] = prediction.selected_fact["evidence"]
+    prediction.operands["frequency"] = {
+        "occurrences_low": None,
+        "occurrences_high": 4,
+        "denominator_low": 1,
+        "denominator_high": 1,
+        "denominator_unit": "day",
+        "vague_count": "multiple",
+    }
+    extraction, errors = reasoner.prediction_to_extraction(prediction)
+
+    assert extraction is not None
+    assert errors == []
+
+    projected = reasoner.final_projected_label(
+        extraction,
+        reasoner.mechanical_adapter_label(extraction),
+    )
+
+    assert projected.final_label == "4 per day"
+    assert projected.projection_families == (
+        "clean_scorer_facing_policy",
+        "selected_evidence_upper_bound_policy",
+    )
 
 
 def test_final_projection_prefers_stabilised_current_rate_over_prior_rate() -> None:
@@ -518,6 +587,42 @@ def test_run_split_reports_primary_mechanical_adapter_layer(monkeypatch) -> None
     ]
 
 
+def test_replay_saved_outputs_adds_final_projection_without_model_calls() -> None:
+    source_rows, _source_metadata = reasoner.run_split(
+        [_record()],
+        split="validation",
+        split_manifest="gan2026_split_v1",
+        model="openai/gpt-4.1-mini",
+        temperature=0.0,
+        max_tokens=1800,
+        mode="prompt-only",
+    )
+    source_rows[0]["structured_record"] = reasoner.LlmHeavyEvidenceSelectionRecord.model_validate(
+        {
+            "selected_fact": _prediction("multiple per week").selected_fact,
+            "operands": _prediction("multiple per week").operands,
+            "raw_model_answer": _prediction("multiple per week").raw_model_answer,
+        }
+    ).model_dump()
+
+    rows, metadata = reasoner.replay_saved_outputs(
+        [_record()],
+        source_rows,
+        split="validation",
+        split_manifest="gan2026_split_v1",
+        model="openai/gpt-4.1-mini",
+        temperature=0.0,
+        max_tokens=1800,
+        source_path=Path("saved.jsonl"),
+    )
+
+    assert metadata["mode"] == "saved-output-replay"
+    assert metadata["summary"]["reused_raw_outputs"] == 1
+    assert rows[0]["reused_raw_output"] is True
+    assert rows[0]["final_projection"]["final_label"] == "3 per 6 week"
+    assert rows[0]["score_layers"]["final_projected_label"]["purist_correct"] is True
+
+
 def test_write_report_records_decision_0007_validation25_gate(tmp_path: Path) -> None:
     rows, metadata = reasoner.run_split(
         [_record()],
@@ -533,5 +638,5 @@ def test_write_report_records_decision_0007_validation25_gate(tmp_path: Path) ->
 
     text = report.read_text(encoding="utf-8")
     assert "LLM-heavy clinical selection with deterministic mechanical adapters" in text
-    assert "Surface: `validation25` under `gan2026_split_v1`" in text
+    assert "Surface: `validation1` under `gan2026_split_v1`" in text
     assert "Primary score layer: `final_projected_label`" in text

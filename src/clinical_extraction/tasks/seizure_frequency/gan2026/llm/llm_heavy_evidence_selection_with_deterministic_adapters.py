@@ -593,6 +593,93 @@ def run_split(
     return rows, metadata
 
 
+def replay_saved_outputs(
+    records: Sequence[GanFrequencyRecord],
+    source_rows: Sequence[Mapping[str, Any]],
+    *,
+    split: str,
+    split_manifest: str,
+    model: str,
+    temperature: float,
+    max_tokens: int,
+    source_path: Path | None = None,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Replay saved Decision 0007 outputs through the current scoring stack."""
+
+    metadata = _run_metadata(
+        records,
+        split=split,
+        split_manifest=split_manifest,
+        model=model,
+        temperature=temperature,
+        max_tokens=max_tokens,
+        mode="saved-output-replay",
+    )
+    metadata["dspy_cache"] = False
+    metadata["reuse_source"] = str(source_path) if source_path is not None else None
+    metadata["repair_mode_layers"] = repair_mode_layers(SCORE_LAYER_NAMES)
+    saved_by_source = {int(row["source_row_index"]): row for row in source_rows}
+
+    rows: list[dict[str, Any]] = []
+    for record in records:
+        saved = saved_by_source.get(record.source_row_index)
+        extraction, adapter_errors = _saved_extraction(saved, note_text=record.note_text)
+        parse_errors = [
+            *adapter_errors,
+            *validate_typed_extraction(extraction, note_text=record.note_text),
+        ]
+        mechanical = mechanical_adapter_label(extraction)
+        projection = final_projected_label(
+            extraction,
+            mechanical,
+            context_text=record.note_text,
+        )
+        score_layers = _score_layers(record, extraction, mechanical, projection)
+        rows.append(
+            {
+                "source_row_index": record.source_row_index,
+                "split": split,
+                "split_manifest": split_manifest,
+                "pipeline_family": PIPELINE_FAMILY,
+                "pipeline_name": PROMPT_VERSION,
+                "prompt_version": PROMPT_VERSION,
+                "typed_input": build_typed_inputs(record),
+                "raw_output": _raw_output_from_extraction(extraction),
+                "reused_raw_output": saved is not None,
+                "call_error": None,
+                "parse_errors": parse_errors,
+                "structured_record": extraction.model_dump() if extraction else None,
+                "evidence_summary": _evidence_summary(record.note_text, extraction),
+                "mechanical_adapter": mechanical.as_dict(),
+                "final_projection": {
+                    "final_label": projection.final_label,
+                    "projection_families": list(projection.projection_families),
+                    "source_label": projection.source_label,
+                },
+                "component_status": _component_status(
+                    extraction=extraction,
+                    parse_errors=parse_errors,
+                    mechanical=mechanical,
+                    score_layers=score_layers,
+                    call_error=None,
+                ),
+                "score_layers": score_layers,
+                "repair_changes": _repair_changes(score_layers),
+                "repair_mode_layers": repair_mode_layers(SCORE_LAYER_NAMES),
+                "reference": {
+                    "gold_label": record.gold_label,
+                    "gold_normalized_label": record.gold_normalized_label,
+                    "gold_label_kind": str(record.gold_label_kind),
+                    "gold_monthly_frequency": record.gold_monthly_frequency,
+                    "row_ok": record.row_ok,
+                },
+            }
+        )
+
+    metadata["summary"] = summarize_records(rows)
+    return rows, metadata
+
+
 def summarize_records(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     """Summarize the Decision 0007 validation smoke."""
 
@@ -633,12 +720,15 @@ def summarize_records(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         ),
         "component_failures": dict(sorted(component_failures.items())),
         "repair_changed_rows": sum(bool(row.get("repair_changes")) for row in rows),
+        "reused_raw_outputs": sum(bool(row.get("reused_raw_output")) for row in rows),
+        "projection_family_counts": _projection_family_counts(rows),
     }
     for layer in SCORE_LAYER_NAMES:
         layer_summary = heavy_reasoner._layer_summary(rows, layer)
         for key, value in layer_summary.items():
             summary[f"{layer}_{key}"] = value
     summary.update(_adapter_deltas(rows))
+    summary.update(_projection_deltas(rows))
     summary["decision_0007_outcome"] = _decision_0007_outcome(summary)
     return summary
 
@@ -660,6 +750,7 @@ def write_report(
     path.parent.mkdir(parents=True, exist_ok=True)
     summary = metadata.get("summary") or summarize_records(rows)
     outcome = str(summary.get("decision_0007_outcome", "revise"))
+    surface_label = f"{metadata.get('split')}{summary.get('examples', 0)}"
     lines = [
         "# Gan 2026 LLM-Heavy Evidence Selection With Deterministic Adapters",
         "",
@@ -672,22 +763,31 @@ def write_report(
         f"- Rows: {summary.get('examples', 0)}",
         f"- Model: `{metadata.get('model')}`",
         f"- Mode: `{metadata.get('mode')}`",
+        f"- Replay source: `{metadata.get('reuse_source')}`",
         f"- Primary score layer: `{PRIMARY_SCORE_LAYER}`",
         f"- Decision 0007 outcome: `{outcome}`",
         "",
-        "## Predeclared Smoke",
+        "## Replay Scope",
         "",
-        "- Surface: `validation25` under `gan2026_split_v1`.",
+        f"- Surface: `{surface_label}` under `{metadata.get('split_manifest')}`.",
         (
             "- Primary question: can typed selected fact/evidence/operand output support "
-            "mechanical adapters without deterministic clinical replacement?"
+            "mechanical adapters and the final projection layer without deterministic "
+            "clinical replacement?"
         ),
-        "- Stop rule: promotion requires the Decision 0007 validation25 gate.",
+        (
+            "- Stop rule: do not escalate broader validation until raw/mechanical/final "
+            "ablations are recorded."
+        ),
         "",
-        "## Smoke Summary",
+        "## Replay Summary",
         "",
         (
             f"- Structured typed outputs: {summary.get('structured_records', 0)}/"
+            f"{summary.get('examples', 0)}"
+        ),
+        (
+            f"- Reused raw outputs: {summary.get('reused_raw_outputs', 0)}/"
             f"{summary.get('examples', 0)}"
         ),
         f"- Adapter parse failures: {summary.get('adapter_parse_failures', 0)}",
@@ -736,6 +836,26 @@ def write_report(
                 "- Adapter raw-correct to wrong: "
                 f"{summary.get('mechanical_adapter_raw_correct_to_wrong', 0)}"
             ),
+            (
+                "- Final projection raw-wrong to correct: "
+                f"{summary.get('final_projection_raw_wrong_to_correct', 0)}"
+            ),
+            (
+                "- Final projection raw-correct to wrong: "
+                f"{summary.get('final_projection_raw_correct_to_wrong', 0)}"
+            ),
+            (
+                "- Final projection mechanical-wrong to correct: "
+                f"{summary.get('final_projection_mechanical_wrong_to_correct', 0)}"
+            ),
+            (
+                "- Final projection mechanical-correct to wrong: "
+                f"{summary.get('final_projection_mechanical_correct_to_wrong', 0)}"
+            ),
+            "",
+            "## Final Projection Families",
+            "",
+            *_projection_family_lines(summary),
             "",
             "## Row Review",
             "",
@@ -752,6 +872,29 @@ def write_report(
         ]
     )
     path.write_text("\n".join(lines), encoding="utf-8")
+
+
+def _saved_extraction(
+    saved: Mapping[str, Any] | None,
+    *,
+    note_text: str,
+) -> tuple[LlmHeavyEvidenceSelectionRecord | None, list[str]]:
+    if saved is None:
+        return None, ["missing_saved_output"]
+    structured = saved.get("structured_record")
+    if not structured and saved.get("raw_output"):
+        try:
+            structured = json.loads(str(saved["raw_output"]))
+        except json.JSONDecodeError as exc:
+            return None, [f"adapter_parse_or_validation_error: {exc}"]
+    if not structured:
+        return None, ["missing_structured_record"]
+    try:
+        extraction = LlmHeavyEvidenceSelectionRecord.model_validate(structured)
+        extraction = _repair_evidence_copy_artifacts(extraction, note_text)
+    except (TypeError, ValidationError) as exc:
+        return None, [f"adapter_parse_or_validation_error: {exc}"]
+    return extraction, []
 
 
 def _frequency_adapter(
@@ -1011,6 +1154,51 @@ def _adapter_deltas(rows: Sequence[Mapping[str, Any]]) -> dict[str, int]:
     }
 
 
+def _projection_deltas(rows: Sequence[Mapping[str, Any]]) -> dict[str, int]:
+    raw_wrong_to_correct = 0
+    raw_correct_to_wrong = 0
+    mechanical_wrong_to_correct = 0
+    mechanical_correct_to_wrong = 0
+    for row in rows:
+        layers = row.get("score_layers") or {}
+        raw = layers.get("raw_model_parser_label") or {}
+        mechanical = layers.get("mechanical_adapter_label") or {}
+        final = layers.get("final_projected_label") or {}
+        raw_correct = bool(raw.get("purist_correct"))
+        mechanical_correct = bool(mechanical.get("purist_correct"))
+        final_correct = bool(final.get("purist_correct"))
+        if not raw_correct and final_correct:
+            raw_wrong_to_correct += 1
+        if raw_correct and not final_correct:
+            raw_correct_to_wrong += 1
+        if not mechanical_correct and final_correct:
+            mechanical_wrong_to_correct += 1
+        if mechanical_correct and not final_correct:
+            mechanical_correct_to_wrong += 1
+    return {
+        "final_projection_raw_wrong_to_correct": raw_wrong_to_correct,
+        "final_projection_raw_correct_to_wrong": raw_correct_to_wrong,
+        "final_projection_mechanical_wrong_to_correct": mechanical_wrong_to_correct,
+        "final_projection_mechanical_correct_to_wrong": mechanical_correct_to_wrong,
+    }
+
+
+def _projection_family_counts(rows: Sequence[Mapping[str, Any]]) -> dict[str, int]:
+    counts = Counter(
+        family
+        for row in rows
+        for family in (row.get("final_projection") or {}).get("projection_families") or []
+    )
+    return dict(sorted(counts.items()))
+
+
+def _projection_family_lines(summary: Mapping[str, Any]) -> list[str]:
+    counts = summary.get("projection_family_counts") or {}
+    if not counts:
+        return ["- No final projection repair families fired."]
+    return [f"- `{family}`: {count}" for family, count in sorted(counts.items())]
+
+
 def _decision_0007_outcome(summary: Mapping[str, Any]) -> str:
     examples = int(summary.get("examples", 0))
     if examples == 0:
@@ -1090,17 +1278,17 @@ def _failure_family(row: Mapping[str, Any]) -> str:
 def _interpretation_text(outcome: str) -> str:
     if outcome == "promote_to_validation50_allowed_by_gate":
         return (
-            "This validation25 Decision 0007 smoke passes the typed-output and "
-            "mechanical-adapter gate. Escalation may be considered only as a separately "
-            "predeclared validation50 run."
+            "This Decision 0007 replay passes the typed-output, mechanical-adapter, "
+            "and final-projection audit gate. Broader validation may be considered only "
+            "as a separately predeclared run."
         )
     if outcome == "reject":
         return (
-            "This validation25 Decision 0007 smoke fails at least one hard selected-fact, "
-            "evidence, operand, or adapter gate. Do not escalate this artifact."
+            "This Decision 0007 replay fails at least one hard selected-fact, evidence, "
+            "operand, adapter, or projection gate. Do not escalate this artifact."
         )
     return (
-        "This validation25 Decision 0007 smoke is interpretable but not promotable. "
+        "This Decision 0007 replay is interpretable but not promotable. "
         "Triage wrong selected fact, evidence exactness, missing operands, then adapter rendering."
     )
 
