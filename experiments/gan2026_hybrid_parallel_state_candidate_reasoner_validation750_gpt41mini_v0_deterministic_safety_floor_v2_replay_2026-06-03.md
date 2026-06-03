@@ -8,7 +8,7 @@
 - Model: `openai/gpt-4.1-mini`
 - Mode: `prompt-only`
 - Claim language: hybrid validation development result with deterministic candidate, state-graph, LLM-candidate, adjudicator, and adapter layers.
-- Smoke outcome: `promote_to_50`
+- Run gate outcome: `full_validation_development_result`
 
 ## Smoke Summary
 

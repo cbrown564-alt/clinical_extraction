@@ -639,7 +639,8 @@ def summarize_records(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         for key, value in layer_summary.items():
             summary[f"{layer}_{key}"] = value
     summary.update(_adapter_deltas(rows))
-    summary["validation25_smoke_outcome"] = _validation25_smoke_outcome(summary)
+    summary["run_gate_outcome"] = _run_gate_outcome(summary)
+    summary["validation25_smoke_outcome"] = summary["run_gate_outcome"]
     return summary
 
 
@@ -677,7 +678,7 @@ def write_report(
             "- Claim language: hybrid validation development result with deterministic "
             "candidate, state-graph, LLM-candidate, adjudicator, and adapter layers."
         ),
-        f"- Smoke outcome: `{summary.get('validation25_smoke_outcome')}`",
+        f"- Run gate outcome: `{summary.get('run_gate_outcome')}`",
         "",
         "## Smoke Summary",
         "",
@@ -1197,7 +1198,7 @@ def _selected_source_type_counts(rows: Sequence[Mapping[str, Any]]) -> Counter[s
     return counts
 
 
-def _validation25_smoke_outcome(summary: Mapping[str, Any]) -> str:
+def _run_gate_outcome(summary: Mapping[str, Any]) -> str:
     examples = int(summary.get("examples", 0))
     if examples == 0:
         return "reject"
@@ -1212,12 +1213,22 @@ def _validation25_smoke_outcome(summary: Mapping[str, Any]) -> str:
     )
     if blocking:
         return "reject"
+    if examples >= 750:
+        return "full_validation_development_result"
+    if examples >= 250:
+        return "validation250_development_result"
+    if examples >= 50:
+        return "validation50_signal_result"
     if (
         int(summary.get("candidate_recall_rescues", 0)) > 0
         or int(summary.get("graph_representability_rescues", 0)) > 0
     ):
         return "promote_to_50"
     return "revise"
+
+
+def _validation25_smoke_outcome(summary: Mapping[str, Any]) -> str:
+    return _run_gate_outcome(summary)
 
 
 def _row_review_lines(rows: Sequence[Mapping[str, Any]]) -> list[str]:

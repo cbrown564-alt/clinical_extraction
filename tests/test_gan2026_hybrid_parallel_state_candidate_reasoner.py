@@ -334,6 +334,26 @@ def test_run_split_deterministic_safety_floor_blocks_llm_only_low_state() -> Non
     assert metadata["summary"]["deterministic_correct_regressions"] == 0
 
 
+def test_full_validation_summary_uses_development_gate_label() -> None:
+    rows, _metadata = run_split(
+        [_record()],
+        split="validation",
+        split_manifest="gan2026_split_v1",
+        model="openai/gpt-4.1-mini",
+        temperature=0.0,
+        max_tokens=100,
+        mode="prompt-only",
+        reuse_llm_candidate_outputs={22: _llm_candidate_raw()},
+        reuse_adjudicator_outputs={22: _adjudicator_raw()},
+    )
+    full_validation_rows = rows * 750
+
+    summary = summarize_records(full_validation_rows)
+
+    assert summary["run_gate_outcome"] == "full_validation_development_result"
+    assert summary["validation25_smoke_outcome"] == "full_validation_development_result"
+
+
 def test_prompt_only_without_reuse_marks_llm_layers_not_run() -> None:
     rows, metadata = run_split(
         [_record()],
