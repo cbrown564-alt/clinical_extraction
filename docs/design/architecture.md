@@ -33,6 +33,13 @@ LLM model policy is documented in `docs/design/model_strategy.md`. Model choice
 should be recorded as run metadata so experiments can distinguish schema,
 prompt, deterministic-rule, optimizer, and runtime-model effects.
 
+Candidate-promotion and architecture-comparison work should also follow the
+component evidence contract in
+`docs/design/component_evidence_attribution_architecture.md`. That contract
+defines how every candidate answers which component solved each clinical
+subproblem, under which evidence gate, with what regression risk, and on which
+distribution.
+
 ## Rule Taxonomy
 
 Deterministic behavior should not collapse into an unstructured regex pile. Rules should be grouped by clinical meaning and expected portability:

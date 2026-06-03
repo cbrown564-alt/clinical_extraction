@@ -1,7 +1,7 @@
 # Clinical Extraction Observatory
 
-**Status:** Phase 3 complete — all Phase 3 features implemented; ready for Phase 4  
-**Last updated:** 2026-06-02 (post-fix: artifact loading + gap chart redesign)  
+**Status:** Phase 4 complete — all Phase 4 features implemented  
+**Last updated:** 2026-06-03 (Phase 4: Laboratory + Gallery + Prompt Diff)  
 **Scope:** Frontend application for exploring, configuring, comparing, and understanding hybrid clinical-extraction pipelines.  
 **Backend dependency:** Reuses existing `clinical_extraction` package, JSONL artifacts, run registry, and split protocol without modification. Backend extensions are noted but deferred.
 
@@ -398,21 +398,36 @@ Any UI toggle state must serialise to a named config object that can be:
 - ✅ **Generalisation Gap** — horizontal grouped bar chart for runs with both validation and test rows. Each run is a row with two bars (validation in steel blue, test in amber) extending from 0 to accuracy. X-axis ticks at 0%, 25%, 50%, 75%, 100% with "Purist Accuracy" label. Gap (Δ) shown as monospace annotation inline with the row label. Scientific, rigorous typography; no decorative clutter.
 - ✅ **Run Selector** — family-grouped chips with decision badges (accept/reject/revise), row counts, and JSONL availability indicators.
 
+**Rudimentary / deferred to Phase 5:**
+- 🟡 Confusion-matrix cell mosaics currently show label strings; linking to full note cards and stage-by-stage autopsy traces requires Workbench integration.
+- 🟡 Generalisation Gap error-family colouring (temporal conflict, seizure-free boundary, etc.) requires standardised error taxonomy tagging (see §9).
+- 🟡 Run Ladder hover metadata (model, prompt version, git commit) is available in registry but not yet rendered in tooltips.
+
 **Data consumed:**
 - `experiments/registry.jsonl` — canonical run log
 - `experiments/*.jsonl` — per-run artifacts parsed client-side for scores, confusion matrices, and validation/test splits
 - **Artifact schema variants handled:** `scores.adjudicator` (hybrid), `score_layers.*` (LLM claim table / direct labeler / structured events), `comparison` + `decision_record` (LLM first direct extractor), flat ablation schema (`purist_predicted_category` + `purist_gold_category`), and replacement post-processing ablation (`purist_correct` + `purist_category_transition`).
 
-**Rudimentary / deferred to Phase 4–5:**
-- 🟡 Confusion-matrix cell mosaics currently show label strings; linking to full note cards and stage-by-stage autopsy traces requires Workbench integration.
-- 🟡 Generalisation Gap error-family colouring (temporal conflict, seizure-free boundary, etc.) requires standardised error taxonomy tagging (see §9).
-- 🟡 Run Ladder hover metadata (model, prompt version, git commit) is available in registry but not yet rendered in tooltips.
-
 ### Phase 4: The Laboratory (Rules & Ablations)
-- Rule inventory with live simulation.
-- Rule interaction graph.
-- Error Gallery with taxonomy filtering and transition matrix.
-- Prompt variant diff viewer.
+**Goal:** Treat deterministic rules as explicit experimental variables. Explore errors as curated specimens. Compare prompt variants as structured diffs.
+
+**Implemented:**
+- ✅ **Laboratory page (`/laboratory`)** — Three-tab layout: Rule Inventory, Co-Fire Matrix, Prompt Diff.
+- ✅ **Rule inventory** — Filterable card grid of every rule with search, group filter, and portability filter. Each card shows rule ID, portability badge, description, and regex preview. Rich Radix Tooltips show full examples, exclusion flags, and regex. Group-level toggles (enabled/disabled) with visual strike-through. Per-rule on/off toggles with inactive state when group is disabled.
+- ✅ **Live ablation simulation** — Right-hand simulation panel calls `/run/ablation` with the current `AblationConfig`. Supports split selection and optional row limit. Displays purist/pragmatic accuracy and F1, per-label F1 breakdown with color-coded severity, and top error transitions (gold → predicted) sorted by frequency.
+- ✅ **Rule co-fire matrix** — SVG-based group×group matrix. Diagonal cells show rule count per group (coloured by group). Off-diagonal cells show shared portability levels between groups, with opacity encoding strength. No D3 dependency; pure SVG with overflow scroll.
+- ✅ **Prompt variant diff viewer** — Side-by-side policy taxonomy diff between any two prompt modules. Shows policies as rows with `NEW`, `CHG`, `removed`, or `same` status. Baseline/compare selectors. Portability badges per policy. Controlled variable and description shown for each policy.
+- ✅ **Error Gallery page (`/gallery`)** — Two-tab layout: Error Gallery and Transition Matrix.
+- ✅ **Error Gallery** — Filters: all / purist wrong / pragmatic wrong / both wrong / purist-only wrong, plus category filter. Specimen cards show run ID, gold vs predicted labels, category transition, purist/pragmatic correctness badges, and a 4-dot mini stage trace (extract → normalise → select → score with divergence highlighted).
+- ✅ **Transition Matrix** — Select run A and run B from currently selected Observatory runs. Filter transitions: A wrong B right, A right B wrong, both wrong, both right. Cards show both predictions, gold label, and status badge ("B fixes A", "B regresses A", etc.). Row index preserved for alignment.
+- ✅ **Navigation** — Navbar updated with Laboratory and Gallery links. Colour-coded badges: deterministic-alt for Laboratory, error for Gallery.
+
+**Rudimentary / deferred to Phase 5:**
+- 🟡 Real-time ablation simulation caching (§9.5) — each simulation is a fresh request.
+- 🟡 Rule interaction graph based on actual per-rule firing telemetry (§9.1) — current matrix uses group-level portability overlap as a proxy.
+- 🟡 Error taxonomy tree with severity sparklines (§9.2) — requires backend error-family tagging.
+- 🟡 Confusion-matrix cell mosaic linking to Workbench autopsy traces — requires cross-view routing.
+- 🟡 Ghost path preview when hovering ablation toggles (§5.1) — deferred to Architect view enhancement.
 
 ### Phase 5: The Review (Paper-Ready Export)
 - Exportable component ablation tables.

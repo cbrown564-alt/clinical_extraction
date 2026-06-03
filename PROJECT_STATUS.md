@@ -10,45 +10,39 @@ component ablations, split discipline, and conservative benchmark language.
 
 ## Current Strategy
 
-The current leading development candidate is
-`hybrid_parallel_state_candidate_reasoner` with a deterministic safety-floor
-final policy. Full validation750 no-call replay of the live GPT-4.1 mini
-outputs reaches 697/750 Purist (0.9293) and 704/750 Pragmatic (0.9387), with
-750/750 exact selected evidence, 750/750 valid source ids, 0
-deterministic-correct regressions, and 136/750 safety-floor fallbacks.
+The leading development lane is hybrid deterministic safety-floor architecture
+work, not an LLM-first or holdout claim. Full validation750 no-call replay of
+`hybrid_parallel_state_candidate_reasoner` reaches 697/750 Purist (0.9293) and
+704/750 Pragmatic (0.9387), with 750/750 exact selected evidence, 750/750 valid
+source ids, 0 deterministic-correct regressions, and 136/750 safety-floor
+fallbacks.
 
-Durable artifacts: hybrid validation interpretation,
-`docs/research/gan2026_frozen_test_audit_plan_2026-06-03.md`, Decision 0007
-validation250 rejection
-`experiments/gan2026_llm_heavy_evidence_selection_with_deterministic_adapters_validation250_gpt41mini_v1_live_2026-06-03.md`,
-and hidden-family/first-failure atlas
-`docs/research/gan2026_hidden_family_first_failure_atlas_2026-06-03.md`.
-The atlas-derived hard-slice predeclaration is fixed in
-`experiments/gan2026_atlas_candidate_generation_projection_hard_slices_2026-06-03.md`
-and JSON manifest
-`experiments/gan2026_atlas_candidate_generation_projection_hard_slices_2026-06-03.json`.
-The no-call fixed-slice diagnostic is recorded in
-`experiments/gan2026_atlas_candidate_generation_projection_hard_slice_diagnostic_2026-06-03.md`.
-Regenerate it with `gan2026-atlas-hard-slice-diagnostic`; the standard report
-now includes automated "Rows That Would Change" tables plus a required
-after-generation human interpretation note.
+Candidate promotion now has a durable component evidence contract:
+`docs/design/component_evidence_attribution_architecture.md`, Decision 0008
+`docs/decisions/0008-component-evidence-contract-for-candidate-promotion.md`,
+and runbook `docs/runbooks/gan2026_component_evidence_audit.md`. Future
+promotion, LLM-superiority, and holdout-readiness claims must answer the
+clinical subproblem/component/evidence/regression/distribution questions before
+broader validation or locked-test movement.
 
-The selective safety-floor fixed-slice replay has graduated from pure
-diagnostic accounting to a separate frozen validation-cycle candidate seed:
-`combined_selective_gate_v0`, with projection-boundary arbitration first and
-LLM sidecar rescue second. This is not production promotion. The freeze is only
-for a named validation candidate because the fixed slices showed high-precision
-rescues, 0 deterministic-correct regressions, exact evidence, and valid source
-ids, while remaining narrow, no-call, and validation-derived.
-The frozen manifest is
-`experiments/gan2026_selective_safety_floor_gate_v0_validation_cycle_manifest_2026-06-03.md`
-with machine-readable JSON alongside it.
-The validation750 no-call replay is recorded in
-`experiments/gan2026_selective_safety_floor_gate_v0_validation750_replay_2026-06-03.md`
-and `.json`/`.jsonl`: `selective_safety_floor_gate_v0` reaches 708/750
-Purist (0.9440) and 715/750 Pragmatic (0.9533), with 21 changed rows, 11
+`selective_safety_floor_gate_v0` is a frozen validation-cycle candidate seed,
+not production promotion. Validation750 no-call replay reaches 708/750 Purist
+(0.9440) and 715/750 Pragmatic (0.9533), with 21 changed rows, 11
 wrong-to-correct, 0 correct-to-wrong, 0 deterministic-correct regressions, and
-21/21 changed rows with exact evidence and valid source ids.
+21/21 changed rows with exact evidence and valid source ids. The validation
+manifest remains validation-only; locked test requires
+`docs/research/gan2026_selective_safety_floor_gate_v0_frozen_test_audit_plan_2026-06-03.md`.
+Frozen-test first readout is now recorded in
+`experiments/gan2026_selective_safety_floor_gate_v0_test450_frozen_audit_first_readout_2026-06-03.md`
+with `.json`/`.jsonl` and frozen-test manifest
+`experiments/gan2026_selective_safety_floor_gate_v0_frozen_test_audit_manifest_2026-06-03.json`.
+On test450, `selective_safety_floor_gate_v0` improves the safety-floor baseline
+from 343/450 to 351/450 Purist and 354/450 to 361/450 Pragmatic, with 14
+changed rows, 8 wrong-to-correct, 0 correct-to-wrong, 0 deterministic-correct
+regressions, and 14/14 changed rows with exact evidence and valid source ids.
+This is a valid frozen holdout first readout, but still hybrid deterministic
+safety-floor evidence, not LLM-first, production-policy, benchmark-comparable,
+or tuning evidence.
 
 Attribution caveat: this is a hybrid deterministic-safety-floor development
 result, not an LLM-first result and not a benchmark or holdout claim. Decision
@@ -69,6 +63,9 @@ and projection arbitration before another broad architecture or multi-agent run.
 - Keep semantic repair, graph projection, scorer normalization, deterministic
   adapters, and production policy separately named and ablated.
 - Use typed DSPy outputs with scoped `JSONAdapter` for new LLM/DSPy architectures.
+- Before promoting a candidate or claiming LLM superiority, apply Decision 0008:
+  component evidence matrix, exact changed-row evidence, LLM delta accounting,
+  and deterministic-correct regression accounting are required.
 
 ## Active Priorities
 
@@ -80,18 +77,17 @@ and projection arbitration before another broad architecture or multi-agent run.
    projection, and LLM clinical-selection hard slices before any broad rerun.
 4. Keep Decision 0007 alive as the LLM-heavy lane, but do not escalate v1 until
    selected-fact and operand failures have a targeted validation-cycle plan.
-5. Answer the critical research questions for each candidate before promotion:
-   - For each clinical subproblem, can the system show which component solves it, under what evidence constraints, with what regression risk, and on which distribution?
-   - Which clinically meaningful decisions can the LLM make more robustly than deterministic rules under exact-evidence and regression constraints?
-   - When the LLM changes the deterministic answer, how often is that change correct?
+5. Use Decision 0008 and the component evidence audit runbook to answer the
+   critical research questions for each candidate before promotion.
 
 ## Work Board
 
 ### Now
 
-- Decide whether to write a separate frozen-test audit plan for
-  `selective_safety_floor_gate_v0`; do not run locked test from the validation
-  manifest.
+- Apply the component evidence audit contract to the next candidate branch:
+  either post-hoc final-evaluation interpretation of the
+  `selective_safety_floor_gate_v0` frozen audit or the validation25
+  typed-operations smoke.
 
 ### Next
 
@@ -102,9 +98,9 @@ and projection arbitration before another broad architecture or multi-agent run.
   cluster size, seizure-free duration, temporal anchor, semiology grouping,
   uncertainty type, and selected evidence ID are now typed outputs, with a
   model-derived state-node graph projection side-car.
-- If freezing `selective_safety_floor_gate_v0` for holdout, write a new
-  frozen-test audit plan that fixes candidate, source artifacts, gate order,
-  scorer, slice definitions, and inspection policy before any locked-test read.
+- If doing row-level review of the `selective_safety_floor_gate_v0` holdout,
+  treat it only as post-hoc final-evaluation analysis; any fix must start a new
+  validation-cycle candidate.
 - Keep Qwen/minimal-evidence-selector transfer as a secondary lane after the safety-floor candidate is frozen.
 
 ### Backlog
@@ -113,51 +109,40 @@ and projection arbitration before another broad architecture or multi-agent run.
 
 ### Blocked
 
-- Benchmark language and holdout analysis are blocked until the frozen-test plan is followed without post-test tuning.
+- Benchmark-comparable language remains blocked; the
+  `selective_safety_floor_gate_v0` holdout first readout is a local frozen
+  generalization audit only.
 - Qwen 3.6 full v5 validation ladder remains blocked until strict schema-compatible output or a named Qwen schema-repair ablation exists.
 
 ### Done Recently
 
+- 2026-06-03: Added the component evidence attribution architecture, Decision
+  0008 promotion contract, and Gan 2026 component evidence audit runbook. Also
+  created local Codex skills for repeatable component-evidence and LLM-delta
+  audits.
+- 2026-06-03: Ran the no-call frozen-test first readout for
+  `selective_safety_floor_gate_v0`: 351/450 Purist and 361/450 Pragmatic versus
+  baseline 343/450 and 354/450, with 14 changed rows, 8 wrong-to-correct, 0
+  correct-to-wrong, 0 deterministic-correct regressions, and 14/14 changed rows
+  with exact evidence and valid source ids. The Markdown first readout omits
+  row-level locked-test details.
+- 2026-06-03: Decided that `selective_safety_floor_gate_v0` needs its own
+  frozen-test audit plan before any holdout use; no locked test was run.
 - 2026-06-03: Ran the frozen validation-only no-call replay for
-  `selective_safety_floor_gate_v0`:
-  `experiments/gan2026_selective_safety_floor_gate_v0_validation750_replay_2026-06-03.md`,
-  `.json`, and `.jsonl`. The candidate improves the safety-floor baseline from
-  697/750 to 708/750 Purist and 704/750 to 715/750 Pragmatic, with 21 changed
-  rows, 11 wrong-to-correct, 0 correct-to-wrong, 1.0000 changed-label
-  precision, 0 deterministic-correct regressions, and 21/21 changed rows with
-  exact evidence and valid source ids. The report explicitly calls out row
-  15193: `unknown` scores in the same Purist/Pragmatic category as
-  `multiple per 13 month`, so that rescue remains a benchmark-format caveat,
-  not exact-label normalization.
+  `selective_safety_floor_gate_v0`: 708/750 Purist, 715/750 Pragmatic, 21
+  changed rows, 11 wrong-to-correct, 0 correct-to-wrong, and 21/21 changed rows
+  with exact evidence and valid source ids.
 - 2026-06-03: Implemented the typed-operations LLM-heavy lane scaffold:
-  `llm_only_typed_operations_reasoner`, registered in the shared
-  `gan2026-llm-experiment` CLI. It uses scoped DSPy `JSONAdapter`, extracts the
-  typed operands requested in the work board, validates selected evidence IDs
-  and exact evidence, and projects a graph built only from model-extracted
-  operation nodes. Targeted tests and prompt-hygiene coverage are in place; no
-  live validation smoke has been run yet.
-- 2026-06-03: Wrote the frozen `selective_safety_floor_gate_v0`
-  validation-cycle manifest:
-  `experiments/gan2026_selective_safety_floor_gate_v0_validation_cycle_manifest_2026-06-03.md`
-  and `.json`. It freezes candidate name, source artifacts, gate order,
-  scorer/repair policy, validation-only inspection policy, required reporting,
-  and promote/revise/reject stop rules; locked test remains out of scope.
-- 2026-06-03: Interpreted the selective safety-floor fixed-slice replay as
-  strong enough to seed a separately frozen validation-cycle candidate, not
-  strong enough for production promotion or holdout language.
-  `combined_selective_gate_v0` is the candidate seed because individual
-  projection and LLM-sidecar gates cleared fixed-slice regression accounting:
-  0 deterministic-correct regressions, 1.0000 changed-label precision on the
-  target rescue slices, exact changed-row evidence, and valid source ids. Caveat:
-  the LLM sidecar still includes a scoring-path convention where `unknown`
-  counts Purist-correct against `multiple per 13 month`; preserve that as a
-  validation-cycle attribution caveat.
+  `llm_only_typed_operations_reasoner`; no live validation smoke has been run
+  yet.
+- 2026-06-03: Wrote the frozen `selective_safety_floor_gate_v0` validation-cycle
+  manifest; locked test remains out of scope.
+- 2026-06-03: Interpreted selective safety-floor fixed-slice replay as strong
+  enough to seed a separately frozen validation-cycle candidate, not strong
+  enough for production promotion or holdout language.
 - 2026-06-03: Implemented and generated the predeclared selective safety-floor
-  no-call replay over the fixed atlas validation slices:
-  `experiments/gan2026_selective_safety_floor_gate_replay_2026-06-03.md`,
-  `.json`, and `.jsonl`. Projection gate rescues 5/11 and 4/6 Purist misses;
-  LLM sidecar rescues 6/44 and 6/26; combined gate has 0 deterministic-correct
-  regressions across all 87 slice memberships.
+  no-call replay over fixed atlas validation slices; combined gate has 0
+  deterministic-correct regressions across all 87 slice memberships.
 - 2026-06-03: Built the hidden-family atlas and fixed hard-slice surfaces.
   Among 89 Purist misses, first-failure owners were candidate generation (44),
   LLM clinical selection (22), projection (9), operand exposure (8),
@@ -172,7 +157,7 @@ and projection arbitration before another broad architecture or multi-agent run.
 
 ## Immediate Next Step
 
-Choose the next branch of work: write a frozen-test audit plan for
-`selective_safety_floor_gate_v0`, or continue with the validation25
-typed-operations smoke. Locked test remains blocked until a new frozen-test plan
-exists.
+Choose the next branch of work: post-hoc final-evaluation interpretation of the
+`selective_safety_floor_gate_v0` holdout readout, or continue with the
+validation25 typed-operations smoke. Do not tune from locked-test row-level
+behavior.

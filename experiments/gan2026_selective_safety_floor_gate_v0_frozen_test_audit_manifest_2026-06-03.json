@@ -1,0 +1,45 @@
+{
+  "artifact_kind": "gan2026_frozen_test_audit_manifest",
+  "audit_plan": "docs/research/gan2026_selective_safety_floor_gate_v0_frozen_test_audit_plan_2026-06-03.md",
+  "candidate_name": "selective_safety_floor_gate_v0",
+  "candidate_seed": "combined_selective_gate_v0",
+  "claim_language": "Frozen-test first readout for a hybrid deterministic-safety-floor selective-action candidate; not an LLM-first, production-policy, benchmark-comparable, or tuning result.",
+  "date": "2026-06-03",
+  "frozen_candidate_policy": {
+    "baseline_layer": "baseline_safety_floor_v2",
+    "component_layers": [
+      "projection_boundary_state_priority_gate_v0",
+      "llm_candidate_sidecar_rescue_gate_v0",
+      "combined_selective_gate_v0"
+    ],
+    "gate_order": [
+      "baseline_safety_floor_v2",
+      "projection_boundary_state_priority_gate_v0",
+      "llm_candidate_sidecar_rescue_gate_v0_if_projection_did_not_change_row"
+    ],
+    "prediction_bearing_layer": "selective_safety_floor_gate_v0",
+    "preserve_baseline_label": true
+  },
+  "frozen_input_hashes": {
+    "data/Gan (2026)/splits/gan2026_split_v1.json": "c5f512d8744261916bd6d92562430489a3ba0494b0bf7c6575bfaa9e58680143",
+    "experiments/gan2026_hybrid_parallel_state_candidate_reasoner_test450_gpt41mini_v0_deterministic_safety_floor_live_2026-06-03.jsonl": "98858a823ecfb0b2884cbd0a1adda7c218c4eb16c6c409a31f443509cb999a72",
+    "experiments/gan2026_selective_safety_floor_gate_v0_validation750_replay_2026-06-03.json": "828b878cb737d5c0c385ae2a7891c1d16dcfd5ce49f0d17adc105e33d1f14e84",
+    "experiments/gan2026_selective_safety_floor_gate_v0_validation_cycle_manifest_2026-06-03.json": "6febc36e3e809b46acba0abb7b6e7c05086a9117b865c1359bf5a4de0a4a0397"
+  },
+  "inspection_policy": {
+    "first_readout": "aggregate_and_predeclared_slices_only",
+    "row_level_locked_test_details_in_markdown": false,
+    "row_level_review_after_first_readout": "post_hoc_final_evaluation_only"
+  },
+  "pre_run_checks": {
+    "clinical_extraction_import": "/Users/cobro/code/clinical-extraction/src/clinical_extraction/__init__.py",
+    "locked_test_row_level_inspection_for_tuning": false,
+    "targeted_tests": "source .venv/bin/activate && python -m pytest tests/test_gan2026_selective_safety_floor_gate_replay.py",
+    "targeted_tests_result": "9 passed on 2026-06-03"
+  },
+  "planning_commit": "153c580",
+  "source_artifact": "experiments/gan2026_hybrid_parallel_state_candidate_reasoner_test450_gpt41mini_v0_deterministic_safety_floor_live_2026-06-03.jsonl",
+  "split": "test",
+  "split_manifest": "gan2026_split_v1",
+  "test_surface": "test450"
+}

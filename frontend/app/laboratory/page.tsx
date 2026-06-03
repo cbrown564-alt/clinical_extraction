@@ -21,9 +21,9 @@ function LaboratoryInner() {
   const rulesQuery = useRules();
   const runAblation = useRunAblation();
 
-  const rules = rulesQuery.data?.rules ?? [];
-  const groups = rulesQuery.data?.groups ?? [];
-  const portabilityLevels = rulesQuery.data?.portability ?? [];
+  const rules = useMemo(() => rulesQuery.data?.rules ?? [], [rulesQuery.data?.rules]);
+  const groups = useMemo(() => rulesQuery.data?.groups ?? [], [rulesQuery.data?.groups]);
+  const portabilityLevels = useMemo(() => rulesQuery.data?.portability ?? [], [rulesQuery.data?.portability]);
 
   const filteredRules = useMemo(() => {
     return rules.filter((r) => {

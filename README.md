@@ -52,6 +52,14 @@ See [docs/research/contribution_thesis.md](docs/research/contribution_thesis.md)
 
 See [docs/design/model_strategy.md](docs/design/model_strategy.md) for LLM model policy and required run metadata.
 
+See
+[docs/design/component_evidence_attribution_architecture.md](docs/design/component_evidence_attribution_architecture.md)
+and
+[docs/runbooks/gan2026_component_evidence_audit.md](docs/runbooks/gan2026_component_evidence_audit.md)
+for the reusable audit contract used to decide which component solved each
+clinical subproblem, whether LLM changes to deterministic answers are correct,
+and what evidence/regression gates a candidate satisfies.
+
 ## Repository Layout
 
 ```text
