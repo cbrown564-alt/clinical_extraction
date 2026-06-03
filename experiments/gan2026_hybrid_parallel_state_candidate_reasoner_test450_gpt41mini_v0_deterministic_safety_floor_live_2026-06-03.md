@@ -4,19 +4,19 @@
 - Pipeline family: `hybrid_parallel_state_candidate_reasoner`
 - Prompt version: `gan2026_hybrid_parallel_state_candidate_reasoner_v0`
 - Split: `test` / `gan2026_split_v1`
-- Rows: 380
+- Rows: 450
 - Model: `openai/gpt-4.1-mini`
 - Mode: `live`
-- Claim language: hybrid validation development result with deterministic candidate, state-graph, LLM-candidate, adjudicator, and adapter layers.
-- Run gate outcome: `validation250_development_result`
+- Claim language: frozen locked-test generalization audit for a hybrid deterministic-safety-floor candidate with deterministic candidate, state-graph, LLM-candidate, adjudicator, and adapter layers. This is not a benchmark claim and must not be used for row-level test tuning.
+- Run gate outcome: `locked_test_generalization_audit_result`
 
 ## Smoke Summary
 
-- Structured LLM candidates: 374/380
-- Structured adjudicator records: 380/380
-- Parse/schema failures: 6
-- Selected evidence exact: 380/380
-- Selected source ids valid: 380/380
+- Structured LLM candidates: 443/450
+- Structured adjudicator records: 450/450
+- Parse/schema failures: 7
+- Selected evidence exact: 450/450
+- Selected source ids valid: 450/450
 - candidate-recall rescue rows: 0
 - graph-representability rescue rows: 11
 - deterministic-correct regressions: 0
@@ -24,18 +24,18 @@
 
 ## Score Layers
 
-- `deterministic_top_candidate`: scorable 380, Purist 283/380 (0.7447), Pragmatic 292/380 (0.7684)
-- `state_graph_projection`: scorable 380, Purist 273/380 (0.7184), Pragmatic 283/380 (0.7447)
-- `llm_candidate_selector_raw`: scorable 80, Purist 66/380 (0.1737), Pragmatic 69/380 (0.1816)
-- `hybrid_adjudicator_raw`: scorable 380, Purist 282/380 (0.7421), Pragmatic 291/380 (0.7658)
-- `hybrid_adjudicator_with_adapters`: scorable 380, Purist 283/380 (0.7447), Pragmatic 292/380 (0.7684)
-- `adapter_only_sidecar_from_adjudicator_selection`: scorable 380, Purist 283/380 (0.7447), Pragmatic 292/380 (0.7684)
+- `deterministic_top_candidate`: scorable 450, Purist 343/450 (0.7622), Pragmatic 354/450 (0.7867)
+- `state_graph_projection`: scorable 450, Purist 333/450 (0.7400), Pragmatic 345/450 (0.7667)
+- `llm_candidate_selector_raw`: scorable 95, Purist 75/450 (0.1667), Pragmatic 78/450 (0.1733)
+- `hybrid_adjudicator_raw`: scorable 450, Purist 342/450 (0.7600), Pragmatic 353/450 (0.7844)
+- `hybrid_adjudicator_with_adapters`: scorable 450, Purist 343/450 (0.7622), Pragmatic 354/450 (0.7867)
+- `adapter_only_sidecar_from_adjudicator_selection`: scorable 450, Purist 343/450 (0.7622), Pragmatic 354/450 (0.7867)
 
 ## Provenance
 
-- `deterministic_candidate`: 336
-- `llm_candidate`: 231
-- `state_graph_node`: 226
+- `deterministic_candidate`: 404
+- `llm_candidate`: 263
+- `state_graph_node`: 277
 
 ## Row Review
 
