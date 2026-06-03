@@ -58,16 +58,17 @@ The interface should feel like a high-end scientific instrument: clean, authorit
 
 ## 4. The Five Primary Views
 
-### 4.1 The Workbench (Single-Note Inspector)
+### 4.1 The Workbench (Single-Note Inspector & Pipeline Trace)
 
-**Purpose:** The hero experience. Inspect how one configuration processes one note, stage by stage, with rich inline annotation.
+**Purpose:** The hero experience. Inspect how one configuration processes one note, stage by stage, with rich inline annotation and full intermediate schema visibility.
 
 **Layout:**
-- **Left 60%:** The clinical note rendered as a formal letter. This is a **provenance surface**, not plain text.
-- **Right 40%:** A vertical **Stage Navigator** showing the pipeline as a stack of detachable, expandable cards.
+- **Top:** A two-tier control bar for specimen selection, pipeline family, and rule configuration.
+- **Horizontal stage strip:** A left-to-right navigator showing all five pipeline stages (`Extract` → `Normalise` → `Select` → `Repair` → `Score`). Each stage button shows a live summary: candidate counts, normalised labels, selected evidence, repair changes, or match status.
+- **Left 55%:** The clinical note rendered as a formal letter. This is a **provenance surface**, not plain text. As the user clicks through stages, highlights animate to show exactly which spans were touched.
+- **Right 45%:** A **Stage Inspector** showing the full intermediate schema for the active stage — candidate cards with rule metadata, normalised event trees, final-selection rationale, repair diffs, and score comparison.
 
 **Interaction design:**
-- As the user clicks through stages (`Extract` → `Normalize` → `Select` → `Repair` → `Score`), the note text animates highlights to show exactly which spans were touched at that stage.
 - Each extracted span is highlighted with a **light background tint + matching underline** in the stage's colour:
   - **Extract** → steel teal (`deterministic`)
   - **Normalise** → slate blue (`deterministic-alt`)
@@ -75,14 +76,15 @@ The interface should feel like a high-end scientific instrument: clean, authorit
   - **Score** → moss green (`success`)
   - Warm amber for LLM-generated spans (future).
   - Coral for repair-modified spans (future).
-- Hovering a span reveals its tooltip (rule ID, label) via native `title`.
-- Full floating cards with rule ID, match groups, portability badge, and rationale are deferred.
+- Hovering a span reveals a rich tooltip (rule ID, group, portability, label) via Radix Tooltip.
 - **Attribution waterfall:** For the final selected span, a horizontal stacked bar shows semantic ownership (`deterministic_extraction` | `llm_adjudication` | `format_repair` | `benchmark_normalisation`).
 - **Diff mode:** Toggle a second configuration. Changed spans pulse; unchanged spans dim. Divergence at a specific stage is called out with a stage-level badge.
+- **Live execution:** Deterministic families run against the backend immediately; LLM/hybrid families replay pre-recorded artifacts from the registry.
 
 **Data consumed:**
 - `GanRecord.note_text`
 - `PipelineResult.diagnostics` (candidate events, normalised events, final selection)
+- `PipelineTrace` (unified stage-oriented representation)
 - `decision_record` (for hybrid architectures)
 - Evidence spans with `start_char` / `end_char`
 
@@ -90,38 +92,7 @@ The interface should feel like a high-end scientific instrument: clean, authorit
 
 ---
 
-### 4.2 The Architect (Pipeline Composer)
-
-**Purpose:** Visually assemble, configure, and name pipeline architectures. Toggle rules and prompt variants and see what would change.
-
-**Layout:**
-- **Canvas centre:** A left-to-right flow diagram.
-- **Palette sidebar:** Draggable node types (Extractor, Normaliser, Selector, Validator, Repair, Scorer) grouped by family.
-
-**Nodes:**
-- Rounded rectangles, colour-coded:
-  - `rules_only` = cool steel/teal (`#2a6f6f`)
-  - `llm_only` = warm amber/gold (`#d97706`)
-  - `hybrid` = controlled purple (`#7c3aed`) at the interface
-- Each node shows its component name and a live "activity ring" (how many active rules or prompts inside).
-
-**Edges:**
-- Animated data-flow lines. Thicker = more candidates/events flowing through.
-- Red pulse = validation errors introduced at that edge.
-
-**Configuration affordances:**
-- Clicking a node expands a **drawer** with toggles for every rule group, prompt variant, and repair policy. Toggles are sorted by portability (general → task-specific → dataset-specific → benchmark-format).
-- **Ghost paths:** Hovering an ablation toggle previews the ablated path as a faint ghost without committing.
-- **Architecture comparator:** Save two architectures as "A" and "B" cards above the canvas. The entire app enters comparison mode.
-
-**Data consumed:**
-- `AblationConfig` schema
-- Rule metadata from `deterministic/rule_metadata.py`
-- Prompt version taxonomy from LLM modules
-
----
-
-### 4.3 The Observatory (Corpus Results & Run Ladder)
+### 4.2 The Observatory (Corpus Results & Run Ladder)
 
 **Purpose:** Aggregate results across validation prefixes and locked test. Surface the generalisation gap and saturation state.
 
@@ -151,7 +122,7 @@ The interface should feel like a high-end scientific instrument: clean, authorit
 
 ---
 
-### 4.4 The Error Gallery (Failure Autopsy)
+### 4.3 The Error Gallery (Failure Autopsy)
 
 **Purpose:** Curated, browsable failure analysis. Understand *why* a configuration failed and compare architectures on their actual mistakes.
 
@@ -165,7 +136,7 @@ The interface should feel like a high-end scientific instrument: clean, authorit
 
 **Comparison mode:**
 - Select two architectures. The gallery becomes a **transition matrix**.
-- Filter: "Show rows where Architecture A got wrong and Architecture B got right."
+- Filter: "Show rows where Configuration A got wrong and Configuration B got right."
 - Each card shows both traces, with the correcting stage annotated.
 
 **Data consumed:**
@@ -174,7 +145,7 @@ The interface should feel like a high-end scientific instrument: clean, authorit
 
 ---
 
-### 4.5 The Rule Laboratory (Controlled Variables)
+### 4.4 The Rule Laboratory (Controlled Variables)
 
 **Purpose:** Treat deterministic rules as explicit experimental variables. Toggle, simulate, and understand impact.
 
@@ -299,7 +270,7 @@ The backend reuses the existing `clinical_extraction` package exactly. No scorin
 
 - **Framework:** Next.js 14+ (App Router) + TypeScript + Tailwind CSS
 - **State management:** Zustand for global config comparison mode; React Query for server state
-- **Pipeline canvas:** React Flow for the Architect view
+- **Pipeline canvas:** React Flow for the Workbench view (deferred)
 - **Custom visualisations:** D3.js for confusion matrix, generalisation gap, rule interaction graph, and run ladder
 - **Virtualised lists:** React Virtuoso for the Error Gallery
 - **Note rendering:** Custom `NoteRenderer` component that takes raw text + evidence spans with `start_char`/`end_char` and renders them as absolutely-positioned highlight layers. This is critical for pixel-accurate evidence visualisation.
@@ -429,7 +400,7 @@ Any UI toggle state must serialise to a named config object that can be:
 - 🟡 Rule interaction graph based on actual per-rule firing telemetry (§9.1) — current matrix uses group-level portability overlap as a proxy.
 - 🟡 Error taxonomy tree with severity sparklines (§9.2) — requires backend error-family tagging.
 - 🟡 Confusion-matrix cell mosaic linking to Workbench autopsy traces — requires cross-view routing.
-- 🟡 Ghost path preview when hovering ablation toggles (§5.1) — deferred to Architect view enhancement.
+- 🟡 Ghost path preview when hovering ablation toggles (§5.1) — deferred to Workbench view enhancement.
 - 🟡 **Prompt diff data model** — See §9.7 for a full audit. The current policy-taxonomy diff works for modules that define `PROMPT_POLICY_TAXONOMY`, but most LLM modules do not. A richer diff (template text, system prompts, schema constraints, temperature, model role) would require a new backend data contract.
 
 ### Phase 5: The Review (Paper-Ready Export)
@@ -448,7 +419,7 @@ The following are *not* required for Phase 1–2 but are noted for future backen
 1. **Finer-grained rule firing telemetry.** The UI wants to show *which exact rule* fired on *which exact span* for every candidate. Current diagnostics provide this for V1; LLM-only pipelines may need structured `rule_suggestions` or `repair_trace` fields.
 2. **Standardised error taxonomy tagging.** The Error Gallery would benefit from a programmatic error taxonomy (e.g., `temporal_conflict`, `seizure_free_boundary`) attached to each row at evaluation time, not only in Markdown reports.
 3. **Hard-slice reproducibility API.** Validation hard slices are currently defined in analysis scripts. A backend endpoint that returns row IDs for a named hard slice (e.g., `temporal_conflict_slice_v1`) would let the UI filter without reimplementing slice logic.
-4. **LLM prompt template registry.** Prompts are currently embedded in Python modules. A registry endpoint (or a YAML/JSON prompt manifest) would let the Architect view list variants without importing Python.
+4. **LLM prompt template registry.** Prompts are currently embedded in Python modules. A registry endpoint (or a YAML/JSON prompt manifest) would let the Workbench list variants without importing Python.
 5. **Real-time ablation simulation caching.** Running a full validation ablation on every toggle is expensive. A lightweight result-cache keyed by `AblationConfig` hash would make the Rule Laboratory responsive.
 6. **Cross-run diff at the record level.** The Error Gallery's transition matrix needs to align records across two JSONL artifacts by `source_row_index`. This is trivial if both artifacts include stable indices; it should be enforced as an output contract.
 
@@ -490,15 +461,14 @@ The following are *not* required for Phase 1–2 but are noted for future backen
 - `docs/design/data_contract.md` — Gan 2026 data contract
 - `docs/design/gan2026_split_protocol.md` — split discipline that the Observatory must visually enforce
 - `docs/design/gan2026_saturated_validation_protocol.md` — saturation language that the Observatory must surface
-- `docs/decisions/0004-gan2026-package-organization.md` — package boundaries that inform Architect node families
+- `docs/decisions/0004-gan2026-package-organization.md` — package boundaries that inform pipeline node families
 
 ### C. URL Structure (Proposed)
 
 ```
 /                     → Landing / task selector
-/workbench            → Single-note inspector (default empty, loadable)
+/workbench            → Single-note inspector & pipeline trace (default empty, loadable)
 /workbench?config=v1&note=1234&compare=v2
-/architect            → Pipeline composer
 /observatory          → Corpus results and run ladder
 /observatory?runs=v1,v2,v3
 /gallery              → Error gallery

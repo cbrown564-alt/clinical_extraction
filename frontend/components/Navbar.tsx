@@ -6,7 +6,6 @@ import { Microscope, FlaskConical, LayoutGrid } from "lucide-react";
 
 const navItems = [
   { href: "/workbench", label: "Workbench", color: "deterministic" },
-  { href: "/architect", label: "Architect", color: "hybrid" },
   { href: "/observatory", label: "Observatory", color: "llm" },
   { href: "/laboratory", label: "Laboratory", color: "deterministic-alt" },
   { href: "/gallery", label: "Gallery", color: "error" },
@@ -35,8 +34,6 @@ export default function Navbar() {
             const colorClass =
               item.color === "deterministic"
                 ? "bg-deterministic/10 text-deterministic border-deterministic/20"
-                : item.color === "hybrid"
-                ? "bg-hybrid/10 text-hybrid border-hybrid/20"
                 : item.color === "llm"
                 ? "bg-llm/10 text-llm border-llm/20"
                 : item.color === "deterministic-alt"

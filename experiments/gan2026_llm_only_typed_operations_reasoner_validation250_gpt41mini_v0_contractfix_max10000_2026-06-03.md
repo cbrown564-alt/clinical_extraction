@@ -5,7 +5,7 @@
 - Prompt/program version: `gan2026_llm_only_typed_operations_reasoner_v0_contractfix`
 - Typed output schema version: `typed_operations_v0`
 - Split: `validation` / `gan2026_split_v1`
-- Rows: 3
+- Rows: 250
 - Model: `openai/gpt-4.1-mini`
 - Mode: `live`
 - Claim language: LLM-heavy typed-operation extraction; graph projection is over model-extracted operation nodes.
@@ -16,20 +16,169 @@
 
 ## Smoke Summary
 
-- Structured records: 3/3
-- Parse/schema failures: 0
-- Selected evidence valid: 1/3
-- Operation graph nodes: 4
-- Selected-operation trace mismatches: 0
+- Structured records: 247/250
+- Parse/schema failures: 3
+- Selected evidence valid: 235/250
+- Operation graph nodes: 370
+- Selected-operation trace mismatches: 1
 
 ## Score Layers
 
-- `raw_llm`: scorable 1, Purist 1/3 (0.3333), Pragmatic 1/3 (0.3333)
-- `format_only`: scorable 1, Purist 1/3 (0.3333), Pragmatic 1/3 (0.3333)
-- `selected_evidence_arithmetic`: scorable 3, Purist 2/3 (0.6667), Pragmatic 2/3 (0.6667)
-- `typed_operation_graph_projection`: scorable 3, Purist 2/3 (0.6667), Pragmatic 2/3 (0.6667)
+- `raw_llm`: scorable 113, Purist 99/250 (0.3960), Pragmatic 102/250 (0.4080)
+- `format_only`: scorable 166, Purist 143/250 (0.5720), Pragmatic 149/250 (0.5960)
+- `selected_evidence_arithmetic`: scorable 247, Purist 216/250 (0.8640), Pragmatic 222/250 (0.8880)
+- `typed_operation_graph_projection`: scorable 250, Purist 208/250 (0.8320), Pragmatic 215/250 (0.8600)
 
 ## Row Review
 
 - 10: gold `4 per day`; raw `up to 4 seizures per day`; typed graph `4 per day`
 - 40: gold `4 per week`; raw `up to 4 seizures per week`; typed graph `multiple per week`
+- 103: gold `2 to 4 per year`; raw `None`; typed graph `no seizure frequency reference`
+- 182: gold `1 per 2 day`; raw `1 seizure per 2 days`; typed graph `1 per 2 day`
+- 187: gold `1 per 7 to 9 day`; raw `seizure clusters every 7 to 9 days`; typed graph `1 per 7 to 9 day`
+- 190: gold `1 per 4 week`; raw `Clusters of absence episodes every 4 weeks over 1-2 days; seizure free from generalised tonic–clonic seizures since May 2025`; typed graph `1 per 4 week`
+- 278: gold `multiple per week`; raw `multiple times per week, at least 2 episodes`; typed graph `multiple per week`
+- 280: gold `multiple per day`; raw `multiple seizures per day`; typed graph `multiple per day`
+- 338: gold `multiple per month`; raw `many convulsions in past month`; typed graph `no seizure frequency reference`
+- 446: gold `2 per week`; raw `up to 2 per week`; typed graph `2 per week`
+- 466: gold `21 to 28 per month`; raw `21 to 28 seizures per month`; typed graph `21 to 28 per month`
+- 531: gold `12 to 30 per 3 month`; raw `12 to 30 seizures per quarter`; typed graph `12 to 30 per 3 month`
+- 678: gold `2 per 4 month`; raw `2 per 4 month with clusters of 3 to 6 per day`; typed graph `2 per 4 month`
+- 704: gold `2 per month`; raw `2 per month with clustering around late luteal phase`; typed graph `2 per month`
+- 731: gold `1 per day`; raw `daily brief seizures with recent cluster`; typed graph `1 per day`
+- 743: gold `multiple per week`; raw `episodes crop up most shifts`; typed graph `no seizure frequency reference`
+- 744: gold `multiple per week`; raw `brief absences most weekdays; 1 generalised tonic–clonic seizure in 8 weeks`; typed graph `1 per 8 week`
+- 816: gold `1 per month`; raw `monthly seizures`; typed graph `1 per month`
+- 849: gold `1 per year`; raw `yearly seizures`; typed graph `1 per year`
+- 854: gold `1 per year`; raw `approximately 1 seizure per year`; typed graph `1 per year`
+- 869: gold `multiple per month`; raw `multiple seizures per month with occasional clusters`; typed graph `multiple per day`
+- 891: gold `1 per 2 day`; raw `3-4 per 6 week`; typed graph `1 per 2 day`
+- 899: gold `1 per 2 week`; raw `1 seizure per 2 week`; typed graph `1 per 2 week`
+- 959: gold `1 per 2 month`; raw `bimonthly frequency with some clustering`; typed graph `1 per 2 month`
+- 960: gold `1 per 2 month`; raw `1 seizure per 2 months`; typed graph `1 per 2 month`
+- 978: gold `1 per 2 month`; raw `approximately 1 seizure every other month`; typed graph `1 per 2 month`
+- 987: gold `1 per 2 month`; raw `2 seizures per 2 months`; typed graph `1 per 2 month`
+- 1030: gold `1 to 3 per month`; raw `1 to 3 seizures per month`; typed graph `1 to 3 per month`
+- 1046: gold `3 to 5 per month`; raw `3 to 5 seizures per month`; typed graph `3 to 5 per month`
+- 1070: gold `3 to 4 per week`; raw `3 to 4 seizures per week`; typed graph `3 to 4 per week`
+- 1094: gold `3 to 5 per week`; raw `3 to 5 seizures per week`; typed graph `3 to 5 per week`
+- 1165: gold `5 to 7 per 3 week`; raw `5 to 7 focal onset seizures per 3 weeks; seizure free for 6 weeks`; typed graph `7 per 3 week`
+- 1171: gold `7 to 9 per 3 week`; raw `7 to 9 focal onset seizures per 3 weeks`; typed graph `9 per 3 week`
+- 1207: gold `21 to 28 per 3 month`; raw `21 to 28 epileptic spasms per 3 months`; typed graph `21 to 28 per 3 month`
+- 1223: gold `3 to 4 per week`; raw `3 to 4 focal impaired awareness seizures per week`; typed graph `3 to 4 per week`
+- 1249: gold `2 to 4 per week`; raw `2 to 4 focal impaired awareness seizures per week`; typed graph `2 to 4 per week`
+- 1281: gold `5 to 7 per year`; raw `5 to 7 epileptic spasms per year`; typed graph `5 to 7 per 10 month`
+- 1317: gold `unknown, multiple per cluster`; raw `cluster of multiple seizures in 1 day`; typed graph `2 per day`
+- 1357: gold `1 per day`; raw `1 tonic-clonic seizure per day (yesterday)`; typed graph `no seizure frequency reference`
+- 1363: gold `3 per day`; raw `3 seizures per 1 day, 1 to 2 auras per week, rare nocturnal events`; typed graph `1 per day`
+- 1454: gold `7 per week`; raw `7 per week with clustering on consecutive days when warmer`; typed graph `7 per week`
+- 1573: gold `11 per week`; raw `11 seizures per week with clusters over two consecutive mornings`; typed graph `11 per 7 day`
+- 1591: gold `11 per month`; raw `11 seizures per month`; typed graph `5 per month`
+- 1636: gold `5 per month`; raw `5 seizures per month`; typed graph `5 per month`
+- 1640: gold `5 per week`; raw `5 seizures per 7 days`; typed graph `5 per week`
+- 1687: gold `multiple per week`; raw `several focal seizures last week`; typed graph `multiple per day`
+- 1694: gold `1 cluster per 2 week, 3 per cluster`; raw `3 seizures per 14 days`; typed graph `3 per 2 week`
+- 1695: gold `multiple per month`; raw `3-5 per month and seizure free current month`; typed graph `seizure free for multiple year`
+- 1706: gold `multiple cluster per month, multiple per cluster`; raw `cluster of short events on multiple days over past month`; typed graph `multiple cluster per month, multiple per cluster`
+- 1707: gold `multiple per week`; raw `cluster of events on multiple days within past week`; typed graph `unknown`
+- 1772: gold `11 per 6 month`; raw `11 seizures per 6 months`; typed graph `11 per 6 month`
+- 1773: gold `11 per 3 month`; raw `11 seizures per 3 months`; typed graph `11 per 3 month`
+- 1790: gold `8 per 4 month`; raw `8 seizures per 4 months`; typed graph `8 per 4 month`
+- 1794: gold `8 per 2 month`; raw `8 seizures per 2 months`; typed graph `8 per 2 month`
+- 1866: gold `8 per 2 month`; raw `8 seizures per 2 months`; typed graph `8 per 2 month`
+- 1880: gold `8 per 2 month`; raw `3 clusters per month, each cluster 4 absences; 8 events per 2 months (drop attacks and convulsions)`; typed graph `3 cluster per month, multiple per cluster`
+- 1923: gold `7 per 6 month`; raw `7 seizures per 6 months`; typed graph `7 per 6 month`
+- 1979: gold `6 per 2 month`; raw `6 seizures per 2 months; ongoing nocturnal events unclear frequency; seizure free for 1 year (no rescue medication use)`; typed graph `3 per 2 month`
+- 1980: gold `6 per 3 month`; raw `6 seizures per 3 months`; typed graph `6 per 3 month`
+- 2080: gold `multiple per month`; raw `a few events per month (approximate 3 to 5 per month)`; typed graph `multiple per day`
+- 2094: gold `multiple per month`; raw `several per month`; typed graph `multiple per day`
+- 2114: gold `multiple per month`; raw `several myoclonic seizures per month`; typed graph `2 per month`
+- 2149: gold `unknown`; raw `ongoing focal aware and focal impaired-awareness seizures; occasional tonic-clonic seizures clustering over last year`; typed graph `unknown`
+- 2166: gold `unknown`; raw `frequent petit mal recently; seizure free generalised tonic–clonic for over a year`; typed graph `seizure free for multiple year`
+- 2228: gold `3 to 5 per 2 week`; raw `3 to 5 seizures per 14 days`; typed graph `3 to 5 per 2 week`
+- 2233: gold `6 to 7 per 2 month`; raw `6-7 seizures per 2 months, clustered on warmer days or after strenuous tasks`; typed graph `6 to 7 per 2 month`
+- 2245: gold `7 to 8 per 3 week`; raw `7 to 8 seizures per 3 weeks`; typed graph `7 to 8 per 3 week`
+- 2259: gold `6 to 8 per 3 month`; raw `6 to 8 seizures per 3 months`; typed graph `6 to 8 per 3 month`
+- 2354: gold `6 to 7 per week`; raw `6 to 7 myoclonic seizures per week`; typed graph `6 to 7 per week`
+- 2369: gold `3 to 4 per month`; raw `3 to 4 seizures per month with clustering`; typed graph `3 to 4 per month`
+- 2374: gold `7 to 9 per month`; raw `7 to 9 seizures per month`; typed graph `7 to 9 per month`
+- 2425: gold `6 to 8 per month`; raw `6 to 8 petit mal seizures per month`; typed graph `6 to 8 per month`
+- 2427: gold `3 to 5 per month`; raw `3 to 5 tonic-clonic seizures per month in two short clusters`; typed graph `3 to 5 per month`
+- 2435: gold `5 to 7 per 2 week`; raw `5 to 7 seizures per 14 days`; typed graph `5 to 7 per 14 day`
+- 2437: gold `2 to 3 per 2 month`; raw `2 to 3 seizures per 2 months`; typed graph `2 to 3 per 2 month`
+- 2440: gold `5 to 7 per 2 month`; raw `5 to 7 seizures per 2 months`; typed graph `5 to 7 per 2 month`
+- 2456: gold `6 to 7 per 2 week`; raw `6-7 seizures per 2 weeks`; typed graph `6 to 7 per 2 week`
+- 2459: gold `7 to 9 per 2 week`; raw `7 to 9 seizures per 14 days`; typed graph `7 to 9 per 2 week`
+- 2487: gold `2 to 3 per 3 month`; raw `2 to 3 seizures per 3 months`; typed graph `2 to 3 per 3 month`
+- 2513: gold `2 to 3 per 2 week`; raw `2 to 3 drop attacks per 14 days`; typed graph `2 to 3 per 2 week`
+- 2541: gold `8 to 9 per 2 week`; raw `8-9 drop attacks per 14 days`; typed graph `8 to 9 per 2 week`
+- 2554: gold `1 to 10 per 2 month`; raw `1 to 10 focal aware seizures per 2 months`; typed graph `1 to 10 per 2 month`
+- 2558: gold `3 to 4 per 2 month`; raw `3 to 4 seizures per 2 months`; typed graph `3 to 4 per 2 month`
+- 2609: gold `1 per day`; raw `1 per day nocturnal seizures`; typed graph `1 per day`
+- 2622: gold `1 per day`; raw `seizures every night`; typed graph `1 per day`
+- 2628: gold `1 per day`; raw `seizures every night with nocturnal clustering over last 3 months`; typed graph `1 per day`
+- 2678: gold `1 per day`; raw `1 per day tonic-clonic seizures`; typed graph `1 per day`
+- 2698: gold `1 per 2 day`; raw `myoclonic seizures every other day`; typed graph `1 per 2 day`
+- 2822: gold `1 per day`; raw `myoclonic jerk daily with occasional clusters`; typed graph `1 per day`
+- 2938: gold `seizure free for 8 month`; raw `Seizure-free since 13-Nov-2015; prior occasional cluster seizures`; typed graph `seizure free for multiple year`
+- 3224: gold `1 cluster per month, 6 to 7 per cluster`; raw `6 to 7 seizures per month cluster`; typed graph `1 cluster per month, 6 to 7 per cluster`
+- 3242: gold `2 cluster per month, 5 per cluster`; raw `None`; typed graph `no seizure frequency reference`
+- 3261: gold `2 cluster per month, 4 per cluster`; raw `8 absences per month in 2 clusters`; typed graph `2 cluster per month, multiple per cluster`
+- 3262: gold `2 cluster per month, 5 per cluster`; raw `10 seizures per month in 2 clusters of 5 each`; typed graph `2 cluster per month, multiple per cluster`
+- 3281: gold `8 per month`; raw `8 seizures per 30 days`; typed graph `8 per month`
+- 3297: gold `6 per month`; raw `6 seizures per 30 days`; typed graph `6 per month`
+- 3356: gold `unknown`; raw `brief generalised tonic–clonic seizures occurring exclusively after nights of curtailed sleep over past 3 months`; typed graph `no seizure frequency reference`
+- 3371: gold `unknown`; raw `seizure free for 8 weeks`; typed graph `seizure free for multiple year`
+- 3436: gold `unknown`; raw `Clustered seizures shortly after early-morning arousal with recent event during morning flight`; typed graph `unknown`
+- 3468: gold `unknown`; raw `Perimenstrual cluster frequency with seizure freedom outside window`; typed graph `seizure free for multiple year`
+- 3469: gold `unknown`; raw `Seizures clustered perimenstrual only with 6 months seizure freedom outside window`; typed graph `seizure free for multiple year`
+- 3482: gold `unknown`; raw `1 seizure per perimenstrual window (7 days) monthly cluster`; typed graph `1 per month`
+- 3493: gold `unknown`; raw `seizure frequency clustered around menstrual period with 6-day window`; typed graph `unknown`
+- 3507: gold `unknown`; raw `frequency reduced by 0.3 per month`; typed graph `3 per month`
+- 3512: gold `unknown`; raw `Frequency increased by approximately 20% per month`; typed graph `no seizure frequency reference`
+- 3528: gold `unknown`; raw `increased seizure frequency with historical seizure freedom for generalised tonic–clonic seizures`; typed graph `seizure free for multiple year`
+- 3532: gold `unknown`; raw `Increased seizure frequency by approximately 20% over 3 weeks`; typed graph `no seizure frequency reference`
+- 3534: gold `unknown`; raw `seizure free for 7 months`; typed graph `seizure free for 7 month`
+- 3623: gold `7 per week`; raw `0 to 7 events per week during clusters over past three months`; typed graph `7 per week`
+- 3643: gold `7 per week`; raw `7 per week in clusters`; typed graph `7 per week`
+- 3681: gold `9 per month`; raw `9 seizures per month`; typed graph `9 per month`
+- 3753: gold `1 per day`; raw `approximately 1 seizure per day with 2 seizure-free days in past month`; typed graph `1 per day`
+- 3774: gold `9 per year`; raw `9 tonic-clonic seizures per year; 2 nocturnal seizures in past quarter`; typed graph `9 per year`
+- 3827: gold `7 per month`; raw `Approximately 7 seizures per month with 2 cluster days in last month`; typed graph `7 per month`
+- 3849: gold `3 per day`; raw `3 per day with clustering on late shifts`; typed graph `3 per day`
+- 3988: gold `multiple per week`; raw `unresolved multiple seizure frequencies: frequent brief spells ongoing and prolonged convulsions absent for 12 months`; typed graph `3 per week`
+- 3995: gold `1 per month`; raw `abs monthly`; typed graph `1 per month`
+- 3999: gold `1 per month`; raw `approximately 1 seizure per month with clustering and medication usage sparingly`; typed graph `3 per month`
+- 4022: gold `8 per month`; raw `8 absence seizures per month`; typed graph `8 per month`
+- 4026: gold `1 per month`; raw `roughly 1 absence episode per month with some months seizure free`; typed graph `seizure free for multiple year`
+- 4092: gold `1 per 2 to 3 week`; raw `2 to 3 per week`; typed graph `1 per 2 to 3 week`
+- 4110: gold `1 per 1 to 2 day`; raw `seizure frequency approximately 0.5 to 1 per day with recent clusters`; typed graph `1 per 1 to 2 day`
+- 4116: gold `1 per 1 to 2 day`; raw `1 to 2 seizures per day on workdays`; typed graph `1 per 1 to 2 day`
+- 4337: gold `3 per 3 month`; raw `3 seizures per 6 month`; typed graph `3 per 6 month`
+- 4345: gold `4 per month`; raw `4 seizures per 16 days`; typed graph `4 per 16 day`
+- 4368: gold `5 per 2 month`; raw `5 seizures per 78 days`; typed graph `5 per 78 day`
+- 4410: gold `4 per 7 month`; raw `5 seizures per 7 months; approximately 1 focal impaired-awareness seizure per 2 to 3 months`; typed graph `4 per 7 month`
+- 4480: gold `3 to 5 per week`; raw `3 to 5 seizures per week`; typed graph `3 to 5 per week`
+- 4496: gold `7 to 8 per 3 month`; raw `7-8 absence seizures per quarter clustering in late evening`; typed graph `7 to 8 per 3 month`
+- 4574: gold `1 per 4 week`; raw `None`; typed graph `no seizure frequency reference`
+- 4592: gold `1 per 2 month`; raw `1 per 2 month with occasional clustering`; typed graph `1 per month`
+- 4597: gold `1 per 3 week`; raw `3 per 3 weeks`; typed graph `3 per 3 week`
+- 4624: gold `1 per 3 to 4 day`; raw `1 seizure per 3 to 4 day interval; 2 seizures per month focal impaired-awareness; seizure free from prolonged focal to bilateral tonic–clonic seizures since last review`; typed graph `seizure free for multiple year`
+- 4631: gold `1 per 14 to 21 day`; raw `1 seizure per 14 to 21 days`; typed graph `1 per 14 to 21 day`
+- 4690: gold `multiple per day`; raw `approximately 10 seizures per hour`; typed graph `10 per week`
+- 4694: gold `multiple per day`; raw `9 seizures per hour`; typed graph `9 per day`
+- 4700: gold `multiple per day`; raw `4 per hour`; typed graph `4 per day`
+- 4709: gold `multiple per day`; raw `6 seizures per hour with variable cluster days`; typed graph `6 per day`
+- 4731: gold `unknown`; raw `rare seizures frequency`; typed graph `1 to 2 per month`
+- 4732: gold `unknown`; raw `occasional seizures, often clustering around travel days or after disrupted sleep`; typed graph `unknown`
+- 4771: gold `unknown`; raw `Increased seizure activity in several stretches over the past three months, including two secondary generalised seizures in the last six weeks, with variable short runs of events after disrupted travel`; typed graph `2 per 6 week`
+- 5121: gold `seizure free for multiple month`; raw `no seizure frequency reference`; typed graph `no seizure frequency reference`
+- 5406: gold `seizure free for multiple month`; raw `no definite epileptic events in past 2 months`; typed graph `no seizure frequency reference`
+- 5476: gold `unknown`; raw `approximately 1 cluster per month`; typed graph `1 per month`
+- 5491: gold `unknown`; raw `2 seizures per 6 weeks`; typed graph `2 per 6 week`
+- 5504: gold `unknown`; raw `sporadic jerks this year`; typed graph `1 per year`
+- 5507: gold `unknown`; raw `3 seizures since June with clustered sudden falls over past months`; typed graph `unknown`
+- 5534: gold `1 per multiple month`; raw `unresolved multiple seizure states: very infrequent recent event and seizure free for 1 year for tonic–clonic seizures`; typed graph `seizure free for 1 year`
+- 5551: gold `multiple per day`; raw `several episodes per day with occasional generalised breakthroughs`; typed graph `1 per week`
+- 5567: gold `multiple per week`; raw `multiple seizure frequencies: several absence episodes per week, 2 generalised tonic–clonic seizures over 6 months, seizure free for 6 weeks from generalised tonic–clonic seizures, clustering absence seizures`; typed graph `seizure free for multiple year`
+- 5584: gold `multiple per week`; raw `several per week`; typed graph `multiple per week`

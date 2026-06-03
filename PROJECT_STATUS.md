@@ -73,9 +73,14 @@ recorded in
 selected-evidence arithmetic Purist, and 47/50 typed-operation graph Purist.
 Interpretation changed after review: treat this as evidence that the 4800-token
 budget is too tight for the current schema depth, not as a reason to patch row
-103 locally. Short-term plan is performance-first: increase max_tokens to 10000,
-run validation250, assess performance, then scale to validation750 with
-comprehensive schema/error tracking before token/schema-efficiency ablations.
+103 locally. The max10000 validation250 live run is recorded in
+`experiments/gan2026_llm_only_typed_operations_reasoner_validation250_gpt41mini_v0_contractfix_max10000_2026-06-03.md`:
+247/250 structured records, 3 parse/schema failures, 235/250 selected evidence
+valid, 1 selected-operation trace mismatch, 216/250 selected-evidence
+arithmetic Purist, and 208/250 typed-operation graph Purist. This is below the
+validation50 trajectory and is not promising enough for validation750
+escalation. Next step is targeted validation250 failure analysis before any
+schema, prompt, or token-efficiency ablation.
 
 ## Guardrails
 
@@ -111,19 +116,20 @@ comprehensive schema/error tracking before token/schema-efficiency ablations.
 
 ### Now
 
-- Run `llm_only_typed_operations_reasoner` validation250 live with
-  `max_tokens=10000`, using the current schema and prompt unchanged except for
-  the larger completion budget. Assess performance first; do not patch row 103
-  or other validation50 tails before this run.
+- Analyze the `llm_only_typed_operations_reasoner` max10000 validation250
+  failures: parse/schema failures, the selected-operation trace mismatch,
+  selected-evidence invalid rows, and selected-evidence-correct to graph-wrong
+  regressions. Decide whether the current typed schema should be repaired,
+  simplified, or paused.
 
 ### Next
 
-- If validation250 is promising, run validation750 with comprehensive evaluation:
-  schema/call tracking, exact-evidence tracking, raw/format/arithmetic/graph
-  attribution layers, row-level error analysis, and failure-family summaries.
-- After validation750, evaluate the cost/benefit of the current typed schema
-  depth and 10000-token budget. Then run ablations that remove or simplify
-  schema pieces until performance/token efficiency is better balanced.
+- If failure analysis finds a small general repair with validation250 evidence,
+  predeclare a narrow validation-cycle rerun; otherwise pause the typed-operations
+  lane and return to hybrid safety-floor/component-stress work.
+- Evaluate the cost/benefit of the current typed schema depth and 10000-token
+  budget. Run ablations that remove or simplify schema pieces only after the
+  validation250 failure families are understood.
 - Keep local-LLM transfer in mind for the ablation phase: smaller local models
   are likely slower and more fragile under excessive schema complexity, so
   schema/token efficiency should become a named objective after the
@@ -146,6 +152,13 @@ comprehensive schema/error tracking before token/schema-efficiency ablations.
 
 ### Done Recently
 
+- 2026-06-03: Ran `llm_only_typed_operations_reasoner` validation250 live at
+  max_tokens=10000 with prompt/schema unchanged from the validation50 run.
+  Result:
+  `experiments/gan2026_llm_only_typed_operations_reasoner_validation250_gpt41mini_v0_contractfix_max10000_2026-06-03.md`
+  reached 247/250 structured records, 235/250 selected evidence valid, 216/250
+  selected-evidence arithmetic Purist, and 208/250 typed-operation graph Purist.
+  Decision: revise, do not escalate to validation750.
 - 2026-06-03: Repaired `llm_only_typed_operations_reasoner` evidence-copy and
   graph-projection sidecars, raised the typed-operations default max token
   budget to 4800, and reran validation25 live with no truncation warnings.
@@ -230,7 +243,8 @@ comprehensive schema/error tracking before token/schema-efficiency ablations.
 
 ## Immediate Next Step
 
-Run `llm_only_typed_operations_reasoner` validation250 with max_tokens=10000 and
-record raw, format-only, selected-evidence arithmetic, typed-graph projection,
-schema/call, and evidence-exactness metrics. Do not tune from locked-test
-row-level behavior.
+Analyze the max10000 validation250 artifact for typed-operations failure
+families before any validation750 escalation or row-specific repair. Focus on
+parse/schema failures, selected-evidence invalid rows, selected-operation trace
+mismatch, and graph-projection regressions from otherwise correct selected
+evidence.
