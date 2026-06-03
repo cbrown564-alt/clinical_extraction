@@ -68,14 +68,17 @@ and projection arbitration before another broad architecture or multi-agent run.
 
 ### Now
 
-- Design the selective safety-floor gate from the fixed-slice diagnostic:
-  candidate-generation sidecar action should be narrow, and projection
-  arbitration should focus on boundary-state priority.
+- Implement the predeclared selective safety-floor no-call replay:
+  `projection_boundary_state_priority_gate_v0`,
+  `llm_candidate_sidecar_rescue_gate_v0`, and `combined_selective_gate_v0`
+  over the fixed atlas validation slices.
 
 ### Next
 
 - If iterating on Decision 0007, focus on selected-fact and operand completeness
   only after slice targets and stop rules are predeclared.
+- If the selective gate replay clears fixed-slice accounting, decide whether to
+  freeze a separate validation-cycle candidate or keep the gate diagnostic.
 - Keep Qwen/minimal-evidence-selector transfer as a secondary lane after the safety-floor candidate is frozen.
 
 ### Backlog
@@ -89,6 +92,12 @@ and projection arbitration before another broad architecture or multi-agent run.
 
 ### Done Recently
 
+- 2026-06-03: Predeclared the selective safety-floor gate design in
+  `experiments/gan2026_selective_safety_floor_gate_predeclaration_2026-06-03.md`
+  and JSON manifest. The first implementation target is a no-call replay that
+  leaves the deterministic safety-floor final policy unchanged while exposing
+  ablated projection-boundary-state, LLM-sidecar rescue, and combined gate
+  score layers with fixed-slice regression accounting.
 - 2026-06-03: Ran the atlas hard-slice no-call diagnostic over saved validation
   artifacts: 87 slice memberships / 55 unique source rows. Candidate-generation
   slices showed 6 saved LLM-candidate sidecar rescues among 8 scorable sidecars
@@ -129,8 +138,8 @@ and projection arbitration before another broad architecture or multi-agent run.
 
 ## Immediate Next Step
 
-Predeclare the smallest candidate change suggested by the diagnostic: a
-selective validation-only gate that can expose LLM candidate-generation sidecar
-rescues and boundary-state projection priority as ablated variants, while
-leaving the final deterministic safety-floor policy unchanged until regression
-accounting clears the fixed slices.
+Implement the predeclared no-call selective-action replay from
+`experiments/gan2026_selective_safety_floor_gate_predeclaration_2026-06-03.json`
+and report changed-label precision, wrong-to-correct, correct-to-wrong,
+deterministic-correct regressions, evidence exactness, and source-id validity by
+fixed validation slice.
