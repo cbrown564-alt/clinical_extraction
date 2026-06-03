@@ -34,7 +34,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label_with_evidence,
 )
 
-PROMPT_VERSION = "gan2026_llm_only_sparse_operands_selected_state_reasoner_v0"
+PROMPT_VERSION = "gan2026_llm_only_sparse_operands_selected_state_reasoner_v1_boundaryfix"
 PIPELINE_FAMILY = "llm_only_sparse_operands_selected_state_reasoner"
 SPARSE_OPERANDS_SCHEMA_VERSION = "sparse_operands_selected_state_v0"
 SCORE_LAYER_NAMES = (
@@ -44,10 +44,10 @@ SCORE_LAYER_NAMES = (
     "sparse_operand_adapter",
 )
 DEFAULT_JSONL_PATH = Path(
-    "experiments/gan2026_llm_only_sparse_operands_selected_state_reasoner_validation25_gpt41mini_v0_2026-06-03.jsonl"
+    "experiments/gan2026_llm_only_sparse_operands_selected_state_reasoner_validation25_gpt41mini_v1_boundaryfix_2026-06-03.jsonl"
 )
 DEFAULT_REPORT_PATH = Path(
-    "experiments/gan2026_llm_only_sparse_operands_selected_state_reasoner_validation25_gpt41mini_v0_2026-06-03.md"
+    "experiments/gan2026_llm_only_sparse_operands_selected_state_reasoner_validation25_gpt41mini_v1_boundaryfix_2026-06-03.md"
 )
 
 
@@ -165,6 +165,17 @@ def build_sparse_operands_inputs(record: GanFrequencyRecord) -> dict[str, Any]:
             (
                 "Leave operands null and write abstain_reason when a numeric rendering "
                 "would be unsafe, unclear, proxy-only, historical, or medication-use only."
+            ),
+            (
+                "Do not render vague multiple wording as a numeric count. If the selected "
+                "state is multiple per day/week/month/year, keep count operands null and "
+                "preserve the multiple label."
+            ),
+            (
+                "For cluster wording, fill count and period operands only for explicit "
+                "cluster cadence. Do not use cluster duration such as over 1-2 days as "
+                "seizure count; leave event-count operands null unless the evidence states "
+                "events per cluster."
             ),
             (
                 "For unknown or no-reference states, keep operands null; do not force a "
@@ -483,7 +494,7 @@ def write_report(
     path.parent.mkdir(parents=True, exist_ok=True)
     summary = metadata.get("summary") or summarize_records(rows)
     lines = [
-        "# Gan 2026 LLM-Only Sparse Operands Selected State Reasoner V0",
+        "# Gan 2026 LLM-Only Sparse Operands Selected State Reasoner",
         "",
         f"- JSONL: `{jsonl_path}`",
         f"- Architecture: `{PIPELINE_FAMILY}`",
@@ -628,6 +639,10 @@ def _sparse_operand_adapter_label(
         return None
     if state.final_kind != "frequency":
         return None
+    if _state_mentions_unresolved_multiple(state):
+        return None
+    if state.selected_operation_kind == "cluster_frequency":
+        return None
     if (
         operands.count_low is None
         or operands.period_count_low is None
@@ -643,6 +658,17 @@ def _render_range(low: int, high: int | None) -> str:
     if high is None or high == low:
         return str(low)
     return f"{low} to {high}"
+
+
+def _state_mentions_unresolved_multiple(state: SparseOperandsSelectedState) -> bool:
+    text = " ".join(
+        (
+            state.raw_llm_final_label,
+            state.selected_evidence,
+            state.raw_source_phrase,
+        )
+    ).lower()
+    return "multiple" in text
 
 
 def _evidence_summary(
