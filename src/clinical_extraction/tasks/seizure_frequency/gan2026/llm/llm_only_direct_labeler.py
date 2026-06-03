@@ -79,14 +79,11 @@ class Gan2026LlmOnlyDirectLabelerExtractorSignature(dspy.Signature):
     """
 
     prompt_input_json: str = dspy.InputField(
-        desc=(
-            "JSON containing one clinical note and task instructions. It intentionally omits "
-            "gold labels and deterministic candidate diagnostics."
-        )
+        desc="JSON containing one clinical note, task instructions, and output fields."
     )
     decision_json: str = dspy.OutputField(
         desc=(
-            "One strict JSON object. final_label must be a Gan-compatible label such as "
+            "One strict JSON object. final_label must be a normalized label such as "
             "'2 per month', '2 to 3 per week', 'multiple per day', "
             "'seizure free for multiple month', 'unknown', or "
             "'no seizure frequency reference'."
@@ -114,16 +111,19 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
         "source_row_index": record.source_row_index,
         "instructions": [
             "Read the full clinical note and extract the current seizure-frequency answer.",
-            "Do not use deterministic rule candidates; this input contains only the note.",
             (
-                "Return final_label as one Gan-compatible string. Examples: 1 per day, "
+                "Return final_label as one normalized string using count, range, or "
+                "multiple over a day/week/month/year denominator; seizure-free duration; "
+                "unknown; or no seizure frequency reference."
+            ),
+            (
+                "Allowed frequency forms include 1 per day, "
                 "2 to 3 per month, multiple per week, 1 cluster per week, 2 to 3 per cluster, "
                 "seizure free for 6 month, unknown, no seizure frequency reference."
             ),
             (
-                "Preserve explicit count-and-window labels when possible. For example, write "
-                "12 to 30 per 3 month rather than converting a quarterly count to a vague "
-                "monthly bucket."
+                "Preserve explicit count-and-window labels when possible instead of converting "
+                "a stated multi-period count to a vague monthly bucket."
             ),
             (
                 "If several current seizure types are present, select the highest current "
@@ -135,7 +135,7 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
             ),
             (
                 "Use unknown when seizures or seizure-like events are discussed but current "
-                "frequency cannot be converted to a Gan-compatible rate."
+                "frequency cannot be converted to a normalized rate."
             ),
             (
                 "Use no seizure frequency reference only when the note contains no usable "

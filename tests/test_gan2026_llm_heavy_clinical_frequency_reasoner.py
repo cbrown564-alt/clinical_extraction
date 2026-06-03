@@ -117,13 +117,7 @@ def test_build_prompt_input_excludes_gold_and_deterministic_candidates() -> None
     assert prompt["note_text"] == _record().note_text
     assert "clinical_quantity" in prompt["event_schema"]
     assert "final_answer_schema" in prompt
-    assert prompt["score_layers_to_report"] == [
-        "raw_llm",
-        "format_only",
-        "selected_evidence_arithmetic",
-        "benchmark_aligned",
-        "oracle_format_upper_bound",
-    ]
+    assert "score_layers_to_report" not in prompt
     assert "gold_label" not in json.dumps(prompt)
     assert "candidate_events" not in prompt
     assert "deterministic_final_selection" not in prompt
@@ -132,8 +126,10 @@ def test_build_prompt_input_excludes_gold_and_deterministic_candidates() -> None
     assert "rendering_operands" in final_answer_schema
     assert "arithmetic_trace" in final_answer_schema
     assert "selected_event_ids" in final_answer_schema
-    assert "parser-ready" in final_answer_schema["raw_llm_final_label"]
-    assert "downstream deterministic selected-evidence arithmetic" in json.dumps(prompt)
+    assert "normalized model-rendered label" in final_answer_schema["raw_llm_final_label"]
+    assert "Render raw_llm_final_label directly from the selected evidence" in json.dumps(
+        prompt
+    )
     assert "Always include final_answer.selected_event_ids" in json.dumps(prompt)
     assert "Omit administrative, medication, plan, and no-reference events" in json.dumps(
         prompt
@@ -142,7 +138,7 @@ def test_build_prompt_input_excludes_gold_and_deterministic_candidates() -> None
     assert "exact copy of one selected event evidence value" in final_answer_schema[
         "selected_evidence"
     ]
-    assert "<= four per week -> 4 per week" in json.dumps(prompt)
+    assert "preserving the selected denominator" in json.dumps(prompt)
 
 
 def test_parse_llm_heavy_reasoner_json_repairs_schema_aliases() -> None:

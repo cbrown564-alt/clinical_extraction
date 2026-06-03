@@ -86,7 +86,7 @@ def _raw_claim_table(final_label: str = "2 per months") -> str:
     )
 
 
-def test_build_prompt_input_excludes_gold_and_deterministic_candidates() -> None:
+def test_build_prompt_input_exposes_claim_schema_without_internal_metadata() -> None:
     prompt = json.loads(build_prompt_input(_record()))
 
     assert prompt["prompt_version"] == PROMPT_VERSION
@@ -100,38 +100,31 @@ def test_build_prompt_input_excludes_gold_and_deterministic_candidates() -> None
     assert "boundary_state" in prompt["final_query_schema"]
     assert "raw_selected_frequency" in prompt["final_query_schema"]
     assert "conversion_note" in prompt["final_query_schema"]
-    assert prompt["required_ablations_before_ladder_runs"] == REQUIRED_ABLATIONS_BEFORE_LADDER
     assert "constrained final selector" in json.dumps(prompt)
     assert "Do not let final_label hide" in json.dumps(prompt)
-    assert "1 per 7 to 10 day" in json.dumps(prompt)
-    assert "bimonthly means every two months" in json.dumps(prompt)
-    assert "Cluster cadence can be the ordinary Gan-facing frequency" in json.dumps(prompt)
-    assert "twice a month -> 2 per month" in json.dumps(prompt)
-    assert "5 or 7 focal onset seizures in three weeks -> 5 to 7 per 3 week" in json.dumps(prompt)
+    assert "count or range per denominator" in json.dumps(prompt)
+    assert "every other unit means one occurrence per two units" in json.dumps(prompt)
+    assert "Cluster cadence can be the ordinary frequency" in json.dumps(prompt)
     assert "An explicit current cluster cadence normally outranks" in json.dumps(prompt)
     assert "short subsequent seizure-free span does not by itself erase" in json.dumps(prompt)
-    assert "several events across most months -> multiple per month" in json.dumps(prompt)
     assert "Do not use historical as claim_type" in json.dumps(prompt)
-    assert "1 cluster per month, 6 to 7 per cluster" in json.dumps(prompt)
-    assert (
-        "six drop attacks plus two absence seizures over two months -> 8 per 2 month"
-        in json.dumps(prompt)
-    )
+    assert "preserve both parts in final_label" in json.dumps(prompt)
+    assert "add the counts and preserve the shared denominator" in json.dumps(prompt)
     assert "Rescue medication use frequency" in json.dumps(prompt)
-    assert "q2-3wk" in json.dumps(prompt)
-    assert "as many as seven in a week" in json.dumps(prompt)
+    assert "compact every-interval notation" in json.dumps(prompt)
+    assert "explicit maximum current burden" in json.dumps(prompt)
     assert "claim_type_note" not in prompt["claim_schema"]
+    assert "prompt_policy_taxonomy" not in prompt
+    assert "required_ablations_before_ladder_runs" not in prompt
+    assert " -> " not in json.dumps(prompt)
     assert "gold_label" not in json.dumps(prompt)
     assert "candidate_events" not in prompt
     assert "deterministic_final_selection" not in prompt
 
 
-def test_prompt_input_names_prompt_policies_as_controlled_variables() -> None:
-    prompt = json.loads(build_prompt_input(_record()))
+def test_prompt_policy_taxonomy_remains_internal_metadata() -> None:
+    policy_ids = {policy["policy_id"] for policy in PROMPT_POLICY_TAXONOMY}
 
-    policy_ids = {policy["policy_id"] for policy in prompt["prompt_policy_taxonomy"]}
-
-    assert prompt["prompt_policy_taxonomy"] == PROMPT_POLICY_TAXONOMY
     assert "sct_v5.schema.scalar_enum_output" in policy_ids
     assert "sct_v5.gan_label.interval_preservation" in policy_ids
     assert "sct_v5.gan_label.cluster_dual_axis" in policy_ids
@@ -140,13 +133,14 @@ def test_prompt_input_names_prompt_policies_as_controlled_variables() -> None:
     assert "sct_v5.boundary.unknown_no_reference_seizure_free" in policy_ids
     assert "sct_v5.schema.boundary_state" in policy_ids
     assert "sct_v5.selection.constrained_selector" in policy_ids
-    assert all(policy["status"] == "active" for policy in prompt["prompt_policy_taxonomy"])
-    assert all(policy["controlled_variable"] for policy in prompt["prompt_policy_taxonomy"])
+    assert all(policy["status"] == "active" for policy in PROMPT_POLICY_TAXONOMY)
+    assert all(policy["controlled_variable"] for policy in PROMPT_POLICY_TAXONOMY)
     assert all(
         policy["portability"]
         in {"general", "seizure_frequency", "gan2026_specific", "benchmark_format"}
-        for policy in prompt["prompt_policy_taxonomy"]
+        for policy in PROMPT_POLICY_TAXONOMY
     )
+    assert REQUIRED_ABLATIONS_BEFORE_LADDER
 
 
 def test_parse_llm_only_claim_table_selector_json_validates_flat_claim_table() -> None:
