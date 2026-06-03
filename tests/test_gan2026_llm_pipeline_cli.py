@@ -152,6 +152,7 @@ def test_pipeline_registry_exposes_routine_llm_experiments() -> None:
         "llm_only_claim_table_selector",
         "llm_only_direct_labeler",
         "llm_only_minimal_evidence_selector",
+        "llm_only_simplified_selected_state_reasoner",
         "llm_only_structured_events",
         "llm_only_typed_adapter_reasoner",
         "llm_only_typed_operations_reasoner",

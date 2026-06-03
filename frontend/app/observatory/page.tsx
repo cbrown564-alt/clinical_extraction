@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState, useEffect } from "react";
+import { Suspense, useState } from "react";
 import { Telescope, BarChart3, Mountain, Grid3X3 } from "lucide-react";
 import { useObservatoryData } from "@/components/observatory/useObservatoryData";
 import RunSelector from "@/components/observatory/RunSelector";
@@ -24,14 +24,6 @@ function ObservatoryInner() {
   } = useObservatoryData();
 
   const [activeTab, setActiveTab] = useState<VizTab>("ladder");
-  const [debugFetch, setDebugFetch] = useState<string>("not started");
-
-  useEffect(() => {
-    fetch("/api/artifacts/gan2026_claim_table_v4_validation750_2026-06-01?limit=1")
-      .then(r => r.json())
-      .then(data => setDebugFetch(`OK: ${data.content?.length} rows`))
-      .catch(e => setDebugFetch(`ERR: ${e.message}`));
-  }, []);
 
   // Aggregate stats across selected runs
   const totalRows = selectedSummaries.reduce((sum, s) => sum + s.rowCount, 0);
@@ -46,23 +38,6 @@ function ObservatoryInner() {
 
   return (
     <div className="flex h-full flex-col bg-background">
-      {/* Header */}
-      <header className="flex items-center justify-between border-b border-border bg-surface px-5 py-2.5 shadow-sm z-10">
-        <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-llm-alt/10">
-            <Telescope className="h-4 w-4 text-llm" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="rounded bg-surface-raised px-1.5 py-0 text-[10px] font-medium uppercase tracking-wider text-muted border border-border">
-                Observatory
-              </span>
-              <span className="text-[10px] text-muted">Phase 3 — Corpus &amp; Ladder</span>
-            </div>
-          </div>
-        </div>
-      </header>
-
       {/* Content */}
       <div className="flex-1 overflow-y-auto">
         {registryLoading ? (
@@ -176,22 +151,6 @@ function ObservatoryInner() {
                 </div>
               </div>
             )}
-
-            {/* Debug info */}
-            <div className="rounded-lg border border-border bg-surface p-3 text-[10px] font-mono text-muted">
-              <div>selectedRunIds: {selectedRunIds.size}</div>
-              <div>selectedSummaries: {selectedSummaries.length}</div>
-              <div>loadingRuns: {loadingRuns.size}</div>
-              <div>runErrors: {runErrors.size}</div>
-              <div>debugFetch: {debugFetch}</div>
-              {runErrors.size > 0 && (
-                <div className="mt-1 text-error">
-                  {Array.from(runErrors.entries()).map(([id, err]) => (
-                    <div key={id}>{id}: {err}</div>
-                  ))}
-                </div>
-              )}
-            </div>
 
             {/* Empty state when nothing selected */}
             {selectedSummaries.length === 0 && (

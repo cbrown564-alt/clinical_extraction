@@ -2,7 +2,6 @@
 
 import { Suspense, useState, useMemo } from "react";
 import {
-  LayoutGrid,
   Filter,
   Eye,
   ArrowRight,
@@ -19,7 +18,6 @@ import {
   TrendingUp,
   TrendingDown,
   Target,
-  SortAsc,
   BarChart3,
   Activity,
   Layers,
@@ -886,33 +884,6 @@ function GalleryInner() {
 
   return (
     <div className="flex h-full flex-col bg-background">
-      {/* Header */}
-      <header className="flex items-center justify-between border-b border-border bg-surface px-5 py-2.5 shadow-sm z-10">
-        <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-error/10">
-            <LayoutGrid className="h-4 w-4 text-error" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="rounded bg-surface-raised px-1.5 py-0 text-[10px] font-medium uppercase tracking-wider text-muted border border-border">
-                Gallery
-              </span>
-              <span className="text-[10px] text-muted">Error Autopsy — Failure Mode Analysis</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 rounded-md bg-surface-raised px-2.5 py-1 border border-border">
-            <span className="text-[10px] text-muted">Errors:</span>
-            <span className="text-[11px] font-semibold text-error">
-              {summary.total - summary.correct}
-            </span>
-            <span className="text-[10px] text-muted">/ {summary.total}</span>
-          </div>
-        </div>
-      </header>
-
       {/* Content */}
       <div className="flex-1 overflow-y-auto">
         {selectedSummaries.length === 0 ? (
@@ -931,11 +902,20 @@ function GalleryInner() {
             {/* 2. Error Distribution + Controls */}
             <div className="rounded-lg border border-border bg-surface p-4 space-y-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <ErrorDistributionBar
-                  summary={summary}
-                  activeFilter={errorFilter}
-                  onFilter={setErrorFilter}
-                />
+                <div className="flex items-center gap-3">
+                  <ErrorDistributionBar
+                    summary={summary}
+                    activeFilter={errorFilter}
+                    onFilter={setErrorFilter}
+                  />
+                  <div className="flex items-center gap-1.5 rounded-md bg-surface-raised px-2 py-1 border border-border">
+                    <span className="text-[10px] text-muted">Errors:</span>
+                    <span className="text-[11px] font-semibold text-error">
+                      {summary.total - summary.correct}
+                    </span>
+                    <span className="text-[10px] text-muted">/ {summary.total}</span>
+                  </div>
+                </div>
                 <div className="flex items-center gap-2">
                   <select
                     value={sortKey}

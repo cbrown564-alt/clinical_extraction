@@ -124,13 +124,7 @@ export default function RuleInventory({
 
                 {/* Expand/collapse chevron */}
                 <Collapsible.Trigger asChild>
-                  <button
-                    className="flex items-center justify-center h-6 w-6 rounded-md hover:bg-black/5 transition-colors shrink-0"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleGroupOpen(group);
-                    }}
-                  >
+                  <button className="flex items-center justify-center h-6 w-6 rounded-md hover:bg-black/5 transition-colors shrink-0">
                     {isOpen ? (
                       <ChevronDown className="h-4 w-4 text-muted" />
                     ) : (

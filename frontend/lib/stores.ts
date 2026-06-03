@@ -131,6 +131,7 @@ interface ArchitectState {
   // For replay mode (LLM/hybrid)
   replayRunId: string | null;
   replayArtifactRows: unknown[] | null;
+  replayRowIndex: number | null;
   setNoteText: (t: string) => void;
   setSplit: (s: string | null) => void;
   setSourceRowIndex: (i: number | null) => void;
@@ -142,6 +143,7 @@ interface ArchitectState {
   setError: (error: string | null) => void;
   setReplayRunId: (id: string | null) => void;
   setReplayArtifactRows: (rows: unknown[] | null) => void;
+  setReplayRowIndex: (idx: number | null) => void;
   toggleRuleGroup: (group: string) => void;
   toggleRuleId: (ruleId: string) => void;
   reset: () => void;
@@ -187,10 +189,11 @@ export const useArchitectStore = create<ArchitectState>((set) => ({
   error: null,
   replayRunId: null,
   replayArtifactRows: null,
+  replayRowIndex: null,
   setNoteText: (noteText) => set({ noteText }),
   setSplit: (split) => set({ split, sourceRowIndex: null }),
   setSourceRowIndex: (sourceRowIndex) => set({ sourceRowIndex }),
-  setPipelineFamily: (pipelineFamily) => set({ pipelineFamily, trace: null, replayArtifactRows: null }),
+  setPipelineFamily: (pipelineFamily) => set({ pipelineFamily, trace: null, replayArtifactRows: null, replayRowIndex: null }),
   setAblationConfig: (ablationConfig) => set({ ablationConfig }),
   setActiveStage: (activeStage) => set({ activeStage }),
   setTrace: (trace) => set({ trace }),
@@ -198,6 +201,7 @@ export const useArchitectStore = create<ArchitectState>((set) => ({
   setError: (error) => set({ error }),
   setReplayRunId: (replayRunId) => set({ replayRunId }),
   setReplayArtifactRows: (replayArtifactRows) => set({ replayArtifactRows }),
+  setReplayRowIndex: (replayRowIndex) => set({ replayRowIndex }),
   toggleRuleGroup: (group) =>
     set((s) => {
       const current = new Set(s.ablationConfig.enabled_groups ?? []);
@@ -225,5 +229,6 @@ export const useArchitectStore = create<ArchitectState>((set) => ({
       error: null,
       replayRunId: null,
       replayArtifactRows: null,
+      replayRowIndex: null,
     }),
 }));

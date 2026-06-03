@@ -11,7 +11,10 @@ component ablations, split discipline, and conservative benchmark language.
 ## Current Strategy
 
 The leading development lane is hybrid deterministic safety-floor architecture
-work, not an LLM-first or holdout claim. Full validation750 no-call replay of
+work, not an LLM-first or holdout claim. The current
+`llm_only_typed_operations_reasoner` typed-operations schema is paused after
+validation250 failure analysis showed the typed graph regresses correct
+selected-evidence outcomes. Full validation750 no-call replay of
 `hybrid_parallel_state_candidate_reasoner` reaches 697/750 Purist (0.9293) and
 704/750 Pragmatic (0.9387), with 750/750 exact selected evidence, 750/750 valid
 source ids, 0 deterministic-correct regressions, and 136/750 safety-floor
@@ -79,8 +82,10 @@ budget is too tight for the current schema depth, not as a reason to patch row
 valid, 1 selected-operation trace mismatch, 216/250 selected-evidence
 arithmetic Purist, and 208/250 typed-operation graph Purist. This is below the
 validation50 trajectory and is not promising enough for validation750
-escalation. Next step is targeted validation250 failure analysis before any
-schema, prompt, or token-efficiency ablation.
+escalation. Targeted failure analysis is recorded in
+`experiments/gan2026_llm_only_typed_operations_reasoner_validation250_failure_analysis_2026-06-03.md`.
+Decision: pause `typed_operations_v0`; any future work should be a
+simplified-schema redesign/ablation, not an in-place repair pass.
 
 ## Guardrails
 
@@ -116,20 +121,22 @@ schema, prompt, or token-efficiency ablation.
 
 ### Now
 
-- Analyze the `llm_only_typed_operations_reasoner` max10000 validation250
-  failures: parse/schema failures, the selected-operation trace mismatch,
-  selected-evidence invalid rows, and selected-evidence-correct to graph-wrong
-  regressions. Decide whether the current typed schema should be repaired,
-  simplified, or paused.
+- Decide whether to move A1 `llm_only_simplified_selected_state_reasoner` to
+  validation50 or first implement A2 sparse operands. A1 validation25 passed the
+  structural gates but exposed two selection/adapter misses that sparse operands
+  may target.
+- Keep the current `typed_operations_v0` lane paused; do not run validation750
+  or another broad repair rerun for it.
 
 ### Next
 
-- If failure analysis finds a small general repair with validation250 evidence,
-  predeclare a narrow validation-cycle rerun; otherwise pause the typed-operations
-  lane and return to hybrid safety-floor/component-stress work.
-- Evaluate the cost/benefit of the current typed schema depth and 10000-token
-  budget. Run ablations that remove or simplify schema pieces only after the
-  validation250 failure families are understood.
+- Run the simplified-schema ablation ladder in order: selection-only
+  validation25, sparse-operands validation25 if needed, A1/A2 validation50
+  comparison, hard-slice stress, then one predeclared validation250 decision
+  run only if the early gates are clean.
+- Evaluate schema/token efficiency for any simplified typed lane. The max10000
+  run showed the bottleneck is schema complexity and duplicated decision
+  ownership, not only completion budget.
 - Keep local-LLM transfer in mind for the ablation phase: smaller local models
   are likely slower and more fragile under excessive schema complexity, so
   schema/token efficiency should become a named objective after the
@@ -152,6 +159,39 @@ schema, prompt, or token-efficiency ablation.
 
 ### Done Recently
 
+- 2026-06-03: Ran A1
+  `llm_only_simplified_selected_state_reasoner` validation25 live with
+  `openai/gpt-4.1-mini`, `max_tokens=1200`, and no graph projection:
+  `experiments/gan2026_llm_only_simplified_selected_state_reasoner_validation25_gpt41mini_v0_2026-06-03.md`
+  / `.jsonl`. Result: 25/25 structured records, 25/25 exact selected evidence,
+  0 selected-state trace mismatches after source-checked raw-phrase artifact
+  repair, raw LLM 5/25 Purist, format-only 18/25 Purist, and
+  selected-evidence arithmetic 23/25 Purist and Pragmatic with 18
+  raw-wrong-to-correct adapter changes and 0 raw-correct-to-wrong adapter
+  regressions. Misses: row 187 needs interval/window information, and row 278
+  needs safer unresolved-multiple handling.
+- 2026-06-03: Implemented Ablation 1 as
+  `llm_only_simplified_selected_state_reasoner`: a DSPy `JSONAdapter`
+  selection-only candidate with one `selected_state`, exact selected evidence,
+  raw source phrase trace validation, raw/format-only/selected-evidence
+  arithmetic score layers, no operation graph projection, shared LLM pipeline
+  CLI registration, focused tests, and report metadata that records graph
+  projection disabled.
+- 2026-06-03: Wrote the full `llm_only_typed_operations_reasoner` max10000
+  validation250 report and simplified-schema ablation plan in
+  `experiments/gan2026_llm_only_typed_operations_reasoner_validation250_full_report_and_simplified_schema_ablation_plan_2026-06-03.md`.
+  The plan keeps `typed_operations_v0` paused and starts with a new
+  `llm_only_simplified_selected_state_reasoner` selection-only schema before
+  adding sparse operands or graph sidecars.
+- 2026-06-03: Analyzed
+  `llm_only_typed_operations_reasoner` max10000 validation250 failures in
+  `experiments/gan2026_llm_only_typed_operations_reasoner_validation250_failure_analysis_2026-06-03.md`.
+  Parse/schema failures were 3/250, selected evidence invalid was 15/250, and
+  selected-operation trace mismatch was 1/250, but the decisive issue was the
+  transition from selected-evidence arithmetic to typed-operation graph:
+  15 selected-evidence-correct rows became graph-wrong versus only 7 graph
+  rescues. Decision: pause `typed_operations_v0`; future work should simplify
+  the schema rather than repair the current graph in place.
 - 2026-06-03: Ran `llm_only_typed_operations_reasoner` validation250 live at
   max_tokens=10000 with prompt/schema unchanged from the validation50 run.
   Result:
@@ -243,8 +283,6 @@ schema, prompt, or token-efficiency ablation.
 
 ## Immediate Next Step
 
-Analyze the max10000 validation250 artifact for typed-operations failure
-families before any validation750 escalation or row-specific repair. Focus on
-parse/schema failures, selected-evidence invalid rows, selected-operation trace
-mismatch, and graph-projection regressions from otherwise correct selected
-evidence.
+Choose the next simplified-schema step: either escalate A1 to validation50 under
+the existing stop rules, or implement A2 sparse operands first to target the
+row 187 interval/window miss and row 278 unresolved-multiple adapter miss.

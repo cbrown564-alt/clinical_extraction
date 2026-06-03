@@ -1,7 +1,7 @@
 "use client";
 
 import NoteRenderer from "@/components/workbench/NoteRenderer";
-import { useArchitectStore } from "@/lib/stores";
+import { useArchitectStore, useUiStore } from "@/lib/stores";
 import type { CandidateEvent, FinalSelection } from "@/lib/types";
 
 function traceItemsToCandidates(items: { id: string; kind: string; rawValue: string; evidence: string; startChar: number | null; endChar: number | null; ruleId?: string; ruleGroup?: string | null; portability?: string | null }[]): CandidateEvent[] {
@@ -22,6 +22,7 @@ function traceItemsToCandidates(items: { id: string; kind: string; rawValue: str
 export default function ArchitectNoteRenderer() {
   const trace = useArchitectStore((s) => s.trace);
   const activeStage = useArchitectStore((s) => s.activeStage);
+  const goldOverlay = useUiStore((s) => s.goldOverlay);
 
   if (!trace) {
     return (
@@ -71,6 +72,7 @@ export default function ArchitectNoteRenderer() {
       candidates={candidates}
       finalSelection={finalSelection}
       activeStage={activeStage}
+      goldOverlay={goldOverlay}
       goldLabel={trace.goldLabel}
       predictedLabel={trace.score.predictedLabel}
     />
