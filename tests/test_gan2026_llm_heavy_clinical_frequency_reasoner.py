@@ -303,6 +303,42 @@ def test_run_split_records_llm_heavy_score_layers() -> None:
     assert metadata["summary"]["arithmetic_trace_present"] == 1
 
 
+def test_run_split_format_only_normalizes_many_per_period_to_multiple() -> None:
+    record = _record()
+    record = GanFrequencyRecord(
+        source_row_index=record.source_row_index,
+        note_text=record.note_text,
+        gold_label="multiple per month",
+        gold_reference=record.gold_reference,
+        labels_match_all_categories=record.labels_match_all_categories,
+        quotes_ok_all_categories=record.quotes_ok_all_categories,
+        row_ok=record.row_ok,
+        raw=record.raw,
+        gold_normalized_label="multiple per month",
+        gold_label_kind=FrequencyLabelKind.UNRESOLVED_MULTIPLE,
+        gold_yearly_bounds=(-1.0, -1.0),
+        gold_monthly_frequency=1000.0,
+    )
+
+    rows, _metadata = run_split(
+        [record],
+        split="validation",
+        split_manifest="gan2026_split_v1",
+        model="openai/gpt-4.1-mini",
+        temperature=0.0,
+        max_tokens=100,
+        mode="prompt-only",
+        dspy_cache=True,
+        reuse_raw_outputs={10: _raw_reasoner("many per month")},
+    )
+
+    row = rows[0]
+
+    assert row["score_layers"]["raw_llm"]["scorable"] is False
+    assert row["score_layers"]["format_only"]["final_label"] == "multiple per month"
+    assert row["score_layers"]["format_only"]["purist_correct"] is True
+
+
 def test_run_split_prompt_only_writes_not_run_records() -> None:
     rows, metadata = run_split(
         [_record()],

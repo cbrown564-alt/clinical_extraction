@@ -122,12 +122,19 @@ def test_build_typed_inputs_exposes_decision_0007_contract() -> None:
     assert "model selects the clinical fact" in instructions
     assert "Unicode inequality symbols" in instructions
     assert "HTML entities" in instructions
+    assert "occurrences_high" in instructions
+    assert "full upper-bound statement exactly" in instructions
     assert "no prefixes, underscores, plural units" in instructions
     assert contract["raw_parser_label_grammar"]["frequency"] == (
         "N per D unit or N to M per D to E unit"
     )
     assert "multiple per unit" in contract["raw_parser_label_grammar"]["vague_frequency"]
     assert contract["evidence_copy_contract"]["preserve_unicode"] is True
+    assert contract["upper_bound_contract"]["evidence_required"] is True
+    assert "≤" in contract["upper_bound_contract"]["allowed_cues"]
+    assert "occurrences_high without occurrences_low" in contract["upper_bound_contract"][
+        "operand_rule"
+    ]
     assert contract["clinical_kind_operand_consistency"]["frequency"] == (
         "total seizure burden, even when the note mentions clustering"
     )
@@ -152,6 +159,56 @@ def test_mechanical_adapter_renders_from_selected_frequency_operands() -> None:
     assert adapted.final_label == "3 per 6 week"
     assert adapted.adapter_families == ("arithmetic_from_selected_operands",)
     assert adapted.operand_complete is True
+
+
+def test_mechanical_adapter_renders_upper_bound_high_operand_with_bound_evidence() -> None:
+    prediction = _prediction("2 per week")
+    prediction.selected_fact["evidence"] = "the overall frequency has been ≤ twice per week"
+    prediction.selected_fact["raw_value"] = "≤ twice per week"
+    prediction.raw_model_answer["selected_evidence"] = prediction.selected_fact["evidence"]
+    prediction.operands["frequency"] = {
+        "occurrences_low": None,
+        "occurrences_high": 2,
+        "denominator_low": 1,
+        "denominator_high": 1,
+        "denominator_unit": "week",
+        "vague_count": None,
+    }
+    extraction, errors = reasoner.prediction_to_extraction(prediction)
+
+    assert extraction is not None
+    assert errors == []
+
+    adapted = reasoner.mechanical_adapter_label(extraction)
+
+    assert adapted.final_label == "2 per 1 week"
+    assert adapted.adapter_families == ("upper_bound_from_selected_operands",)
+    assert adapted.operand_complete is True
+
+
+def test_mechanical_adapter_rejects_high_only_operand_without_bound_evidence() -> None:
+    prediction = _prediction("2 per week")
+    prediction.selected_fact["evidence"] = "the overall frequency was discussed per week"
+    prediction.selected_fact["raw_value"] = "2 per week"
+    prediction.raw_model_answer["selected_evidence"] = prediction.selected_fact["evidence"]
+    prediction.operands["frequency"] = {
+        "occurrences_low": None,
+        "occurrences_high": 2,
+        "denominator_low": 1,
+        "denominator_high": 1,
+        "denominator_unit": "week",
+        "vague_count": None,
+    }
+    extraction, errors = reasoner.prediction_to_extraction(prediction)
+
+    assert extraction is not None
+    assert errors == []
+
+    adapted = reasoner.mechanical_adapter_label(extraction)
+
+    assert adapted.final_label is None
+    assert adapted.error == "incomplete_frequency_operands"
+    assert adapted.operand_complete is False
 
 
 def test_prediction_to_extraction_repairs_source_checked_unicode_evidence_copy() -> None:

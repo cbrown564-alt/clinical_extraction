@@ -81,6 +81,8 @@ def test_label_to_frequency_record_preserves_no_reference_semantics_before_scori
         (None, "no seizure frequency reference"),
         ("", "no seizure frequency reference"),
         ("twice weekly", "2 per week"),
+        ("many per month", "multiple per month"),
+        ("many per week", "multiple per week"),
         ("3-5/mo", "3 to 5 per month"),
         ("seizure-free since 2020", "seizure free for multiple year"),
         ("seizure free for 1.5 years", "seizure free for 1.5 year"),

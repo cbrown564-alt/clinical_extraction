@@ -198,6 +198,10 @@ def _inequality_to_multiple(text: str) -> str:
     return re.sub(r"[≤<]\s*\d+(?:\s*to\s*\d+)?", "multiple", text)
 
 
+def _many_to_multiple(text: str) -> str:
+    return re.sub(r"\bmany\b", "multiple", text)
+
+
 def _drop_prediction_noise(text: str) -> str:
     text = re.sub(r"\b(?:approximately|approx\.?|about|around|nearly|~)\b", "", text)
     text = re.sub(r"\b(?:a few|few|several)\b", "multiple", text)
@@ -562,6 +566,11 @@ BENCHMARK_REPAIR_STEPS = (
         apply=_inequality_to_multiple,
     ),
     BenchmarkRepairStep(
+        rule_id="benchmark_repair.many_to_multiple",
+        description="Map many as a vague count synonym to the accepted multiple token.",
+        apply=_many_to_multiple,
+    ),
+    BenchmarkRepairStep(
         rule_id="benchmark_repair.drop_prediction_noise",
         description="Drop approximate and seizure-word noise from prediction labels.",
         apply=_drop_prediction_noise,
@@ -718,6 +727,11 @@ FORMAT_PRESERVING_BENCHMARK_REPAIR_STEPS = (
         rule_id="benchmark_repair.normalize_quarter_period",
         description="Convert quarter denominators to the Gan-compatible 3 month window.",
         apply=_normalize_quarter_period,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.many_to_multiple",
+        description="Map many as a vague count synonym to the accepted multiple token.",
+        apply=_many_to_multiple,
     ),
     BenchmarkRepairStep(
         rule_id="benchmark_repair.drop_prediction_format_noise",
