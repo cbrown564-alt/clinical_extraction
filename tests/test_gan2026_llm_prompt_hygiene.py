@@ -12,6 +12,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
     llm_only_claim_table_selector,
     llm_only_direct_labeler,
     llm_only_minimal_evidence_selector,
+    llm_only_sparse_operands_selected_state_reasoner,
     llm_only_structured_events,
     llm_only_typed_adapter_reasoner,
     llm_only_typed_operations_reasoner,
@@ -80,6 +81,10 @@ def _payload_text(payload: str | dict[str, object]) -> str:
         (
             "llm_only_minimal_evidence_selector",
             llm_only_minimal_evidence_selector.build_prompt_input,
+        ),
+        (
+            "llm_only_sparse_operands_selected_state_reasoner",
+            llm_only_sparse_operands_selected_state_reasoner.build_sparse_operands_inputs,
         ),
         (
             "llm_heavy_clinical_frequency_reasoner",

@@ -12,8 +12,6 @@ import {
   Film,
   Pencil,
   X,
-  Eye,
-  EyeOff,
   Settings2,
 } from "lucide-react";
 import { useArchitectStore, useUiStore } from "@/lib/stores";
@@ -74,7 +72,7 @@ export default function TraceControls() {
     setReplayRowIndex,
   } = useArchitectStore();
 
-  const { goldOverlay, toggleGoldOverlay } = useUiStore();
+
 
   const runNote = useRunNote();
   const rulesQuery = useRules();
@@ -351,8 +349,57 @@ export default function TraceControls() {
           </div>
         )}
 
+        {/* Error */}
+        {error && (
+          <div className="flex items-center gap-1 rounded-md border border-error/20 bg-error/5 px-2 py-1 text-[11px] text-error max-w-xs truncate shrink-0">
+            <AlertCircle className="h-3 w-3 shrink-0" />
+            <span className="truncate">{error}</span>
+          </div>
+        )}
+
         {/* Spacer */}
-        <div className="flex-1 min-w-4" />
+        <div className="flex-1" />
+
+        {/* Pipeline family */}
+        <div className="flex items-center gap-1.5 shrink-0">
+          <label className="text-[10px] font-semibold uppercase tracking-wide text-muted">
+            Pipeline
+          </label>
+          <select
+            className="rounded-md border border-border bg-surface px-2 py-1 text-xs text-foreground outline-none focus:border-deterministic"
+            value={pipelineFamily}
+            onChange={(e) =>
+              setPipelineFamily(e.target.value as PipelineFamily)
+            }
+          >
+            {pipelineOptions.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+                {!opt.executable ? " (replay)" : ""}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Paste custom note */}
+        <button
+          onClick={handleOpenCustomNote}
+          className="flex items-center justify-center rounded-md border border-border bg-surface p-1.5 text-muted hover:text-foreground transition-all shrink-0"
+          title="Paste custom clinical note"
+        >
+          <Pencil className="h-3.5 w-3.5" />
+        </button>
+
+        {/* Reset */}
+        {trace && (
+          <button
+            onClick={() => useArchitectStore.getState().reset()}
+            className="flex items-center justify-center rounded-md border border-border bg-surface p-1.5 text-muted hover:text-foreground transition-all shrink-0"
+            title="Reset"
+          >
+            <RotateCcw className="h-3.5 w-3.5" />
+          </button>
+        )}
 
         {/* Rule panel toggle (deterministic only) */}
         {isLive && rulesQuery.data && (
@@ -392,70 +439,6 @@ export default function TraceControls() {
             <AlertCircle className="h-3.5 w-3.5" />
             No replay artifact
           </span>
-        )}
-
-        {/* Error */}
-        {error && (
-          <div className="flex items-center gap-1 rounded-md border border-error/20 bg-error/5 px-2 py-1 text-[11px] text-error max-w-xs truncate shrink-0">
-            <AlertCircle className="h-3 w-3 shrink-0" />
-            <span className="truncate">{error}</span>
-          </div>
-        )}
-
-        {/* Pipeline family */}
-        <div className="flex items-center gap-1.5 shrink-0">
-          <label className="text-[10px] font-semibold uppercase tracking-wide text-muted">
-            Pipeline
-          </label>
-          <select
-            className="rounded-md border border-border bg-surface px-2 py-1 text-xs text-foreground outline-none focus:border-deterministic"
-            value={pipelineFamily}
-            onChange={(e) =>
-              setPipelineFamily(e.target.value as PipelineFamily)
-            }
-          >
-            {pipelineOptions.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-                {!opt.executable ? " (replay)" : ""}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Gold overlay toggle */}
-        {trace && (
-          <button
-            onClick={toggleGoldOverlay}
-            className={`flex items-center justify-center rounded-md border p-1.5 transition-all shrink-0 ${
-              goldOverlay
-                ? "border-gold-ghost/30 bg-gold-ghost/10 text-gold-ghost"
-                : "border-border bg-surface text-muted hover:text-foreground"
-            }`}
-            title="Toggle gold label overlay"
-          >
-            {goldOverlay ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
-          </button>
-        )}
-
-        {/* Paste custom note */}
-        <button
-          onClick={handleOpenCustomNote}
-          className="flex items-center justify-center rounded-md border border-border bg-surface p-1.5 text-muted hover:text-foreground transition-all shrink-0"
-          title="Paste custom clinical note"
-        >
-          <Pencil className="h-3.5 w-3.5" />
-        </button>
-
-        {/* Reset */}
-        {trace && (
-          <button
-            onClick={() => useArchitectStore.getState().reset()}
-            className="flex items-center justify-center rounded-md border border-border bg-surface p-1.5 text-muted hover:text-foreground transition-all shrink-0"
-            title="Reset"
-          >
-            <RotateCcw className="h-3.5 w-3.5" />
-          </button>
         )}
       </div>
 

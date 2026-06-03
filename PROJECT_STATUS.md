@@ -87,6 +87,20 @@ escalation. Targeted failure analysis is recorded in
 Decision: pause `typed_operations_v0`; any future work should be a
 simplified-schema redesign/ablation, not an in-place repair pass.
 
+Simplified-schema ablation has moved from A1 to A2 and produced an early stop
+signal. A1 `llm_only_simplified_selected_state_reasoner` validation25 passed
+structure/evidence gates and reached 23/25 selected-evidence arithmetic Purist.
+A2 `llm_only_sparse_operands_selected_state_reasoner` is now implemented and
+recorded in
+`experiments/gan2026_llm_only_sparse_operands_selected_state_reasoner_validation25_gpt41mini_v0_2026-06-03.md`
+with `.jsonl`: 25/25 structured, 23/25 exact selected evidence, 0 trace
+mismatches, selected-evidence arithmetic 23/25 Purist, but sparse-operand
+adapter 21/25 Purist with 2 selected-evidence-correct to operand-wrong
+regressions. Interpretation: sparse operands are useful diagnostic fields, but
+the adapter cannot escalate to validation50 until boundary/permission handling
+prevents clusters and `multiple` wording from becoming numeric clinical
+selectors.
+
 ## Guardrails
 
 - Split `gan2026_split_v1` is locked: 300 train, 750 validation, 450 holdout.
@@ -121,19 +135,23 @@ simplified-schema redesign/ablation, not an in-place repair pass.
 
 ### Now
 
-- Decide whether to move A1 `llm_only_simplified_selected_state_reasoner` to
-  validation50 or first implement A2 sparse operands. A1 validation25 passed the
-  structural gates but exposed two selection/adapter misses that sparse operands
-  may target.
+- Review A2 sparse-operand validation25 failures and implement a predeclared
+  boundary/permission fix or A3 boundary-tag ablation before any A2 validation50.
+  Rows 190 and 280 show sparse operands over-numericizing cluster/`multiple`
+  evidence; row 187 remains an interval/window selection miss.
 - Keep the current `typed_operations_v0` lane paused; do not run validation750
   or another broad repair rerun for it.
 
 ### Next
 
-- Run the simplified-schema ablation ladder in order: selection-only
-  validation25, sparse-operands validation25 if needed, A1/A2 validation50
-  comparison, hard-slice stress, then one predeclared validation250 decision
-  run only if the early gates are clean.
+- After the A2/A3 boundary fix passes validation25 without selected-evidence
+  correct-to-adapter-wrong regressions, run an A1 versus safer A2/A3 validation50
+  comparison. Do not run validation250 until the 50-row and hard-slice results
+  name the specific hypothesis being decided.
+- Build a fixed hard-slice stress panel for interval/window selection,
+  unresolved `multiple`, cluster-frequency wording, medication/proxy rates,
+  perimenstrual-only windows, and compact `/hour` rates before any broad
+  simplified-schema escalation.
 - Evaluate schema/token efficiency for any simplified typed lane. The max10000
   run showed the bottleneck is schema complexity and duplicated decision
   ownership, not only completion budget.
@@ -159,6 +177,18 @@ simplified-schema redesign/ablation, not an in-place repair pass.
 
 ### Done Recently
 
+- 2026-06-03: Implemented A2
+  `llm_only_sparse_operands_selected_state_reasoner` as a separate DSPy
+  `JSONAdapter` candidate with one selected state, exact selected evidence,
+  sparse nullable operands, no graph projection, CLI registration, focused
+  tests, prompt-hygiene coverage, and report metadata. Ran validation25 live
+  with `openai/gpt-4.1-mini`, `max_tokens=1400`:
+  `experiments/gan2026_llm_only_sparse_operands_selected_state_reasoner_validation25_gpt41mini_v0_2026-06-03.md`
+  / `.jsonl`. Result: 25/25 structured, 23/25 exact selected evidence, 0 trace
+  mismatches, selected-evidence arithmetic 23/25 Purist, sparse-operand adapter
+  21/25 Purist, and 2 selected-evidence-correct to operand-wrong regressions.
+  Decision: do not escalate A2 to validation50 until boundary/permission logic
+  is fixed or A3 boundary tags are tested.
 - 2026-06-03: Ran A1
   `llm_only_simplified_selected_state_reasoner` validation25 live with
   `openai/gpt-4.1-mini`, `max_tokens=1200`, and no graph projection:
