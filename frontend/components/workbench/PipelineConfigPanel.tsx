@@ -54,10 +54,7 @@ export default function PipelineConfigPanel() {
     (r) => r.source_row_index === sourceRowIndex
   );
 
-  const pipelineOptions = familiesQuery.data?.families ?? [
-    { value: "rules_only" as PipelineFamily, label: "Deterministic V1", executable: true, kind: "rules_only" as const },
-    { value: "deterministic_v1" as PipelineFamily, label: "Deterministic V1 (alias)", executable: true, kind: "rules_only" as const },
-  ];
+  const pipelineOptions = familiesQuery.data?.families ?? [];
 
   const selectedFamily = pipelineOptions.find((f) => f.value === pipeline);
   const isExecutable = selectedFamily?.executable ?? true;

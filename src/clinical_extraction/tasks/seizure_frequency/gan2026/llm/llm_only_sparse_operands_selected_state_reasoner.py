@@ -587,7 +587,7 @@ def _score_layers(
         if extraction and format_label
         else None
     )
-    sparse_operand_label = _sparse_operand_adapter_label(extraction) or selected_evidence_label
+    sparse_operand_label = _sparse_operand_adapter_label(extraction, selected_evidence_label) or selected_evidence_label
     return {
         "raw_llm": heavy_reasoner._score_label(record, raw_label, repair_mode="raw_llm"),
         "format_only": heavy_reasoner._score_label(
@@ -619,16 +619,46 @@ def _raw_final_label(
     return state.raw_llm_final_label
 
 
+def _state_should_defer_to_arithmetic(state: SparseOperandsSelectedState) -> bool:
+    text = " ".join(
+        (
+            state.raw_llm_final_label,
+            state.selected_evidence,
+            state.raw_source_phrase,
+        )
+    ).lower()
+
+    if "bimonthly" in text:
+        return True
+    if "perimenstrual" in text or "menstrual" in text or "cyclical" in text:
+        return True
+    if "every other" in text:
+        return True
+
+    import re
+    if re.search(r"\bq[a-z0-9\-]+", text):
+        return True
+    if "hour" in text or "/h" in text:
+        return True
+
+    return False
+
+
 def _sparse_operand_adapter_label(
     extraction: SparseOperandsSelectedStateExtractionRecord | None,
+    selected_evidence_label: str | None = None,
 ) -> str | None:
     if extraction is None:
         return None
     state = extraction.selected_state
     operands = state.operands
     if state.final_kind == "unknown":
+        if selected_evidence_label and selected_evidence_label not in {"unknown", "no seizure frequency reference"}:
+            return None
         return "unknown"
     if state.final_kind == "no_reference":
+        if selected_evidence_label and selected_evidence_label not in {"unknown", "no seizure frequency reference"}:
+            return None
         return "no seizure frequency reference"
     if state.final_kind == "seizure_free":
         if operands.seizure_free_duration_count and operands.seizure_free_duration_unit:
@@ -640,6 +670,8 @@ def _sparse_operand_adapter_label(
     if state.final_kind != "frequency":
         return None
     if _state_mentions_unresolved_multiple(state):
+        return None
+    if _state_should_defer_to_arithmetic(state):
         return None
     if state.selected_operation_kind == "cluster_frequency":
         return None

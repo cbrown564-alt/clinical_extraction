@@ -135,6 +135,8 @@ def test_sparse_operand_adapter_ignores_operands_for_unknown_state(monkeypatch) 
         def __call__(self, **kwargs):
             prediction = _prediction("unknown")
             prediction.selected_state["final_kind"] = "unknown"
+            prediction.selected_state["selected_evidence"] = "no seizure frequency reference"
+            prediction.selected_state["raw_source_phrase"] = "no seizure frequency reference"
             prediction.selected_state["selected_operation_kind"] = "unknown_frequency"
             prediction.selected_state["operands"] = {
                 **prediction.selected_state["operands"],

@@ -61,7 +61,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline_v1 import Gan2
 
 PipelineFamily = Literal[
     "rules_only",
-    "deterministic_v1",
     "llm_only_claim_table_selector",
     "llm_only_direct_labeler",
     "llm_only_structured_events",
@@ -79,7 +78,7 @@ PROMPT_MODULES = (
 )
 
 # Families that can actually be executed via /run/note and /run/ablation
-EXECUTABLE_PIPELINES: set[str] = {"rules_only", "deterministic_v1"}
+EXECUTABLE_PIPELINES: set[str] = {"rules_only"}
 
 
 class ObservatorySettings(BaseModel):
@@ -298,22 +297,7 @@ def create_app(
 
     @app.get("/pipeline-families")
     def pipeline_families() -> dict[str, Any]:
-        families: list[dict[str, Any]] = [
-            {
-                "value": "rules_only",
-                "label": "Deterministic V1",
-                "executable": True,
-                "kind": "rules_only",
-            },
-            {
-                "value": "deterministic_v1",
-                "label": "Deterministic V1 (alias)",
-                "executable": True,
-                "kind": "rules_only",
-            },
-        ]
-        for module_name in PROMPT_MODULES:
-            families.append(_llm_family_payload(module_name))
+        families = _build_pipeline_families(settings)
         return {"families": families}
 
     @app.get("/prompts")
@@ -545,6 +529,97 @@ def _llm_family_payload(module_name: str) -> dict[str, Any]:
         "executable": False,
         "kind": kind,
     }
+
+
+def _derive_family_kind(family: str) -> str:
+    if family == "rules_only":
+        return "rules_only"
+    if "hybrid" in family:
+        return "hybrid"
+    if family.startswith("llm_"):
+        return "llm_only"
+    if "deterministic" in family:
+        return "rules_only"
+    return "llm_only"
+
+
+# Concise human-readable labels for the workbench dropdown.
+# Overrides the long prose `model_role` values from the registry.
+FAMILY_SHORT_LABELS: dict[str, str] = {
+    "rules_only": "Deterministic V1",
+    "dspy_final_selection_adjudicator": "DSPY Adjudicator",
+    "hybrid_clinical_frequency_state_graph": "State Graph",
+    "hybrid_rules_candidates_llm_adjudicator": "Hybrid Adjudicator",
+    "hybrid_parallel_state_candidate_reasoner": "Parallel Hybrid",
+    "llm_first_direct_extractor": "Direct Extractor",
+    "llm_heavy_clinical_frequency_reasoner": "LLM Heavy Reasoner",
+    "llm_heavy_evidence_selection_with_deterministic_adapters": "LLM Heavy + Det",
+    "llm_only_claim_table_selector": "Claim Table",
+    "llm_only_minimal_evidence_selector": "Minimal Evidence",
+    "llm_only_typed_adapter_reasoner": "Typed Adapter",
+    "llm_only_typed_operations_reasoner": "Typed Operations",
+    "llm_replacement_postprocessing_ablation": "Replacement Ablation",
+    "llm_structured_events": "Structured Events",
+}
+
+
+def _derive_family_label(family: str, runs: list[dict[str, Any]]) -> str:
+    """Derive a human-readable label from registry runs for a family."""
+    # 1. Hard-coded short labels (preferred)
+    if family in FAMILY_SHORT_LABELS:
+        return FAMILY_SHORT_LABELS[family]
+    # 2. Fallback: model_role from the run with the most rows
+    best_run = max(runs, key=lambda r: r.get("row_count", 0), default=None)
+    if best_run and best_run.get("model_role"):
+        return str(best_run["model_role"])
+    # 3. Ultimate fallback: prettify the family name
+    return family.replace("_", " ").title()
+
+
+def _build_pipeline_families(settings: ObservatorySettings) -> list[dict[str, Any]]:
+    """Build pipeline family list from registry runs plus executable deterministic."""
+    entries = load_run_registry(settings.registry_path)
+
+    # Group registry entries by pipeline_family
+    by_family: dict[str, list[dict[str, Any]]] = {}
+    for entry in entries:
+        record = entry.to_json_record()
+        family = record.get("pipeline_family")
+        if not family:
+            continue
+        by_family.setdefault(family, []).append(record)
+
+    families: list[dict[str, Any]] = []
+
+    # Always include the executable deterministic family
+    if "rules_only" not in by_family:
+        families.append({
+            "value": "rules_only",
+            "label": "Deterministic V1",
+            "executable": True,
+            "kind": "rules_only",
+            "has_replay_artifact": False,
+        })
+
+    for family, runs in sorted(by_family.items()):
+        has_jsonl = any(
+            any(p.endswith(".jsonl") for p in r.get("artifact_paths", []))
+            for r in runs
+        )
+        kind = _derive_family_kind(family)
+        executable = family in EXECUTABLE_PIPELINES
+        label = _derive_family_label(family, runs)
+
+        families.append({
+            "value": family,
+            "label": label,
+            "executable": executable,
+            "kind": kind,
+            "has_replay_artifact": has_jsonl,
+            "run_count": len(runs),
+        })
+
+    return families
 
 
 def _jsonable_mapping_sequence(items: Iterable[Any]) -> list[dict[str, Any]]:
