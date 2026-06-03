@@ -14,6 +14,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
     llm_only_minimal_evidence_selector,
     llm_only_structured_events,
     llm_only_typed_adapter_reasoner,
+    llm_only_typed_operations_reasoner,
 )
 
 INTERNAL_MODEL_FACING_PHRASES = (
@@ -87,6 +88,10 @@ def _payload_text(payload: str | dict[str, object]) -> str:
         (
             "llm_only_typed_adapter_reasoner",
             llm_only_typed_adapter_reasoner.build_typed_adapter_inputs,
+        ),
+        (
+            "llm_only_typed_operations_reasoner",
+            llm_only_typed_operations_reasoner.build_typed_operations_inputs,
         ),
         (
             "llm_heavy_evidence_selection_with_deterministic_adapters",

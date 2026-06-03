@@ -63,3 +63,19 @@ export function fetchArtifact(runId: string, artifactPath?: string, limit?: numb
     `/artifacts/${runId}${query ? "?" + query : ""}`
   );
 }
+
+export function runAblation(params: {
+  split: string;
+  pipeline?: string;
+  limit?: number;
+  ablation_config?: import("./types").AblationConfigPayload;
+}) {
+  return fetchJson<import("./types").RunAblationResponse>("/run/ablation", {
+    method: "POST",
+    body: JSON.stringify(params),
+  });
+}
+
+export function fetchPrompts() {
+  return fetchJson<import("./types").PromptsResponse>("/prompts");
+}

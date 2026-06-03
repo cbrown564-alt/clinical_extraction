@@ -129,6 +129,64 @@ def test_llm_sidecar_requires_valid_evidence_and_source_ids(tmp_path: Path) -> N
     assert llm_sidecar["final_label"] == "seizure free for multiple year"
 
 
+def test_projection_gate_does_not_make_deterministic_correct_row_wrong(
+    tmp_path: Path,
+) -> None:
+    artifact_path = tmp_path / "artifact.jsonl"
+    artifact_path.write_text(
+        _jsonl(
+            {
+                "source_row_index": 5,
+                "reference": {
+                    "gold_label": "1 per month",
+                    "gold_label_kind": "frequency",
+                    "gold_monthly_frequency": 1.0,
+                },
+                "score_layers": {
+                    "hybrid_adjudicator_with_adapters": {
+                        "final_label": "1 per month",
+                        "purist_correct": True,
+                        "pragmatic_correct": True,
+                        "scorable": True,
+                    },
+                    "state_graph_projection": {
+                        "final_label": "2 per month",
+                        "purist_correct": False,
+                        "pragmatic_correct": False,
+                        "scorable": True,
+                    },
+                },
+                "component_inputs": {
+                    "state_graph_nodes": [
+                        _graph_node("sg-001", "2 per month", "frequency", 2.0),
+                        _graph_node("sg-002", "unknown", "unknown", 1000.0),
+                    ]
+                },
+                "diagnostics": {
+                    "deterministic_correct": True,
+                    "selected_evidence_exact": True,
+                    "selected_source_ids_exist": True,
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    rows, metadata = replay.run_selective_safety_floor_gate_replay(
+        _manifest("projection_arbitration", 5, "1 per month"),
+        artifact_dir=tmp_path,
+    )
+
+    projection = rows[0]["gate_variants"][replay.PROJECTION_VARIANT]
+    combined = rows[0]["gate_variants"][replay.COMBINED_VARIANT]
+    summary = metadata["slice_summary"]["projection_arbitration"]["variant_summary"]
+    assert projection["changed"] is False
+    assert projection["fallback_reason"] == "deterministic_correct_regression_guard"
+    assert combined["final_label"] == "1 per month"
+    assert summary[replay.PROJECTION_VARIANT]["deterministic_correct_regressions"] == 0
+    assert summary[replay.COMBINED_VARIANT]["deterministic_correct_regressions"] == 0
+
+
 def test_write_replay_report_has_valid_would_change_table(tmp_path: Path) -> None:
     report_path = tmp_path / "report.md"
     metadata = {
@@ -175,6 +233,120 @@ def test_missing_manifest_rows_fail_with_clear_error(tmp_path: Path) -> None:
             _manifest("candidate_generation_rescue", 99, "unknown"),
             artifact_dir=tmp_path,
         )
+
+
+def test_validation_cycle_manifest_replays_full_saved_validation_artifact(
+    tmp_path: Path,
+) -> None:
+    artifact_path = tmp_path / "artifact.jsonl"
+    artifact_path.write_text(
+        _jsonl(
+            {
+                "source_row_index": 3,
+                "reference": {
+                    "gold_label": "unknown",
+                    "gold_label_kind": "unknown",
+                    "gold_monthly_frequency": 1000.0,
+                },
+                "score_layers": {
+                    "hybrid_adjudicator_with_adapters": {
+                        "final_label": "seizure free for multiple year",
+                        "purist_correct": False,
+                        "pragmatic_correct": False,
+                        "scorable": True,
+                    },
+                    "llm_candidate_selector_raw": {
+                        "final_label": "unknown",
+                        "purist_correct": True,
+                        "pragmatic_correct": True,
+                        "scorable": True,
+                    },
+                },
+                "component_inputs": {"state_graph_nodes": []},
+                "diagnostics": {
+                    "deterministic_correct": False,
+                    "selected_evidence_exact": True,
+                    "selected_source_ids_exist": True,
+                },
+            }
+        )
+        + _jsonl(
+            {
+                "source_row_index": 4,
+                "reference": {
+                    "gold_label": "1 per month",
+                    "gold_label_kind": "frequency",
+                    "gold_monthly_frequency": 1.0,
+                },
+                "score_layers": {
+                    "hybrid_adjudicator_with_adapters": {
+                        "final_label": "1 per month",
+                        "purist_correct": True,
+                        "pragmatic_correct": True,
+                        "scorable": True,
+                    },
+                    "llm_candidate_selector_raw": {
+                        "final_label": "unknown",
+                        "purist_correct": False,
+                        "pragmatic_correct": False,
+                        "scorable": True,
+                    },
+                },
+                "component_inputs": {"state_graph_nodes": []},
+                "diagnostics": {
+                    "deterministic_correct": True,
+                    "selected_evidence_exact": True,
+                    "selected_source_ids_exist": True,
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    rows, metadata = replay.run_selective_safety_floor_gate_replay(
+        {
+            "artifact_kind": "gan2026_validation_cycle_candidate_manifest",
+            "candidate_name": "selective_safety_floor_gate_v0",
+            "split_manifest": "gan2026_split_v1",
+            "source_artifacts": {"validation_source_jsonl": "artifact.jsonl"},
+        },
+        artifact_dir=tmp_path,
+        manifest_path="candidate_manifest.json",
+    )
+
+    assert metadata["artifact_kind"] == "gan2026_selective_safety_floor_gate_v0_replay"
+    assert metadata["row_count"] == 2
+    assert metadata["slice_summary"]["validation750"]["rows"] == 2
+    summary = metadata["slice_summary"]["validation750"]["variant_summary"]
+    assert summary[replay.SELECTIVE_CANDIDATE_VARIANT]["wrong_to_correct"] == 1
+    assert summary[replay.SELECTIVE_CANDIDATE_VARIANT]["deterministic_correct_regressions"] == 0
+    assert rows[0]["gate_variants"][replay.SELECTIVE_CANDIDATE_VARIANT]["final_label"] == "unknown"
+
+
+def test_load_manifest_preserves_validation_cycle_manifest_without_predeclaration(
+    tmp_path: Path,
+) -> None:
+    manifest_path = tmp_path / "candidate.json"
+    predeclaration_path = tmp_path / "predeclaration.json"
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "artifact_kind": "gan2026_validation_cycle_candidate_manifest",
+                "candidate_name": "selective_safety_floor_gate_v0",
+                "source_artifacts": {"validation_source_jsonl": "artifact.jsonl"},
+            }
+        ),
+        encoding="utf-8",
+    )
+    predeclaration_path.write_text(
+        json.dumps({"slice_manifest": "old_slices.json", "surfaces": []}),
+        encoding="utf-8",
+    )
+
+    loaded = replay.load_manifest(manifest_path, predeclaration=predeclaration_path)
+
+    assert loaded["candidate_name"] == "selective_safety_floor_gate_v0"
+    assert "slices" not in loaded
 
 
 def _manifest(slice_name: str, source_row_index: int, gold_label: str) -> dict:
