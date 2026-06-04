@@ -1,4 +1,4 @@
-"""LLM-only minimal evidence selector for Gan 2026 seizure-frequency extraction."""
+"""LLM-only minimal evidence selector for seizure-frequency extraction."""
 
 from __future__ import annotations
 
@@ -53,11 +53,14 @@ PROMPT_POLICY_TAXONOMY: list[dict[str, str]] = [
         "description": "Prompt requires answer.evidence to be copied from the note.",
     },
     {
-        "policy_id": "mes_v2.answer.source_near_text",
-        "controlled_variable": "source_near_answer_policy",
+        "policy_id": "mes_v2.answer.close_text_match",
+        "controlled_variable": "close_text_match_answer_policy",
         "portability": "seizure_frequency",
         "status": "active",
-        "description": "Prompt asks for source-near answer text; normalization is downstream.",
+        "description": (
+            "Prompt asks for selected answer text that closely matches the note; "
+            "normalization is downstream."
+        ),
     },
 ]
 DEFAULT_JSONL_PATH = Path(
@@ -75,12 +78,12 @@ MinimalAnswerState = Literal[
     "unknown_frequency",
     "no_frequency_reference",
     "last_event_only",
-    "non_seizure_or_proxy",
+    "not_seizure_frequency",
 ]
 
 
 class MinimalAnswerRecord(BaseModel):
-    """Minimal prediction-bearing answer emitted by the model."""
+    """Minimal answer emitted by the model."""
 
     model_config = ConfigDict(extra="forbid")
 
@@ -92,7 +95,7 @@ class MinimalAnswerRecord(BaseModel):
 
 
 class MinimalSupportingFactRecord(BaseModel):
-    """Optional source-near fact supporting or competing with the answer."""
+    """Optional fact supporting or competing with the answer."""
 
     model_config = ConfigDict(extra="forbid")
 
@@ -113,7 +116,7 @@ class MinimalEvidenceExtractionRecord(BaseModel):
 
 
 class Gan2026MinimalEvidenceSelectorSignature(dspy.Signature):
-    """Select the Gan seizure-frequency answer using a minimal evidence contract."""
+    """Select the seizure-frequency answer using a minimal evidence contract."""
 
     prompt_input_json: str = dspy.InputField(
         desc="JSON containing one clinical note, minimal instructions, and output schema."
@@ -138,9 +141,7 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
     """Build the minimal evidence-selector prompt payload, excluding gold labels."""
 
     payload = {
-        "prompt_version": PROMPT_VERSION,
-        "task": "Gan 2026 minimal evidence selector for seizure frequency",
-        "source_row_index": record.source_row_index,
+        "task": "Select the current seizure-frequency answer from one clinical note.",
         "instructions": [
             "Read the full clinical note.",
             (
@@ -148,16 +149,16 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "and supporting_facts."
             ),
             "Do not return markdown, Python dict syntax, comments, or any extra top-level keys.",
-            "Do not create a nested final_query object.",
             (
                 "Use answer.state to describe the selected answer family: frequency, "
                 "cluster_frequency, seizure_free, unknown_frequency, no_frequency_reference, "
-                "last_event_only, or non_seizure_or_proxy."
+                "last_event_only, or not_seizure_frequency."
             ),
             (
-                "Use answer.answer_text for the source-near selected frequency or boundary "
-                "answer. It can be natural source wording such as <= four per day, no seizures "
-                "for six months, unknown, or no seizure frequency reference."
+                "Use answer.answer_text for the selected frequency or boundary answer, "
+                "closely matching the wording and context in the text. Examples include "
+                "<= four per day, no seizures for six months, unknown, or no seizure "
+                "frequency reference."
             ),
             "Every evidence value must be an exact substring from the note when possible.",
             (
@@ -172,38 +173,49 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
             ),
             (
                 "Prefer the current or recent seizure-frequency answer over historical, "
-                "hypothetical, medication, rescue-medication, or proxy-only statements."
+                "hypothetical, medication, rescue-medication, or indirect context."
             ),
         ],
         "answer_schema": {
-            "state": [
-                "frequency",
-                "cluster_frequency",
-                "seizure_free",
-                "unknown_frequency",
-                "no_frequency_reference",
-                "last_event_only",
-                "non_seizure_or_proxy",
-            ],
-            "answer_text": "source-near selected answer text",
+            "state": {
+                "description": "Answer family for the selected seizure-frequency statement.",
+                "allowed_values": [
+                    "frequency",
+                    "cluster_frequency",
+                    "seizure_free",
+                    "unknown_frequency",
+                    "no_frequency_reference",
+                    "last_event_only",
+                    "not_seizure_frequency",
+                ],
+            },
+            "answer_text": (
+                "Selected answer text, closely matching the wording and context in the note."
+            ),
             "evidence": "exact note substring supporting the selected answer",
             "confidence": ["low", "medium", "high", None],
             "reason": "optional brief reason, or null",
         },
         "supporting_fact_schema": {
             "fact_id": "stable string such as f1",
-            "role": ["selected", "competing", "context", "rejected"],
-            "state": [
-                "frequency",
-                "cluster_frequency",
-                "seizure_free",
-                "unknown_frequency",
-                "no_frequency_reference",
-                "last_event_only",
-                "non_seizure_or_proxy",
-                "cluster_context",
-            ],
-            "fact_text": "source-near fact text",
+            "role": {
+                "description": "How this fact relates to the selected answer.",
+                "allowed_values": ["selected", "competing", "context", "rejected"],
+            },
+            "state": {
+                "description": "Answer family for this supporting or competing fact.",
+                "allowed_values": [
+                    "frequency",
+                    "cluster_frequency",
+                    "seizure_free",
+                    "unknown_frequency",
+                    "no_frequency_reference",
+                    "last_event_only",
+                    "not_seizure_frequency",
+                    "cluster_context",
+                ],
+            },
+            "fact_text": "fact text, closely matching the wording and context in the note",
             "evidence": "exact note substring supporting this fact",
         },
         "note_text": record.note_text,
@@ -449,7 +461,7 @@ def _raw_answer_label(extraction: MinimalEvidenceExtractionRecord | None) -> str
     if extraction is None:
         return None
     state = extraction.answer.state
-    if state in {"unknown_frequency", "last_event_only", "non_seizure_or_proxy"}:
+    if state in {"unknown_frequency", "last_event_only", "not_seizure_frequency"}:
         return "unknown"
     if state == "no_frequency_reference":
         return "no seizure frequency reference"
@@ -709,7 +721,7 @@ def _state_from_answer_kind(value: Any) -> Any:
         "unknown_frequency": "unknown_frequency",
         "no_reference": "no_frequency_reference",
         "no_frequency_reference": "no_frequency_reference",
-        "non_seizure_event": "non_seizure_or_proxy",
+        "non_seizure_event": "not_seizure_frequency",
     }
     return mapping.get(str(value), value)
 
@@ -722,7 +734,7 @@ def _state_from_claim_type(value: Any) -> Any:
         "last_event_only": "last_event_only",
         "unknown_frequency": "unknown_frequency",
         "no_reference": "no_frequency_reference",
-        "non_seizure_event": "non_seizure_or_proxy",
+        "non_seizure_event": "not_seizure_frequency",
     }
     return mapping.get(str(value), value)
 
@@ -732,7 +744,8 @@ def _state_alias(value: Any) -> Any:
         "unknown": "unknown_frequency",
         "no_reference": "no_frequency_reference",
         "no seizure frequency reference": "no_frequency_reference",
-        "non_seizure_event": "non_seizure_or_proxy",
+        "non_seizure_event": "not_seizure_frequency",
+        "non_seizure_or_proxy": "not_seizure_frequency",
     }
     if isinstance(value, str):
         return aliases.get(value, value)
@@ -747,7 +760,7 @@ def _derive_boundary_state(state: str) -> str:
         "unknown_frequency": "unknown_frequency",
         "no_frequency_reference": "no_frequency_reference",
         "last_event_only": "last_event_only",
-        "non_seizure_or_proxy": "non_epileptic_or_proxy",
+        "not_seizure_frequency": "not_seizure_frequency",
     }[state]
 
 
@@ -773,7 +786,7 @@ def _semantic_kind_for_state(state: str) -> str:
         "unknown_frequency": "unknown",
         "no_frequency_reference": "no_reference",
         "last_event_only": "unknown",
-        "non_seizure_or_proxy": "unknown",
+        "not_seizure_frequency": "unknown",
     }[state]
 
 
@@ -785,7 +798,7 @@ def _claim_type_for_fact_state(state: str) -> str:
         "unknown_frequency": "unknown_frequency",
         "no_frequency_reference": "no_reference",
         "last_event_only": "last_event_only",
-        "non_seizure_or_proxy": "non_seizure_event",
+        "not_seizure_frequency": "non_seizure_event",
         "cluster_context": "cluster_frequency",
     }[state]
 

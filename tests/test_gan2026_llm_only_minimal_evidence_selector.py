@@ -63,15 +63,24 @@ def _raw_minimal(answer_text: str = "Current seizure frequency is two per month"
 def test_build_prompt_input_exposes_minimal_contract_without_rich_selector_state() -> None:
     prompt = json.loads(minimal_selector.build_prompt_input(_record()))
 
-    assert prompt["prompt_version"] == minimal_selector.PROMPT_VERSION
-    assert prompt["prompt_version"] == "gan2026_llm_only_minimal_evidence_selector_v2"
+    assert "prompt_version" not in prompt
+    assert "source_row_index" not in prompt
     assert "prompt_policy_taxonomy" not in prompt
     assert minimal_selector.PROMPT_POLICY_TAXONOMY
-    assert prompt["answer_schema"]["answer_text"] == "source-near selected answer text"
+    assert prompt["answer_schema"]["answer_text"] == (
+        "Selected answer text, closely matching the wording and context in the note."
+    )
     assert "final_label" not in prompt["answer_schema"]
     assert prompt["supporting_fact_schema"]["fact_id"] == "stable string such as f1"
+    assert prompt["answer_schema"]["state"]["description"]
+    assert "not_seizure_frequency" in prompt["answer_schema"]["state"]["allowed_values"]
     prompt_text = json.dumps(prompt)
-    assert "Do not create a nested final_query object" in prompt_text
+    assert "Gan 2026" not in prompt_text
+    assert "source-near" not in prompt_text
+    assert "proxy" not in prompt_text
+    assert "prompt_version" not in prompt_text
+    assert "source_row_index" not in prompt_text
+    assert "Do not create a nested final_query object" not in prompt_text
     assert "answer.final_label" not in prompt_text
     assert "convert number words to digits" not in prompt_text
     assert "convert quarter to 3 month" not in prompt_text
@@ -162,6 +171,22 @@ def test_parse_minimal_evidence_selector_json_repairs_cluster_context_role_alias
     assert extraction.supporting_facts[0].state == "cluster_context"
     assert "schema_repair: cluster_context role mapped to context" in errors
     assert diagnostics["repair_applied"] is True
+
+
+def test_parse_minimal_evidence_selector_json_repairs_old_non_seizure_state() -> None:
+    payload = json.loads(_raw_minimal())
+    payload["answer"]["state"] = "non_seizure_or_proxy"
+    payload["supporting_facts"][0]["state"] = "non_seizure_or_proxy"
+
+    extraction, errors, diagnostics = minimal_selector.parse_minimal_evidence_selector_json(
+        json.dumps(payload)
+    )
+
+    assert extraction is not None
+    assert extraction.answer.state == "not_seizure_frequency"
+    assert extraction.supporting_facts[0].state == "not_seizure_frequency"
+    assert errors == []
+    assert diagnostics["schema_valid"] is True
 
 
 def test_run_split_records_score_layers_evidence_and_derived_projection() -> None:
