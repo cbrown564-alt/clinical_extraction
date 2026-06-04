@@ -169,6 +169,7 @@ export default function GoldAuditPanel() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["gold-audit-decisions"] });
       queryClient.invalidateQueries({ queryKey: ["gold-audit-rows"] });
+      setCurrentSourceRowIndex(null);
     },
   });
 
@@ -195,8 +196,8 @@ export default function GoldAuditPanel() {
       clinically_defensible_alternative: false,
       likely_gold_defect: false,
     };
-    saveMutation.mutate(decision, { onSuccess: goNext });
-  }, [currentRow, simpleClass, notes, correctedGoldLabel, saveMutation, goNext]);
+    saveMutation.mutate(decision);
+  }, [currentRow, simpleClass, notes, correctedGoldLabel, saveMutation]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -233,6 +234,7 @@ export default function GoldAuditPanel() {
   const decided = decisionsMap.size;
   const progress = total > 0 ? decided / total : 0;
   const reviewCount = reviewRows.length;
+  const samplingModel = rowsData?.sampling_model;
 
   if (rowsLoading || decisionsLoading) {
     return (
@@ -301,12 +303,34 @@ export default function GoldAuditPanel() {
 
         <div className="flex items-center gap-1.5 text-[11px] text-muted">
           <span className="font-mono">#{sri}</span>
+          {currentRow.predicted_simple_class && (
+            <span
+              className={`rounded border px-1.5 py-0 text-[9px] font-medium ${classBadgeStyle(currentRow.predicted_simple_class)}`}
+              title={currentRow.active_learning_reason}
+            >
+              model {currentRow.predicted_simple_class}{" "}
+              {Math.round((currentRow.prediction_confidence ?? 0) * 100)}%
+            </span>
+          )}
           {isDone && (
             <span className={`rounded border px-1.5 py-0 text-[9px] font-medium ${classBadgeStyle(existing?.simple_class ?? "")}`}>
               {existing?.simple_class}
             </span>
           )}
         </div>
+
+        {samplingModel && (
+          <div
+            className={`hidden items-center rounded-md border px-2 py-1 text-[10px] font-medium md:flex ${
+              samplingModel.is_calibrated_enough
+                ? "border-success/20 bg-success/10 text-success"
+                : "border-border bg-surface-raised text-muted"
+            }`}
+            title={samplingModel.claim_language}
+          >
+            {samplingModel.decision_count} labels
+          </div>
+        )}
 
         {/* Class toggle legend */}
         <div className="flex items-center gap-1">

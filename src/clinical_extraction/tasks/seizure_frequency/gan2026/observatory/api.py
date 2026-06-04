@@ -6,15 +6,17 @@ import csv
 import importlib
 import json
 import os
-import random
 from collections.abc import Iterable, Mapping, Sequence
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Literal
 
 from fastapi import FastAPI, HTTPException, Query
 from pydantic import BaseModel, ConfigDict, Field
 
+from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis.gold_audit_active_sampler import (  # noqa: E501
+    enrich_rows_for_active_sampling,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     label_to_frequency_record,
 )
@@ -376,25 +378,20 @@ def create_app(
     def gold_audit_rows(split: str = Query(default="validation")) -> dict[str, Any]:
         rows = _load_gold_audit_rows(settings, split=split)
         decisions = _load_gold_audit_decisions(settings)
-        decided = {_decision_key(d) for d in decisions}
         class_counts: dict[str, int] = {c: 0 for c in RQ10_CLASS_ORDER}
         for d in decisions:
             c = str(d.get("rq10_class", ""))
             if c in class_counts:
                 class_counts[c] += 1
-        enriched = []
-        for row in rows:
-            key = _decision_key(row)
-            enriched.append({
-                **row,
-                "has_decision": key in decided,
-                "priority_score": round(_row_priority_score(row, class_counts), 2),
-            })
+        enriched, model_summary = enrich_rows_for_active_sampling(rows, decisions)
+        for row in enriched:
+            row["priority_score"] = row["active_learning_score"]
         return {
             "split": split,
             "total": len(rows),
-            "decided": len(decided),
+            "decided": sum(1 for row in enriched if row["has_decision"]),
             "class_counts": class_counts,
+            "sampling_model": model_summary,
             "rows": enriched,
         }
 
@@ -409,7 +406,7 @@ def create_app(
     def gold_audit_decide(decision: GoldAuditDecision) -> dict[str, Any]:
         payload = decision.model_dump(mode="json")
         if not payload.get("timestamp"):
-            payload["timestamp"] = datetime.now(timezone.utc).isoformat()
+            payload["timestamp"] = datetime.now(UTC).isoformat()
         _save_gold_audit_decision(settings, payload)
         return {"status": "saved", "decision": payload}
 
@@ -443,7 +440,9 @@ RQ10_CLASS_ORDER = [
 ]
 
 
-def _load_gold_audit_rows(settings: ObservatorySettings, split: str = "validation") -> list[dict[str, Any]]:
+def _load_gold_audit_rows(
+    settings: ObservatorySettings, split: str = "validation"
+) -> list[dict[str, Any]]:
     """Load ambiguity review CSV rows for the given split."""
     csv_path = _resolve_under_root(settings.repo_root, DEFAULT_GOLD_AUDIT_CSV)
     if not csv_path.exists():
@@ -487,67 +486,14 @@ def _decision_key(d: Mapping[str, Any]) -> tuple[str, int]:
     return (str(d.get("split", "")), int(d.get("source_row_index", 0)))
 
 
-def _row_priority_score(row: Mapping[str, Any], class_counts: Mapping[str, int]) -> float:
-    """Heuristic score for adaptive ranking: higher = review sooner."""
-    score = 0.0
-    reasons = str(row.get("codex_ambiguity_reasons", "")).lower()
-    label = str(row.get("codex_initial_ambiguity_label", "")).lower()
-    kind = str(row.get("gold_label_kind", "")).lower()
-    ref_found = str(row.get("reference_found_in_note", "")).lower()
-    labels_match = str(row.get("labels_match_all_categories", "")).lower()
-
-    if label == "ambiguous":
-        score += 10.0
-    if kind == "unresolved_multiple":
-        score += 8.0
-    if ref_found == "false":
-        score += 6.0
-    if "reference_does_not_explicitly_support_frequency" in reasons:
-        score += 5.0
-    if "range_or_upper_bound" in reasons:
-        score += 4.0
-    if "vague_count_or_period" in reasons:
-        score += 4.0
-    if "calendar_or_diary_arithmetic" in reasons:
-        score += 3.0
-    if "unknown_gold_boundary" in reasons:
-        score += 3.0
-    if labels_match == "false":
-        score += 3.0
-
-    # Class-balancing bonus: boost rows that might help underrepresented classes.
-    # We don't know the true class yet, so we apply a small blanket jitter plus
-    # a mild bonus if the row is ambiguous (ambiguous rows are more likely to
-    # land in minority non-true-extraction-failure classes).
-    if label == "ambiguous":
-        max_count = max(class_counts.values()) if class_counts else 0
-        underrepresented = [c for c, n in class_counts.items() if n < max_count * 0.5]
-        if underrepresented:
-            score += 2.0
-
-    # Tie-breaker jitter so the order isn't completely deterministic
-    score += random.uniform(-0.5, 0.5)
-    return score
-
-
 def _compute_next_row(
     rows: Sequence[Mapping[str, Any]], decisions: Sequence[Mapping[str, Any]]
 ) -> dict[str, Any] | None:
     """Return the highest-priority un-audited row, or None if all audited."""
-    decided = {_decision_key(d) for d in decisions}
-    class_counts: dict[str, int] = {c: 0 for c in RQ10_CLASS_ORDER}
-    for d in decisions:
-        c = str(d.get("rq10_class", ""))
-        if c in class_counts:
-            class_counts[c] += 1
-
-    candidates = []
-    for row in rows:
-        key = _decision_key(row)
-        if key in decided:
-            continue
-        score = _row_priority_score(row, class_counts)
-        candidates.append((score, row))
+    enriched, _model_summary = enrich_rows_for_active_sampling(rows, decisions)
+    candidates = [
+        (float(row["active_learning_score"]), row) for row in enriched if not row["has_decision"]
+    ]
 
     if not candidates:
         return None

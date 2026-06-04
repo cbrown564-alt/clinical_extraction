@@ -58,6 +58,13 @@ prediction-bearing use for 34 rows through abstention or human review, and keeps
 19 rows as true extraction failures for component debugging. It does not change
 labels, scorer policy, projection policy, or locked-test claims.
 
+Human review of the validation750 gold/reference ambiguity worklist now has 140
+unique adjudicated rows. The qualitative report
+`docs/research/gan2026_human_gold_audit_abstention_policy_report_2026-06-04.md`
+finds that `unknown`, drop-attack, trigger-only, last-event, cluster, and
+since-anchor cases require an explicit abstention/human-review policy with
+coverage and over-abstention accounting.
+
 ## Active Question
 
 Candidate Union And Ambiguity Ownership
@@ -122,14 +129,14 @@ Core artifacts:
 
 ### Now
 
-- Review the validation750 gold/reference ambiguity CSV and replace the
-  heuristic `codex_initial_ambiguity_label` with manual adjudication.
+- Convert the human Gold Audit findings into an RQ9 follow-up selective-action
+  evaluation contract: coverage, selective accuracy, abstention/review rate, and
+  over-abstention accounting.
 
 ### Next
 
-- Fill legacy `source_id_status` validation for the 200 earlier
-  `balanced_validation50` isolated-control rows that predate recursive source-id
-  instrumentation.
+- Define the explicit `unknown` and drop-attack boundary policy used by the
+  selective-action router before scoring any new surface.
 
 ### Backlog
 
@@ -146,6 +153,16 @@ Core artifacts:
 
 ### Done Recently
 
+- 2026-06-04: Wrote the human Gold Audit abstention-policy report from 140
+  unique manual validation worklist decisions. The report supports an explicit
+  unknown/drop-attack/trigger/cluster human-review policy and requires selective
+  accuracy to be paired with coverage and over-abstention metrics.
+- 2026-06-04: Backfilled legacy `source_id_status` validation for the 200
+  earlier `balanced_validation50` isolated-control rows in the RQ1/RQ2 component
+  matrix: 142 are valid and 58 are explicitly `not_instrumented` by design
+  (8 candidate-only rows emitted no candidates/source ids; projection-only emits
+  fixed candidate ids rather than source ids). Completed matrix rows now have
+  0/1000 missing `source_id_status`.
 - 2026-06-04: Predeclared RQ9 abstention/human-review routing from RQ10 classes.
   The policy covers 53 residual validation Purist misses, blocks
   prediction-bearing use for 34 rows through abstention or review, and keeps 19

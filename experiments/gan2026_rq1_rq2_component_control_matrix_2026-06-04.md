@@ -6,14 +6,14 @@ The `balanced_validation50` panel, paired-task overload conditions, and
 
 - Date: `2026-06-04`
 - JSONL artifact: `experiments/gan2026_rq1_rq2_component_control_matrix_2026-06-04.jsonl`
-- Total matrix rows: 875
+- Total matrix rows: 1000
 - Source rows represented: 115
-- Completed output rows: 875/875
+- Completed output rows: 1000/1000
 - Claim boundary: validation-development component analysis only; no locked-test or benchmark-comparable claim.
 
 ## Executive Findings
 
-1. All 875 matrix rows now have parsed outputs. This includes all paired-task overload conditions and all 525 hidden-family hard-panel rows.
+1. All 1,000 matrix rows now have parsed outputs. This includes the isolated instruction-heavy projection condition, all paired-task overload conditions, and all 600 hidden-family hard-panel rows.
 2. Single-task evidence selection remains the strongest surface: `candidate_conditioned_evidence_only` is 47/50 exact on balanced and 73/75 exact on hard rows; `gold_query_evidence_only` is 47/50 and 69/75.
 3. Paired-task overload reduces exact-evidence quality, especially when projection is bundled with candidate/evidence generation: `candidate_plus_evidence_plus_projection` is 35/50 exact on balanced and 52/75 on hard rows.
 4. Projection remains the weak link. Balanced projection-only parsed 50/50 but only 4/50 outputs exactly match canonical Gan labels; hard-panel projection needs the same deterministic rendering and policy-layer caution.
@@ -23,8 +23,8 @@ The `balanced_validation50` panel, paired-task overload conditions, and
 
 | Panel | Matrix rows | Source rows | Completed rows | Status |
 | --- | ---: | ---: | ---: | --- |
-| `balanced_validation50` | 350 | 50 | 350 | completed controls |
-| `hidden_family_hard_panel` | 525 | 75 | 525 | completed controls |
+| `balanced_validation50` | 400 | 50 | 400 | completed controls |
+| `hidden_family_hard_panel` | 600 | 75 | 600 | completed controls |
 
 ## Condition Status
 
@@ -37,6 +37,7 @@ The `balanced_validation50` panel, paired-task overload conditions, and
 | `evidence_plus_projection` | `evidence_selection+projection` | `balanced_validation50` | 50 | 50/50 | 50/50 | fresh outputs present |
 | `gold_query_evidence_only` | `evidence_selection` | `balanced_validation50` | 50 | 50/50 | 47/50 | fresh outputs present |
 | `projection_only` | `projection` | `balanced_validation50` | 50 | 50/50 | 0/50 | fresh outputs present |
+| `projection_only_instruction_heavy` | `projection` | `balanced_validation50` | 50 | 50/50 | 0/50 | fresh outputs present |
 | `candidate_conditioned_evidence_only` | `evidence_selection` | `hidden_family_hard_panel` | 75 | 75/75 | 73/75 | fresh outputs present |
 | `candidate_only` | `candidate_generation` | `hidden_family_hard_panel` | 75 | 75/75 | 67/75 | fresh outputs present |
 | `candidate_plus_evidence` | `candidate_generation+evidence_selection` | `hidden_family_hard_panel` | 75 | 75/75 | 63/75 | fresh outputs present |
@@ -44,6 +45,7 @@ The `balanced_validation50` panel, paired-task overload conditions, and
 | `evidence_plus_projection` | `evidence_selection+projection` | `hidden_family_hard_panel` | 75 | 75/75 | 74/75 | fresh outputs present |
 | `gold_query_evidence_only` | `evidence_selection` | `hidden_family_hard_panel` | 75 | 75/75 | 69/75 | fresh outputs present |
 | `projection_only` | `projection` | `hidden_family_hard_panel` | 75 | 75/75 | 0/75 | fresh outputs present |
+| `projection_only_instruction_heavy` | `projection` | `hidden_family_hard_panel` | 75 | 75/75 | 0/75 | fresh outputs present |
 
 ## RQ1 Candidate-Only Readout
 
@@ -233,10 +235,11 @@ Projection-kind mismatches:
 
 | Panel | Condition | Rows | Parsed | Exact evidence | Valid source ids |
 | --- | --- | ---: | ---: | ---: | ---: |
-| `balanced_validation50` | `candidate_only` | 50 | 50/50 | 47/50 | 0/50 |
-| `balanced_validation50` | `gold_query_evidence_only` | 50 | 50/50 | 47/50 | 0/50 |
-| `balanced_validation50` | `candidate_conditioned_evidence_only` | 50 | 50/50 | 47/50 | 0/50 |
+| `balanced_validation50` | `candidate_only` | 50 | 50/50 | 47/50 | 42/50 |
+| `balanced_validation50` | `gold_query_evidence_only` | 50 | 50/50 | 47/50 | 50/50 |
+| `balanced_validation50` | `candidate_conditioned_evidence_only` | 50 | 50/50 | 47/50 | 50/50 |
 | `balanced_validation50` | `projection_only` | 50 | 50/50 | 0/50 | 0/50 |
+| `balanced_validation50` | `projection_only_instruction_heavy` | 50 | 50/50 | 0/50 | 0/50 |
 | `balanced_validation50` | `candidate_plus_evidence` | 50 | 50/50 | 40/50 | 41/50 |
 | `balanced_validation50` | `evidence_plus_projection` | 50 | 50/50 | 50/50 | 50/50 |
 | `balanced_validation50` | `candidate_plus_evidence_plus_projection` | 50 | 50/50 | 35/50 | 36/50 |
@@ -244,6 +247,7 @@ Projection-kind mismatches:
 | `hidden_family_hard_panel` | `gold_query_evidence_only` | 75 | 75/75 | 69/75 | 75/75 |
 | `hidden_family_hard_panel` | `candidate_conditioned_evidence_only` | 75 | 75/75 | 73/75 | 75/75 |
 | `hidden_family_hard_panel` | `projection_only` | 75 | 75/75 | 0/75 | 0/75 |
+| `hidden_family_hard_panel` | `projection_only_instruction_heavy` | 75 | 75/75 | 0/75 | 0/75 |
 | `hidden_family_hard_panel` | `candidate_plus_evidence` | 75 | 75/75 | 63/75 | 69/75 |
 | `hidden_family_hard_panel` | `evidence_plus_projection` | 75 | 75/75 | 74/75 | 75/75 |
 | `hidden_family_hard_panel` | `candidate_plus_evidence_plus_projection` | 75 | 75/75 | 52/75 | 57/75 |
@@ -269,12 +273,12 @@ Family interpretation: exact evidence stays high even in dense overlapping famil
 ## Instrumentation Gaps And Next Analysis
 
 - Paired-task overload rows with outputs: 375/375.
-- Hidden-family hard-panel rows with outputs: 525/525.
-- Completed rows missing `source_id_status`: 200/875.
-- Completed rows missing `model_id`: 0/875.
+- Hidden-family hard-panel rows with outputs: 600/600.
+- Completed rows missing `source_id_status`: 0/1000.
+- Legacy `balanced_validation50` isolated-control source-id audit: 200/200 backfilled; candidate-only 42/50 valid and 8/50 not instrumented because no candidates/source ids were emitted, gold-query evidence-only 50/50 valid, candidate-conditioned evidence-only 50/50 valid, projection-only 50/50 not instrumented by design.
+- Completed rows missing `model_id`: 0/1000.
 - `projection_only` exact-evidence status is `not_checked` by design because the input is fixed candidate/evidence state rather than newly selected spans.
 
 ## Decision
 
 The completed matrix supports a development-control answer across the fixed validation surfaces: candidate generation and evidence selection are worth carrying forward as component surfaces, while projection should not be trusted as direct final-label rendering. Use paired prompts as overload diagnostics rather than preferred final architecture, and keep deterministic rendering/policy gates after LLM-selected facts.
-

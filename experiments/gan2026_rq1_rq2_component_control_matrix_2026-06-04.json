@@ -42,12 +42,18 @@
       "overload_condition": false,
       "rows": 125,
       "source_rows": 115
+    },
+    "projection_only_instruction_heavy": {
+      "component_task": "projection",
+      "overload_condition": false,
+      "rows": 125,
+      "source_rows": 115
     }
   },
-  "claim_boundary": "Pre-call matrix for isolated and paired-task overload controls. Rows record prompt/schema obligations but do not contain fresh model outputs.",
-  "condition_count": 7,
+  "claim_boundary": "Pre-call and completed-output matrix for isolated and paired-task overload controls. Rows record prompt/schema obligations plus parsed model outputs where materialized; no locked-test or benchmark-comparable claim.",
+  "condition_count": 8,
   "date": "2026-06-04",
-  "matrix_row_count": 875,
+  "matrix_row_count": 1000,
   "source_row_count": 115,
   "split_manifest": "gan2026_split_v1"
 }
