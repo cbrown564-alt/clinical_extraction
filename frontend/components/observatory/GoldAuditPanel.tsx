@@ -4,13 +4,10 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Check,
-  ChevronLeft,
   ChevronRight,
   HelpCircle,
-  List,
   PanelLeftClose,
   PanelLeftOpen,
-  Save,
   X,
 } from "lucide-react";
 import {
@@ -23,9 +20,9 @@ import type { GoldAuditRow, GoldAuditDecision, FullRecordResponse } from "@/lib/
 import LetterRenderer from "./LetterRenderer";
 
 const SIMPLE_CLASSES = [
-  { value: "correct" as const, label: "Correct", shortcut: "1", color: "bg-success hover:bg-success/90", text: "text-white", icon: Check },
-  { value: "ambiguous" as const, label: "Ambiguous", shortcut: "2", color: "bg-llm hover:bg-llm/90", text: "text-white", icon: HelpCircle },
-  { value: "wrong" as const, label: "Wrong", shortcut: "3", color: "bg-error hover:bg-error/90", text: "text-white", icon: X },
+  { value: "correct" as const, label: "Correct", shortcut: "1", color: "border-success text-success bg-success/10" },
+  { value: "ambiguous" as const, label: "Ambiguous", shortcut: "2", color: "border-llm text-llm bg-llm/10" },
+  { value: "wrong" as const, label: "Wrong", shortcut: "3", color: "border-error text-error bg-error/10" },
 ];
 
 function classBadgeStyle(c: string): string {
@@ -79,12 +76,12 @@ function findHighlightSpans(noteText: string, referenceContext: string): { start
 
 export default function GoldAuditPanel() {
   const queryClient = useQueryClient();
+  const [mode, setMode] = useState<"adjudicate" | "review">("adjudicate");
   const [queueOpen, setQueueOpen] = useState(false);
   const [currentSourceRowIndex, setCurrentSourceRowIndex] = useState<number | null>(null);
   const [simpleClass, setSimpleClass] = useState<"correct" | "ambiguous" | "wrong" | null>(null);
   const [notes, setNotes] = useState("");
   const [correctedGoldLabel, setCorrectedGoldLabel] = useState("");
-  const [showMore, setShowMore] = useState(false);
 
   const { data: rowsData, isLoading: rowsLoading } = useQuery({
     queryKey: ["gold-audit-rows"],
@@ -119,16 +116,23 @@ export default function GoldAuditPanel() {
     return list;
   }, [allRows, decisionsMap]);
 
+  const reviewRows = useMemo(() => {
+    return sortedRows.filter((r) => {
+      const d = decisionsMap.get(Number(r.source_row_index));
+      return d && (d.simple_class === "ambiguous" || d.simple_class === "wrong");
+    });
+  }, [sortedRows, decisionsMap]);
+
+  const visibleRows = mode === "review" ? reviewRows : sortedRows;
+
   const currentRow: GoldAuditRow | undefined = useMemo(() => {
     if (currentSourceRowIndex == null) {
-      // Auto-select first un-audited row on initial load
-      const first = sortedRows.find((r) => !decisionsMap.has(Number(r.source_row_index)));
-      return first ?? sortedRows[0];
+      const first = visibleRows.find((r) => !decisionsMap.has(Number(r.source_row_index)));
+      return first ?? visibleRows[0];
     }
-    return sortedRows.find((r) => Number(r.source_row_index) === currentSourceRowIndex);
-  }, [sortedRows, currentSourceRowIndex, decisionsMap]);
+    return visibleRows.find((r) => Number(r.source_row_index) === currentSourceRowIndex);
+  }, [visibleRows, currentSourceRowIndex, decisionsMap]);
 
-  // Sync currentSourceRowIndex when currentRow changes from auto-select
   useEffect(() => {
     if (currentRow && currentSourceRowIndex == null) {
       setCurrentSourceRowIndex(Number(currentRow.source_row_index));
@@ -141,7 +145,6 @@ export default function GoldAuditPanel() {
     enabled: !!currentRow,
   });
 
-  // Load existing decision into form when row changes
   useEffect(() => {
     if (!currentRow) {
       setSimpleClass(null);
@@ -171,11 +174,11 @@ export default function GoldAuditPanel() {
 
   const goNext = useCallback(() => {
     if (!currentRow) return;
-    const idx = sortedRows.findIndex((r) => Number(r.source_row_index) === Number(currentRow.source_row_index));
-    if (idx >= 0 && idx < sortedRows.length - 1) {
-      setCurrentSourceRowIndex(Number(sortedRows[idx + 1].source_row_index));
+    const idx = visibleRows.findIndex((r) => Number(r.source_row_index) === Number(currentRow.source_row_index));
+    if (idx >= 0 && idx < visibleRows.length - 1) {
+      setCurrentSourceRowIndex(Number(visibleRows[idx + 1].source_row_index));
     }
-  }, [currentRow, sortedRows]);
+  }, [currentRow, visibleRows]);
 
   const handleSave = useCallback(() => {
     if (!currentRow || !simpleClass) return;
@@ -192,25 +195,13 @@ export default function GoldAuditPanel() {
       clinically_defensible_alternative: false,
       likely_gold_defect: false,
     };
-    saveMutation.mutate(decision, {
-      onSuccess: () => {
-        goNext();
-      },
-    });
+    saveMutation.mutate(decision, { onSuccess: goNext });
   }, [currentRow, simpleClass, notes, correctedGoldLabel, saveMutation, goNext]);
 
   // Keyboard shortcuts
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      const target = e.target as HTMLElement | null;
-      const isTyping =
-        target &&
-        (target.tagName === "INPUT" ||
-          target.tagName === "TEXTAREA" ||
-          target.isContentEditable);
-
-      // Number keys 1-3 select simple class (only when not typing)
-      if (e.key >= "1" && e.key <= "3" && !e.ctrlKey && !e.metaKey && !e.altKey && !isTyping) {
+      if (e.key >= "1" && e.key <= "3" && !e.ctrlKey && !e.metaKey && !e.altKey) {
         const idx = parseInt(e.key, 10) - 1;
         if (idx < SIMPLE_CLASSES.length) {
           e.preventDefault();
@@ -218,24 +209,20 @@ export default function GoldAuditPanel() {
         }
         return;
       }
-      // Cmd/Ctrl+Enter save
-      if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+      if (e.key === "Enter" && !e.ctrlKey && !e.metaKey && !e.altKey && simpleClass) {
         e.preventDefault();
         handleSave();
         return;
       }
-      // Arrow keys navigate (only when not typing)
-      if (!isTyping) {
-        if (e.key === "ArrowRight" || e.key === "j" || e.key === "J") {
-          e.preventDefault();
-          goNext();
-          return;
-        }
+      if (e.key === "ArrowRight" || e.key === "j" || e.key === "J") {
+        e.preventDefault();
+        goNext();
+        return;
       }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [handleSave, goNext]);
+  }, [handleSave, goNext, simpleClass]);
 
   const highlights = useMemo(() => {
     if (!fullRecord?.note_text || !currentRow?.reference_context) return [];
@@ -245,6 +232,7 @@ export default function GoldAuditPanel() {
   const total = rowsData?.total ?? 0;
   const decided = decisionsMap.size;
   const progress = total > 0 ? decided / total : 0;
+  const reviewCount = reviewRows.length;
 
   if (rowsLoading || decisionsLoading) {
     return (
@@ -257,7 +245,9 @@ export default function GoldAuditPanel() {
   if (!currentRow) {
     return (
       <div className="flex h-full items-center justify-center text-muted">
-        <p className="text-sm font-medium">No rows available.</p>
+        <p className="text-sm font-medium">
+          {mode === "review" ? "No ambiguous or wrong rows to review." : "No rows available."}
+        </p>
       </div>
     );
   }
@@ -279,6 +269,26 @@ export default function GoldAuditPanel() {
           {queueOpen ? <PanelLeftClose className="h-3.5 w-3.5" /> : <PanelLeftOpen className="h-3.5 w-3.5" />}
         </button>
 
+        {/* Mode switcher */}
+        <div className="flex items-center rounded-md border border-border bg-surface-raised overflow-hidden">
+          <button
+            onClick={() => { setMode("adjudicate"); setCurrentSourceRowIndex(null); }}
+            className={`px-3 py-1.5 text-[10px] font-medium transition-colors ${
+              mode === "adjudicate" ? "bg-surface text-foreground" : "text-muted hover:text-foreground"
+            }`}
+          >
+            Adjudicate
+          </button>
+          <button
+            onClick={() => { setMode("review"); setCurrentSourceRowIndex(null); }}
+            className={`px-3 py-1.5 text-[10px] font-medium transition-colors ${
+              mode === "review" ? "bg-surface text-foreground" : "text-muted hover:text-foreground"
+            }`}
+          >
+            Review ({reviewCount})
+          </button>
+        </div>
+
         <div className="flex-1">
           <div className="h-2 w-full overflow-hidden rounded-full bg-surface-raised">
             <div className="h-full rounded-full bg-llm transition-all" style={{ width: `${progress * 100}%` }} />
@@ -298,10 +308,34 @@ export default function GoldAuditPanel() {
           )}
         </div>
 
+        {/* Class toggle legend */}
+        <div className="flex items-center gap-1">
+          {SIMPLE_CLASSES.map((c) => {
+            const active = simpleClass === c.value;
+            const Icon = c.value === "correct" ? Check : c.value === "wrong" ? X : HelpCircle;
+            return (
+              <button
+                key={c.value}
+                onClick={() => setSimpleClass(c.value)}
+                className={`flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[11px] font-medium transition-all duration-200 ease-out hover:scale-[1.03] active:scale-[0.97] ${
+                  active
+                    ? `${c.color} shadow-sm`
+                    : "border-border bg-surface text-muted hover:text-foreground hover:bg-surface-raised"
+                }`}
+                title={`${c.label} (${c.shortcut})`}
+              >
+                <Icon className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">{c.label}</span>
+                <span className="rounded px-1 py-0 text-[9px] font-mono opacity-70">{c.shortcut}</span>
+              </button>
+            );
+          })}
+        </div>
+
         <button
           onClick={goNext}
-          disabled={sortedRows.findIndex((r) => Number(r.source_row_index) === sri) >= sortedRows.length - 1}
-          className="flex items-center gap-1 rounded-md border border-border bg-surface px-2 py-1 text-[10px] font-medium text-muted hover:text-foreground disabled:opacity-30"
+          disabled={visibleRows.findIndex((r) => Number(r.source_row_index) === sri) >= visibleRows.length - 1}
+          className="flex items-center gap-1 rounded-md border border-border bg-surface px-2 py-1.5 text-[10px] font-medium text-muted hover:text-foreground disabled:opacity-30"
         >
           Next <ChevronRight className="h-3 w-3" />
         </button>
@@ -314,14 +348,14 @@ export default function GoldAuditPanel() {
           <div className="flex w-[240px] flex-col border-r border-border bg-surface">
             <div className="flex items-center justify-between border-b border-border px-3 py-2">
               <span className="text-[10px] font-semibold uppercase tracking-wider text-muted">
-                Queue ({sortedRows.length})
+                Queue ({visibleRows.length})
               </span>
               <button onClick={() => setQueueOpen(false)} className="rounded p-1 text-muted hover:bg-surface-raised hover:text-foreground">
                 <PanelLeftClose className="h-3.5 w-3.5" />
               </button>
             </div>
             <div className="flex-1 overflow-y-auto">
-              {sortedRows.map((row) => {
+              {visibleRows.map((row) => {
                 const rowSri = Number(row.source_row_index);
                 const active = sri === rowSri;
                 const done = decisionsMap.has(rowSri);
@@ -330,15 +364,15 @@ export default function GoldAuditPanel() {
                   <button
                     key={rowSri}
                     onClick={() => setCurrentSourceRowIndex(rowSri)}
-                    className={`w-full border-b border-border px-3 py-2 text-left transition-colors ${
-                      active ? "bg-llm/5" : "hover:bg-surface-raised"
+                    className={`w-full border-b border-border pl-3 pr-3 py-2 text-left transition-all border-l-2 ${
+                      active ? "bg-llm/5 border-l-llm" : "hover:bg-surface-raised border-l-transparent"
                     }`}
                   >
                     <div className="flex items-center gap-2">
                       <span className="text-[10px] font-mono text-muted">#{rowSri}</span>
                       {done ? (
-                        <span className={`rounded px-1 py-0 text-[9px] font-medium ${classBadgeStyle(d?.simple_class ?? "")}`}>
-                          {d?.simple_class}
+                        <span className={`flex items-center gap-0.5 rounded border px-1 py-0 text-[9px] font-medium ${classBadgeStyle(d?.simple_class ?? "")}`}>
+                          <Check className="h-2.5 w-2.5" /> {d?.simple_class}
                         </span>
                       ) : (
                         <span className="h-2 w-2 rounded-full border border-border" />
@@ -352,14 +386,21 @@ export default function GoldAuditPanel() {
           </div>
         )}
 
-        {/* Center: letter + decision buttons */}
+        {/* Center: letter */}
         <div className="flex flex-1 flex-col overflow-hidden">
           <div className="flex-1 overflow-y-auto">
             <div className="mx-auto max-w-3xl space-y-4 p-5 pb-8">
               {/* Gold metadata header */}
-              <div className="flex items-start justify-between gap-4">
+              <div className="sticky top-0 bg-background/80 backdrop-blur-md z-10 flex items-start justify-between gap-4 border-b border-border pb-3 pt-2 px-4">
                 <div>
-                  <h2 className="text-lg font-semibold text-foreground">{currentRow.gold_label}</h2>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-lg font-semibold text-foreground">{currentRow.gold_label}</h2>
+                    {isDone && (
+                      <span className={`flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-medium ${classBadgeStyle(existing?.simple_class ?? "")}`}>
+                        <Check className="h-3 w-3" /> Reviewed
+                      </span>
+                    )}
+                  </div>
                   <p className="text-sm text-muted">{currentRow.gold_reference}</p>
                 </div>
                 <div className="text-right">
@@ -368,108 +409,97 @@ export default function GoldAuditPanel() {
                 </div>
               </div>
 
-              {/* Letter */}
               <LetterRenderer
                 text={fullRecord?.note_text ?? currentRow.note_text_single_line.replace(/\\n/g, "\n")}
                 highlights={highlights}
               />
             </div>
           </div>
+        </div>
 
-          {/* Decision bar — fixed at bottom */}
-          <div className="border-t border-border bg-surface p-4">
-            <div className="mx-auto max-w-3xl space-y-3">
-              {/* Big three buttons */}
-              <div className="grid grid-cols-3 gap-3">
-                {SIMPLE_CLASSES.map((c) => {
-                  const active = simpleClass === c.value;
-                  const Icon = c.icon;
-                  return (
-                    <button
-                      key={c.value}
-                      onClick={() => setSimpleClass(c.value)}
-                      className={`flex flex-col items-center justify-center gap-1.5 rounded-xl border-2 px-4 py-4 transition-all ${
-                        active
-                          ? `${c.color} border-transparent shadow-md`
-                          : "border-border bg-surface-raised hover:bg-surface text-foreground"
-                      }`}
-                    >
-                      <Icon className={`h-6 w-6 ${active ? c.text : "text-muted"}`} />
-                      <span className={`text-sm font-semibold ${active ? c.text : "text-foreground"}`}>{c.label}</span>
-                      <span className={`rounded px-1 py-0 text-[9px] font-mono ${active ? "bg-white/20 text-white" : "bg-surface text-muted"}`}>
-                        {c.shortcut}
-                      </span>
-                    </button>
-                  );
-                })}
+        {/* Review mode: dominant right sidebar */}
+        {mode === "review" && (
+          <div className="flex w-[340px] flex-col border-l border-border bg-surface">
+            <div className="border-b border-border px-4 py-3">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground">
+                Review notes
+              </h3>
+              <p className="mt-0.5 text-[10px] text-muted">
+                Row #{sri} — {currentRow.gold_label}
+              </p>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-semibold uppercase tracking-wider text-muted">
+                  Why is this ambiguous or wrong?
+                </label>
+                <textarea
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder="Describe the issue…"
+                  className="h-40 w-full resize-none rounded-lg border border-border bg-surface px-3 py-2 text-[12px] text-foreground placeholder:text-muted focus:border-deterministic focus:outline-none"
+                />
               </div>
 
-              {/* Save row */}
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={handleSave}
-                  disabled={!simpleClass || saveMutation.isPending}
-                  className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-deterministic px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-deterministic/90 disabled:opacity-40"
-                >
-                  {saveMutation.isPending ? (
-                    <span>Saving…</span>
-                  ) : (
-                    <>
-                      <Save className="h-4 w-4" />
-                      Save & next
-                      <span className="rounded bg-white/20 px-1.5 py-0 text-[10px]">⌘Enter</span>
-                    </>
-                  )}
-                </button>
-
-                <button
-                  onClick={() => setShowMore((v) => !v)}
-                  className="rounded-lg border border-border bg-surface px-3 py-2.5 text-[11px] font-medium text-muted hover:text-foreground"
-                >
-                  {showMore ? "Hide options" : "More options"}
-                </button>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-semibold uppercase tracking-wider text-muted">
+                  Corrected gold label
+                </label>
+                <input
+                  type="text"
+                  value={correctedGoldLabel}
+                  onChange={(e) => setCorrectedGoldLabel(e.target.value)}
+                  placeholder="What should the gold label be?"
+                  className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-[12px] text-foreground placeholder:text-muted focus:border-deterministic focus:outline-none"
+                />
               </div>
 
-              {/* Optional expanded options */}
-              {showMore && (
-                <div className="space-y-3 rounded-xl border border-border bg-surface-raised p-4">
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-semibold uppercase tracking-wider text-muted">
-                      Adjudication notes
-                    </label>
-                    <textarea
-                      value={notes}
-                      onChange={(e) => setNotes(e.target.value)}
-                      placeholder="Why this judgment? Any observations…"
-                      className="h-20 w-full resize-none rounded-lg border border-border bg-surface px-3 py-2 text-[11px] text-foreground placeholder:text-muted focus:border-deterministic focus:outline-none"
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-semibold uppercase tracking-wider text-muted">
-                      Corrected gold label (optional)
-                    </label>
-                    <input
-                      type="text"
-                      value={correctedGoldLabel}
-                      onChange={(e) => setCorrectedGoldLabel(e.target.value)}
-                      placeholder="If gold should be different…"
-                      className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-[11px] text-foreground placeholder:text-muted focus:border-deterministic focus:outline-none"
-                    />
-                  </div>
-
-
+              <div className="rounded-lg border border-border bg-surface-raised p-3 space-y-1">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-muted">Row metadata</p>
+                <div className="flex justify-between text-[10px]">
+                  <span className="text-muted">Kind</span>
+                  <span className="text-foreground">{currentRow.gold_label_kind}</span>
                 </div>
-              )}
+                <div className="flex justify-between text-[10px]">
+                  <span className="text-muted">Monthly freq</span>
+                  <span className="text-foreground">{Number(currentRow.gold_monthly_frequency).toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-[10px]">
+                  <span className="text-muted">Yearly bounds</span>
+                  <span className="text-foreground">{currentRow.gold_yearly_bounds}</span>
+                </div>
+                <div className="flex justify-between text-[10px]">
+                  <span className="text-muted">Ref found</span>
+                  <span className={parseBool(currentRow.reference_found_in_note) ? "text-success" : "text-error"}>
+                    {parseBool(currentRow.reference_found_in_note) ? "Yes" : "No"}
+                  </span>
+                </div>
+                <div className="flex justify-between text-[10px]">
+                  <span className="text-muted">Heuristic</span>
+                  <span className={currentRow.codex_initial_ambiguity_label === "ambiguous" ? "text-error" : "text-success"}>
+                    {currentRow.codex_initial_ambiguity_label}
+                  </span>
+                </div>
+              </div>
+            </div>
 
+            <div className="border-t border-border p-3">
+              <button
+                onClick={handleSave}
+                disabled={!simpleClass || saveMutation.isPending}
+                className="w-full rounded-lg bg-deterministic px-3 py-2.5 text-sm font-medium text-white transition-all duration-200 ease-out hover:scale-[1.01] active:scale-[0.99] hover:bg-deterministic/90 disabled:opacity-40"
+              >
+                {saveMutation.isPending ? "Saving…" : "Save & next"}
+              </button>
               {saveMutation.isError && (
-                <p className="text-center text-[10px] text-error">
+                <p className="mt-2 text-center text-[10px] text-error">
                   Error saving: {String(saveMutation.error)}
                 </p>
               )}
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
