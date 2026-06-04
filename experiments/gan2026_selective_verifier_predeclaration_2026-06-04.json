@@ -1,0 +1,148 @@
+{
+  "allowed_recommendations": [
+    "render_as_selected_state",
+    "render_as_unknown",
+    "abstain_review",
+    "choose_listed_competing_hypothesis"
+  ],
+  "artifact_kind": "gan2026_selective_verifier_predeclaration",
+  "by_hidden_family": {
+    "benchmark_format_convention": {
+      "c_to_w_rows": 3,
+      "route_review_rows": 3,
+      "route_unknown_rows": 10,
+      "rows": 13
+    },
+    "candidate_absent_or_weak": {
+      "route_unknown_rows": 3,
+      "rows": 3
+    },
+    "cluster_burden": {
+      "c_to_w_rows": 5,
+      "route_review_rows": 2,
+      "route_unknown_rows": 8,
+      "rows": 10
+    },
+    "cluster_or_diary": {
+      "route_review_rows": 3,
+      "route_unknown_rows": 4,
+      "rows": 7
+    },
+    "competing_semiologies": {
+      "c_to_w_rows": 3,
+      "route_review_rows": 3,
+      "route_unknown_rows": 19,
+      "rows": 22,
+      "w_to_c_rows": 1
+    },
+    "current_vs_historical": {
+      "c_to_w_rows": 3,
+      "route_review_rows": 2,
+      "route_unknown_rows": 18,
+      "rows": 20,
+      "w_to_c_rows": 1
+    },
+    "deterministic_miss": {
+      "route_unknown_rows": 3,
+      "rows": 3
+    },
+    "diary_or_log_aggregation": {
+      "route_review_rows": 2,
+      "route_unknown_rows": 1,
+      "rows": 3
+    },
+    "rate_bucket_or_denominator": {
+      "c_to_w_rows": 1,
+      "route_review_rows": 3,
+      "route_unknown_rows": 11,
+      "rows": 14
+    },
+    "seizure_free_duration": {
+      "route_review_rows": 3,
+      "route_unknown_rows": 15,
+      "rows": 18
+    },
+    "seizure_free_overreach": {
+      "c_to_w_rows": 1,
+      "route_review_rows": 2,
+      "route_unknown_rows": 5,
+      "rows": 7
+    },
+    "temporal_conflict": {
+      "c_to_w_rows": 1,
+      "route_review_rows": 2,
+      "route_unknown_rows": 3,
+      "rows": 5
+    },
+    "uncertainty_or_ambiguity": {
+      "c_to_w_rows": 1,
+      "route_review_rows": 2,
+      "route_unknown_rows": 13,
+      "rows": 15,
+      "w_to_c_rows": 1
+    },
+    "unclassified": {
+      "route_review_rows": 1,
+      "route_unknown_rows": 2,
+      "rows": 3
+    },
+    "unknown_boundary": {
+      "route_review_rows": 1,
+      "route_unknown_rows": 12,
+      "rows": 13,
+      "w_to_c_rows": 1
+    },
+    "unknown_no_reference_boundary": {
+      "c_to_w_rows": 1,
+      "route_review_rows": 3,
+      "route_unknown_rows": 5,
+      "rows": 8
+    }
+  },
+  "claim_language": "Validation-development verifier predeclaration only. No live model calls, locked-test inspection, whole-pipeline promotion, or benchmark-comparable claim are authorized.",
+  "date": "2026-06-04",
+  "decision_rule": "The verifier can become prediction-bearing only if changed-decision precision is high and deterministic-correct regression count is zero or explicitly adjudicated before any further validation use.",
+  "eligibility_rule": "Include saved suspicious selected-state rows routed to unknown or review only when selected evidence is an exact source substring. Exclude rows whose selected evidence is missing or non-exact from verifier calls.",
+  "excluded_source_row_indices": [
+    1695,
+    6094
+  ],
+  "flag_counts": {
+    "denominator_window_mismatch": 3,
+    "diary_log_date_list_without_defined_observation_window": 4,
+    "frequency_with_count_blocking_ambiguity": 29,
+    "frequency_with_exclusive_conditionality": 5,
+    "seizure_free_non_all_type_scope_with_current_events": 2,
+    "unresolved_cluster_cadence_with_per_cluster_burden": 8,
+    "vague_trend_without_absolute_current_frequency": 1
+  },
+  "metrics": {
+    "c_to_w_against_comparator_rows": 6,
+    "eligible_verifier_rows": 42,
+    "exact_evidence_rate": 1.0,
+    "excluded_non_exact_or_missing_evidence_rows": 2,
+    "route_review_rows": 7,
+    "route_unknown_rows": 35,
+    "routed_to_review_rows": 7,
+    "w_to_c_against_comparator_rows": 1
+  },
+  "row_count": 42,
+  "source_artifact": "experiments/gan2026_suspicious_selected_state_routing_2026-06-04.jsonl",
+  "split": "validation",
+  "split_manifest": "gan2026_split_v1",
+  "verifier_output_schema": {
+    "chosen_competing_hypothesis": "String copied from provided competing hypotheses or null.",
+    "confidence": "low, medium, or high.",
+    "evidence_quotes": [
+      "One or more exact substrings copied from selected_evidence or provided competing text."
+    ],
+    "reason": "Brief explanation grounded only in the provided state and evidence.",
+    "recommendation": [
+      "render_as_selected_state",
+      "render_as_unknown",
+      "abstain_review",
+      "choose_listed_competing_hypothesis"
+    ],
+    "recommended_label": "Gan normalized label, unknown, or null for abstain_review."
+  }
+}
