@@ -79,3 +79,27 @@ export function runAblation(params: {
 export function fetchPrompts() {
   return fetchJson<import("./types").PromptsResponse>("/prompts");
 }
+
+export function fetchGoldAuditRows(split: string = "validation") {
+  return fetchJson<import("./types").GoldAuditRowsResponse>(
+    `/gold-audit/rows?split=${encodeURIComponent(split)}`
+  );
+}
+
+export function fetchGoldAuditDecisions(split?: string) {
+  const qs = split ? `?split=${encodeURIComponent(split)}` : "";
+  return fetchJson<import("./types").GoldAuditDecisionsResponse>(`/gold-audit/decisions${qs}`);
+}
+
+export function postGoldAuditDecision(decision: import("./types").GoldAuditDecision) {
+  return fetchJson<import("./types").GoldAuditDecisionResponse>("/gold-audit/decide", {
+    method: "POST",
+    body: JSON.stringify(decision),
+  });
+}
+
+export function fetchGoldAuditNext(split: string = "validation") {
+  return fetchJson<import("./types").GoldAuditNextResponse>(
+    `/gold-audit/next?split=${encodeURIComponent(split)}`
+  );
+}

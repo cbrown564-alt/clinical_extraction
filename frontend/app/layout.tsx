@@ -38,6 +38,7 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${inter.variable} ${sourceSerif.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       <body className="h-screen flex flex-col overflow-hidden bg-background text-foreground">
         <Providers>

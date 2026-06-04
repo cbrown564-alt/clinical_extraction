@@ -29,20 +29,28 @@ complete with no new live model calls: orientation-exact projected labels moved
 from 26/75 to 37/75, with 11 wrong-to-right changes, 0 right-to-wrong changes,
 and 75/75 parseable revised labels.
 
+The next architecture decision is documented in
+`docs/research/gan2026_candidate_union_and_ambiguity_ownership_report_2026-06-04.md`:
+test parallel deterministic plus selective LLM candidate proposal with a gated
+union, and keep ambiguity primarily inside the rich selected state before
+deterministic render/unknown/abstain/review policy. A post-state LLM verifier is
+a backup for predeclared suspicious-state slices only.
+The candidate-union and ambiguity-ownership protocols are now predeclared; the
+next step is saved-artifact implementation, not new live model calls.
+
 ## Active Question
 
-RQ3 Rich Selected State
+Candidate Union And Ambiguity Ownership
 
-Question: can candidate/evidence facts be carried into a typed selected state
-with explicit currentness, conditionality, cluster burden, denominator,
-seizure-free boundary, and ambiguity fields, then rendered by deterministic
-projection policy?
+Question: should candidate breadth come from parallel deterministic and
+selective LLM candidate proposal with a gated union, and should ambiguity live
+inside the rich selected state before deterministic render/unknown/abstain/review
+policy?
 
-Status: answered for validation-development hard-panel rows. The schema is
-structurally reliable and preserves unknown/ambiguity boundaries well, but the
-first deterministic renderer is not yet rich enough for cluster cadence,
-benchmark multiple conventions, diary aggregation, and seizure-free/currentness
-precedence.
+Status: protocols predeclared. RQ3 rich selected-state is answered for
+validation-development hard-panel rows and supports the typed fact-carrier path.
+The next step is to materialize saved-artifact candidate-union and
+suspicious-state artifacts before any new live model calls.
 
 Core artifacts:
 
@@ -73,6 +81,9 @@ Core artifacts:
 - `experiments/gan2026_rich_selected_state_hard_panel_policy_replay_2026-06-04.jsonl`
 - `docs/research/gan2026_rq5_deterministic_compilation_rendering_answer_2026-06-04.md`
 - `docs/research/gan2026_llm_component_mechanics_synthesis_2026-06-04.md`
+- `docs/research/gan2026_candidate_union_and_ambiguity_ownership_report_2026-06-04.md`
+- `docs/research/gan2026_candidate_union_protocol_2026-06-04.md`
+- `docs/research/gan2026_ambiguity_ownership_protocol_2026-06-04.md`
 
 ## Guardrails
 
@@ -93,12 +104,22 @@ Core artifacts:
 
 ### Now
 
-- Predeclare RQ9 abstention/human-review routing using the RQ10 audit classes.
-- Review the validation750 gold/reference ambiguity CSV and replace the
-  heuristic `codex_initial_ambiguity_label` with manual adjudication.
+- Implement saved-artifact candidate-union analysis: materialize
+  `deterministic_candidates`, selective `llm_boundary_candidate_proposals`, and
+  `union_verified_candidates` with evidence, source-id, metadata, and burden
+  gates before any new live LLM calls.
+- Implement deterministic suspicious-state checks over saved rich selected-state
+  artifacts, then decide whether a selective LLM verifier is still needed.
 
 ### Next
 
+- If saved candidate-union machinery is coherent, predeclare the exact hard
+  slice and prompt/schema for any new selective LLM boundary-candidate calls.
+- If suspicious-state slices remain unresolved after deterministic routing,
+  predeclare a selective verifier run with W->C/C->W accounting.
+- Predeclare RQ9 abstention/human-review routing using the RQ10 audit classes.
+- Review the validation750 gold/reference ambiguity CSV and replace the
+  heuristic `codex_initial_ambiguity_label` with manual adjudication.
 - Fill legacy `source_id_status` validation for the 200 earlier
   `balanced_validation50` isolated-control rows that predate recursive source-id
   instrumentation.
@@ -131,6 +152,15 @@ Core artifacts:
   `experiments/gan2026_rich_selected_state_hard_panel_policy_replay_2026-06-04.md`
   and
   `experiments/gan2026_rich_selected_state_hard_panel_policy_replay_2026-06-04.jsonl`.
+- 2026-06-04: Wrote the candidate-union and ambiguity-ownership architecture
+  report. The preferred next path is parallel deterministic plus selective LLM
+  candidate proposal, gated union, rich selected-state fact carrying, and
+  deterministic render/unknown/abstain/review policy; a post-state LLM verifier
+  remains a selective backup for suspicious-state slices only.
+- 2026-06-04: Predeclared the candidate-union and ambiguity-ownership protocols.
+  Both require saved-artifact analysis first and block new live model calls
+  until candidate gates, suspicious-state checks, and W->C/C->W accounting are
+  materialized.
 - 2026-06-04: Completed the full
   validation750 gold/reference ambiguity review sheet:
   `experiments/gan2026_validation750_gold_reference_ambiguity_review_2026-06-04.csv`

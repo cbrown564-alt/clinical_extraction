@@ -130,3 +130,147 @@ def test_observatory_run_ablation_against_tiny_split(tmp_path: Path) -> None:
     assert payload["row_count"] == 1
     assert payload["rows"][0]["prediction_label"] == "2 per month"
     assert payload["summary"]["total"] == 1
+
+
+def test_gold_audit_endpoints(tmp_path: Path) -> None:
+    repo_root = tmp_path
+    experiments = repo_root / "experiments"
+    experiments.mkdir()
+
+    # Create a tiny ambiguity review CSV
+    csv_path = experiments / "gan2026_validation750_gold_reference_ambiguity_review_2026-06-04.csv"
+    import csv
+    fieldnames = [
+        "manual_ambiguity_label", "manual_notes", "manual_corrected_gold_label",
+        "validation_order", "source_row_index", "split", "gold_label", "gold_label_kind",
+        "gold_reference", "codex_initial_ambiguity_label", "codex_ambiguity_reasons",
+        "codex_ambiguity_rationale", "gold_monthly_frequency", "gold_yearly_bounds",
+        "row_ok", "labels_match_all_categories", "quotes_ok_all_categories",
+        "reference_found_in_note", "reference_context", "note_text_single_line",
+    ]
+    with csv_path.open("w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames, lineterminator="\n")
+        writer.writeheader()
+        writer.writerow({
+            "manual_ambiguity_label": "",
+            "manual_notes": "",
+            "manual_corrected_gold_label": "",
+            "validation_order": "1",
+            "source_row_index": "42",
+            "split": "validation",
+            "gold_label": "2 per month",
+            "gold_label_kind": "frequency",
+            "gold_reference": "twice per month",
+            "codex_initial_ambiguity_label": "ambiguous",
+            "codex_ambiguity_reasons": "range_or_upper_bound",
+            "codex_ambiguity_rationale": "Initial screen: range or upper bound.",
+            "gold_monthly_frequency": "2.0",
+            "gold_yearly_bounds": "24.0 to 24.0",
+            "row_ok": "True",
+            "labels_match_all_categories": "True",
+            "quotes_ok_all_categories": "True",
+            "reference_found_in_note": "True",
+            "reference_context": "...twice per month...",
+            "note_text_single_line": "Current seizures occur twice per month.",
+        })
+        writer.writerow({
+            "manual_ambiguity_label": "",
+            "manual_notes": "",
+            "manual_corrected_gold_label": "",
+            "validation_order": "2",
+            "source_row_index": "99",
+            "split": "validation",
+            "gold_label": "unknown",
+            "gold_label_kind": "unknown",
+            "gold_reference": "frequency unknown",
+            "codex_initial_ambiguity_label": "clear",
+            "codex_ambiguity_reasons": "",
+            "codex_ambiguity_rationale": "Initial screen: gold label and reference look directly reviewable without an obvious ambiguity flag.",
+            "gold_monthly_frequency": "-1.0",
+            "gold_yearly_bounds": "-1.0 to -1.0",
+            "row_ok": "True",
+            "labels_match_all_categories": "True",
+            "quotes_ok_all_categories": "True",
+            "reference_found_in_note": "False",
+            "reference_context": "",
+            "note_text_single_line": "No frequency mentioned.",
+        })
+
+    split_path = repo_root / "splits.json"
+    split_path.write_text(
+        json.dumps({"splits": {"validation": {"source_row_indices": [42, 99]}}}),
+        encoding="utf-8",
+    )
+
+    client = TestClient(
+        create_app(
+            repo_root=repo_root,
+            split_manifest_path=split_path,
+            registry_path=repo_root / "missing_registry.jsonl",
+            experiments_dir=experiments,
+        )
+    )
+
+    # Rows endpoint
+    r = client.get("/gold-audit/rows?split=validation")
+    assert r.status_code == 200
+    payload = r.json()
+    assert payload["total"] == 2
+    assert payload["decided"] == 0
+    rows = payload["rows"]
+    assert len(rows) == 2
+    assert rows[0]["source_row_index"] == "42"
+    assert rows[0]["priority_score"] > rows[1]["priority_score"]  # ambiguous scores higher
+
+    # Next endpoint
+    r = client.get("/gold-audit/next?split=validation")
+    assert r.status_code == 200
+    next_row = r.json()["row"]
+    assert next_row is not None
+    assert next_row["source_row_index"] == "42"
+
+    # Decisions endpoint (empty)
+    r = client.get("/gold-audit/decisions?split=validation")
+    assert r.status_code == 200
+    assert r.json()["count"] == 0
+
+    # Save a decision
+    r = client.post("/gold-audit/decide", json={
+        "source_row_index": 42,
+        "split": "validation",
+        "simple_class": "ambiguous",
+        "rq10_class": "benchmark_convention_dominated",
+        "notes": "test note",
+        "benchmark_convention_flag": True,
+    })
+    assert r.status_code == 200
+    assert r.json()["status"] == "saved"
+    assert r.json()["decision"]["simple_class"] == "ambiguous"
+    assert r.json()["decision"]["rq10_class"] == "benchmark_convention_dominated"
+
+    # Decisions endpoint (one saved)
+    r = client.get("/gold-audit/decisions?split=validation")
+    assert r.status_code == 200
+    assert r.json()["count"] == 1
+
+    # Next should now return the other row
+    r = client.get("/gold-audit/next?split=validation")
+    assert r.status_code == 200
+    next_row = r.json()["row"]
+    assert next_row is not None
+    assert next_row["source_row_index"] == "99"
+
+    # Save second decision
+    r = client.post("/gold-audit/decide", json={
+        "source_row_index": 99,
+        "split": "validation",
+        "simple_class": "wrong",
+        "rq10_class": "possible_gold_weakness",
+        "notes": "",
+    })
+    assert r.status_code == 200
+
+    # Next should now return None
+    r = client.get("/gold-audit/next?split=validation")
+    assert r.status_code == 200
+    assert r.json()["row"] is None
