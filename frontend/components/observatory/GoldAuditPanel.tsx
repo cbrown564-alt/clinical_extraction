@@ -389,7 +389,7 @@ export default function GoldAuditPanel() {
         {/* Center: letter */}
         <div className="flex flex-1 flex-col overflow-hidden">
           <div className="flex-1 overflow-y-auto">
-            <div className="mx-auto max-w-3xl space-y-4 p-5 pb-8">
+            <div className="mx-auto max-w-5xl space-y-4 p-5 pb-8">
               {/* Gold metadata header */}
               <div className="sticky top-0 bg-background/80 backdrop-blur-md z-10 flex items-start justify-between gap-4 border-b border-border pb-3 pt-2 px-4">
                 <div>
