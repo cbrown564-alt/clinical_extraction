@@ -64,8 +64,12 @@ def test_predeclaration_includes_exact_suspicious_rows_and_model_input_contract(
     assert model_input["provided_competing_hypotheses"] == [
         "Recent seizure-free interval is also mentioned."
     ]
+    assert model_input["proposed_answer"] == "1 per month"
+    assert model_input["proposed_evidence"] == "Current seizures occur about once per month."
     assert "gold_label" not in model_input
     assert "delta" not in model_input
+    assert "deterministic_policy_label" not in model_input
+    assert "selected_state" not in model_input
     assert row["development_accounting"]["delta"] == "C_to_W"
     assert metadata["metrics"]["eligible_verifier_rows"] == 1
     assert metadata["metrics"]["c_to_w_against_comparator_rows"] == 1
@@ -104,6 +108,29 @@ def test_predeclaration_adds_plain_language_prompt_design_candidates() -> None:
         "veto_first_safety_reviewer",
         "support_parts_fact_check",
     ]
+
+
+def test_rendered_verifier_payload_keeps_research_metadata_out_of_model_input() -> None:
+    rows, _ = (
+        selective_verifier_predeclaration.build_selective_verifier_predeclaration_rows(
+            [_routing_row()]
+        )
+    )
+
+    payload_text = str(rows[0]["verifier_model_input"])
+
+    for term in [
+        "Gan",
+        "benchmark",
+        "scorer",
+        "selected state",
+        "deterministic",
+        "suspicious",
+        "gold_label",
+        "delta",
+        "task_design",
+    ]:
+        assert term not in payload_text
 
 
 def test_predeclaration_excludes_non_exact_suspicious_rows() -> None:

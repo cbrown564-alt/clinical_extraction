@@ -465,6 +465,7 @@ def _evidence_quotes_exact(
         return False
     model_input = predeclared["verifier_model_input"]
     allowed_texts = [
+        str(model_input.get("proposed_evidence") or ""),
         str((model_input.get("selected_state") or {}).get("selected_evidence") or ""),
         *[str(item) for item in model_input.get("provided_competing_hypotheses") or []],
     ]

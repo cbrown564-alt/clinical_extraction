@@ -15,6 +15,10 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis impor
 from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis.rq1_rq2_control_panels import (  # noqa: E501
     DEFAULT_PANEL_JSONL_PATH,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.components.source_trace import (
+    projection_source_id_consistency,
+    summarize_projection_source_id_consistency,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     label_to_frequency_record,
 )
@@ -97,7 +101,7 @@ def summarize_selected_state_union_replay_rows(
         if row["source_row_index"] in KNOWN_REAL_MODEL_ERROR_ROWS
         and row["primary_v3_selected_state_replay"]["label"] != row["gold_label"]
     ]
-    consistency = _projection_source_id_consistency(rows)
+    consistency = summarize_projection_source_id_consistency(rows)
     return {
         "artifact_kind": "gan2026_selected_state_union_replay_v3",
         "policy_name": "staged_hybrid_assembly_validation_development_v0",
@@ -297,7 +301,7 @@ def _selected_state_union_replay_row(
             "correct": comparator_correct,
         },
         "primary_v3_selected_state_replay": primary_replay,
-        "projection_source_id_consistency": _row_projection_source_id_consistency(
+        "projection_source_id_consistency": projection_source_id_consistency(
             primary, primary_replay
         ),
         "safety_floor_selected_state_replay": {
@@ -320,52 +324,6 @@ def _selected_state_union_replay_row(
             ),
             "safety_delta": _delta(comparator_correct, safety_correct),
         },
-    }
-
-
-def _row_projection_source_id_consistency(
-    candidate: Mapping[str, Any] | None,
-    primary_replay: Mapping[str, Any],
-) -> dict[str, Any]:
-    if candidate is None:
-        return {
-            "consistent": True,
-            "status": "not_applicable",
-            "selected_source_ids": [],
-            "required_source_id_status": "valid",
-            "failures": [],
-        }
-    failures: list[str] = []
-    source_id_status = str(candidate.get("source_id_status") or "")
-    selected_source_ids = [str(candidate.get("source_id") or "")]
-    if primary_replay.get("scorable") and source_id_status != "valid":
-        failures.append("scorable_projection_without_valid_source_id")
-    if primary_replay.get("scorable") and not candidate.get("exact_evidence"):
-        failures.append("scorable_projection_without_exact_evidence")
-    if primary_replay.get("scorable") and not str(candidate.get("evidence") or "").strip():
-        failures.append("scorable_projection_without_evidence")
-    return {
-        "consistent": not failures,
-        "status": "valid" if not failures else "invalid",
-        "selected_source_ids": selected_source_ids,
-        "source_id_status": source_id_status,
-        "exact_evidence": bool(candidate.get("exact_evidence")),
-        "failures": failures,
-    }
-
-
-def _projection_source_id_consistency(
-    rows: Sequence[Mapping[str, Any]],
-) -> dict[str, Any]:
-    inconsistent = [
-        int(row["source_row_index"])
-        for row in rows
-        if not row["projection_source_id_consistency"]["consistent"]
-    ]
-    return {
-        "projection_source_id_consistent_rows": len(rows) - len(inconsistent),
-        "projection_source_id_inconsistent_rows": len(inconsistent),
-        "projection_source_id_inconsistent_source_row_indices": inconsistent,
     }
 
 

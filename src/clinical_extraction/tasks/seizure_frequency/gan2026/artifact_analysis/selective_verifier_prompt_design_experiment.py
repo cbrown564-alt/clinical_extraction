@@ -12,6 +12,9 @@ from typing import Any
 
 from pydantic import BaseModel, Field, ValidationError
 
+from clinical_extraction.tasks.seizure_frequency.gan2026.components import (
+    selective_verifier,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     load_jsonl_rows,
     write_jsonl_rows,
@@ -33,7 +36,7 @@ DEFAULT_PREDECLARATION_JSONL_PATH = predecl.DEFAULT_JSONL_PATH
 DEFAULT_SOURCE_DATA_PATH = Path("data/Gan (2026)/synthetic_data_subset_1500.json")
 TASK_DESIGNS = tuple(predecl.PROMPT_DESIGN_ORDER)
 FULL_LETTER_TASK_DESIGN = "support_parts_full_letter"
-BINARY_TASK_DESIGN = "binary_quote_highest_answer_selector"
+BINARY_TASK_DESIGN = selective_verifier.PROMOTED_VERIFIER_DESIGN
 ACTION_VALUES = {"use_proposed_answer", "use_unknown", "needs_review"}
 SUPPORT_PARTS_FULL_LETTER_SYSTEM_PROMPT = (
     "Check whether the proposed seizure-frequency answer is supported by the "
@@ -44,25 +47,7 @@ SUPPORT_PARTS_FULL_LETTER_SYSTEM_PROMPT = (
     "seizure types, or other context matters. Do not fill in missing parts from "
     "assumptions. Return only JSON matching the requested fields."
 )
-BINARY_SYSTEM_PROMPT = (
-    "Check a selected seizure-frequency quote and label using the full clinical "
-    "letter. Answer the first three questions with only true or false. First, "
-    "does the selected quote support the selected label? Second, is the selected "
-    "label the highest current seizure frequency described anywhere in the "
-    "letter? Third, are you certain? Then choose exactly one answer from the "
-    "provided answer choices. Do not create a new answer. If none of the answer "
-    "choices is clearly right, choose human_review. For the highest-frequency "
-    "question, compare across all current or recent seizure/event types in the "
-    "letter, not only the seizure type named in the selected quote. Set "
-    "selected_label_is_highest_frequency to false if any other current or recent "
-    "seizure type is more frequent, if another active seizure type continues but "
-    "has no clear count, or if the selected label is about seizure freedom for "
-    "only one seizure type while another type still occurs. Do not mark a "
-    "zero-seizure label as highest when any current seizure-like events continue. "
-    "Only answer true when the selected label is at least as frequent as every "
-    "other current seizure/event frequency in the full letter. Return only JSON "
-    "matching the requested fields."
-)
+BINARY_SYSTEM_PROMPT = selective_verifier.BINARY_SYSTEM_PROMPT
 
 
 class VetoFirstOutput(BaseModel):
@@ -97,13 +82,7 @@ class SupportPartsFullLetterOutput(BaseModel):
     reason: str = ""
 
 
-class BinaryQuoteHighestOutput(BaseModel):
-    quote_supports_label: bool
-    selected_label_is_highest_frequency: bool
-    certain: bool
-    selected_answer: str
-    supporting_quotes: list[str] = Field(default_factory=list)
-    reason: str = ""
+BinaryQuoteHighestOutput = selective_verifier.BinaryQuoteHighestOutput
 
 
 ParsedOutput = (
@@ -374,7 +353,7 @@ def _parse_output(task_design: str, raw_output: str) -> tuple[ParsedOutput | Non
             parsed = SupportPartsFullLetterOutput.model_validate(payload)
             errors = _validate_action("recommended_action", parsed.recommended_action)
         elif task_design == BINARY_TASK_DESIGN:
-            parsed = BinaryQuoteHighestOutput.model_validate(payload)
+            parsed = selective_verifier.BinaryQuoteHighestOutput.model_validate(payload)
             errors = []
         else:
             return None, [f"unsupported_task_design:{task_design}"]
@@ -414,7 +393,7 @@ def _normalize_payload(task_design: str, payload: Any) -> Any:
     if task_design == FULL_LETTER_TASK_DESIGN:
         _collapse_single_item_list(normalized, "recommended_action")
     if task_design == BINARY_TASK_DESIGN:
-        _collapse_single_item_list(normalized, "selected_answer")
+        return selective_verifier.normalize_binary_quote_highest_payload(normalized)
     return normalized
 
 
@@ -428,28 +407,11 @@ def _model_input(
     snippet_payload = predeclared["prompt_design_candidates"]["support_parts_fact_check"]
     source_row_index = int(predeclared["source_row_index"])
     if task_design == BINARY_TASK_DESIGN:
-        selected_label = snippet_payload.get("proposed_answer")
-        return {
-            "task_design": BINARY_TASK_DESIGN,
-            "system_prompt": BINARY_SYSTEM_PROMPT,
-            "clinical_text": source_text_by_row.get(source_row_index)
-            or snippet_payload.get("clinical_text"),
-            "selected_quote": snippet_payload.get("clinical_text"),
-            "selected_label": selected_label,
-            "answer_choices": [selected_label, "unknown", "human_review"],
-            "competing_possibilities": snippet_payload.get("competing_possibilities", []),
-            "review_reasons": snippet_payload.get("review_reasons", []),
-            "output_schema": {
-                "quote_supports_label": "true or false.",
-                "selected_label_is_highest_frequency": "true or false.",
-                "certain": "true or false.",
-                "selected_answer": "One value copied from answer_choices.",
-                "supporting_quotes": ["Exact copied phrases from clinical_text."],
-                "reason": "Brief explanation using only the provided clinical text.",
-            },
-        }
+        return selective_verifier.build_binary_quote_highest_model_input(
+            predeclared,
+            source_text_by_row,
+        )
     return {
-        "task_design": FULL_LETTER_TASK_DESIGN,
         "system_prompt": SUPPORT_PARTS_FULL_LETTER_SYSTEM_PROMPT,
         "clinical_text": source_text_by_row.get(source_row_index)
         or snippet_payload.get("clinical_text"),
