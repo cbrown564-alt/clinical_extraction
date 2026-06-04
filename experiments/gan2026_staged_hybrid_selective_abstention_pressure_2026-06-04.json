@@ -1,0 +1,29 @@
+{
+  "artifact_kind": "gan2026_staged_hybrid_selective_abstention_pressure",
+  "claim_language": "Validation-development pressure review of staged-hybrid non-prediction rows. Blocked-candidate correctness is development accounting only; this artifact does not change router behavior, prompts, scorer policy, gold labels, locked-test behavior, verifier use, or benchmark-comparable claims.",
+  "component_name": "selective_abstention_pressure",
+  "coverage_cost_rows": 19,
+  "pressure_class_counts": {
+    "coverage_cost": 19,
+    "protective_block": 15
+  },
+  "protective_block_rows": 15,
+  "reason_counts": {
+    "last_event_boundary": 8,
+    "missing_denominator_anchor": 2,
+    "trigger_conditioned_frequency": 24
+  },
+  "recommended_next_step": "Predeclare a gold-blinded trigger-context release rule and a frozen last-event date policy before changing prediction-bearing behavior.",
+  "review_lane_counts": {
+    "anchor_policy_needed": 2,
+    "date_policy_needed": 8,
+    "keep_nonprediction": 9,
+    "trigger_release_candidate": 2,
+    "trigger_sentinel_boundary_review": 13
+  },
+  "row_count": 34,
+  "source_artifacts": {
+    "decision_jsonl": "experiments/gan2026_staged_hybrid_decision_layer_validation750_no_call_2026-06-04.jsonl",
+    "residual_audit_jsonl": "experiments/gan2026_staged_hybrid_residual_nonprediction_audit_2026-06-04.jsonl"
+  }
+}

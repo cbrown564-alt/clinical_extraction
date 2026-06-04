@@ -33,7 +33,7 @@ def _predeclared_row() -> dict:
             "binary_quote_highest_answer_selector": {
                 "clinical_text": "Full letter says current seizures occur once per month.",
                 "selected_quote": "Current seizures occur once per month.",
-                "selected_label": "1 per month",
+                "proposed_answer": "1 per month",
                 "answer_choices": ["1 per month", "unknown", "human_review"],
                 "system_prompt": "Check the selected quote and label.",
             },
@@ -220,5 +220,20 @@ def test_binary_prompt_forces_false_highest_on_competing_active_events() -> None
 
     assert "selected_label_is_highest_frequency to false" in prompt
     assert "any other current or recent seizure type is more frequent" in prompt
-    assert "Do not mark a zero-seizure label as highest" in prompt
-    assert "Only answer true when the selected label is at least as frequent" in prompt
+    assert "Do not mark a zero-seizure answer as highest" in prompt
+    assert "Only answer true when the proposed answer is at least as frequent" in prompt
+
+
+def test_binary_rendered_payload_is_plain_language_and_metadata_free() -> None:
+    payload = experiment._model_input(
+        _predeclared_row(),
+        "binary_quote_highest_answer_selector",
+        {101: "Full letter says current seizures occur once per month."},
+    )
+    payload_text = json.dumps(payload, sort_keys=True)
+
+    assert payload["proposed_answer"] == "1 per month"
+    assert "task_design" not in payload
+    assert "selected_label" not in payload
+    for term in ["Gan", "benchmark", "scorer", "gold", "frozen", "control", "delta"]:
+        assert term not in payload_text

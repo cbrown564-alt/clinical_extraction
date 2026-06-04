@@ -1,0 +1,157 @@
+{
+  "artifact_kind": "gan2026_staged_hybrid_validation750_no_call_assembly",
+  "claim_language": "Validation750 staged assembly over saved component artifacts only. No new model calls, locked-test inspection, whole-pipeline promotion, verifier full-validation effect estimate, or benchmark-comparable claim.",
+  "component_outputs": {
+    "hybrid_reasoner_replay": {
+      "component_owner": "hybrid_reasoner_replay",
+      "source_metadata": {
+        "assembly_role": "historical full-validation source candidate replay",
+        "component_name": "hybrid_reasoner_replay",
+        "component_status_counts": {
+          "adapter_layer": {
+            "ok": 750
+          },
+          "deterministic_top": {
+            "ok": 750
+          },
+          "hybrid_adjudicator": {
+            "ok": 750
+          },
+          "llm_candidate_selector": {
+            "fail": 11,
+            "ok": 739
+          },
+          "selected_evidence_exactness": {
+            "ok": 750
+          },
+          "source_id_trace": {
+            "ok": 750
+          },
+          "state_graph_projection": {
+            "ok": 750
+          }
+        },
+        "notes": [
+          "Provides full-validation source rows and source-id status.",
+          "Saved prompt payloads are historical evidence, not prompt text to reuse."
+        ],
+        "ready_for_staged_assembly": true,
+        "row_count": 750,
+        "source_row_count": 750,
+        "source_row_coverage": "validation750"
+      }
+    },
+    "rq9_selective_action_router_v3": {
+      "component_owner": "rq9_selective_action_router_v3",
+      "source_metadata": {
+        "action_counts": {
+          "abstain": 26,
+          "human_review": 8,
+          "predict": 716
+        },
+        "assembly_role": "full-validation selective predict/abstain/review policy",
+        "component_name": "rq9_selective_action_router_v3",
+        "metrics": {
+          "abstained_rows": 26,
+          "abstention_rate": 0.034666666666666665,
+          "coverage": 0.9546666666666667,
+          "covered_rows": 716,
+          "eligible_rows": 750,
+          "extraction_error_analysis_rows": 0,
+          "hidden_error_rate": 0.0,
+          "human_review_rate": 0.010666666666666666,
+          "human_review_rows": 8,
+          "over_abstention_rate_reviewed": 0.0,
+          "over_review_rate_reviewed": 0.0,
+          "rescue_value_rate": 0.4411764705882353,
+          "reviewed_human_correct_nonprediction_rows": 0,
+          "reviewed_human_noncorrect_nonprediction_rows": 6,
+          "reviewed_nonprediction_rows": 6,
+          "reviewed_rows": 140,
+          "selective_accuracy": 0.946927374301676
+        },
+        "notes": [
+          "Gold and human-review fields are development accounting only.",
+          "Router predictions do not authorize locked-test or benchmark-comparable claims."
+        ],
+        "ready_for_staged_assembly": true,
+        "row_count": 750,
+        "source_row_count": 750,
+        "source_row_coverage": "validation750"
+      }
+    },
+    "selective_safety_floor_gate_v0": {
+      "component_owner": "selective_safety_floor_gate_v0",
+      "source_metadata": {
+        "assembly_role": "full-validation safety floor and rescue gate replay",
+        "combined_gate_summary": {
+          "changed_label_precision": 1.0,
+          "changed_rows": 21,
+          "changed_rows_with_exact_evidence": 21,
+          "changed_rows_with_valid_source_ids": 21,
+          "correct_to_wrong": 0,
+          "deterministic_correct_regressions": 0,
+          "fallback_count": 729,
+          "non_equivalent_changes": 11,
+          "pragmatic_correct": 715,
+          "purist_correct": 708,
+          "rows": 750,
+          "wrong_to_correct": 11
+        },
+        "component_name": "selective_safety_floor_gate_v0",
+        "notes": [
+          "Provides full-validation evidence/source-id quality checks.",
+          "Combined gate summary is development accounting, not benchmark evidence."
+        ],
+        "ready_for_staged_assembly": true,
+        "row_count": 750,
+        "selected_evidence_exact_rows": 750,
+        "selected_source_ids_exist_rows": 750,
+        "source_row_count": 750,
+        "source_row_coverage": "validation750"
+      }
+    }
+  },
+  "metrics": {
+    "assembly_rows": 750,
+    "assembly_rows_with_reasoner": 750,
+    "assembly_rows_with_router": 750,
+    "assembly_rows_with_safety_floor": 750,
+    "reasoner_rows": 750,
+    "router_abstain_rows": 26,
+    "router_human_review_rows": 8,
+    "router_predict_rows": 716,
+    "router_rows": 750,
+    "safety_floor_rows": 750,
+    "safety_floor_selected_evidence_exact_rows": 750,
+    "safety_floor_selected_source_ids_exist_rows": 750
+  },
+  "missing_component_inputs": [
+    {
+      "component_name": "rich_selected_state_fact_carrier",
+      "needed_for": "new selected-state union assembly contract",
+      "status": "not materialized at validation750 in the current component shape"
+    },
+    {
+      "component_name": "boundary_v3_selected_state_candidates",
+      "needed_for": "validation750 selected-state union replay",
+      "status": "hard-panel artifact exists; validation750 component input not identified"
+    },
+    {
+      "component_name": "promoted_binary_selective_verifier",
+      "needed_for": "full-validation verifier effect estimate",
+      "status": "saved slice exists; full-validation use needs predeclared calls or gating"
+    }
+  ],
+  "next_assembly_action": "Add the explicit prediction-bearing decision layer over the assembled validation750 component rows, keeping verifier slice evidence separate until a full-validation verifier protocol exists.",
+  "policy_name": "staged_hybrid_assembly_validation_development_v0",
+  "source_artifacts": {
+    "reasoner_jsonl": "experiments/gan2026_hybrid_parallel_state_candidate_reasoner_validation750_gpt41mini_v0_deterministic_safety_floor_v2_replay_2026-06-03.jsonl",
+    "router_json": "experiments/gan2026_rq9_selective_action_router_v3_2026-06-04.json",
+    "router_jsonl": "experiments/gan2026_rq9_selective_action_router_v3_2026-06-04.jsonl",
+    "safety_floor_json": "experiments/gan2026_selective_safety_floor_gate_v0_validation750_replay_2026-06-03.json",
+    "safety_floor_jsonl": "experiments/gan2026_selective_safety_floor_gate_v0_validation750_replay_2026-06-03.jsonl"
+  },
+  "split": "validation",
+  "split_manifest": "gan2026_split_v1"
+}

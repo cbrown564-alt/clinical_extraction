@@ -38,20 +38,19 @@ ALLOWED_RECOMMENDATIONS = [
 ]
 VERIFIER_OUTPUT_SCHEMA = {
     "recommendation": ALLOWED_RECOMMENDATIONS,
-    "recommended_label": "Gan normalized label, unknown, or null for abstain_review.",
+    "recommended_label": "Seizure-frequency answer, unknown, or null for abstain_review.",
     "chosen_competing_hypothesis": "String copied from provided competing hypotheses or null.",
     "evidence_quotes": [
-        "One or more exact substrings copied from selected_evidence or provided competing text."
+        "One or more exact phrases copied from proposed_evidence or competing text."
     ],
-    "reason": "Brief explanation grounded only in the provided state and evidence.",
+    "reason": "Brief explanation using only the provided text.",
     "confidence": "low, medium, or high.",
 }
 VERIFIER_SYSTEM_PROMPT = (
-    "You are a selective verifier for Gan 2026 seizure-frequency selected states. "
-    "Use only the provided selected state, selected evidence, suspicious flags, "
-    "deterministic label, and explicitly listed competing hypotheses. Do not infer "
-    "new candidates from outside the provided evidence. Choose one allowed "
-    "recommendation and return JSON matching the schema."
+    "Review a proposed seizure-frequency answer. Use only the proposed answer, "
+    "the quoted supporting text, the review notes, and the listed competing "
+    "possibilities. Do not add a new answer from other context. Choose one "
+    "allowed recommendation and return only JSON matching the requested fields."
 )
 VETO_FIRST_SYSTEM_PROMPT = (
     "You are reviewing a proposed seizure-frequency answer. Use only the clinical "
@@ -328,11 +327,9 @@ def _predeclaration_row(row: Mapping[str, Any]) -> dict[str, Any]:
         },
         "verifier_model_input": {
             "system_prompt": VERIFIER_SYSTEM_PROMPT,
-            "selected_state": selected_state,
-            "deterministic_policy_label": row.get("deterministic_policy_label"),
-            "deterministic_policy_action": row.get("deterministic_policy_action"),
-            "suspicious_state_action": row.get("suspicious_state_action"),
-            "suspicious_state_flags": list(row.get("suspicious_state_flags") or []),
+            "proposed_answer": row.get("deterministic_policy_label"),
+            "proposed_evidence": selected_evidence,
+            "review_notes": _review_reasons(row.get("suspicious_state_flags") or []),
             "allowed_recommendations": ALLOWED_RECOMMENDATIONS,
             "provided_competing_hypotheses": _provided_competing_hypotheses(row),
             "output_schema": VERIFIER_OUTPUT_SCHEMA,
@@ -393,13 +390,11 @@ def _prompt_design_candidates(
     }
     return {
         "veto_first_safety_reviewer": {
-            "task_design": "veto_first_safety_reviewer",
             "system_prompt": VETO_FIRST_SYSTEM_PROMPT,
             **common,
             "output_schema": VETO_FIRST_OUTPUT_SCHEMA,
         },
         "support_parts_fact_check": {
-            "task_design": "support_parts_fact_check",
             "system_prompt": SUPPORT_PARTS_SYSTEM_PROMPT,
             **common,
             "output_schema": SUPPORT_PARTS_OUTPUT_SCHEMA,

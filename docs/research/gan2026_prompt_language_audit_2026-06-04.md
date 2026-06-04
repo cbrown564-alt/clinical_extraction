@@ -179,3 +179,199 @@ Acceptance checklist from the skill:
 - jargon terms are removed or defined;
 - prompt length matches the experiment's purpose;
 - controlled-experiment deviations are explicitly justified.
+
+## Selective Verifier Follow-Up
+
+Completed on 2026-06-04:
+
+- Audited the rendered model-facing payloads for the selective-verifier path
+  selected for staged-hybrid integration, including:
+  `verifier_model_input` and `binary_quote_highest_answer_selector`.
+- Removed research and implementation terms from the older verifier model
+  input: `Gan`, `selected state`, `deterministic`, and `suspicious` no longer
+  appear in rendered model-facing text.
+- Reworded the verifier system prompt around a plain task:
+  review a proposed seizure-frequency answer using only quoted supporting text,
+  review notes, and listed competing possibilities.
+- Renamed model-facing payload fields from implementation terms to
+  `proposed_answer`, `proposed_evidence`, and `review_notes`.
+- Kept parser-facing enum values such as `render_as_selected_state` stable for
+  compatibility with existing verifier output parsing, but moved their
+  explanation into plain model-facing wording.
+- Rewrote the promoted binary verifier prompt to talk about a proposed answer
+  rather than an internal selected label, and removed `task_design` from the
+  model-facing payload.
+- Added rendered-payload tests so verifier model inputs cannot silently
+  reintroduce research metadata or prompt-jargon terms.
+
+Rendered-payload audit terms checked for the active verifier surfaces:
+`Gan`, `benchmark`, `scorer`, `source-near`, `operands`, `denominator`,
+`proxy`, `final label`, `gold`, `frozen`, `control`, `stop rule`,
+`selected state`, `deterministic`, `suspicious`, `task_design`, and `delta`.
+The remediated `verifier_model_input` and
+`binary_quote_highest_answer_selector` payloads had no hits.
+
+Validation:
+
+- `python -m pytest tests/test_gan2026_selective_verifier_predeclaration.py tests/test_gan2026_selective_verifier_prompt_design_experiment.py tests/test_gan2026_selective_verifier_experiment.py`
+
+## Assembly Inventory Follow-Up
+
+Completed on 2026-06-04:
+
+- Added a validation750 input inventory for staged-hybrid assembly without
+  creating any new model-facing prompt surface.
+- Inspected the saved validation750 reasoner replay and found historical
+  prompt payloads embedded in the saved artifact rows. Those payloads are
+  retained as evidence of prior runs, not accepted as prompt text for new
+  component work.
+- Kept the inventory report model-free and claim-bounded: it records available
+  component surfaces, missing module-shaped inputs, source artifacts, and the
+  next assembly action.
+
+Acceptance checklist:
+
+- Rendered prompt inspected: not applicable; no new prompt is rendered.
+- Model-facing text is plain language: not applicable for the new inventory.
+- Internal metadata is separated from model-facing text: yes; inventory
+  metadata is research-facing only.
+- Non-obvious schema fields have descriptions: not applicable; no model schema
+  was added.
+- Jargon terms are removed or defined: yes for new human-facing report text.
+- Prompt length matches the experiment's purpose: not applicable.
+- Controlled-experiment deviations are explicitly justified: historical saved
+  prompt payloads are documented as inherited artifacts only.
+
+## Validation750 Assembly Follow-Up
+
+Completed on 2026-06-04:
+
+- Added validation750 assembly adapters for the saved reasoner replay,
+  safety-floor gate, and RQ9 selective-action router.
+- The assembly adapters do not create a new model-facing prompt surface.
+- Historical reasoner prompt payload fields such as `prompt_input_json`,
+  `prompt_version`, and `pipeline_family` are omitted from the assembled JSONL.
+- The assembled rows keep compact status, candidate, scoring, gate, and router
+  records only.
+
+Validation:
+
+- `python -m pytest tests/test_gan2026_staged_hybrid_assembly.py tests/test_gan2026_component_validation_surface_inventory.py`
+- `python -m ruff check src/clinical_extraction/tasks/seizure_frequency/gan2026/hybrid/staged_hybrid_assembly.py tests/test_gan2026_staged_hybrid_assembly.py`
+
+## Decision Layer Follow-Up
+
+Completed on 2026-06-04:
+
+- Added the `staged_decision_policy` component for the explicit
+  prediction-bearing decision layer over assembled validation750 rows.
+- The decision layer does not create a model-facing prompt surface.
+- The decision JSONL was checked for inherited prompt payload fields:
+  `prompt_input_json`, `prompt_version`, `pipeline_family`, and `raw_output`.
+  No hits were found.
+- The policy records `verifier_used: false` on every row; the promoted verifier
+  remains slice-only until a separate full-validation protocol exists.
+
+Validation:
+
+- `python -m pytest tests/test_gan2026_component_staged_decision_policy.py tests/test_gan2026_staged_hybrid_assembly.py`
+- `python -m ruff check src/clinical_extraction/tasks/seizure_frequency/gan2026/components/staged_decision_policy.py src/clinical_extraction/tasks/seizure_frequency/gan2026/hybrid/staged_hybrid_assembly.py tests/test_gan2026_component_staged_decision_policy.py tests/test_gan2026_staged_hybrid_assembly.py`
+
+## Residual Non-Prediction Audit Follow-Up
+
+Completed on 2026-06-04:
+
+- Added the `residual_nonprediction_audit` component for the 34
+  non-prediction rows from the staged decision layer.
+- The audit does not create a model-facing prompt surface.
+- The audit joins decision rows to assembled component rows so blocked source
+  candidate labels and development correctness remain visible without copying
+  historical prompt payloads.
+- The audit recommends selective abstention-pressure review before
+  full-validation verifier use or promotion.
+
+Validation:
+
+- `python -m pytest tests/test_gan2026_component_residual_nonprediction_audit.py`
+- `python -m ruff check src/clinical_extraction/tasks/seizure_frequency/gan2026/components/residual_nonprediction_audit.py tests/test_gan2026_component_residual_nonprediction_audit.py`
+
+## Selective Abstention-Pressure Follow-Up
+
+Completed on 2026-06-04:
+
+- Added the `selective_abstention_pressure` component for a no-call review of
+  the 34 residual non-prediction rows.
+- The pressure review does not create a model-facing prompt surface.
+- The first pass was corrected so sentinel trigger rows such as `unknown` or
+  `no seizure frequency reference` are not mislabeled as direct release
+  candidates.
+- The pressure review recommends a predeclared gold-blinded trigger-context
+  release rule and a frozen last-event date policy before behavior changes.
+
+Validation:
+
+- `python -m pytest tests/test_gan2026_component_selective_abstention_pressure.py`
+- `python -m ruff check src/clinical_extraction/tasks/seizure_frequency/gan2026/components/selective_abstention_pressure.py tests/test_gan2026_component_selective_abstention_pressure.py`
+
+## Abstention Policy Predeclaration Follow-Up
+
+Completed on 2026-06-04:
+
+- Added the `abstention_policy_predeclaration` component for the next
+  gold-blinded abstention-pressure policy work.
+- The predeclaration does not create a model-facing prompt surface and does not
+  change prediction-bearing behavior.
+- The emitted JSON/Markdown artifacts were checked for inherited prompt payload
+  fields: `prompt_input_json`, `prompt_version`, `pipeline_family`, and
+  `raw_output`. No hits were found.
+- The predeclaration freezes `trigger_context_release_rule_v0` and
+  `last_event_date_policy_v0` as rule-design contracts with portability
+  category `seizure_frequency`.
+
+Validation:
+
+- `python -m pytest tests/test_gan2026_component_abstention_policy_predeclaration.py`
+- `python -m ruff check src/clinical_extraction/tasks/seizure_frequency/gan2026/components/abstention_policy_predeclaration.py tests/test_gan2026_component_abstention_policy_predeclaration.py`
+
+## Trigger-Context Release Follow-Up
+
+Completed on 2026-06-04:
+
+- Added the `trigger_context_release_rule` component for the proposed
+  gold-blinded trigger-context release layer.
+- The release rule does not create a model-facing prompt surface.
+- The proposed decision artifacts were checked for inherited prompt payload
+  fields: `prompt_input_json`, `prompt_version`, `pipeline_family`, and
+  `raw_output`. No hits were found.
+- The rule releases only rows that pass the predeclared lane, non-sentinel
+  label, event-target evidence, rate/window evidence, exact-source, and
+  non-exclusive-trigger checks.
+
+Validation:
+
+- `python -m pytest tests/test_gan2026_component_trigger_context_release_rule.py`
+- `python -m ruff check src/clinical_extraction/tasks/seizure_frequency/gan2026/components/trigger_context_release_rule.py tests/test_gan2026_component_trigger_context_release_rule.py`
+
+## Last-Event Date Instrumentation Follow-Up
+
+Completed on 2026-06-04:
+
+- Added the `last_event_date_instrumentation` component for the
+  `date_policy_needed` residual rows.
+- The component does not create a model-facing prompt surface and does not
+  change prediction-bearing behavior.
+- The generated artifacts classify explicit date evidence only: full date,
+  partial date missing a year, or no explicit date in selected evidence.
+- The component now joins source records only to extract compact
+  note/reference-date anchors; it does not copy note text into generated
+  artifacts.
+- Automatic release-ready rows remain 0 because auditable duration derivation
+  and conflict checks are not implemented yet.
+- The emitted JSON/Markdown artifacts were checked for inherited prompt payload
+  fields: `prompt_input_json`, `prompt_version`, `pipeline_family`, and
+  `raw_output`. No hits were found.
+
+Validation:
+
+- `python -m pytest tests/test_gan2026_component_last_event_date_instrumentation.py tests/test_gan2026_staged_hybrid_assembly.py`
+- `python -m ruff check src/clinical_extraction/tasks/seizure_frequency/gan2026/components/last_event_date_instrumentation.py tests/test_gan2026_component_last_event_date_instrumentation.py`
