@@ -23,6 +23,15 @@ PAIRED_CONDITIONS = (
     "evidence_plus_projection",
     "candidate_plus_evidence_plus_projection",
 )
+PAIRED_AND_HARD_SUMMARY_CONDITIONS = (
+    "candidate_only",
+    "gold_query_evidence_only",
+    "candidate_conditioned_evidence_only",
+    "projection_only",
+    "candidate_plus_evidence",
+    "evidence_plus_projection",
+    "candidate_plus_evidence_plus_projection",
+)
 
 
 def main() -> None:
@@ -45,34 +54,32 @@ def build_report(rows: Sequence[Mapping[str, Any]]) -> str:
         "# Gan 2026 RQ1/RQ2 Component-Control Matrix Analysis",
         "",
         "Full validation-development analysis of the RQ1/RQ2 component-control matrix.",
-        "Only the `balanced_validation50` isolated controls contain fresh parsed outputs;",
-        "the hidden-family hard panel and paired-task overload rows remain planned or empty",
-        "surfaces and are not interpretable as model failures.",
+        "The `balanced_validation50` panel, paired-task overload conditions, and",
+        "`hidden_family_hard_panel` now contain fresh parsed outputs.",
         "",
         f"- Date: `2026-06-04`",
         f"- JSONL artifact: `{MATRIX_JSONL_PATH}`",
         f"- Total matrix rows: {len(rows)}",
         f"- Source rows represented: {len({row['source_row_index'] for row in rows})}",
-        f"- Completed output surface: `balanced_validation50` isolated controls",
+        f"- Completed output rows: {sum(has_output(row) for row in rows)}/{len(rows)}",
         f"- Claim boundary: validation-development component analysis only; no locked-test or benchmark-comparable claim.",
         "",
         "## Executive Findings",
         "",
-        "1. Isolated RQ1/RQ2 prompts have strong schema adherence on `balanced_validation50`: "
-        "`candidate_only`, `gold_query_evidence_only`, `candidate_conditioned_evidence_only`, "
-        "and `projection_only` each parsed 50/50 rows.",
-        "2. Candidate generation and evidence selection are credible component capabilities: "
-        "candidate-only exact evidence is 47/50, gold-query evidence exactness is 47/50, "
-        "and candidate-conditioned evidence exactness is 47/50.",
-        "3. Projection is the weak link. It parsed 50/50 and often selected the right broad "
-        "decision kind, but only 4/50 outputs are already in exact Gan canonical label form. "
-        "Most frequency and seizure-free rows need deterministic rendering or policy handling.",
-        "4. Unknown and unresolved-multiple rows are not solved by the current projection-only "
-        "surface: unknown rows are usually collapsed to `no_reference` or `seizure_free`, and "
-        "unresolved-multiple rows are usually abstained, collapsed, or over-projected.",
-        "5. The paired-task overload rows have no parsed outputs, so overload loss is still "
-        "unanswered. The hard panel also has no outputs, so hidden-family transfer remains "
-        "unanswered beyond panel membership.",
+        "1. All 875 matrix rows now have parsed outputs. This includes all paired-task overload "
+        "conditions and all 525 hidden-family hard-panel rows.",
+        "2. Single-task evidence selection remains the strongest surface: "
+        "`candidate_conditioned_evidence_only` is 47/50 exact on balanced and 73/75 exact on "
+        "hard rows; `gold_query_evidence_only` is 47/50 and 69/75.",
+        "3. Paired-task overload reduces exact-evidence quality, especially when projection is "
+        "bundled with candidate/evidence generation: `candidate_plus_evidence_plus_projection` "
+        "is 35/50 exact on balanced and 52/75 on hard rows.",
+        "4. Projection remains the weak link. Balanced projection-only parsed 50/50 but only "
+        "4/50 outputs exactly match canonical Gan labels; hard-panel projection needs the same "
+        "deterministic rendering and policy-layer caution.",
+        "5. The completed hard panel confirms the mechanism pattern: text location is generally "
+        "stronger than benchmark-state projection, especially for ambiguity, unknown-boundary, "
+        "and benchmark-convention rows.",
         "",
         "## Artifact Coverage",
         "",
@@ -81,7 +88,7 @@ def build_report(rows: Sequence[Mapping[str, Any]]) -> str:
     ]
     for panel_id, panel_rows in sorted(by_panel.items()):
         completed = sum(has_output(row) for row in panel_rows)
-        status = "completed isolated controls" if completed else "planned surface only"
+        status = "completed controls" if completed == len(panel_rows) else "partially completed"
         lines.append(
             f"| `{panel_id}` | {len(panel_rows)} | "
             f"{len({row['source_row_index'] for row in panel_rows})} | {completed} | {status} |"
@@ -116,6 +123,7 @@ def build_report(rows: Sequence[Mapping[str, Any]]) -> str:
         )
     )
     lines.extend(projection_section(balanced))
+    lines.extend(overload_section(rows))
     lines.extend(hidden_family_section(balanced))
     lines.extend(gap_section(rows))
     return "\n".join(lines) + "\n"
@@ -330,6 +338,45 @@ def projection_section(rows: Sequence[Mapping[str, Any]]) -> list[str]:
     return lines
 
 
+def overload_section(rows: Sequence[Mapping[str, Any]]) -> list[str]:
+    lines = [
+        "",
+        "## Paired-Task And Hard-Panel Summary",
+        "",
+        "| Panel | Condition | Rows | Parsed | Exact evidence | Valid source ids |",
+        "| --- | --- | ---: | ---: | ---: | ---: |",
+    ]
+    for panel_id in ("balanced_validation50", "hidden_family_hard_panel"):
+        for condition_id in PAIRED_AND_HARD_SUMMARY_CONDITIONS:
+            condition_rows = [
+                row
+                for row in rows
+                if row.get("row_panel_id") == panel_id and row.get("condition_id") == condition_id
+            ]
+            if not condition_rows:
+                continue
+            parsed = sum(parsed_successfully(row) for row in condition_rows)
+            exact = sum(row.get("exact_evidence_status") == "exact" for row in condition_rows)
+            valid_source = sum(row.get("source_id_status") == "valid" for row in condition_rows)
+            lines.append(
+                f"| `{panel_id}` | `{condition_id}` | {len(condition_rows)} | "
+                f"{parsed}/{len(condition_rows)} | {exact}/{len(condition_rows)} | "
+                f"{valid_source}/{len(condition_rows)} |"
+            )
+    lines.extend(
+        [
+            "",
+            "Overload interpretation: paired prompts parse reliably, but exact-evidence "
+            "quality drops when candidate discovery, evidence selection, and projection are "
+            "bundled. The `evidence_plus_projection` condition is the exception: because it "
+            "conditions on a fixed candidate, it preserves exact evidence on 50/50 balanced "
+            "rows and 74/75 hard rows. The full bundled condition should therefore be treated "
+            "as a stress surface, not a preferred architecture.",
+        ]
+    )
+    return lines
+
+
 def hidden_family_section(rows: Sequence[Mapping[str, Any]]) -> list[str]:
     families = sorted({family for row in rows_for(rows, "candidate_only") for family in row.get("hidden_families", [])})
     lines = [
@@ -381,11 +428,11 @@ def gap_section(rows: Sequence[Mapping[str, Any]]) -> list[str]:
         "",
         "## Decision",
         "",
-        "The matrix supports a development-control answer for isolated `balanced_validation50` only: "
-        "candidate generation and evidence selection are worth carrying forward as component "
-        "surfaces, but projection should not be trusted as direct final-label rendering. "
-        "Before moving to paired prompts or the hard panel, fill model metadata and source-id "
-        "validation, then run the paired-task overload rows with the same prompt versions.",
+        "The completed matrix supports a development-control answer across the fixed validation "
+        "surfaces: candidate generation and evidence selection are worth carrying forward as "
+        "component surfaces, while projection should not be trusted as direct final-label "
+        "rendering. Use paired prompts as overload diagnostics rather than preferred final "
+        "architecture, and keep deterministic rendering/policy gates after LLM-selected facts.",
         "",
     ]
     return lines
