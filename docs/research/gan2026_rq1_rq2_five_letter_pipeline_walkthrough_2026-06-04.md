@@ -294,8 +294,15 @@ for the wrong supplied target can still support the wrong interpretation.
 
 ### Projection
 
-Projection is where clinical facts become benchmark policy. It failed in
-different ways:
+Projection is where clinical facts become benchmark policy. The current
+`projection_only` result should be read as an under-instructed fixed-input
+projection test, not as a complete negative result for LLM projection. The
+policy choices are non-obvious and partly subjective: without explicit
+annotation instructions, reasonable reviewers may not consistently make the
+same choices about currentness, cluster burden, conditional events,
+seizure-free distractors, and unresolved multiple events.
+
+The light prompt failed in different ways:
 
 - Letter B: over-demanded numeric operands for `multiple per day`;
 - Letter C: overcalled seizure freedom from conditional/no-event context;
@@ -303,7 +310,9 @@ different ways:
 - Letter E: abstained or omitted a label despite enough current summary evidence.
 
 Projection can work on ordinary fixed-input rates, as in Letter A, but that is
-not enough to make it a reliable component.
+not enough to make the light prompt a reliable component. The fairer comparison
+is a fixed-input, instruction-heavy projection variant that states general
+principles without copying row-specific examples from this panel.
 
 ### Paired Prompts
 
@@ -325,10 +334,13 @@ The five letters support this component ranking:
 5. `evidence_plus_projection` only as provisional state classification, not
    rendering.
 6. `candidate_plus_evidence_plus_projection` as overload diagnostics only.
-7. `projection_only` as a negative result for direct final-label ownership.
+7. `projection_only` as a negative result for under-instructed direct
+   final-label ownership.
 
 The next experiment should not ask whether the LLM can get a higher F1. It
-should ask whether candidate/evidence facts can be carried into a typed selected
-state with explicit currentness, conditionality, cluster burden, denominator,
-seizure-free boundary, and ambiguity fields, then rendered by deterministic
-projection policy.
+should first compare the light projection prompt against an instruction-heavy
+fixed-input projection variant covering the common policy scenarios. After that,
+it should ask whether candidate/evidence facts can be carried into a typed
+selected state with explicit currentness, conditionality, cluster burden, rate
+time basis, seizure-free boundary, and ambiguity fields, then rendered by an
+auditable projection policy.

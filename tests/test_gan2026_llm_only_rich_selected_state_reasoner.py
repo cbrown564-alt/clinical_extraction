@@ -103,7 +103,9 @@ def test_conditional_events_render_unknown_not_seizure_free() -> None:
     )
     prediction = _prediction(
         state_kind="unknown",
-        selected_evidence="Generalised tonic-clonic seizures occur only after nights of curtailed sleep",
+        selected_evidence=(
+            "Generalised tonic-clonic seizures occur only after nights of curtailed sleep"
+        ),
         raw_source_phrase="seizures occur only after nights of curtailed sleep",
         currentness="conditional",
         rate={
@@ -158,6 +160,87 @@ def test_cluster_burden_without_cadence_renders_unknown_per_cluster() -> None:
     )
 
 
+def test_cluster_burden_takes_precedence_over_accidental_daily_rate() -> None:
+    note = "There are four to six short spells grouped together on days when they occur."
+    prediction = _prediction(
+        state_kind="frequency",
+        selected_evidence="four to six short spells grouped together on days when they occur",
+        raw_source_phrase="four to six short spells grouped together",
+        currentness="current",
+        rate={
+            **_prediction().selected_state["rate"],
+            "count_low": 4,
+            "count_high": 6,
+            "count_is_multiple": False,
+            "time_count_low": 1,
+            "time_count_high": 1,
+            "time_unit": "day",
+            "rate_time_basis_known": True,
+        },
+        cluster={
+            "has_cluster_pattern": True,
+            "cluster_cadence_known": False,
+            "cluster_cadence_text": "on days when they occur",
+            "seizures_per_cluster_low": 4,
+            "seizures_per_cluster_high": 6,
+            "cluster_uncertainty": "Cluster cadence is unknown.",
+        },
+    )
+    extraction, _errors = reasoner.prediction_to_extraction(prediction, note_text=note)
+
+    assert extraction is not None
+    assert reasoner.deterministic_project_selected_state(extraction) == (
+        "unknown, 4 to 6 per cluster"
+    )
+
+
+def test_conditionality_note_blocks_fixed_frequency_rendering() -> None:
+    note = "Seizures occur exclusively after nights of curtailed sleep."
+    prediction = _prediction(
+        state_kind="frequency",
+        selected_evidence="Seizures occur exclusively after nights of curtailed sleep",
+        raw_source_phrase="Seizures occur exclusively after nights of curtailed sleep",
+        currentness="recent",
+        rate={
+            **_prediction().selected_state["rate"],
+            "count_is_multiple": True,
+            "time_count_low": 3,
+            "time_unit": "month",
+            "rate_time_basis_known": True,
+        },
+        conditionality_note="Events occur only after curtailed sleep.",
+    )
+    extraction, _errors = reasoner.prediction_to_extraction(prediction, note_text=note)
+
+    assert extraction is not None
+    assert reasoner.deterministic_project_selected_state(extraction) == "unknown"
+
+
+def test_upper_bound_rate_renders_using_upper_count() -> None:
+    note = "The observed frequency is noted as <= four per day."
+    prediction = _prediction(
+        state_kind="frequency",
+        selected_evidence="The observed frequency is noted as <= four per day",
+        raw_source_phrase="<= four per day",
+        currentness="current",
+        rate={
+            **_prediction().selected_state["rate"],
+            "count_low": None,
+            "count_high": 4,
+            "count_is_upper_bound": True,
+            "count_is_multiple": False,
+            "time_count_low": 1,
+            "time_count_high": 1,
+            "time_unit": "day",
+            "rate_time_basis_known": True,
+        },
+    )
+    extraction, _errors = reasoner.prediction_to_extraction(prediction, note_text=note)
+
+    assert extraction is not None
+    assert reasoner.deterministic_project_selected_state(extraction) == "4 per day"
+
+
 def test_seizure_free_with_recent_events_is_validation_error_and_renders_unknown() -> None:
     note = "No events when sleep is adequate, but seizures occur after curtailed sleep."
     prediction = _prediction(
@@ -207,3 +290,182 @@ def test_current_monthly_summary_renders_one_per_month() -> None:
     assert extraction is not None
     assert reasoner.validate_rich_selected_state(extraction, note_text=note) == []
     assert reasoner.deterministic_project_selected_state(extraction) == "1 per month"
+
+
+def test_saved_hard_panel_cluster_cadence_renders_bare_cadence_when_burden_is_one() -> None:
+    note = (
+        "At present he reports clusters of brief absence episodes every 4 weeks, "
+        "usually over 1-2 days, often precipitated by reduced sleep and academic stress."
+    )
+    prediction = _prediction(
+        state_kind="frequency",
+        selected_evidence=(
+            "At present he reports clusters of brief absence episodes every 4 weeks, "
+            "usually over 1-2 days, often precipitated by reduced sleep and academic stress"
+        ),
+        raw_source_phrase="clusters of brief absence episodes every 4 weeks",
+        currentness="current",
+        rate={
+            **_prediction().selected_state["rate"],
+            "count_low": 1,
+            "count_is_multiple": True,
+            "time_count_low": 4,
+            "time_count_high": 4,
+            "time_unit": "week",
+            "rate_time_basis_known": True,
+            "rate_text": "every 4 weeks",
+        },
+        cluster={
+            "has_cluster_pattern": True,
+            "cluster_cadence_known": True,
+            "cluster_cadence_text": "every 4 weeks",
+            "seizures_per_cluster_low": 1,
+            "seizures_per_cluster_high": None,
+            "cluster_uncertainty": "unclear exact number of seizures per cluster",
+        },
+        conditionality_note="often precipitated by reduced sleep and academic stress",
+    )
+    extraction, _errors = reasoner.prediction_to_extraction(prediction, note_text=note)
+
+    assert extraction is not None
+    assert reasoner.deterministic_project_selected_state(extraction) == "1 per 4 week"
+
+
+def test_saved_hard_panel_cluster_cadence_with_burden_renders_cluster_syntax() -> None:
+    note = "The diary says weekly, 2 - 3 per cluster."
+    prediction = _prediction(
+        state_kind="frequency",
+        selected_evidence="weekly, 2 - 3 per cluster",
+        raw_source_phrase="weekly, 2 - 3 per cluster",
+        currentness="current",
+        rate={
+            **_prediction().selected_state["rate"],
+            "count_low": 2,
+            "count_high": 3,
+            "count_is_multiple": False,
+            "time_count_low": 1,
+            "time_count_high": 1,
+            "time_unit": "week",
+            "rate_time_basis_known": True,
+            "rate_text": "weekly",
+        },
+        cluster={
+            "has_cluster_pattern": True,
+            "cluster_cadence_known": True,
+            "cluster_cadence_text": "weekly",
+            "seizures_per_cluster_low": 2,
+            "seizures_per_cluster_high": 3,
+            "cluster_uncertainty": "",
+        },
+    )
+    extraction, _errors = reasoner.prediction_to_extraction(prediction, note_text=note)
+
+    assert extraction is not None
+    assert reasoner.deterministic_project_selected_state(extraction) == (
+        "1 cluster per week, 2 to 3 per cluster"
+    )
+
+
+def test_saved_hard_panel_recent_cluster_over_window_renders_one_cluster_per_window() -> None:
+    note = "There were three short episodes over the past fortnight."
+    prediction = _prediction(
+        state_kind="frequency",
+        selected_evidence="three short episodes over the past fortnight",
+        raw_source_phrase="three short episodes over the past fortnight",
+        currentness="recent",
+        rate={
+            **_prediction().selected_state["rate"],
+            "count_low": 3,
+            "count_high": 3,
+            "count_is_multiple": False,
+            "time_count_low": 14,
+            "time_count_high": 14,
+            "time_unit": "day",
+            "rate_time_basis_known": True,
+            "rate_text": "three short episodes over the past fortnight",
+        },
+        cluster={
+            "has_cluster_pattern": True,
+            "cluster_cadence_known": False,
+            "cluster_cadence_text": "",
+            "seizures_per_cluster_low": 3,
+            "seizures_per_cluster_high": 3,
+            "cluster_uncertainty": "Cluster frequency not specified",
+        },
+        conditionality_note="Events linked to disrupted sleep and missed levetiracetam dose",
+    )
+    extraction, _errors = reasoner.prediction_to_extraction(prediction, note_text=note)
+
+    assert extraction is not None
+    assert reasoner.deterministic_project_selected_state(extraction) == (
+        "1 cluster per 2 week, 3 per cluster"
+    )
+
+
+def test_saved_hard_panel_cluster_after_seizure_free_gap_uses_gap_as_cadence() -> None:
+    note = "She can manage five days without seizures, followed by a day of clustering."
+    prediction = _prediction(
+        state_kind="frequency",
+        selected_evidence="five days without seizures, followed by a day of clustering",
+        raw_source_phrase="five days without seizures, followed by a day of clustering",
+        currentness="current",
+        rate={
+            **_prediction().selected_state["rate"],
+            "count_low": 2,
+            "count_high": 4,
+            "count_is_multiple": False,
+            "time_count_low": 1,
+            "time_count_high": 1,
+            "time_unit": "day",
+            "rate_time_basis_known": True,
+            "rate_text": "two to four events per day",
+        },
+        cluster={
+            "has_cluster_pattern": True,
+            "cluster_cadence_known": False,
+            "cluster_cadence_text": "",
+            "seizures_per_cluster_low": 2,
+            "seizures_per_cluster_high": 4,
+            "cluster_uncertainty": "Cluster frequency not specified",
+        },
+        seizure_free_boundary={
+            "has_no_event_claim": False,
+            "duration_count": 5,
+            "duration_unit": "day",
+            "applies_to_all_seizure_types": False,
+            "has_recent_events_or_conditions": True,
+            "boundary_note": "five days without seizures, followed by clustering",
+        },
+    )
+    extraction, _errors = reasoner.prediction_to_extraction(prediction, note_text=note)
+
+    assert extraction is not None
+    assert reasoner.deterministic_project_selected_state(extraction) == (
+        "1 cluster per 5 day, 2 to 4 per cluster"
+    )
+
+
+def test_saved_hard_panel_vague_increase_does_not_render_multiple_per_day() -> None:
+    note = "He describes more frequent brief morning jerks, increased by about 50%."
+    prediction = _prediction(
+        state_kind="frequency",
+        selected_evidence="more frequent brief morning jerks, increased by about 50%",
+        raw_source_phrase="more frequent brief morning jerks",
+        currentness="current",
+        rate={
+            **_prediction().selected_state["rate"],
+            "count_low": 1,
+            "count_is_multiple": True,
+            "time_count_low": 1,
+            "time_count_high": 1,
+            "time_unit": "day",
+            "rate_time_basis_known": True,
+            "rate_text": "more frequent brief morning jerks and intermittent episodes",
+        },
+        ambiguity_flags=["Exact numeric frequency not stated", "Frequency increase approximate"],
+        raw_model_label_hint="increased seizure frequency",
+    )
+    extraction, _errors = reasoner.prediction_to_extraction(prediction, note_text=note)
+
+    assert extraction is not None
+    assert reasoner.deterministic_project_selected_state(extraction) == "unknown"

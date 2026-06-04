@@ -8,7 +8,6 @@ from collections.abc import Iterable, Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
-
 MATRIX_JSONL_PATH = Path("experiments/gan2026_rq1_rq2_component_control_matrix_2026-06-04.jsonl")
 REPORT_PATH = Path("experiments/gan2026_rq1_rq2_component_control_matrix_2026-06-04.md")
 
@@ -48,7 +47,6 @@ def load_rows(path: Path) -> list[dict[str, Any]]:
 def build_report(rows: Sequence[Mapping[str, Any]]) -> str:
     by_panel = group_by(rows, "row_panel_id")
     balanced = by_panel.get("balanced_validation50", [])
-    hard = by_panel.get("hidden_family_hard_panel", [])
 
     lines = [
         "# Gan 2026 RQ1/RQ2 Component-Control Matrix Analysis",
@@ -57,12 +55,13 @@ def build_report(rows: Sequence[Mapping[str, Any]]) -> str:
         "The `balanced_validation50` panel, paired-task overload conditions, and",
         "`hidden_family_hard_panel` now contain fresh parsed outputs.",
         "",
-        f"- Date: `2026-06-04`",
+        "- Date: `2026-06-04`",
         f"- JSONL artifact: `{MATRIX_JSONL_PATH}`",
         f"- Total matrix rows: {len(rows)}",
         f"- Source rows represented: {len({row['source_row_index'] for row in rows})}",
         f"- Completed output rows: {sum(has_output(row) for row in rows)}/{len(rows)}",
-        f"- Claim boundary: validation-development component analysis only; no locked-test or benchmark-comparable claim.",
+        "- Claim boundary: validation-development component analysis only; "
+        "no locked-test or benchmark-comparable claim.",
         "",
         "## Executive Findings",
         "",
@@ -74,9 +73,12 @@ def build_report(rows: Sequence[Mapping[str, Any]]) -> str:
         "3. Paired-task overload reduces exact-evidence quality, especially when projection is "
         "bundled with candidate/evidence generation: `candidate_plus_evidence_plus_projection` "
         "is 35/50 exact on balanced and 52/75 on hard rows.",
-        "4. Projection remains the weak link. Balanced projection-only parsed 50/50 but only "
-        "4/50 outputs exactly match canonical Gan labels; hard-panel projection needs the same "
-        "deterministic rendering and policy-layer caution.",
+        "4. The light projection prompt remains the weak link. Balanced projection-only parsed "
+        "50/50 but only 4/50 outputs exactly match canonical Gan labels; hard-panel "
+        "projection needs the same "
+        "fixed-input evaluation before final claims. This is not yet a complete test of LLM "
+        "projection because the prompt did not spell out the subjective policy choices that a "
+        "human annotator would need for consistent projection.",
         "5. The completed hard panel confirms the mechanism pattern: text location is generally "
         "stronger than benchmark-state projection, especially for ambiguity, unknown-boundary, "
         "and benchmark-convention rows.",
@@ -104,13 +106,15 @@ def build_report(rows: Sequence[Mapping[str, Any]]) -> str:
         ]
     )
     for panel_id in ("balanced_validation50", "hidden_family_hard_panel"):
-        for condition_id, condition_rows in sorted(group_by(by_panel.get(panel_id, []), "condition_id").items()):
+        grouped_conditions = group_by(by_panel.get(panel_id, []), "condition_id")
+        for condition_id, condition_rows in sorted(grouped_conditions.items()):
             parsed = sum(parsed_successfully(row) for row in condition_rows)
             exact = sum(row.get("exact_evidence_status") == "exact" for row in condition_rows)
             status = condition_status(condition_rows)
             lines.append(
                 f"| `{condition_id}` | `{condition_rows[0]['component_task']}` | `{panel_id}` | "
-                f"{len(condition_rows)} | {parsed}/{len(condition_rows)} | {exact}/{len(condition_rows)} | {status} |"
+                f"{len(condition_rows)} | {parsed}/{len(condition_rows)} | "
+                f"{exact}/{len(condition_rows)} | {status} |"
             )
 
     lines.extend(candidate_section(balanced))
@@ -132,11 +136,16 @@ def build_report(rows: Sequence[Mapping[str, Any]]) -> str:
 def candidate_section(rows: Sequence[Mapping[str, Any]]) -> list[str]:
     condition_rows = rows_for(rows, "candidate_only")
     counts = [len(candidates(row)) for row in condition_rows]
-    kinds = Counter(candidate.get("candidate_kind") for row in condition_rows for candidate in candidates(row))
-    temporality = Counter(candidate.get("temporality") for row in condition_rows for candidate in candidates(row))
-    confidence = Counter(candidate.get("confidence") for row in condition_rows for candidate in candidates(row))
+    candidate_values = [
+        candidate for row in condition_rows for candidate in candidates(row)
+    ]
+    kinds = Counter(candidate.get("candidate_kind") for candidate in candidate_values)
+    temporality = Counter(candidate.get("temporality") for candidate in candidate_values)
+    confidence = Counter(candidate.get("confidence") for candidate in candidate_values)
     zero_rows = [row for row in condition_rows if not candidates(row)]
     non_exact = [row for row in condition_rows if row.get("exact_evidence_status") != "exact"]
+    parsed_count = sum(parsed_successfully(row) for row in condition_rows)
+    exact_count = sum(row.get("exact_evidence_status") == "exact" for row in condition_rows)
 
     lines = [
         "",
@@ -144,8 +153,8 @@ def candidate_section(rows: Sequence[Mapping[str, Any]]) -> list[str]:
         "",
         "| Metric | Value |",
         "| --- | ---: |",
-        f"| Parsed rows | {sum(parsed_successfully(row) for row in condition_rows)}/{len(condition_rows)} |",
-        f"| Exact-evidence rows | {sum(row.get('exact_evidence_status') == 'exact' for row in condition_rows)}/{len(condition_rows)} |",
+        f"| Parsed rows | {parsed_count}/{len(condition_rows)} |",
+        f"| Exact-evidence rows | {exact_count}/{len(condition_rows)} |",
         f"| Candidate facts emitted | {sum(counts)} |",
         f"| Mean candidates per row | {mean(counts):.2f} |",
         f"| Median candidates per row | {median(counts):.0f} |",
@@ -200,8 +209,9 @@ def candidate_section(rows: Sequence[Mapping[str, Any]]) -> list[str]:
 def evidence_section(rows: Sequence[Mapping[str, Any]], condition_id: str, title: str) -> list[str]:
     condition_rows = rows_for(rows, condition_id)
     span_counts = [len(evidence_spans(row)) for row in condition_rows]
-    roles = Counter(span.get("role") for row in condition_rows for span in evidence_spans(row))
-    support = Counter(span.get("support_status") for row in condition_rows for span in evidence_spans(row))
+    spans = [span for row in condition_rows for span in evidence_spans(row)]
+    roles = Counter(span.get("role") for span in spans)
+    support = Counter(span.get("support_status") for span in spans)
     missing_components = Counter(
         missing
         for row in condition_rows
@@ -209,7 +219,11 @@ def evidence_section(rows: Sequence[Mapping[str, Any]], condition_id: str, title
         for missing in span.get("missing_components", [])
     )
     non_exact = [row for row in condition_rows if row.get("exact_evidence_status") != "exact"]
-    insufficient = sum(bool(output(row).get("insufficient_evidence_reason")) for row in condition_rows)
+    insufficient = sum(
+        bool(output(row).get("insufficient_evidence_reason")) for row in condition_rows
+    )
+    parsed_count = sum(parsed_successfully(row) for row in condition_rows)
+    exact_count = sum(row.get("exact_evidence_status") == "exact" for row in condition_rows)
 
     lines = [
         "",
@@ -217,8 +231,8 @@ def evidence_section(rows: Sequence[Mapping[str, Any]], condition_id: str, title
         "",
         "| Metric | Value |",
         "| --- | ---: |",
-        f"| Parsed rows | {sum(parsed_successfully(row) for row in condition_rows)}/{len(condition_rows)} |",
-        f"| Exact-evidence rows | {sum(row.get('exact_evidence_status') == 'exact' for row in condition_rows)}/{len(condition_rows)} |",
+        f"| Parsed rows | {parsed_count}/{len(condition_rows)} |",
+        f"| Exact-evidence rows | {exact_count}/{len(condition_rows)} |",
         f"| Evidence spans emitted | {sum(span_counts)} |",
         f"| Mean spans per row | {mean(span_counts):.2f} |",
         f"| Median spans per row | {median(span_counts):.0f} |",
@@ -274,10 +288,15 @@ def projection_section(rows: Sequence[Mapping[str, Any]]) -> list[str]:
     condition_rows = rows_for(rows, "projection_only")
     exact = sum(exact_label_match(row) for row in condition_rows)
     kind = sum(projection_kind_match(row) for row in condition_rows)
-    null_label = sum(output(row).get("seizure_frequency_label") in (None, "") for row in condition_rows)
+    null_label = sum(
+        output(row).get("seizure_frequency_label") in (None, "") for row in condition_rows
+    )
     by_gold: dict[str, list[int]] = defaultdict(lambda: [0, 0, 0, 0])
-    transitions = Counter((row.get("gold_kind"), output(row).get("decision_kind")) for row in condition_rows)
+    transitions = Counter(
+        (row.get("gold_kind"), output(row).get("decision_kind")) for row in condition_rows
+    )
     mismatches = [row for row in condition_rows if not projection_kind_match(row)]
+    parsed_count = sum(parsed_successfully(row) for row in condition_rows)
 
     for row in condition_rows:
         bucket = by_gold[str(row.get("gold_kind"))]
@@ -292,7 +311,7 @@ def projection_section(rows: Sequence[Mapping[str, Any]]) -> list[str]:
         "",
         "| Metric | Value |",
         "| --- | ---: |",
-        f"| Parsed rows | {sum(parsed_successfully(row) for row in condition_rows)}/{len(condition_rows)} |",
+        f"| Parsed rows | {parsed_count}/{len(condition_rows)} |",
         f"| Exact canonical label matches | {exact}/{len(condition_rows)} |",
         f"| Broad decision-kind matches | {kind}/{len(condition_rows)} |",
         f"| Null or abstained labels | {null_label}/{len(condition_rows)} |",
@@ -315,12 +334,13 @@ def projection_section(rows: Sequence[Mapping[str, Any]]) -> list[str]:
     lines.extend(
         [
             "",
-            "Interpretation: projection-only separates semantic selection from benchmark rendering. "
+            "Interpretation: the light projection-only prompt separates semantic selection from "
+            "benchmark rendering, but it is an under-instructed projection test. "
             "The model often recognizes ordinary frequency and seizure-free states, but it "
             "does not reliably emit canonical Gan labels and it mishandles `unknown` and "
-            "`unresolved_multiple` policy states. This supports a deterministic compiler or "
-            "policy layer after any LLM-selected state, plus an explicit ambiguity/review "
-            "routing policy rather than direct model rendering.",
+            "`unresolved_multiple` policy states. This supports an explicit policy comparison: "
+            "rerun fixed-input projection with an instruction-heavy prompt before treating the "
+            "negative result as evidence against LLM projection itself.",
             "",
             "Projection-kind mismatches:",
             "",
@@ -378,20 +398,28 @@ def overload_section(rows: Sequence[Mapping[str, Any]]) -> list[str]:
 
 
 def hidden_family_section(rows: Sequence[Mapping[str, Any]]) -> list[str]:
-    families = sorted({family for row in rows_for(rows, "candidate_only") for family in row.get("hidden_families", [])})
+    candidate_rows = rows_for(rows, "candidate_only")
+    families = sorted(
+        {family for row in candidate_rows for family in row.get("hidden_families", [])}
+    )
     lines = [
         "",
         "## Balanced Panel Hidden-Family Readout",
         "",
-        "| Family | Rows | Candidate exact | Gold-query evidence exact | Candidate-conditioned evidence exact | Projection kind match |",
+        "| Family | Rows | Candidate exact | Gold-query evidence exact | "
+        "Candidate-conditioned evidence exact | Projection kind match |",
         "| --- | ---: | ---: | ---: | ---: | ---: |",
     ]
     for family in families:
-        base = [row for row in rows_for(rows, "candidate_only") if family in row.get("hidden_families", [])]
+        base = [row for row in candidate_rows if family in row.get("hidden_families", [])]
         candidate_exact = exact_for_family(rows, "candidate_only", family)
         gold_exact = exact_for_family(rows, "gold_query_evidence_only", family)
         conditioned_exact = exact_for_family(rows, "candidate_conditioned_evidence_only", family)
-        projection_rows = [row for row in rows_for(rows, "projection_only") if family in row.get("hidden_families", [])]
+        projection_rows = [
+            row
+            for row in rows_for(rows, "projection_only")
+            if family in row.get("hidden_families", [])
+        ]
         projection_match = sum(projection_kind_match(row) for row in projection_rows)
         lines.append(
             f"| `{family}` | {len(base)} | {candidate_exact}/{len(base)} | "
@@ -420,19 +448,24 @@ def gap_section(rows: Sequence[Mapping[str, Any]]) -> list[str]:
         "",
         "## Instrumentation Gaps And Next Analysis",
         "",
-        f"- Paired-task overload rows with outputs: {sum(has_output(row) for row in paired)}/{len(paired)}.",
-        f"- Hidden-family hard-panel rows with outputs: {sum(has_output(row) for row in hard)}/{len(hard)}.",
+        "- Paired-task overload rows with outputs: "
+        f"{sum(has_output(row) for row in paired)}/{len(paired)}.",
+        "- Hidden-family hard-panel rows with outputs: "
+        f"{sum(has_output(row) for row in hard)}/{len(hard)}.",
         f"- Completed rows missing `source_id_status`: {source_blank}/{completed}.",
         f"- Completed rows missing `model_id`: {model_blank}/{completed}.",
-        "- `projection_only` exact-evidence status is `not_checked` by design because the input is fixed candidate/evidence state rather than newly selected spans.",
+        "- `projection_only` exact-evidence status is `not_checked` by design because "
+        "the input is fixed candidate/evidence state rather than newly selected spans.",
         "",
         "## Decision",
         "",
         "The completed matrix supports a development-control answer across the fixed validation "
         "surfaces: candidate generation and evidence selection are worth carrying forward as "
-        "component surfaces, while projection should not be trusted as direct final-label "
-        "rendering. Use paired prompts as overload diagnostics rather than preferred final "
-        "architecture, and keep deterministic rendering/policy gates after LLM-selected facts.",
+        "component surfaces, while the light projection prompt should not be trusted as direct "
+        "final-label rendering. Projection remains open until a fixed-input, instruction-heavy "
+        "variant tests the common policy choices explicitly. Use paired prompts as overload "
+        "diagnostics rather than preferred final architecture, and keep deterministic "
+        "rendering/policy gates after LLM-selected facts until that comparison is run.",
         "",
     ]
     return lines
@@ -495,9 +528,11 @@ def projection_kind_match(row: Mapping[str, Any]) -> bool:
     if gold_kind in {"frequency", "seizure_free", "unknown", "no_reference"}:
         return decision_kind == gold_kind
     if gold_kind == "unresolved_multiple":
-        # The projection schema has no unresolved_multiple decision kind, so the
-        # least-bad broad match is preserving a non-null frequency-like state
-        # rather than collapsing the row to no_reference, unknown, or seizure_free.
+        if decision_kind == "unresolved_multiple":
+            return True
+        # Also count a non-null frequency-like state as a broad preservation of
+        # unresolved multiple evidence rather than a collapse to no_reference,
+        # unknown, or seizure_free.
         return decision_kind == "frequency" and bool(predicted)
     return False
 

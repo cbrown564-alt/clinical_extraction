@@ -21,21 +21,28 @@ scorer/gold-wrong, and 0 are strong likely gold defects. This is a
 development-control result only. A full validation750 gold/reference review CSV
 now screens all gold labels as `clear` or `ambiguous` for manual adjudication.
 
-RQ1/RQ2 single-task controls remain materialized and should resume after the
-current ambiguity/review-routing decision, unless the next priority is RQ9.
+RQ3 rich selected-state is now answered for the focused five-row surface and
+the 75-row hidden-family hard panel. The result supports the architecture as a
+typed fact carrier, not as direct LLM label rendering.
+The first deterministic projection-policy replay over the saved hard panel is
+complete with no new live model calls: orientation-exact projected labels moved
+from 26/75 to 37/75, with 11 wrong-to-right changes, 0 right-to-wrong changes,
+and 75/75 parseable revised labels.
 
 ## Active Question
 
-RQ10 Gold/Scorer Ambiguity Audit
+RQ3 Rich Selected State
 
-Question: how much residual validation error reflects true extraction failure
-versus benchmark convention, underdetermined notes, clinically defensible
-alternatives, or possible gold-label weakness?
+Question: can candidate/evidence facts be carried into a typed selected state
+with explicit currentness, conditionality, cluster burden, denominator,
+seizure-free boundary, and ambiguity fields, then rendered by deterministic
+projection policy?
 
-Status: answered for saved validation replay only. The next action is to
-predeclare RQ9 abstention/human-review routing that separates
-`underdetermined_note`, `clinically_defensible_alternative`, and
-`benchmark_convention_dominated` rows from true extraction failures.
+Status: answered for validation-development hard-panel rows. The schema is
+structurally reliable and preserves unknown/ambiguity boundaries well, but the
+first deterministic renderer is not yet rich enough for cluster cadence,
+benchmark multiple conventions, diary aggregation, and seizure-free/currentness
+precedence.
 
 Core artifacts:
 
@@ -55,6 +62,15 @@ Core artifacts:
 - `experiments/gan2026_rq1_rq2_component_control_matrix_2026-06-04.md`
 - `docs/research/gan2026_rq1_rq2_component_control_fundamentals_analysis_2026-06-04.md`
 - `docs/research/gan2026_rq1_rq2_five_letter_pipeline_walkthrough_2026-06-04.md`
+- `docs/research/gan2026_rq3_rich_selected_state_protocol_2026-06-04.md`
+- `docs/research/gan2026_rq3_rich_selected_state_five_letter_answer_2026-06-04.md`
+- `docs/research/gan2026_rq3_rich_selected_state_hard_panel_answer_2026-06-04.md`
+- `experiments/gan2026_rich_selected_state_five_letter_2026-06-04.md`
+- `experiments/gan2026_rich_selected_state_five_letter_2026-06-04.jsonl`
+- `experiments/gan2026_rich_selected_state_hard_panel_2026-06-04.md`
+- `experiments/gan2026_rich_selected_state_hard_panel_2026-06-04.jsonl`
+- `experiments/gan2026_rich_selected_state_hard_panel_policy_replay_2026-06-04.md`
+- `experiments/gan2026_rich_selected_state_hard_panel_policy_replay_2026-06-04.jsonl`
 - `docs/research/gan2026_rq5_deterministic_compilation_rendering_answer_2026-06-04.md`
 - `docs/research/gan2026_llm_component_mechanics_synthesis_2026-06-04.md`
 
@@ -80,25 +96,20 @@ Core artifacts:
 - Predeclare RQ9 abstention/human-review routing using the RQ10 audit classes.
 - Review the validation750 gold/reference ambiguity CSV and replace the
   heuristic `codex_initial_ambiguity_label` with manual adjudication.
-- Interpret the completed RQ1/RQ2 control matrix before using it to choose the
-  next schema or selected-state experiment.
 
 ### Next
 
 - Fill legacy `source_id_status` validation for the 200 earlier
   `balanced_validation50` isolated-control rows that predate recursive source-id
   instrumentation.
-- Use the completed paired/hard-panel control matrix to decide whether RQ3
-  should compare selected-state schemas or first tighten projection policy.
+- Add consistency checks for suspicious selected states, especially
+  `state_kind=frequency` plus conditionality, unresolved cluster cadence, or
+  seizure-free blockers that force deterministic abstention.
 
 ### Backlog
 
-- Resume RQ3 schema-comparison protocol after single-task controls identify the
-  representation failures that need schema comparison.
 - Rewrite `llm_only_minimal_evidence_selector.py` under the prompt-language
   audit before any new minimal-evidence calls.
-- Design one clean selected-state successor from the prompt-contamination
-  disposition report before any new selected-state live calls.
 - RQ5 follow-up implementation only if a non-state-graph selected-state surface
   exposes fixed bundles that need rendering audit.
 
@@ -110,6 +121,16 @@ Core artifacts:
 
 ### Done Recently
 
+- 2026-06-04: Revised deterministic projection policy against the saved RQ3
+  hard-panel rich selected-state JSONL with no new live model calls. The replay
+  added cluster cadence/burden rendering, trigger-versus-condition handling,
+  cluster-window inference with no-regression gates, and vague-increase
+  abstention. Development orientation exactness improved from 26/75 to 37/75;
+  changed rows were 11 wrong-to-right and 0 right-to-wrong, with 75/75 parseable
+  revised labels. Artifacts:
+  `experiments/gan2026_rich_selected_state_hard_panel_policy_replay_2026-06-04.md`
+  and
+  `experiments/gan2026_rich_selected_state_hard_panel_policy_replay_2026-06-04.jsonl`.
 - 2026-06-04: Completed the full
   validation750 gold/reference ambiguity review sheet:
   `experiments/gan2026_validation750_gold_reference_ambiguity_review_2026-06-04.csv`
@@ -132,6 +153,20 @@ Core artifacts:
 - 2026-06-04: Added a five-letter RQ1/RQ2 pipeline walkthrough over rows 10,
   280, 3356, 10618, and 2748, showing how each experimental setup preserves or
   loses candidates, evidence, ambiguity, and projection policy.
+- 2026-06-04: Implemented and smoke-tested the RQ3 rich selected-state surface
+  `llm_only_rich_selected_state_reasoner`: five focused validation rows produced
+  5/5 structured records, 5/5 exact selected evidence, and 5/5 parseable
+  deterministic projected labels after same-output renderer replay. The key
+  caveat is that the model overused `state_kind=frequency`, but filled
+  conditionality and cluster fields well enough for deterministic projection on
+  the focused rows.
+- 2026-06-04: Completed the RQ3 rich selected-state hidden-family hard-panel
+  run: 75/75 structured selected states, 72/75 clean evidence/trace rows, 75/75
+  parseable deterministic projections, and 26/75 orientation-exact projected
+  labels. The fundamentals answer is positive for typed fact carrying,
+  strongest on unknown/ambiguity boundaries, but renderer policy remains weak
+  for cluster cadence, benchmark multiple conventions, diary aggregation, and
+  seizure-free/currentness precedence.
 - 2026-06-04: Completed the RQ10 gold/scorer ambiguity audit for saved
   validation replay: 53 Purist misses classified, hard-row ambiguity rate
   0.641, 29 exact-evidence-but-scorer-wrong rows, 25 clinically defensible

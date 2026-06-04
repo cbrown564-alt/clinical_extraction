@@ -253,8 +253,12 @@ def _rows_from_arbitration_ablation(path: Path) -> list[dict[str, Any]]:
                     "projection_correct": projection_correct,
                     "baseline_correct": baseline_correct,
                     "changed_from_baseline": changed,
-                    "wrong_to_correct": bool(changed and not baseline_correct and projection_correct),
-                    "correct_to_wrong": bool(changed and baseline_correct and not projection_correct),
+                    "wrong_to_correct": bool(
+                        changed and not baseline_correct and projection_correct
+                    ),
+                    "correct_to_wrong": bool(
+                        changed and baseline_correct and not projection_correct
+                    ),
                     "evidence_status": "exact" if _text(projection.get("evidence")) else "missing",
                     "source_id_status": (
                         "valid" if projection.get("selected_node_ids") else "not_instrumented"
