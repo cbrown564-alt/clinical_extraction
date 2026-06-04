@@ -1,0 +1,112 @@
+{
+  "artifact_kind": "gan2026_rq9_abstention_review_predeclaration",
+  "by_hidden_family": {
+    "benchmark_format_convention": {
+      "benchmark_convention_dominated": 3,
+      "clinically_defensible_alternative": 3,
+      "rows": 10,
+      "true_extraction_failure": 2,
+      "underdetermined_note": 2
+    },
+    "cluster_burden": {
+      "benchmark_convention_dominated": 2,
+      "clinically_defensible_alternative": 6,
+      "rows": 11,
+      "true_extraction_failure": 3
+    },
+    "competing_semiologies": {
+      "clinically_defensible_alternative": 12,
+      "rows": 25,
+      "true_extraction_failure": 10,
+      "underdetermined_note": 3
+    },
+    "current_vs_historical": {
+      "clinically_defensible_alternative": 12,
+      "possible_gold_weakness": 3,
+      "rows": 25,
+      "true_extraction_failure": 7,
+      "underdetermined_note": 3
+    },
+    "diary_or_log_aggregation": {
+      "clinically_defensible_alternative": 1,
+      "possible_gold_weakness": 2,
+      "rows": 3
+    },
+    "rate_bucket_or_denominator": {
+      "benchmark_convention_dominated": 2,
+      "clinically_defensible_alternative": 3,
+      "rows": 19,
+      "true_extraction_failure": 13,
+      "underdetermined_note": 1
+    },
+    "seizure_free_duration": {
+      "clinically_defensible_alternative": 17,
+      "possible_gold_weakness": 3,
+      "rows": 27,
+      "true_extraction_failure": 4,
+      "underdetermined_note": 3
+    },
+    "uncertainty_or_ambiguity": {
+      "benchmark_convention_dominated": 1,
+      "clinically_defensible_alternative": 22,
+      "rows": 24,
+      "underdetermined_note": 1
+    },
+    "unclassified": {
+      "rows": 2,
+      "true_extraction_failure": 1,
+      "underdetermined_note": 1
+    },
+    "unknown_boundary": {
+      "clinically_defensible_alternative": 19,
+      "rows": 20,
+      "underdetermined_note": 1
+    }
+  },
+  "claim_language": "Validation-development RQ9 predeclaration only. The policy defines abstention and human-review routing from saved RQ10 audit classes; it does not change scorer policy, gold labels, prompts, deterministic rules, projection policy, locked-test behavior, or benchmark-comparable claims.",
+  "date": "2026-06-04",
+  "decision_rule": "Use RQ9 as a selective-action evaluation: rows routed to review or abstention are success cases only when they block an unsafe final label without hiding true extraction failures. Promote no automatic label changes from this predeclaration.",
+  "metrics": {
+    "abstain_or_route_unknown_rows": 5,
+    "exact_evidence_rate": 1.0,
+    "extraction_error_analysis_rows": 19,
+    "human_review_benchmark_convention_rows": 3,
+    "human_review_clinical_convention_rows": 23,
+    "human_review_gold_reference_rows": 3,
+    "predeclared_rows": 53,
+    "prediction_blocked_rows": 34,
+    "rq10_hard_row_ambiguity_rate": 0.6415
+  },
+  "primary_class_counts": {
+    "benchmark_convention_dominated": 11,
+    "true_extraction_failure": 19,
+    "underdetermined_note": 23
+  },
+  "review_bucket_counts": {
+    "benchmark_convention_dominated": 3,
+    "clinically_defensible_alternative": 23,
+    "possible_gold_weakness": 3,
+    "true_extraction_failure": 19,
+    "underdetermined_note": 5
+  },
+  "routing_actions": {
+    "benchmark_convention_dominated": "human_review_benchmark_convention",
+    "clinically_defensible_alternative": "human_review_clinical_convention",
+    "possible_gold_weakness": "human_review_gold_reference",
+    "true_extraction_failure": "extraction_error_analysis",
+    "underdetermined_note": "abstain_or_route_unknown"
+  },
+  "routing_policy_version": "gan2026_rq9_abstention_review_policy_v0",
+  "routing_priority": [
+    "possible_gold_weakness",
+    "clinically_defensible_alternative",
+    "benchmark_convention_dominated",
+    "underdetermined_note",
+    "true_extraction_failure"
+  ],
+  "row_count": 53,
+  "source_artifact": "experiments/gan2026_rq10_gold_scorer_ambiguity_audit_2026-06-04.jsonl",
+  "source_summary": "experiments/gan2026_rq10_gold_scorer_ambiguity_audit_2026-06-04.json",
+  "split": "validation",
+  "split_manifest": "gan2026_split_v1"
+}

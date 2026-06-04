@@ -52,6 +52,12 @@ Suspicious selected-state routing and verifier predeclaration are materialized:
 versus the deterministic comparator. The verifier slice has 42 exact-evidence
 eligible rows; rows 1695 and 6094 are excluded for non-exact evidence.
 
+RQ9 abstention/human-review routing is predeclared from the saved RQ10 residual
+miss classes. The policy covers 53 validation residual Purist misses, blocks
+prediction-bearing use for 34 rows through abstention or human review, and keeps
+19 rows as true extraction failures for component debugging. It does not change
+labels, scorer policy, projection policy, or locked-test claims.
+
 ## Active Question
 
 Candidate Union And Ambiguity Ownership
@@ -62,14 +68,15 @@ inside the rich selected state before deterministic render/unknown/abstain/revie
 policy?
 
 Status: candidate-union, selective boundary-candidate, suspicious-state routing,
-selected-state union replay, and verifier predeclarations are materialized on
-saved artifacts. The current answer is parallel deterministic plus gated
-selective boundary-candidate proposal, rich selected-state fact carrying, and
-deterministic render/unknown/review policy. V3 boundary candidates should feed
-selected state as an input surface only; promoting primary v3 candidate-state
-projection as policy would regress 6 deterministic-correct rows. A selective
-verifier remains a predeclared backup for stable suspicious slices because naive
-deterministic unknown-routing caused 6 C->W regressions.
+selected-state union replay, verifier predeclarations, and RQ9 abstention/review
+routing are materialized on saved artifacts. The current answer is parallel
+deterministic plus gated selective boundary-candidate proposal, rich
+selected-state fact carrying, and deterministic render/unknown/review policy. V3
+boundary candidates should feed selected state as an input surface only;
+promoting primary v3 candidate-state projection as policy would regress 6
+deterministic-correct rows. A selective verifier remains a predeclared backup
+for stable suspicious slices because naive deterministic unknown-routing caused
+6 C->W regressions.
 
 Core artifacts:
 
@@ -92,6 +99,9 @@ Core artifacts:
   `gan2026_selected_state_union_replay_v3_2026-06-04.*`,
   `gan2026_suspicious_selected_state_routing_2026-06-04.*`, and
   `gan2026_selective_verifier_predeclaration_2026-06-04.*`.
+- RQ9 abstention/review artifacts:
+  `docs/research/gan2026_rq9_abstention_review_predeclaration_2026-06-04.md`
+  and `experiments/gan2026_rq9_abstention_review_predeclaration_2026-06-04.*`.
 
 ## Guardrails
 
@@ -112,12 +122,11 @@ Core artifacts:
 
 ### Now
 
-- Predeclare RQ9 abstention/human-review routing using the RQ10 audit classes.
+- Review the validation750 gold/reference ambiguity CSV and replace the
+  heuristic `codex_initial_ambiguity_label` with manual adjudication.
 
 ### Next
 
-- Review the validation750 gold/reference ambiguity CSV and replace the
-  heuristic `codex_initial_ambiguity_label` with manual adjudication.
 - Fill legacy `source_id_status` validation for the 200 earlier
   `balanced_validation50` isolated-control rows that predate recursive source-id
   instrumentation.
@@ -137,6 +146,11 @@ Core artifacts:
 
 ### Done Recently
 
+- 2026-06-04: Predeclared RQ9 abstention/human-review routing from RQ10 classes.
+  The policy covers 53 residual validation Purist misses, blocks
+  prediction-bearing use for 34 rows through abstention or review, and keeps 19
+  rows as true extraction failures; no scorer, label, projection, or locked-test
+  policy change is authorized.
 - 2026-06-04: Completed no-call selected-state replay over the gated v3
   boundary-candidate union. Primary v3 candidate-state projection is 16/22 and
   would create 6 C->W changes if promoted; safety-floor replay remains 37/75
