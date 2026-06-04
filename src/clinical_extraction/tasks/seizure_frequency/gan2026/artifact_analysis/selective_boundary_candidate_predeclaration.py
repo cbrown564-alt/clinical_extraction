@@ -34,7 +34,7 @@ DEFAULT_REPORT_PATH = Path(
 )
 DEFAULT_PROTOCOL_PATH = Path("docs/research/gan2026_candidate_union_protocol_2026-06-04.md")
 
-PROMPT_VERSION = "selective_boundary_candidate_proposer_v0"
+PROMPT_VERSION = "selective_boundary_candidate_proposer_v3"
 MAX_PROPOSED_CANDIDATES = 4
 ALLOWED_CANDIDATE_KINDS = [
     "frequency_rate",
@@ -77,23 +77,50 @@ BOUNDARY_PROPOSER_SYSTEM_PROMPT = (
     "conditional-only events, competing seizure types, cluster patterns, diary "
     "or log summaries, and vague rates with a clear time basis. Do not choose a "
     "seizure-frequency answer. Do not rewrite ordinary rate facts unless they "
-    "are needed to explain one of these hard cases."
+    "are needed to explain one of these hard cases. Use one string value, not a "
+    "list, for each choice field such as candidate_kind, currentness, "
+    "assertion_status, time_unit, and duration_unit. Use asserted, not "
+    "no_reference, as assertion_status when candidate_kind is no_reference. For "
+    "cluster statements, put the number of clusters and cluster timing in rate, "
+    "and put seizures per cluster in cluster. Do not put seizures per cluster in "
+    "rate count fields. If the note gives exact seizures per cluster, fill the "
+    "numeric low/high fields and leave seizures_per_cluster_is_multiple false. "
+    "If the note gives only seizures per cluster without timing, still return "
+    "that cluster burden. For cluster timing, keep the stated unit: four to five "
+    "weeks means time_count_low 4, time_count_high 5, and time_unit week. one to "
+    "two times per month means count_low 1, count_high 2, time_count_low 1, and "
+    "time_unit month. five days without seizures followed by a cluster means one "
+    "cluster per five days, not one cluster per day."
 )
 BOUNDARY_PROPOSER_OUTPUT_SCHEMA = {
     "candidates": [
         {
-            "candidate_kind": ALLOWED_CANDIDATE_KINDS,
+            "candidate_kind": (
+                "One string value: frequency_rate, cluster_frequency, seizure_free, "
+                "unknown_frequency, no_reference, or conditional_frequency."
+            ),
             "evidence_quote": "Exact substring copied from the note.",
-            "currentness": ALLOWED_CURRENTNESS,
-            "assertion_status": ALLOWED_ASSERTION_STATUS,
+            "currentness": "One string value: current, recent, historical, or unclear.",
+            "assertion_status": (
+                "One string value: asserted, negated, uncertain, or conditional. "
+                "For candidate_kind no_reference, use asserted."
+            ),
             "seizure_type": "Seizure type or null when the note does not say.",
             "rate": {
                 "count_low": "Number or null.",
                 "count_high": "Number or null.",
-                "count_is_multiple": "true when the note says multiple, many, several, or similar.",
+                "count_is_multiple": (
+                    "true when the cluster count or ordinary event count says multiple, "
+                    "many, several, or similar. For cluster_frequency, these count "
+                    "fields describe clusters, not seizures per cluster."
+                ),
                 "time_count_low": "Number or null.",
                 "time_count_high": "Number or null.",
-                "time_unit": "day, week, month, year, or null.",
+                "time_unit": (
+                    "One string value: day, week, month, year, or null. Keep the "
+                    "note's stated time unit; do not collapse four to five weeks "
+                    "into one month."
+                ),
                 "rate_text": "Exact phrase for the count and time basis, or null.",
             },
             "cluster": {
@@ -101,12 +128,16 @@ BOUNDARY_PROPOSER_OUTPUT_SCHEMA = {
                 "cluster_cadence_text": "Exact phrase for cluster timing, or null.",
                 "seizures_per_cluster_low": "Number or null.",
                 "seizures_per_cluster_high": "Number or null.",
+                "seizures_per_cluster_is_multiple": (
+                    "true only when the note says multiple, many, several, or similar "
+                    "seizures per cluster and does not give exact low/high numbers."
+                ),
                 "cluster_uncertainty": "Short note or null.",
             },
             "seizure_free": {
                 "has_no_event_claim": "Boolean.",
                 "duration_count": "Number or null.",
-                "duration_unit": "day, week, month, year, or null.",
+                "duration_unit": "One string value: day, week, month, year, or null.",
                 "applies_to_all_seizure_types": "true, false, or null.",
                 "has_recent_events_or_conditions": "Boolean.",
                 "boundary_note": "Short note or null.",
