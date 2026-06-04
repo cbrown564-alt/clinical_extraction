@@ -224,7 +224,8 @@ def _suspicious_routing_row(
     *,
     panel_row: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    state = dict(row.get("structured_record", {}).get("selected_state") or {})
+    structured_record = row.get("structured_record") or {}
+    state = dict(structured_record.get("selected_state") or {})
     note_text = str(row.get("typed_input", {}).get("note_text") or "")
     gold_label = _normalize_label(row.get("reference", {}).get("gold_normalized_label"))
     comparator_label = _normalize_label(
@@ -234,7 +235,12 @@ def _suspicious_routing_row(
     exact_trace = bool(state.get("selected_evidence")) and evidence_is_substring(
         note_text, str(state.get("selected_evidence") or "")
     )
-    flags = _suspicious_flags(state, exact_trace=exact_trace)
+    source_id_status = _source_id_status(structured_record, exact_trace=exact_trace)
+    flags = _suspicious_flags(
+        state,
+        exact_trace=exact_trace,
+        source_id_status=source_id_status,
+    )
     action = _routing_action(flags)
     final_label = _final_policy_label(comparator_label, action)
     comparator_correct = comparator_label == gold_label
@@ -251,6 +257,8 @@ def _suspicious_routing_row(
         "selected_evidence_status": {
             "exact_trace": exact_trace,
             "selected_evidence_present": bool(str(state.get("selected_evidence") or "").strip()),
+            "selected_source_ids": list(structured_record.get("selected_source_ids") or []),
+            "source_id_status": source_id_status,
         },
         "embedded_ambiguity_fields": {
             "ambiguity_flags": list(state.get("ambiguity_flags") or []),
@@ -291,7 +299,12 @@ def _suspicious_routing_row(
     }
 
 
-def _suspicious_flags(state: Mapping[str, Any], *, exact_trace: bool) -> list[str]:
+def _suspicious_flags(
+    state: Mapping[str, Any],
+    *,
+    exact_trace: bool,
+    source_id_status: str,
+) -> list[str]:
     flags: list[str] = []
     state_kind = str(state.get("state_kind") or "")
     currentness = str(state.get("currentness") or "")
@@ -342,6 +355,8 @@ def _suspicious_flags(state: Mapping[str, Any], *, exact_trace: bool) -> list[st
         flags.append("vague_trend_without_absolute_current_frequency")
     if not exact_trace:
         flags.append("selected_evidence_missing_exact_trace")
+    if exact_trace and source_id_status not in {"valid", "not_instrumented"}:
+        flags.append("selected_source_id_invalid")
     return sorted(set(flags))
 
 
@@ -353,6 +368,7 @@ def _routing_action(flags: Sequence[str]) -> str:
         "competing_current_rates_without_controlling_semiology",
         "diary_log_date_list_without_defined_observation_window",
         "denominator_window_mismatch",
+        "selected_source_id_invalid",
     }
     unknown_flags = {
         "frequency_with_exclusive_conditionality",
@@ -506,6 +522,8 @@ def _first_failure_owner(flags: Sequence[str]) -> str:
         return "none"
     if "selected_evidence_missing_exact_trace" in flags:
         return "evidence_trace"
+    if "selected_source_id_invalid" in flags:
+        return "source_id_trace"
     if any(flag.startswith("seizure_free") for flag in flags):
         return "seizure_free_boundary"
     if any("cluster" in flag for flag in flags):
@@ -530,6 +548,17 @@ def _by_hidden_family(rows: Sequence[Mapping[str, Any]]) -> dict[str, dict[str, 
             if row["suspicious_state_action"] == "route_review":
                 by_family[str(family)]["route_review_rows"] += 1
     return {family: dict(counts) for family, counts in sorted(by_family.items())}
+
+
+def _source_id_status(structured_record: Mapping[str, Any], *, exact_trace: bool) -> str:
+    status = str(structured_record.get("source_id_status") or "").strip()
+    if status:
+        return status
+    if not exact_trace:
+        return "invalid"
+    if structured_record.get("selected_source_ids"):
+        return "valid"
+    return "not_instrumented"
 
 
 def _verifier_decision(rows: Sequence[Mapping[str, Any]], c_to_w_rows: Sequence[int]) -> str:

@@ -14,56 +14,43 @@ Use saved artifacts as research instruments for component questions, not
 whole-pipeline validation F1. Deterministic rules are frozen comparators, safety
 floors, and miss-slice definers, not eligible answers for RQ1-RQ4.
 
-RQ9 is answered for saved validation replay in
-`docs/research/gan2026_rq9_selective_action_answer_2026-06-04.md`: selective
-action with bounded prediction, abstention, human review, and monitoring. The
-v3 router covers 716/750 validation rows, abstains on 26, routes 8 to human
-review, and has covered-row Purist accuracy 0.9469. It is a
-validation-development artifact only.
+RQ1-RQ10 now have bounded validation-development answers or explicit claim
+boundaries. RQ3 remains a positive hard-panel direction with unresolved
+projection-policy work, and no benchmark-comparable claim is authorized.
 
-The frozen RQ9 selective-action holdout audit protocol is written in
-`docs/research/gan2026_rq9_selective_action_frozen_holdout_audit_protocol_2026-06-04.md`.
-It fixes v3, the source candidate, monitoring slices, required metrics, allowed
-first readout, and post-run inspection limits before any locked-test use. It
-does not run or authorize locked-test evaluation.
+Key answer docs: RQ6
+`docs/research/gan2026_rq6_selective_llm_value_answer_2026-06-04.md`, RQ7
+`docs/research/gan2026_rq7_family_indexed_component_matrix_answer_2026-06-04.md`,
+RQ8
+`docs/research/gan2026_rq8_efficiency_operational_reliability_answer_2026-06-04.md`,
+RQ9 `docs/research/gan2026_rq9_selective_action_answer_2026-06-04.md`, and
+RQ10
+`docs/research/gan2026_rq10_gold_scorer_ambiguity_audit_answer_2026-06-04.md`.
 
-RQ10 is answered for saved validation replay: among 53 residual Purist misses,
-23 are `underdetermined_note`, 19 are `true_extraction_failure`, and 11 are
-`benchmark_convention_dominated`; 0 are strong likely gold defects. A full
-validation750 gold/reference review CSV exists for manual adjudication.
-
-Candidate-union and ambiguity ownership are answered for saved validation
-artifacts in
-`docs/research/gan2026_candidate_union_and_ambiguity_ownership_report_2026-06-04.md`.
-Saved union recall improved from 25/75 deterministic rows to 47/75, with 22
-saved boundary rescues and 0 deterministic-recall losses. V3 boundary candidates
-are useful as selected-state inputs, but primary v3 candidate-state projection
-would regress 6 deterministic-correct rows, so deterministic safety-floor
-projection remains the policy boundary.
+Important numbers: `selective_safety_floor_gate_v0` changed 21 validation750
+rows with 11 W->C and 0 C->W, and 14 frozen local test450 rows with 8 W->C and
+0 C->W. RQ9 v3 covers 716/750 validation rows, abstains on 26, routes 8 to
+human review, and has covered-row Purist accuracy 0.9469. RQ10 found 23
+`underdetermined_note`, 19 `true_extraction_failure`, 11
+`benchmark_convention_dominated`, and 0 strong likely gold defects among 53
+residual Purist misses.
 
 ## Active Question
 
-Candidate Union And Ambiguity Ownership
+Staged Hybrid Assembly
 
-Status: candidate-union, selective boundary-candidate, suspicious-state routing,
-selected-state union replay, verifier predeclarations, and RQ9
-abstention/review routing are materialized on saved artifacts. The current
-answer is parallel deterministic plus gated selective boundary-candidate
-proposal, rich selected-state fact carrying, and deterministic
-render/unknown/review policy. A selective verifier remains a predeclared backup
-for stable suspicious slices because naive deterministic unknown-routing caused
-6 C->W regressions.
+Status: architecture assembly readiness is accepted for validation
+development. The older broad LLM-first V1 hypothesis is superseded by the
+staged hybrid assembly decision.
 
 Core artifacts:
 
-- Architecture: `docs/research/gan2026_candidate_union_and_ambiguity_ownership_report_2026-06-04.md`
-- RQ9 contract: `docs/research/gan2026_rq9_selective_action_evaluation_contract_2026-06-04.md`
-- RQ9 answer: `docs/research/gan2026_rq9_selective_action_answer_2026-06-04.md`
-- RQ9 frozen holdout protocol: `docs/research/gan2026_rq9_selective_action_frozen_holdout_audit_protocol_2026-06-04.md`
-- RQ9 v3 router: `experiments/gan2026_rq9_selective_action_router_v3_2026-06-04.*`
-- RQ9 cluster/convention monitoring: `experiments/gan2026_rq9_cluster_convention_monitoring_2026-06-04.*`
-- Candidate-union artifacts: `experiments/gan2026_candidate_union_saved_artifact_2026-06-04.*`
-- Selected-state replay: `experiments/gan2026_selected_state_union_replay_v3_2026-06-04.*`
+- RQ8 answer: `docs/research/gan2026_rq8_efficiency_operational_reliability_answer_2026-06-04.md`
+- RQ8 matrix: `experiments/gan2026_rq8_operational_matrix_2026-06-04.*`
+- RQ7 matrix: `experiments/gan2026_rq7_family_component_matrix_2026-06-04.*`
+- Component-control matrix: `experiments/gan2026_rq1_rq2_component_control_matrix_2026-06-04.*`
+- Assembly decision: `docs/research/gan2026_architecture_assembly_readiness_decision_2026-06-04.md`
+- ADR: `docs/decisions/0009-gan2026-staged-hybrid-assembly.md`
 
 ## Guardrails
 
@@ -83,34 +70,31 @@ Core artifacts:
 
 ### Now
 
-- No active implementation task is open. Keep RQ9 holdout use blocked until a
-  user explicitly authorizes verifying a runnable locked-test audit command
-  against the frozen protocol.
+- Replay the assembled validation-development policy on existing hard-panel
+  artifacts before any new model calls.
 
 ### Next
 
-- If holdout is later authorized, verify the runnable command against
-  `docs/research/gan2026_rq9_selective_action_frozen_holdout_audit_protocol_2026-06-04.md`
-  and record all frozen inputs before execution.
-- Keep missing-anchor abstentions and last-event human-review routing unchanged
-  unless a new predeclared policy targets a narrower source-backed slice.
-
-### Backlog
-
-- Rewrite `llm_only_minimal_evidence_selector.py` under prompt-language audit
-  before any new minimal-evidence calls.
-- RQ5 follow-up implementation only if a non-state-graph selected-state surface
-  exposes fixed bundles that need rendering audit.
+- Regenerate the suspicious selected-state routing artifact over saved rich-state
+  rows with the new source-id trace.
+- Add projection/source-id consistency checks to the assembled candidate report.
 
 ### Blocked
 
 - Benchmark-comparable language remains blocked; current holdout evidence is a
   local frozen audit only.
-- Whole-pipeline promotion is blocked until component questions are answered.
+- Whole-pipeline promotion is blocked until the family-indexed matrix is
+  implemented as an auditable assembled candidate and any holdout-facing use
+  has a frozen protocol.
 
 ### Done Recently
 
-- 2026-06-04: Wrote the frozen RQ9 selective-action holdout audit protocol.
-- 2026-06-04: Wrote the RQ9 selective-action answer and promotion boundary.
-- 2026-06-04: Materialized RQ9 v3 trigger-context narrowing, last-event routing,
-  and cluster/convention monitoring artifacts.
+- 2026-06-04: Started the smallest staged-hybrid assembly slice: rich
+  selected-state extraction now derives `selected_source_ids=["note"]` and
+  `source_id_status` from exact evidence, and suspicious routing sends invalid
+  source-id traces to review.
+- 2026-06-04: Added RQ6 selective LLM value answer, RQ7 hidden-family
+  synthesis/family matrix answer, and RQ8 operational-reliability
+  protocol/answer after the RQ1-RQ10 review.
+- 2026-06-04: Accepted staged hybrid assembly for validation development in
+  ADR 0009 and the architecture readiness report.

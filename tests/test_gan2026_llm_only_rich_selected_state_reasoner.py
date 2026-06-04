@@ -79,6 +79,7 @@ def test_build_rich_selected_state_inputs_keeps_gold_and_metadata_out() -> None:
     assert inputs["note_text"] == _record().note_text
     assert "gold" not in str(inputs).lower()
     assert "pipeline_family" not in str(inputs)
+    assert "selected_source_ids" not in inputs["output_contract"]["selected_state_fields"]
     assert inputs["output_contract"]["top_level_outputs"] == ["selected_state"]
     assert "conditionality_note" in inputs["output_contract"]["selected_state_fields"]
     assert inputs["output_contract"]["field_descriptions"]["cluster"]
@@ -92,8 +93,25 @@ def test_multiple_per_day_renders_from_typed_multiple_state() -> None:
 
     assert extraction is not None
     assert errors == []
+    assert extraction.selected_source_ids == ["note"]
+    assert extraction.source_id_status == "valid"
     assert reasoner.validate_rich_selected_state(extraction, note_text=_record().note_text) == []
     assert reasoner.deterministic_project_selected_state(extraction) == "multiple per day"
+
+
+def test_non_exact_selected_evidence_gets_invalid_source_id_trace() -> None:
+    extraction, _errors = reasoner.prediction_to_extraction(
+        _prediction(selected_evidence="not copied from note"),
+        note_text=_record().note_text,
+    )
+
+    assert extraction is not None
+    assert extraction.selected_source_ids == []
+    assert extraction.source_id_status == "invalid"
+    assert "evidence: invalid selected evidence" in reasoner.validate_rich_selected_state(
+        extraction,
+        note_text=_record().note_text,
+    )
 
 
 def test_conditional_events_render_unknown_not_seizure_free() -> None:

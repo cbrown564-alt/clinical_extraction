@@ -200,6 +200,10 @@ class RichSelectedStateExtractionRecord(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     selected_state: RichSelectedState
+    selected_source_ids: list[str] = Field(default_factory=list)
+    source_id_status: Literal["valid", "missing", "invalid", "not_instrumented"] = (
+        "not_instrumented"
+    )
 
 
 class Gan2026RichSelectedStateReasonerSignature(dspy.Signature):
@@ -328,6 +332,7 @@ def prediction_to_extraction(
     prediction: Any,
     *,
     note_text: str | None = None,
+    source_id: str = "note",
 ) -> tuple[RichSelectedStateExtractionRecord | None, list[str]]:
     """Validate a typed prediction into a rich selected-state record."""
 
@@ -339,23 +344,51 @@ def prediction_to_extraction(
         return None, [f"rich_selected_state_parse_or_validation_error: {exc}"]
     if note_text is not None:
         state = extraction.selected_state
+        selected_evidence = repair_evidence_text_if_source_exact(
+            state.selected_evidence,
+            note_text,
+        )
+        raw_source_phrase = repair_evidence_text_if_source_exact(
+            state.raw_source_phrase,
+            note_text,
+        )
+        source_trace = materialize_selected_source_trace(
+            selected_evidence=selected_evidence,
+            note_text=note_text,
+            source_id=source_id,
+        )
         extraction = extraction.model_copy(
             update={
                 "selected_state": state.model_copy(
                     update={
-                        "selected_evidence": repair_evidence_text_if_source_exact(
-                            state.selected_evidence,
-                            note_text,
-                        ),
-                        "raw_source_phrase": repair_evidence_text_if_source_exact(
-                            state.raw_source_phrase,
-                            note_text,
-                        ),
+                        "selected_evidence": selected_evidence,
+                        "raw_source_phrase": raw_source_phrase,
                     }
-                )
+                ),
+                **source_trace,
             }
         )
     return extraction, []
+
+
+def materialize_selected_source_trace(
+    *,
+    selected_evidence: str,
+    note_text: str | None,
+    source_id: str = "note",
+) -> dict[str, Any]:
+    """Derive source-id trace from exact selected evidence without model involvement."""
+
+    evidence = selected_evidence.strip()
+    if not evidence:
+        return {"selected_source_ids": [], "source_id_status": "missing"}
+    if note_text is None:
+        return {"selected_source_ids": [], "source_id_status": "not_instrumented"}
+    if not source_id.strip():
+        return {"selected_source_ids": [], "source_id_status": "invalid"}
+    if evidence_is_substring(note_text, selected_evidence):
+        return {"selected_source_ids": [source_id], "source_id_status": "valid"}
+    return {"selected_source_ids": [], "source_id_status": "invalid"}
 
 
 def validate_rich_selected_state(
@@ -376,6 +409,10 @@ def validate_rich_selected_state(
     if note_text is not None and not evidence_is_substring(note_text, state.selected_evidence):
         errors.append("evidence: invalid selected evidence")
         evidence_valid = False
+    if extraction.source_id_status == "valid" and not extraction.selected_source_ids:
+        errors.append("source_id: valid status without selected_source_ids")
+    if evidence_valid and note_text is not None and extraction.source_id_status != "valid":
+        errors.append("source_id: exact selected evidence lacks valid source id")
     if (
         evidence_valid
         and state.raw_source_phrase
