@@ -25,6 +25,9 @@ PROMPT_VERSIONS = {
         "gan2026_candidate_conditioned_evidence_only_v0_frozen_2026_06_04"
     ),
     "projection_only": "gan2026_projection_only_v0_frozen_2026_06_04",
+    "projection_only_instruction_heavy": (
+        "gan2026_projection_only_instruction_heavy_v0_frozen_2026_06_04"
+    ),
     "candidate_plus_evidence": "gan2026_candidate_plus_evidence_v0_frozen_2026_06_04",
     "evidence_plus_projection": "gan2026_evidence_plus_projection_v0_frozen_2026_06_04",
     "candidate_plus_evidence_plus_projection": (
@@ -482,6 +485,97 @@ def build_projection_only_prompt_input(
                 (
                     "Return seizure_frequency_label only when the supplied information "
                     "supports one."
+                ),
+                "Return exactly one JSON object matching projection_only_schema.",
+            ],
+            "input_source": input_source,
+            "candidates": [dict(candidate) for candidate in candidates],
+            "evidence": [dict(evidence_item) for evidence_item in evidence],
+            "projection_only_schema": _schema_stub(FrozenProjectionOnlyDecision),
+        }
+    )
+    return _json(payload)
+
+
+def build_projection_only_instruction_heavy_prompt_input(
+    record: GanFrequencyRecord,
+    candidates: Sequence[Mapping[str, Any]],
+    evidence: Sequence[Mapping[str, Any]],
+    *,
+    row_panel_id: str = PANEL_ID,
+    input_source: str,
+) -> str:
+    """Prepare a principle-heavy projection prompt for fixed candidates/evidence."""
+
+    payload = _base_payload(record)
+    payload.update(
+        {
+            "task": (
+                "Choose the current seizure-frequency interpretation supported by the "
+                "supplied candidates and evidence."
+            ),
+            "instructions": [
+                "Use only the supplied candidates and evidence.",
+                (
+                    "This task requires a policy choice. Different reviewers may choose "
+                    "different answers unless the policy is stated, so apply the principles "
+                    "below consistently."
+                ),
+                (
+                    "Prefer the current or recent overall seizure state over older history, "
+                    "future plans, medication context, safety advice, or indirect context."
+                ),
+                (
+                    "When a current explicit summary conflicts with an older or derived "
+                    "rate, choose the current explicit summary unless the supplied evidence "
+                    "shows it is not about seizures."
+                ),
+                (
+                    "Do not choose seizure freedom when any supplied current or recent "
+                    "asserted seizure, cluster, spell, or event candidate remains active."
+                ),
+                (
+                    "A statement that one seizure type is absent does not prove overall "
+                    "seizure freedom if another seizure type or spell is current or recent."
+                ),
+                (
+                    "Conditional events, such as events only with missed sleep or other "
+                    "triggers, are still events. If their rate cannot be stated, choose "
+                    "'unknown' rather than seizure freedom."
+                ),
+                (
+                    "Cluster information can describe two separate things: how often "
+                    "clusters happen and how many seizures happen inside each cluster. "
+                    "If only the number inside each cluster is supplied, keep that visible "
+                    "and mark the overall rate as uncertain."
+                ),
+                (
+                    "If the supplied evidence says there were multiple seizures in a day "
+                    "or other time period, a precise numeric count is not required. Use an "
+                    "unresolved-multiple decision and render a concise label such as "
+                    "'multiple per day' when the time period is clear."
+                ),
+                (
+                    "If a count and time basis are explicitly supplied in ordinary language, "
+                    "render the concise label even when the wording is approximate, bounded, "
+                    "or phrased as 'up to'."
+                ),
+                (
+                    "Use 'unknown' when seizure-frequency evidence exists but the current "
+                    "rate cannot be chosen because the supplied candidates are conditional, "
+                    "competing, vague, or incomplete."
+                ),
+                (
+                    "Use 'no_reference' only when the supplied candidates and evidence contain "
+                    "no usable seizure-frequency information."
+                ),
+                (
+                    "Abstain only when the supplied candidates or evidence are internally "
+                    "invalid for this task, not merely because the clinical answer is uncertain."
+                ),
+                (
+                    "Return seizure_frequency_label when the decision can be expressed as a "
+                    "concise label; otherwise explain the uncertainty or abstention."
                 ),
                 "Return exactly one JSON object matching projection_only_schema.",
             ],

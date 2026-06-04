@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import argparse
 from collections import Counter, defaultdict
-from collections.abc import Iterable, Mapping, Sequence
+from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
@@ -176,7 +176,9 @@ def _rq1_mechanics_rows(
     *,
     max_examples_per_bucket: int,
 ) -> list[dict[str, Any]]:
-    by_source: dict[int, dict[str, list[Mapping[str, Any]]]] = defaultdict(lambda: defaultdict(list))
+    by_source: dict[int, dict[str, list[Mapping[str, Any]]]] = defaultdict(
+        lambda: defaultdict(list)
+    )
     for row in rows:
         by_source[int(row["source_row_index"])][str(row["generator_name"])].append(row)
 
@@ -282,7 +284,9 @@ def _rq1_row(
         "split": row.get("split") or "validation",
         "clinical_subproblem": "candidate_generation",
         "mechanism_bucket": mechanism_bucket,
-        "component_name": component_name or row.get("generator_name") or "llm_candidate_selector_raw",
+        "component_name": (
+            component_name or row.get("generator_name") or "llm_candidate_selector_raw"
+        ),
         "source_row_index": int(row.get("source_row_index") or -1),
         "gold_label": row.get("gold_label") or "",
         "candidate_label": _clean_text(row.get("candidate_label")),

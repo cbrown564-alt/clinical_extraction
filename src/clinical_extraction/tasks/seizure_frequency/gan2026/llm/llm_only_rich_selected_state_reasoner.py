@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import re
 from collections import Counter
 from collections.abc import Mapping
 from pathlib import Path
@@ -18,8 +19,10 @@ from clinical_extraction.core.evidence import (
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     label_to_frequency_record,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
-from clinical_extraction.tasks.seizure_frequency.gan2026.data import load_records_for_split
+from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
+    GanFrequencyRecord,
+    load_records_for_split,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     write_jsonl_rows,
 )
@@ -373,7 +376,11 @@ def validate_rich_selected_state(
     if note_text is not None and not evidence_is_substring(note_text, state.selected_evidence):
         errors.append("evidence: invalid selected evidence")
         evidence_valid = False
-    if evidence_valid and state.raw_source_phrase and state.raw_source_phrase not in state.selected_evidence:
+    if (
+        evidence_valid
+        and state.raw_source_phrase
+        and state.raw_source_phrase not in state.selected_evidence
+    ):
         errors.append("selected_state_trace: raw_source_phrase not in selected_evidence")
     if state.state_kind == "no_reference" and (
         _has_rate_value(state.rate)
@@ -381,7 +388,10 @@ def validate_rich_selected_state(
         or state.seizure_free_boundary.has_no_event_claim
     ):
         errors.append("boundary: no_reference state contains clinical frequency details")
-    if state.state_kind == "seizure_free" and state.seizure_free_boundary.has_recent_events_or_conditions:
+    if (
+        state.state_kind == "seizure_free"
+        and state.seizure_free_boundary.has_recent_events_or_conditions
+    ):
         errors.append("boundary: seizure_free state has recent events or conditions")
     if state.currentness == "conditional" and not state.conditionality_note.strip():
         errors.append("boundary: conditional state missing conditionality_note")
@@ -413,15 +423,48 @@ def deterministic_project_selected_state(
 
 def _render_frequency(state: RichSelectedState) -> str | None:
     rate = state.rate
+    if _conditionality_blocks_frequency(state):
+        return _render_unknown(state)
+    if _rate_boundary_blocks_frequency(state):
+        return _render_unknown(state)
+    if _vague_increase_without_count(state):
+        return "unknown"
+    if cluster_label := _render_cluster_frequency(state):
+        return cluster_label
+    if _cluster_quiescence_blocks_bare_rate(state):
+        return _render_unknown(state)
+    if (
+        state.cluster.has_cluster_pattern
+        and not state.cluster.cluster_cadence_known
+        and (
+            state.cluster.seizures_per_cluster_low is not None
+            or state.cluster.seizures_per_cluster_high is not None
+        )
+    ):
+        return _render_unknown(state)
     if rate.count_is_multiple and rate.time_unit:
         return f"multiple per {rate.time_unit}"
-    if rate.count_low is not None and rate.time_unit:
+    if (rate.count_low is not None or rate.count_high is not None) and rate.time_unit:
         count = _format_range(rate.count_low, rate.count_high)
         period = _format_period(rate.time_count_low, rate.time_count_high, rate.time_unit)
         return f"{count} per {period}"
-    if state.cluster.has_cluster_pattern and not state.cluster.cluster_cadence_known:
-        return _render_unknown(state)
     return None
+
+
+def _render_cluster_frequency(state: RichSelectedState) -> str | None:
+    cluster = state.cluster
+    if not cluster.has_cluster_pattern:
+        return None
+
+    cadence_period = _cluster_cadence_period(state)
+    if cadence_period is None:
+        return None
+
+    cluster_count = _cluster_cadence_count(state)
+    burden = _cluster_burden(cluster, default_multiple=_cluster_burden_is_unknown(state))
+    if burden is None or burden == "1":
+        return f"{cluster_count} per {cadence_period}"
+    return f"{cluster_count} cluster per {cadence_period}, {burden} per cluster"
 
 
 def _render_unresolved_multiple(state: RichSelectedState) -> str | None:
@@ -433,7 +476,8 @@ def _render_unresolved_multiple(state: RichSelectedState) -> str | None:
 def _render_unknown(state: RichSelectedState) -> str:
     cluster = state.cluster
     if cluster.has_cluster_pattern and (
-        cluster.seizures_per_cluster_low is not None or cluster.seizures_per_cluster_high is not None
+        cluster.seizures_per_cluster_low is not None
+        or cluster.seizures_per_cluster_high is not None
     ):
         burden = _format_range(
             cluster.seizures_per_cluster_low,
@@ -446,12 +490,216 @@ def _render_unknown(state: RichSelectedState) -> str:
     return "unknown"
 
 
+def _conditionality_blocks_frequency(state: RichSelectedState) -> bool:
+    note = state.conditionality_note.strip().lower()
+    if not note:
+        return False
+    if state.currentness == "conditional":
+        return True
+    blocking_patterns = (
+        r"\bonly\s+(?:after|when|if|with|during)\b",
+        r"\bexclusively\s+(?:after|when|if|with|during)\b",
+        r"\bno events?\b.*\b(?:when|if|with)\b",
+    )
+    return any(re.search(pattern, note) for pattern in blocking_patterns)
+
+
+def _vague_increase_without_count(state: RichSelectedState) -> bool:
+    text = " ".join(
+        [
+            state.rate.rate_text,
+            state.raw_source_phrase,
+            " ".join(state.ambiguity_flags),
+            state.raw_model_label_hint,
+        ]
+    ).lower()
+    if not re.search(r"\b(more frequent|increased|increase|worse|worsening)\b", text):
+        return False
+    return bool(
+        state.rate.count_is_multiple
+        and any(
+            "exact" in flag.lower() and "not stated" in flag.lower()
+            for flag in state.ambiguity_flags
+        )
+    )
+
+
+def _rate_boundary_blocks_frequency(state: RichSelectedState) -> bool:
+    text = " ".join(
+        [
+            state.selected_evidence,
+            state.raw_source_phrase,
+            state.rate.rate_text,
+            state.competing_state_summary,
+            " ".join(state.ambiguity_flags),
+        ]
+    ).lower()
+    blockers = (
+        "single breakthrough",
+        "exact frequency outside",
+        "indirect report",
+        "second-hand",
+        "exact dates and counts",
+        "prior to last event",
+        "since starting",
+    )
+    return any(blocker in text for blocker in blockers)
+
+
+def _cluster_quiescence_blocks_bare_rate(state: RichSelectedState) -> bool:
+    if not state.cluster.has_cluster_pattern or state.cluster.cluster_cadence_known:
+        return False
+    if (
+        state.cluster.seizures_per_cluster_low is not None
+        or state.cluster.seizures_per_cluster_high is not None
+    ):
+        return False
+    text = f"{state.selected_evidence} {state.cluster.cluster_cadence_text}".lower()
+    return "followed by quiescence" in text or "weeks without events" in text
+
+
+def _cluster_cadence_period(state: RichSelectedState) -> str | None:
+    cluster = state.cluster
+    rate = state.rate
+    if cluster.cluster_cadence_known:
+        if period := _period_from_cluster_text(cluster.cluster_cadence_text):
+            return period
+        if rate.rate_time_basis_known and rate.time_unit:
+            return _format_period(rate.time_count_low, rate.time_count_high, rate.time_unit)
+
+    if _rate_window_describes_single_cluster(state):
+        return _format_period(rate.time_count_low, rate.time_count_high, rate.time_unit)
+
+    boundary = state.seizure_free_boundary
+    boundary_text = f"{boundary.boundary_note} {state.selected_evidence}".lower()
+    if (
+        boundary.duration_count is not None
+        and boundary.duration_unit
+        and re.search(r"\bfollowed by\b.*\b(cluster|clustering|burst)", boundary_text)
+    ):
+        return _format_period(boundary.duration_count, None, boundary.duration_unit)
+    return None
+
+
+def _cluster_cadence_count(state: RichSelectedState) -> str:
+    rate = state.rate
+    cluster = state.cluster
+    burden_low = cluster.seizures_per_cluster_low
+    burden_high = cluster.seizures_per_cluster_high
+    if (
+        cluster.cluster_cadence_known
+        and rate.count_low is not None
+        and not _range_matches(rate.count_low, rate.count_high, burden_low, burden_high)
+    ):
+        return _format_range(rate.count_low, rate.count_high)
+    return "1"
+
+
+def _cluster_burden(cluster: RichClusterDetails, *, default_multiple: bool) -> str | None:
+    if (
+        cluster.seizures_per_cluster_low is not None
+        or cluster.seizures_per_cluster_high is not None
+    ):
+        return _format_range(
+            cluster.seizures_per_cluster_low,
+            cluster.seizures_per_cluster_high,
+            multiple_text="multiple",
+        )
+    if default_multiple:
+        return "multiple"
+    return None
+
+
+def _cluster_burden_is_unknown(state: RichSelectedState) -> bool:
+    text = " ".join(
+        [
+            state.cluster.cluster_uncertainty,
+            " ".join(state.ambiguity_flags),
+            state.raw_model_label_hint,
+        ]
+    ).lower()
+    return bool(re.search(r"\b(number|count|episodes|events).*\b(not|unclear|unknown)", text))
+
+
+def _rate_window_describes_single_cluster(state: RichSelectedState) -> bool:
+    rate = state.rate
+    cadence_text = state.cluster.cluster_cadence_text.lower()
+    if "when they occur" in cadence_text or "on days when" in state.selected_evidence.lower():
+        return False
+    if (
+        not rate.rate_time_basis_known
+        or rate.time_unit is None
+        or (
+            state.cluster.seizures_per_cluster_low is None
+            and state.cluster.seizures_per_cluster_high is None
+        )
+        or not _range_matches(
+            rate.count_low,
+            rate.count_high,
+            state.cluster.seizures_per_cluster_low,
+            state.cluster.seizures_per_cluster_high,
+        )
+    ):
+        return False
+    text = f"{rate.rate_text} {state.selected_evidence}".lower()
+    return bool(re.search(r"\b(over|past|preceding|previous|within)\b", text))
+
+
+def _range_matches(
+    left_low: float | None,
+    left_high: float | None,
+    right_low: float | None,
+    right_high: float | None,
+) -> bool:
+    return left_low == right_low and (left_high or left_low) == (right_high or right_low)
+
+
+def _period_from_cluster_text(text: str) -> str | None:
+    normalized = text.lower().replace("-", " ")
+    if re.search(r"\b(weekly|each week|every week|once a week|once weekly)\b", normalized):
+        return "week"
+    if re.search(r"\b(monthly|each month|every month|once a month|once monthly)\b", normalized):
+        return "month"
+    match = re.search(
+        r"\b(?:every|once every|roughly every|approximately every)\s+"
+        r"(\d+(?:\s+to\s+\d+)?)\s+(day|week|month|year)s?\b",
+        normalized,
+    )
+    if match:
+        return f"{match.group(1)} {match.group(2)}"
+    word_range = re.search(
+        r"\b(?:every|once every|roughly every|approximately every)\s+"
+        r"(four|five|six|seven|eight)(?:\s+to\s+(four|five|six|seven|eight))?\s+"
+        r"(day|week|month|year)s?\b",
+        normalized,
+    )
+    if word_range:
+        low = _word_number(word_range.group(1))
+        high_word = word_range.group(2)
+        high = _word_number(high_word) if high_word else low
+        count = str(low) if low == high else f"{low} to {high}"
+        return f"{count} {word_range.group(3)}"
+    return None
+
+
+def _word_number(word: str | None) -> int:
+    numbers = {
+        "four": 4,
+        "five": 5,
+        "six": 6,
+        "seven": 7,
+        "eight": 8,
+    }
+    return numbers[str(word)]
+
+
 def _render_seizure_free(state: RichSelectedState) -> str:
     boundary = state.seizure_free_boundary
     if not boundary.applies_to_all_seizure_types or boundary.has_recent_events_or_conditions:
         return "unknown"
     if boundary.duration_count is not None and boundary.duration_unit:
-        return f"seizure free for {_format_number(boundary.duration_count)} {boundary.duration_unit}"
+        duration_count = _format_number(boundary.duration_count)
+        return f"seizure free for {duration_count} {boundary.duration_unit}"
     return "seizure free for multiple month"
 
 
@@ -483,7 +731,10 @@ def _format_period(
     high: float | None,
     unit: Literal["day", "week", "month", "year"],
 ) -> str:
-    if low is None or (high is None and low == 1):
+    if unit == "day" and low is not None and (high is None or high == low) and low % 7 == 0:
+        week_count = low / 7
+        return _format_period(week_count, None, "week")
+    if low is None or ((high is None or high == low) and low == 1):
         return unit
     return f"{_format_range(low, high)} {unit}"
 

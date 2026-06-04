@@ -7,6 +7,9 @@ from pathlib import Path
 from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis import (
     rq1_rq2_control_panels,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.experiments import (
+    single_task_control_prompts,
+)
 
 
 def test_balanced_panel_respects_gold_kind_targets_and_family_coverage() -> None:
@@ -165,6 +168,7 @@ def test_component_control_matrix_expands_isolated_and_overload_conditions() -> 
         "gold_query_evidence_only",
         "candidate_conditioned_evidence_only",
         "projection_only",
+        "projection_only_instruction_heavy",
         "candidate_plus_evidence",
         "evidence_plus_projection",
         "candidate_plus_evidence_plus_projection",
@@ -172,8 +176,68 @@ def test_component_control_matrix_expands_isolated_and_overload_conditions() -> 
     assert rows[0]["prompt_name"] == "candidate_only"
     assert rows[0]["component_task"] == "candidate_generation"
     assert rows[-1]["overload_condition"] is True
-    assert metadata["condition_count"] == 7
+    assert metadata["condition_count"] == 8
     assert metadata["by_condition"]["projection_only"]["component_task"] == "projection"
+    assert metadata["by_condition"]["projection_only_instruction_heavy"][
+        "component_task"
+    ] == "projection"
+
+
+def test_instruction_heavy_projection_prompt_adds_policy_without_row_examples() -> None:
+    record = _record("multiple per day")
+    candidate = {
+        "candidate_id": "c1",
+        "source_id": "note",
+        "evidence": "multiple seizures in the past day",
+        "candidate_kind": "frequency_rate",
+        "temporality": "recent",
+        "assertion_status": "asserted",
+        "applies_to": "seizures",
+        "components": {
+            "count": "multiple",
+            "timeframe": "past day",
+            "unit": "seizures",
+            "rate_time_basis": "day",
+            "cluster_cadence": None,
+            "per_cluster_burden": None,
+            "seizure_free_duration": None,
+        },
+        "ambiguity_reasons": [],
+        "normalization_note": None,
+        "confidence": "high",
+        "rationale": "The evidence states multiple seizures in the past day.",
+    }
+    evidence = {
+        "evidence_id": "e1",
+        "source_id": "note",
+        "evidence": "multiple seizures in the past day",
+        "role": "decisive",
+        "support_status": "supports_candidate",
+        "applies_to": "seizures",
+        "extracted_components": candidate["components"],
+        "missing_components": [],
+        "conflict_notes": [],
+        "ambiguity_reasons": [],
+        "confidence": "high",
+        "rationale": "The evidence supports the candidate.",
+    }
+
+    payload = json.loads(
+        single_task_control_prompts.build_projection_only_instruction_heavy_prompt_input(
+            record,
+            [candidate],
+            [evidence],
+            input_source="deterministic",
+        )
+    )
+    instructions = "\n".join(payload["instructions"])
+
+    assert payload["task"].startswith("Choose the current seizure-frequency")
+    assert "conditional" in instructions
+    assert "Cluster information can describe two separate things" in instructions
+    assert "multiple seizures in a day" in instructions
+    assert "row" not in instructions.lower()
+    assert "gold" not in instructions.lower()
 
 
 def test_hidden_family_panel_uses_repo_label_parser_for_gold_kind(tmp_path: Path) -> None:
@@ -223,3 +287,15 @@ def _write_empty_atlas(path: Path) -> None:
             ],
         )
         writer.writeheader()
+
+
+def _record(label: str) -> object:
+    return type(
+        "Record",
+        (),
+        {
+            "source_row_index": 1,
+            "note_text": "Clinic note: multiple seizures in the past day.",
+            "gold_label": label,
+        },
+    )()

@@ -105,6 +105,14 @@ CONTROL_CONDITIONS: tuple[dict[str, Any], ...] = (
         "overload_condition": False,
     },
     {
+        "condition_id": "projection_only_instruction_heavy",
+        "prompt_name": "projection_only_instruction_heavy",
+        "component_task": "projection",
+        "representation_type": "selected_fact_or_typed_state_with_policy_principles",
+        "input_contract": "fixed_candidate_facts_exact_evidence_and_projection_policy",
+        "overload_condition": False,
+    },
+    {
         "condition_id": "candidate_plus_evidence",
         "prompt_name": "candidate_plus_evidence",
         "component_task": "candidate_generation+evidence_selection",
