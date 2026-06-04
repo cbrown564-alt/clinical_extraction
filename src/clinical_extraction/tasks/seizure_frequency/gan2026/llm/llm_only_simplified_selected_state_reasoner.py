@@ -1,4 +1,4 @@
-"""LLM-only simplified selected-state reasoner for Gan 2026 ablation A1."""
+"""LLM-only simplified selected-state reasoner."""
 
 from __future__ import annotations
 
@@ -115,7 +115,7 @@ class DspySimplifiedSelectedStateReasoner(dspy.Module):
 
 
 def build_selected_state_inputs(record: GanFrequencyRecord) -> dict[str, Any]:
-    """Build model-facing A1 inputs without labels, candidates, or graph hints."""
+    """Build model-facing inputs without labels, candidates, or graph hints."""
 
     return {
         "note_text": record.note_text,
@@ -130,12 +130,11 @@ def build_selected_state_inputs(record: GanFrequencyRecord) -> dict[str, Any]:
                 "Do not paraphrase, normalize symbols, or copy administrative boilerplate."
             ),
             (
-                "Use raw_source_phrase for the source-near selected phrase from that "
-                "same evidence."
+                "Use raw_source_phrase for the selected phrase copied from that same evidence."
             ),
             (
-                "Use raw_llm_final_label for your scorer-facing final label proposal, "
-                "such as 4 per day, 1 per 7 to 9 day, multiple per month, seizure "
+                "Use raw_llm_final_label for your seizure-frequency answer, such as "
+                "4 per day, 1 per 7 to 9 day, multiple per month, seizure "
                 "free for 6 month, unknown, or no seizure frequency reference."
             ),
             (
@@ -144,16 +143,13 @@ def build_selected_state_inputs(record: GanFrequencyRecord) -> dict[str, Any]:
             ),
             (
                 "Prefer current/recent seizure-frequency evidence over historical, "
-                "hypothetical, medication-use, rescue-medication, or proxy-only rates."
+                "hypothetical, medication-use, rescue-medication, or indirect context."
             ),
             "Return typed fields, not a string payload.",
             "Do not add any top-level outputs other than selected_state.",
-            "This ablation has one selected clinical state and no graph projection.",
+            "Choose only one selected clinical state.",
         ],
         "output_contract": {
-            "prompt_version": PROMPT_VERSION,
-            "pipeline_family": PIPELINE_FAMILY,
-            "typed_output_schema_version": SIMPLIFIED_OUTPUT_SCHEMA_VERSION,
             "top_level_outputs": ["selected_state"],
             "selected_state_fields": [
                 "final_kind",
@@ -163,6 +159,16 @@ def build_selected_state_inputs(record: GanFrequencyRecord) -> dict[str, Any]:
                 "selection_reason",
                 "uncertainty_flags",
             ],
+            "field_descriptions": {
+                "final_kind": "Broad answer type for the selected state.",
+                "raw_llm_final_label": (
+                    "Seizure-frequency answer written from the selected evidence."
+                ),
+                "selected_evidence": "Exact note substring that supports the answer.",
+                "raw_source_phrase": "Short phrase copied from selected_evidence.",
+                "selection_reason": "Brief reason for choosing this state.",
+                "uncertainty_flags": "Short notes about uncertainty, or an empty list.",
+            },
             "final_kind_values": [
                 "frequency",
                 "seizure_free",
@@ -180,12 +186,12 @@ def build_selected_state_inputs(record: GanFrequencyRecord) -> dict[str, Any]:
                     "control characters",
                 ],
             },
-            "projection_rule": "No graph projection or operation matrix is used in A1.",
+            "selection_rule": "Select one answer from the note; do not combine unrelated facts.",
             "forbidden_inputs": [
-                "gold annotations",
+                "reference annotations",
                 "reference answers",
-                "deterministic candidate lists",
-                "state graph nodes",
+                "candidate lists",
+                "state nodes",
             ],
         },
     }

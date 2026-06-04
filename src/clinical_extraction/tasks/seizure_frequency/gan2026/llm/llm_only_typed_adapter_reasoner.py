@@ -1,4 +1,4 @@
-"""Typed DSPy JSONAdapter reasoner for Gan 2026 adapter smoke experiments."""
+"""Typed DSPy JSONAdapter reasoner for adapter smoke experiments."""
 
 from __future__ import annotations
 
@@ -134,9 +134,9 @@ class TypedAdapterExtractionRecord(BaseModel):
 
 
 class Gan2026TypedAdapterReasonerSignature(dspy.Signature):
-    """Extract Gan 2026 seizure frequency with typed DSPy JSON output fields."""
+    """Extract seizure frequency with typed DSPy JSON output fields."""
 
-    note_text: str = dspy.InputField(desc="Full Gan 2026 note text.")
+    note_text: str = dspy.InputField(desc="Full clinical note text.")
     task_instructions: list[str] = dspy.InputField(
         desc="Short clinical extraction and rendering instructions."
     )
@@ -144,7 +144,7 @@ class Gan2026TypedAdapterReasonerSignature(dspy.Signature):
         desc="Typed output contract and allowed clinical enum values."
     )
     events: list[TypedClinicalFrequencyEvent] = dspy.OutputField(
-        desc="Source-near seizure-frequency facts with exact evidence substrings."
+        desc="Seizure-frequency facts with exact evidence substrings."
     )
     selection: TypedClinicalSelection = dspy.OutputField(
         desc="Model-owned event selection and clinical aggregation decision."
@@ -181,18 +181,31 @@ def build_typed_adapter_inputs(record: GanFrequencyRecord) -> dict[str, Any]:
     return {
         "note_text": record.note_text,
         "task_instructions": [
-            "Extract source-near seizure-frequency facts only from the note.",
+            "Extract seizure-frequency facts only from the note.",
             "Copy every evidence string as an exact substring from the note.",
-            "Select the prediction-bearing current/recent clinical frequency state.",
-            "Render raw_llm_final_label as a normalized label.",
-            "Keep rendering operands consistent with the selected evidence and final label.",
+            "Select the current or recent clinical frequency state that answers the note.",
+            "Write raw_llm_final_label as a seizure-frequency answer.",
+            (
+                "Keep any numeric details consistent with the selected evidence and "
+                "seizure-frequency answer."
+            ),
             "Return typed fields, not an opaque JSON string payload.",
         ],
         "output_contract": {
-            "prompt_version": PROMPT_VERSION,
-            "pipeline_family": PIPELINE_FAMILY,
-            "typed_output_schema_version": TYPED_OUTPUT_SCHEMA_VERSION,
             "top_level_outputs": ["events", "selection", "final_answer"],
+            "field_descriptions": {
+                "events": "Facts copied from the note that may describe seizure frequency.",
+                "selection": "Which extracted facts answer the current seizure-frequency question.",
+                "final_answer": "Seizure-frequency answer supported by the selected facts.",
+                "raw_llm_final_label": (
+                    "Seizure-frequency answer written from the selected evidence."
+                ),
+                "rendering_operands": (
+                    "Optional numeric details such as count, timeframe, or unit."
+                ),
+                "selected_evidence": "Exact note substring supporting the answer.",
+                "selected_event_ids": "Identifiers of selected facts from events.",
+            },
             "event_kinds": [
                 "frequency_rate",
                 "cluster_frequency",

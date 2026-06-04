@@ -103,10 +103,8 @@ def test_build_typed_operations_inputs_exposes_required_operands_without_gold() 
     inputs = reasoner.build_typed_operations_inputs(_record())
 
     assert inputs["note_text"] == _record().note_text
-    assert inputs["output_contract"]["pipeline_family"] == reasoner.PIPELINE_FAMILY
-    assert inputs["output_contract"]["typed_output_schema_version"] == (
-        reasoner.TYPED_OUTPUT_SCHEMA_VERSION
-    )
+    assert "pipeline_family" not in inputs["output_contract"]
+    assert "typed_output_schema_version" not in inputs["output_contract"]
     assert inputs["output_contract"]["top_level_outputs"] == [
         "operations",
         "selection",
@@ -122,6 +120,8 @@ def test_build_typed_operations_inputs_exposes_required_operands_without_gold() 
     assert "semiology_grouping" in operand_fields
     assert "uncertainty_type" in operand_fields
     assert "selected_evidence_id" in operand_fields
+    assert inputs["output_contract"]["field_descriptions"]["raw_llm_final_label"]
+    assert inputs["output_contract"]["operation_operand_field_descriptions"]["denominator_unit"]
     assert "Do not add any keys other than operations, selection, and final_answer" in str(inputs)
     assert "DOB" in inputs["output_contract"]["forbidden_extra_keys"]
     assert "selected_evidence_id" in inputs["output_contract"]["rendering_operands_rule"]

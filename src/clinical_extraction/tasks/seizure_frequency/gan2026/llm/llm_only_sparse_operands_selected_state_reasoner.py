@@ -1,4 +1,4 @@
-"""LLM-only selected-state reasoner with sparse operands for Gan 2026 A2."""
+"""LLM-only selected-state reasoner with sparse numeric details."""
 
 from __future__ import annotations
 
@@ -52,7 +52,7 @@ DEFAULT_REPORT_PATH = Path(
 
 
 class SparseSelectedOperands(BaseModel):
-    """Nullable source-near operands for the single selected state."""
+    """Nullable numeric details for the single selected state."""
 
     model_config = ConfigDict(extra="forbid")
 
@@ -70,7 +70,7 @@ class SparseSelectedOperands(BaseModel):
 
 
 class SparseOperandsSelectedState(BaseModel):
-    """One model-owned clinical state plus exact evidence and sparse operands."""
+    """One model-owned clinical state plus exact evidence and numeric details."""
 
     model_config = ConfigDict(extra="forbid")
 
@@ -112,10 +112,10 @@ class Gan2026SparseOperandsSelectedStateReasonerSignature(dspy.Signature):
         desc="Clinical state selection instructions."
     )
     output_contract: dict[str, Any] = dspy.InputField(
-        desc="Selected-state output contract with sparse nullable operands."
+        desc="Selected-state output contract with nullable numeric details."
     )
     selected_state: SparseOperandsSelectedState = dspy.OutputField(
-        desc="One selected clinical state with exact evidence and sparse operands."
+        desc="One selected clinical state with exact evidence and numeric details."
     )
 
 
@@ -141,7 +141,7 @@ class DspySparseOperandsSelectedStateReasoner(dspy.Module):
 
 
 def build_sparse_operands_inputs(record: GanFrequencyRecord) -> dict[str, Any]:
-    """Build model-facing A2 inputs without labels, candidates, or graph hints."""
+    """Build model-facing inputs without labels, candidates, or graph hints."""
 
     return {
         "note_text": record.note_text,
@@ -152,42 +152,40 @@ def build_sparse_operands_inputs(record: GanFrequencyRecord) -> dict[str, Any]:
                 "Copy selected_evidence as an exact non-empty substring from the note. "
                 "Do not paraphrase, normalize symbols, or copy administrative boilerplate."
             ),
-            "Use raw_source_phrase for the source-near selected phrase from that evidence.",
+            "Use raw_source_phrase for the selected phrase copied from that evidence.",
             (
-                "Use raw_llm_final_label for your final label proposal, such as 4 per "
+                "Use raw_llm_final_label for your seizure-frequency answer, such as 4 per "
                 "day, 1 per 7 to 9 day, multiple per month, seizure free for 6 month, "
                 "unknown, or no seizure frequency reference."
             ),
             (
-                "Fill sparse operands only when the selected evidence directly states "
+                "Fill numeric detail fields only when the selected evidence directly states "
                 "the count, interval, cluster, or seizure-free duration."
             ),
             (
-                "Leave operands null and write abstain_reason when a numeric rendering "
-                "would be unsafe, unclear, proxy-only, historical, or medication-use only."
+                "Leave numeric detail fields null and write abstain_reason when a numeric "
+                "answer would be unsafe, unclear, historical, medication-use only, or based "
+                "only on indirect context."
             ),
             (
                 "Do not render vague multiple wording as a numeric count. If the selected "
-                "state is multiple per day/week/month/year, keep count operands null and "
+                "state is multiple per day/week/month/year, keep count fields null and "
                 "preserve the multiple label."
             ),
             (
-                "For cluster wording, fill count and period operands only for explicit "
+                "For cluster wording, fill count and period fields only for explicit "
                 "cluster cadence. Do not use cluster duration such as over 1-2 days as "
-                "seizure count; leave event-count operands null unless the evidence states "
+                "seizure count; leave event-count fields null unless the evidence states "
                 "events per cluster."
             ),
             (
-                "For unknown or no-reference states, keep operands null; do not force a "
-                "number from tempting but unsafe text."
+                "For unknown or no-reference states, keep numeric detail fields null; do "
+                "not force a number from tempting but unsafe text."
             ),
             "Return typed fields, not a string payload.",
             "Do not add any top-level outputs other than selected_state.",
         ],
         "output_contract": {
-            "prompt_version": PROMPT_VERSION,
-            "pipeline_family": PIPELINE_FAMILY,
-            "typed_output_schema_version": SPARSE_OPERANDS_SCHEMA_VERSION,
             "top_level_outputs": ["selected_state"],
             "selected_state_fields": [
                 "final_kind",
@@ -199,6 +197,21 @@ def build_sparse_operands_inputs(record: GanFrequencyRecord) -> dict[str, Any]:
                 "selection_reason",
                 "uncertainty_flags",
             ],
+            "field_descriptions": {
+                "final_kind": "Broad answer type for the selected state.",
+                "raw_llm_final_label": (
+                    "Seizure-frequency answer written from the selected evidence."
+                ),
+                "selected_evidence": "Exact note substring that supports the answer.",
+                "raw_source_phrase": "Short phrase copied from selected_evidence.",
+                "selected_operation_kind": "Type of clinical statement selected from the note.",
+                "operands": (
+                    "Numeric details such as count, timeframe, cluster size, or "
+                    "seizure-free duration."
+                ),
+                "selection_reason": "Brief reason for choosing this state.",
+                "uncertainty_flags": "Short notes about uncertainty, or an empty list.",
+            },
             "final_kind_values": [
                 "frequency",
                 "seizure_free",
@@ -213,7 +226,7 @@ def build_sparse_operands_inputs(record: GanFrequencyRecord) -> dict[str, Any]:
                 "unknown_frequency",
                 "no_reference",
             ],
-            "operand_fields": [
+            "numeric_detail_fields": [
                 "count_low",
                 "count_high",
                 "period_count_low",
@@ -226,6 +239,19 @@ def build_sparse_operands_inputs(record: GanFrequencyRecord) -> dict[str, Any]:
                 "seizure_free_duration_unit",
                 "abstain_reason",
             ],
+            "numeric_detail_field_descriptions": {
+                "count_low": "Lowest stated seizure count.",
+                "count_high": "Highest stated seizure count, if a range is given.",
+                "period_count_low": "Lowest stated timeframe count.",
+                "period_count_high": "Highest stated timeframe count, if a range is given.",
+                "period_unit": "Time unit for the stated rate.",
+                "cluster_count": "Number of clusters, if stated.",
+                "seizures_per_cluster_low": "Lowest stated seizures per cluster.",
+                "seizures_per_cluster_high": "Highest stated seizures per cluster.",
+                "seizure_free_duration_count": "Duration count for seizure-free statements.",
+                "seizure_free_duration_unit": "Time unit for seizure-free duration.",
+                "abstain_reason": "Reason numeric details were left blank.",
+            },
             "evidence_copy_rule": {
                 "required": "selected_evidence must be an exact non-empty note substring",
                 "forbidden": [
@@ -236,15 +262,12 @@ def build_sparse_operands_inputs(record: GanFrequencyRecord) -> dict[str, Any]:
                     "control characters",
                 ],
             },
-            "projection_rule": (
-                "No operation graph is used. Sparse operands may only render the selected "
-                "state; they may not choose another clinical fact."
-            ),
+            "selection_rule": "Numeric details may only describe the selected state.",
             "forbidden_inputs": [
-                "gold annotations",
+                "reference annotations",
                 "reference answers",
                 "candidate lists",
-                "state graph nodes",
+                "state nodes",
             ],
         },
     }
@@ -587,7 +610,10 @@ def _score_layers(
         if extraction and format_label
         else None
     )
-    sparse_operand_label = _sparse_operand_adapter_label(extraction, selected_evidence_label) or selected_evidence_label
+    sparse_operand_label = (
+        _sparse_operand_adapter_label(extraction, selected_evidence_label)
+        or selected_evidence_label
+    )
     return {
         "raw_llm": heavy_reasoner._score_label(record, raw_label, repair_mode="raw_llm"),
         "format_only": heavy_reasoner._score_label(
@@ -653,11 +679,17 @@ def _sparse_operand_adapter_label(
     state = extraction.selected_state
     operands = state.operands
     if state.final_kind == "unknown":
-        if selected_evidence_label and selected_evidence_label not in {"unknown", "no seizure frequency reference"}:
+        if selected_evidence_label and selected_evidence_label not in {
+            "unknown",
+            "no seizure frequency reference",
+        }:
             return None
         return "unknown"
     if state.final_kind == "no_reference":
-        if selected_evidence_label and selected_evidence_label not in {"unknown", "no seizure frequency reference"}:
+        if selected_evidence_label and selected_evidence_label not in {
+            "unknown",
+            "no seizure frequency reference",
+        }:
             return None
         return "no seizure frequency reference"
     if state.final_kind == "seizure_free":
