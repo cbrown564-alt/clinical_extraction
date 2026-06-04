@@ -65,6 +65,27 @@ finds that `unknown`, drop-attack, trigger-only, last-event, cluster, and
 since-anchor cases require an explicit abstention/human-review policy with
 coverage and over-abstention accounting.
 
+The RQ9 follow-up selective-action evaluation contract is now predeclared in
+`docs/research/gan2026_rq9_selective_action_evaluation_contract_2026-06-04.md`.
+It requires one action per eligible row, coverage plus selective accuracy,
+abstention/review rates, over-abstention and over-review accounting, rescue
+value, hidden-error rate, and gold-blinded review packets.
+
+The explicit RQ9 `unknown` and drop-attack boundary policy is frozen in
+`docs/research/gan2026_rq9_unknown_drop_attack_boundary_policy_2026-06-04.md`.
+`unknown` is prediction-bearing only for non-convertible current/recent seizure
+evidence; missing anchors, trigger-only evidence, last-event boundaries, and
+uncertain drop attacks route to abstention or human review.
+
+The RQ9 selective-action router artifact is materialized over the saved
+validation750 safety-floor source in
+`experiments/gan2026_rq9_selective_action_router_2026-06-04.*`. It covers
+555/750 rows, abstains on 41, routes 154 to human review, and has 0 extraction
+error-analysis rows; covered-row Purist accuracy is 0.9568. Reviewed
+nonprediction rows split 24 human-correct versus 19 human-noncorrect, so
+over-review remains a real pressure point, especially cluster/convention
+review routing.
+
 ## Active Question
 
 Candidate Union And Ambiguity Ownership
@@ -107,8 +128,11 @@ Core artifacts:
   `gan2026_suspicious_selected_state_routing_2026-06-04.*`, and
   `gan2026_selective_verifier_predeclaration_2026-06-04.*`.
 - RQ9 abstention/review artifacts:
-  `docs/research/gan2026_rq9_abstention_review_predeclaration_2026-06-04.md`
-  and `experiments/gan2026_rq9_abstention_review_predeclaration_2026-06-04.*`.
+  `docs/research/gan2026_rq9_abstention_review_predeclaration_2026-06-04.md`,
+  `docs/research/gan2026_rq9_selective_action_evaluation_contract_2026-06-04.md`,
+  `docs/research/gan2026_rq9_unknown_drop_attack_boundary_policy_2026-06-04.md`,
+  `experiments/gan2026_rq9_abstention_review_predeclaration_2026-06-04.*`, and
+  `experiments/gan2026_rq9_selective_action_router_2026-06-04.*`.
 
 ## Guardrails
 
@@ -129,14 +153,14 @@ Core artifacts:
 
 ### Now
 
-- Convert the human Gold Audit findings into an RQ9 follow-up selective-action
-  evaluation contract: coverage, selective accuracy, abstention/review rate, and
-  over-abstention accounting.
+- Interpret and refine the RQ9 selective-action router pressure points before
+  promotion: high human-review volume, cluster/convention review precision, and
+  reviewed-row over-review.
 
 ### Next
 
-- Define the explicit `unknown` and drop-attack boundary policy used by the
-  selective-action router before scoring any new surface.
+- Decide whether cluster/convention review routing needs a narrower policy or a
+  verifier slice before any broader prediction-bearing use.
 
 ### Backlog
 
@@ -153,6 +177,21 @@ Core artifacts:
 
 ### Done Recently
 
+- 2026-06-04: Implemented and materialized
+  `gan2026_rq9_selective_action_router_v0` over the saved validation750
+  safety-floor source. The router covers 555/750 rows, abstains on 41, routes
+  154 to human review, has covered-row Purist accuracy 0.9568, rescue value
+  rate 0.1487, and reviewed nonprediction accounting of 24 human-correct versus
+  19 human-noncorrect rows.
+- 2026-06-04: Froze the explicit RQ9 `unknown` and drop-attack boundary policy
+  before router scoring. `Unknown` prediction is limited to non-convertible
+  current/recent seizure evidence; missing anchors, trigger-only cases,
+  last-event boundaries, and uncertain drop attacks route to abstention or
+  human review.
+- 2026-06-04: Converted the human Gold Audit findings into an RQ9
+  selective-action evaluation contract requiring coverage, selective accuracy,
+  abstention/review rates, over-abstention/over-review accounting, rescue value,
+  hidden-error rate, slices, and gold-blinded review packets.
 - 2026-06-04: Wrote the human Gold Audit abstention-policy report from 140
   unique manual validation worklist decisions. The report supports an explicit
   unknown/drop-attack/trigger/cluster human-review policy and requires selective
