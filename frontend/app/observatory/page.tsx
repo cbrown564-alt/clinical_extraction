@@ -1,14 +1,15 @@
 "use client";
 
 import { Suspense, useState } from "react";
-import { Telescope, BarChart3, Mountain, Grid3X3 } from "lucide-react";
+import { Telescope, BarChart3, Mountain, Grid3X3, Target } from "lucide-react";
 import { useObservatoryData } from "@/components/observatory/useObservatoryData";
 import RunSelector from "@/components/observatory/RunSelector";
 import RunLadder from "@/components/observatory/RunLadder";
 import GeneralisationGap from "@/components/observatory/GeneralisationGap";
 import ConfusionMatrix from "@/components/observatory/ConfusionMatrix";
+import GoldAuditPanel from "@/components/observatory/GoldAuditPanel";
 
-type VizTab = "ladder" | "gap" | "matrix";
+type VizTab = "ladder" | "gap" | "matrix" | "audit";
 
 function ObservatoryInner() {
   const {
@@ -36,18 +37,53 @@ function ObservatoryInner() {
       ? selectedSummaries.reduce((sum, s) => sum + s.pragmaticAccuracy, 0) / selectedSummaries.length
       : 0;
 
+  if (registryLoading) {
+    return (
+      <div className="flex h-full items-center justify-center text-muted">
+        <div className="text-center">
+          <p className="text-sm font-medium">Loading registry…</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-full flex-col bg-background">
-      {/* Content */}
-      <div className="flex-1 overflow-y-auto">
-        {registryLoading ? (
-          <div className="flex h-full items-center justify-center text-muted">
-            <div className="text-center">
-              <p className="text-sm font-medium">Loading registry…</p>
-            </div>
-          </div>
+      {/* Tab bar — always visible when loaded */}
+      <div className="flex items-center gap-1 border-b border-border px-5">
+        <TabButton
+          active={activeTab === "ladder"}
+          onClick={() => setActiveTab("ladder")}
+          icon={<BarChart3 className="h-3.5 w-3.5" />}
+          label="Run Ladder"
+        />
+        <TabButton
+          active={activeTab === "gap"}
+          onClick={() => setActiveTab("gap")}
+          icon={<Mountain className="h-3.5 w-3.5" />}
+          label="Generalisation Gap"
+          badge={hasTestData ? "test data" : undefined}
+        />
+        <TabButton
+          active={activeTab === "matrix"}
+          onClick={() => setActiveTab("matrix")}
+          icon={<Grid3X3 className="h-3.5 w-3.5" />}
+          label="Confusion Matrix"
+        />
+        <TabButton
+          active={activeTab === "audit"}
+          onClick={() => setActiveTab("audit")}
+          icon={<Target className="h-3.5 w-3.5" />}
+          label="Gold Audit"
+        />
+      </div>
+
+      {/* Content area */}
+      <div className="flex-1 overflow-hidden">
+        {activeTab === "audit" ? (
+          <GoldAuditPanel />
         ) : (
-          <div className="space-y-5 p-5 max-w-[1400px] mx-auto">
+          <div className="h-full overflow-y-auto space-y-5 p-5 max-w-[1400px] mx-auto">
             {/* Run Selector Table */}
             <RunSelector
               runs={runs}
@@ -119,31 +155,9 @@ function ObservatoryInner() {
               </div>
             )}
 
-            {/* Visualization tabs */}
+            {/* Visualization tabs content */}
             {selectedSummaries.length > 0 && (
               <div className="space-y-3">
-                <div className="flex items-center gap-1 border-b border-border">
-                  <TabButton
-                    active={activeTab === "ladder"}
-                    onClick={() => setActiveTab("ladder")}
-                    icon={<BarChart3 className="h-3.5 w-3.5" />}
-                    label="Run Ladder"
-                  />
-                  <TabButton
-                    active={activeTab === "gap"}
-                    onClick={() => setActiveTab("gap")}
-                    icon={<Mountain className="h-3.5 w-3.5" />}
-                    label="Generalisation Gap"
-                    badge={hasTestData ? "test data" : undefined}
-                  />
-                  <TabButton
-                    active={activeTab === "matrix"}
-                    onClick={() => setActiveTab("matrix")}
-                    icon={<Grid3X3 className="h-3.5 w-3.5" />}
-                    label="Confusion Matrix"
-                  />
-                </div>
-
                 <div className="min-h-[300px]">
                   {activeTab === "ladder" && <RunLadder summaries={selectedSummaries} />}
                   {activeTab === "gap" && <GeneralisationGap summaries={selectedSummaries} />}
