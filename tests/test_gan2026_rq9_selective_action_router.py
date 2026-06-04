@@ -78,6 +78,61 @@ def test_router_abstains_trigger_only_unknown_without_leaking_gold() -> None:
     assert metadata["metrics"]["abstained_rows"] == 1
 
 
+def test_router_predicts_trigger_context_when_baseline_rate_is_explicit() -> None:
+    rows, metadata = router.build_selective_action_router_rows(
+        [
+            _source_row(
+                final_label="2 per month",
+                selected_evidence=(
+                    "Frequency is now reported as twice a month, often clustering "
+                    "around the late luteal phase."
+                ),
+            )
+        ],
+        [
+            _inventory_row(
+                gold_label="2 per month",
+                gold_label_kind="frequency",
+                reasons="conditional_or_trigger_bound",
+                reference=(
+                    "Frequency is now reported as twice a month, often clustering "
+                    "around the late luteal phase."
+                ),
+            )
+        ],
+    )
+
+    assert rows[0]["selective_action"] == "predict"
+    assert rows[0]["primary_reason"] == "plain_predictable_frequency"
+    assert rows[0]["final_label"] == "2 per month"
+    assert metadata["metrics"]["covered_rows"] == 1
+
+
+def test_router_keeps_terse_trigger_rate_without_event_context_abstained() -> None:
+    rows, metadata = router.build_selective_action_router_rows(
+        [
+            _source_row(
+                final_label="3 per week",
+                selected_evidence="three times per week",
+            )
+        ],
+        [
+            _inventory_row(
+                gold_label="unknown",
+                gold_label_kind="unknown",
+                reasons="conditional_or_trigger_bound;reference_does_not_explicitly_support_frequency",
+                reference="three times per week",
+                context="The trigger context is unclear.",
+            )
+        ],
+    )
+
+    assert rows[0]["selective_action"] == "abstain"
+    assert rows[0]["primary_reason"] == "trigger_conditioned_frequency"
+    assert rows[0]["final_label"] is None
+    assert metadata["metrics"]["abstained_rows"] == 1
+
+
 def test_router_predicts_convertible_drop_attack_frequency() -> None:
     rows, metadata = router.build_selective_action_router_rows(
         [
@@ -151,3 +206,74 @@ def test_latest_human_decision_is_used_for_over_review_accounting() -> None:
     assert rows[0]["selective_action"] == "human_review"
     assert rows[0]["development_accounting"]["human_simple_class"] == "correct"
     assert metadata["metrics"]["reviewed_human_correct_nonprediction_rows"] == 1
+
+
+def test_router_predicts_cluster_label_when_cluster_boundary_is_preserved() -> None:
+    rows, metadata = router.build_selective_action_router_rows(
+        [
+            _source_row(
+                final_label="1 cluster per month, multiple per cluster",
+                selected_evidence="Clusters occur about monthly with several events each time",
+            )
+        ],
+        [
+            _inventory_row(
+                gold_label="1 cluster per month, multiple per cluster",
+                gold_label_kind="frequency",
+                reasons="cluster_or_per_cluster_convention",
+                reference="Clusters occur about monthly with several events each time",
+            )
+        ],
+    )
+
+    assert rows[0]["selective_action"] == "predict"
+    assert rows[0]["primary_reason"] == "plain_predictable_frequency"
+    assert rows[0]["final_label"] == "1 cluster per month, multiple per cluster"
+    assert metadata["metrics"]["covered_rows"] == 1
+
+
+def test_router_predicts_cluster_boundary_even_when_label_drops_cluster_structure() -> None:
+    rows, metadata = router.build_selective_action_router_rows(
+        [
+            _source_row(
+                final_label="1 per month",
+                selected_evidence="Clusters occur about monthly with several events each time",
+            )
+        ],
+        [
+            _inventory_row(
+                gold_label="1 cluster per month, multiple per cluster",
+                gold_label_kind="frequency",
+                reasons="cluster_or_per_cluster_convention",
+                reference="Clusters occur about monthly with several events each time",
+            )
+        ],
+    )
+
+    assert rows[0]["selective_action"] == "predict"
+    assert rows[0]["primary_reason"] == "plain_predictable_frequency"
+    assert rows[0]["final_label"] == "1 per month"
+    assert metadata["metrics"]["covered_rows"] == 1
+
+
+def test_router_predicts_benchmark_convention_boundary_from_source_label() -> None:
+    rows, metadata = router.build_selective_action_router_rows(
+        [
+            _source_row(
+                final_label="no seizure frequency reference",
+                selected_evidence="No current seizure frequency was documented",
+            )
+        ],
+        [
+            _inventory_row(
+                gold_label="no seizure frequency reference",
+                gold_label_kind="no_reference",
+                reasons="no_reference_boundary;author_quality_flag_not_all_ok",
+                reference="No current seizure frequency was documented",
+            )
+        ],
+    )
+
+    assert rows[0]["selective_action"] == "predict"
+    assert rows[0]["primary_reason"] == "plain_no_reference"
+    assert metadata["metrics"]["covered_rows"] == 1
