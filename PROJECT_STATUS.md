@@ -53,6 +53,8 @@ Core artifacts:
 - `src/clinical_extraction/tasks/seizure_frequency/gan2026/experiments/single_task_control_prompts.py`
 - `experiments/gan2026_rq1_rq2_single_task_control_panels_2026-06-04.md`
 - `experiments/gan2026_rq1_rq2_component_control_matrix_2026-06-04.md`
+- `docs/research/gan2026_rq1_rq2_component_control_fundamentals_analysis_2026-06-04.md`
+- `docs/research/gan2026_rq1_rq2_five_letter_pipeline_walkthrough_2026-06-04.md`
 - `docs/research/gan2026_rq5_deterministic_compilation_rendering_answer_2026-06-04.md`
 - `docs/research/gan2026_llm_component_mechanics_synthesis_2026-06-04.md`
 
@@ -78,16 +80,16 @@ Core artifacts:
 - Predeclare RQ9 abstention/human-review routing using the RQ10 audit classes.
 - Review the validation750 gold/reference ambiguity CSV and replace the
   heuristic `codex_initial_ambiguity_label` with manual adjudication.
-- Decide whether to run RQ1/RQ2 `balanced_validation50` controls before or after
-  the RQ9 protocol.
+- Interpret the completed RQ1/RQ2 control matrix before using it to choose the
+  next schema or selected-state experiment.
 
 ### Next
 
-- Fill `source_id_status` validation for completed RQ1/RQ2 isolated controls.
-- Run paired-task overload controls on `balanced_validation50` without changing
-  frozen prompt versions.
-- Decide from validation50 isolated results whether and how to run the fixed
-  `hidden_family_hard_panel`.
+- Fill legacy `source_id_status` validation for the 200 earlier
+  `balanced_validation50` isolated-control rows that predate recursive source-id
+  instrumentation.
+- Use the completed paired/hard-panel control matrix to decide whether RQ3
+  should compare selected-state schemas or first tighten projection policy.
 
 ### Backlog
 
@@ -113,13 +115,23 @@ Core artifacts:
   `experiments/gan2026_validation750_gold_reference_ambiguity_review_2026-06-04.csv`
   has 750 rows with manual review columns, 244 initial `clear` screens and 506
   initial `ambiguous` screens. Labels are heuristic worklist flags only.
-- 2026-06-04: Completed the full
-  `gan2026_rq1_rq2_component_control_matrix` analysis for completed
-  `balanced_validation50` isolated controls: candidate-only, gold-query
-  evidence-only, candidate-conditioned evidence-only, and projection-only each
-  parsed 50/50; evidence exactness was 47/50 for the first three surfaces;
-  projection had 4/50 exact canonical labels and 33/50 broad kind matches.
-  Paired-task overload rows and the hard panel remain unrun.
+- 2026-06-04: Completed all 875 RQ1/RQ2 component-control matrix rows across
+  `balanced_validation50`, paired-task overload conditions, and
+  `hidden_family_hard_panel`. Every condition parsed fully. Single-task
+  evidence selection remained strongest
+  (`candidate_conditioned_evidence_only`: 47/50 balanced, 73/75 hard exact;
+  `gold_query_evidence_only`: 47/50 balanced, 69/75 hard exact). Paired
+  `candidate_plus_evidence_plus_projection` dropped to 35/50 balanced and 52/75
+  hard exact, supporting overload/stress-surface interpretation rather than a
+  preferred architecture.
+- 2026-06-04: Wrote the RQ1/RQ2 fundamentals analysis: best LLM-owned primitive
+  is `candidate_conditioned_evidence_only`, best broad locator is
+  `gold_query_evidence_only`, `candidate_only` has selective rescue value, full
+  `candidate_plus_evidence_plus_projection` is an overload/stress surface, and
+  unconstrained LLM projection is rejected as direct final-label rendering.
+- 2026-06-04: Added a five-letter RQ1/RQ2 pipeline walkthrough over rows 10,
+  280, 3356, 10618, and 2748, showing how each experimental setup preserves or
+  loses candidates, evidence, ambiguity, and projection policy.
 - 2026-06-04: Completed the RQ10 gold/scorer ambiguity audit for saved
   validation replay: 53 Purist misses classified, hard-row ambiguity rate
   0.641, 29 exact-evidence-but-scorer-wrong rows, 25 clinically defensible

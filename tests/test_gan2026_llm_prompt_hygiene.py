@@ -12,6 +12,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
     llm_only_claim_table_selector,
     llm_only_direct_labeler,
     llm_only_minimal_evidence_selector,
+    llm_only_rich_selected_state_reasoner,
     llm_only_simplified_selected_state_reasoner,
     llm_only_sparse_operands_selected_state_reasoner,
     llm_only_structured_events,
@@ -140,6 +141,10 @@ def _assert_field_descriptions_cover(
             llm_only_sparse_operands_selected_state_reasoner.build_sparse_operands_inputs,
         ),
         (
+            "llm_only_rich_selected_state_reasoner",
+            llm_only_rich_selected_state_reasoner.build_rich_selected_state_inputs,
+        ),
+        (
             "llm_heavy_clinical_frequency_reasoner",
             llm_heavy_clinical_frequency_reasoner.build_prompt_input,
         ),
@@ -181,6 +186,10 @@ def test_llm_model_facing_payloads_do_not_expose_internal_protocol_language(
             llm_only_simplified_selected_state_reasoner.build_selected_state_inputs,
         ),
         (
+            "llm_only_rich_selected_state_reasoner",
+            llm_only_rich_selected_state_reasoner.build_rich_selected_state_inputs,
+        ),
+        (
             "llm_only_typed_adapter_reasoner",
             llm_only_typed_adapter_reasoner.build_typed_adapter_inputs,
         ),
@@ -215,6 +224,10 @@ def test_selected_state_model_instructions_use_plain_language(
             llm_only_simplified_selected_state_reasoner.build_selected_state_inputs,
         ),
         (
+            "llm_only_rich_selected_state_reasoner",
+            llm_only_rich_selected_state_reasoner.build_rich_selected_state_inputs,
+        ),
+        (
             "llm_only_typed_adapter_reasoner",
             llm_only_typed_adapter_reasoner.build_typed_adapter_inputs,
         ),
@@ -243,6 +256,7 @@ def test_selected_state_schema_fields_have_descriptions() -> None:
     sparse = llm_only_sparse_operands_selected_state_reasoner.build_sparse_operands_inputs(
         _record()
     )
+    rich = llm_only_rich_selected_state_reasoner.build_rich_selected_state_inputs(_record())
     typed_adapter = llm_only_typed_adapter_reasoner.build_typed_adapter_inputs(_record())
     typed_operations = llm_only_typed_operations_reasoner.build_typed_operations_inputs(
         _record()
@@ -262,6 +276,11 @@ def test_selected_state_schema_fields_have_descriptions() -> None:
         sparse,
         "numeric_detail_fields",
         "numeric_detail_field_descriptions",
+    )
+    _assert_field_descriptions_cover(
+        rich,
+        "selected_state_fields",
+        "field_descriptions",
     )
     assert typed_adapter["output_contract"]["field_descriptions"]
     assert typed_operations["output_contract"]["field_descriptions"]

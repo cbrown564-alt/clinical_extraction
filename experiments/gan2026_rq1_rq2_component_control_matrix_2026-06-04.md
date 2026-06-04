@@ -1,31 +1,30 @@
 # Gan 2026 RQ1/RQ2 Component-Control Matrix Analysis
 
 Full validation-development analysis of the RQ1/RQ2 component-control matrix.
-Only the `balanced_validation50` isolated controls contain fresh parsed outputs;
-the hidden-family hard panel and paired-task overload rows remain planned or empty
-surfaces and are not interpretable as model failures.
+The `balanced_validation50` panel, paired-task overload conditions, and
+`hidden_family_hard_panel` now contain fresh parsed outputs.
 
 - Date: `2026-06-04`
 - JSONL artifact: `experiments/gan2026_rq1_rq2_component_control_matrix_2026-06-04.jsonl`
 - Total matrix rows: 875
 - Source rows represented: 115
-- Completed output surface: `balanced_validation50` isolated controls
+- Completed output rows: 875/875
 - Claim boundary: validation-development component analysis only; no locked-test or benchmark-comparable claim.
 
 ## Executive Findings
 
-1. Isolated RQ1/RQ2 prompts have strong schema adherence on `balanced_validation50`: `candidate_only`, `gold_query_evidence_only`, `candidate_conditioned_evidence_only`, and `projection_only` each parsed 50/50 rows.
-2. Candidate generation and evidence selection are credible component capabilities: candidate-only exact evidence is 47/50, gold-query evidence exactness is 47/50, and candidate-conditioned evidence exactness is 47/50.
-3. Projection is the weak link. It parsed 50/50 and often selected the right broad decision kind, but only 4/50 outputs are already in exact Gan canonical label form. Most frequency and seizure-free rows need deterministic rendering or policy handling.
-4. Unknown and unresolved-multiple rows are not solved by the current projection-only surface: unknown rows are usually collapsed to `no_reference` or `seizure_free`, and unresolved-multiple rows are usually abstained, collapsed, or over-projected.
-5. The paired-task overload rows have no parsed outputs, so overload loss is still unanswered. The hard panel also has no outputs, so hidden-family transfer remains unanswered beyond panel membership.
+1. All 875 matrix rows now have parsed outputs. This includes all paired-task overload conditions and all 525 hidden-family hard-panel rows.
+2. Single-task evidence selection remains the strongest surface: `candidate_conditioned_evidence_only` is 47/50 exact on balanced and 73/75 exact on hard rows; `gold_query_evidence_only` is 47/50 and 69/75.
+3. Paired-task overload reduces exact-evidence quality, especially when projection is bundled with candidate/evidence generation: `candidate_plus_evidence_plus_projection` is 35/50 exact on balanced and 52/75 on hard rows.
+4. Projection remains the weak link. Balanced projection-only parsed 50/50 but only 4/50 outputs exactly match canonical Gan labels; hard-panel projection needs the same deterministic rendering and policy-layer caution.
+5. The completed hard panel confirms the mechanism pattern: text location is generally stronger than benchmark-state projection, especially for ambiguity, unknown-boundary, and benchmark-convention rows.
 
 ## Artifact Coverage
 
 | Panel | Matrix rows | Source rows | Completed rows | Status |
 | --- | ---: | ---: | ---: | --- |
-| `balanced_validation50` | 350 | 50 | 200 | completed isolated controls |
-| `hidden_family_hard_panel` | 525 | 75 | 0 | planned surface only |
+| `balanced_validation50` | 350 | 50 | 350 | completed controls |
+| `hidden_family_hard_panel` | 525 | 75 | 525 | completed controls |
 
 ## Condition Status
 
@@ -33,18 +32,18 @@ surfaces and are not interpretable as model failures.
 | --- | --- | --- | ---: | ---: | ---: | --- |
 | `candidate_conditioned_evidence_only` | `evidence_selection` | `balanced_validation50` | 50 | 50/50 | 47/50 | fresh outputs present |
 | `candidate_only` | `candidate_generation` | `balanced_validation50` | 50 | 50/50 | 47/50 | fresh outputs present |
-| `candidate_plus_evidence` | `candidate_generation+evidence_selection` | `balanced_validation50` | 50 | 0/50 | 0/50 | not run: overload unanswered |
-| `candidate_plus_evidence_plus_projection` | `candidate_generation+evidence_selection+projection` | `balanced_validation50` | 50 | 0/50 | 0/50 | not run: overload unanswered |
-| `evidence_plus_projection` | `evidence_selection+projection` | `balanced_validation50` | 50 | 0/50 | 0/50 | not run: overload unanswered |
+| `candidate_plus_evidence` | `candidate_generation+evidence_selection` | `balanced_validation50` | 50 | 50/50 | 40/50 | fresh outputs present |
+| `candidate_plus_evidence_plus_projection` | `candidate_generation+evidence_selection+projection` | `balanced_validation50` | 50 | 50/50 | 35/50 | fresh outputs present |
+| `evidence_plus_projection` | `evidence_selection+projection` | `balanced_validation50` | 50 | 50/50 | 50/50 | fresh outputs present |
 | `gold_query_evidence_only` | `evidence_selection` | `balanced_validation50` | 50 | 50/50 | 47/50 | fresh outputs present |
 | `projection_only` | `projection` | `balanced_validation50` | 50 | 50/50 | 0/50 | fresh outputs present |
-| `candidate_conditioned_evidence_only` | `evidence_selection` | `hidden_family_hard_panel` | 75 | 0/75 | 0/75 | not run |
-| `candidate_only` | `candidate_generation` | `hidden_family_hard_panel` | 75 | 0/75 | 0/75 | not run |
-| `candidate_plus_evidence` | `candidate_generation+evidence_selection` | `hidden_family_hard_panel` | 75 | 0/75 | 0/75 | not run: overload unanswered |
-| `candidate_plus_evidence_plus_projection` | `candidate_generation+evidence_selection+projection` | `hidden_family_hard_panel` | 75 | 0/75 | 0/75 | not run: overload unanswered |
-| `evidence_plus_projection` | `evidence_selection+projection` | `hidden_family_hard_panel` | 75 | 0/75 | 0/75 | not run: overload unanswered |
-| `gold_query_evidence_only` | `evidence_selection` | `hidden_family_hard_panel` | 75 | 0/75 | 0/75 | not run |
-| `projection_only` | `projection` | `hidden_family_hard_panel` | 75 | 0/75 | 0/75 | not run |
+| `candidate_conditioned_evidence_only` | `evidence_selection` | `hidden_family_hard_panel` | 75 | 75/75 | 73/75 | fresh outputs present |
+| `candidate_only` | `candidate_generation` | `hidden_family_hard_panel` | 75 | 75/75 | 67/75 | fresh outputs present |
+| `candidate_plus_evidence` | `candidate_generation+evidence_selection` | `hidden_family_hard_panel` | 75 | 75/75 | 63/75 | fresh outputs present |
+| `candidate_plus_evidence_plus_projection` | `candidate_generation+evidence_selection+projection` | `hidden_family_hard_panel` | 75 | 75/75 | 52/75 | fresh outputs present |
+| `evidence_plus_projection` | `evidence_selection+projection` | `hidden_family_hard_panel` | 75 | 75/75 | 74/75 | fresh outputs present |
+| `gold_query_evidence_only` | `evidence_selection` | `hidden_family_hard_panel` | 75 | 75/75 | 69/75 | fresh outputs present |
+| `projection_only` | `projection` | `hidden_family_hard_panel` | 75 | 75/75 | 0/75 | fresh outputs present |
 
 ## RQ1 Candidate-Only Readout
 
@@ -230,6 +229,27 @@ Projection-kind mismatches:
 | 3468 | `unknown` | `unknown` | `None` | `no_reference` | `unknown_boundary;seizure_free_duration;cluster_burden;diary_or_log_aggregation;current_vs_historical;competing_semiologies;uncertainty_or_ambiguity` |
 | 3469 | `unknown` | `unknown` | `seizure free for 6 months` | `seizure_free` | `unknown_boundary;cluster_burden;diary_or_log_aggregation;rate_bucket_or_denominator;current_vs_historical;competing_semiologies;uncertainty_or_ambiguity` |
 
+## Paired-Task And Hard-Panel Summary
+
+| Panel | Condition | Rows | Parsed | Exact evidence | Valid source ids |
+| --- | --- | ---: | ---: | ---: | ---: |
+| `balanced_validation50` | `candidate_only` | 50 | 50/50 | 47/50 | 0/50 |
+| `balanced_validation50` | `gold_query_evidence_only` | 50 | 50/50 | 47/50 | 0/50 |
+| `balanced_validation50` | `candidate_conditioned_evidence_only` | 50 | 50/50 | 47/50 | 0/50 |
+| `balanced_validation50` | `projection_only` | 50 | 50/50 | 0/50 | 0/50 |
+| `balanced_validation50` | `candidate_plus_evidence` | 50 | 50/50 | 40/50 | 41/50 |
+| `balanced_validation50` | `evidence_plus_projection` | 50 | 50/50 | 50/50 | 50/50 |
+| `balanced_validation50` | `candidate_plus_evidence_plus_projection` | 50 | 50/50 | 35/50 | 36/50 |
+| `hidden_family_hard_panel` | `candidate_only` | 75 | 75/75 | 67/75 | 69/75 |
+| `hidden_family_hard_panel` | `gold_query_evidence_only` | 75 | 75/75 | 69/75 | 75/75 |
+| `hidden_family_hard_panel` | `candidate_conditioned_evidence_only` | 75 | 75/75 | 73/75 | 75/75 |
+| `hidden_family_hard_panel` | `projection_only` | 75 | 75/75 | 0/75 | 0/75 |
+| `hidden_family_hard_panel` | `candidate_plus_evidence` | 75 | 75/75 | 63/75 | 69/75 |
+| `hidden_family_hard_panel` | `evidence_plus_projection` | 75 | 75/75 | 74/75 | 75/75 |
+| `hidden_family_hard_panel` | `candidate_plus_evidence_plus_projection` | 75 | 75/75 | 52/75 | 57/75 |
+
+Overload interpretation: paired prompts parse reliably, but exact-evidence quality drops when candidate discovery, evidence selection, and projection are bundled. The `evidence_plus_projection` condition is the exception: because it conditions on a fixed candidate, it preserves exact evidence on 50/50 balanced rows and 74/75 hard rows. The full bundled condition should therefore be treated as a stress surface, not a preferred architecture.
+
 ## Balanced Panel Hidden-Family Readout
 
 | Family | Rows | Candidate exact | Gold-query evidence exact | Candidate-conditioned evidence exact | Projection kind match |
@@ -248,13 +268,13 @@ Family interpretation: exact evidence stays high even in dense overlapping famil
 
 ## Instrumentation Gaps And Next Analysis
 
-- Paired-task overload rows with outputs: 0/375.
-- Hidden-family hard-panel rows with outputs: 0/525.
-- Completed rows missing `source_id_status`: 200/200.
-- Completed rows missing `model_id`: 0/200.
+- Paired-task overload rows with outputs: 375/375.
+- Hidden-family hard-panel rows with outputs: 525/525.
+- Completed rows missing `source_id_status`: 200/875.
+- Completed rows missing `model_id`: 0/875.
 - `projection_only` exact-evidence status is `not_checked` by design because the input is fixed candidate/evidence state rather than newly selected spans.
 
 ## Decision
 
-The matrix supports a development-control answer for isolated `balanced_validation50` only: candidate generation and evidence selection are worth carrying forward as component surfaces, but projection should not be trusted as direct final-label rendering. Before moving to paired prompts or the hard panel, fill model metadata and source-id validation, then run the paired-task overload rows with the same prompt versions.
+The completed matrix supports a development-control answer across the fixed validation surfaces: candidate generation and evidence selection are worth carrying forward as component surfaces, while projection should not be trusted as direct final-label rendering. Use paired prompts as overload diagnostics rather than preferred final architecture, and keep deterministic rendering/policy gates after LLM-selected facts.
 
