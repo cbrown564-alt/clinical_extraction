@@ -1,0 +1,111 @@
+{
+  "artifact_kind": "gan2026_selected_state_union_replay_v3",
+  "boundary_candidate_artifact": "experiments/gan2026_selective_boundary_candidate_experiment_v3_2026-06-04.jsonl",
+  "by_hidden_family": {
+    "benchmark_format_convention": {
+      "rows": 24,
+      "v3_boundary_rows": 5
+    },
+    "candidate_absent_or_weak": {
+      "rows": 4,
+      "v3_boundary_rows": 1
+    },
+    "cluster_burden": {
+      "rows": 18,
+      "v3_boundary_rows": 8
+    },
+    "cluster_or_diary": {
+      "rows": 12,
+      "v3_boundary_rows": 2
+    },
+    "competing_semiologies": {
+      "rows": 37,
+      "v3_boundary_rows": 11
+    },
+    "current_vs_historical": {
+      "rows": 39,
+      "v3_boundary_rows": 10
+    },
+    "deterministic_miss": {
+      "rows": 4,
+      "v3_boundary_rows": 1
+    },
+    "diary_or_log_aggregation": {
+      "rows": 8,
+      "v3_boundary_rows": 2
+    },
+    "rate_bucket_or_denominator": {
+      "rows": 32,
+      "v3_boundary_rows": 6
+    },
+    "seizure_free_duration": {
+      "rows": 27,
+      "v3_boundary_rows": 12
+    },
+    "seizure_free_overreach": {
+      "rows": 11,
+      "v3_boundary_rows": 3
+    },
+    "shorthand_interval_range": {
+      "rows": 1
+    },
+    "temporal_conflict": {
+      "rows": 10,
+      "v3_boundary_rows": 2
+    },
+    "uncertainty_or_ambiguity": {
+      "rows": 26,
+      "v3_boundary_rows": 16
+    },
+    "unclassified": {
+      "rows": 4
+    },
+    "unknown_boundary": {
+      "rows": 20,
+      "v3_boundary_rows": 13
+    },
+    "unknown_no_reference_boundary": {
+      "rows": 14,
+      "v3_boundary_rows": 3
+    }
+  },
+  "candidate_kind_counts": {
+    "cluster_frequency": 12,
+    "conditional_frequency": 21,
+    "frequency_rate": 5,
+    "no_reference": 19,
+    "seizure_free": 7,
+    "unknown_frequency": 11
+  },
+  "claim_language": "Validation-development no-call selected-state replay over saved rich selected states plus the controlled v3 boundary-candidate artifact. No locked-test inspection, live model call, scorer-policy change, whole-pipeline promotion, or benchmark-comparable claim is authorized.",
+  "date": "2026-06-04",
+  "known_real_model_error_source_row_indices": [
+    15593
+  ],
+  "metrics": {
+    "comparator_correct_rows": 37,
+    "known_real_model_error_rows_carried": 1,
+    "primary_v3_c_to_w_against_comparator_rows": 6,
+    "primary_v3_projection_correct_rows": 16,
+    "primary_v3_projection_scorable_rows": 22,
+    "rows_with_union_verified_candidates": 75,
+    "rows_with_v3_boundary_candidates": 22,
+    "safety_c_to_w_against_comparator_rows": 0,
+    "safety_floor_correct_rows": 37,
+    "safety_w_to_c_against_comparator_rows": 0
+  },
+  "primary_v3_c_to_w_source_row_indices": [
+    338,
+    1707,
+    10618,
+    12456,
+    15593,
+    15834
+  ],
+  "row_count": 75,
+  "safety_c_to_w_source_row_indices": [],
+  "safety_w_to_c_source_row_indices": [],
+  "source_artifact": "experiments/gan2026_rich_selected_state_hard_panel_policy_replay_2026-06-04.jsonl",
+  "split": "validation",
+  "split_manifest": "gan2026_split_v1"
+}
