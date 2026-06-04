@@ -240,6 +240,14 @@ export interface GoldAuditRow {
   note_text_single_line: string;
   has_decision?: boolean;
   priority_score?: number;
+  predicted_simple_class?: "correct" | "ambiguous" | "wrong";
+  predicted_correct_prob?: number;
+  predicted_ambiguous_prob?: number;
+  predicted_wrong_prob?: number;
+  prediction_confidence?: number;
+  prediction_uncertainty?: number;
+  active_learning_score?: number;
+  active_learning_reason?: string;
 }
 
 export interface GoldAuditDecision {
@@ -263,6 +271,17 @@ export interface GoldAuditRowsResponse {
   total: number;
   decided: number;
   class_counts: Record<string, number>;
+  sampling_model?: {
+    model_kind: string;
+    decision_count: number;
+    minimum_modelled_decisions: number;
+    is_calibrated_enough: boolean;
+    class_counts: Record<string, number>;
+    global_probs: Record<string, number>;
+    class_rate_intervals_95: Record<string, unknown>;
+    projected_class_rate_intervals_95: Record<string, unknown>;
+    claim_language: string;
+  };
   rows: GoldAuditRow[];
 }
 

@@ -185,7 +185,10 @@ def test_gold_audit_endpoints(tmp_path: Path) -> None:
             "gold_reference": "frequency unknown",
             "codex_initial_ambiguity_label": "clear",
             "codex_ambiguity_reasons": "",
-            "codex_ambiguity_rationale": "Initial screen: gold label and reference look directly reviewable without an obvious ambiguity flag.",
+            "codex_ambiguity_rationale": (
+                "Initial screen: gold label and reference look directly reviewable without an "
+                "obvious ambiguity flag."
+            ),
             "gold_monthly_frequency": "-1.0",
             "gold_yearly_bounds": "-1.0 to -1.0",
             "row_ok": "True",
@@ -217,9 +220,13 @@ def test_gold_audit_endpoints(tmp_path: Path) -> None:
     payload = r.json()
     assert payload["total"] == 2
     assert payload["decided"] == 0
+    assert payload["sampling_model"]["model_kind"] == "smoothed_feature_naive_bayes_active_sampler"
+    assert payload["sampling_model"]["decision_count"] == 0
     rows = payload["rows"]
     assert len(rows) == 2
     assert rows[0]["source_row_index"] == "42"
+    assert rows[0]["priority_score"] == rows[0]["active_learning_score"]
+    assert rows[0]["predicted_simple_class"] in {"correct", "ambiguous", "wrong"}
     assert rows[0]["priority_score"] > rows[1]["priority_score"]  # ambiguous scores higher
 
     # Next endpoint
@@ -252,6 +259,13 @@ def test_gold_audit_endpoints(tmp_path: Path) -> None:
     r = client.get("/gold-audit/decisions?split=validation")
     assert r.status_code == 200
     assert r.json()["count"] == 1
+
+    r = client.get("/gold-audit/rows?split=validation")
+    assert r.status_code == 200
+    payload = r.json()
+    assert payload["decided"] == 1
+    assert payload["sampling_model"]["decision_count"] == 1
+    assert payload["rows"][0]["has_decision"] is True
 
     # Next should now return the other row
     r = client.get("/gold-audit/next?split=validation")
