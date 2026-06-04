@@ -25,10 +25,10 @@ DEFAULT_SOURCE_JSONL_PATH = Path(
 )
 DEFAULT_DECISIONS_PATH = Path("experiments/gold_audit_decisions.jsonl")
 DEFAULT_JSONL_PATH = Path(
-    "experiments/gan2026_rq9_selective_action_router_2026-06-04.jsonl"
+    "experiments/gan2026_rq9_selective_action_router_v3_2026-06-04.jsonl"
 )
-DEFAULT_JSON_PATH = Path("experiments/gan2026_rq9_selective_action_router_2026-06-04.json")
-DEFAULT_REPORT_PATH = Path("experiments/gan2026_rq9_selective_action_router_2026-06-04.md")
+DEFAULT_JSON_PATH = Path("experiments/gan2026_rq9_selective_action_router_v3_2026-06-04.json")
+DEFAULT_REPORT_PATH = Path("experiments/gan2026_rq9_selective_action_router_v3_2026-06-04.md")
 DEFAULT_CONTRACT_PATH = Path(
     "docs/research/gan2026_rq9_selective_action_evaluation_contract_2026-06-04.md"
 )
@@ -36,7 +36,7 @@ DEFAULT_BOUNDARY_POLICY_PATH = Path(
     "docs/research/gan2026_rq9_unknown_drop_attack_boundary_policy_2026-06-04.md"
 )
 DEFAULT_SOURCE_LAYER = "hybrid_adjudicator_with_adapters"
-ROUTER_VERSION = "gan2026_rq9_selective_action_router_v0"
+ROUTER_VERSION = "gan2026_rq9_selective_action_router_v3"
 
 PREDICT = "predict"
 ABSTAIN = "abstain"
@@ -414,6 +414,8 @@ def _route(
     if not boundary["instrumented"] or not boundary["scorable"]:
         return EXTRACTION_ERROR_ANALYSIS, "true_extraction_failure", []
     if "conditional_or_trigger_bound" in reasons or boundary["source_has_trigger_language"]:
+        if _trigger_context_prediction_allowed(boundary, source_candidate, reasons):
+            return PREDICT, _predict_reason(label), []
         return ABSTAIN, "trigger_conditioned_frequency", []
     if boundary["source_has_drop_attack_language"]:
         if boundary["source_has_unable_to_quantify"]:
@@ -428,12 +430,8 @@ def _route(
         return HUMAN_REVIEW, "drop_attack_boundary", []
     if "last_event_or_seizure_free_boundary" in reasons:
         return HUMAN_REVIEW, "last_event_boundary", []
-    if "cluster_or_per_cluster_convention" in reasons:
-        return HUMAN_REVIEW, "cluster_projection_boundary", []
     if _missing_denominator(boundary, reasons):
         return ABSTAIN, "missing_denominator_anchor", []
-    if "no_reference_boundary" in reasons or "non_epileptic_or_seizure_like_boundary" in reasons:
-        return HUMAN_REVIEW, "benchmark_convention_boundary", []
     if label == "unknown":
         return PREDICT, "unknown_frequency_unquantified", []
     return PREDICT, _predict_reason(label), []
@@ -456,6 +454,51 @@ def _missing_denominator(boundary: Mapping[str, Any], reasons: set[str]) -> bool
             or "unknown_gold_boundary" in reasons
         )
         and boundary["final_label"] == "unknown"
+    )
+
+
+def _trigger_context_prediction_allowed(
+    boundary: Mapping[str, Any],
+    source_candidate: Mapping[str, Any],
+    reasons: set[str],
+) -> bool:
+    label = _text(source_candidate.get("final_label")).lower()
+    if label in {"", "unknown", "no seizure frequency reference"}:
+        return False
+    if "unknown_gold_boundary" in reasons:
+        return False
+    evidence = _text(source_candidate.get("selected_evidence")).lower()
+    if not _has_event_or_frequency_context(evidence):
+        return False
+    if _has_any(
+        evidence,
+        "only when",
+        "only with",
+        "outside this window",
+        "outside that window",
+    ):
+        return False
+    return bool(boundary["scorable"])
+
+
+def _has_event_or_frequency_context(text: str) -> bool:
+    return _has_any(
+        text,
+        "seizure",
+        "seizures",
+        "event",
+        "events",
+        "episode",
+        "episodes",
+        "cluster",
+        "clusters",
+        "convulsion",
+        "convulsive",
+        "myoclonic",
+        "focal",
+        "absence",
+        "frequency",
+        "rate",
     )
 
 

@@ -1,0 +1,112 @@
+{
+  "action_counts": {
+    "abstain": 41,
+    "human_review": 8,
+    "predict": 701
+  },
+  "artifact_kind": "gan2026_rq9_selective_action_router",
+  "boundary_policy": "docs/research/gan2026_rq9_unknown_drop_attack_boundary_policy_2026-06-04.md",
+  "by_gold_label_kind": {
+    "frequency": {
+      "abstain_rows": 16,
+      "human_review_rows": 2,
+      "predict_rows": 450,
+      "rows": 468
+    },
+    "no_reference": {
+      "predict_rows": 27,
+      "rows": 27
+    },
+    "seizure_free": {
+      "abstain_rows": 1,
+      "predict_rows": 111,
+      "rows": 112
+    },
+    "unknown": {
+      "abstain_rows": 23,
+      "human_review_rows": 6,
+      "predict_rows": 71,
+      "rows": 100
+    },
+    "unresolved_multiple": {
+      "abstain_rows": 1,
+      "predict_rows": 42,
+      "rows": 43
+    }
+  },
+  "by_reason": {
+    "last_event_boundary": {
+      "human_review_rows": 8,
+      "rows": 8
+    },
+    "missing_denominator_anchor": {
+      "abstain_rows": 2,
+      "rows": 2
+    },
+    "plain_no_reference": {
+      "predict_rows": 97,
+      "rows": 97
+    },
+    "plain_predictable_frequency": {
+      "predict_rows": 482,
+      "rows": 482
+    },
+    "plain_predictable_seizure_free": {
+      "predict_rows": 121,
+      "rows": 121
+    },
+    "trigger_conditioned_frequency": {
+      "abstain_rows": 39,
+      "rows": 39
+    },
+    "unknown_frequency_unquantified": {
+      "predict_rows": 1,
+      "rows": 1
+    }
+  },
+  "claim_language": "Validation-development no-call selective-action router artifact. The router uses saved source predictions and predeclared boundary features; gold labels and human audit classes are development accounting only. It does not change scorer policy, prompts, deterministic rules, projection policy, locked-test behavior, or benchmark-comparable claims.",
+  "contract": "docs/research/gan2026_rq9_selective_action_evaluation_contract_2026-06-04.md",
+  "date": "2026-06-04",
+  "gold_label_kind_counts": {
+    "frequency": 468,
+    "no_reference": 27,
+    "seizure_free": 112,
+    "unknown": 100,
+    "unresolved_multiple": 43
+  },
+  "human_decisions_artifact": "experiments/gold_audit_decisions.jsonl",
+  "inventory_artifact": "experiments/gan2026_validation750_gold_reference_ambiguity_review_2026-06-04.csv",
+  "metrics": {
+    "abstained_rows": 41,
+    "abstention_rate": 0.05466666666666667,
+    "coverage": 0.9346666666666666,
+    "covered_rows": 701,
+    "eligible_rows": 750,
+    "extraction_error_analysis_rows": 0,
+    "hidden_error_rate": 0.0,
+    "human_review_rate": 0.010666666666666666,
+    "human_review_rows": 8,
+    "over_abstention_rate_reviewed": 0.2222222222222222,
+    "over_review_rate_reviewed": 0.0,
+    "rescue_value_rate": 0.30612244897959184,
+    "reviewed_human_correct_nonprediction_rows": 2,
+    "reviewed_human_noncorrect_nonprediction_rows": 7,
+    "reviewed_nonprediction_rows": 9,
+    "reviewed_rows": 140,
+    "selective_accuracy": 0.9457917261055635
+  },
+  "reason_counts": {
+    "last_event_boundary": 8,
+    "missing_denominator_anchor": 2,
+    "plain_no_reference": 97,
+    "plain_predictable_frequency": 482,
+    "plain_predictable_seizure_free": 121,
+    "trigger_conditioned_frequency": 39,
+    "unknown_frequency_unquantified": 1
+  },
+  "router_version": "gan2026_rq9_selective_action_router_v2",
+  "source_artifact": "experiments/gan2026_hybrid_parallel_state_candidate_reasoner_validation750_gpt41mini_v0_deterministic_safety_floor_v2_replay_2026-06-03.jsonl",
+  "source_layer": "hybrid_adjudicator_with_adapters",
+  "split": "validation",
+  "split_manifest": "gan2026_split_v1"
+}

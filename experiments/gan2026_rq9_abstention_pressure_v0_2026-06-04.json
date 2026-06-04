@@ -1,0 +1,65 @@
+{
+  "analysis_version": "gan2026_rq9_abstention_pressure_v0",
+  "artifact_kind": "gan2026_rq9_abstention_pressure",
+  "by_reason": {
+    "last_event_boundary": {
+      "candidate_prediction_bearing_rows": 0,
+      "development_safe_candidate_rows": 0,
+      "development_unsafe_candidate_rows": 0,
+      "needs_frozen_policy_before_prediction_rows": 8,
+      "policy_supported_nonprediction_rows": 0,
+      "pressure_class_counts": {
+        "needs_frozen_policy_before_prediction": 8
+      },
+      "rows": 8
+    },
+    "missing_denominator_anchor": {
+      "candidate_prediction_bearing_rows": 0,
+      "development_safe_candidate_rows": 0,
+      "development_unsafe_candidate_rows": 0,
+      "needs_frozen_policy_before_prediction_rows": 0,
+      "policy_supported_nonprediction_rows": 2,
+      "pressure_class_counts": {
+        "policy_supported_nonprediction": 2
+      },
+      "rows": 2
+    },
+    "trigger_conditioned_frequency": {
+      "candidate_prediction_bearing_rows": 26,
+      "development_safe_candidate_rows": 17,
+      "development_unsafe_candidate_rows": 9,
+      "needs_frozen_policy_before_prediction_rows": 0,
+      "policy_supported_nonprediction_rows": 13,
+      "pressure_class_counts": {
+        "candidate_prediction_bearing": 26,
+        "policy_supported_nonprediction": 13
+      },
+      "rows": 39
+    }
+  },
+  "claim_language": "Validation-development interpretation of remaining v2 RQ9 nonprediction rows. Development correctness and human classes are offline accounting only; this artifact does not change scorer, gold, router, prompt, projection, locked-test, or benchmark-comparable policy.",
+  "date": "2026-06-04",
+  "decision": "Some trigger-conditioned abstentions can plausibly stay prediction-bearing, but only under a stricter gold-blinded trigger-context rule. There are 26 trigger rows with non-sentinel candidate labels, 17 of which are development-safe if predicted and 9 of which are not. Missing-anchor rows should remain abstentions, and last-event rows should remain human-review until a frozen date-window policy exists.",
+  "metrics": {
+    "abstain_rows": 41,
+    "candidate_prediction_bearing_rows": 26,
+    "development_safe_candidate_rate": 0.6538461538461539,
+    "development_safe_candidate_rows": 17,
+    "development_unsafe_candidate_rows": 9,
+    "human_review_rows": 8,
+    "needs_frozen_policy_before_prediction_rows": 8,
+    "policy_supported_nonprediction_rows": 15,
+    "rows": 49
+  },
+  "pressure_class_counts": {
+    "candidate_prediction_bearing": 26,
+    "needs_frozen_policy_before_prediction": 8,
+    "policy_supported_nonprediction": 15
+  },
+  "reason_counts": {
+    "last_event_boundary": 8,
+    "missing_denominator_anchor": 2,
+    "trigger_conditioned_frequency": 39
+  },
+  "source_artifact": "experiments/gan2026_rq9_selective_action_router_v2_2026-06-04.jsonl"
+}

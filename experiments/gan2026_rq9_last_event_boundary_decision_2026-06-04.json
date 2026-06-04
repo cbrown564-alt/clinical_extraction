@@ -1,0 +1,21 @@
+{
+  "analysis_version": "gan2026_rq9_last_event_boundary_decision_v0",
+  "artifact_kind": "gan2026_rq9_last_event_boundary_decision",
+  "claim_language": "Validation-development decision over v3 last-event human-review rows. This artifact does not change scorer, gold, router, prompt, projection, locked-test, or benchmark-comparable policy.",
+  "date": "2026-06-04",
+  "decision": "keep_last_event_as_human_review",
+  "failure_mode_counts": {
+    "recent_event_frequency_selection_boundary": 2,
+    "unknown_convention_blocks_seizure_free_projection": 4,
+    "unresolved_last_event_unknown_boundary": 2
+  },
+  "metrics": {
+    "date_policy_ready_rows": 0,
+    "development_safe_if_predicted_rows": 2,
+    "development_unsafe_if_predicted_rows": 6,
+    "keep_human_review_rows": 8,
+    "rows": 8
+  },
+  "rationale": "Do not implement a v4 date-window projection policy for this slice. The eight last-event rows are heterogeneous: unknown-convention seizure-free projections, already-unknown last-event rows, and recent frequency-selection failures. A single date-window rule would either predict development-wrong seizure-free labels or fail to address the frequency-selection rows.",
+  "source_artifact": "experiments/gan2026_rq9_selective_action_router_v3_2026-06-04.jsonl"
+}

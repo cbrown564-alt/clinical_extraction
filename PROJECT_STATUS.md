@@ -77,14 +77,44 @@ The explicit RQ9 `unknown` and drop-attack boundary policy is frozen in
 evidence; missing anchors, trigger-only evidence, last-event boundaries, and
 uncertain drop attacks route to abstention or human review.
 
-The RQ9 selective-action router artifact is materialized over the saved
-validation750 safety-floor source in
-`experiments/gan2026_rq9_selective_action_router_2026-06-04.*`. It covers
-555/750 rows, abstains on 41, routes 154 to human review, and has 0 extraction
-error-analysis rows; covered-row Purist accuracy is 0.9568. Reviewed
-nonprediction rows split 24 human-correct versus 19 human-noncorrect, so
-over-review remains a real pressure point, especially cluster/convention
-review routing.
+The RQ9 selective-action router v3 is materialized over the saved validation750
+safety-floor source in
+`experiments/gan2026_rq9_selective_action_router_v3_2026-06-04.*`. It covers
+716/750 rows, abstains on 26, routes 8 to human review, and has 0 extraction
+error-analysis rows; covered-row Purist accuracy is 0.9469. V3 implements the
+predeclared gold-blinded trigger-context narrowing rule: 15 trigger-context
+abstentions from v2 are now prediction-bearing, all development-safe in offline
+accounting. Cluster/convention ambiguity flags remain prediction-bearing
+monitoring or verifier-slice signals, not automatic human-review criteria.
+
+The v2 nonprediction pressure interpretation remains materialized in
+`experiments/gan2026_rq9_abstention_pressure_v0_2026-06-04.*`: 26
+trigger-conditioned rows have non-sentinel candidate labels and 17 are
+development-safe if predicted, but 9 are development-unsafe. Missing-anchor rows
+remain policy-supported abstentions, and last-event rows need a frozen
+date-window policy before prediction-bearing use.
+
+The last-event boundary decision is materialized in
+`experiments/gan2026_rq9_last_event_boundary_decision_2026-06-04.*`. It keeps
+all 8 last-event rows as human review and rejects a v4 date-window projection
+policy for this slice: 4 rows are unknown-convention seizure-free projection
+risks, 2 are unresolved last-event unknown boundaries, and 2 are recent-event
+frequency-selection failures.
+
+The cluster/convention monitoring predeclaration and artifact are materialized
+in
+`docs/research/gan2026_rq9_cluster_convention_monitoring_predeclaration_2026-06-04.md`
+and `experiments/gan2026_rq9_cluster_convention_monitoring_2026-06-04.*`.
+All 115 v3 prediction-bearing cluster/convention rows remain prediction-bearing;
+61 are high-priority verifier-monitoring rows and 54 are routine monitoring.
+Offline development accounting is 104/115 safe and 11/115 unsafe, so verifier
+priority is for audit/monitoring rather than default human-review routing.
+
+RQ9 is answered for saved validation replay in
+`docs/research/gan2026_rq9_selective_action_answer_2026-06-04.md`. The answer is
+selective action with bounded prediction, abstention, human review, and
+monitoring: v3 is the current validation-development artifact, not a
+holdout-facing or benchmark-comparable claim.
 
 ## Active Question
 
@@ -131,8 +161,19 @@ Core artifacts:
   `docs/research/gan2026_rq9_abstention_review_predeclaration_2026-06-04.md`,
   `docs/research/gan2026_rq9_selective_action_evaluation_contract_2026-06-04.md`,
   `docs/research/gan2026_rq9_unknown_drop_attack_boundary_policy_2026-06-04.md`,
-  `experiments/gan2026_rq9_abstention_review_predeclaration_2026-06-04.*`, and
-  `experiments/gan2026_rq9_selective_action_router_2026-06-04.*`.
+  `experiments/gan2026_rq9_abstention_review_predeclaration_2026-06-04.*`,
+  `experiments/gan2026_rq9_selective_action_router_2026-06-04.*`,
+  `experiments/gan2026_rq9_selective_action_router_v1_2026-06-04.*`,
+  `experiments/gan2026_rq9_selective_action_router_v2_2026-06-04.*`, and
+  `experiments/gan2026_rq9_selective_action_router_v2_pressure_points_2026-06-04.*`,
+  `experiments/gan2026_rq9_abstention_pressure_v0_2026-06-04.*`,
+  `docs/research/gan2026_rq9_trigger_context_narrowing_predeclaration_2026-06-04.md`,
+  `experiments/gan2026_rq9_selective_action_router_v3_2026-06-04.*`, and
+  `experiments/gan2026_rq9_selective_action_router_v3_pressure_points_2026-06-04.*`,
+  `experiments/gan2026_rq9_last_event_boundary_decision_2026-06-04.*`,
+  `docs/research/gan2026_rq9_cluster_convention_monitoring_predeclaration_2026-06-04.md`,
+  `experiments/gan2026_rq9_cluster_convention_monitoring_2026-06-04.*`, and
+  `docs/research/gan2026_rq9_selective_action_answer_2026-06-04.md`.
 
 ## Guardrails
 
@@ -153,14 +194,14 @@ Core artifacts:
 
 ### Now
 
-- Interpret and refine the RQ9 selective-action router pressure points before
-  promotion: high human-review volume, cluster/convention review precision, and
-  reviewed-row over-review.
+- Write a frozen RQ9 selective-action audit protocol before any holdout-facing
+  use: fix v3, source candidate, monitoring slices, metrics, and permitted
+  post-run inspection.
 
 ### Next
 
-- Decide whether cluster/convention review routing needs a narrower policy or a
-  verifier slice before any broader prediction-bearing use.
+- Keep missing-anchor abstentions and last-event human-review routing unchanged
+  unless a new predeclared policy targets a narrower source-backed slice.
 
 ### Backlog
 
@@ -177,6 +218,38 @@ Core artifacts:
 
 ### Done Recently
 
+- 2026-06-04: Tightened the RQ9 selective-action router from conservative v0 to
+  v2. V0 covered 555/750 rows and routed 154 to human review; v2 covers
+  701/750, routes 8 to human review, keeps 41 abstentions, and removes automatic
+  cluster/convention human-review routing. The v2 pressure report shows 49
+  nonprediction rows, 15 blocked wrong source predictions, 34 blocked
+  source-correct predictions, 9 reviewed nonprediction rows, and 7/9 reviewed
+  noncorrect rows.
+- 2026-06-04: Interpreted remaining RQ9 abstention pressure under the frozen
+  boundary policy. Of 49 v2 nonprediction rows, 26 trigger-conditioned rows are
+  plausible prediction-bearing candidates, but only 17/26 are development-safe
+  if predicted; broad release would introduce 9 unsafe predictions. The 2
+  missing-anchor rows should remain abstentions, and the 8 last-event rows
+  require a frozen date-window policy before prediction-bearing use.
+- 2026-06-04: Predeclared and implemented the RQ9 v3 trigger-context narrowing
+  rule. V3 releases only non-sentinel trigger rows without `unknown_gold_boundary`
+  and with gold-blinded evidence naming seizure/event frequency context. It moves
+  15 v2 trigger abstentions to prediction, all development-safe, raising coverage
+  from 701/750 to 716/750 and reducing abstentions from 41 to 26 while keeping
+  human review at 8 rows.
+- 2026-06-04: Decided the RQ9 last-event boundary should remain human review,
+  not a v4 date-window projection policy. The 8-row slice has 0
+  date-policy-ready rows: 4 unknown-convention seizure-free projection risks, 2
+  unresolved last-event unknown boundaries, and 2 recent-event frequency
+  selection failures.
+- 2026-06-04: Predeclared and materialized cluster/convention monitoring for v3
+  prediction-bearing rows. All 115 eligible rows stay prediction-bearing; 61 are
+  high-priority verifier-monitoring rows, 54 are routine monitoring, and offline
+  development accounting is 104 safe versus 11 unsafe.
+- 2026-06-04: Wrote the RQ9 selective-action answer and promotion boundary.
+  RQ9 is answered for saved validation replay only: v3 is the current
+  validation-development selective-action artifact, with no holdout-facing or
+  benchmark-comparable claim authorized.
 - 2026-06-04: Implemented and materialized
   `gan2026_rq9_selective_action_router_v0` over the saved validation750
   safety-floor source. The router covers 555/750 rows, abstains on 41, routes
