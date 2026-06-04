@@ -100,6 +100,15 @@ def test_suspicious_routing_routes_invalid_source_id_trace_to_review() -> None:
     row = rows[0]
     assert row["selected_evidence_status"]["exact_trace"] is True
     assert row["selected_evidence_status"]["source_id_status"] == "invalid"
+    assert row["selected_evidence_status"]["source_id_trace"] == {
+        "source_id_status": "invalid",
+        "declared_source_id_status": "invalid",
+        "selected_source_ids": [],
+        "expected_source_ids": ["note"],
+        "missing_expected_source_ids": ["note"],
+        "unexpected_source_ids": [],
+        "trace_basis": "exact_selected_evidence",
+    }
     assert "selected_source_id_invalid" in row["suspicious_state_flags"]
     assert row["suspicious_state_action"] == "route_review"
     assert row["first_failure_owner"] == "source_id_trace"

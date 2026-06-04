@@ -86,4 +86,7 @@ def test_replay_carries_known_v3_model_error_without_safety_regression() -> None
     )
     assert row["comparison"]["primary_v3_c_to_w_against_comparator"] is True
     assert row["comparison"]["safety_c_to_w_against_comparator"] is False
+    assert row["projection_source_id_consistency"]["consistent"] is True
+    assert metadata["policy_name"] == "staged_hybrid_assembly_validation_development_v0"
+    assert metadata["metrics"]["projection_source_id_inconsistent_rows"] == 0
     assert metadata["known_real_model_error_source_row_indices"] == [15593]

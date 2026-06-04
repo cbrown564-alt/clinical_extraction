@@ -235,7 +235,8 @@ def _suspicious_routing_row(
     exact_trace = bool(state.get("selected_evidence")) and evidence_is_substring(
         note_text, str(state.get("selected_evidence") or "")
     )
-    source_id_status = _source_id_status(structured_record, exact_trace=exact_trace)
+    source_id_trace = _source_id_trace(structured_record, exact_trace=exact_trace)
+    source_id_status = source_id_trace["source_id_status"]
     flags = _suspicious_flags(
         state,
         exact_trace=exact_trace,
@@ -257,8 +258,8 @@ def _suspicious_routing_row(
         "selected_evidence_status": {
             "exact_trace": exact_trace,
             "selected_evidence_present": bool(str(state.get("selected_evidence") or "").strip()),
-            "selected_source_ids": list(structured_record.get("selected_source_ids") or []),
             "source_id_status": source_id_status,
+            "source_id_trace": source_id_trace,
         },
         "embedded_ambiguity_fields": {
             "ambiguity_flags": list(state.get("ambiguity_flags") or []),
@@ -550,15 +551,41 @@ def _by_hidden_family(rows: Sequence[Mapping[str, Any]]) -> dict[str, dict[str, 
     return {family: dict(counts) for family, counts in sorted(by_family.items())}
 
 
-def _source_id_status(structured_record: Mapping[str, Any], *, exact_trace: bool) -> str:
-    status = str(structured_record.get("source_id_status") or "").strip()
-    if status:
-        return status
-    if not exact_trace:
-        return "invalid"
-    if structured_record.get("selected_source_ids"):
-        return "valid"
-    return "not_instrumented"
+def _source_id_trace(structured_record: Mapping[str, Any], *, exact_trace: bool) -> dict[str, Any]:
+    selected_source_ids = [
+        str(value) for value in structured_record.get("selected_source_ids") or []
+    ]
+    declared_status = str(structured_record.get("source_id_status") or "").strip()
+    expected_source_ids = ["note"] if exact_trace else []
+    missing_expected_source_ids = [
+        source_id for source_id in expected_source_ids if source_id not in selected_source_ids
+    ]
+    unexpected_source_ids = [
+        source_id for source_id in selected_source_ids if source_id not in expected_source_ids
+    ]
+    if declared_status:
+        status = declared_status
+    elif not exact_trace:
+        status = "invalid"
+    elif selected_source_ids:
+        status = (
+            "valid"
+            if not missing_expected_source_ids and not unexpected_source_ids
+            else "invalid"
+        )
+    else:
+        status = "not_instrumented"
+    return {
+        "source_id_status": status,
+        "declared_source_id_status": declared_status or None,
+        "selected_source_ids": selected_source_ids,
+        "expected_source_ids": expected_source_ids,
+        "missing_expected_source_ids": missing_expected_source_ids,
+        "unexpected_source_ids": unexpected_source_ids,
+        "trace_basis": (
+            "exact_selected_evidence" if exact_trace else "non_exact_or_missing_evidence"
+        ),
+    }
 
 
 def _verifier_decision(rows: Sequence[Mapping[str, Any]], c_to_w_rows: Sequence[int]) -> str:

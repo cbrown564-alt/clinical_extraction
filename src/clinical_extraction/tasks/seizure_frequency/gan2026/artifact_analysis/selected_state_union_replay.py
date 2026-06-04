@@ -97,8 +97,11 @@ def summarize_selected_state_union_replay_rows(
         if row["source_row_index"] in KNOWN_REAL_MODEL_ERROR_ROWS
         and row["primary_v3_selected_state_replay"]["label"] != row["gold_label"]
     ]
+    consistency = _projection_source_id_consistency(rows)
     return {
         "artifact_kind": "gan2026_selected_state_union_replay_v3",
+        "policy_name": "staged_hybrid_assembly_validation_development_v0",
+        "policy_replay_scope": "existing_hard_panel_saved_artifacts_before_new_model_calls",
         "date": "2026-06-04",
         "split_manifest": "gan2026_split_v1",
         "split": "validation",
@@ -126,11 +129,20 @@ def summarize_selected_state_union_replay_rows(
             "safety_c_to_w_against_comparator_rows": len(c_to_w),
             "primary_v3_c_to_w_against_comparator_rows": len(primary_c_to_w),
             "known_real_model_error_rows_carried": len(known_model_errors),
+            "projection_source_id_consistent_rows": consistency[
+                "projection_source_id_consistent_rows"
+            ],
+            "projection_source_id_inconsistent_rows": consistency[
+                "projection_source_id_inconsistent_rows"
+            ],
         },
         "safety_w_to_c_source_row_indices": w_to_c,
         "safety_c_to_w_source_row_indices": c_to_w,
         "primary_v3_c_to_w_source_row_indices": primary_c_to_w,
         "known_real_model_error_source_row_indices": known_model_errors,
+        "projection_source_id_inconsistent_source_row_indices": consistency[
+            "projection_source_id_inconsistent_source_row_indices"
+        ],
         "candidate_kind_counts": _candidate_kind_counts(rows),
         "by_hidden_family": _by_hidden_family(rows),
     }
@@ -154,7 +166,9 @@ def write_report(
         "# Gan 2026 Selected-State Union Replay V3",
         "",
         "This is a no-call validation-development replay over the saved 75-row rich "
-        "selected-state hard panel and the controlled v3 boundary-candidate output.",
+        "selected-state hard panel and the controlled v3 boundary-candidate output. "
+        "It replays `staged_hybrid_assembly_validation_development_v0` before any "
+        "new model calls.",
         "",
         "## Outcome",
         "",
@@ -218,6 +232,8 @@ def write_report(
             "- Keep v3 boundary candidates as a useful selected-state input surface, "
             "not as final labels.",
             "- Keep row 15593 visible as a real v3 model error before any broader replay.",
+            "- Require projection/source-id consistency checks before using the "
+            "assembled candidate report for another live-call decision.",
             "- The safety-floor result is diagnostic because it preserves "
             "deterministic-correct rows by policy.",
             "",
@@ -281,6 +297,9 @@ def _selected_state_union_replay_row(
             "correct": comparator_correct,
         },
         "primary_v3_selected_state_replay": primary_replay,
+        "projection_source_id_consistency": _row_projection_source_id_consistency(
+            primary, primary_replay
+        ),
         "safety_floor_selected_state_replay": {
             "label": safety_label,
             "source": "comparator_when_known_else_primary_v3_candidate_state",
@@ -301,6 +320,52 @@ def _selected_state_union_replay_row(
             ),
             "safety_delta": _delta(comparator_correct, safety_correct),
         },
+    }
+
+
+def _row_projection_source_id_consistency(
+    candidate: Mapping[str, Any] | None,
+    primary_replay: Mapping[str, Any],
+) -> dict[str, Any]:
+    if candidate is None:
+        return {
+            "consistent": True,
+            "status": "not_applicable",
+            "selected_source_ids": [],
+            "required_source_id_status": "valid",
+            "failures": [],
+        }
+    failures: list[str] = []
+    source_id_status = str(candidate.get("source_id_status") or "")
+    selected_source_ids = [str(candidate.get("source_id") or "")]
+    if primary_replay.get("scorable") and source_id_status != "valid":
+        failures.append("scorable_projection_without_valid_source_id")
+    if primary_replay.get("scorable") and not candidate.get("exact_evidence"):
+        failures.append("scorable_projection_without_exact_evidence")
+    if primary_replay.get("scorable") and not str(candidate.get("evidence") or "").strip():
+        failures.append("scorable_projection_without_evidence")
+    return {
+        "consistent": not failures,
+        "status": "valid" if not failures else "invalid",
+        "selected_source_ids": selected_source_ids,
+        "source_id_status": source_id_status,
+        "exact_evidence": bool(candidate.get("exact_evidence")),
+        "failures": failures,
+    }
+
+
+def _projection_source_id_consistency(
+    rows: Sequence[Mapping[str, Any]],
+) -> dict[str, Any]:
+    inconsistent = [
+        int(row["source_row_index"])
+        for row in rows
+        if not row["projection_source_id_consistency"]["consistent"]
+    ]
+    return {
+        "projection_source_id_consistent_rows": len(rows) - len(inconsistent),
+        "projection_source_id_inconsistent_rows": len(inconsistent),
+        "projection_source_id_inconsistent_source_row_indices": inconsistent,
     }
 
 
