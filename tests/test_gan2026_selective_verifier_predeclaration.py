@@ -72,6 +72,40 @@ def test_predeclaration_includes_exact_suspicious_rows_and_model_input_contract(
     assert metadata["metrics"]["exact_evidence_rate"] == 1.0
 
 
+def test_predeclaration_adds_plain_language_prompt_design_candidates() -> None:
+    rows, metadata = (
+        selective_verifier_predeclaration.build_selective_verifier_predeclaration_rows(
+            [_routing_row()]
+        )
+    )
+
+    candidates = rows[0]["prompt_design_candidates"]
+
+    assert sorted(candidates) == [
+        "support_parts_fact_check",
+        "veto_first_safety_reviewer",
+    ]
+    veto_prompt = candidates["veto_first_safety_reviewer"]["system_prompt"]
+    support_prompt = candidates["support_parts_fact_check"]["system_prompt"]
+    assert "Gan" not in veto_prompt
+    assert "selected state" not in veto_prompt
+    assert "selected state" not in support_prompt
+    assert "proposed seizure-frequency answer" in veto_prompt
+    assert "fully supported by the clinical text" in support_prompt
+    assert candidates["veto_first_safety_reviewer"]["output_schema"]["decision"] == [
+        "use_proposed_answer",
+        "use_unknown",
+        "needs_review",
+    ]
+    assert candidates["support_parts_fact_check"]["output_schema"][
+        "all_required_parts_supported"
+    ] == "true or false."
+    assert metadata["prompt_design_candidates"] == [
+        "veto_first_safety_reviewer",
+        "support_parts_fact_check",
+    ]
+
+
 def test_predeclaration_excludes_non_exact_suspicious_rows() -> None:
     rows, metadata = (
         selective_verifier_predeclaration.build_selective_verifier_predeclaration_rows(

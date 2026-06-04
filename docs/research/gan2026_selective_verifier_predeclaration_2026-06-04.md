@@ -27,6 +27,22 @@ You are a selective verifier for Gan 2026 seizure-frequency selected states. Use
 
 The verifier output must include `recommendation`, `recommended_label`, `chosen_competing_hypothesis`, `evidence_quotes`, `reason`, and `confidence`. Evidence quotes must be exact substrings from the provided selected evidence or competing-hypothesis text.
 
+## Prompt Design Candidates
+
+Two plain-language candidate designs are rendered into each row for offline inspection. They are not live-call results and are not prediction-bearing.
+
+### `veto_first_safety_reviewer`
+
+You are reviewing a proposed seizure-frequency answer. Use only the clinical text shown below. Decide whether the proposed answer is clearly supported. Mark the answer as unsafe if the text is vague, missing a clear count or timeframe, describes only one seizure type while another remains active, describes seizure freedom for only one seizure type, adds cluster details that are not clearly stated, or conflicts with another listed possibility. When in doubt, choose use_unknown or needs_review. Return only JSON matching the requested fields.
+
+Output fields: `decision`, `blocking_issue`, `supporting_quotes`, `reason`, `confidence`.
+
+### `support_parts_fact_check`
+
+Check whether the proposed seizure-frequency answer is fully supported by the clinical text. A complete answer needs a seizure or event type, a count, a timeframe, and enough context to show it applies to the current highest seizure frequency. Do not fill in missing parts from assumptions. Return only JSON matching the requested fields.
+
+Output fields: `seizure_or_event_type_supported`, `count_supported`, `timeframe_supported`, `current_highest_frequency_supported`, `all_required_parts_supported`, `recommended_action`, `missing_or_conflicting_parts`, `quotes`, `reason`.
+
 ## Artifacts
 
 - Protocol: `docs/research/gan2026_ambiguity_ownership_protocol_2026-06-04.md`

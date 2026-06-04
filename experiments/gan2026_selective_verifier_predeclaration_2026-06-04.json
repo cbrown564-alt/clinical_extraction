@@ -126,6 +126,10 @@
     "routed_to_review_rows": 7,
     "w_to_c_against_comparator_rows": 1
   },
+  "prompt_design_candidates": [
+    "veto_first_safety_reviewer",
+    "support_parts_fact_check"
+  ],
   "row_count": 42,
   "source_artifact": "experiments/gan2026_suspicious_selected_state_routing_2026-06-04.jsonl",
   "split": "validation",
