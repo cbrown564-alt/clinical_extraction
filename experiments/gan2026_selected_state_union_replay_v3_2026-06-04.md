@@ -1,6 +1,6 @@
 # Gan 2026 Selected-State Union Replay V3
 
-This is a no-call validation-development replay over the saved 75-row rich selected-state hard panel and the controlled v3 boundary-candidate output.
+This is a no-call validation-development replay over the saved 75-row rich selected-state hard panel and the controlled v3 boundary-candidate output. It replays `staged_hybrid_assembly_validation_development_v0` before any new model calls.
 
 ## Outcome
 
@@ -31,6 +31,8 @@ Validation-development no-call selected-state replay over saved rich selected st
 | safety c to w against comparator rows | 0 |
 | primary v3 c to w against comparator rows | 6 |
 | known real model error rows carried | 1 |
+| projection source id consistent rows | 75 |
+| projection source id inconsistent rows | 0 |
 
 ## V3 Boundary Rows
 
@@ -63,4 +65,5 @@ Validation-development no-call selected-state replay over saved rich selected st
 
 - Keep v3 boundary candidates as a useful selected-state input surface, not as final labels.
 - Keep row 15593 visible as a real v3 model error before any broader replay.
+- Require projection/source-id consistency checks before using the assembled candidate report for another live-call decision.
 - The safety-floor result is diagnostic because it preserves deterministic-correct rows by policy.

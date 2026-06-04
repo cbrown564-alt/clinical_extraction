@@ -47,7 +47,10 @@ Core artifacts:
 
 - RQ8 answer: `docs/research/gan2026_rq8_efficiency_operational_reliability_answer_2026-06-04.md`
 - RQ8 matrix: `experiments/gan2026_rq8_operational_matrix_2026-06-04.*`
+- RQ8 telemetry guard: `experiments/gan2026_rq8_telemetry_guard_2026-06-04.*`
 - RQ7 matrix: `experiments/gan2026_rq7_family_component_matrix_2026-06-04.*`
+- Staged assembly replay: `experiments/gan2026_selected_state_union_replay_v3_2026-06-04.*`
+- Suspicious routing: `experiments/gan2026_suspicious_selected_state_routing_2026-06-04.*`
 - Component-control matrix: `experiments/gan2026_rq1_rq2_component_control_matrix_2026-06-04.*`
 - Assembly decision: `docs/research/gan2026_architecture_assembly_readiness_decision_2026-06-04.md`
 - ADR: `docs/decisions/0009-gan2026-staged-hybrid-assembly.md`
@@ -70,14 +73,16 @@ Core artifacts:
 
 ### Now
 
-- Replay the assembled validation-development policy on existing hard-panel
-  artifacts before any new model calls.
+- Decide whether the next step is a telemetry-only RQ8 pass or a frozen
+  verifier/predeclaration slice; do not make new model calls until that choice
+  is explicit.
 
 ### Next
 
-- Regenerate the suspicious selected-state routing artifact over saved rich-state
-  rows with the new source-id trace.
-- Add projection/source-id consistency checks to the assembled candidate report.
+- If cost/latency/token efficiency is needed, run a telemetry-only pass over
+  surviving primitives before strengthening RQ8 claims.
+- If ambiguity resolution is next, predeclare the selective verifier over the
+  stable suspicious routing slices and keep C->W rows visible.
 
 ### Blocked
 
@@ -89,6 +94,16 @@ Core artifacts:
 
 ### Done Recently
 
+- 2026-06-04: Replayed `staged_hybrid_assembly_validation_development_v0` over
+  existing hard-panel artifacts before new model calls: 75/75
+  projection/source-id consistency, 0 inconsistent rows, and primary v3
+  projection still demoted to diagnostic because it carries 6 C->W risks.
+- 2026-06-04: Regenerated suspicious selected-state routing with explicit
+  source-id trace payloads; routing remains 35 `route_unknown`, 9
+  `route_review`, and 31 render rows.
+- 2026-06-04: Added the RQ8 telemetry guard; 0/21 operational-matrix rows have
+  complete token/latency/cost telemetry, so RQ8 cost/latency/token claims remain
+  blocked.
 - 2026-06-04: Started the smallest staged-hybrid assembly slice: rich
   selected-state extraction now derives `selected_source_ids=["note"]` and
   `source_id_status` from exact evidence, and suspicious routing sends invalid

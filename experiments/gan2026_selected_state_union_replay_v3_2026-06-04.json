@@ -88,12 +88,16 @@
     "primary_v3_c_to_w_against_comparator_rows": 6,
     "primary_v3_projection_correct_rows": 16,
     "primary_v3_projection_scorable_rows": 22,
+    "projection_source_id_consistent_rows": 75,
+    "projection_source_id_inconsistent_rows": 0,
     "rows_with_union_verified_candidates": 75,
     "rows_with_v3_boundary_candidates": 22,
     "safety_c_to_w_against_comparator_rows": 0,
     "safety_floor_correct_rows": 37,
     "safety_w_to_c_against_comparator_rows": 0
   },
+  "policy_name": "staged_hybrid_assembly_validation_development_v0",
+  "policy_replay_scope": "existing_hard_panel_saved_artifacts_before_new_model_calls",
   "primary_v3_c_to_w_source_row_indices": [
     338,
     1707,
@@ -102,6 +106,7 @@
     15593,
     15834
   ],
+  "projection_source_id_inconsistent_source_row_indices": [],
   "row_count": 75,
   "safety_c_to_w_source_row_indices": [],
   "safety_w_to_c_source_row_indices": [],

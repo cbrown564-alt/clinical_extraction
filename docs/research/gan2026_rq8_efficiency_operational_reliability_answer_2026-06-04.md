@@ -58,6 +58,8 @@ Supporting artifacts:
 
 - `experiments/gan2026_rq8_operational_matrix_2026-06-04.json`
 - `experiments/gan2026_rq8_operational_matrix_2026-06-04.md`
+- `experiments/gan2026_rq8_telemetry_guard_2026-06-04.json`
+- `experiments/gan2026_rq8_telemetry_guard_2026-06-04.md`
 - `experiments/gan2026_rq1_rq2_component_control_matrix_2026-06-04.*`
 - `experiments/gan2026_selective_boundary_candidate_experiment_v2_2026-06-04.*`
 - `experiments/gan2026_rich_selected_state_hard_panel_2026-06-04.*`
@@ -92,6 +94,12 @@ not inspect locked-test row-level failures.
 The saved artifacts do not uniformly preserve prompt tokens, completion tokens,
 wall-clock latency, retry counts, or cost. RQ8 therefore cannot honestly answer
 which surviving component is cheapest per 1,000 notes in dollars or seconds.
+
+The explicit telemetry guard confirms the boundary: 0/21 operational-matrix rows
+have complete prompt-token, completion-token, total-token, wall-clock-latency,
+retry-count, and cost-per-1,000-note telemetry. Cost, latency, and
+token-efficiency claims remain blocked until a telemetry-only pass is run or
+equivalent call telemetry is recovered.
 
 That missing telemetry does not change the architecture choice yet because the
 available reliability signals are decisive:
