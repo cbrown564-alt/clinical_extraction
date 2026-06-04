@@ -42,7 +42,32 @@ The first controlled live boundary-proposer run on that surface completed with
 exact-label candidate recall, 16/22 Purist candidate recall, all retained
 candidate evidence exact, median 3 and p90 4 retained candidates. This is a
 revise signal: useful selective rescue, but cluster labels and enum/schema
-ambiguity need cleanup before downstream selected-state replay.
+ambiguity needed cleanup before downstream selected-state replay. The v1
+predeclaration now renders enum fields as scalar "one string value" fields and
+adds explicit cluster-burden support for `multiple per cluster`, cadence ranges,
+and `unknown, N per cluster` labels. The controlled v1 replay on the same 22
+rows produced 22/22 calls, 20/22 parseable rows, 15/22 exact-label recall, 17/22
+Purist recall, 20/22 saved-rescue evidence overlap, and fewer rejected
+candidates (13 vs 24), but still failed parse stability through
+`assertion_status=no_reference` and still missed several exact cluster labels.
+The v2 predeclaration now pins `no_reference` candidates to
+`assertion_status=asserted`, keeps seizures-per-cluster out of rate count
+fields, preserves exact cluster low/high burden over generic multiple flags, and
+diagnostically reparses all 22 saved v1 raw outputs with 0 parse-error rows.
+The controlled v2 replay completed with 22/22 calls, 21/22 parseable rows, 16/22
+exact-label candidate recall, 20/22 Purist recall, 21/22 saved-rescue evidence
+overlap, and 10 rejected candidates. This is directionally better than v1 but
+still a revise signal before selected-state replay: row 12456 omitted required
+`reason`, and cluster exact labels still miss rows 9943, 10996, and 15593.
+The v3 predeclaration adds a format-only missing-`reason` repair plus explicit
+cluster-cadence examples for four-to-five-week periods, one-to-two-per-month
+cluster counts, and seizure-free intervals followed by a cluster. The controlled
+v3 replay completed with 22/22 calls, 22/22 parseable rows, 16/22 exact-label
+candidate recall, 21/22 Purist recall, 21/22 saved-rescue evidence overlap, and
+7 rejected candidates. V3 fixed rows 9943, 10996, and 12456. Row 15593 remains a
+real model error: it maps `five days without seizures followed by a cluster` to
+`1 cluster per day` instead of `1 cluster per 5 day`; do not repair this before
+selected-state replay.
 
 Suspicious selected-state routing and verifier predeclaration are materialized:
 44/75 rows flagged, 35 routed to `unknown`, 9 to review, 1 W->C and 6 C->W
@@ -106,8 +131,8 @@ Core artifacts:
 
 ### Now
 
-- Revise the selective boundary-candidate prompt/schema for parse-stable enum
-  fields and cluster-burden rows before downstream selected-state replay.
+- Proceed to selected-state replay over the gated v3 boundary-candidate union,
+  carrying row 15593 as a known real model cluster-cadence error.
 
 ### Next
 
@@ -133,6 +158,27 @@ Core artifacts:
 
 ### Done Recently
 
+- 2026-06-04: Revised and ran selective boundary-candidate v3 on the same 22
+  validation rows: 22/22 parseable, 16/22 exact-label recall, 21/22 Purist
+  recall, 21/22 saved-rescue evidence overlap, 7 rejected candidates. V3 fixed
+  rows 9943, 10996, and 12456; row 15593 is accepted as a real model
+  cluster-cadence error rather than a prompt-repair target.
+- 2026-06-04: Ran the controlled selective boundary-candidate v2 replay on the
+  same 22 validation rows: 21/22 parseable, 16/22 exact-label recall, 20/22
+  Purist recall, 21/22 saved-rescue evidence overlap, 10 rejected candidates.
+  Directionally improved over v1 but still revise before selected-state replay.
+- 2026-06-04: Revised selective boundary-candidate to v2: prompt/schema now
+  pins `no_reference` assertion aliasing and exact cluster-label specificity;
+  parser/rendering tests cover `assertion_status=no_reference` repair and exact
+  cluster low/high burden precedence; saved v1 raw-output diagnostic reparse is
+  22/22 parseable with no new model calls.
+- 2026-06-04: Ran the controlled selective boundary-candidate v1 replay on the
+  same 22 validation rows: 20/22 parseable, 15/22 exact-label recall, 17/22
+  Purist recall, 20/22 saved-rescue evidence overlap, 13 rejected candidates;
+  revise before selected-state replay.
+- 2026-06-04: Revised the selective boundary-candidate prompt/schema to v1:
+  scalar enum wording in rendered model inputs plus cluster-burden rendering for
+  multiple-per-cluster, cadence ranges, and unknown-cadence burden labels.
 - 2026-06-04: Materialized the selective boundary-candidate predeclaration:
   stop/go `go`, 22 exact saved recall-rescue validation rows, plain
   prompt/schema, max 4 proposed candidates per row, and no final-label use.

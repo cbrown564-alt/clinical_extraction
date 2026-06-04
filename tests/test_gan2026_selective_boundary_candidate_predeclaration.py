@@ -100,3 +100,24 @@ def test_boundary_candidate_prompt_uses_plain_task_language() -> None:
     assert "benchmark" not in prompt
     assert "scorer" not in prompt
     assert "seizure-frequency answer" in prompt
+    assert "one string value" in prompt
+    assert "Use asserted, not no_reference" in prompt
+    assert "Do not put seizures per cluster in rate count fields" in prompt
+    assert "four to five weeks means time_count_low 4" in prompt
+    assert "one to two times per month means count_low 1" in prompt
+    assert "five days without seizures followed by a cluster means" in prompt
+
+
+def test_boundary_candidate_schema_presents_choice_fields_as_scalars() -> None:
+    schema_candidate = predecl.BOUNDARY_PROPOSER_OUTPUT_SCHEMA["candidates"][0]
+
+    assert isinstance(schema_candidate["candidate_kind"], str)
+    assert isinstance(schema_candidate["currentness"], str)
+    assert isinstance(schema_candidate["assertion_status"], str)
+    assert "candidate_kind no_reference, use asserted" in schema_candidate["assertion_status"]
+    assert isinstance(schema_candidate["rate"]["time_unit"], str)
+    assert isinstance(schema_candidate["seizure_free"]["duration_unit"], str)
+    assert "seizures_per_cluster_is_multiple" in schema_candidate["cluster"]
+    assert "does not give exact low/high numbers" in schema_candidate["cluster"][
+        "seizures_per_cluster_is_multiple"
+    ]

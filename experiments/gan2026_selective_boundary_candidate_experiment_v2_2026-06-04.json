@@ -1,0 +1,113 @@
+{
+  "artifact_kind": "gan2026_selective_boundary_candidate_experiment",
+  "candidate_kind_counts": {
+    "cluster_frequency": 10,
+    "conditional_frequency": 20,
+    "frequency_rate": 6,
+    "no_reference": 12,
+    "seizure_free": 9,
+    "unknown_frequency": 14
+  },
+  "claim_language": "Validation-development controlled component experiment only. Outputs are candidate proposals, not final labels; no locked-test inspection, whole-pipeline promotion, or benchmark-comparable claim is authorized.",
+  "date": "2026-06-04",
+  "gate_failure_counts": {
+    "missing_seizure_free_duration": 1,
+    "non_exact_evidence": 3,
+    "unrenderable_candidate": 6
+  },
+  "hard_family_summary": {
+    "candidate_absent_or_weak": {
+      "exact_recall_rows": 1,
+      "purist_recall_rows": 1,
+      "rows": 1
+    },
+    "cluster_burden": {
+      "exact_recall_rows": 4,
+      "purist_recall_rows": 7,
+      "rows": 8
+    },
+    "cluster_or_diary": {
+      "exact_recall_rows": 1,
+      "purist_recall_rows": 2,
+      "rows": 2
+    },
+    "competing_semiologies": {
+      "exact_recall_rows": 9,
+      "purist_recall_rows": 10,
+      "rows": 11
+    },
+    "current_vs_historical": {
+      "exact_recall_rows": 8,
+      "purist_recall_rows": 9,
+      "rows": 10
+    },
+    "deterministic_miss": {
+      "exact_recall_rows": 1,
+      "purist_recall_rows": 1,
+      "rows": 1
+    },
+    "diary_or_log_aggregation": {
+      "exact_recall_rows": 1,
+      "purist_recall_rows": 2,
+      "rows": 2
+    },
+    "rate_bucket_or_denominator": {
+      "exact_recall_rows": 3,
+      "purist_recall_rows": 5,
+      "rows": 6
+    },
+    "seizure_free_duration": {
+      "exact_recall_rows": 11,
+      "purist_recall_rows": 12,
+      "rows": 12
+    },
+    "seizure_free_overreach": {
+      "exact_recall_rows": 2,
+      "purist_recall_rows": 3,
+      "rows": 3
+    },
+    "temporal_conflict": {
+      "exact_recall_rows": 1,
+      "purist_recall_rows": 2,
+      "rows": 2
+    },
+    "uncertainty_or_ambiguity": {
+      "exact_recall_rows": 14,
+      "purist_recall_rows": 16,
+      "rows": 16
+    },
+    "unknown_boundary": {
+      "exact_recall_rows": 12,
+      "purist_recall_rows": 13,
+      "rows": 13
+    },
+    "unknown_no_reference_boundary": {
+      "exact_recall_rows": 2,
+      "purist_recall_rows": 3,
+      "rows": 3
+    }
+  },
+  "max_tokens": 3000,
+  "metrics": {
+    "call_error_rows": 0,
+    "call_ok_rows": 22,
+    "median_retained_candidates": 4.0,
+    "p90_retained_candidates": 4.0,
+    "parse_error_rows": 1,
+    "parse_ok_rows": 21,
+    "rows_all_retained_evidence_exact": 21,
+    "rows_with_gold_exact_label_recall": 16,
+    "rows_with_gold_purist_recall": 20,
+    "rows_with_retained_candidate": 21,
+    "rows_with_saved_rescue_evidence_overlap": 21,
+    "total_rejected_candidates": 10,
+    "total_retained_candidates": 71
+  },
+  "model": "openai/gpt-4.1-mini",
+  "prompt_version": "selective_boundary_candidate_proposer_v2",
+  "row_count": 22,
+  "source_artifact": "experiments/gan2026_selective_boundary_candidate_predeclaration_2026-06-04.jsonl",
+  "split": "validation",
+  "split_manifest": "gan2026_split_v1",
+  "temperature": 0.0
+}

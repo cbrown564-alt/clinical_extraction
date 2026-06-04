@@ -6,51 +6,35 @@
         "ambiguity_flags": [
           "Short plain-language ambiguity flags."
         ],
-        "assertion_status": [
-          "asserted",
-          "negated",
-          "uncertain",
-          "conditional"
-        ],
-        "candidate_kind": [
-          "frequency_rate",
-          "cluster_frequency",
-          "seizure_free",
-          "unknown_frequency",
-          "no_reference",
-          "conditional_frequency"
-        ],
+        "assertion_status": "One string value: asserted, negated, uncertain, or conditional. For candidate_kind no_reference, use asserted.",
+        "candidate_kind": "One string value: frequency_rate, cluster_frequency, seizure_free, unknown_frequency, no_reference, or conditional_frequency.",
         "cluster": {
           "cluster_cadence_text": "Exact phrase for cluster timing, or null.",
           "cluster_uncertainty": "Short note or null.",
           "has_cluster_pattern": "Boolean.",
           "seizures_per_cluster_high": "Number or null.",
+          "seizures_per_cluster_is_multiple": "true only when the note says multiple, many, several, or similar seizures per cluster and does not give exact low/high numbers.",
           "seizures_per_cluster_low": "Number or null."
         },
         "competing_state_summary": "Short summary of competing current facts, or null.",
         "conditionality_note": "Trigger or condition, or null.",
-        "currentness": [
-          "current",
-          "recent",
-          "historical",
-          "unclear"
-        ],
+        "currentness": "One string value: current, recent, historical, or unclear.",
         "evidence_quote": "Exact substring copied from the note.",
         "rate": {
           "count_high": "Number or null.",
-          "count_is_multiple": "true when the note says multiple, many, several, or similar.",
+          "count_is_multiple": "true when the cluster count or ordinary event count says multiple, many, several, or similar. For cluster_frequency, these count fields describe clusters, not seizures per cluster.",
           "count_low": "Number or null.",
           "rate_text": "Exact phrase for the count and time basis, or null.",
           "time_count_high": "Number or null.",
           "time_count_low": "Number or null.",
-          "time_unit": "day, week, month, year, or null."
+          "time_unit": "One string value: day, week, month, year, or null. Keep the note's stated time unit; do not collapse four to five weeks into one month."
         },
         "reason": "Brief reason this is a hard candidate.",
         "seizure_free": {
           "applies_to_all_seizure_types": "true, false, or null.",
           "boundary_note": "Short note or null.",
           "duration_count": "Number or null.",
-          "duration_unit": "day, week, month, year, or null.",
+          "duration_unit": "One string value: day, week, month, year, or null.",
           "has_no_event_claim": "Boolean.",
           "has_recent_events_or_conditions": "Boolean."
         },
@@ -106,7 +90,7 @@
     "report_candidate_recall_rescue": true,
     "report_rejected_candidates": true
   },
-  "prompt_version": "selective_boundary_candidate_proposer_v0",
+  "prompt_version": "selective_boundary_candidate_proposer_v3",
   "rich_state_source_artifact": "experiments/gan2026_rich_selected_state_hard_panel_policy_replay_2026-06-04.jsonl",
   "row_count": 22,
   "saved_rescue_candidate_kind_counts": {

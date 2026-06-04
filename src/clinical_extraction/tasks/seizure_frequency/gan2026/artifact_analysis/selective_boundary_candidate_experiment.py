@@ -87,6 +87,7 @@ class ClusterPayload(BaseModel):
     cluster_cadence_text: str | None = None
     seizures_per_cluster_low: float | None = None
     seizures_per_cluster_high: float | None = None
+    seizures_per_cluster_is_multiple: bool | None = None
     cluster_uncertainty: str | None = None
 
 
@@ -477,6 +478,12 @@ def _repair_singleton_enum_lists(payload: Any) -> Any:
             value = candidate.get(key)
             if isinstance(value, list) and len(value) == 1:
                 candidate[key] = value[0]
+        if (
+            candidate.get("candidate_kind") == "no_reference"
+            and candidate.get("assertion_status") == "no_reference"
+        ):
+            candidate["assertion_status"] = "asserted"
+        candidate.setdefault("reason", "")
         for key in ("rate", "cluster", "seizure_free"):
             if candidate.get(key) is None:
                 candidate[key] = {}
@@ -537,32 +544,44 @@ def _candidate_label(candidate: BoundaryCandidatePayload) -> tuple[str | None, l
 def _cluster_label(candidate: BoundaryCandidatePayload) -> str | None:
     rate = candidate.rate
     cluster = candidate.cluster
-    if not rate.time_unit or not rate.time_count_low:
+    burden = _cluster_burden_text(cluster)
+    if not burden:
         return None
-    cluster_count = rate.count_low or 1
-    period = _period_text(rate.time_count_low, rate.time_unit)
+    if not rate.time_unit or not rate.time_count_low:
+        return f"unknown, {burden}"
+    cluster_count = _count_text(
+        low=rate.count_low,
+        high=rate.count_high,
+        is_multiple=rate.count_is_multiple,
+        default="1",
+    )
+    period = _period_text(rate.time_count_low, rate.time_unit, high=rate.time_count_high)
+    return f"{cluster_count} cluster per {period}, {burden}"
+
+
+def _cluster_burden_text(cluster: ClusterPayload) -> str | None:
     low = cluster.seizures_per_cluster_low
     high = cluster.seizures_per_cluster_high
     if low and high and low != high:
-        burden = f"{_format_number(low)} to {_format_number(high)} per cluster"
-    elif low:
-        burden = f"{_format_number(low)} per cluster"
-    else:
-        return None
-    return f"{_format_number(cluster_count)} cluster per {period}, {burden}"
+        return f"{_format_number(low)} to {_format_number(high)} per cluster"
+    if low:
+        return f"{_format_number(low)} per cluster"
+    if cluster.seizures_per_cluster_is_multiple:
+        return "multiple per cluster"
+    return None
 
 
 def _rate_label(rate: RatePayload) -> str | None:
     if not rate.time_unit:
         return None
-    period_count = rate.time_count_low or 1
-    period = _period_text(period_count, rate.time_unit)
-    if rate.count_is_multiple:
-        return f"multiple per {period}"
-    if rate.count_low and rate.count_high and rate.count_low != rate.count_high:
-        return f"{_format_number(rate.count_low)} to {_format_number(rate.count_high)} per {period}"
-    if rate.count_low:
-        return f"{_format_number(rate.count_low)} per {period}"
+    period = _period_text(rate.time_count_low or 1, rate.time_unit, high=rate.time_count_high)
+    count = _count_text(
+        low=rate.count_low,
+        high=rate.count_high,
+        is_multiple=rate.count_is_multiple,
+    )
+    if count:
+        return f"{count} per {period}"
     return None
 
 
@@ -636,7 +655,25 @@ def _hard_family_summary(rows: Sequence[Mapping[str, Any]]) -> dict[str, dict[st
     return {family: dict(counts) for family, counts in sorted(summary.items())}
 
 
-def _period_text(count: float, unit: str) -> str:
+def _count_text(
+    *,
+    low: float | None,
+    high: float | None,
+    is_multiple: bool | None,
+    default: str | None = None,
+) -> str | None:
+    if is_multiple:
+        return "multiple"
+    if low and high and low != high:
+        return f"{_format_number(low)} to {_format_number(high)}"
+    if low:
+        return _format_number(low)
+    return default
+
+
+def _period_text(count: float, unit: str, *, high: float | None = None) -> str:
+    if high and high != count:
+        return f"{_format_number(count)} to {_format_number(high)} {unit}"
     if count == 1:
         return unit
     return f"{_format_number(count)} {unit}"
