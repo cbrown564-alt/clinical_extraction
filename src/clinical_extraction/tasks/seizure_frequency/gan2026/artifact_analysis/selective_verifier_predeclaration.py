@@ -53,6 +53,78 @@ VERIFIER_SYSTEM_PROMPT = (
     "new candidates from outside the provided evidence. Choose one allowed "
     "recommendation and return JSON matching the schema."
 )
+VETO_FIRST_SYSTEM_PROMPT = (
+    "You are reviewing a proposed seizure-frequency answer. Use only the clinical "
+    "text shown below. Decide whether the proposed answer is clearly supported. "
+    "Mark the answer as unsafe if the text is vague, missing a clear count or "
+    "timeframe, describes only one seizure type while another remains active, "
+    "describes seizure freedom for only one seizure type, adds cluster details "
+    "that are not clearly stated, or conflicts with another listed possibility. "
+    "When in doubt, choose use_unknown or needs_review. Return only JSON matching "
+    "the requested fields."
+)
+SUPPORT_PARTS_SYSTEM_PROMPT = (
+    "Check whether the proposed seizure-frequency answer is fully supported by "
+    "the clinical text. A complete answer needs a seizure or event type, a count, "
+    "a timeframe, and enough context to show it applies to the current highest "
+    "seizure frequency. Do not fill in missing parts from assumptions. Return "
+    "only JSON matching the requested fields."
+)
+VETO_FIRST_OUTPUT_SCHEMA = {
+    "decision": ["use_proposed_answer", "use_unknown", "needs_review"],
+    "blocking_issue": [
+        "none",
+        "vague_count",
+        "vague_timeframe",
+        "competing_seizure_type",
+        "partial_seizure_freedom",
+        "cluster_not_supported",
+        "historical_or_conditional",
+        "other",
+    ],
+    "supporting_quotes": ["Exact copied phrases from clinical_text."],
+    "reason": "Brief explanation using only the provided clinical text.",
+    "confidence": "low, medium, or high.",
+}
+SUPPORT_PARTS_OUTPUT_SCHEMA = {
+    "seizure_or_event_type_supported": "true or false.",
+    "count_supported": "true or false.",
+    "timeframe_supported": "true or false.",
+    "current_highest_frequency_supported": "true or false.",
+    "all_required_parts_supported": "true or false.",
+    "recommended_action": ["use_proposed_answer", "use_unknown", "needs_review"],
+    "missing_or_conflicting_parts": [
+        "Short names of any unsupported or conflicting parts."
+    ],
+    "quotes": ["Exact copied phrases from clinical_text."],
+    "reason": "Brief explanation using only the provided clinical text.",
+}
+PROMPT_DESIGN_ORDER = [
+    "veto_first_safety_reviewer",
+    "support_parts_fact_check",
+]
+FLAG_REVIEW_REASONS = {
+    "denominator_window_mismatch": "The count and timeframe may not belong together.",
+    "diary_log_date_list_without_defined_observation_window": (
+        "The text lists dates or diary entries without a clear observation timeframe."
+    ),
+    "frequency_with_count_blocking_ambiguity": (
+        "The text may not give enough information for both count and timeframe."
+    ),
+    "frequency_with_exclusive_conditionality": (
+        "The frequency may apply only under a condition or trigger."
+    ),
+    "seizure_free_non_all_type_scope_with_current_events": (
+        "The text may describe seizure freedom for one seizure type while another "
+        "type remains active."
+    ),
+    "unresolved_cluster_cadence_with_per_cluster_burden": (
+        "The text may describe seizures in groups without a clear group frequency."
+    ),
+    "vague_trend_without_absolute_current_frequency": (
+        "The text describes a trend but may not give a current frequency."
+    ),
+}
 
 
 def build_selective_verifier_predeclaration_rows(
@@ -90,6 +162,7 @@ def summarize_selective_verifier_predeclaration(
         ),
         "allowed_recommendations": ALLOWED_RECOMMENDATIONS,
         "verifier_output_schema": VERIFIER_OUTPUT_SCHEMA,
+        "prompt_design_candidates": PROMPT_DESIGN_ORDER,
         "metrics": {
             "eligible_verifier_rows": len(rows),
             "route_unknown_rows": action_counts["route_unknown"],
@@ -171,6 +244,28 @@ def write_selective_verifier_report(
             "`confidence`. Evidence quotes must be exact substrings from the provided "
             "selected evidence or competing-hypothesis text.",
             "",
+            "## Prompt Design Candidates",
+            "",
+            "Two plain-language candidate designs are rendered into each row for "
+            "offline inspection. They are not live-call results and are not "
+            "prediction-bearing.",
+            "",
+            "### `veto_first_safety_reviewer`",
+            "",
+            VETO_FIRST_SYSTEM_PROMPT,
+            "",
+            "Output fields: `decision`, `blocking_issue`, `supporting_quotes`, "
+            "`reason`, `confidence`.",
+            "",
+            "### `support_parts_fact_check`",
+            "",
+            SUPPORT_PARTS_SYSTEM_PROMPT,
+            "",
+            "Output fields: `seizure_or_event_type_supported`, `count_supported`, "
+            "`timeframe_supported`, `current_highest_frequency_supported`, "
+            "`all_required_parts_supported`, `recommended_action`, "
+            "`missing_or_conflicting_parts`, `quotes`, `reason`.",
+            "",
             "## Artifacts",
             "",
             f"- Protocol: `{protocol_path}`",
@@ -242,6 +337,7 @@ def _predeclaration_row(row: Mapping[str, Any]) -> dict[str, Any]:
             "provided_competing_hypotheses": _provided_competing_hypotheses(row),
             "output_schema": VERIFIER_OUTPUT_SCHEMA,
         },
+        "prompt_design_candidates": _prompt_design_candidates(row, selected_state),
         "development_accounting": {
             "comparator_label": row.get("deterministic_policy_label"),
             "routing_policy_label": final_policy.get("label"),
@@ -279,6 +375,45 @@ def _provided_competing_hypotheses(row: Mapping[str, Any]) -> list[str]:
     embedded = row.get("embedded_ambiguity_fields") or {}
     summary = str(embedded.get("competing_state_summary") or "").strip()
     return [summary] if summary else []
+
+
+def _prompt_design_candidates(
+    row: Mapping[str, Any],
+    selected_state: Mapping[str, Any],
+) -> dict[str, dict[str, Any]]:
+    proposed_answer = row.get("deterministic_policy_label")
+    clinical_text = str(selected_state.get("selected_evidence") or "")
+    competing = _provided_competing_hypotheses(row)
+    review_reasons = _review_reasons(row.get("suspicious_state_flags") or [])
+    common = {
+        "clinical_text": clinical_text,
+        "proposed_answer": proposed_answer,
+        "competing_possibilities": competing,
+        "review_reasons": review_reasons,
+    }
+    return {
+        "veto_first_safety_reviewer": {
+            "task_design": "veto_first_safety_reviewer",
+            "system_prompt": VETO_FIRST_SYSTEM_PROMPT,
+            **common,
+            "output_schema": VETO_FIRST_OUTPUT_SCHEMA,
+        },
+        "support_parts_fact_check": {
+            "task_design": "support_parts_fact_check",
+            "system_prompt": SUPPORT_PARTS_SYSTEM_PROMPT,
+            **common,
+            "output_schema": SUPPORT_PARTS_OUTPUT_SCHEMA,
+        },
+    }
+
+
+def _review_reasons(flags: Sequence[Any]) -> list[str]:
+    reasons = [
+        FLAG_REVIEW_REASONS[str(flag)]
+        for flag in flags
+        if str(flag) in FLAG_REVIEW_REASONS
+    ]
+    return reasons or ["The proposed answer was routed for extra review."]
 
 
 def _hidden_family_summary(rows: Sequence[Mapping[str, Any]]) -> dict[str, dict[str, int]]:
