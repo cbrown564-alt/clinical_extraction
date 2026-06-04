@@ -61,14 +61,14 @@ def test_build_sparse_operands_inputs_exposes_a2_schema_without_gold() -> None:
     inputs = reasoner.build_sparse_operands_inputs(_record())
 
     assert inputs["note_text"] == _record().note_text
-    assert inputs["output_contract"]["pipeline_family"] == reasoner.PIPELINE_FAMILY
-    assert inputs["output_contract"]["typed_output_schema_version"] == (
-        reasoner.SPARSE_OPERANDS_SCHEMA_VERSION
-    )
+    assert "pipeline_family" not in inputs["output_contract"]
+    assert "typed_output_schema_version" not in inputs["output_contract"]
     assert inputs["output_contract"]["top_level_outputs"] == ["selected_state"]
     assert "operands" in inputs["output_contract"]["selected_state_fields"]
-    assert "period_count_high" in inputs["output_contract"]["operand_fields"]
-    assert "operation graph" in str(inputs).lower()
+    assert "period_count_high" in inputs["output_contract"]["numeric_detail_fields"]
+    assert inputs["output_contract"]["field_descriptions"]["operands"]
+    assert inputs["output_contract"]["numeric_detail_field_descriptions"]["period_count_high"]
+    assert "numeric detail" in str(inputs).lower()
     assert "gold_label" not in str(inputs)
     assert "deterministic candidates" not in str(inputs)
 

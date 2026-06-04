@@ -200,7 +200,7 @@ class Gan2026TypedOperationsReasonerSignature(dspy.Signature):
         desc="Typed output contract and enum values."
     )
     operations: list[TypedOperationRecord] = dspy.OutputField(
-        desc="Typed source-near operation facts with exact evidence substrings."
+        desc="Typed operation facts with exact evidence substrings."
     )
     selection: TypedOperationSelection = dspy.OutputField(
         desc="Selected operation ids and selection policy."
@@ -237,11 +237,11 @@ def build_typed_operations_inputs(record: GanFrequencyRecord) -> dict[str, Any]:
     return {
         "note_text": record.note_text,
         "task_instructions": [
-            "Extract source-near seizure-frequency operations from the note.",
+            "Extract seizure-frequency facts from the note.",
             "Copy each evidence value as an exact substring from the note.",
             (
-                "Expose operands for event counts, windows, denominators, clusters, "
-                "seizure freedom, anchors, semiology, and uncertainty."
+                "Record numeric details for event counts, timeframes, rate time basis, "
+                "clusters, seizure freedom, anchors, semiology, and uncertainty."
             ),
             (
                 "Select the operation set that best answers the requested policy while "
@@ -263,14 +263,11 @@ def build_typed_operations_inputs(record: GanFrequencyRecord) -> dict[str, Any]:
                 "characters inside evidence strings."
             ),
             (
-                "If final_answer.rendering_operands is present, include the same "
-                "selected_evidence_id field required on operation operands."
+                "If final_answer includes numeric details, include the same "
+                "selected_evidence_id field required on the selected fact."
             ),
         ],
         "output_contract": {
-            "prompt_version": PROMPT_VERSION,
-            "pipeline_family": PIPELINE_FAMILY,
-            "typed_output_schema_version": TYPED_OUTPUT_SCHEMA_VERSION,
             "top_level_outputs": ["operations", "selection", "final_answer"],
             "operation_kinds": [
                 "frequency_rate",
@@ -280,6 +277,21 @@ def build_typed_operations_inputs(record: GanFrequencyRecord) -> dict[str, Any]:
                 "unknown_frequency",
                 "no_reference",
             ],
+            "field_descriptions": {
+                "operations": "Facts copied from the note that may describe seizure frequency.",
+                "selection": "Which extracted facts answer the current seizure-frequency question.",
+                "final_answer": "Seizure-frequency answer supported by the selected facts.",
+                "operation_id": "Stable identifier for one extracted fact.",
+                "operation_kind": "Type of seizure-frequency fact.",
+                "evidence_id": "Stable identifier for the evidence text.",
+                "evidence": "Exact note substring supporting the fact.",
+                "raw_phrase": "Short phrase copied from the evidence.",
+                "operands": "Numeric details such as count, timeframe, cluster size, or duration.",
+                "raw_llm_final_label": (
+                    "Seizure-frequency answer written from the selected evidence."
+                ),
+                "rendering_operands": "Optional numeric details used in the answer.",
+            },
             "operation_operand_fields": [
                 "event_count_low",
                 "event_count_high",
@@ -298,6 +310,24 @@ def build_typed_operations_inputs(record: GanFrequencyRecord) -> dict[str, Any]:
                 "uncertainty_type",
                 "selected_evidence_id",
             ],
+            "operation_operand_field_descriptions": {
+                "event_count_low": "Lowest stated seizure count.",
+                "event_count_high": "Highest stated seizure count, if a range is given.",
+                "time_window_low": "Lowest stated timeframe count.",
+                "time_window_high": "Highest stated timeframe count, if a range is given.",
+                "time_window_unit": "Time unit for the stated timeframe.",
+                "denominator_count": "Count for the time unit in a rate.",
+                "denominator_unit": "Time unit in a rate, or cluster when the rate is per cluster.",
+                "cluster_size_low": "Lowest stated seizures per cluster.",
+                "cluster_size_high": "Highest stated seizures per cluster.",
+                "seizure_free_duration_low": "Lowest stated seizure-free duration.",
+                "seizure_free_duration_high": "Highest stated seizure-free duration.",
+                "seizure_free_duration_unit": "Time unit for seizure-free duration.",
+                "temporal_anchor": "Text describing when the fact applies.",
+                "semiology_grouping": "Text naming which seizure type the fact applies to.",
+                "uncertainty_type": "Type of uncertainty, or none.",
+                "selected_evidence_id": "Evidence identifier this numeric detail describes.",
+            },
             "final_label_examples": [
                 "4 per day",
                 "1 per 7 to 9 day",

@@ -47,10 +47,8 @@ def test_build_selected_state_inputs_exposes_minimal_schema_without_gold() -> No
     inputs = reasoner.build_selected_state_inputs(_record())
 
     assert inputs["note_text"] == _record().note_text
-    assert inputs["output_contract"]["pipeline_family"] == reasoner.PIPELINE_FAMILY
-    assert inputs["output_contract"]["typed_output_schema_version"] == (
-        reasoner.SIMPLIFIED_OUTPUT_SCHEMA_VERSION
-    )
+    assert "pipeline_family" not in inputs["output_contract"]
+    assert "typed_output_schema_version" not in inputs["output_contract"]
     assert inputs["output_contract"]["top_level_outputs"] == ["selected_state"]
     assert inputs["output_contract"]["selected_state_fields"] == [
         "final_kind",
@@ -60,7 +58,8 @@ def test_build_selected_state_inputs_exposes_minimal_schema_without_gold() -> No
         "selection_reason",
         "uncertainty_flags",
     ]
-    assert "no graph projection" in str(inputs).lower()
+    assert inputs["output_contract"]["field_descriptions"]["raw_llm_final_label"]
+    assert "selected clinical state" in str(inputs).lower()
     assert "gold_label" not in str(inputs)
     assert "deterministic candidates" not in str(inputs)
 

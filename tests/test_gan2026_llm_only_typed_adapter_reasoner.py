@@ -79,16 +79,15 @@ def test_build_typed_adapter_inputs_excludes_gold_and_opaque_json_string() -> No
     inputs = reasoner.build_typed_adapter_inputs(_record())
 
     assert inputs["note_text"] == _record().note_text
-    assert inputs["output_contract"]["prompt_version"] == reasoner.PROMPT_VERSION
-    assert inputs["output_contract"]["pipeline_family"] == reasoner.PIPELINE_FAMILY
-    assert inputs["output_contract"]["typed_output_schema_version"] == (
-        reasoner.TYPED_OUTPUT_SCHEMA_VERSION
-    )
+    assert "prompt_version" not in inputs["output_contract"]
+    assert "pipeline_family" not in inputs["output_contract"]
+    assert "typed_output_schema_version" not in inputs["output_contract"]
     assert inputs["output_contract"]["top_level_outputs"] == [
         "events",
         "selection",
         "final_answer",
     ]
+    assert inputs["output_contract"]["field_descriptions"]["raw_llm_final_label"]
     assert "opaque JSON string" in " ".join(inputs["task_instructions"])
     assert "gold_label" not in str(inputs)
     assert "candidate_events" not in str(inputs)

@@ -18,7 +18,8 @@ RQ10 is now answered for saved validation replay: among 53 residual Purist
 misses, 23 are `underdetermined_note`, 19 are `true_extraction_failure`, and 11
 are `benchmark_convention_dominated`; 29 rows have exact evidence but remain
 scorer/gold-wrong, and 0 are strong likely gold defects. This is a
-development-control result only.
+development-control result only. A full validation750 gold/reference review CSV
+now screens all gold labels as `clear` or `ambiguous` for manual adjudication.
 
 RQ1/RQ2 single-task controls remain materialized and should resume after the
 current ambiguity/review-routing decision, unless the next priority is RQ9.
@@ -43,8 +44,12 @@ Core artifacts:
 - `experiments/gan2026_rq10_gold_scorer_ambiguity_audit_2026-06-04.jsonl`
 - `experiments/gan2026_rq10_gold_scorer_ambiguity_audit_2026-06-04.json`
 - `src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/rq10_gold_scorer_ambiguity_audit.py`
+- `experiments/gan2026_validation750_gold_reference_ambiguity_review_2026-06-04.csv`
+- `experiments/gan2026_validation750_gold_reference_ambiguity_review_2026-06-04.json`
+- `src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/validation_gold_ambiguity_inventory.py`
 - `docs/research/gan2026_rq1_rq2_single_task_controls_protocol_2026-06-04.md`
 - `docs/research/gan2026_prompt_language_audit_2026-06-04.md`
+- `docs/research/gan2026_prompt_contamination_variant_disposition_report_2026-06-04.md`
 - `src/clinical_extraction/tasks/seizure_frequency/gan2026/experiments/single_task_control_prompts.py`
 - `experiments/gan2026_rq1_rq2_single_task_control_panels_2026-06-04.md`
 - `experiments/gan2026_rq1_rq2_component_control_matrix_2026-06-04.md`
@@ -71,6 +76,8 @@ Core artifacts:
 ### Now
 
 - Predeclare RQ9 abstention/human-review routing using the RQ10 audit classes.
+- Review the validation750 gold/reference ambiguity CSV and replace the
+  heuristic `codex_initial_ambiguity_label` with manual adjudication.
 - Decide whether to run RQ1/RQ2 `balanced_validation50` controls before or after
   the RQ9 protocol.
 
@@ -88,6 +95,8 @@ Core artifacts:
   representation failures that need schema comparison.
 - Rewrite `llm_only_minimal_evidence_selector.py` under the prompt-language
   audit before any new minimal-evidence calls.
+- Design one clean selected-state successor from the prompt-contamination
+  disposition report before any new selected-state live calls.
 - RQ5 follow-up implementation only if a non-state-graph selected-state surface
   exposes fixed bundles that need rendering audit.
 
@@ -99,6 +108,11 @@ Core artifacts:
 
 ### Done Recently
 
+- 2026-06-04: Completed the full
+  validation750 gold/reference ambiguity review sheet:
+  `experiments/gan2026_validation750_gold_reference_ambiguity_review_2026-06-04.csv`
+  has 750 rows with manual review columns, 244 initial `clear` screens and 506
+  initial `ambiguous` screens. Labels are heuristic worklist flags only.
 - 2026-06-04: Completed the full
   `gan2026_rq1_rq2_component_control_matrix` analysis for completed
   `balanced_validation50` isolated controls: candidate-only, gold-query
@@ -115,6 +129,10 @@ Core artifacts:
   validated personal skill
   `/Users/cobro/.codex/skills/plain-language-prompt-auditor/SKILL.md`, and
   wrote frozen prompt/schema stubs for the RQ1/RQ2 controls.
+- 2026-06-04: Wrote the prompt-contamination variant disposition report:
+  preserve existing variants as historical prompt conditions, keep the cleaned
+  minimal evidence selector as a narrow baseline, and design one clean
+  selected-state successor before further selected-state live calls.
 - 2026-06-04: Materialized the fixed RQ1/RQ2 control surfaces:
   `balanced_validation50`, `hidden_family_hard_panel`, and the 875-record
   component-control matrix.

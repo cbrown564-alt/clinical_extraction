@@ -131,6 +131,32 @@ Validation:
 - `python -m pytest tests/test_gan2026_llm_only_minimal_evidence_selector.py`
 - `python -m pytest tests/test_gan2026_llm_prompt_hygiene.py`
 
+Completed selected-state follow-up on 2026-06-04:
+
+- Added rendered-payload prompt-discipline tests for selected-state surfaces:
+  model-facing instructions must not contain the audited jargon terms, prompt
+  metadata keys must not appear in model-facing payloads, and listed schema
+  fields must have descriptions.
+- Audited and remediated:
+  `llm_only_sparse_operands_selected_state_reasoner.py`,
+  `llm_only_simplified_selected_state_reasoner.py`,
+  `llm_only_typed_adapter_reasoner.py`, and
+  `llm_only_typed_operations_reasoner.py`.
+- Removed `prompt_version`, `pipeline_family`, and typed schema version metadata
+  from the selected-state model inputs. These remain available through run rows
+  and run metadata.
+- Rewrote selected-state task instructions away from `source-near`, `proxy`,
+  `scorer-facing`, and parser vocabulary where plain clinical wording was
+  sufficient.
+- Added field-description dictionaries for non-obvious schema fields. Stable
+  parser field names were retained where downstream typed parsing depends on
+  them.
+
+Selected-state validation:
+
+- `python -m pytest tests/test_gan2026_llm_prompt_hygiene.py tests/test_gan2026_llm_only_simplified_selected_state_reasoner.py tests/test_gan2026_llm_only_sparse_operands_selected_state_reasoner.py tests/test_gan2026_llm_only_typed_adapter_reasoner.py tests/test_gan2026_llm_only_typed_operations_reasoner.py`
+- `python -m ruff check tests/test_gan2026_llm_prompt_hygiene.py tests/test_gan2026_llm_only_simplified_selected_state_reasoner.py tests/test_gan2026_llm_only_sparse_operands_selected_state_reasoner.py tests/test_gan2026_llm_only_typed_adapter_reasoner.py tests/test_gan2026_llm_only_typed_operations_reasoner.py src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_only_simplified_selected_state_reasoner.py src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_only_sparse_operands_selected_state_reasoner.py src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_only_typed_adapter_reasoner.py src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_only_typed_operations_reasoner.py`
+
 ## New Preventive Control
 
 Created personal Codex skill:
