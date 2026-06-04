@@ -37,11 +37,11 @@ residual Purist misses.
 
 ## Active Question
 
-Staged Hybrid Assembly
+Selective Verifier Live Readout
 
-Status: architecture assembly readiness is accepted for validation
-development. The older broad LLM-first V1 hypothesis is superseded by the
-staged hybrid assembly decision.
+Status: the authorized live selective-verifier run is complete on the frozen
+42-row validation-development surface. The verifier is diagnostic only, not
+promotion-ready, because it introduced 5 C->W regressions versus routing.
 
 Core artifacts:
 
@@ -54,6 +54,11 @@ Core artifacts:
 - Component-control matrix: `experiments/gan2026_rq1_rq2_component_control_matrix_2026-06-04.*`
 - Assembly decision: `docs/research/gan2026_architecture_assembly_readiness_decision_2026-06-04.md`
 - ADR: `docs/decisions/0009-gan2026-staged-hybrid-assembly.md`
+- Ambiguity protocol: `docs/research/gan2026_ambiguity_ownership_protocol_2026-06-04.md`
+- Selective verifier predeclaration:
+  `docs/research/gan2026_selective_verifier_predeclaration_2026-06-04.md`
+- Selective verifier live run:
+  `docs/research/gan2026_selective_verifier_live_gpt41mini_2026-06-04.md`
 
 ## Guardrails
 
@@ -73,16 +78,17 @@ Core artifacts:
 
 ### Now
 
-- Decide whether the next step is a telemetry-only RQ8 pass or a frozen
-  verifier/predeclaration slice; do not make new model calls until that choice
-  is explicit.
+- Treat `gan2026_selective_verifier_v0` as diagnostic-only. It ran 42/42 live
+  calls with 42 parseable outputs, 38/42 exact evidence-quote rows, 6 W->C, 5
+  C->W, and changed-decision precision 0.522 versus routing.
 
 ### Next
 
+- Adjudicate the 5 verifier C->W regression rows
+  (`2080`, `5534`, `6209`, `7168`, `15193`) before any verifier redesign or
+  prediction-bearing use.
 - If cost/latency/token efficiency is needed, run a telemetry-only pass over
   surviving primitives before strengthening RQ8 claims.
-- If ambiguity resolution is next, predeclare the selective verifier over the
-  stable suspicious routing slices and keep C->W rows visible.
 
 ### Blocked
 
@@ -94,6 +100,14 @@ Core artifacts:
 
 ### Done Recently
 
+- 2026-06-04: Ran the authorized live selective verifier on the frozen 42-row
+  validation predeclaration using `openai/gpt-4.1-mini`: 42/42 calls ok, 42/42
+  parseable, 38/42 exact evidence-quote rows, 6 W->C, 5 C->W, changed-decision
+  precision 0.522, so verifier promotion is blocked.
+- 2026-06-04: Resolved the next-step choice in favor of ambiguity resolution,
+  materialized the frozen selective-verifier predeclaration over 42
+  exact-evidence suspicious validation rows, and verified the builder/routing/RQ8
+  guard tests (`7 passed`).
 - 2026-06-04: Replayed `staged_hybrid_assembly_validation_development_v0` over
   existing hard-panel artifacts before new model calls: 75/75
   projection/source-id consistency, 0 inconsistent rows, and primary v3
