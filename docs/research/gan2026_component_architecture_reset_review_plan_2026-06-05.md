@@ -1568,11 +1568,96 @@ Extract -> ClinicalAssessment -> Project/Verify/Render
   `$env:PYTHONPATH='src'; .venv/Scripts/python.exe -m ruff check src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_candidate_set_clinical_assessment_probe.py src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/clinical_assessment_diagnostics.py tests/test_gan2026_llm_candidate_set_clinical_assessment_probe.py tests/test_gan2026_clinical_assessment_diagnostics.py`
   passed.
 
+### Clinical Assessment V3-Nested Validation250 Close-Out
+
+- Live validation250 v3nested v2 artifacts:
+  - `experiments/gan2026_candidate_set_clinical_assessment_probe_live_validation250_gpt41mini_v3nested_v2.jsonl`;
+  - `experiments/gan2026_candidate_set_clinical_assessment_probe_live_validation250_gpt41mini_v3nested_v2.md`;
+  - `experiments/gan2026_candidate_set_clinical_assessment_probe_live_validation250_v3nested_v2_diagnostics.jsonl`;
+  - `experiments/gan2026_candidate_set_clinical_assessment_probe_live_validation250_v3nested_v2_diagnostics.json`;
+  - `experiments/gan2026_candidate_set_clinical_assessment_probe_live_validation250_v3nested_v2_diagnostics.md`.
+- v3nested v2 validation250 summary:
+  - rows: 250;
+  - clinical assessment rows: 247/250;
+  - call failures: 0;
+  - parse/validation failure rows: 3;
+  - missing candidate-set rows: 0;
+  - assessment kinds: 167 `frequency_rate`, 22 `cluster_frequency`, 41
+    `seizure_free`, and 17 `unknown_frequency`;
+  - aggregation policies: 185 `single_fact`, 41 `primary_with_context`, 14
+    `seizure_free_state`, 3 `additive_same_window`, 2 `cluster_axis`, 1
+    `no_reference_boundary`, and 1 `unknown_due_to_absence`.
+- Diagnostic correction:
+  - updated `clinical_assessment_diagnostics.py` so the report claim boundary
+    reflects the actual row count rather than the old validation25 wording;
+  - narrowed `historical_primary_candidate` so seizure-free "since date" or
+    "no events since referral" assessments are not flagged merely because the
+    extractor labeled the only available seizure-free candidate as
+    `historical`;
+  - after this correction, true flagged rows reduced from 8 to 5:
+    744, 1363, 3469, 3532, and 5567.
+- Remaining v2 diagnostic flags:
+  - row 744: `additive_policy_non_frequency_primary`;
+  - rows 1363, 3532, and 5567: `assessment_missing` after otherwise
+    successful model calls because of role overlap, empty primary ids for a
+    `frequency_rate` assessment, or an invented rejected candidate id;
+  - row 3469: `seizure_free_context_leak_in_cluster_burden`.
+- Revised prompt to v3:
+  - bumped `PROMPT_VERSION` to
+    `gan2026_candidate_set_clinical_assessment_probe_v3`;
+  - explicitly prohibited invented candidate ids and candidate ids appearing
+    in more than one role;
+  - limited `additive_same_window` to concrete `frequency_rate` primary
+    candidates;
+  - instructed no-primary cases to return `unknown_frequency` /
+    `unknown_due_to_absence` or `no_reference` / `no_reference_boundary`,
+    not `frequency_rate` with empty primary ids;
+  - added recurring-risk-window guidance so seizure-free outside-window context
+    is not copied into non-`seizure_free` normalized burden fields;
+  - added examples for vague frequency plus isolated concrete event, no usable
+    primary candidate, and seizure-free outside a pattern window.
+- Targeted v3 repair check on the 5 true flagged validation250 rows:
+  - `experiments/gan2026_candidate_set_clinical_assessment_probe_live_validation250_flagged5_gpt41mini_v3nested_v3.jsonl`;
+  - `experiments/gan2026_candidate_set_clinical_assessment_probe_live_validation250_flagged5_gpt41mini_v3nested_v3.md`;
+  - `experiments/gan2026_candidate_set_clinical_assessment_probe_live_validation250_flagged5_v3nested_v3_diagnostics.jsonl`;
+  - `experiments/gan2026_candidate_set_clinical_assessment_probe_live_validation250_flagged5_v3nested_v3_diagnostics.json`;
+  - `experiments/gan2026_candidate_set_clinical_assessment_probe_live_validation250_flagged5_v3nested_v3_diagnostics.md`.
+- Targeted v3 flagged-row summary:
+  - rows: 5;
+  - clinical assessment rows: 5/5;
+  - call failures: 0;
+  - parse/validation failure rows: 0;
+  - invalid reference rows: 0;
+  - role overlap rows: 0;
+  - diagnostic flag rows: 0.
+- Interpretation:
+  - validation250 supports the merged `ClinicalAssessment` middle-stage design:
+    the v2 prompt completed 247/250 assessments without call failures, and the
+    remaining true diagnostic failures were narrow prompt-contract failures;
+  - the corrected diagnostics preserve the distinction between actionable
+    historical-primary mistakes and acceptable seizure-free "since date"
+    evidence whose source candidate was labeled historical upstream;
+  - targeted v3 replay resolved all five true flagged rows, so the phase can
+    close for architecture-review purposes without claiming a full v3
+    validation250 run;
+  - before deterministic projection/rendering, treat v3 as the active
+    clinical-assessment prompt, but carry forward that full-validation250 clean
+    diagnostics exist for v2 only after diagnostic correction plus targeted v3
+    repair, not as a full v3 validation250 promotion claim.
+- Verification:
+  `$env:PYTHONPATH='src'; .venv/Scripts/python.exe -m pytest tests/test_gan2026_llm_candidate_set_clinical_assessment_probe.py tests/test_gan2026_clinical_assessment_diagnostics.py -q`
+  passed with 12 tests.
+  `$env:PYTHONPATH='src'; .venv/Scripts/python.exe -m ruff check src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_candidate_set_clinical_assessment_probe.py src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/clinical_assessment_diagnostics.py tests/test_gan2026_llm_candidate_set_clinical_assessment_probe.py tests/test_gan2026_clinical_assessment_diagnostics.py`
+  passed.
+
 ### Current Resume Point
 
-The next session should resume at v3nested v2 validation250 promotion, not at
-extract design, separate selector normalization, or another validation25 prompt
-loop.
+The v3nested validation250 clinical-assessment phase is now closed for
+architecture-review purposes. The next session should resume at the
+post-assessment architecture decision: whether to build deterministic
+projection/rendering from the `ClinicalAssessment` object, add a narrow
+last-event/context timing field first, or run a full v3 validation250 replay if
+promotion-grade prompt evidence is required.
 The source-near candidate contract, deterministic/LLM candidate-set replay,
 high-recall extract variant, union artifact, `SelectedCandidateDecision` contract,
 selector schema probe, and related-group policy diagnostics are now
@@ -1581,16 +1666,18 @@ middle-stage design.
 
 Start next session with:
 
-1. Run validation250 live with:
-   `--candidate-set-jsonl experiments/gan2026_validation250_candidate_set_v3_nested_dedupe.jsonl`.
-2. Re-run clinical-assessment diagnostics and compare against v3nested v2
-   validation50.
-3. Inspect any new diagnostic flags before deterministic projection/rendering.
-4. Separately decide whether the `ClinicalAssessment` schema needs a
-   last-event/context timing field so last-event context cannot be forced into
+1. Decide whether `ClinicalAssessment` needs a narrow last-event/context timing
+   field before projection/rendering, especially for rows where later
+   seizure-free intervals or last-event context should not be represented as
    seizure-free duration operands.
-5. Do not build deterministic projection/rendering until validation250
-   diagnostics remain clean or any new flags are understood.
+2. If projection/rendering begins, use v3nested CandidateSets and the active
+   v3 clinical-assessment contract, and keep projection deterministic and
+   policy-versioned.
+3. Do not claim a full v3 validation250 promotion unless a future full v3
+   validation250 replay is run and diagnosed.
+4. Keep the current validation250 conclusion scoped to mechanics: the
+   assessment contract is viable enough to close Phase 3 diagnostics and move
+   to projection design, not to benchmark-comparable scoring.
 
 Do not draw selector-quality conclusions from
 `experiments/gan2026_validation250_selected_fact_v0_v2_high_recall.jsonl`

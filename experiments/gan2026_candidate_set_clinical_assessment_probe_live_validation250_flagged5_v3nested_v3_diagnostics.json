@@ -1,0 +1,124 @@
+{
+  "artifact_name": "gan2026_candidate_set_clinical_assessment_probe_live_validation25_v0_diagnostics",
+  "claim_boundary": "5-row clinical-assessment diagnostics only. This inspects role usage, context separation, and comparisons to selector artifacts; it does not score, project, or render answers.",
+  "inspection_examples": {
+    "context_leak_rows": [],
+    "flagged_rows": [],
+    "minimal_selector_differences": [
+      {
+        "aggregation_policy": "primary_with_context",
+        "assessment_kind": "unknown_frequency",
+        "assessment_summary": "The patient experiences frequent brief absence seizures on most weekdays, often clustering in the late afternoon due to fatigue, with one generalised tonic–clonic seizure in the last eight weeks. Current antiepileptic regimen is maintained with focus on managing fatigue and triggers. Monitoring and seizure diary recommended.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "different",
+        "primary_candidate_ids": [
+          "llm:744:1"
+        ],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "different",
+        "source_row_index": 744,
+        "supporting_candidate_ids": [
+          "llm:744:2",
+          "det:744:1",
+          "det:744:2",
+          "det:744:3"
+        ]
+      },
+      {
+        "aggregation_policy": "primary_with_context",
+        "assessment_kind": "cluster_frequency",
+        "assessment_summary": "Seizures occur exclusively during the perimenstrual window (days -3 to +3) with no events reported outside this window over the last six months. Events are brief behavioral arrests with loss of awareness and no consistent aura. Triggers include sleep disruption and premenstrual symptoms. Patient maintains a seizure ID card and peer observations supplement history. Repeat EEG and blood tests planned.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "assessment_primary_subset",
+        "primary_candidate_ids": [
+          "llm:3469:1"
+        ],
+        "rejected_candidate_ids": [
+          "det:3469:2"
+        ],
+        "rich_selector_primary_relation": "same",
+        "source_row_index": 3469,
+        "supporting_candidate_ids": [
+          "llm:3469:2",
+          "det:3469:3"
+        ]
+      },
+      {
+        "aggregation_policy": "primary_with_context",
+        "assessment_kind": "frequency_rate",
+        "assessment_summary": "The patient experiences several absence seizures per week, typically clustering in the late afternoon, with two generalised tonic–clonic seizures over the past six months, the last one three weeks ago after sleep deprivation. Generalised tonic–clonic seizures have not recurred since valproate dose increase six weeks ago. The absence seizures remain frequent and are the dominant current burden.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "different",
+        "primary_candidate_ids": [
+          "det:5567:1"
+        ],
+        "rejected_candidate_ids": [
+          "llm:5567:1",
+          "llm:5567:2"
+        ],
+        "rich_selector_primary_relation": "same",
+        "source_row_index": 5567,
+        "supporting_candidate_ids": [
+          "det:5567:2",
+          "llm:5567:3",
+          "llm:5567:4"
+        ]
+      }
+    ],
+    "multi_primary_rows": [],
+    "rich_selector_differences": [
+      {
+        "aggregation_policy": "primary_with_context",
+        "assessment_kind": "unknown_frequency",
+        "assessment_summary": "The patient experiences frequent brief absence seizures on most weekdays, often clustering in the late afternoon due to fatigue, with one generalised tonic–clonic seizure in the last eight weeks. Current antiepileptic regimen is maintained with focus on managing fatigue and triggers. Monitoring and seizure diary recommended.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "different",
+        "primary_candidate_ids": [
+          "llm:744:1"
+        ],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "different",
+        "source_row_index": 744,
+        "supporting_candidate_ids": [
+          "llm:744:2",
+          "det:744:1",
+          "det:744:2",
+          "det:744:3"
+        ]
+      }
+    ]
+  },
+  "row_count": 5,
+  "source_artifact": "experiments\\gan2026_candidate_set_clinical_assessment_probe_live_validation250_flagged5_gpt41mini_v3nested_v3.jsonl",
+  "summary": {
+    "aggregation_policy_counts": {
+      "primary_with_context": 4,
+      "unknown_due_to_absence": 1
+    },
+    "assessment_kind_counts": {
+      "cluster_frequency": 2,
+      "frequency_rate": 1,
+      "unknown_frequency": 2
+    },
+    "clinical_assessment_rows": 5,
+    "diagnostic_flag_counts": {},
+    "flagged_source_row_indices": [],
+    "invalid_reference_rows": 0,
+    "minimal_selector_primary_relation_counts": {
+      "assessment_primary_subset": 1,
+      "different": 2,
+      "same": 1
+    },
+    "missing_assessment_rows": 0,
+    "primary_candidate_count_distribution": {
+      "0": 1,
+      "1": 4
+    },
+    "rich_selector_primary_relation_counts": {
+      "different": 1,
+      "same": 3
+    },
+    "role_overlap_rows": 0,
+    "rows_with_diagnostic_flags": 0
+  }
+}
