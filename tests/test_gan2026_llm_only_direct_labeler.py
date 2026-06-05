@@ -85,6 +85,49 @@ def test_parse_decision_json_repairs_common_model_aliases() -> None:
     assert errors == ["final_label_repaired: '1 every 2 days' -> '1 per 2 day'"]
 
 
+def test_parse_decision_json_repairs_direct_labeler_answer_kind_phrases() -> None:
+    raw = json.dumps(
+        {
+            "final_label": "nightly",
+            "evidence": "nightly generalised convulsions seizures",
+            "answer_kind": "direct frequency statement",
+            "selected_seizure_type": "generalised convulsions",
+            "time_window": "current",
+            "confidence": "high",
+            "rationale": "The note gives an ongoing nightly seizure frequency.",
+        }
+    )
+
+    decision, errors = parse_decision_json(raw)
+
+    assert decision is not None
+    assert decision.answer_kind == "frequency"
+    assert decision.final_label == "1 per day"
+    assert errors == ["final_label_repaired: 'nightly' -> '1 per day'"]
+
+
+def test_parse_decision_json_repairs_confidence_aliases() -> None:
+    raw = json.dumps(
+        {
+            "final_label": "17 per month",
+            "evidence": "current seizure frequency of 17 per month",
+            "answer_kind": "explicit_frequency",
+            "selected_seizure_type": "focal aware seizures",
+            "time_window": "per month",
+            "confidence": "very high",
+            "rationale": "The note explicitly states the current frequency.",
+        }
+    )
+
+    decision, errors = parse_decision_json(raw)
+
+    assert decision is not None
+    assert decision.answer_kind == "frequency"
+    assert decision.confidence == "high"
+    assert decision.final_label == "17 per month"
+    assert errors == []
+
+
 def test_parse_decision_json_repairs_benchmark_format_without_changing_interpretation() -> None:
     raw = json.dumps(
         {

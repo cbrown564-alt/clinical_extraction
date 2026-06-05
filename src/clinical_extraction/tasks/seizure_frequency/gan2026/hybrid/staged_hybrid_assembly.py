@@ -14,12 +14,15 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis impor
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.components import (
     abstention_policy_predeclaration,
+    component_evidence_matrix,
+    exact_label_selector_ablation,
     last_event_date_instrumentation,
     residual_nonprediction_audit,
     selective_abstention_pressure,
     selective_verifier,
     staged_decision_policy,
     trigger_context_release_rule,
+    trigger_release_promotion_analysis,
     validation_surface_inventory,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
@@ -32,6 +35,8 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io
     write_jsonl_rows,
 )
 
+CANDIDATE_VERSION = "hybrid_multi_component_staged_assembly_v0"
+ARTIFACT_STEM = "gan2026_hybrid_multi_component_staged_assembly_v0"
 POLICY_NAME = "staged_hybrid_assembly_validation_development_v0"
 DEFAULT_JSONL_PATH = Path(
     "experiments/gan2026_staged_hybrid_assembly_no_call_replay_2026-06-04.jsonl"
@@ -116,6 +121,49 @@ DEFAULT_LAST_EVENT_DATE_JSON_PATH = Path(
 DEFAULT_LAST_EVENT_DATE_REPORT_PATH = Path(
     "experiments/"
     "gan2026_staged_hybrid_last_event_date_instrumentation_2026-06-04.md"
+)
+DEFAULT_COMPONENT_MATRIX_CSV_PATH = Path(
+    "experiments/"
+    "gan2026_hybrid_multi_component_staged_assembly_v0_validation750_"
+    "component_matrix_2026-06-04.csv"
+)
+DEFAULT_COMPONENT_MATRIX_JSON_PATH = Path(
+    "experiments/"
+    "gan2026_hybrid_multi_component_staged_assembly_v0_validation750_"
+    "component_matrix_2026-06-04.json"
+)
+DEFAULT_COMPONENT_MATRIX_REPORT_PATH = Path(
+    "experiments/"
+    "gan2026_hybrid_multi_component_staged_assembly_v0_validation750_"
+    "component_matrix_2026-06-04.md"
+)
+DEFAULT_TRIGGER_PROMOTION_JSON_PATH = Path(
+    "experiments/"
+    "gan2026_hybrid_multi_component_staged_assembly_v0_validation750_"
+    "trigger_release_promotion_2026-06-04.json"
+)
+DEFAULT_TRIGGER_PROMOTION_REPORT_PATH = Path(
+    "experiments/"
+    "gan2026_hybrid_multi_component_staged_assembly_v0_validation750_"
+    "trigger_release_promotion_2026-06-04.md"
+)
+DEFAULT_CANDIDATE_DISCOVERY_JSONL_PATH = Path(
+    "experiments/gan2026_rq1_candidate_discovery_matrix_2026-06-03.jsonl"
+)
+DEFAULT_SELECTOR_ABLATION_CSV_PATH = Path(
+    "experiments/"
+    "gan2026_hybrid_multi_component_staged_assembly_v0_validation750_"
+    "exact_label_selector_ablation_2026-06-05.csv"
+)
+DEFAULT_SELECTOR_ABLATION_JSON_PATH = Path(
+    "experiments/"
+    "gan2026_hybrid_multi_component_staged_assembly_v0_validation750_"
+    "exact_label_selector_ablation_2026-06-05.json"
+)
+DEFAULT_SELECTOR_ABLATION_REPORT_PATH = Path(
+    "experiments/"
+    "gan2026_hybrid_multi_component_staged_assembly_v0_validation750_"
+    "exact_label_selector_ablation_2026-06-05.md"
 )
 DEFAULT_REASONER_JSONL_PATH = validation_surface_inventory.DEFAULT_REASONER_JSONL_PATH
 DEFAULT_SAFETY_FLOOR_JSONL_PATH = (
@@ -900,6 +948,51 @@ def main(argv: Sequence[str] | None = None) -> int:
         type=Path,
         default=DEFAULT_LAST_EVENT_DATE_REPORT_PATH,
     )
+    parser.add_argument(
+        "--component-matrix-csv-path",
+        type=Path,
+        default=DEFAULT_COMPONENT_MATRIX_CSV_PATH,
+    )
+    parser.add_argument(
+        "--component-matrix-json-path",
+        type=Path,
+        default=DEFAULT_COMPONENT_MATRIX_JSON_PATH,
+    )
+    parser.add_argument(
+        "--component-matrix-report-path",
+        type=Path,
+        default=DEFAULT_COMPONENT_MATRIX_REPORT_PATH,
+    )
+    parser.add_argument(
+        "--trigger-promotion-json-path",
+        type=Path,
+        default=DEFAULT_TRIGGER_PROMOTION_JSON_PATH,
+    )
+    parser.add_argument(
+        "--trigger-promotion-report-path",
+        type=Path,
+        default=DEFAULT_TRIGGER_PROMOTION_REPORT_PATH,
+    )
+    parser.add_argument(
+        "--candidate-discovery-jsonl-path",
+        type=Path,
+        default=DEFAULT_CANDIDATE_DISCOVERY_JSONL_PATH,
+    )
+    parser.add_argument(
+        "--selector-ablation-csv-path",
+        type=Path,
+        default=DEFAULT_SELECTOR_ABLATION_CSV_PATH,
+    )
+    parser.add_argument(
+        "--selector-ablation-json-path",
+        type=Path,
+        default=DEFAULT_SELECTOR_ABLATION_JSON_PATH,
+    )
+    parser.add_argument(
+        "--selector-ablation-report-path",
+        type=Path,
+        default=DEFAULT_SELECTOR_ABLATION_REPORT_PATH,
+    )
     args = parser.parse_args(argv)
 
     if args.mode == "validation750":
@@ -1143,6 +1236,115 @@ def main(argv: Sequence[str] | None = None) -> int:
             release_jsonl_path=args.trigger_release_jsonl_path,
             proposed_jsonl_path=args.trigger_release_proposed_jsonl_path,
             json_path=args.trigger_release_json_path,
+        )
+        matrix_rows = component_evidence_matrix.build_matrix_rows(
+            assembly_rows,
+            decision_rows,
+            trigger_release_rows=trigger_release_rows,
+            last_event_rows=last_event_date_rows,
+            candidate_version=CANDIDATE_VERSION,
+        )
+        matrix_summary = component_evidence_matrix.summarize_matrix_rows(
+            matrix_rows
+        )
+        contract_issues = component_evidence_matrix.validate_matrix_contract(
+            matrix_rows
+        )
+        matrix_summary = {
+            **matrix_summary,
+            "artifact_kind": "gan2026_hybrid_multi_component_staged_assembly_component_matrix",
+            "candidate_version": CANDIDATE_VERSION,
+            "artifact_stem": ARTIFACT_STEM,
+            "contract_issues": contract_issues,
+            "source_artifacts": {
+                "assembly_jsonl": str(jsonl_path),
+                "decision_jsonl": str(args.decision_jsonl_path),
+                "trigger_release_jsonl": str(args.trigger_release_jsonl_path),
+                "last_event_date_jsonl": str(args.last_event_date_jsonl_path),
+            },
+        }
+        component_evidence_matrix.write_csv_rows(
+            matrix_rows,
+            args.component_matrix_csv_path,
+        )
+        component_evidence_matrix.write_summary_json(
+            matrix_summary,
+            args.component_matrix_json_path,
+        )
+        component_evidence_matrix.write_report(
+            matrix_summary,
+            args.component_matrix_report_path,
+            csv_path=args.component_matrix_csv_path,
+            json_path=args.component_matrix_json_path,
+        )
+        trigger_promotion = (
+            trigger_release_promotion_analysis.build_promotion_analysis(
+                trigger_release_rows,
+                proposed_decision_rows,
+                matrix_rows,
+            )
+        )
+        trigger_promotion = {
+            **trigger_promotion,
+            "artifact_kind": (
+                "gan2026_hybrid_multi_component_staged_assembly_trigger_release_promotion"
+            ),
+            "candidate_version": CANDIDATE_VERSION,
+            "source_artifacts": {
+                "trigger_release_jsonl": str(args.trigger_release_jsonl_path),
+                "proposed_decision_jsonl": str(
+                    args.trigger_release_proposed_jsonl_path
+                ),
+                "component_matrix_csv": str(args.component_matrix_csv_path),
+            },
+        }
+        trigger_release_promotion_analysis.write_summary_json(
+            trigger_promotion,
+            args.trigger_promotion_json_path,
+        )
+        trigger_release_promotion_analysis.write_report(
+            trigger_promotion,
+            args.trigger_promotion_report_path,
+            json_path=args.trigger_promotion_json_path,
+        )
+        candidate_discovery_rows = load_jsonl_rows(args.candidate_discovery_jsonl_path)
+        selector_ablation_rows = (
+            exact_label_selector_ablation.build_selector_ablation_rows(
+                matrix_rows,
+                candidate_discovery_rows,
+            )
+        )
+        selector_ablation_summary = (
+            exact_label_selector_ablation.summarize_selector_ablation_rows(
+                selector_ablation_rows,
+                matrix_rows,
+            )
+        )
+        selector_ablation_summary = {
+            **selector_ablation_summary,
+            "artifact_kind": (
+                "gan2026_hybrid_multi_component_staged_assembly_"
+                "exact_label_selector_ablation"
+            ),
+            "candidate_version": CANDIDATE_VERSION,
+            "source_artifacts": {
+                "component_matrix_csv": str(args.component_matrix_csv_path),
+                "candidate_discovery_jsonl": str(args.candidate_discovery_jsonl_path),
+            },
+        }
+        exact_label_selector_ablation.write_csv_rows(
+            selector_ablation_rows,
+            args.selector_ablation_csv_path,
+        )
+        exact_label_selector_ablation.write_summary_json(
+            selector_ablation_summary,
+            args.selector_ablation_json_path,
+        )
+        exact_label_selector_ablation.write_report(
+            selector_ablation_summary,
+            args.selector_ablation_report_path,
+            csv_path=args.selector_ablation_csv_path,
+            json_path=args.selector_ablation_json_path,
         )
         return 0
 

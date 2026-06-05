@@ -17,6 +17,7 @@ def build_dspy_lm(
     cache: bool,
     api_base: str | None = None,
     num_retries: int = 2,
+    timeout: int | None = None,
 ) -> dspy.LM:
     """Create a DSPy LM with optional local/OpenAI-compatible endpoint routing."""
 
@@ -26,6 +27,8 @@ def build_dspy_lm(
         "cache": cache,
         "num_retries": num_retries,
     }
+    if timeout is not None:
+        kwargs["timeout"] = timeout
     if model.startswith(OLLAMA_CHAT_PREFIX):
         kwargs["api_base"] = (api_base or "http://localhost:11434").removesuffix("/v1")
         kwargs["extra_body"] = {"think": False}

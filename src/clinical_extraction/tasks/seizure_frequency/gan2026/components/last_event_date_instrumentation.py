@@ -6,6 +6,7 @@ import json
 import re
 from collections import Counter
 from collections.abc import Mapping, Sequence
+from datetime import date
 from pathlib import Path
 from typing import Any
 
@@ -14,6 +15,31 @@ MONTH_PATTERN = (
     r"Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|"
     r"Dec(?:ember)?"
 )
+MONTHS = {
+    "jan": 1,
+    "january": 1,
+    "feb": 2,
+    "february": 2,
+    "mar": 3,
+    "march": 3,
+    "apr": 4,
+    "april": 4,
+    "may": 5,
+    "jun": 6,
+    "june": 6,
+    "jul": 7,
+    "july": 7,
+    "aug": 8,
+    "august": 8,
+    "sep": 9,
+    "september": 9,
+    "oct": 10,
+    "october": 10,
+    "nov": 11,
+    "november": 11,
+    "dec": 12,
+    "december": 12,
+}
 FULL_DATE_RE = re.compile(
     rf"\b\d{{1,2}}(?:st|nd|rd|th)?[ /-](?:{MONTH_PATTERN})[ /-]\d{{2,4}}\b",
     flags=re.IGNORECASE,
@@ -22,6 +48,7 @@ FULL_MONTH_DATE_RE = re.compile(
     rf"\b\d{{1,2}}(?:st|nd|rd|th)?\s+(?:{MONTH_PATTERN})\s+\d{{2,4}}\b",
     flags=re.IGNORECASE,
 )
+FULL_SLASH_DATE_RE = re.compile(r"\b\d{1,2}/\d{1,2}/\d{2,4}\b")
 PARTIAL_DATE_RE = re.compile(
     rf"\b\d{{1,2}}(?:st|nd|rd|th)?(?:[ /-](?:{MONTH_PATTERN})|\s+(?:{MONTH_PATTERN}))\b",
     flags=re.IGNORECASE,
@@ -70,28 +97,35 @@ def summarize_last_event_date_rows(rows: Sequence[Mapping[str, Any]]) -> dict[st
     release_ready_rows = sum(
         row.get("automatic_release_ready") is True for row in rows
     )
+    duration_auditable_rows = sum(row.get("duration_auditable") is True for row in rows)
     reference_date_available_rows = sum(
         row.get("note_or_reference_date_available") is True for row in rows
     )
+    blocker_counts = Counter(str(row.get("release_blocker")) for row in rows)
     return {
         "component_name": "last_event_date_instrumentation",
+        "policy_name": "last_event_duration_policy_v0",
         "row_count": len(rows),
         "date_signal_class_counts": dict(sorted(signal_counts.items())),
+        "release_blocker_counts": dict(sorted(blocker_counts.items())),
         "full_date_rows": signal_counts["full_date_detected"],
         "partial_date_rows": signal_counts["partial_date_missing_year"],
         "no_explicit_date_rows": signal_counts[
             "no_explicit_date_in_selected_evidence"
         ],
         "reference_date_available_rows": reference_date_available_rows,
+        "duration_auditable_rows": duration_auditable_rows,
         "automatic_release_ready_rows": release_ready_rows,
         "recommended_next_step": (
-            "Add auditable duration derivation and conflict checks before any "
-            "last-event automatic release."
+            "Use duration-auditable rows only after the candidate-level promotion "
+            "gate confirms no deterministic-correct regression and no evidence "
+            "or source-id defect."
         ),
         "claim_language": (
-            "Validation-development date instrumentation for last-event review "
-            "rows. It does not change prediction-bearing behavior, prompts, "
-            "scorer policy, gold labels, locked-test behavior, verifier use, or "
+            "Validation-development last-event duration policy for review rows. "
+            "It derives auditable durations and conflict flags, but does not "
+            "itself change prediction-bearing behavior, prompts, scorer policy, "
+            "gold labels, locked-test behavior, verifier use, or "
             "benchmark-comparable claims."
         ),
     }
@@ -130,6 +164,7 @@ def write_report(
             f"Reference-date anchors are available for "
             f"{summary['reference_date_available_rows']} rows."
         ),
+        f"Duration-auditable rows: {summary['duration_auditable_rows']}.",
         "",
         "## Release Readiness",
         "",
@@ -148,6 +183,17 @@ def write_report(
     lines.extend(
         [
             "",
+            "## Release Blockers",
+            "",
+            "| Blocker | Rows |",
+            "| --- | ---: |",
+        ]
+    )
+    for blocker, count in summary.get("release_blocker_counts", {}).items():
+        lines.append(f"| `{blocker}` | {count} |")
+    lines.extend(
+        [
+            "",
             "## Next Step",
             "",
             str(summary["recommended_next_step"]),
@@ -159,14 +205,17 @@ def write_report(
             "",
             "## Rows",
             "",
-            "| Row | Label | Date signal | Event dates | Reference dates |",
-            "| ---: | --- | --- | --- | --- |",
+            "| Row | Label | Date signal | Derived duration | Blocker | "
+            "Event dates | Reference dates |",
+            "| ---: | --- | --- | --- | --- | --- | --- |",
         ]
     )
     for row in rows:
         lines.append(
             f"| {row['source_row_index']} | `{row['blocked_candidate_label']}` | "
             f"`{row['date_signal_class']}` | "
+            f"`{row.get('derived_duration_label') or ''}` | "
+            f"`{row.get('release_blocker') or ''}` | "
             f"`{_joined_date_spans(row)}` | "
             f"`{', '.join(row['reference_date_spans'])}` |"
         )
@@ -186,13 +235,35 @@ def _date_instrumentation_row(
     signal_class = _date_signal_class(full_dates, partial_dates)
     reference_dates, reference_source = _reference_date_spans(source_record)
     reference_date_available = bool(reference_dates)
+    parsed_event_dates = [_parse_full_date(span) for span in full_dates]
+    parsed_reference_dates = [_parse_full_date(span) for span in reference_dates]
+    conflict_flags = _conflict_flags(evidence, parsed_event_dates, parsed_reference_dates)
+    derived = _derive_duration(parsed_event_dates, parsed_reference_dates)
+    duration_auditable = (
+        derived is not None
+        and not partial_dates
+        and not conflict_flags
+        and _has_event_target(evidence)
+    )
+    pressure_class = str(pressure.get("pressure_class") or "")
+    label = str(residual.get("blocked_candidate_label") or "")
+    release_blocker = _release_blocker(
+        signal_class=signal_class,
+        reference_date_available=reference_date_available,
+        duration_auditable=duration_auditable,
+        pressure_class=pressure_class,
+        label=label,
+        conflict_flags=conflict_flags,
+    )
     return {
         "artifact_kind": "gan2026_last_event_date_instrumentation_row",
+        "policy_name": "last_event_duration_policy_v0",
         "source_row_index": source_row_index,
         "review_lane": pressure.get("review_lane"),
+        "pressure_class": pressure.get("pressure_class"),
         "final_action": pressure.get("final_action"),
         "decision_reason": pressure.get("decision_reason"),
-        "blocked_candidate_label": residual.get("blocked_candidate_label"),
+        "blocked_candidate_label": label,
         "blocked_candidate_evidence": residual.get("blocked_candidate_evidence"),
         "blocked_candidate_source_ids": residual.get(
             "blocked_candidate_source_ids", []
@@ -203,19 +274,27 @@ def _date_instrumentation_row(
         "reference_date_spans": reference_dates,
         "reference_date_source": reference_source,
         "note_or_reference_date_available": reference_date_available,
+        "parsed_event_dates": [_format_date(value) for value in parsed_event_dates],
+        "parsed_reference_dates": [
+            _format_date(value) for value in parsed_reference_dates
+        ],
+        "duration_days": derived["days"] if derived else None,
+        "derived_duration_label": derived["label"] if derived else None,
+        "derived_duration_months_floor": derived["months_floor"] if derived else None,
+        "event_target_present": _has_event_target(evidence),
+        "conflict_flags": conflict_flags,
+        "duration_auditable": duration_auditable,
+        "promotion_gate_ready": release_blocker == "manual_promotion_required",
         "automatic_release_ready": False,
-        "release_blocker": (
-            "release_policy_not_implemented"
-            if reference_date_available
-            else "note_or_reference_date_missing"
-        ),
-        "claim_boundary": "validation_development_instrumentation_only",
+        "release_blocker": release_blocker,
+        "claim_boundary": "validation_development_duration_policy_only",
     }
 
 
 def _full_date_spans(text: str) -> list[str]:
     spans = [match.group(0) for match in FULL_DATE_RE.finditer(text)]
     spans.extend(match.group(0) for match in FULL_MONTH_DATE_RE.finditer(text))
+    spans.extend(match.group(0) for match in FULL_SLASH_DATE_RE.finditer(text))
     return _dedupe_preserving_order(spans)
 
 
@@ -274,6 +353,115 @@ def _dates_after_label(text: str, label: str) -> list[str]:
         return []
     snippet = text[label_index + len(label) : label_index + len(label) + 80]
     return _full_date_spans(snippet)
+
+
+def _parse_full_date(span: str) -> date | None:
+    cleaned = re.sub(r"(\d{1,2})(st|nd|rd|th)", r"\1", span, flags=re.IGNORECASE)
+    cleaned = cleaned.replace("-", " ").replace("/", " ")
+    parts = cleaned.split()
+    if len(parts) != 3:
+        return None
+    try:
+        day = int(parts[0])
+        month_token = parts[1].lower().rstrip(".")
+        if month_token.isdigit():
+            month = int(month_token)
+        else:
+            month = MONTHS[month_token]
+        year = int(parts[2])
+        if year < 100:
+            year += 2000 if year < 50 else 1900
+        return date(year, month, day)
+    except (KeyError, ValueError):
+        return None
+
+
+def _derive_duration(
+    event_dates: Sequence[date | None],
+    reference_dates: Sequence[date | None],
+) -> dict[str, Any] | None:
+    event_date = _single_parsed_date(event_dates)
+    reference_date = _single_parsed_date(reference_dates)
+    if event_date is None or reference_date is None:
+        return None
+    days = (reference_date - event_date).days
+    if days < 0:
+        return None
+    months_floor = days // 30
+    years_floor = days // 365
+    if years_floor >= 2:
+        label = "seizure free for multiple year"
+    elif years_floor == 1:
+        label = "seizure free for 1 year"
+    elif months_floor >= 1:
+        label = f"seizure free for {months_floor} month"
+    else:
+        label = f"seizure free for {max(days, 0)} day"
+    return {"days": days, "months_floor": months_floor, "label": label}
+
+
+def _single_parsed_date(values: Sequence[date | None]) -> date | None:
+    parsed = [value for value in values if value is not None]
+    if len(parsed) != 1:
+        return None
+    return parsed[0]
+
+
+def _conflict_flags(
+    evidence: str,
+    event_dates: Sequence[date | None],
+    reference_dates: Sequence[date | None],
+) -> list[str]:
+    flags = []
+    if len([value for value in event_dates if value is not None]) > 1:
+        flags.append("multiple_full_event_dates")
+    if len([value for value in reference_dates if value is not None]) > 1:
+        flags.append("multiple_reference_dates")
+    if _single_parsed_date(event_dates) and _single_parsed_date(reference_dates):
+        if _single_parsed_date(event_dates) > _single_parsed_date(reference_dates):
+            flags.append("event_date_after_reference_date")
+    lowered = evidence.lower()
+    if "another seizure" in lowered or "subsequent seizure" in lowered:
+        flags.append("subsequent_event_language")
+    return flags
+
+
+def _has_event_target(evidence: str) -> bool:
+    lowered = evidence.lower()
+    return any(
+        term in lowered
+        for term in ("seizure", "seizures", "episode", "episodes", "event", "events")
+    )
+
+
+def _release_blocker(
+    *,
+    signal_class: str,
+    reference_date_available: bool,
+    duration_auditable: bool,
+    pressure_class: str,
+    label: str,
+    conflict_flags: Sequence[str],
+) -> str:
+    if not reference_date_available:
+        return "note_or_reference_date_missing"
+    if signal_class == "partial_date_missing_year":
+        return "partial_date_missing_year"
+    if signal_class == "no_explicit_date_in_selected_evidence":
+        return "no_explicit_date_in_selected_evidence"
+    if conflict_flags:
+        return "conflict_flags_present"
+    if not duration_auditable:
+        return "duration_not_auditable"
+    if not label.startswith("seizure free for "):
+        return "non_seizure_free_label"
+    if pressure_class == "protective_block":
+        return "protective_block_validation_accounting"
+    return "manual_promotion_required"
+
+
+def _format_date(value: date | None) -> str | None:
+    return value.isoformat() if value is not None else None
 
 
 def _record_value(record: Any, key: str) -> Any:
