@@ -1827,3 +1827,51 @@ Next resume point after V1:
    normalized by date arithmetic, routed to verifier, or left null in this
    mechanics layer.
 4. Keep scoring disabled.
+
+### ClinicalAssessment Projection Score Policy V0
+
+- Implemented a separate score-policy artifact over the active V1
+  project/render mechanics output.
+- Added `RenderedLabelScore` to the projection/render contract family with:
+  - schema id `gan2026_rendered_label_scoring_v0`;
+  - policy id `gan2026_rendered_label_scoring_policy_v0`.
+- The scorer reuses existing Gan scoring surfaces rather than adding a new
+  scorer:
+  - `label_to_frequency_record(...)` parses and normalizes rendered labels;
+  - `GanFrequencyRecord` supplies gold normalized labels and monthly
+    frequencies from the existing split loader;
+  - `map_purist(...)` and `map_pragmatic(...)` provide the existing category
+    comparisons.
+- Null rendered labels are explicitly `not_scored_null_rendered_label`, not
+  counted as wrong by the scoring policy.
+- Unparseable rendered labels are explicitly
+  `not_scored_unparseable_rendered_label`, preserving parse failures as score
+  issues rather than silently coercing them.
+- Generated:
+  - `experiments/gan2026_clinical_assessment_projection_score_validation250_v0.jsonl`;
+  - `experiments/gan2026_clinical_assessment_projection_score_validation250_v0.json`;
+  - `experiments/gan2026_clinical_assessment_projection_score_validation250_v0.md`.
+- V0 score-policy summary over the V1 mechanics artifact:
+  - rows: 250;
+  - scored rows: 198;
+  - non-scored rows: 52;
+  - non-scored issue counts: 52 `rendered_label_null`;
+  - exact normalized-label matches on scored rows: 173/198 (0.8737);
+  - purist-correct rows on scored rows: 188/198 (0.9495);
+  - pragmatic-correct rows on scored rows: 193/198 (0.9747).
+- Claim boundary:
+  - this is validation250 mechanics scoring over saved project/render rows only;
+  - it is not a benchmark-comparable promotion claim;
+  - it does not authorize score-first tuning or locked-test row-level work.
+- Verification:
+  `$env:PYTHONPATH='src'; .venv/Scripts/python.exe -m pytest tests/test_gan2026_clinical_assessment_projection_score.py tests/test_gan2026_clinical_assessment_projection_render.py tests/test_gan2026_llm_candidate_set_clinical_assessment_probe.py -q`
+  passed with 21 tests.
+
+Next resume point after scoring V0:
+
+1. Inspect the 52 non-scored rows by projection/render issue family.
+2. Inspect the 10 purist-wrong scored rows before changing projection policy.
+3. Keep the scorer fixed while deciding whether errors belong to assessment,
+   normalization, projection, render, or verifier routing.
+4. Do not tune projection/render rules directly against score without a named
+   mechanics failure family and artifact evidence.
