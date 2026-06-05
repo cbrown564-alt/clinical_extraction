@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 import sys
 from collections import Counter
 from collections.abc import Mapping, Sequence
@@ -14,6 +15,7 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.candidate_set import (
     CandidateSet,
+    ExtractedCandidate,
     candidate_source_phrase,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.clinical_assessment import (
@@ -24,6 +26,12 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.clinical_asses
     NormalizedBurden,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
+from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic import (
+    deterministic_extraction,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.candidates import (
+    CandidateKind as DeterministicCandidateKind,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     write_jsonl_rows,
 )
@@ -34,9 +42,13 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
     llm_candidate_set_selector_schema_probe as selector_probe,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
+from clinical_extraction.tasks.seizure_frequency.gan2026.selected_evidence import (
+    selected_evidence_derivation,
+)
 
 PROMPT_VERSION = "gan2026_candidate_set_clinical_assessment_probe_v3"
 PIPELINE_FAMILY = "llm_candidate_set_clinical_assessment_probe"
+NORMALIZATION_POLICY_ID = "gan2026_clinical_assessment_normalization_v0"
 DEFAULT_JSONL_PATH = Path(
     "experiments/gan2026_candidate_set_clinical_assessment_probe_validation25_gpt41mini_v0_2026-06-05.jsonl"
 )
@@ -120,8 +132,12 @@ def build_assessment_inputs(
             ),
             (
                 "You own the clinical synthesis: choose the primary fact or facts, "
-                "normalize the burden source-nearly, and decide whether related "
-                "facts are additive, contextual, rejected, or too ambiguous."
+                "provide a source-near burden phrase, and decide whether related facts "
+                "are additive, contextual, rejected, or too ambiguous."
+            ),
+            (
+                "Do not perform parser-like normalization. Deterministic assembly owns "
+                "count, range, period, interval, duration, and cluster operand parsing."
             ),
             (
                 "Use primary_candidate_ids only for facts that determine the "
@@ -239,9 +255,12 @@ def build_assessment_inputs(
                 "no_reference_boundary",
             ],
             "normalized_burden": {
-                "counts": "count_low/count_high or vague_count with period fields",
-                "seizure_free": "seizure_free_duration fields",
-                "cluster": "cluster cadence and events_per_cluster fields",
+                "model_fill": ["source_normalized_phrase"],
+                "deterministic_fill": [
+                    "count_low/count_high/vague_count with period fields",
+                    "seizure_free_duration fields",
+                    "cluster cadence and events_per_cluster fields",
+                ],
                 "source_normalized_phrase": "short source-near clinical summary phrase",
             },
         },
@@ -259,6 +278,10 @@ def assemble_clinical_assessment(
         return None, ["assessment_draft_missing"]
 
     errors = _validate_candidate_references(draft, candidate_set)
+    normalized_burden, normalization_issues = normalize_assessment_burden(
+        draft,
+        candidate_set=candidate_set,
+    )
     try:
         assessment = ClinicalAssessment(
             source_row_index=candidate_set.source_row_index,
@@ -268,7 +291,9 @@ def assemble_clinical_assessment(
             supporting_candidate_ids=draft.supporting_candidate_ids,
             rejected_candidate_ids=draft.rejected_candidate_ids,
             aggregation_policy=draft.aggregation_policy,  # type: ignore[arg-type]
-            normalized_burden=draft.normalized_burden,
+            normalized_burden=normalized_burden,
+            normalization_policy_id=NORMALIZATION_POLICY_ID,
+            normalization_issues=normalization_issues,
             assessment_summary=draft.assessment_summary,
             uncertainty_flags=draft.uncertainty_flags,
         )
@@ -278,6 +303,44 @@ def assemble_clinical_assessment(
     if errors:
         return None, errors
     return assessment, errors
+
+
+def normalize_assessment_burden(
+    draft: AssessmentDraft,
+    *,
+    candidate_set: CandidateSet,
+) -> tuple[NormalizedBurden, list[str]]:
+    """Deterministically parse source-near assessment burden operands."""
+
+    primary_candidates = _candidates_by_ids(candidate_set, draft.primary_candidate_ids)
+    source_phrase = _normalization_source_phrase(draft, primary_candidates)
+    issues: list[str] = []
+    if not source_phrase:
+        issues.append("normalization_source_phrase_missing")
+
+    if draft.assessment_kind == "frequency_rate":
+        if draft.aggregation_policy == "additive_same_window":
+            burden, additive_issues = _additive_frequency_burden(
+                primary_candidates,
+                source_phrase=source_phrase,
+            )
+            issues.extend(additive_issues)
+            return burden, issues
+        burden, rate_issues = _frequency_burden(source_phrase)
+        issues.extend(rate_issues)
+        return burden, issues
+
+    if draft.assessment_kind == "cluster_frequency":
+        burden, cluster_issues = _cluster_burden(primary_candidates, source_phrase=source_phrase)
+        issues.extend(cluster_issues)
+        return burden, issues
+
+    if draft.assessment_kind == "seizure_free":
+        burden, seizure_free_issues = _seizure_free_burden(source_phrase)
+        issues.extend(seizure_free_issues)
+        return burden, issues
+
+    return NormalizedBurden(source_normalized_phrase=source_phrase), issues
 
 
 def prediction_to_assessment_draft(
@@ -295,6 +358,340 @@ def prediction_to_assessment_draft(
         return AssessmentDraft.model_validate(value), []
     except ValidationError as exc:
         return None, _validation_error_messages(exc)
+
+
+def _candidates_by_ids(
+    candidate_set: CandidateSet,
+    candidate_ids: Sequence[str],
+) -> list[ExtractedCandidate]:
+    by_id = {candidate.candidate_id: candidate for candidate in candidate_set.candidates}
+    return [by_id[candidate_id] for candidate_id in candidate_ids if candidate_id in by_id]
+
+
+def _normalization_source_phrase(
+    draft: AssessmentDraft,
+    primary_candidates: Sequence[ExtractedCandidate],
+) -> str:
+    if draft.normalized_burden.source_normalized_phrase.strip():
+        return _clean_phrase(draft.normalized_burden.source_normalized_phrase)
+    phrases = [
+        candidate_source_phrase(candidate) or candidate.evidence_span.text
+        for candidate in primary_candidates
+    ]
+    return _clean_phrase("; ".join(phrase for phrase in phrases if phrase))
+
+
+def _frequency_burden(source_phrase: str) -> tuple[NormalizedBurden, list[str]]:
+    label = _deterministic_label_from_source_phrase(
+        source_phrase,
+        preferred_kind=DeterministicCandidateKind.FREQUENCY_RATE,
+    )
+    if label is None:
+        return NormalizedBurden(source_normalized_phrase=source_phrase), [
+            "frequency_rate_operands_unparsed"
+        ]
+    burden, issues = _burden_from_label(label, source_phrase=source_phrase)
+    if _has_cluster_label(label):
+        issues.append("frequency_rate_label_derivation_returned_cluster")
+    if _has_seizure_free_label(label):
+        issues.append("frequency_rate_label_derivation_returned_seizure_free")
+    return burden, issues
+
+
+def _additive_frequency_burden(
+    primary_candidates: Sequence[ExtractedCandidate],
+    *,
+    source_phrase: str,
+) -> tuple[NormalizedBurden, list[str]]:
+    parsed = [
+        _frequency_burden(candidate_source_phrase(candidate) or candidate.evidence_span.text)
+        for candidate in primary_candidates
+    ]
+    issues = [issue for _, burden_issues in parsed for issue in burden_issues]
+    burdens = [burden for burden, _ in parsed]
+    if not burdens:
+        return NormalizedBurden(source_normalized_phrase=source_phrase), [
+            "additive_frequency_primary_candidates_missing"
+        ]
+    first = burdens[0]
+    same_period = all(
+        burden.period_low == first.period_low
+        and burden.period_high == first.period_high
+        and burden.period_unit == first.period_unit
+        for burden in burdens
+    )
+    if not same_period:
+        return NormalizedBurden(source_normalized_phrase=source_phrase), [
+            *issues,
+            "additive_frequency_period_mismatch",
+        ]
+    if any(burden.count_low is None or burden.count_high is None for burden in burdens):
+        return NormalizedBurden(source_normalized_phrase=source_phrase), [
+            *issues,
+            "additive_frequency_count_unparsed",
+        ]
+    return (
+        NormalizedBurden(
+            count_low=sum(float(burden.count_low or 0) for burden in burdens),
+            count_high=sum(float(burden.count_high or 0) for burden in burdens),
+            period_low=first.period_low,
+            period_high=first.period_high,
+            period_unit=first.period_unit,
+            source_normalized_phrase=source_phrase,
+        ),
+        issues,
+    )
+
+
+def _cluster_burden(
+    primary_candidates: Sequence[ExtractedCandidate],
+    *,
+    source_phrase: str,
+) -> tuple[NormalizedBurden, list[str]]:
+    text = "; ".join(_cluster_phrases(primary_candidates)) or source_phrase
+    label = _deterministic_label_from_source_phrase(
+        text,
+        preferred_kind=DeterministicCandidateKind.CLUSTER_FREQUENCY,
+    )
+    if label is None:
+        return NormalizedBurden(source_normalized_phrase=source_phrase), [
+            "cluster_frequency_operands_unparsed"
+        ]
+    burden, issues = _cluster_burden_from_label(label, source_phrase=source_phrase)
+    return burden, issues
+
+
+def _seizure_free_burden(source_phrase: str) -> tuple[NormalizedBurden, list[str]]:
+    label = _deterministic_label_from_source_phrase(
+        source_phrase,
+        preferred_kind=DeterministicCandidateKind.SEIZURE_FREE,
+    )
+    if label is None or not _has_seizure_free_label(label):
+        return (
+            NormalizedBurden(source_normalized_phrase=source_phrase),
+            ["seizure_free_duration_unparsed"],
+        )
+    return _burden_from_label(label, source_phrase=source_phrase)
+
+
+def _cluster_phrases(candidates: Sequence[ExtractedCandidate]) -> list[str]:
+    phrases: list[str] = []
+    for candidate in candidates:
+        if candidate.cluster_details is None:
+            phrase = candidate_source_phrase(candidate) or candidate.evidence_span.text
+            if phrase:
+                phrases.append(phrase)
+            continue
+        details = candidate.cluster_details
+        phrases.extend(
+            phrase
+            for phrase in (
+                details.cluster_frequency,
+                details.events_per_cluster,
+                details.cluster_count,
+                details.cluster_period,
+                candidate.evidence_span.text,
+            )
+            if phrase
+        )
+    return phrases
+
+
+def _deterministic_label_from_source_phrase(
+    source_phrase: str,
+    *,
+    preferred_kind: DeterministicCandidateKind,
+) -> str | None:
+    candidates = deterministic_extraction._extract_candidates(source_phrase)
+    preferred = [
+        candidate.label
+        for candidate in candidates
+        if candidate.kind is preferred_kind and candidate.label
+    ]
+    if preferred:
+        return _prefer_most_specific_label(preferred)
+    fallback = selected_evidence_derivation.prediction_label_from_selected_evidence(
+        source_phrase
+    )
+    return fallback
+
+
+def _prefer_most_specific_label(labels: Sequence[str]) -> str:
+    return max(labels, key=_label_specificity_score)
+
+
+def _label_specificity_score(label: str) -> tuple[int, int]:
+    normalized = label.lower()
+    return (
+        1 if "multiple" not in normalized and "unknown" not in normalized else 0,
+        len(normalized),
+    )
+
+
+def _burden_from_label(
+    label: str,
+    *,
+    source_phrase: str,
+) -> tuple[NormalizedBurden, list[str]]:
+    normalized = " ".join(label.lower().split())
+    if _has_seizure_free_label(normalized):
+        return _seizure_free_burden_from_label(normalized, source_phrase=source_phrase)
+    if _has_cluster_label(normalized):
+        return _cluster_burden_from_label(normalized, source_phrase=source_phrase)
+    if normalized in {"unknown", "no seizure frequency reference"}:
+        return NormalizedBurden(source_normalized_phrase=source_phrase), []
+    return _rate_burden_from_label(normalized, source_phrase=source_phrase)
+
+
+def _cluster_burden_from_label(
+    label: str,
+    *,
+    source_phrase: str,
+) -> tuple[NormalizedBurden, list[str]]:
+    normalized = " ".join(label.lower().split())
+    if not _has_cluster_label(normalized):
+        burden, issues = _rate_burden_from_label(normalized, source_phrase=source_phrase)
+        return (
+            NormalizedBurden(
+                cluster_count_low=burden.count_low,
+                cluster_count_high=burden.count_high,
+                cluster_period_low=burden.period_low,
+                cluster_period_high=burden.period_high,
+                cluster_period_unit=burden.period_unit,
+                source_normalized_phrase=source_phrase,
+            ),
+            issues,
+        )
+    match = re.match(
+        r"^(?P<count>multiple|\d+(?:\.\d+)?(?:\s+to\s+\d+(?:\.\d+)?)?)\s+"
+        r"clusters?\s+per\s+"
+        r"(?:(?P<period_count>\d+(?:\.\d+)?(?:\s+to\s+\d+(?:\.\d+)?)?)\s+)?"
+        r"(?P<period_unit>day|week|month|year),\s+"
+        r"(?P<events>multiple|\d+(?:\.\d+)?(?:\s+to\s+\d+(?:\.\d+)?)?)\s+"
+        r"per\s+cluster$",
+        normalized,
+    )
+    if not match:
+        return NormalizedBurden(source_normalized_phrase=source_phrase), [
+            "cluster_label_operands_unparsed"
+        ]
+    count_low, count_high, count_issue = _parse_label_range(match.group("count"))
+    period_low, period_high, period_issue = _parse_label_range(
+        match.group("period_count") or "1"
+    )
+    events_low, events_high, events_issue = _parse_label_range(match.group("events"))
+    issues = [
+        issue
+        for issue in (count_issue, period_issue, events_issue)
+        if issue is not None
+    ]
+    return (
+        NormalizedBurden(
+            cluster_count_low=count_low,
+            cluster_count_high=count_high,
+            cluster_period_low=period_low,
+            cluster_period_high=period_high,
+            cluster_period_unit=match.group("period_unit"),  # type: ignore[arg-type]
+            events_per_cluster_low=events_low,
+            events_per_cluster_high=events_high,
+            source_normalized_phrase=source_phrase,
+        ),
+        issues,
+    )
+
+
+def _rate_burden_from_label(
+    label: str,
+    *,
+    source_phrase: str,
+) -> tuple[NormalizedBurden, list[str]]:
+    match = re.match(
+        r"^(?P<count>multiple|\d+(?:\.\d+)?(?:\s+to\s+\d+(?:\.\d+)?)?)\s+"
+        r"per\s+"
+        r"(?:(?P<period_count>multiple|\d+(?:\.\d+)?(?:\s+to\s+\d+(?:\.\d+)?)?)\s+)?"
+        r"(?P<period_unit>day|week|month|year)$",
+        label,
+    )
+    if not match:
+        return NormalizedBurden(source_normalized_phrase=source_phrase), [
+            "frequency_label_operands_unparsed"
+        ]
+    count_low, count_high, count_issue = _parse_label_range(match.group("count"))
+    period_low, period_high, period_issue = _parse_label_range(
+        match.group("period_count") or "1"
+    )
+    issues = [issue for issue in (count_issue, period_issue) if issue is not None]
+    return (
+        NormalizedBurden(
+            count_low=count_low,
+            count_high=count_high,
+            vague_count="multiple" if count_issue == "vague_count" else None,
+            period_low=period_low,
+            period_high=period_high,
+            period_unit=match.group("period_unit"),  # type: ignore[arg-type]
+            source_normalized_phrase=source_phrase,
+        ),
+        issues,
+    )
+
+
+def _seizure_free_burden_from_label(
+    label: str,
+    *,
+    source_phrase: str,
+) -> tuple[NormalizedBurden, list[str]]:
+    match = re.match(
+        r"^seizure free for (?P<count>multiple|\d+(?:\.\d+)?) "
+        r"(?P<unit>day|week|month|year)$",
+        label,
+    )
+    if not match:
+        return NormalizedBurden(source_normalized_phrase=source_phrase), [
+            "seizure_free_label_operands_unparsed"
+        ]
+    low, high, issue = _parse_label_range(match.group("count"))
+    return (
+        NormalizedBurden(
+            seizure_free_duration_low=low,
+            seizure_free_duration_high=high,
+            seizure_free_duration_unit=match.group("unit"),  # type: ignore[arg-type]
+            source_normalized_phrase=source_phrase,
+        ),
+        [issue] if issue else [],
+    )
+
+
+def _parse_label_range(value: str) -> tuple[float | None, float | None, str | None]:
+    if value == "multiple":
+        return None, None, "vague_count"
+    if " to " in value:
+        left, right = value.split(" to ", maxsplit=1)
+        left_value = float(left)
+        right_value = float(right)
+        return min(left_value, right_value), max(left_value, right_value), None
+    parsed = float(value)
+    return parsed, parsed, None
+
+
+def _has_cluster_label(label: str) -> bool:
+    return "cluster" in label
+
+
+def _has_seizure_free_label(label: str) -> bool:
+    return label.startswith("seizure free for ")
+
+
+def _clean_phrase(value: str) -> str:
+    return " ".join(value.strip().split())
+
+
+def _normalize_phrase_for_parse(value: str) -> str:
+    text = value.lower()
+    text = re.sub(r"[≈~]", "", text)
+    text = re.sub(r"\s*[-–—]\s*", " to ", text)
+    text = re.sub(r"\bper\s+24\s*h(?:ours?)?\b", "per day", text)
+    text = re.sub(r"\b24\s*h(?:ours?)?\b", "day", text)
+    return " ".join(text.split())
 
 
 def run_split(

@@ -1690,3 +1690,140 @@ Do not resume with:
 - score-first tuning;
 - scorer-facing labels from LLM extraction;
 - further changes to frozen legacy components before disposition review.
+
+### Deterministic Clinical-Assessment Normalization V0
+
+- Decision at the post-assessment architecture gate: begin with deterministic
+  normalization of the active `ClinicalAssessment` contract before building
+  projection/rendering.
+- Added `normalization_policy_id` and `normalization_issues` to
+  `ClinicalAssessment`.
+- Updated clinical-assessment assembly so parser-like burden operands are
+  filled by `gan2026_clinical_assessment_normalization_v0`, not trusted from
+  model output.
+- Current deterministic normalization coverage is intentionally conservative:
+  exact/range frequency rates, additive same-window frequency arithmetic when
+  periods match, simple interval phrasing, cluster cadence, events per cluster,
+  cluster duration fragments, seizure-free durations, and unknown/no-reference
+  source-near pass-through.
+- Parse misses are preserved as normalization issues rather than converted into
+  false precision.
+- Prompt contract language now asks the model for source-near burden phrasing
+  and candidate roles, while deterministic assembly owns counts, ranges,
+  periods, intervals, durations, and cluster operands.
+- Focused verification passed for the clinical-assessment probe and diagnostics
+  tests, plus ruff on the touched files.
+
+Next resume point:
+
+1. Run deterministic-normalization diagnostics on saved validation250 clinical
+   assessment artifacts before starting deterministic projection/rendering.
+2. Inspect normalization issue families on validation250 and decide whether to
+   extend V0 parsing or keep them as verifier/projection abstention inputs.
+3. Only then start a deterministic, policy-versioned projection from normalized
+   `ClinicalAssessment`; do not claim benchmark-comparable scoring from this
+   mechanics step.
+
+### ClinicalAssessment Projection/Render Mechanics V0
+
+- Implemented the first deterministic project/render mechanics layer from saved
+  `ClinicalAssessment` rows.
+- Added schema contracts:
+  - `ProjectionDecision`;
+  - `FinalRenderedLabel`.
+- Policy ids:
+  - `gan2026_clinical_assessment_projection_v0`;
+  - `gan2026_final_label_renderer_v0`.
+- The mechanics artifact emits both a structured projection decision and a
+  nullable scorer-facing rendered label in one row.
+- Scoring is explicitly disabled in the artifact.
+- Saved validation250 source inputs:
+  - `experiments/gan2026_candidate_set_clinical_assessment_probe_live_validation250_gpt41mini_v3nested_v2.jsonl`;
+  - `experiments/gan2026_validation250_candidate_set_v3_nested_dedupe.jsonl`.
+- Generated:
+  - `experiments/gan2026_clinical_assessment_projection_render_validation250_v0.jsonl`;
+  - `experiments/gan2026_clinical_assessment_projection_render_validation250_v0.json`;
+  - `experiments/gan2026_clinical_assessment_projection_render_validation250_v0.md`.
+- V0 mechanics summary:
+  - rows: 250;
+  - projection rows: 247;
+  - rendered-label rows: 130;
+  - null rendered-label rows: 117;
+  - row issue rows: 3.
+- Projection kind counts:
+  - `frequency_rate`: 167;
+  - `cluster_frequency`: 22;
+  - `seizure_free`: 41;
+  - `unknown_frequency`: 17.
+- Policy decisions implemented:
+  - unknown-frequency assessments remain a richer internal projection state and
+    render to final label `unknown`;
+  - no-reference assessments render to `no seizure frequency reference`;
+  - seizure-free assessments render only when a duration is parsed; otherwise
+    rendered label is null with issue flags;
+  - cluster cadence without events-per-cluster renders as a simple rate with
+    projection basis `cluster_cadence_without_size`;
+  - incomplete or unparsed operands stay null rather than becoming false
+    precision.
+- Current issue families are expected V0 mechanics outputs, not scoring
+  failures. They should guide the next normalization/projection policy review.
+- Verification:
+  `$env:PYTHONPATH='src'; .venv/Scripts/python.exe -m pytest tests/test_gan2026_clinical_assessment_projection_render.py tests/test_gan2026_llm_candidate_set_clinical_assessment_probe.py -q`
+  passed with 13 tests.
+  `$env:PYTHONPATH='src'; .venv/Scripts/python.exe -m ruff check src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/projection_render.py src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/clinical_assessment_projection_render.py tests/test_gan2026_clinical_assessment_projection_render.py`
+  passed.
+
+Next resume point after projection/render V0:
+
+1. Inspect the 117 null rendered-label rows by issue family before extending
+   projection policy.
+2. Decide whether V0 should add more deterministic normalization coverage for
+   frequent rate phrases, or whether specific issue families should route to
+   verifier/human-review instead.
+3. Keep score calculation disabled until the projection policy is reviewed as a
+   mechanics artifact rather than tuned against validation labels.
+
+### ClinicalAssessment Normalization Reuse Correction V1
+
+- Corrected the deterministic-normalization implementation after review: do not
+  grow a parallel source-phrase parser inside the clinical-assessment probe.
+- The normalizer now reuses existing deterministic frequency parsing:
+  `deterministic_extraction._extract_candidates(...)` supplies canonical
+  `RawCandidate.label` values for selected source phrases.
+- `prediction_label_from_selected_evidence(...)` remains only a fallback when
+  the deterministic extractor emits no label.
+- The reset-specific normalizer now only parses canonical Gan-compatible labels
+  into `NormalizedBurden` operands; it no longer owns broad free-text parsing.
+- Regenerated projection/render mechanics with the corrected implementation:
+  - `experiments/gan2026_clinical_assessment_projection_render_validation250_v1.jsonl`;
+  - `experiments/gan2026_clinical_assessment_projection_render_validation250_v1.json`;
+  - `experiments/gan2026_clinical_assessment_projection_render_validation250_v1.md`.
+- V1 mechanics summary:
+  - rows: 250;
+  - projection rows: 247;
+  - rendered-label rows: 198;
+  - null rendered-label rows: 49;
+  - row issue rows: 3.
+- Change from V0:
+  - rendered-label rows: 130 -> 198;
+  - null rendered-label rows: 117 -> 49.
+- Remaining null-label families are now more policy/verifier-shaped:
+  - seizure-free since-date or visit-relative statements without numeric
+    duration;
+  - cluster descriptions without renderable cadence/per-cluster operands;
+  - additive vague-plus-concrete mixed-window assessments;
+  - known saved v2 assessment-contract failures.
+- Verification:
+  `$env:PYTHONPATH='src'; .venv/Scripts/python.exe -m pytest tests/test_gan2026_llm_candidate_set_clinical_assessment_probe.py tests/test_gan2026_clinical_assessment_projection_render.py -q`
+  passed with 17 tests.
+  `$env:PYTHONPATH='src'; .venv/Scripts/python.exe -m ruff check src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_candidate_set_clinical_assessment_probe.py tests/test_gan2026_llm_candidate_set_clinical_assessment_probe.py`
+  passed.
+
+Next resume point after V1:
+
+1. Treat V1 as the active mechanics artifact.
+2. Inspect the 49 null rendered-label rows before adding any more render policy.
+3. Decide explicitly whether since-date seizure-free statements should be
+   normalized by date arithmetic, routed to verifier, or left null in this
+   mechanics layer.
+4. Keep scoring disabled.
