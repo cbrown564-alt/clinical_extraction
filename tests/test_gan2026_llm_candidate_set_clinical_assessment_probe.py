@@ -7,6 +7,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.candidate_set 
     EvidenceSpan,
     ExtractedCandidate,
     FrequencyDetails,
+    SeizureFreeDetails,
     SourcePhraseOnlyDetails,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.clinical_assessment import (
@@ -96,6 +97,14 @@ def test_assemble_clinical_assessment_accepts_primary_with_context() -> None:
     assert assessment.primary_candidate_ids == ["det:302:1"]
     assert assessment.supporting_candidate_ids == ["llm:302:2"]
     assert assessment.aggregation_policy == "primary_with_context"
+    assert assessment.normalization_policy_id == (
+        "gan2026_clinical_assessment_normalization_v0"
+    )
+    assert assessment.normalized_burden.count_low == 12
+    assert assessment.normalized_burden.count_high == 12
+    assert assessment.normalized_burden.period_low == 1
+    assert assessment.normalized_burden.period_unit == "month"
+    assert assessment.normalization_issues == []
 
 
 def test_assemble_clinical_assessment_accepts_additive_same_window() -> None:
@@ -126,6 +135,204 @@ def test_assemble_clinical_assessment_accepts_additive_same_window() -> None:
     assert errors == []
     assert assessment is not None
     assert assessment.primary_candidate_ids == ["det:303:1", "llm:303:2"]
+    assert assessment.normalized_burden.count_low == 5
+    assert assessment.normalized_burden.count_high == 5
+    assert assessment.normalized_burden.period_low == 1
+    assert assessment.normalized_burden.period_unit == "month"
+    assert assessment.normalization_issues == []
+
+
+def test_assemble_clinical_assessment_ignores_model_operand_leak() -> None:
+    candidate_set = _candidate_set(
+        _frequency_candidate("det:306:1", "two seizures per month"),
+        _cluster_candidate("llm:306:2", "clusters after sleep loss"),
+        source_row_index=306,
+    )
+    draft = assessment_probe.AssessmentDraft(
+        assessment_kind="frequency_rate",
+        primary_candidate_ids=["det:306:1"],
+        supporting_candidate_ids=["llm:306:2"],
+        aggregation_policy="primary_with_context",
+        normalized_burden=NormalizedBurden(
+            count_low=999,
+            count_high=999,
+            period_low=1,
+            period_high=1,
+            period_unit="year",
+            cluster_count_low=3,
+            cluster_count_high=3,
+            source_normalized_phrase="two seizures per month",
+        ),
+    )
+
+    assessment, errors = assessment_probe.assemble_clinical_assessment(
+        draft,
+        candidate_set=candidate_set,
+    )
+
+    assert errors == []
+    assert assessment is not None
+    assert assessment.normalized_burden.count_low == 2
+    assert assessment.normalized_burden.count_high == 2
+    assert assessment.normalized_burden.period_unit == "month"
+    assert assessment.normalized_burden.cluster_count_low is None
+
+
+def test_assemble_clinical_assessment_parses_seizure_free_duration() -> None:
+    candidate_set = _candidate_set(
+        _seizure_free_candidate("llm:307:1", "seizure free for nine months"),
+        source_row_index=307,
+    )
+    draft = assessment_probe.AssessmentDraft(
+        assessment_kind="seizure_free",
+        primary_candidate_ids=["llm:307:1"],
+        aggregation_policy="seizure_free_state",
+        normalized_burden=NormalizedBurden(
+            source_normalized_phrase="seizure free for nine months",
+        ),
+    )
+
+    assessment, errors = assessment_probe.assemble_clinical_assessment(
+        draft,
+        candidate_set=candidate_set,
+    )
+
+    assert errors == []
+    assert assessment is not None
+    assert assessment.normalized_burden.seizure_free_duration_low == 9
+    assert assessment.normalized_burden.seizure_free_duration_high == 9
+    assert assessment.normalized_burden.seizure_free_duration_unit == "month"
+
+
+def test_assemble_clinical_assessment_parses_cluster_axes() -> None:
+    candidate_set = _candidate_set(
+        _cluster_candidate("llm:308:1", "3 clusters this month; each two to four events"),
+        source_row_index=308,
+    )
+    draft = assessment_probe.AssessmentDraft(
+        assessment_kind="cluster_frequency",
+        primary_candidate_ids=["llm:308:1"],
+        aggregation_policy="cluster_axis",
+        normalized_burden=NormalizedBurden(
+            source_normalized_phrase="3 clusters this month; each two to four events",
+        ),
+    )
+
+    assessment, errors = assessment_probe.assemble_clinical_assessment(
+        draft,
+        candidate_set=candidate_set,
+    )
+
+    assert errors == []
+    assert assessment is not None
+    assert assessment.normalized_burden.cluster_count_low == 3
+    assert assessment.normalized_burden.cluster_period_low == 1
+    assert assessment.normalized_burden.cluster_period_unit == "month"
+    assert assessment.normalized_burden.events_per_cluster_low == 2
+    assert assessment.normalized_burden.events_per_cluster_high == 4
+
+
+def test_assemble_clinical_assessment_parses_article_rate() -> None:
+    candidate_set = _candidate_set(
+        _frequency_candidate("llm:309:1", "seizures once a week"),
+        source_row_index=309,
+    )
+    draft = assessment_probe.AssessmentDraft(
+        assessment_kind="frequency_rate",
+        primary_candidate_ids=["llm:309:1"],
+        aggregation_policy="single_fact",
+        normalized_burden=NormalizedBurden(source_normalized_phrase="seizures once a week"),
+    )
+
+    assessment, errors = assessment_probe.assemble_clinical_assessment(
+        draft,
+        candidate_set=candidate_set,
+    )
+
+    assert errors == []
+    assert assessment is not None
+    assert assessment.normalized_burden.count_low == 1
+    assert assessment.normalized_burden.period_low == 1
+    assert assessment.normalized_burden.period_unit == "week"
+
+
+def test_assemble_clinical_assessment_parses_every_other_interval() -> None:
+    candidate_set = _candidate_set(
+        _frequency_candidate("llm:310:1", "seizures every other month"),
+        source_row_index=310,
+    )
+    draft = assessment_probe.AssessmentDraft(
+        assessment_kind="frequency_rate",
+        primary_candidate_ids=["llm:310:1"],
+        aggregation_policy="single_fact",
+        normalized_burden=NormalizedBurden(
+            source_normalized_phrase="seizures every other month"
+        ),
+    )
+
+    assessment, errors = assessment_probe.assemble_clinical_assessment(
+        draft,
+        candidate_set=candidate_set,
+    )
+
+    assert errors == []
+    assert assessment is not None
+    assert assessment.normalized_burden.count_low == 1
+    assert assessment.normalized_burden.period_low == 2
+    assert assessment.normalized_burden.period_unit == "month"
+
+
+def test_assemble_clinical_assessment_parses_count_over_period_with_spasms() -> None:
+    candidate_set = _candidate_set(
+        _frequency_candidate("llm:311:1", "21 to 28 epileptic spasms in three months"),
+        source_row_index=311,
+    )
+    draft = assessment_probe.AssessmentDraft(
+        assessment_kind="frequency_rate",
+        primary_candidate_ids=["llm:311:1"],
+        aggregation_policy="single_fact",
+        normalized_burden=NormalizedBurden(
+            source_normalized_phrase="21 to 28 epileptic spasms in three months"
+        ),
+    )
+
+    assessment, errors = assessment_probe.assemble_clinical_assessment(
+        draft,
+        candidate_set=candidate_set,
+    )
+
+    assert errors == []
+    assert assessment is not None
+    assert assessment.normalized_burden.count_low == 21
+    assert assessment.normalized_burden.count_high == 28
+    assert assessment.normalized_burden.period_low == 3
+    assert assessment.normalized_burden.period_unit == "month"
+
+
+def test_assemble_clinical_assessment_parses_vague_count_over_period() -> None:
+    candidate_set = _candidate_set(
+        _frequency_candidate("llm:312:1", "multiple seizures in past week"),
+        source_row_index=312,
+    )
+    draft = assessment_probe.AssessmentDraft(
+        assessment_kind="frequency_rate",
+        primary_candidate_ids=["llm:312:1"],
+        aggregation_policy="single_fact",
+        normalized_burden=NormalizedBurden(
+            source_normalized_phrase="multiple seizures in past week"
+        ),
+    )
+
+    assessment, errors = assessment_probe.assemble_clinical_assessment(
+        draft,
+        candidate_set=candidate_set,
+    )
+
+    assert errors == []
+    assert assessment is not None
+    assert assessment.normalized_burden.vague_count == "multiple"
+    assert assessment.normalized_burden.period_low == 1
+    assert assessment.normalized_burden.period_unit == "week"
 
 
 def test_assemble_clinical_assessment_reports_unknown_candidate_id() -> None:
@@ -248,6 +455,26 @@ def _unknown_candidate(candidate_id: str, evidence: str) -> ExtractedCandidate:
         temporality="current",
         certainty="uncertain",
         certainty_reason="vague_count",
+        assertion_status="asserted",
+        evidence_span=EvidenceSpan(text=evidence, start_char=0, end_char=len(evidence)),
+        source_ids=[f"note:{source_row_index}:span:0-{len(evidence)}"],
+        clinical_or_policy="clinical",
+    )
+
+
+def _seizure_free_candidate(candidate_id: str, evidence: str) -> ExtractedCandidate:
+    source_row_index = int(candidate_id.split(":")[1])
+    return ExtractedCandidate(
+        candidate_id=candidate_id,
+        component_owner="test",
+        source_type="llm_candidate",
+        source_artifact="test",
+        source_row_index=source_row_index,
+        candidate_kind="seizure_free",
+        event_type="seizure",
+        seizure_free=SeizureFreeDetails(source_phrase=evidence),
+        temporality="current",
+        certainty="certain",
         assertion_status="asserted",
         evidence_span=EvidenceSpan(text=evidence, start_char=0, end_char=len(evidence)),
         source_ids=[f"note:{source_row_index}:span:0-{len(evidence)}"],

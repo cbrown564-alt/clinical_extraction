@@ -66,6 +66,8 @@ class ClinicalAssessment(BaseModel):
     rejected_candidate_ids: list[str] = Field(default_factory=list)
     aggregation_policy: AggregationPolicy
     normalized_burden: NormalizedBurden
+    normalization_policy_id: str = "gan2026_clinical_assessment_normalization_v0"
+    normalization_issues: list[str] = Field(default_factory=list)
     assessment_summary: str = ""
     uncertainty_flags: list[str] = Field(default_factory=list)
     schema_version: Literal["gan2026_clinical_assessment_v0"] = SCHEMA_VERSION
