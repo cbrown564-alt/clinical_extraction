@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Microscope, FlaskConical, LayoutGrid } from "lucide-react";
+import { Microscope, FlaskConical, LayoutGrid, FileCheck } from "lucide-react";
 
 const navItems = [
   { href: "/workbench", label: "Workbench", color: "deterministic" },
   { href: "/observatory", label: "Observatory", color: "llm" },
   { href: "/laboratory", label: "Laboratory", color: "deterministic-alt" },
   { href: "/gallery", label: "Gallery", color: "error" },
+  { href: "/review", label: "Review", color: "success" },
 ] as const;
 
 export default function Navbar() {
@@ -40,6 +41,8 @@ export default function Navbar() {
                 ? "bg-deterministic-alt/10 text-deterministic-alt border-deterministic-alt/20"
                 : item.color === "error"
                 ? "bg-error/10 text-error border-error/20"
+                : item.color === "success"
+                ? "bg-success/10 text-success border-success/20"
                 : "bg-muted/10 text-muted border-muted/20";
 
             return (
