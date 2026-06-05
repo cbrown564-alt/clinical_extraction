@@ -1,5 +1,8 @@
 {
   "artifact_kind": "gan2026_untagged_nonprediction_release_candidate_summary",
+  "assembled_candidate_json_artifact": "experiments/gan2026_untagged_nonprediction_release_candidate_v0_assembled_candidate_2026-06-05.json",
+  "assembled_candidate_jsonl_artifact": "experiments/gan2026_untagged_nonprediction_release_candidate_v0_assembled_candidate_2026-06-05.jsonl",
+  "assembled_candidate_report_artifact": "experiments/gan2026_untagged_nonprediction_release_candidate_v0_assembled_candidate_2026-06-05.md",
   "candidate_correct_prediction_rows": 697,
   "candidate_prediction_bearing_rows": 735,
   "claim_boundary": "Validation-development no-call candidate patch. It releases only staged-policy nonprediction rows with no hidden-family tags by falling back to the deterministic comparator label. This does not authorize holdout use or benchmark-comparable claims.",

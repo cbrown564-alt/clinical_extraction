@@ -109,6 +109,25 @@ Important standing numbers:
 - `untagged_nonprediction_release_candidate_v0` is frozen in a validation-only
   protocol addendum: release only staged nonpredictions with no hidden-family
   tags through deterministic-comparator fallback; no holdout use is authorized.
+- `untagged_nonprediction_release_candidate_v0_assembled_candidate` is now the
+  auditable validation-development assembly record: 750 rows, 19 release-eligible
+  rows, 19 releases, 0 release-wrong rows, 735 prediction-bearing rows, 697
+  correct prediction rows, 37/37 H6 controls preserved, and 0 locked-test
+  row-level artifacts used. Holdout use remains unauthorized.
+- H1 hidden-family mix is now tested as an aggregate-only slice readout over
+  `selective_safety_floor_gate_v0`: validation proxy 0.9440 versus test proxy
+  0.7800. The result is inconclusive rather than accepted because broad,
+  overlapping families show gaps across much of the surface; use the sharper
+  family gaps as strata for H3/H7, not as a primary explanation.
+- Generalization-first design is now the active research posture for
+  seizure-free duration and benchmark-format convention. A validation exact-label
+  drop is acceptable only when a predeclared, source-grounded mechanism separates
+  clinical boundary semantics from scorer-facing benchmark rendering and is
+  tested on hard/control panels.
+- `boundary_benchmark_seed_panel_v0` is the first H3/H7 contract surface for
+  that posture: 12 synthetic rows, 6 minimal pairs, 6 clinical-state invariant
+  pairs, 12 exact-evidence rows, 6 boundary rows, and 6 renderer rows. It is
+  ready for mechanism contract tests and is not final-label promotion evidence.
 
 Core plans and artifacts:
 
@@ -134,6 +153,8 @@ Core plans and artifacts:
   `experiments/gan2026_structured_seed_validation_extractor_v0_2026-06-05.json`
 - Validation-test gap implementation plan:
   `docs/research/gan2026_validation_test_generalisation_gap_implementation_plan_2026-06-05.md`
+- Validation-test gap hypothesis synthesis report:
+  `docs/research/gan2026_validation_test_gap_hypothesis_synthesis_report_2026-06-05.md`
 - Validation-test gap Phase 0 protocol and inventory:
   `docs/research/gan2026_validation_test_gap_protocol_2026-06-05.md`,
   `experiments/gan2026_validation_test_gap_artifact_inventory_2026-06-05.json`
@@ -159,15 +180,26 @@ Core plans and artifacts:
   `experiments/gan2026_untagged_nonprediction_release_candidate_v0_2026-06-05.md`
 - Untagged nonprediction release candidate protocol addendum:
   `docs/research/gan2026_untagged_nonprediction_release_candidate_protocol_addendum_2026-06-05.md`
+- Untagged nonprediction assembled-candidate artifact:
+  `experiments/gan2026_untagged_nonprediction_release_candidate_v0_assembled_candidate_2026-06-05.json`,
+  `experiments/gan2026_untagged_nonprediction_release_candidate_v0_assembled_candidate_2026-06-05.md`
+- H1 hidden-family slice aggregates v0:
+  `experiments/gan2026_h1_hidden_family_slice_aggregates_v0_2026-06-05.json`,
+  `experiments/gan2026_h1_hidden_family_slice_aggregates_v0_2026-06-05.md`
+- Generalization-first boundary/convention solution design:
+  `docs/research/gan2026_generalization_first_boundary_and_benchmark_solution_design_2026-06-05.md`
+- Boundary/benchmark H3/H7 seed panel v0:
+  `experiments/gan2026_boundary_benchmark_seed_panel_v0_2026-06-05.json`,
+  `experiments/gan2026_boundary_benchmark_seed_panel_v0_2026-06-05.md`
 
 ## Work Board
 
 ### Now
 
-- Materialize an auditable assembled-candidate artifact for
-  `untagged_nonprediction_release_candidate_v0`: record release eligibility,
-  original staged action, fallback label, candidate action, component ownership,
-  H6 membership, and aggregate accounting; do not authorize holdout use.
+- Implement typed `seizure_free_boundary_event_v0` and
+  `benchmark_convention_renderer_v0` contract tests against
+  `boundary_benchmark_seed_panel_v0`; keep clinical state and Gan-rendered label
+  separate, and do not connect the mechanisms to final-label policy yet.
 - Extend the gap-matrix adapters only when a saved artifact has an explicit
   row-source contract. The current matrix intentionally uses only the staged
   assembly component seed and skips locked-test row-level artifacts.
@@ -195,9 +227,8 @@ Core plans and artifacts:
 
 ### Blocked
 
-- Whole-pipeline promotion is blocked until a family-indexed matrix exists as
-  an auditable assembled candidate and any holdout-facing use has a frozen
-  protocol.
+- Whole-pipeline promotion remains blocked until any holdout-facing use has a
+  frozen protocol and explicit user authorization.
 - Trigger-context release is rejected as a behavior change because it failed
   the predeclared promotion gate.
 - Last-event automatic release remains blocked under
@@ -240,6 +271,26 @@ Core plans and artifacts:
   addendum. The release rule is limited to staged nonpredictions with no
   hidden-family tags through deterministic-comparator fallback and still blocks
   holdout-facing use.
+- 2026-06-05: Materialized
+  `untagged_nonprediction_release_candidate_v0_assembled_candidate` as the
+  auditable validation-development assembly record with row-level eligibility,
+  original action, fallback label, candidate action, component ownership, H6
+  membership, and aggregate accounting.
+- 2026-06-05: Created a living validation-test gap hypothesis synthesis report.
+  It records tested H2/H4/H6 evidence, interprets the untagged nonprediction
+  patch as deterministic fallback action-policy recovery, and predeclares H1
+  hidden-family slice aggregation as the next setup-heavy hypothesis.
+- 2026-06-05: Added `h1_hidden_family_slice_aggregates_v0` and updated the
+  synthesis report. H1 is inconclusive as a primary explanation: validation
+  0.9440 versus test 0.7800, with gaps spread across overlapping families rather
+  than concentrated cleanly in a small family set.
+- 2026-06-05: Added a generalization-first solution design for seizure-free
+  duration and benchmark-format convention. The next mechanism should use typed
+  boundary events and explicit benchmark rendering, and may accept validation
+  score loss if it improves principled transfer evidence.
+- 2026-06-05: Added `boundary_benchmark_seed_panel_v0`, a 12-row synthetic H3/H7
+  seed panel with exact evidence and pair-invariant clinical states for
+  seizure-free boundary and benchmark-renderer contract tests.
 - 2026-06-05: Closed the direct-labeler targeted switch branch as safe but
   low-coverage. Validation750 targeted switching projected 717/750 with 9 W->C
   and 0 C->W, but frozen aggregate-only test450 selected only 4 rows with

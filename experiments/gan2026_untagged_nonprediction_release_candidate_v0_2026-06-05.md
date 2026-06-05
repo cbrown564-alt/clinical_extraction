@@ -35,5 +35,8 @@ Freeze this validation-cycle candidate in a protocol addendum before any broader
 
 - Candidate JSONL: `experiments/gan2026_untagged_nonprediction_release_candidate_v0_2026-06-05.jsonl`
 - Summary JSON: `experiments/gan2026_untagged_nonprediction_release_candidate_v0_2026-06-05.json`
+- Assembled candidate JSONL: `experiments/gan2026_untagged_nonprediction_release_candidate_v0_assembled_candidate_2026-06-05.jsonl`
+- Assembled candidate JSON: `experiments/gan2026_untagged_nonprediction_release_candidate_v0_assembled_candidate_2026-06-05.json`
+- Assembled candidate report: `experiments/gan2026_untagged_nonprediction_release_candidate_v0_assembled_candidate_2026-06-05.md`
 - Component matrix: `experiments/gan2026_hybrid_multi_component_staged_assembly_v0_validation750_component_matrix_2026-06-04.csv`
 - H2/H4 panel: `experiments/gan2026_h2_h4_validation_component_stress_panel_v0_2026-06-05.jsonl`

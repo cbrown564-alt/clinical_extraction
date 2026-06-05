@@ -1,0 +1,37 @@
+{
+  "artifact_kind": "gan2026_untagged_nonprediction_release_candidate_assembled_summary",
+  "candidate_correct_prediction_rows": 697,
+  "candidate_prediction_bearing_rows": 735,
+  "candidate_version": "gan2026_untagged_nonprediction_release_candidate_v0_assembled_candidate",
+  "claim_boundary": "Auditable validation-development assembled candidate for untagged_nonprediction_release_candidate_v0. It records row-level release eligibility, original staged action, deterministic fallback label, candidate action, component ownership, and H6 membership. It does not authorize holdout use or benchmark-comparable claims.",
+  "component_owner_counts": {
+    "deterministic_adapter": 701,
+    "deterministic_comparator_fallback": 19,
+    "safety_floor": 30
+  },
+  "decision": "candidate_patch_passes_validation_no_regression_gate",
+  "h6_control_preserved_rows": 37,
+  "h6_control_regression_rows": 0,
+  "h6_control_rows": 37,
+  "h6_member_rows": 37,
+  "holdout_authorized": false,
+  "json_artifact": "experiments/gan2026_untagged_nonprediction_release_candidate_v0_assembled_candidate_2026-06-05.json",
+  "jsonl_artifact": "experiments/gan2026_untagged_nonprediction_release_candidate_v0_assembled_candidate_2026-06-05.jsonl",
+  "locked_test_row_level_artifacts_used": 0,
+  "original_nonprediction_rows": 34,
+  "policy_name": "gan2026_untagged_nonprediction_release_candidate_v0",
+  "recommended_next_step": "Use this artifact as the family-indexed assembly record before any separate frozen holdout protocol; do not run or tune on locked-test row-level failures from this artifact.",
+  "release_applied_rows": 19,
+  "release_correct_rows": 19,
+  "release_eligible_rows": 19,
+  "release_transition_counts": {
+    "C_to_abstain": 17,
+    "C_to_review": 2
+  },
+  "release_wrong_rows": 0,
+  "report_artifact": "experiments/gan2026_untagged_nonprediction_release_candidate_v0_assembled_candidate_2026-06-05.md",
+  "row_count": 750,
+  "source_component_matrix": "experiments/gan2026_hybrid_multi_component_staged_assembly_v0_validation750_component_matrix_2026-06-04.csv",
+  "source_panel_artifact": "experiments/gan2026_h2_h4_validation_component_stress_panel_v0_2026-06-05.jsonl",
+  "split_manifest": "gan2026_split_v1"
+}
