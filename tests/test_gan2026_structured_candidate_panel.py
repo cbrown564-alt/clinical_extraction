@@ -97,5 +97,5 @@ def test_direct_labeler_panel_summary_reports_gate_failure() -> None:
     assert summary["validation_gate"]["frozen_test_audit_ready"] is False
     assert summary["validation_gate"]["gate_failures"] == [
         "coverage_below_150",
-        "w_to_c_below_60",
+        "w_to_c_below_25",
     ]

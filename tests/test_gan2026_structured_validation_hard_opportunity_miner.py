@@ -52,7 +52,7 @@ def test_hard_opportunity_summary_reports_w_to_c_ceiling() -> None:
     assert summary["selected_prediction_bearing_rows"] == 2
     assert summary["w_to_c_rows"] == 2
     assert summary["w_to_c_gate_reachable_on_current_surface"] is False
-    assert summary["gate_failures"] == ["coverage_below_150", "w_to_c_below_60"]
+    assert summary["gate_failures"] == ["coverage_below_150", "w_to_c_below_25"]
 
 
 def _assembled_row(

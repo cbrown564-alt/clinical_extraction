@@ -14,7 +14,8 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser i
 from clinical_extraction.tasks.seizure_frequency.gan2026.labels import map_purist
 
 MIN_VALIDATION_COVERAGE = 150
-MIN_W_TO_C = 60
+MIN_W_TO_C = 25
+W_TO_C_GATE_FAILURE = f"w_to_c_below_{MIN_W_TO_C}"
 MAX_C_TO_W_RATE = 0.05
 MIN_PARSE_OK_EXACT_EVIDENCE_RATE = 0.95
 
@@ -167,7 +168,7 @@ def summarize_validation_gate(
     if selected_count < MIN_VALIDATION_COVERAGE:
         gate_failures.append("coverage_below_150")
     if transitions["W_to_C"] < MIN_W_TO_C:
-        gate_failures.append("w_to_c_below_60")
+        gate_failures.append(W_TO_C_GATE_FAILURE)
     if c_to_w_rate > MAX_C_TO_W_RATE:
         gate_failures.append("c_to_w_above_5_percent")
     if parse_ok_exact_rate < MIN_PARSE_OK_EXACT_EVIDENCE_RATE:

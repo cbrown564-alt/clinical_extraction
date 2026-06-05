@@ -116,7 +116,7 @@ def test_validation_projection_panel_summary_blocks_undercovered_validation() ->
     assert summary["frozen_test_audit_ready"] is False
     assert summary["gate_failures"] == [
         "coverage_below_150",
-        "w_to_c_below_60",
+        "w_to_c_below_25",
         "c_to_w_above_5_percent",
     ]
 
