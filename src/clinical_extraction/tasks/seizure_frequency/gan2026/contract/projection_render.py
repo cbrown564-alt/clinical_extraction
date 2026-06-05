@@ -9,6 +9,8 @@ from pydantic import BaseModel, ConfigDict, Field
 SCHEMA_VERSION = "gan2026_projection_render_v0"
 PROJECTION_POLICY_ID = "gan2026_clinical_assessment_projection_v0"
 RENDER_POLICY_ID = "gan2026_final_label_renderer_v0"
+SCORING_SCHEMA_VERSION = "gan2026_rendered_label_scoring_v0"
+SCORING_POLICY_ID = "gan2026_rendered_label_scoring_policy_v0"
 
 ProjectionKind = Literal[
     "frequency_rate",
@@ -56,3 +58,40 @@ class FinalRenderedLabel(BaseModel):
     scorer_facing: Literal[True] = True
     scoring_enabled: Literal[False] = False
     schema_version: Literal["gan2026_projection_render_v0"] = SCHEMA_VERSION
+
+
+ScoreStatus = Literal[
+    "scored",
+    "not_scored_null_rendered_label",
+    "not_scored_unparseable_rendered_label",
+    "not_scored_missing_gold_record",
+]
+
+
+class RenderedLabelScore(BaseModel):
+    """Score-policy result for a scorer-facing rendered label."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    source_row_index: int
+    component_owner: Literal["rendered_label_scorer"]
+    scoring_policy_id: Literal["gan2026_rendered_label_scoring_policy_v0"] = (
+        SCORING_POLICY_ID
+    )
+    score_status: ScoreStatus
+    rendered_label: str | None
+    gold_label: str | None
+    predicted_normalized_label: str | None = None
+    gold_normalized_label: str | None = None
+    predicted_monthly_frequency: float | None = None
+    gold_monthly_frequency: float | None = None
+    predicted_purist_category: str | None = None
+    gold_purist_category: str | None = None
+    predicted_pragmatic_category: str | None = None
+    gold_pragmatic_category: str | None = None
+    exact_normalized_label_match: bool | None = None
+    purist_correct: bool | None = None
+    pragmatic_correct: bool | None = None
+    score_issues: list[str] = Field(default_factory=list)
+    clinical_or_policy: Literal["score_policy"] = "score_policy"
+    schema_version: Literal["gan2026_rendered_label_scoring_v0"] = SCORING_SCHEMA_VERSION
