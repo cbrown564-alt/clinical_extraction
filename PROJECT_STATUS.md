@@ -12,6 +12,10 @@ The current goal-achieving path is not another narrow switch layer. The repo now
 has `structured_candidate_contract_v0` as the typed candidate/event gate for the
 next validation ablation before any new holdout use.
 
+The immediate research-control path is the validation-test generalisation gap
+program: instrument component attribution and test named hypotheses before
+adding or promoting another prediction-bearing architecture.
+
 ## Current Strategy
 
 Use saved artifacts as research instruments for component questions, not
@@ -26,6 +30,10 @@ release remains blocked under `last_event_duration_policy_v0`.
 Return to validation and synthetic hard panels for a new mechanism that can
 beat the deterministic locked-test ceiling. Do not tune from test row-level
 failures, and do not inspect locked-test row-level diagnostics.
+
+Near-term work should build `validation_test_gap_matrix_v0` from saved
+artifacts, then run controlled component-specific hypotheses. Broad validation
+F1 movement is not an adequate learning goal.
 
 ## Guardrails
 
@@ -72,6 +80,13 @@ Important standing numbers:
   `seizure_free_to_unknown`, `yearly_to_daily`, and `cluster_completion`.
 - `structured_seed_event_generator_v0` passed the synthetic smoke on that panel:
   90/90 hard rows emitted, 90/90 controls suppressed, 180/180 exact evidence.
+- `structured_seed_validation_panel_v0` selected a conservative real validation
+  hard/control surface for those seed families: 46 rows, 23 hard and 23 matched
+  controls, with no note text written to artifacts.
+- `structured_seed_validation_extractor_v0` passed that validation smoke but is
+  blocked by undercoverage: 23/23 hard rows emitted with exact candidate
+  evidence, 23/23 controls suppressed, 0 action mismatches, and only 23 hard
+  opportunities versus the required 60 W->C and 150 prediction-bearing rows.
 
 Core plans and artifacts:
 
@@ -91,11 +106,32 @@ Core plans and artifacts:
   `experiments/gan2026_structured_seed_expansion_panel_v0_2026-06-05.json`
 - Structured seed event generator smoke:
   `experiments/gan2026_structured_seed_event_generator_v0_synthetic_panel_2026-06-05.json`
+- Structured seed validation panel:
+  `experiments/gan2026_structured_seed_validation_panel_v0_2026-06-05.json`
+- Structured seed validation extractor smoke:
+  `experiments/gan2026_structured_seed_validation_extractor_v0_2026-06-05.json`
+- Validation-test gap implementation plan:
+  `docs/research/gan2026_validation_test_generalisation_gap_implementation_plan_2026-06-05.md`
+- Validation-test gap Phase 0 protocol and inventory:
+  `docs/research/gan2026_validation_test_gap_protocol_2026-06-05.md`,
+  `experiments/gan2026_validation_test_gap_artifact_inventory_2026-06-05.json`
+- Validation-test surface map v0:
+  `experiments/gan2026_validation_test_surface_map_v0_2026-06-05.json`
+- Validation-test gap matrix v0:
+  `experiments/gan2026_validation_test_gap_matrix_v0_validation750_2026-06-05.jsonl`,
+  `experiments/gan2026_validation_test_gap_matrix_v0_validation750_2026-06-05.md`
 
 ## Work Board
 
 ### Now
 
+- Analyze `validation_test_gap_matrix_v0` to choose no more than three
+  controlled hypotheses for component-stress experiments; current priorities
+  are H2 component ownership, H4 evidence-versus-projection/rendering, and H6
+  selective action transfer.
+- Extend the gap-matrix adapters only when a saved artifact has an explicit
+  row-source contract. The current matrix intentionally uses only the staged
+  assembly component seed and skips locked-test row-level artifacts.
 - Design the next structured mechanism around high-precision candidate
   generation, not broad direct-labeler switching: target at least 60 W->C,
   <=5% C->W, and >=95% parse-ok plus exact-evidence on validation hard/control
@@ -105,7 +141,8 @@ Core plans and artifacts:
   do not promote family-slice rules directly.
 - Translate `structured_seed_event_generator_v0` into validation hard/control
   row selection and typed event extraction for the same three seed families.
-  Do not use locked test rows.
+  This first validation smoke is complete but undercovered; broaden the event
+  family surface before any frozen test audit. Do not use locked test rows.
 - Keep the structured surface validation-only until those gates pass and a
   frozen test450 protocol addendum is written.
 
@@ -136,6 +173,16 @@ Core plans and artifacts:
 
 ### Done Recently
 
+- 2026-06-05: Added a validation-test generalisation gap implementation plan,
+  frozen Phase 0 protocol, machine-readable H1-H10 hypothesis registry,
+  saved-artifact inventory, and aggregate-only surface-map generator. The first
+  surface map reproduces roughly 17-point validation-test gaps for the closed
+  targeted-switch, few-shot, and structural-guard branches without inspecting
+  locked-test row-level failures.
+- 2026-06-05: Added `validation_test_gap_matrix_v0` as the first Phase 2
+  artifact: 1,534 validation-only layer rows from the staged assembly component
+  seed, covering 750 deterministic comparator rows, 750 final-policy rows, and
+  34 abstain/review monitor rows with 0 locked-test row-level artifacts used.
 - 2026-06-05: Closed the direct-labeler targeted switch branch as safe but
   low-coverage. Validation750 targeted switching projected 717/750 with 9 W->C
   and 0 C->W, but frozen aggregate-only test450 selected only 4 rows with
@@ -157,6 +204,10 @@ Core plans and artifacts:
 - 2026-06-05: Added `structured_seed_event_generator_v0` and ran the synthetic
   smoke: 90/90 hard rows emitted, 90/90 controls suppressed, 180/180 exact
   evidence. This only promotes to validation hard/control design.
+- 2026-06-05: Added `structured_seed_validation_panel_v0` and
+  `structured_seed_validation_extractor_v0`. The validation smoke passed on the
+  seed panel, but the decision is `validation_smoke_passed_undercoverage`
+  because it covers only 23 hard opportunities and cannot authorize holdout use.
 - 2026-06-05: Closed the train-exemplar few-shot branch as non-goal-achieving.
   The few-shot-specific contract was clean on validation750 (708/750 ->
   726/750; 18 W->C, 0 C->W), but frozen aggregate-only test450 reached only

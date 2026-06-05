@@ -14,6 +14,25 @@ statistics only. It does not inspect locked-test note text or row-level failure
 examples. Any future fix suggested here must start as a new validation-cycle
 candidate.
 
+2026-06-05 continuation: this report now feeds the frozen validation-test gap
+program rather than another whole-pipeline iteration. The Phase 0 protocol,
+artifact inventory, hypothesis registry, aggregate-only surface map, and first
+validation-only gap matrix have been materialized:
+
+- `docs/research/gan2026_validation_test_gap_protocol_2026-06-05.md`
+- `experiments/gan2026_validation_test_gap_artifact_inventory_2026-06-05.json`
+- `experiments/gan2026_validation_test_gap_hypothesis_registry_2026-06-05.json`
+- `experiments/gan2026_validation_test_surface_map_v0_2026-06-05.md`
+- `experiments/gan2026_validation_test_gap_matrix_v0_validation750_2026-06-05.md`
+
+The first matrix is deliberately validation row-level only. It expands the
+staged assembly component seed into 1,534 score-layer rows: 750 deterministic
+comparator rows, 750 final-policy rows, and 34 abstain/review monitor rows.
+Locked-test row-level artifacts remain unused. This turns the recommendation
+below into an executable next step: analyze component-owner and hidden-family
+strata on validation first, then choose no more than three controlled mechanism
+hypotheses before any new architecture change.
+
 ## Executive Summary
 
 The generalization gap is persistent across architecture families.
@@ -420,15 +439,23 @@ sub-task, not which final label to trust globally.
 Do not tune v0.2 gates from the test run. The locked-test result should be
 recorded as a final generalization audit for that frozen candidate.
 
-The most informative next work is a validation-only graph/coverage cycle:
+The most informative next work is now the validation-only gap-matrix analysis
+cycle:
 
 - freeze current rules-only V1, claim-table v5, and hybrid v0.2 cluster/diary as
 comparators;
+- use `validation_test_gap_matrix_v0` to identify component-owner and
+ hidden-family strata with real validation leverage;
+- choose at most three controlled hypotheses from H1-H10, with current priority
+ on H2 component ownership, H4 evidence-versus-projection/rendering, and H6
+ selective action transfer;
 - build oracle span and graph coverage diagnostics on validation and synthetic
-hard panels;
-- add a family-aware validation split or hard-slice protocol;
+ hard panels only after the matrix identifies the first-failure owners worth
+ stressing;
+- add a family-aware validation split or hard-slice protocol before any
+ holdout-facing audit;
 - report whether remaining errors are span absence, graph construction,
-projection policy, or arbitration.
+ projection policy, selective action, or benchmark convention.
 
 The goal should shift from "which architecture gets the highest next F1?" to
 "which architecture tells us where the hidden variable is?" Once that hidden

@@ -1,0 +1,90 @@
+{
+  "registry_id": "gan2026_validation_test_gap_hypotheses_v0",
+  "date": "2026-06-05",
+  "split_manifest": "gan2026_split_v1",
+  "status": "active",
+  "claim_boundary": "Development and frozen-audit planning only; not benchmark-comparable.",
+  "hypotheses": [
+    {
+      "id": "H1",
+      "name": "hidden_family_mix",
+      "hypothesis": "Hidden-family mix explains the aggregate validation-test gap.",
+      "primary_signal": "Validation and test predeclared-slice aggregates show the gap concentrated in a small set of hidden families.",
+      "revise_if": "The gap persists within most matched hidden families.",
+      "initial_surface": "validation_test_surface_map_v0"
+    },
+    {
+      "id": "H2",
+      "name": "component_ownership",
+      "hypothesis": "Component ownership explains the gap.",
+      "primary_signal": "LLM-owned, deterministic-owned, projection-owned, and safety-floor-owned rows have different validation-test gaps after family stratification.",
+      "revise_if": "Ownership strata have similar gaps once hidden family is controlled.",
+      "initial_surface": "validation_test_gap_matrix_v0"
+    },
+    {
+      "id": "H3",
+      "name": "candidate_generation_transfer",
+      "hypothesis": "Candidate-generation recall fails to transfer.",
+      "primary_signal": "Gold-relevant candidate exposure is high on validation hard slices but lower on predeclared test slice aggregates or synthetic paraphrases.",
+      "revise_if": "Candidate recall is stable while later components fail.",
+      "initial_surface": "candidate_generation_component_stress"
+    },
+    {
+      "id": "H4",
+      "name": "evidence_transfers_projection_does_not",
+      "hypothesis": "Evidence selection transfers, but projection or rendering does not.",
+      "primary_signal": "Exact evidence and source-id rates are stable while projection or adapter layers create validation-test divergence.",
+      "revise_if": "Evidence validity falls alongside final accuracy.",
+      "initial_surface": "score_layer_ladder"
+    },
+    {
+      "id": "H5",
+      "name": "deterministic_repair_masks_llm_weakness",
+      "hypothesis": "Deterministic semantic repair masks LLM weakness on validation.",
+      "primary_signal": "Raw LLM or format-only layers have a larger gap than full repair, and full repair owns prediction-bearing changes.",
+      "revise_if": "Same-raw-output ladder attributes gains to LLM-owned selected facts.",
+      "initial_surface": "llm_replacement_postprocessing_ablation"
+    },
+    {
+      "id": "H6",
+      "name": "selective_action_transfers",
+      "hypothesis": "Safety-floor and selective-action policies transfer better than broad replacement.",
+      "primary_signal": "Change-only rows show high changed-label precision and low correct-to-wrong rate on validation and frozen aggregate test summaries.",
+      "revise_if": "Safety floor suppresses useful test changes or selective-action gains vanish.",
+      "initial_surface": "selective_safety_floor_gate_replay"
+    },
+    {
+      "id": "H7",
+      "name": "template_brittleness",
+      "hypothesis": "Template brittleness, not clinical complexity, causes the gap.",
+      "primary_signal": "Paraphrase or minimal-pair panels preserve gold facts but flip component behavior by wording, order, section placement, or distractor changes.",
+      "revise_if": "Components remain stable across paraphrases.",
+      "initial_surface": "adversarial_minimal_pair_panel"
+    },
+    {
+      "id": "H8",
+      "name": "benchmark_format_conventions",
+      "hypothesis": "Benchmark-format conventions dominate a subset of the gap.",
+      "primary_signal": "Convention-tagged rows have poor transfer and strong disagreement between clinical-state correctness and Gan label exactness.",
+      "revise_if": "The gap remains after excluding convention-dominated slices.",
+      "initial_surface": "benchmark_format_slice_analysis"
+    },
+    {
+      "id": "H9",
+      "name": "action_policy_shift",
+      "hypothesis": "Abstention and review policy hide different failure modes by split.",
+      "primary_signal": "Nonprediction, review, and monitor rates differ by hidden family and component owner across validation and test aggregate summaries.",
+      "revise_if": "Action rates are stable and unrelated to misses.",
+      "initial_surface": "rq9_action_policy_summary"
+    },
+    {
+      "id": "H10",
+      "name": "runtime_variance",
+      "hypothesis": "Model or runtime variance is being mistaken for a generalisation gap.",
+      "primary_signal": "Same-raw-output and no-call replays produce stable attribution, while live reruns differ mainly in output contract or stochastic noise.",
+      "revise_if": "Same-output replay still shows the gap.",
+      "initial_surface": "same_raw_output_replay_inventory"
+    }
+  ]
+}
+

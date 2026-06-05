@@ -1,0 +1,30 @@
+{
+  "action_counts": {
+    "emit_candidate": 23,
+    "suppress_candidate": 23
+  },
+  "artifact_kind": "gan2026_structured_seed_validation_extractor_summary",
+  "claim_boundary": "Validation-development smoke for typed seed event extraction. It uses validation notes in memory, writes no note text, and does not authorize locked-test or holdout-facing use.",
+  "control_reference_retrievable_rows": 21,
+  "control_rows": 23,
+  "control_suppressed_rows": 23,
+  "decision": "validation_smoke_passed_undercoverage",
+  "exact_evidence_rows": 44,
+  "expected_action_mismatch_rows": 0,
+  "family_counts": {
+    "cluster_completion": 10,
+    "seizure_free_to_unknown": 26,
+    "yearly_to_daily": 10
+  },
+  "hard_emit_rows": 23,
+  "hard_exact_evidence_rows": 23,
+  "hard_rows": 23,
+  "json_artifact": "experiments/gan2026_structured_seed_validation_extractor_v0_2026-06-05.json",
+  "jsonl_artifact": "experiments/gan2026_structured_seed_validation_extractor_v0_2026-06-05.jsonl",
+  "policy_name": "gan2026_structured_seed_validation_extractor_v0",
+  "recommended_next_step": "Broaden validation hard/control construction beyond the seed families until the typed candidate/event surface can reach at least 60 W->C, 150 prediction-bearing rows, <=5% matched-control C->W, and >=95% parse-ok plus exact-evidence rows.",
+  "report_artifact": "experiments/gan2026_structured_seed_validation_extractor_v0_2026-06-05.md",
+  "row_count": 46,
+  "source_panel_artifact": "experiments/gan2026_structured_seed_validation_panel_v0_2026-06-05.jsonl",
+  "validation_smoke_passed": true
+}
