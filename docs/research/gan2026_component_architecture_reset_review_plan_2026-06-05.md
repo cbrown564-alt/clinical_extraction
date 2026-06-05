@@ -371,7 +371,7 @@ Deliverables:
 
 - `ExtractedCandidate`;
 - `CandidateSet`;
-- `SelectedClinicalFact`;
+- `SelectedCandidateDecision`;
 - `NormalizedClinicalState`;
 - `ProjectionDecision`;
 - `VerificationDecision`;
@@ -1002,59 +1002,59 @@ built out.
   `PYTHONPATH=src .venv/Scripts/python.exe -m pytest tests/test_gan2026_deterministic_unknown_candidate_recall.py tests/test_gan2026_candidate_set_contract.py tests/test_gan2026_llm_pipeline_cli.py -q`
   passed with 11 tests before full artifact generation.
 
-### SelectedClinicalFact Contract V0
+### SelectedCandidateDecision Contract V0
 
 - Added:
   - `src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/selected_fact.py`
   - `tests/test_gan2026_selected_fact_contract.py`
 - Schema version:
-  - `gan2026_selected_clinical_fact_v0`.
+  - `gan2026_selected_candidate_decision_v0`.
 - Contract boundary:
-  - `SelectedClinicalFact` is a clinical selector output before normalization,
-    projection, verification, rendering, or scoring;
-  - it may select one or more candidate ids, reject high-risk candidate ids,
-    or abstain with `ambiguous`, `conflict`, `no_reliable_candidate`, or
-    `human_review`;
-  - it carries source-near evidence spans and source ids, but no
-    scorer-facing labels.
-- Unknown-frequency design:
-  - selected `unknown_frequency` candidates are allowed, but must explicitly
-    state `unknown_basis="extracted_unknown_candidate"`;
-  - `no_reliable_candidate` supports unknown-by-absence with
-    `unknown_basis="absence_of_usable_frequency_evidence"` and no selected
-    candidate ids;
-  - this preserves the experimental comparison between expanded
-    unknown-candidate recall and reconstructing unknown from absence,
-    uncertainty, contradiction, or verifier referral.
+  - `SelectedCandidateDecision` is a minimal selector output before
+    normalization, aggregation derivation, projection, verification, rendering,
+    or scoring;
+  - the model owns only `selected_candidate_ids`, `selection_mode`, and
+    `rationale`;
+  - candidate kind, evidence, source phrases, temporality, certainty, source
+    ids, and non-selected candidate sets are passed through or derived
+    deterministically from the source `CandidateSet`;
+  - related-event aggregation is represented by selecting multiple candidate
+    ids with `selection_mode="related_candidate_group"`, not by asking the
+    model to emit operands or a benchmark-facing label.
 - Validation rules:
-  - `selected` requires selected candidate ids, clinical fact kind, and
-    primary evidence;
-  - `no_reliable_candidate` must not select candidate ids and must carry a
-    substantive unknown basis;
-  - `ambiguous` and `conflict` must not select candidate ids and must carry
-    flags or multiple supporting candidate ids;
-  - selected and rejected candidate ids cannot overlap.
+  - `single_candidate` requires exactly one selected candidate id;
+  - `related_candidate_group` requires two or more selected candidate ids;
+  - `no_reliable_candidate`, `ambiguous`, and `conflict` must not select
+    candidate ids;
+  - selected candidate ids must be unique.
 - Verification:
-  `PYTHONPATH=src .venv/Scripts/python.exe -m pytest tests/test_gan2026_selected_fact_contract.py tests/test_gan2026_candidate_set_contract.py -q`
-  passed with 8 tests.
+  `PYTHONPATH=src .venv/Scripts/python.exe -m pytest tests/test_gan2026_selected_fact_contract.py tests/test_gan2026_llm_candidate_set_selector_schema_probe.py tests/test_gan2026_llm_pipeline_cli.py -q`
+  passed with 17 tests.
 
-### CandidateSet Selector Schema Probe V0
+### CandidateSet Selector Schema Probe V0/V1/V2
 
 - Added:
   - `src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_candidate_set_selector_schema_probe.py`
   - `tests/test_gan2026_llm_candidate_set_selector_schema_probe.py`
 - Registered the routine LLM CLI pipeline:
   - `llm_candidate_set_selector_schema_probe`
-- Prompt/schema version:
-  - `gan2026_candidate_set_selector_schema_probe_v0`.
+- Prompt/schema versions:
+  - validation250 v0 run used
+    `gan2026_candidate_set_selector_schema_probe_v0`;
+  - v1 removed internal-facing wording from the prompt;
+  - current code is bumped to
+    `gan2026_candidate_set_selector_schema_probe_v2` with the minimal
+    `SelectedCandidateDecision` output.
 - Default selector substrate:
   - `experiments/gan2026_validation250_candidate_set_v2_high_recall.jsonl`.
 - Probe boundary:
   - consumes a row-level `CandidateSet`;
-  - model emits only `SelectionDraft` fields;
-  - deterministic assembly fills row index, source artifacts, evidence spans,
-    source ids, temporality, certainty, and schema bookkeeping;
-  - output is `SelectedClinicalFact`, not a normalized or scorer-facing answer.
+  - model emits only `selected_candidate_ids`, `selection_mode`, and
+    `rationale`;
+  - deterministic assembly fills row index, component owner, schema
+    bookkeeping, and candidate-id validation;
+  - output is `SelectedCandidateDecision`, not a normalized clinical state or
+    scorer-facing answer.
 - Unknown-frequency comparison preserved:
   - prompt tells the selector to prefer explicit current frequency,
     seizure-free, or cluster-frequency candidates over vague unknown-frequency
@@ -1065,32 +1065,142 @@ built out.
     of reliable usable evidence is the better explanation.
 - Current status:
   - schema probe and prompt-only path are implemented;
-  - no live selector validation250 run has been executed yet;
-  - next live run should compare selection behavior on v2 high-recall first,
-    then optionally re-run against v1 baseline union if candidate burden appears
-    to degrade selection quality.
+  - validation25 live run on v2 completed with 25/25 selected facts and 0
+    parse/validation failures after treating model-mangled evidence-text copies
+    as selection issues rather than assembly failures;
+  - validation250 live run on v2 completed as
+    `experiments/gan2026_validation250_selected_fact_v0_v2_high_recall.jsonl`
+    and
+    `experiments/gan2026_validation250_selected_fact_v0_v2_high_recall.md`.
+- Validation250 v0 selector summary:
+  - rows: 250;
+  - call failures: 0;
+  - selected fact rows: 248/250;
+  - parse/validation failure rows: 2;
+  - selection statuses: 240 `selected`, 8 `no_reliable_candidate`, 2 failed;
+  - selection bases: 239 `direct_candidate_selection`, 8
+    `absence_of_evidence`, 1 `candidate_combination`;
+  - selected fact kinds: 170 `frequency_rate`, 41 `seizure_free`, 23
+    `cluster_frequency`, 7 `unknown_frequency`, 2 `last_event_only`;
+  - unknown basis: 8 `absence_of_usable_frequency_evidence`, 4
+    `extracted_unknown_candidate`, 36 `not_applicable`.
+- v0 selector contract failures:
+  - row 2427: model returned `ambiguous` while also selecting candidate ids;
+  - row 3528: model selected `unknown_frequency` without explicit
+    `unknown_basis`.
+- Important v0 prompt-language caveat:
+  - the first selector prompt included internal-facing terms such as
+    `benchmark label` and `scorer-facing answer`;
+  - these terms are not appropriate model-facing clinical task language and may
+    distract the selector from the actual job.
+- Prompt revision for next run:
+  - bumped prompt version to `gan2026_candidate_set_selector_schema_probe_v1`;
+  - replaced internal-facing instruction language with direct clinical wording:
+    choose the best current seizure-frequency statement, say when no reliable
+    candidate is available, do not calculate or standardize a new answer, and
+    distinguish vague unknown-frequency candidates from unknown-by-absence;
+  - added a regression test banning `benchmark`, `scorer`, and `pipeline` from
+    model-facing task instructions.
+- v2 schema/prompt revision:
+  - slimmed the model output to selected candidate ids, selection mode, and
+    rationale;
+  - removed model-owned clinical fact kind, evidence copies, rejected ids,
+    unknown basis, support ids, source ids, temporality, certainty, and
+    selection status/basis fields;
+  - changed the first instruction to: "Review the set of candidate facts
+    extracted from the clinical note and choose the fact(s) that best describe
+    the patient's current seizure frequency burden.";
+  - added `related_candidate_group` so the selector can group multiple related
+    current-window candidate facts before downstream deterministic
+    normalization/aggregation derivation.
+- Validation250 v2 selector run:
+  - generated
+    `experiments/gan2026_validation250_selected_candidate_decision_v2_v2_high_recall.jsonl`
+    and
+    `experiments/gan2026_validation250_selected_candidate_decision_v2_v2_high_recall.md`;
+  - rows: 250;
+  - call failures: 0;
+  - parse/validation failure rows: 0;
+  - selected decision rows: 250/250;
+  - selection modes: 226 `single_candidate`, 21 `related_candidate_group`,
+    and 3 `no_reliable_candidate`.
+- Added selector diagnostics:
+  - `src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/selected_candidate_decision_diagnostics.py`;
+  - `tests/test_gan2026_selected_candidate_decision_diagnostics.py`;
+  - `experiments/gan2026_validation250_selected_candidate_decision_v2_diagnostics.jsonl`;
+  - `experiments/gan2026_validation250_selected_candidate_decision_v2_diagnostics.json`;
+  - `experiments/gan2026_validation250_selected_candidate_decision_v2_diagnostics.md`.
+- v2 selector diagnostics summary:
+  - invalid selected-reference rows: 0;
+  - high-burden rows: 69, all with selected decisions;
+  - selected candidate source composition: 200 `llm_only`, 44
+    `deterministic_only`, 3 `mixed`, 3 `none`;
+  - selected source types by candidate: 222 `llm_candidate`, 48
+    `deterministic_candidate`;
+  - selected candidate kinds: 175 `frequency_rate`, 48 `seizure_free`, 26
+    `cluster_frequency`, 18 `unknown_frequency`, and 3 `last_event_only`;
+  - related candidate groups: 21;
+  - related groups with heuristic coherence flags: 14;
+  - related groups with mixed candidate kind: 13;
+  - related groups with mixed temporality: 4;
+  - related groups without cluster or shared-kind signal: 3.
+- v0/v2 selector comparison:
+  - v0 had 2 parse/validation failures; v2 has 0;
+  - mapped v0 modes were 217 `single_candidate`, 23
+    `related_candidate_group`, 8 `no_reliable_candidate`, and 2 failed;
+  - v2 modes are 226 `single_candidate`, 21 `related_candidate_group`, and
+    3 `no_reliable_candidate`;
+  - only one v0 related-candidate-group row remained a v2 related group; v2
+    therefore changes selector behavior, not only schema bookkeeping.
+- Interpretation:
+  - the minimal selector contract is mechanically healthy and traceable;
+  - v2 related groups are an important review surface before normalization:
+    some appear to capture same-window aggregation, while others combine active
+    frequency with seizure-free context or mix frequency/unknown candidates in
+    ways that may need verifier or downstream policy rather than aggregation;
+  - do not move directly to scorer-facing rendering from v2 decisions.
+- Next run:
+  - inspect or diagnose the 21 `related_candidate_group` rows before building
+    deterministic normalization/aggregation derivation;
+  - then decide whether to revise grouping prompt language, route some
+    mixed-kind groups to verifier/defer policy, or proceed with normalization
+    that can handle selected candidate groups explicitly.
 - Verification:
   `PYTHONPATH=src .venv/Scripts/python.exe -m pytest tests/test_gan2026_llm_candidate_set_selector_schema_probe.py tests/test_gan2026_selected_fact_contract.py tests/test_gan2026_llm_pipeline_cli.py -q`
-  passed with 14 tests.
+  passed with 15 tests.
   `PYTHONPATH=src .venv/Scripts/python.exe -m ruff check src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_candidate_set_selector_schema_probe.py tests/test_gan2026_llm_candidate_set_selector_schema_probe.py src/clinical_extraction/tasks/seizure_frequency/gan2026/cli/llm_pipeline_cli.py tests/test_gan2026_llm_pipeline_cli.py`
   passed.
 
-### Original Recommended Next Steps
+### Current Resume Point
 
-Recommended next steps:
+The next session should resume at selector evaluation, not at extract design.
+The source-near candidate contract, deterministic/LLM candidate-set replay,
+high-recall extract variant, union artifact, `SelectedCandidateDecision` contract,
+and selector schema probe are now implemented.
 
-1. Start `SelectedClinicalFact` schema design with substrate choice recorded:
-   baseline union v1, high-recall union v2, or both as an experimental variable.
-2. Require the selector to report:
-   - selected candidate ids;
-   - rejected high-risk candidate ids;
-   - source reliability concerns;
-   - ambiguity/conflict object when no single candidate should be selected.
-3. Treat candidate burden and unknown-frequency representation as experimental
-   variables after the first selector implementation, comparing v1 and v2
-   candidate-set substrates.
-4. Preserve deterministic-only, LLM-only, and neither-row stratification in
-   later selection and normalization evaluations.
+Start next session with:
+
+1. Review the 21 `related_candidate_group` rows from
+   `experiments/gan2026_validation250_selected_candidate_decision_v2_diagnostics.jsonl`,
+   especially the 14 rows with coherence flags.
+2. Decide the grouping policy before normalization:
+   - keep same-kind same-window groups as aggregation candidates;
+   - preserve cluster cadence plus per-cluster burden as grouped cluster
+     candidates;
+   - decide whether active-frequency plus seizure-free groups should be
+     normalized together, routed to verifier, or split into primary selected
+     fact plus context;
+   - decide whether frequency plus unknown-frequency groups should remain
+     grouped or become verifier/defer cases.
+3. Only after the v2 related-group diagnostic is understood, decide whether to:
+   - run the same selector against baseline union v1 to test candidate burden;
+   - revise prompt/schema for ambiguity, conflict, or related-group behavior;
+   - move to deterministic normalization/aggregation derivation over selected
+     candidate ids.
+
+Do not draw selector-quality conclusions from
+`experiments/gan2026_validation250_selected_fact_v0_v2_high_recall.jsonl`
+without carrying the prompt-language caveat forward.
 
 Do not resume with:
 

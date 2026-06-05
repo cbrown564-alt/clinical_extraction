@@ -2,93 +2,80 @@ import pytest
 from pydantic import ValidationError
 
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.selected_fact import (
-    SelectedClinicalFact,
+    SelectedCandidateDecision,
     referenced_candidate_ids,
 )
 
 
-def test_selected_clinical_fact_accepts_source_near_candidate_selection() -> None:
-    selection = SelectedClinicalFact(
+def test_selected_candidate_decision_accepts_single_candidate() -> None:
+    selection = SelectedCandidateDecision(
         source_row_index=101,
-        component_owner="candidate_set_selector",
-        source_artifacts=["gan2026_validation250_candidate_set_v2_high_recall"],
-        selection_status="selected",
-        selection_basis="direct_candidate_selection",
-        clinical_fact_kind="frequency_rate",
+        component_owner="llm_candidate_set_selector",
         selected_candidate_ids=["det:101:1"],
-        rejected_candidate_ids=["llm:101:2"],
-        primary_evidence=[{"text": "two seizures per month", "start_char": 20, "end_char": 42}],
-        source_ids=["note:101:span:20-42"],
-        temporality="current",
-        certainty="certain",
-        rationale="The selected candidate is the current explicit rate.",
+        selection_mode="single_candidate",
+        rationale="The candidate is the current explicit rate.",
     )
 
-    assert selection.schema_version == "gan2026_selected_clinical_fact_v0"
-    assert selection.clinical_or_policy == "clinical"
-    assert referenced_candidate_ids(selection) == {"det:101:1", "llm:101:2"}
+    assert selection.schema_version == "gan2026_selected_candidate_decision_v0"
+    assert referenced_candidate_ids(selection) == {"det:101:1"}
 
 
-def test_unknown_by_absence_does_not_select_a_candidate() -> None:
-    selection = SelectedClinicalFact(
+def test_selected_candidate_decision_accepts_related_candidate_group() -> None:
+    selection = SelectedCandidateDecision(
         source_row_index=102,
-        component_owner="candidate_set_selector",
-        source_artifacts=["gan2026_validation250_candidate_set_v2_high_recall"],
-        selection_status="no_reliable_candidate",
-        selection_basis="absence_of_evidence",
-        clinical_fact_kind="unknown_frequency",
-        unknown_basis="absence_of_usable_frequency_evidence",
-        source_reliability_flags=["no_current_frequency_candidate"],
-        rationale="The row has no usable current frequency evidence.",
+        component_owner="llm_candidate_set_selector",
+        selected_candidate_ids=["det:102:1", "llm:102:2"],
+        selection_mode="related_candidate_group",
+        rationale="Both candidates describe the same current short-window burden.",
     )
 
-    assert selection.selected_candidate_ids == []
-    assert selection.primary_evidence == []
-    assert selection.unknown_basis == "absence_of_usable_frequency_evidence"
+    assert selection.selected_candidate_ids == ["det:102:1", "llm:102:2"]
 
 
-def test_selected_unknown_candidate_must_state_unknown_basis() -> None:
+def test_single_candidate_requires_exactly_one_id() -> None:
     payload = {
         "source_row_index": 103,
-        "component_owner": "candidate_set_selector",
-        "source_artifacts": ["candidate_set"],
-        "selection_status": "selected",
-        "selection_basis": "direct_candidate_selection",
-        "clinical_fact_kind": "unknown_frequency",
-        "selected_candidate_ids": ["llm:103:1"],
-        "primary_evidence": [{"text": "seizure frequency is unclear"}],
+        "component_owner": "llm_candidate_set_selector",
+        "selected_candidate_ids": ["det:103:1", "llm:103:2"],
+        "selection_mode": "single_candidate",
     }
 
-    with pytest.raises(ValidationError, match="selected unknown_frequency facts require"):
-        SelectedClinicalFact.model_validate(payload)
+    with pytest.raises(ValidationError, match="exactly one"):
+        SelectedCandidateDecision.model_validate(payload)
 
 
-def test_selection_rejects_overlapping_selected_and_rejected_ids() -> None:
+def test_related_candidate_group_requires_multiple_ids() -> None:
     payload = {
         "source_row_index": 104,
-        "component_owner": "candidate_set_selector",
-        "source_artifacts": ["candidate_set"],
-        "selection_status": "selected",
-        "selection_basis": "direct_candidate_selection",
-        "clinical_fact_kind": "seizure_free",
+        "component_owner": "llm_candidate_set_selector",
         "selected_candidate_ids": ["det:104:1"],
-        "rejected_candidate_ids": ["det:104:1"],
-        "primary_evidence": [{"text": "seizure free for six months"}],
+        "selection_mode": "related_candidate_group",
     }
 
-    with pytest.raises(ValidationError, match="must not overlap"):
-        SelectedClinicalFact.model_validate(payload)
+    with pytest.raises(ValidationError, match="two or more"):
+        SelectedCandidateDecision.model_validate(payload)
 
 
-def test_ambiguity_requires_flags_or_multiple_supporting_candidates() -> None:
+def test_defer_modes_do_not_select_ids() -> None:
+    for mode in ("no_reliable_candidate", "ambiguous", "conflict"):
+        payload = {
+            "source_row_index": 105,
+            "component_owner": "llm_candidate_set_selector",
+            "selected_candidate_ids": ["det:105:1"],
+            "selection_mode": mode,
+        }
+
+        with pytest.raises(ValidationError, match="must not select"):
+            SelectedCandidateDecision.model_validate(payload)
+
+
+def test_selected_candidate_ids_must_be_unique() -> None:
     payload = {
-        "source_row_index": 105,
-        "component_owner": "candidate_set_selector",
-        "source_artifacts": ["candidate_set"],
-        "selection_status": "ambiguous",
-        "selection_basis": "ambiguity_between_candidates",
-        "supporting_candidate_ids": ["det:105:1"],
+        "source_row_index": 106,
+        "component_owner": "llm_candidate_set_selector",
+        "selected_candidate_ids": ["det:106:1", "det:106:1"],
+        "selection_mode": "related_candidate_group",
     }
 
-    with pytest.raises(ValidationError, match="ambiguity_flags"):
-        SelectedClinicalFact.model_validate(payload)
+    with pytest.raises(ValidationError, match="must be unique"):
+        SelectedCandidateDecision.model_validate(payload)

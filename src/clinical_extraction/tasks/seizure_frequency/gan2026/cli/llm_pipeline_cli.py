@@ -143,7 +143,7 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
         ),
         "llm_candidate_set_selector_schema_probe": GanLlmPipelineCliSpec(
             description=(
-                "Run the Gan 2026 CandidateSet-to-SelectedClinicalFact schema probe."
+                "Run the Gan 2026 CandidateSet selector-decision schema probe."
             ),
             default_jsonl_path=llm_candidate_set_selector_schema_probe.DEFAULT_JSONL_PATH,
             default_report_path=llm_candidate_set_selector_schema_probe.DEFAULT_REPORT_PATH,

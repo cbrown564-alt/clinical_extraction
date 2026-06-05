@@ -1,0 +1,819 @@
+{
+  "artifact_name": "gan2026_validation250_selected_candidate_decision_v2_diagnostics",
+  "claim_boundary": "Validation250 selector-decision diagnostics only. This verifies candidate-id traceability and selection shape; it does not score, normalize, project, or render labels.",
+  "high_burden_threshold": 4,
+  "inspection_examples": {
+    "high_burden_rows": [
+      {
+        "rationale": "This candidate explicitly states the current seizure frequency as every 2 days on average with certainty.",
+        "related_group_coherence_flags": [],
+        "selected_candidate_ids": [
+          "llm:182:1"
+        ],
+        "selected_candidate_kinds": [
+          "frequency_rate"
+        ],
+        "selected_source_types": [
+          "llm_candidate"
+        ],
+        "selection_mode": "single_candidate",
+        "source_row_index": 182
+      },
+      {
+        "rationale": "The candidate llm:190:1 explicitly describes the current seizure frequency as clusters every 4 weeks over 1-2 days, which best captures the patient's current seizure burden.",
+        "related_group_coherence_flags": [],
+        "selected_candidate_ids": [
+          "llm:190:1"
+        ],
+        "selected_candidate_kinds": [
+          "cluster_frequency"
+        ],
+        "selected_source_types": [
+          "llm_candidate"
+        ],
+        "selection_mode": "single_candidate",
+        "source_row_index": 190
+      },
+      {
+        "rationale": "The candidate llm:198:1 explicitly states the current seizure frequency as every 4 weeks, which best describes the patient's current seizure burden.",
+        "related_group_coherence_flags": [],
+        "selected_candidate_ids": [
+          "llm:198:1"
+        ],
+        "selected_candidate_kinds": [
+          "frequency_rate"
+        ],
+        "selected_source_types": [
+          "llm_candidate"
+        ],
+        "selection_mode": "single_candidate",
+        "source_row_index": 198
+      },
+      {
+        "rationale": "The candidate 'multiple seizures in past day' explicitly describes the current seizure frequency burden.",
+        "related_group_coherence_flags": [],
+        "selected_candidate_ids": [
+          "det:280:1"
+        ],
+        "selected_candidate_kinds": [
+          "frequency_rate"
+        ],
+        "selected_source_types": [
+          "deterministic_candidate"
+        ],
+        "selection_mode": "single_candidate",
+        "source_row_index": 280
+      },
+      {
+        "rationale": "This candidate provides the most current and explicit seizure frequency evidence as ≤ twice per week over the past month.",
+        "related_group_coherence_flags": [],
+        "selected_candidate_ids": [
+          "llm:446:3"
+        ],
+        "selected_candidate_kinds": [
+          "frequency_rate"
+        ],
+        "selected_source_types": [
+          "llm_candidate"
+        ],
+        "selection_mode": "single_candidate",
+        "source_row_index": 446
+      },
+      {
+        "rationale": "The current seizure frequency and cluster information together best describe the patient's seizure burden.",
+        "related_group_coherence_flags": [
+          "mixed_candidate_kind"
+        ],
+        "selected_candidate_ids": [
+          "llm:466:1",
+          "llm:466:2"
+        ],
+        "selected_candidate_kinds": [
+          "frequency_rate",
+          "cluster_frequency"
+        ],
+        "selected_source_types": [
+          "llm_candidate",
+          "llm_candidate"
+        ],
+        "selection_mode": "related_candidate_group",
+        "source_row_index": 466
+      },
+      {
+        "rationale": "This candidate provides a clear, recent, and averaged seizure frequency over the past 16 months, directly describing the current seizure burden.",
+        "related_group_coherence_flags": [],
+        "selected_candidate_ids": [
+          "llm:598:2"
+        ],
+        "selected_candidate_kinds": [
+          "frequency_rate"
+        ],
+        "selected_source_types": [
+          "llm_candidate"
+        ],
+        "selection_mode": "single_candidate",
+        "source_row_index": 598
+      },
+      {
+        "rationale": "This candidate explicitly states the current seizure frequency as twice every 4 months, which is the clearest and most relevant evidence.",
+        "related_group_coherence_flags": [],
+        "selected_candidate_ids": [
+          "llm:678:1"
+        ],
+        "selected_candidate_kinds": [
+          "frequency_rate"
+        ],
+        "selected_source_types": [
+          "llm_candidate"
+        ],
+        "selection_mode": "single_candidate",
+        "source_row_index": 678
+      },
+      {
+        "rationale": "Both the frequent brief absences on most weekdays and the single generalised tonic–clonic seizure in the last eight weeks jointly describe the current seizure frequency burden.",
+        "related_group_coherence_flags": [],
+        "selected_candidate_ids": [
+          "det:744:2",
+          "det:744:1"
+        ],
+        "selected_candidate_kinds": [
+          "frequency_rate",
+          "frequency_rate"
+        ],
+        "selected_source_types": [
+          "deterministic_candidate",
+          "deterministic_candidate"
+        ],
+        "selection_mode": "related_candidate_group",
+        "source_row_index": 744
+      },
+      {
+        "rationale": "The candidate llm:763:1 explicitly states ongoing seizure-like events occurring roughly weekly, reflecting the current seizure frequency burden.",
+        "related_group_coherence_flags": [],
+        "selected_candidate_ids": [
+          "llm:763:1"
+        ],
+        "selected_candidate_kinds": [
+          "frequency_rate"
+        ],
+        "selected_source_types": [
+          "llm_candidate"
+        ],
+        "selection_mode": "single_candidate",
+        "source_row_index": 763
+      },
+      {
+        "rationale": "The note explicitly states the current seizure frequency as monthly seizures, making llm:816:1 the best current evidence.",
+        "related_group_coherence_flags": [],
+        "selected_candidate_ids": [
+          "llm:816:1"
+        ],
+        "selected_candidate_kinds": [
+          "frequency_rate"
+        ],
+        "selected_source_types": [
+          "llm_candidate"
+        ],
+        "selection_mode": "single_candidate",
+        "source_row_index": 816
+      },
+      {
+        "rationale": "Candidate llm:959:2 provides the most complete and current description of seizure frequency including variability within months.",
+        "related_group_coherence_flags": [],
+        "selected_candidate_ids": [
+          "llm:959:2"
+        ],
+        "selected_candidate_kinds": [
+          "frequency_rate"
+        ],
+        "selected_source_types": [
+          "llm_candidate"
+        ],
+        "selection_mode": "single_candidate",
+        "source_row_index": 959
+      }
+    ],
+    "invalid_reference_rows": [],
+    "related_group_coherence_flags": [
+      {
+        "rationale": "The patient has many convulsions in the past month that cluster after eastbound flights and restricted sleep, so both candidates together best describe the current seizure frequency burden.",
+        "related_group_coherence_flags": [
+          "mixed_candidate_kind",
+          "mixed_temporality"
+        ],
+        "selected_candidate_ids": [
+          "det:338:1",
+          "llm:338:2"
+        ],
+        "selected_candidate_kinds": [
+          "unknown_frequency",
+          "cluster_frequency"
+        ],
+        "selected_source_types": [
+          "deterministic_candidate",
+          "llm_candidate"
+        ],
+        "selection_mode": "related_candidate_group",
+        "source_row_index": 338
+      },
+      {
+        "rationale": "The current seizure frequency and cluster information together best describe the patient's seizure burden.",
+        "related_group_coherence_flags": [
+          "mixed_candidate_kind"
+        ],
+        "selected_candidate_ids": [
+          "llm:466:1",
+          "llm:466:2"
+        ],
+        "selected_candidate_kinds": [
+          "frequency_rate",
+          "cluster_frequency"
+        ],
+        "selected_source_types": [
+          "llm_candidate",
+          "llm_candidate"
+        ],
+        "selection_mode": "related_candidate_group",
+        "source_row_index": 466
+      },
+      {
+        "rationale": "The combined candidates describe the recent seizure frequency including both total count and specific focal seizure types, providing a fuller picture of current seizure burden.",
+        "related_group_coherence_flags": [
+          "mixed_temporality"
+        ],
+        "selected_candidate_ids": [
+          "det:1046:1",
+          "llm:1046:2"
+        ],
+        "selected_candidate_kinds": [
+          "frequency_rate",
+          "frequency_rate"
+        ],
+        "selected_source_types": [
+          "deterministic_candidate",
+          "llm_candidate"
+        ],
+        "selection_mode": "related_candidate_group",
+        "source_row_index": 1046
+      },
+      {
+        "rationale": "The recent seizure cluster and subsequent six seizure-free weeks together best describe the current seizure frequency burden.",
+        "related_group_coherence_flags": [
+          "mixed_candidate_kind"
+        ],
+        "selected_candidate_ids": [
+          "llm:1165:1",
+          "llm:1165:2"
+        ],
+        "selected_candidate_kinds": [
+          "cluster_frequency",
+          "seizure_free"
+        ],
+        "selected_source_types": [
+          "llm_candidate",
+          "llm_candidate"
+        ],
+        "selection_mode": "related_candidate_group",
+        "source_row_index": 1165
+      },
+      {
+        "rationale": "The total seizure count and cluster frequency together best describe the current seizure burden.",
+        "related_group_coherence_flags": [
+          "mixed_candidate_kind"
+        ],
+        "selected_candidate_ids": [
+          "llm:1573:1",
+          "llm:1573:2"
+        ],
+        "selected_candidate_kinds": [
+          "frequency_rate",
+          "cluster_frequency"
+        ],
+        "selected_source_types": [
+          "llm_candidate",
+          "llm_candidate"
+        ],
+        "selection_mode": "related_candidate_group",
+        "source_row_index": 1573
+      },
+      {
+        "rationale": "The seizure frequency burden is best described by both the perimenstrual seizure clustering and the seizure-free periods outside this window.",
+        "related_group_coherence_flags": [
+          "mixed_candidate_kind"
+        ],
+        "selected_candidate_ids": [
+          "llm:3468:1",
+          "llm:3468:2"
+        ],
+        "selected_candidate_kinds": [
+          "cluster_frequency",
+          "seizure_free"
+        ],
+        "selected_source_types": [
+          "llm_candidate",
+          "llm_candidate"
+        ],
+        "selection_mode": "related_candidate_group",
+        "source_row_index": 3468
+      },
+      {
+        "rationale": "Seizures occur only perimenstrually with no events outside this window over six months, so both candidates together describe the current seizure frequency burden.",
+        "related_group_coherence_flags": [
+          "mixed_candidate_kind",
+          "mixed_temporality"
+        ],
+        "selected_candidate_ids": [
+          "llm:3469:1",
+          "llm:3469:2"
+        ],
+        "selected_candidate_kinds": [
+          "cluster_frequency",
+          "seizure_free"
+        ],
+        "selected_source_types": [
+          "llm_candidate",
+          "llm_candidate"
+        ],
+        "selection_mode": "related_candidate_group",
+        "source_row_index": 3469
+      },
+      {
+        "rationale": "Clusters up to 7 in bad weeks and one daytime convulsion together best describe current seizure frequency burden.",
+        "related_group_coherence_flags": [
+          "mixed_candidate_kind"
+        ],
+        "selected_candidate_ids": [
+          "llm:3643:1",
+          "llm:3643:5"
+        ],
+        "selected_candidate_kinds": [
+          "cluster_frequency",
+          "frequency_rate"
+        ],
+        "selected_source_types": [
+          "llm_candidate",
+          "llm_candidate"
+        ],
+        "selection_mode": "related_candidate_group",
+        "source_row_index": 3643
+      },
+      {
+        "rationale": "The average seizure frequency and the peri-menstrual exacerbation together best describe the current seizure burden.",
+        "related_group_coherence_flags": [
+          "mixed_candidate_kind"
+        ],
+        "selected_candidate_ids": [
+          "llm:3949:1",
+          "llm:3949:2"
+        ],
+        "selected_candidate_kinds": [
+          "frequency_rate",
+          "cluster_frequency"
+        ],
+        "selected_source_types": [
+          "llm_candidate",
+          "llm_candidate"
+        ],
+        "selection_mode": "related_candidate_group",
+        "source_row_index": 3949
+      },
+      {
+        "rationale": "These candidates together describe the current seizure frequency and seizure-free months, providing a complete picture of the current burden.",
+        "related_group_coherence_flags": [
+          "mixed_candidate_kind",
+          "no_cluster_or_shared_kind_signal"
+        ],
+        "selected_candidate_ids": [
+          "llm:4026:3",
+          "llm:4026:4"
+        ],
+        "selected_candidate_kinds": [
+          "frequency_rate",
+          "seizure_free"
+        ],
+        "selected_source_types": [
+          "llm_candidate",
+          "llm_candidate"
+        ],
+        "selection_mode": "related_candidate_group",
+        "source_row_index": 4026
+      },
+      {
+        "rationale": "Both candidates describe related seizure frequency events in the same recent clinical window and should be interpreted together.",
+        "related_group_coherence_flags": [
+          "mixed_candidate_kind",
+          "mixed_temporality",
+          "no_cluster_or_shared_kind_signal"
+        ],
+        "selected_candidate_ids": [
+          "det:4478:2",
+          "llm:4478:2"
+        ],
+        "selected_candidate_kinds": [
+          "frequency_rate",
+          "unknown_frequency"
+        ],
+        "selected_source_types": [
+          "deterministic_candidate",
+          "llm_candidate"
+        ],
+        "selection_mode": "related_candidate_group",
+        "source_row_index": 4478
+      },
+      {
+        "rationale": "Two recent secondary generalised seizures and short runs of events over several days together best describe current seizure frequency burden.",
+        "related_group_coherence_flags": [
+          "mixed_candidate_kind",
+          "no_cluster_or_shared_kind_signal"
+        ],
+        "selected_candidate_ids": [
+          "llm:4771:3",
+          "llm:4771:4"
+        ],
+        "selected_candidate_kinds": [
+          "frequency_rate",
+          "unknown_frequency"
+        ],
+        "selected_source_types": [
+          "llm_candidate",
+          "llm_candidate"
+        ],
+        "selection_mode": "related_candidate_group",
+        "source_row_index": 4771
+      }
+    ],
+    "related_group_rows": [
+      {
+        "rationale": "The patient has many convulsions in the past month that cluster after eastbound flights and restricted sleep, so both candidates together best describe the current seizure frequency burden.",
+        "related_group_coherence_flags": [
+          "mixed_candidate_kind",
+          "mixed_temporality"
+        ],
+        "selected_candidate_ids": [
+          "det:338:1",
+          "llm:338:2"
+        ],
+        "selected_candidate_kinds": [
+          "unknown_frequency",
+          "cluster_frequency"
+        ],
+        "selected_source_types": [
+          "deterministic_candidate",
+          "llm_candidate"
+        ],
+        "selection_mode": "related_candidate_group",
+        "source_row_index": 338
+      },
+      {
+        "rationale": "The current seizure frequency and cluster information together best describe the patient's seizure burden.",
+        "related_group_coherence_flags": [
+          "mixed_candidate_kind"
+        ],
+        "selected_candidate_ids": [
+          "llm:466:1",
+          "llm:466:2"
+        ],
+        "selected_candidate_kinds": [
+          "frequency_rate",
+          "cluster_frequency"
+        ],
+        "selected_source_types": [
+          "llm_candidate",
+          "llm_candidate"
+        ],
+        "selection_mode": "related_candidate_group",
+        "source_row_index": 466
+      },
+      {
+        "rationale": "Both the frequent brief absences on most weekdays and the single generalised tonic–clonic seizure in the last eight weeks jointly describe the current seizure frequency burden.",
+        "related_group_coherence_flags": [],
+        "selected_candidate_ids": [
+          "det:744:2",
+          "det:744:1"
+        ],
+        "selected_candidate_kinds": [
+          "frequency_rate",
+          "frequency_rate"
+        ],
+        "selected_source_types": [
+          "deterministic_candidate",
+          "deterministic_candidate"
+        ],
+        "selection_mode": "related_candidate_group",
+        "source_row_index": 744
+      },
+      {
+        "rationale": "The combined candidates describe the recent seizure frequency including both total count and specific focal seizure types, providing a fuller picture of current seizure burden.",
+        "related_group_coherence_flags": [
+          "mixed_temporality"
+        ],
+        "selected_candidate_ids": [
+          "det:1046:1",
+          "llm:1046:2"
+        ],
+        "selected_candidate_kinds": [
+          "frequency_rate",
+          "frequency_rate"
+        ],
+        "selected_source_types": [
+          "deterministic_candidate",
+          "llm_candidate"
+        ],
+        "selection_mode": "related_candidate_group",
+        "source_row_index": 1046
+      },
+      {
+        "rationale": "The recent seizure cluster and subsequent six seizure-free weeks together best describe the current seizure frequency burden.",
+        "related_group_coherence_flags": [
+          "mixed_candidate_kind"
+        ],
+        "selected_candidate_ids": [
+          "llm:1165:1",
+          "llm:1165:2"
+        ],
+        "selected_candidate_kinds": [
+          "cluster_frequency",
+          "seizure_free"
+        ],
+        "selected_source_types": [
+          "llm_candidate",
+          "llm_candidate"
+        ],
+        "selection_mode": "related_candidate_group",
+        "source_row_index": 1165
+      },
+      {
+        "rationale": "The total seizure count and cluster frequency together best describe the current seizure burden.",
+        "related_group_coherence_flags": [
+          "mixed_candidate_kind"
+        ],
+        "selected_candidate_ids": [
+          "llm:1573:1",
+          "llm:1573:2"
+        ],
+        "selected_candidate_kinds": [
+          "frequency_rate",
+          "cluster_frequency"
+        ],
+        "selected_source_types": [
+          "llm_candidate",
+          "llm_candidate"
+        ],
+        "selection_mode": "related_candidate_group",
+        "source_row_index": 1573
+      },
+      {
+        "rationale": "Both five focal onset seizures and six focal non-motor seizures in the last month jointly describe the current seizure frequency burden.",
+        "related_group_coherence_flags": [],
+        "selected_candidate_ids": [
+          "llm:1591:1",
+          "llm:1591:2"
+        ],
+        "selected_candidate_kinds": [
+          "frequency_rate",
+          "frequency_rate"
+        ],
+        "selected_source_types": [
+          "llm_candidate",
+          "llm_candidate"
+        ],
+        "selection_mode": "related_candidate_group",
+        "source_row_index": 1591
+      },
+      {
+        "rationale": "The one drop attack and seven convulsions in the past two months together best describe the current seizure frequency burden.",
+        "related_group_coherence_flags": [],
+        "selected_candidate_ids": [
+          "llm:1880:2",
+          "llm:1880:3"
+        ],
+        "selected_candidate_kinds": [
+          "frequency_rate",
+          "frequency_rate"
+        ],
+        "selected_source_types": [
+          "llm_candidate",
+          "llm_candidate"
+        ],
+        "selection_mode": "related_candidate_group",
+        "source_row_index": 1880
+      },
+      {
+        "rationale": "The seizure frequency burden is best described by both the perimenstrual seizure clustering and the seizure-free periods outside this window.",
+        "related_group_coherence_flags": [
+          "mixed_candidate_kind"
+        ],
+        "selected_candidate_ids": [
+          "llm:3468:1",
+          "llm:3468:2"
+        ],
+        "selected_candidate_kinds": [
+          "cluster_frequency",
+          "seizure_free"
+        ],
+        "selected_source_types": [
+          "llm_candidate",
+          "llm_candidate"
+        ],
+        "selection_mode": "related_candidate_group",
+        "source_row_index": 3468
+      },
+      {
+        "rationale": "Seizures occur only perimenstrually with no events outside this window over six months, so both candidates together describe the current seizure frequency burden.",
+        "related_group_coherence_flags": [
+          "mixed_candidate_kind",
+          "mixed_temporality"
+        ],
+        "selected_candidate_ids": [
+          "llm:3469:1",
+          "llm:3469:2"
+        ],
+        "selected_candidate_kinds": [
+          "cluster_frequency",
+          "seizure_free"
+        ],
+        "selected_source_types": [
+          "llm_candidate",
+          "llm_candidate"
+        ],
+        "selection_mode": "related_candidate_group",
+        "source_row_index": 3469
+      },
+      {
+        "rationale": "Clusters up to 7 in bad weeks and one daytime convulsion together best describe current seizure frequency burden.",
+        "related_group_coherence_flags": [
+          "mixed_candidate_kind"
+        ],
+        "selected_candidate_ids": [
+          "llm:3643:1",
+          "llm:3643:5"
+        ],
+        "selected_candidate_kinds": [
+          "cluster_frequency",
+          "frequency_rate"
+        ],
+        "selected_source_types": [
+          "llm_candidate",
+          "llm_candidate"
+        ],
+        "selection_mode": "related_candidate_group",
+        "source_row_index": 3643
+      },
+      {
+        "rationale": "Both candidates describe related recent seizure frequency evidence within the same clinical window and should be interpreted together.",
+        "related_group_coherence_flags": [],
+        "selected_candidate_ids": [
+          "llm:3774:1",
+          "llm:3774:2"
+        ],
+        "selected_candidate_kinds": [
+          "frequency_rate",
+          "frequency_rate"
+        ],
+        "selected_source_types": [
+          "llm_candidate",
+          "llm_candidate"
+        ],
+        "selection_mode": "related_candidate_group",
+        "source_row_index": 3774
+      }
+    ]
+  },
+  "row_count": 250,
+  "source_artifact": "experiments\\gan2026_validation250_selected_candidate_decision_v2_v2_high_recall.jsonl",
+  "summary": {
+    "high_burden_rows": 69,
+    "high_burden_selected_rows": 69,
+    "high_burden_source_row_indices": [
+      182,
+      190,
+      198,
+      280,
+      446,
+      466,
+      598,
+      678,
+      744,
+      763,
+      816,
+      959,
+      978,
+      1363,
+      1413,
+      1573,
+      1591,
+      1597,
+      1687,
+      1790,
+      1794,
+      1880,
+      1914,
+      1923,
+      1979,
+      2114,
+      2369,
+      2374,
+      2541,
+      2681,
+      2748,
+      2759,
+      2776,
+      2887,
+      2932,
+      2965,
+      2992,
+      3015,
+      3082,
+      3242,
+      3261,
+      3262,
+      3281,
+      3371,
+      3469,
+      3534,
+      3643,
+      3753,
+      3774,
+      3827,
+      3949,
+      3988,
+      4026,
+      4116,
+      4345,
+      4410,
+      4480,
+      4563,
+      4597,
+      4771,
+      4839,
+      4842,
+      4951,
+      4992,
+      5082,
+      5121,
+      5379,
+      5551,
+      5567
+    ],
+    "invalid_reference_source_row_indices": [],
+    "invalid_selected_reference_rows": 0,
+    "missing_decision_rows": 0,
+    "related_group_mixed_kind_rows": 13,
+    "related_group_mixed_temporality_rows": 4,
+    "related_group_rows": 21,
+    "related_group_source_row_indices": [
+      338,
+      466,
+      744,
+      1046,
+      1165,
+      1573,
+      1591,
+      1880,
+      3468,
+      3469,
+      3643,
+      3774,
+      3827,
+      3949,
+      4026,
+      4478,
+      4771,
+      4842,
+      4951,
+      5476,
+      5551
+    ],
+    "related_group_with_coherence_flags": 14,
+    "related_group_without_cluster_or_shared_kind_rows": 3,
+    "selected_candidate_count_distribution": {
+      "0": 3,
+      "1": 226,
+      "2": 19,
+      "3": 2
+    },
+    "selected_candidate_kind_counts": {
+      "cluster_frequency": 26,
+      "frequency_rate": 175,
+      "last_event_only": 3,
+      "seizure_free": 48,
+      "unknown_frequency": 18
+    },
+    "selected_decision_rows": 250,
+    "selected_source_composition_counts": {
+      "deterministic_only": 44,
+      "llm_only": 200,
+      "mixed": 3,
+      "none": 3
+    },
+    "selected_source_type_counts": {
+      "deterministic_candidate": 48,
+      "llm_candidate": 222
+    },
+    "selection_mode_counts": {
+      "no_reliable_candidate": 3,
+      "related_candidate_group": 21,
+      "single_candidate": 226
+    }
+  }
+}

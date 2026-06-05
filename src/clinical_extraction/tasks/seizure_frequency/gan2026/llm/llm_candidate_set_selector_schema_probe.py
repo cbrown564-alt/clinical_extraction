@@ -13,17 +13,13 @@ import dspy
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.candidate_set import (
-    CandidateKind,
     CandidateSet,
-    EvidenceSpan,
     candidate_source_phrase,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.selected_fact import (
     SCHEMA_VERSION,
-    SelectedClinicalFact,
-    SelectionBasis,
-    SelectionStatus,
-    UnknownBasis,
+    SelectedCandidateDecision,
+    SelectionMode,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
@@ -34,36 +30,26 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_metadat
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
-PROMPT_VERSION = "gan2026_candidate_set_selector_schema_probe_v0"
+PROMPT_VERSION = "gan2026_candidate_set_selector_schema_probe_v2"
 PIPELINE_FAMILY = "llm_candidate_set_selector_schema_probe"
 DEFAULT_CANDIDATE_SET_JSONL_PATH = Path(
     "experiments/gan2026_validation250_candidate_set_v2_high_recall.jsonl"
 )
 DEFAULT_JSONL_PATH = Path(
-    "experiments/gan2026_candidate_set_selector_schema_probe_validation25_gpt41mini_v0_2026-06-05.jsonl"
+    "experiments/gan2026_candidate_set_selector_schema_probe_validation25_gpt41mini_v2_2026-06-05.jsonl"
 )
 DEFAULT_REPORT_PATH = Path(
-    "experiments/gan2026_candidate_set_selector_schema_probe_validation25_gpt41mini_v0_2026-06-05.md"
+    "experiments/gan2026_candidate_set_selector_schema_probe_validation25_gpt41mini_v2_2026-06-05.md"
 )
 
 
 class SelectionDraft(BaseModel):
-    """Model-owned clinical selection fields only."""
+    """Model-owned candidate-decision fields only."""
 
     model_config = ConfigDict(extra="forbid")
 
-    selection_status: SelectionStatus
-    selection_basis: SelectionBasis
-    clinical_fact_kind: CandidateKind | None = None
     selected_candidate_ids: list[str] = Field(default_factory=list)
-    supporting_candidate_ids: list[str] = Field(default_factory=list)
-    rejected_candidate_ids: list[str] = Field(default_factory=list)
-    primary_evidence_texts: list[str] = Field(default_factory=list)
-    unknown_basis: UnknownBasis | None = None
-    ambiguity_flags: list[str] = Field(default_factory=list)
-    conflict_flags: list[str] = Field(default_factory=list)
-    source_reliability_flags: list[str] = Field(default_factory=list)
-    selection_issues: list[str] = Field(default_factory=list)
+    selection_mode: SelectionMode
     rationale: str = ""
 
 
@@ -74,9 +60,9 @@ class Gan2026CandidateSetSelectorSignature(dspy.Signature):
     source_row_index: int = dspy.InputField(desc="Source row index.")
     task_instructions: list[str] = dspy.InputField(desc="Selector instructions.")
     candidate_set: dict[str, Any] = dspy.InputField(desc="Source-near candidates.")
-    output_contract: dict[str, Any] = dspy.InputField(desc="SelectedClinicalFact contract.")
+    output_contract: dict[str, Any] = dspy.InputField(desc="SelectedCandidateDecision contract.")
     selection_draft: SelectionDraft = dspy.OutputField(
-        desc="Clinical selection fields only; provenance and spans are filled by code."
+        desc="Candidate ids, selection mode, and rationale only."
     )
 
 
@@ -109,83 +95,72 @@ def build_selector_inputs(
     record: GanFrequencyRecord,
     candidate_set: CandidateSet,
 ) -> dict[str, Any]:
-    """Build model-facing selector inputs without labels or normalized answers."""
+    """Build model-facing selector inputs without final rendered answers."""
 
     return {
         "note_text": record.note_text,
         "source_row_index": record.source_row_index,
         "task_instructions": [
             (
-                "Select the clinically relevant current seizure-frequency fact from "
-                "the candidate_set, or explicitly abstain."
+                "Review the set of candidate facts extracted from the clinical note "
+                "and choose the fact(s) that best describe the patient's current "
+                "seizure frequency burden."
             ),
             (
-                "Do not emit a benchmark label, normalized rate, monthly frequency, "
-                "yearly frequency, or scorer-facing answer."
+                "Return only selected_candidate_ids, selection_mode, and rationale."
             ),
             (
-                "Use selected only when one candidate or a small compatible group is "
-                "reliable enough to carry forward."
+                "Use single_candidate when exactly one candidate controls the answer."
             ),
             (
-                "Prefer explicit current frequency_rate, seizure_free, or "
-                "cluster_frequency candidates over vague unknown_frequency candidates."
+                "Use related_candidate_group when two or more candidates describe "
+                "related events in the same current clinical window and should be "
+                "interpreted together."
             ),
             (
-                "Use no_reliable_candidate when the row has no reliable current "
-                "frequency fact, even if vague or low-quality candidates are present."
+                "Use no_reliable_candidate when no candidate gives usable current "
+                "seizure-frequency evidence."
             ),
             (
-                "Use unknown_basis extracted_unknown_candidate only when an "
-                "unknown_frequency candidate is itself the best clinical fact to "
-                "carry forward."
+                "Use ambiguous when multiple plausible candidates exist but the note "
+                "does not let you choose safely."
             ),
             (
-                "Use unknown_basis absence_of_usable_frequency_evidence when unknown "
-                "is better explained by the absence of reliable usable evidence."
+                "Use conflict when current candidates make incompatible claims."
             ),
             (
-                "Use ambiguous when multiple plausible candidates cannot be resolved "
-                "without policy or verifier help."
+                "Prefer current evidence over historical or future evidence."
             ),
-            "Use conflict when candidates make incompatible current claims.",
-            "Use human_review when the row is too risky for automatic selection.",
             (
-                "Put risky candidates in rejected_candidate_ids when they are "
-                "tempting but should not control the selected fact."
+                "Prefer explicit seizure-frequency, seizure-free, or cluster-frequency "
+                "evidence over vague unknown-frequency evidence."
             ),
-            "Copy primary_evidence_texts exactly from selected candidate evidence when selected.",
+            (
+                "Do not select separate candidates together merely because they are "
+                "both present; group only when they jointly determine the same answer."
+            ),
+            (
+                "Preserve cluster structure: cluster cadence and events-per-cluster "
+                "are related, not interchangeable."
+            ),
+            (
+                "Do not turn vague words like several, few, many, or multiple into "
+                "exact numbers."
+            ),
+            "Rationale should be one short sentence.",
             "Return only selection_draft.",
         ],
         "candidate_set": _candidate_set_for_prompt(candidate_set),
         "output_contract": {
             "schema_version": SCHEMA_VERSION,
-            "model_outputs_only": ["selection_draft"],
-            "filled_by_code": [
-                "source_row_index",
-                "component_owner",
-                "source_artifacts",
-                "primary_evidence.start_char",
-                "primary_evidence.end_char",
-                "source_ids",
-                "temporality",
-                "certainty",
-                "clinical_or_policy",
-            ],
-            "selection_status_values": [
-                "selected",
+            "return_object": "selection_draft",
+            "fields": ["selected_candidate_ids", "selection_mode", "rationale"],
+            "selection_mode_values": [
+                "single_candidate",
+                "related_candidate_group",
+                "no_reliable_candidate",
                 "ambiguous",
                 "conflict",
-                "no_reliable_candidate",
-                "human_review",
-            ],
-            "unknown_basis_values": [
-                "extracted_unknown_candidate",
-                "absence_of_usable_frequency_evidence",
-                "uncertain_only",
-                "conflicting_candidates",
-                "verifier_required",
-                "not_applicable",
             ],
         },
     }
@@ -195,65 +170,26 @@ def assemble_selected_fact(
     draft: SelectionDraft | None,
     *,
     candidate_set: CandidateSet,
-) -> tuple[SelectedClinicalFact | None, list[str]]:
-    """Assemble a full SelectedClinicalFact from model-owned selection fields."""
+) -> tuple[SelectedCandidateDecision | None, list[str]]:
+    """Assemble a selected-candidate decision from model-owned fields."""
 
     if draft is None:
         return None, ["selection_draft_missing"]
 
     errors = _validate_candidate_references(draft, candidate_set)
-    candidate_by_id = {candidate.candidate_id: candidate for candidate in candidate_set.candidates}
-    selected_candidates = [
-        candidate_by_id[candidate_id]
-        for candidate_id in draft.selected_candidate_ids
-        if candidate_id in candidate_by_id
-    ]
-    primary_evidence = [
-        EvidenceSpan(
-            text=candidate.evidence_span.text,
-            start_char=candidate.evidence_span.start_char,
-            end_char=candidate.evidence_span.end_char,
-        )
-        for candidate in selected_candidates
-    ]
-    if draft.primary_evidence_texts and selected_candidates:
-        selected_evidence = {candidate.evidence_span.text for candidate in selected_candidates}
-        missing = [
-            text for text in draft.primary_evidence_texts if text not in selected_evidence
-        ]
-        errors.extend(f"primary_evidence_text_not_selected_candidate:{text}" for text in missing)
-    source_ids = [
-        source_id
-        for candidate in selected_candidates
-        for source_id in candidate.source_ids
-    ]
-    temporality = _common_value([candidate.temporality for candidate in selected_candidates])
-    certainty = _common_value([candidate.certainty for candidate in selected_candidates])
 
     try:
-        selection = SelectedClinicalFact(
+        selection = SelectedCandidateDecision(
             source_row_index=candidate_set.source_row_index,
             component_owner="llm_candidate_set_selector",
-            source_artifacts=candidate_set.source_artifacts,
-            selection_status=draft.selection_status,
-            selection_basis=draft.selection_basis,
-            clinical_fact_kind=draft.clinical_fact_kind,
             selected_candidate_ids=draft.selected_candidate_ids,
-            supporting_candidate_ids=draft.supporting_candidate_ids,
-            rejected_candidate_ids=draft.rejected_candidate_ids,
-            primary_evidence=primary_evidence,
-            source_ids=source_ids,
-            temporality=temporality,
-            certainty=certainty,
-            unknown_basis=draft.unknown_basis,
-            ambiguity_flags=draft.ambiguity_flags,
-            conflict_flags=draft.conflict_flags,
-            source_reliability_flags=draft.source_reliability_flags,
-            selection_issues=[*draft.selection_issues, *errors],
+            selection_mode=draft.selection_mode,
             rationale=draft.rationale,
         )
     except ValidationError as exc:
         errors.extend(_validation_error_messages(exc))
+        return None, errors
+    if errors:
         return None, errors
     return selection, errors
 
@@ -354,7 +290,7 @@ def run_split(
             "call_error": call_error,
             "parse_errors": [*parse_errors, *assembly_errors],
             "selection_draft": draft.model_dump() if draft else None,
-            "selected_clinical_fact": selection.model_dump() if selection else None,
+            "selected_candidate_decision": selection.model_dump() if selection else None,
             "schema_probe": _schema_probe(selection),
         }
         rows.append(row)
@@ -389,25 +325,20 @@ def load_candidate_sets(path: Path) -> dict[int, CandidateSet]:
 def summarize_records(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     """Summarize selector schema fit without scoring."""
 
-    selections = [row for row in rows if row.get("selected_clinical_fact")]
-    status_counts = Counter(
-        str((row.get("selected_clinical_fact") or {}).get("selection_status"))
-        for row in selections
-    )
-    basis_counts = Counter(
-        str((row.get("selected_clinical_fact") or {}).get("selection_basis"))
+    selections = [row for row in rows if row.get("selected_candidate_decision")]
+    mode_counts = Counter(
+        str((row.get("selected_candidate_decision") or {}).get("selection_mode"))
         for row in selections
     )
     return {
         "examples": len(rows),
-        "selected_fact_rows": len(selections),
+        "selected_decision_rows": len(selections),
         "call_failures": sum(bool(row.get("call_error")) for row in rows),
         "parse_or_validation_failures": sum(bool(row.get("parse_errors")) for row in rows),
         "missing_candidate_set_rows": sum(
             "candidate_set_missing" in (row.get("parse_errors") or []) for row in rows
         ),
-        "selection_status_counts": dict(sorted(status_counts.items())),
-        "selection_basis_counts": dict(sorted(basis_counts.items())),
+        "selection_mode_counts": dict(sorted(mode_counts.items())),
     }
 
 
@@ -443,21 +374,18 @@ def write_report(
         "## Summary",
         "",
         (
-            f"- Selected fact rows: {summary.get('selected_fact_rows', 0)}/"
+            f"- Selected decision rows: {summary.get('selected_decision_rows', 0)}/"
             f"{summary.get('examples', 0)}"
         ),
         f"- Call failures: {summary.get('call_failures', 0)}",
         f"- Parse/validation failure rows: {summary.get('parse_or_validation_failures', 0)}",
         f"- Missing candidate-set rows: {summary.get('missing_candidate_set_rows', 0)}",
         "",
-        "## Selection Status",
+        "## Selection Mode",
         "",
     ]
-    for status, count in (summary.get("selection_status_counts") or {}).items():
-        lines.append(f"- `{status}`: {count}")
-    lines.extend(["", "## Selection Basis", ""])
-    for basis, count in (summary.get("selection_basis_counts") or {}).items():
-        lines.append(f"- `{basis}`: {count}")
+    for mode, count in (summary.get("selection_mode_counts") or {}).items():
+        lines.append(f"- `{mode}`: {count}")
     lines.extend(["", "## Row Notes", ""])
     lines.extend(_row_note_lines(rows))
     lines.append("")
@@ -495,40 +423,27 @@ def _validate_candidate_references(
 ) -> list[str]:
     known = {candidate.candidate_id for candidate in candidate_set.candidates}
     errors: list[str] = []
-    for field_name in (
-        "selected_candidate_ids",
-        "supporting_candidate_ids",
-        "rejected_candidate_ids",
-    ):
-        for candidate_id in getattr(draft, field_name):
-            if candidate_id not in known:
-                errors.append(f"{field_name}:unknown_candidate_id:{candidate_id}")
+    for candidate_id in draft.selected_candidate_ids:
+        if candidate_id not in known:
+            errors.append(f"selected_candidate_ids:unknown_candidate_id:{candidate_id}")
     return errors
-
-
-def _common_value(values: Sequence[str]) -> str | None:
-    if not values:
-        return None
-    return values[0] if len(set(values)) == 1 else "mixed"
 
 
 def _validation_error_messages(exc: ValidationError) -> list[str]:
     return [str(error.get("msg", error)) for error in exc.errors()]
 
 
-def _schema_probe(selection: SelectedClinicalFact | None) -> dict[str, Any]:
+def _schema_probe(selection: SelectedCandidateDecision | None) -> dict[str, Any]:
     if selection is None:
-        return {"selected_fact_fit": False}
+        return {"selected_decision_fit": False}
     return {
-        "selected_fact_fit": True,
-        "selection_status": selection.selection_status,
-        "selection_basis": selection.selection_basis,
+        "selected_decision_fit": True,
+        "selection_mode": selection.selection_mode,
         "selected_candidate_count": len(selection.selected_candidate_ids),
-        "rejected_candidate_count": len(selection.rejected_candidate_ids),
     }
 
 
-def _raw_output_from_selection(selection: SelectedClinicalFact | None) -> str:
+def _raw_output_from_selection(selection: SelectedCandidateDecision | None) -> str:
     if selection is None:
         return ""
     return json.dumps(selection.model_dump(), sort_keys=True)
@@ -552,8 +467,8 @@ def _missing_candidate_set_row(
         "call_error": None,
         "parse_errors": ["candidate_set_missing"],
         "selection_draft": None,
-        "selected_clinical_fact": None,
-        "schema_probe": {"selected_fact_fit": False},
+        "selected_candidate_decision": None,
+        "schema_probe": {"selected_decision_fit": False},
     }
 
 
