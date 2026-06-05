@@ -1,7 +1,8 @@
 # Clinical Extraction Observatory
 
-**Status:** Phase 4 complete — all Phase 4 features implemented  
-**Last updated:** 2026-06-03 (UI polish pass: headers removed, controls consolidated, letter spacing tightened, stage icons updated, rule inventory masonry layout; prompt diff data-structure audit in §9.7)  
+**Status:** Phase 5 in progress — Review & export layer  
+**Last updated:** 2026-06-04 (Phase 5 scaffold: `/review` page, paper-ready tables, Markdown/CSV export, report assembly; navbar expanded)
+  
 **Scope:** Frontend application for exploring, configuring, comparing, and understanding hybrid clinical-extraction pipelines.  
 **Backend dependency:** Reuses existing `clinical_extraction` package, JSONL artifacts, run registry, and split protocol without modification. Backend extensions are noted but deferred.
 
@@ -418,11 +419,53 @@ Any UI toggle state must serialise to a named config object that can be:
 - 🟡 **Prompt diff data model** — See §9.7 for a full audit. The current policy-taxonomy diff works for modules that define `PROMPT_POLICY_TAXONOMY`, but most LLM modules do not. A richer diff (template text, system prompts, schema constraints, temperature, model role) would require a new backend data contract.
 
 ### Phase 5: The Review (Paper-Ready Export)
-- Exportable component ablation tables.
-- Exportable error taxonomy summaries.
-- Evidence-validity rate summaries.
-- Per-label purist/pragmatic performance tables.
-- Designed to generate the exact tables and figures described in `docs/research/contribution_thesis.md`.
+**Goal:** Transform observatory data into publication-ready artifacts. A researcher should be able to select any subset of runs, generate the exact tables and figures described in `docs/research/contribution_thesis.md`, and export them as Markdown (for papers), CSV (for spreadsheets), or JSON (for further analysis).
+
+**The Review is not a new data source.** It is a *lens* over the Observatory, Laboratory, and Gallery. Every number in a Review table can be traced back to a specific run artifact, a specific row, and a specific scoring decision.
+
+**Layout:**
+- **Top:** Run selector (reuses the Observatory `RunSelector` component) with family-grouped chips, decision badges, and JSONL availability indicators.
+- **Tab bar:** Report Assembly · Run Comparison · Per-Label Performance · Error Taxonomy · Evidence Audit
+- **Report Assembly:** A unified dashboard showing all tables at once. A "Download Full Report" button generates a single Markdown document with all tables, metadata, and timestamps. Designed to be pasted directly into a paper's results section or supplementary material.
+- **Run Comparison:** Component ablation table. Rows = selected runs. Cols = pipeline family, split, row count, purist accuracy, purist F1, pragmatic accuracy, pragmatic F1, evidence-valid rate, generalisation gap (Δ validation→test when both splits present). Runs are sorted by purist F1 descending; saturated validation surfaces are annotated with a low-information badge.
+- **Per-Label Performance:** Rows = purist categories (from `currently_no_seizure` to `seizure_freq_1ormore_daily`). Cols = for each selected run: precision, recall, F1, support. Cells are colour-coded by F1 severity (green ≥0.8, amber 0.5–0.8, red <0.5). A "support" column shows how many gold rows exist for that category across the selected runs' splits.
+- **Error Taxonomy:** Rows = error types (`false_negative`, `false_positive`, `over_estimate`, `under_estimate`, `near_miss`). Cols = absolute count and % of errors per run. A severity sparkline (mini horizontal bar) shows the contribution of each error type to the total error budget. Clicking a count filters the Gallery to exactly those rows.
+- **Evidence Audit:** Rows = runs. Cols = exact-evidence rate (evidence is a verbatim substring of the note), valid-evidence rate (evidence passes heuristic checks), repair rate (% of rows where `repair_changes` is non-empty), mean evidence length, and unknown-rate (% of rows where the predicted category is `seizure_freq_unknown`). This table directly serves Contribution 3 (Transparency Through Evidence).
+
+**Export functionality:**
+- Every table has **Copy Markdown** and **Download CSV** actions in its header toolbar.
+- **Full Report** combines all tables into one Markdown file with YAML front-matter (run IDs, date, user agent, and a link back to the Observatory URL state).
+- Markdown tables use GFM alignment syntax and include footnotes for saturation warnings.
+- CSV downloads use the run ID as a filename prefix and include a metadata header row.
+
+**Attribution discipline in exports:**
+- Every exported table includes a caption/footer stating the exact splits, row counts, and run IDs that produced the numbers.
+- If validation and test rows are mixed, the table is split into two sub-tables or explicitly tagged with split labels.
+- No benchmark-comparable claim is generated automatically; the export footer reminds the user that locked-test results require a frozen predeclared protocol.
+
+**Data consumed:**
+- `RunSummary` from `useObservatoryData` — per-category metrics, row scores, validation/test split metrics.
+- `gallery-utils.ts` error classification (`classifyError`, `ERROR_TYPE_LABELS`, `severityLevel`).
+- Artifact row fields: `evidence_summary.selected_evidence_valid`, `repair_changes`, `evidence`.
+- Registry metadata: `model`, `model_role`, `date`, `decision`.
+
+**Implemented:**
+- ✅ Review page (`/review`) with tabbed layout and run selector
+- ✅ Run Comparison table with saturation badges and generalisation-gap computation
+- ✅ Per-Label Performance table with F1 heat-map colouring
+- ✅ Error Taxonomy summary table with severity sparklines
+- ✅ Evidence Audit table (exact evidence, valid evidence, repair rate, unknown rate)
+- ✅ Report Assembly view with combined "Download Full Report" Markdown generation
+- ✅ Per-table Copy Markdown / Download CSV actions
+- ✅ Navbar updated with Review link and `success` colour badge
+
+**Rudimentary / deferred:**
+- 🟡 Figure export (confusion matrix heat-map as PNG, generalisation gap as PNG, run ladder as PNG) — requires a canvas/SSR rendering pipeline or Vega-Lite spec export.
+- 🟡 LaTeX table export — can be derived from Markdown via Pandoc; not built-in.
+- 🟡 Automatic git-commit hash and working-tree cleanliness in report metadata — requires a backend `/meta` endpoint.
+- 🟡 Hard-slice filter in Review tables ("Show only temporal-conflict rows") — requires backend hard-slice API (§9.3).
+- 🟡 Component ablation table that mixes Laboratory ablation results with Observatory run results — requires unified `AblationRunSummary` type.
+
 
 ---
 
@@ -490,6 +533,7 @@ The following are *not* required for Phase 1–2 but are noted for future backen
 /gallery              → Error gallery
 /gallery?transition=a_wrong_b_right&arch_a=v1&arch_b=v2
 /laboratory           → Rule inventory and ablation simulator
+/review               → Paper-ready report builder and export console
 ```
 
 ---

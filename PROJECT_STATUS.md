@@ -31,9 +31,9 @@ Return to validation and synthetic hard panels for a new mechanism that can
 beat the deterministic locked-test ceiling. Do not tune from test row-level
 failures, and do not inspect locked-test row-level diagnostics.
 
-Near-term work should build `validation_test_gap_matrix_v0` from saved
-artifacts, then run controlled component-specific hypotheses. Broad validation
-F1 movement is not an adequate learning goal.
+Near-term work should run the selected H2/H4 component-stress panel with H6 as
+the transfer-control hypothesis. Broad validation F1 movement is not an
+adequate learning goal.
 
 ## Guardrails
 
@@ -87,6 +87,10 @@ Important standing numbers:
   blocked by undercoverage: 23/23 hard rows emitted with exact candidate
   evidence, 23/23 controls suppressed, 0 action mismatches, and only 23 hard
   opportunities versus the required 60 W->C and 150 prediction-bearing rows.
+- `validation_test_gap_hypothesis_selection_v0` selects exactly three controlled
+  hypotheses: H2 component ownership, H4 evidence versus projection/rendering,
+  and H6 selective-action transfer control. The matrix used 0 locked-test
+  row-level artifacts.
 
 Core plans and artifacts:
 
@@ -120,15 +124,17 @@ Core plans and artifacts:
 - Validation-test gap matrix v0:
   `experiments/gan2026_validation_test_gap_matrix_v0_validation750_2026-06-05.jsonl`,
   `experiments/gan2026_validation_test_gap_matrix_v0_validation750_2026-06-05.md`
+- Validation-test gap hypothesis selection v0:
+  `experiments/gan2026_validation_test_gap_hypothesis_selection_v0_2026-06-05.json`,
+  `experiments/gan2026_validation_test_gap_hypothesis_selection_v0_2026-06-05.md`
 
 ## Work Board
 
 ### Now
 
-- Analyze `validation_test_gap_matrix_v0` to choose no more than three
-  controlled hypotheses for component-stress experiments; current priorities
-  are H2 component ownership, H4 evidence-versus-projection/rendering, and H6
-  selective action transfer.
+- Build the H2/H4 validation hard/control component-stress panel from
+  `validation_test_gap_hypothesis_selection_v0`; use H6 selective action as the
+  no-regression control and do not inspect locked-test rows.
 - Extend the gap-matrix adapters only when a saved artifact has an explicit
   row-source contract. The current matrix intentionally uses only the staged
   assembly component seed and skips locked-test row-level artifacts.
@@ -136,21 +142,17 @@ Core plans and artifacts:
   generation, not broad direct-labeler switching: target at least 60 W->C,
   <=5% C->W, and >=95% parse-ok plus exact-evidence on validation hard/control
   panels.
-- Expand from the clean seed slices (`seizure_free->unknown`, `yearly->daily`,
-  and cluster completion) through typed event generation plus matched controls;
-  do not promote family-slice rules directly.
-- Translate `structured_seed_event_generator_v0` into validation hard/control
-  row selection and typed event extraction for the same three seed families.
-  This first validation smoke is complete but undercovered; broaden the event
-  family surface before any frozen test audit. Do not use locked test rows.
-- Keep the structured surface validation-only until those gates pass and a
-  frozen test450 protocol addendum is written.
 
 ### Next
 
 - Decide whether the next architecture should be a typed candidate contract
   layered over current components or a richer structured event representation
   with explicit projection ownership.
+- Expand from the clean seed slices (`seizure_free->unknown`, `yearly->daily`,
+  and cluster completion) through typed event generation plus matched controls;
+  do not promote family-slice rules directly.
+- Broaden `structured_seed_validation_extractor_v0` beyond its undercovered
+  23-hard-row validation smoke before any frozen test audit.
 - Build synthetic hard/control panels that stress prediction-bearing failures,
   not only nonprediction repair opportunities.
 - Write a frozen test450 protocol addendum only after the structured
@@ -183,6 +185,9 @@ Core plans and artifacts:
   artifact: 1,534 validation-only layer rows from the staged assembly component
   seed, covering 750 deterministic comparator rows, 750 final-policy rows, and
   34 abstain/review monitor rows with 0 locked-test row-level artifacts used.
+- 2026-06-05: Added `validation_test_gap_hypothesis_selection_v0`. It selects
+  H2 component ownership, H4 evidence-versus-projection/rendering, and H6
+  selective-action transfer control as the next controlled experiments.
 - 2026-06-05: Closed the direct-labeler targeted switch branch as safe but
   low-coverage. Validation750 targeted switching projected 717/750 with 9 W->C
   and 0 C->W, but frozen aggregate-only test450 selected only 4 rows with
