@@ -829,8 +829,8 @@ def test_parse_structured_json_monthly_diary_counts_cluster_and_last_events() ->
     assert extraction is not None
     assert extraction.selection.final_label == "5 per 7 month"
     assert errors == [
-        "final_label_repaired: '1 tonic seizure in February' -> 'no seizure frequency reference'",
-        "final_label_repaired: 'no seizure frequency reference' -> '5 per 7 month'",
+        "final_label_repaired: '1 tonic seizure in February' -> 'unknown'",
+        "final_label_repaired: 'unknown' -> '5 per 7 month'",
     ]
 
 

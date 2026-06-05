@@ -171,6 +171,46 @@ Decision:
 - Reject as a gap-closing explanation if exposure remains below a predeclared
   coverage gate or W->C is too small to plausibly affect the aggregate gap.
 
+### Stage 2 Outcome: Boundary Event Contract v1
+
+Artifact:
+
+- `experiments/gan2026_boundary_event_contract_v1_2026-06-05.json`
+- `experiments/gan2026_boundary_event_contract_v1_2026-06-05.md`
+
+Decision: `boundary_event_contract_v1_passed`.
+
+The contract ran over the existing synthetic H3/H7 seed panel and exposed the
+richer typed-event surface: `clinical_event`, `boundary_state`,
+`selected_frequency_state`, `projection_policy`, and `gan_rendered_label`. It
+matched 36/36 rows, preserved 18/18 clinical-state invariant pairs, kept
+36/36 exact-evidence rows, completed typed-event and projection-policy metadata
+on 36/36 rows, and kept final-label policy disconnected.
+
+Implication: proceed to `boundary_event_validation_panel_v1` on validation
+hard/control rows. Require exact evidence, unsupported-candidate suppression,
+no source note text in artifacts, and no final-label policy connection.
+
+### Stage 2 Outcome: Boundary Event Validation Panel v1
+
+Artifact:
+
+- `experiments/gan2026_boundary_event_validation_panel_v1_2026-06-05.json`
+- `experiments/gan2026_boundary_event_validation_panel_v1_2026-06-05.md`
+
+Decision: `boundary_event_validation_panel_v1_ready`.
+
+The panel scanned 750 validation records and emitted only 30 supported
+exact-evidence typed-event rows: 19 boundary rows, 11 renderer rows, 22 hard
+rows, and 8 controls. It suppressed 720 source records from the row artifact,
+wrote 0 unsupported candidate rows, 0 source-note-text rows, 30/30
+typed-event-complete rows, 30/30 projection-policy-complete rows, and kept
+final-label policy disconnected.
+
+Implication: proceed to `h7_minimal_pair_panel_v1` and
+`benchmark_renderer_fixture_v1` before connecting this typed-event surface to a
+validation diagnostic assembly.
+
 ## Stage 3: H7 Robustness And Template Brittleness
 
 Purpose: test whether the mechanism is learning clinical state rather than
@@ -272,6 +312,26 @@ Decision:
 - If raw outputs differ, do not compare score deltas without live-run variance
   accounting.
 
+### Stage 5 Outcome: H10 Raw Identity Sidecar v1
+
+Artifact:
+
+- `experiments/gan2026_h10_raw_identity_sidecar_v1_2026-06-05.json`
+- `experiments/gan2026_h10_raw_identity_sidecar_v1_2026-06-05.md`
+
+Decision: `raw_identity_sidecar_ready`.
+
+The sidecar covers the saved H5 replacement-postprocessing ladder and paired
+validation live/replay artifacts. For the paired validation750 artifacts,
+`raw_output`, `llm_candidate_raw_output`, and `adjudicator_raw_output` are each
+present and byte-identical for 750/750 matched rows. The sidecar makes 0 model
+calls, changes 0 predictions, writes 0 row-level output artifacts, and uses 0
+locked-test row-level failures.
+
+Implication: the H10 provenance prerequisite is satisfied for the next staged
+mechanism work. Any later live/replay comparison should attach this sidecar or a
+new version of it before interpreting label deltas.
+
 ## Stage 6: Frozen Aggregate Test Audit
 
 Purpose: assess validation-test gap effect only after a candidate and analysis
@@ -312,6 +372,27 @@ Decision:
   record a frozen local holdout result with no benchmark-comparable claim.
 - If the candidate fails, record it as final-evaluation evidence and restart a
   new validation-only cycle; do not tune from test rows.
+
+### Stage 6 Outcome: Structured Projection Port Promoted Audit
+
+User authorization on 2026-06-05 waived the original coverage and W->C gates for
+`structured_validation_projection_port_panel_v0`, permitting one frozen
+aggregate-only locked-test audit. The protocol and readout are:
+
+- `docs/research/gan2026_structured_projection_port_frozen_test_protocol_2026-06-05.md`
+- `experiments/gan2026_structured_projection_port_test450_aggregate_audit_2026-06-05.json`
+- `experiments/gan2026_structured_projection_port_test450_aggregate_audit_2026-06-05.md`
+
+Result: `promoted_audit_rejected_or_revise`. The promoted policy lowered the
+test450 Purist proxy from 342/450 (0.7600) to 337/450 (0.7489), with 46 changed
+rows, 7 W->C, 12 C->W, and changed-label precision 0.3684. The audit made 0 new
+LLM calls, wrote 0 locked-test row-level artifacts, and does not support
+benchmark-comparable language.
+
+Implication: restart from a validation-only cycle. Do not tune from locked-test
+row-level failures. The failure is consistent with the plan's warning that
+low-coverage validation mechanisms and broad structured selectors can be
+validation-attuned without transferring.
 
 ## Recommended Order Of Work
 
@@ -359,13 +440,21 @@ Pause candidate promotion if any of these occur:
 
 Run these first, in order:
 
-1. `h5_repair_inventory_v0`.
-2. `h5_repair_family_ablation_v0`.
-3. `h10_raw_identity_sidecar_v1` over the same saved artifacts.
-4. `boundary_event_contract_v1` with final policy disconnected.
-5. `h7_minimal_pair_panel_v1`.
+1. `h5_repair_inventory_v0` - complete:
+   `experiments/gan2026_h5_repair_inventory_v0_2026-06-05.json`.
+2. `h5_repair_family_ablation_v0` - complete:
+   `experiments/gan2026_h5_repair_family_ablation_v0_2026-06-05.json`.
+3. `h10_raw_identity_sidecar_v1` over the same saved artifacts - complete:
+   `experiments/gan2026_h10_raw_identity_sidecar_v1_2026-06-05.json`.
+4. `boundary_event_contract_v1` with final policy disconnected - complete:
+   `experiments/gan2026_boundary_event_contract_v1_2026-06-05.json`.
+5. `boundary_event_validation_panel_v1` on validation hard/control rows -
+   complete:
+   `experiments/gan2026_boundary_event_validation_panel_v1_2026-06-05.json`.
+6. `h7_minimal_pair_panel_v1` - next.
+7. `benchmark_renderer_fixture_v1`.
 
-Only after those five should we assemble another validation diagnostic
+Only after those seven should we assemble another validation diagnostic
 candidate. That keeps the experiment legible: first remove suspect repair
 confounding, then test whether the proposed typed mechanism can stand on its
 own.

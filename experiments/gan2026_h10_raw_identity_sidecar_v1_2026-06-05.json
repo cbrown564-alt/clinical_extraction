@@ -1,0 +1,143 @@
+{
+  "artifact_kind": "gan2026_h10_raw_identity_sidecar_v1",
+  "artifact_summaries": [
+    {
+      "path": "experiments/gan2026_llm_replacement_postprocessing_ablation_validation250_v0_2026-06-02.jsonl",
+      "prompt_field_counts": {
+        "split": {
+          "validation": 1000
+        }
+      },
+      "raw_field_present_counts": {
+        "adjudicator_raw_output": 0,
+        "llm_candidate_raw_output": 0,
+        "raw_output": 0
+      },
+      "raw_fields_present_rows": 0,
+      "reuse_flag_counts": {
+        "reused_raw_output=False": 800,
+        "reused_raw_output=True": 200
+      },
+      "row_count": 1000,
+      "score_layer_counts": {},
+      "sha256": "915edbf34f236af779c795630054839dfcfaaaa4e45ab811e4ac233b4a42b909",
+      "source_row_count": 250
+    },
+    {
+      "path": "experiments/gan2026_hybrid_parallel_state_candidate_reasoner_validation750_gpt41mini_v0_conservative_live_2026-06-03.jsonl",
+      "prompt_field_counts": {
+        "pipeline_family": {
+          "hybrid_parallel_state_candidate_reasoner": 750
+        },
+        "pipeline_name": {
+          "gan2026_hybrid_parallel_state_candidate_reasoner_v0": 750
+        },
+        "prompt_version": {
+          "gan2026_hybrid_parallel_state_candidate_reasoner_v0": 750
+        },
+        "split": {
+          "validation": 750
+        },
+        "split_manifest": {
+          "gan2026_split_v1": 750
+        }
+      },
+      "raw_field_present_counts": {
+        "adjudicator_raw_output": 750,
+        "llm_candidate_raw_output": 750,
+        "raw_output": 750
+      },
+      "raw_fields_present_rows": 750,
+      "reuse_flag_counts": {
+        "reused_adjudicator_output=False": 750,
+        "reused_llm_candidate_output=False": 750
+      },
+      "row_count": 750,
+      "score_layer_counts": {
+        "adapter_only_sidecar_from_adjudicator_selection": 750,
+        "deterministic_top_candidate": 750,
+        "hybrid_adjudicator_raw": 750,
+        "hybrid_adjudicator_with_adapters": 750,
+        "llm_candidate_selector_raw": 750,
+        "state_graph_projection": 750
+      },
+      "sha256": "91c4021e4ae0fd1727c38647b72e43e6adca7a6b0210446705753b2bc7c1dc68",
+      "source_row_count": 750
+    },
+    {
+      "path": "experiments/gan2026_hybrid_parallel_state_candidate_reasoner_validation750_gpt41mini_v0_deterministic_safety_floor_v2_replay_2026-06-03.jsonl",
+      "prompt_field_counts": {
+        "pipeline_family": {
+          "hybrid_parallel_state_candidate_reasoner": 750
+        },
+        "pipeline_name": {
+          "gan2026_hybrid_parallel_state_candidate_reasoner_v0": 750
+        },
+        "prompt_version": {
+          "gan2026_hybrid_parallel_state_candidate_reasoner_v0": 750
+        },
+        "split": {
+          "validation": 750
+        },
+        "split_manifest": {
+          "gan2026_split_v1": 750
+        }
+      },
+      "raw_field_present_counts": {
+        "adjudicator_raw_output": 750,
+        "llm_candidate_raw_output": 750,
+        "raw_output": 750
+      },
+      "raw_fields_present_rows": 750,
+      "reuse_flag_counts": {
+        "reused_adjudicator_output=True": 750,
+        "reused_llm_candidate_output=True": 750
+      },
+      "row_count": 750,
+      "score_layer_counts": {
+        "adapter_only_sidecar_from_adjudicator_selection": 750,
+        "deterministic_top_candidate": 750,
+        "hybrid_adjudicator_raw": 750,
+        "hybrid_adjudicator_with_adapters": 750,
+        "llm_candidate_selector_raw": 750,
+        "state_graph_projection": 750
+      },
+      "sha256": "bcc883ba959543ec1350e6076380c7179b2bbe2484bd5d31d20d8ee9d16a99c4",
+      "source_row_count": 750
+    }
+  ],
+  "claim_boundary": "H10 provenance sidecar only. It makes no model calls, changes no predictions, writes no row-level output artifact, and uses no locked-test row-level failures.",
+  "date": "2026-06-05",
+  "decision": "raw_identity_sidecar_ready",
+  "json_artifact": "experiments/gan2026_h10_raw_identity_sidecar_v1_2026-06-05.json",
+  "paired_identity": {
+    "left_only_rows": 0,
+    "left_path": "experiments/gan2026_hybrid_parallel_state_candidate_reasoner_validation750_gpt41mini_v0_conservative_live_2026-06-03.jsonl",
+    "left_sha256": "91c4021e4ae0fd1727c38647b72e43e6adca7a6b0210446705753b2bc7c1dc68",
+    "matched_rows": 750,
+    "raw_field_identity": {
+      "adjudicator_raw_output": {
+        "identical_pairs": 750,
+        "identity_rate": 1.0,
+        "present_pairs": 750
+      },
+      "llm_candidate_raw_output": {
+        "identical_pairs": 750,
+        "identity_rate": 1.0,
+        "present_pairs": 750
+      },
+      "raw_output": {
+        "identical_pairs": 750,
+        "identity_rate": 1.0,
+        "present_pairs": 750
+      }
+    },
+    "right_only_rows": 0,
+    "right_path": "experiments/gan2026_hybrid_parallel_state_candidate_reasoner_validation750_gpt41mini_v0_deterministic_safety_floor_v2_replay_2026-06-03.jsonl",
+    "right_sha256": "bcc883ba959543ec1350e6076380c7179b2bbe2484bd5d31d20d8ee9d16a99c4"
+  },
+  "policy_name": "gan2026_h10_raw_identity_sidecar_v1",
+  "recommended_next_step": "Use this sidecar as the H10 provenance prerequisite before boundary_event_contract_v1 and any later live/replay comparison.",
+  "report_artifact": "experiments/gan2026_h10_raw_identity_sidecar_v1_2026-06-05.md",
+  "split_manifest": "gan2026_split_v1"
+}
