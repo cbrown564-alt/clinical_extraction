@@ -39,6 +39,7 @@ def repair_decision_payload(payload: Any) -> Any:
     _repair_string_alias(repaired, "certainty", _CERTAINTY_ALIASES)
     _repair_string_alias(repaired, "temporality", _TEMPORALITY_ALIASES)
     _repair_string_alias(repaired, "answer_kind", _ANSWER_KIND_ALIASES)
+    _repair_string_alias(repaired, "confidence", _CONFIDENCE_ALIASES)
     _repair_numeric_confidence(repaired)
 
     normalized_rate = repaired.get("normalized_rate")
@@ -117,6 +118,15 @@ _CERTAINTY_ALIASES = {
     "unclear": "unknown",
 }
 
+_CONFIDENCE_ALIASES = {
+    "very high": "high",
+    "high confidence": "high",
+    "confident": "high",
+    "moderate": "medium",
+    "moderate confidence": "medium",
+    "uncertain": "low",
+}
+
 _TEMPORALITY_ALIASES = {
     "active": "current",
     "current/recent": "recent",
@@ -162,30 +172,58 @@ _ANSWER_KIND_ALIASES = {
     "count per time": "frequency",
     "count per time window": "frequency",
     "count per year": "frequency",
+    "count-and-window": "frequency",
     "count-based": "frequency",
     "count-conditioned frequency": "frequency",
     "current frequency": "frequency",
     "current seizure frequency": "frequency",
     "direct": "frequency",
+    "direct frequency statement": "frequency",
+    "direct patient report": "frequency",
     "direct report": "frequency",
     "direct statement": "frequency",
     "direct_extraction": "frequency",
+    "direct_normalized": "frequency",
+    "direct_report": "frequency",
     "electrographic seizure frequency": "frequency",
+    "explicit frequency": "frequency",
+    "explicit frequency statement": "frequency",
+    "explicit_frequency": "frequency",
+    "explicit_frequency_normalized": "frequency",
+    "explicit_frequency_phrase": "frequency",
     "extracted": "frequency",
     "extracted frequency": "frequency",
+    "frequency_count": "frequency",
     "frequency change": "frequency",
+    "frequency pattern with trigger": "frequency",
+    "frequency described but not quantifiable": "unknown",
+    "imprecise frequency": "unknown",
     "last event": "frequency",
     "last-event-only": "frequency",
     "last_event_only": "frequency",
     "last seizure": "frequency",
     "multiple": "unresolved_multiple",
+    "nonnumeric": "unknown",
     "no reference": "no_reference",
     "no seizure frequency reference": "no_reference",
+    "normalized_frequency_unknown": "unknown",
     "seizure frequency": "frequency",
     "seizure_frequency": "frequency",
     "patient report": "frequency",
     "patient report and peer observation": "frequency",
+    "patient and observer report": "frequency",
+    "patient and witness report": "frequency",
+    "patient/caregiver reported": "frequency",
     "patient self-report": "frequency",
     "patient-reported count": "frequency",
+    "provoked-only": "unknown",
+    "quoted normalized": "frequency",
     "seizure-free": "seizure_free",
+    "seizure-free duration": "seizure_free",
+    "duration_seizure_free": "seizure_free",
+    "temporal numeric extraction": "frequency",
+    "verbatim": "frequency",
+    "verbatim and paraphrased extraction": "frequency",
+    "verbatim/complex": "unresolved_multiple",
+    "verbatim_count_and_window": "frequency",
 }

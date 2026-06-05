@@ -1,0 +1,59 @@
+{
+  "artifact_kind": "gan2026_change_only_verifier_llm_selector_exact_calibration_summary",
+  "candidate_kind_counts": {
+    "cluster_frequency": 21,
+    "frequency_rate": 26,
+    "last_event_only": 15,
+    "unknown_frequency": 26
+  },
+  "claim_boundary": "Validation-development calibration panel for LLM-selector exact alternatives. Panel positives and controls use validation gold only for development accounting and do not authorize locked-test use.",
+  "date": "2026-06-05",
+  "improved_source_row_indices": [
+    4690,
+    6244,
+    6321,
+    6987,
+    10266,
+    10618,
+    15193
+  ],
+  "interpretation": "Promote to full validation-family audit; calibration is clean and useful.",
+  "metrics": {
+    "all_evidence_quotes_exact_rows": 84,
+    "base_correct_rows": 75,
+    "base_purist_proxy": 0.8522727272727273,
+    "call_ok_rows": 88,
+    "changed_label_precision": 1.0,
+    "model_call_rows": 0,
+    "parse_error_rows": 0,
+    "parse_ok_rows": 88,
+    "projected_correct_rows": 82,
+    "projected_purist_proxy": 0.9318181818181818,
+    "raw_output_reused_rows": 88,
+    "recoverable_positive_rows": 13,
+    "regression_control_rows": 75,
+    "row_count": 88
+  },
+  "model": "openai/gpt-4.1",
+  "policy_name": "gan2026_change_only_candidate_verifier_v0",
+  "prompt_version": "gan2026_change_only_candidate_verifier_v0",
+  "proposal_policy": "One exact llm_candidate_selector_raw alternative per validation row, ranked frequency_rate before unknown_frequency before cluster_frequency before last_event_only, then normalized label, candidate id, evidence.",
+  "raw_reuse_paths": [
+    "experiments/gan2026_change_only_verifier_calibration_gpt41_2026-06-05.jsonl",
+    "experiments/gan2026_change_only_verifier_expanded_calibration_gpt41_2026-06-05.jsonl",
+    "experiments/gan2026_change_only_verifier_sf_unknown_family_gpt41_2026-06-05.jsonl",
+    "experiments/gan2026_change_only_verifier_det_state_alt_full_family_gpt41_2026-06-05.jsonl",
+    "experiments/gan2026_change_only_verifier_llm_selector_exact_calibration_gpt41_2026-06-05.jsonl"
+  ],
+  "recommendation_counts": {
+    "keep_current": 59,
+    "switch_to_proposed": 29
+  },
+  "regression_source_row_indices": [],
+  "source_artifact": "experiments/gan2026_rq1_candidate_discovery_matrix_2026-06-03.jsonl",
+  "transition_counts": {
+    "C_to_C": 75,
+    "W_to_C": 7,
+    "W_to_W": 6
+  }
+}

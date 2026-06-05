@@ -1,0 +1,40 @@
+{
+  "analyzed_rows": 1,
+  "artifact_kind": "gan2026_hybrid_multi_component_staged_assembly_trigger_release_promotion",
+  "c_to_w_rows": 0,
+  "candidate_version": "hybrid_multi_component_staged_assembly_v0",
+  "category_correct_not_exact_label_rows": 1,
+  "claim_language": "Validation-development trigger-context release promotion analysis. It uses validation accounting and component-matrix fields only; it does not inspect locked-test rows, change scorer policy, change gold labels, or create a benchmark-comparable claim.",
+  "component_name": "trigger_release_promotion_analysis",
+  "decision": "reject",
+  "issues": [
+    "promotion_gate_expected_all_releases_w_to_c_and_zero_c_to_w"
+  ],
+  "policy_name": "gan2026_trigger_release_promotion_analysis_v0",
+  "release_rows": 1,
+  "rows": [
+    {
+      "category_correct_not_exact_label": true,
+      "caveat": "category_correct_not_exact_label",
+      "issues": [],
+      "matrix_comparator_transition": "C_to_abstain",
+      "matrix_final_action": "abstain",
+      "matrix_gold_label": "unknown",
+      "prediction_label": "multiple per 6 week",
+      "proposed_purist_correct": true,
+      "selected_evidence": "several episodes over the past six weeks",
+      "selected_source_ids": [
+        "det:event_1",
+        "graph:sg-001"
+      ],
+      "source_row_index": 5977,
+      "transition": "C_to_C"
+    }
+  ],
+  "source_artifacts": {
+    "component_matrix_csv": "experiments/gan2026_hybrid_multi_component_staged_assembly_v0_validation750_component_matrix_2026-06-04.csv",
+    "proposed_decision_jsonl": "experiments/gan2026_staged_hybrid_trigger_context_release_proposed_decisions_2026-06-04.jsonl",
+    "trigger_release_jsonl": "experiments/gan2026_staged_hybrid_trigger_context_release_rule_2026-06-04.jsonl"
+  },
+  "w_to_c_rows": 0
+}

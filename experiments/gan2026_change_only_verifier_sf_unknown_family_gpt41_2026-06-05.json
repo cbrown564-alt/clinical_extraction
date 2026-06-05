@@ -1,0 +1,32 @@
+{
+  "artifact_kind": "gan2026_change_only_verifier_sf_unknown_family_summary",
+  "base_correct_rows": 31,
+  "base_purist_proxy": 0.8157894736842105,
+  "call_ok_rows": 38,
+  "changed_label_precision": 0.3333333333333333,
+  "claim_language": "Validation-development full family audit for current seizure-free rows with LLM unknown alternatives. No locked-test rows inspected.",
+  "component_name": "change_only_candidate_verifier",
+  "created_date": "2026-06-05",
+  "decision": "reject",
+  "exact_quote_rows": 32,
+  "model": "openai/gpt-4.1",
+  "new_model_call_rows": 31,
+  "parse_ok_rows": 38,
+  "policy_name": "gan2026_change_only_candidate_verifier_v0",
+  "projected_correct_rows": 26,
+  "projected_purist_proxy": 0.6842105263157895,
+  "recommendation_counts": {
+    "keep_current": 20,
+    "switch_to_proposed": 18
+  },
+  "reused_raw_output_rows": 7,
+  "row_count": 38,
+  "split": "validation",
+  "split_manifest": "gan2026_split_v1",
+  "transition_counts": {
+    "C_to_C": 21,
+    "C_to_W": 10,
+    "W_to_C": 5,
+    "W_to_W": 2
+  }
+}

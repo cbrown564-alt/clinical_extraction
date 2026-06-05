@@ -1,18 +1,25 @@
 {
   "artifact_kind": "gan2026_staged_hybrid_last_event_date_instrumentation",
   "automatic_release_ready_rows": 0,
-  "claim_language": "Validation-development date instrumentation for last-event review rows. It does not change prediction-bearing behavior, prompts, scorer policy, gold labels, locked-test behavior, verifier use, or benchmark-comparable claims.",
+  "claim_language": "Validation-development last-event duration policy for review rows. It derives auditable durations and conflict flags, but does not itself change prediction-bearing behavior, prompts, scorer policy, gold labels, locked-test behavior, verifier use, or benchmark-comparable claims.",
   "component_name": "last_event_date_instrumentation",
   "date_signal_class_counts": {
     "full_date_detected": 1,
     "no_explicit_date_in_selected_evidence": 4,
     "partial_date_missing_year": 3
   },
+  "duration_auditable_rows": 1,
   "full_date_rows": 1,
   "no_explicit_date_rows": 4,
   "partial_date_rows": 3,
-  "recommended_next_step": "Add auditable duration derivation and conflict checks before any last-event automatic release.",
+  "policy_name": "last_event_duration_policy_v0",
+  "recommended_next_step": "Use duration-auditable rows only after the candidate-level promotion gate confirms no deterministic-correct regression and no evidence or source-id defect.",
   "reference_date_available_rows": 8,
+  "release_blocker_counts": {
+    "no_explicit_date_in_selected_evidence": 4,
+    "partial_date_missing_year": 3,
+    "protective_block_validation_accounting": 1
+  },
   "row_count": 8,
   "source_artifacts": {
     "abstention_policy_json": "experiments/gan2026_staged_hybrid_abstention_policy_predeclaration_2026-06-04.json",

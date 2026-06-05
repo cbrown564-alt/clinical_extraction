@@ -1,0 +1,35 @@
+{
+  "artifact_kind": "gan2026_combined_change_only_switch_layer_test450_aggregate_audit",
+  "claim_boundary": "Frozen locked-test aggregate-only audit for the combined change-only switch layer. This summary intentionally omits row ids, clinical text, raw model outputs, and row-level failures.",
+  "date": "2026-06-05",
+  "decision": "does_not_meet_goal",
+  "family_priority": [
+    "det_state_exact",
+    "llm_selector_exact",
+    "keep_current"
+  ],
+  "metrics": {
+    "base_correct_rows": 342,
+    "base_purist_proxy": 0.76,
+    "call_ok_rows": 446,
+    "changed_label_precision": 0.9285714285714286,
+    "changed_rows": 31,
+    "projected_correct_rows": 354,
+    "projected_purist_proxy": 0.7866666666666666,
+    "test_rows": 450
+  },
+  "model": "openai/gpt-4.1",
+  "policy_name": "gan2026_combined_change_only_switch_layer_v0",
+  "selected_family_counts": {
+    "det_state_exact": 10,
+    "keep_current": 419,
+    "llm_selector_exact": 21
+  },
+  "source_artifact": "experiments/gan2026_hybrid_parallel_state_candidate_reasoner_test450_gpt41mini_v0_deterministic_safety_floor_live_2026-06-03.jsonl",
+  "transition_counts": {
+    "C_to_C": 341,
+    "C_to_W": 1,
+    "W_to_C": 13,
+    "W_to_W": 95
+  }
+}

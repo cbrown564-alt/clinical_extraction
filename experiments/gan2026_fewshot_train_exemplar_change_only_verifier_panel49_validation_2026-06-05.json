@@ -1,0 +1,24 @@
+{
+  "artifact_kind": "gan2026_fewshot_change_only_verifier_panel49_summary",
+  "claim_boundary": "Validation-development hard/control panel only. No locked-test rows were inspected or used.",
+  "date": "2026-06-05",
+  "decision": "reject_raw_or_broad_gate",
+  "metrics": {
+    "call_ok_rows": 49,
+    "candidate_correct_rows": null,
+    "current_correct_rows": null,
+    "exact_evidence_rows": 49,
+    "parse_ok_rows": 49,
+    "row_count": 49
+  },
+  "panel_role_counts": {
+    "unknown": 49
+  },
+  "source_jsonl": "experiments/gan2026_fewshot_train_exemplar_change_only_verifier_panel49_validation_2026-06-05.jsonl",
+  "transition_counts": {
+    "C_to_C": 13,
+    "C_to_W": 3,
+    "W_to_C": 6,
+    "W_to_W": 27
+  }
+}

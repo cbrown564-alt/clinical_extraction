@@ -1,0 +1,79 @@
+{
+  "artifact_kind": "gan2026_change_only_verifier_det_state_alt_full_family_summary",
+  "candidate_kind_counts": {
+    "cluster_frequency": 5,
+    "frequency_rate": 144
+  },
+  "candidate_source_counts": {
+    "deterministic_candidates_all": 149
+  },
+  "claim_boundary": "Validation-development row-level full-family audit over deterministic/state exact frequency or cluster alternatives. The proposal ranker does not use gold labels; gold labels are used only for validation accounting. This artifact does not authorize locked-test row-level inspection or benchmark claims.",
+  "date": "2026-06-05",
+  "improved_source_row_indices": [
+    5921,
+    10386,
+    13209,
+    15986
+  ],
+  "interpretation": "Promote to a frozen aggregate-only holdout audit: validation full-family accounting has positive W->C movement and zero C->W regressions.",
+  "metrics": {
+    "all_evidence_quotes_exact_rows": 141,
+    "base_correct_rows": 138,
+    "base_purist_proxy": 0.9261744966442953,
+    "call_ok_rows": 149,
+    "changed_label_precision": 1.0,
+    "model_call_rows": 1,
+    "parse_error_rows": 0,
+    "parse_ok_rows": 149,
+    "projected_correct_rows": 142,
+    "projected_purist_proxy": 0.9530201342281879,
+    "raw_output_reused_rows": 148,
+    "row_count": 149,
+    "whole_validation_base_correct_rows": 697,
+    "whole_validation_base_purist_proxy": 0.9293333333333333,
+    "whole_validation_projected_correct_rows": 701,
+    "whole_validation_projected_purist_proxy": 0.9346666666666666
+  },
+  "model": "openai/gpt-4.1",
+  "policy_name": "gan2026_change_only_candidate_verifier_v0",
+  "prompt_version": "gan2026_change_only_candidate_verifier_v0",
+  "proposal_policy": "Select one non-gold deterministic/state exact alternative per validation row: deterministic_candidates_all before state_graph_nodes; frequency_rate before cluster_frequency; then normalized label, candidate_id, evidence.",
+  "raw_reuse_paths": [
+    "experiments/gan2026_change_only_verifier_calibration_gpt41_2026-06-05.jsonl",
+    "experiments/gan2026_change_only_verifier_expanded_calibration_gpt41_2026-06-05.jsonl",
+    "experiments/gan2026_change_only_verifier_det_state_alt_calibration_gpt41_2026-06-05.jsonl",
+    "experiments/gan2026_change_only_verifier_sf_unknown_family_gpt41_2026-06-05.jsonl",
+    "experiments/gan2026_change_only_verifier_det_state_alt_full_family_gpt41_2026-06-05.jsonl"
+  ],
+  "recommendation_counts": {
+    "keep_current": 119,
+    "switch_to_proposed": 30
+  },
+  "regression_source_row_indices": [],
+  "source_artifact": "experiments/gan2026_rq1_candidate_discovery_matrix_2026-06-03.jsonl",
+  "summary": {
+    "base_correct_rows": 138,
+    "base_purist_proxy": 0.9261744966442953,
+    "changed_label_precision": 1.0,
+    "component_name": "change_only_candidate_verifier",
+    "decision": "promote_candidate",
+    "policy_name": "gan2026_change_only_candidate_verifier_v0",
+    "projected_correct_rows": 142,
+    "projected_purist_proxy": 0.9530201342281879,
+    "recommendation_counts": {
+      "keep_current": 119,
+      "switch_to_proposed": 30
+    },
+    "row_count": 149,
+    "transition_counts": {
+      "C_to_C": 138,
+      "W_to_C": 4,
+      "W_to_W": 7
+    }
+  },
+  "transition_counts": {
+    "C_to_C": 138,
+    "W_to_C": 4,
+    "W_to_W": 7
+  }
+}

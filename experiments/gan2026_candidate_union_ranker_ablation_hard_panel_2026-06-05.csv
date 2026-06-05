@@ -1,0 +1,236 @@
+ranker_name,source_row_index,gold_label,comparator_label,comparator_correct,selected_candidate_id,selected_candidate_label,selected_candidate_kind,selected_candidate_rule_id,selected_candidate_provenance,selected_candidate_evidence,selected_candidate_correct,selected_transition
+comparator_absent_quality_rank_v0,338,multiple per month,multiple per month,True,live-boundary-001,"multiple cluster per 4 week, multiple per cluster",cluster_frequency,,live_llm_boundary_proposal_v3,"Over the last four weeks he has experienced many convulsions in past month, described as sudden loss of awareness followed by generalised tonic–clonic activity lasting 1–2 minutes with tongue‑bite on one occasion and post‑ictal confusion for up to an hour. These events clustered after eastbound flights and consecutive nights of restricted sleep (3–4 hours).",False,C_to_W
+comparator_absent_quality_rank_v0,743,multiple per week,multiple per day,False,det-sg-001,no seizure frequency reference,no_reference,state_graph.no_reference_fallback,deterministic,"King's College Hospital 
+
+Department of Neurosciences 
+
+Clinic Date: 02 October 2025 
+
+Dr A.",True,W_to_C
+comparator_absent_quality_rank_v0,869,multiple per month,unknown,False,det-sg-001,no seizure frequency reference,no_reference,state_graph.no_reference_fallback,deterministic,"KINGS NEUROSCIENCES CENTRE
+
+
+Clinic Date: 09 April 2019
+
+Dr A.",True,W_to_C
+comparator_absent_quality_rank_v0,959,1 per 2 month,"unknown, 2 per cluster",False,det-sg-001,1 per 2 month,frequency_rate,rate.occurring_adjective,deterministic,occur bimonthly,True,W_to_C
+comparator_absent_quality_rank_v0,960,1 per 2 month,multiple per month,False,det-sg-001,1 per 2 month,frequency_rate,rate.seizure_adjective,deterministic,bimonthly seizures,True,W_to_C
+comparator_absent_quality_rank_v0,987,1 per 2 month,2 per 1 to 2 month,False,det-sg-001,1 per 2 month,frequency_rate,rate.seizure_adjective,deterministic,bimonthly seizures,True,W_to_C
+comparator_absent_quality_rank_v0,1317,"unknown, multiple per cluster",multiple per day,False,det-sg-001,no seizure frequency reference,no_reference,state_graph.no_reference_fallback,deterministic,"Centre for Epilepsy
+
+Neurosciences Division 
+
+Clinic Date: 09 August 2024 
+
+Dr Aisha Rahman 
+Consultant Neurologist  
+Centre for Epilepsy  
+King’s College Hospital, Denmark Hill, London SE5 9RS  
+
+Dear Dr Aisha Rahman, 
+
+Ms Hannah Cooper, D",True,W_to_C
+comparator_absent_quality_rank_v0,1363,3 per day,"unknown, 3 per cluster",False,det-sg-002,3 per day,frequency_rate,rate.yesterday_or_today_count,deterministic,three tonic-clonic seizures yesterday,True,W_to_C
+comparator_absent_quality_rank_v0,1695,multiple per month,3 to 5 per month,False,det-sg-001,no seizure frequency reference,no_reference,state_graph.no_reference_fallback,deterministic,"University College Hospital 
+
+National Hospital for Neurology and Neurosurgery 
+
+Clinic Date: 27 July 2024 
+
+Dr Helen Morris  
+Maple Road Health Centre  
+12 Maple Road, London NW1 8QT  
+
+Dear Dr Helen Morris,  
+
+Robert Jenkins, DOB: 22-07-1",True,W_to_C
+comparator_absent_quality_rank_v0,1706,"multiple cluster per month, multiple per cluster",multiple per month,False,det-sg-001,"multiple cluster per month, multiple per cluster",cluster_frequency,cluster.vague_days_over_period,deterministic,"Over the past month, the patient reports a cluster of short events on multiple days",True,W_to_C
+comparator_absent_quality_rank_v0,1707,multiple per week,multiple per week,True,live-boundary-001,"multiple cluster per week, multiple per cluster",cluster_frequency,,live_llm_boundary_proposal_v3,a brief cluster of events occurring on multiple days within the past week,False,C_to_W
+comparator_absent_quality_rank_v0,2080,multiple per month,"1 cluster per month, 2 per cluster",False,det-sg-001,no seizure frequency reference,no_reference,state_graph.no_reference_fallback,deterministic,"KINGS NEUROSCIENCES CENTRE
+
+
+Clinic Date: 02 October 2025 
+
+Dr A.",True,W_to_C
+comparator_absent_quality_rank_v0,4368,5 per 2 month,unknown,False,det-sg-001,5 per 2 month,frequency_rate,diary.date_list,deterministic,"Seizure events on 03-07, 03-27, 05-15, 05-19, 05-24",True,W_to_C
+comparator_absent_quality_rank_v0,4690,multiple per day,10 per day,False,det-sg-001,seizure free for multiple year,seizure_free,seizure_free.current_control_phrase,deterministic,no witnessed convulsions since,False,W_to_W
+comparator_absent_quality_rank_v0,5534,1 per multiple month,1 per 2 week,False,det-sg-001,seizure free for multiple year,seizure_free,seizure_free.current_control_phrase,deterministic,no generalised tonic–clonic seizures since,False,W_to_W
+comparator_absent_quality_rank_v0,5921,1 per 6 to 8 week,"1 cluster per 6 to 8 week, multiple per cluster",False,det-sg-001,1 per day,frequency_rate,rate.seizure_adjective,deterministic,"daily  
+
+Seizures",False,W_to_W
+comparator_absent_quality_rank_v0,6094,3 per month,"unknown, 1 to 3 per cluster",False,det-sg-001,3 per week,frequency_rate,rate.direct_count_per_period,deterministic,three times per week,False,W_to_W
+comparator_absent_quality_rank_v0,6153,9 per month,9 per 4 week,False,det-sg-001,1 per 1 to 2 week,frequency_rate,unknown,deterministic,every one to two weeks,False,W_to_W
+comparator_absent_quality_rank_v0,6209,multiple per day,2 to 3 per day,False,det-sg-002,1 per day,frequency_rate,rate.seizure_adjective,deterministic,daily brief events,False,W_to_W
+comparator_absent_quality_rank_v0,6501,unknown,unknown,True,live-boundary-002,"1 cluster per 2 to 3 day, multiple per cluster",cluster_frequency,,live_llm_boundary_proposal_v3,"Clusters are described as brief episodes occurring over 2–3 days, often during consecutive evening shifts near the grill station, followed by several weeks without events.",False,C_to_W
+comparator_absent_quality_rank_v0,6571,unknown,unknown,True,live-boundary-001,"unknown, multiple per cluster",cluster_frequency,,live_llm_boundary_proposal_v3,"Patient describes brief behavioural arrest with preserved awareness per family report, occurring in clusters during periods of missed or delayed doses in the past.",True,C_to_C
+comparator_absent_quality_rank_v0,7168,unknown,"1 cluster per year, 2 per cluster",False,det-sg-001,2 per year,frequency_rate,rate.period_first_recent_count,deterministic,Over the past year there have been two brief generalised tonic–clonic seizures,False,W_to_W
+comparator_absent_quality_rank_v0,7615,3 to 7 per month,"1 cluster per month, 3 to 6 per cluster",False,det-sg-001,2 per year,frequency_rate,rate.recent_count,deterministic,two generalised tonic-clonic seizures this year,False,W_to_W
+comparator_absent_quality_rank_v0,9496,6 per 12 month,0 to 2 per month,False,det-sg-001,2 per 5 month,frequency_rate,diary.monthly_count_log,deterministic,"seizure: 2019: Aug x0, Sep x0, Oct x1, Nov x0, Dec x1",True,W_to_C
+comparator_absent_quality_rank_v0,9937,"1 cluster per month, multiple per cluster",1 per 3 to 4 week,False,det-sg-001,1 per multiple week,frequency_rate,unknown,deterministic,every few weeks,False,W_to_W
+comparator_absent_quality_rank_v0,10618,"unknown, 4 to 6 per cluster","unknown, 4 to 6 per cluster",True,live-boundary-001,"1 cluster per day, 4 to 6 per cluster",cluster_frequency,,live_llm_boundary_proposal_v3,episodes tend to come in small runs: typically around four to six short spells grouped together on days when they occur,False,C_to_W
+comparator_absent_quality_rank_v0,13209,1 per 8 month,unknown,False,det-sg-001,1 per 4 to 5 week,frequency_rate,unknown,deterministic,every 4–5 weeks,False,W_to_W
+comparator_absent_quality_rank_v0,13843,seizure free for multiple month,unknown,False,det-sg-001,no seizure frequency reference,no_reference,state_graph.no_reference_fallback,deterministic,"King's College Hospital
+
+Department of Neurosciences
+
+Clinic Date: 14 September 2025
+
+Dr Priya Desai
+King's College Hospital
+Department of Neurosciences, King's College Hospital, London SE5 9RS
+
+Dear Dr Priya Desai,
+
+Daniel Carter, DOB: 17-",False,W_to_W
+comparator_absent_quality_rank_v0,13858,seizure free for multiple month,unknown,False,det-sg-001,no seizure frequency reference,no_reference,state_graph.no_reference_fallback,deterministic,"Department of Neurology 
+
+Clinic Date: 02 October 2025 
+
+Dr Amelia Grant  
+St.",False,W_to_W
+comparator_absent_quality_rank_v0,13889,seizure free for multiple month,unknown,False,det-sg-001,no seizure frequency reference,no_reference,state_graph.no_reference_fallback,deterministic,"KINGS NEUROSCIENCES CENTRE
+
+Clinic Date: 02 October 2025
+
+Dr Maya Patel
+Willowbrook Health Centre
+
+12 Arkwright Road, London NW3 6AA
+
+Dear Dr Maya Patel
+
+Wendy Brown, DOB: 21-11-1982, Hospital No: K482715 NHS No.",False,W_to_W
+comparator_absent_quality_rank_v0,14810,1 per month,unknown,False,det-sg-001,12 per month,frequency_rate,rate.period_first_recent_count,deterministic,"this month, but these have now settled. On 12 May the absence episodes",False,W_to_W
+comparator_absent_quality_rank_v0,14821,1 per month,unknown,False,det-sg-001,17 per month,frequency_rate,rate.period_first_recent_count,deterministic,"this month, but these have now settled. On 17 Jul the absence episodes",False,W_to_W
+comparator_absent_quality_rank_v0,15168,multiple per 15 month,unknown,False,det-sg-001,seizure free for multiple year,seizure_free,seizure_free.current_control_phrase,deterministic,no generalised seizures since,False,W_to_W
+comparator_absent_quality_rank_v0,15193,multiple per 13 month,0 per 9 to 10 month,False,det-sg-001,seizure free for multiple year,seizure_free,seizure_free.current_control_phrase,deterministic,no generalised seizures since,False,W_to_W
+comparator_absent_quality_rank_v0,15593,"1 cluster per 5 day, 2 to 4 per cluster","1 cluster per 5 day, 2 to 4 per cluster",True,live-boundary-001,"1 cluster per day, 2 to 4 per cluster",cluster_frequency,,live_llm_boundary_proposal_v3,"She can occasionally manage five days without seizures, though this is usually followed by a day of clustering, with two to four events.",False,C_to_W
+comparator_absent_quality_rank_v0,15672,1 per day,multiple per day,False,det-sg-001,1 to 2 per year,frequency_rate,rate.direct_count_per_period,deterministic,one to two times per year,False,W_to_W
+comparator_absent_quality_rank_v0,15986,11 per 3 month,1 to 5 per month,False,det-sg-002,11 per 3 month,frequency_rate,diary.sleep_awake_month_summary,deterministic,In Mar she had five seizures during sleep and 5 while awake. In May she had no in sleep and one while awake,True,W_to_C
+comparator_absent_structural_guard_rank_v0,338,multiple per month,multiple per month,True,live-boundary-003,unknown,unknown_frequency,,live_llm_boundary_proposal_v3,"He reports irregular sleep, prolonged flights, and variable meal schedules, often with overnight work calls.",True,C_to_C
+comparator_absent_structural_guard_rank_v0,743,multiple per week,multiple per day,False,det-sg-001,no seizure frequency reference,no_reference,state_graph.no_reference_fallback,deterministic,"King's College Hospital 
+
+Department of Neurosciences 
+
+Clinic Date: 02 October 2025 
+
+Dr A.",True,W_to_C
+comparator_absent_structural_guard_rank_v0,869,multiple per month,unknown,False,det-sg-001,no seizure frequency reference,no_reference,state_graph.no_reference_fallback,deterministic,"KINGS NEUROSCIENCES CENTRE
+
+
+Clinic Date: 09 April 2019
+
+Dr A.",True,W_to_C
+comparator_absent_structural_guard_rank_v0,960,1 per 2 month,multiple per month,False,det-sg-001,1 per 2 month,frequency_rate,rate.seizure_adjective,deterministic,bimonthly seizures,True,W_to_C
+comparator_absent_structural_guard_rank_v0,987,1 per 2 month,2 per 1 to 2 month,False,det-sg-001,1 per 2 month,frequency_rate,rate.seizure_adjective,deterministic,bimonthly seizures,True,W_to_C
+comparator_absent_structural_guard_rank_v0,1317,"unknown, multiple per cluster",multiple per day,False,det-sg-001,no seizure frequency reference,no_reference,state_graph.no_reference_fallback,deterministic,"Centre for Epilepsy
+
+Neurosciences Division 
+
+Clinic Date: 09 August 2024 
+
+Dr Aisha Rahman 
+Consultant Neurologist  
+Centre for Epilepsy  
+King’s College Hospital, Denmark Hill, London SE5 9RS  
+
+Dear Dr Aisha Rahman, 
+
+Ms Hannah Cooper, D",True,W_to_C
+comparator_absent_structural_guard_rank_v0,1695,multiple per month,3 to 5 per month,False,det-sg-001,no seizure frequency reference,no_reference,state_graph.no_reference_fallback,deterministic,"University College Hospital 
+
+National Hospital for Neurology and Neurosurgery 
+
+Clinic Date: 27 July 2024 
+
+Dr Helen Morris  
+Maple Road Health Centre  
+12 Maple Road, London NW1 8QT  
+
+Dear Dr Helen Morris,  
+
+Robert Jenkins, DOB: 22-07-1",True,W_to_C
+comparator_absent_structural_guard_rank_v0,1706,"multiple cluster per month, multiple per cluster",multiple per month,False,det-sg-001,"multiple cluster per month, multiple per cluster",cluster_frequency,cluster.vague_days_over_period,deterministic,"Over the past month, the patient reports a cluster of short events on multiple days",True,W_to_C
+comparator_absent_structural_guard_rank_v0,1707,multiple per week,multiple per week,True,det-sg-001,no seizure frequency reference,no_reference,state_graph.no_reference_fallback,deterministic,"Centre for Epilepsy
+
+Neurosciences Division
+
+Clinic Date: 01 October 2020
+
+Dr Aisha Karim
+Consultant Neurologist
+Centre for Epilepsy
+King’s College Hospital, Denmark Hill, London
+
+Dear Dr Aisha Karim,
+
+Mr Samir Khan, DOB: 12-03-1987, Hospit",True,C_to_C
+comparator_absent_structural_guard_rank_v0,4368,5 per 2 month,unknown,False,det-sg-001,5 per 2 month,frequency_rate,diary.date_list,deterministic,"Seizure events on 03-07, 03-27, 05-15, 05-19, 05-24",True,W_to_C
+comparator_absent_structural_guard_rank_v0,6153,9 per month,9 per 4 week,False,det-sg-001,1 per 1 to 2 week,frequency_rate,unknown,deterministic,every one to two weeks,False,W_to_W
+comparator_absent_structural_guard_rank_v0,6209,multiple per day,2 to 3 per day,False,det-sg-002,1 per day,frequency_rate,rate.seizure_adjective,deterministic,daily brief events,False,W_to_W
+comparator_absent_structural_guard_rank_v0,6501,unknown,unknown,True,live-boundary-003,no seizure frequency reference,no_reference,,live_llm_boundary_proposal_v3,"Witness accounts from colleagues describe brief behavioural arrest with staring, utensil pause, and subsequent confusion lasting a few minutes; no convulsions noted.",True,C_to_C
+comparator_absent_structural_guard_rank_v0,6571,unknown,unknown,True,live-boundary-004,no seizure frequency reference,no_reference,,live_llm_boundary_proposal_v3,Patient maintains a diary noting dates of supply interruptions and has begun requesting early refills when travel is anticipated.,True,C_to_C
+comparator_absent_structural_guard_rank_v0,9496,6 per 12 month,0 to 2 per month,False,det-sg-001,2 per 5 month,frequency_rate,diary.monthly_count_log,deterministic,"seizure: 2019: Aug x0, Sep x0, Oct x1, Nov x0, Dec x1",True,W_to_C
+comparator_absent_structural_guard_rank_v0,9937,"1 cluster per month, multiple per cluster",1 per 3 to 4 week,False,det-sg-001,1 per multiple week,frequency_rate,unknown,deterministic,every few weeks,False,W_to_W
+comparator_absent_structural_guard_rank_v0,13209,1 per 8 month,unknown,False,det-sg-001,1 per 4 to 5 week,frequency_rate,unknown,deterministic,every 4–5 weeks,False,W_to_W
+comparator_absent_structural_guard_rank_v0,13843,seizure free for multiple month,unknown,False,det-sg-001,no seizure frequency reference,no_reference,state_graph.no_reference_fallback,deterministic,"King's College Hospital
+
+Department of Neurosciences
+
+Clinic Date: 14 September 2025
+
+Dr Priya Desai
+King's College Hospital
+Department of Neurosciences, King's College Hospital, London SE5 9RS
+
+Dear Dr Priya Desai,
+
+Daniel Carter, DOB: 17-",False,W_to_W
+comparator_absent_structural_guard_rank_v0,13858,seizure free for multiple month,unknown,False,det-sg-001,no seizure frequency reference,no_reference,state_graph.no_reference_fallback,deterministic,"Department of Neurology 
+
+Clinic Date: 02 October 2025 
+
+Dr Amelia Grant  
+St.",False,W_to_W
+comparator_absent_structural_guard_rank_v0,13889,seizure free for multiple month,unknown,False,det-sg-001,no seizure frequency reference,no_reference,state_graph.no_reference_fallback,deterministic,"KINGS NEUROSCIENCES CENTRE
+
+Clinic Date: 02 October 2025
+
+Dr Maya Patel
+Willowbrook Health Centre
+
+12 Arkwright Road, London NW3 6AA
+
+Dear Dr Maya Patel
+
+Wendy Brown, DOB: 21-11-1982, Hospital No: K482715 NHS No.",False,W_to_W
+comparator_absent_structural_guard_rank_v0,14810,1 per month,unknown,False,det-sg-001,12 per month,frequency_rate,rate.period_first_recent_count,deterministic,"this month, but these have now settled. On 12 May the absence episodes",False,W_to_W
+comparator_absent_structural_guard_rank_v0,14821,1 per month,unknown,False,det-sg-001,17 per month,frequency_rate,rate.period_first_recent_count,deterministic,"this month, but these have now settled. On 17 Jul the absence episodes",False,W_to_W
+comparator_absent_structural_guard_rank_v0,15672,1 per day,multiple per day,False,det-sg-001,1 to 2 per year,frequency_rate,rate.direct_count_per_period,deterministic,one to two times per year,False,W_to_W
+comparator_absent_structural_guard_rank_v0,15986,11 per 3 month,1 to 5 per month,False,det-sg-002,11 per 3 month,frequency_rate,diary.sleep_awake_month_summary,deterministic,In Mar she had five seizures during sleep and 5 while awake. In May she had no in sleep and one while awake,True,W_to_C
+diary_log_only_v0,4368,5 per 2 month,unknown,False,det-sg-001,5 per 2 month,frequency_rate,diary.date_list,deterministic,"Seizure events on 03-07, 03-27, 05-15, 05-19, 05-24",True,W_to_C
+diary_log_only_v0,9496,6 per 12 month,0 to 2 per month,False,det-sg-001,2 per 5 month,frequency_rate,diary.monthly_count_log,deterministic,"seizure: 2019: Aug x0, Sep x0, Oct x1, Nov x0, Dec x1",True,W_to_C
+diary_log_only_v0,15986,11 per 3 month,1 to 5 per month,False,det-sg-002,11 per 3 month,frequency_rate,diary.sleep_awake_month_summary,deterministic,In Mar she had five seizures during sleep and 5 while awake. In May she had no in sleep and one while awake,True,W_to_C
+unknown_or_cluster_frequency_rank_v0,959,1 per 2 month,"unknown, 2 per cluster",False,det-sg-001,1 per 2 month,frequency_rate,rate.occurring_adjective,deterministic,occur bimonthly,True,W_to_C
+unknown_or_cluster_frequency_rank_v0,1363,3 per day,"unknown, 3 per cluster",False,det-sg-002,3 per day,frequency_rate,rate.yesterday_or_today_count,deterministic,three tonic-clonic seizures yesterday,True,W_to_C
+unknown_or_cluster_frequency_rank_v0,4368,5 per 2 month,unknown,False,det-sg-001,5 per 2 month,frequency_rate,diary.date_list,deterministic,"Seizure events on 03-07, 03-27, 05-15, 05-19, 05-24",True,W_to_C
+unknown_or_cluster_frequency_rank_v0,5921,1 per 6 to 8 week,"1 cluster per 6 to 8 week, multiple per cluster",False,det-sg-001,1 per day,frequency_rate,rate.seizure_adjective,deterministic,"daily  
+
+Seizures",False,W_to_W
+unknown_or_cluster_frequency_rank_v0,6094,3 per month,"unknown, 1 to 3 per cluster",False,det-sg-001,3 per week,frequency_rate,rate.direct_count_per_period,deterministic,three times per week,False,W_to_W
+unknown_or_cluster_frequency_rank_v0,6321,unknown,unknown,True,det-sg-001,1 per day,frequency_rate,rate.seizure_adjective,deterministic,"daily  
+
+Seizures",False,C_to_W
+unknown_or_cluster_frequency_rank_v0,7168,unknown,"1 cluster per year, 2 per cluster",False,det-sg-001,2 per year,frequency_rate,rate.period_first_recent_count,deterministic,Over the past year there have been two brief generalised tonic–clonic seizures,False,W_to_W
+unknown_or_cluster_frequency_rank_v0,7615,3 to 7 per month,"1 cluster per month, 3 to 6 per cluster",False,det-sg-001,2 per year,frequency_rate,rate.recent_count,deterministic,two generalised tonic-clonic seizures this year,False,W_to_W
+unknown_or_cluster_frequency_rank_v0,9943,"1 cluster per 4 to 5 week, multiple per cluster","1 cluster per 4 to 5 week, multiple per cluster",True,det-sg-002,1 per 4 to 5 week,frequency_rate,unknown,deterministic,every four to five weeks,False,C_to_W
+unknown_or_cluster_frequency_rank_v0,9955,"1 cluster per month, multiple per cluster","1 cluster per month, multiple per cluster",True,det-sg-001,1 per month,frequency_rate,rate.direct_count_per_period,deterministic,once each month,False,C_to_W
+unknown_or_cluster_frequency_rank_v0,10266,unknown,unknown,True,det-sg-001,1 per 5 day,frequency_rate,unknown,deterministic,every 5 days,False,C_to_W
+unknown_or_cluster_frequency_rank_v0,10386,"1 cluster per week, 2 to 3 per cluster","1 cluster per week, 2 to 3 per cluster",True,det-sg-001,1 per day,frequency_rate,rate.seizure_adjective,deterministic,"daily
+
+Seizure",False,C_to_W
+unknown_or_cluster_frequency_rank_v0,13209,1 per 8 month,unknown,False,det-sg-001,1 per 4 to 5 week,frequency_rate,unknown,deterministic,every 4–5 weeks,False,W_to_W
+unknown_or_cluster_frequency_rank_v0,14025,unknown,unknown,True,live-boundary-001,2 per 6 week,frequency_rate,,live_llm_boundary_proposal_v3,"since starting ketogenic diet he has had two drop attacks, the latest one on 10-Jan",False,C_to_W
+unknown_or_cluster_frequency_rank_v0,14810,1 per month,unknown,False,det-sg-001,12 per month,frequency_rate,rate.period_first_recent_count,deterministic,"this month, but these have now settled. On 12 May the absence episodes",False,W_to_W
+unknown_or_cluster_frequency_rank_v0,14821,1 per month,unknown,False,det-sg-001,17 per month,frequency_rate,rate.period_first_recent_count,deterministic,"this month, but these have now settled. On 17 Jul the absence episodes",False,W_to_W
+unknown_or_cluster_frequency_rank_v0,15593,"1 cluster per 5 day, 2 to 4 per cluster","1 cluster per 5 day, 2 to 4 per cluster",True,det-sg-001,2 per 6 month,frequency_rate,rate.there_have_been_count,deterministic,two nocturnal episodes over the past six months,False,C_to_W

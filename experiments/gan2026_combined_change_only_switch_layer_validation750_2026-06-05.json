@@ -1,0 +1,31 @@
+{
+  "artifact_kind": "gan2026_combined_change_only_switch_layer_validation_summary",
+  "claim_boundary": "Validation-development composition of already validation-clean change-only switch families over the staged reasoner scorer-facing label. This does not authorize benchmark-comparable claims.",
+  "date": "2026-06-05",
+  "decision": "freeze_candidate_for_aggregate_audit",
+  "family_priority": [
+    "det_state_exact",
+    "llm_selector_exact",
+    "keep_current"
+  ],
+  "metrics": {
+    "base_correct_rows": 697,
+    "base_purist_proxy": 0.9293333333333333,
+    "changed_label_precision": 1.0,
+    "changed_rows": 34,
+    "projected_correct_rows": 708,
+    "projected_purist_proxy": 0.944,
+    "row_count": 750
+  },
+  "policy_name": "gan2026_combined_change_only_switch_layer_v0",
+  "selected_family_counts": {
+    "det_state_exact": 9,
+    "keep_current": 716,
+    "llm_selector_exact": 25
+  },
+  "transition_counts": {
+    "C_to_C": 697,
+    "W_to_C": 11,
+    "W_to_W": 42
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "artifact_kind": "gan2026_change_only_verifier_sf_unknown_test450_aggregate_audit",
+  "base_correct_rows": 342,
+  "base_full_row_purist_proxy": 0.76,
+  "base_score_layer": "hybrid_adjudicator_raw",
+  "call_ok_rows": 16,
+  "candidate_kind_counts": {
+    "cluster_frequency": 2,
+    "frequency_rate": 4,
+    "last_event_only": 2,
+    "unknown_frequency": 8
+  },
+  "changed_label_precision": 0.0,
+  "claim_language": "Frozen aggregate-only locked-test audit for current seizure-free labels with LLM unknown alternatives using the validation-frozen change-only verifier and active-event duration-preserving gate. No test row-level failures or raw outputs were written.",
+  "component_name": "change_only_candidate_verifier",
+  "created_date": "2026-06-05",
+  "decision": "does_not_meet_goal",
+  "eligible_base_correct_rows": 13,
+  "eligible_rows": 16,
+  "eligible_transition_counts": {
+    "C_to_C": 13,
+    "W_to_W": 3
+  },
+  "exact_quote_rows": 16,
+  "inspection_policy": "aggregate_only_no_row_level_test_failure_inspection",
+  "model": "openai/gpt-4.1",
+  "parse_ok_rows": 16,
+  "policy_name": "gan2026_change_only_candidate_verifier_v0",
+  "projected_correct_rows": 342,
+  "projected_full_row_purist_proxy": 0.76,
+  "recommendation_counts": {
+    "human_review": 1,
+    "keep_current": 9,
+    "switch_to_proposed": 6
+  },
+  "source_artifact": "experiments/gan2026_hybrid_parallel_state_candidate_reasoner_test450_gpt41mini_v0_deterministic_safety_floor_live_2026-06-03.jsonl",
+  "split": "test",
+  "split_manifest": "gan2026_split_v1",
+  "total_rows": 450
+}

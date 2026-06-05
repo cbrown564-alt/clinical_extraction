@@ -1,0 +1,37 @@
+{
+  "artifact_kind": "gan2026_change_only_verifier_calibration_summary",
+  "base_correct_rows": 12,
+  "base_purist_proxy": 0.5,
+  "call_ok_rows": 24,
+  "changed_label_precision": 0.8333333333333334,
+  "claim_language": "Validation-development change-only verifier calibration panel. Gold labels were used only for panel construction and post-selection accounting, not in model input. No locked-test rows were inspected.",
+  "component_name": "change_only_candidate_verifier",
+  "created_date": "2026-06-05",
+  "decision": "diagnostic_positive_but_not_promotable",
+  "exact_quote_rows": 21,
+  "model": "openai/gpt-4.1",
+  "parse_ok_rows": 24,
+  "policy_name": "gan2026_change_only_candidate_verifier_v0",
+  "projected_correct_rows": 20,
+  "projected_purist_proxy": 0.8333333333333334,
+  "recommendation_counts": {
+    "keep_current": 11,
+    "switch_to_proposed": 13
+  },
+  "row_count": 24,
+  "source_panel": "experiments/gan2026_change_only_verifier_calibration_panel_2026-06-05.jsonl",
+  "split": "validation",
+  "split_manifest": "gan2026_split_v1",
+  "transition_counts": {
+    "C_to_C": 10,
+    "C_to_W": 2,
+    "W_to_C": 10,
+    "W_to_W": 2
+  },
+  "usage": {
+    "input_tokens": 22715,
+    "output_tokens": 4450,
+    "total_tokens": 27165,
+    "wall_clock_latency_seconds": 61.20805112604285
+  }
+}

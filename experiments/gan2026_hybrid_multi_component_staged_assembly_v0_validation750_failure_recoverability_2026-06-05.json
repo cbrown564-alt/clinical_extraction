@@ -1,0 +1,39 @@
+{
+  "actionable_candidate_rate": 0.39622641509433965,
+  "actionable_candidate_rows": 21,
+  "artifact_kind": "gan2026_hybrid_multi_component_staged_assembly_failure_recoverability",
+  "base_correct_rows": 678,
+  "by_best_generator": {
+    "deterministic_candidates_all": 27,
+    "llm_candidate_selector_raw": 12,
+    "none": 14
+  },
+  "by_failure_transition": {
+    "W_to_W": 38,
+    "W_to_abstain": 9,
+    "W_to_review": 6
+  },
+  "by_recoverability_class": {
+    "actionable_candidate": 21,
+    "candidate_with_evidence_or_source_issue": 1,
+    "no_recalled_candidate": 14,
+    "semantic_state_only": 17
+  },
+  "candidate_version": "hybrid_multi_component_staged_assembly_v0",
+  "claim_language": "Validation-development recoverability analysis over assembly failure rows and saved candidate-discovery artifacts. It does not inspect locked-test row-level failures, change predictions, change scorer policy, or make a benchmark-comparable claim.",
+  "component_name": "assembly_failure_recoverability",
+  "exact_label_actionable_rows": 16,
+  "oracle_actionable_upper_bound_correct_rows": 699,
+  "oracle_actionable_upper_bound_score": 0.932,
+  "oracle_exact_label_upper_bound_correct_rows": 694,
+  "oracle_exact_label_upper_bound_score": 0.9253333333333333,
+  "policy_name": "gan2026_assembly_failure_recoverability_v0",
+  "purist_category_actionable_rows": 5,
+  "recommended_next_step": "Run a validation ablation that lets `llm_candidate_selector_raw` override only the 11 actionable failure rows it already recalls with exact evidence and valid source ids; compare W->C and C->W before any holdout use.",
+  "row_count": 53,
+  "source_artifacts": {
+    "candidate_discovery_jsonl": "experiments/gan2026_rq1_candidate_discovery_matrix_2026-06-03.jsonl",
+    "component_matrix_csv": "experiments/gan2026_hybrid_multi_component_staged_assembly_v0_validation750_component_matrix_2026-06-04.csv"
+  },
+  "total_rows": 750
+}

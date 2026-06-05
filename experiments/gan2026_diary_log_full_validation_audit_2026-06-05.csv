@@ -1,0 +1,6 @@
+source_row_index,candidate_action,candidate_rule_id,candidate_label,candidate_evidence,base_prediction_label,gold_label,base_transition,base_purist_correct,candidate_purist_correct,selected_transition
+6065,rejected_rule,diary.increasing_monthly_count,4 per month,August x 4 focal aware motor (two progressing to impaired awareness),5 per month,5 per month,C_to_C,True,False,
+6065,rejected_rule,diary.increasing_monthly_count,3 per month,July x 3 focal aware motor,5 per month,5 per month,C_to_C,True,False,
+13635,rejected_rule,diary.seizure_day_log,47 per 7 month,"Seizures in 2017-2017: May: 8 days with seizures June: 1 days with seizures July: 9 days with more severe seizures August: 7 days with more severe seizures, September: 12 days with seizures October: 3 days, most of them at sleep time, November: 7 days",2 to 3 per week,47 per 7 month,C_to_C,True,True,
+9496,selected,diary.monthly_count_log,2 per 5 month,"seizure: 2019: Aug x0, Sep x0, Oct x1, Nov x0, Dec x1",2 per week,6 per 12 month,W_to_W,False,True,W_to_C
+15986,selected,diary.sleep_awake_month_summary,11 per 3 month,In Mar she had five seizures during sleep and 5 while awake. In May she had no in sleep and one while awake,1 per 5 to 7 day,11 per 3 month,W_to_W,False,True,W_to_C

@@ -1,0 +1,31 @@
+{
+  "artifact_kind": "gan2026_direct_labeler_targeted_switch_validation_summary",
+  "claim_boundary": "Validation-development targeted policy over direct-labeler alternatives and change-only verifier decisions. Gold labels are used only for validation accounting; no locked-test row-level inspection is involved.",
+  "date": "2026-06-05",
+  "decision": "freeze_candidate_for_aggregate_audit",
+  "metrics": {
+    "base_correct_rows": 708,
+    "base_purist_proxy": 0.944,
+    "changed_label_precision": 1.0,
+    "projected_correct_rows": 717,
+    "projected_purist_proxy": 0.956,
+    "selected_rows": 20
+  },
+  "policy_name": "gan2026_direct_labeler_targeted_switch_v0",
+  "policy_rules": [
+    "direct_unknown_from_current_seizure_free",
+    "direct_cluster_per_cluster_completion",
+    "direct_daily_upgrade_from_non_daily_current"
+  ],
+  "selected_family_counts": {
+    "direct_cluster_per_cluster_completion": 7,
+    "direct_daily_upgrade_from_non_daily_current": 7,
+    "direct_unknown_from_current_seizure_free": 6
+  },
+  "source_artifact": "experiments/gan2026_direct_labeler_full_validation750_change_only_verifier_gpt41_2026-06-05.jsonl",
+  "transition_counts": {
+    "C_to_C": 4,
+    "W_to_C": 9,
+    "W_to_W": 7
+  }
+}

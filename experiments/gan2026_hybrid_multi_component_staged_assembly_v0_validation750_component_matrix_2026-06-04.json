@@ -1,0 +1,45 @@
+{
+  "action_counts": {
+    "abstain": 26,
+    "human_review": 8,
+    "predict": 716
+  },
+  "artifact_kind": "gan2026_hybrid_multi_component_staged_assembly_component_matrix",
+  "artifact_stem": "gan2026_hybrid_multi_component_staged_assembly_v0",
+  "candidate_version": "hybrid_multi_component_staged_assembly_v0",
+  "claim_language": "Validation-development component evidence matrix for the staged hybrid assembly. It is an audit artifact and does not change candidate predictions, scorer policy, gold labels, locked-test behavior, or benchmark-comparable claims.",
+  "component_name": "component_evidence_matrix",
+  "contract_issues": [],
+  "evidence_issue_rows": 0,
+  "first_failure_owner_counts": {
+    "none": 750
+  },
+  "last_event_duration_auditable_rows": 1,
+  "non_prediction_rows": 34,
+  "parse_issue_rows": 0,
+  "policy_name": "gan2026_component_evidence_matrix_v0",
+  "prediction_bearing_rows": 716,
+  "row_count": 750,
+  "schema_issue_rows": 0,
+  "selected_evidence_exact_false_rows": 0,
+  "selected_source_ids_missing_rows": 0,
+  "source_artifacts": {
+    "assembly_jsonl": "experiments/gan2026_staged_hybrid_assembly_validation750_no_call_2026-06-04.jsonl",
+    "decision_jsonl": "experiments/gan2026_staged_hybrid_decision_layer_validation750_no_call_2026-06-04.jsonl",
+    "last_event_date_jsonl": "experiments/gan2026_staged_hybrid_last_event_date_instrumentation_2026-06-04.jsonl",
+    "trigger_release_jsonl": "experiments/gan2026_staged_hybrid_trigger_context_release_rule_2026-06-04.jsonl"
+  },
+  "transition_counts": {
+    "C_to_C": 678,
+    "C_to_abstain": 17,
+    "C_to_review": 2,
+    "W_to_W": 38,
+    "W_to_abstain": 9,
+    "W_to_review": 6
+  },
+  "trigger_release_rows": 1,
+  "unique_source_rows": 750,
+  "verifier_status_counts": {
+    "not_run": 750
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "artifact_kind": "gan2026_change_only_verifier_det_state_alt_calibration_reparse_summary",
+  "base_correct_rows": 55,
+  "base_purist_proxy": 0.9016393442622951,
+  "call_ok_rows": 61,
+  "changed_label_precision": 1.0,
+  "claim_language": "Validation-development same-raw-output reparse of deterministic/state alternative calibration with benchmark-convention gates. No new model calls and no locked-test rows inspected.",
+  "component_name": "change_only_candidate_verifier",
+  "created_date": "2026-06-05",
+  "decision": "promote_candidate",
+  "exact_quote_rows": 61,
+  "model": "openai/gpt-4.1",
+  "new_model_call_rows": 0,
+  "parse_ok_rows": 61,
+  "policy_name": "gan2026_change_only_candidate_verifier_v0",
+  "projected_correct_rows": 61,
+  "projected_purist_proxy": 1.0,
+  "recommendation_counts": {
+    "keep_current": 49,
+    "switch_to_proposed": 12
+  },
+  "reused_raw_output_rows": 61,
+  "row_count": 61,
+  "source_artifact": "experiments/gan2026_change_only_verifier_det_state_alt_calibration_gpt41_2026-06-05.jsonl",
+  "split": "validation",
+  "split_manifest": "gan2026_split_v1",
+  "transition_counts": {
+    "C_to_C": 55,
+    "W_to_C": 6
+  }
+}

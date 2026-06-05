@@ -1,0 +1,25 @@
+{
+  "artifact_kind": "gan2026_fewshot_direct_hard_control84_summary",
+  "claim_boundary": "Validation-development hard/control panel only. No locked-test rows were inspected or used.",
+  "date": "2026-06-05",
+  "decision": "reject_raw_or_broad_gate",
+  "metrics": {
+    "call_ok_rows": 83,
+    "candidate_correct_rows": 61,
+    "current_correct_rows": 42,
+    "exact_evidence_rows": 76,
+    "parse_ok_rows": 31,
+    "row_count": 84
+  },
+  "panel_role_counts": {
+    "current_correct_control": 42,
+    "current_miss": 42
+  },
+  "source_jsonl": "experiments/gan2026_fewshot_train_exemplar_direct_labeler_hard_control84_validation_2026-06-05.jsonl",
+  "transition_counts": {
+    "C_to_C": 34,
+    "C_to_W": 8,
+    "W_to_C": 27,
+    "W_to_W": 15
+  }
+}

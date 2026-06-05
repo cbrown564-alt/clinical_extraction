@@ -1,0 +1,134 @@
+{
+  "artifact_kind": "gan2026_candidate_union_ranker_ablation",
+  "base_correct_rows": 37,
+  "base_purist_proxy": 0.49333333333333335,
+  "best_ranker_by_projected_correct": "comparator_absent_structural_guard_rank_v0",
+  "claim_language": "Validation hard-panel ranker ablation over selected-state union candidates. Ranker selection uses non-gold candidate features; gold labels are used only after selection for W->C/C->W accounting. This does not change production predictions, scorer policy, split policy, or locked-test behavior.",
+  "component_name": "candidate_union_ranker_ablation",
+  "created_date": "2026-06-05",
+  "hard_panel_rows": 75,
+  "oracle_recoverable_miss_rows": 16,
+  "oracle_upper_bound_correct_rows": 53,
+  "oracle_upper_bound_purist_proxy": 0.7066666666666667,
+  "policy_name": "gan2026_candidate_union_ranker_ablation_v0",
+  "rankers": {
+    "comparator_absent_quality_rank_v0": {
+      "base_correct_rows": 37,
+      "changed_label_precision": 0.7222222222222222,
+      "decision": "diagnostic_positive_but_not_promotable",
+      "projected_correct_rows": 45,
+      "projected_purist_proxy": 0.6,
+      "selected_candidate_kind_counts": {
+        "cluster_frequency": 7,
+        "frequency_rate": 18,
+        "no_reference": 8,
+        "seizure_free": 4
+      },
+      "selected_candidate_rule_counts": {
+        "": 6,
+        "cluster.vague_days_over_period": 1,
+        "diary.date_list": 1,
+        "diary.monthly_count_log": 1,
+        "diary.sleep_awake_month_summary": 1,
+        "rate.direct_count_per_period": 2,
+        "rate.occurring_adjective": 1,
+        "rate.period_first_recent_count": 3,
+        "rate.recent_count": 1,
+        "rate.seizure_adjective": 4,
+        "rate.yesterday_or_today_count": 1,
+        "seizure_free.current_control_phrase": 4,
+        "state_graph.no_reference_fallback": 8,
+        "unknown": 3
+      },
+      "selected_rows": 37,
+      "selected_transition_counts": {
+        "C_to_C": 1,
+        "C_to_W": 5,
+        "W_to_C": 13,
+        "W_to_W": 18
+      }
+    },
+    "comparator_absent_structural_guard_rank_v0": {
+      "base_correct_rows": 37,
+      "changed_label_precision": 1.0,
+      "decision": "promote_candidate",
+      "projected_correct_rows": 47,
+      "projected_purist_proxy": 0.6266666666666667,
+      "selected_candidate_kind_counts": {
+        "cluster_frequency": 1,
+        "frequency_rate": 12,
+        "no_reference": 10,
+        "unknown_frequency": 1
+      },
+      "selected_candidate_rule_counts": {
+        "": 3,
+        "cluster.vague_days_over_period": 1,
+        "diary.date_list": 1,
+        "diary.monthly_count_log": 1,
+        "diary.sleep_awake_month_summary": 1,
+        "rate.direct_count_per_period": 1,
+        "rate.period_first_recent_count": 2,
+        "rate.seizure_adjective": 3,
+        "state_graph.no_reference_fallback": 8,
+        "unknown": 3
+      },
+      "selected_rows": 24,
+      "selected_transition_counts": {
+        "C_to_C": 4,
+        "W_to_C": 10,
+        "W_to_W": 10
+      }
+    },
+    "diary_log_only_v0": {
+      "base_correct_rows": 37,
+      "changed_label_precision": 1.0,
+      "decision": "promote_candidate",
+      "projected_correct_rows": 40,
+      "projected_purist_proxy": 0.5333333333333333,
+      "selected_candidate_kind_counts": {
+        "frequency_rate": 3
+      },
+      "selected_candidate_rule_counts": {
+        "diary.date_list": 1,
+        "diary.monthly_count_log": 1,
+        "diary.sleep_awake_month_summary": 1
+      },
+      "selected_rows": 3,
+      "selected_transition_counts": {
+        "W_to_C": 3
+      }
+    },
+    "unknown_or_cluster_frequency_rank_v0": {
+      "base_correct_rows": 37,
+      "changed_label_precision": 0.3,
+      "decision": "reject",
+      "projected_correct_rows": 33,
+      "projected_purist_proxy": 0.44,
+      "selected_candidate_kind_counts": {
+        "frequency_rate": 17
+      },
+      "selected_candidate_rule_counts": {
+        "": 1,
+        "diary.date_list": 1,
+        "rate.direct_count_per_period": 2,
+        "rate.occurring_adjective": 1,
+        "rate.period_first_recent_count": 3,
+        "rate.recent_count": 1,
+        "rate.seizure_adjective": 3,
+        "rate.there_have_been_count": 1,
+        "rate.yesterday_or_today_count": 1,
+        "unknown": 3
+      },
+      "selected_rows": 17,
+      "selected_transition_counts": {
+        "C_to_W": 7,
+        "W_to_C": 3,
+        "W_to_W": 7
+      }
+    }
+  },
+  "recommended_next_step": "`comparator_absent_structural_guard_rank_v0` is a clean validation hard-panel signal with 10 W->C and 0 C->W. Expand this family with negative tests before any full-validation or holdout use.",
+  "row_count": 81,
+  "source_artifact": "experiments/gan2026_selected_state_union_replay_v3_2026-06-04.jsonl",
+  "working_tree_note": "dirty working tree; component ablation regenerated after structural guard ranker addition"
+}

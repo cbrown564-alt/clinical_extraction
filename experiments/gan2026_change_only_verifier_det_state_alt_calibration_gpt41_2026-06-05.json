@@ -1,0 +1,32 @@
+{
+  "artifact_kind": "gan2026_change_only_verifier_det_state_alt_calibration_summary",
+  "base_correct_rows": 55,
+  "base_purist_proxy": 0.9016393442622951,
+  "call_ok_rows": 61,
+  "changed_label_precision": 0.5454545454545454,
+  "claim_language": "Validation-development calibration for deterministic/state exact frequency or cluster alternatives. Gold labels were used only for panel construction/accounting, not model input. No locked-test rows inspected.",
+  "component_name": "change_only_candidate_verifier",
+  "created_date": "2026-06-05",
+  "decision": "diagnostic_positive_but_not_promotable",
+  "exact_quote_rows": 57,
+  "model": "openai/gpt-4.1",
+  "new_model_call_rows": 55,
+  "parse_ok_rows": 61,
+  "policy_name": "gan2026_change_only_candidate_verifier_v0",
+  "projected_correct_rows": 56,
+  "projected_purist_proxy": 0.9180327868852459,
+  "recommendation_counts": {
+    "keep_current": 49,
+    "switch_to_proposed": 12
+  },
+  "reused_raw_output_rows": 6,
+  "row_count": 61,
+  "source_panel": "experiments/gan2026_change_only_verifier_det_state_alt_calibration_panel_2026-06-05.jsonl",
+  "split": "validation",
+  "split_manifest": "gan2026_split_v1",
+  "transition_counts": {
+    "C_to_C": 50,
+    "C_to_W": 5,
+    "W_to_C": 6
+  }
+}

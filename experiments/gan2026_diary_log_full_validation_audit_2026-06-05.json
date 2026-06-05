@@ -1,0 +1,35 @@
+{
+  "artifact_kind": "gan2026_diary_log_full_validation_audit",
+  "base_correct_rows": 678,
+  "base_full_row_purist_proxy": 0.904,
+  "changed_label_precision": 1.0,
+  "claim_language": "Validation-development full-validation diary/log audit. The selected policy uses fixed diary rule ids from prior hard-panel ablation and reports rejected diary rules for negative evidence. It does not inspect locked-test row-level failures, change scorer policy, or make a benchmark-comparable claim.",
+  "component_name": "diary_log_full_validation_audit",
+  "decision": "freeze_candidate_for_aggregate_audit",
+  "policy_name": "gan2026_diary_log_full_validation_audit_v0",
+  "projected_correct_rows": 680,
+  "projected_full_row_purist_proxy": 0.9066666666666666,
+  "recommended_next_step": "The selected diary/log rule set is clean on full validation. Freeze the rule ids and run an aggregate-only locked-test audit; keep rejected diary rules excluded (diary.increasing_monthly_count:2, diary.seizure_day_log:1).",
+  "rejected_candidate_rows": 3,
+  "rejected_rule_counts": {
+    "diary.increasing_monthly_count": 2,
+    "diary.seizure_day_log": 1
+  },
+  "row_count": 5,
+  "selected_candidate_rows": 2,
+  "selected_rule_counts": {
+    "diary.monthly_count_log": 1,
+    "diary.sleep_awake_month_summary": 1
+  },
+  "selected_transition_counts": {
+    "W_to_C": 2
+  },
+  "source_artifacts": {
+    "component_matrix_csv": "experiments/gan2026_hybrid_multi_component_staged_assembly_v0_validation750_component_matrix_2026-06-04.csv",
+    "data_path": "data/Gan (2026)/synthetic_data_subset_1500.json",
+    "split_manifest_path": "data/Gan (2026)/splits/gan2026_split_v1.json"
+  },
+  "split": "validation",
+  "split_manifest": "gan2026_split_v1",
+  "total_rows": 750
+}

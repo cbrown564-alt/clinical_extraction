@@ -1,0 +1,34 @@
+{
+  "artifact_kind": "gan2026_direct_labeler_change_only_verifier_panel_summary",
+  "claim_boundary": "Validation-development verifier panel over exact-evidence direct-labeler alternatives from hard failures and current-correct controls. Gold labels are used only for validation accounting.",
+  "date": "2026-06-05",
+  "decision": "reject_or_revise_verifier_gate",
+  "metrics": {
+    "all_evidence_quotes_exact_rows": 220,
+    "base_full_correct_rows": 708,
+    "call_ok_rows": 222,
+    "changed_label_precision": 0.3055555555555556,
+    "panel_base_correct_rows": 195,
+    "panel_projected_correct_rows": 181,
+    "panel_projected_purist_proxy": 0.8044444444444444,
+    "parse_ok_rows": 225,
+    "projected_full_correct_rows": 694,
+    "projected_full_purist_proxy": 0.9253333333333333,
+    "row_count": 225
+  },
+  "model": "openai/gpt-4.1",
+  "policy_name": "gan2026_direct_labeler_change_only_verifier_panel_v0",
+  "prompt_version": "gan2026_change_only_candidate_verifier_v0",
+  "recommendation_counts": {
+    "human_review": 5,
+    "keep_current": 106,
+    "parse_error": 3,
+    "switch_to_proposed": 111
+  },
+  "transition_counts": {
+    "C_to_C": 170,
+    "C_to_W": 25,
+    "W_to_C": 11,
+    "W_to_W": 19
+  }
+}
