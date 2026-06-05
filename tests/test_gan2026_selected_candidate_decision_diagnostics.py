@@ -3,6 +3,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis impor
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.candidate_set import (
     CandidateSet,
+    ClusterDetails,
     EvidenceSpan,
     ExtractedCandidate,
     FrequencyDetails,
@@ -50,6 +51,9 @@ def test_selected_candidate_decision_diagnostics_summarizes_sources_and_modes() 
     assert diagnostic_rows[0]["selected_source_composition"] == "mixed"
     assert diagnostic_rows[0]["high_burden"] is True
     assert diagnostic_rows[0]["related_group_coherence_flags"] == []
+    assert diagnostic_rows[0]["related_group_policy_action"] == (
+        "aggregate_selected_candidates"
+    )
     assert metadata["summary"]["selection_mode_counts"] == {
         "no_reliable_candidate": 1,
         "related_candidate_group": 1,
@@ -57,6 +61,9 @@ def test_selected_candidate_decision_diagnostics_summarizes_sources_and_modes() 
     assert metadata["summary"]["selected_source_type_counts"] == {
         "deterministic_candidate": 1,
         "llm_candidate": 1,
+    }
+    assert metadata["summary"]["related_group_policy_action_counts"] == {
+        "aggregate_selected_candidates": 1
     }
     assert metadata["summary"]["high_burden_rows"] == 1
     assert "does not score" in metadata["claim_boundary"]
@@ -106,7 +113,37 @@ def test_selected_candidate_decision_diagnostics_flags_mixed_related_groups() ->
         "mixed_candidate_kind",
         "no_cluster_or_shared_kind_signal",
     ]
+    assert diagnostic_rows[0]["related_group_policy_action"] == (
+        "route_to_verifier_before_normalization"
+    )
     assert metadata["summary"]["related_group_with_coherence_flags"] == 1
+
+
+def test_selected_candidate_decision_diagnostics_classifies_cluster_context() -> None:
+    rows = [
+        _selection_row(
+            14,
+            [
+                _frequency_candidate("llm:14:1", "two seizures per month"),
+                _cluster_candidate("llm:14:2", "occasional clusters"),
+            ],
+            SelectedCandidateDecision(
+                source_row_index=14,
+                component_owner="llm_candidate_set_selector",
+                selected_candidate_ids=["llm:14:1", "llm:14:2"],
+                selection_mode="related_candidate_group",
+            ),
+        )
+    ]
+
+    diagnostic_rows, metadata = diagnostics.build_selected_candidate_decision_diagnostics(rows)
+
+    assert diagnostic_rows[0]["related_group_policy_action"] == (
+        "preserve_as_cluster_modifier_context"
+    )
+    assert metadata["summary"]["related_group_policy_action_counts"] == {
+        "preserve_as_cluster_modifier_context": 1
+    }
 
 
 def _selection_row(
@@ -167,6 +204,26 @@ def _unknown_candidate(candidate_id: str, evidence: str) -> ExtractedCandidate:
         temporality="current",
         certainty="uncertain",
         certainty_reason="vague_count",
+        assertion_status="asserted",
+        evidence_span=EvidenceSpan(text=evidence),
+        source_ids=[f"note:{source_row_index}:span:0-1"],
+        clinical_or_policy="clinical",
+    )
+
+
+def _cluster_candidate(candidate_id: str, evidence: str) -> ExtractedCandidate:
+    source_row_index = int(candidate_id.split(":")[1])
+    return ExtractedCandidate(
+        candidate_id=candidate_id,
+        component_owner="test",
+        source_type="llm_candidate",
+        source_artifact="test",
+        source_row_index=source_row_index,
+        candidate_kind="cluster_frequency",
+        event_type="seizure",
+        cluster_details=ClusterDetails(cluster_frequency=evidence),
+        temporality="current",
+        certainty="certain",
         assertion_status="asserted",
         evidence_span=EvidenceSpan(text=evidence),
         source_ids=[f"note:{source_row_index}:span:0-1"],

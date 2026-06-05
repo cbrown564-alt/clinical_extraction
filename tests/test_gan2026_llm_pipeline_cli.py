@@ -141,6 +141,40 @@ def test_general_llm_pipeline_cli_allows_broad_validation_with_escalation(
     assert calls["kwargs"]["escalation_reason"] == ("single justified validation ladder promotion")
 
 
+def test_general_llm_pipeline_cli_passes_candidate_set_jsonl_for_supported_specs(
+    tmp_path: Path, monkeypatch
+) -> None:
+    calls: dict[str, Any] = {}
+    candidate_set_path = tmp_path / "candidate_sets.jsonl"
+    spec = _dummy_spec(
+        tmp_path,
+        calls,
+        default_candidate_set_jsonl_path=tmp_path / "default_candidate_sets.jsonl",
+    )
+    monkeypatch.setattr(llm_pipeline_cli, "pipeline_specs", lambda: {"dummy": spec})
+    monkeypatch.setattr(llm_pipeline_cli, "load_records_for_split", lambda split: ["row"])
+    monkeypatch.setattr(
+        llm_pipeline_cli,
+        "load_split_manifest",
+        lambda: {"manifest_version": "test_manifest_v1"},
+    )
+
+    llm_pipeline_cli.run_cli(
+        [
+            "--pipeline",
+            "dummy",
+            "--mode",
+            "prompt-only",
+            "--limit",
+            "1",
+            "--candidate-set-jsonl",
+            str(candidate_set_path),
+        ]
+    )
+
+    assert calls["kwargs"]["candidate_set_jsonl_path"] == candidate_set_path
+
+
 def test_pipeline_registry_exposes_routine_llm_experiments() -> None:
     specs = llm_pipeline_cli.pipeline_specs()
 
@@ -149,6 +183,7 @@ def test_pipeline_registry_exposes_routine_llm_experiments() -> None:
         "hybrid_rules_candidates_llm_adjudicator",
         "llm_heavy_evidence_selection_with_deterministic_adapters",
         "llm_heavy_clinical_frequency_reasoner",
+        "llm_candidate_set_clinical_assessment_probe",
         "llm_candidate_set_selector_schema_probe",
         "llm_extracted_candidate_schema_probe",
         "llm_only_claim_table_selector",
@@ -168,6 +203,13 @@ def test_pipeline_registry_exposes_routine_llm_experiments() -> None:
     )
     assert specs["llm_only_claim_table_selector"].default_max_tokens == 1400
     assert specs["llm_heavy_clinical_frequency_reasoner"].default_max_tokens == 1800
+    assert specs["llm_candidate_set_clinical_assessment_probe"].default_max_tokens == 2400
+    assert (
+        specs[
+            "llm_candidate_set_clinical_assessment_probe"
+        ].default_candidate_set_jsonl_path
+        is not None
+    )
     assert specs["llm_candidate_set_selector_schema_probe"].default_max_tokens == 1800
     assert specs["llm_extracted_candidate_schema_probe"].default_max_tokens == 5000
     assert specs["llm_only_minimal_evidence_selector"].default_max_tokens == 900
@@ -177,7 +219,12 @@ def test_pipeline_registry_exposes_routine_llm_experiments() -> None:
     assert specs["llm_only_typed_operations_reasoner"].default_max_tokens == 4800
 
 
-def _dummy_spec(tmp_path: Path, calls: dict[str, Any] | None = None) -> GanLlmPipelineCliSpec:
+def _dummy_spec(
+    tmp_path: Path,
+    calls: dict[str, Any] | None = None,
+    *,
+    default_candidate_set_jsonl_path: Path | None = None,
+) -> GanLlmPipelineCliSpec:
     calls = calls if calls is not None else {}
 
     def run_split(records, **kwargs):
@@ -198,4 +245,5 @@ def _dummy_spec(tmp_path: Path, calls: dict[str, Any] | None = None) -> GanLlmPi
         run_split=run_split,
         write_jsonl=write_jsonl,
         write_report=write_report,
+        default_candidate_set_jsonl_path=default_candidate_set_jsonl_path,
     )

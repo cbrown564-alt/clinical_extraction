@@ -83,7 +83,10 @@ def summarize_union_rows(
                 for row in rows
             ),
             "llm_call_error_rows": sum(
-                any(issue.startswith("llm_call_error:") for issue in row["candidate_set"]["assembly_issues"])
+                any(
+                    issue.startswith("llm_call_error:")
+                    for issue in row["candidate_set"]["assembly_issues"]
+                )
                 for row in rows
             ),
             "llm_parse_or_validation_issue_rows": sum(
@@ -95,6 +98,12 @@ def summarize_union_rows(
             ),
             "merged_duplicate_candidates": sum(
                 "merged_duplicate_candidate" in issue
+                for row in rows
+                for candidate in row["candidate_set"]["candidates"]
+                for issue in candidate.get("extraction_issues", [])
+            ),
+            "merged_nested_duplicate_candidates": sum(
+                "merged_nested_duplicate_candidate" in issue
                 for row in rows
                 for candidate in row["candidate_set"]["candidates"]
                 for issue in candidate.get("extraction_issues", [])
@@ -120,7 +129,7 @@ def write_report(
 ) -> None:
     summary = metadata["summary"]
     lines = [
-        "# Gan 2026 Validation250 CandidateSet Union V1",
+        f"# {metadata['artifact_name']}",
         "",
         str(metadata["claim_boundary"]),
         "",
@@ -141,6 +150,10 @@ def write_report(
         f"- LLM call-error rows: {summary['llm_call_error_rows']}",
         f"- LLM parse/validation issue rows: {summary['llm_parse_or_validation_issue_rows']}",
         f"- Merged duplicate candidates: {summary['merged_duplicate_candidates']}",
+        (
+            "- Merged nested duplicate candidates: "
+            f"{summary['merged_nested_duplicate_candidates']}"
+        ),
         "",
         "## Candidate Kinds",
         "",
@@ -181,6 +194,7 @@ def _union_row(
                 continue
             merged_by_key[key] = len(candidates)
             candidates.append(candidate)
+    candidates, nested_duplicate_count = _merge_nested_duplicate_candidates(candidates)
 
     assembly_issues = [
         *deterministic_set.assembly_issues,
@@ -189,6 +203,10 @@ def _union_row(
     ]
     if duplicate_count:
         assembly_issues.append(f"merged_duplicate_candidate_count:{duplicate_count}")
+    if nested_duplicate_count:
+        assembly_issues.append(
+            f"merged_nested_duplicate_candidate_count:{nested_duplicate_count}"
+        )
 
     candidate_set = CandidateSet(
         source_row_index=source_row_index,
@@ -210,6 +228,7 @@ def _union_row(
             "deterministic_candidate_count": len(deterministic_set.candidates),
             "llm_candidate_count": len(llm_set.candidates) if llm_set is not None else 0,
             "merged_duplicate_candidate_count": duplicate_count,
+            "merged_nested_duplicate_candidate_count": nested_duplicate_count,
             "union_candidate_count": len(candidate_set.candidates),
         },
         "call_error": llm_row.get("call_error") if llm_row else None,
@@ -220,6 +239,8 @@ def _union_row(
 def _merge_duplicate(
     existing: ExtractedCandidate,
     duplicate: ExtractedCandidate,
+    *,
+    issue_prefix: str = "merged_duplicate_candidate",
 ) -> ExtractedCandidate:
     return existing.model_copy(
         update={
@@ -227,7 +248,7 @@ def _merge_duplicate(
             "extraction_issues": [
                 *existing.extraction_issues,
                 (
-                    "merged_duplicate_candidate:"
+                    f"{issue_prefix}:"
                     f"{duplicate.source_type}:{duplicate.candidate_id}"
                 ),
                 *[
@@ -237,6 +258,126 @@ def _merge_duplicate(
             ],
         }
     )
+
+
+def _merge_nested_duplicate_candidates(
+    candidates: Sequence[ExtractedCandidate],
+) -> tuple[list[ExtractedCandidate], int]:
+    retained: list[ExtractedCandidate] = []
+    merged_count = 0
+    for candidate in candidates:
+        merge_indices = _nested_duplicate_indices(retained, candidate)
+        if not merge_indices:
+            retained.append(candidate)
+            continue
+        retained = _merge_nested_duplicate_group(retained, candidate, merge_indices)
+        merged_count += len(merge_indices)
+    return retained, merged_count
+
+
+def _nested_duplicate_indices(
+    retained: Sequence[ExtractedCandidate],
+    candidate: ExtractedCandidate,
+) -> list[int]:
+    return [
+        index
+        for index, existing in enumerate(retained)
+        if _is_nested_duplicate(existing, candidate)
+    ]
+
+
+def _merge_nested_duplicate_group(
+    retained: list[ExtractedCandidate],
+    candidate: ExtractedCandidate,
+    merge_indices: Sequence[int],
+) -> list[ExtractedCandidate]:
+    duplicate_group = [candidate, *(retained[index] for index in merge_indices)]
+    preferred = max(duplicate_group, key=_candidate_detail_score)
+    merged = preferred
+    for duplicate in duplicate_group:
+        if duplicate is preferred:
+            continue
+        merged = _merge_duplicate(
+            merged,
+            duplicate,
+            issue_prefix="merged_nested_duplicate_candidate",
+        )
+
+    updated = list(retained)
+    updated[merge_indices[0]] = merged
+    for index in reversed(merge_indices[1:]):
+        del updated[index]
+    return updated
+
+
+def _is_nested_duplicate(
+    left: ExtractedCandidate,
+    right: ExtractedCandidate,
+) -> bool:
+    if left.candidate_kind != right.candidate_kind:
+        return False
+    if left.event_type != right.event_type:
+        return False
+    left_span = _resolved_span(left)
+    right_span = _resolved_span(right)
+    left_text = _normalize(left.evidence_span.text)
+    right_text = _normalize(right.evidence_span.text)
+    if left_span is not None and right_span is not None:
+        return (
+            _span_contains(left_span, right_span)
+            or _span_contains(right_span, left_span)
+            or (
+                _spans_overlap(left_span, right_span)
+                and _text_contains(left_text, right_text)
+            )
+        )
+    return _text_contains(left_text, right_text)
+
+
+def _resolved_span(candidate: ExtractedCandidate) -> tuple[int, int] | None:
+    start = candidate.evidence_span.start_char
+    end = candidate.evidence_span.end_char
+    if start is None or end is None:
+        return None
+    return (start, end)
+
+
+def _span_contains(
+    outer: tuple[int, int],
+    inner: tuple[int, int],
+) -> bool:
+    return outer[0] <= inner[0] and inner[1] <= outer[1]
+
+
+def _spans_overlap(
+    left: tuple[int, int],
+    right: tuple[int, int],
+) -> bool:
+    return max(left[0], right[0]) < min(left[1], right[1])
+
+
+def _text_contains(left_text: str, right_text: str) -> bool:
+    return bool(left_text and right_text) and (
+        left_text in right_text or right_text in left_text
+    )
+
+
+def _prefer_nested_duplicate(
+    left: ExtractedCandidate,
+    right: ExtractedCandidate,
+) -> tuple[ExtractedCandidate, ExtractedCandidate]:
+    left_score = _candidate_detail_score(left)
+    right_score = _candidate_detail_score(right)
+    if right_score > left_score:
+        return right, left
+    return left, right
+
+
+def _candidate_detail_score(candidate: ExtractedCandidate) -> tuple[int, int]:
+    span = _resolved_span(candidate)
+    span_length = span[1] - span[0] if span is not None else 0
+    evidence_length = len(candidate.evidence_span.text)
+    return (span_length, evidence_length)
 
 
 def _llm_row_issues(llm_row: Mapping[str, Any] | None) -> list[str]:
@@ -272,7 +413,11 @@ def _mean(values: Sequence[int]) -> float:
 
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--deterministic-jsonl", type=Path, default=DEFAULT_DETERMINISTIC_JSONL_PATH)
+    parser.add_argument(
+        "--deterministic-jsonl",
+        type=Path,
+        default=DEFAULT_DETERMINISTIC_JSONL_PATH,
+    )
     parser.add_argument("--llm-jsonl", type=Path, default=DEFAULT_LLM_JSONL_PATH)
     parser.add_argument("--jsonl-path", type=Path, default=DEFAULT_JSONL_PATH)
     parser.add_argument("--json-path", type=Path, default=DEFAULT_JSON_PATH)

@@ -41,6 +41,7 @@ class PipelineRunFn(Protocol):
         progress_every: int | None,
         checkpoint_jsonl_path: Path | None,
         checkpoint_report_path: Path | None,
+        candidate_set_jsonl_path: Path | None = None,
     ) -> tuple[list[dict[str, Any]], dict[str, Any]]: ...
 
 
@@ -68,6 +69,7 @@ class GanLlmPipelineCliSpec:
     write_report: PipelineReportWriter
     default_model: str = "openai/gpt-4.1-mini"
     default_max_tokens: int = 900
+    default_candidate_set_jsonl_path: Path | None = None
 
 
 def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
@@ -78,6 +80,7 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
         hybrid_rules_candidates_llm_adjudicator,
     )
     from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
+        llm_candidate_set_clinical_assessment_probe,
         llm_candidate_set_selector_schema_probe,
         llm_extracted_candidate_schema_probe,
         llm_heavy_clinical_frequency_reasoner,
@@ -151,6 +154,20 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
             write_jsonl=llm_candidate_set_selector_schema_probe.write_jsonl,
             write_report=llm_candidate_set_selector_schema_probe.write_report,
             default_max_tokens=1800,
+        ),
+        "llm_candidate_set_clinical_assessment_probe": GanLlmPipelineCliSpec(
+            description=(
+                "Run the Gan 2026 CandidateSet merged clinical-assessment schema probe."
+            ),
+            default_jsonl_path=llm_candidate_set_clinical_assessment_probe.DEFAULT_JSONL_PATH,
+            default_report_path=llm_candidate_set_clinical_assessment_probe.DEFAULT_REPORT_PATH,
+            run_split=llm_candidate_set_clinical_assessment_probe.run_split,
+            write_jsonl=llm_candidate_set_clinical_assessment_probe.write_jsonl,
+            write_report=llm_candidate_set_clinical_assessment_probe.write_report,
+            default_max_tokens=2400,
+            default_candidate_set_jsonl_path=(
+                llm_candidate_set_clinical_assessment_probe.DEFAULT_CANDIDATE_SET_JSONL_PATH
+            ),
         ),
         "llm_only_structured_events": GanLlmPipelineCliSpec(
             description="Run the Gan 2026 LLM-only structured-events experiment.",
@@ -288,6 +305,13 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
     )
     parser.add_argument("--temperature", type=float, default=0.0)
     parser.add_argument("--max-tokens", type=int, default=spec.default_max_tokens)
+    if spec.default_candidate_set_jsonl_path is not None:
+        parser.add_argument(
+            "--candidate-set-jsonl",
+            type=Path,
+            default=spec.default_candidate_set_jsonl_path,
+            help="CandidateSet JSONL artifact to use for CandidateSet-backed probes.",
+        )
     parser.add_argument("--mode", choices=("live", "prompt-only"), default="live")
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument(
@@ -320,21 +344,23 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
 
     run_started_at = datetime.now(UTC)
     run_started_monotonic = time.perf_counter()
-    rows, metadata = spec.run_split(
-        records,
-        split=args.split,
-        split_manifest=split_manifest,
-        model=args.model,
-        temperature=args.temperature,
-        max_tokens=args.max_tokens,
-        mode=args.mode,
-        dspy_cache=not args.disable_dspy_cache,
-        api_base=args.api_base,
-        escalation_reason=args.escalation_reason,
-        progress_every=progress_every,
-        checkpoint_jsonl_path=args.jsonl,
-        checkpoint_report_path=args.markdown,
-    )
+    run_kwargs: dict[str, Any] = {
+        "split": args.split,
+        "split_manifest": split_manifest,
+        "model": args.model,
+        "temperature": args.temperature,
+        "max_tokens": args.max_tokens,
+        "mode": args.mode,
+        "dspy_cache": not args.disable_dspy_cache,
+        "api_base": args.api_base,
+        "escalation_reason": args.escalation_reason,
+        "progress_every": progress_every,
+        "checkpoint_jsonl_path": args.jsonl,
+        "checkpoint_report_path": args.markdown,
+    }
+    if spec.default_candidate_set_jsonl_path is not None:
+        run_kwargs["candidate_set_jsonl_path"] = args.candidate_set_jsonl
+    rows, metadata = spec.run_split(records, **run_kwargs)
     _attach_run_timing(
         metadata,
         started_at=run_started_at,
