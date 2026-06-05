@@ -1,0 +1,30 @@
+{
+  "artifact_kind": "gan2026_structured_projection_expansion_source_audit_summary",
+  "candidate_clean_c_to_w_rate": 0.21390374331550802,
+  "candidate_clean_c_to_w_rows": 40,
+  "candidate_clean_prediction_bearing_rows": 187,
+  "candidate_clean_transition_counts": {
+    "C_to_C": 137,
+    "C_to_W": 40,
+    "W_to_C": 6,
+    "W_to_W": 4
+  },
+  "candidate_clean_w_to_c_rows": 6,
+  "candidate_source": "direct_labeler_structured_candidate_panel",
+  "candidate_unclean_rows": 563,
+  "claim_boundary": "Validation-development expansion-source audit only. It compares saved validation artifacts, writes no note text, uses no locked-test row-level artifacts, and does not authorize holdout-facing use.",
+  "current_w_to_c_rows": 23,
+  "decision": "direct_labeler_source_rejected_for_broadening",
+  "holdout_authorized": false,
+  "json_artifact": "experiments/gan2026_structured_projection_expansion_source_audit_v0_2026-06-05.json",
+  "jsonl_artifact": "experiments/gan2026_structured_projection_expansion_source_audit_v0_2026-06-05.jsonl",
+  "locked_test_row_level_artifacts_used": 0,
+  "novel_clean_w_to_c_rows": 1,
+  "policy_name": "gan2026_structured_projection_expansion_source_audit_v0",
+  "recommended_next_step": "Do not broaden by importing the broad direct-labeler source. Build a new validation hard-opportunity panel from explicit projection-owner mechanisms and matched controls, then rerun the extractor smoke.",
+  "report_artifact": "experiments/gan2026_structured_projection_expansion_source_audit_v0_2026-06-05.md",
+  "row_count": 750,
+  "safe_to_broaden_from_candidate_source": false,
+  "source_candidate_artifact": "experiments/gan2026_structured_candidate_event_contract_v0_direct_labeler_validation750_panel_2026-06-05.jsonl",
+  "source_current_extractor_artifact": "experiments/gan2026_structured_validation_projection_extractor_v0_2026-06-05.jsonl"
+}

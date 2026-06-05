@@ -1,0 +1,50 @@
+{
+  "artifact_kind": "gan2026_structured_validation_projection_panel_summary",
+  "c_to_w_rate": 0.041666666666666664,
+  "c_to_w_rows": 1,
+  "claim_boundary": "Validation-development projection-owner panel only. It combines saved validation seed hard/control rows with the named boundary no-regression case, writes no note text, uses no locked-test row-level artifacts, and does not authorize holdout-facing use.",
+  "control_rows": 23,
+  "decision": "validation_projection_panel_ready_for_extractor_design",
+  "frozen_test_audit_ready": false,
+  "gate_failures": [
+    "coverage_below_150",
+    "w_to_c_below_60"
+  ],
+  "hard_rows": 23,
+  "holdout_authorized": false,
+  "json_artifact": "experiments/gan2026_structured_validation_projection_panel_v0_2026-06-05.json",
+  "jsonl_artifact": "experiments/gan2026_structured_validation_projection_panel_v0_2026-06-05.jsonl",
+  "locked_test_row_level_artifacts_used": 0,
+  "no_regression_case_rows": 1,
+  "panel_source_counts": {
+    "structured_event_projection_audit_v0": 1,
+    "structured_seed_validation_panel_v0": 46
+  },
+  "parse_ok_exact_evidence_rate": 1.0,
+  "parse_ok_exact_evidence_rows": 24,
+  "policy_name": "gan2026_structured_validation_projection_panel_v0",
+  "projection_owner_counts": {
+    "boundary_projection_policy": 27,
+    "cluster_projection_policy": 10,
+    "rate_projection_policy": 10
+  },
+  "projection_ownership_explicit_rows": 47,
+  "recommended_next_step": "Implement the validation projection-owner extractor smoke over this panel. Keep the boundary C->W row as a no-regression control and do not write a frozen test450 protocol until validation gates pass.",
+  "report_artifact": "experiments/gan2026_structured_validation_projection_panel_v0_2026-06-05.md",
+  "representation_version": "structured_event_projection_v0",
+  "row_count": 47,
+  "seed_family_counts": {
+    "cluster_completion": 10,
+    "seizure_free_to_unknown": 26,
+    "yearly_to_daily": 10
+  },
+  "selected_prediction_bearing_rows": 24,
+  "source_note_text_rows": 0,
+  "source_projection_audit_artifact": "experiments/gan2026_structured_event_projection_audit_v0_2026-06-05.jsonl",
+  "source_seed_panel_artifact": "experiments/gan2026_structured_seed_validation_panel_v0_2026-06-05.jsonl",
+  "transition_counts": {
+    "C_to_W": 1,
+    "W_to_C": 23
+  },
+  "w_to_c_rows": 23
+}

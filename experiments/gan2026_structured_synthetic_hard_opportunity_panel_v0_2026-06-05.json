@@ -1,0 +1,39 @@
+{
+  "artifact_kind": "gan2026_structured_synthetic_hard_opportunity_panel_summary",
+  "claim_boundary": "Synthetic development data for undercovered structured projection opportunity mechanisms. It is not validation750, not holdout, not benchmark evidence, and not a final-label promotion artifact.",
+  "control_family_counts": {
+    "cluster_frequency": 30,
+    "daily_frequency": 30,
+    "other_frequency": 30,
+    "unknown_frequency": 30
+  },
+  "control_rows": 120,
+  "decision": "ready_for_structured_projection_generator_smoke",
+  "exact_evidence_rows": 240,
+  "family_counts": {
+    "cluster_frequency": 60,
+    "daily_frequency": 60,
+    "other_frequency": 60,
+    "unknown_frequency": 60
+  },
+  "hard_family_counts": {
+    "cluster_frequency": 30,
+    "daily_frequency": 30,
+    "other_frequency": 30,
+    "unknown_frequency": 30
+  },
+  "hard_rows": 120,
+  "holdout_authorized": false,
+  "json_artifact": "experiments/gan2026_structured_synthetic_hard_opportunity_panel_v0_2026-06-05.json",
+  "jsonl_artifact": "experiments/gan2026_structured_synthetic_hard_opportunity_panel_v0_2026-06-05.jsonl",
+  "locked_test_row_level_artifacts_used": 0,
+  "policy_name": "gan2026_structured_synthetic_hard_opportunity_panel_v0",
+  "projection_owner_counts": {
+    "boundary_projection_policy": 60,
+    "cluster_projection_policy": 60,
+    "rate_projection_policy": 120
+  },
+  "recommended_next_step": "Run a synthetic projection generator smoke over this panel. Promote only mechanism behavior that emits hard rows, suppresses matched controls, preserves exact evidence, and keeps projection ownership explicit.",
+  "report_artifact": "experiments/gan2026_structured_synthetic_hard_opportunity_panel_v0_2026-06-05.md",
+  "row_count": 240
+}

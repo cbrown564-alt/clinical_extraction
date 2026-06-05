@@ -172,6 +172,46 @@ Important standing numbers:
   labels and 15 blocked deterministic-wrong labels. The aggregate locked-test
   selector readout has only 1/450 nonprediction row, and no locked-test row-level
   artifacts were written.
+- `structured_event_projection_audit_v0` switches the rejected shallow
+  boundary/renderer bridge into an explicit structured event/projection schema:
+  30/30 rows have explicit projection ownership, 19 boundary-projection rows,
+  11 benchmark-renderer rows, 6 W->C, 1 C->W carried as a no-regression case,
+  and 1.0000 parse-ok plus exact-evidence. It is schema-ready but still blocked
+  by coverage and W->C gates before any frozen audit.
+- `structured_seed_projection_generator_v0` broadens the synthetic structured
+  seed generator around that projection-owner schema: 180 synthetic rows,
+  90/90 hard rows emitted, 90/90 controls suppressed, 180/180 exact-evidence
+  rows, 180/180 explicit projection-owner rows, and 0 source-note-text rows.
+  It promotes only to validation projection-owner panel design.
+- `structured_validation_projection_panel_v0` ports the projection-owner schema
+  to validation hard/control expansion: 47 rows, 23 hard rows, 23 matched
+  controls, 1 boundary no-regression case, 24 prediction-bearing rows, 23 W->C,
+  1 C->W, 1.0000 parse-ok plus exact-evidence, 47/47 explicit
+  projection-owner rows, and 0 source-note-text rows. Frozen test remains
+  blocked by coverage and W->C gates.
+- `structured_validation_projection_extractor_v0` passes the validation
+  projection-owner extractor smoke under the inherited control-evidence policy:
+  47 rows, 23/23 hard rows emitted, 23/23 controls suppressed, the boundary
+  no-regression row suppressed, 23 selected prediction-bearing W->C rows, 0 C->W
+  releases, 23/23 hard exact-evidence rows, 21/23 control references retrievable,
+  and 0 source-note-text rows. It remains undercovered before any frozen audit.
+- `structured_projection_expansion_source_audit_v0` rejects broadening from the
+  saved direct-labeler structured source: among 187 clean prediction-bearing
+  rows it has only 6 W->C, 40 C->W, and just 1 novel clean W->C beyond the
+  current projection extractor. It is not a safe source for validation expansion.
+- `structured_validation_hard_opportunity_miner_v0` shows the current
+  validation assembly cannot satisfy the 60 W->C gate on its fixed
+  prediction-bearing residual surface: it finds 38 hard W->C opportunities,
+  40 matched controls, 1 no-regression row, 0 C->W rows, and only 0.6053
+  parse-ok plus exact-evidence because many broad gold references are not exact
+  extractor spans. The remaining incorrect validation rows include 38 predicts,
+  9 abstentions, and 6 human-review rows.
+- `structured_synthetic_hard_opportunity_panel_v0` adds synthetic development
+  data for undercovered projection-owner mechanisms: 240 rows, 120 hard and
+  120 matched controls across `unknown_frequency`, `cluster_frequency`,
+  `daily_frequency`, and `other_frequency`; 240/240 exact-evidence rows and
+  explicit projection ownership. It is not validation, holdout, or benchmark
+  evidence.
 
 Core plans and artifacts:
 
@@ -271,16 +311,36 @@ Core plans and artifacts:
   `experiments/gan2026_h3_h7_full_boundary_benchmark_test_v0_2026-06-05.md`
 - Validation-test gap staged action plan:
   `docs/research/gan2026_validation_test_gap_staged_action_plan_2026-06-05.md`
+- Structured event/projection audit v0:
+  `experiments/gan2026_structured_event_projection_audit_v0_2026-06-05.json`,
+  `experiments/gan2026_structured_event_projection_audit_v0_2026-06-05.md`
+- Structured seed projection generator v0:
+  `experiments/gan2026_structured_seed_projection_generator_v0_2026-06-05.json`,
+  `experiments/gan2026_structured_seed_projection_generator_v0_2026-06-05.md`
+- Structured validation projection panel v0:
+  `experiments/gan2026_structured_validation_projection_panel_v0_2026-06-05.json`,
+  `experiments/gan2026_structured_validation_projection_panel_v0_2026-06-05.md`
+- Structured validation projection extractor v0:
+  `experiments/gan2026_structured_validation_projection_extractor_v0_2026-06-05.json`,
+  `experiments/gan2026_structured_validation_projection_extractor_v0_2026-06-05.md`
+- Structured projection expansion-source audit v0:
+  `experiments/gan2026_structured_projection_expansion_source_audit_v0_2026-06-05.json`,
+  `experiments/gan2026_structured_projection_expansion_source_audit_v0_2026-06-05.md`
+- Structured validation hard-opportunity miner v0:
+  `experiments/gan2026_structured_validation_hard_opportunity_miner_v0_2026-06-05.json`,
+  `experiments/gan2026_structured_validation_hard_opportunity_miner_v0_2026-06-05.md`
+- Structured synthetic hard-opportunity panel v0:
+  `experiments/gan2026_structured_synthetic_hard_opportunity_panel_v0_2026-06-05.json`,
+  `experiments/gan2026_structured_synthetic_hard_opportunity_panel_v0_2026-06-05.md`
 
 ## Work Board
 
 ### Now
 
-- Switch from the shallow boundary/renderer typed-candidate layer to a richer
-  structured event representation with explicit projection ownership; H3 is
-  rejected for the shallow layer, H7 supports template-brittleness pressure, and
-  H8 supports explicit benchmark-convention rendering as a validation-only
-  mechanism.
+- Run a synthetic projection generator smoke over
+  `structured_synthetic_hard_opportunity_panel_v0`; require hard emits, matched
+  control suppression, exact evidence, and explicit projection ownership before
+  porting any new mechanism back to validation.
 - Use `h5_repair_policy_v1_manifest` as the current bounded repair contract for
   the next validation diagnostic; do not restore broad frequency-to-sentinel
   repair or mix repair-policy changes with boundary/renderer mechanism changes.
@@ -301,8 +361,6 @@ Core plans and artifacts:
   23-hard-row validation smoke before any frozen test audit.
 - Build synthetic hard/control panels that stress prediction-bearing failures,
   not only nonprediction repair opportunities.
-- Carry the single boundary/benchmark C->W regression as a validation
-  no-regression case for the richer structured event branch.
 - Write a frozen test450 protocol addendum only after the structured
   candidate/event validation gates pass.
 - If cost/latency/token efficiency is needed, run a telemetry-only pass over
@@ -322,6 +380,40 @@ Core plans and artifacts:
 
 ### Done Recently
 
+- 2026-06-05: Added `structured_synthetic_hard_opportunity_panel_v0`, a
+  240-row synthetic development panel with 120 hard opportunities and 120
+  matched controls across four undercovered projection-owner mechanism families.
+  It is ready for a synthetic generator smoke and carries no validation,
+  holdout, or benchmark claim.
+- 2026-06-05: Added `structured_validation_hard_opportunity_miner_v0`, the
+  aggressive validation opportunity miner requested for option 1. It shows the
+  current validation assembly cannot reach the 60 W->C gate on prediction-bearing
+  residual misses: only 38 hard W->C opportunities remain, with 15 more wrong
+  rows sitting in abstain/human-review actions.
+- 2026-06-05: Added `structured_projection_expansion_source_audit_v0`, rejecting
+  the saved direct-labeler structured source as a broadening path. It offers
+  only 1 novel clean W->C beyond the current extractor and carries 40 clean C->W
+  rows, so the next expansion must come from explicit mechanism panel design.
+- 2026-06-05: Added `structured_validation_projection_extractor_v0`, which
+  passes the validation projection-owner extractor smoke while still blocking
+  frozen-test use. It emits 23/23 hard opportunities, suppresses 23/23 matched
+  controls plus the boundary no-regression case, releases 0 C->W rows, and keeps
+  source note text out of artifacts.
+- 2026-06-05: Added `structured_validation_projection_panel_v0`, a 47-row
+  validation-development projection-owner panel with 23 hard rows, 23 matched
+  controls, and 1 boundary no-regression case. It preserves explicit projection
+  ownership and exact evidence for all rows but remains below coverage and W->C
+  gates.
+- 2026-06-05: Added `structured_seed_projection_generator_v0`, a synthetic
+  projection-owner-aware generator smoke over 180 rows. It emitted 90/90 hard
+  cases, suppressed 90/90 controls, preserved exact evidence and explicit
+  projection ownership for all rows, and promotes only to validation panel
+  design.
+- 2026-06-05: Added `structured_event_projection_audit_v0`, replacing the
+  shallow boundary/renderer bridge as the active representation path. The schema
+  is ready for validation expansion with 30/30 explicit projection-owner rows
+  and 0 source-note-text rows, but frozen-test use remains blocked by coverage
+  and W->C gates.
 - 2026-06-05: Added `h5_repair_policy_v1_manifest`, freezing H5 policy v1 as
   the bounded repair contract for the next validation diagnostic. It confirms
   0 `frequency->no_reference` transitions, requires renderer effects to remain
