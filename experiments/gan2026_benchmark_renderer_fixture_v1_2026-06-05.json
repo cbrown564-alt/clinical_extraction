@@ -1,0 +1,43 @@
+{
+  "artifact_kind": "gan2026_benchmark_renderer_fixture_v1_summary",
+  "benchmark_rule_counts": {
+    "gan_cluster_multiple_per_cluster": 6,
+    "gan_non_epileptic_seizure_free_projection": 2,
+    "gan_unknown_sentinel": 4,
+    "gan_vague_multiple_frequency": 4
+  },
+  "claim_boundary": "Synthetic benchmark_renderer_fixture_v1. It freezes input clinical state, exercises benchmark-only rendering, exposes renderer rule ids and scorer-sentinel use, and keeps final-label policy disconnected. It is not validation or holdout evidence.",
+  "clinical_state_counts": {
+    "cluster_frequency_with_unresolved_burden": 6,
+    "non_epileptic_current_events": 2,
+    "unknown_frequency": 4,
+    "vague_multiple_current_events": 4
+  },
+  "clinical_state_preserved_rows": 16,
+  "contract_matched_rows": 16,
+  "decision": "benchmark_renderer_fixture_v1_passed",
+  "exact_evidence_rows": 16,
+  "final_label_policy_connected": false,
+  "format_only_rows": 16,
+  "gan_rendered_label_counts": {
+    "1 cluster per 2 month, multiple per cluster": 2,
+    "1 cluster per 4 to 5 week, multiple per cluster": 2,
+    "1 cluster per week, multiple per cluster": 2,
+    "multiple per month": 2,
+    "multiple per week": 2,
+    "seizure free for multiple year": 2,
+    "unknown": 4
+  },
+  "json_artifact": "experiments/gan2026_benchmark_renderer_fixture_v1_2026-06-05.json",
+  "jsonl_artifact": "experiments/gan2026_benchmark_renderer_fixture_v1_2026-06-05.jsonl",
+  "policy_name": "gan2026_benchmark_renderer_fixture_v1",
+  "recommended_next_step": "Run boundary_renderer_component_ablation_v1 as validation diagnostics with benchmark-only gains separated from clinical-state changes.",
+  "renderer_rule_id_rows": 16,
+  "report_artifact": "experiments/gan2026_benchmark_renderer_fixture_v1_2026-06-05.md",
+  "row_count": 16,
+  "scorer_sentinel_used_rows": 14,
+  "sentinel_visibility_rows": 16,
+  "source_panel_artifact": "experiments/gan2026_boundary_benchmark_seed_panel_v0_2026-06-05.jsonl",
+  "split": "synthetic_hard_control",
+  "split_manifest": "gan2026_boundary_benchmark_seed_panel_v0"
+}

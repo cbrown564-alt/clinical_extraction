@@ -126,7 +126,7 @@ def test_validation_projection_extractor_summary_passes_smoke_but_blocks_test() 
     assert summary["no_regression_suppressed_rows"] == 1
     assert summary["validation_smoke_passed"] is True
     assert summary["frozen_test_audit_ready"] is False
-    assert summary["gate_failures"] == ["coverage_below_150", "w_to_c_below_60"]
+    assert summary["gate_failures"] == ["coverage_below_150", "w_to_c_below_25"]
 
 
 def _panel_row(

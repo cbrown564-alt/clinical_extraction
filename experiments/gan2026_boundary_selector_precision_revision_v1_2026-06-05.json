@@ -1,0 +1,70 @@
+{
+  "artifact_kind": "gan2026_boundary_selector_precision_revision_v1_summary",
+  "c_to_w_rows": 0,
+  "candidate_rows": 30,
+  "claim_boundary": "Validation-only selector precision revision over boundary_renderer_component_ablation_v1. It suppresses unsafe last-event seizure-free overrides and unknown/no-reference sentinel churn, writes no source note text, and does not authorize final-label promotion or holdout use.",
+  "decision": "boundary_selector_precision_revision_v1_precision_fixed_low_coverage",
+  "effect_class_transition_counts": {
+    "benchmark_only_rendering": {
+      "C_to_C": 10
+    },
+    "clinical_boundary_projection": {
+      "C_to_C": 12,
+      "W_to_C": 6
+    }
+  },
+  "final_label_policy_connected": false,
+  "frozen_test_audit_ready": false,
+  "gate_failures": [
+    "coverage_below_150",
+    "w_to_c_below_25"
+  ],
+  "h6_control_regression_rows": 0,
+  "h6_control_regression_source_row_indices": [],
+  "holdout_authorized": false,
+  "json_artifact": "experiments/gan2026_boundary_selector_precision_revision_v1_2026-06-05.json",
+  "jsonl_artifact": "experiments/gan2026_boundary_selector_precision_revision_v1_2026-06-05.jsonl",
+  "locked_test_row_level_artifacts_used": 0,
+  "non_convention_c_to_w_rows": 0,
+  "non_convention_c_to_w_source_row_indices": [],
+  "policy_name": "gan2026_boundary_selector_precision_revision_v1",
+  "recommended_next_step": "Keep this selector rule as a validation-cycle diagnostic only. The precision issue is fixed, but exposure remains too low for any larger assembly or frozen audit.",
+  "report_artifact": "experiments/gan2026_boundary_selector_precision_revision_v1_2026-06-05.md",
+  "selected_prediction_bearing_rows": 28,
+  "slice_transition_counts": {
+    "asserted_seizure_free_interval": {
+      "C_to_C": 8
+    },
+    "cluster_multiple_per_cluster": {
+      "C_to_C": 3
+    },
+    "conditional_or_trigger_only": {
+      "C_to_C": 2,
+      "W_to_C": 1
+    },
+    "last_event_only": {
+      "C_to_C": 2,
+      "W_to_C": 3
+    },
+    "non_epileptic_current_events": {
+      "W_to_C": 2
+    },
+    "vague_multiple_frequency": {
+      "C_to_C": 7
+    }
+  },
+  "source_ablation_artifact": "experiments/gan2026_boundary_renderer_component_ablation_v1_2026-06-05.jsonl",
+  "source_ablation_policy": "gan2026_boundary_renderer_component_ablation_v1",
+  "source_split": "validation",
+  "split_manifest": "gan2026_split_v1",
+  "suppressed_rows": 2,
+  "suppression_reason_counts": {
+    "last_event_current_seizure_free_protected": 1,
+    "unknown_no_reference_sentinel_churn": 1
+  },
+  "transition_counts": {
+    "C_to_C": 22,
+    "W_to_C": 6
+  },
+  "w_to_c_rows": 6
+}

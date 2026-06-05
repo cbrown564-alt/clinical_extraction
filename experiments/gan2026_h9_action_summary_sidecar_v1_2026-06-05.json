@@ -1,0 +1,162 @@
+{
+  "artifact_kind": "gan2026_h9_action_summary_sidecar_v1",
+  "candidate_count": 1,
+  "candidates": [
+    {
+      "abstain_rows": 9,
+      "candidate": "untagged_nonprediction_release_candidate_v0_assembled_candidate",
+      "correct_prediction_rows": 697,
+      "fallback_owner_counts": {
+        "deterministic_comparator_fallback": 19
+      },
+      "family_action_rates": [
+        {
+          "abstain_rows": 0,
+          "family": "benchmark_format_convention",
+          "nonprediction_rate": 0.0,
+          "nonprediction_rows": 0,
+          "prediction_bearing_rows": 10,
+          "review_rows": 0,
+          "rows": 10
+        },
+        {
+          "abstain_rows": 0,
+          "family": "cluster_burden",
+          "nonprediction_rate": 0.0,
+          "nonprediction_rows": 0,
+          "prediction_bearing_rows": 11,
+          "review_rows": 0,
+          "rows": 11
+        },
+        {
+          "abstain_rows": 2,
+          "family": "competing_semiologies",
+          "nonprediction_rate": 0.2692307692307692,
+          "nonprediction_rows": 7,
+          "prediction_bearing_rows": 19,
+          "review_rows": 5,
+          "rows": 26
+        },
+        {
+          "abstain_rows": 2,
+          "family": "current_vs_historical",
+          "nonprediction_rate": 0.32,
+          "nonprediction_rows": 8,
+          "prediction_bearing_rows": 17,
+          "review_rows": 6,
+          "rows": 25
+        },
+        {
+          "abstain_rows": 0,
+          "family": "diary_or_log_aggregation",
+          "nonprediction_rate": 0.0,
+          "nonprediction_rows": 0,
+          "prediction_bearing_rows": 4,
+          "review_rows": 0,
+          "rows": 4
+        },
+        {
+          "abstain_rows": 2,
+          "family": "rate_bucket_or_denominator",
+          "nonprediction_rate": 0.1,
+          "nonprediction_rows": 2,
+          "prediction_bearing_rows": 18,
+          "review_rows": 0,
+          "rows": 20
+        },
+        {
+          "abstain_rows": 4,
+          "family": "seizure_free_duration",
+          "nonprediction_rate": 0.37037037037037035,
+          "nonprediction_rows": 10,
+          "prediction_bearing_rows": 17,
+          "review_rows": 6,
+          "rows": 27
+        },
+        {
+          "abstain_rows": 7,
+          "family": "uncertainty_or_ambiguity",
+          "nonprediction_rate": 0.4583333333333333,
+          "nonprediction_rows": 11,
+          "prediction_bearing_rows": 13,
+          "review_rows": 4,
+          "rows": 24
+        },
+        {
+          "abstain_rows": 1,
+          "family": "unclassified",
+          "nonprediction_rate": 0.0014347202295552368,
+          "nonprediction_rows": 1,
+          "prediction_bearing_rows": 696,
+          "review_rows": 0,
+          "rows": 697
+        },
+        {
+          "abstain_rows": 7,
+          "family": "unknown_boundary",
+          "nonprediction_rate": 0.55,
+          "nonprediction_rows": 11,
+          "prediction_bearing_rows": 9,
+          "review_rows": 4,
+          "rows": 20
+        }
+      ],
+      "nonprediction_rows": 15,
+      "owner_action_rates": [
+        {
+          "abstain_rows": 0,
+          "nonprediction_rate": 0.0,
+          "nonprediction_rows": 0,
+          "owner": "deterministic_adapter",
+          "prediction_bearing_rows": 701,
+          "review_rows": 0,
+          "rows": 701
+        },
+        {
+          "abstain_rows": 0,
+          "nonprediction_rate": 0.0,
+          "nonprediction_rows": 0,
+          "owner": "deterministic_comparator_fallback",
+          "prediction_bearing_rows": 19,
+          "review_rows": 0,
+          "rows": 19
+        },
+        {
+          "abstain_rows": 9,
+          "nonprediction_rate": 0.5,
+          "nonprediction_rows": 15,
+          "owner": "safety_floor",
+          "prediction_bearing_rows": 15,
+          "review_rows": 6,
+          "rows": 30
+        }
+      ],
+      "prediction_bearing_coverage": 0.98,
+      "prediction_bearing_rows": 735,
+      "release_lane_counts": {
+        "abstain": 17,
+        "human_review": 2
+      },
+      "release_rows": 19,
+      "review_rows": 6,
+      "rows": 750,
+      "split_manifest": "gan2026_split_v1"
+    }
+  ],
+  "claim_boundary": "Stage 4 action-policy sidecar over saved validation artifacts. It reports coverage, abstain/review burden, release lane, fallback owner, and family-specific action rates without changing candidate predictions or using locked-test row-level information.",
+  "date": "2026-06-05",
+  "decision": "h9_action_summary_sidecar_v1_complete",
+  "hypothesis_ids": [
+    "H9"
+  ],
+  "inspection_policy": "validation_artifact_sidecar_no_prediction_change",
+  "json_artifact": "experiments/gan2026_h9_action_summary_sidecar_v1_2026-06-05.json",
+  "locked_test_row_level_artifacts_used": 0,
+  "model_calls": 0,
+  "prediction_changes": 0,
+  "report_artifact": "experiments/gan2026_h9_action_summary_sidecar_v1_2026-06-05.md",
+  "source_artifacts": {
+    "assembled_candidate_jsonl": "experiments/gan2026_untagged_nonprediction_release_candidate_v0_assembled_candidate_2026-06-05.jsonl"
+  },
+  "split_manifest": "gan2026_split_v1"
+}

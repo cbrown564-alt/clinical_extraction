@@ -10,8 +10,11 @@ No benchmark-comparable claim is authorized.
 
 The active path is the validation-test generalisation gap program. Use saved
 artifacts as research instruments for component questions, not as whole-pipeline
-F1 trophies. The current mechanism track is boundary/benchmark typed events with
-final-label policy disconnected.
+F1 trophies. The boundary/benchmark typed-event layer is promoted as a bounded
+rare-family component for eligible boundary and benchmark-rendering cases, not
+as a broad aggregate-gap fix. Stage 4 action-policy sidecars and H6/H9 controls
+are complete for the current cycle; the next candidate cycle must attach these
+sidecars and H10 provenance before interpreting deltas.
 
 ## Guardrails
 
@@ -29,37 +32,35 @@ final-label policy disconnected.
 
 ## Current Evidence
 
-- Conservative staged assembly on validation750: 716 prediction-bearing rows,
-  26 abstentions, 8 human-review rows, covered-row Purist accuracy 0.9469.
+- Conservative staged assembly on validation750: 735 prediction-bearing rows
+  after untagged nonprediction releases, 697 correct prediction rows, 37/37 H6
+  controls preserved, and 0 release-wrong rows.
 - `selective_safety_floor_gate_v0`: validation750 21 changes with 11 W->C and
   0 C->W; frozen local test450 14 changes with 8 W->C and 0 C->W.
-- `h2_h4_validation_component_stress_ablation_v0`: H6 controls preserved
-  37/37, but hard-panel staged policy produced 0 W->C and 31 nonpredictions.
-- `untagged_nonprediction_release_candidate_v0_assembled_candidate`: 19
-  validation releases, 0 release-wrong rows, 735 prediction-bearing rows,
-  697 correct prediction rows, and 37/37 H6 controls preserved.
-- H5 policy v1 is frozen as bounded repair: no frequency-bearing predictions may
-  become no-reference, per-hour rates render as `multiple per day`, vague
-  frequency words remain unresolved multiple labels, and renderer effects stay
-  separate from clinical selection.
+- H5 policy v1 is frozen as bounded repair; renderer effects stay separate from
+  clinical selection.
 - `structured_projection_port_promoted_v0` was explicitly authorized despite
   failed validation gates and then rejected on frozen aggregate-only test450:
   base 342/450 Purist proxy 0.7600 fell to 337/450 proxy 0.7489, with 7 W->C,
   12 C->W, and changed-label precision 0.3684. No locked-test row-level artifact
   was written.
 - `h10_raw_identity_sidecar_v1`: paired validation750 raw outputs are
-  byte-identical for `raw_output`, `llm_candidate_raw_output`, and
-  `adjudicator_raw_output` on 750/750 matched rows. It made 0 model calls,
-  changed 0 predictions, and wrote no row-level output artifact.
-- `boundary_event_contract_v1`: synthetic typed-event contract passed with
-  36/36 contract-matched rows, 18/18 invariant pairs, 36/36 exact-evidence rows,
-  complete typed-event/projection-policy metadata on 36/36 rows, and final-label
-  policy disconnected.
-- `boundary_event_validation_panel_v1`: validation panel scanned 750 records
-  and emitted 30 supported exact-evidence typed-event rows, with 19 boundary
-  rows, 11 renderer rows, 22 hard rows, 8 controls, 0 unsupported candidate
-  rows, 0 source-note-text rows, complete metadata on 30/30 rows, and final
-  policy disconnected.
+  byte-identical on 750/750 matched rows, with 0 calls and 0 prediction changes.
+- Boundary typed-event cycle is complete and promoted as a bounded
+  rare-family component. It passed contract, validation-panel, H7, and
+  renderer-fixture gates; after selector precision revision, the eligible
+  validation typed panel has 6 W->C, 0 C->W, 0 H6 regressions, 0 source-note-text
+  rows, and no final-label policy connection in the diagnostic artifacts.
+  Coverage is accepted as intrinsically bounded because boundary/benchmark
+  cases are rare; the claim is component-level support, not aggregate
+  validation-test gap closure.
+- Stage 4 H6/H9 sidecars are complete for the current validation control:
+  action summary coverage is 735/750 prediction-bearing rows with 9 abstain and
+  6 review rows after 19 deterministic-comparator fallback releases;
+  release-lane ablation passes guardrails with 17 abstain-lane W->C, 2
+  human-review-lane W->C, 0 C->W, and 0 H6 regressions; H6 replay passes across
+  the current assembled control, boundary selector precision revision, and the
+  release-lane sidecar.
 
 ## Core Artifacts
 
@@ -71,26 +72,32 @@ final-label policy disconnected.
 - H10 raw identity sidecar: `experiments/gan2026_h10_raw_identity_sidecar_v1_2026-06-05.json`
 - Boundary event contract v1: `experiments/gan2026_boundary_event_contract_v1_2026-06-05.json`
 - Boundary event validation panel v1: `experiments/gan2026_boundary_event_validation_panel_v1_2026-06-05.json`
+- H7 minimal pair panel v1: `experiments/gan2026_h7_minimal_pair_panel_v1_2026-06-05.json`
+- Benchmark renderer fixture v1: `experiments/gan2026_benchmark_renderer_fixture_v1_2026-06-05.json`
+- Boundary renderer component ablation v1: `experiments/gan2026_boundary_renderer_component_ablation_v1_2026-06-05.json`
+- Boundary selector precision revision v1: `experiments/gan2026_boundary_selector_precision_revision_v1_2026-06-05.json`
+- H9 action summary sidecar v1: `experiments/gan2026_h9_action_summary_sidecar_v1_2026-06-05.json`
+- H9 release lane ablation v1: `experiments/gan2026_h9_release_lane_ablation_v1_2026-06-05.json`
+- H6 control replay v1: `experiments/gan2026_h6_control_replay_v1_2026-06-05.json`
+- Boundary/renderer promotion decision:
+  `docs/decisions/0011-promote-boundary-renderer-rare-family-component.md`
 
 ## Work Board
 
 ### Now
 
-- Run `h7_minimal_pair_panel_v1` to test whether the typed mechanism preserves
-  clinical state across wording, order, section, distractor, semiology, and time
-  anchor perturbations.
-- Add `benchmark_renderer_fixture_v1` with clinical state frozen and renderer
-  effects explicit.
-- Treat `structured_projection_port_promoted_v0` as rejected/revise-only. Any
-  follow-up must start a new validation-only cycle with stricter selector
-  precision, especially around `unknown_frequency`.
+- Start any new mechanism work as a validation-only cycle with H6/H9 action
+  sidecars and H10 provenance attached before interpreting deltas.
+- Include the promoted boundary/renderer typed-event component only on eligible
+  boundary and benchmark-rendering cases, with selector suppression and
+  component-owner attribution intact.
+- Keep `structured_projection_port_promoted_v0` and broad action-policy widening
+  as rejected/revise-only; do not promote either as the lead path.
 
 ### Next
 
-- After contract and robustness gates pass, run
-  `boundary_renderer_component_ablation_v1` as validation diagnostics.
-- Attach H6 action summaries and the H10 raw-identity sidecar to any new
-  candidate before interpreting deltas.
+- If a new prediction-bearing candidate is assembled, attach H6 action summaries
+  and the H10 raw-identity sidecar before interpreting deltas.
 
 ### Blocked
 
@@ -104,10 +111,34 @@ final-label policy disconnected.
 
 ### Done Recently
 
-- 2026-06-05: Added `boundary_event_contract_v1`; synthetic typed-event
-  contract passed and the next staged task is complete.
-- 2026-06-05: Added `boundary_event_validation_panel_v1`; validation hard/control
-  typed-event panel is ready with no unsupported candidate rows or note text.
+- 2026-06-05: Completed Stage 4 action-policy sidecars:
+  `h9_action_summary_sidecar_v1`, `h9_release_lane_ablation_v1`, and
+  `h6_control_replay_v1`. The current control has 735/750 prediction-bearing
+  rows, 15 remaining nonprediction rows, 19 fallback releases, 0 release C->W,
+  and 0 H6 regressions across replayed candidates.
+- 2026-06-05: Promoted the boundary/renderer typed-event layer as a bounded
+  rare-family component for eligible boundary and benchmark-rendering cases.
+  The promotion accepts low coverage as intrinsic to the target family and does
+  not authorize whole-pipeline promotion, holdout use, or benchmark-comparable
+  language.
+- 2026-06-05: Added `boundary_selector_precision_revision_v1`; suppressed the
+  unsafe last-event override and unknown/no-reference churn, producing 6 W->C,
+  0 C->W, and 0 H6 regressions on the 30-row validation typed panel. Corrected
+  the reusable W->C gate from impossible 60+ to 25.
+- 2026-06-05: Marked the Stage 2/3 boundary-renderer bundle complete in the
+  staged action plan and moved the active board to Stage 4 action-policy
+  sidecars.
+- 2026-06-05: Ran `boundary_renderer_component_ablation_v1`; benchmark-only rows
+  were 11/11 C->C, but clinical boundary projection caused 1 H6 C->W regression
+  before selector precision revision, so the initial ablation was rejected.
+- 2026-06-05: Added `benchmark_renderer_fixture_v1`; 16/16 renderer rows
+  preserved clinical state with renderer rule ids and scorer-sentinel use
+  explicit.
+- 2026-06-05: Added `h7_minimal_pair_panel_v1`; typed state was invariant for
+  18/18 synthetic pairs.
+- 2026-06-05: Added `boundary_event_contract_v1` and
+  `boundary_event_validation_panel_v1`; synthetic and validation typed-event
+  gates passed with final-label policy disconnected.
 - 2026-06-05: Added `h10_raw_identity_sidecar_v1`; paired validation raw
   outputs are byte-identical on 750/750 matched rows.
 - 2026-06-05: Ran the authorized frozen aggregate-only structured projection

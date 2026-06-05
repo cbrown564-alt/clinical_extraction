@@ -1,0 +1,63 @@
+{
+  "artifact_kind": "gan2026_h9_release_lane_ablation_v1",
+  "c_to_w_rows": 0,
+  "changed_label_precision": 1.0,
+  "claim_boundary": "Validation-development release-lane ablation. Each lane replays an already saved deterministic fallback release independently; no semantic repair, boundary/renderer, prompt, model, parser, scorer, or locked-test policy changes are made.",
+  "date": "2026-06-05",
+  "decision": "h9_release_lane_ablation_v1_passed_guardrail",
+  "h6_regression_rows": 0,
+  "hypothesis_ids": [
+    "H6",
+    "H9"
+  ],
+  "json_artifact": "experiments/gan2026_h9_release_lane_ablation_v1_2026-06-05.json",
+  "lanes": [
+    {
+      "c_to_w_rows": 0,
+      "changed_label_precision": 1.0,
+      "fallback_owner_counts": {
+        "deterministic_comparator_fallback": 17
+      },
+      "gate": "passed_no_c_to_w_no_h6_regression",
+      "h6_control_rows": 0,
+      "h6_regression_rows": 0,
+      "release_lane": "abstain",
+      "release_rows": 17,
+      "transition_counts": {
+        "C_to_abstain": 17
+      },
+      "w_to_c_rows": 17
+    },
+    {
+      "c_to_w_rows": 0,
+      "changed_label_precision": 1.0,
+      "fallback_owner_counts": {
+        "deterministic_comparator_fallback": 2
+      },
+      "gate": "passed_no_c_to_w_no_h6_regression",
+      "h6_control_rows": 0,
+      "h6_regression_rows": 0,
+      "release_lane": "human_review",
+      "release_rows": 2,
+      "transition_counts": {
+        "C_to_review": 2
+      },
+      "w_to_c_rows": 2
+    }
+  ],
+  "locked_test_row_level_artifacts_used": 0,
+  "model_calls": 0,
+  "one_change": "release_one_existing_nonprediction_lane_at_a_time",
+  "prediction_changes": 0,
+  "release_correct_rows": 19,
+  "release_rows": 19,
+  "release_wrong_rows": 0,
+  "report_artifact": "experiments/gan2026_h9_release_lane_ablation_v1_2026-06-05.md",
+  "source_artifacts": {
+    "assembled_candidate_jsonl": "experiments/gan2026_untagged_nonprediction_release_candidate_v0_assembled_candidate_2026-06-05.jsonl"
+  },
+  "source_candidate": "gan2026_untagged_nonprediction_release_candidate_v0_assembled_candidate",
+  "split_manifest": "gan2026_split_v1",
+  "surface": "validation_hard_control_rows_from_current_assembled_control",
+  "w_to_c_rows": 19
+}

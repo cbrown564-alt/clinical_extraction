@@ -15,6 +15,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.components import (
     boundary_benchmark_seed_panel,
     boundary_benchmark_validation_contract,
     boundary_benchmark_validation_panel,
+    structured_candidate_contract,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     label_to_frequency_record,
@@ -169,8 +170,10 @@ def summarize_full_test(
     h3_gate_failures = []
     if validation_candidate_present < 150:
         h3_gate_failures.append("validation_candidate_exposure_below_150")
-    if transitions["W_to_C"] < 60:
-        h3_gate_failures.append("validation_w_to_c_below_60")
+    if transitions["W_to_C"] < structured_candidate_contract.MIN_W_TO_C:
+        h3_gate_failures.append(
+            f"validation_{structured_candidate_contract.W_TO_C_GATE_FAILURE}"
+        )
     if c_to_w_rate > 0.05:
         h3_gate_failures.append("validation_c_to_w_above_5_percent")
     if unsupported_candidate_rows:

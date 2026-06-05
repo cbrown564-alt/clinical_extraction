@@ -94,7 +94,7 @@ def test_candidate_assembly_summary_blocks_undercovered_validation_panel() -> No
     assert summary["c_to_w_rows"] == 0
     assert summary["parse_ok_exact_evidence_rate"] == 1.0
     assert summary["frozen_test_audit_ready"] is False
-    assert summary["gate_failures"] == ["coverage_below_150", "w_to_c_below_60"]
+    assert summary["gate_failures"] == ["coverage_below_150", "w_to_c_below_25"]
     assert summary["holdout_authorized"] is False
 
 

@@ -140,6 +140,5 @@ def test_structured_candidate_validation_gate_blocks_undercoverage_and_regressio
     assert summary["frozen_test_audit_ready"] is False
     assert summary["gate_failures"] == [
         "coverage_below_150",
-        "w_to_c_below_60",
         "c_to_w_above_5_percent",
     ]

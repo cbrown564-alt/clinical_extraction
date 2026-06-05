@@ -1,0 +1,111 @@
+{
+  "artifact_kind": "gan2026_boundary_renderer_component_ablation_v1_summary",
+  "benchmark_only_transition_counts": {
+    "C_to_C": 11
+  },
+  "c_to_w_rate": 0.03333333333333333,
+  "c_to_w_rows": 1,
+  "candidate_rows": 30,
+  "claim_boundary": "Validation-development boundary_renderer_component_ablation_v1. It connects the passed typed-event panel only inside a validation diagnostic layer, separates benchmark-only rendering from clinical boundary projection, writes no source note text, and does not authorize final-label promotion or holdout use.",
+  "clinical_boundary_transition_counts": {
+    "C_to_C": 12,
+    "C_to_W": 1,
+    "W_to_C": 6
+  },
+  "contract_matched_rows": 30,
+  "decision": "boundary_renderer_component_ablation_v1_rejected_revise_only",
+  "effect_class_transition_counts": {
+    "benchmark_only_rendering": {
+      "C_to_C": 11
+    },
+    "clinical_boundary_projection": {
+      "C_to_C": 12,
+      "C_to_W": 1,
+      "W_to_C": 6
+    }
+  },
+  "exact_evidence_rows": 30,
+  "final_label_policy_connected": false,
+  "frozen_test_audit_ready": false,
+  "gate_failures": [
+    "coverage_below_150",
+    "w_to_c_below_25",
+    "c_to_w_outside_benchmark_convention",
+    "h6_control_regression"
+  ],
+  "h6_control_regression_rows": 1,
+  "h6_control_regression_source_row_indices": [
+    2965
+  ],
+  "h6_control_rows": 37,
+  "holdout_authorized": false,
+  "json_artifact": "experiments/gan2026_boundary_renderer_component_ablation_v1_2026-06-05.json",
+  "jsonl_artifact": "experiments/gan2026_boundary_renderer_component_ablation_v1_2026-06-05.jsonl",
+  "locked_test_row_level_artifacts_used": 0,
+  "non_convention_c_to_w_rows": 1,
+  "non_convention_c_to_w_source_row_indices": [
+    2965
+  ],
+  "policy_name": "gan2026_boundary_renderer_component_ablation_v1",
+  "recommended_next_step": "Do not promote this low-exposure typed layer. Revise the validation-only cycle to improve selector precision for last-event and unknown-frequency boundary rows before any larger diagnostic assembly.",
+  "report_artifact": "experiments/gan2026_boundary_renderer_component_ablation_v1_2026-06-05.md",
+  "selected_h6_rows": 5,
+  "selected_prediction_bearing_rows": 30,
+  "slice_transition_counts": {
+    "asserted_seizure_free_interval": {
+      "C_to_C": 8
+    },
+    "cluster_multiple_per_cluster": {
+      "C_to_C": 3
+    },
+    "conditional_or_trigger_only": {
+      "C_to_C": 2,
+      "W_to_C": 1
+    },
+    "last_event_only": {
+      "C_to_C": 2,
+      "C_to_W": 1,
+      "W_to_C": 3
+    },
+    "non_epileptic_current_events": {
+      "W_to_C": 2
+    },
+    "unknown_sentinel": {
+      "C_to_C": 1
+    },
+    "vague_multiple_frequency": {
+      "C_to_C": 7
+    }
+  },
+  "source_current_candidate_artifact": "experiments/gan2026_untagged_nonprediction_release_candidate_v0_assembled_candidate_2026-06-05.jsonl",
+  "source_note_text_rows": 0,
+  "source_panel_artifact": "experiments/gan2026_boundary_event_validation_panel_v1_2026-06-05.jsonl",
+  "source_split": "validation",
+  "split_manifest": "gan2026_split_v1",
+  "target_family_transition_counts": {
+    "benchmark_format_convention": {
+      "C_to_C": 11
+    },
+    "seizure_free_duration": {
+      "C_to_C": 12,
+      "C_to_W": 1,
+      "W_to_C": 6
+    }
+  },
+  "target_mechanism_transition_counts": {
+    "benchmark_convention_renderer_v0": {
+      "C_to_C": 11
+    },
+    "seizure_free_boundary_event_v0": {
+      "C_to_C": 12,
+      "C_to_W": 1,
+      "W_to_C": 6
+    }
+  },
+  "transition_counts": {
+    "C_to_C": 23,
+    "C_to_W": 1,
+    "W_to_C": 6
+  },
+  "w_to_c_rows": 6
+}

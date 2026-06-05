@@ -1,0 +1,53 @@
+{
+  "artifact_kind": "gan2026_h6_control_replay_v1",
+  "candidate_count": 3,
+  "candidates": [
+    {
+      "candidate": "boundary_selector_precision_revision_v1",
+      "changed_correct_rows": 6,
+      "changed_label_precision": 1.0,
+      "changed_wrong_rows": 0,
+      "h6_control_rows": 0,
+      "h6_regression_rows": 0,
+      "source_decision": "boundary_selector_precision_revision_v1_precision_fixed_low_coverage"
+    },
+    {
+      "candidate": "h9_release_lane_ablation_v1",
+      "changed_correct_rows": 19,
+      "changed_label_precision": 1.0,
+      "changed_wrong_rows": 0,
+      "h6_control_rows": 0,
+      "h6_regression_rows": 0,
+      "source_decision": "h9_release_lane_ablation_v1_passed_guardrail"
+    },
+    {
+      "candidate": "untagged_nonprediction_release_candidate_v0_assembled_candidate",
+      "changed_correct_rows": 19,
+      "changed_label_precision": 1.0,
+      "changed_wrong_rows": 0,
+      "h6_control_rows": 37,
+      "h6_regression_rows": 0,
+      "source_decision": "candidate_patch_passes_validation_no_regression_gate"
+    }
+  ],
+  "claim_boundary": "Stage 4 H6 replay sidecar. It verifies no H6 control regression from saved validation summaries and reports changed-label precision where summary-level changed-row counts are available.",
+  "date": "2026-06-05",
+  "decision": "h6_control_replay_v1_passed",
+  "h6_regression_candidates": [],
+  "hypothesis_ids": [
+    "H6",
+    "H9"
+  ],
+  "inspection_policy": "validation_sidecar_no_candidate_change",
+  "json_artifact": "experiments/gan2026_h6_control_replay_v1_2026-06-05.json",
+  "locked_test_row_level_artifacts_used": 0,
+  "model_calls": 0,
+  "prediction_changes": 0,
+  "report_artifact": "experiments/gan2026_h6_control_replay_v1_2026-06-05.md",
+  "source_artifacts": {
+    "assembled_candidate_summary": "experiments/gan2026_untagged_nonprediction_release_candidate_v0_assembled_candidate_2026-06-05.json",
+    "boundary_selector_precision_revision_summary": "experiments/gan2026_boundary_selector_precision_revision_v1_2026-06-05.json",
+    "release_lane_ablation_summary": "experiments/gan2026_h9_release_lane_ablation_v1_2026-06-05.json"
+  },
+  "split_manifest": "gan2026_split_v1"
+}

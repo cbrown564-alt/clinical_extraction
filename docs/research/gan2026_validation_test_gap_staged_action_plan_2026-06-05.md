@@ -211,6 +211,55 @@ Implication: proceed to `h7_minimal_pair_panel_v1` and
 `benchmark_renderer_fixture_v1` before connecting this typed-event surface to a
 validation diagnostic assembly.
 
+### Stage 2 Outcome: Benchmark Renderer Fixture v1
+
+Artifact:
+
+- `experiments/gan2026_benchmark_renderer_fixture_v1_2026-06-05.json`
+- `experiments/gan2026_benchmark_renderer_fixture_v1_2026-06-05.md`
+
+Decision: `benchmark_renderer_fixture_v1_passed`.
+
+The renderer fixture ran over 16 synthetic benchmark-renderer rows. It preserved
+clinical state on 16/16 rows, exposed renderer rule ids on 16/16 rows, exposed
+scorer-sentinel use on 16/16 rows, kept exact evidence on 16/16 rows, and kept
+final-label policy disconnected.
+
+### Stage 2 Outcome: Boundary Renderer Component Ablation v1
+
+Artifact:
+
+- `experiments/gan2026_boundary_renderer_component_ablation_v1_2026-06-05.json`
+- `experiments/gan2026_boundary_renderer_component_ablation_v1_2026-06-05.md`
+
+Decision: `boundary_renderer_component_ablation_v1_rejected_revise_only`.
+
+The validation diagnostic connected the typed layer only inside the
+validation-development panel. It selected 30 rows, found 6 W->C and 1 C->W, and
+separated benchmark-only rendering from clinical boundary projection. The
+benchmark-only rows were 11/11 C->C; the C->W came from clinical boundary
+projection on H6 row 2965. The artifact wrote 0 source-note-text rows, used 0
+locked-test row-level artifacts, and kept final-label policy disconnected.
+
+### Stage 2 Outcome: Boundary Selector Precision Revision v1
+
+Artifact:
+
+- `experiments/gan2026_boundary_selector_precision_revision_v1_2026-06-05.json`
+- `experiments/gan2026_boundary_selector_precision_revision_v1_2026-06-05.md`
+
+Decision: `boundary_selector_precision_revision_v1_promoted_bounded_component`.
+
+The validation-only selector revision suppressed the unsafe row-2965 last-event
+override and unknown/no-reference sentinel churn. It left 28 selected rows, 6
+W->C, 0 C->W, 0 H6 regressions, 0 source-note-text rows, and no final-label
+policy connection. The current typed validation panel reaches only 36 rows when
+slice caps are removed, but that low exposure is now treated as intrinsic to
+the rare boundary/benchmark family rather than as a rejection reason. The
+boundary/renderer typed-event layer is promoted as a bounded component for
+eligible cases; it is not a whole-pipeline promotion and does not authorize
+holdout use or benchmark-comparable language.
+
 ## Stage 3: H7 Robustness And Template Brittleness
 
 Purpose: test whether the mechanism is learning clinical state rather than
@@ -246,6 +295,24 @@ Decision:
 - If robustness depends on semantic repair rather than typed source state,
   return to Stage 1.
 
+### Stage 3 Outcome: H7 Minimal Pair Panel v1
+
+Artifact:
+
+- `experiments/gan2026_h7_minimal_pair_panel_v1_2026-06-05.json`
+- `experiments/gan2026_h7_minimal_pair_panel_v1_2026-06-05.md`
+
+Decision: `h7_minimal_pair_panel_v1_passed`.
+
+The minimal-pair panel reused `boundary_event_contract_v1` rows and tested
+wording, order, section, distractor, semiology, and time-anchor perturbations.
+It passed with 36 rows, 18/18 complete invariant pairs, 36/36 exact-evidence
+rows, and final-label policy disconnected. This completes the current H7
+panel-construction task. Component-stress and repair-sensitivity variants are
+not needed before moving to Stage 4 because the typed boundary/renderer layer is
+now promoted only as a bounded rare-family component with exact-evidence and
+H6/H9 guardrails, not as a broad aggregate-gap mechanism.
+
 ## Stage 4: Action Policy As A Guardrail, Not A Lead Fix
 
 Purpose: keep H9 and nonprediction recovery useful without letting them mask
@@ -280,6 +347,71 @@ Decision:
 - Promote only as a safety/fallback policy.
 - Do not prioritize action-policy widening over mechanism work while locked-test
   nonprediction burden remains low in aggregate.
+
+### Stage 4 Outcome: H9 Action Summary Sidecar v1
+
+Artifact:
+
+- `experiments/gan2026_h9_action_summary_sidecar_v1_2026-06-05.json`
+- `experiments/gan2026_h9_action_summary_sidecar_v1_2026-06-05.md`
+
+Decision: `h9_action_summary_sidecar_v1_complete`.
+
+The sidecar ran over the current auditable validation assembly,
+`untagged_nonprediction_release_candidate_v0_assembled_candidate`, and made
+0 model calls, 0 prediction changes, and used 0 locked-test row-level artifacts.
+It records 750 validation rows, 735 prediction-bearing rows (0.9800 coverage),
+697 correct prediction-bearing rows, 9 abstain rows, 6 human-review rows, and
+19 deterministic-comparator fallback releases. Family action rates are now
+available for future candidates; the largest remaining nonprediction rates are
+unknown-boundary (11/20), uncertainty/ambiguity (11/24), seizure-free duration
+(10/27), current-versus-historical (8/25), and competing semiologies (7/26).
+
+Implication: future candidates should attach this same action-summary shape
+before interpreting validation deltas. The sidecar is instrumentation only and
+does not promote action widening as the lead fix.
+
+### Stage 4 Outcome: H9 Release Lane Ablation v1
+
+Artifact:
+
+- `experiments/gan2026_h9_release_lane_ablation_v1_2026-06-05.json`
+- `experiments/gan2026_h9_release_lane_ablation_v1_2026-06-05.md`
+
+Decision: `h9_release_lane_ablation_v1_passed_guardrail`.
+
+The one-lane-at-a-time validation replay preserved the Stage 4
+anti-confounding constraints: no semantic repair changes, no boundary/renderer
+changes, 0 model calls, 0 prediction changes beyond replaying already saved
+deterministic fallback releases, and 0 locked-test row-level artifacts. The
+abstain lane released 17 rows with 17 W->C, 0 C->W, and 0 H6 regressions. The
+human-review lane released 2 rows with 2 W->C, 0 C->W, and 0 H6 regressions.
+
+Implication: the current untagged-nonprediction release remains acceptable as a
+safety/fallback validation-development policy, but the result is not a
+validation-test gap solution and does not justify broad action-policy widening.
+
+### Stage 4 Outcome: H6 Control Replay v1
+
+Artifact:
+
+- `experiments/gan2026_h6_control_replay_v1_2026-06-05.json`
+- `experiments/gan2026_h6_control_replay_v1_2026-06-05.md`
+
+Decision: `h6_control_replay_v1_passed`.
+
+The replay sidecar checked saved validation summaries for
+`untagged_nonprediction_release_candidate_v0_assembled_candidate`,
+`boundary_selector_precision_revision_v1`, and
+`h9_release_lane_ablation_v1`. It observed 0 H6 control regressions across the
+checked candidates. The assembled nonprediction release preserved 37/37 H6
+controls with changed-label precision 19/19; the boundary selector precision
+revision retained 0 H6 regressions and changed-label precision 6/6; the release
+lane ablation retained 0 H6 regressions and changed-label precision 19/19.
+
+Implication: Stage 4 sidecars and controls are complete for the current cycle.
+The next mechanism cycle can use the Stage 4 sidecar formats as required
+guardrails before interpreting any new candidate delta.
 
 ## Stage 5: Same-Output And Runtime Provenance Hygiene
 
@@ -451,10 +583,25 @@ Run these first, in order:
 5. `boundary_event_validation_panel_v1` on validation hard/control rows -
    complete:
    `experiments/gan2026_boundary_event_validation_panel_v1_2026-06-05.json`.
-6. `h7_minimal_pair_panel_v1` - next.
-7. `benchmark_renderer_fixture_v1`.
+6. `h7_minimal_pair_panel_v1` - complete:
+   `experiments/gan2026_h7_minimal_pair_panel_v1_2026-06-05.json`.
+7. `benchmark_renderer_fixture_v1` - complete:
+   `experiments/gan2026_benchmark_renderer_fixture_v1_2026-06-05.json`.
+8. `boundary_renderer_component_ablation_v1` - complete and rejected/revise-only:
+   `experiments/gan2026_boundary_renderer_component_ablation_v1_2026-06-05.json`.
+9. `boundary_selector_precision_revision_v1` - complete and promoted as a
+   bounded rare-family component despite intrinsically low coverage:
+   `experiments/gan2026_boundary_selector_precision_revision_v1_2026-06-05.json`.
+10. `h9_action_summary_sidecar_v1` - complete:
+    `experiments/gan2026_h9_action_summary_sidecar_v1_2026-06-05.json`.
+11. `h9_release_lane_ablation_v1` - complete:
+    `experiments/gan2026_h9_release_lane_ablation_v1_2026-06-05.json`.
+12. `h6_control_replay_v1` - complete:
+    `experiments/gan2026_h6_control_replay_v1_2026-06-05.json`.
 
-Only after those seven should we assemble another validation diagnostic
-candidate. That keeps the experiment legible: first remove suspect repair
-confounding, then test whether the proposed typed mechanism can stand on its
-own.
+The Stage 2/3 boundary-renderer bundle and Stage 4 action-policy sidecar bundle
+are now complete for this cycle. Promote the boundary/renderer layer only as a
+bounded rare-family component for eligible boundary and benchmark-rendering
+cases; do not use it as a broad aggregate-gap claim. Do not continue widening
+action policy as the lead path. For any future candidate, attach H6/H9 action
+summaries and H10 provenance before interpreting deltas.

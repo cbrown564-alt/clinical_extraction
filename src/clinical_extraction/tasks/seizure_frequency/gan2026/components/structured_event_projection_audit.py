@@ -68,7 +68,7 @@ def summarize_projection_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, An
     if selected_count < structured_candidate_contract.MIN_VALIDATION_COVERAGE:
         gate_failures.append("coverage_below_150")
     if transitions["W_to_C"] < structured_candidate_contract.MIN_W_TO_C:
-        gate_failures.append("w_to_c_below_60")
+        gate_failures.append(structured_candidate_contract.W_TO_C_GATE_FAILURE)
     if c_to_w_rate > structured_candidate_contract.MAX_C_TO_W_RATE:
         gate_failures.append("c_to_w_above_5_percent")
     if (
