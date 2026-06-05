@@ -10,9 +10,12 @@ def test_boundary_benchmark_seed_panel_has_both_mechanisms() -> None:
     summary = boundary_benchmark_seed_panel.summarize_seed_panel_rows(rows)
 
     assert summary["decision"] == "ready_for_boundary_renderer_contract_tests"
-    assert summary["boundary_rows"] == 6
-    assert summary["renderer_rows"] == 6
+    assert summary["row_count"] == 36
+    assert summary["boundary_rows"] == 20
+    assert summary["renderer_rows"] == 16
     assert summary["exact_evidence_rows"] == summary["row_count"]
+    assert summary["hard_rows"] == 24
+    assert summary["control_rows"] == 12
 
 
 def test_boundary_pairs_preserve_expected_clinical_state() -> None:
@@ -24,6 +27,9 @@ def test_boundary_pairs_preserve_expected_clinical_state() -> None:
     assert all(len(states) == 1 for states in pairs.values())
     assert pairs["last_event_only"] == {"last_event_only"}
     assert pairs["residual_active_semiology"] == {"active_residual_seizure_frequency"}
+    assert pairs["conditional_trigger_only"] == {"conditional_or_trigger_only"}
+    assert pairs["non_epileptic_current_events"] == {"non_epileptic_current_events"}
+    assert pairs["no_boundary_evidence"] == {"no_boundary_evidence"}
 
 
 def test_renderer_rows_are_format_transparent() -> None:
@@ -44,6 +50,12 @@ def test_renderer_rows_are_format_transparent() -> None:
         "1 cluster per 4 to 5 week, multiple per cluster",
         "multiple per month",
         "unknown",
+    }
+    assert {row["expected_benchmark_format_rule_id"] for row in renderer_rows} >= {
+        "gan_cluster_multiple_per_cluster",
+        "gan_unknown_sentinel",
+        "gan_vague_multiple_frequency",
+        "gan_non_epileptic_seizure_free_projection",
     }
 
 

@@ -40,11 +40,44 @@ def test_boundary_contract_preserves_pair_consistency() -> None:
     summary = boundary_benchmark_contract.summarize_contract_rows(result_rows)
 
     assert summary["decision"] == "boundary_renderer_contract_passed"
-    assert summary["row_count"] == 12
-    assert summary["contract_matched_rows"] == 12
-    assert summary["exact_evidence_rows"] == 12
-    assert summary["clinical_state_invariant_pairs"] == 6
+    assert summary["row_count"] == 36
+    assert summary["contract_matched_rows"] == 36
+    assert summary["exact_evidence_rows"] == 36
+    assert summary["clinical_state_invariant_pairs"] == 18
     assert summary["final_label_policy_connected"] is False
+
+
+def test_boundary_contract_covers_expanded_boundary_states() -> None:
+    panel_rows = boundary_benchmark_seed_panel.build_seed_panel_rows()
+    result_rows = boundary_benchmark_contract.build_contract_rows(panel_rows)
+
+    assert {row["boundary_state"] for row in result_rows} >= {
+        "asserted_seizure_free_interval",
+        "last_event_only",
+        "conditional_or_trigger_only",
+        "non_epileptic_current_events",
+        "residual_seizure_activity",
+        "no_boundary_evidence",
+    }
+    assert all(row["final_label_policy_connected"] is False for row in result_rows)
+
+
+def test_renderer_contract_covers_expanded_benchmark_rules() -> None:
+    panel_rows = boundary_benchmark_seed_panel.build_seed_panel_rows()
+    result_rows = boundary_benchmark_contract.build_contract_rows(panel_rows)
+
+    renderer_rows = [
+        row
+        for row in result_rows
+        if row["target_mechanism"] == "benchmark_convention_renderer_v0"
+    ]
+    assert {row["benchmark_format_rule_id"] for row in renderer_rows} >= {
+        "gan_cluster_multiple_per_cluster",
+        "gan_unknown_sentinel",
+        "gan_vague_multiple_frequency",
+        "gan_non_epileptic_seizure_free_projection",
+    }
+    assert all(row["format_only_change"] is True for row in renderer_rows)
 
 
 def test_contract_flags_unmatched_expectations() -> None:

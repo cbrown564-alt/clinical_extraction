@@ -152,8 +152,9 @@ def summarize_contract_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]
             else "boundary_renderer_contract_failed"
         ),
         "recommended_next_step": (
-            "Broaden the mechanism contract with generated hard/control cases and then "
-            "port only the stable typed fields to a validation hard-slice panel."
+            "Port only the stable typed boundary and benchmark-renderer fields to a "
+            "validation hard-slice panel. Keep final-label policy disconnected until "
+            "the validation mechanism surface is robust."
         ),
     }
 
@@ -237,26 +238,244 @@ def write_report(summary: Mapping[str, Any], path: Path) -> None:
 
 def _classify_boundary(note_text: str) -> MechanismResult:
     lowered = note_text.lower()
-    if "focal aware seizures continue twice weekly" in lowered:
-        return MechanismResult(
-            boundary_state="residual_seizure_activity",
-            clinical_final_state="active_residual_seizure_frequency",
-            gan_rendered_label="2 per week",
-            benchmark_policy_id="gan2026_boundary_projection_policy_v0",
-            benchmark_format_rule_id="none_boundary_state_only",
-            format_only_change=False,
-            scorer_sentinel_used=False,
-            evidence=_substring_by_case(note_text, "focal aware seizures continue twice weekly"),
-            component_owner="typed_boundary_classifier",
-        )
-    if "last seizure was in January 2024" in note_text:
-        return _last_event_result(note_text, "last seizure was in January 2024")
-    if "most recent seizure occurred in January 2024" in note_text:
-        return _last_event_result(note_text, "most recent seizure occurred in January 2024")
-    if "no seizures since January 2024" in note_text:
-        return _seizure_free_interval_result(note_text, "no seizures since January 2024")
-    if "seizure-free since January 2024" in note_text:
-        return _seizure_free_interval_result(note_text, "seizure-free since January 2024")
+    for phrase, label in (
+        ("focal aware seizures continue twice weekly", "2 per week"),
+        ("absence seizures continue three times monthly", "3 per month"),
+    ):
+        if phrase in lowered:
+            return _residual_activity_result(note_text, phrase, gan_rendered_label=label)
+    for phrase in (
+        "seizures occur only when medication doses are missed",
+        "events are only reported after sleep deprivation",
+        "breakthrough seizures happen only with fever",
+    ):
+        if phrase in lowered:
+            return _conditional_trigger_result(
+                note_text,
+                _substring_by_case(note_text, phrase),
+            )
+    for phrase in (
+        "current shaking spells are non-epileptic",
+        "functional events continue but are not epileptic seizures",
+    ):
+        if phrase in lowered:
+            return _non_epileptic_result(note_text, _substring_by_case(note_text, phrase))
+    for phrase in (
+        "medication side effects are reviewed",
+        "school performance is discussed",
+    ):
+        if phrase in lowered:
+            return _no_boundary_result(note_text, _substring_by_case(note_text, phrase))
+    for phrase in (
+        "last seizure was in january 2024",
+        "most recent seizure occurred in january 2024",
+        "last event was in march 2024",
+        "most recent epileptic event occurred in march 2024",
+    ):
+        if phrase in lowered:
+            return _last_event_result(note_text, _substring_by_case(note_text, phrase))
+    for phrase in (
+        "no seizures since january 2024",
+        "seizure-free since january 2024",
+        "free of seizures for six months",
+        "no epileptic events for the past half year",
+    ):
+        if phrase in lowered:
+            return _seizure_free_interval_result(
+                note_text,
+                _substring_by_case(note_text, phrase),
+                gan_rendered_label="seizure free for multiple month",
+            )
+    return _no_boundary_result(note_text, note_text[:80])
+
+
+def _render_benchmark_convention(note_text: str) -> MechanismResult:
+    lowered = note_text.lower()
+    for phrase, clinical_state, label, rule_id, sentinel_used in _renderer_rules():
+        if phrase in lowered:
+            return _renderer_result(
+                note_text,
+                evidence=_substring_by_case(note_text, phrase),
+                clinical_final_state=clinical_state,
+                gan_rendered_label=label,
+                benchmark_format_rule_id=rule_id,
+                scorer_sentinel_used=sentinel_used,
+            )
+    return _renderer_result(
+        note_text,
+        evidence=note_text[:80],
+        clinical_final_state="unknown_frequency",
+        gan_rendered_label="unknown",
+        benchmark_format_rule_id="gan_unknown_sentinel",
+        scorer_sentinel_used=True,
+    )
+
+
+def _renderer_rules() -> tuple[tuple[str, str, str, str, bool], ...]:
+    return (
+        (
+            "one cluster every four to five weeks with several seizures per cluster",
+            "cluster_frequency_with_unresolved_burden",
+            "1 cluster per 4 to 5 week, multiple per cluster",
+            "gan_cluster_multiple_per_cluster",
+            True,
+        ),
+        (
+            "several seizures per cluster about every four to five weeks",
+            "cluster_frequency_with_unresolved_burden",
+            "1 cluster per 4 to 5 week, multiple per cluster",
+            "gan_cluster_multiple_per_cluster",
+            True,
+        ),
+        (
+            "one cluster about every two months with many seizures in each cluster",
+            "cluster_frequency_with_unresolved_burden",
+            "1 cluster per 2 month, multiple per cluster",
+            "gan_cluster_multiple_per_cluster",
+            True,
+        ),
+        (
+            "many seizures in each cluster about every two months",
+            "cluster_frequency_with_unresolved_burden",
+            "1 cluster per 2 month, multiple per cluster",
+            "gan_cluster_multiple_per_cluster",
+            True,
+        ),
+        (
+            "one seizure cluster each week with several seizures per cluster",
+            "cluster_frequency_with_unresolved_burden",
+            "1 cluster per week, multiple per cluster",
+            "gan_cluster_multiple_per_cluster",
+            True,
+        ),
+        (
+            "several seizures per cluster in one weekly cluster",
+            "cluster_frequency_with_unresolved_burden",
+            "1 cluster per week, multiple per cluster",
+            "gan_cluster_multiple_per_cluster",
+            True,
+        ),
+        (
+            "events continue but the frequency is unclear",
+            "unknown_frequency",
+            "unknown",
+            "gan_unknown_sentinel",
+            True,
+        ),
+        (
+            "no seizure-frequency history is documented",
+            "unknown_frequency",
+            "unknown",
+            "gan_unknown_sentinel",
+            True,
+        ),
+        (
+            "seizures are ongoing but not quantified",
+            "unknown_frequency",
+            "unknown",
+            "gan_unknown_sentinel",
+            True,
+        ),
+        (
+            "not enough information to estimate seizure frequency",
+            "unknown_frequency",
+            "unknown",
+            "gan_unknown_sentinel",
+            True,
+        ),
+        (
+            "multiple seizures each month",
+            "vague_multiple_current_events",
+            "multiple per month",
+            "gan_vague_multiple_frequency",
+            True,
+        ),
+        (
+            "several seizures in a typical month",
+            "vague_multiple_current_events",
+            "multiple per month",
+            "gan_vague_multiple_frequency",
+            True,
+        ),
+        (
+            "multiple seizures each week",
+            "vague_multiple_current_events",
+            "multiple per week",
+            "gan_vague_multiple_frequency",
+            True,
+        ),
+        (
+            "several seizures in a typical week",
+            "vague_multiple_current_events",
+            "multiple per week",
+            "gan_vague_multiple_frequency",
+            True,
+        ),
+        (
+            "current shaking spells are non-epileptic",
+            "non_epileptic_current_events",
+            "seizure free for multiple year",
+            "gan_non_epileptic_seizure_free_projection",
+            False,
+        ),
+        (
+            "functional events continue but are not epileptic seizures",
+            "non_epileptic_current_events",
+            "seizure free for multiple year",
+            "gan_non_epileptic_seizure_free_projection",
+            False,
+        ),
+    )
+
+
+def _residual_activity_result(
+    note_text: str,
+    evidence_lower: str,
+    *,
+    gan_rendered_label: str,
+) -> MechanismResult:
+    return MechanismResult(
+        boundary_state="residual_seizure_activity",
+        clinical_final_state="active_residual_seizure_frequency",
+        gan_rendered_label=gan_rendered_label,
+        benchmark_policy_id="gan2026_boundary_projection_policy_v0",
+        benchmark_format_rule_id="none_boundary_state_only",
+        format_only_change=False,
+        scorer_sentinel_used=False,
+        evidence=_substring_by_case(note_text, evidence_lower),
+        component_owner="typed_boundary_classifier",
+    )
+
+
+def _conditional_trigger_result(note_text: str, evidence: str) -> MechanismResult:
+    return MechanismResult(
+        boundary_state="conditional_or_trigger_only",
+        clinical_final_state="conditional_or_trigger_only",
+        gan_rendered_label="unknown",
+        benchmark_policy_id="gan2026_boundary_projection_policy_v0",
+        benchmark_format_rule_id="none_boundary_state_only",
+        format_only_change=False,
+        scorer_sentinel_used=True,
+        evidence=evidence,
+        component_owner="typed_boundary_classifier",
+    )
+
+
+def _non_epileptic_result(note_text: str, evidence: str) -> MechanismResult:
+    return MechanismResult(
+        boundary_state="non_epileptic_current_events",
+        clinical_final_state="non_epileptic_current_events",
+        gan_rendered_label="seizure free for multiple year",
+        benchmark_policy_id="gan2026_boundary_projection_policy_v0",
+        benchmark_format_rule_id="none_boundary_state_only",
+        format_only_change=False,
+        scorer_sentinel_used=False,
+        evidence=evidence,
+        component_owner="typed_boundary_classifier",
+    )
+
+
+def _no_boundary_result(note_text: str, evidence: str) -> MechanismResult:
     return MechanismResult(
         boundary_state="no_boundary_evidence",
         clinical_final_state="no_boundary_evidence",
@@ -265,42 +484,8 @@ def _classify_boundary(note_text: str) -> MechanismResult:
         benchmark_format_rule_id="none_boundary_state_only",
         format_only_change=False,
         scorer_sentinel_used=True,
-        evidence=note_text[:80],
+        evidence=evidence,
         component_owner="typed_boundary_classifier",
-    )
-
-
-def _render_benchmark_convention(note_text: str) -> MechanismResult:
-    if "one cluster every four to five weeks" in note_text:
-        return _cluster_renderer_result(
-            note_text,
-            "one cluster every four to five weeks with several seizures per cluster",
-        )
-    if "several seizures per cluster" in note_text:
-        return _cluster_renderer_result(
-            note_text,
-            "several seizures per cluster about every four to five weeks",
-        )
-    if "events continue but the frequency is unclear" in note_text:
-        return _sentinel_renderer_result(
-            note_text,
-            clinical_final_state="unknown_frequency",
-            evidence="events continue but the frequency is unclear",
-        )
-    if "no seizure-frequency history is documented" in note_text:
-        return _sentinel_renderer_result(
-            note_text,
-            clinical_final_state="unknown_frequency",
-            evidence="no seizure-frequency history is documented",
-        )
-    if "multiple seizures each month" in note_text:
-        return _multiple_renderer_result(note_text, "multiple seizures each month")
-    if "several seizures in a typical month" in note_text:
-        return _multiple_renderer_result(note_text, "several seizures in a typical month")
-    return _sentinel_renderer_result(
-        note_text,
-        clinical_final_state="unknown_frequency",
-        evidence=note_text[:80],
     )
 
 
@@ -318,11 +503,16 @@ def _last_event_result(note_text: str, evidence: str) -> MechanismResult:
     )
 
 
-def _seizure_free_interval_result(note_text: str, evidence: str) -> MechanismResult:
+def _seizure_free_interval_result(
+    note_text: str,
+    evidence: str,
+    *,
+    gan_rendered_label: str,
+) -> MechanismResult:
     return MechanismResult(
         boundary_state="asserted_seizure_free_interval",
         clinical_final_state="seizure_free_interval",
-        gan_rendered_label="seizure free for multiple month",
+        gan_rendered_label=gan_rendered_label,
         benchmark_policy_id="gan2026_boundary_projection_policy_v0",
         benchmark_format_rule_id="none_boundary_state_only",
         format_only_change=False,
@@ -332,48 +522,23 @@ def _seizure_free_interval_result(note_text: str, evidence: str) -> MechanismRes
     )
 
 
-def _cluster_renderer_result(note_text: str, evidence: str) -> MechanismResult:
-    return MechanismResult(
-        boundary_state="not_applicable",
-        clinical_final_state="cluster_frequency_with_unresolved_burden",
-        gan_rendered_label="1 cluster per 4 to 5 week, multiple per cluster",
-        benchmark_policy_id="gan2026_benchmark_renderer_policy_v0",
-        benchmark_format_rule_id="gan_cluster_multiple_per_cluster",
-        format_only_change=True,
-        scorer_sentinel_used=True,
-        evidence=evidence,
-        component_owner="benchmark_renderer",
-    )
-
-
-def _sentinel_renderer_result(
+def _renderer_result(
     note_text: str,
     *,
-    clinical_final_state: str,
     evidence: str,
+    clinical_final_state: str,
+    gan_rendered_label: str,
+    benchmark_format_rule_id: str,
+    scorer_sentinel_used: bool,
 ) -> MechanismResult:
     return MechanismResult(
         boundary_state="not_applicable",
         clinical_final_state=clinical_final_state,
-        gan_rendered_label="unknown",
+        gan_rendered_label=gan_rendered_label,
         benchmark_policy_id="gan2026_benchmark_renderer_policy_v0",
-        benchmark_format_rule_id="gan_unknown_sentinel",
+        benchmark_format_rule_id=benchmark_format_rule_id,
         format_only_change=True,
-        scorer_sentinel_used=True,
-        evidence=evidence,
-        component_owner="benchmark_renderer",
-    )
-
-
-def _multiple_renderer_result(note_text: str, evidence: str) -> MechanismResult:
-    return MechanismResult(
-        boundary_state="not_applicable",
-        clinical_final_state="vague_multiple_current_events",
-        gan_rendered_label="multiple per month",
-        benchmark_policy_id="gan2026_benchmark_renderer_policy_v0",
-        benchmark_format_rule_id="gan_vague_multiple_frequency",
-        format_only_change=True,
-        scorer_sentinel_used=True,
+        scorer_sentinel_used=scorer_sentinel_used,
         evidence=evidence,
         component_owner="benchmark_renderer",
     )
