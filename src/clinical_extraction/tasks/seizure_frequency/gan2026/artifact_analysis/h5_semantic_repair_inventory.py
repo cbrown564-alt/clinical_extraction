@@ -127,7 +127,6 @@ CONDITION_TO_FAMILY_ID = {
     "format_only_repair": "format_only_prediction_surface",
     "selected_evidence_arithmetic_only": "selected_evidence_arithmetic",
     "benchmark_aligned_adapter": "benchmark_convention_renderer",
-    "full_stack": "benchmark_convention_renderer",
 }
 
 

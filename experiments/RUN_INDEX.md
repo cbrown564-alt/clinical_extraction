@@ -93,7 +93,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Pipeline: `llm_replacement_postprocessing_ablation`; mode `saved-output no-call post-processing replacement ablation`; replay `saved_output_replay`.
 - Model role: analysis-only deterministic post-processing replacement replay; model `none; saved outputs only`.
 - Repair mode/config: `raw_llm + format_only + selected_evidence_arithmetic + benchmark_aligned`.
-- Primary metrics: benchmark_aligned_adapter_purist_correct=204, condition_rows=1250, format_only_repair_purist_correct=188, full_stack_purist_correct=204, raw_model_selected_label_purist_correct=188, reused_raw_output_rows=50, row_count=250, selected_evidence_arithmetic_only_purist_correct=219.
+- Primary metrics: benchmark_aligned_adapter_purist_correct=204, condition_rows=1000, format_only_repair_purist_correct=188, raw_model_selected_label_purist_correct=188, reused_raw_output_rows=50, row_count=250, selected_evidence_arithmetic_only_purist_correct=219.
 - Evidence validity: Reports selected-evidence exactness, event/node evidence validity, and selected-event trace mismatches for each replacement condition.
 - Cache/reuse source: experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation250_gpt41mini_v1_2026-06-02.jsonl.
 - Supersedes: `gan2026_llm_replacement_postprocessing_ablation_design_2026-06-02`.

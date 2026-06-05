@@ -104,7 +104,7 @@ def _replacement_ablation() -> dict[str, object]:
                 ctw=1,
             ),
             _condition(
-                "full_stack",
+                "benchmark_aligned_adapter",
                 changed=28,
                 exact=28,
                 pragmatic=24,

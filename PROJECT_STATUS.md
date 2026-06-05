@@ -160,6 +160,12 @@ Important standing numbers:
   gap is 0.1747, and validation receives a 0.1987 larger repair gain than
   locked test. Treat this as deterministic semantic repair and contract-coverage
   overfitting validation, not LLM-owned transfer success.
+- `h5_repair_policy_v1_manifest` freezes H5 policy v1 as the current bounded
+  repair contract for the next validation diagnostic: frequency-bearing
+  predictions may not become no-reference, per-hour rates render as
+  `multiple per day`, vague frequency words remain unresolved-multiple labels,
+  cluster context preserves frequency content, renderer effects remain
+  separate from clinical selection, and holdout use is not authorized.
 - `h9_action_policy_gap_v0` partially supports H9 as an action-policy shift,
   not as the primary gap explanation. Validation has 34/750 nonprediction or
   review rows, all safety-floor-owned, including 19 blocked deterministic-correct
@@ -237,6 +243,9 @@ Core plans and artifacts:
   `experiments/gan2026_h5_repair_policy_v1_reparse_validation250_2026-06-05.md`,
   `experiments/gan2026_h5_semantic_kind_transformations_policy_v1_validation250_2026-06-05.csv`,
   `experiments/gan2026_h5_semantic_kind_transformations_policy_v1_validation250_2026-06-05.md`
+- H5 repair policy v1 manifest:
+  `experiments/gan2026_h5_repair_policy_v1_manifest_2026-06-05.json`,
+  `experiments/gan2026_h5_repair_policy_v1_manifest_2026-06-05.md`
 - H9 action-policy gap v0:
   `experiments/gan2026_h9_action_policy_gap_v0_2026-06-05.json`,
   `experiments/gan2026_h9_action_policy_gap_v0_2026-06-05.md`
@@ -267,14 +276,14 @@ Core plans and artifacts:
 
 ### Now
 
-- Follow the staged validation-test gap action plan before another candidate
-  assembly: freeze the current control manifest and resolve H5 repair-policy
-  bounds before expanding the richer typed event boundary/renderer mechanism.
 - Switch from the shallow boundary/renderer typed-candidate layer to a richer
   structured event representation with explicit projection ownership; H3 is
   rejected for the shallow layer, H7 supports template-brittleness pressure, and
   H8 supports explicit benchmark-convention rendering as a validation-only
   mechanism.
+- Use `h5_repair_policy_v1_manifest` as the current bounded repair contract for
+  the next validation diagnostic; do not restore broad frequency-to-sentinel
+  repair or mix repair-policy changes with boundary/renderer mechanism changes.
 - Extend the gap-matrix adapters only when a saved artifact has an explicit
   row-source contract. The current matrix intentionally uses only the staged
   assembly component seed and skips locked-test row-level artifacts.
@@ -285,11 +294,6 @@ Core plans and artifacts:
 
 ### Next
 
-- Treat H5 repair policy v1 as the current bounded repair policy for the next
-  validation diagnostic: no frequency-bearing prediction may become
-  no-reference; per-hour rates render as `multiple per day`; vague frequency
-  words render as unresolved-multiple labels; cluster context preserves
-  frequency content.
 - Expand from the clean seed slices (`seizure_free->unknown`, `yearly->daily`,
   and cluster completion) through typed event generation plus matched controls;
   do not promote family-slice rules directly.
@@ -318,6 +322,10 @@ Core plans and artifacts:
 
 ### Done Recently
 
+- 2026-06-05: Added `h5_repair_policy_v1_manifest`, freezing H5 policy v1 as
+  the bounded repair contract for the next validation diagnostic. It confirms
+  0 `frequency->no_reference` transitions, requires renderer effects to remain
+  separate from clinical selection, and keeps holdout use unauthorized.
 - 2026-06-05: Added a staged action plan for the validation-test gap program.
   The next sequence is deliberately non-confounded: freeze the control state,
   review/ablate semantic repair families, then test richer boundary/benchmark

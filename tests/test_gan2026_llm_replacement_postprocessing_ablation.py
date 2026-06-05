@@ -109,7 +109,6 @@ def test_build_replacement_ablation_reports_required_condition_rows() -> None:
         "format_only_repair",
         "selected_evidence_arithmetic_only",
         "benchmark_aligned_adapter",
-        "full_stack",
     ]
     assert metadata["conditions"][1]["repair_attribution"]["raw_wrong_to_condition_correct"] == 1
     assert metadata["conditions"][0]["evidence_validity"]["selected_event_trace_mismatches"] == 1
@@ -153,7 +152,7 @@ def test_replacement_ablation_writes_jsonl_json_markdown_and_registry_entry(
         artifact_paths=("experiments/rows.jsonl", "experiments/summary.json"),
     )
 
-    assert len(jsonl_path.read_text(encoding="utf-8").splitlines()) == 5
+    assert len(jsonl_path.read_text(encoding="utf-8").splitlines()) == 4
     assert json.loads(json_path.read_text(encoding="utf-8"))["summary"]["row_count"] == 1
     report = report_path.read_text(encoding="utf-8")
     assert "LLM-Replacement Post-Processing Ablation" in report

@@ -6,7 +6,7 @@ Diagnostic saved-output replay only: no hosted calls, prompt changes, scorer cha
 - Split: `validation`
 - Split manifest: `gan2026_split_v1`
 - Rows: 250
-- Condition rows: 1250
+- Condition rows: 1000
 - JSONL artifact: `experiments/gan2026_llm_replacement_postprocessing_ablation_validation250_v0_2026-06-02.jsonl`
 - Summary JSON: `experiments/gan2026_llm_replacement_postprocessing_ablation_validation250_v0_2026-06-02.json`
 
@@ -18,7 +18,6 @@ Diagnostic saved-output replay only: no hosted calls, prompt changes, scorer cha
 | `format_only_repair` | `strict_format` | 250 | 213 | 188 (0.7520) | 195 (0.7800) | 7 | 0 | 0 | 230 | 9 |
 | `selected_evidence_arithmetic_only` | `selected_evidence_arithmetic` | 250 | 237 | 219 (0.8760) | 225 (0.9000) | 57 | 32 | 1 | 230 | 9 |
 | `benchmark_aligned_adapter` | `benchmark_aligned` | 250 | 237 | 204 (0.8160) | 213 (0.8520) | 28 | 16 | 0 | 230 | 9 |
-| `full_stack` | `deterministic_fallback` | 250 | 237 | 204 (0.8160) | 213 (0.8520) | 28 | 16 | 0 | 230 | 9 |
 
 ## Replay Variance
 

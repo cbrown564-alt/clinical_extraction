@@ -77,25 +77,6 @@
         "rows": 250,
         "scorable_rows": 250
       }
-    },
-    {
-      "condition": "full_stack",
-      "repair_attribution": {
-        "changed_from_raw": 41,
-        "pragmatic_category_transitions": 37,
-        "purist_category_transitions": 37,
-        "raw_correct_to_condition_wrong": 0,
-        "raw_wrong_to_condition_correct": 25,
-        "semantic_kind_transitions": 12
-      },
-      "score": {
-        "pragmatic_accuracy": 0.888,
-        "pragmatic_correct": 222,
-        "purist_accuracy": 0.852,
-        "purist_correct": 213,
-        "rows": 250,
-        "scorable_rows": 250
-      }
     }
   ],
   "date": "2026-06-05",

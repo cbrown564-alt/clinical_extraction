@@ -45,7 +45,7 @@ def build_h5_semantic_repair_gap(
     selected_evidence = _condition_summary(
         conditions.get("selected_evidence_arithmetic_only")
     )
-    full_stack = _condition_summary(conditions.get("full_stack"))
+    benchmark_aligned = _condition_summary(conditions.get("benchmark_aligned_adapter"))
 
     validation_metrics = _metrics(validation_summary)
     test_metrics = _metrics(test_summary)
@@ -65,7 +65,9 @@ def build_h5_semantic_repair_gap(
         test_gain=test_gain,
         raw_gap=raw_gap,
         full_gap=full_gap,
-        full_stack_gain=_difference(full_stack["purist_accuracy"], raw["purist_accuracy"]),
+        benchmark_aligned_gain=_difference(
+            benchmark_aligned["purist_accuracy"], raw["purist_accuracy"]
+        ),
         selected_evidence_gain=_difference(
             selected_evidence["purist_accuracy"], raw["purist_accuracy"]
         ),
@@ -94,15 +96,15 @@ def build_h5_semantic_repair_gap(
             "raw_model_selected_label": raw,
             "format_only_repair": format_only,
             "selected_evidence_arithmetic_only": selected_evidence,
-            "full_stack": full_stack,
+            "benchmark_aligned_adapter": benchmark_aligned,
             "format_only_gain_over_raw": _difference(
                 format_only["purist_accuracy"], raw["purist_accuracy"]
             ),
             "selected_evidence_gain_over_raw": _difference(
                 selected_evidence["purist_accuracy"], raw["purist_accuracy"]
             ),
-            "full_stack_gain_over_raw": _difference(
-                full_stack["purist_accuracy"], raw["purist_accuracy"]
+            "benchmark_aligned_gain_over_raw": _difference(
+                benchmark_aligned["purist_accuracy"], raw["purist_accuracy"]
             ),
         },
         "validation_test_repair_gain": {
@@ -178,7 +180,7 @@ def write_h5_report(artifact: Mapping[str, Any], path: Path) -> None:
         "raw_model_selected_label",
         "format_only_repair",
         "selected_evidence_arithmetic_only",
-        "full_stack",
+        "benchmark_aligned_adapter",
     ):
         item = ladder.get(key, {})
         lines.append(
@@ -275,7 +277,7 @@ def _classify_outcome(
     test_gain: float | None,
     raw_gap: float | None,
     full_gap: float | None,
-    full_stack_gain: float | None,
+    benchmark_aligned_gain: float | None,
     selected_evidence_gain: float | None,
 ) -> str:
     if validation_gain is None or test_gain is None:
@@ -285,7 +287,7 @@ def _classify_outcome(
         raw_gap is not None and full_gap is not None and full_gap > raw_gap
     )
     ladder_has_semantic_gain = (
-        (full_stack_gain is not None and full_stack_gain > 0.03)
+        (benchmark_aligned_gain is not None and benchmark_aligned_gain > 0.03)
         or (selected_evidence_gain is not None and selected_evidence_gain > 0.03)
     )
     if repair_masks_validation and full_gap_exceeds_raw_gap and ladder_has_semantic_gain:

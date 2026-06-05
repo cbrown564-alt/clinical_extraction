@@ -22,16 +22,6 @@
       "raw_wrong_to_condition_correct": 0,
       "semantic_kind_transitions": 0
     },
-    "full_stack": {
-      "changed_from_raw": 28,
-      "exact_normalized_label_transitions": 28,
-      "family_id": "benchmark_convention_renderer",
-      "pragmatic_category_transitions": 24,
-      "purist_category_transitions": 24,
-      "raw_correct_to_condition_wrong": 0,
-      "raw_wrong_to_condition_correct": 16,
-      "semantic_kind_transitions": 15
-    },
     "selected_evidence_arithmetic_only": {
       "changed_from_raw": 57,
       "exact_normalized_label_transitions": 57,

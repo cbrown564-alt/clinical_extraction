@@ -14,7 +14,7 @@ Diagnostic attribution only. Locked-test readout is aggregate-only and does not 
 | raw_model_selected_label | 0.7520 | 0 | 0 | 0 | llm |
 | format_only_repair | 0.7520 | 7 | 0 | 0 | llm |
 | selected_evidence_arithmetic_only | 0.8760 | 57 | 32 | 1 | llm_selected_evidence_then_deterministic_arithmetic |
-| full_stack | 0.8160 | 28 | 16 | 0 | mixed_llm_plus_deterministic_postprocessing |
+| benchmark_aligned_adapter | 0.8160 | 28 | 16 | 0 | llm_with_named_benchmark_adapter |
 
 ## Validation-Test Repair Gain
 

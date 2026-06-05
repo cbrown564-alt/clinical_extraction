@@ -93,14 +93,6 @@ CONDITIONS: tuple[ReplacementCondition, ...] = (
         replacement_target="benchmark_aligned",
         transition_reason="benchmark_alignment_adapter",
     ),
-    ReplacementCondition(
-        condition="full_stack",
-        score_layer="benchmark_aligned",
-        prediction_owner="mixed_llm_plus_deterministic_postprocessing",
-        repair_mode="full_stack",
-        replacement_target="deterministic_fallback",
-        transition_reason="existing_best_saved_stack",
-    ),
 )
 
 

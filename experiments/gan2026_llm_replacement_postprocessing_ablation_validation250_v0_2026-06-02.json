@@ -121,43 +121,12 @@
         "scorable_rows": 237
       },
       "score_layer": "benchmark_aligned"
-    },
-    {
-      "condition": "full_stack",
-      "evidence_validity": {
-        "event_or_node_evidence_rows": 250,
-        "event_or_node_evidence_valid_rows": 236,
-        "selected_event_trace_mismatches": 9,
-        "selected_evidence_rows": 250,
-        "selected_evidence_valid_rows": 230
-      },
-      "prediction_owner": "mixed_llm_plus_deterministic_postprocessing",
-      "repair_attribution": {
-        "changed_from_raw": 28,
-        "exact_normalized_label_transitions": 28,
-        "pragmatic_category_transitions": 24,
-        "purist_category_transitions": 24,
-        "raw_correct_to_condition_wrong": 0,
-        "raw_wrong_to_condition_correct": 16,
-        "semantic_kind_transitions": 15
-      },
-      "replacement_target": "deterministic_fallback",
-      "score": {
-        "pragmatic_accuracy": 0.852,
-        "pragmatic_correct": 213,
-        "purist_accuracy": 0.816,
-        "purist_correct": 204,
-        "rows": 250,
-        "scorable_rows": 237
-      },
-      "score_layer": "benchmark_aligned"
     }
   ],
   "date": "2026-06-02",
   "pipeline_family": "llm_replacement_postprocessing_ablation",
   "replacement_targets": [
     "benchmark_aligned",
-    "deterministic_fallback",
     "selected_evidence_arithmetic",
     "strict_format"
   ],
@@ -166,7 +135,7 @@
   "split": "validation",
   "split_manifest": "gan2026_split_v1",
   "summary": {
-    "condition_row_count": 1250,
+    "condition_row_count": 1000,
     "hard_slice_breakdown": {
       "cluster": {
         "parse_or_schema_failures": 1,

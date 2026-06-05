@@ -30,7 +30,6 @@ Validation-development repair taxonomy only. No locked-test row-level artifacts 
 | --- | --- | ---: | ---: | ---: | ---: |
 | `benchmark_aligned_adapter` | `benchmark_convention_renderer` | 28 | 15 | 16 | 0 |
 | `format_only_repair` | `format_only_prediction_surface` | 7 | 0 | 0 | 0 |
-| `full_stack` | `benchmark_convention_renderer` | 28 | 15 | 16 | 0 |
 | `selected_evidence_arithmetic_only` | `selected_evidence_arithmetic` | 57 | 16 | 32 | 1 |
 
 ## Interpretation

@@ -11,6 +11,16 @@
   "locked_test_row_level_artifacts_used": 0,
   "outcome": "partially_supported_revise",
   "same_output_ladder": {
+    "benchmark_aligned_adapter": {
+      "changed_from_raw": 28,
+      "prediction_owner": "llm_with_named_benchmark_adapter",
+      "purist_accuracy": 0.816,
+      "purist_correct": 204,
+      "raw_correct_to_condition_wrong": 0,
+      "raw_wrong_to_condition_correct": 16,
+      "rows": 250
+    },
+    "benchmark_aligned_gain_over_raw": 0.064,
     "format_only_gain_over_raw": 0.0,
     "format_only_repair": {
       "changed_from_raw": 7,
@@ -21,16 +31,6 @@
       "raw_wrong_to_condition_correct": 0,
       "rows": 250
     },
-    "full_stack": {
-      "changed_from_raw": 28,
-      "prediction_owner": "mixed_llm_plus_deterministic_postprocessing",
-      "purist_accuracy": 0.816,
-      "purist_correct": 204,
-      "raw_correct_to_condition_wrong": 0,
-      "raw_wrong_to_condition_correct": 16,
-      "rows": 250
-    },
-    "full_stack_gain_over_raw": 0.064,
     "raw_model_selected_label": {
       "changed_from_raw": 0,
       "prediction_owner": "llm",

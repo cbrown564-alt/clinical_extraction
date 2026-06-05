@@ -37,13 +37,13 @@ def test_h5_semantic_repair_gap_reports_repair_gain_without_test_rows() -> None:
                 prediction_owner="llm_selected_evidence_then_deterministic_arithmetic",
             ),
             _condition(
-                "full_stack",
+                "benchmark_aligned_adapter",
                 purist_accuracy=0.81,
                 purist_correct=81,
                 changed=12,
                 raw_wrong_to_correct=8,
                 raw_correct_to_wrong=0,
-                prediction_owner="mixed_llm_plus_deterministic_postprocessing",
+                prediction_owner="deterministic_benchmark_renderer",
             ),
         ],
         "split_manifest": "gan2026_split_v1",
@@ -80,7 +80,7 @@ def test_h5_semantic_repair_gap_reports_repair_gain_without_test_rows() -> None:
     assert artifact["hypothesis_id"] == "H5"
     assert artifact["split_manifest"] == "gan2026_split_v1"
     assert artifact["locked_test_row_level_artifacts_used"] == 0
-    assert artifact["same_output_ladder"]["full_stack_gain_over_raw"] == 0.06
+    assert artifact["same_output_ladder"]["benchmark_aligned_gain_over_raw"] == 0.06
     assert artifact["same_output_ladder"]["format_only_gain_over_raw"] == 0.0
     assert artifact["validation_test_repair_gain"]["validation_repair_gain"] == 0.232
     assert artifact["validation_test_repair_gain"]["test_repair_gain"] == 0.0333

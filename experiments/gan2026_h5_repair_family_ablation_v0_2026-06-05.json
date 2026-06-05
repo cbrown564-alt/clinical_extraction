@@ -7,8 +7,7 @@
     {
       "changed_from_raw": 28,
       "conditions": [
-        "benchmark_aligned_adapter",
-        "full_stack"
+        "benchmark_aligned_adapter"
       ],
       "decision": "review_required",
       "default_policy": "review_required",
