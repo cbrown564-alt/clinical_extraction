@@ -145,6 +145,27 @@ Important standing numbers:
   assembled candidate, but only as a diagnostic validation artifact: 30 selected
   rows, 6 W->C, 1 C->W, 30/30 exact-evidence rows, 0 note-text rows, and blocked
   by coverage plus W->C gates before any frozen audit.
+- `h3_h7_full_boundary_benchmark_test_v0` fully tests the current
+  boundary/benchmark H3/H7/H8 branch. H3 is rejected for the shallow typed
+  layer: all-eligible validation exposure is clean but only 36 rows with
+  6 W->C and 1 C->W, below coverage and W->C gates. H7 is supported on the
+  synthetic minimal-pair panel: typed behavior is consistent on 18/18 pairs
+  while the deterministic comparator flips on 4/18 pairs. H8 is partially
+  supported as validation-development mechanism evidence: 11/11 benchmark
+  convention rows have exact evidence and separated clinical/rendered fields,
+  but no locked-test transfer audit was run.
+- `h5_semantic_repair_gap_test_v0` partially supports and revises H5. Validation
+  repair layers mask weak raw LLM behavior, but the original raw-layer-gap
+  primary signal is wrong: raw/base validation-test gap is -0.0240, full-repair
+  gap is 0.1747, and validation receives a 0.1987 larger repair gain than
+  locked test. Treat this as deterministic semantic repair and contract-coverage
+  overfitting validation, not LLM-owned transfer success.
+- `h9_action_policy_gap_v0` partially supports H9 as an action-policy shift,
+  not as the primary gap explanation. Validation has 34/750 nonprediction or
+  review rows, all safety-floor-owned, including 19 blocked deterministic-correct
+  labels and 15 blocked deterministic-wrong labels. The aggregate locked-test
+  selector readout has only 1/450 nonprediction row, and no locked-test row-level
+  artifacts were written.
 
 Core plans and artifacts:
 
@@ -203,6 +224,12 @@ Core plans and artifacts:
 - H1 hidden-family slice aggregates v0:
   `experiments/gan2026_h1_hidden_family_slice_aggregates_v0_2026-06-05.json`,
   `experiments/gan2026_h1_hidden_family_slice_aggregates_v0_2026-06-05.md`
+- H5 semantic repair gap test v0:
+  `experiments/gan2026_h5_semantic_repair_gap_test_v0_2026-06-05.json`,
+  `experiments/gan2026_h5_semantic_repair_gap_test_v0_2026-06-05.md`
+- H9 action-policy gap v0:
+  `experiments/gan2026_h9_action_policy_gap_v0_2026-06-05.json`,
+  `experiments/gan2026_h9_action_policy_gap_v0_2026-06-05.md`
 - Generalization-first boundary/convention solution design:
   `docs/research/gan2026_generalization_first_boundary_and_benchmark_solution_design_2026-06-05.md`
 - Boundary/benchmark H3/H7 seed panel v0:
@@ -220,15 +247,19 @@ Core plans and artifacts:
 - Boundary/benchmark candidate assembly v0:
   `experiments/gan2026_boundary_benchmark_candidate_assembly_v0_2026-06-05.json`,
   `experiments/gan2026_boundary_benchmark_candidate_assembly_v0_2026-06-05.md`
+- H3/H7/H8 full boundary/benchmark test v0:
+  `experiments/gan2026_h3_h7_full_boundary_benchmark_test_v0_2026-06-05.json`,
+  `experiments/gan2026_h3_h7_full_boundary_benchmark_test_v0_2026-06-05.md`
 
 ## Work Board
 
 ### Now
 
-- Expand the boundary/renderer typed-candidate layer on validation hard/control
-  surfaces before any frozen audit. If it remains below coverage or W->C gates,
-  switch to a richer structured event representation with explicit projection
-  ownership.
+- Switch from the shallow boundary/renderer typed-candidate layer to a richer
+  structured event representation with explicit projection ownership; H3 is
+  rejected for the shallow layer, H7 supports template-brittleness pressure, and
+  H8 supports explicit benchmark-convention rendering as a validation-only
+  mechanism.
 - Extend the gap-matrix adapters only when a saved artifact has an explicit
   row-source contract. The current matrix intentionally uses only the staged
   assembly component seed and skips locked-test row-level artifacts.
@@ -246,8 +277,8 @@ Core plans and artifacts:
   23-hard-row validation smoke before any frozen test audit.
 - Build synthetic hard/control panels that stress prediction-bearing failures,
   not only nonprediction repair opportunities.
-- Audit the single C->W row in `boundary_benchmark_candidate_assembly_v0` on
-  validation only before broadening the typed layer.
+- Carry the single boundary/benchmark C->W regression as a validation
+  no-regression case for the richer structured event branch.
 - Write a frozen test450 protocol addendum only after the structured
   candidate/event validation gates pass.
 - If cost/latency/token efficiency is needed, run a telemetry-only pass over
@@ -340,6 +371,25 @@ Core plans and artifacts:
   typed-candidate-contract layer as the next validation-only architecture
   bridge. It remains diagnostic only: 30 selected rows, 6 W->C, 1 C->W, 100%
   parse-ok plus exact-evidence, and blocked by coverage plus W->C gates.
+- 2026-06-05: Added `h3_h7_full_boundary_benchmark_test_v0`. H3 is rejected for
+  the shallow typed layer because all-eligible validation exposure is clean but
+  only 36 rows with 6 W->C, below coverage and W->C gates. H7 is supported:
+  typed behavior is pair-consistent on 18/18 synthetic pairs while the
+  deterministic comparator flips on 4/18 pairs. H8 is partially supported as
+  validation-development mechanism evidence: 11/11 benchmark convention rows
+  have exact evidence and separated clinical/rendered fields. No locked-test
+  row-level artifacts were used.
+- 2026-06-05: Added `h5_semantic_repair_gap_test_v0` using the saved
+  same-output validation ladder plus aggregate-only few-shot validation/test
+  readouts. H5 is partially supported and revised: validation repair gain is
+  0.2320 versus 0.0333 on locked test, while raw/base validation-test gap is not
+  larger than full repair. No locked-test row-level artifacts were used.
+- 2026-06-05: Added `h9_action_policy_gap_v0` from the validation gap matrix
+  plus aggregate-only locked-test nonprediction selector readout. H9 is
+  partially supported as an action-policy split shift, but not as the main gap
+  explanation: validation has 34/750 nonprediction/review rows, while the
+  aggregate locked-test selector readout has 1/450. No locked-test row-level
+  artifacts were written.
 - 2026-06-05: Closed the direct-labeler targeted switch branch as safe but
   low-coverage. Validation750 targeted switching projected 717/750 with 9 W->C
   and 0 C->W, but frozen aggregate-only test450 selected only 4 rows with

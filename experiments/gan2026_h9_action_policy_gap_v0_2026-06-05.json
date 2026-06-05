@@ -1,0 +1,314 @@
+{
+  "artifact_kind": "gan2026_h9_action_policy_gap_v0",
+  "claim_boundary": "H9 no-call validation plus aggregate-only locked-test readout. Validation action rows may be inspected, but locked-test output is limited to predeclared aggregate action/family summaries and writes no test row ids, note text, raw model outputs, or row-level failures.",
+  "date": "2026-06-05",
+  "decision": "h9_partially_supported_action_policy_shift_not_primary_gap_explanation",
+  "hypothesis": "Abstention/review policy hides different failure modes by split.",
+  "hypothesis_id": "H9",
+  "inspection_policy": {
+    "locked_test": "aggregate_only_no_row_level_failure_records_written",
+    "validation": "row_level_allowed"
+  },
+  "interpretation": "Validation action policy is not neutral: nonprediction/review rows are safety-floor-owned and frequently block deterministic-correct labels. The locked-test aggregate selector surface has much lower nonprediction burden, while the test accuracy gap remains large, so H9 is supported as an action-policy shift but not as the primary explanation for the validation-test generalisation gap.",
+  "json_artifact": "experiments/gan2026_h9_action_policy_gap_v0_2026-06-05.json",
+  "locked_test": {
+    "family_aggregate_context": [
+      {
+        "family": "unknown_boundary",
+        "test_changed_rate": 0.10526315789473684,
+        "test_purist_proxy": 0.7368421052631579,
+        "test_rows": 57,
+        "validation_minus_test_gap": 0.136842105263158
+      },
+      {
+        "family": "benchmark_format_convention",
+        "test_changed_rate": 0.08333333333333333,
+        "test_purist_proxy": 0.6666666666666666,
+        "test_rows": 48,
+        "validation_minus_test_gap": 0.2369477911646587
+      },
+      {
+        "family": "seizure_free_duration",
+        "test_changed_rate": 0.04132231404958678,
+        "test_purist_proxy": 0.6528925619834711,
+        "test_rows": 121,
+        "validation_minus_test_gap": 0.24314704197692494
+      },
+      {
+        "family": "uncertainty_or_ambiguity",
+        "test_changed_rate": 0.03932584269662921,
+        "test_purist_proxy": 0.7247191011235955,
+        "test_rows": 178,
+        "validation_minus_test_gap": 0.20081281377002147
+      },
+      {
+        "family": "cluster_burden",
+        "test_changed_rate": 0.03787878787878788,
+        "test_purist_proxy": 0.7765151515151515,
+        "test_rows": 264,
+        "validation_minus_test_gap": 0.15681818181818186
+      },
+      {
+        "family": "rate_bucket_or_denominator",
+        "test_changed_rate": 0.03170028818443804,
+        "test_purist_proxy": 0.7752161383285303,
+        "test_rows": 347,
+        "validation_minus_test_gap": 0.1642796599907974
+      },
+      {
+        "family": "current_vs_historical",
+        "test_changed_rate": 0.03153153153153153,
+        "test_purist_proxy": 0.777027027027027,
+        "test_rows": 444,
+        "validation_minus_test_gap": 0.16613941410964417
+      },
+      {
+        "family": "competing_semiologies",
+        "test_changed_rate": 0.025906735751295335,
+        "test_purist_proxy": 0.772020725388601,
+        "test_rows": 386,
+        "validation_minus_test_gap": 0.16860427461139904
+      },
+      {
+        "family": "diary_or_log_aggregation",
+        "test_changed_rate": 0.02522935779816514,
+        "test_purist_proxy": 0.7775229357798165,
+        "test_rows": 436,
+        "validation_minus_test_gap": 0.17020746311977086
+      },
+      {
+        "family": "unclassified",
+        "test_changed_rate": 0.0,
+        "test_purist_proxy": 1.0,
+        "test_rows": 1,
+        "validation_minus_test_gap": 0.0
+      }
+    ],
+    "inspection_policy": "aggregate_only_no_row_level_test_failure_inspection",
+    "known_gap": "Locked-test aggregate artifacts expose action counts and predeclared family correctness, but not component-owner-by-family nonprediction failure rows.",
+    "router_metrics": {
+      "abstain_rows": 1,
+      "coverage": 0.9977777777777778,
+      "human_review_rows": 0,
+      "nonprediction_rate": 0.0022222222222222222,
+      "nonprediction_rows": 1,
+      "rows": 450,
+      "selective_accuracy": 0.7616926503340757
+    },
+    "source_artifact": "experiments/gan2026_hybrid_parallel_state_candidate_reasoner_test450_gpt41mini_v0_deterministic_safety_floor_live_2026-06-03.jsonl"
+  },
+  "locked_test_row_level_artifacts_written": 0,
+  "recommended_next_step": "Keep action policy as a guardrail and report validation overblocking, but prioritize H3/H7 candidate exposure and template-brittleness work. Before any frozen test audit, predeclare aggregate owner/family action summaries so H9 can be tested without row-level holdout inspection.",
+  "report_artifact": "experiments/gan2026_h9_action_policy_gap_v0_2026-06-05.md",
+  "source_artifacts": {
+    "h1_family_aggregate": "experiments/gan2026_h1_hidden_family_slice_aggregates_v0_2026-06-05.json",
+    "locked_test_nonprediction_aggregate": "experiments/gan2026_hybrid_multi_component_staged_assembly_v0_test450_nonprediction_selector_aggregate_audit_2026-06-05.json",
+    "validation_gap_matrix": "experiments/gan2026_validation_test_gap_matrix_v0_validation750_2026-06-05.jsonl"
+  },
+  "split_manifest": "gan2026_split_v1",
+  "support_signal": {
+    "action_rate_shift": -0.043111111111111114,
+    "test_owner_family_resolution_available": false,
+    "validation_actions_related_to_blocked_baseline_misses": true,
+    "validation_actions_related_to_overblocking": true
+  },
+  "validation": {
+    "by_component_owner": [
+      {
+        "abstain_rows": 0,
+        "blocked_baseline_correct_rate": null,
+        "blocked_baseline_correct_rows": 0,
+        "blocked_baseline_wrong_rate": null,
+        "blocked_baseline_wrong_rows": 0,
+        "component_owner": "deterministic_adapter",
+        "human_review_rows": 0,
+        "nonprediction_rate": 0.0,
+        "nonprediction_rows": 0,
+        "rows": 701
+      },
+      {
+        "abstain_rows": 26,
+        "blocked_baseline_correct_rate": 0.5588235294117647,
+        "blocked_baseline_correct_rows": 19,
+        "blocked_baseline_wrong_rate": 0.4411764705882353,
+        "blocked_baseline_wrong_rows": 15,
+        "component_owner": "safety_floor",
+        "human_review_rows": 8,
+        "nonprediction_rate": 0.6938775510204082,
+        "nonprediction_rows": 34,
+        "rows": 49
+      }
+    ],
+    "by_hidden_family": [
+      {
+        "abstain_rows": 0,
+        "blocked_baseline_correct_rate": null,
+        "blocked_baseline_correct_rows": 0,
+        "blocked_baseline_wrong_rate": null,
+        "blocked_baseline_wrong_rows": 0,
+        "family": "benchmark_format_convention",
+        "human_review_rows": 0,
+        "nonprediction_rate": 0.0,
+        "nonprediction_rows": 0,
+        "rows": 10
+      },
+      {
+        "abstain_rows": 0,
+        "blocked_baseline_correct_rate": null,
+        "blocked_baseline_correct_rows": 0,
+        "blocked_baseline_wrong_rate": null,
+        "blocked_baseline_wrong_rows": 0,
+        "family": "cluster_burden",
+        "human_review_rows": 0,
+        "nonprediction_rate": 0.0,
+        "nonprediction_rows": 0,
+        "rows": 11
+      },
+      {
+        "abstain_rows": 2,
+        "blocked_baseline_correct_rate": 0.0,
+        "blocked_baseline_correct_rows": 0,
+        "blocked_baseline_wrong_rate": 1.0,
+        "blocked_baseline_wrong_rows": 7,
+        "family": "competing_semiologies",
+        "human_review_rows": 5,
+        "nonprediction_rate": 0.2692307692307692,
+        "nonprediction_rows": 7,
+        "rows": 26
+      },
+      {
+        "abstain_rows": 2,
+        "blocked_baseline_correct_rate": 0.0,
+        "blocked_baseline_correct_rows": 0,
+        "blocked_baseline_wrong_rate": 1.0,
+        "blocked_baseline_wrong_rows": 8,
+        "family": "current_vs_historical",
+        "human_review_rows": 6,
+        "nonprediction_rate": 0.32,
+        "nonprediction_rows": 8,
+        "rows": 25
+      },
+      {
+        "abstain_rows": 0,
+        "blocked_baseline_correct_rate": null,
+        "blocked_baseline_correct_rows": 0,
+        "blocked_baseline_wrong_rate": null,
+        "blocked_baseline_wrong_rows": 0,
+        "family": "diary_or_log_aggregation",
+        "human_review_rows": 0,
+        "nonprediction_rate": 0.0,
+        "nonprediction_rows": 0,
+        "rows": 4
+      },
+      {
+        "abstain_rows": 2,
+        "blocked_baseline_correct_rate": 0.0,
+        "blocked_baseline_correct_rows": 0,
+        "blocked_baseline_wrong_rate": 1.0,
+        "blocked_baseline_wrong_rows": 2,
+        "family": "rate_bucket_or_denominator",
+        "human_review_rows": 0,
+        "nonprediction_rate": 0.1,
+        "nonprediction_rows": 2,
+        "rows": 20
+      },
+      {
+        "abstain_rows": 4,
+        "blocked_baseline_correct_rate": 0.0,
+        "blocked_baseline_correct_rows": 0,
+        "blocked_baseline_wrong_rate": 1.0,
+        "blocked_baseline_wrong_rows": 10,
+        "family": "seizure_free_duration",
+        "human_review_rows": 6,
+        "nonprediction_rate": 0.37037037037037035,
+        "nonprediction_rows": 10,
+        "rows": 27
+      },
+      {
+        "abstain_rows": 7,
+        "blocked_baseline_correct_rate": 0.0,
+        "blocked_baseline_correct_rows": 0,
+        "blocked_baseline_wrong_rate": 1.0,
+        "blocked_baseline_wrong_rows": 11,
+        "family": "uncertainty_or_ambiguity",
+        "human_review_rows": 4,
+        "nonprediction_rate": 0.4583333333333333,
+        "nonprediction_rows": 11,
+        "rows": 24
+      },
+      {
+        "abstain_rows": 18,
+        "blocked_baseline_correct_rate": 0.95,
+        "blocked_baseline_correct_rows": 19,
+        "blocked_baseline_wrong_rate": 0.05,
+        "blocked_baseline_wrong_rows": 1,
+        "family": "unclassified",
+        "human_review_rows": 2,
+        "nonprediction_rate": 0.028694404591104734,
+        "nonprediction_rows": 20,
+        "rows": 697
+      },
+      {
+        "abstain_rows": 7,
+        "blocked_baseline_correct_rate": 0.0,
+        "blocked_baseline_correct_rows": 0,
+        "blocked_baseline_wrong_rate": 1.0,
+        "blocked_baseline_wrong_rows": 11,
+        "family": "unknown_boundary",
+        "human_review_rows": 4,
+        "nonprediction_rate": 0.55,
+        "nonprediction_rows": 11,
+        "rows": 20
+      }
+    ],
+    "by_reason": [
+      {
+        "abstain_rows": 0,
+        "blocked_baseline_correct_rate": 0.25,
+        "blocked_baseline_correct_rows": 2,
+        "blocked_baseline_wrong_rate": 0.75,
+        "blocked_baseline_wrong_rows": 6,
+        "human_review_rows": 8,
+        "nonprediction_rate": 0.010666666666666666,
+        "nonprediction_rows": 8,
+        "reason": "last_event_boundary",
+        "rows": 750
+      },
+      {
+        "abstain_rows": 2,
+        "blocked_baseline_correct_rate": 1.0,
+        "blocked_baseline_correct_rows": 2,
+        "blocked_baseline_wrong_rate": 0.0,
+        "blocked_baseline_wrong_rows": 0,
+        "human_review_rows": 0,
+        "nonprediction_rate": 0.0026666666666666666,
+        "nonprediction_rows": 2,
+        "reason": "missing_denominator_anchor",
+        "rows": 750
+      },
+      {
+        "abstain_rows": 24,
+        "blocked_baseline_correct_rate": 0.625,
+        "blocked_baseline_correct_rows": 15,
+        "blocked_baseline_wrong_rate": 0.375,
+        "blocked_baseline_wrong_rows": 9,
+        "human_review_rows": 0,
+        "nonprediction_rate": 0.032,
+        "nonprediction_rows": 24,
+        "reason": "trigger_conditioned_frequency",
+        "rows": 750
+      }
+    ],
+    "overall": {
+      "abstain_rows": 26,
+      "blocked_baseline_correct_rate": 0.5588235294117647,
+      "blocked_baseline_correct_rows": 19,
+      "blocked_baseline_wrong_rate": 0.4411764705882353,
+      "blocked_baseline_wrong_rows": 15,
+      "human_review_rows": 8,
+      "nonprediction_rate": 0.04533333333333334,
+      "nonprediction_rows": 34,
+      "rows": 750
+    }
+  }
+}
