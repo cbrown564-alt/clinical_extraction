@@ -1,0 +1,49 @@
+{
+  "artifact_kind": "gan2026_boundary_benchmark_validation_panel_summary",
+  "benchmark_rule_counts": {
+    "gan_cluster_multiple_per_cluster": 3,
+    "gan_unknown_sentinel": 1,
+    "gan_vague_multiple_frequency": 7,
+    "none_boundary_state_only": 19
+  },
+  "boundary_rows": 19,
+  "boundary_state_counts": {
+    "asserted_seizure_free_interval": 8,
+    "conditional_or_trigger_only": 3,
+    "last_event_only": 6,
+    "non_epileptic_current_events": 2,
+    "not_applicable": 11
+  },
+  "claim_boundary": "Validation-development hard-slice panel for stable boundary and benchmark-renderer typed fields. It reads validation notes in memory, writes no note text, keeps clinical state separate from Gan-rendered labels, and does not authorize holdout use or final-label promotion.",
+  "control_rows": 8,
+  "decision": "ready_for_boundary_renderer_validation_contract",
+  "exact_evidence_rows": 30,
+  "final_label_policy_connected": false,
+  "hard_rows": 22,
+  "json_artifact": "experiments/gan2026_boundary_benchmark_validation_panel_v0_2026-06-05.json",
+  "jsonl_artifact": "experiments/gan2026_boundary_benchmark_validation_panel_v0_2026-06-05.jsonl",
+  "policy_name": "gan2026_boundary_benchmark_validation_panel_v0",
+  "recommended_next_step": "Run a validation contract smoke over this panel that checks typed-field classification, exact evidence, and renderer transparency before any candidate assembly or holdout-facing protocol.",
+  "renderer_rows": 11,
+  "report_artifact": "experiments/gan2026_boundary_benchmark_validation_panel_v0_2026-06-05.md",
+  "row_count": 30,
+  "slice_counts": {
+    "asserted_seizure_free_interval": 8,
+    "cluster_multiple_per_cluster": 3,
+    "conditional_or_trigger_only": 3,
+    "last_event_only": 6,
+    "non_epileptic_current_events": 2,
+    "unknown_sentinel": 1,
+    "vague_multiple_frequency": 7
+  },
+  "source_split": "validation",
+  "split_manifest": "gan2026_split_v1",
+  "target_family_counts": {
+    "benchmark_format_convention": 11,
+    "seizure_free_duration": 19
+  },
+  "target_mechanism_counts": {
+    "benchmark_convention_renderer_v0": 11,
+    "seizure_free_boundary_event_v0": 19
+  }
+}

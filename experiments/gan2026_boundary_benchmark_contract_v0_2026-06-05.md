@@ -10,32 +10,33 @@ boundary_renderer_contract_passed
 
 | Metric | Value |
 | --- | ---: |
-| rows | 12 |
-| pairs | 6 |
-| clinical-state invariant pairs | 6 |
-| contract-matched rows | 12 |
-| exact evidence rows | 12 |
+| rows | 36 |
+| pairs | 18 |
+| clinical-state invariant pairs | 18 |
+| contract-matched rows | 36 |
+| exact evidence rows | 36 |
 | final-label policy connected | False |
 
 ## Target Mechanisms
 
 | Mechanism | Rows |
 | --- | ---: |
-| `benchmark_convention_renderer_v0` | 6 |
-| `seizure_free_boundary_event_v0` | 6 |
+| `benchmark_convention_renderer_v0` | 16 |
+| `seizure_free_boundary_event_v0` | 20 |
 
 ## Benchmark Rules
 
 | Rule | Rows |
 | --- | ---: |
-| `gan_cluster_multiple_per_cluster` | 2 |
-| `gan_unknown_sentinel` | 2 |
-| `gan_vague_multiple_frequency` | 2 |
-| `none_boundary_state_only` | 6 |
+| `gan_cluster_multiple_per_cluster` | 6 |
+| `gan_non_epileptic_seizure_free_projection` | 2 |
+| `gan_unknown_sentinel` | 4 |
+| `gan_vague_multiple_frequency` | 4 |
+| `none_boundary_state_only` | 20 |
 
 ## Next Step
 
-Broaden the mechanism contract with generated hard/control cases and then port only the stable typed fields to a validation hard-slice panel.
+Port only the stable typed boundary and benchmark-renderer fields to a validation hard-slice panel. Keep final-label policy disconnected until the validation mechanism surface is robust.
 
 ## Artifacts
 

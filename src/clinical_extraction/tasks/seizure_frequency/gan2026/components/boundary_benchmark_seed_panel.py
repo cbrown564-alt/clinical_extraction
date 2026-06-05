@@ -123,8 +123,9 @@ def summarize_seed_panel_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, An
             else "panel_contract_failed"
         ),
         "recommended_next_step": (
-            "Implement typed boundary and benchmark-renderer contract tests against "
-            "this panel before connecting the mechanisms to any final-label policy."
+            "Port only the stable typed boundary and benchmark-renderer fields to a "
+            "validation hard-slice panel. Keep final-label policy disconnected until "
+            "the validation mechanism surface is robust."
         ),
     }
 
@@ -224,7 +225,7 @@ def _pair_clinical_state_invariant(rows: Sequence[Mapping[str, Any]]) -> bool:
 
 
 def _case_specs() -> list[dict[str, Any]]:
-    return [
+    seed_cases = [
         _boundary_case(
             pair_id="sf_asserted_interval",
             pair_variant="no_seizures_since",
@@ -400,6 +401,358 @@ def _case_specs() -> list[dict[str, Any]]:
             ),
         ),
     ]
+    return seed_cases + _generated_case_specs()
+
+
+def _generated_case_specs() -> list[dict[str, Any]]:
+    return [
+        _boundary_case(
+            pair_id="sf_asserted_interval_generated",
+            pair_variant="free_for_six_months",
+            panel_role="hard",
+            target_family="seizure_free_duration",
+            boundary_state="asserted_seizure_free_interval",
+            clinical_state="seizure_free_interval",
+            gan_label="seizure free for multiple month",
+            evidence="free of seizures for six months",
+            note=(
+                "Follow-up note: free of seizures for six months. There are no "
+                "current spells reported by the family."
+            ),
+        ),
+        _boundary_case(
+            pair_id="sf_asserted_interval_generated",
+            pair_variant="no_events_for_half_year",
+            panel_role="hard",
+            target_family="seizure_free_duration",
+            boundary_state="asserted_seizure_free_interval",
+            clinical_state="seizure_free_interval",
+            gan_label="seizure free for multiple month",
+            evidence="no epileptic events for the past half year",
+            note=(
+                "Follow-up note: no epileptic events for the past half year. "
+                "Medication has not changed."
+            ),
+        ),
+        _boundary_case(
+            pair_id="last_event_only_generated",
+            pair_variant="last_event_in_march",
+            panel_role="hard",
+            target_family="seizure_free_duration",
+            boundary_state="last_event_only",
+            clinical_state="last_event_only",
+            gan_label="unknown",
+            evidence="last event was in March 2024",
+            note=(
+                "Interval history: last event was in March 2024. The note does not "
+                "say whether events stopped after March."
+            ),
+        ),
+        _boundary_case(
+            pair_id="last_event_only_generated",
+            pair_variant="most_recent_event_in_march",
+            panel_role="hard",
+            target_family="seizure_free_duration",
+            boundary_state="last_event_only",
+            clinical_state="last_event_only",
+            gan_label="unknown",
+            evidence="most recent epileptic event occurred in March 2024",
+            note=(
+                "Interval history: most recent epileptic event occurred in March 2024. "
+                "The note does not say whether events stopped after March."
+            ),
+        ),
+        _boundary_case(
+            pair_id="conditional_trigger_only",
+            pair_variant="missed_medication_trigger",
+            panel_role="hard",
+            target_family="seizure_free_duration",
+            boundary_state="conditional_or_trigger_only",
+            clinical_state="conditional_or_trigger_only",
+            gan_label="unknown",
+            evidence="seizures occur only when medication doses are missed",
+            note=(
+                "History: seizures occur only when medication doses are missed. "
+                "No baseline unprovoked frequency is documented."
+            ),
+        ),
+        _boundary_case(
+            pair_id="conditional_trigger_only",
+            pair_variant="sleep_deprivation_trigger",
+            panel_role="control",
+            target_family="seizure_free_duration",
+            boundary_state="conditional_or_trigger_only",
+            clinical_state="conditional_or_trigger_only",
+            gan_label="unknown",
+            evidence="events are only reported after sleep deprivation",
+            note=(
+                "History: events are only reported after sleep deprivation. "
+                "No baseline unprovoked frequency is documented."
+            ),
+        ),
+        _boundary_case(
+            pair_id="non_epileptic_current_events",
+            pair_variant="current_nonepileptic_spells",
+            panel_role="hard",
+            target_family="seizure_free_duration",
+            boundary_state="non_epileptic_current_events",
+            clinical_state="non_epileptic_current_events",
+            gan_label="seizure free for multiple year",
+            evidence="current shaking spells are non-epileptic",
+            note=(
+                "Assessment: current shaking spells are non-epileptic. No epileptic "
+                "seizures have occurred for two years."
+            ),
+        ),
+        _boundary_case(
+            pair_id="non_epileptic_current_events",
+            pair_variant="functional_events_current",
+            panel_role="control",
+            target_family="seizure_free_duration",
+            boundary_state="non_epileptic_current_events",
+            clinical_state="non_epileptic_current_events",
+            gan_label="seizure free for multiple year",
+            evidence="functional events continue but are not epileptic seizures",
+            note=(
+                "Assessment: functional events continue but are not epileptic seizures. "
+                "No epileptic seizures have occurred for two years."
+            ),
+        ),
+        _boundary_case(
+            pair_id="residual_active_semiology_generated",
+            pair_variant="absence_active_after_convulsion_free",
+            panel_role="hard",
+            target_family="seizure_free_duration",
+            boundary_state="residual_seizure_activity",
+            clinical_state="active_residual_seizure_frequency",
+            gan_label="3 per month",
+            evidence="absence seizures continue three times monthly",
+            note=(
+                "No convulsions for one year. However, absence seizures continue "
+                "three times monthly and remain the active seizure type."
+            ),
+        ),
+        _boundary_case(
+            pair_id="residual_active_semiology_generated",
+            pair_variant="active_absence_first",
+            panel_role="control",
+            target_family="seizure_free_duration",
+            boundary_state="residual_seizure_activity",
+            clinical_state="active_residual_seizure_frequency",
+            gan_label="3 per month",
+            evidence="Absence seizures continue three times monthly",
+            note=(
+                "Absence seizures continue three times monthly and remain the active "
+                "seizure type. There have been no convulsions for one year."
+            ),
+        ),
+        _boundary_case(
+            pair_id="no_boundary_evidence",
+            pair_variant="medication_only",
+            panel_role="control",
+            target_family="seizure_free_duration",
+            boundary_state="no_boundary_evidence",
+            clinical_state="no_boundary_evidence",
+            gan_label="no seizure frequency reference",
+            evidence="medication side effects are reviewed",
+            note=(
+                "Clinic note: medication side effects are reviewed. No seizure "
+                "frequency or seizure-free interval is documented."
+            ),
+        ),
+        _boundary_case(
+            pair_id="no_boundary_evidence",
+            pair_variant="school_update_only",
+            panel_role="control",
+            target_family="seizure_free_duration",
+            boundary_state="no_boundary_evidence",
+            clinical_state="no_boundary_evidence",
+            gan_label="no seizure frequency reference",
+            evidence="school performance is discussed",
+            note=(
+                "Clinic note: school performance is discussed. No seizure frequency "
+                "or seizure-free interval is documented."
+            ),
+        ),
+        _boundary_case(
+            pair_id="conditional_trigger_ordering",
+            pair_variant="trigger_before_free_text",
+            panel_role="hard",
+            target_family="seizure_free_duration",
+            boundary_state="conditional_or_trigger_only",
+            clinical_state="conditional_or_trigger_only",
+            gan_label="unknown",
+            evidence="breakthrough seizures happen only with fever",
+            note=(
+                "Family reports breakthrough seizures happen only with fever. "
+                "Between illnesses he is described as seizure-free."
+            ),
+        ),
+        _boundary_case(
+            pair_id="conditional_trigger_ordering",
+            pair_variant="free_text_before_trigger",
+            panel_role="control",
+            target_family="seizure_free_duration",
+            boundary_state="conditional_or_trigger_only",
+            clinical_state="conditional_or_trigger_only",
+            gan_label="unknown",
+            evidence="breakthrough seizures happen only with fever",
+            note=(
+                "Between illnesses he is described as seizure-free. Family reports "
+                "breakthrough seizures happen only with fever."
+            ),
+        ),
+        _renderer_case(
+            pair_id="cluster_generated_interval",
+            pair_variant="two_month_cluster",
+            panel_role="hard",
+            target_family="benchmark_format_convention",
+            clinical_state="cluster_frequency_with_unresolved_burden",
+            gan_label="1 cluster per 2 month, multiple per cluster",
+            rule_id="gan_cluster_multiple_per_cluster",
+            scorer_sentinel_used=True,
+            evidence="one cluster about every two months with many seizures in each cluster",
+            note=(
+                "Diary summary: one cluster about every two months with many seizures "
+                "in each cluster. Exact within-cluster count is not recorded."
+            ),
+        ),
+        _renderer_case(
+            pair_id="cluster_generated_interval",
+            pair_variant="burden_first_two_month_cluster",
+            panel_role="control",
+            target_family="benchmark_format_convention",
+            clinical_state="cluster_frequency_with_unresolved_burden",
+            gan_label="1 cluster per 2 month, multiple per cluster",
+            rule_id="gan_cluster_multiple_per_cluster",
+            scorer_sentinel_used=True,
+            evidence="many seizures in each cluster about every two months",
+            note=(
+                "Diary summary: many seizures in each cluster about every two months. "
+                "Exact within-cluster count is not recorded."
+            ),
+        ),
+        _renderer_case(
+            pair_id="vague_multiple_generated_week",
+            pair_variant="multiple_weekly",
+            panel_role="hard",
+            target_family="benchmark_format_convention",
+            clinical_state="vague_multiple_current_events",
+            gan_label="multiple per week",
+            rule_id="gan_vague_multiple_frequency",
+            scorer_sentinel_used=True,
+            evidence="multiple seizures each week",
+            note=(
+                "Interval history: multiple seizures each week, but no reliable "
+                "numeric count is available."
+            ),
+        ),
+        _renderer_case(
+            pair_id="vague_multiple_generated_week",
+            pair_variant="several_weekly",
+            panel_role="hard",
+            target_family="benchmark_format_convention",
+            clinical_state="vague_multiple_current_events",
+            gan_label="multiple per week",
+            rule_id="gan_vague_multiple_frequency",
+            scorer_sentinel_used=True,
+            evidence="several seizures in a typical week",
+            note=(
+                "Interval history: several seizures in a typical week, but no "
+                "reliable numeric count is available."
+            ),
+        ),
+        _renderer_case(
+            pair_id="unknown_generated_sentinel",
+            pair_variant="frequency_not_quantified",
+            panel_role="hard",
+            target_family="benchmark_format_convention",
+            clinical_state="unknown_frequency",
+            gan_label="unknown",
+            rule_id="gan_unknown_sentinel",
+            scorer_sentinel_used=True,
+            evidence="seizures are ongoing but not quantified",
+            note=(
+                "Interval history: seizures are ongoing but not quantified. "
+                "The note gives no denominator."
+            ),
+        ),
+        _renderer_case(
+            pair_id="unknown_generated_sentinel",
+            pair_variant="not_enough_information",
+            panel_role="control",
+            target_family="benchmark_format_convention",
+            clinical_state="unknown_frequency",
+            gan_label="unknown",
+            rule_id="gan_unknown_sentinel",
+            scorer_sentinel_used=True,
+            evidence="not enough information to estimate seizure frequency",
+            note=(
+                "Interval history: not enough information to estimate seizure "
+                "frequency. The note gives no denominator."
+            ),
+        ),
+        _renderer_case(
+            pair_id="non_epileptic_renderer_projection",
+            pair_variant="nonepileptic_current_spells",
+            panel_role="hard",
+            target_family="benchmark_format_convention",
+            clinical_state="non_epileptic_current_events",
+            gan_label="seizure free for multiple year",
+            rule_id="gan_non_epileptic_seizure_free_projection",
+            scorer_sentinel_used=False,
+            evidence="current shaking spells are non-epileptic",
+            note=(
+                "Assessment: current shaking spells are non-epileptic. No epileptic "
+                "seizures have occurred for two years."
+            ),
+        ),
+        _renderer_case(
+            pair_id="non_epileptic_renderer_projection",
+            pair_variant="functional_current_events",
+            panel_role="control",
+            target_family="benchmark_format_convention",
+            clinical_state="non_epileptic_current_events",
+            gan_label="seizure free for multiple year",
+            rule_id="gan_non_epileptic_seizure_free_projection",
+            scorer_sentinel_used=False,
+            evidence="functional events continue but are not epileptic seizures",
+            note=(
+                "Assessment: functional events continue but are not epileptic seizures. "
+                "No epileptic seizures have occurred for two years."
+            ),
+        ),
+        _renderer_case(
+            pair_id="cluster_generated_week",
+            pair_variant="weekly_cluster",
+            panel_role="hard",
+            target_family="benchmark_format_convention",
+            clinical_state="cluster_frequency_with_unresolved_burden",
+            gan_label="1 cluster per week, multiple per cluster",
+            rule_id="gan_cluster_multiple_per_cluster",
+            scorer_sentinel_used=True,
+            evidence="one seizure cluster each week with several seizures per cluster",
+            note=(
+                "Diary summary: one seizure cluster each week with several seizures "
+                "per cluster. Exact within-cluster count is not recorded."
+            ),
+        ),
+        _renderer_case(
+            pair_id="cluster_generated_week",
+            pair_variant="cluster_burden_weekly",
+            panel_role="control",
+            target_family="benchmark_format_convention",
+            clinical_state="cluster_frequency_with_unresolved_burden",
+            gan_label="1 cluster per week, multiple per cluster",
+            rule_id="gan_cluster_multiple_per_cluster",
+            scorer_sentinel_used=True,
+            evidence="several seizures per cluster in one weekly cluster",
+            note=(
+                "Diary summary: several seizures per cluster in one weekly cluster. "
+                "Exact within-cluster count is not recorded."
+            ),
+        ),
+    ]
 
 
 def _boundary_case(
@@ -429,7 +782,8 @@ def _boundary_case(
         "expected_benchmark_policy_id": "gan2026_boundary_projection_policy_v0",
         "expected_benchmark_format_rule_id": "none_boundary_state_only",
         "expected_format_only_change": False,
-        "expected_scorer_sentinel_used": gan_label == "unknown",
+        "expected_scorer_sentinel_used": gan_label
+        in {"unknown", "no seizure frequency reference"},
         "expected_evidence_substring": evidence,
         "source_note_text": note,
     }

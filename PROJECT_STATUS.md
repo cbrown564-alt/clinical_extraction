@@ -124,14 +124,18 @@ Important standing numbers:
   drop is acceptable only when a predeclared, source-grounded mechanism separates
   clinical boundary semantics from scorer-facing benchmark rendering and is
   tested on hard/control panels.
-- `boundary_benchmark_seed_panel_v0` is the first H3/H7 contract surface for
-  that posture: 12 synthetic rows, 6 minimal pairs, 6 clinical-state invariant
-  pairs, 12 exact-evidence rows, 6 boundary rows, and 6 renderer rows. It is
-  ready for mechanism contract tests and is not final-label promotion evidence.
+- `boundary_benchmark_seed_panel_v0` is now the broadened H3/H7 contract surface
+  for that posture: 36 synthetic rows, 18 minimal pairs, 18 clinical-state
+  invariant pairs, 36 exact-evidence rows, 20 boundary rows, and 16 renderer
+  rows. It is not final-label promotion evidence.
 - `boundary_benchmark_contract_v0` now executes the typed boundary classifier
-  and benchmark renderer over that panel: 12/12 contract-matched rows, 12/12
-  exact evidence rows, 6/6 clinical-state invariant pairs, and final-label
-  policy remains disconnected.
+  and benchmark renderer over that broadened panel: 36/36 contract-matched rows,
+  36/36 exact-evidence rows, 18/18 clinical-state invariant pairs, and
+  final-label policy remains disconnected.
+- `boundary_benchmark_validation_panel_v0` ports only the stable typed fields to
+  validation hard slices: 30 validation rows, 19 boundary rows, 11 renderer rows,
+  22 hard rows, 8 controls, 30/30 exact-evidence rows, no note text in
+  artifacts, and final-label policy disconnected.
 
 Core plans and artifacts:
 
@@ -198,15 +202,18 @@ Core plans and artifacts:
 - Boundary/benchmark H3/H7 contract smoke v0:
   `experiments/gan2026_boundary_benchmark_contract_v0_2026-06-05.json`,
   `experiments/gan2026_boundary_benchmark_contract_v0_2026-06-05.md`
+- Boundary/benchmark validation hard-slice panel v0:
+  `experiments/gan2026_boundary_benchmark_validation_panel_v0_2026-06-05.json`,
+  `experiments/gan2026_boundary_benchmark_validation_panel_v0_2026-06-05.md`
 
 ## Work Board
 
 ### Now
 
-- Broaden `boundary_benchmark_contract_v0` with generated hard/control cases
-  for seizure-free boundary and benchmark convention, then port only stable
-  typed fields to a validation hard-slice panel; keep final-label policy
-  disconnected until the mechanism surface is robust.
+- Run a validation contract smoke over
+  `boundary_benchmark_validation_panel_v0` that checks typed-field
+  classification, exact evidence, and renderer transparency before any
+  candidate assembly or holdout-facing protocol.
 - Extend the gap-matrix adapters only when a saved artifact has an explicit
   row-source contract. The current matrix intentionally uses only the staged
   assembly component seed and skips locked-test row-level artifacts.
@@ -302,6 +309,15 @@ Core plans and artifacts:
   mechanism smoke passed all seed-panel rows, preserving exact evidence and
   separate clinical-state versus Gan-rendered-label fields without connecting to
   final-label policy.
+- 2026-06-05: Broadened `boundary_benchmark_seed_panel_v0` and
+  `boundary_benchmark_contract_v0` with generated hard/control cases. The
+  synthetic mechanism surface now has 36 rows, 18 invariant pairs, 36/36 exact
+  evidence rows, 36/36 contract matches, and still no final-label policy
+  connection.
+- 2026-06-05: Added `boundary_benchmark_validation_panel_v0`, a validation-only
+  hard-slice port of stable boundary/renderer typed fields. It selected 30 rows
+  with 30/30 exact evidence, omitted note text from artifacts, and kept
+  final-label policy disconnected.
 - 2026-06-05: Closed the direct-labeler targeted switch branch as safe but
   low-coverage. Validation750 targeted switching projected 717/750 with 9 W->C
   and 0 C->W, but frozen aggregate-only test450 selected only 4 rows with

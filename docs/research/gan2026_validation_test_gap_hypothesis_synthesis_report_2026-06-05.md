@@ -293,10 +293,14 @@ preserved.
   a lower validation exact-label score is acceptable only when a predeclared,
   source-grounded mechanism separates seizure-free boundary semantics from
   benchmark-format rendering and is tested on hard/control panels.
-- 2026-06-05: Added `boundary_benchmark_seed_panel_v0`, a 12-row H3/H7
-  synthetic hard/control seed panel for typed seizure-free boundary events and
-  explicit benchmark rendering. It passed exact-evidence and pair-invariance
-  checks and is ready for mechanism contract tests.
-- 2026-06-05: Added `boundary_benchmark_contract_v0`, a no-call mechanism
-  contract smoke over the seed panel. It passed all 12 rows while keeping final
-  label policy disconnected.
+- 2026-06-05: Added and broadened `boundary_benchmark_seed_panel_v0`, a 36-row
+  H3/H7 synthetic hard/control panel for typed seizure-free boundary events and
+  explicit benchmark rendering. It has 18 invariant pairs and 36/36 exact
+  evidence rows.
+- 2026-06-05: Added and broadened `boundary_benchmark_contract_v0`, a no-call
+  mechanism contract smoke over the seed panel. It passed all 36 rows while
+  keeping final-label policy disconnected.
+- 2026-06-05: Added `boundary_benchmark_validation_panel_v0`, a validation-only
+  hard-slice panel that ports stable boundary/renderer typed fields without raw
+  note text. It selected 30 rows, 19 boundary rows, 11 renderer rows, 30/30
+  exact-evidence rows, and no final-label policy connection.

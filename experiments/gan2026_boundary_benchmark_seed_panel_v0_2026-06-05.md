@@ -10,32 +10,32 @@ ready_for_boundary_renderer_contract_tests
 
 | Metric | Value |
 | --- | ---: |
-| rows | 12 |
-| pairs | 6 |
-| clinical-state invariant pairs | 6 |
-| exact evidence rows | 12 |
-| boundary rows | 6 |
-| renderer rows | 6 |
-| hard rows | 10 |
-| control rows | 2 |
+| rows | 36 |
+| pairs | 18 |
+| clinical-state invariant pairs | 18 |
+| exact evidence rows | 36 |
+| boundary rows | 20 |
+| renderer rows | 16 |
+| hard rows | 24 |
+| control rows | 12 |
 
 ## Target Families
 
 | Family | Rows |
 | --- | ---: |
-| `benchmark_format_convention` | 6 |
-| `seizure_free_duration` | 6 |
+| `benchmark_format_convention` | 16 |
+| `seizure_free_duration` | 20 |
 
 ## Target Mechanisms
 
 | Mechanism | Rows |
 | --- | ---: |
-| `benchmark_convention_renderer_v0` | 6 |
-| `seizure_free_boundary_event_v0` | 6 |
+| `benchmark_convention_renderer_v0` | 16 |
+| `seizure_free_boundary_event_v0` | 20 |
 
 ## Next Step
 
-Implement typed boundary and benchmark-renderer contract tests against this panel before connecting the mechanisms to any final-label policy.
+Port only the stable typed boundary and benchmark-renderer fields to a validation hard-slice panel. Keep final-label policy disconnected until the validation mechanism surface is robust.
 
 ## Artifacts
 
