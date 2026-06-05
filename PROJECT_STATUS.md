@@ -38,6 +38,11 @@ a predeclared symmetric model-swap comparison.
 - Conservative staged assembly on validation750: 735 prediction-bearing rows,
   697 correct prediction rows, 37/37 H6 controls preserved, and 0 release-wrong
   rows after untagged nonprediction releases.
+- 2026-06-05: User authorized an aggregate-only test450 audit under
+  `docs/research/gan2026_hybrid_multi_component_staged_assembly_v1_frozen_holdout_protocol_2026-06-05.md`
+  after validation freeze-gate review. Authorization applies to the saved-replay
+  frozen protocol only; no row-level test failure review, live model variant
+  winner selection, or benchmark-comparable claim is authorized.
 - `selective_safety_floor_gate_v0`: validation750 21 changes with 11 W->C and
   0 C->W; frozen local test450 14 changes with 8 W->C and 0 C->W.
 - H5 policy v1 is frozen as bounded repair; renderer effects stay separate from
