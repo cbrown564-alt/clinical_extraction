@@ -1,0 +1,48 @@
+{
+  "artifact_kind": "gan2026_fewshot_train_exemplar_contract_test450_aggregate_audit",
+  "claim_boundary": "Frozen locked-test aggregate-only audit for the few-shot train-exemplar contract over the combined switch-layer current label. This artifact omits test row ids, clinical text, raw model outputs, and row-level failures.",
+  "combined_family_counts": {
+    "det_state_exact": 10,
+    "keep_current": 415,
+    "llm_selector_exact": 25
+  },
+  "combined_transition_counts": {
+    "C_to_C": 340,
+    "C_to_W": 2,
+    "W_to_C": 13,
+    "W_to_W": 95
+  },
+  "contract_family_counts": {
+    "keep_current": 446,
+    "multiple_daily_upgrade_from_single_daily": 1,
+    "sf_current_to_unknown": 3
+  },
+  "contract_name": "gan2026_fewshot_train_exemplar_contract_v0",
+  "contract_transition_counts": {
+    "C_to_C": 353,
+    "W_to_C": 4,
+    "W_to_W": 93
+  },
+  "date": "2026-06-05",
+  "decision": "does_not_meet_goal",
+  "max_tokens": 900,
+  "metrics": {
+    "combined_changed_rows": 35,
+    "combined_current_correct_rows": 353,
+    "combined_current_purist_proxy": 0.7844444444444445,
+    "contract_changed_label_precision": 1.0,
+    "contract_selected_rows": 4,
+    "fewshot_call_ok_rows": 448,
+    "fewshot_exact_evidence_rows": 408,
+    "fewshot_parse_ok_rows": 158,
+    "final_correct_rows": 357,
+    "final_purist_proxy": 0.7933333333333333,
+    "raw_base_correct_rows": 342,
+    "raw_base_purist_proxy": 0.76,
+    "test_rows": 450
+  },
+  "model": "openai/gpt-4.1",
+  "prompt_version": "gan2026_fewshot_train_exemplar_direct_labeler_v0",
+  "source_artifact": "experiments/gan2026_hybrid_parallel_state_candidate_reasoner_test450_gpt41mini_v0_deterministic_safety_floor_live_2026-06-03.jsonl",
+  "verifier_max_tokens": 500
+}

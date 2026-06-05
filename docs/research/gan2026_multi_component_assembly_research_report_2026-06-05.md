@@ -16,7 +16,7 @@ Primary references:
 The multi-component assembly program has made the system substantially more
 auditable, but it has not yet produced a goal-achieving locked-test
 architecture. The best frozen aggregate-only holdout result from this phase is
-still `354/450 = 0.7867` Purist proxy, far below the requested >=0.9 target.
+now `357/450 = 0.7933` Purist proxy, far below the requested >=0.9 target.
 
 The central scientific finding is that validation is now saturated enough that
 clean validation movement is weak evidence unless it is paired with a
@@ -34,9 +34,10 @@ few-shot candidate generator with a narrow contract:
 - contract transitions: `18 W->C`, `0 C->W`, `24 W->W`, `708 C->C`;
 - contract selected rows: 23.
 
-That branch has not yet been run as a frozen aggregate-only locked-test audit.
-It is the next most informative test when work resumes. If it fails to transfer,
-the evidence points away from narrow switch layers and toward a typed candidate
+That branch has now been run as a frozen aggregate-only locked-test audit. It
+transferred with high precision but negligible coverage: `4 W->C`, `0 C->W`,
+and final `357/450 = 0.7933`. It is rejected as a goal-achieving branch. The
+evidence points away from narrow switch layers and toward a typed candidate
 contract or structured event architecture with broader prediction-bearing
 coverage.
 
@@ -307,10 +308,34 @@ Contract-selected families:
 | multiple-daily upgrade from single-daily | 1 |
 | seizure-free current to unknown | 5 |
 
-Interpretation: this is the broadest validation-clean branch at the pause
-point. It is not yet evidence of locked-test success. The correct next step is
-an aggregate-only frozen test audit of this exact contract, with no row-level
-test failure inspection.
+Frozen aggregate-only locked-test audit:
+
+| Metric | Result |
+| --- | ---: |
+| frozen candidate | `gan2026_fewshot_train_exemplar_contract_v0` |
+| model | `openai/gpt-4.1` |
+| prompt version | `gan2026_fewshot_train_exemplar_direct_labeler_v0` |
+| source artifact | `experiments/gan2026_hybrid_parallel_state_candidate_reasoner_test450_gpt41mini_v0_deterministic_safety_floor_live_2026-06-03.jsonl` |
+| max tokens | 900 |
+| verifier max tokens | 500 |
+| raw base correct | 342/450 = 0.7600 |
+| combined current correct | 353/450 = 0.7844 |
+| final correct | 357/450 = 0.7933 |
+| contract selected rows | 4 |
+| contract transitions | `4 W->C`, `0 C->W`, `93 W->W`, `353 C->C` |
+| contract changed-label precision | 1.0000 |
+| few-shot call-ok rows | 448/450 |
+| few-shot parse-ok rows | 158/450 |
+| exact-evidence rows | 408/450 |
+
+Artifact:
+`experiments/gan2026_fewshot_train_exemplar_contract_test450_aggregate_audit_2026-06-05.md`.
+The audit wrote no test row ids, clinical text, raw model outputs, row-level
+failures, or row-level diagnostics.
+
+Interpretation: this is a clean but too-narrow transfer. The few-shot contract
+is rejected as a goal-achieving branch. Its validation strength did not
+generalize into enough locked-test prediction-bearing coverage.
 
 ## Cross-Experiment Findings
 
@@ -407,8 +432,8 @@ The architecture needs three separable capabilities:
 
 The current system has made strong progress on item 3 and partial progress on
 item 2. Item 1 remains the largest obstacle. The few-shot train-exemplar branch
-is promising because it attacks candidate recall directly, but its locked-test
-coverage is still unknown.
+attacked candidate recall directly, but the frozen holdout audit showed that
+the accepted-contract coverage is still far too narrow.
 
 ## Current Best Evidence
 
@@ -419,7 +444,7 @@ coverage is still unknown.
 | exact LLM-selector verifier | `697 -> 704/750` | `342 -> 347/450` | positive but too small |
 | combined switch layer | `697 -> 708/750` | `342 -> 354/450` | best holdout movement, not goal-achieving |
 | targeted direct switch | `708 -> 717/750` | final `354/450` | safe but low coverage |
-| few-shot train-exemplar contract | `708 -> 726/750`; `18 W->C`, `0 C->W` | not yet audited | most promising next audit |
+| few-shot train-exemplar contract | `708 -> 726/750`; `18 W->C`, `0 C->W` | `353 -> 357/450`; `4 W->C`, `0 C->W` | clean but too narrow; reject as goal-achieving |
 
 ## Research Claims Supported So Far
 
@@ -435,14 +460,14 @@ The work supports these cautious claims:
   labels are unsafe under Gan Purist scoring.
 - Change-only framing reduces regression risk, but narrow accepted-change
   families do not supply enough locked-test coverage.
-- Retrieved train exemplars appear to improve validation hard-slice candidate
-  generation, but require a separate locked-test audit before any generalization
-  claim.
+- Retrieved train exemplars improve validation hard-slice candidate generation,
+  but the frozen accepted-contract holdout coverage is too narrow to reach the
+  locked-test target.
 
 The work does not yet support these claims:
 
 - The architecture reaches Purist F1 >= 0.9 on locked test.
-- The few-shot contract generalizes to the locked holdout.
+- The few-shot contract generalizes enough to reach the locked holdout target.
 - Any current LLM branch is a clean LLM-first solution.
 - Validation F1 above 0.95 is by itself evidence of benchmark-level success.
 
@@ -450,17 +475,19 @@ The work does not yet support these claims:
 
 When the experiment loop resumes, the next steps should be:
 
-1. Finish lint and focused tests for the few-shot train-exemplar contract module
-   and schema-repair changes.
-2. Run a one-row smoke of the few-shot aggregate-only test audit to verify the
-   audit path writes no row-level test diagnostics.
-3. Run the frozen aggregate-only test audit for
-   `gan2026_fewshot_train_exemplar_contract_v0`.
-4. If the audit reaches >=0.9, perform a completion audit and document the
-   exact frozen candidate.
-5. If it fails, reject it as a goal-achieving branch and pivot to a typed
-   candidate contract or structured event architecture with explicit coverage
-   targets.
+1. Treat `gan2026_fewshot_train_exemplar_contract_v0` as rejected for the
+   >=0.9 locked-test goal despite clean changed-label precision.
+2. Pivot to a typed candidate contract or structured event architecture that
+   raises prediction-bearing coverage, not another narrow switch family.
+3. Predeclare explicit coverage targets before any new frozen audit: candidate
+   generation should cover at least 150 holdout-like prediction-bearing rows on
+   validation hard/control surfaces, accepted changes should target at least
+   60 validation W->C opportunities with <=5% C->W on matched controls, and
+   parse/evidence contracts should reach >=95% parse-ok and exact-evidence
+   rows on validation before holdout use.
+4. Keep the locked test aggregate-only. Any new candidate must freeze code,
+   prompt, model, scorer, token limits, source artifacts, inspection policy,
+   and coverage targets before another holdout audit.
 
 The key stop rule remains unchanged: do not tune from locked-test row-level
 failures. A failed aggregate audit is a distribution-level finding, not a
@@ -481,6 +508,7 @@ switch, but a broader candidate generator paired with a typed, evidence-grounded
 acceptance contract.
 ```
 
-The few-shot train-exemplar contract is the first serious version of that
-hypothesis. Its validation result is strong enough to justify the next frozen
-aggregate audit, but not strong enough to claim success before that audit runs.
+The few-shot train-exemplar contract was the first serious version of that
+hypothesis. Its frozen aggregate audit was clean but far too low-coverage, so
+the next version needs a typed candidate contract or structured event layer with
+explicit coverage targets before another holdout use.

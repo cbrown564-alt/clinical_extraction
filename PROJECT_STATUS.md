@@ -242,8 +242,20 @@ below the >=0.9 target, so saved exact-alternative switching is not sufficient.
 The next mechanism should add candidate-generation coverage or materially
 change the architecture, not merely add more gates over the same candidate
 pool.
-validation-only mechanism search on higher-coverage prediction-bearing failure
-families.
+
+The retrieved train-exemplar few-shot branch is now closed as a goal-achieving
+candidate. The validation replay of `gan2026_fewshot_train_exemplar_contract_v0`
+was strong (708/750 -> 726/750; 18 W->C, 0 C->W), but the frozen aggregate-only
+test450 audit moved only 353/450 -> 357/450 with 4 W->C and 0 C->W. The exact
+frozen audit used `openai/gpt-4.1`,
+`gan2026_fewshot_train_exemplar_direct_labeler_v0`, max tokens 900, verifier
+max tokens 500, and source artifact
+`experiments/gan2026_hybrid_parallel_state_candidate_reasoner_test450_gpt41mini_v0_deterministic_safety_floor_live_2026-06-03.jsonl`.
+No test row ids, clinical text, raw model outputs, row-level failures, or
+row-level diagnostics were written. The branch is safe but far too
+low-coverage for the >=0.9 locked-test target, so the next mechanism should be
+a typed candidate contract or structured event architecture with explicit
+coverage targets.
 
 Core verifier artifacts live under
 `docs/research/gan2026_selective_verifier_*2026-06-04.md`.
@@ -264,29 +276,27 @@ Core verifier artifacts live under
 
 ### Now
 
-- Execute the Multi-Component Assembly plan: add candidate versioning and the
-  assembly row contract, then finish component homes for rich selected state
-  and boundary candidates.
+- Pivot from narrow switch layers to a typed candidate contract or structured
+  event architecture with explicit coverage targets before any new holdout use.
 - Keep the frozen validation assembly conservative: 716 predict / 26 abstain /
   8 human review. Trigger-context release is rejected and last-event automatic
   release remains blocked under `last_event_duration_policy_v0`.
 - Return to validation/synthetic hard panels for a new mechanism that can beat
   the deterministic locked-test ceiling; do not tune from test row-level
   failures.
-- Next validation ablation: design a prediction-bearing hard-slice mechanism
-  that does not depend on nonprediction repair. Diary/log and structural-guard
-  branches were validation-clean but too low-coverage on holdout; the GPT-4.1
-  full-adjudicator smoke was structurally healthy but not behaviorally useful.
-  The change-only verifier is promising on calibration but needs a
-  higher-coverage family: seizure-free-to-unknown is now gated and safe, but
-  it produced 0 W->C on aggregate holdout.
+- Next validation ablation: define a structured candidate/event surface that
+  covers at least 150 holdout-like prediction-bearing rows on validation
+  hard/control panels, accepts at least 60 validation W->C opportunities with
+  <=5% C->W on matched controls, and reaches >=95% parse-ok plus exact-evidence
+  rows before any frozen test audit.
 
 ### Next
 
-- Materialize the full validation750 assembly artifact and component evidence
-  matrix, then apply the predeclared freeze gate before any locked test use.
-- If validation freeze gates pass, write a frozen test450 protocol addendum and
-  run test once without test row-level tuning.
+- Decide whether the next architecture should be a typed candidate contract
+  layered over current components or a richer structured event representation
+  with explicit projection ownership.
+- Write a frozen test450 protocol addendum only after the new validation
+  coverage gates pass.
 - If cost/latency/token efficiency is needed, run a telemetry-only pass over
   surviving primitives before strengthening RQ8 claims.
 
@@ -297,6 +307,8 @@ Core verifier artifacts live under
 - Whole-pipeline promotion is blocked until the family-indexed matrix is
   implemented as an auditable assembled candidate and any holdout-facing use
   has a frozen protocol.
+- The few-shot train-exemplar contract is blocked as a goal-achieving path:
+  clean precision but only 4 accepted W->C rows on frozen test450.
 
 ### Done Recently
 
@@ -312,15 +324,16 @@ Core verifier artifacts live under
   1 W->C and 0 C->W, leaving the final proxy at 354/450 (0.7867). It is safe
   but far too low-coverage for the >=0.9 test target; no test row-level
   inspection was performed or authorized.
-- 2026-06-05: Probed train-exemplar retrieval as a broader candidate
-  mechanism. Nearest train-label replacement was rejected at 239/750 validation
-  Purist proxy. A retrieved-train-exemplar few-shot GPT-4.1 panel over all 42
-  combined-current validation misses plus 42 current-correct controls produced
-  strong raw hard-slice coverage but unsafe regressions: 27 W->C, 8 C->W, 15
-  W->W, 34 C->C. Passing the 49 exact-evidence differing alternatives through
-  the existing change-only verifier was still unsafe (6 W->C, 3 C->W). This is
-  now the broadest validation rescue signal, but it needs a few-shot-specific
-  verifier or structured candidate contract before any full-validation freeze.
+- 2026-06-05: Closed the train-exemplar few-shot branch as non-goal-achieving.
+  Nearest train-label replacement was rejected at 239/750 validation Purist
+  proxy. A retrieved-train-exemplar GPT-4.1 panel over 42 validation misses plus
+  42 controls produced strong raw coverage but unsafe regressions (27 W->C,
+  8 C->W), and the existing change-only verifier stayed unsafe (6 W->C,
+  3 C->W). The few-shot-specific contract was clean on validation750
+  (708/750 -> 726/750; 18 W->C, 0 C->W), but the frozen aggregate-only test450
+  audit reached only 357/450 (0.7933), with 4 W->C, 0 C->W, and 4 selected
+  rows. No test row-level diagnostics were written. Pivot to a typed candidate
+  contract or structured event architecture with explicit coverage targets.
 - 2026-06-05: Implemented `last_event_duration_policy_v0`, added focused
   policy tests, and rebuilt the validation750 staged assembly chain. The policy
   found 1 duration-auditable last-event row but 0 automatic release-ready rows:
