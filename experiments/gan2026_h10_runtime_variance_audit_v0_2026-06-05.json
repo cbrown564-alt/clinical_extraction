@@ -2,9 +2,9 @@
   "artifact_kind": "gan2026_h10_runtime_variance_audit_v0",
   "claim_boundary": "No live model calls were made. No locked-test row-level failures were inspected; locked-test evidence is limited to the saved aggregate surface map.",
   "date": "2026-06-05",
-  "decision": "h10_rejected_as_primary_gap_explanation",
+  "decision": "same_output_provenance_control_only",
   "hypothesis_id": "H10",
-  "interpretation": "The paired validation live/replay surface has byte-identical saved raw outputs for every matched row, while saved validation/test surface-map gaps remain large. Runtime variance may affect downstream attribution when adapters or repair code change, but it is not the primary explanation for the observed generalisation gap.",
+  "interpretation": "This cached/saved-output comparison does not test live model variance. It only proves that when saved raw outputs are held fixed, downstream parser, adapter, repair, and policy code can still change labels and correctness. Use this as an attribution control, not as the H10 decision.",
   "live_only_rows": 0,
   "live_path": "experiments/gan2026_hybrid_parallel_state_candidate_reasoner_validation750_gpt41mini_v0_conservative_live_2026-06-03.jsonl",
   "matched_source_rows": 750,
@@ -102,6 +102,7 @@
     }
   },
   "split_manifest": "gan2026_split_v1",
+  "superseded_by": "experiments/gan2026_h10_fresh_live_variability_audit_v0_2026-06-05.json",
   "surface_gap_context": {
     "candidate_gaps": [
       {

@@ -1,0 +1,106 @@
+{
+  "artifact_kind": "gan2026_h5_repair_policy_v1_reparse_validation250",
+  "claim_boundary": "Validation-development no-call reparse from saved raw labels and selected evidence. No locked-test row-level artifacts used.",
+  "conditions": [
+    {
+      "condition": "raw_model_selected_label",
+      "repair_attribution": {
+        "changed_from_raw": 0,
+        "pragmatic_category_transitions": 0,
+        "purist_category_transitions": 0,
+        "raw_correct_to_condition_wrong": 0,
+        "raw_wrong_to_condition_correct": 0,
+        "semantic_kind_transitions": 0
+      },
+      "score": {
+        "pragmatic_accuracy": 0.78,
+        "pragmatic_correct": 195,
+        "purist_accuracy": 0.752,
+        "purist_correct": 188,
+        "rows": 250,
+        "scorable_rows": 213
+      }
+    },
+    {
+      "condition": "format_only_repair",
+      "repair_attribution": {
+        "changed_from_raw": 20,
+        "pragmatic_category_transitions": 13,
+        "purist_category_transitions": 13,
+        "raw_correct_to_condition_wrong": 0,
+        "raw_wrong_to_condition_correct": 6,
+        "semantic_kind_transitions": 0
+      },
+      "score": {
+        "pragmatic_accuracy": 0.804,
+        "pragmatic_correct": 201,
+        "purist_accuracy": 0.776,
+        "purist_correct": 194,
+        "rows": 250,
+        "scorable_rows": 226
+      }
+    },
+    {
+      "condition": "selected_evidence_arithmetic_only",
+      "repair_attribution": {
+        "changed_from_raw": 70,
+        "pragmatic_category_transitions": 45,
+        "purist_category_transitions": 49,
+        "raw_correct_to_condition_wrong": 1,
+        "raw_wrong_to_condition_correct": 38,
+        "semantic_kind_transitions": 16
+      },
+      "score": {
+        "pragmatic_accuracy": 0.924,
+        "pragmatic_correct": 231,
+        "purist_accuracy": 0.9,
+        "purist_correct": 225,
+        "rows": 250,
+        "scorable_rows": 250
+      }
+    },
+    {
+      "condition": "benchmark_aligned_adapter",
+      "repair_attribution": {
+        "changed_from_raw": 41,
+        "pragmatic_category_transitions": 37,
+        "purist_category_transitions": 37,
+        "raw_correct_to_condition_wrong": 0,
+        "raw_wrong_to_condition_correct": 25,
+        "semantic_kind_transitions": 12
+      },
+      "score": {
+        "pragmatic_accuracy": 0.888,
+        "pragmatic_correct": 222,
+        "purist_accuracy": 0.852,
+        "purist_correct": 213,
+        "rows": 250,
+        "scorable_rows": 250
+      }
+    },
+    {
+      "condition": "full_stack",
+      "repair_attribution": {
+        "changed_from_raw": 41,
+        "pragmatic_category_transitions": 37,
+        "purist_category_transitions": 37,
+        "raw_correct_to_condition_wrong": 0,
+        "raw_wrong_to_condition_correct": 25,
+        "semantic_kind_transitions": 12
+      },
+      "score": {
+        "pragmatic_accuracy": 0.888,
+        "pragmatic_correct": 222,
+        "purist_accuracy": 0.852,
+        "purist_correct": 213,
+        "rows": 250,
+        "scorable_rows": 250
+      }
+    }
+  ],
+  "date": "2026-06-05",
+  "locked_test_row_level_artifacts_used": 0,
+  "source_jsonl": "experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation250_gpt41mini_v1_2026-06-02.jsonl",
+  "split": "validation",
+  "split_manifest": "gan2026_split_v1"
+}

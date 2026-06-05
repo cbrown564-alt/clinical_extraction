@@ -1,0 +1,67 @@
+{
+  "artifact_kind": "gan2026_h5_repair_family_ablation_v0",
+  "claim_boundary": "Validation-development same-output family ablation over saved H5 ladder summaries. It does not change prediction policy and does not use locked-test row-level artifacts.",
+  "date": "2026-06-05",
+  "decision": "repair_policy_review_required_before_new_candidate",
+  "family_ablation": [
+    {
+      "changed_from_raw": 28,
+      "conditions": [
+        "benchmark_aligned_adapter",
+        "full_stack"
+      ],
+      "decision": "review_required",
+      "default_policy": "review_required",
+      "family_id": "benchmark_convention_renderer",
+      "portability_category": "benchmark_format",
+      "pragmatic_category_transitions": 24,
+      "purist_category_transitions": 24,
+      "raw_correct_to_wrong": 0,
+      "raw_wrong_to_correct": 16,
+      "semantic_effect": "benchmark_convention_or_sentinel_policy",
+      "semantic_kind_transitions": 15
+    },
+    {
+      "changed_from_raw": 7,
+      "conditions": [
+        "format_only_repair"
+      ],
+      "decision": "keep_allowed",
+      "default_policy": "allowed",
+      "family_id": "format_only_prediction_surface",
+      "portability_category": "general",
+      "pragmatic_category_transitions": 0,
+      "purist_category_transitions": 0,
+      "raw_correct_to_wrong": 0,
+      "raw_wrong_to_correct": 0,
+      "semantic_effect": "format_only",
+      "semantic_kind_transitions": 0
+    },
+    {
+      "changed_from_raw": 57,
+      "conditions": [
+        "selected_evidence_arithmetic_only"
+      ],
+      "decision": "revise_or_bound",
+      "default_policy": "allowed_with_ablation",
+      "family_id": "selected_evidence_arithmetic",
+      "portability_category": "seizure_frequency",
+      "pragmatic_category_transitions": 32,
+      "purist_category_transitions": 36,
+      "raw_correct_to_wrong": 1,
+      "raw_wrong_to_correct": 32,
+      "semantic_effect": "denominator_or_window_policy",
+      "semantic_kind_transitions": 16
+    }
+  ],
+  "hypothesis_id": "H5",
+  "inspection_policy": {
+    "locked_test": "not_used",
+    "validation": "saved_same_output_ladder"
+  },
+  "locked_test_row_level_artifacts_used": 0,
+  "source_artifacts": {
+    "same_output_ladder": "experiments/gan2026_llm_replacement_postprocessing_ablation_validation250_v0_2026-06-02.json"
+  },
+  "split_manifest": "gan2026_split_v1"
+}

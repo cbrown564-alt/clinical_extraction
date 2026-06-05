@@ -1,6 +1,6 @@
 # H10 Runtime Variance Audit
 
-Decision: `h10_rejected_as_primary_gap_explanation`.
+Decision: `same_output_provenance_control_only`.
 
 No live model calls were made. No locked-test row-level failures were inspected; locked-test evidence is limited to the saved aggregate surface map.
 
@@ -33,4 +33,4 @@ Mean saved validation-minus-test gap: 0.1713.
 
 ## Interpretation
 
-The paired validation live/replay surface has byte-identical saved raw outputs for every matched row, while saved validation/test surface-map gaps remain large. Runtime variance may affect downstream attribution when adapters or repair code change, but it is not the primary explanation for the observed generalisation gap.
+This cached/saved-output comparison does not test live model variance. It only proves that when saved raw outputs are held fixed, downstream parser, adapter, repair, and policy code can still change labels and correctness. Use this as an attribution control, not as the H10 decision. Superseded for H10 by `experiments/gan2026_h10_fresh_live_variability_audit_v0_2026-06-05.json`.

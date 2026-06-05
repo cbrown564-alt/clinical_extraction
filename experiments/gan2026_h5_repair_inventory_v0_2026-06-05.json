@@ -1,0 +1,137 @@
+{
+  "artifact_kind": "gan2026_h5_semantic_repair_inventory_v0",
+  "claim_boundary": "Validation-development repair-family inventory only. This artifact uses saved validation repair-ladder summaries and static repair taxonomy; it writes no locked-test row-level artifacts.",
+  "condition_ladder": {
+    "benchmark_aligned_adapter": {
+      "changed_from_raw": 28,
+      "exact_normalized_label_transitions": 28,
+      "family_id": "benchmark_convention_renderer",
+      "pragmatic_category_transitions": 24,
+      "purist_category_transitions": 24,
+      "raw_correct_to_condition_wrong": 0,
+      "raw_wrong_to_condition_correct": 16,
+      "semantic_kind_transitions": 15
+    },
+    "format_only_repair": {
+      "changed_from_raw": 7,
+      "exact_normalized_label_transitions": 7,
+      "family_id": "format_only_prediction_surface",
+      "pragmatic_category_transitions": 0,
+      "purist_category_transitions": 0,
+      "raw_correct_to_condition_wrong": 0,
+      "raw_wrong_to_condition_correct": 0,
+      "semantic_kind_transitions": 0
+    },
+    "full_stack": {
+      "changed_from_raw": 28,
+      "exact_normalized_label_transitions": 28,
+      "family_id": "benchmark_convention_renderer",
+      "pragmatic_category_transitions": 24,
+      "purist_category_transitions": 24,
+      "raw_correct_to_condition_wrong": 0,
+      "raw_wrong_to_condition_correct": 16,
+      "semantic_kind_transitions": 15
+    },
+    "selected_evidence_arithmetic_only": {
+      "changed_from_raw": 57,
+      "exact_normalized_label_transitions": 57,
+      "family_id": "selected_evidence_arithmetic",
+      "pragmatic_category_transitions": 32,
+      "purist_category_transitions": 36,
+      "raw_correct_to_condition_wrong": 1,
+      "raw_wrong_to_condition_correct": 32,
+      "semantic_kind_transitions": 16
+    }
+  },
+  "date": "2026-06-05",
+  "decision": "ready_for_one_family_at_a_time_ablation",
+  "hypothesis_id": "H5",
+  "inspection_policy": {
+    "locked_test": "not_used",
+    "validation": "summary_and_static_taxonomy"
+  },
+  "locked_test_row_level_artifacts_used": 0,
+  "repair_families": [
+    {
+      "default_policy": "allowed",
+      "family_id": "format_only_prediction_surface",
+      "layer": "format_only_repair",
+      "portability_category": "general",
+      "prediction_owner": "llm_selected_label",
+      "rationale": "Parser-compatible spelling, units, whitespace, number words, and JSON/schema-compatible label surface repairs should preserve the selected fact.",
+      "semantic_effect": "format_only",
+      "source_grounding": "already_selected_label"
+    },
+    {
+      "default_policy": "allowed_with_ablation",
+      "family_id": "selected_evidence_arithmetic",
+      "layer": "selected_evidence_arithmetic_only",
+      "portability_category": "seizure_frequency",
+      "prediction_owner": "llm_selected_evidence_then_deterministic_arithmetic",
+      "rationale": "Arithmetic over already selected evidence can be portable, but it changes denominator/window semantics and must remain separately ablated from raw model selection.",
+      "semantic_effect": "denominator_or_window_policy",
+      "source_grounding": "selected_exact_evidence"
+    },
+    {
+      "default_policy": "review_required",
+      "family_id": "benchmark_convention_renderer",
+      "layer": "benchmark_aligned_adapter",
+      "portability_category": "benchmark_format",
+      "prediction_owner": "deterministic_benchmark_renderer",
+      "rationale": "Gan scorer-facing rendering can be useful, but it must not silently change clinical state or be counted as LLM-owned clinical selection.",
+      "semantic_effect": "benchmark_convention_or_sentinel_policy",
+      "source_grounding": "typed_or_selected_clinical_state"
+    },
+    {
+      "default_policy": "quarantine_until_panel_ablation",
+      "family_id": "seizure_free_boundary_duration",
+      "layer": "semantic_repair_helper",
+      "portability_category": "clinical_epilepsy",
+      "prediction_owner": "deterministic_semantic_repair",
+      "rationale": "Seizure-free and last-event duration rules change boundary state and must be tested on hard/control panels before promotion.",
+      "semantic_effect": "boundary_state_or_selected_event",
+      "source_grounding": "source_event_dates_and_boundary_evidence"
+    },
+    {
+      "default_policy": "quarantine_until_panel_ablation",
+      "family_id": "non_epileptic_current_event_projection",
+      "layer": "semantic_repair_helper",
+      "portability_category": "clinical_epilepsy",
+      "prediction_owner": "deterministic_semantic_repair",
+      "rationale": "Mapping current non-epileptic events into a Gan seizure-frequency label is a clinical boundary and benchmark-convention decision.",
+      "semantic_effect": "semantic_kind_or_sentinel_state",
+      "source_grounding": "non_epileptic_event_evidence"
+    },
+    {
+      "default_policy": "review_required",
+      "family_id": "cluster_and_vague_multiple_completion",
+      "layer": "semantic_repair_helper",
+      "portability_category": "benchmark_format",
+      "prediction_owner": "deterministic_semantic_repair",
+      "rationale": "Cluster and vague-multiple completion changes benchmark-rendered labels and should be reported apart from clinical extraction wins.",
+      "semantic_effect": "cluster_interpretation_or_benchmark_convention",
+      "source_grounding": "cluster_or_vague_frequency_evidence"
+    }
+  ],
+  "source_artifacts": {
+    "same_output_ladder": "experiments/gan2026_llm_replacement_postprocessing_ablation_validation250_v0_2026-06-02.json"
+  },
+  "split_manifest": "gan2026_split_v1",
+  "summary": {
+    "by_default_policy": {
+      "allowed": 1,
+      "allowed_with_ablation": 1,
+      "quarantine_until_panel_ablation": 2,
+      "review_required": 2
+    },
+    "by_portability_category": {
+      "benchmark_format": 2,
+      "clinical_epilepsy": 2,
+      "general": 1,
+      "seizure_frequency": 1
+    },
+    "quarantined_or_review_required_families": 4,
+    "repair_families": 6,
+    "semantic_families": 5
+  }
+}

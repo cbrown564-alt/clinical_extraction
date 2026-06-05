@@ -46,6 +46,11 @@ on it.
 - Add tests before changing any conversion from raw labels to numeric rates or categories.
 - Preserve raw semantic labels separately from scoring sentinels where possible.
 - Treat `unknown` and `no seizure frequency reference` as distinct raw states even though Gan scoring maps both to the unknown category.
+- Do not demote a frequency-bearing prediction to `no seizure frequency reference`
+  merely because the scorer-facing surface is awkward. H5 repair policy v1 keeps
+  vague frequency words as unresolved-multiple labels, maps per-hour rates to
+  `multiple per day`, and preserves cluster frequency content when cluster
+  context is present.
 - Prefer the author evaluation-script scoring policy where it conflicts with the CSV-preparation parser.
 - Keep clean scorer-facing gold-normalization policy separate from strict
   benchmark-format repair and from named deterministic semantic modules. The

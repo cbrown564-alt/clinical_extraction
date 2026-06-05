@@ -104,7 +104,7 @@ def _normalize_units(text: str) -> str:
 
 
 def _slash_per_forms(text: str) -> str:
-    unit_pattern = r"d|day|wk|wks?|week|mo|mon|mos|mons?|month|yr|yrs?|y|year"
+    unit_pattern = r"h|hr|hrs?|hour|d|day|wk|wks?|week|mo|mon|mos|mons?|month|yr|yrs?|y|year"
 
     def replace(match: re.Match[str]) -> str:
         unit = UNIT_SYNONYMS.get(match.group("unit"), match.group("unit"))
@@ -118,7 +118,7 @@ def _slash_per_forms(text: str) -> str:
 
 
 def _x_times_forms(text: str) -> str:
-    unit_pattern = r"d|day|wk|wks?|week|mo|mon|mos?|month|yr|yrs?|y|year"
+    unit_pattern = r"h|hr|hrs?|hour|d|day|wk|wks?|week|mo|mon|mos?|month|yr|yrs?|y|year"
     text = re.sub(r"(?<=\d)\s*[x×]\s*(?=per\b|/)", " ", text)
     text = re.sub(
         rf"\bx\s*(\d+)\s*/\s*({unit_pattern})s?\b",
@@ -202,6 +202,30 @@ def _many_to_multiple(text: str) -> str:
     return re.sub(r"\bmany\b", "multiple", text)
 
 
+def _hourly_to_multiple_per_day(text: str) -> str:
+    return re.sub(
+        r"\b(?:\d+(?:\s*to\s*\d+)?|multiple)\s+per\s+(?:h|hr|hour)\b",
+        "multiple per day",
+        text,
+    )
+
+
+def _vague_frequency_to_multiple(text: str) -> str:
+    text = re.sub(r"\brare\b(?!\s+per\b)", "multiple per year", text)
+    text = re.sub(r"\boccasional\b(?!\s+per\b)", "multiple per month", text)
+    text = re.sub(r"\bfrequent\b(?!\s+per\b)", "multiple per day", text)
+    text = re.sub(r"\brare\s+per\s+unspecified\s+time\b", "multiple per year", text)
+    text = re.sub(
+        r"\boccasional\s+per\s+unspecified\s+time\b",
+        "multiple per month",
+        text,
+    )
+    text = re.sub(r"\bfrequent\s+per\s+unspecified\s+time\b", "multiple per day", text)
+    text = re.sub(r"\brare\s+per\s+", "multiple per ", text)
+    text = re.sub(r"\boccasional\s+per\s+", "multiple per ", text)
+    return re.sub(r"\bfrequent\s+per\s+", "multiple per ", text)
+
+
 def _drop_prediction_noise(text: str) -> str:
     text = re.sub(r"\b(?:approximately|approx\.?|about|around|nearly|~)\b", "", text)
     text = re.sub(r"\b(?:a few|few|several)\b", "multiple", text)
@@ -255,7 +279,31 @@ def _canonicalize_seizure_free(text: str) -> str:
 def _fix_cluster_block(text: str) -> str:
     if "cluster" not in text:
         return text
+    text = re.sub(r"\bclustered\b", "", text).strip()
+    if "cluster" not in text:
+        return normalize_frequency_label(text)
     text = re.sub(r"\bclusters\b", "cluster", text)
+    text = re.sub(
+        r"\b(?P<count>\d+(?:\s*to\s*\d+)?|multiple)\s+per\s+"
+        r"(?P<window>(?:\d+(?:\s*to\s*\d+)?\s+)?(?:day|week|month|year))\s+"
+        r"cluster\s+of\s+(?P<burden>\d+(?:\s*to\s*\d+)?|multiple)"
+        r"(?:\s+(?:absences?|seizures?|events?|episodes?))?\b",
+        r"\g<count> cluster per \g<window>, \g<burden> per cluster",
+        text,
+    )
+    text = re.sub(
+        r"\b(?P<count>\d+(?:\s*to\s*\d+)?|multiple)\s+per\s+"
+        r"(?P<window>(?:\d+(?:\s*to\s*\d+)?\s+)?(?:day|week|month|year))\s+"
+        r"cluster\s+(?P<burden>\d+(?:\s*to\s*\d+)?|multiple)\b",
+        r"\g<count> cluster per \g<window>, \g<burden> per cluster",
+        text,
+    )
+    text = re.sub(
+        r"\b(\d+(?:\s*to\s*\d+)?|multiple)\s+"
+        r"(?:absences?|seizures?|events?|episodes?)\s+per\s+cluster\b",
+        r"\1 per cluster",
+        text,
+    )
     text = re.sub(
         r"\bunknown\s+per\s+cluster\s+(\d+(?:\s*to\s*\d+)?)\b",
         r"unknown, \1 per cluster",
@@ -462,6 +510,8 @@ def _fallback_prediction_repair(text: str) -> str:
         unit = event_per_window.group("unit")
         den_text = f"{denominator} " if denominator and denominator != "1" else ""
         return f"{event_per_window.group('num')} per {den_text}{unit}"
+    if re.search(r"\b(?:seizure|attack|convulsion|spasm|event|absence|tonic)\b", text):
+        return "unknown"
     return "no seizure frequency reference"
 
 
@@ -569,6 +619,16 @@ BENCHMARK_REPAIR_STEPS = (
         rule_id="benchmark_repair.many_to_multiple",
         description="Map many as a vague count synonym to the accepted multiple token.",
         apply=_many_to_multiple,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.hourly_to_multiple_per_day",
+        description="Map any per-hour seizure frequency to multiple per day.",
+        apply=_hourly_to_multiple_per_day,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.vague_frequency_to_multiple",
+        description="Preserve vague frequency words as unresolved multiple labels.",
+        apply=_vague_frequency_to_multiple,
     ),
     BenchmarkRepairStep(
         rule_id="benchmark_repair.drop_prediction_noise",

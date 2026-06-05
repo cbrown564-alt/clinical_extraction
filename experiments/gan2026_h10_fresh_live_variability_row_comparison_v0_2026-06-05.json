@@ -1,0 +1,3447 @@
+{
+  "artifact_kind": "gan2026_h10_fresh_live_variability_row_comparison_v0",
+  "claim_boundary": "Validation-development row comparison. No clinical note text is included. No locked-test rows or failures were inspected.",
+  "date": "2026-06-05",
+  "layer_label_change_counts": {
+    "adapter_only_sidecar_from_adjudicator_selection": 0,
+    "deterministic_top_candidate": 0,
+    "hybrid_adjudicator_raw": 1,
+    "hybrid_adjudicator_with_adapters": 0,
+    "llm_candidate_selector_raw": 3,
+    "state_graph_projection": 0
+  },
+  "layer_purist_change_counts": {
+    "adapter_only_sidecar_from_adjudicator_selection": 0,
+    "deterministic_top_candidate": 0,
+    "hybrid_adjudicator_raw": 1,
+    "hybrid_adjudicator_with_adapters": 0,
+    "llm_candidate_selector_raw": 0,
+    "state_graph_projection": 0
+  },
+  "matched_rows": 20,
+  "raw_change_counts": {
+    "adjudicator_raw_output": 19,
+    "llm_candidate_raw_output": 19,
+    "raw_output": 19
+  },
+  "rows": [
+    {
+      "adjudicator_selection": {
+        "run_a": {
+          "final_kind": "frequency",
+          "final_label": "4 per day",
+          "selected_evidence_hash": "fb43eb81009b",
+          "selected_source_ids": [
+            "det:event_1",
+            "graph:sg-001"
+          ]
+        },
+        "run_b": {
+          "final_kind": "frequency",
+          "final_label": "4 per day",
+          "selected_evidence_hash": "fb43eb81009b",
+          "selected_source_ids": [
+            "det:event_1",
+            "graph:sg-001"
+          ]
+        }
+      },
+      "call_error": {
+        "run_a": null,
+        "run_b": null
+      },
+      "gold_label": "4 per day",
+      "layer_changes": {
+        "adapter_only_sidecar_from_adjudicator_selection": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "4 per day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "4 per day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "deterministic_top_candidate": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "4 per day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "4 per day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "hybrid_adjudicator_raw": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "4 per day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "4 per day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "hybrid_adjudicator_with_adapters": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "4 per day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "4 per day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "llm_candidate_selector_raw": {
+          "label_changed": true,
+          "purist_changed": false,
+          "run_a": {
+            "error": "Unparsable label (raw: 'frequent' / normalized: 'frequent')",
+            "label": "frequent",
+            "purist_correct": null,
+            "scorable": false
+          },
+          "run_b": {
+            "error": "Unparsable label (raw: 'frequency' / normalized: 'frequency')",
+            "label": "frequency",
+            "purist_correct": null,
+            "scorable": false
+          },
+          "scorable_changed": false
+        },
+        "state_graph_projection": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "4 per day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "4 per day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        }
+      },
+      "llm_candidate_selection": {
+        "run_a": {
+          "evidence_hash": null,
+          "final_kind": "frequency",
+          "final_label": "frequent",
+          "selected_event_ids": null
+        },
+        "run_b": {
+          "evidence_hash": null,
+          "final_kind": "frequency",
+          "final_label": "frequency",
+          "selected_event_ids": null
+        }
+      },
+      "parse_errors": {
+        "run_a": [],
+        "run_b": []
+      },
+      "raw_changes": {
+        "adjudicator_raw_output": true,
+        "llm_candidate_raw_output": true,
+        "raw_output": true
+      },
+      "raw_hashes": {
+        "adjudicator_raw_output": {
+          "run_a": "1b78c8d83a14",
+          "run_b": "e0ba41d0bd6a"
+        },
+        "llm_candidate_raw_output": {
+          "run_a": "6d3af0dc6fee",
+          "run_b": "1b87e1e65a77"
+        },
+        "raw_output": {
+          "run_a": "1b78c8d83a14",
+          "run_b": "e0ba41d0bd6a"
+        }
+      },
+      "source_row_index": 10
+    },
+    {
+      "adjudicator_selection": {
+        "run_a": {
+          "final_kind": "frequency",
+          "final_label": "4 per week",
+          "selected_evidence_hash": "8fa51a0dcb23",
+          "selected_source_ids": [
+            "det:event_1",
+            "graph:sg-001",
+            "llm:llm-1"
+          ]
+        },
+        "run_b": {
+          "final_kind": "frequency",
+          "final_label": "4 per week",
+          "selected_evidence_hash": "8fa51a0dcb23",
+          "selected_source_ids": [
+            "det:event_1",
+            "graph:sg-001"
+          ]
+        }
+      },
+      "call_error": {
+        "run_a": null,
+        "run_b": null
+      },
+      "gold_label": "4 per week",
+      "layer_changes": {
+        "adapter_only_sidecar_from_adjudicator_selection": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "4 per week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "4 per week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "deterministic_top_candidate": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "4 per week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "4 per week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "hybrid_adjudicator_raw": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "4 per week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "4 per week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "hybrid_adjudicator_with_adapters": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "4 per week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "4 per week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "llm_candidate_selector_raw": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": "Unparsable label (raw: 'four or fewer per week' / normalized: 'four or fewer per week')",
+            "label": "four or fewer per week",
+            "purist_correct": null,
+            "scorable": false
+          },
+          "run_b": {
+            "error": "Unparsable label (raw: 'four or fewer per week' / normalized: 'four or fewer per week')",
+            "label": "four or fewer per week",
+            "purist_correct": null,
+            "scorable": false
+          },
+          "scorable_changed": false
+        },
+        "state_graph_projection": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "4 per week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "4 per week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        }
+      },
+      "llm_candidate_selection": {
+        "run_a": {
+          "evidence_hash": null,
+          "final_kind": "frequency",
+          "final_label": "four or fewer per week",
+          "selected_event_ids": null
+        },
+        "run_b": {
+          "evidence_hash": null,
+          "final_kind": "frequency",
+          "final_label": "four or fewer per week",
+          "selected_event_ids": null
+        }
+      },
+      "parse_errors": {
+        "run_a": [],
+        "run_b": []
+      },
+      "raw_changes": {
+        "adjudicator_raw_output": true,
+        "llm_candidate_raw_output": true,
+        "raw_output": true
+      },
+      "raw_hashes": {
+        "adjudicator_raw_output": {
+          "run_a": "d8fb6e7177df",
+          "run_b": "190e7850033c"
+        },
+        "llm_candidate_raw_output": {
+          "run_a": "468440cd1f06",
+          "run_b": "1bbb00d4e9fe"
+        },
+        "raw_output": {
+          "run_a": "d8fb6e7177df",
+          "run_b": "190e7850033c"
+        }
+      },
+      "source_row_index": 40
+    },
+    {
+      "adjudicator_selection": {
+        "run_a": {
+          "final_kind": "frequency",
+          "final_label": "6 to 7 per year",
+          "selected_evidence_hash": "0713f9f35b7d",
+          "selected_source_ids": [
+            "det:event_1",
+            "graph:sg-001"
+          ]
+        },
+        "run_b": {
+          "final_kind": "frequency",
+          "final_label": "6 to 7 per year",
+          "selected_evidence_hash": "0713f9f35b7d",
+          "selected_source_ids": [
+            "det:event_1",
+            "graph:sg-001",
+            "llm:llm-2"
+          ]
+        }
+      },
+      "call_error": {
+        "run_a": null,
+        "run_b": null
+      },
+      "gold_label": "6 to 7 per year",
+      "layer_changes": {
+        "adapter_only_sidecar_from_adjudicator_selection": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "6 to 7 per year",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "6 to 7 per year",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "deterministic_top_candidate": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "6 to 7 per year",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "6 to 7 per year",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "hybrid_adjudicator_raw": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "6 to 7 per year",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "6 to 7 per year",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "hybrid_adjudicator_with_adapters": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "6 to 7 per year",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "6 to 7 per year",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "llm_candidate_selector_raw": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": "Unparsable label (raw: '\u22646-7 per year' / normalized: '\u22646 to 7 per year')",
+            "label": "\u22646-7 per year",
+            "purist_correct": null,
+            "scorable": false
+          },
+          "run_b": {
+            "error": "Unparsable label (raw: '\u22646-7 per year' / normalized: '\u22646 to 7 per year')",
+            "label": "\u22646-7 per year",
+            "purist_correct": null,
+            "scorable": false
+          },
+          "scorable_changed": false
+        },
+        "state_graph_projection": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "6 to 7 per year",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "6 to 7 per year",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        }
+      },
+      "llm_candidate_selection": {
+        "run_a": {
+          "evidence_hash": null,
+          "final_kind": "frequency",
+          "final_label": "\u22646-7 per year",
+          "selected_event_ids": null
+        },
+        "run_b": {
+          "evidence_hash": null,
+          "final_kind": "frequency",
+          "final_label": "\u22646-7 per year",
+          "selected_event_ids": null
+        }
+      },
+      "parse_errors": {
+        "run_a": [],
+        "run_b": []
+      },
+      "raw_changes": {
+        "adjudicator_raw_output": true,
+        "llm_candidate_raw_output": true,
+        "raw_output": true
+      },
+      "raw_hashes": {
+        "adjudicator_raw_output": {
+          "run_a": "81d5a29d17aa",
+          "run_b": "4487a52b6c8b"
+        },
+        "llm_candidate_raw_output": {
+          "run_a": "00718854ea0b",
+          "run_b": "3d256c720132"
+        },
+        "raw_output": {
+          "run_a": "81d5a29d17aa",
+          "run_b": "4487a52b6c8b"
+        }
+      },
+      "source_row_index": 79
+    },
+    {
+      "adjudicator_selection": {
+        "run_a": {
+          "final_kind": "frequency",
+          "final_label": "2 to 4 per year",
+          "selected_evidence_hash": "d19b4e404e57",
+          "selected_source_ids": [
+            "det:event_1",
+            "graph:sg-001",
+            "llm:llm-1"
+          ]
+        },
+        "run_b": {
+          "final_kind": "frequency",
+          "final_label": "2 to 4 per year",
+          "selected_evidence_hash": "d19b4e404e57",
+          "selected_source_ids": [
+            "det:event_1",
+            "graph:sg-001",
+            "llm:llm-1"
+          ]
+        }
+      },
+      "call_error": {
+        "run_a": null,
+        "run_b": null
+      },
+      "gold_label": "2 to 4 per year",
+      "layer_changes": {
+        "adapter_only_sidecar_from_adjudicator_selection": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "2 to 4 per year",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "2 to 4 per year",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "deterministic_top_candidate": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "2 to 4 per year",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "2 to 4 per year",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "hybrid_adjudicator_raw": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "2 to 4 per year",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "2 to 4 per year",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "hybrid_adjudicator_with_adapters": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "2 to 4 per year",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "2 to 4 per year",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "llm_candidate_selector_raw": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": "Unparsable label (raw: 'two to four per year' / normalized: 'two to four per year')",
+            "label": "two to four per year",
+            "purist_correct": null,
+            "scorable": false
+          },
+          "run_b": {
+            "error": "Unparsable label (raw: 'two to four per year' / normalized: 'two to four per year')",
+            "label": "two to four per year",
+            "purist_correct": null,
+            "scorable": false
+          },
+          "scorable_changed": false
+        },
+        "state_graph_projection": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "2 to 4 per year",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "2 to 4 per year",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        }
+      },
+      "llm_candidate_selection": {
+        "run_a": {
+          "evidence_hash": null,
+          "final_kind": "frequency",
+          "final_label": "two to four per year",
+          "selected_event_ids": null
+        },
+        "run_b": {
+          "evidence_hash": null,
+          "final_kind": "frequency",
+          "final_label": "two to four per year",
+          "selected_event_ids": null
+        }
+      },
+      "parse_errors": {
+        "run_a": [],
+        "run_b": []
+      },
+      "raw_changes": {
+        "adjudicator_raw_output": true,
+        "llm_candidate_raw_output": true,
+        "raw_output": true
+      },
+      "raw_hashes": {
+        "adjudicator_raw_output": {
+          "run_a": "c79e62de3dd6",
+          "run_b": "fc008ea0ded5"
+        },
+        "llm_candidate_raw_output": {
+          "run_a": "e355698964ca",
+          "run_b": "25e8d8484c93"
+        },
+        "raw_output": {
+          "run_a": "c79e62de3dd6",
+          "run_b": "fc008ea0ded5"
+        }
+      },
+      "source_row_index": 103
+    },
+    {
+      "adjudicator_selection": {
+        "run_a": {
+          "final_kind": "frequency",
+          "final_label": "17 per month",
+          "selected_evidence_hash": "794e1763063a",
+          "selected_source_ids": [
+            "det:event_1",
+            "graph:sg-001",
+            "llm:llm-1"
+          ]
+        },
+        "run_b": {
+          "final_kind": "frequency",
+          "final_label": "17 per month",
+          "selected_evidence_hash": "794e1763063a",
+          "selected_source_ids": [
+            "det:event_1",
+            "graph:sg-001",
+            "llm:llm-1"
+          ]
+        }
+      },
+      "call_error": {
+        "run_a": null,
+        "run_b": null
+      },
+      "gold_label": "17 per month",
+      "layer_changes": {
+        "adapter_only_sidecar_from_adjudicator_selection": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "17 per month",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "17 per month",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "deterministic_top_candidate": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "17 per month",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "17 per month",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "hybrid_adjudicator_raw": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "17 per month",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "17 per month",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "hybrid_adjudicator_with_adapters": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "17 per month",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "17 per month",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "llm_candidate_selector_raw": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "17 per month",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "17 per month",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "state_graph_projection": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "17 per month",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "17 per month",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        }
+      },
+      "llm_candidate_selection": {
+        "run_a": {
+          "evidence_hash": null,
+          "final_kind": "frequency",
+          "final_label": "17 per month",
+          "selected_event_ids": null
+        },
+        "run_b": {
+          "evidence_hash": null,
+          "final_kind": "frequency",
+          "final_label": "17 per month",
+          "selected_event_ids": null
+        }
+      },
+      "parse_errors": {
+        "run_a": [],
+        "run_b": []
+      },
+      "raw_changes": {
+        "adjudicator_raw_output": false,
+        "llm_candidate_raw_output": false,
+        "raw_output": false
+      },
+      "raw_hashes": {
+        "adjudicator_raw_output": {
+          "run_a": "a70968ade748",
+          "run_b": "a70968ade748"
+        },
+        "llm_candidate_raw_output": {
+          "run_a": "3fa36595fefa",
+          "run_b": "3fa36595fefa"
+        },
+        "raw_output": {
+          "run_a": "a70968ade748",
+          "run_b": "a70968ade748"
+        }
+      },
+      "source_row_index": 128
+    },
+    {
+      "adjudicator_selection": {
+        "run_a": {
+          "final_kind": "frequency",
+          "final_label": "1 per 6 day",
+          "selected_evidence_hash": "326ed0812e9c",
+          "selected_source_ids": [
+            "det:event_1",
+            "graph:sg-001",
+            "llm:llm-1"
+          ]
+        },
+        "run_b": {
+          "final_kind": "frequency",
+          "final_label": "1 per 6 day",
+          "selected_evidence_hash": "326ed0812e9c",
+          "selected_source_ids": [
+            "det:event_1",
+            "graph:sg-001",
+            "llm:llm-1"
+          ]
+        }
+      },
+      "call_error": {
+        "run_a": null,
+        "run_b": null
+      },
+      "gold_label": "1 per 6 day",
+      "layer_changes": {
+        "adapter_only_sidecar_from_adjudicator_selection": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 6 day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 6 day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "deterministic_top_candidate": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 6 day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 6 day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "hybrid_adjudicator_raw": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 6 day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 6 day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "hybrid_adjudicator_with_adapters": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 6 day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 6 day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "llm_candidate_selector_raw": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": "Unparsable label (raw: 'every 6 days' / normalized: 'every 6 days')",
+            "label": "every 6 days",
+            "purist_correct": null,
+            "scorable": false
+          },
+          "run_b": {
+            "error": "Unparsable label (raw: 'every 6 days' / normalized: 'every 6 days')",
+            "label": "every 6 days",
+            "purist_correct": null,
+            "scorable": false
+          },
+          "scorable_changed": false
+        },
+        "state_graph_projection": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 6 day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 6 day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        }
+      },
+      "llm_candidate_selection": {
+        "run_a": {
+          "evidence_hash": null,
+          "final_kind": "frequency",
+          "final_label": "every 6 days",
+          "selected_event_ids": null
+        },
+        "run_b": {
+          "evidence_hash": null,
+          "final_kind": "frequency",
+          "final_label": "every 6 days",
+          "selected_event_ids": null
+        }
+      },
+      "parse_errors": {
+        "run_a": [],
+        "run_b": []
+      },
+      "raw_changes": {
+        "adjudicator_raw_output": true,
+        "llm_candidate_raw_output": true,
+        "raw_output": true
+      },
+      "raw_hashes": {
+        "adjudicator_raw_output": {
+          "run_a": "0df04083f553",
+          "run_b": "a69c60241205"
+        },
+        "llm_candidate_raw_output": {
+          "run_a": "a283d5c66968",
+          "run_b": "61fdcd5b2318"
+        },
+        "raw_output": {
+          "run_a": "0df04083f553",
+          "run_b": "a69c60241205"
+        }
+      },
+      "source_row_index": 156
+    },
+    {
+      "adjudicator_selection": {
+        "run_a": {
+          "final_kind": "frequency",
+          "final_label": "1 per 7 day",
+          "selected_evidence_hash": "9cabbfebca90",
+          "selected_source_ids": [
+            "det:event_1",
+            "graph:sg-001",
+            "llm:llm-1"
+          ]
+        },
+        "run_b": {
+          "final_kind": "frequency",
+          "final_label": "1 per 7 day",
+          "selected_evidence_hash": "9cabbfebca90",
+          "selected_source_ids": [
+            "det:event_1",
+            "graph:sg-001",
+            "llm:llm-1"
+          ]
+        }
+      },
+      "call_error": {
+        "run_a": null,
+        "run_b": null
+      },
+      "gold_label": "1 per 7 day",
+      "layer_changes": {
+        "adapter_only_sidecar_from_adjudicator_selection": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 7 day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 7 day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "deterministic_top_candidate": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 7 day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 7 day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "hybrid_adjudicator_raw": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 7 day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 7 day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "hybrid_adjudicator_with_adapters": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 7 day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 7 day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "llm_candidate_selector_raw": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": "Unparsable label (raw: 'seizures every 7 days' / normalized: 'seizures every 7 days')",
+            "label": "seizures every 7 days",
+            "purist_correct": null,
+            "scorable": false
+          },
+          "run_b": {
+            "error": "Unparsable label (raw: 'seizures every 7 days' / normalized: 'seizures every 7 days')",
+            "label": "seizures every 7 days",
+            "purist_correct": null,
+            "scorable": false
+          },
+          "scorable_changed": false
+        },
+        "state_graph_projection": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 7 day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 7 day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        }
+      },
+      "llm_candidate_selection": {
+        "run_a": {
+          "evidence_hash": null,
+          "final_kind": "frequency",
+          "final_label": "seizures every 7 days",
+          "selected_event_ids": null
+        },
+        "run_b": {
+          "evidence_hash": null,
+          "final_kind": "frequency",
+          "final_label": "seizures every 7 days",
+          "selected_event_ids": null
+        }
+      },
+      "parse_errors": {
+        "run_a": [],
+        "run_b": []
+      },
+      "raw_changes": {
+        "adjudicator_raw_output": true,
+        "llm_candidate_raw_output": true,
+        "raw_output": true
+      },
+      "raw_hashes": {
+        "adjudicator_raw_output": {
+          "run_a": "7c45200bd520",
+          "run_b": "be3b46a7ef9b"
+        },
+        "llm_candidate_raw_output": {
+          "run_a": "029e693ebaf6",
+          "run_b": "706b34647d81"
+        },
+        "raw_output": {
+          "run_a": "7c45200bd520",
+          "run_b": "be3b46a7ef9b"
+        }
+      },
+      "source_row_index": 180
+    },
+    {
+      "adjudicator_selection": {
+        "run_a": {
+          "final_kind": "frequency",
+          "final_label": "1 per 2 day",
+          "selected_evidence_hash": "e465e9f44d18",
+          "selected_source_ids": [
+            "det:event_1",
+            "graph:sg-001",
+            "llm:llm-1"
+          ]
+        },
+        "run_b": {
+          "final_kind": "frequency",
+          "final_label": "1 per 2 day",
+          "selected_evidence_hash": "a4973a5dcfc0",
+          "selected_source_ids": [
+            "det:event_1",
+            "graph:sg-002",
+            "llm:llm-1"
+          ]
+        }
+      },
+      "call_error": {
+        "run_a": null,
+        "run_b": null
+      },
+      "gold_label": "1 per 2 day",
+      "layer_changes": {
+        "adapter_only_sidecar_from_adjudicator_selection": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 2 day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 2 day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "deterministic_top_candidate": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 2 day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 2 day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "hybrid_adjudicator_raw": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 2 day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 2 day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "hybrid_adjudicator_with_adapters": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 2 day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 2 day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "llm_candidate_selector_raw": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": "Unparsable label (raw: 'every 2 days' / normalized: 'every 2 days')",
+            "label": "every 2 days",
+            "purist_correct": null,
+            "scorable": false
+          },
+          "run_b": {
+            "error": "Unparsable label (raw: 'every 2 days' / normalized: 'every 2 days')",
+            "label": "every 2 days",
+            "purist_correct": null,
+            "scorable": false
+          },
+          "scorable_changed": false
+        },
+        "state_graph_projection": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 2 day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 2 day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        }
+      },
+      "llm_candidate_selection": {
+        "run_a": {
+          "evidence_hash": null,
+          "final_kind": "frequency",
+          "final_label": "every 2 days",
+          "selected_event_ids": null
+        },
+        "run_b": {
+          "evidence_hash": null,
+          "final_kind": "frequency",
+          "final_label": "every 2 days",
+          "selected_event_ids": null
+        }
+      },
+      "parse_errors": {
+        "run_a": [],
+        "run_b": []
+      },
+      "raw_changes": {
+        "adjudicator_raw_output": true,
+        "llm_candidate_raw_output": true,
+        "raw_output": true
+      },
+      "raw_hashes": {
+        "adjudicator_raw_output": {
+          "run_a": "aee9da32cca6",
+          "run_b": "da7c642a2216"
+        },
+        "llm_candidate_raw_output": {
+          "run_a": "367b67e2028e",
+          "run_b": "3bc824d7c655"
+        },
+        "raw_output": {
+          "run_a": "aee9da32cca6",
+          "run_b": "da7c642a2216"
+        }
+      },
+      "source_row_index": 182
+    },
+    {
+      "adjudicator_selection": {
+        "run_a": {
+          "final_kind": "frequency",
+          "final_label": "1 per 7 to 9 day",
+          "selected_evidence_hash": "342a2e3c74a1",
+          "selected_source_ids": [
+            "det:event_1",
+            "graph:sg-001",
+            "llm:llm-1"
+          ]
+        },
+        "run_b": {
+          "final_kind": "frequency",
+          "final_label": "1 per 7 to 9 day",
+          "selected_evidence_hash": "342a2e3c74a1",
+          "selected_source_ids": [
+            "det:event_1",
+            "graph:sg-001",
+            "llm:llm-1"
+          ]
+        }
+      },
+      "call_error": {
+        "run_a": null,
+        "run_b": null
+      },
+      "gold_label": "1 per 7 to 9 day",
+      "layer_changes": {
+        "adapter_only_sidecar_from_adjudicator_selection": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 7 to 9 day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 7 to 9 day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "deterministic_top_candidate": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 7 to 9 day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 7 to 9 day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "hybrid_adjudicator_raw": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 7 to 9 day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 7 to 9 day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "hybrid_adjudicator_with_adapters": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 7 to 9 day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 7 to 9 day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "llm_candidate_selector_raw": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": "Unparsable cluster label: 'cluster every 7-9 days'",
+            "label": "cluster every 7-9 days",
+            "purist_correct": null,
+            "scorable": false
+          },
+          "run_b": {
+            "error": "Unparsable cluster label: 'cluster every 7-9 days'",
+            "label": "cluster every 7-9 days",
+            "purist_correct": null,
+            "scorable": false
+          },
+          "scorable_changed": false
+        },
+        "state_graph_projection": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 7 to 9 day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 7 to 9 day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        }
+      },
+      "llm_candidate_selection": {
+        "run_a": {
+          "evidence_hash": null,
+          "final_kind": "frequency",
+          "final_label": "cluster every 7-9 days",
+          "selected_event_ids": null
+        },
+        "run_b": {
+          "evidence_hash": null,
+          "final_kind": "frequency",
+          "final_label": "cluster every 7-9 days",
+          "selected_event_ids": null
+        }
+      },
+      "parse_errors": {
+        "run_a": [
+          "evidence: invalid candidate evidence for ['llm-3']"
+        ],
+        "run_b": [
+          "evidence: invalid candidate evidence for ['llm-3']"
+        ]
+      },
+      "raw_changes": {
+        "adjudicator_raw_output": true,
+        "llm_candidate_raw_output": true,
+        "raw_output": true
+      },
+      "raw_hashes": {
+        "adjudicator_raw_output": {
+          "run_a": "9f581a325645",
+          "run_b": "79c3c797daba"
+        },
+        "llm_candidate_raw_output": {
+          "run_a": "128a7d557237",
+          "run_b": "21c8a246dc23"
+        },
+        "raw_output": {
+          "run_a": "9f581a325645",
+          "run_b": "79c3c797daba"
+        }
+      },
+      "source_row_index": 187
+    },
+    {
+      "adjudicator_selection": {
+        "run_a": {
+          "final_kind": "frequency",
+          "final_label": "unknown",
+          "selected_evidence_hash": "5ee09cd17179",
+          "selected_source_ids": [
+            "llm:llm-1"
+          ]
+        },
+        "run_b": {
+          "final_kind": "frequency",
+          "final_label": "unknown",
+          "selected_evidence_hash": "5ee09cd17179",
+          "selected_source_ids": [
+            "llm:llm-1"
+          ]
+        }
+      },
+      "call_error": {
+        "run_a": null,
+        "run_b": null
+      },
+      "gold_label": "1 per 4 week",
+      "layer_changes": {
+        "adapter_only_sidecar_from_adjudicator_selection": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 4 week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 4 week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "deterministic_top_candidate": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 4 week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 4 week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "hybrid_adjudicator_raw": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "unknown",
+            "purist_correct": false,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "unknown",
+            "purist_correct": false,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "hybrid_adjudicator_with_adapters": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 4 week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 4 week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "llm_candidate_selector_raw": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": "Unparsable cluster label: 'absence cluster every 4 weeks'",
+            "label": "absence cluster every 4 weeks",
+            "purist_correct": null,
+            "scorable": false
+          },
+          "run_b": {
+            "error": "Unparsable cluster label: 'absence cluster every 4 weeks'",
+            "label": "absence cluster every 4 weeks",
+            "purist_correct": null,
+            "scorable": false
+          },
+          "scorable_changed": false
+        },
+        "state_graph_projection": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 4 week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 4 week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        }
+      },
+      "llm_candidate_selection": {
+        "run_a": {
+          "evidence_hash": null,
+          "final_kind": "frequency",
+          "final_label": "absence cluster every 4 weeks",
+          "selected_event_ids": null
+        },
+        "run_b": {
+          "evidence_hash": null,
+          "final_kind": "frequency",
+          "final_label": "absence cluster every 4 weeks",
+          "selected_event_ids": null
+        }
+      },
+      "parse_errors": {
+        "run_a": [
+          "final_label_repaired: 'absence cluster every 4 weeks' -> 'unknown'"
+        ],
+        "run_b": [
+          "evidence: invalid candidate evidence for ['llm-2']",
+          "final_label_repaired: 'absence cluster every 4 weeks' -> 'unknown'"
+        ]
+      },
+      "raw_changes": {
+        "adjudicator_raw_output": true,
+        "llm_candidate_raw_output": true,
+        "raw_output": true
+      },
+      "raw_hashes": {
+        "adjudicator_raw_output": {
+          "run_a": "3748a0e8649c",
+          "run_b": "1bffa80702b9"
+        },
+        "llm_candidate_raw_output": {
+          "run_a": "1f8455db840b",
+          "run_b": "89601cfb2b7a"
+        },
+        "raw_output": {
+          "run_a": "3748a0e8649c",
+          "run_b": "1bffa80702b9"
+        }
+      },
+      "source_row_index": 190
+    },
+    {
+      "adjudicator_selection": {
+        "run_a": {
+          "final_kind": "frequency",
+          "final_label": "1 per 4 week",
+          "selected_evidence_hash": "e21da929d18d",
+          "selected_source_ids": [
+            "det:event_1"
+          ]
+        },
+        "run_b": {
+          "final_kind": "frequency",
+          "final_label": "1 per 4 week",
+          "selected_evidence_hash": "884914461482",
+          "selected_source_ids": [
+            "det:event_1",
+            "graph:sg-001",
+            "llm:llm-1"
+          ]
+        }
+      },
+      "call_error": {
+        "run_a": null,
+        "run_b": null
+      },
+      "gold_label": "1 per 4 week",
+      "layer_changes": {
+        "adapter_only_sidecar_from_adjudicator_selection": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 4 week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 4 week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "deterministic_top_candidate": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 4 week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 4 week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "hybrid_adjudicator_raw": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 4 week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 4 week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "hybrid_adjudicator_with_adapters": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 4 week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 4 week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "llm_candidate_selector_raw": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": "Unparsable label (raw: 'every 4 weeks' / normalized: 'every 4 weeks')",
+            "label": "every 4 weeks",
+            "purist_correct": null,
+            "scorable": false
+          },
+          "run_b": {
+            "error": "Unparsable label (raw: 'every 4 weeks' / normalized: 'every 4 weeks')",
+            "label": "every 4 weeks",
+            "purist_correct": null,
+            "scorable": false
+          },
+          "scorable_changed": false
+        },
+        "state_graph_projection": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 4 week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 4 week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        }
+      },
+      "llm_candidate_selection": {
+        "run_a": {
+          "evidence_hash": null,
+          "final_kind": "frequency",
+          "final_label": "every 4 weeks",
+          "selected_event_ids": null
+        },
+        "run_b": {
+          "evidence_hash": null,
+          "final_kind": "frequency",
+          "final_label": "every 4 weeks",
+          "selected_event_ids": null
+        }
+      },
+      "parse_errors": {
+        "run_a": [],
+        "run_b": []
+      },
+      "raw_changes": {
+        "adjudicator_raw_output": true,
+        "llm_candidate_raw_output": true,
+        "raw_output": true
+      },
+      "raw_hashes": {
+        "adjudicator_raw_output": {
+          "run_a": "710dddf1d5a3",
+          "run_b": "8c75c7195ba6"
+        },
+        "llm_candidate_raw_output": {
+          "run_a": "2ca5759463c8",
+          "run_b": "6d2c550753f2"
+        },
+        "raw_output": {
+          "run_a": "710dddf1d5a3",
+          "run_b": "8c75c7195ba6"
+        }
+      },
+      "source_row_index": 198
+    },
+    {
+      "adjudicator_selection": {
+        "run_a": {
+          "final_kind": "frequency",
+          "final_label": "1 per 3 to 4 week",
+          "selected_evidence_hash": "9854445d1fd9",
+          "selected_source_ids": [
+            "det:event_1",
+            "graph:sg-001",
+            "llm:llm-1"
+          ]
+        },
+        "run_b": {
+          "final_kind": "frequency",
+          "final_label": "1 per 3 to 4 week",
+          "selected_evidence_hash": "9854445d1fd9",
+          "selected_source_ids": [
+            "det:event_1",
+            "graph:sg-001",
+            "llm:llm-1"
+          ]
+        }
+      },
+      "call_error": {
+        "run_a": null,
+        "run_b": null
+      },
+      "gold_label": "1 per 3 to 4 week",
+      "layer_changes": {
+        "adapter_only_sidecar_from_adjudicator_selection": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 3 to 4 week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 3 to 4 week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "deterministic_top_candidate": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 3 to 4 week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 3 to 4 week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "hybrid_adjudicator_raw": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 3 to 4 week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 3 to 4 week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "hybrid_adjudicator_with_adapters": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 3 to 4 week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 3 to 4 week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "llm_candidate_selector_raw": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": "Unparsable label (raw: '3-4 weeks' / normalized: '3 to 4 weeks')",
+            "label": "3-4 weeks",
+            "purist_correct": null,
+            "scorable": false
+          },
+          "run_b": {
+            "error": "Unparsable label (raw: '3-4 weeks' / normalized: '3 to 4 weeks')",
+            "label": "3-4 weeks",
+            "purist_correct": null,
+            "scorable": false
+          },
+          "scorable_changed": false
+        },
+        "state_graph_projection": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 3 to 4 week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 3 to 4 week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        }
+      },
+      "llm_candidate_selection": {
+        "run_a": {
+          "evidence_hash": null,
+          "final_kind": "frequency",
+          "final_label": "3-4 weeks",
+          "selected_event_ids": null
+        },
+        "run_b": {
+          "evidence_hash": null,
+          "final_kind": "frequency",
+          "final_label": "3-4 weeks",
+          "selected_event_ids": null
+        }
+      },
+      "parse_errors": {
+        "run_a": [],
+        "run_b": []
+      },
+      "raw_changes": {
+        "adjudicator_raw_output": true,
+        "llm_candidate_raw_output": true,
+        "raw_output": true
+      },
+      "raw_hashes": {
+        "adjudicator_raw_output": {
+          "run_a": "6f17f5df700e",
+          "run_b": "aa5abf041ce0"
+        },
+        "llm_candidate_raw_output": {
+          "run_a": "22b7176d4f7d",
+          "run_b": "990c7dc084cd"
+        },
+        "raw_output": {
+          "run_a": "6f17f5df700e",
+          "run_b": "aa5abf041ce0"
+        }
+      },
+      "source_row_index": 212
+    },
+    {
+      "adjudicator_selection": {
+        "run_a": {
+          "final_kind": "frequency",
+          "final_label": "1 per 3 week",
+          "selected_evidence_hash": "0818b2dd9cdd",
+          "selected_source_ids": [
+            "det:event_1",
+            "graph:sg-001",
+            "llm:llm-1"
+          ]
+        },
+        "run_b": {
+          "final_kind": "frequency",
+          "final_label": "1 per 3 week",
+          "selected_evidence_hash": "0818b2dd9cdd",
+          "selected_source_ids": [
+            "det:event_1",
+            "graph:sg-001",
+            "llm:llm-2"
+          ]
+        }
+      },
+      "call_error": {
+        "run_a": null,
+        "run_b": null
+      },
+      "gold_label": "1 per 3 week",
+      "layer_changes": {
+        "adapter_only_sidecar_from_adjudicator_selection": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 3 week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 3 week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "deterministic_top_candidate": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 3 week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 3 week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "hybrid_adjudicator_raw": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 3 week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 3 week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "hybrid_adjudicator_with_adapters": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 3 week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 3 week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "llm_candidate_selector_raw": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": "Unparsable label (raw: 'seizures every 3 weeks' / normalized: 'seizures every 3 weeks')",
+            "label": "seizures every 3 weeks",
+            "purist_correct": null,
+            "scorable": false
+          },
+          "run_b": {
+            "error": "Unparsable label (raw: 'seizures every 3 weeks' / normalized: 'seizures every 3 weeks')",
+            "label": "seizures every 3 weeks",
+            "purist_correct": null,
+            "scorable": false
+          },
+          "scorable_changed": false
+        },
+        "state_graph_projection": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 3 week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 3 week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        }
+      },
+      "llm_candidate_selection": {
+        "run_a": {
+          "evidence_hash": null,
+          "final_kind": "frequency",
+          "final_label": "seizures every 3 weeks",
+          "selected_event_ids": null
+        },
+        "run_b": {
+          "evidence_hash": null,
+          "final_kind": "frequency",
+          "final_label": "seizures every 3 weeks",
+          "selected_event_ids": null
+        }
+      },
+      "parse_errors": {
+        "run_a": [],
+        "run_b": []
+      },
+      "raw_changes": {
+        "adjudicator_raw_output": true,
+        "llm_candidate_raw_output": true,
+        "raw_output": true
+      },
+      "raw_hashes": {
+        "adjudicator_raw_output": {
+          "run_a": "1ce5ece87553",
+          "run_b": "5756d5f621d2"
+        },
+        "llm_candidate_raw_output": {
+          "run_a": "4220b0906ba3",
+          "run_b": "f3a7b80fc98e"
+        },
+        "raw_output": {
+          "run_a": "1ce5ece87553",
+          "run_b": "5756d5f621d2"
+        }
+      },
+      "source_row_index": 218
+    },
+    {
+      "adjudicator_selection": {
+        "run_a": {
+          "final_kind": "frequency",
+          "final_label": "1 per 4 month",
+          "selected_evidence_hash": "e3563953f0e2",
+          "selected_source_ids": [
+            "det:event_1",
+            "graph:sg-001",
+            "llm:llm-1"
+          ]
+        },
+        "run_b": {
+          "final_kind": "frequency",
+          "final_label": "1 per 4 month",
+          "selected_evidence_hash": "765f46037bbd",
+          "selected_source_ids": [
+            "det:event_1"
+          ]
+        }
+      },
+      "call_error": {
+        "run_a": null,
+        "run_b": null
+      },
+      "gold_label": "1 per 4 month",
+      "layer_changes": {
+        "adapter_only_sidecar_from_adjudicator_selection": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 4 month",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 4 month",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "deterministic_top_candidate": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 4 month",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 4 month",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "hybrid_adjudicator_raw": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 4 month",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 4 month",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "hybrid_adjudicator_with_adapters": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 4 month",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 4 month",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "llm_candidate_selector_raw": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": "Unparsable label (raw: 'every four months' / normalized: 'every four months')",
+            "label": "every four months",
+            "purist_correct": null,
+            "scorable": false
+          },
+          "run_b": {
+            "error": "Unparsable label (raw: 'every four months' / normalized: 'every four months')",
+            "label": "every four months",
+            "purist_correct": null,
+            "scorable": false
+          },
+          "scorable_changed": false
+        },
+        "state_graph_projection": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per 4 month",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per 4 month",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        }
+      },
+      "llm_candidate_selection": {
+        "run_a": {
+          "evidence_hash": null,
+          "final_kind": "frequency",
+          "final_label": "every four months",
+          "selected_event_ids": null
+        },
+        "run_b": {
+          "evidence_hash": null,
+          "final_kind": "frequency",
+          "final_label": "every four months",
+          "selected_event_ids": null
+        }
+      },
+      "parse_errors": {
+        "run_a": [],
+        "run_b": []
+      },
+      "raw_changes": {
+        "adjudicator_raw_output": true,
+        "llm_candidate_raw_output": true,
+        "raw_output": true
+      },
+      "raw_hashes": {
+        "adjudicator_raw_output": {
+          "run_a": "8edc8c034f56",
+          "run_b": "1060e121f334"
+        },
+        "llm_candidate_raw_output": {
+          "run_a": "584b3cf58feb",
+          "run_b": "6795d254ed93"
+        },
+        "raw_output": {
+          "run_a": "8edc8c034f56",
+          "run_b": "1060e121f334"
+        }
+      },
+      "source_row_index": 243
+    },
+    {
+      "adjudicator_selection": {
+        "run_a": {
+          "final_kind": "frequency",
+          "final_label": "multiple per week",
+          "selected_evidence_hash": "5bbec518dd5f",
+          "selected_source_ids": [
+            "det:event_2",
+            "llm:llm-1",
+            "graph:sg-001"
+          ]
+        },
+        "run_b": {
+          "final_kind": "frequency",
+          "final_label": "multiple per week",
+          "selected_evidence_hash": "5bbec518dd5f",
+          "selected_source_ids": [
+            "det:event_2",
+            "graph:sg-001",
+            "llm:llm-1"
+          ]
+        }
+      },
+      "call_error": {
+        "run_a": null,
+        "run_b": null
+      },
+      "gold_label": "multiple per week",
+      "layer_changes": {
+        "adapter_only_sidecar_from_adjudicator_selection": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "multiple per week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "multiple per week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "deterministic_top_candidate": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "multiple per week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "multiple per week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "hybrid_adjudicator_raw": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "multiple per week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "multiple per week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "hybrid_adjudicator_with_adapters": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "multiple per week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "multiple per week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "llm_candidate_selector_raw": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": "Unparsable label (raw: 'multiple times per week' / normalized: 'multiple times per week')",
+            "label": "multiple times per week",
+            "purist_correct": null,
+            "scorable": false
+          },
+          "run_b": {
+            "error": "Unparsable label (raw: 'multiple times per week' / normalized: 'multiple times per week')",
+            "label": "multiple times per week",
+            "purist_correct": null,
+            "scorable": false
+          },
+          "scorable_changed": false
+        },
+        "state_graph_projection": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "seizure free for multiple year",
+            "purist_correct": false,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "seizure free for multiple year",
+            "purist_correct": false,
+            "scorable": true
+          },
+          "scorable_changed": false
+        }
+      },
+      "llm_candidate_selection": {
+        "run_a": {
+          "evidence_hash": null,
+          "final_kind": "frequency",
+          "final_label": "multiple times per week",
+          "selected_event_ids": null
+        },
+        "run_b": {
+          "evidence_hash": null,
+          "final_kind": "frequency",
+          "final_label": "multiple times per week",
+          "selected_event_ids": null
+        }
+      },
+      "parse_errors": {
+        "run_a": [],
+        "run_b": [
+          "final_label_repaired: 'multiple times per week' -> 'multiple per week'"
+        ]
+      },
+      "raw_changes": {
+        "adjudicator_raw_output": true,
+        "llm_candidate_raw_output": true,
+        "raw_output": true
+      },
+      "raw_hashes": {
+        "adjudicator_raw_output": {
+          "run_a": "c4f2132f322e",
+          "run_b": "4183e56db303"
+        },
+        "llm_candidate_raw_output": {
+          "run_a": "aec1ad0bf087",
+          "run_b": "3a1b3c4b10ec"
+        },
+        "raw_output": {
+          "run_a": "c4f2132f322e",
+          "run_b": "4183e56db303"
+        }
+      },
+      "source_row_index": 278
+    },
+    {
+      "adjudicator_selection": {
+        "run_a": {
+          "final_kind": "unresolved_multiple",
+          "final_label": "multiple per day",
+          "selected_evidence_hash": "20b317df45c7",
+          "selected_source_ids": [
+            "det:event_1",
+            "graph:sg-001",
+            "llm:llm-1"
+          ]
+        },
+        "run_b": {
+          "final_kind": "unresolved_multiple",
+          "final_label": "multiple per day",
+          "selected_evidence_hash": "20b317df45c7",
+          "selected_source_ids": [
+            "det:event_1",
+            "graph:sg-001",
+            "llm:llm-1"
+          ]
+        }
+      },
+      "call_error": {
+        "run_a": null,
+        "run_b": null
+      },
+      "gold_label": "multiple per day",
+      "layer_changes": {
+        "adapter_only_sidecar_from_adjudicator_selection": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "multiple per day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "multiple per day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "deterministic_top_candidate": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "multiple per day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "multiple per day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "hybrid_adjudicator_raw": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "multiple per day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "multiple per day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "hybrid_adjudicator_with_adapters": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "multiple per day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "multiple per day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "llm_candidate_selector_raw": {
+          "label_changed": true,
+          "purist_changed": false,
+          "run_a": {
+            "error": "Unparsable label (raw: 'multiple seizures per day' / normalized: 'multiple seizures per day')",
+            "label": "multiple seizures per day",
+            "purist_correct": null,
+            "scorable": false
+          },
+          "run_b": {
+            "error": "Unparsable label (raw: 'multiple seizures in past day' / normalized: 'multiple seizures in past day')",
+            "label": "multiple seizures in past day",
+            "purist_correct": null,
+            "scorable": false
+          },
+          "scorable_changed": false
+        },
+        "state_graph_projection": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "multiple per day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "multiple per day",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        }
+      },
+      "llm_candidate_selection": {
+        "run_a": {
+          "evidence_hash": null,
+          "final_kind": "frequency",
+          "final_label": "multiple seizures per day",
+          "selected_event_ids": null
+        },
+        "run_b": {
+          "evidence_hash": null,
+          "final_kind": "frequency",
+          "final_label": "multiple seizures in past day",
+          "selected_event_ids": null
+        }
+      },
+      "parse_errors": {
+        "run_a": [],
+        "run_b": []
+      },
+      "raw_changes": {
+        "adjudicator_raw_output": true,
+        "llm_candidate_raw_output": true,
+        "raw_output": true
+      },
+      "raw_hashes": {
+        "adjudicator_raw_output": {
+          "run_a": "edc16ce6607f",
+          "run_b": "610b7245c931"
+        },
+        "llm_candidate_raw_output": {
+          "run_a": "2b8b316dc4a1",
+          "run_b": "d388f9e0a62a"
+        },
+        "raw_output": {
+          "run_a": "edc16ce6607f",
+          "run_b": "610b7245c931"
+        }
+      },
+      "source_row_index": 280
+    },
+    {
+      "adjudicator_selection": {
+        "run_a": {
+          "final_kind": "frequency",
+          "final_label": "no seizure frequency reference",
+          "selected_evidence_hash": "2b7bd4731624",
+          "selected_source_ids": [
+            "llm:llm-1"
+          ]
+        },
+        "run_b": {
+          "final_kind": "frequency",
+          "final_label": "no seizure frequency reference",
+          "selected_evidence_hash": "2b7bd4731624",
+          "selected_source_ids": [
+            "llm:llm-1"
+          ]
+        }
+      },
+      "call_error": {
+        "run_a": null,
+        "run_b": null
+      },
+      "gold_label": "multiple per month",
+      "layer_changes": {
+        "adapter_only_sidecar_from_adjudicator_selection": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "no seizure frequency reference",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "no seizure frequency reference",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "deterministic_top_candidate": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "no seizure frequency reference",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "no seizure frequency reference",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "hybrid_adjudicator_raw": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "no seizure frequency reference",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "no seizure frequency reference",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "hybrid_adjudicator_with_adapters": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "no seizure frequency reference",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "no seizure frequency reference",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "llm_candidate_selector_raw": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": "Unparsable label (raw: 'many' / normalized: 'many')",
+            "label": "many",
+            "purist_correct": null,
+            "scorable": false
+          },
+          "run_b": {
+            "error": "Unparsable label (raw: 'many' / normalized: 'many')",
+            "label": "many",
+            "purist_correct": null,
+            "scorable": false
+          },
+          "scorable_changed": false
+        },
+        "state_graph_projection": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "no seizure frequency reference",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "no seizure frequency reference",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        }
+      },
+      "llm_candidate_selection": {
+        "run_a": {
+          "evidence_hash": null,
+          "final_kind": "frequency",
+          "final_label": "many",
+          "selected_event_ids": null
+        },
+        "run_b": {
+          "evidence_hash": null,
+          "final_kind": "frequency",
+          "final_label": "many",
+          "selected_event_ids": null
+        }
+      },
+      "parse_errors": {
+        "run_a": [
+          "final_label_repaired: 'many' -> 'no seizure frequency reference'"
+        ],
+        "run_b": [
+          "final_label_repaired: 'many' -> 'no seizure frequency reference'"
+        ]
+      },
+      "raw_changes": {
+        "adjudicator_raw_output": true,
+        "llm_candidate_raw_output": true,
+        "raw_output": true
+      },
+      "raw_hashes": {
+        "adjudicator_raw_output": {
+          "run_a": "8e1f11184be0",
+          "run_b": "8b9e18d12e5a"
+        },
+        "llm_candidate_raw_output": {
+          "run_a": "4479d3267a36",
+          "run_b": "2b0153768c72"
+        },
+        "raw_output": {
+          "run_a": "8e1f11184be0",
+          "run_b": "8b9e18d12e5a"
+        }
+      },
+      "source_row_index": 338
+    },
+    {
+      "adjudicator_selection": {
+        "run_a": {
+          "final_kind": "frequency",
+          "final_label": "1 per month",
+          "selected_evidence_hash": "0cb9cc687c85",
+          "selected_source_ids": [
+            "det:event_1",
+            "graph:sg-001",
+            "llm:llm-2"
+          ]
+        },
+        "run_b": {
+          "final_kind": "frequency",
+          "final_label": "multiple per month",
+          "selected_evidence_hash": "37e4072f183e",
+          "selected_source_ids": [
+            "llm:llm-2"
+          ]
+        }
+      },
+      "call_error": {
+        "run_a": null,
+        "run_b": null
+      },
+      "gold_label": "1 per month",
+      "layer_changes": {
+        "adapter_only_sidecar_from_adjudicator_selection": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per month",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per month",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "deterministic_top_candidate": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per month",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per month",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "hybrid_adjudicator_raw": {
+          "label_changed": true,
+          "purist_changed": true,
+          "run_a": {
+            "error": null,
+            "label": "1 per month",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "multiple per month",
+            "purist_correct": false,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "hybrid_adjudicator_with_adapters": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per month",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per month",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "llm_candidate_selector_raw": {
+          "label_changed": true,
+          "purist_changed": false,
+          "run_a": {
+            "error": "Unparsable label (raw: 'monthly' / normalized: 'monthly')",
+            "label": "monthly",
+            "purist_correct": null,
+            "scorable": false
+          },
+          "run_b": {
+            "error": "Unparsable label (raw: '\u2264 once per month' / normalized: '\u2264 once per month')",
+            "label": "\u2264 once per month",
+            "purist_correct": null,
+            "scorable": false
+          },
+          "scorable_changed": false
+        },
+        "state_graph_projection": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "1 per month",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "1 per month",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        }
+      },
+      "llm_candidate_selection": {
+        "run_a": {
+          "evidence_hash": null,
+          "final_kind": "frequency",
+          "final_label": "monthly",
+          "selected_event_ids": null
+        },
+        "run_b": {
+          "evidence_hash": null,
+          "final_kind": "frequency",
+          "final_label": "\u2264 once per month",
+          "selected_event_ids": null
+        }
+      },
+      "parse_errors": {
+        "run_a": [],
+        "run_b": [
+          "final_label_repaired: '\u2264 once per month' -> 'multiple per month'"
+        ]
+      },
+      "raw_changes": {
+        "adjudicator_raw_output": true,
+        "llm_candidate_raw_output": true,
+        "raw_output": true
+      },
+      "raw_hashes": {
+        "adjudicator_raw_output": {
+          "run_a": "4a24df5bc74d",
+          "run_b": "68dbe075b3ce"
+        },
+        "llm_candidate_raw_output": {
+          "run_a": "59bfa4aa0269",
+          "run_b": "4ebed3bac573"
+        },
+        "raw_output": {
+          "run_a": "4a24df5bc74d",
+          "run_b": "68dbe075b3ce"
+        }
+      },
+      "source_row_index": 409
+    },
+    {
+      "adjudicator_selection": {
+        "run_a": {
+          "final_kind": "frequency",
+          "final_label": "2 per year",
+          "selected_evidence_hash": "28cd6e6f593d",
+          "selected_source_ids": [
+            "det:event_1",
+            "graph:sg-001",
+            "llm:llm-1"
+          ]
+        },
+        "run_b": {
+          "final_kind": "frequency",
+          "final_label": "2 per year",
+          "selected_evidence_hash": "28cd6e6f593d",
+          "selected_source_ids": [
+            "det:event_1",
+            "graph:sg-001"
+          ]
+        }
+      },
+      "call_error": {
+        "run_a": null,
+        "run_b": null
+      },
+      "gold_label": "2 per year",
+      "layer_changes": {
+        "adapter_only_sidecar_from_adjudicator_selection": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "2 per year",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "2 per year",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "deterministic_top_candidate": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "2 per year",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "2 per year",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "hybrid_adjudicator_raw": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "2 per year",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "2 per year",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "hybrid_adjudicator_with_adapters": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "2 per year",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "2 per year",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "llm_candidate_selector_raw": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": "Unparsable label (raw: 'approximately twice per year' / normalized: 'approximately twice per year')",
+            "label": "approximately twice per year",
+            "purist_correct": null,
+            "scorable": false
+          },
+          "run_b": {
+            "error": "Unparsable label (raw: 'approximately twice per year' / normalized: 'approximately twice per year')",
+            "label": "approximately twice per year",
+            "purist_correct": null,
+            "scorable": false
+          },
+          "scorable_changed": false
+        },
+        "state_graph_projection": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "2 per year",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "2 per year",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        }
+      },
+      "llm_candidate_selection": {
+        "run_a": {
+          "evidence_hash": null,
+          "final_kind": "frequency",
+          "final_label": "approximately twice per year",
+          "selected_event_ids": null
+        },
+        "run_b": {
+          "evidence_hash": null,
+          "final_kind": "frequency",
+          "final_label": "approximately twice per year",
+          "selected_event_ids": null
+        }
+      },
+      "parse_errors": {
+        "run_a": [],
+        "run_b": []
+      },
+      "raw_changes": {
+        "adjudicator_raw_output": true,
+        "llm_candidate_raw_output": true,
+        "raw_output": true
+      },
+      "raw_hashes": {
+        "adjudicator_raw_output": {
+          "run_a": "722d7e491672",
+          "run_b": "13a0bfa74f0a"
+        },
+        "llm_candidate_raw_output": {
+          "run_a": "b5bb4d00e9d8",
+          "run_b": "e33c14faafdd"
+        },
+        "raw_output": {
+          "run_a": "722d7e491672",
+          "run_b": "13a0bfa74f0a"
+        }
+      },
+      "source_row_index": 419
+    },
+    {
+      "adjudicator_selection": {
+        "run_a": {
+          "final_kind": "frequency",
+          "final_label": "2 per week",
+          "selected_evidence_hash": "26698aad5b80",
+          "selected_source_ids": [
+            "det:event_1",
+            "graph:sg-001"
+          ]
+        },
+        "run_b": {
+          "final_kind": "frequency",
+          "final_label": "2 per week",
+          "selected_evidence_hash": "897399393d82",
+          "selected_source_ids": [
+            "det:event_1",
+            "graph:sg-001"
+          ]
+        }
+      },
+      "call_error": {
+        "run_a": null,
+        "run_b": null
+      },
+      "gold_label": "2 per week",
+      "layer_changes": {
+        "adapter_only_sidecar_from_adjudicator_selection": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "2 per week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "2 per week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "deterministic_top_candidate": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "2 per week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "2 per week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "hybrid_adjudicator_raw": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "2 per week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "2 per week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "hybrid_adjudicator_with_adapters": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "2 per week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "2 per week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        },
+        "llm_candidate_selector_raw": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": "Unparsable label (raw: 'twice per week or less' / normalized: 'twice per week or less')",
+            "label": "twice per week or less",
+            "purist_correct": null,
+            "scorable": false
+          },
+          "run_b": {
+            "error": "Unparsable label (raw: 'twice per week or less' / normalized: 'twice per week or less')",
+            "label": "twice per week or less",
+            "purist_correct": null,
+            "scorable": false
+          },
+          "scorable_changed": false
+        },
+        "state_graph_projection": {
+          "label_changed": false,
+          "purist_changed": false,
+          "run_a": {
+            "error": null,
+            "label": "2 per week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "run_b": {
+            "error": null,
+            "label": "2 per week",
+            "purist_correct": true,
+            "scorable": true
+          },
+          "scorable_changed": false
+        }
+      },
+      "llm_candidate_selection": {
+        "run_a": {
+          "evidence_hash": null,
+          "final_kind": "frequency",
+          "final_label": "twice per week or less",
+          "selected_event_ids": null
+        },
+        "run_b": {
+          "evidence_hash": null,
+          "final_kind": "frequency",
+          "final_label": "twice per week or less",
+          "selected_event_ids": null
+        }
+      },
+      "parse_errors": {
+        "run_a": [],
+        "run_b": []
+      },
+      "raw_changes": {
+        "adjudicator_raw_output": true,
+        "llm_candidate_raw_output": true,
+        "raw_output": true
+      },
+      "raw_hashes": {
+        "adjudicator_raw_output": {
+          "run_a": "809f951d6708",
+          "run_b": "880519050ae7"
+        },
+        "llm_candidate_raw_output": {
+          "run_a": "14778211df54",
+          "run_b": "8d6aa22d611a"
+        },
+        "raw_output": {
+          "run_a": "809f951d6708",
+          "run_b": "880519050ae7"
+        }
+      },
+      "source_row_index": 446
+    }
+  ],
+  "run_a_path": "experiments/gan2026_h10_fresh_live_variability_validation25_run_a_2026-06-05.jsonl",
+  "run_b_path": "experiments/gan2026_h10_fresh_live_variability_validation25_run_b_2026-06-05.jsonl"
+}

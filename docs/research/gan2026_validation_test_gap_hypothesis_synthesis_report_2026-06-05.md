@@ -61,6 +61,10 @@ Primary source artifacts:
 - `experiments/gan2026_untagged_nonprediction_release_candidate_v0_assembled_candidate_2026-06-05.json`
 - `experiments/gan2026_h1_hidden_family_slice_aggregates_v0_2026-06-05.json`
 - `experiments/gan2026_h5_semantic_repair_gap_test_v0_2026-06-05.json`
+- `experiments/gan2026_h5_repair_inventory_v0_2026-06-05.json`
+- `experiments/gan2026_h5_repair_family_ablation_v0_2026-06-05.json`
+- `experiments/gan2026_h5_repair_policy_v1_reparse_validation250_2026-06-05.json`
+- `experiments/gan2026_h5_semantic_kind_transformations_policy_v1_validation250_2026-06-05.csv`
 - `docs/research/gan2026_generalization_first_boundary_and_benchmark_solution_design_2026-06-05.md`
 - `experiments/gan2026_boundary_benchmark_seed_panel_v0_2026-06-05.json`
 - `experiments/gan2026_boundary_benchmark_contract_v0_2026-06-05.json`
@@ -70,6 +74,7 @@ Primary source artifacts:
 - `experiments/gan2026_h3_h7_full_boundary_benchmark_test_v0_2026-06-05.json`
 - `experiments/gan2026_h9_action_policy_gap_v0_2026-06-05.json`
 - `experiments/gan2026_h10_runtime_variance_audit_v0_2026-06-05.json`
+- `experiments/gan2026_h10_fresh_live_variability_audit_v0_2026-06-05.json`
 
 ## Hypothesis Outcomes
 
@@ -81,6 +86,8 @@ Primary source artifacts:
 | Action-policy nonprediction recovery, derived from H2/H4/H6 findings | supported for validation-development only | nonprediction recovery audit and assembled candidate artifact | Untagged nonprediction release candidate: 750 rows, 19 release-eligible rows, 19 releases, 0 release-wrong rows, 735 prediction-bearing rows, 697 correct prediction rows, and 37/37 H6 controls preserved. | The candidate safely recovers deterministic-correct staged nonpredictions when no hidden-family tags are present. This is deterministic-comparator fallback, not LLM-owned improvement. | Keep as an auditable assembled validation artifact. Do not run holdout until a separate protocol freezes candidate, slice definitions, and allowed readouts. |
 | H1 hidden-family mix explains the aggregate gap | tested; inconclusive | aggregate-only predeclared hidden-family validation/test readout over selective_safety_floor_gate_v0 | Validation proxy was 0.9440 and test proxy was 0.7800. Family gaps were broad: diary/log 0.1702, current-vs-historical 0.1661, competing semiologies 0.1686, rate/denominator 0.1643, seizure-free duration 0.2431, benchmark convention 0.2369. | Hidden-family mix contributes useful stratification but does not cleanly explain the aggregate gap by itself. Family tags overlap heavily, and broad classifier families are high-incidence, so this should not be accepted as a concentrated-family explanation. | Move to H3 candidate-exposure instrumentation and H7 template-brittleness panels, using H1 families as strata rather than as the primary explanation. |
 | H5 deterministic semantic repair masks LLM weakness on validation | partially supported; hypothesis wording revised; policy failure identified | same-output validation repair ladder plus aggregate-only validation/test few-shot readouts | Same-output validation ladder: raw model-selected label 0.7520, format-only repair 0.7520, selected-evidence arithmetic 0.8760, full stack 0.8160. Validation repair gain is 0.2320, locked-test aggregate repair gain is 0.0333, and repair-gain validation minus test is 0.1987. Locked-test row-level artifacts used: 0. | The important signal is not that raw LLM has a larger validation-test gap than full repair. It does not. The signal is that validation performance is heavily carried by deterministic semantic repair and contract rules that fail to transfer. This should be treated as a semantic-repair policy failure: we designed rules too precisely around examples we had seen. | Freeze validation-attuned semantic repair expansion. Run a complete semantic-repair policy review. Redesign repair families for portability, source grounding, ablation visibility, and acceptable validation-score decline before any new holdout-facing candidate. |
+| H5 repair inventory and same-output family ablation | first review pass complete; policy bounds still needed | validation-development static taxonomy plus saved same-output H5 ladder | Inventory found 6 repair families: 1 format-only family, 5 semantic families, and 4 review-required or quarantine-required families. Same-output family ablation keeps format-only repair allowed; selected-evidence arithmetic has 57 changed rows, 32 W->C, 1 C->W, and 16 semantic-kind transitions, so it is `revise_or_bound`; benchmark convention rendering has 28 changed rows, 16 W->C, 0 C->W, and 15 semantic-kind transitions, so it remains `review_required`. | The review confirms H5 is not just a metric story. Format-only cleanup can stay, but the prediction-bearing repair gains are semantic and must be bounded before another candidate assembly. Benchmark rendering cannot be counted as clinical extraction unless clinical-state preservation is shown separately. | Write explicit repair-policy bounds before boundary/renderer expansion: allow format-only, bound selected-evidence arithmetic with C->W controls, and keep benchmark rendering separated from clinical-state selection. |
+| H5 repair policy v1 | validation-development no-call reparse complete | saved raw labels and selected evidence from validation250, reparsed under bounded repair policy | Policy v1 removes broad frequency-to-no-reference demotion, maps per-hour rates to `multiple per day`, keeps vague frequency words as unresolved-multiple labels, and preserves cluster frequency content. Benchmark-aligned replay improves from 204/250 to 213/250 Purist-correct rows, with 25 W->C, 0 C->W, and 12 semantic-kind transitions. No `frequency->no_reference` transitions remain; one bounded `frequency->unknown` case remains for an unquantified seizure phrase with gold `unknown`. | This supports the user's policy read: the unsafe part was broad sentinel demotion, not all benchmark rendering. The remaining semantic transitions are mostly frequency-to-unresolved-multiple renderer choices, which should still be reported separately from clinical selection. | Use v1 as the current bounded repair policy for the next validation diagnostic. Do not restore broad frequency-to-sentinel repair. |
 | H9 abstention/review policy hides different failure modes by split | partially supported; not primary gap explanation | validation gap matrix plus aggregate-only locked-test nonprediction selector readout | Validation750 has 34 nonprediction/review rows: 26 abstain, 8 human review, rate 0.0453. All are safety-floor-owned; 19 block deterministic-correct labels and 15 block deterministic-wrong labels. The aggregate locked-test selector readout has 1/450 nonprediction row, rate 0.0022, with no row-level test failure artifacts written. | Action policy is not neutral on validation and does hide both overblocking and blocked-miss pressure, but the locked-test aggregate surface has much lower nonprediction burden while the accuracy gap remains large. H9 is therefore an action-policy shift/control finding, not the main explanation for the validation-test gap. | Keep H9 fields in future frozen audit protocols as aggregate owner/family action summaries. Do not prioritize action-policy widening over H3/H7/H8 mechanism work. |
 | Generalization-first boundary/convention design | predeclared design pivot | synthesis of H1, RQ10, normalization semantics, and saturated-validation protocol | Seizure-free duration and benchmark-format convention show larger within-family gaps than the aggregate surface. RQ10 shows some rows are benchmark-convention dominated or clinically defensible alternatives rather than ordinary extraction failures. | A lower validation score can be acceptable if it comes from source-grounded boundary states and explicit benchmark rendering instead of validation-fit label switching. | Build typed `seizure_free_boundary_event_v0` and `benchmark_convention_renderer_v0` panels before final-label promotion. |
 | H3/H7 boundary and benchmark seed panel | panel contract created and broadened | synthetic hard/control minimal-pair panel | 36 rows, 18 pairs, 18 clinical-state invariant pairs, 36 exact-evidence rows, 20 `seizure_free_boundary_event_v0` rows, and 16 `benchmark_convention_renderer_v0` rows. | The next mechanism has an explicit contract for candidate exposure, boundary state, renderer transparency, and pair consistency. This is mechanism scaffolding, not performance evidence. | Keep the synthetic panel as a regression/control surface; use validation hard slices for source-backed mechanism pressure. |
@@ -89,7 +96,7 @@ Primary source artifacts:
 | H3/H7 boundary and benchmark validation contract smoke | validation mechanism contract passed; final policy disconnected | validation panel typed-field replay | 30 rows, 22 hard rows, 8 controls, 30/30 contract-matched rows, 30/30 exact-evidence rows, 0 source-note-text rows, 19 boundary rows, 11 renderer rows, and final-label policy connected = false. | This is the first source-backed validation mechanism control for the boundary/renderer pivot. It supports transparency and exact-evidence carry-through, but remains validation-development evidence only and does not authorize candidate assembly or holdout use. | Decide whether to connect the typed fields through a validation-only candidate assembly protocol or build a richer structured event representation with explicit projection ownership. |
 | H3/H7 boundary and benchmark candidate assembly | diagnostic only; architecture chosen but not promotion-ready | validation-only typed-candidate bridge over current assembled candidate | 30 candidate rows, 30 selected prediction-bearing rows, 6 W->C, 1 C->W, 30/30 exact-evidence rows, parse-ok plus exact-evidence rate 1.0000, 0 source-note-text rows, and final-label policy connected = false. Gate failures: coverage below 150 and W->C below 60. | The next architecture should start as a shallow typed-candidate-contract layer, not an immediate richer event rewrite. However, this panel is undercovered and has one validation C->W row, so it remains diagnostic and cannot authorize holdout or final-label promotion. | Expand validation hard/control coverage and audit the C->W row on validation only; if coverage or W->C remains insufficient, move to richer structured events with explicit projection ownership. |
 | H3/H7/H8 full boundary/benchmark test | H3 rejected for current typed layer; H7 supported on pair panel; H8 partially supported on validation panel | all eligible validation boundary/benchmark rows plus synthetic minimal-pair component comparison | Validation all-eligible contract rows: 36/36 candidate-present, 36/36 exact evidence, 0 unsupported candidates, 36/36 metadata-complete. Validation transitions were 6 W->C, 1 C->W, and 29 C->C, failing exposure >=150 and W->C >=60 gates. Synthetic pairs: typed mechanism was consistent on 18/18 pairs; deterministic comparator flipped on 4/18 pairs. H8 benchmark-convention rows: 11/11 selected, 11/11 clinical/rendering separated, all C->C, with 7 vague-multiple, 3 cluster-multiple-per-cluster, and 1 unknown-sentinel rows. | H3 is no longer merely untested: candidate exposure is clean but too small and too low-yield for the current shallow layer. H7 is supported as deterministic template brittleness on the predeclared synthetic pair panel. H8 has validation-development support that benchmark conventions can be explicitly separated from clinical state, but this does not prove the locked-test transfer portion of H8. | Do not promote the shallow typed layer or run holdout. Use H7/H8 as evidence to move toward a richer structured event representation with explicit projection ownership, broader benchmark-convention coverage, and H6 no-regression controls. |
-| H10 model/runtime variance is being mistaken for generalisation gap | tested; rejected as primary explanation | paired validation750 live/replay artifact plus saved validation/test aggregate surface map | The live reasoner artifact and deterministic-safety-floor replay match on 750/750 row ids. `raw_output`, `llm_candidate_raw_output`, and `adjudicator_raw_output` are byte-identical on 750/750 rows. Downstream score-layer drift remains: adapter and hybrid-with-adapters labels changed on 114 rows with 58 Purist-status changes; hybrid-adjudicator-raw labels changed on 69 rows with 26 Purist-status changes. Saved surface-map gaps still average 0.1713 across three paired candidates, with max gap 0.1747. | Raw model/runtime variance is not the primary explanation for the validation-test gap. However, same-output replay can materially change downstream attribution when parser, adapter, repair, or safety-floor policy changes. | Keep H10 provenance checks on future runs. Compare raw-output identity before interpreting live/replay deltas, and treat adapter/replay drift as component-policy drift rather than model stochasticity. |
+| H10 model/runtime variance is being mistaken for generalisation gap | tested on fresh uncached prefix; supported for byte-level raw JSON variance, not final-policy variance on prefix | two uncached validation live replicates over the same first 20 completed validation rows; cache disabled and no reused outputs | Run A completed 25 rows; Run B was interrupted after 20 completed rows because the final block hung. On the 20 matched rows, `reused_llm_candidate_output` and `reused_adjudicator_output` were 0 in both runs, with 0 call failures. Byte-level raw JSON strings differed on 19/20 rows for `llm_candidate_raw_output`, `adjudicator_raw_output`, and `raw_output`; many differences were rationale/source/evidence/formatting changes with the same normalized label. Scorer-visible labels changed on 3/20 LLM-candidate rows, 1/20 raw-adjudicator rows, and 0/20 final `hybrid_adjudicator_with_adapters` rows. | The cached replay audit was only a same-output provenance control. Fresh uncached calls show substantial byte/string-level raw runtime variability, but most changes were not label-level changes, and the current deterministic adapter/final-policy layer absorbed them on this 20-row prefix. H10 is therefore plausible as a raw-output phenomenon but not yet shown to explain the validation-test gap. | Repeat with explicit request timeouts and a predeclared larger validation sample before making a full-gap claim. Report raw JSON variance, normalized/scorer-visible label variance, and adapter/final-policy variance as separate quantities. |
 
 ## Detailed Results
 
@@ -266,6 +273,31 @@ Required repair-policy review:
    rule is first expressed as a general mechanism and tested against controls
    that were not used to design it.
 
+First review pass:
+
+- `h5_repair_inventory_v0` inventories 6 repair families: 1 format-only family,
+  5 semantic families, and 4 review-required or quarantine-required families.
+- `h5_repair_family_ablation_v0` interprets saved same-output ladder transitions
+  by family. Format-only repair remains `keep_allowed`. Selected-evidence
+  arithmetic is `revise_or_bound` because it has 32 W->C but 1 C->W and 16
+  semantic-kind transitions. Benchmark convention rendering remains
+  `review_required` because it has 16 W->C and 0 C->W but still owns semantic
+  kind plus Purist/Pragmatic category transitions.
+- Decision: resolve explicit repair-policy bounds before another
+  prediction-bearing boundary/renderer candidate assembly.
+
+Repair policy v1:
+
+- Broad `frequency->no seizure frequency reference` repair is removed.
+- Per-hour rates render as `multiple per day`.
+- Vague frequency words render as unresolved-multiple labels rather than
+  sentinels.
+- Cluster context preserves frequency content instead of falling to `unknown`.
+- Validation250 no-call reparse: benchmark-aligned Purist-correct rows increase
+  from 204 to 213; W->C increases from 16 to 25; C->W remains 0; semantic-kind
+  transitions fall from 15 to 12; `frequency->no_reference` transitions fall to
+  0.
+
 ## Recommended Action
 
 1. Keep the assembled untagged-nonprediction artifact as the current auditable
@@ -289,9 +321,9 @@ Required repair-policy review:
    are too small, H7 supports deterministic template brittleness on the
    synthetic pair panel, and H8 is partially supported as a validation-only
    benchmark-convention separation mechanism.
-9. Treat H10 as rejected for primary gap explanation but required for
-   attribution hygiene: saved raw outputs can be identical while downstream
-   adapter or repair layers change labels and correctness.
+9. Treat H10 as unresolved for the full gap but real at the raw-output layer:
+   fresh uncached calls differed on 19/20 paired rows, while final
+   hybrid-with-adapters labels stayed stable on that prefix.
 
 ## H9 Action-Policy Gap
 
@@ -626,7 +658,7 @@ clinical state with exact evidence, but all H8 validation rows are C->C and the
 artifact does not test locked-test transfer. H8 should therefore remain a
 mechanism-supported but transfer-unproven hypothesis.
 
-### H10 Runtime Variance Audit v0
+### H10 Same-Output Provenance Control v0
 
 Artifact:
 
@@ -664,14 +696,69 @@ Saved surface-map context:
 - Maximum validation-minus-test gap: 0.1747.
 - Mean validation-minus-test gap: 0.1713.
 
-Decision: `h10_rejected_as_primary_gap_explanation`.
+Decision: `same_output_provenance_control_only`.
 
-Interpretation: H10 is rejected as the primary explanation because the paired
-validation live/replay artifacts have byte-identical saved raw outputs across
-all 750 matched rows while saved validation/test gaps remain large. The useful
-finding is narrower: same-output replay can still produce adapter and
-hybrid-layer label/correctness drift, so future claims must separate model
-runtime variance from downstream parser, adapter, repair, and policy drift.
+Interpretation: this cached/saved-output comparison does not test live model
+variance. It only proves that when the saved raw outputs are held fixed,
+downstream parser, adapter, repair, and policy code can still change labels and
+correctness. It should be used as an attribution control, not as the H10
+decision.
+
+### H10 Fresh Live Variability Audit v0
+
+Artifact:
+
+- `experiments/gan2026_h10_fresh_live_variability_audit_v0_2026-06-05.json`
+- `experiments/gan2026_h10_fresh_live_variability_audit_v0_2026-06-05.md`
+- `experiments/gan2026_h10_fresh_live_variability_validation25_run_a_2026-06-05.jsonl`
+- `experiments/gan2026_h10_fresh_live_variability_validation25_run_b_2026-06-05.jsonl`
+
+Protocol boundary:
+
+- Both runs used `--disable-dspy-cache`.
+- No raw-output reuse paths were supplied.
+- `reused_llm_candidate_output` and `reused_adjudicator_output` were 0 in both
+  runs.
+- No locked-test rows or locked-test failures were inspected.
+- Run A completed 25 rows. Run B completed 20 rows and was interrupted after a
+  hung final block, so the audit compares the 20 matched completed rows.
+
+Raw-output identity over the 20 matched fresh-call rows.
+Important distinction: this table compares the full raw JSON strings returned
+by the model. A row can be counted as different here even when the parsed
+clinical label is unchanged, because rationale wording, selected evidence span,
+selected source ids, optional fields, or JSON formatting changed.
+
+| Field | Identical rows | Different rows | Identity rate |
+| --- | ---: | ---: | ---: |
+| `llm_candidate_raw_output` | 1 | 19 | 0.0500 |
+| `adjudicator_raw_output` | 1 | 19 | 0.0500 |
+| `raw_output` | 1 | 19 | 0.0500 |
+
+Score-layer drift under fresh uncached calls:
+
+| Score layer | Final-label changed | Purist changed | Run A accuracy | Run B accuracy |
+| --- | ---: | ---: | ---: | ---: |
+| `adapter_only_sidecar_from_adjudicator_selection` | 0 | 0 | 1.0000 | 1.0000 |
+| `deterministic_top_candidate` | 0 | 0 | 1.0000 | 1.0000 |
+| `hybrid_adjudicator_raw` | 1 | 1 | 0.9500 | 0.9000 |
+| `hybrid_adjudicator_with_adapters` | 0 | 0 | 1.0000 | 1.0000 |
+| `llm_candidate_selector_raw` | 3 | 0 | 1.0000 | 1.0000 |
+| `state_graph_projection` | 0 | 0 | 0.9500 | 0.9500 |
+
+Decision:
+`h10_supported_for_raw_runtime_variance_but_not_final_policy_variance_on_prefix`.
+
+Interpretation: fresh uncached validation calls show substantial byte-level raw
+JSON variance: 19/20 paired rows differ at both the LLM-candidate and
+adjudicator raw-output layers. Most of that variance is not scorer-visible label
+variance. Parsed labels changed on 3/20 LLM-candidate rows and 1/20 raw
+adjudicator rows; deterministic adapters and the final hybrid-with-adapters
+layer absorbed those changes, with 0 final label changes and 0 Purist-status
+changes. H10 is therefore real at the raw string layer, but this prefix does not
+show final-policy variance large enough to explain the validation-test gap. A
+broader fresh-call audit with explicit request timeouts is needed before
+estimating full-gap contribution.
 
 ## Update Log
 
@@ -719,12 +806,16 @@ runtime variance from downstream parser, adapter, repair, and policy drift.
   the aggregate locked-test selector readout has only 1/450 nonprediction row.
   This does not explain the main locked-test accuracy gap, and no locked-test
   row-level artifacts were written.
-- 2026-06-05: Added `h10_runtime_variance_audit_v0`. H10 is rejected as the
-  primary explanation for the validation-test gap: paired validation750
-  live/replay artifacts have byte-identical raw LLM/adjudicator outputs on
-  750/750 rows, while saved validation/test aggregate gaps remain about 0.17.
-  Same-output replay still changed downstream adapter/hybrid labels on 114
-  rows, so H10 remains an attribution-control requirement.
+- 2026-06-05: Added `h10_runtime_variance_audit_v0` as a same-output
+  provenance control, not a live-variance test. Corrected the H10 interpretation
+  after fresh uncached runs showed that cached replay cannot determine runtime
+  variability.
+- 2026-06-05: Clarified `h10_fresh_live_variability_audit_v0`: the 19/20
+  variance count is byte-level raw JSON-string variance, not label-level
+  variance. Scorer-visible labels changed on 3/20 LLM-candidate rows, 1/20 raw
+  adjudicator rows, and 0/20 final hybrid-with-adapters rows. H10 is supported
+  as raw-string variance, but not yet as a final-policy explanation for the
+  validation-test gap.
 - 2026-06-05: Added `h5_semantic_repair_gap_test_v0`. H5 is partially supported
   and revised: validation repair gain is 0.2320 versus 0.0333 on locked test,
   while raw/base validation-test gap is not larger than the full-repair gap.

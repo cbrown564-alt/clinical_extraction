@@ -227,6 +227,16 @@ Core plans and artifacts:
 - H5 semantic repair gap test v0:
   `experiments/gan2026_h5_semantic_repair_gap_test_v0_2026-06-05.json`,
   `experiments/gan2026_h5_semantic_repair_gap_test_v0_2026-06-05.md`
+- H5 semantic repair inventory and family ablation v0:
+  `experiments/gan2026_h5_repair_inventory_v0_2026-06-05.json`,
+  `experiments/gan2026_h5_repair_inventory_v0_2026-06-05.md`,
+  `experiments/gan2026_h5_repair_family_ablation_v0_2026-06-05.json`,
+  `experiments/gan2026_h5_repair_family_ablation_v0_2026-06-05.md`
+- H5 repair policy v1 no-call reparse:
+  `experiments/gan2026_h5_repair_policy_v1_reparse_validation250_2026-06-05.json`,
+  `experiments/gan2026_h5_repair_policy_v1_reparse_validation250_2026-06-05.md`,
+  `experiments/gan2026_h5_semantic_kind_transformations_policy_v1_validation250_2026-06-05.csv`,
+  `experiments/gan2026_h5_semantic_kind_transformations_policy_v1_validation250_2026-06-05.md`
 - H9 action-policy gap v0:
   `experiments/gan2026_h9_action_policy_gap_v0_2026-06-05.json`,
   `experiments/gan2026_h9_action_policy_gap_v0_2026-06-05.md`
@@ -250,11 +260,16 @@ Core plans and artifacts:
 - H3/H7/H8 full boundary/benchmark test v0:
   `experiments/gan2026_h3_h7_full_boundary_benchmark_test_v0_2026-06-05.json`,
   `experiments/gan2026_h3_h7_full_boundary_benchmark_test_v0_2026-06-05.md`
+- Validation-test gap staged action plan:
+  `docs/research/gan2026_validation_test_gap_staged_action_plan_2026-06-05.md`
 
 ## Work Board
 
 ### Now
 
+- Follow the staged validation-test gap action plan before another candidate
+  assembly: freeze the current control manifest and resolve H5 repair-policy
+  bounds before expanding the richer typed event boundary/renderer mechanism.
 - Switch from the shallow boundary/renderer typed-candidate layer to a richer
   structured event representation with explicit projection ownership; H3 is
   rejected for the shallow layer, H7 supports template-brittleness pressure, and
@@ -270,6 +285,11 @@ Core plans and artifacts:
 
 ### Next
 
+- Treat H5 repair policy v1 as the current bounded repair policy for the next
+  validation diagnostic: no frequency-bearing prediction may become
+  no-reference; per-hour rates render as `multiple per day`; vague frequency
+  words render as unresolved-multiple labels; cluster context preserves
+  frequency content.
 - Expand from the clean seed slices (`seizure_free->unknown`, `yearly->daily`,
   and cluster completion) through typed event generation plus matched controls;
   do not promote family-slice rules directly.
@@ -298,6 +318,22 @@ Core plans and artifacts:
 
 ### Done Recently
 
+- 2026-06-05: Added a staged action plan for the validation-test gap program.
+  The next sequence is deliberately non-confounded: freeze the control state,
+  review/ablate semantic repair families, then test richer boundary/benchmark
+  typed-event mechanisms with H6 controls and H10 provenance sidecars before
+  any frozen aggregate test audit.
+- 2026-06-05: Added H5 semantic repair inventory and same-output family
+  ablation artifacts. Format-only repair remains allowed; selected-evidence
+  arithmetic is `revise_or_bound` because it has 32 W->C and 1 C->W; benchmark
+  convention rendering remains `review_required` despite 16 W->C and 0 C->W
+  because it owns semantic-kind and category transitions.
+- 2026-06-05: Added H5 repair policy v1 and a validation250 no-call reparse.
+  The policy removes broad frequency-to-no-reference demotion, maps per-hour
+  rates to `multiple per day`, preserves cluster frequency content, and renders
+  vague frequency words as unresolved multiple. Benchmark-aligned validation250
+  replay improves from 204 to 213 Purist-correct rows with 25 W->C, 0 C->W, and
+  no `frequency->no_reference` transitions.
 - 2026-06-05: Added a validation-test generalisation gap implementation plan,
   frozen Phase 0 protocol, machine-readable H1-H10 hypothesis registry,
   saved-artifact inventory, and aggregate-only surface-map generator. The first
