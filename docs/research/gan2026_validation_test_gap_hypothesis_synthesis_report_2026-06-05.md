@@ -53,6 +53,9 @@ Primary source artifacts:
 - `docs/research/gan2026_generalization_first_boundary_and_benchmark_solution_design_2026-06-05.md`
 - `experiments/gan2026_boundary_benchmark_seed_panel_v0_2026-06-05.json`
 - `experiments/gan2026_boundary_benchmark_contract_v0_2026-06-05.json`
+- `experiments/gan2026_boundary_benchmark_validation_panel_v0_2026-06-05.json`
+- `experiments/gan2026_boundary_benchmark_validation_contract_v0_2026-06-05.json`
+- `experiments/gan2026_boundary_benchmark_candidate_assembly_v0_2026-06-05.json`
 
 ## Hypothesis Outcomes
 
@@ -64,8 +67,11 @@ Primary source artifacts:
 | Action-policy nonprediction recovery, derived from H2/H4/H6 findings | supported for validation-development only | nonprediction recovery audit and assembled candidate artifact | Untagged nonprediction release candidate: 750 rows, 19 release-eligible rows, 19 releases, 0 release-wrong rows, 735 prediction-bearing rows, 697 correct prediction rows, and 37/37 H6 controls preserved. | The candidate safely recovers deterministic-correct staged nonpredictions when no hidden-family tags are present. This is deterministic-comparator fallback, not LLM-owned improvement. | Keep as an auditable assembled validation artifact. Do not run holdout until a separate protocol freezes candidate, slice definitions, and allowed readouts. |
 | H1 hidden-family mix explains the aggregate gap | tested; inconclusive | aggregate-only predeclared hidden-family validation/test readout over selective_safety_floor_gate_v0 | Validation proxy was 0.9440 and test proxy was 0.7800. Family gaps were broad: diary/log 0.1702, current-vs-historical 0.1661, competing semiologies 0.1686, rate/denominator 0.1643, seizure-free duration 0.2431, benchmark convention 0.2369. | Hidden-family mix contributes useful stratification but does not cleanly explain the aggregate gap by itself. Family tags overlap heavily, and broad classifier families are high-incidence, so this should not be accepted as a concentrated-family explanation. | Move to H3 candidate-exposure instrumentation and H7 template-brittleness panels, using H1 families as strata rather than as the primary explanation. |
 | Generalization-first boundary/convention design | predeclared design pivot | synthesis of H1, RQ10, normalization semantics, and saturated-validation protocol | Seizure-free duration and benchmark-format convention show larger within-family gaps than the aggregate surface. RQ10 shows some rows are benchmark-convention dominated or clinically defensible alternatives rather than ordinary extraction failures. | A lower validation score can be acceptable if it comes from source-grounded boundary states and explicit benchmark rendering instead of validation-fit label switching. | Build typed `seizure_free_boundary_event_v0` and `benchmark_convention_renderer_v0` panels before final-label promotion. |
-| H3/H7 boundary and benchmark seed panel | panel contract created; mechanism not yet implemented | synthetic hard/control minimal-pair panel | 12 rows, 6 pairs, 6 clinical-state invariant pairs, 12 exact-evidence rows, 6 `seizure_free_boundary_event_v0` rows, and 6 `benchmark_convention_renderer_v0` rows. | The next mechanism now has an explicit contract for candidate exposure, boundary state, renderer transparency, and pair consistency. This is mechanism scaffolding, not performance evidence. | Implement typed boundary and benchmark-renderer contract tests against the panel before connecting either mechanism to final-label policy. |
-| H3/H7 boundary and benchmark contract smoke | mechanism contract passed; final policy disconnected | synthetic seed-panel replay | 12 rows, 6 pairs, 6 clinical-state invariant pairs, 12 contract-matched rows, 12 exact-evidence rows, 6 boundary rows, 6 renderer rows, and final-label policy connected = false. | The first executable mechanism separates `clinical_final_state` from `gan_rendered_label` while preserving exact evidence and pair consistency. It remains synthetic mechanism evidence only. | Broaden the mechanism contract with generated hard/control cases, then port stable typed fields to validation hard-slice panels. |
+| H3/H7 boundary and benchmark seed panel | panel contract created and broadened | synthetic hard/control minimal-pair panel | 36 rows, 18 pairs, 18 clinical-state invariant pairs, 36 exact-evidence rows, 20 `seizure_free_boundary_event_v0` rows, and 16 `benchmark_convention_renderer_v0` rows. | The next mechanism has an explicit contract for candidate exposure, boundary state, renderer transparency, and pair consistency. This is mechanism scaffolding, not performance evidence. | Keep the synthetic panel as a regression/control surface; use validation hard slices for source-backed mechanism pressure. |
+| H3/H7 boundary and benchmark contract smoke | mechanism contract passed; final policy disconnected | synthetic seed-panel replay | 36 rows, 18 pairs, 18 clinical-state invariant pairs, 36 contract-matched rows, 36 exact-evidence rows, 20 boundary rows, 16 renderer rows, and final-label policy connected = false. | The executable mechanism separates `clinical_final_state` from `gan_rendered_label` while preserving exact evidence and pair consistency. It remains synthetic mechanism evidence only. | Port stable typed fields to validation hard-slice panels and run a validation contract smoke before candidate assembly. |
+| H3/H7 boundary and benchmark validation panel | validation hard-slice panel created; final policy disconnected | validation-only hard/control typed-field panel | 30 validation rows, 22 hard rows, 8 controls, 19 boundary rows, 11 renderer rows, 30/30 exact-evidence rows, and no note text written to artifacts. | Stable typed boundary/renderer fields can be represented over real validation slices without leaking note text or connecting to final-label policy. | Run a validation typed-field contract smoke before any candidate assembly or holdout-facing protocol. |
+| H3/H7 boundary and benchmark validation contract smoke | validation mechanism contract passed; final policy disconnected | validation panel typed-field replay | 30 rows, 22 hard rows, 8 controls, 30/30 contract-matched rows, 30/30 exact-evidence rows, 0 source-note-text rows, 19 boundary rows, 11 renderer rows, and final-label policy connected = false. | This is the first source-backed validation mechanism control for the boundary/renderer pivot. It supports transparency and exact-evidence carry-through, but remains validation-development evidence only and does not authorize candidate assembly or holdout use. | Decide whether to connect the typed fields through a validation-only candidate assembly protocol or build a richer structured event representation with explicit projection ownership. |
+| H3/H7 boundary and benchmark candidate assembly | diagnostic only; architecture chosen but not promotion-ready | validation-only typed-candidate bridge over current assembled candidate | 30 candidate rows, 30 selected prediction-bearing rows, 6 W->C, 1 C->W, 30/30 exact-evidence rows, parse-ok plus exact-evidence rate 1.0000, 0 source-note-text rows, and final-label policy connected = false. Gate failures: coverage below 150 and W->C below 60. | The next architecture should start as a shallow typed-candidate-contract layer, not an immediate richer event rewrite. However, this panel is undercovered and has one validation C->W row, so it remains diagnostic and cannot authorize holdout or final-label promotion. | Expand validation hard/control coverage and audit the C->W row on validation only; if coverage or W->C remains insufficient, move to richer structured events with explicit projection ownership. |
 
 ## Detailed Results
 
@@ -228,28 +234,33 @@ Artifact:
 
 Panel contract:
 
-- Rows: 12.
-- Minimal pairs: 6.
-- Clinical-state invariant pairs: 6.
-- Exact evidence rows: 12.
-- Boundary rows: 6.
-- Renderer rows: 6.
-- Hard rows: 10.
-- Control rows: 2.
+- Rows: 36.
+- Minimal pairs: 18.
+- Clinical-state invariant pairs: 18.
+- Exact evidence rows: 36.
+- Boundary rows: 20.
+- Renderer rows: 16.
+- Boundary states: asserted seizure-free interval, last-event-only,
+  conditional/trigger-only, non-epileptic current events, residual seizure
+  activity, and no-boundary-evidence controls.
+- Benchmark renderer rules: unresolved cluster burden, unknown sentinel, vague
+  multiple frequency, and non-epileptic seizure-free projection.
 
 Target mechanisms:
 
 - `seizure_free_boundary_event_v0`: asserted seizure-free interval,
-  last-event-only, and residual-active-semiology cases.
+  last-event-only, conditional/trigger-only, non-epileptic current events,
+  residual-active-semiology cases, and no-boundary controls.
 - `benchmark_convention_renderer_v0`: unresolved cluster burden,
-  unknown/no-reference sentinel behavior, and vague multiple-frequency cases.
+  unknown/no-reference sentinel behavior, vague multiple-frequency cases, and
+  non-epileptic benchmark projection cases.
 
 Decision: `ready_for_boundary_renderer_contract_tests`.
 
-Interpretation: this panel creates the next contract surface. It should not be
-used as a final-label score target. The next useful step is to implement typed
-boundary and benchmark-renderer contract tests that expose clinical state and
-Gan-rendered label separately.
+Interpretation: this panel creates a synthetic regression/control surface. It
+should not be used as a final-label score target. Its purpose is to protect
+typed boundary states, renderer transparency, exact evidence, and pair
+consistency before moving stable fields onto validation hard slices.
 
 ### H3/H7 Boundary/Benchmark Contract Smoke v0
 
@@ -261,25 +272,142 @@ Artifact:
 
 Contract accounting:
 
-- Rows: 12.
-- Minimal pairs: 6.
-- Clinical-state invariant pairs: 6.
-- Contract-matched rows: 12.
-- Exact evidence rows: 12.
-- Target mechanisms: 6 `seizure_free_boundary_event_v0`, 6
+- Rows: 36.
+- Minimal pairs: 18.
+- Clinical-state invariant pairs: 18.
+- Contract-matched rows: 36.
+- Exact evidence rows: 36.
+- Target mechanisms: 20 `seizure_free_boundary_event_v0`, 16
   `benchmark_convention_renderer_v0`.
-- Benchmark rules: 2 `gan_cluster_multiple_per_cluster`, 2
-  `gan_unknown_sentinel`, 2 `gan_vague_multiple_frequency`, and 6
+- Benchmark rules: 6 `gan_cluster_multiple_per_cluster`, 4
+  `gan_unknown_sentinel`, 4 `gan_vague_multiple_frequency`, 2
+  `gan_non_epileptic_seizure_free_projection`, and 20
   `none_boundary_state_only`.
 - Final-label policy connected: false.
 
 Decision: `boundary_renderer_contract_passed`.
 
-Interpretation: this is the first executable mechanism proof for the pivot. It
-does not claim validation or holdout performance. Its value is that the typed
-boundary classifier and benchmark renderer now expose separate fields for
+Interpretation: this is the executable synthetic mechanism proof for the pivot.
+It does not claim validation or holdout performance. Its value is that the
+typed boundary classifier and benchmark renderer expose separate fields for
 clinical state and Gan-rendered label, with exact evidence and pair consistency
 preserved.
+
+### H3/H7 Boundary/Benchmark Validation Panel v0
+
+Artifact:
+
+- `experiments/gan2026_boundary_benchmark_validation_panel_v0_2026-06-05.json`
+- `experiments/gan2026_boundary_benchmark_validation_panel_v0_2026-06-05.jsonl`
+- `experiments/gan2026_boundary_benchmark_validation_panel_v0_2026-06-05.md`
+
+Panel accounting:
+
+- Rows: 30.
+- Hard rows: 22.
+- Control rows: 8.
+- Boundary rows: 19.
+- Renderer rows: 11.
+- Exact evidence rows: 30.
+- Source-note-text rows written: 0.
+- Final-label policy connected: false.
+
+Slices:
+
+| Slice | Rows |
+| --- | ---: |
+| `asserted_seizure_free_interval` | 8 |
+| `cluster_multiple_per_cluster` | 3 |
+| `conditional_or_trigger_only` | 3 |
+| `last_event_only` | 6 |
+| `non_epileptic_current_events` | 2 |
+| `unknown_sentinel` | 1 |
+| `vague_multiple_frequency` | 7 |
+
+Decision: `ready_for_boundary_renderer_validation_contract`.
+
+Interpretation: this panel ports only stable typed fields from the synthetic
+mechanism design onto real validation hard/control slices. It demonstrates that
+the boundary/renderer work can be represented without storing raw note text in
+artifacts and without connecting to final-label policy.
+
+### H3/H7 Boundary/Benchmark Validation Contract Smoke v0
+
+Artifact:
+
+- `experiments/gan2026_boundary_benchmark_validation_contract_v0_2026-06-05.json`
+- `experiments/gan2026_boundary_benchmark_validation_contract_v0_2026-06-05.jsonl`
+- `experiments/gan2026_boundary_benchmark_validation_contract_v0_2026-06-05.md`
+
+Contract accounting:
+
+- Rows: 30.
+- Hard rows: 22.
+- Control rows: 8.
+- Contract-matched rows: 30.
+- Exact evidence rows: 30.
+- Source-note-text rows: 0.
+- Target mechanisms: 19 `seizure_free_boundary_event_v0`, 11
+  `benchmark_convention_renderer_v0`.
+- Benchmark rules: 3 `gan_cluster_multiple_per_cluster`, 1
+  `gan_unknown_sentinel`, 7 `gan_vague_multiple_frequency`, and 19
+  `none_boundary_state_only`.
+- Final-label policy connected: false.
+
+Decision: `boundary_renderer_validation_contract_passed`.
+
+Interpretation: this is the first validation-development mechanism control for
+the H3/H7 boundary/renderer pivot. It checks typed-field classification,
+exact-evidence carry-through, renderer transparency, absence of source note text
+in artifacts, and disconnection from final-label policy. It does not authorize
+candidate assembly or holdout use. The next decision is architectural: connect
+the typed boundary/renderer fields through a validation-only candidate assembly
+protocol, or build a richer structured event representation with explicit
+projection ownership first.
+
+### H3/H7 Boundary/Benchmark Candidate Assembly v0
+
+Artifact:
+
+- `experiments/gan2026_boundary_benchmark_candidate_assembly_v0_2026-06-05.json`
+- `experiments/gan2026_boundary_benchmark_candidate_assembly_v0_2026-06-05.jsonl`
+- `experiments/gan2026_boundary_benchmark_candidate_assembly_v0_2026-06-05.md`
+
+Architecture decision:
+
+- Use a shallow typed-candidate-contract layer over the current assembled
+  validation candidate.
+- Defer a richer structured event representation until this layer either fails
+  expansion or cannot explain projection ownership safely.
+
+Candidate accounting:
+
+- Candidate rows: 30.
+- Selected prediction-bearing rows: 30.
+- W->C rows: 6.
+- C->W rows: 1.
+- C->W rate: 0.0333.
+- Parse-ok plus exact-evidence rows: 30.
+- Parse-ok plus exact-evidence rate: 1.0000.
+- Source-note-text rows: 0.
+- Final-label policy connected: false.
+- Holdout authorized: false.
+- Locked-test row-level artifacts used: 0.
+
+Gate failures:
+
+- `coverage_below_150`.
+- `w_to_c_below_60`.
+
+Decision: `candidate_contract_layer_diagnostic_only`.
+
+Interpretation: the bridge makes candidate exposure and projection ownership
+auditable without writing note text or promoting final labels. It is useful as a
+validation-development diagnostic, but not as a holdout-facing candidate. The
+single C->W row should be audited on validation only before broadening. If an
+expanded typed layer remains undercovered or produces unsafe regressions, the
+next branch should be a richer structured event representation with explicit
+projection ownership.
 
 ## Update Log
 
@@ -304,3 +432,12 @@ preserved.
   hard-slice panel that ports stable boundary/renderer typed fields without raw
   note text. It selected 30 rows, 19 boundary rows, 11 renderer rows, 30/30
   exact-evidence rows, and no final-label policy connection.
+- 2026-06-05: Added `boundary_benchmark_validation_contract_v0`, a validation
+  typed-field smoke over the panel. It passed 30/30 contract matches with
+  30/30 exact-evidence rows, 0 source-note-text rows, and no final-label policy
+  connection. It remains validation-development mechanism evidence only.
+- 2026-06-05: Added `boundary_benchmark_candidate_assembly_v0`, resolving the
+  architecture decision in favor of a validation-only typed-candidate-contract
+  layer over the current assembled candidate. The artifact is diagnostic only:
+  30 selected rows, 6 W->C, 1 C->W, 100% parse-ok plus exact-evidence, and
+  blocked by coverage plus W->C gates.

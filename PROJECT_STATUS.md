@@ -136,6 +136,15 @@ Important standing numbers:
   validation hard slices: 30 validation rows, 19 boundary rows, 11 renderer rows,
   22 hard rows, 8 controls, 30/30 exact-evidence rows, no note text in
   artifacts, and final-label policy disconnected.
+- `boundary_benchmark_validation_contract_v0` passed the validation mechanism
+  smoke: 30/30 contract-matched rows, 30/30 exact-evidence rows, 0 note-text
+  rows, 22 hard rows, 8 controls, and final-label policy disconnected. It
+  remains validation-development mechanism evidence only.
+- `boundary_benchmark_candidate_assembly_v0` resolves the architecture decision
+  in favor of a shallow typed-candidate-contract layer over the current
+  assembled candidate, but only as a diagnostic validation artifact: 30 selected
+  rows, 6 W->C, 1 C->W, 30/30 exact-evidence rows, 0 note-text rows, and blocked
+  by coverage plus W->C gates before any frozen audit.
 
 Core plans and artifacts:
 
@@ -205,15 +214,21 @@ Core plans and artifacts:
 - Boundary/benchmark validation hard-slice panel v0:
   `experiments/gan2026_boundary_benchmark_validation_panel_v0_2026-06-05.json`,
   `experiments/gan2026_boundary_benchmark_validation_panel_v0_2026-06-05.md`
+- Boundary/benchmark validation contract smoke v0:
+  `experiments/gan2026_boundary_benchmark_validation_contract_v0_2026-06-05.json`,
+  `experiments/gan2026_boundary_benchmark_validation_contract_v0_2026-06-05.md`
+- Boundary/benchmark candidate assembly v0:
+  `experiments/gan2026_boundary_benchmark_candidate_assembly_v0_2026-06-05.json`,
+  `experiments/gan2026_boundary_benchmark_candidate_assembly_v0_2026-06-05.md`
 
 ## Work Board
 
 ### Now
 
-- Run a validation contract smoke over
-  `boundary_benchmark_validation_panel_v0` that checks typed-field
-  classification, exact evidence, and renderer transparency before any
-  candidate assembly or holdout-facing protocol.
+- Expand the boundary/renderer typed-candidate layer on validation hard/control
+  surfaces before any frozen audit. If it remains below coverage or W->C gates,
+  switch to a richer structured event representation with explicit projection
+  ownership.
 - Extend the gap-matrix adapters only when a saved artifact has an explicit
   row-source contract. The current matrix intentionally uses only the staged
   assembly component seed and skips locked-test row-level artifacts.
@@ -224,9 +239,6 @@ Core plans and artifacts:
 
 ### Next
 
-- Decide whether the next architecture should be a typed candidate contract
-  layered over current components or a richer structured event representation
-  with explicit projection ownership.
 - Expand from the clean seed slices (`seizure_free->unknown`, `yearly->daily`,
   and cluster completion) through typed event generation plus matched controls;
   do not promote family-slice rules directly.
@@ -234,6 +246,8 @@ Core plans and artifacts:
   23-hard-row validation smoke before any frozen test audit.
 - Build synthetic hard/control panels that stress prediction-bearing failures,
   not only nonprediction repair opportunities.
+- Audit the single C->W row in `boundary_benchmark_candidate_assembly_v0` on
+  validation only before broadening the typed layer.
 - Write a frozen test450 protocol addendum only after the structured
   candidate/event validation gates pass.
 - If cost/latency/token efficiency is needed, run a telemetry-only pass over
@@ -318,6 +332,14 @@ Core plans and artifacts:
   hard-slice port of stable boundary/renderer typed fields. It selected 30 rows
   with 30/30 exact evidence, omitted note text from artifacts, and kept
   final-label policy disconnected.
+- 2026-06-05: Added `boundary_benchmark_validation_contract_v0`, a validation
+  typed-field smoke over that panel. It passed 30/30 contract matches with
+  30/30 exact evidence rows, 0 note-text rows, and no final-label policy
+  connection.
+- 2026-06-05: Added `boundary_benchmark_candidate_assembly_v0`, choosing the
+  typed-candidate-contract layer as the next validation-only architecture
+  bridge. It remains diagnostic only: 30 selected rows, 6 W->C, 1 C->W, 100%
+  parse-ok plus exact-evidence, and blocked by coverage plus W->C gates.
 - 2026-06-05: Closed the direct-labeler targeted switch branch as safe but
   low-coverage. Validation750 targeted switching projected 717/750 with 9 W->C
   and 0 C->W, but frozen aggregate-only test450 selected only 4 rows with
