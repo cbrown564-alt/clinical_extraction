@@ -42,6 +42,7 @@ def repair_ablation_ladder() -> list[tuple[str, StructuredRepairConfig]]:
     """Return the cumulative repair-family ladder from the v0.5 repair audit."""
 
     off: dict[str, Any] = {
+        "json_dialect_repair": True,
         "basic_label_repair": False,
         "basic_label_repair_format_only": False,
         "selected_evidence_repair": False,
@@ -57,34 +58,38 @@ def repair_ablation_ladder() -> list[tuple[str, StructuredRepairConfig]]:
     cumulative = dict(off)
     ladder = [
         (
-            "A_raw_llm_final_label_only",
-            StructuredRepairConfig.for_mode("raw_model"),
-        )
+            "A_strict_json_raw_llm_final_label_only",
+            StructuredRepairConfig.for_mode("strict_json_raw_model"),
+        ),
+        (
+            "B_python_literal_dialect_repair_only",
+            StructuredRepairConfig.for_mode("json_dialect_only"),
+        ),
     ]
     cumulative["basic_label_repair"] = True
     cumulative["basic_label_repair_format_only"] = True
     ladder.append(
         (
-            "B_format_preserving_basic_label_repair",
+            "C_format_preserving_basic_label_repair",
             StructuredRepairConfig.for_mode("strict_format"),
         )
     )
     cumulative["basic_label_repair_format_only"] = False
-    ladder.append(("C_full_basic_gan_label_repair", StructuredRepairConfig(**cumulative)))
+    ladder.append(("D_full_basic_gan_label_repair", StructuredRepairConfig(**cumulative)))
     for name, key in [
-        ("D_selected_evidence_repair", "selected_evidence_repair"),
-        ("E_monthly_diary_arithmetic", "monthly_diary_repair"),
-        ("F_usual_interval_override", "usual_interval_repair"),
-        ("G_breakthrough_after_seizure_free", "breakthrough_repair"),
-        ("H_non_epileptic_override", "non_epileptic_repair"),
-        ("I_residual_jerk_date_anchor", "residual_jerk_repair"),
-        ("J_post_change_burst", "post_change_burst_repair"),
-        ("K_dated_sequence", "dated_sequence_repair"),
-        ("L_elapsed_anchor", "elapsed_anchor_repair"),
+        ("E_selected_evidence_repair", "selected_evidence_repair"),
+        ("F_monthly_diary_arithmetic", "monthly_diary_repair"),
+        ("G_usual_interval_override", "usual_interval_repair"),
+        ("H_breakthrough_after_seizure_free", "breakthrough_repair"),
+        ("I_non_epileptic_override", "non_epileptic_repair"),
+        ("J_residual_jerk_date_anchor", "residual_jerk_repair"),
+        ("K_post_change_burst", "post_change_burst_repair"),
+        ("L_dated_sequence", "dated_sequence_repair"),
+        ("M_elapsed_anchor", "elapsed_anchor_repair"),
     ]:
         cumulative[key] = True
         ladder.append((name, StructuredRepairConfig(**cumulative)))
-    ladder.append(("M_full_current_stack", StructuredRepairConfig()))
+    ladder.append(("N_full_current_stack", StructuredRepairConfig()))
     return ladder
 
 
@@ -163,38 +168,49 @@ def write_ablation_report(result: Mapping[str, Any], path: Path, *, json_path: P
         "",
         "## Condition Summary",
         "",
-        "| Condition | Purist | Pragmatic | Exact label | Semantic kind | Evidence | "
+        "| Condition | Structured | Blocking parse/schema | JSON dialect repairs | "
+        "Label repair notes | Purist | Pragmatic | Exact label | Semantic kind | Evidence | "
         "Improved | Regressed |",
-        "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+        "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
     ]
     for condition in result["conditions"]:
         summary = condition["summary"]
         lines.append(
-            f"| {condition['name']} | {summary['purist_accuracy']:.4f} | "
+            f"| {condition['name']} | {summary['structured_records']} | "
+            f"{summary['parse_or_validation_failures']} | "
+            f"{summary['json_dialect_repairs']} | {summary['repair_notes']} | "
+            f"{summary['purist_accuracy']:.4f} | "
             f"{summary['pragmatic_accuracy']:.4f} | {summary['exact_label_accuracy']:.4f} | "
             f"{summary['semantic_kind_accuracy']:.4f} | {summary['evidence_rate']:.4f} | "
             f"{summary['improved_vs_previous']} | {summary['regressed_vs_previous']} |"
         )
     condition_by_name = {condition["name"]: condition for condition in result["conditions"]}
-    if "B_format_preserving_basic_label_repair" in condition_by_name:
-        raw = condition_by_name["A_raw_llm_final_label_only"]["summary"]
-        strict_basic = condition_by_name["B_format_preserving_basic_label_repair"]["summary"]
-        full_basic = condition_by_name["C_full_basic_gan_label_repair"]["summary"]
+    if "C_format_preserving_basic_label_repair" in condition_by_name:
+        strict_json = condition_by_name["A_strict_json_raw_llm_final_label_only"]["summary"]
+        dialect = condition_by_name["B_python_literal_dialect_repair_only"]["summary"]
+        strict_basic = condition_by_name["C_format_preserving_basic_label_repair"]["summary"]
+        full_basic = condition_by_name["D_full_basic_gan_label_repair"]["summary"]
         lines.extend(
             [
                 "",
-                "## Basic Repair Split Interpretation",
+                "## Dialect And Basic Repair Split Interpretation",
                 "",
-                "The clean LLM-only structured-events attribution baseline is raw "
-                "model selection plus format-preserving basic label repair only. "
-                "This condition keeps casing, "
+                "The first two conditions separate strict JSON compliance from "
+                "non-semantic Python-literal dialect repair. The clean LLM-only "
+                "structured-events attribution baseline is dialect repair plus "
+                "format-preserving basic label repair only. This condition keeps casing, "
                 "plural units, compact rate syntax, event-word cleanup, and directly "
                 "stated every/each-period phrasing, but excludes vague-quantity remapping, "
                 "semantic fallback to unknown/no-reference, impossible-denominator fallback, "
                 "and final catch-all coercion.",
                 "",
-                f"- Raw model selection: {raw['purist_correct']} / {raw['rows']} Purist "
-                f"correct = {raw['purist_accuracy']:.4f}.",
+                f"- Strict JSON raw model selection: {strict_json['purist_correct']} / "
+                f"{strict_json['rows']} Purist correct = "
+                f"{strict_json['purist_accuracy']:.4f}.",
+                f"- Python-literal dialect repair only: {dialect['purist_correct']} / "
+                f"{dialect['rows']} Purist correct = {dialect['purist_accuracy']:.4f}; "
+                f"{dialect['improved_vs_previous']} improved and "
+                f"{dialect['regressed_vs_previous']} regressed versus strict JSON.",
                 f"- Format-preserving basic repair: {strict_basic['purist_correct']} / "
                 f"{strict_basic['rows']} Purist correct = "
                 f"{strict_basic['purist_accuracy']:.4f}; "
@@ -264,6 +280,14 @@ def _condition_summary(
     improved, regressed = _changed_correctness_counts(rows, previous_rows)
     return {
         "rows": count,
+        "structured_records": sum(bool(row.get("structured_record")) for row in rows),
+        "parse_or_validation_failures": sum(
+            _has_blocking_parse_issue(row.get("parse_errors")) for row in rows
+        ),
+        "json_dialect_repairs": sum(
+            _has_json_dialect_repair(row.get("parse_errors")) for row in rows
+        ),
+        "repair_notes": sum(_has_repair_note(row.get("parse_errors")) for row in rows),
         "purist_correct": purist,
         "purist_accuracy": round(purist / count, 4) if count else 0.0,
         "pragmatic_correct": pragmatic,
@@ -416,6 +440,28 @@ def _text_matches(row: Mapping[str, Any], pattern: str) -> bool:
 
 def _yes_no(value: bool) -> str:
     return "yes" if value else "no"
+
+
+def _has_blocking_parse_issue(errors: Any) -> bool:
+    return any(
+        str(error).startswith(
+            (
+                "invalid_json:",
+                "schema_validation_error:",
+                "unscorable_final_label:",
+                "not_run",
+            )
+        )
+        for error in errors or []
+    )
+
+
+def _has_json_dialect_repair(errors: Any) -> bool:
+    return any(str(error).startswith("json_dialect_repaired:") for error in errors or [])
+
+
+def _has_repair_note(errors: Any) -> bool:
+    return any(str(error).startswith("final_label_repaired:") for error in errors or [])
 
 
 def main(argv: Sequence[str] | None = None) -> None:

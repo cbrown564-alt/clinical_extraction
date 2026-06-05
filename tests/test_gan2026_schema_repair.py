@@ -14,6 +14,18 @@ def test_parse_json_payload_with_schema_repair_handles_python_literal_dialect() 
     assert notes == ["json_dialect_repaired: python_literal"]
 
 
+def test_parse_json_payload_with_schema_repair_can_disable_python_literal_dialect() -> None:
+    try:
+        parse_json_payload_with_schema_repair(
+            "{'events': [{'notes': None}], 'selection': {'confidence': 'high'}}",
+            python_literal_dialect_repair=False,
+        )
+    except ValueError as exc:
+        assert "Expecting property name enclosed in double quotes" in str(exc)
+    else:  # pragma: no cover - keeps the assertion explicit if json changes behavior.
+        raise AssertionError("Expected strict JSON parsing to reject Python literal syntax")
+
+
 def test_repair_decision_payload_handles_common_schema_aliases() -> None:
     payload = repair_decision_payload(
         {

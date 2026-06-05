@@ -135,6 +135,7 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
             run_split=llm_only_structured_events.run_split,
             write_jsonl=llm_only_structured_events.write_jsonl,
             write_report=llm_only_structured_events.write_report,
+            default_max_tokens=5000,
         ),
         "llm_only_claim_table_selector": llm_only_claim_table_selector_spec,
         "llm_only_minimal_evidence_selector": GanLlmPipelineCliSpec(

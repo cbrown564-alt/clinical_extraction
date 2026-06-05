@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import os
 import re
 from collections import Counter
 from collections.abc import Mapping, Sequence
@@ -762,6 +763,60 @@ def _format_metric(value: Any) -> str:
     return str(value)
 
 
+def _model_artifact_tag(model: str) -> str:
+    tag = model.removeprefix("openai/").removeprefix("ollama_chat/")
+    tag = tag.lower().replace(".", "")
+    tag = re.sub(r"[^a-z0-9]+", "_", tag).strip("_")
+    return tag or "model"
+
+
+def _default_validation_jsonl_path(model: str) -> Path:
+    if model == MODEL:
+        return DEFAULT_JSONL_PATH
+    return Path(
+        f"experiments/gan2026_fewshot_train_exemplar_full_validation750_"
+        f"{_model_artifact_tag(model)}_{DATE}.jsonl"
+    )
+
+
+def _default_validation_json_path(model: str) -> Path:
+    if model == MODEL:
+        return DEFAULT_JSON_PATH
+    return Path(
+        f"experiments/gan2026_fewshot_train_exemplar_full_validation750_"
+        f"{_model_artifact_tag(model)}_{DATE}.json"
+    )
+
+
+def _default_validation_report_path(model: str) -> Path:
+    if model == MODEL:
+        return DEFAULT_REPORT_PATH
+    return Path(
+        f"experiments/gan2026_fewshot_train_exemplar_full_validation750_"
+        f"{_model_artifact_tag(model)}_{DATE}.md"
+    )
+
+
+def _default_test_json_path(model: str, limit: int | None) -> Path:
+    if model == MODEL and limit is None:
+        return DEFAULT_TEST_JSON_PATH
+    suffix = f"smoke{limit}_" if limit is not None else ""
+    return Path(
+        f"experiments/gan2026_fewshot_train_exemplar_contract_test450_aggregate_audit_"
+        f"{suffix}{_model_artifact_tag(model)}_{DATE}.json"
+    )
+
+
+def _default_test_report_path(model: str, limit: int | None) -> Path:
+    if model == MODEL and limit is None:
+        return DEFAULT_TEST_REPORT_PATH
+    suffix = f"smoke{limit}_" if limit is not None else ""
+    return Path(
+        f"experiments/gan2026_fewshot_train_exemplar_contract_test450_aggregate_audit_"
+        f"{suffix}{_model_artifact_tag(model)}_{DATE}.md"
+    )
+
+
 def main(argv: Sequence[str] | None = None) -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -774,21 +829,37 @@ def main(argv: Sequence[str] | None = None) -> None:
         type=Path,
         default=DEFAULT_COMBINED_VALIDATION_JSONL_PATH,
     )
-    parser.add_argument("--jsonl-path", type=Path, default=DEFAULT_JSONL_PATH)
-    parser.add_argument("--json-path", type=Path, default=DEFAULT_JSON_PATH)
-    parser.add_argument("--report-path", type=Path, default=DEFAULT_REPORT_PATH)
+    parser.add_argument("--jsonl-path", type=Path)
+    parser.add_argument("--json-path", type=Path)
+    parser.add_argument("--report-path", type=Path)
     parser.add_argument("--test-input-path", type=Path, default=DEFAULT_TEST_INPUT_PATH)
-    parser.add_argument("--test-json-path", type=Path, default=DEFAULT_TEST_JSON_PATH)
-    parser.add_argument("--test-report-path", type=Path, default=DEFAULT_TEST_REPORT_PATH)
+    parser.add_argument("--test-json-path", type=Path)
+    parser.add_argument("--test-report-path", type=Path)
     parser.add_argument("--model", default=MODEL)
+    parser.add_argument("--api-base")
+    parser.add_argument("--limit", type=int)
     parser.add_argument("--max-tokens", type=int, default=900)
     parser.add_argument("--verifier-max-tokens", type=int, default=500)
     parser.add_argument("--progress-every", type=int, default=25)
     args = parser.parse_args(argv)
 
+    if args.api_base:
+        os.environ["GAN2026_API_BASE"] = args.api_base
+
+    args.jsonl_path = args.jsonl_path or _default_validation_jsonl_path(args.model)
+    args.json_path = args.json_path or _default_validation_json_path(args.model)
+    args.report_path = args.report_path or _default_validation_report_path(args.model)
+    args.test_json_path = args.test_json_path or _default_test_json_path(args.model, args.limit)
+    args.test_report_path = args.test_report_path or _default_test_report_path(
+        args.model, args.limit
+    )
+
     if args.mode == "test-aggregate":
+        test_rows = load_jsonl_rows(args.test_input_path)
+        if args.limit is not None:
+            test_rows = test_rows[: args.limit]
         metadata = run_test_aggregate_audit(
-            load_jsonl_rows(args.test_input_path),
+            test_rows,
             model=args.model,
             max_tokens=args.max_tokens,
             verifier_max_tokens=args.verifier_max_tokens,
@@ -805,8 +876,11 @@ def main(argv: Sequence[str] | None = None) -> None:
         write_jsonl_rows(rows, args.jsonl_path)
         metadata = summarize_rows(rows, model=args.model)
     else:
+        combined_rows = load_jsonl_rows(args.combined_jsonl_path)
+        if args.limit is not None:
+            combined_rows = combined_rows[: args.limit]
         rows, metadata = run_full_validation(
-            load_jsonl_rows(args.combined_jsonl_path),
+            combined_rows,
             model=args.model,
             max_tokens=args.max_tokens,
             progress_every=args.progress_every,

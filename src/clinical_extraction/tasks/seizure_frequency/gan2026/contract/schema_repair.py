@@ -7,7 +7,11 @@ import json
 from typing import Any
 
 
-def parse_json_payload_with_schema_repair(raw_payload: str) -> tuple[Any, list[str]]:
+def parse_json_payload_with_schema_repair(
+    raw_payload: str,
+    *,
+    python_literal_dialect_repair: bool = True,
+) -> tuple[Any, list[str]]:
     """Parse model JSON, allowing explicit non-semantic JSON dialect repair.
 
     Some local models emit Python literal syntax for otherwise valid structured
@@ -19,6 +23,8 @@ def parse_json_payload_with_schema_repair(raw_payload: str) -> tuple[Any, list[s
     try:
         return json.loads(raw_payload), []
     except json.JSONDecodeError as json_error:
+        if not python_literal_dialect_repair:
+            raise json_error from None
         try:
             return ast.literal_eval(raw_payload), ["json_dialect_repaired: python_literal"]
         except (SyntaxError, ValueError):

@@ -100,6 +100,8 @@ DEFAULT_REPORT_PATH = Path(
     "experiments/gan2026_llm_only_structured_events_validation_gpt41mini_2026-06-01.md"
 )
 StructuredRepairMode = Literal[
+    "strict_json_raw_model",
+    "json_dialect_only",
     "raw_model",
     "strict_format",
     "clean_scorer_facing",
@@ -179,6 +181,7 @@ class StructuredRepairConfig:
     """Controls deterministic repair families applied after LLM-only structured-events output."""
 
     repair_mode: StructuredRepairMode | None = None
+    json_dialect_repair: bool = True
     basic_label_repair: bool = True
     basic_label_repair_format_only: bool = False
     clean_scorer_facing_gold_policy: bool = False
@@ -196,6 +199,40 @@ class StructuredRepairConfig:
     def for_mode(cls, mode: StructuredRepairMode) -> StructuredRepairConfig:
         """Build one of the named repair modes used in run metadata and reports."""
 
+        if mode == "strict_json_raw_model":
+            return cls(
+                repair_mode=mode,
+                json_dialect_repair=False,
+                basic_label_repair=False,
+                basic_label_repair_format_only=False,
+                clean_scorer_facing_gold_policy=False,
+                selected_evidence_repair=False,
+                monthly_diary_repair=False,
+                usual_interval_repair=False,
+                breakthrough_repair=False,
+                non_epileptic_repair=False,
+                residual_jerk_repair=False,
+                post_change_burst_repair=False,
+                dated_sequence_repair=False,
+                elapsed_anchor_repair=False,
+            )
+        if mode == "json_dialect_only":
+            return cls(
+                repair_mode=mode,
+                json_dialect_repair=True,
+                basic_label_repair=False,
+                basic_label_repair_format_only=False,
+                clean_scorer_facing_gold_policy=False,
+                selected_evidence_repair=False,
+                monthly_diary_repair=False,
+                usual_interval_repair=False,
+                breakthrough_repair=False,
+                non_epileptic_repair=False,
+                residual_jerk_repair=False,
+                post_change_burst_repair=False,
+                dated_sequence_repair=False,
+                elapsed_anchor_repair=False,
+            )
         if mode == "raw_model":
             return cls(
                 repair_mode=mode,
@@ -270,6 +307,8 @@ class StructuredRepairConfig:
 
         flags = self._flags()
         for mode in (
+            "strict_json_raw_model",
+            "json_dialect_only",
             "raw_model",
             "strict_format",
             "clean_scorer_facing",
@@ -282,6 +321,7 @@ class StructuredRepairConfig:
 
     def _flags(self) -> dict[str, bool]:
         return {
+            "json_dialect_repair": self.json_dialect_repair,
             "basic_label_repair": self.basic_label_repair,
             "basic_label_repair_format_only": self.basic_label_repair_format_only,
             "clean_scorer_facing_gold_policy": self.clean_scorer_facing_gold_policy,
@@ -436,7 +476,8 @@ def parse_structured_json(
     repair_config = repair_config or StructuredRepairConfig()
     try:
         raw_payload, errors = parse_json_payload_with_schema_repair(
-            _extract_json_object(raw_output)
+            _extract_json_object(raw_output),
+            python_literal_dialect_repair=repair_config.json_dialect_repair,
         )
         payload = _filter_structured_payload(
             repair_structured_extraction_payload(raw_payload)
