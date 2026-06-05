@@ -199,6 +199,7 @@ def test_prediction_to_extraction_repairs_control_character_inequality_evidence(
     [
         ("\x0264 four per day", "≤ four per day"),
         ("\x026#8804; 6 to 7 per year", "≤ 6 to 7 per year"),
+        ("\x026 6 to 7 per year", "≤ 6 to 7 per year"),
         ("\x00b two or four per year", "≤ two or four per year"),
         ("\x0b once per month", "≤ once per month"),
         ("\x1c twice per week", "≤ twice per week"),
