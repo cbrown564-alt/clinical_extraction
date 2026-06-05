@@ -11,12 +11,24 @@ from pathlib import Path
 from typing import Any, Literal
 
 import dspy
-from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
+from pydantic import BaseModel, ConfigDict, ValidationError, model_validator
 
 from clinical_extraction.core.evidence import (
     evidence_is_substring,
     locate_evidence,
     repair_evidence_text_if_source_exact,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.contract.candidate_set import (
+    SCHEMA_VERSION,
+    CandidateSet,
+    ClusterDetails,
+    EvidenceSpan,
+    ExtractedCandidate,
+    FrequencyDetails,
+    LastEventOnlyDetails,
+    SeizureFreeDetails,
+    SourcePhraseOnlyDetails,
+    candidate_source_phrase,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
@@ -27,126 +39,14 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_metadat
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
-PROMPT_VERSION = "gan2026_extracted_candidate_schema_probe_v5"
+PROMPT_VERSION = "gan2026_extracted_candidate_schema_probe_v6"
 PIPELINE_FAMILY = "llm_extracted_candidate_schema_probe"
-SCHEMA_VERSION = "extracted_candidate_kind_specific_details_v0"
 DEFAULT_JSONL_PATH = Path(
-    "experiments/gan2026_extracted_candidate_schema_probe_validation25_gpt41mini_v5_2026-06-05.jsonl"
+    "experiments/gan2026_extracted_candidate_schema_probe_validation25_gpt41mini_v6_2026-06-05.jsonl"
 )
 DEFAULT_REPORT_PATH = Path(
-    "experiments/gan2026_extracted_candidate_schema_probe_validation25_gpt41mini_v5_2026-06-05.md"
+    "experiments/gan2026_extracted_candidate_schema_probe_validation25_gpt41mini_v6_2026-06-05.md"
 )
-
-
-class EvidenceSpan(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    text: str
-    start_char: int | None = None
-    end_char: int | None = None
-
-
-class FrequencyDetails(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    count: str | None = None
-    count_range: str | None = None
-    time_period: str | None = None
-    time_period_range: str | None = None
-    source_phrase: str
-
-
-class SeizureFreeDetails(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    duration: str | None = None
-    anchor: str | None = None
-    source_phrase: str
-
-
-class LastEventOnlyDetails(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    event_timing: str | None = None
-    event_count: str | None = None
-    source_phrase: str
-
-
-class ClusterDetails(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    cluster_frequency: str | None = None
-    events_per_cluster: str | None = None
-    cluster_count: str | None = None
-    cluster_period: str | None = None
-
-
-class SourcePhraseOnlyDetails(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    source_phrase: str
-
-
-class ExtractedCandidate(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    candidate_id: str
-    component_owner: str
-    source_type: Literal["llm_candidate"]
-    source_artifact: str
-    source_row_index: int
-    candidate_kind: Literal[
-        "frequency_rate",
-        "cluster_frequency",
-        "seizure_free",
-        "last_event_only",
-        "unknown_frequency",
-        "no_reference",
-    ]
-    event_type: Literal["seizure", "seizure_like_event", "non_epileptic_event", "unclear_event"]
-    event_subtype: str | None = None
-    frequency: FrequencyDetails | None = None
-    seizure_free: SeizureFreeDetails | None = None
-    last_event_only: LastEventOnlyDetails | None = None
-    cluster_details: ClusterDetails | None = None
-    unknown_frequency: SourcePhraseOnlyDetails | None = None
-    no_reference: SourcePhraseOnlyDetails | None = None
-    temporality: Literal["current", "recent", "historical", "unclear"]
-    certainty: Literal["certain", "uncertain"]
-    certainty_reason: Literal[
-        "vague_count",
-        "unclear_time_period",
-        "approximate_wording",
-        "conditional_statement",
-        "other",
-    ] | None = None
-    assertion_status: Literal["asserted", "negated", "uncertain", "conditional"]
-    evidence_span: EvidenceSpan
-    source_ids: list[str]
-    extraction_issues: list[str] = Field(default_factory=list)
-    clinical_or_policy: Literal["clinical"]
-
-    @model_validator(mode="after")
-    def validate_kind_detail(self) -> ExtractedCandidate:
-        detail_by_kind = {
-            "frequency_rate": self.frequency,
-            "cluster_frequency": self.cluster_details,
-            "seizure_free": self.seizure_free,
-            "last_event_only": self.last_event_only,
-            "unknown_frequency": self.unknown_frequency,
-            "no_reference": self.no_reference,
-        }
-        populated = [name for name, value in detail_by_kind.items() if value is not None]
-        if populated != [self.candidate_kind]:
-            raise ValueError(
-                "candidate_kind must have exactly one matching detail object; "
-                f"candidate_kind={self.candidate_kind!r}, populated={populated!r}"
-            )
-        if self.certainty == "certain" and self.certainty_reason is not None:
-            raise ValueError("certainty_reason must be null when certainty is certain")
-        if self.certainty == "uncertain" and self.certainty_reason is None:
-            raise ValueError("certainty_reason is required when certainty is uncertain")
-        return self
 
 
 class CandidateDraft(BaseModel):
@@ -215,16 +115,6 @@ class CandidateDraftSet(BaseModel):
     candidates: list[CandidateDraft]
 
 
-class CandidateSet(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    source_row_index: int
-    component_owner: str
-    source_artifacts: list[str]
-    candidates: list[ExtractedCandidate]
-    assembly_issues: list[str] = Field(default_factory=list)
-
-
 class Gan2026CandidateSetExtractorSignature(dspy.Signature):
     """Extract a row-level candidate set using kind-specific detail objects."""
 
@@ -279,6 +169,12 @@ def build_candidate_set_inputs(record: GanFrequencyRecord) -> dict[str, Any]:
             "Example: '≤ four seizures per week' -> frequency.source_phrase '≤ four seizures per week'.",
             "Example: 'seizures every 1 or 2 weeks' -> frequency.source_phrase 'seizures every 1 or 2 weeks'.",
             "Example: 'multiple times in the past week' -> frequency.source_phrase 'multiple times in the past week', certainty uncertain, certainty_reason vague_count.",
+            "High-recall unknown-frequency rule: when a statement gives only vague quantity words such as multiple, several, many, a few, handful, couple, most days, most weekdays, most shifts, or a few events, emit an unknown_frequency candidate.",
+            "For vague quantity statements, do not use frequency_rate unless the phrase also contains a directly stated numeric count, numeric range, or exact interval.",
+            "Example: 'several focal seizures last week' -> unknown_frequency.source_phrase 'several focal seizures last week'.",
+            "Example: 'brief absences occurring on most weekdays' -> unknown_frequency.source_phrase 'brief absences occurring on most weekdays'.",
+            "Example: 'a few events in the preceding month' -> unknown_frequency.source_phrase 'a few events in the preceding month'.",
+            "Example: 'multiple seizures in past day' -> unknown_frequency.source_phrase 'multiple seizures in past day'.",
             "For seizure clusters, use cluster_details only when the note states how often clusters happen, how long a cluster lasts, how many clusters occurred, or how many events happen in a cluster.",
             "For cluster_details, copy the relevant phrase into cluster_frequency, events_per_cluster, cluster_count, or cluster_period only if that phrase is directly stated.",
             "Do not create a cluster candidate for generic wording such as variable clustering, occurring in clusters on stressful days, clustering around stress, clustering around sleep deprivation, or often in the afternoon.",
@@ -787,17 +683,7 @@ def _schema_probe(
 
 
 def _candidate_source_phrase(candidate: ExtractedCandidate) -> str | None:
-    if candidate.frequency is not None:
-        return candidate.frequency.source_phrase
-    if candidate.seizure_free is not None:
-        return candidate.seizure_free.source_phrase
-    if candidate.last_event_only is not None:
-        return candidate.last_event_only.source_phrase
-    if candidate.unknown_frequency is not None:
-        return candidate.unknown_frequency.source_phrase
-    if candidate.no_reference is not None:
-        return candidate.no_reference.source_phrase
-    return None
+    return candidate_source_phrase(candidate)
 
 
 def _raw_output_from_candidate_set(candidate_set: CandidateSet | None) -> str:

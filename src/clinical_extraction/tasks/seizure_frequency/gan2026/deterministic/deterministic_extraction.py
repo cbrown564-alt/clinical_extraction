@@ -280,4 +280,72 @@ def _extract_unknown_candidates(text: str, ablation_config: AblationConfig) -> l
         )
         for match in unknown.finditer(text)
     )
+    candidates.extend(_extract_vague_quantified_unknown_candidates(text))
+    return candidates
+
+
+def _extract_vague_quantified_unknown_candidates(text: str) -> list[_RawCandidate]:
+    vague_quantity = (
+        r"multiple|several|many|few|a\s+few|handful|a\s+handful|couple|"
+        r"a\s+couple|most|a\s+number\s+of"
+    )
+    event_terms = (
+        r"seizures?|events?|episodes?|spells?|turns?|absences?|convulsions?|"
+        r"myoclonic|focal\s+seizures?|focal\s+events?"
+    )
+    event_phrase = rf"(?:(?:brief|short|typical|current|focal)\s+)*(?:{event_terms})"
+    time_basis = (
+        r"(?:the\s+)?past\s+(?:day|week|month|few\s+weeks|several\s+weeks)|"
+        r"(?:the\s+)?last\s+(?:day|week|month|few\s+weeks|several\s+weeks)|"
+        r"(?:the\s+)?preceding\s+(?:day|week|month|few\s+weeks|several\s+weeks)|"
+        r"(?:the\s+)?previous\s+(?:day|week|month|few\s+weeks|several\s+weeks)|"
+        r"per\s+(?:day|week|month)|"
+        r"most\s+(?:days|weekdays|nights|shifts|months)|"
+        r"across\s+most\s+months|"
+        r"spread\s+across\s+most\s+months"
+    )
+    patterns = [
+        re.compile(
+            rf"\b(?P<quantity>{vague_quantity})\s+"
+            rf"(?P<event>{event_phrase})\s+"
+            rf"(?:in|during|over|across|spread\s+across|per|on)\s+"
+            rf"(?P<time>{time_basis})\b",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            rf"\b(?P<quantity>{vague_quantity})\s+"
+            rf"(?P<event>{event_phrase})\s+"
+            rf"(?P<time>last\s+(?:day|week|month)|"
+            rf"past\s+(?:day|week|month)|"
+            rf"previous\s+(?:day|week|month)|"
+            rf"preceding\s+(?:day|week|month))\b",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            rf"\b(?P<event>{event_phrase})\s+"
+            rf"(?:occurring|happening|reported|recorded|noted|cropping\s+up)\s+"
+            rf"(?:on\s+)?(?P<time>{time_basis})\b",
+            re.IGNORECASE,
+        ),
+        re.compile(
+            rf"\b(?P<quantity>{vague_quantity})\s+"
+            rf"(?P<event>{event_phrase})\s+"
+            rf"(?:were\s+)?(?:reported|recorded|noted|described)\b",
+            re.IGNORECASE,
+        ),
+    ]
+    candidates: list[_RawCandidate] = []
+    for pattern in patterns:
+        candidates.extend(
+            _RawCandidate(
+                kind=CandidateKind.UNKNOWN_FREQUENCY,
+                label="unknown",
+                evidence=_clean_evidence(match.group(0)),
+                rule_id="unknown.vague_quantified_frequency",
+                rule_group=RuleGroup.SEIZURE_FREE_NO_EVENT_ASSERTIONS,
+                portability=Portability.SEIZURE_FREQUENCY,
+                match_groups=match.groupdict(),
+            )
+            for match in pattern.finditer(text)
+        )
     return candidates
