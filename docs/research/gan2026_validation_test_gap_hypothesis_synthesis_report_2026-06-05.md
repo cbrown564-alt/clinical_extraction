@@ -52,6 +52,7 @@ Primary source artifacts:
 - `experiments/gan2026_h1_hidden_family_slice_aggregates_v0_2026-06-05.json`
 - `docs/research/gan2026_generalization_first_boundary_and_benchmark_solution_design_2026-06-05.md`
 - `experiments/gan2026_boundary_benchmark_seed_panel_v0_2026-06-05.json`
+- `experiments/gan2026_boundary_benchmark_contract_v0_2026-06-05.json`
 
 ## Hypothesis Outcomes
 
@@ -64,6 +65,7 @@ Primary source artifacts:
 | H1 hidden-family mix explains the aggregate gap | tested; inconclusive | aggregate-only predeclared hidden-family validation/test readout over selective_safety_floor_gate_v0 | Validation proxy was 0.9440 and test proxy was 0.7800. Family gaps were broad: diary/log 0.1702, current-vs-historical 0.1661, competing semiologies 0.1686, rate/denominator 0.1643, seizure-free duration 0.2431, benchmark convention 0.2369. | Hidden-family mix contributes useful stratification but does not cleanly explain the aggregate gap by itself. Family tags overlap heavily, and broad classifier families are high-incidence, so this should not be accepted as a concentrated-family explanation. | Move to H3 candidate-exposure instrumentation and H7 template-brittleness panels, using H1 families as strata rather than as the primary explanation. |
 | Generalization-first boundary/convention design | predeclared design pivot | synthesis of H1, RQ10, normalization semantics, and saturated-validation protocol | Seizure-free duration and benchmark-format convention show larger within-family gaps than the aggregate surface. RQ10 shows some rows are benchmark-convention dominated or clinically defensible alternatives rather than ordinary extraction failures. | A lower validation score can be acceptable if it comes from source-grounded boundary states and explicit benchmark rendering instead of validation-fit label switching. | Build typed `seizure_free_boundary_event_v0` and `benchmark_convention_renderer_v0` panels before final-label promotion. |
 | H3/H7 boundary and benchmark seed panel | panel contract created; mechanism not yet implemented | synthetic hard/control minimal-pair panel | 12 rows, 6 pairs, 6 clinical-state invariant pairs, 12 exact-evidence rows, 6 `seizure_free_boundary_event_v0` rows, and 6 `benchmark_convention_renderer_v0` rows. | The next mechanism now has an explicit contract for candidate exposure, boundary state, renderer transparency, and pair consistency. This is mechanism scaffolding, not performance evidence. | Implement typed boundary and benchmark-renderer contract tests against the panel before connecting either mechanism to final-label policy. |
+| H3/H7 boundary and benchmark contract smoke | mechanism contract passed; final policy disconnected | synthetic seed-panel replay | 12 rows, 6 pairs, 6 clinical-state invariant pairs, 12 contract-matched rows, 12 exact-evidence rows, 6 boundary rows, 6 renderer rows, and final-label policy connected = false. | The first executable mechanism separates `clinical_final_state` from `gan_rendered_label` while preserving exact evidence and pair consistency. It remains synthetic mechanism evidence only. | Broaden the mechanism contract with generated hard/control cases, then port stable typed fields to validation hard-slice panels. |
 
 ## Detailed Results
 
@@ -249,6 +251,36 @@ used as a final-label score target. The next useful step is to implement typed
 boundary and benchmark-renderer contract tests that expose clinical state and
 Gan-rendered label separately.
 
+### H3/H7 Boundary/Benchmark Contract Smoke v0
+
+Artifact:
+
+- `experiments/gan2026_boundary_benchmark_contract_v0_2026-06-05.json`
+- `experiments/gan2026_boundary_benchmark_contract_v0_2026-06-05.jsonl`
+- `experiments/gan2026_boundary_benchmark_contract_v0_2026-06-05.md`
+
+Contract accounting:
+
+- Rows: 12.
+- Minimal pairs: 6.
+- Clinical-state invariant pairs: 6.
+- Contract-matched rows: 12.
+- Exact evidence rows: 12.
+- Target mechanisms: 6 `seizure_free_boundary_event_v0`, 6
+  `benchmark_convention_renderer_v0`.
+- Benchmark rules: 2 `gan_cluster_multiple_per_cluster`, 2
+  `gan_unknown_sentinel`, 2 `gan_vague_multiple_frequency`, and 6
+  `none_boundary_state_only`.
+- Final-label policy connected: false.
+
+Decision: `boundary_renderer_contract_passed`.
+
+Interpretation: this is the first executable mechanism proof for the pivot. It
+does not claim validation or holdout performance. Its value is that the typed
+boundary classifier and benchmark renderer now expose separate fields for
+clinical state and Gan-rendered label, with exact evidence and pair consistency
+preserved.
+
 ## Update Log
 
 - 2026-06-05: Created initial synthesis from H2/H4/H6 selection, H2/H4
@@ -265,3 +297,6 @@ Gan-rendered label separately.
   synthetic hard/control seed panel for typed seizure-free boundary events and
   explicit benchmark rendering. It passed exact-evidence and pair-invariance
   checks and is ready for mechanism contract tests.
+- 2026-06-05: Added `boundary_benchmark_contract_v0`, a no-call mechanism
+  contract smoke over the seed panel. It passed all 12 rows while keeping final
+  label policy disconnected.

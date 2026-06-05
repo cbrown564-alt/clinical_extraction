@@ -128,6 +128,10 @@ Important standing numbers:
   that posture: 12 synthetic rows, 6 minimal pairs, 6 clinical-state invariant
   pairs, 12 exact-evidence rows, 6 boundary rows, and 6 renderer rows. It is
   ready for mechanism contract tests and is not final-label promotion evidence.
+- `boundary_benchmark_contract_v0` now executes the typed boundary classifier
+  and benchmark renderer over that panel: 12/12 contract-matched rows, 12/12
+  exact evidence rows, 6/6 clinical-state invariant pairs, and final-label
+  policy remains disconnected.
 
 Core plans and artifacts:
 
@@ -191,15 +195,18 @@ Core plans and artifacts:
 - Boundary/benchmark H3/H7 seed panel v0:
   `experiments/gan2026_boundary_benchmark_seed_panel_v0_2026-06-05.json`,
   `experiments/gan2026_boundary_benchmark_seed_panel_v0_2026-06-05.md`
+- Boundary/benchmark H3/H7 contract smoke v0:
+  `experiments/gan2026_boundary_benchmark_contract_v0_2026-06-05.json`,
+  `experiments/gan2026_boundary_benchmark_contract_v0_2026-06-05.md`
 
 ## Work Board
 
 ### Now
 
-- Implement typed `seizure_free_boundary_event_v0` and
-  `benchmark_convention_renderer_v0` contract tests against
-  `boundary_benchmark_seed_panel_v0`; keep clinical state and Gan-rendered label
-  separate, and do not connect the mechanisms to final-label policy yet.
+- Broaden `boundary_benchmark_contract_v0` with generated hard/control cases
+  for seizure-free boundary and benchmark convention, then port only stable
+  typed fields to a validation hard-slice panel; keep final-label policy
+  disconnected until the mechanism surface is robust.
 - Extend the gap-matrix adapters only when a saved artifact has an explicit
   row-source contract. The current matrix intentionally uses only the staged
   assembly component seed and skips locked-test row-level artifacts.
@@ -291,6 +298,10 @@ Core plans and artifacts:
 - 2026-06-05: Added `boundary_benchmark_seed_panel_v0`, a 12-row synthetic H3/H7
   seed panel with exact evidence and pair-invariant clinical states for
   seizure-free boundary and benchmark-renderer contract tests.
+- 2026-06-05: Implemented `boundary_benchmark_contract_v0`. The no-call
+  mechanism smoke passed all seed-panel rows, preserving exact evidence and
+  separate clinical-state versus Gan-rendered-label fields without connecting to
+  final-label policy.
 - 2026-06-05: Closed the direct-labeler targeted switch branch as safe but
   low-coverage. Validation750 targeted switching projected 717/750 with 9 W->C
   and 0 C->W, but frozen aggregate-only test450 selected only 4 rows with
