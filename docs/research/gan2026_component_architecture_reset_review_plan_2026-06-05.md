@@ -654,29 +654,443 @@ The reset should produce these reports before returning to validation750:
 
 ## Where To Resume Next Session
 
-Phase 0 and the initial Extract schema probe are complete enough to continue.
-The next session should start with Phase 1/2 implementation rather than more
+Phase 0 and the initial Extract schema probe were complete enough to continue.
+The 2026-06-05 continuation started Phase 1/2 implementation rather than more
 schema brainstorming.
+
+## Continuation On 2026-06-05
+
+### Stable CandidateSet Contract
+
+- Promoted the v5 source-near `ExtractedCandidate` / `CandidateSet` shape into
+  `src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/candidate_set.py`.
+- Refactored
+  `src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_extracted_candidate_schema_probe.py`
+  so the LLM probe imports the shared contract instead of owning a private copy.
+- Kept `CandidateDraft` as model-owned prompt/runtime schema only; ids,
+  provenance, source artifacts, spans, source ids, and stage bookkeeping remain
+  deterministic assembly fields.
+- Recorded the resolved language in `CONTEXT.md`: deterministic candidate
+  labels are extraction provenance for later normalization/projection, not
+  selected clinical facts or final scorer answers.
+
+### Deterministic CandidateSet Replay
+
+- Added a deterministic validation250 candidate-set replay builder:
+  `src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/candidate_set_replay.py`.
+- Generated the named Phase 1/2 artifact family:
+  - `experiments/gan2026_validation250_candidate_set_v0.jsonl`
+  - `experiments/gan2026_validation250_candidate_set_v0.json`
+  - `experiments/gan2026_validation250_candidate_set_v0.md`
+- Replay summary over validation250:
+  - rows: 250;
+  - candidate sets: 250;
+  - total candidates: 370;
+  - rows with no candidates: 27;
+  - mean candidates per row: 1.48;
+  - max candidates per row: 5;
+  - candidate kinds: 271 `frequency_rate`, 79 `seizure_free`, 13
+    `cluster_frequency`, 7 `unknown_frequency`;
+  - source-phrase missing candidates: 0;
+  - assembly issue rows: 0.
+- Added focused tests in `tests/test_gan2026_candidate_set_contract.py`.
+- Verification:
+  `PYTHONPATH=src .venv/Scripts/python.exe -m pytest tests/test_gan2026_candidate_set_contract.py tests/test_gan2026_llm_pipeline_cli.py -q`
+  passed with 8 tests.
+
+### Next Decision To Grill
+
+The next unresolved branch is whether the LLM v5 extractor should be promoted
+from schema probe to validation250 candidate-source replay. Recommended answer:
+not yet as a full validation250 live run. First inspect the deterministic
+candidate-set replay failures and candidate burden, then predeclare a narrow
+LLM extraction question such as deterministic-miss rows, no-candidate rows, or
+cluster/seizure-free boundary rows.
+
+### CandidateSet Diagnostics
+
+- Added extract-stage diagnostics:
+  `src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/candidate_set_diagnostics.py`.
+- Generated the diagnostic artifact family:
+  - `experiments/gan2026_validation250_candidate_set_diagnostics_v0.jsonl`
+  - `experiments/gan2026_validation250_candidate_set_diagnostics_v0.json`
+  - `experiments/gan2026_validation250_candidate_set_diagnostics_v0.md`
+- Added focused tests in `tests/test_gan2026_candidate_set_diagnostics.py`.
+- Defined `Compatible-Kind Coverage` in `CONTEXT.md` as an extract-stage
+  diagnostic, not normalized-label recall or benchmark performance.
+- Validation250 diagnostic summary:
+  - compatible-kind coverage: 209/250 rows, 0.836;
+  - rows with no candidates: 27;
+  - high-burden rows, using threshold >=4 candidates: 8;
+  - incompatible or empty rows: 41.
+- Coverage by gold candidate kind:
+  - `frequency_rate`: 161/161, 1.000;
+  - `seizure_free`: 38/38, 1.000;
+  - `cluster_frequency`: 6/7, 0.857;
+  - `unknown_frequency`: 4/44, 0.091.
+- Interpretation:
+  - deterministic extraction is broad enough for ordinary frequency and
+    seizure-free extraction review;
+  - high burden is narrow and inspectable, not a general blocker;
+  - the main extract-stage gap is unknown or unresolved multiple wording;
+  - one cluster row with gold `unknown, multiple per cluster` lacks a compatible
+    extracted cluster candidate.
+- Superseded recommendation: at this point the proposed next step was to avoid
+  a blanket validation250 live LLM extractor and predeclare only a narrow LLM
+  extraction replay over deterministic no-candidate rows plus unknown-frequency
+  incompatible rows. The subsequent user correction below replaced this with a
+  full validation250 LLM extractor evaluation.
+- Verification:
+  `PYTHONPATH=src .venv/Scripts/python.exe -m pytest tests/test_gan2026_candidate_set_contract.py tests/test_gan2026_candidate_set_diagnostics.py tests/test_gan2026_llm_pipeline_cli.py -q`
+  passed with 9 tests.
+
+### Full LLM CandidateSet Validation250
+
+User correction: the extract review must evaluate both deterministic and LLM
+candidate sources all the way through the same validation250 mechanics surface.
+The earlier narrow-slice recommendation was too fast.
+
+- Ran the full validation250 LLM extractor:
+  `llm_extracted_candidate_schema_probe` / `gan2026_extracted_candidate_schema_probe_v5`.
+- Generated the LLM candidate-set artifact family:
+  - `experiments/gan2026_validation250_llm_candidate_set_v0.jsonl`
+  - `experiments/gan2026_validation250_llm_candidate_set_v0.md`
+- LLM schema/run summary:
+  - rows: 250;
+  - candidate sets: 248/250;
+  - total candidates: 358;
+  - call failures: 2;
+  - parse/validation failure rows: 18;
+  - evidence error rows: 8;
+  - source-phrase error rows: 15;
+  - rows with no candidates: 6;
+  - candidate kinds: 252 `frequency_rate`, 44 `seizure_free`, 36
+    `cluster_frequency`, 22 `last_event_only`, 2 `unknown_frequency`, 2
+    `no_reference`.
+- Ran the same diagnostics over LLM candidate sets:
+  - `experiments/gan2026_validation250_llm_candidate_set_diagnostics_v0.jsonl`
+  - `experiments/gan2026_validation250_llm_candidate_set_diagnostics_v0.json`
+  - `experiments/gan2026_validation250_llm_candidate_set_diagnostics_v0.md`
+- LLM compatible-kind coverage:
+  - overall: 196/250, 0.784;
+  - `frequency_rate`: 155/161, 0.963;
+  - `seizure_free`: 33/38, 0.868;
+  - `cluster_frequency`: 6/7, 0.857;
+  - `unknown_frequency`: 2/44, 0.045.
+- Added deterministic-vs-LLM comparison:
+  - `src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/candidate_set_comparison.py`
+  - `tests/test_gan2026_candidate_set_comparison.py`
+  - `experiments/gan2026_validation250_candidate_set_comparison_v0.jsonl`
+  - `experiments/gan2026_validation250_candidate_set_comparison_v0.json`
+  - `experiments/gan2026_validation250_candidate_set_comparison_v0.md`
+- Comparison summary:
+  - deterministic compatible rows: 209/250, 0.836;
+  - LLM compatible rows: 196/250, 0.784;
+  - union compatible rows: 212/250, 0.848;
+  - both compatible rows: 193;
+  - deterministic-only rows: 16;
+  - LLM-only rows: 3;
+  - neither rows: 38;
+  - LLM diagnostic issue rows: 18;
+  - LLM missing candidate-set rows: 2.
+- Union by gold candidate kind:
+  - `frequency_rate`: 161/161, 1.000;
+  - `seizure_free`: 38/38, 1.000;
+  - `cluster_frequency`: 7/7, 1.000;
+  - `unknown_frequency`: 6/44, 0.136.
+- Interpretation:
+  - deterministic remains the stronger standalone extractor on this
+    compatible-kind diagnostic;
+  - LLM is not redundant: it contributes three deterministic-miss rows and
+    completes cluster compatible-kind coverage in union;
+  - LLM extraction has operational/schema risks that deterministic extraction
+    does not: 2 call failures and 18 diagnostic issue rows;
+  - unknown/unresolved-multiple wording remains the major extract-stage gap for
+    both candidate sources.
+- Revised recommendation: build `gan2026_validation250_candidate_set_v1` as a
+  deterministic+LLM union candidate set with explicit source provenance,
+  deduplication, and issue flags. Do not promote LLM-only extraction, and do not
+  move to selector design until the union artifact distinguishes LLM rescues,
+  deterministic-only rows, neither rows, and LLM evidence/schema failures.
+- Verification:
+  `PYTHONPATH=src .venv/Scripts/python.exe -m pytest tests/test_gan2026_candidate_set_diagnostics.py tests/test_gan2026_candidate_set_comparison.py -q`
+  passed with 3 tests.
+
+### CandidateSet Union V1
+
+- Added deterministic+LLM union builder:
+  `src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/candidate_set_union.py`.
+- Added focused tests:
+  `tests/test_gan2026_candidate_set_union.py`.
+- Generated the union artifact family:
+  - `experiments/gan2026_validation250_candidate_set_v1.jsonl`
+  - `experiments/gan2026_validation250_candidate_set_v1.json`
+  - `experiments/gan2026_validation250_candidate_set_v1.md`
+- Union rules:
+  - deterministic candidates are the stable base;
+  - LLM candidates are added unless an exact duplicate exists by
+    candidate-kind, evidence text, and source phrase;
+  - duplicate LLM candidates are merged into the retained candidate's source ids
+    and extraction issues;
+  - LLM call errors, missing candidate sets, parse/validation errors, evidence
+    errors, and source-phrase errors are preserved as union assembly issues;
+  - no gold labels, scorer-facing labels, selection, normalization, projection,
+    or locked-test data are used.
+- Union v1 summary:
+  - rows: 250;
+  - total candidates: 703;
+  - source types: 370 `deterministic_candidate`, 333 `llm_candidate`;
+  - candidate kinds: 502 `frequency_rate`, 119 `seizure_free`, 49
+    `cluster_frequency`, 22 `last_event_only`, 9 `unknown_frequency`, 2
+    `no_reference`;
+  - exact duplicate candidates merged: 25;
+  - rows with no candidates: 4;
+  - mean candidates per row: 2.812;
+  - max candidates per row: 10;
+  - rows with union assembly issues: 84;
+  - LLM missing candidate-set rows: 2;
+  - LLM call-error rows: 2;
+  - LLM parse/validation issue rows: 18.
+- Generated v1 diagnostics:
+  - `experiments/gan2026_validation250_candidate_set_v1_diagnostics.jsonl`
+  - `experiments/gan2026_validation250_candidate_set_v1_diagnostics.json`
+  - `experiments/gan2026_validation250_candidate_set_v1_diagnostics.md`
+- v1 compatible-kind coverage:
+  - overall: 212/250, 0.848;
+  - `frequency_rate`: 161/161, 1.000;
+  - `seizure_free`: 38/38, 1.000;
+  - `cluster_frequency`: 7/7, 1.000;
+  - `unknown_frequency`: 6/44, 0.136.
+- v1 candidate burden:
+  - high-burden rows at threshold >=4 candidates: 58;
+  - rows with no candidates: 4;
+  - remaining incompatible or empty rows: 38, dominated by
+    `unknown_frequency`.
+- Interpretation:
+  - v1 is the best extract-stage substrate so far by compatible-kind coverage;
+  - v1 also materially increases selector burden and carries LLM reliability
+    issues, so selector design must use source provenance and issue flags;
+  - the major remaining extract-stage weakness is unresolved/unknown frequency
+    wording, not ordinary frequency, seizure-free, or cluster coverage.
+- Verification:
+  `PYTHONPATH=src .venv/Scripts/python.exe -m pytest tests/test_gan2026_candidate_set_union.py tests/test_gan2026_candidate_set_contract.py tests/test_gan2026_candidate_set_diagnostics.py -q`
+  passed with 7 tests.
+
+### High-Recall Extract Cycle
+
+User direction: candidate burden is acceptable for now and can be tested as an
+experimental variable later. The immediate Extract objective is to improve
+candidate recall through both deterministic and LLM candidate sources, then
+evaluate which component choices work better after the rest of the pipeline is
+built out.
+
+- Added deterministic high-recall unknown-frequency extraction for vague
+  quantified current-frequency wording such as:
+  - `a few events in the preceding month`;
+  - `brief absences occurring on most weekdays`;
+  - `several focal seizures last week`.
+- Added focused deterministic tests:
+  `tests/test_gan2026_deterministic_unknown_candidate_recall.py`.
+- Updated the LLM extractor prompt to
+  `gan2026_extracted_candidate_schema_probe_v6` with explicit high-recall
+  unknown-frequency instructions for vague quantity words such as `multiple`,
+  `several`, `many`, `a few`, `handful`, `couple`, and `most weekdays`.
+- Added artifact-name parameters to candidate-set replay and union builders so
+  the high-recall cycle can be recorded without overwriting the earlier cycle.
+
+#### Deterministic CandidateSet V1
+
+- Generated:
+  - `experiments/gan2026_validation250_deterministic_candidate_set_v1.jsonl`
+  - `experiments/gan2026_validation250_deterministic_candidate_set_v1.json`
+  - `experiments/gan2026_validation250_deterministic_candidate_set_v1.md`
+  - `experiments/gan2026_validation250_deterministic_candidate_set_v1_diagnostics.jsonl`
+  - `experiments/gan2026_validation250_deterministic_candidate_set_v1_diagnostics.json`
+  - `experiments/gan2026_validation250_deterministic_candidate_set_v1_diagnostics.md`
+- Summary:
+  - total candidates: 377, up from 370;
+  - `unknown_frequency` candidates: 14, up from 7;
+  - rows with no candidates: 24, down from 27;
+  - mean candidates per row: 1.508, up from 1.48;
+  - high-burden rows: 8, unchanged;
+  - compatible-kind coverage: 216/250, 0.864, up from 209/250, 0.836;
+  - `unknown_frequency` compatible-kind coverage: 11/44, 0.250, up from
+    4/44, 0.091.
+
+#### LLM CandidateSet V1 / V6
+
+- Ran the full validation250 LLM candidate extractor with v6 prompt.
+- Generated:
+  - `experiments/gan2026_validation250_llm_candidate_set_v1_v6.jsonl`
+  - `experiments/gan2026_validation250_llm_candidate_set_v1_v6.md`
+  - `experiments/gan2026_validation250_llm_candidate_set_v1_v6_diagnostics.jsonl`
+  - `experiments/gan2026_validation250_llm_candidate_set_v1_v6_diagnostics.json`
+  - `experiments/gan2026_validation250_llm_candidate_set_v1_v6_diagnostics.md`
+- Summary:
+  - candidate sets: 249/250, up from 248/250;
+  - total candidates: 383, up from 358;
+  - call failures: 1, down from 2;
+  - parse/validation issue rows: 12, down from 18;
+  - evidence error rows: 9, up from 8;
+  - source-phrase error rows: 10, down from 15;
+  - rows with no candidates: 4, down from 6;
+  - `unknown_frequency` candidates: 67, up from 2;
+  - compatible-kind coverage: 218/250, 0.872, up from 196/250, 0.784;
+  - `unknown_frequency` compatible-kind coverage: 25/44, 0.568, up from
+    2/44, 0.045.
+
+#### High-Recall Component Comparison
+
+- Generated:
+  - `experiments/gan2026_validation250_candidate_set_high_recall_comparison_v1.jsonl`
+  - `experiments/gan2026_validation250_candidate_set_high_recall_comparison_v1.json`
+  - `experiments/gan2026_validation250_candidate_set_high_recall_comparison_v1.md`
+- Summary:
+  - deterministic compatible rows: 216/250, 0.864;
+  - LLM compatible rows: 218/250, 0.872;
+  - union compatible rows: 235/250, 0.940;
+  - both compatible rows: 199;
+  - deterministic-only rows: 17;
+  - LLM-only rows: 19;
+  - neither rows: 15.
+- Union by gold candidate kind:
+  - `frequency_rate`: 161/161, 1.000;
+  - `seizure_free`: 38/38, 1.000;
+  - `cluster_frequency`: 7/7, 1.000;
+  - `unknown_frequency`: 29/44, 0.659.
+
+#### CandidateSet Union V2 High Recall
+
+- Generated:
+  - `experiments/gan2026_validation250_candidate_set_v2_high_recall.jsonl`
+  - `experiments/gan2026_validation250_candidate_set_v2_high_recall.json`
+  - `experiments/gan2026_validation250_candidate_set_v2_high_recall.md`
+  - `experiments/gan2026_validation250_candidate_set_v2_high_recall_diagnostics.jsonl`
+  - `experiments/gan2026_validation250_candidate_set_v2_high_recall_diagnostics.json`
+  - `experiments/gan2026_validation250_candidate_set_v2_high_recall_diagnostics.md`
+- Summary:
+  - total candidates: 735, up from v1's 703;
+  - source types: 377 deterministic, 358 LLM;
+  - rows with no candidates: 3, down from 4;
+  - mean candidates per row: 2.94, up from 2.812;
+  - max candidates per row: 10, unchanged;
+  - high-burden rows: 69, up from 58;
+  - union assembly issue rows: 68, down from 84;
+  - compatible-kind coverage: 235/250, 0.940, up from v1's 212/250, 0.848;
+  - remaining incompatible or empty rows: 15, all outside ordinary
+    frequency/seizure-free/cluster coverage.
+- Interpretation:
+  - high-recall extract mode materially improves recall while increasing burden
+    only moderately at the row level;
+  - LLM v6 becomes the stronger standalone compatible-kind extractor, but still
+    carries runtime/schema/evidence issues;
+  - deterministic high-recall rules provide cheap, stable unknown-frequency
+    gains without increasing high-burden rows;
+  - v2 high-recall union should be the next selector substrate unless the
+    selector proves too sensitive to burden.
+- Important caution:
+  - expanded recall may harm precision and create downstream confusion,
+    especially for `unknown_frequency`;
+  - it may be better to judge unknown by the absence of good usable frequency
+    evidence rather than by the presence of vague or low-quality evidence;
+  - an alternative downstream strategy is to reconstruct unknown from
+    uncertain, incomplete, absent, or contradictory candidate signals, or rely on
+    a verifier/action route to catch unknown cases;
+  - therefore v2 high-recall should be treated as one experimental substrate,
+    not as a settled extract design.
+- Verification:
+  `PYTHONPATH=src .venv/Scripts/python.exe -m pytest tests/test_gan2026_deterministic_unknown_candidate_recall.py tests/test_gan2026_candidate_set_contract.py tests/test_gan2026_llm_pipeline_cli.py -q`
+  passed with 11 tests before full artifact generation.
+
+### SelectedClinicalFact Contract V0
+
+- Added:
+  - `src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/selected_fact.py`
+  - `tests/test_gan2026_selected_fact_contract.py`
+- Schema version:
+  - `gan2026_selected_clinical_fact_v0`.
+- Contract boundary:
+  - `SelectedClinicalFact` is a clinical selector output before normalization,
+    projection, verification, rendering, or scoring;
+  - it may select one or more candidate ids, reject high-risk candidate ids,
+    or abstain with `ambiguous`, `conflict`, `no_reliable_candidate`, or
+    `human_review`;
+  - it carries source-near evidence spans and source ids, but no
+    scorer-facing labels.
+- Unknown-frequency design:
+  - selected `unknown_frequency` candidates are allowed, but must explicitly
+    state `unknown_basis="extracted_unknown_candidate"`;
+  - `no_reliable_candidate` supports unknown-by-absence with
+    `unknown_basis="absence_of_usable_frequency_evidence"` and no selected
+    candidate ids;
+  - this preserves the experimental comparison between expanded
+    unknown-candidate recall and reconstructing unknown from absence,
+    uncertainty, contradiction, or verifier referral.
+- Validation rules:
+  - `selected` requires selected candidate ids, clinical fact kind, and
+    primary evidence;
+  - `no_reliable_candidate` must not select candidate ids and must carry a
+    substantive unknown basis;
+  - `ambiguous` and `conflict` must not select candidate ids and must carry
+    flags or multiple supporting candidate ids;
+  - selected and rejected candidate ids cannot overlap.
+- Verification:
+  `PYTHONPATH=src .venv/Scripts/python.exe -m pytest tests/test_gan2026_selected_fact_contract.py tests/test_gan2026_candidate_set_contract.py -q`
+  passed with 8 tests.
+
+### CandidateSet Selector Schema Probe V0
+
+- Added:
+  - `src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_candidate_set_selector_schema_probe.py`
+  - `tests/test_gan2026_llm_candidate_set_selector_schema_probe.py`
+- Registered the routine LLM CLI pipeline:
+  - `llm_candidate_set_selector_schema_probe`
+- Prompt/schema version:
+  - `gan2026_candidate_set_selector_schema_probe_v0`.
+- Default selector substrate:
+  - `experiments/gan2026_validation250_candidate_set_v2_high_recall.jsonl`.
+- Probe boundary:
+  - consumes a row-level `CandidateSet`;
+  - model emits only `SelectionDraft` fields;
+  - deterministic assembly fills row index, source artifacts, evidence spans,
+    source ids, temporality, certainty, and schema bookkeeping;
+  - output is `SelectedClinicalFact`, not a normalized or scorer-facing answer.
+- Unknown-frequency comparison preserved:
+  - prompt tells the selector to prefer explicit current frequency,
+    seizure-free, or cluster-frequency candidates over vague unknown-frequency
+    candidates;
+  - prompt allows selected `unknown_frequency` only when the extracted unknown
+    candidate is the best clinical fact;
+  - prompt allows `no_reliable_candidate` with unknown-by-absence when absence
+    of reliable usable evidence is the better explanation.
+- Current status:
+  - schema probe and prompt-only path are implemented;
+  - no live selector validation250 run has been executed yet;
+  - next live run should compare selection behavior on v2 high-recall first,
+    then optionally re-run against v1 baseline union if candidate burden appears
+    to degrade selection quality.
+- Verification:
+  `PYTHONPATH=src .venv/Scripts/python.exe -m pytest tests/test_gan2026_llm_candidate_set_selector_schema_probe.py tests/test_gan2026_selected_fact_contract.py tests/test_gan2026_llm_pipeline_cli.py -q`
+  passed with 14 tests.
+  `PYTHONPATH=src .venv/Scripts/python.exe -m ruff check src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_candidate_set_selector_schema_probe.py tests/test_gan2026_llm_candidate_set_selector_schema_probe.py src/clinical_extraction/tasks/seizure_frequency/gan2026/cli/llm_pipeline_cli.py tests/test_gan2026_llm_pipeline_cli.py`
+  passed.
+
+### Original Recommended Next Steps
 
 Recommended next steps:
 
-1. Promote the v5 source-near `ExtractedCandidate` / `CandidateSet` shape from
-   probe code into a stable schema module or contract file.
-2. Build deterministic mapping from existing deterministic candidate artifacts
-   into that stable `CandidateSet` shape.
-3. Add a validation250 candidate-set replay artifact, likely named
-   `gan2026_validation250_candidate_set_v0`.
-4. Run a candidate recall and burden report over validation250:
-   - rows with no candidate;
-   - candidates per row;
-   - candidate-kind coverage;
-   - deterministic-only, LLM-only, and overlapping candidates;
-   - trigger-only cluster skips and other assembly issues.
-5. Decide whether the LLM v5 extractor should be used as a validation250 live
-   run, a cached replay component, or only as a prompt/schema probe until the
-   deterministic candidate-set mapping is stable.
-6. Start the `SelectedClinicalFact` schema only after candidate-set replay shows
-   enough candidate coverage to support selection review.
+1. Start `SelectedClinicalFact` schema design with substrate choice recorded:
+   baseline union v1, high-recall union v2, or both as an experimental variable.
+2. Require the selector to report:
+   - selected candidate ids;
+   - rejected high-risk candidate ids;
+   - source reliability concerns;
+   - ambiguity/conflict object when no single candidate should be selected.
+3. Treat candidate burden and unknown-frequency representation as experimental
+   variables after the first selector implementation, comparing v1 and v2
+   candidate-set substrates.
+4. Preserve deterministic-only, LLM-only, and neither-row stratification in
+   later selection and normalization evaluations.
 
 Do not resume with:
 

@@ -1,0 +1,28 @@
+{
+  "artifact_name": "gan2026_validation250_candidate_set_v2_high_recall",
+  "claim_boundary": "Validation250 extract-stage deterministic+LLM candidate-set union only. No selection, normalization, projection, scoring, or locked-test work.",
+  "row_count": 250,
+  "summary": {
+    "candidate_kind_counts": {
+      "cluster_frequency": 50,
+      "frequency_rate": 457,
+      "last_event_only": 22,
+      "seizure_free": 128,
+      "unknown_frequency": 78
+    },
+    "candidate_sets": 250,
+    "llm_call_error_rows": 1,
+    "llm_candidate_set_missing_rows": 1,
+    "llm_parse_or_validation_issue_rows": 12,
+    "max_candidates_per_row": 10,
+    "mean_candidates_per_row": 2.94,
+    "merged_duplicate_candidates": 25,
+    "rows_with_no_candidates": 3,
+    "rows_with_union_assembly_issues": 68,
+    "source_type_counts": {
+      "deterministic_candidate": 377,
+      "llm_candidate": 358
+    },
+    "total_candidates": 735
+  }
+}

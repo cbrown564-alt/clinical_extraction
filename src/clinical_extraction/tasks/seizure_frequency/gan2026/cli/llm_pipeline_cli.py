@@ -78,11 +78,12 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
         hybrid_rules_candidates_llm_adjudicator,
     )
     from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
+        llm_candidate_set_selector_schema_probe,
+        llm_extracted_candidate_schema_probe,
         llm_heavy_clinical_frequency_reasoner,
         llm_heavy_evidence_selection_with_deterministic_adapters,
         llm_only_claim_table_selector,
         llm_only_direct_labeler,
-        llm_extracted_candidate_schema_probe,
         llm_only_minimal_evidence_selector,
         llm_only_simplified_selected_state_reasoner,
         llm_only_sparse_operands_selected_state_reasoner,
@@ -139,6 +140,17 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
             write_jsonl=llm_extracted_candidate_schema_probe.write_jsonl,
             write_report=llm_extracted_candidate_schema_probe.write_report,
             default_max_tokens=5000,
+        ),
+        "llm_candidate_set_selector_schema_probe": GanLlmPipelineCliSpec(
+            description=(
+                "Run the Gan 2026 CandidateSet-to-SelectedClinicalFact schema probe."
+            ),
+            default_jsonl_path=llm_candidate_set_selector_schema_probe.DEFAULT_JSONL_PATH,
+            default_report_path=llm_candidate_set_selector_schema_probe.DEFAULT_REPORT_PATH,
+            run_split=llm_candidate_set_selector_schema_probe.run_split,
+            write_jsonl=llm_candidate_set_selector_schema_probe.write_jsonl,
+            write_report=llm_candidate_set_selector_schema_probe.write_report,
+            default_max_tokens=1800,
         ),
         "llm_only_structured_events": GanLlmPipelineCliSpec(
             description="Run the Gan 2026 LLM-only structured-events experiment.",

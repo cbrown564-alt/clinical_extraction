@@ -1,0 +1,27 @@
+{
+  "artifact_name": "gan2026_validation250_candidate_set_v0",
+  "claim_boundary": "Validation250 deterministic candidate-set replay only. No locked-test row-level work, scorer-facing claims, or final-label selection.",
+  "row_count": 250,
+  "schema_version": "gan2026_candidate_set_source_near_v0",
+  "split": "validation",
+  "split_manifest": "gan2026_split_v1",
+  "summary": {
+    "assembly_issue_rows": 0,
+    "candidate_kind_counts": {
+      "cluster_frequency": 13,
+      "frequency_rate": 271,
+      "seizure_free": 79,
+      "unknown_frequency": 7
+    },
+    "candidate_sets": 250,
+    "max_candidates_per_row": 5,
+    "mean_candidates_per_row": 1.48,
+    "min_candidates_per_row": 0,
+    "rows_with_no_candidates": 27,
+    "source_phrase_missing_candidates": 0,
+    "source_type_counts": {
+      "deterministic_candidate": 370
+    },
+    "total_candidates": 370
+  }
+}

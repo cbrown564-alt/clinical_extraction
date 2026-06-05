@@ -1,0 +1,520 @@
+{
+  "artifact_name": "gan2026_validation250_candidate_set_comparison_v0",
+  "claim_boundary": "Validation250 extract-stage comparison only. Compatible-kind coverage is not normalized-label recall and makes no benchmark-comparable claim.",
+  "inspection_examples": {
+    "deterministic_only_rows": [
+      {
+        "deterministic_kinds": [
+          "frequency_rate"
+        ],
+        "gold_candidate_kind": "frequency_rate",
+        "gold_label": "1 per 7 to 9 day",
+        "llm_kinds": [
+          "cluster_frequency"
+        ],
+        "note_excerpt": "Centre for Epilepsy Neurosciences Division Clinic Date: 01 June 2020 Dr Priya Nair Consultant Neurologist Centre for Epilepsy Kingsway Community Hospital, London Dear Dr Priya Nair, Ms Aisha Rahman, DOB: 22-08-1992, H...",
+        "source_row_index": 187
+      },
+      {
+        "deterministic_kinds": [
+          "frequency_rate"
+        ],
+        "gold_candidate_kind": "frequency_rate",
+        "gold_label": "1 per 4 week",
+        "llm_kinds": [
+          "cluster_frequency",
+          "last_event_only"
+        ],
+        "note_excerpt": "KINGS NEUROSCIENCES CENTRE Clinic Date: 02 October 2025 Dr Wang Saffron Park Hospital Saffron Park, London, E14 7JL Dear Dr Wang Alex Carter, DOB: 14-05-2006, Hospital No: P903772 NHS No. 7712390045 Flat 3, 12 Kingsbr...",
+        "source_row_index": 190
+      },
+      {
+        "deterministic_kinds": [
+          "frequency_rate"
+        ],
+        "gold_candidate_kind": "frequency_rate",
+        "gold_label": "2 per 2 week",
+        "llm_kinds": [
+          "cluster_frequency"
+        ],
+        "note_excerpt": "University College Hospital National Hospital for Neurology and Neurosurgery Clinic Date: 02 October 2025 Dr Alicia Morton Riverside Medical Practice 12 Wharf Street, London SE8 3DR Dear Dr Alicia Morton, Jordan Ellis...",
+        "source_row_index": 665
+      },
+      {
+        "deterministic_kinds": [
+          "frequency_rate"
+        ],
+        "gold_candidate_kind": "frequency_rate",
+        "gold_label": "5 to 7 per 3 week",
+        "llm_kinds": [
+          "cluster_frequency",
+          "seizure_free"
+        ],
+        "note_excerpt": "University College Hospital National Hospital for Neurology and Neurosurgery Clinic Date: 20 November 2021 Dr Susan University College Hospital National Hospital for Neurology and Neurosurgery, London WC1N 3BG Dear Dr...",
+        "source_row_index": 1165
+      },
+      {
+        "deterministic_kinds": [
+          "cluster_frequency"
+        ],
+        "gold_candidate_kind": "cluster_frequency",
+        "gold_label": "multiple cluster per month, multiple per cluster",
+        "llm_kinds": [
+          "unknown_frequency"
+        ],
+        "note_excerpt": "Epilepsy Centre Neurosciences Division From: Dr Emily Harper (KING'S COLLEGE HOSPITAL NHS FOUNDATION TRUST) Sent: 01 August 2016 10:15 To: neuro.epilepsyclinic@nhs.net Cc: Dr Michael O’Connor (KING'S COLLEGE HOSPITAL ...",
+        "source_row_index": 1706
+      },
+      {
+        "deterministic_kinds": [
+          "frequency_rate"
+        ],
+        "gold_candidate_kind": "frequency_rate",
+        "gold_label": "3 to 5 per 2 week",
+        "llm_kinds": [
+          "unknown_frequency"
+        ],
+        "note_excerpt": "Department of Neurology Clinic Date: 02 October 2025 Dr Amelia Grant South Thames Neurology Centre 2nd Floor, Riverside Wing, St Martin’s Hospital, London SE11 3PA Dear Dr Amelia Grant, Michael Turner, DOB: 14-03-1991...",
+        "source_row_index": 2228
+      },
+      {
+        "deterministic_kinds": [
+          "frequency_rate",
+          "seizure_free",
+          "unknown_frequency"
+        ],
+        "gold_candidate_kind": "unknown_frequency",
+        "gold_label": "unknown",
+        "llm_kinds": [
+          "frequency_rate",
+          "last_event_only"
+        ],
+        "note_excerpt": "Centre for Epilepsy Neurosciences Division Clinic Date: 02 October 2025 Dr Fiona Centre for Epilepsy Queen Square, London WC1N 3BG Dear Dr Fiona, Daniel Harris, DOB: 22-11-1990, Hospital No: H384920 NHS No. 9134756201...",
+        "source_row_index": 3371
+      },
+      {
+        "deterministic_kinds": [
+          "seizure_free",
+          "unknown_frequency"
+        ],
+        "gold_candidate_kind": "unknown_frequency",
+        "gold_label": "unknown",
+        "llm_kinds": [
+          "cluster_frequency",
+          "seizure_free"
+        ],
+        "note_excerpt": "KINGS NEUROSCIENCES CENTRE Clinic Date: 02 October 2025 Dr Julia Ahmed Riverbank Health Centre 12 Westgate, Southwark, London SE1 9AB Dear Dr Julia Ahmed Wendy Brown, DOB: 21-11-1982, Hospital No: K482715 NHS No. 6592...",
+        "source_row_index": 3469
+      },
+      {
+        "deterministic_kinds": [
+          "frequency_rate",
+          "unknown_frequency"
+        ],
+        "gold_candidate_kind": "unknown_frequency",
+        "gold_label": "unknown",
+        "llm_kinds": [
+          "frequency_rate"
+        ],
+        "note_excerpt": "Epilepsy Centre Neurosciences Division Clinic Date: 02 October 2025 Dr Patel North Sea Neurology Service Harbour Medical Centre, 18 Quay Street, Aberdeen AB11 5AA Dear Dr Patel, Jordan Evans, DOB: 14-07-1992, Hospital...",
+        "source_row_index": 3482
+      },
+      {
+        "deterministic_kinds": [
+          "frequency_rate",
+          "unknown_frequency"
+        ],
+        "gold_candidate_kind": "unknown_frequency",
+        "gold_label": "unknown",
+        "llm_kinds": [
+          "frequency_rate",
+          "last_event_only",
+          "seizure_free"
+        ],
+        "note_excerpt": "St Mary's Hospital Institute of Neurology Clinic Date: 02 October 2025 Dr Patel Maple Gate Health Centre 12 Brook Street, London W1D 3QF Dear Dr Patel, Aisha Khan, DOB: 04-11-1992, Hospital No: H847520 NHS No. 9054317...",
+        "source_row_index": 3534
+      },
+      {
+        "deterministic_kinds": [
+          "frequency_rate"
+        ],
+        "gold_candidate_kind": "frequency_rate",
+        "gold_label": "7 per week",
+        "llm_kinds": [],
+        "note_excerpt": "King's College Hospital Department of Neurosciences Clinic Date: 14 October 2025 Dr Priya Nair Consultant Neurologist King's College Hospital Department of Neurosciences, King's College Hospital, London SE5 9RS Dear D...",
+        "source_row_index": 3623
+      },
+      {
+        "deterministic_kinds": [
+          "frequency_rate"
+        ],
+        "gold_candidate_kind": "frequency_rate",
+        "gold_label": "7 per month",
+        "llm_kinds": [
+          "cluster_frequency"
+        ],
+        "note_excerpt": "Centre for Epilepsy Neurosciences Division Clinic Date: 09 December 2016 Dr Ayesha Khan Consultant Neurologist Riverside Neurology Clinic Riverside Hospital, 12 Wharf Road, Manchester M3 4AB Dear Dr Ayesha Khan, Ms Em...",
+        "source_row_index": 3827
+      }
+    ],
+    "llm_only_rows": [
+      {
+        "deterministic_kinds": [
+          "frequency_rate",
+          "seizure_free"
+        ],
+        "gold_candidate_kind": "unknown_frequency",
+        "gold_label": "multiple per week",
+        "llm_kinds": [
+          "unknown_frequency"
+        ],
+        "note_excerpt": "Department of Neurology Clinic Date: 15 January 2014 Dr A. Rahman Southbank Neurology Clinic Level 3, Riverside Health Centre, 12 Thames Walk, London SE1 7AB Dear Dr A. Rahman, Mr Amir Khan, DOB: 14-03-1992, Hospital ...",
+        "source_row_index": 278
+      },
+      {
+        "deterministic_kinds": [],
+        "gold_candidate_kind": "unknown_frequency",
+        "gold_label": "multiple per week",
+        "llm_kinds": [
+          "unknown_frequency"
+        ],
+        "note_excerpt": "King's College Hospital Department of Neurosciences Clinic Date: 02 October 2025 Dr A. Patel Consultant Neurologist King's College Hospital Department of Neurosciences, Denmark Hill, London SE5 9RS Dear Dr A. Patel Co...",
+        "source_row_index": 743
+      },
+      {
+        "deterministic_kinds": [],
+        "gold_candidate_kind": "cluster_frequency",
+        "gold_label": "unknown, multiple per cluster",
+        "llm_kinds": [
+          "cluster_frequency"
+        ],
+        "note_excerpt": "Centre for Epilepsy Neurosciences Division Clinic Date: 09 August 2024 Dr Aisha Rahman Consultant Neurologist Centre for Epilepsy King’s College Hospital, Denmark Hill, London SE5 9RS Dear Dr Aisha Rahman, Ms Hannah C...",
+        "source_row_index": 1317
+      },
+      {
+        "deterministic_kinds": [],
+        "gold_candidate_kind": "unknown_frequency",
+        "gold_label": "multiple per month",
+        "llm_kinds": [
+          "seizure_free",
+          "unknown_frequency"
+        ],
+        "note_excerpt": "University College Hospital National Hospital for Neurology and Neurosurgery Clinic Date: 27 July 2024 Dr Helen Morris Maple Road Health Centre 12 Maple Road, London NW1 8QT Dear Dr Helen Morris, Robert Jenkins, DOB: ...",
+        "source_row_index": 1695
+      },
+      {
+        "deterministic_kinds": [],
+        "gold_candidate_kind": "unknown_frequency",
+        "gold_label": "multiple per week",
+        "llm_kinds": [
+          "unknown_frequency"
+        ],
+        "note_excerpt": "Centre for Epilepsy Neurosciences Division Clinic Date: 01 October 2020 Dr Aisha Karim Consultant Neurologist Centre for Epilepsy King’s College Hospital, Denmark Hill, London Dear Dr Aisha Karim, Mr Samir Khan, DOB: ...",
+        "source_row_index": 1707
+      },
+      {
+        "deterministic_kinds": [
+          "frequency_rate"
+        ],
+        "gold_candidate_kind": "unknown_frequency",
+        "gold_label": "multiple per month",
+        "llm_kinds": [
+          "unknown_frequency"
+        ],
+        "note_excerpt": "St Mary's Hospital Institute of Neurology Clinic Date: 02 October 2025 Dr Patel St Mary's Hospital Institute of Neurology, St Mary's Hospital, London W2 1NY Dear Dr Patel, Aisha Khan, DOB: 12-05-1991, Hospital No: H48...",
+        "source_row_index": 2094
+      },
+      {
+        "deterministic_kinds": [],
+        "gold_candidate_kind": "unknown_frequency",
+        "gold_label": "unknown",
+        "llm_kinds": [
+          "seizure_free",
+          "unknown_frequency"
+        ],
+        "note_excerpt": "Epilepsy Centre Neurosciences Division From: Dr Priya Shah (KING'S COLLEGE HOSPITAL NHS FOUNDATION TRUST) Sent: 27 June 2019 11:20 To: epilepsy.clinic@nhs.net Cc: Dr Michael Turner (KING'S COLLEGE HOSPITAL NHS FOUNDAT...",
+        "source_row_index": 2166
+      },
+      {
+        "deterministic_kinds": [
+          "seizure_free"
+        ],
+        "gold_candidate_kind": "unknown_frequency",
+        "gold_label": "unknown",
+        "llm_kinds": [
+          "last_event_only",
+          "unknown_frequency"
+        ],
+        "note_excerpt": "Department of Neurology Clinic Date: 22 September 2025 Dr Eleanor Patel St. Catherine’s Neurology Centre Neurology Outpatients, 3rd Floor, St. Catherine’s Hospital, Mill Lane, Bristol BS2 8RJ Dear Dr Eleanor Patel, Jo...",
+        "source_row_index": 3528
+      },
+      {
+        "deterministic_kinds": [],
+        "gold_candidate_kind": "unknown_frequency",
+        "gold_label": "unknown",
+        "llm_kinds": [
+          "unknown_frequency"
+        ],
+        "note_excerpt": "KINGS NEUROSCIENCES CENTRE Clinic Date: 21 September 2025 Dr Patel Riverside Health Centre 12 Riverside Way, London, SE1 6AB Dear Dr Patel Jane Smith, DOB: 21-11-1982, Hospital No: H392847 NHS No. 7748291930 Flat 4, 2...",
+        "source_row_index": 3600
+      },
+      {
+        "deterministic_kinds": [
+          "frequency_rate"
+        ],
+        "gold_candidate_kind": "unknown_frequency",
+        "gold_label": "multiple per week",
+        "llm_kinds": [
+          "seizure_free",
+          "unknown_frequency"
+        ],
+        "note_excerpt": "Department of Neurology Clinic Date: 02 October 2025 Dr Emily Carter St. Mary’s Hospital Department of Neurology, Praed Street, London W2 1NY Dear Dr Emily Carter, Alex Turner, DOB: 14-03-2006, Hospital No: H293847 NH...",
+        "source_row_index": 3988
+      },
+      {
+        "deterministic_kinds": [],
+        "gold_candidate_kind": "unknown_frequency",
+        "gold_label": "unknown",
+        "llm_kinds": [
+          "unknown_frequency"
+        ],
+        "note_excerpt": "Epilepsy Clinic Neurosciences Division Clinic Date: 08 August 2018 Dr Patel Riverside NHS Neurology Clinic Riverside Health Centre, 12 Mill Lane, Bristol, BS1 4AB Dear Dr Patel, Emily Carter, DOB: 14-07-1991, Hospital...",
+        "source_row_index": 4732
+      },
+      {
+        "deterministic_kinds": [],
+        "gold_candidate_kind": "unknown_frequency",
+        "gold_label": "unknown",
+        "llm_kinds": [
+          "frequency_rate",
+          "unknown_frequency"
+        ],
+        "note_excerpt": "Centre for Epilepsy Neurosciences Division Clinic Date: 02 October 2025 Dr A. Patel Riverside Health Centre 12 Kingfisher Way, Bristol BS1 4AA Dear Dr A. Patel, Laura Bennett, DOB: 23-11-1991, Hospital No: H3726154 NH...",
+        "source_row_index": 4771
+      }
+    ],
+    "neither_rows": [
+      {
+        "deterministic_kinds": [],
+        "gold_candidate_kind": "unknown_frequency",
+        "gold_label": "unknown",
+        "llm_kinds": [],
+        "note_excerpt": "KINGS NEUROSCIENCES CENTRE Clinic Date: 08 October 2019 Dr Patel Riverside Health Centre 1 Wharf Lane, Southwark, London SE1 2AB Dear Dr Patel Wendy Brown, DOB: 21-11-1982, Hospital No: K482715 NHS No. 6592841037 Flat...",
+        "source_row_index": 2149
+      },
+      {
+        "deterministic_kinds": [
+          "seizure_free"
+        ],
+        "gold_candidate_kind": "unknown_frequency",
+        "gold_label": "unknown",
+        "llm_kinds": [
+          "frequency_rate"
+        ],
+        "note_excerpt": "Epilepsy Centre Neurosciences Division From: Dr Emma Clarke (KING'S COLLEGE HOSPITAL NHS FOUNDATION TRUST) Sent: 07 July 2024 10:15 To: kch.epilepsyclinic@nhs.net Cc: Dr Ravi Desai (KING'S COLLEGE HOSPITAL NHS FOUNDAT...",
+        "source_row_index": 3356
+      },
+      {
+        "deterministic_kinds": [],
+        "gold_candidate_kind": "unknown_frequency",
+        "gold_label": "unknown",
+        "llm_kinds": [],
+        "note_excerpt": "Epilepsy Centre Neurosciences Division From: Dr Helen Carter (KING'S COLLEGE HOSPITAL NHS FOUNDATION TRUST) Sent: 01 June 2017 10:15 To: neuro.airwaysclinic@nhs.net Cc: Dr Omar Singh (KING'S COLLEGE HOSPITAL NHS FOUND...",
+        "source_row_index": 3436
+      },
+      {
+        "deterministic_kinds": [],
+        "gold_candidate_kind": "unknown_frequency",
+        "gold_label": "unknown",
+        "llm_kinds": [
+          "cluster_frequency",
+          "seizure_free"
+        ],
+        "note_excerpt": "Department of Neurology Clinic Date: 02 October 2025 Dr Amelia Turner St Cuthbert’s NHS Neurology Centre Level 3, Neurology Outpatients, St Cuthbert’s Hospital, Durham DH1 3LE Dear Dr Amelia Turner, Emily Carter, DOB:...",
+        "source_row_index": 3468
+      },
+      {
+        "deterministic_kinds": [],
+        "gold_candidate_kind": "unknown_frequency",
+        "gold_label": "unknown",
+        "llm_kinds": [
+          "cluster_frequency"
+        ],
+        "note_excerpt": "King's College Hospital Department of Neurosciences Clinic Date: 25 October 2018 Dr Priya Menon Consultant Neurologist King's College Hospital Department of Neurosciences, King's College Hospital, London SE5 9RS Dear ...",
+        "source_row_index": 3493
+      },
+      {
+        "deterministic_kinds": [],
+        "gold_candidate_kind": "unknown_frequency",
+        "gold_label": "unknown",
+        "llm_kinds": [
+          "frequency_rate"
+        ],
+        "note_excerpt": "Centre for Neurology Services Neurosciences Division Clinic Date: 31 August 2024 Dr Priya Menon Consultant Neurologist Riverside Neurology Clinic St George’s Way, London SE17 2RT Dear Dr Priya Menon, Alex Turner, DOB:...",
+        "source_row_index": 3507
+      },
+      {
+        "deterministic_kinds": [],
+        "gold_candidate_kind": "unknown_frequency",
+        "gold_label": "unknown",
+        "llm_kinds": [
+          "frequency_rate"
+        ],
+        "note_excerpt": "Epilepsy Centre Neurosciences Division Clinic Date: 02 October 2025 Dr Patel North Thames Neurology Service Outpatient Department, Riverside Health Centre, London, W6 2JL Dear Dr Patel, Maya Johnson, DOB: 14-07-2010, ...",
+        "source_row_index": 3512
+      },
+      {
+        "deterministic_kinds": [],
+        "gold_candidate_kind": "unknown_frequency",
+        "gold_label": "unknown",
+        "llm_kinds": [],
+        "note_excerpt": "Epilepsy Centre Neurosciences Division Clinic Date: 02 October 2025 Dr Patel Northern General Hospital Department of Neurology, Herries Road, Sheffield S5 7AU Dear Dr Patel, James Walker, DOB: 14-08-1990, Hospital No:...",
+        "source_row_index": 3532
+      },
+      {
+        "deterministic_kinds": [
+          "seizure_free"
+        ],
+        "gold_candidate_kind": "unknown_frequency",
+        "gold_label": "multiple per day",
+        "llm_kinds": [
+          "frequency_rate"
+        ],
+        "note_excerpt": "KINGS NEUROSCIENCES CENTRE Clinic Date: 24 March 2017 Dr Wang Saffron Park Hospital Saffron Park, London, E14 7JL Dear Dr Wang John Doe, DOB: 21-11-1982, Hospital No: P546484 NHS No. 5484656746 Flat 15 Roundwood Road,...",
+        "source_row_index": 4690
+      },
+      {
+        "deterministic_kinds": [],
+        "gold_candidate_kind": "unknown_frequency",
+        "gold_label": "multiple per day",
+        "llm_kinds": [
+          "frequency_rate"
+        ],
+        "note_excerpt": "St Mary's Hospital Institute of Neurology Clinic Date: 02 October 2025 Dr Patel St Mary's Hospital Institute of Neurology, St Mary's Hospital, London W2 1NY Dear Dr Patel, Emily Carter, DOB: 17-08-1989, Hospital No: C...",
+        "source_row_index": 4694
+      },
+      {
+        "deterministic_kinds": [],
+        "gold_candidate_kind": "unknown_frequency",
+        "gold_label": "multiple per day",
+        "llm_kinds": [
+          "frequency_rate"
+        ],
+        "note_excerpt": "KINGS NEUROSCIENCES CENTRE Clinic Date: 23 September 2016 Dr A Patel Riverside Health Centre 221 Riverside Way, London, SE1 3AB Dear Dr A Patel Alex Morgan, DOB: 21-11-1982, Hospital No: H392774 NHS No. 9472635190 12 ...",
+        "source_row_index": 4700
+      },
+      {
+        "deterministic_kinds": [],
+        "gold_candidate_kind": "unknown_frequency",
+        "gold_label": "multiple per day",
+        "llm_kinds": [
+          "frequency_rate"
+        ],
+        "note_excerpt": "KINGS NEUROSCIENCES CENTRE Clinic Date: 02 October 2025 Dr Jonathan Hale Riverside Health Centre 12 Brook Lane, Southwark London SE1 9ZZ Dear Dr Jonathan Hale Alex Morgan, DOB: 14-03-1987, Hospital No: H927451 NHS No....",
+        "source_row_index": 4709
+      }
+    ]
+  },
+  "row_count": 250,
+  "summary": {
+    "both_compatible_rows": 199,
+    "by_gold_candidate_kind": {
+      "cluster_frequency": {
+        "deterministic_compatible_rows": 6,
+        "llm_compatible_rows": 6,
+        "rows": 7,
+        "union_compatible_rate": 1.0,
+        "union_compatible_rows": 7
+      },
+      "frequency_rate": {
+        "deterministic_compatible_rows": 161,
+        "llm_compatible_rows": 151,
+        "rows": 161,
+        "union_compatible_rate": 1.0,
+        "union_compatible_rows": 161
+      },
+      "seizure_free": {
+        "deterministic_compatible_rows": 38,
+        "llm_compatible_rows": 36,
+        "rows": 38,
+        "union_compatible_rate": 1.0,
+        "union_compatible_rows": 38
+      },
+      "unknown_frequency": {
+        "deterministic_compatible_rows": 11,
+        "llm_compatible_rows": 25,
+        "rows": 44,
+        "union_compatible_rate": 0.6590909090909091,
+        "union_compatible_rows": 29
+      }
+    },
+    "deterministic_compatible_rate": 0.864,
+    "deterministic_compatible_rows": 216,
+    "deterministic_only_rows": 17,
+    "deterministic_only_source_row_indices": [
+      187,
+      190,
+      665,
+      1165,
+      1706,
+      2228,
+      3371,
+      3469,
+      3482,
+      3534,
+      3623,
+      3827,
+      4173,
+      4337,
+      5379,
+      5406,
+      5528
+    ],
+    "llm_compatible_rate": 0.872,
+    "llm_compatible_rows": 218,
+    "llm_diagnostic_issue_rows": 12,
+    "llm_missing_candidate_set_rows": 1,
+    "llm_only_rows": 19,
+    "llm_only_source_row_indices": [
+      278,
+      743,
+      1317,
+      1695,
+      1707,
+      2094,
+      2166,
+      3528,
+      3600,
+      3988,
+      4732,
+      4771,
+      5490,
+      5491,
+      5504,
+      5507,
+      5551,
+      5567,
+      5584
+    ],
+    "neither_rows": 15,
+    "neither_source_row_indices": [
+      2149,
+      3356,
+      3436,
+      3468,
+      3493,
+      3507,
+      3512,
+      3532,
+      4690,
+      4694,
+      4700,
+      4709,
+      4731,
+      5476,
+      5534
+    ],
+    "union_compatible_rate": 0.94,
+    "union_compatible_rows": 235
+  }
+}
