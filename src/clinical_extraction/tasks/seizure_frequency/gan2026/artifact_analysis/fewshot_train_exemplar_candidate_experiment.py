@@ -14,6 +14,8 @@ from typing import Any
 from clinical_extraction.core.evidence import evidence_is_substring
 from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis import (
     direct_labeler_unrecalled_failure_slice_experiment as direct_switch_experiment,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis import (
     selective_verifier_experiment,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
