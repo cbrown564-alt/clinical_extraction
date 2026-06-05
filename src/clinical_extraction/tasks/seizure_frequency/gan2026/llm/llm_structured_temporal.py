@@ -132,7 +132,9 @@ def event_date(text: str, *, clinic: date) -> date | None:
             month=int(numeric.group("month")),
             clinic=clinic,
         )
-        candidates.append(date(year, int(numeric.group("month")), int(numeric.group("day"))))
+        candidate = _safe_date(year, int(numeric.group("month")), int(numeric.group("day")))
+        if candidate is not None:
+            candidates.append(candidate)
     for named in re.finditer(
         rf"\b(?P<day>\d{{1,2}})[-/ ](?P<month>{MONTH_PATTERN})"
         rf"(?:[-/ ](?P<year>\d{{2,4}}))?\b",
@@ -140,7 +142,9 @@ def event_date(text: str, *, clinic: date) -> date | None:
     ):
         month = month_number(named.group("month"))
         year = event_year_from_optional_text(named.group("year"), month=month, clinic=clinic)
-        candidates.append(date(year, month, int(named.group("day"))))
+        candidate = _safe_date(year, month, int(named.group("day")))
+        if candidate is not None:
+            candidates.append(candidate)
     candidates = [candidate for candidate in candidates if candidate <= clinic]
     if not candidates:
         return None
@@ -178,6 +182,8 @@ def event_month_year(text: str, *, clinic_year: int) -> tuple[int, int] | None:
     numeric = re.search(r"\b\d{1,2}[-/](?P<month>\d{1,2})(?:[-/](?P<year>\d{2,4}))?\b", normalized)
     if numeric:
         month = int(numeric.group("month"))
+        if not 1 <= month <= 12:
+            return None
         year_text = numeric.group("year")
         year = clinic_year if year_text is None else int(year_text)
         if year < 100:
@@ -190,6 +196,13 @@ def event_month_year(text: str, *, clinic_year: int) -> tuple[int, int] | None:
     if named:
         return month_number(named.group("month")), int(named.group("year") or clinic_year)
     return None
+
+
+def _safe_date(year: int, month: int, day: int) -> date | None:
+    try:
+        return date(year, month, day)
+    except ValueError:
+        return None
 
 
 def elapsed_months(

@@ -114,6 +114,10 @@ def write_report(
 
 def _repair_policy_description(repair_mode: str) -> str:
     descriptions = {
+        "strict_json_raw_model": "strict JSON parsing only, with no dialect or final-label repair",
+        "json_dialect_only": (
+            "raw structured model selection plus Python-literal JSON dialect repair only"
+        ),
         "raw_model": "raw structured model selection with no deterministic final-label repair",
         "strict_format": (
             "raw structured model selection plus strict format-preserving basic label repair only"

@@ -6,10 +6,26 @@ from collections.abc import Iterable, Mapping
 from typing import Any
 
 REPAIR_MODE_METADATA: Mapping[str, Mapping[str, Any]] = {
+    "strict_json_raw_model": {
+        "repair_mode": "strict_json_raw_model",
+        "attribution_source": "strict_json_raw_llm_output",
+        "repair_family": "none",
+        "semantic_selection_owner": "llm",
+        "deterministic_semantic_repair": False,
+        "scorer_facing": False,
+    },
+    "json_dialect_only": {
+        "repair_mode": "json_dialect_only",
+        "attribution_source": "raw_llm_output_plus_json_dialect_repair",
+        "repair_family": "python_literal_json_dialect_repair",
+        "semantic_selection_owner": "llm",
+        "deterministic_semantic_repair": False,
+        "scorer_facing": False,
+    },
     "raw_model": {
         "repair_mode": "raw_model",
-        "attribution_source": "raw_llm_output",
-        "repair_family": "none",
+        "attribution_source": "raw_llm_output_plus_json_dialect_repair",
+        "repair_family": "python_literal_json_dialect_repair",
         "semantic_selection_owner": "llm",
         "deterministic_semantic_repair": False,
         "scorer_facing": False,

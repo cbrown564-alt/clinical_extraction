@@ -168,6 +168,7 @@ def test_pipeline_registry_exposes_routine_llm_experiments() -> None:
     assert specs["llm_heavy_clinical_frequency_reasoner"].default_max_tokens == 1800
     assert specs["llm_only_minimal_evidence_selector"].default_max_tokens == 900
     assert specs["llm_only_sparse_operands_selected_state_reasoner"].default_max_tokens == 1400
+    assert specs["llm_only_structured_events"].default_max_tokens == 5000
     assert specs["llm_only_typed_adapter_reasoner"].default_max_tokens == 1800
     assert specs["llm_only_typed_operations_reasoner"].default_max_tokens == 4800
 

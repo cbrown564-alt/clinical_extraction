@@ -15,6 +15,8 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_structured
     _clinic_month_year,
     _elapsed_months_from_nearest_event_date_precise,
     _event_month_year,
+    _event_text,
+    _nearest_event_date,
     build_prompt_input,
     load_reusable_raw_outputs,
     parse_structured_json,
@@ -85,6 +87,25 @@ def test_structured_events_uses_shared_temporal_helpers() -> None:
     assert _event_month_year("last event in 05/2020", clinic_year=2022) == (5, 2020)
 
 
+def test_temporal_helpers_ignore_invalid_numeric_date_fragments() -> None:
+    class Event:
+        kind = "last_event_only"
+        evidence = "Seizure events on 06-03, 06-13, 09-23"
+        raw_value = None
+        time_window = None
+        notes = None
+
+    clinic = date(2025, 10, 2)
+
+    assert _event_text(Event()) == "seizure events on 06-03, 06-13, 09-23"
+    assert _nearest_event_date(
+        [Event()],
+        clinic=clinic,
+        event_kinds={"last_event_only"},
+        max_months=240,
+    ) == date(2025, 3, 6)
+
+
 def test_build_prompt_input_excludes_gold_and_deterministic_candidates() -> None:
     prompt = json.loads(build_prompt_input(_record()))
 
@@ -126,6 +147,55 @@ def test_parse_structured_json_records_python_literal_json_dialect_repair() -> N
     assert extraction.selection.final_label == "2 per month"
     assert normalized_events[0].normalized_label == "2 per month"
     assert errors == ["json_dialect_repaired: python_literal"]
+
+
+def test_parse_structured_json_can_disable_python_literal_json_dialect_repair() -> None:
+    raw = (
+        "{'events': [{'event_id': 'e1', 'kind': 'frequency_rate', "
+        "'raw_value': 'two seizures per month', 'applies_to': 'seizures', "
+        "'time_window': 'present', 'temporality': 'current', "
+        "'assertion_status': 'asserted', 'evidence': 'two seizures per month', "
+        "'notes': None}], 'selection': {'selected_event_ids': ['e1'], "
+        "'final_kind': 'frequency', 'final_label': '2 per month', "
+        "'evidence': 'two seizures per month', 'confidence': 'high', "
+        "'rationale': 'The note states the present seizure frequency.'}}"
+    )
+
+    extraction, normalized_events, errors = parse_structured_json(
+        raw,
+        repair_config=StructuredRepairConfig.for_mode("strict_json_raw_model"),
+    )
+
+    assert extraction is None
+    assert normalized_events == []
+    assert errors == ["invalid_json: Expecting property name enclosed in double quotes"]
+
+
+def test_json_dialect_only_mode_repairs_dialect_without_final_label_repair() -> None:
+    raw = (
+        "{'events': [{'event_id': 'e1', 'kind': 'frequency_rate', "
+        "'raw_value': 'two seizures per month', 'applies_to': 'seizures', "
+        "'time_window': 'present', 'temporality': 'current', "
+        "'assertion_status': 'asserted', 'evidence': 'two seizures per month', "
+        "'notes': None}], 'selection': {'selected_event_ids': ['e1'], "
+        "'final_kind': 'frequency', 'final_label': 'several per week', "
+        "'evidence': 'two seizures per month', 'confidence': 'high', "
+        "'rationale': 'The note states the present seizure frequency.'}}"
+    )
+
+    extraction, normalized_events, errors = parse_structured_json(
+        raw,
+        repair_config=StructuredRepairConfig.for_mode("json_dialect_only"),
+    )
+
+    assert extraction is not None
+    assert extraction.selection.final_label == "several per week"
+    assert normalized_events[0].normalized_label == "2 per month"
+    assert errors == [
+        "json_dialect_repaired: python_literal",
+        "unscorable_final_label: Unparsable label (raw: 'several per week' / "
+        "normalized: 'several per week')",
+    ]
 
 
 def test_parse_structured_json_can_compute_final_label_from_selected_event() -> None:

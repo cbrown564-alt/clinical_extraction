@@ -60,19 +60,20 @@ def _raw_structured() -> str:
 
 def test_repair_ablation_ladder_matches_audit_condition_order() -> None:
     assert [name for name, _ in repair_ablation_ladder()] == [
-        "A_raw_llm_final_label_only",
-        "B_format_preserving_basic_label_repair",
-        "C_full_basic_gan_label_repair",
-        "D_selected_evidence_repair",
-        "E_monthly_diary_arithmetic",
-        "F_usual_interval_override",
-        "G_breakthrough_after_seizure_free",
-        "H_non_epileptic_override",
-        "I_residual_jerk_date_anchor",
-        "J_post_change_burst",
-        "K_dated_sequence",
-        "L_elapsed_anchor",
-        "M_full_current_stack",
+        "A_strict_json_raw_llm_final_label_only",
+        "B_python_literal_dialect_repair_only",
+        "C_format_preserving_basic_label_repair",
+        "D_full_basic_gan_label_repair",
+        "E_selected_evidence_repair",
+        "F_monthly_diary_arithmetic",
+        "G_usual_interval_override",
+        "H_breakthrough_after_seizure_free",
+        "I_non_epileptic_override",
+        "J_residual_jerk_date_anchor",
+        "K_post_change_burst",
+        "L_dated_sequence",
+        "M_elapsed_anchor",
+        "N_full_current_stack",
     ]
 
 
@@ -90,16 +91,49 @@ def test_run_repair_ablation_filters_to_rows_with_saved_raw_outputs(tmp_path: Pa
         reuse_jsonl=reuse_jsonl,
     )
 
-    raw_summary = result["conditions"][0]["summary"]
-    basic_summary = result["conditions"][1]["summary"]
-    full_basic_summary = result["conditions"][2]["summary"]
-    assert result["conditions"][0]["repair_mode"] == "raw_model"
-    assert result["conditions"][1]["repair_mode"] == "strict_format"
-    assert result["conditions"][1]["repair_mode_metadata"]["repair_family"] == (
+    strict_json_summary = result["conditions"][0]["summary"]
+    dialect_summary = result["conditions"][1]["summary"]
+    basic_summary = result["conditions"][2]["summary"]
+    full_basic_summary = result["conditions"][3]["summary"]
+    assert result["conditions"][0]["repair_mode"] == "strict_json_raw_model"
+    assert result["conditions"][1]["repair_mode"] == "json_dialect_only"
+    assert result["conditions"][2]["repair_mode"] == "strict_format"
+    assert result["conditions"][2]["repair_mode_metadata"]["repair_family"] == (
         "format_preserving_label_repair"
     )
-    assert raw_summary["rows"] == 1
-    assert raw_summary["exact_label_accuracy"] == 0.0
+    assert strict_json_summary["rows"] == 1
+    assert strict_json_summary["structured_records"] == 1
+    assert strict_json_summary["exact_label_accuracy"] == 0.0
+    assert dialect_summary["rows"] == 1
+    assert dialect_summary["json_dialect_repairs"] == 0
+    assert dialect_summary["exact_label_accuracy"] == 0.0
     assert basic_summary["rows"] == 1
+    assert basic_summary["repair_notes"] == 1
     assert basic_summary["exact_label_accuracy"] == 1.0
     assert full_basic_summary["exact_label_accuracy"] == 1.0
+
+
+def test_repair_ablation_separates_strict_json_from_python_literal_dialect(
+    tmp_path: Path,
+) -> None:
+    reuse_jsonl = tmp_path / "prior.jsonl"
+    python_literal = _raw_structured().replace('"', "'").replace("null", "None")
+    reuse_jsonl.write_text(
+        json.dumps({"source_row_index": 10, "raw_output": python_literal}) + "\n",
+        encoding="utf-8",
+    )
+
+    result = run_repair_ablation(
+        [_record(10)],
+        split="validation",
+        split_manifest="gan2026_split_v1",
+        reuse_jsonl=reuse_jsonl,
+    )
+
+    strict_json_summary = result["conditions"][0]["summary"]
+    dialect_summary = result["conditions"][1]["summary"]
+    assert strict_json_summary["structured_records"] == 0
+    assert strict_json_summary["parse_or_validation_failures"] == 1
+    assert dialect_summary["structured_records"] == 1
+    assert dialect_summary["parse_or_validation_failures"] == 0
+    assert dialect_summary["json_dialect_repairs"] == 1

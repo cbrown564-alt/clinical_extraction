@@ -293,6 +293,13 @@ def _call_openai_responses(
     model: str,
     max_tokens: int,
 ) -> tuple[str, dict[str, Any], float]:
+    if model.startswith("ollama_chat/"):
+        return _call_ollama_chat(
+            system_prompt,
+            model_input,
+            model=model,
+            max_tokens=max_tokens,
+        )
     api_key = os.environ["OPENAI_API_KEY"].strip()
     body = {
         "model": model.removeprefix("openai/"),
@@ -341,6 +348,65 @@ def _call_openai_responses(
     if not output_text:
         raise RuntimeError("OpenAI response contained no output text")
     return output_text, dict(payload.get("usage") or {}), latency
+
+
+def _call_ollama_chat(
+    system_prompt: str,
+    model_input: Mapping[str, Any],
+    *,
+    model: str,
+    max_tokens: int,
+) -> tuple[str, dict[str, Any], float]:
+    api_base = os.environ.get("GAN2026_API_BASE") or os.environ.get("OPENAI_API_BASE")
+    api_base = (api_base or "http://localhost:11434").rstrip("/")
+    if api_base.endswith("/v1"):
+        api_base = api_base[: -len("/v1")]
+    body = {
+        "model": model.removeprefix("ollama_chat/"),
+        "messages": [
+            {"role": "system", "content": system_prompt},
+            {
+                "role": "user",
+                "content": json.dumps(model_input, ensure_ascii=False, sort_keys=True),
+            },
+        ],
+        "stream": False,
+        "think": False,
+        "options": {
+            "temperature": 0,
+            "num_predict": max_tokens,
+        },
+    }
+    started = time.monotonic()
+    request = urllib.request.Request(
+        f"{api_base}/api/chat",
+        data=json.dumps(body).encode("utf-8"),
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=180) as response:
+            payload = json.loads(response.read())
+    except urllib.error.HTTPError as exc:
+        detail = exc.read().decode("utf-8", errors="replace")
+        raise RuntimeError(f"Ollama HTTP {exc.code}: {detail[:500]}") from exc
+    latency = time.monotonic() - started
+    output_text = str((payload.get("message") or {}).get("content") or "").strip()
+    if not output_text:
+        raise RuntimeError("Ollama response contained no assistant content")
+    usage = {
+        key: payload[key]
+        for key in [
+            "total_duration",
+            "load_duration",
+            "prompt_eval_count",
+            "prompt_eval_duration",
+            "eval_count",
+            "eval_duration",
+        ]
+        if key in payload
+    }
+    return output_text, usage, latency
 
 
 def _routing_decision(predeclared: Mapping[str, Any]) -> dict[str, Any]:
