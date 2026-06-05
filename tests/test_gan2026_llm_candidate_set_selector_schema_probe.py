@@ -28,23 +28,26 @@ def test_selector_inputs_include_candidates_without_gold_labels() -> None:
 
     assert inputs["source_row_index"] == 201
     assert inputs["candidate_set"]["candidates"][0]["candidate_id"] == "det:201:1"
-    assert "benchmark label" in " ".join(inputs["task_instructions"])
+    instructions = " ".join(inputs["task_instructions"])
+    assert "choose the fact(s) that best describe" in instructions
+    assert "current seizure frequency burden" in instructions
+    assert "selected_candidate_ids, selection_mode, and rationale" in instructions
+    assert "related_candidate_group" in instructions
+    assert "benchmark" not in instructions
+    assert "scorer" not in instructions
+    assert "pipeline" not in instructions
     assert "gold" not in json.dumps(inputs).lower()
 
 
-def test_assemble_selected_fact_fills_evidence_from_selected_candidate() -> None:
+def test_assemble_selected_fact_accepts_single_selected_candidate() -> None:
     candidate_set = _candidate_set(
         _frequency_candidate("det:202:1", "two seizures per month"),
         _unknown_candidate("llm:202:2", "a few events recently"),
         source_row_index=202,
     )
     draft = selector_probe.SelectionDraft(
-        selection_status="selected",
-        selection_basis="direct_candidate_selection",
-        clinical_fact_kind="frequency_rate",
         selected_candidate_ids=["det:202:1"],
-        rejected_candidate_ids=["llm:202:2"],
-        primary_evidence_texts=["two seizures per month"],
+        selection_mode="single_candidate",
         rationale="Explicit current rate beats vague quantity wording.",
     )
 
@@ -55,12 +58,31 @@ def test_assemble_selected_fact_fills_evidence_from_selected_candidate() -> None
 
     assert errors == []
     assert selection is not None
-    assert selection.selection_status == "selected"
-    assert selection.primary_evidence == [
-        EvidenceSpan(text="two seizures per month", start_char=0, end_char=22)
-    ]
-    assert selection.source_ids == ["note:202:span:0-22"]
-    assert selection.rejected_candidate_ids == ["llm:202:2"]
+    assert selection.selection_mode == "single_candidate"
+    assert selection.selected_candidate_ids == ["det:202:1"]
+    assert selection.rationale == "Explicit current rate beats vague quantity wording."
+
+
+def test_assemble_selected_fact_accepts_related_candidate_group() -> None:
+    candidate_set = _candidate_set(
+        _frequency_candidate("det:206:1", "two seizures yesterday"),
+        _frequency_candidate("llm:206:2", "one seizure today"),
+        source_row_index=206,
+    )
+    draft = selector_probe.SelectionDraft(
+        selected_candidate_ids=["det:206:1", "llm:206:2"],
+        selection_mode="related_candidate_group",
+        rationale="Both candidates describe the same current short-window burden.",
+    )
+
+    selection, errors = selector_probe.assemble_selected_fact(
+        draft,
+        candidate_set=candidate_set,
+    )
+
+    assert errors == []
+    assert selection is not None
+    assert selection.selected_candidate_ids == ["det:206:1", "llm:206:2"]
 
 
 def test_assemble_selected_fact_reports_unknown_candidate_id() -> None:
@@ -69,11 +91,8 @@ def test_assemble_selected_fact_reports_unknown_candidate_id() -> None:
         source_row_index=203,
     )
     draft = selector_probe.SelectionDraft(
-        selection_status="selected",
-        selection_basis="direct_candidate_selection",
-        clinical_fact_kind="frequency_rate",
         selected_candidate_ids=["missing-id"],
-        primary_evidence_texts=["two seizures per month"],
+        selection_mode="single_candidate",
     )
 
     selection, errors = selector_probe.assemble_selected_fact(
@@ -83,7 +102,26 @@ def test_assemble_selected_fact_reports_unknown_candidate_id() -> None:
 
     assert selection is None
     assert any("unknown_candidate_id:missing-id" in error for error in errors)
-    assert any("selected status requires primary_evidence" in error for error in errors)
+    assert len(errors) == 1
+
+
+def test_assemble_selected_fact_reports_mode_id_count_mismatch() -> None:
+    candidate_set = _candidate_set(
+        _frequency_candidate("det:207:1", "two seizures per month"),
+        source_row_index=207,
+    )
+    draft = selector_probe.SelectionDraft(
+        selected_candidate_ids=["det:207:1"],
+        selection_mode="related_candidate_group",
+    )
+
+    selection, errors = selector_probe.assemble_selected_fact(
+        draft,
+        candidate_set=candidate_set,
+    )
+
+    assert selection is None
+    assert any("two or more" in error for error in errors)
 
 
 def test_run_split_prompt_only_uses_default_candidate_set_artifact(
@@ -114,7 +152,7 @@ def test_run_split_prompt_only_uses_default_candidate_set_artifact(
     assert rows[0]["typed_input"]["candidate_set"]["candidates"][0]["candidate_id"] == "det:204:1"
     assert rows[0]["parse_errors"] == ["not_run", "selection_draft_missing"]
     assert metadata["summary"]["examples"] == 1
-    assert metadata["summary"]["selected_fact_rows"] == 0
+    assert metadata["summary"]["selected_decision_rows"] == 0
 
 
 def _candidate_set(
