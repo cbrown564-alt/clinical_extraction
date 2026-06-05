@@ -36,13 +36,20 @@ def test_assessment_inputs_include_general_grouping_policy_examples() -> None:
     assert "one overarching clinical assessment" in instructions
     assert "primary_candidate_ids" in instructions
     assert "supporting_candidate_ids" in instructions
+    assert "Never invent, renumber, or guess candidate ids" in instructions
+    assert "at most one role" in instructions
     assert "Group primary candidates only" in instructions
     assert "For single_fact, use exactly one primary candidate" in instructions
+    assert "Use additive_same_window only" in instructions
     assert "repeat the same current burden" in instructions
     assert "Do not use historical candidates as primary" in instructions
+    assert "frequency_rate with zero primary candidates" in instructions
     assert "source_normalized_phrase should describe only" in instructions
     assert "do not fill seizure_free_duration fields" in instructions
+    assert "outside-window seizure-free durations" in instructions
     assert "Total count plus subtype" in examples
+    assert "Vague frequency plus isolated concrete event" in examples
+    assert "No usable primary candidate" in examples
     assert "Primary with non-additive context" in examples
     assert "Repeated reference to same burden" in examples
     assert "Frequency plus cluster modifier" in examples

@@ -95,9 +95,9 @@ def summarize_diagnostics(
         "source_artifact": source_artifact,
         "row_count": len(diagnostics),
         "claim_boundary": (
-            "Validation25 clinical-assessment diagnostics only. This inspects "
-            "role usage, context separation, and comparisons to selector artifacts; "
-            "it does not score, project, or render answers."
+            f"{len(diagnostics)}-row clinical-assessment diagnostics only. This "
+            "inspects role usage, context separation, and comparisons to selector "
+            "artifacts; it does not score, project, or render answers."
         ),
         "summary": {
             "clinical_assessment_rows": sum(
@@ -375,7 +375,12 @@ def _diagnostic_flags(
         flags.append("multi_primary_nonadditive_policy")
     if assessment.aggregation_policy == "single_fact" and len(assessment.primary_candidate_ids) > 1:
         flags.append("single_fact_multiple_primary_candidates")
-    if "historical" in _candidate_values(primary_candidates, "temporality"):
+    if _has_actionable_historical_primary(
+        assessment=assessment,
+        primary_candidates=primary_candidates,
+        supporting_candidates=supporting_candidates,
+        rejected_candidates=rejected_candidates,
+    ):
         flags.append("historical_primary_candidate")
     if assessment.assessment_kind == "frequency_rate" and _has_cluster_burden(normalized_burden):
         flags.append("cluster_context_leak_in_frequency_burden")
@@ -505,6 +510,27 @@ def _has_seizure_free_burden(normalized_burden: Mapping[str, Any]) -> bool:
             "seizure_free_duration_unit",
         )
     )
+
+
+def _has_actionable_historical_primary(
+    *,
+    assessment: ClinicalAssessment,
+    primary_candidates: Sequence[Mapping[str, Any]],
+    supporting_candidates: Sequence[Mapping[str, Any]],
+    rejected_candidates: Sequence[Mapping[str, Any]],
+) -> bool:
+    if "historical" not in _candidate_values(primary_candidates, "temporality"):
+        return False
+    competing_candidates = [*supporting_candidates, *rejected_candidates]
+    has_current_or_recent_alternative = any(
+        str(candidate.get("temporality")) in {"current", "recent"}
+        for candidate in competing_candidates
+    )
+    if has_current_or_recent_alternative:
+        return True
+    if assessment.assessment_kind == "seizure_free":
+        return False
+    return True
 
 
 def _role_overlap_ids(

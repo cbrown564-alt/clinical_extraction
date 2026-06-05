@@ -35,7 +35,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
-PROMPT_VERSION = "gan2026_candidate_set_clinical_assessment_probe_v2"
+PROMPT_VERSION = "gan2026_candidate_set_clinical_assessment_probe_v3"
 PIPELINE_FAMILY = "llm_candidate_set_clinical_assessment_probe"
 DEFAULT_JSONL_PATH = Path(
     "experiments/gan2026_candidate_set_clinical_assessment_probe_validation25_gpt41mini_v0_2026-06-05.jsonl"
@@ -129,6 +129,14 @@ def build_assessment_inputs(
                 "or non-additive context in supporting_candidate_ids or rejected_candidate_ids."
             ),
             (
+                "Use only candidate_id values that appear in the provided CandidateSet. "
+                "Never invent, renumber, or guess candidate ids."
+            ),
+            (
+                "Put each candidate id in at most one role. A candidate cannot be both "
+                "supporting and rejected."
+            ),
+            (
                 "Group primary candidates only when they should be normalized together "
                 "as one burden assessment."
             ),
@@ -143,6 +151,11 @@ def build_assessment_inputs(
                 "additive primary facts."
             ),
             (
+                "Use additive_same_window only when all primary candidates are concrete "
+                "frequency_rate facts. Do not use additive_same_window for vague "
+                "unknown_frequency facts such as 'most weekdays' or 'rare'."
+            ),
+            (
                 "If multiple candidates repeat the same current burden in different "
                 "parts of the note, use the most specific source-near candidate as "
                 "primary and put the corroborating repeat references in support."
@@ -150,6 +163,11 @@ def build_assessment_inputs(
             (
                 "Do not use historical candidates as primary for current burden when "
                 "a current or recent candidate is available."
+            ),
+            (
+                "If the note has no usable frequency candidate, return unknown_frequency "
+                "with unknown_due_to_absence or no_reference with no_reference_boundary; "
+                "do not return frequency_rate with zero primary candidates."
             ),
             (
                 "Do not group a total count with a subtype or subcount that may already "
@@ -170,6 +188,12 @@ def build_assessment_inputs(
                 "When assessment_kind is frequency_rate or cluster_frequency, do not "
                 "fill seizure_free_duration fields unless seizure freedom is the "
                 "primary burden assessment."
+            ),
+            (
+                "For menstrual, sleep, travel, or other recurring risk windows, keep "
+                "seizure-free outside-window statements in supporting context. Do not "
+                "copy outside-window seizure-free durations into cluster or frequency "
+                "normalized_burden fields."
             ),
             (
                 "Preserve cluster structure: cluster cadence and events per cluster are "
@@ -494,6 +518,28 @@ def _policy_examples() -> list[dict[str, str]]:
             ),
         },
         {
+            "case": "Vague frequency plus isolated concrete event",
+            "candidates": (
+                "A says brief absences occur on most weekdays; B says one tonic-clonic "
+                "seizure occurred in the last eight weeks."
+            ),
+            "assessment": (
+                "Do not use additive_same_window because A is a vague unknown-frequency "
+                "burden. Use the clinically dominant current burden as primary and keep "
+                "the other fact as supporting context unless the note clearly requires "
+                "a combined exact rate."
+            ),
+        },
+        {
+            "case": "No usable primary candidate",
+            "candidates": "The CandidateSet is empty or contains no seizure-frequency fact.",
+            "assessment": (
+                "Use unknown_frequency with unknown_due_to_absence, or no_reference with "
+                "no_reference_boundary when there is truly no reference. Do not return "
+                "frequency_rate with an empty primary_candidate_ids list."
+            ),
+        },
+        {
             "case": "Primary with non-additive context",
             "candidates": (
                 "A says brief seizures occur daily; B says there was one short cluster "
@@ -579,7 +625,8 @@ def _policy_examples() -> list[dict[str, str]]:
             ),
             "assessment": (
                 "Use A as primary and B as supporting context. Do not add them "
-                "together as frequency evidence."
+                "together as frequency evidence, and do not fill seizure_free_duration "
+                "fields unless the assessment_kind is seizure_free."
             ),
         },
         {

@@ -7,6 +7,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.candidate_set 
     EvidenceSpan,
     ExtractedCandidate,
     FrequencyDetails,
+    SeizureFreeDetails,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.clinical_assessment import (
     ClinicalAssessment,
@@ -156,6 +157,71 @@ def test_clinical_assessment_diagnostics_allows_single_primary_cluster_axis() ->
     assert metadata["summary"]["rows_with_diagnostic_flags"] == 0
 
 
+def test_clinical_assessment_diagnostics_allows_seizure_free_historical_only_primary() -> None:
+    rows = [
+        _assessment_row(
+            15,
+            [
+                _seizure_free_candidate(
+                    "llm:15:1",
+                    "No seizures observed since initial referral",
+                    temporality="historical",
+                )
+            ],
+            ClinicalAssessment(
+                source_row_index=15,
+                component_owner="test",
+                assessment_kind="seizure_free",
+                primary_candidate_ids=["llm:15:1"],
+                aggregation_policy="single_fact",
+                normalized_burden=NormalizedBurden(
+                    source_normalized_phrase="no seizures since initial referral",
+                ),
+            ),
+        )
+    ]
+
+    diagnostic_rows, metadata = diagnostics.build_clinical_assessment_diagnostics(rows)
+
+    assert diagnostic_rows[0]["diagnostic_flags"] == []
+    assert metadata["claim_boundary"].startswith("1-row clinical-assessment")
+
+
+def test_clinical_assessment_diagnostics_flags_historical_primary_with_recent_alternative() -> None:
+    rows = [
+        _assessment_row(
+            16,
+            [
+                _frequency_candidate(
+                    "llm:16:1",
+                    "weekly seizures in 2020",
+                    temporality="historical",
+                ),
+                _frequency_candidate(
+                    "llm:16:2",
+                    "now has monthly seizures",
+                    temporality="current",
+                ),
+            ],
+            ClinicalAssessment(
+                source_row_index=16,
+                component_owner="test",
+                assessment_kind="frequency_rate",
+                primary_candidate_ids=["llm:16:1"],
+                supporting_candidate_ids=["llm:16:2"],
+                aggregation_policy="primary_with_context",
+                normalized_burden=NormalizedBurden(
+                    source_normalized_phrase="weekly seizures in 2020",
+                ),
+            ),
+        )
+    ]
+
+    diagnostic_rows, _ = diagnostics.build_clinical_assessment_diagnostics(rows)
+
+    assert diagnostic_rows[0]["diagnostic_flags"] == ["historical_primary_candidate"]
+
+
 def test_clinical_assessment_diagnostics_compares_selector_artifacts() -> None:
     assessment_rows = [
         _assessment_row(
@@ -223,7 +289,12 @@ def _assessment_row(
     }
 
 
-def _frequency_candidate(candidate_id: str, evidence: str) -> ExtractedCandidate:
+def _frequency_candidate(
+    candidate_id: str,
+    evidence: str,
+    *,
+    temporality: str = "current",
+) -> ExtractedCandidate:
     source_row_index = int(candidate_id.split(":")[1])
     source_type = (
         "deterministic_candidate" if candidate_id.startswith("det:") else "llm_candidate"
@@ -237,7 +308,7 @@ def _frequency_candidate(candidate_id: str, evidence: str) -> ExtractedCandidate
         candidate_kind="frequency_rate",
         event_type="seizure",
         frequency=FrequencyDetails(source_phrase=evidence),
-        temporality="current",
+        temporality=temporality,
         certainty="certain",
         assertion_status="asserted",
         evidence_span=EvidenceSpan(text=evidence),
@@ -258,6 +329,31 @@ def _cluster_candidate(candidate_id: str, evidence: str) -> ExtractedCandidate:
         event_type="seizure",
         cluster_details=ClusterDetails(cluster_frequency=evidence),
         temporality="current",
+        certainty="certain",
+        assertion_status="asserted",
+        evidence_span=EvidenceSpan(text=evidence),
+        source_ids=[f"note:{source_row_index}:span:0-1"],
+        clinical_or_policy="clinical",
+    )
+
+
+def _seizure_free_candidate(
+    candidate_id: str,
+    evidence: str,
+    *,
+    temporality: str = "current",
+) -> ExtractedCandidate:
+    source_row_index = int(candidate_id.split(":")[1])
+    return ExtractedCandidate(
+        candidate_id=candidate_id,
+        component_owner="test",
+        source_type="llm_candidate",
+        source_artifact="test",
+        source_row_index=source_row_index,
+        candidate_kind="seizure_free",
+        event_type="seizure",
+        seizure_free=SeizureFreeDetails(source_phrase=evidence),
+        temporality=temporality,
         certainty="certain",
         assertion_status="asserted",
         evidence_span=EvidenceSpan(text=evidence),
