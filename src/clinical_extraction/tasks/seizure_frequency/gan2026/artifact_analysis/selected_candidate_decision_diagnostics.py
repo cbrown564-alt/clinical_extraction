@@ -73,6 +73,11 @@ def summarize_diagnostics(
     selected_count_counts = Counter(
         str(row["selected_candidate_count"]) for row in diagnostics
     )
+    related_group_policy_counts = Counter(
+        str(row["related_group_policy_action"])
+        for row in diagnostics
+        if row["selection_mode"] == "related_candidate_group"
+    )
     invalid_reference_rows = [
         row for row in diagnostics if row["unknown_selected_candidate_ids"]
     ]
@@ -127,6 +132,9 @@ def summarize_diagnostics(
             "related_group_without_cluster_or_shared_kind_rows": sum(
                 "no_cluster_or_shared_kind_signal" in row["related_group_coherence_flags"]
                 for row in related_group_rows
+            ),
+            "related_group_policy_action_counts": dict(
+                sorted(related_group_policy_counts.items())
             ),
             "invalid_reference_source_row_indices": [
                 int(row["source_row_index"]) for row in invalid_reference_rows
@@ -201,6 +209,9 @@ def write_report(
     lines.extend(["", "## Source Composition", ""])
     for composition, count in summary["selected_source_composition_counts"].items():
         lines.append(f"- `{composition}`: {count}")
+    lines.extend(["", "## Related Group Policy Actions", ""])
+    for action, count in summary["related_group_policy_action_counts"].items():
+        lines.append(f"- `{action}`: {count}")
     lines.extend(["", "## Inspection Examples", ""])
     for title, examples in metadata["inspection_examples"].items():
         lines.extend([f"### {title.replace('_', ' ').title()}", ""])
@@ -213,7 +224,8 @@ def write_report(
                 f"selected {row['selected_candidate_ids']}, kinds "
                 f"{row['selected_candidate_kinds']}, source types "
                 f"{row['selected_source_types']}, flags "
-                f"{row['related_group_coherence_flags']}. "
+                f"{row['related_group_coherence_flags']}, policy "
+                f"`{row['related_group_policy_action']}`. "
                 f"Rationale: {row['rationale']}"
             )
         lines.append("")
@@ -253,6 +265,11 @@ def _diagnostic_row(
         str(candidate.get("certainty")) for candidate in selected_candidates
     ]
     selection_mode = decision.selection_mode if decision is not None else "missing"
+    related_group_coherence_flags = _related_group_coherence_flags(
+        selection_mode=str(selection_mode),
+        selected_kinds=selected_kinds,
+        temporalities=temporality_values,
+    )
     return {
         "source_row_index": int(row["source_row_index"]),
         "split": row.get("split", "validation"),
@@ -277,10 +294,11 @@ def _diagnostic_row(
             for candidate in candidates
             if str(candidate.get("candidate_id")) not in set(selected_ids)
         ],
-        "related_group_coherence_flags": _related_group_coherence_flags(
+        "related_group_coherence_flags": related_group_coherence_flags,
+        "related_group_policy_action": _related_group_policy_action(
             selection_mode=str(selection_mode),
             selected_kinds=selected_kinds,
-            temporalities=temporality_values,
+            coherence_flags=related_group_coherence_flags,
         ),
         "rationale": decision.rationale if decision is not None else "",
         "parse_errors": list(row.get("parse_errors") or []),
@@ -349,6 +367,38 @@ def _related_group_coherence_flags(
     return flags
 
 
+def _related_group_policy_action(
+    *,
+    selection_mode: str,
+    selected_kinds: Sequence[str],
+    coherence_flags: Sequence[str],
+) -> str:
+    """Classify grouped selections before deterministic normalization.
+
+    These are review labels, not downstream decisions. They make the selector
+    surface explicit enough to choose the next normalization/verifier contract.
+    """
+
+    if selection_mode != "related_candidate_group":
+        return "not_applicable"
+    unique_kinds = set(selected_kinds)
+    if unique_kinds == {"frequency_rate"}:
+        if "mixed_temporality" in coherence_flags:
+            return "route_to_verifier_before_normalization"
+        return "aggregate_selected_candidates"
+    if unique_kinds == {"seizure_free"}:
+        return "preserve_as_corrob_seizure_free"
+    if unique_kinds == {"cluster_frequency"}:
+        return "preserve_as_cluster_axis"
+    if "cluster_frequency" in unique_kinds:
+        if "seizure_free" in unique_kinds:
+            return "split_primary_with_context"
+        return "preserve_as_cluster_modifier_context"
+    if "seizure_free" in unique_kinds:
+        return "split_primary_with_context"
+    return "route_to_verifier_before_normalization"
+
+
 def _examples(rows: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
     return [
         {
@@ -358,6 +408,7 @@ def _examples(rows: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
             "selected_candidate_kinds": list(row["selected_candidate_kinds"]),
             "selected_source_types": list(row["selected_source_types"]),
             "related_group_coherence_flags": list(row["related_group_coherence_flags"]),
+            "related_group_policy_action": row["related_group_policy_action"],
             "rationale": row["rationale"],
         }
         for row in rows[:MAX_EXAMPLES_PER_SECTION]

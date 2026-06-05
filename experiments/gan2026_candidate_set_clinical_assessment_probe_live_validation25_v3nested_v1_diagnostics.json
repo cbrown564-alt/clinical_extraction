@@ -1,0 +1,212 @@
+{
+  "artifact_name": "gan2026_candidate_set_clinical_assessment_probe_live_validation25_v0_diagnostics",
+  "claim_boundary": "Validation25 clinical-assessment diagnostics only. This inspects role usage, context separation, and comparisons to selector artifacts; it does not score, project, or render answers.",
+  "inspection_examples": {
+    "context_leak_rows": [],
+    "flagged_rows": [],
+    "minimal_selector_differences": [
+      {
+        "aggregation_policy": "single_fact",
+        "assessment_kind": "frequency_rate",
+        "assessment_summary": "Patient reports combined generalized and focal epilepsy with seizure frequency ≤ 6 to 7 per year, typically clustering around travel-related sleep loss and jet lag. No injuries or hospital admissions. Current medications well tolerated. Clobazam used PRN during travel. Adherence reinforced. No immediate further investigations required.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "different",
+        "primary_candidate_ids": [
+          "llm:79:1"
+        ],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "assessment_primary_subset",
+        "source_row_index": 79,
+        "supporting_candidate_ids": [
+          "llm:79:2"
+        ]
+      },
+      {
+        "aggregation_policy": "single_fact",
+        "assessment_kind": "frequency_rate",
+        "assessment_summary": "The patient reports improved seizure control with seizures now occurring approximately every 3 weeks, compared to prior frequency of once every 2 to 3 days. No injuries or emergency attendances noted. Current regimen and lifestyle adjustments are effective and well tolerated.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "different",
+        "primary_candidate_ids": [
+          "llm:218:2"
+        ],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "same",
+        "source_row_index": 218,
+        "supporting_candidate_ids": [
+          "llm:218:1"
+        ]
+      },
+      {
+        "aggregation_policy": "primary_with_context",
+        "assessment_kind": "frequency_rate",
+        "assessment_summary": "The patient has experienced many convulsions in the past month, with events clustering after eastbound flights and consecutive nights of restricted sleep. The plan focuses on optimizing sleep hygiene and medication timing to reduce breakthrough seizures.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "assessment_primary_subset",
+        "primary_candidate_ids": [
+          "det:338:1"
+        ],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "different",
+        "source_row_index": 338,
+        "supporting_candidate_ids": [
+          "llm:338:2"
+        ]
+      },
+      {
+        "aggregation_policy": "primary_with_context",
+        "assessment_kind": "frequency_rate",
+        "assessment_summary": "The patient currently experiences seizures up to twice per week, both nocturnally and during wakefulness, with variable clustering. This represents a clinical deterioration compared to prior months (June and August) when seizure frequency was lower. The patient is on stable polytherapy but reports worsening control and adverse effects impacting function.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "different",
+        "primary_candidate_ids": [
+          "det:446:1"
+        ],
+        "rejected_candidate_ids": [
+          "llm:446:1",
+          "llm:446:2"
+        ],
+        "rich_selector_primary_relation": "different",
+        "source_row_index": 446,
+        "supporting_candidate_ids": [
+          "llm:446:3"
+        ]
+      },
+      {
+        "aggregation_policy": "primary_with_context",
+        "assessment_kind": "frequency_rate",
+        "assessment_summary": "The patient experiences 21 to 28 focal impaired awareness seizures per month, typically brief and with post-ictal fatigue. Occasional seizure clusters occur around significant sleep disruption but are not quantified separately in frequency burden. No generalized tonic-clonic seizures reported in past six months.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "assessment_primary_subset",
+        "primary_candidate_ids": [
+          "llm:466:1"
+        ],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "same",
+        "source_row_index": 466,
+        "supporting_candidate_ids": [
+          "llm:466:2"
+        ]
+      },
+      {
+        "aggregation_policy": "single_fact",
+        "assessment_kind": "frequency_rate",
+        "assessment_summary": "Patient reports stable focal epilepsy with impaired awareness seizures occurring approximately once every eight months over the past 16 months, consistent with seizure diary. No secondary generalization or worsening noted. Triggers include sleep deprivation. Current antiepileptic therapy is effective and well tolerated.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "different",
+        "primary_candidate_ids": [
+          "llm:598:1"
+        ],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "assessment_primary_subset",
+        "source_row_index": 598,
+        "supporting_candidate_ids": [
+          "llm:598:2"
+        ]
+      }
+    ],
+    "multi_primary_rows": [],
+    "rich_selector_differences": [
+      {
+        "aggregation_policy": "single_fact",
+        "assessment_kind": "frequency_rate",
+        "assessment_summary": "Patient reports combined generalized and focal epilepsy with seizure frequency ≤ 6 to 7 per year, typically clustering around travel-related sleep loss and jet lag. No injuries or hospital admissions. Current medications well tolerated. Clobazam used PRN during travel. Adherence reinforced. No immediate further investigations required.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "different",
+        "primary_candidate_ids": [
+          "llm:79:1"
+        ],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "assessment_primary_subset",
+        "source_row_index": 79,
+        "supporting_candidate_ids": [
+          "llm:79:2"
+        ]
+      },
+      {
+        "aggregation_policy": "primary_with_context",
+        "assessment_kind": "frequency_rate",
+        "assessment_summary": "The patient has experienced many convulsions in the past month, with events clustering after eastbound flights and consecutive nights of restricted sleep. The plan focuses on optimizing sleep hygiene and medication timing to reduce breakthrough seizures.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "assessment_primary_subset",
+        "primary_candidate_ids": [
+          "det:338:1"
+        ],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "different",
+        "source_row_index": 338,
+        "supporting_candidate_ids": [
+          "llm:338:2"
+        ]
+      },
+      {
+        "aggregation_policy": "primary_with_context",
+        "assessment_kind": "frequency_rate",
+        "assessment_summary": "The patient currently experiences seizures up to twice per week, both nocturnally and during wakefulness, with variable clustering. This represents a clinical deterioration compared to prior months (June and August) when seizure frequency was lower. The patient is on stable polytherapy but reports worsening control and adverse effects impacting function.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "different",
+        "primary_candidate_ids": [
+          "det:446:1"
+        ],
+        "rejected_candidate_ids": [
+          "llm:446:1",
+          "llm:446:2"
+        ],
+        "rich_selector_primary_relation": "different",
+        "source_row_index": 446,
+        "supporting_candidate_ids": [
+          "llm:446:3"
+        ]
+      },
+      {
+        "aggregation_policy": "single_fact",
+        "assessment_kind": "frequency_rate",
+        "assessment_summary": "Patient reports stable focal epilepsy with impaired awareness seizures occurring approximately once every eight months over the past 16 months, consistent with seizure diary. No secondary generalization or worsening noted. Triggers include sleep deprivation. Current antiepileptic therapy is effective and well tolerated.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "different",
+        "primary_candidate_ids": [
+          "llm:598:1"
+        ],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "assessment_primary_subset",
+        "source_row_index": 598,
+        "supporting_candidate_ids": [
+          "llm:598:2"
+        ]
+      }
+    ]
+  },
+  "row_count": 25,
+  "source_artifact": "experiments\\gan2026_candidate_set_clinical_assessment_probe_live_validation25_gpt41mini_v3nested_v1.jsonl",
+  "summary": {
+    "aggregation_policy_counts": {
+      "cluster_axis": 1,
+      "primary_with_context": 6,
+      "single_fact": 18
+    },
+    "assessment_kind_counts": {
+      "cluster_frequency": 2,
+      "frequency_rate": 23
+    },
+    "clinical_assessment_rows": 25,
+    "diagnostic_flag_counts": {},
+    "flagged_source_row_indices": [],
+    "invalid_reference_rows": 0,
+    "minimal_selector_primary_relation_counts": {
+      "assessment_primary_subset": 2,
+      "different": 4,
+      "same": 19
+    },
+    "missing_assessment_rows": 0,
+    "primary_candidate_count_distribution": {
+      "1": 25
+    },
+    "rich_selector_primary_relation_counts": {
+      "assessment_primary_subset": 2,
+      "different": 2,
+      "same": 21
+    },
+    "role_overlap_rows": 0,
+    "rows_with_diagnostic_flags": 0
+  }
+}

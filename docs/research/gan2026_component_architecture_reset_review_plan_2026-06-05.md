@@ -1171,32 +1171,426 @@ built out.
   `PYTHONPATH=src .venv/Scripts/python.exe -m ruff check src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_candidate_set_selector_schema_probe.py tests/test_gan2026_llm_candidate_set_selector_schema_probe.py src/clinical_extraction/tasks/seizure_frequency/gan2026/cli/llm_pipeline_cli.py tests/test_gan2026_llm_pipeline_cli.py`
   passed.
 
+### Related Candidate Group Review V0
+
+- Continued selector evaluation from the 21 validation250
+  `related_candidate_group` rows in
+  `experiments/gan2026_validation250_selected_candidate_decision_v2_diagnostics.jsonl`.
+- Added pre-normalization related-group policy diagnostics to:
+  - `src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/selected_candidate_decision_diagnostics.py`;
+  - `tests/test_gan2026_selected_candidate_decision_diagnostics.py`;
+  - `experiments/gan2026_validation250_selected_candidate_decision_v2_diagnostics.jsonl`;
+  - `experiments/gan2026_validation250_selected_candidate_decision_v2_diagnostics.json`;
+  - `experiments/gan2026_validation250_selected_candidate_decision_v2_diagnostics.md`.
+- These labels are review diagnostics only. They do not normalize, project,
+  render, score, or mutate the selector decisions.
+- Related-group policy action counts:
+  - `aggregate_selected_candidates`: 4;
+  - `preserve_as_cluster_axis`: 1;
+  - `preserve_as_cluster_modifier_context`: 7;
+  - `preserve_as_corrob_seizure_free`: 2;
+  - `split_primary_with_context`: 4;
+  - `route_to_verifier_before_normalization`: 3.
+- Policy interpretation before normalization:
+  - same-kind same-window `frequency_rate` groups can be treated as aggregation
+    candidates when they do not carry mixed-temporality flags;
+  - same-kind `seizure_free` groups are corroborating evidence, not additive
+    seizure-free duration;
+  - cluster candidates should be preserved as a separate cluster axis or as
+    cluster-modifier context, not summed into ordinary frequency rates;
+  - cluster plus seizure-free, and frequency plus seizure-free, should become a
+    primary selected burden plus contextual seizure-free statement rather than a
+    single normalized count;
+  - frequency plus unknown-frequency groups without cluster signal should route
+    to verifier/defer handling before normalization;
+  - same-kind frequency groups with mixed temporality also route to
+    verifier/defer handling before normalization, because they may combine a
+    total count with a subtype/subcount rather than additive evidence.
+- Rows that currently look like straightforward aggregation candidates:
+  744, 1591, 1880, and 3774.
+- Rows that should not be collapsed into one ordinary frequency rate without
+  additional policy:
+  338, 466, 1046, 1165, 1573, 3468, 3469, 3643, 3827, 3949, 4026, 4478, 4771,
+  4842, 4951, 5476, and 5551.
+- Immediate normalization design implication:
+  `NormalizedClinicalState` should support selected candidate groups with
+  separate primary burden, aggregation inputs, cluster modifiers,
+  seizure-free/context statements, and verifier-route flags. It should not
+  assume every `related_candidate_group` means arithmetic aggregation.
+- Verification:
+  `$env:PYTHONPATH='src'; .venv/Scripts/python.exe -m pytest tests/test_gan2026_selected_candidate_decision_diagnostics.py -q`
+  passed with 4 tests.
+  `$env:PYTHONPATH='src'; .venv/Scripts/python.exe -m ruff check src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/selected_candidate_decision_diagnostics.py tests/test_gan2026_selected_candidate_decision_diagnostics.py`
+  passed.
+
+### Merged Clinical Assessment Probe V0
+
+User direction: selecting, normalizing, and aggregating candidate facts may be
+one clinical reasoning problem rather than three cleanly separable stages. The
+new experimental middle stage is therefore:
+
+```text
+Extract -> ClinicalAssessment -> Project/Verify/Render
+```
+
+- Added `ClinicalAssessment` and `NormalizedBurden`:
+  - `src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/clinical_assessment.py`;
+  - `tests/test_gan2026_clinical_assessment_contract.py`.
+- Added a new CandidateSet-to-assessment LLM probe:
+  - `src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_candidate_set_clinical_assessment_probe.py`;
+  - `tests/test_gan2026_llm_candidate_set_clinical_assessment_probe.py`.
+- Registered the routine CLI pipeline:
+  `llm_candidate_set_clinical_assessment_probe`.
+- Contract intent:
+  - the LLM owns one overarching clinical assessment of current seizure burden;
+  - `primary_candidate_ids` identify the facts that determine the burden;
+  - `supporting_candidate_ids` retain corroborating, trigger, pattern,
+    seizure-free-outside-window, or other non-additive context;
+  - `rejected_candidate_ids` retain historical, subtype/subcount, duplicate, or
+    unsafe candidates;
+  - `normalized_burden` carries source-near operands and a short clinical phrase;
+  - deterministic code still owns later projection, verification, and rendering.
+- Prompt examples are general policy examples, not copied problematic rows.
+  They cover:
+  - additive same-window event types;
+  - total count plus subtype/subcount;
+  - frequency plus cluster modifier;
+  - cluster cadence plus per-cluster burden;
+  - seizure-free outside a pattern window;
+  - precise count plus vague bursts.
+- Prompt-language cleanup:
+  - model-facing instructions avoid `benchmark`, `scorer`, `gold`,
+    `external evaluator`, and `final label` language;
+  - tests scan the full model-facing input payload for these terms.
+- Prompt-only validation25 smoke:
+  - `experiments/gan2026_candidate_set_clinical_assessment_probe_prompt_only_validation25_v0.jsonl`;
+  - `experiments/gan2026_candidate_set_clinical_assessment_probe_prompt_only_validation25_v0.md`.
+- Live validation25 smoke after prompt cleanup:
+  - `experiments/gan2026_candidate_set_clinical_assessment_probe_live_validation25_gpt41mini_v0.jsonl`;
+  - `experiments/gan2026_candidate_set_clinical_assessment_probe_live_validation25_gpt41mini_v0.md`;
+  - rows: 25;
+  - clinical assessment rows: 25/25;
+  - call failures: 0;
+  - parse/validation failures: 0;
+  - assessment kinds: 21 `frequency_rate`, 2 `cluster_frequency`, and 2
+    `unknown_frequency`;
+  - aggregation policies: 15 `single_fact` and 10 `primary_with_context`.
+- Initial interpretation:
+  - the merged assessment contract is mechanically healthier than the minimal
+    selector contract because it gives the model separate primary, supporting,
+    and rejected candidate roles;
+  - row 466 now selects the monthly frequency as primary and keeps clustering
+    as supporting context, which is the behavior the earlier selector lacked;
+  - row 338 now carries vague high monthly burden as primary and cluster timing
+    as context, rather than grouping both as selected facts;
+  - the probe still needs diagnostics before validation250 because some rows
+    place duplicate corroborating candidates in `primary_candidate_ids`, and at
+    least one inspected row blends historical cluster context into
+    `normalized_burden`;
+  - therefore v0 is a promising contract smoke, not a promoted assessment
+    policy.
+- Verification:
+  `$env:PYTHONPATH='src'; .venv/Scripts/python.exe -m pytest tests/test_gan2026_clinical_assessment_contract.py tests/test_gan2026_llm_candidate_set_clinical_assessment_probe.py tests/test_gan2026_llm_pipeline_cli.py -q`
+  passed with 13 tests.
+  `$env:PYTHONPATH='src'; .venv/Scripts/python.exe -m ruff check src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/clinical_assessment.py src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_candidate_set_clinical_assessment_probe.py src/clinical_extraction/tasks/seizure_frequency/gan2026/cli/llm_pipeline_cli.py tests/test_gan2026_clinical_assessment_contract.py tests/test_gan2026_llm_candidate_set_clinical_assessment_probe.py tests/test_gan2026_llm_pipeline_cli.py`
+  passed.
+
+### Clinical Assessment Diagnostics V0
+
+- Added repeatable diagnostics for the live validation25 clinical-assessment
+  smoke:
+  - `src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/clinical_assessment_diagnostics.py`;
+  - `tests/test_gan2026_clinical_assessment_diagnostics.py`;
+  - `experiments/gan2026_candidate_set_clinical_assessment_probe_live_validation25_v0_diagnostics.jsonl`;
+  - `experiments/gan2026_candidate_set_clinical_assessment_probe_live_validation25_v0_diagnostics.json`;
+  - `experiments/gan2026_candidate_set_clinical_assessment_probe_live_validation25_v0_diagnostics.md`.
+- Diagnostic scope:
+  - role usage;
+  - invalid candidate references;
+  - candidate ids used in multiple roles;
+  - duplicate/corroborating candidates placed in primary roles;
+  - historical, seizure-free, or cluster context leaking into frequency burden
+    operands;
+  - comparison against the minimal v2 selector and the richer v0 selector on the
+    same rows.
+- Summary:
+  - rows: 25;
+  - clinical assessment rows: 25;
+  - missing assessment rows: 0;
+  - invalid reference rows: 0;
+  - role overlap rows: 0;
+  - rows with diagnostic flags: 9.
+- Assessment kinds:
+  - 21 `frequency_rate`;
+  - 2 `cluster_frequency`;
+  - 2 `unknown_frequency`.
+- Aggregation policies:
+  - 15 `single_fact`;
+  - 10 `primary_with_context`;
+  - 0 `additive_same_window`;
+  - 0 `cluster_axis`.
+- Primary candidate count distribution:
+  - one primary candidate: 17;
+  - two primary candidates: 6;
+  - three primary candidates: 1;
+  - four primary candidates: 1.
+- Diagnostic flags:
+  - `multi_primary_nonadditive_policy`: 8;
+  - `single_fact_multiple_primary_candidates`: 5;
+  - `cluster_context_leak_in_frequency_burden`: 1;
+  - `historical_context_phrase_in_burden`: 1;
+  - `seizure_free_context_leak_in_frequency_burden`: 1.
+- Selector comparison:
+  - minimal v2 relation to assessment primary ids: 11 same, 8 assessment
+    supersets, 2 assessment subsets, 4 different;
+  - rich v0 relation to assessment primary ids: 11 same, 8 assessment
+    supersets, 1 assessment subset, 5 different.
+- Interpretation:
+  - schema mechanics are strong: no call failures, parse failures, invalid
+    references, or role overlaps;
+  - the merged assessment contract materially improves the earlier grouped-row
+    failure mode by giving the model primary/supporting/rejected roles;
+  - the dominant issue is primary-role inflation, where duplicate deterministic
+    and LLM candidates that express the same fact are both marked primary under
+    `single_fact` or `primary_with_context`;
+  - this is mostly an attribution/provenance problem, not necessarily a wrong
+    clinical assessment, but it will complicate deterministic projection unless
+    fixed;
+  - two stronger prompt/schema issues remain:
+    - row 198 uses seizure-free duration fields to carry last-event context;
+    - row 409 leaks historical cluster context into current frequency burden
+      operands;
+  - v0 should be revised before validation50/validation250. The likely next
+    revision is to clarify that primary ids should be the minimal evidence set
+    needed for the assessment, while corroborating duplicate candidates belong
+    in supporting ids, and to separate last-event/context timing from
+    seizure-free duration fields.
+- Verification:
+  `$env:PYTHONPATH='src'; .venv/Scripts/python.exe -m pytest tests/test_gan2026_clinical_assessment_diagnostics.py -q`
+  passed with 3 tests.
+  `$env:PYTHONPATH='src'; .venv/Scripts/python.exe -m ruff check src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/clinical_assessment_diagnostics.py tests/test_gan2026_clinical_assessment_diagnostics.py`
+  passed.
+
+### CandidateSet Nested Evidence Dedupe V3
+
+- Added deterministic nested-evidence dedupe to
+  `src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/candidate_set_union.py`.
+- Policy:
+  - exact normalized duplicate candidates are still merged first;
+  - same-kind, same-event candidates with nested spans are merged;
+  - same-kind, same-event candidates with overlapping spans and contained
+    evidence text are merged;
+  - the retained candidate is the most detailed evidence span;
+  - far-apart repeated references to the same burden are not merged
+    deterministically and remain available as model-facing corroboration.
+- Added tests in `tests/test_gan2026_candidate_set_union.py` for:
+  - preserving the fuller phrase over a terse nested phrase;
+  - merging overlapping contained evidence text;
+  - merging one broad candidate against multiple retained nested fragments;
+  - preserving separate mentions.
+- Generated:
+  - `experiments/gan2026_validation250_candidate_set_v3_nested_dedupe.jsonl`;
+  - `experiments/gan2026_validation250_candidate_set_v3_nested_dedupe.json`;
+  - `experiments/gan2026_validation250_candidate_set_v3_nested_dedupe.md`;
+  - `experiments/gan2026_validation250_candidate_set_v3_nested_dedupe_diagnostics.jsonl`;
+  - `experiments/gan2026_validation250_candidate_set_v3_nested_dedupe_diagnostics.json`;
+  - `experiments/gan2026_validation250_candidate_set_v3_nested_dedupe_diagnostics.md`.
+- Summary versus v2 high-recall union:
+  - total candidates: 735 -> 514;
+  - nested duplicate merges: 221;
+  - changed rows: 154;
+  - compatible-kind coverage remains 235/250 (0.940);
+  - rows with no candidates remain 3;
+  - diagnostic issue rows remain 12.
+- Representative behavior:
+  - `9 per month` merges into the fuller `Current average frequency is 9 per
+    month`;
+  - `every four months` merges into the fuller sentence-level current-burden
+    statement;
+  - multiple nested `every 2 days` fragments collapse into the fuller
+    sentence-level burden statement;
+  - repeated same-burden mentions in different note locations are preserved
+    for the clinical-assessment model to treat as supporting corroboration.
+- Updated the clinical-assessment prompt examples to state that repeated
+  references to the same current burden should use the most specific
+  source-near candidate as primary and put corroborating repeats in
+  `supporting_candidate_ids` unless they clearly describe additional
+  non-overlapping events.
+- Verification:
+  `$env:PYTHONPATH='src'; .venv/Scripts/python.exe -m pytest tests/test_gan2026_candidate_set_union.py tests/test_gan2026_llm_candidate_set_clinical_assessment_probe.py -q`
+  passed with 11 tests.
+  `$env:PYTHONPATH='src'; .venv/Scripts/python.exe -m ruff check src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/candidate_set_union.py src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_candidate_set_clinical_assessment_probe.py tests/test_gan2026_candidate_set_union.py tests/test_gan2026_llm_candidate_set_clinical_assessment_probe.py`
+  passed.
+
+### Clinical Assessment V3-Nested Validation25
+
+- Added a shared CLI `--candidate-set-jsonl` option for CandidateSet-backed
+  probes and wired it through the clinical-assessment probe.
+- Prompt-only validation25 against v3 nested-dedupe candidates succeeded with
+  25/25 rows finding CandidateSets:
+  - `experiments/gan2026_candidate_set_clinical_assessment_probe_prompt_only_validation25_v3nested_v0.jsonl`;
+  - `experiments/gan2026_candidate_set_clinical_assessment_probe_prompt_only_validation25_v3nested_v0.md`.
+- Live validation25 v3nested v0 artifacts:
+  - `experiments/gan2026_candidate_set_clinical_assessment_probe_live_validation25_gpt41mini_v3nested_v0.jsonl`;
+  - `experiments/gan2026_candidate_set_clinical_assessment_probe_live_validation25_gpt41mini_v3nested_v0.md`;
+  - `experiments/gan2026_candidate_set_clinical_assessment_probe_live_validation25_v3nested_v0_diagnostics.jsonl`;
+  - `experiments/gan2026_candidate_set_clinical_assessment_probe_live_validation25_v3nested_v0_diagnostics.json`;
+  - `experiments/gan2026_candidate_set_clinical_assessment_probe_live_validation25_v3nested_v0_diagnostics.md`.
+- v3nested v0 summary:
+  - clinical assessment rows: 25/25;
+  - call failures: 0;
+  - parse/validation failures: 0;
+  - diagnostic flag rows: 1;
+  - primary candidate count distribution: 24 rows with one primary, 1 row
+    with two primaries;
+  - remaining flag: row 409 historical/cluster context leaked into current
+    frequency burden phrase.
+- Revised prompt to v1:
+  - bumped `PROMPT_VERSION` to
+    `gan2026_candidate_set_clinical_assessment_probe_v1`;
+  - added an explicit instruction that normalized burden fields and
+    `source_normalized_phrase` should describe only the current primary
+    burden;
+  - added a general historical-comparison example showing that prior burden
+    belongs in supporting context or summary, not normalized burden operands.
+- Live validation25 v3nested v1 artifacts:
+  - `experiments/gan2026_candidate_set_clinical_assessment_probe_live_validation25_gpt41mini_v3nested_v1.jsonl`;
+  - `experiments/gan2026_candidate_set_clinical_assessment_probe_live_validation25_gpt41mini_v3nested_v1.md`;
+  - `experiments/gan2026_candidate_set_clinical_assessment_probe_live_validation25_v3nested_v1_diagnostics.jsonl`;
+  - `experiments/gan2026_candidate_set_clinical_assessment_probe_live_validation25_v3nested_v1_diagnostics.json`;
+  - `experiments/gan2026_candidate_set_clinical_assessment_probe_live_validation25_v3nested_v1_diagnostics.md`.
+- v3nested v1 summary:
+  - clinical assessment rows: 25/25;
+  - call failures: 0;
+  - parse/validation failures: 0;
+  - invalid reference rows: 0;
+  - role overlap rows: 0;
+  - diagnostic flag rows: 0;
+  - primary candidate count distribution: 25 rows with one primary;
+  - assessment kinds: 23 `frequency_rate`, 2 `cluster_frequency`;
+  - aggregation policies: 18 `single_fact`, 6 `primary_with_context`,
+    1 `cluster_axis`.
+- Diagnostic correction:
+  - adjusted `clinical_assessment_diagnostics.py` so `cluster_axis` does not
+    require multiple primary candidate ids when one cluster candidate supplies
+    multiple normalized axes, such as cluster cadence plus cluster duration.
+- Interpretation:
+  - deterministic nested dedupe plus explicit corroboration guidance resolves
+    the earlier primary-role inflation pattern on validation25;
+  - the historical-comparison prompt revision resolves the remaining context
+    leak observed in row 409;
+  - v3nested v1 is now the best candidate middle-stage design to promote to
+    validation50.
+- Verification:
+  `$env:PYTHONPATH='src'; .venv/Scripts/python.exe -m pytest tests/test_gan2026_llm_candidate_set_clinical_assessment_probe.py tests/test_gan2026_llm_pipeline_cli.py tests/test_gan2026_clinical_assessment_diagnostics.py -q`
+  passed with 15 tests.
+  `$env:PYTHONPATH='src'; .venv/Scripts/python.exe -m ruff check src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_candidate_set_clinical_assessment_probe.py src/clinical_extraction/tasks/seizure_frequency/gan2026/cli/llm_pipeline_cli.py src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/clinical_assessment_diagnostics.py tests/test_gan2026_llm_candidate_set_clinical_assessment_probe.py tests/test_gan2026_llm_pipeline_cli.py tests/test_gan2026_clinical_assessment_diagnostics.py`
+  passed.
+
+### Clinical Assessment V3-Nested Validation50
+
+- Live validation50 v3nested v1 artifacts:
+  - `experiments/gan2026_candidate_set_clinical_assessment_probe_live_validation50_gpt41mini_v3nested_v1.jsonl`;
+  - `experiments/gan2026_candidate_set_clinical_assessment_probe_live_validation50_gpt41mini_v3nested_v1.md`;
+  - `experiments/gan2026_candidate_set_clinical_assessment_probe_live_validation50_v3nested_v1_diagnostics.jsonl`;
+  - `experiments/gan2026_candidate_set_clinical_assessment_probe_live_validation50_v3nested_v1_diagnostics.json`;
+  - `experiments/gan2026_candidate_set_clinical_assessment_probe_live_validation50_v3nested_v1_diagnostics.md`.
+- v3nested v1 validation50 summary:
+  - clinical assessment rows: 50/50;
+  - call failures: 0;
+  - parse/validation failures: 0;
+  - invalid reference rows: 0;
+  - role overlap rows: 0;
+  - diagnostic flag rows: 4.
+- v1 validation50 diagnostic flags:
+  - row 678: historical cluster candidate used as primary;
+  - row 731: cluster context leaked into frequency burden fields;
+  - row 744: multiple primary candidates under `primary_with_context`;
+  - row 1165: duplicate/corroborating cluster/frequency facts both primary
+    under `single_fact`, and later seizure-free interval leaked into normalized
+    burden fields.
+- Revised prompt to v2:
+  - bumped `PROMPT_VERSION` to
+    `gan2026_candidate_set_clinical_assessment_probe_v2`;
+  - made `single_fact` exactly one primary candidate;
+  - made `primary_with_context` use one current burden-defining primary
+    candidate, with non-additive context in support;
+  - stated that multiple additive primary facts should use
+    `additive_same_window`, not `primary_with_context`;
+  - prohibited historical candidates as primary when current/recent candidates
+    are available;
+  - prohibited cluster fields in `frequency_rate` assessments and
+    seizure-free duration fields in non-`seizure_free` assessments;
+  - added general examples for primary-with-context, historical/current burden
+    separation, and later seizure-free interval context.
+- Diagnostic expansion:
+  - added `seizure_free_context_leak_in_cluster_burden`;
+  - retained the corrected cluster-axis single-primary allowance when one
+    source candidate provides multiple cluster axes.
+- Live validation50 v3nested v2 artifacts:
+  - `experiments/gan2026_candidate_set_clinical_assessment_probe_live_validation50_gpt41mini_v3nested_v2.jsonl`;
+  - `experiments/gan2026_candidate_set_clinical_assessment_probe_live_validation50_gpt41mini_v3nested_v2.md`;
+  - `experiments/gan2026_candidate_set_clinical_assessment_probe_live_validation50_v3nested_v2_diagnostics.jsonl`;
+  - `experiments/gan2026_candidate_set_clinical_assessment_probe_live_validation50_v3nested_v2_diagnostics.json`;
+  - `experiments/gan2026_candidate_set_clinical_assessment_probe_live_validation50_v3nested_v2_diagnostics.md`.
+- v3nested v2 validation50 summary:
+  - clinical assessment rows: 50/50;
+  - call failures: 0;
+  - parse/validation failures: 0;
+  - invalid reference rows: 0;
+  - role overlap rows: 0;
+  - diagnostic flag rows: 0;
+  - primary candidate count distribution: 49 rows with one primary, 1 row
+    with two primaries;
+  - assessment kinds: 43 `frequency_rate`, 5 `cluster_frequency`,
+    2 `unknown_frequency`;
+  - aggregation policies: 40 `single_fact`, 9 `primary_with_context`,
+    1 `cluster_axis`.
+- Interpretation:
+  - validation50 supports the merged clinical-assessment design with v3
+    nested-dedupe CandidateSets and the v2 prompt;
+  - the remaining one multi-primary row is a permitted cluster-axis case, not
+    a role inflation failure;
+  - a future deterministic guard could exclude or demote `historical`
+    candidates before assessment when current/recent frequency candidates are
+    available, with additional logic for edge cases such as historical-only
+    notes, relapse context, and seizure-free boundaries;
+  - the current prompt-only handling is acceptable for now because v3nested v2
+    validation50 diagnostics are clean. Revisit the deterministic guard only
+    if validation250 or later projection work shows recurrent historical
+    primary selection;
+  - validation250 is the next reasonable promotion step, but it should be run
+    intentionally as a broader validation-ladder step and followed by the same
+    diagnostics before deterministic projection/rendering.
+- Verification:
+  `$env:PYTHONPATH='src'; .venv/Scripts/python.exe -m pytest tests/test_gan2026_llm_candidate_set_clinical_assessment_probe.py tests/test_gan2026_clinical_assessment_diagnostics.py -q`
+  passed with 10 tests.
+  `$env:PYTHONPATH='src'; .venv/Scripts/python.exe -m ruff check src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_candidate_set_clinical_assessment_probe.py src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/clinical_assessment_diagnostics.py tests/test_gan2026_llm_candidate_set_clinical_assessment_probe.py tests/test_gan2026_clinical_assessment_diagnostics.py`
+  passed.
+
 ### Current Resume Point
 
-The next session should resume at selector evaluation, not at extract design.
+The next session should resume at v3nested v2 validation250 promotion, not at
+extract design, separate selector normalization, or another validation25 prompt
+loop.
 The source-near candidate contract, deterministic/LLM candidate-set replay,
 high-recall extract variant, union artifact, `SelectedCandidateDecision` contract,
-and selector schema probe are now implemented.
+selector schema probe, and related-group policy diagnostics are now
+implemented. A merged `ClinicalAssessment` probe now exists as a competing
+middle-stage design.
 
 Start next session with:
 
-1. Review the 21 `related_candidate_group` rows from
-   `experiments/gan2026_validation250_selected_candidate_decision_v2_diagnostics.jsonl`,
-   especially the 14 rows with coherence flags.
-2. Decide the grouping policy before normalization:
-   - keep same-kind same-window groups as aggregation candidates;
-   - preserve cluster cadence plus per-cluster burden as grouped cluster
-     candidates;
-   - decide whether active-frequency plus seizure-free groups should be
-     normalized together, routed to verifier, or split into primary selected
-     fact plus context;
-   - decide whether frequency plus unknown-frequency groups should remain
-     grouped or become verifier/defer cases.
-3. Only after the v2 related-group diagnostic is understood, decide whether to:
-   - run the same selector against baseline union v1 to test candidate burden;
-   - revise prompt/schema for ambiguity, conflict, or related-group behavior;
-   - move to deterministic normalization/aggregation derivation over selected
-     candidate ids.
+1. Run validation250 live with:
+   `--candidate-set-jsonl experiments/gan2026_validation250_candidate_set_v3_nested_dedupe.jsonl`.
+2. Re-run clinical-assessment diagnostics and compare against v3nested v2
+   validation50.
+3. Inspect any new diagnostic flags before deterministic projection/rendering.
+4. Separately decide whether the `ClinicalAssessment` schema needs a
+   last-event/context timing field so last-event context cannot be forced into
+   seizure-free duration operands.
+5. Do not build deterministic projection/rendering until validation250
+   diagnostics remain clean or any new flags are understood.
 
 Do not draw selector-quality conclusions from
 `experiments/gan2026_validation250_selected_fact_v0_v2_high_recall.jsonl`

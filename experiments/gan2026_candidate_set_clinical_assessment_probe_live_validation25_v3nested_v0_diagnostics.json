@@ -1,0 +1,258 @@
+{
+  "artifact_name": "gan2026_candidate_set_clinical_assessment_probe_live_validation25_v0_diagnostics",
+  "claim_boundary": "Validation25 clinical-assessment diagnostics only. This inspects role usage, context separation, and comparisons to selector artifacts; it does not score, project, or render answers.",
+  "inspection_examples": {
+    "context_leak_rows": [
+      {
+        "aggregation_policy": "primary_with_context",
+        "assessment_kind": "frequency_rate",
+        "assessment_summary": "Seizure frequency has markedly improved to ≤ once per month with brief focal impaired awareness episodes; previously experienced weekly clusters of three events.",
+        "diagnostic_flags": [
+          "cluster_context_leak_in_frequency_burden",
+          "historical_context_phrase_in_burden"
+        ],
+        "minimal_selector_primary_relation": "same",
+        "primary_candidate_ids": [
+          "llm:409:2"
+        ],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "same",
+        "source_row_index": 409,
+        "supporting_candidate_ids": [
+          "llm:409:1"
+        ]
+      }
+    ],
+    "flagged_rows": [
+      {
+        "aggregation_policy": "primary_with_context",
+        "assessment_kind": "frequency_rate",
+        "assessment_summary": "Seizure frequency has markedly improved to ≤ once per month with brief focal impaired awareness episodes; previously experienced weekly clusters of three events.",
+        "diagnostic_flags": [
+          "cluster_context_leak_in_frequency_burden",
+          "historical_context_phrase_in_burden"
+        ],
+        "minimal_selector_primary_relation": "same",
+        "primary_candidate_ids": [
+          "llm:409:2"
+        ],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "same",
+        "source_row_index": 409,
+        "supporting_candidate_ids": [
+          "llm:409:1"
+        ]
+      }
+    ],
+    "minimal_selector_differences": [
+      {
+        "aggregation_policy": "single_fact",
+        "assessment_kind": "frequency_rate",
+        "assessment_summary": "Patient reports a current seizure frequency of up to 6 to 7 seizures per year, consistent across note references, with no recent hospital admissions or injuries.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "different",
+        "primary_candidate_ids": [
+          "llm:79:1"
+        ],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "assessment_primary_subset",
+        "source_row_index": 79,
+        "supporting_candidate_ids": [
+          "llm:79:2"
+        ]
+      },
+      {
+        "aggregation_policy": "single_fact",
+        "assessment_kind": "frequency_rate",
+        "assessment_summary": "Seizure frequency has improved to approximately one seizure every 3 weeks over the past three months, indicating better control with current treatment and lifestyle adjustments.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "different",
+        "primary_candidate_ids": [
+          "llm:218:2"
+        ],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "same",
+        "source_row_index": 218,
+        "supporting_candidate_ids": [
+          "llm:218:1"
+        ]
+      },
+      {
+        "aggregation_policy": "single_fact",
+        "assessment_kind": "frequency_rate",
+        "assessment_summary": "The patient currently experiences seizures up to twice per week, indicating a clinical worsening compared to prior months despite medication adherence.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "different",
+        "primary_candidate_ids": [
+          "det:446:1"
+        ],
+        "rejected_candidate_ids": [
+          "llm:446:1",
+          "llm:446:2"
+        ],
+        "rich_selector_primary_relation": "different",
+        "source_row_index": 446,
+        "supporting_candidate_ids": [
+          "llm:446:3"
+        ]
+      },
+      {
+        "aggregation_policy": "primary_with_context",
+        "assessment_kind": "frequency_rate",
+        "assessment_summary": "Patient experiences 21 to 28 focal impaired awareness seizures per month, with occasional clusters triggered by sleep disruption.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "assessment_primary_subset",
+        "primary_candidate_ids": [
+          "llm:466:1"
+        ],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "same",
+        "source_row_index": 466,
+        "supporting_candidate_ids": [
+          "llm:466:2"
+        ]
+      },
+      {
+        "aggregation_policy": "single_fact",
+        "assessment_kind": "frequency_rate",
+        "assessment_summary": "Patient reports stable seizure frequency averaging one seizure every eight months, consistent with clinical history and seizure diary.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "different",
+        "primary_candidate_ids": [
+          "llm:598:1"
+        ],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "assessment_primary_subset",
+        "source_row_index": 598,
+        "supporting_candidate_ids": [
+          "llm:598:2"
+        ]
+      }
+    ],
+    "multi_primary_rows": [
+      {
+        "aggregation_policy": "cluster_axis",
+        "assessment_kind": "cluster_frequency",
+        "assessment_summary": "Patient experiences many convulsions in the past month, with seizures clustering after eastbound flights and nights of restricted sleep.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "same",
+        "primary_candidate_ids": [
+          "det:338:1",
+          "llm:338:2"
+        ],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "assessment_primary_superset",
+        "source_row_index": 338,
+        "supporting_candidate_ids": []
+      }
+    ],
+    "rich_selector_differences": [
+      {
+        "aggregation_policy": "single_fact",
+        "assessment_kind": "frequency_rate",
+        "assessment_summary": "Patient reports a current seizure frequency of up to 6 to 7 seizures per year, consistent across note references, with no recent hospital admissions or injuries.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "different",
+        "primary_candidate_ids": [
+          "llm:79:1"
+        ],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "assessment_primary_subset",
+        "source_row_index": 79,
+        "supporting_candidate_ids": [
+          "llm:79:2"
+        ]
+      },
+      {
+        "aggregation_policy": "cluster_axis",
+        "assessment_kind": "cluster_frequency",
+        "assessment_summary": "Patient experiences many convulsions in the past month, with seizures clustering after eastbound flights and nights of restricted sleep.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "same",
+        "primary_candidate_ids": [
+          "det:338:1",
+          "llm:338:2"
+        ],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "assessment_primary_superset",
+        "source_row_index": 338,
+        "supporting_candidate_ids": []
+      },
+      {
+        "aggregation_policy": "single_fact",
+        "assessment_kind": "frequency_rate",
+        "assessment_summary": "The patient currently experiences seizures up to twice per week, indicating a clinical worsening compared to prior months despite medication adherence.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "different",
+        "primary_candidate_ids": [
+          "det:446:1"
+        ],
+        "rejected_candidate_ids": [
+          "llm:446:1",
+          "llm:446:2"
+        ],
+        "rich_selector_primary_relation": "different",
+        "source_row_index": 446,
+        "supporting_candidate_ids": [
+          "llm:446:3"
+        ]
+      },
+      {
+        "aggregation_policy": "single_fact",
+        "assessment_kind": "frequency_rate",
+        "assessment_summary": "Patient reports stable seizure frequency averaging one seizure every eight months, consistent with clinical history and seizure diary.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "different",
+        "primary_candidate_ids": [
+          "llm:598:1"
+        ],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "assessment_primary_subset",
+        "source_row_index": 598,
+        "supporting_candidate_ids": [
+          "llm:598:2"
+        ]
+      }
+    ]
+  },
+  "row_count": 25,
+  "source_artifact": "experiments\\gan2026_candidate_set_clinical_assessment_probe_live_validation25_gpt41mini_v3nested_v0.jsonl",
+  "summary": {
+    "aggregation_policy_counts": {
+      "cluster_axis": 1,
+      "primary_with_context": 4,
+      "single_fact": 20
+    },
+    "assessment_kind_counts": {
+      "cluster_frequency": 3,
+      "frequency_rate": 22
+    },
+    "clinical_assessment_rows": 25,
+    "diagnostic_flag_counts": {
+      "cluster_context_leak_in_frequency_burden": 1,
+      "historical_context_phrase_in_burden": 1
+    },
+    "flagged_source_row_indices": [
+      409
+    ],
+    "invalid_reference_rows": 0,
+    "minimal_selector_primary_relation_counts": {
+      "assessment_primary_subset": 1,
+      "different": 4,
+      "same": 20
+    },
+    "missing_assessment_rows": 0,
+    "primary_candidate_count_distribution": {
+      "1": 24,
+      "2": 1
+    },
+    "rich_selector_primary_relation_counts": {
+      "assessment_primary_subset": 2,
+      "assessment_primary_superset": 1,
+      "different": 1,
+      "same": 21
+    },
+    "role_overlap_rows": 0,
+    "rows_with_diagnostic_flags": 1
+  }
+}

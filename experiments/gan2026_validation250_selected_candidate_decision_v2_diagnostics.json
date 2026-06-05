@@ -7,6 +7,7 @@
       {
         "rationale": "This candidate explicitly states the current seizure frequency as every 2 days on average with certainty.",
         "related_group_coherence_flags": [],
+        "related_group_policy_action": "not_applicable",
         "selected_candidate_ids": [
           "llm:182:1"
         ],
@@ -22,6 +23,7 @@
       {
         "rationale": "The candidate llm:190:1 explicitly describes the current seizure frequency as clusters every 4 weeks over 1-2 days, which best captures the patient's current seizure burden.",
         "related_group_coherence_flags": [],
+        "related_group_policy_action": "not_applicable",
         "selected_candidate_ids": [
           "llm:190:1"
         ],
@@ -37,6 +39,7 @@
       {
         "rationale": "The candidate llm:198:1 explicitly states the current seizure frequency as every 4 weeks, which best describes the patient's current seizure burden.",
         "related_group_coherence_flags": [],
+        "related_group_policy_action": "not_applicable",
         "selected_candidate_ids": [
           "llm:198:1"
         ],
@@ -52,6 +55,7 @@
       {
         "rationale": "The candidate 'multiple seizures in past day' explicitly describes the current seizure frequency burden.",
         "related_group_coherence_flags": [],
+        "related_group_policy_action": "not_applicable",
         "selected_candidate_ids": [
           "det:280:1"
         ],
@@ -67,6 +71,7 @@
       {
         "rationale": "This candidate provides the most current and explicit seizure frequency evidence as ≤ twice per week over the past month.",
         "related_group_coherence_flags": [],
+        "related_group_policy_action": "not_applicable",
         "selected_candidate_ids": [
           "llm:446:3"
         ],
@@ -84,6 +89,7 @@
         "related_group_coherence_flags": [
           "mixed_candidate_kind"
         ],
+        "related_group_policy_action": "preserve_as_cluster_modifier_context",
         "selected_candidate_ids": [
           "llm:466:1",
           "llm:466:2"
@@ -102,6 +108,7 @@
       {
         "rationale": "This candidate provides a clear, recent, and averaged seizure frequency over the past 16 months, directly describing the current seizure burden.",
         "related_group_coherence_flags": [],
+        "related_group_policy_action": "not_applicable",
         "selected_candidate_ids": [
           "llm:598:2"
         ],
@@ -117,6 +124,7 @@
       {
         "rationale": "This candidate explicitly states the current seizure frequency as twice every 4 months, which is the clearest and most relevant evidence.",
         "related_group_coherence_flags": [],
+        "related_group_policy_action": "not_applicable",
         "selected_candidate_ids": [
           "llm:678:1"
         ],
@@ -132,6 +140,7 @@
       {
         "rationale": "Both the frequent brief absences on most weekdays and the single generalised tonic–clonic seizure in the last eight weeks jointly describe the current seizure frequency burden.",
         "related_group_coherence_flags": [],
+        "related_group_policy_action": "aggregate_selected_candidates",
         "selected_candidate_ids": [
           "det:744:2",
           "det:744:1"
@@ -150,6 +159,7 @@
       {
         "rationale": "The candidate llm:763:1 explicitly states ongoing seizure-like events occurring roughly weekly, reflecting the current seizure frequency burden.",
         "related_group_coherence_flags": [],
+        "related_group_policy_action": "not_applicable",
         "selected_candidate_ids": [
           "llm:763:1"
         ],
@@ -165,6 +175,7 @@
       {
         "rationale": "The note explicitly states the current seizure frequency as monthly seizures, making llm:816:1 the best current evidence.",
         "related_group_coherence_flags": [],
+        "related_group_policy_action": "not_applicable",
         "selected_candidate_ids": [
           "llm:816:1"
         ],
@@ -180,6 +191,7 @@
       {
         "rationale": "Candidate llm:959:2 provides the most complete and current description of seizure frequency including variability within months.",
         "related_group_coherence_flags": [],
+        "related_group_policy_action": "not_applicable",
         "selected_candidate_ids": [
           "llm:959:2"
         ],
@@ -201,6 +213,7 @@
           "mixed_candidate_kind",
           "mixed_temporality"
         ],
+        "related_group_policy_action": "preserve_as_cluster_modifier_context",
         "selected_candidate_ids": [
           "det:338:1",
           "llm:338:2"
@@ -221,6 +234,7 @@
         "related_group_coherence_flags": [
           "mixed_candidate_kind"
         ],
+        "related_group_policy_action": "preserve_as_cluster_modifier_context",
         "selected_candidate_ids": [
           "llm:466:1",
           "llm:466:2"
@@ -241,6 +255,7 @@
         "related_group_coherence_flags": [
           "mixed_temporality"
         ],
+        "related_group_policy_action": "route_to_verifier_before_normalization",
         "selected_candidate_ids": [
           "det:1046:1",
           "llm:1046:2"
@@ -261,6 +276,7 @@
         "related_group_coherence_flags": [
           "mixed_candidate_kind"
         ],
+        "related_group_policy_action": "split_primary_with_context",
         "selected_candidate_ids": [
           "llm:1165:1",
           "llm:1165:2"
@@ -281,6 +297,7 @@
         "related_group_coherence_flags": [
           "mixed_candidate_kind"
         ],
+        "related_group_policy_action": "preserve_as_cluster_modifier_context",
         "selected_candidate_ids": [
           "llm:1573:1",
           "llm:1573:2"
@@ -301,6 +318,7 @@
         "related_group_coherence_flags": [
           "mixed_candidate_kind"
         ],
+        "related_group_policy_action": "split_primary_with_context",
         "selected_candidate_ids": [
           "llm:3468:1",
           "llm:3468:2"
@@ -322,6 +340,7 @@
           "mixed_candidate_kind",
           "mixed_temporality"
         ],
+        "related_group_policy_action": "split_primary_with_context",
         "selected_candidate_ids": [
           "llm:3469:1",
           "llm:3469:2"
@@ -342,6 +361,7 @@
         "related_group_coherence_flags": [
           "mixed_candidate_kind"
         ],
+        "related_group_policy_action": "preserve_as_cluster_modifier_context",
         "selected_candidate_ids": [
           "llm:3643:1",
           "llm:3643:5"
@@ -362,6 +382,7 @@
         "related_group_coherence_flags": [
           "mixed_candidate_kind"
         ],
+        "related_group_policy_action": "preserve_as_cluster_modifier_context",
         "selected_candidate_ids": [
           "llm:3949:1",
           "llm:3949:2"
@@ -383,6 +404,7 @@
           "mixed_candidate_kind",
           "no_cluster_or_shared_kind_signal"
         ],
+        "related_group_policy_action": "split_primary_with_context",
         "selected_candidate_ids": [
           "llm:4026:3",
           "llm:4026:4"
@@ -405,6 +427,7 @@
           "mixed_temporality",
           "no_cluster_or_shared_kind_signal"
         ],
+        "related_group_policy_action": "route_to_verifier_before_normalization",
         "selected_candidate_ids": [
           "det:4478:2",
           "llm:4478:2"
@@ -426,6 +449,7 @@
           "mixed_candidate_kind",
           "no_cluster_or_shared_kind_signal"
         ],
+        "related_group_policy_action": "route_to_verifier_before_normalization",
         "selected_candidate_ids": [
           "llm:4771:3",
           "llm:4771:4"
@@ -449,6 +473,7 @@
           "mixed_candidate_kind",
           "mixed_temporality"
         ],
+        "related_group_policy_action": "preserve_as_cluster_modifier_context",
         "selected_candidate_ids": [
           "det:338:1",
           "llm:338:2"
@@ -469,6 +494,7 @@
         "related_group_coherence_flags": [
           "mixed_candidate_kind"
         ],
+        "related_group_policy_action": "preserve_as_cluster_modifier_context",
         "selected_candidate_ids": [
           "llm:466:1",
           "llm:466:2"
@@ -487,6 +513,7 @@
       {
         "rationale": "Both the frequent brief absences on most weekdays and the single generalised tonic–clonic seizure in the last eight weeks jointly describe the current seizure frequency burden.",
         "related_group_coherence_flags": [],
+        "related_group_policy_action": "aggregate_selected_candidates",
         "selected_candidate_ids": [
           "det:744:2",
           "det:744:1"
@@ -507,6 +534,7 @@
         "related_group_coherence_flags": [
           "mixed_temporality"
         ],
+        "related_group_policy_action": "route_to_verifier_before_normalization",
         "selected_candidate_ids": [
           "det:1046:1",
           "llm:1046:2"
@@ -527,6 +555,7 @@
         "related_group_coherence_flags": [
           "mixed_candidate_kind"
         ],
+        "related_group_policy_action": "split_primary_with_context",
         "selected_candidate_ids": [
           "llm:1165:1",
           "llm:1165:2"
@@ -547,6 +576,7 @@
         "related_group_coherence_flags": [
           "mixed_candidate_kind"
         ],
+        "related_group_policy_action": "preserve_as_cluster_modifier_context",
         "selected_candidate_ids": [
           "llm:1573:1",
           "llm:1573:2"
@@ -565,6 +595,7 @@
       {
         "rationale": "Both five focal onset seizures and six focal non-motor seizures in the last month jointly describe the current seizure frequency burden.",
         "related_group_coherence_flags": [],
+        "related_group_policy_action": "aggregate_selected_candidates",
         "selected_candidate_ids": [
           "llm:1591:1",
           "llm:1591:2"
@@ -583,6 +614,7 @@
       {
         "rationale": "The one drop attack and seven convulsions in the past two months together best describe the current seizure frequency burden.",
         "related_group_coherence_flags": [],
+        "related_group_policy_action": "aggregate_selected_candidates",
         "selected_candidate_ids": [
           "llm:1880:2",
           "llm:1880:3"
@@ -603,6 +635,7 @@
         "related_group_coherence_flags": [
           "mixed_candidate_kind"
         ],
+        "related_group_policy_action": "split_primary_with_context",
         "selected_candidate_ids": [
           "llm:3468:1",
           "llm:3468:2"
@@ -624,6 +657,7 @@
           "mixed_candidate_kind",
           "mixed_temporality"
         ],
+        "related_group_policy_action": "split_primary_with_context",
         "selected_candidate_ids": [
           "llm:3469:1",
           "llm:3469:2"
@@ -644,6 +678,7 @@
         "related_group_coherence_flags": [
           "mixed_candidate_kind"
         ],
+        "related_group_policy_action": "preserve_as_cluster_modifier_context",
         "selected_candidate_ids": [
           "llm:3643:1",
           "llm:3643:5"
@@ -662,6 +697,7 @@
       {
         "rationale": "Both candidates describe related recent seizure frequency evidence within the same clinical window and should be interpreted together.",
         "related_group_coherence_flags": [],
+        "related_group_policy_action": "aggregate_selected_candidates",
         "selected_candidate_ids": [
           "llm:3774:1",
           "llm:3774:2"
@@ -760,6 +796,14 @@
     "missing_decision_rows": 0,
     "related_group_mixed_kind_rows": 13,
     "related_group_mixed_temporality_rows": 4,
+    "related_group_policy_action_counts": {
+      "aggregate_selected_candidates": 4,
+      "preserve_as_cluster_axis": 1,
+      "preserve_as_cluster_modifier_context": 7,
+      "preserve_as_corrob_seizure_free": 2,
+      "route_to_verifier_before_normalization": 3,
+      "split_primary_with_context": 4
+    },
     "related_group_rows": 21,
     "related_group_source_row_indices": [
       338,

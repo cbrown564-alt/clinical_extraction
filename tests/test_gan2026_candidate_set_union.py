@@ -35,6 +35,179 @@ def test_candidate_set_union_merges_exact_duplicate_candidates() -> None:
     assert metadata["summary"]["merged_duplicate_candidates"] == 1
 
 
+def test_candidate_set_union_merges_nested_duplicate_candidates_prefer_longer_span() -> None:
+    deterministic = _row(
+        12,
+        [
+            _candidate(
+                12,
+                "det:12:1",
+                "deterministic_candidate",
+                "9 per month",
+                start_char=30,
+                end_char=41,
+            )
+        ],
+    )
+    llm = _row(
+        12,
+        [
+            _candidate(
+                12,
+                "llm:12:1",
+                "llm_candidate",
+                "Current average frequency is 9 per month",
+                start_char=0,
+                end_char=41,
+            )
+        ],
+    )
+
+    rows, metadata = candidate_set_union.build_candidate_set_union_rows([deterministic], [llm])
+
+    union_set = CandidateSet.model_validate(rows[0]["candidate_set"])
+    assert len(union_set.candidates) == 1
+    assert union_set.candidates[0].candidate_id == "llm:12:1"
+    assert union_set.candidates[0].evidence_span.text == (
+        "Current average frequency is 9 per month"
+    )
+    assert union_set.candidates[0].source_ids == [
+        "deterministic_candidate:12:span",
+        "llm_candidate:12:span",
+    ]
+    assert union_set.candidates[0].extraction_issues == [
+        "merged_nested_duplicate_candidate:deterministic_candidate:det:12:1"
+    ]
+    assert union_set.assembly_issues == ["merged_nested_duplicate_candidate_count:1"]
+    assert rows[0]["union_summary"]["merged_nested_duplicate_candidate_count"] == 1
+    assert metadata["summary"]["merged_nested_duplicate_candidates"] == 1
+
+
+def test_candidate_set_union_merges_overlapping_contained_evidence_text() -> None:
+    deterministic = _row(
+        14,
+        [
+            _candidate(
+                14,
+                "det:14:1",
+                "deterministic_candidate",
+                "every 2 days on average",
+                start_char=20,
+                end_char=43,
+            )
+        ],
+    )
+    llm = _row(
+        14,
+        [
+            _candidate(
+                14,
+                "llm:14:1",
+                "llm_candidate",
+                "seizures are occurring every 2 days on average",
+                start_char=0,
+                end_char=43,
+            )
+        ],
+    )
+
+    rows, metadata = candidate_set_union.build_candidate_set_union_rows([deterministic], [llm])
+
+    union_set = CandidateSet.model_validate(rows[0]["candidate_set"])
+    assert len(union_set.candidates) == 1
+    assert union_set.candidates[0].candidate_id == "llm:14:1"
+    assert union_set.candidates[0].evidence_span.text == (
+        "seizures are occurring every 2 days on average"
+    )
+    assert union_set.assembly_issues == ["merged_nested_duplicate_candidate_count:1"]
+    assert metadata["summary"]["merged_nested_duplicate_candidates"] == 1
+
+
+def test_candidate_set_union_merges_multiple_nested_matches() -> None:
+    deterministic = _row(
+        15,
+        [
+            _candidate(
+                15,
+                "det:15:1",
+                "deterministic_candidate",
+                "occurring every 2 days",
+                start_char=10,
+                end_char=32,
+            ),
+            _candidate(
+                15,
+                "det:15:2",
+                "deterministic_candidate",
+                "every 2 days on average",
+                start_char=20,
+                end_char=43,
+            ),
+        ],
+    )
+    llm = _row(
+        15,
+        [
+            _candidate(
+                15,
+                "llm:15:1",
+                "llm_candidate",
+                "seizures are occurring every 2 days on average",
+                start_char=0,
+                end_char=43,
+            )
+        ],
+    )
+
+    rows, metadata = candidate_set_union.build_candidate_set_union_rows([deterministic], [llm])
+
+    union_set = CandidateSet.model_validate(rows[0]["candidate_set"])
+    assert len(union_set.candidates) == 1
+    assert union_set.candidates[0].candidate_id == "llm:15:1"
+    assert union_set.candidates[0].extraction_issues == [
+        "merged_nested_duplicate_candidate:deterministic_candidate:det:15:1",
+        "merged_nested_duplicate_candidate:deterministic_candidate:det:15:2",
+    ]
+    assert union_set.assembly_issues == ["merged_nested_duplicate_candidate_count:2"]
+    assert metadata["summary"]["merged_nested_duplicate_candidates"] == 2
+
+
+def test_candidate_set_union_does_not_merge_same_kind_separate_mentions() -> None:
+    deterministic = _row(
+        13,
+        [
+            _candidate(
+                13,
+                "det:13:1",
+                "deterministic_candidate",
+                "6 to 7 per year",
+                start_char=10,
+                end_char=25,
+            )
+        ],
+    )
+    llm = _row(
+        13,
+        [
+            _candidate(
+                13,
+                "llm:13:1",
+                "llm_candidate",
+                "seizure burden remains 6 to 7 per year",
+                start_char=100,
+                end_char=140,
+            )
+        ],
+    )
+
+    rows, metadata = candidate_set_union.build_candidate_set_union_rows([deterministic], [llm])
+
+    union_set = CandidateSet.model_validate(rows[0]["candidate_set"])
+    assert len(union_set.candidates) == 2
+    assert union_set.assembly_issues == []
+    assert metadata["summary"]["merged_nested_duplicate_candidates"] == 0
+
+
 def test_candidate_set_union_preserves_missing_llm_candidate_set_issue() -> None:
     deterministic = _row(
         11,
@@ -85,6 +258,9 @@ def _candidate(
     candidate_id: str,
     source_type: str,
     evidence: str,
+    *,
+    start_char: int | None = None,
+    end_char: int | None = None,
 ) -> ExtractedCandidate:
     return ExtractedCandidate(
         candidate_id=candidate_id,
@@ -98,7 +274,7 @@ def _candidate(
         temporality="current",
         certainty="certain",
         assertion_status="asserted",
-        evidence_span=EvidenceSpan(text=evidence),
+        evidence_span=EvidenceSpan(text=evidence, start_char=start_char, end_char=end_char),
         source_ids=[f"{source_type}:{source_row_index}:span"],
         clinical_or_policy="clinical",
     )
