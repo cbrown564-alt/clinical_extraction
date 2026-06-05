@@ -130,31 +130,40 @@ export default function PaperTable({
         <table className="w-full text-[11px]">
           <thead>
             <tr className="border-b border-border bg-surface-raised/60">
-              {headers.map((h, i) => (
-                <th
-                  key={i}
-                  className={`px-3 py-2 font-semibold text-muted text-left ${
-                    align?.[i] === "right" ? "text-right" : align?.[i] === "center" ? "text-center" : ""
-                  }`}
-                >
-                  {h}
-                </th>
-              ))}
+              {headers.map((h, i) => {
+                const isLong = h.length > 20;
+                return (
+                  <th
+                    key={i}
+                    title={isLong ? h : undefined}
+                    className={`px-3 py-2 font-semibold text-muted text-left ${
+                      align?.[i] === "right" ? "text-right" : align?.[i] === "center" ? "text-center" : ""
+                    } ${isLong ? "max-w-[160px] truncate" : ""}`}
+                  >
+                    {h}
+                  </th>
+                );
+              })}
             </tr>
           </thead>
           <tbody>
             {rows.map((row, ri) => (
               <tr key={ri} className="border-b border-border last:border-0 hover:bg-surface-raised/30 transition-colors">
-                {row.map((cell, ci) => (
-                  <td
-                    key={ci}
-                    className={`px-3 py-2 text-foreground ${
-                      align?.[ci] === "right" ? "text-right font-mono" : align?.[ci] === "center" ? "text-center" : ""
-                    } ${cellClasses?.[ri]?.[ci] ?? ""}`}
-                  >
-                    {formatCell(cell)}
-                  </td>
-                ))}
+                {row.map((cell, ci) => {
+                  const formatted = formatCell(cell);
+                  const isLong = typeof cell === "string" && cell.length > 24;
+                  return (
+                    <td
+                      key={ci}
+                      title={isLong ? cell : undefined}
+                      className={`px-3 py-2 text-foreground ${
+                        align?.[ci] === "right" ? "text-right font-mono" : align?.[ci] === "center" ? "text-center" : ""
+                      } ${cellClasses?.[ri]?.[ci] ?? ""} ${isLong ? "max-w-[180px] truncate" : ""}`}
+                    >
+                      {formatted}
+                    </td>
+                  );
+                })}
               </tr>
             ))}
           </tbody>
