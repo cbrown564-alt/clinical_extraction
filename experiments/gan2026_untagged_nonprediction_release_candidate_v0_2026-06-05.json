@@ -1,0 +1,33 @@
+{
+  "artifact_kind": "gan2026_untagged_nonprediction_release_candidate_summary",
+  "candidate_correct_prediction_rows": 697,
+  "candidate_prediction_bearing_rows": 735,
+  "claim_boundary": "Validation-development no-call candidate patch. It releases only staged-policy nonprediction rows with no hidden-family tags by falling back to the deterministic comparator label. This does not authorize holdout use or benchmark-comparable claims.",
+  "decision": "candidate_patch_passes_validation_no_regression_gate",
+  "h6_control_preserved_rows": 37,
+  "h6_control_regression_rows": 0,
+  "h6_control_rows": 37,
+  "json_artifact": "experiments/gan2026_untagged_nonprediction_release_candidate_v0_2026-06-05.json",
+  "jsonl_artifact": "experiments/gan2026_untagged_nonprediction_release_candidate_v0_2026-06-05.jsonl",
+  "locked_test_row_level_artifacts_used": 0,
+  "panel_release_rows": 16,
+  "policy_name": "gan2026_untagged_nonprediction_release_candidate_v0",
+  "recommended_next_step": "Freeze this validation-cycle candidate in a protocol addendum before any broader assembly use: no hidden-family tags, staged nonprediction, deterministic comparator fallback, and H6 controls unchanged.",
+  "release_correct_rows": 19,
+  "release_reason_counts": {
+    "last_event_boundary": 2,
+    "missing_denominator_anchor": 2,
+    "trigger_conditioned_frequency": 15
+  },
+  "release_rows": 19,
+  "release_transition_counts": {
+    "C_to_abstain": 17,
+    "C_to_review": 2
+  },
+  "release_wrong_rows": 0,
+  "report_artifact": "experiments/gan2026_untagged_nonprediction_release_candidate_v0_2026-06-05.md",
+  "row_count": 750,
+  "source_component_matrix": "experiments/gan2026_hybrid_multi_component_staged_assembly_v0_validation750_component_matrix_2026-06-04.csv",
+  "source_panel_artifact": "experiments/gan2026_h2_h4_validation_component_stress_panel_v0_2026-06-05.jsonl",
+  "split_manifest": "gan2026_split_v1"
+}

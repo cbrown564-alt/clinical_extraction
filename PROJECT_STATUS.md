@@ -31,9 +31,9 @@ Return to validation and synthetic hard panels for a new mechanism that can
 beat the deterministic locked-test ceiling. Do not tune from test row-level
 failures, and do not inspect locked-test row-level diagnostics.
 
-Near-term work should run the selected H2/H4 component-stress panel with H6 as
-the transfer-control hypothesis. Broad validation F1 movement is not an
-adequate learning goal.
+Near-term work should run component-stress ablations on the selected H2/H4
+panel with H6 as the transfer-control hypothesis. Broad validation F1 movement
+is not an adequate learning goal.
 
 ## Guardrails
 
@@ -91,6 +91,24 @@ Important standing numbers:
   hypotheses: H2 component ownership, H4 evidence versus projection/rendering,
   and H6 selective-action transfer control. The matrix used 0 locked-test
   row-level artifacts.
+- `h2_h4_validation_component_stress_panel_v0` is ready for ablation: 106
+  validation-only rows, 69 hard rows, 37 controls, 38 hard exact-evidence rows,
+  31 hard nonprediction rows, and 0 locked-test row-level artifacts used.
+- `h2_h4_validation_component_stress_ablation_v0` passed the H6 no-regression
+  controls but found no W->C gains on the hard panel: staged final policy
+  changed 31/106 rows, with 0 W->C, 0 C->W, 16 C->nonprediction, and
+  15 W->nonprediction.
+- `nonprediction_recovery_audit_v0` selected `untagged_nonprediction` as the
+  only broad recovery lane worth testing: 19 releases, 19 C->nonprediction
+  recoveries, and 0 wrong-baseline releases on validation750; releasing all
+  nonpredictions would release 15 wrong baselines.
+- `untagged_nonprediction_release_candidate_v0` passes the validation
+  no-regression gate: 19 released rows, 19 release-correct, 0 release-wrong,
+  735 prediction-bearing rows, 697 correct prediction rows, and 37/37 H6
+  controls preserved.
+- `untagged_nonprediction_release_candidate_v0` is frozen in a validation-only
+  protocol addendum: release only staged nonpredictions with no hidden-family
+  tags through deterministic-comparator fallback; no holdout use is authorized.
 
 Core plans and artifacts:
 
@@ -127,14 +145,29 @@ Core plans and artifacts:
 - Validation-test gap hypothesis selection v0:
   `experiments/gan2026_validation_test_gap_hypothesis_selection_v0_2026-06-05.json`,
   `experiments/gan2026_validation_test_gap_hypothesis_selection_v0_2026-06-05.md`
+- H2/H4 validation component-stress panel v0:
+  `experiments/gan2026_h2_h4_validation_component_stress_panel_v0_2026-06-05.json`,
+  `experiments/gan2026_h2_h4_validation_component_stress_panel_v0_2026-06-05.md`
+- H2/H4 validation component-stress ablation v0:
+  `experiments/gan2026_h2_h4_validation_component_stress_ablation_v0_2026-06-05.json`,
+  `experiments/gan2026_h2_h4_validation_component_stress_ablation_v0_2026-06-05.md`
+- Nonprediction recovery audit v0:
+  `experiments/gan2026_nonprediction_recovery_audit_v0_2026-06-05.json`,
+  `experiments/gan2026_nonprediction_recovery_audit_v0_2026-06-05.md`
+- Untagged nonprediction release candidate v0:
+  `experiments/gan2026_untagged_nonprediction_release_candidate_v0_2026-06-05.json`,
+  `experiments/gan2026_untagged_nonprediction_release_candidate_v0_2026-06-05.md`
+- Untagged nonprediction release candidate protocol addendum:
+  `docs/research/gan2026_untagged_nonprediction_release_candidate_protocol_addendum_2026-06-05.md`
 
 ## Work Board
 
 ### Now
 
-- Build the H2/H4 validation hard/control component-stress panel from
-  `validation_test_gap_hypothesis_selection_v0`; use H6 selective action as the
-  no-regression control and do not inspect locked-test rows.
+- Materialize an auditable assembled-candidate artifact for
+  `untagged_nonprediction_release_candidate_v0`: record release eligibility,
+  original staged action, fallback label, candidate action, component ownership,
+  H6 membership, and aggregate accounting; do not authorize holdout use.
 - Extend the gap-matrix adapters only when a saved artifact has an explicit
   row-source contract. The current matrix intentionally uses only the staged
   assembly component seed and skips locked-test row-level artifacts.
@@ -188,6 +221,25 @@ Core plans and artifacts:
 - 2026-06-05: Added `validation_test_gap_hypothesis_selection_v0`. It selects
   H2 component ownership, H4 evidence-versus-projection/rendering, and H6
   selective-action transfer control as the next controlled experiments.
+- 2026-06-05: Added `h2_h4_validation_component_stress_panel_v0`, a
+  validation-only component-stress design panel with 69 hard rows and 37
+  deterministic-correct controls. It uses 0 locked-test row-level artifacts and
+  is ready for component ablations, not architecture promotion.
+- 2026-06-05: Added `h2_h4_validation_component_stress_ablation_v0`, a no-call
+  validation ablation over the panel. Decision:
+  `diagnostic_ablation_passed_h6_controls_but_nonprediction_pressure_remains`;
+  H6 controls preserved 37/37, but staged final policy had 0 W->C, 0 C->W,
+  16 C->nonprediction, and 15 W->nonprediction.
+- 2026-06-05: Added `nonprediction_recovery_audit_v0` and
+  `untagged_nonprediction_release_candidate_v0`. The selected release lane
+  recovers 19 validation nonpredictions through deterministic-comparator
+  fallback with 0 release-wrong rows and 37/37 H6 controls preserved; broader
+  assembly still requires an auditable assembled-candidate artifact.
+- 2026-06-05: Froze
+  `untagged_nonprediction_release_candidate_v0` in a validation-only protocol
+  addendum. The release rule is limited to staged nonpredictions with no
+  hidden-family tags through deterministic-comparator fallback and still blocks
+  holdout-facing use.
 - 2026-06-05: Closed the direct-labeler targeted switch branch as safe but
   low-coverage. Validation750 targeted switching projected 717/750 with 9 W->C
   and 0 C->W, but frozen aggregate-only test450 selected only 4 rows with
@@ -231,3 +283,7 @@ Core plans and artifacts:
   target without a new typed candidate/event mechanism.
 - 2026-06-04: Added ADR 0010 for component homes before pipeline assembly and
   materialized the no-call staged-hybrid assembly surface.
+- 2026-06-04: Completed Observatory Phase 5 scaffold: `/review` page with
+  paper-ready report builder, run-comparison table, per-label performance table,
+  error-taxonomy summary, evidence-audit table, and full-report Markdown/CSV
+  export. Updated design doc and navbar.

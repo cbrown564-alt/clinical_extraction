@@ -1,0 +1,91 @@
+{
+  "action_counts": {
+    "abstain": 26,
+    "human_review": 8
+  },
+  "artifact_kind": "gan2026_nonprediction_recovery_audit_summary",
+  "claim_boundary": "Validation-development nonprediction recovery audit. Release lanes use observable validation artifact fields such as hidden-family tags, router reason, and baseline label family; correctness is development accounting only and does not authorize holdout use.",
+  "decision": "candidate_lane_passes_validation_no_regression_audit",
+  "json_artifact": "experiments/gan2026_nonprediction_recovery_audit_v0_2026-06-05.json",
+  "jsonl_artifact": "experiments/gan2026_nonprediction_recovery_audit_v0_2026-06-05.jsonl",
+  "locked_test_row_level_artifacts_used": 0,
+  "policy_name": "gan2026_nonprediction_recovery_audit_v0",
+  "reason_counts": {
+    "last_event_boundary": 8,
+    "missing_denominator_anchor": 2,
+    "trigger_conditioned_frequency": 24
+  },
+  "recommended_next_step": "Predeclare `untagged_nonprediction` as a validation-cycle release candidate over staged-policy nonpredictions, then test it as a candidate patch with H6 controls fixed before any holdout protocol.",
+  "report_artifact": "experiments/gan2026_nonprediction_recovery_audit_v0_2026-06-05.md",
+  "row_count": 34,
+  "selected_candidate_lane": {
+    "baseline_correct_rows": 19,
+    "panel_release_rows": 16,
+    "release_lane_counts": {
+      "sentinel_untagged_nonprediction": 17,
+      "trigger_untagged_nonprediction": 15,
+      "untagged_nonprediction": 19
+    },
+    "release_rows": 19,
+    "variant": "untagged_nonprediction",
+    "would_recover_c_to_nonprediction": 19,
+    "would_release_wrong_baseline": 0
+  },
+  "source_component_matrix": "experiments/gan2026_hybrid_multi_component_staged_assembly_v0_validation750_component_matrix_2026-06-04.csv",
+  "source_panel_artifact": "experiments/gan2026_h2_h4_validation_component_stress_panel_v0_2026-06-05.jsonl",
+  "split_manifest": "gan2026_split_v1",
+  "variant_summaries": [
+    {
+      "baseline_correct_rows": 19,
+      "panel_release_rows": 16,
+      "release_lane_counts": {
+        "sentinel_untagged_nonprediction": 17,
+        "trigger_untagged_nonprediction": 15,
+        "untagged_nonprediction": 19
+      },
+      "release_rows": 19,
+      "variant": "untagged_nonprediction",
+      "would_recover_c_to_nonprediction": 19,
+      "would_release_wrong_baseline": 0
+    },
+    {
+      "baseline_correct_rows": 17,
+      "panel_release_rows": 14,
+      "release_lane_counts": {
+        "sentinel_untagged_nonprediction": 17,
+        "trigger_untagged_nonprediction": 13,
+        "untagged_nonprediction": 17
+      },
+      "release_rows": 17,
+      "variant": "sentinel_untagged_nonprediction",
+      "would_recover_c_to_nonprediction": 17,
+      "would_release_wrong_baseline": 0
+    },
+    {
+      "baseline_correct_rows": 15,
+      "panel_release_rows": 12,
+      "release_lane_counts": {
+        "sentinel_untagged_nonprediction": 13,
+        "trigger_untagged_nonprediction": 15,
+        "untagged_nonprediction": 15
+      },
+      "release_rows": 15,
+      "variant": "trigger_untagged_nonprediction",
+      "would_recover_c_to_nonprediction": 15,
+      "would_release_wrong_baseline": 0
+    },
+    {
+      "baseline_correct_rows": 19,
+      "panel_release_rows": 31,
+      "release_lane_counts": {
+        "sentinel_untagged_nonprediction": 17,
+        "trigger_untagged_nonprediction": 15,
+        "untagged_nonprediction": 19
+      },
+      "release_rows": 34,
+      "variant": "all_nonpredictions",
+      "would_recover_c_to_nonprediction": 19,
+      "would_release_wrong_baseline": 15
+    }
+  ]
+}
