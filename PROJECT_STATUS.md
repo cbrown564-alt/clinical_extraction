@@ -13,8 +13,11 @@ artifacts as research instruments for component questions, not as whole-pipeline
 F1 trophies. The boundary/benchmark typed-event layer is promoted as a bounded
 rare-family component for eligible boundary and benchmark-rendering cases, not
 as a broad aggregate-gap fix. Stage 4 action-policy sidecars and H6/H9 controls
-are complete for the current cycle; the next candidate cycle must attach these
-sidecars and H10 provenance before interpreting deltas.
+are complete for the current cycle. Stage 5 downstream provenance expansion is
+deferred; the existing H10 raw-identity sidecar is sufficient for saved-replay
+assembly unless a future candidate uses live calls. The active next phase is
+implementing the fully assembled staged hybrid pipeline and then freezing a
+holdout protocol.
 
 ## Guardrails
 
@@ -61,6 +64,8 @@ sidecars and H10 provenance before interpreting deltas.
   human-review-lane W->C, 0 C->W, and 0 H6 regressions; H6 replay passes across
   the current assembled control, boundary selector precision revision, and the
   release-lane sidecar.
+- Final assembly interpretation and implementation plan is recorded in
+  `docs/research/gan2026_final_assembly_findings_and_holdout_plan_2026-06-05.md`.
 
 ## Core Artifacts
 
@@ -81,13 +86,15 @@ sidecars and H10 provenance before interpreting deltas.
 - H6 control replay v1: `experiments/gan2026_h6_control_replay_v1_2026-06-05.json`
 - Boundary/renderer promotion decision:
   `docs/decisions/0011-promote-boundary-renderer-rare-family-component.md`
+- Final assembly findings and holdout plan:
+  `docs/research/gan2026_final_assembly_findings_and_holdout_plan_2026-06-05.md`
 
 ## Work Board
 
 ### Now
 
-- Start any new mechanism work as a validation-only cycle with H6/H9 action
-  sidecars and H10 provenance attached before interpreting deltas.
+- Implement `hybrid_multi_component_staged_assembly_v1` as the fully assembled
+  saved-replay validation pipeline.
 - Include the promoted boundary/renderer typed-event component only on eligible
   boundary and benchmark-rendering cases, with selector suppression and
   component-owner attribution intact.
@@ -96,13 +103,17 @@ sidecars and H10 provenance before interpreting deltas.
 
 ### Next
 
-- If a new prediction-bearing candidate is assembled, attach H6 action summaries
-  and the H10 raw-identity sidecar before interpreting deltas.
+- Materialize validation750 assembly outputs and component evidence matrix.
+- If the validation freeze gate passes, write the separate frozen test protocol
+  addendum and request explicit authorization for the aggregate-only test450
+  audit.
 
 ### Blocked
 
 - Whole-pipeline promotion remains blocked until a holdout-facing frozen
   protocol is authorized.
+- Stage 5 downstream provenance expansion is deferred; do not spend the next
+  cycle on it unless live/replay drift becomes relevant.
 - Trigger-context release is rejected as a behavior change.
 - Last-event automatic release remains blocked under
   `last_event_duration_policy_v0`.

@@ -417,6 +417,13 @@ guardrails before interpreting any new candidate delta.
 
 Purpose: prevent H10-class drift from being confused with model generalization.
 
+Status update on 2026-06-05: Stage 5 downstream provenance expansion is
+deferred. `h10_raw_identity_sidecar_v1` is already sufficient for the current
+saved-replay assembly phase because paired validation750 raw outputs are
+byte-identical on 750/750 matched rows, with 0 calls and 0 prediction changes.
+Do not spend the next cycle on expanded downstream drift ladders unless a future
+candidate uses live calls or compares live versus replay behavior.
+
 Action items:
 
 - Before every live/replay comparison, compute raw-output byte identity for
@@ -603,5 +610,8 @@ The Stage 2/3 boundary-renderer bundle and Stage 4 action-policy sidecar bundle
 are now complete for this cycle. Promote the boundary/renderer layer only as a
 bounded rare-family component for eligible boundary and benchmark-rendering
 cases; do not use it as a broad aggregate-gap claim. Do not continue widening
-action policy as the lead path. For any future candidate, attach H6/H9 action
-summaries and H10 provenance before interpreting deltas.
+action policy as the lead path. Stage 5 downstream provenance expansion is
+deferred. The next work is implementing
+`hybrid_multi_component_staged_assembly_v1`, materializing validation750
+assembly outputs and a component evidence matrix, then writing a separate frozen
+test protocol addendum if the validation freeze gate passes.

@@ -1,0 +1,85 @@
+{
+  "artifact_kind": "gan2026_hybrid_multi_component_staged_assembly_v1_summary",
+  "artifact_stem": "gan2026_hybrid_multi_component_staged_assembly_v1",
+  "candidate_version": "hybrid_multi_component_staged_assembly_v1",
+  "claim_boundary": "Validation-development saved-replay final assembly. It makes no new model calls, uses no locked-test row-level artifacts, and does not authorize whole-pipeline promotion or benchmark-comparable claims.",
+  "contract_issues": [],
+  "control_candidate": "gan2026_untagged_nonprediction_release_candidate_v0_assembled_candidate",
+  "matrix_summary": {
+    "artifact_kind": "gan2026_hybrid_multi_component_staged_assembly_v1_component_matrix",
+    "candidate_row_count": 750,
+    "candidate_version": "hybrid_multi_component_staged_assembly_v1",
+    "component_owner_counts": {
+      "benchmark_renderer": 10,
+      "deterministic_adapter": 684,
+      "deterministic_comparator_fallback": 15,
+      "safety_floor": 23,
+      "typed_boundary_classifier": 18
+    },
+    "contract_issues": [],
+    "row_count": 750,
+    "transition_counts": {
+      "C_to_C": 697,
+      "W_to_W": 38,
+      "nonprediction_or_unknown": 15
+    },
+    "unique_source_rows": 750
+  },
+  "metrics": {
+    "action_counts": {
+      "abstain": 9,
+      "human_review": 6,
+      "predict": 735
+    },
+    "boundary_selected_rows": 28,
+    "boundary_suppressed_rows": 2,
+    "changed_from_comparator_rows": 0,
+    "component_owner_counts": {
+      "benchmark_renderer": 10,
+      "deterministic_adapter": 684,
+      "deterministic_comparator_fallback": 15,
+      "safety_floor": 23,
+      "typed_boundary_classifier": 18
+    },
+    "h6_member_rows": 37,
+    "h6_regression_rows": 0,
+    "non_prediction_rows": 15,
+    "prediction_bearing_rows": 735,
+    "release_applied_rows": 19,
+    "row_count": 750,
+    "unique_source_rows": 750
+  },
+  "mode": "saved-replay",
+  "policy_ids": {
+    "action_sidecars": [
+      "h9_action_summary_sidecar_v1",
+      "h9_release_lane_ablation_v1",
+      "h6_control_replay_v1"
+    ],
+    "boundary_policy_id": "seizure_free_boundary_event_v0",
+    "provenance_sidecar": "h10_raw_identity_sidecar_v1",
+    "renderer_policy_id": "benchmark_convention_renderer_v0",
+    "repair_policy_id": "h5_repair_policy_v1",
+    "safety_floor_policy_id": "selective_safety_floor_gate_v0"
+  },
+  "rejected_or_revise_only": [
+    "structured_projection_port_promoted_v0",
+    "trigger_context_release",
+    "last_event_automatic_release",
+    "broad_action_policy_widening"
+  ],
+  "sidecar_gate_issues": [],
+  "source_artifacts": {
+    "boundary_json": "experiments/gan2026_boundary_selector_precision_revision_v1_2026-06-05.json",
+    "boundary_jsonl": "experiments/gan2026_boundary_selector_precision_revision_v1_2026-06-05.jsonl",
+    "control_json": "experiments/gan2026_untagged_nonprediction_release_candidate_v0_assembled_candidate_2026-06-05.json",
+    "control_jsonl": "experiments/gan2026_untagged_nonprediction_release_candidate_v0_assembled_candidate_2026-06-05.jsonl",
+    "h10_summary": "experiments/gan2026_h10_raw_identity_sidecar_v1_2026-06-05.json",
+    "h5_manifest": "experiments/gan2026_h5_repair_policy_v1_manifest_2026-06-05.json",
+    "h6_summary": "experiments/gan2026_h6_control_replay_v1_2026-06-05.json",
+    "h9_action_summary": "experiments/gan2026_h9_action_summary_sidecar_v1_2026-06-05.json",
+    "h9_release_summary": "experiments/gan2026_h9_release_lane_ablation_v1_2026-06-05.json"
+  },
+  "split": "validation",
+  "split_manifest": "gan2026_split_v1"
+}
