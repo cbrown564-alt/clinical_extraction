@@ -1,0 +1,58 @@
+{
+  "artifact_kind": "gan2026_structured_candidate_event_contract_summary",
+  "claim_boundary": "Validation-development structured candidate/event panel adapted from saved direct-labeler full-validation rows. This is a no-call analysis and does not inspect locked-test rows or authorize a frozen test audit.",
+  "contract_issue_rows": 563,
+  "decision": "blocked_before_holdout",
+  "exact_evidence_rows": 485,
+  "json_artifact": "experiments/gan2026_structured_candidate_event_contract_v0_direct_labeler_validation750_panel_2026-06-05.json",
+  "jsonl_artifact": "experiments/gan2026_structured_candidate_event_contract_v0_direct_labeler_validation750_panel_2026-06-05.jsonl",
+  "panel_role_counts": {
+    "control": 708,
+    "hard": 42
+  },
+  "parse_ok_rows": 221,
+  "policy_name": "gan2026_structured_candidate_event_contract_v0",
+  "report_artifact": "experiments/gan2026_structured_candidate_event_contract_v0_direct_labeler_validation750_panel_2026-06-05.md",
+  "row_count": 750,
+  "source_artifact": "experiments/gan2026_direct_labeler_full_validation750_over_combined_current_gpt41_2026-06-05.jsonl",
+  "source_artifact_kind": "direct_labeler_full_validation750",
+  "source_transition_counts": {
+    "C_to_C": 379,
+    "C_to_W": 329,
+    "W_to_C": 26,
+    "W_to_W": 16
+  },
+  "transition_counts": {
+    "C_to_C": 379,
+    "C_to_W": 329,
+    "W_to_C": 26,
+    "W_to_W": 16
+  },
+  "validation_gate": {
+    "c_to_w_rate": 0.22448979591836735,
+    "c_to_w_rows": 121,
+    "claim_boundary": "Validation-development structured candidate/event gate only. No locked-test row-level inspection or holdout-facing use is authorized.",
+    "component_name": "structured_candidate_contract",
+    "frozen_test_audit_ready": false,
+    "gate_failures": [
+      "w_to_c_below_60",
+      "c_to_w_above_5_percent",
+      "parse_ok_exact_evidence_below_95_percent"
+    ],
+    "panel_role_counts": {
+      "control": 500,
+      "hard": 39
+    },
+    "parse_ok_exact_evidence_rate": 0.3469387755102041,
+    "parse_ok_exact_evidence_rows": 187,
+    "policy_name": "gan2026_structured_candidate_event_contract_v0",
+    "selected_prediction_bearing_rows": 539,
+    "transition_counts": {
+      "C_to_C": 379,
+      "C_to_W": 121,
+      "W_to_C": 26,
+      "W_to_W": 13
+    },
+    "w_to_c_rows": 26
+  }
+}

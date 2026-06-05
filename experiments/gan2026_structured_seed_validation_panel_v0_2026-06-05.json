@@ -1,0 +1,30 @@
+{
+  "artifact_kind": "gan2026_structured_seed_validation_panel_summary",
+  "claim_boundary": "Validation-development hard/control design panel for structured seed event extraction. It reads validation rows only, omits note text from artifacts, and does not authorize holdout use.",
+  "control_family_counts": {
+    "cluster_completion": 5,
+    "seizure_free_to_unknown": 13,
+    "yearly_to_daily": 5
+  },
+  "control_rows": 23,
+  "decision": "ready_for_validation_extractor_smoke",
+  "exact_reference_rows": 46,
+  "family_counts": {
+    "cluster_completion": 10,
+    "seizure_free_to_unknown": 26,
+    "yearly_to_daily": 10
+  },
+  "hard_family_counts": {
+    "cluster_completion": 5,
+    "seizure_free_to_unknown": 13,
+    "yearly_to_daily": 5
+  },
+  "hard_rows": 23,
+  "json_artifact": "experiments/gan2026_structured_seed_validation_panel_v0_2026-06-05.json",
+  "jsonl_artifact": "experiments/gan2026_structured_seed_validation_panel_v0_2026-06-05.jsonl",
+  "policy_name": "gan2026_structured_seed_validation_panel_v0",
+  "recommended_next_step": "Run a validation extractor smoke that loads note text in memory, emits typed candidates for hard rows, suppresses matched controls, and writes only bounded row metadata plus exact evidence strings.",
+  "report_artifact": "experiments/gan2026_structured_seed_validation_panel_v0_2026-06-05.md",
+  "row_count": 46,
+  "source_current_artifact": "experiments/gan2026_combined_change_only_switch_layer_validation750_2026-06-05.jsonl"
+}
