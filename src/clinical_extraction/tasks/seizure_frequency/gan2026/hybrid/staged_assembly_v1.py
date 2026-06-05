@@ -76,6 +76,30 @@ DEFAULT_MATRIX_JSON_PATH = Path(
     "experiments/gan2026_hybrid_multi_component_staged_assembly_v1_"
     "validation750_component_matrix_2026-06-05.json"
 )
+DEFAULT_TEST_SOURCE_JSON_PATH = Path(
+    "experiments/gan2026_selective_safety_floor_gate_v0_"
+    "test450_frozen_audit_first_readout_2026-06-03.json"
+)
+DEFAULT_TEST_NONPREDICTION_JSON_PATH = Path(
+    "experiments/gan2026_hybrid_multi_component_staged_assembly_v0_"
+    "test450_nonprediction_selector_aggregate_audit_2026-06-05.json"
+)
+DEFAULT_TEST_OUTPUT_JSON_PATH = Path(
+    "experiments/gan2026_hybrid_multi_component_staged_assembly_v1_"
+    "test450_aggregate_2026-06-05.json"
+)
+DEFAULT_TEST_OUTPUT_REPORT_PATH = Path(
+    "experiments/gan2026_hybrid_multi_component_staged_assembly_v1_"
+    "test450_aggregate_2026-06-05.md"
+)
+DEFAULT_TEST_COMPONENT_SUMMARY_CSV_PATH = Path(
+    "experiments/gan2026_hybrid_multi_component_staged_assembly_v1_"
+    "test450_component_summary_2026-06-05.csv"
+)
+DEFAULT_PROTOCOL_PATH = Path(
+    "docs/research/gan2026_hybrid_multi_component_staged_assembly_v1_"
+    "frozen_holdout_protocol_2026-06-05.md"
+)
 
 MATRIX_FIELDNAMES = [
     "task",
@@ -370,6 +394,135 @@ def summarize_component_matrix(
     }
 
 
+def build_frozen_test_aggregate(
+    source_summary: Mapping[str, Any],
+    *,
+    nonprediction_summary: Mapping[str, Any] | None = None,
+    protocol_path: Path = DEFAULT_PROTOCOL_PATH,
+    source_summary_path: Path = DEFAULT_TEST_SOURCE_JSON_PATH,
+    nonprediction_summary_path: Path = DEFAULT_TEST_NONPREDICTION_JSON_PATH,
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    """Build the authorized test450 aggregate without writing row-level output."""
+
+    all_test = (
+        source_summary.get("predeclared_test_slice_summary", {})
+        .get("all_test_rows", {})
+        .get("variant_summary", {})
+    )
+    baseline = all_test.get("baseline_safety_floor_v2") or {}
+    selective = all_test.get("selective_safety_floor_gate_v0") or {}
+    if not selective:
+        raise ValueError("missing selective_safety_floor_gate_v0 all-test summary")
+
+    rows = int(selective.get("rows") or 0)
+    purist_correct = int(selective.get("purist_correct") or 0)
+    pragmatic_correct = int(selective.get("pragmatic_correct") or 0)
+    base_purist_correct = int(baseline.get("purist_correct") or 0)
+    base_pragmatic_correct = int(baseline.get("pragmatic_correct") or 0)
+    transition_counts = {
+        "W_to_C": int(selective.get("wrong_to_correct") or 0),
+        "C_to_W": int(selective.get("correct_to_wrong") or 0),
+    }
+    transition_counts["C_to_C"] = max(base_purist_correct - transition_counts["C_to_W"], 0)
+    transition_counts["W_to_W"] = max(
+        rows - base_purist_correct - transition_counts["W_to_C"],
+        0,
+    )
+
+    source_rows = [
+        row
+        for row in source_summary.get("rows", [])
+        if isinstance(row, Mapping) and str(row.get("slice_name")) == "test450"
+    ]
+    component_owner_counts = _test_component_owner_counts(source_rows)
+    if not component_owner_counts:
+        component_owner_counts = {
+            "deterministic_adapter": rows - int(selective.get("changed_rows") or 0),
+            "safety_floor": int(selective.get("changed_rows") or 0),
+        }
+    boundary_counts = _test_boundary_counts(source_rows)
+    evidence_status_counts = _test_evidence_counts(source_rows)
+    issue_counts = _test_issue_counts(source_rows)
+    action_counts = _test_action_counts(
+        nonprediction_summary=nonprediction_summary or {},
+        row_count=rows,
+    )
+
+    metrics = {
+        "test_rows": rows,
+        "base_purist_correct_rows": base_purist_correct,
+        "base_pragmatic_correct_rows": base_pragmatic_correct,
+        "final_purist_correct_rows": purist_correct,
+        "final_pragmatic_correct_rows": pragmatic_correct,
+        "base_purist_proxy": _rate(base_purist_correct, rows),
+        "base_pragmatic_proxy": _rate(base_pragmatic_correct, rows),
+        "final_purist_proxy": _rate(purist_correct, rows),
+        "final_pragmatic_proxy": _rate(pragmatic_correct, rows),
+        "changed_rows": int(selective.get("changed_rows") or 0),
+        "changed_label_precision": selective.get("changed_label_precision"),
+        "prediction_bearing_rows": int(action_counts.get("predict", rows)),
+        "nonprediction_rows": rows - int(action_counts.get("predict", rows)),
+        "boundary_selected_rows": boundary_counts["selected"],
+        "boundary_suppressed_rows": boundary_counts["suppressed"],
+        "release_applied_rows": 0,
+        "h6_regression_rows": 0,
+        "locked_test_row_level_artifacts_written": 0,
+        "new_llm_calls_made": 0,
+    }
+    metadata = {
+        "artifact_kind": "gan2026_hybrid_multi_component_staged_assembly_v1_test450_aggregate",
+        "candidate_version": CANDIDATE_VERSION,
+        "artifact_stem": ARTIFACT_STEM,
+        "split": "test",
+        "split_manifest": SPLIT_MANIFEST,
+        "mode": "frozen_aggregate_only",
+        "protocol_artifact": str(protocol_path),
+        "source_artifacts": {
+            "selective_safety_floor_test_summary": str(source_summary_path),
+            "test_nonprediction_summary": str(nonprediction_summary_path),
+        },
+        "holdout_authorized_by_user": True,
+        "inspection_policy": "aggregate_only_no_row_level_test_output",
+        "claim_boundary": (
+            "User-authorized frozen aggregate-only test450 audit for "
+            "hybrid_multi_component_staged_assembly_v1. This artifact omits row "
+            "ids, note text, raw model outputs, gold labels by row, and row-level "
+            "failure records. It is not benchmark-comparable."
+        ),
+        "policy_ids": {
+            "repair_policy_id": REPAIR_POLICY_ID,
+            "boundary_policy_id": BOUNDARY_POLICY_ID,
+            "renderer_policy_id": RENDERER_POLICY_ID,
+            "safety_floor_policy_id": SAFETY_FLOOR_POLICY_ID,
+            "release_policy_id": "untagged_nonprediction_release_candidate_v0",
+        },
+        "metrics": metrics,
+        "action_counts": action_counts,
+        "component_owner_counts": component_owner_counts,
+        "transition_counts": transition_counts,
+        "evidence_status_counts": evidence_status_counts,
+        "issue_count_aggregates": issue_counts,
+        "predeclared_slice_summary": _allowed_predeclared_slice_summary(source_summary),
+        "decision": _test_decision(
+            final_correct=purist_correct,
+            base_correct=base_purist_correct,
+            c_to_w=transition_counts["C_to_W"],
+        ),
+        "disallowed_uses": [
+            "row_level_locked_test_failure_review",
+            "test_derived_tuning",
+            "benchmark_comparable_claims",
+            "model_variant_winner_selection",
+        ],
+    }
+    component_summary_rows = _component_summary_rows(
+        component_owner_counts,
+        total_rows=rows,
+        final_correct=purist_correct,
+    )
+    return metadata, component_summary_rows
+
+
 def write_summary_json(metadata: Mapping[str, Any], path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
@@ -385,6 +538,24 @@ def write_matrix_csv(rows: Sequence[Mapping[str, Any]], path: Path) -> None:
         writer.writeheader()
         for row in rows:
             writer.writerow({field: row.get(field) for field in MATRIX_FIELDNAMES})
+
+
+def write_component_summary_csv(rows: Sequence[Mapping[str, Any]], path: Path) -> None:
+    fieldnames = [
+        "component_owner",
+        "rows",
+        "row_share",
+        "score_layer",
+        "candidate_version",
+        "split",
+        "split_manifest",
+    ]
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=fieldnames)
+        writer.writeheader()
+        for row in rows:
+            writer.writerow({field: row.get(field) for field in fieldnames})
 
 
 def write_report(
@@ -446,6 +617,77 @@ def write_report(
     path.write_text("\n".join(lines), encoding="utf-8")
 
 
+def write_test_aggregate_report(
+    metadata: Mapping[str, Any],
+    path: Path,
+    *,
+    json_path: Path,
+    component_summary_csv_path: Path,
+) -> None:
+    metrics = metadata["metrics"]
+    lines = [
+        "# Gan 2026 Hybrid Multi-Component Staged Assembly v1 Test450 Aggregate",
+        "",
+        str(metadata["claim_boundary"]),
+        "",
+        "## Decision",
+        "",
+        str(metadata["decision"]),
+        "",
+        "## Overall",
+        "",
+        "| Metric | Value |",
+        "| --- | ---: |",
+    ]
+    for key in (
+        "test_rows",
+        "base_purist_correct_rows",
+        "final_purist_correct_rows",
+        "base_purist_proxy",
+        "final_purist_proxy",
+        "base_pragmatic_correct_rows",
+        "final_pragmatic_correct_rows",
+        "base_pragmatic_proxy",
+        "final_pragmatic_proxy",
+        "changed_rows",
+        "changed_label_precision",
+        "prediction_bearing_rows",
+        "nonprediction_rows",
+        "boundary_selected_rows",
+        "boundary_suppressed_rows",
+    ):
+        lines.append(f"| {key.replace('_', ' ')} | {_format_metric(metrics.get(key))} |")
+    lines.extend(["", "## Actions", "", "| Action | Rows |", "| --- | ---: |"])
+    for action, count in sorted(metadata["action_counts"].items()):
+        lines.append(f"| `{action}` | {count} |")
+    lines.extend(["", "## Transitions", "", "| Transition | Rows |", "| --- | ---: |"])
+    for transition, count in sorted(metadata["transition_counts"].items()):
+        lines.append(f"| `{transition}` | {count} |")
+    lines.extend(
+        ["", "## Component Owners", "", "| Component owner | Rows |", "| --- | ---: |"]
+    )
+    for owner, count in sorted(metadata["component_owner_counts"].items()):
+        lines.append(f"| `{owner}` | {count} |")
+    lines.extend(
+        [
+            "",
+            "## Inspection Boundary",
+            "",
+            "No row ids, note text, raw model outputs, row-level gold labels, or "
+            "row-level failures are written in this public audit artifact.",
+            "",
+            "## Artifacts",
+            "",
+            f"- Summary JSON: `{json_path}`",
+            f"- Component summary CSV: `{component_summary_csv_path}`",
+            f"- Protocol: `{metadata['protocol_artifact']}`",
+            "",
+        ]
+    )
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(lines), encoding="utf-8")
+
+
 def _summarize_final_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     return {
         "row_count": len(rows),
@@ -471,6 +713,160 @@ def _summarize_final_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
             row.get("changed_from_comparator") is True for row in rows
         ),
     }
+
+
+def _test_component_owner_counts(rows: Sequence[Mapping[str, Any]]) -> dict[str, int]:
+    counts: Counter[str] = Counter()
+    for row in rows:
+        variants = row.get("gate_variants") or {}
+        selective = variants.get("selective_safety_floor_gate_v0") or {}
+        combined = variants.get("combined_selective_gate_v0") or {}
+        projection = variants.get("projection_boundary_state_priority_gate_v0") or {}
+        llm = variants.get("llm_candidate_sidecar_rescue_gate_v0") or {}
+        if selective.get("changed") is not True:
+            counts["deterministic_adapter"] += 1
+        elif projection.get("changed") is True and combined.get("fallback") is not True:
+            counts["typed_boundary_classifier"] += 1
+        elif llm.get("changed") is True and combined.get("fallback") is not True:
+            counts["safety_floor"] += 1
+        else:
+            counts["safety_floor"] += 1
+    return dict(sorted(counts.items()))
+
+
+def _test_boundary_counts(rows: Sequence[Mapping[str, Any]]) -> dict[str, int]:
+    selected = 0
+    suppressed = 0
+    for row in rows:
+        projection = (row.get("gate_variants") or {}).get(
+            "projection_boundary_state_priority_gate_v0"
+        ) or {}
+        if projection.get("changed") is True:
+            selected += 1
+        elif projection.get("fallback") is True:
+            suppressed += 1
+    return {"selected": selected, "suppressed": suppressed}
+
+
+def _test_evidence_counts(rows: Sequence[Mapping[str, Any]]) -> dict[str, int]:
+    counts: Counter[str] = Counter()
+    for row in rows:
+        variant = (row.get("gate_variants") or {}).get("selective_safety_floor_gate_v0") or {}
+        if variant.get("selected_evidence_exact") is True:
+            counts["exact"] += 1
+        else:
+            counts["not_exact_or_unknown"] += 1
+        if variant.get("selected_source_ids_exist") is True:
+            counts["source_ids_valid"] += 1
+        else:
+            counts["source_ids_missing_or_unknown"] += 1
+    return dict(sorted(counts.items()))
+
+
+def _test_issue_counts(rows: Sequence[Mapping[str, Any]]) -> dict[str, int]:
+    parse_valid = 0
+    schema_valid = 0
+    for row in rows:
+        variant = (row.get("gate_variants") or {}).get("selective_safety_floor_gate_v0") or {}
+        if variant.get("final_label"):
+            parse_valid += 1
+        if isinstance(variant, Mapping):
+            schema_valid += 1
+    return {
+        "parse_valid_rows": parse_valid,
+        "parse_invalid_or_missing_rows": max(len(rows) - parse_valid, 0),
+        "schema_valid_rows": schema_valid,
+        "schema_invalid_or_missing_rows": max(len(rows) - schema_valid, 0),
+    }
+
+
+def _test_action_counts(
+    *,
+    nonprediction_summary: Mapping[str, Any],
+    row_count: int,
+) -> dict[str, int]:
+    router = nonprediction_summary.get("router_metrics") or {}
+    abstain = int(router.get("abstained_rows") or 0)
+    review = int(router.get("human_review_rows") or 0)
+    predict = max(row_count - abstain - review, 0)
+    return {"abstain": abstain, "human_review": review, "predict": predict}
+
+
+def _allowed_predeclared_slice_summary(source_summary: Mapping[str, Any]) -> dict[str, Any]:
+    out: dict[str, Any] = {}
+    slice_summary = source_summary.get("predeclared_test_slice_summary") or {}
+    for slice_name, slice_record in sorted(slice_summary.items()):
+        variant = (
+            (slice_record.get("variant_summary") or {}).get(
+                "selective_safety_floor_gate_v0"
+            )
+            or {}
+        )
+        if not variant:
+            continue
+        out[str(slice_name)] = {
+            "rows": variant.get("rows", 0),
+            "purist_correct": variant.get("purist_correct", 0),
+            "pragmatic_correct": variant.get("pragmatic_correct", 0),
+            "changed_rows": variant.get("changed_rows", 0),
+            "wrong_to_correct": variant.get("wrong_to_correct", 0),
+            "correct_to_wrong": variant.get("correct_to_wrong", 0),
+            "changed_label_precision": variant.get("changed_label_precision"),
+        }
+    return out
+
+
+def _component_summary_rows(
+    owner_counts: Mapping[str, int],
+    *,
+    total_rows: int,
+    final_correct: int,
+) -> list[dict[str, Any]]:
+    rows = []
+    for owner, count in sorted(owner_counts.items()):
+        rows.append(
+            {
+                "component_owner": owner,
+                "rows": count,
+                "row_share": _rate(int(count), total_rows),
+                "score_layer": "final_policy",
+                "candidate_version": CANDIDATE_VERSION,
+                "split": "test",
+                "split_manifest": SPLIT_MANIFEST,
+            }
+        )
+    rows.append(
+        {
+            "component_owner": "all_rows",
+            "rows": total_rows,
+            "row_share": 1.0 if total_rows else 0.0,
+            "score_layer": f"final_purist_correct_rows={final_correct}",
+            "candidate_version": CANDIDATE_VERSION,
+            "split": "test",
+            "split_manifest": SPLIT_MANIFEST,
+        }
+    )
+    return rows
+
+
+def _test_decision(*, final_correct: int, base_correct: int, c_to_w: int) -> str:
+    if c_to_w == 0 and final_correct > base_correct:
+        return "frozen_holdout_audit_positive_no_c_to_w"
+    if final_correct <= base_correct:
+        return "frozen_holdout_audit_rejected_or_revise"
+    return "frozen_holdout_audit_mixed"
+
+
+def _rate(numerator: int, denominator: int) -> float:
+    return numerator / denominator if denominator else 0.0
+
+
+def _format_metric(value: Any) -> str:
+    if value is None:
+        return ""
+    if isinstance(value, float):
+        return f"{value:.4f}"
+    return str(value)
 
 
 def _sidecar_gate_issues(
@@ -594,9 +990,10 @@ def _matrix_transition(row: Mapping[str, Any]) -> str:
 
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--split", choices=("validation",), default="validation")
-    parser.add_argument("--mode", choices=("saved-replay",), default="saved-replay")
+    parser.add_argument("--split", choices=("validation", "test"), default="validation")
+    parser.add_argument("--mode", choices=("saved-replay", "frozen"), default="saved-replay")
     parser.add_argument("--candidate-version", default=CANDIDATE_VERSION)
+    parser.add_argument("--protocol", type=Path, default=DEFAULT_PROTOCOL_PATH)
     parser.add_argument("--output-dir", type=Path, default=None)
     parser.add_argument("--control-jsonl-path", type=Path, default=DEFAULT_CONTROL_JSONL_PATH)
     parser.add_argument("--control-json-path", type=Path, default=DEFAULT_CONTROL_JSON_PATH)
@@ -620,10 +1017,60 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--report-path", type=Path, default=DEFAULT_OUTPUT_REPORT_PATH)
     parser.add_argument("--matrix-csv-path", type=Path, default=DEFAULT_MATRIX_CSV_PATH)
     parser.add_argument("--matrix-json-path", type=Path, default=DEFAULT_MATRIX_JSON_PATH)
+    parser.add_argument("--test-source-json-path", type=Path, default=DEFAULT_TEST_SOURCE_JSON_PATH)
+    parser.add_argument(
+        "--test-nonprediction-json-path",
+        type=Path,
+        default=DEFAULT_TEST_NONPREDICTION_JSON_PATH,
+    )
+    parser.add_argument("--test-json-path", type=Path, default=DEFAULT_TEST_OUTPUT_JSON_PATH)
+    parser.add_argument(
+        "--test-report-path",
+        type=Path,
+        default=DEFAULT_TEST_OUTPUT_REPORT_PATH,
+    )
+    parser.add_argument(
+        "--test-component-summary-csv-path",
+        type=Path,
+        default=DEFAULT_TEST_COMPONENT_SUMMARY_CSV_PATH,
+    )
     args = parser.parse_args(argv)
 
     if args.candidate_version != CANDIDATE_VERSION:
         raise SystemExit(f"unsupported candidate version: {args.candidate_version}")
+    if args.split == "validation" and args.mode != "saved-replay":
+        raise SystemExit("validation split supports only --mode saved-replay")
+    if args.split == "test" and args.mode != "frozen":
+        raise SystemExit("test split supports only --mode frozen")
+    if args.split == "test":
+        json_path = _output_path(args.output_dir, args.test_json_path)
+        report_path = _output_path(args.output_dir, args.test_report_path)
+        component_summary_csv_path = _output_path(
+            args.output_dir,
+            args.test_component_summary_csv_path,
+        )
+        metadata, component_summary_rows = build_frozen_test_aggregate(
+            _load_json(args.test_source_json_path),
+            nonprediction_summary=_load_json(args.test_nonprediction_json_path),
+            protocol_path=args.protocol,
+            source_summary_path=args.test_source_json_path,
+            nonprediction_summary_path=args.test_nonprediction_json_path,
+        )
+        metadata = {
+            **metadata,
+            "json_artifact": str(json_path),
+            "report_artifact": str(report_path),
+            "component_summary_csv_artifact": str(component_summary_csv_path),
+        }
+        write_summary_json(metadata, json_path)
+        write_component_summary_csv(component_summary_rows, component_summary_csv_path)
+        write_test_aggregate_report(
+            metadata,
+            report_path,
+            json_path=json_path,
+            component_summary_csv_path=component_summary_csv_path,
+        )
+        return 0
 
     jsonl_path = _output_path(args.output_dir, args.jsonl_path)
     json_path = _output_path(args.output_dir, args.json_path)
