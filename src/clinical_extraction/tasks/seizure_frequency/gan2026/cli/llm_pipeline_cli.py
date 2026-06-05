@@ -82,6 +82,7 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
         llm_heavy_evidence_selection_with_deterministic_adapters,
         llm_only_claim_table_selector,
         llm_only_direct_labeler,
+        llm_extracted_candidate_schema_probe,
         llm_only_minimal_evidence_selector,
         llm_only_simplified_selected_state_reasoner,
         llm_only_sparse_operands_selected_state_reasoner,
@@ -127,6 +128,17 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
             run_split=llm_only_direct_labeler.run_split,
             write_jsonl=llm_only_direct_labeler.write_jsonl,
             write_report=llm_only_direct_labeler.write_report,
+        ),
+        "llm_extracted_candidate_schema_probe": GanLlmPipelineCliSpec(
+            description=(
+                "Run the Gan 2026 ExtractedCandidate kind-specific schema probe."
+            ),
+            default_jsonl_path=llm_extracted_candidate_schema_probe.DEFAULT_JSONL_PATH,
+            default_report_path=llm_extracted_candidate_schema_probe.DEFAULT_REPORT_PATH,
+            run_split=llm_extracted_candidate_schema_probe.run_split,
+            write_jsonl=llm_extracted_candidate_schema_probe.write_jsonl,
+            write_report=llm_extracted_candidate_schema_probe.write_report,
+            default_max_tokens=5000,
         ),
         "llm_only_structured_events": GanLlmPipelineCliSpec(
             description="Run the Gan 2026 LLM-only structured-events experiment.",

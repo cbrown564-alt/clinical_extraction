@@ -2,6 +2,7 @@ from __future__ import annotations
 
 SEMANTICALLY_NEUTRAL_TEXT_ARTIFACTS: tuple[tuple[str, str], ...] = (
     ("\x026#8804;", "≤"),
+    ("\x026 ", "≤ "),
     ("\x0264", "≤"),
     ("\x0260;", "≤"),
     ("\x0260", "≤"),
