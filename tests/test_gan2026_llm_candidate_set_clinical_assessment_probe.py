@@ -178,6 +178,33 @@ def test_assemble_clinical_assessment_ignores_model_operand_leak() -> None:
     assert assessment.normalized_burden.cluster_count_low is None
 
 
+def test_assessment_draft_accepts_qwen_extra_burden_fields() -> None:
+    draft = assessment_probe.AssessmentDraft.model_validate(
+        {
+            "assessment_kind": "frequency_rate",
+            "primary_candidate_ids": ["det:306:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "single_fact",
+            "normalized_burden": {
+                "source_normalized_phrase": "two seizures per month",
+                "period": "month",
+                "rationale": "The current frequency is stated directly.",
+                "cluster_cadence": None,
+                "events_per_cluster": None,
+                "vague_count": "several",
+                "period_unit": "months",
+            },
+            "assessment_summary": "Current rate is directly stated.",
+            "rationale": "Qwen sometimes emits this extra explanation field.",
+        }
+    )
+
+    assert draft.normalized_burden.source_normalized_phrase == "two seizures per month"
+    assert draft.normalized_burden.period_unit == "month"
+    assert draft.normalized_burden.vague_count == "several"
+
+
 def test_assemble_clinical_assessment_parses_seizure_free_duration() -> None:
     candidate_set = _candidate_set(
         _seizure_free_candidate("llm:307:1", "seizure free for nine months"),
@@ -335,6 +362,202 @@ def test_assemble_clinical_assessment_parses_vague_count_over_period() -> None:
     assert assessment.normalized_burden.period_unit == "week"
 
 
+def test_assemble_clinical_assessment_promotes_cluster_when_concrete_frequency_wins() -> None:
+    candidate_set = _candidate_set(
+        _frequency_candidate(
+            "llm:313:1",
+            "five focal cognitive and six focal non-motors in last week",
+        ),
+        _cluster_candidate("llm:313:2", "clustered over two consecutive mornings"),
+        source_row_index=313,
+    )
+    draft = assessment_probe.AssessmentDraft(
+        assessment_kind="cluster_frequency",
+        primary_candidate_ids=["llm:313:1", "llm:313:2"],
+        aggregation_policy="cluster_axis",
+        normalized_burden=NormalizedBurden(
+            source_normalized_phrase=(
+                "11 focal seizures over last week with clusters on two mornings"
+            )
+        ),
+    )
+
+    assessment, errors = assessment_probe.assemble_clinical_assessment(
+        draft,
+        candidate_set=candidate_set,
+    )
+
+    assert errors == []
+    assert assessment is not None
+    assert assessment.assessment_kind == "frequency_rate"
+    assert assessment.primary_candidate_ids == ["llm:313:1"]
+    assert assessment.normalized_burden.count_low == 11
+    assert assessment.normalized_burden.period_unit == "week"
+    assert "cluster_assessment_promoted_to_frequency_rate" in assessment.normalization_issues
+
+
+def test_assemble_clinical_assessment_promotes_supporting_frequency_over_cluster() -> None:
+    candidate_set = _candidate_set(
+        _cluster_candidate(
+            "llm:314:1",
+            "roughly once in a fortnight with occasional two close together",
+        ),
+        _frequency_candidate("det:314:1", "once in a fortnight"),
+        source_row_index=314,
+    )
+    draft = assessment_probe.AssessmentDraft(
+        assessment_kind="cluster_frequency",
+        primary_candidate_ids=["llm:314:1"],
+        supporting_candidate_ids=["det:314:1"],
+        aggregation_policy="single_fact",
+        normalized_burden=NormalizedBurden(
+            source_normalized_phrase="spells roughly once in a fortnight"
+        ),
+    )
+
+    assessment, errors = assessment_probe.assemble_clinical_assessment(
+        draft,
+        candidate_set=candidate_set,
+    )
+
+    assert errors == []
+    assert assessment is not None
+    assert assessment.assessment_kind == "frequency_rate"
+    assert assessment.primary_candidate_ids == ["det:314:1"]
+    assert assessment.normalized_burden.count_low == 1
+    assert assessment.normalized_burden.period_low == 2
+    assert assessment.normalized_burden.period_unit == "week"
+
+
+def test_assemble_clinical_assessment_projects_vague_multiple_days_in_past_week() -> None:
+    candidate_set = _candidate_set(
+        _unknown_candidate(
+            "llm:315:1",
+            "a brief cluster of events occurring on multiple days within the past week",
+        ),
+        source_row_index=315,
+    )
+    draft = assessment_probe.AssessmentDraft(
+        assessment_kind="frequency_rate",
+        primary_candidate_ids=["llm:315:1"],
+        aggregation_policy="single_fact",
+        normalized_burden=NormalizedBurden(
+            source_normalized_phrase=(
+                "a brief cluster of events occurring on multiple days within the past week"
+            )
+        ),
+    )
+
+    assessment, errors = assessment_probe.assemble_clinical_assessment(
+        draft,
+        candidate_set=candidate_set,
+    )
+
+    assert errors == []
+    assert assessment is not None
+    assert assessment.normalized_burden.vague_count == "multiple"
+    assert assessment.normalized_burden.period_low == 1
+    assert assessment.normalized_burden.period_unit == "week"
+
+
+def test_assemble_clinical_assessment_promotes_cluster_events_per_day() -> None:
+    candidate_set = _candidate_set(
+        _cluster_candidate_with_events(
+            "llm:316:1",
+            cluster_frequency="ongoing daytime clusters",
+            events_per_cluster="several episodes per day",
+            evidence="ongoing daytime clusters with several episodes per day",
+        ),
+        source_row_index=316,
+    )
+    draft = assessment_probe.AssessmentDraft(
+        assessment_kind="cluster_frequency",
+        primary_candidate_ids=["llm:316:1"],
+        aggregation_policy="primary_with_context",
+        normalized_burden=NormalizedBurden(
+            source_normalized_phrase="ongoing daytime clusters, several episodes per day"
+        ),
+    )
+
+    assessment, errors = assessment_probe.assemble_clinical_assessment(
+        draft,
+        candidate_set=candidate_set,
+    )
+
+    assert errors == []
+    assert assessment is not None
+    assert assessment.assessment_kind == "frequency_rate"
+    assert assessment.normalized_burden.vague_count == "multiple"
+    assert assessment.normalized_burden.period_unit == "day"
+
+
+def test_assemble_clinical_assessment_keeps_renderable_cluster_burden() -> None:
+    candidate_set = _candidate_set(
+        _cluster_candidate_with_events(
+            "llm:317:1",
+            cluster_frequency="two clusters this month",
+            events_per_cluster="four absences per cluster",
+            evidence="two clusters this month; each four absences",
+        ),
+        _unknown_candidate(
+            "llm:317:2",
+            "brief spells of lost awareness after breakfast on workdays",
+        ),
+        source_row_index=317,
+    )
+    draft = assessment_probe.AssessmentDraft(
+        assessment_kind="cluster_frequency",
+        primary_candidate_ids=["llm:317:1"],
+        supporting_candidate_ids=["llm:317:2"],
+        aggregation_policy="single_fact",
+        normalized_burden=NormalizedBurden(
+            source_normalized_phrase="two clusters this month; each four absences"
+        ),
+    )
+
+    assessment, errors = assessment_probe.assemble_clinical_assessment(
+        draft,
+        candidate_set=candidate_set,
+    )
+
+    assert errors == []
+    assert assessment is not None
+    assert assessment.assessment_kind == "cluster_frequency"
+    assert assessment.primary_candidate_ids == ["llm:317:1"]
+    assert assessment.normalized_burden.cluster_count_low == 2
+    assert assessment.normalized_burden.events_per_cluster_low == 4
+
+
+def test_assemble_clinical_assessment_does_not_promote_medication_cadence() -> None:
+    candidate_set = _candidate_set(
+        _cluster_candidate(
+            "llm:318:1",
+            "Clobazam as needed for clusters, patient-led use approximately once monthly",
+        ),
+        source_row_index=318,
+    )
+    draft = assessment_probe.AssessmentDraft(
+        assessment_kind="cluster_frequency",
+        primary_candidate_ids=["llm:318:1"],
+        aggregation_policy="primary_with_context",
+        normalized_burden=NormalizedBurden(
+            source_normalized_phrase="clusters approximately once monthly"
+        ),
+    )
+
+    assessment, errors = assessment_probe.assemble_clinical_assessment(
+        draft,
+        candidate_set=candidate_set,
+    )
+
+    assert errors == []
+    assert assessment is not None
+    assert assessment.assessment_kind == "cluster_frequency"
+    assert "cluster_assessment_promoted_to_frequency_rate" not in (
+        assessment.normalization_issues
+    )
+
+
 def test_assemble_clinical_assessment_reports_unknown_candidate_id() -> None:
     candidate_set = _candidate_set(
         _frequency_candidate("det:304:1", "two seizures per month"),
@@ -432,6 +655,35 @@ def _cluster_candidate(candidate_id: str, evidence: str) -> ExtractedCandidate:
         candidate_kind="cluster_frequency",
         event_type="seizure",
         cluster_details=ClusterDetails(cluster_frequency=evidence),
+        temporality="current",
+        certainty="certain",
+        assertion_status="asserted",
+        evidence_span=EvidenceSpan(text=evidence, start_char=0, end_char=len(evidence)),
+        source_ids=[f"note:{source_row_index}:span:0-{len(evidence)}"],
+        clinical_or_policy="clinical",
+    )
+
+
+def _cluster_candidate_with_events(
+    candidate_id: str,
+    *,
+    cluster_frequency: str,
+    events_per_cluster: str,
+    evidence: str,
+) -> ExtractedCandidate:
+    source_row_index = int(candidate_id.split(":")[1])
+    return ExtractedCandidate(
+        candidate_id=candidate_id,
+        component_owner="test",
+        source_type="llm_candidate",
+        source_artifact="test",
+        source_row_index=source_row_index,
+        candidate_kind="cluster_frequency",
+        event_type="seizure",
+        cluster_details=ClusterDetails(
+            cluster_frequency=cluster_frequency,
+            events_per_cluster=events_per_cluster,
+        ),
         temporality="current",
         certainty="certain",
         assertion_status="asserted",

@@ -56,7 +56,7 @@ class CandidateDraft(BaseModel):
     filled deterministically after the model call.
     """
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
     candidate_kind: Literal[
         "frequency_rate",
@@ -86,6 +86,32 @@ class CandidateDraft(BaseModel):
     assertion_status: Literal["asserted", "negated", "uncertain", "conditional"]
     evidence_text: str
 
+    @model_validator(mode="before")
+    @classmethod
+    def normalize_model_draft(cls, value: Any) -> Any:
+        if not isinstance(value, Mapping):
+            return value
+        draft = dict(value)
+        detail = draft.pop("detail", None)
+        if isinstance(detail, Mapping):
+            for key, detail_value in detail.items():
+                draft.setdefault(str(key), detail_value)
+        if "frequency_rate" in draft and "frequency" not in draft:
+            alias_value = draft.pop("frequency_rate")
+            draft["frequency"] = (
+                alias_value.get("frequency")
+                if isinstance(alias_value, Mapping) and "frequency" in alias_value
+                else alias_value
+            )
+        temporality = draft.get("temporality")
+        if temporality not in {"current", "recent", "historical", "unclear"}:
+            draft["temporality"] = "unclear"
+        if draft.get("certainty") == "uncertain" and not draft.get("certainty_reason"):
+            draft["certainty_reason"] = "other"
+        if draft.get("certainty") == "certain":
+            draft["certainty_reason"] = None
+        return _ensure_matching_detail(draft)
+
     @model_validator(mode="after")
     def validate_kind_detail(self) -> CandidateDraft:
         detail_by_kind = {
@@ -113,6 +139,71 @@ class CandidateDraftSet(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     candidates: list[CandidateDraft]
+
+    @model_validator(mode="before")
+    @classmethod
+    def wrap_bare_candidate_list(cls, value: Any) -> Any:
+        if isinstance(value, list):
+            return {"candidates": value}
+        return value
+
+
+def _ensure_matching_detail(draft: dict[str, Any]) -> dict[str, Any]:
+    kind = draft.get("candidate_kind")
+    evidence_text = str(draft.get("evidence_text") or "")
+    detail_fields = {
+        "frequency_rate": "frequency",
+        "cluster_frequency": "cluster_details",
+        "seizure_free": "seizure_free",
+        "last_event_only": "last_event_only",
+        "unknown_frequency": "unknown_frequency",
+        "no_reference": "no_reference",
+    }
+    target_field = detail_fields.get(str(kind))
+    if target_field is None:
+        return draft
+    for field in detail_fields.values():
+        if field != target_field:
+            draft[field] = None
+    detail = draft.get(target_field)
+    if target_field == "cluster_details":
+        draft[target_field] = _cluster_detail_payload(detail, fallback=evidence_text)
+        return draft
+    draft[target_field] = _source_phrase_payload(detail, fallback=evidence_text)
+    return draft
+
+
+def _source_phrase_payload(value: Any, *, fallback: str) -> dict[str, str]:
+    if isinstance(value, Mapping):
+        source_phrase = value.get("source_phrase") or fallback
+    elif isinstance(value, str):
+        source_phrase = value
+    else:
+        source_phrase = fallback
+    return {"source_phrase": str(source_phrase)}
+
+
+def _cluster_detail_payload(value: Any, *, fallback: str) -> dict[str, str | None]:
+    allowed = {
+        "cluster_frequency",
+        "events_per_cluster",
+        "cluster_count",
+        "cluster_period",
+    }
+    if isinstance(value, Mapping):
+        payload = {
+            key: str(raw_value)
+            for key, raw_value in value.items()
+            if key in allowed and raw_value is not None
+        }
+        if payload:
+            return payload
+        source_phrase = value.get("source_phrase")
+        if source_phrase:
+            return {"cluster_frequency": str(source_phrase)}
+    if isinstance(value, str):
+        return {"cluster_frequency": value}
+    return {"cluster_frequency": fallback}
 
 
 class Gan2026CandidateSetExtractorSignature(dspy.Signature):
@@ -157,31 +248,98 @@ def build_candidate_set_inputs(record: GanFrequencyRecord) -> dict[str, Any]:
         "note_text": record.note_text,
         "source_row_index": record.source_row_index,
         "task_instructions": [
-            "Find statements in the note that describe how often seizures or seizure-like events happen.",
+            (
+                "Find statements in the note that describe how often seizures or "
+                "seizure-like events happen."
+            ),
             "Each distinct statement is one candidate.",
-            "If the same frequency is repeated without adding new information, include only the clearest occurrence.",
+            (
+                "If the same frequency is repeated without adding new information, "
+                "include only the clearest occurrence."
+            ),
             "Do not decide which candidate is the best answer.",
             "Copy evidence_text exactly from the note. Preserve symbols such as ≤ and ≥.",
             "Use exactly one detail object for each candidate.",
-            "Do not parse counts, ranges, durations, or time periods. Copy the source phrase and leave parsed fields null.",
-            "For an ordinary rate or interval, use frequency and fill only frequency.source_phrase.",
+            (
+                "Do not parse counts, ranges, durations, or time periods. Copy the "
+                "source phrase and leave parsed fields null."
+            ),
+            (
+                "For an ordinary rate or interval, use frequency and fill only "
+                "frequency.source_phrase."
+            ),
             "Example: '2 seizures per month' -> frequency.source_phrase '2 seizures per month'.",
-            "Example: '≤ four seizures per week' -> frequency.source_phrase '≤ four seizures per week'.",
-            "Example: 'seizures every 1 or 2 weeks' -> frequency.source_phrase 'seizures every 1 or 2 weeks'.",
-            "Example: 'multiple times in the past week' -> frequency.source_phrase 'multiple times in the past week', certainty uncertain, certainty_reason vague_count.",
-            "High-recall unknown-frequency rule: when a statement gives only vague quantity words such as multiple, several, many, a few, handful, couple, most days, most weekdays, most shifts, or a few events, emit an unknown_frequency candidate.",
-            "For vague quantity statements, do not use frequency_rate unless the phrase also contains a directly stated numeric count, numeric range, or exact interval.",
-            "Example: 'several focal seizures last week' -> unknown_frequency.source_phrase 'several focal seizures last week'.",
-            "Example: 'brief absences occurring on most weekdays' -> unknown_frequency.source_phrase 'brief absences occurring on most weekdays'.",
-            "Example: 'a few events in the preceding month' -> unknown_frequency.source_phrase 'a few events in the preceding month'.",
-            "Example: 'multiple seizures in past day' -> unknown_frequency.source_phrase 'multiple seizures in past day'.",
-            "For seizure clusters, use cluster_details only when the note states how often clusters happen, how long a cluster lasts, how many clusters occurred, or how many events happen in a cluster.",
-            "For cluster_details, copy the relevant phrase into cluster_frequency, events_per_cluster, cluster_count, or cluster_period only if that phrase is directly stated.",
-            "Do not create a cluster candidate for generic wording such as variable clustering, occurring in clusters on stressful days, clustering around stress, clustering around sleep deprivation, or often in the afternoon.",
-            "Do not create a cluster candidate unless at least one cluster_details field can be filled with a directly stated cluster cadence, duration, count, or events-per-cluster phrase.",
+            (
+                "Example: '≤ four seizures per week' -> frequency.source_phrase "
+                "'≤ four seizures per week'."
+            ),
+            (
+                "Example: 'seizures every 1 or 2 weeks' -> frequency.source_phrase "
+                "'seizures every 1 or 2 weeks'."
+            ),
+            (
+                "Example: 'multiple times in the past week' -> "
+                "frequency.source_phrase 'multiple times in the past week', "
+                "certainty uncertain, certainty_reason vague_count."
+            ),
+            (
+                "High-recall unknown-frequency rule: when a statement gives only "
+                "vague quantity words such as multiple, several, many, a few, "
+                "handful, couple, most days, most weekdays, most shifts, or a few "
+                "events, emit an unknown_frequency candidate."
+            ),
+            (
+                "For vague quantity statements, do not use frequency_rate unless "
+                "the phrase also contains a directly stated numeric count, numeric "
+                "range, or exact interval."
+            ),
+            (
+                "Example: 'several focal seizures last week' -> "
+                "unknown_frequency.source_phrase 'several focal seizures last week'."
+            ),
+            (
+                "Example: 'brief absences occurring on most weekdays' -> "
+                "unknown_frequency.source_phrase 'brief absences occurring on most "
+                "weekdays'."
+            ),
+            (
+                "Example: 'a few events in the preceding month' -> "
+                "unknown_frequency.source_phrase 'a few events in the preceding month'."
+            ),
+            (
+                "Example: 'multiple seizures in past day' -> "
+                "unknown_frequency.source_phrase 'multiple seizures in past day'."
+            ),
+            (
+                "For seizure clusters, use cluster_details only when the note states "
+                "how often clusters happen, how long a cluster lasts, how many "
+                "clusters occurred, or how many events happen in a cluster."
+            ),
+            (
+                "For cluster_details, copy the relevant phrase into "
+                "cluster_frequency, events_per_cluster, cluster_count, or "
+                "cluster_period only if that phrase is directly stated."
+            ),
+            (
+                "Do not create a cluster candidate for generic wording such as "
+                "variable clustering, occurring in clusters on stressful days, "
+                "clustering around stress, clustering around sleep deprivation, or "
+                "often in the afternoon."
+            ),
+            (
+                "Do not create a cluster candidate unless at least one "
+                "cluster_details field can be filled with a directly stated cluster "
+                "cadence, duration, count, or events-per-cluster phrase."
+            ),
             "For seizure-free wording, use seizure_free and fill only seizure_free.source_phrase.",
-            "For a dated or relative last seizure without a rate or seizure-free interval, use last_event_only and fill only last_event_only.source_phrase.",
-            "Use unknown_frequency when the note discusses seizure frequency but does not give a usable value.",
+            (
+                "For a dated or relative last seizure without a rate or seizure-free "
+                "interval, use last_event_only and fill only last_event_only.source_phrase."
+            ),
+            (
+                "Use unknown_frequency when the note discusses seizure frequency but "
+                "does not give a usable value."
+            ),
             "Use no_reference only when the note has no usable seizure-frequency statement.",
             "Leave fields null when the note does not state them.",
             "Return only candidate_draft_set.",
@@ -256,7 +414,9 @@ def build_candidate_set_inputs(record: GanFrequencyRecord) -> dict[str, Any]:
                         "cluster_count",
                         "cluster_period",
                     ],
-                    "model_fill_rule": "copy source-near phrases only; do not calculate missing values",
+                    "model_fill_rule": (
+                        "copy source-near phrases only; do not calculate missing values"
+                    ),
                 },
                 "seizure_free": {
                     "field": "seizure_free",
@@ -676,7 +836,9 @@ def _schema_probe(
     if candidate_set is None:
         return {"kind_detail_fit": False, "candidate_count": 0}
     return {
-        "kind_detail_fit": not any("candidate_kind must have" in error for error in validation_errors),
+        "kind_detail_fit": not any(
+            "candidate_kind must have" in error for error in validation_errors
+        ),
         "candidate_count": len(candidate_set.candidates),
         "candidate_kinds": [candidate.candidate_kind for candidate in candidate_set.candidates],
     }
