@@ -53,6 +53,12 @@ Controlling thread:
   by `selected_evidence_missing_exact_trace` (250 rows) plus
   `selected_source_id_invalid` (9 rows); this needs a deliberate report read,
   not silent promotion.
+- A no-call candidate-evidence provenance replay is now complete:
+  `source_normalized_phrase` no longer gates exact provenance on this surface,
+  routed rows fall from `276` to `82`, provenance-only rows fall from `220` to
+  `26`, `selected_evidence_missing_exact_trace` disappears, and the remaining
+  provenance surface is mostly the truer `selected_source_id_invalid` tail
+  (`27` rows, including `26` provenance-only rows and `1` mixed row).
 - The first saved verifier comparison packet for `context_repair_v6` is now
   materialized. It preserves the predeclared `29 / 4 / 18 / 5 / 220` bucket
   split and keeps provenance sidecars visible on `39` of the `56`
@@ -75,6 +81,8 @@ Controlling thread:
   `docs/research/gan2026_validation750_route_bucket_split_v6_2026-06-06.md`.
 - Cluster-family pass read:
   `docs/research/gan2026_validation750_cluster_family_pass_v6_2026-06-06.md`.
+- Vague cluster-count cadence decision:
+  `docs/research/gan2026_validation750_vague_cluster_count_cadence_decision_v6_2026-06-06.md`.
 - Verifier-candidate surface read:
   `docs/research/gan2026_validation750_verifier_candidate_surface_v6_2026-06-06.md`.
 - Null action taxonomy read:
@@ -83,6 +91,10 @@ Controlling thread:
   `docs/research/gan2026_validation750_first_verifier_report_predeclaration_v6_2026-06-06.md`.
 - First saved verifier comparison packet:
   `docs/research/gan2026_validation750_first_verifier_saved_comparison_context_repair_v6_2026-06-06.md`.
+- Provenance-only failure taxonomy:
+  `docs/research/gan2026_validation750_provenance_only_failure_taxonomy_v6_2026-06-06.md`.
+- Candidate-evidence provenance replay route artifact:
+  `experiments/gan2026_validation750_verification_route_gpt41mini_context_repair_v6_candidate_trace_v1_2026-06-06.jsonl`.
 - Validation750 reset artifacts live under
   `experiments/gan2026_*validation750*gpt41mini*2026-06-06.*`.
 - June 5 staged-assembly holdout docs remain a separate frozen thread; do not
@@ -96,22 +108,26 @@ Controlling thread:
   `29` main ambiguity rows, `4` abstain exemplars, `18` upstream-policy rows,
   `5` rendered policy-sensitive rows, and `220` provenance-only audit rows.
 - Keep the `220` provenance-only routed rows out of the first verifier
-  success/failure table and adjudicate whether they remain audit-only debt,
-  separate review queue, or prompt-visible sidecars only.
+  success/failure table; the new taxonomy shows they are mostly exact-trace
+  representation debt, not clinical ambiguity.
+- Use the replayed route surface operationally: `55` non-provenance routed
+  clinical/policy rows remain the real verifier-target surface, while the
+  residual provenance work is the `27`-row source-id tail.
 - Use the reset-stage component inventory to define the first component-level
   ablation report surface: family, recovered rows, newly routed rows, remaining
   nulls, provenance validity, and audit-only W->C/C->W.
 
 ### Next
 
-- Decide whether vague cluster-count cadence needs a reset-native contract, or
-  should remain routed policy debt after the current verifier-candidate report.
 - Freeze the first verifier no-call/live input-output contract against the
   saved packet: action-only output, cited candidate/source ids, nullable final
   rendered label, and no score-derived hints in model-visible input.
 - Decide whether the first verifier run should score only the 29-row ambiguity
   table or also produce separate appendix readouts for the 4 abstain, 18
   upstream-policy, and 5 rendered policy-sensitive rows.
+- Repair the remaining `27` `selected_source_id_invalid` rows and split the
+  `26` provenance-only unresolved-source rows from the single mixed
+  clinical/provenance row.
 
 ### Blocked
 
@@ -137,6 +153,28 @@ Controlling thread:
 
 ### Done Recently
 
+- 2026-06-06: Completed the candidate-evidence provenance replay and updated
+  `docs/research/gan2026_validation750_provenance_only_failure_taxonomy_v6_2026-06-06.md`.
+  Recomputing exact provenance from selected primary candidate evidence/source
+  ids instead of `source_normalized_phrase` dropped routed rows from `276` to
+  `82`, dropped provenance-only rows from `220` to `26`, removed
+  `selected_evidence_missing_exact_trace` entirely, and left rendered/scored
+  output unchanged.
+- 2026-06-06: Completed the full provenance-only audit as
+  `docs/research/gan2026_validation750_provenance_only_failure_taxonomy_v6_2026-06-06.md`.
+  The `220` provenance-only routed rows split into `174` summary/paraphrase
+  carry-through rows, `20` exact-phrase expansion rows, `9` empty sentinel
+  phrase rows, `9` unresolved source-id rows, `6` case-only exact matches, and
+  `2` symbol-normalization rewrites; `204 / 220` still have exactly one primary
+  candidate, so the surface looks largely fixable by provenance plumbing rather
+  than new clinical logic.
+- 2026-06-06: Resolved the open cluster-cadence contract question in
+  `docs/research/gan2026_validation750_vague_cluster_count_cadence_decision_v6_2026-06-06.md`:
+  vague cluster-count cadence phrases such as `multiple days`, `several
+  mornings`, and `several evenings` remain routed upstream policy debt for the
+  current reset thread, not a new reset-native projection/render contract,
+  because the schema does not yet own a non-invented benchmark-facing cadence
+  mapping for those values.
 - 2026-06-06: Built the first saved verifier comparison packet as
   `experiments/gan2026_validation750_first_verifier_saved_comparison_context_repair_v6_2026-06-06.{jsonl,json}`
   plus

@@ -53,7 +53,7 @@ def test_project_and_render_frequency_rate_label() -> None:
             "expected_source_ids": ["note:10:span:0-20"],
             "missing_expected_source_ids": [],
             "unexpected_source_ids": [],
-            "trace_basis": "exact_selected_evidence",
+            "trace_basis": "primary_candidate_exact_evidence",
         },
     }
     assert rendered.rendered_label == "4 per day"
@@ -1459,14 +1459,14 @@ def test_build_projection_render_marks_non_exact_selected_evidence_trace() -> No
     )
 
     projection = artifact_row["projection_decision"]
-    assert projection["selected_evidence_status"]["exact_trace"] is False
-    assert projection["selected_evidence_status"]["source_id_status"] == "invalid"
+    assert projection["selected_evidence_status"]["exact_trace"] is True
+    assert projection["selected_evidence_status"]["source_id_status"] == "valid"
     assert projection["selected_evidence_status"]["source_id_trace"] == {
         "selected_source_ids": ["note:46:span:0-20"],
-        "expected_source_ids": [],
+        "expected_source_ids": ["note:46:span:0-20"],
         "missing_expected_source_ids": [],
-        "unexpected_source_ids": ["note:46:span:0-20"],
-        "trace_basis": "non_exact_or_missing_evidence",
+        "unexpected_source_ids": [],
+        "trace_basis": "primary_candidate_exact_evidence",
     }
 
 
@@ -1533,7 +1533,7 @@ def test_build_projection_render_marks_invalid_source_id_for_exact_trace() -> No
         "expected_source_ids": ["note:47:span:unresolved:0"],
         "missing_expected_source_ids": [],
         "unexpected_source_ids": [],
-        "trace_basis": "exact_selected_evidence",
+        "trace_basis": "primary_candidate_exact_evidence",
     }
 
 
@@ -1570,6 +1570,37 @@ def test_build_projection_render_carries_source_phrase_for_denominator_window_re
     projection = artifact_row["projection_decision"]
     assert projection["source_normalized_phrase"] == "brief absences occur on most weekdays"
     assert artifact_row["final_rendered_label"]["rendered_label"] == "multiple per week"
+
+
+def test_project_and_render_marks_absence_rows_as_provenance_not_applicable() -> None:
+    assessment = ClinicalAssessment(
+        source_row_index=49,
+        component_owner="llm_candidate_set_clinical_assessment",
+        assessment_kind="no_reference",
+        primary_candidate_ids=[],
+        aggregation_policy="no_reference_boundary",
+        normalized_burden=NormalizedBurden(
+            source_normalized_phrase="No seizure frequency or burden information present"
+        ),
+    )
+
+    projection, rendered = projection_render.project_and_render(
+        assessment,
+        candidate_set=_candidate_set(49),
+    )
+
+    assert projection.selected_evidence_status == {
+        "exact_trace": None,
+        "source_id_status": "not_applicable",
+        "source_id_trace": {
+            "selected_source_ids": [],
+            "expected_source_ids": [],
+            "missing_expected_source_ids": [],
+            "unexpected_source_ids": [],
+            "trace_basis": "no_primary_candidate",
+        },
+    }
+    assert rendered.rendered_label == "no seizure frequency reference"
 
 
 def test_build_projection_render_repairs_seizure_free_duration_from_primary_candidate() -> None:

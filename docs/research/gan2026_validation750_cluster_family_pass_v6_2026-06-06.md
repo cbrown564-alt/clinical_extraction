@@ -192,3 +192,15 @@ the now-cleaner route surface to define:
 - the 56-row verifier-candidate report from the clinical/policy bucket only
 - the null-render/action taxonomy across clinically unknown, abstain,
   human-review, missing upstream policy, and verifier-eligible ambiguity
+
+## Resolution
+
+The follow-on decision for the current thread is now recorded in
+`docs/research/gan2026_validation750_vague_cluster_count_cadence_decision_v6_2026-06-06.md`.
+
+Outcome:
+
+- vague cluster-count cadence remains routed upstream policy debt for now;
+- no reset-native projection/render contract is added for `multiple`/`several`
+  cluster-count language in V6;
+- future promotion requires an explicit schema contract plus ablation plan.

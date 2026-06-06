@@ -12,7 +12,6 @@ from typing import Any
 
 from pydantic import ValidationError
 
-from clinical_extraction.core.evidence import evidence_is_substring
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.candidate_set import (
     CandidateSet,
     candidate_source_phrase,
@@ -606,38 +605,37 @@ def _selected_evidence_status_for_assessment(
         for candidate in [by_id.get(candidate_id)]
         if candidate is not None
     ]
-    selected_evidence = assessment.normalized_burden.source_normalized_phrase.strip()
-    note_text = " ".join(
-        candidate.evidence_span.text
-        for candidate in primary_candidates
-        if candidate.evidence_span.text
-    )
-    exact_trace = bool(selected_evidence) and (
-        any(
-            selected_evidence == phrase
-            for candidate in primary_candidates
-            for phrase in _exact_trace_phrases(candidate)
-        )
-        or bool(note_text and evidence_is_substring(note_text, selected_evidence))
-    )
     expected_source_ids = sorted(
         set(
             source_id
             for candidate in primary_candidates
-            for phrase in _exact_trace_phrases(candidate)
-            if selected_evidence and selected_evidence == phrase
+            if _candidate_has_exact_trace_evidence(candidate)
             for source_id in candidate.source_ids
         )
     )
     selected_source_ids = _source_ids_for_assessment(assessment, candidate_set)
+    if not primary_candidates:
+        exact_trace: bool | None = None
+        trace_basis = "no_primary_candidate"
+    else:
+        exact_trace = all(
+            _candidate_has_exact_trace_evidence(candidate) for candidate in primary_candidates
+        )
+        trace_basis = (
+            "primary_candidate_exact_evidence"
+            if exact_trace
+            else "primary_candidate_evidence_missing"
+        )
     missing_expected_source_ids = [
         source_id for source_id in expected_source_ids if source_id not in selected_source_ids
     ]
     unexpected_source_ids = [
         source_id for source_id in selected_source_ids if source_id not in expected_source_ids
     ]
-    if not exact_trace:
+    if exact_trace is False:
         source_id_status = "invalid"
+    elif exact_trace is None:
+        source_id_status = "not_applicable"
     elif not selected_source_ids:
         source_id_status = "not_instrumented"
     elif any("unresolved" in source_id for source_id in selected_source_ids):
@@ -654,9 +652,7 @@ def _selected_evidence_status_for_assessment(
             "expected_source_ids": expected_source_ids,
             "missing_expected_source_ids": missing_expected_source_ids,
             "unexpected_source_ids": unexpected_source_ids,
-            "trace_basis": (
-                "exact_selected_evidence" if exact_trace else "non_exact_or_missing_evidence"
-            ),
+            "trace_basis": trace_basis,
         },
     }
 
@@ -675,6 +671,10 @@ def _exact_trace_phrases(candidate: Any) -> list[str]:
         seen.add(phrase)
         deduped.append(phrase)
     return deduped
+
+
+def _candidate_has_exact_trace_evidence(candidate: Any) -> bool:
+    return bool(_exact_trace_phrases(candidate))
 
 
 def _has_primary_medication_cadence(
