@@ -22,6 +22,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
     load_records_for_split,
     load_split_manifest,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
+    load_jsonl_rows,
+)
 
 
 class PipelineRunFn(Protocol):
@@ -57,6 +60,10 @@ class PipelineReportWriter(Protocol):
     ) -> None: ...
 
 
+class PipelineSummarizer(Protocol):
+    def __call__(self, rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]: ...
+
+
 @dataclass(frozen=True)
 class GanLlmPipelineCliSpec:
     """Callbacks and defaults needed to expose a Gan LLM pipeline on the CLI."""
@@ -67,6 +74,7 @@ class GanLlmPipelineCliSpec:
     run_split: PipelineRunFn
     write_jsonl: Callable[[Sequence[Mapping[str, Any]], Path], None]
     write_report: PipelineReportWriter
+    summarize_rows: PipelineSummarizer | None = None
     default_model: str = "openai/gpt-4.1-mini"
     default_max_tokens: int = 900
     default_candidate_set_jsonl_path: Path | None = None
@@ -102,6 +110,7 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
         run_split=llm_only_claim_table_selector.run_split,
         write_jsonl=llm_only_claim_table_selector.write_jsonl,
         write_report=llm_only_claim_table_selector.write_report,
+        summarize_rows=llm_only_claim_table_selector.summarize_records,
         default_max_tokens=1400,
     )
     hybrid_rules_candidates_llm_adjudicator_spec = GanLlmPipelineCliSpec(
@@ -121,6 +130,9 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
         write_report=(
             hybrid_rules_candidates_llm_adjudicator.write_hybrid_rules_candidates_llm_adjudicator_report
         ),
+        summarize_rows=(
+            hybrid_rules_candidates_llm_adjudicator.summarize_hybrid_rules_candidates_llm_adjudicator_records
+        ),
         default_max_tokens=1100,
     )
 
@@ -132,6 +144,7 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
             run_split=llm_only_direct_labeler.run_split,
             write_jsonl=llm_only_direct_labeler.write_jsonl,
             write_report=llm_only_direct_labeler.write_report,
+            summarize_rows=llm_only_direct_labeler.summarize_records,
         ),
         "llm_extracted_candidate_schema_probe": GanLlmPipelineCliSpec(
             description=(
@@ -142,6 +155,7 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
             run_split=llm_extracted_candidate_schema_probe.run_split,
             write_jsonl=llm_extracted_candidate_schema_probe.write_jsonl,
             write_report=llm_extracted_candidate_schema_probe.write_report,
+            summarize_rows=llm_extracted_candidate_schema_probe.summarize_records,
             default_max_tokens=5000,
         ),
         "llm_candidate_set_selector_schema_probe": GanLlmPipelineCliSpec(
@@ -153,6 +167,7 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
             run_split=llm_candidate_set_selector_schema_probe.run_split,
             write_jsonl=llm_candidate_set_selector_schema_probe.write_jsonl,
             write_report=llm_candidate_set_selector_schema_probe.write_report,
+            summarize_rows=llm_candidate_set_selector_schema_probe.summarize_records,
             default_max_tokens=1800,
         ),
         "llm_candidate_set_clinical_assessment_probe": GanLlmPipelineCliSpec(
@@ -164,6 +179,7 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
             run_split=llm_candidate_set_clinical_assessment_probe.run_split,
             write_jsonl=llm_candidate_set_clinical_assessment_probe.write_jsonl,
             write_report=llm_candidate_set_clinical_assessment_probe.write_report,
+            summarize_rows=llm_candidate_set_clinical_assessment_probe.summarize_records,
             default_max_tokens=2400,
             default_candidate_set_jsonl_path=(
                 llm_candidate_set_clinical_assessment_probe.DEFAULT_CANDIDATE_SET_JSONL_PATH
@@ -176,6 +192,7 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
             run_split=llm_only_structured_events.run_split,
             write_jsonl=llm_only_structured_events.write_jsonl,
             write_report=llm_only_structured_events.write_report,
+            summarize_rows=llm_only_structured_events.summarize_records,
             default_max_tokens=5000,
         ),
         "llm_only_claim_table_selector": llm_only_claim_table_selector_spec,
@@ -186,6 +203,7 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
             run_split=llm_only_minimal_evidence_selector.run_split,
             write_jsonl=llm_only_minimal_evidence_selector.write_jsonl,
             write_report=llm_only_minimal_evidence_selector.write_report,
+            summarize_rows=llm_only_minimal_evidence_selector.summarize_records,
             default_max_tokens=900,
         ),
         "llm_only_simplified_selected_state_reasoner": GanLlmPipelineCliSpec(
@@ -201,6 +219,7 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
             run_split=llm_only_simplified_selected_state_reasoner.run_split,
             write_jsonl=llm_only_simplified_selected_state_reasoner.write_jsonl,
             write_report=llm_only_simplified_selected_state_reasoner.write_report,
+            summarize_rows=llm_only_simplified_selected_state_reasoner.summarize_records,
             default_max_tokens=1200,
         ),
         "llm_only_sparse_operands_selected_state_reasoner": GanLlmPipelineCliSpec(
@@ -217,6 +236,7 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
             run_split=llm_only_sparse_operands_selected_state_reasoner.run_split,
             write_jsonl=llm_only_sparse_operands_selected_state_reasoner.write_jsonl,
             write_report=llm_only_sparse_operands_selected_state_reasoner.write_report,
+            summarize_rows=llm_only_sparse_operands_selected_state_reasoner.summarize_records,
             default_max_tokens=1400,
         ),
         "hybrid_rules_candidates_llm_adjudicator": (hybrid_rules_candidates_llm_adjudicator_spec),
@@ -229,6 +249,7 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
             run_split=hybrid_parallel_state_candidate_reasoner.run_split,
             write_jsonl=hybrid_parallel_state_candidate_reasoner.write_jsonl,
             write_report=hybrid_parallel_state_candidate_reasoner.write_report,
+            summarize_rows=hybrid_parallel_state_candidate_reasoner.summarize_records,
             default_max_tokens=1800,
         ),
         "llm_heavy_clinical_frequency_reasoner": GanLlmPipelineCliSpec(
@@ -240,6 +261,7 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
             run_split=llm_heavy_clinical_frequency_reasoner.run_split,
             write_jsonl=llm_heavy_clinical_frequency_reasoner.write_jsonl,
             write_report=llm_heavy_clinical_frequency_reasoner.write_report,
+            summarize_rows=llm_heavy_clinical_frequency_reasoner.summarize_records,
             default_max_tokens=1800,
         ),
         "llm_heavy_evidence_selection_with_deterministic_adapters": GanLlmPipelineCliSpec(
@@ -256,6 +278,9 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
             run_split=llm_heavy_evidence_selection_with_deterministic_adapters.run_split,
             write_jsonl=llm_heavy_evidence_selection_with_deterministic_adapters.write_jsonl,
             write_report=llm_heavy_evidence_selection_with_deterministic_adapters.write_report,
+            summarize_rows=(
+                llm_heavy_evidence_selection_with_deterministic_adapters.summarize_records
+            ),
             default_max_tokens=1800,
         ),
         "llm_only_typed_adapter_reasoner": GanLlmPipelineCliSpec(
@@ -267,6 +292,7 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
             run_split=llm_only_typed_adapter_reasoner.run_split,
             write_jsonl=llm_only_typed_adapter_reasoner.write_jsonl,
             write_report=llm_only_typed_adapter_reasoner.write_report,
+            summarize_rows=llm_only_typed_adapter_reasoner.summarize_records,
             default_max_tokens=1800,
         ),
         "llm_only_typed_operations_reasoner": GanLlmPipelineCliSpec(
@@ -278,6 +304,7 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
             run_split=llm_only_typed_operations_reasoner.run_split,
             write_jsonl=llm_only_typed_operations_reasoner.write_jsonl,
             write_report=llm_only_typed_operations_reasoner.write_report,
+            summarize_rows=llm_only_typed_operations_reasoner.summarize_records,
             default_max_tokens=4800,
         ),
     }
@@ -330,6 +357,15 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
         default=10,
         help="Emit progress and checkpoint artifacts every N processed rows. Use 0 to disable.",
     )
+    parser.add_argument(
+        "--resume-existing",
+        action="store_true",
+        help=(
+            "Resume from the target JSONL by skipping existing source_row_index rows. "
+            "Progress checkpoints are written to .resume-part files so the existing "
+            "artifact is not overwritten until the combined run succeeds."
+        ),
+    )
     args = parser.parse_args(argv)
     spec = specs[args.pipeline]
     _validate_validation_ladder(args, parser)
@@ -344,6 +380,22 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
 
     run_started_at = datetime.now(UTC)
     run_started_monotonic = time.perf_counter()
+    existing_rows: list[dict[str, Any]] = []
+    records_to_run = records
+    resume_checkpoint_jsonl_path = args.jsonl
+    resume_checkpoint_report_path = args.markdown
+    if args.resume_existing:
+        if args.jsonl.exists():
+            existing_rows = load_jsonl_rows(args.jsonl)
+        completed_indices = _source_indices_from_rows(existing_rows)
+        records_to_run = [
+            record
+            for record in records
+            if _source_index_from_record(record, parser) not in completed_indices
+        ]
+        resume_checkpoint_jsonl_path = _resume_part_path(args.jsonl)
+        resume_checkpoint_report_path = _resume_part_path(args.markdown)
+
     run_kwargs: dict[str, Any] = {
         "split": args.split,
         "split_manifest": split_manifest,
@@ -355,12 +407,34 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
         "api_base": args.api_base,
         "escalation_reason": args.escalation_reason,
         "progress_every": progress_every,
-        "checkpoint_jsonl_path": args.jsonl,
-        "checkpoint_report_path": args.markdown,
+        "checkpoint_jsonl_path": resume_checkpoint_jsonl_path,
+        "checkpoint_report_path": resume_checkpoint_report_path,
     }
     if spec.default_candidate_set_jsonl_path is not None:
         run_kwargs["candidate_set_jsonl_path"] = args.candidate_set_jsonl
-    rows, metadata = spec.run_split(records, **run_kwargs)
+    rows, metadata = (
+        spec.run_split(records_to_run, **run_kwargs)
+        if records_to_run
+        else ([], {"summary": {}})
+    )
+    if args.resume_existing:
+        rows = _combine_resume_rows(
+            existing_rows,
+            rows,
+            requested_records=records,
+            parser=parser,
+        )
+        metadata["resume"] = {
+            "enabled": True,
+            "existing_rows": len(existing_rows),
+            "completed_rows_skipped": len(existing_rows),
+            "rows_run": len(records_to_run),
+            "combined_rows": len(rows),
+            "resume_checkpoint_jsonl_path": str(resume_checkpoint_jsonl_path),
+            "resume_checkpoint_report_path": str(resume_checkpoint_report_path),
+        }
+        if spec.summarize_rows is not None:
+            metadata["summary"] = spec.summarize_rows(rows)
     _attach_run_timing(
         metadata,
         started_at=run_started_at,
@@ -402,6 +476,60 @@ def _attach_run_timing(
     metadata["elapsed_minutes"] = round(elapsed / 60, 3)
     metadata["rows_per_second"] = round(row_count / elapsed_seconds, 6) if elapsed_seconds else None
     metadata["seconds_per_row"] = round(elapsed_seconds / row_count, 3) if row_count else None
+
+
+def _source_index_from_record(record: GanFrequencyRecord, parser: argparse.ArgumentParser) -> int:
+    source_row_index = getattr(record, "source_row_index", None)
+    if source_row_index is None:
+        parser.error("--resume-existing requires records with source_row_index")
+    return int(source_row_index)
+
+
+def _source_indices_from_rows(rows: Sequence[Mapping[str, Any]]) -> set[int]:
+    indices: set[int] = set()
+    for row in rows:
+        source_row_index = row.get("source_row_index")
+        if source_row_index is not None:
+            indices.add(int(source_row_index))
+    return indices
+
+
+def _resume_part_path(path: Path) -> Path:
+    return path.with_name(f"{path.stem}.resume-part{path.suffix}")
+
+
+def _combine_resume_rows(
+    existing_rows: Sequence[Mapping[str, Any]],
+    new_rows: Sequence[Mapping[str, Any]],
+    *,
+    requested_records: Sequence[GanFrequencyRecord],
+    parser: argparse.ArgumentParser,
+) -> list[dict[str, Any]]:
+    rows_by_index: dict[int, dict[str, Any]] = {}
+    duplicate_indices: list[int] = []
+    for row in [*existing_rows, *new_rows]:
+        source_row_index = row.get("source_row_index")
+        if source_row_index is None:
+            continue
+        index = int(source_row_index)
+        if index in rows_by_index:
+            duplicate_indices.append(index)
+        rows_by_index[index] = dict(row)
+    if duplicate_indices:
+        parser.error(
+            "--resume-existing found duplicate source_row_index rows: "
+            + ", ".join(str(index) for index in duplicate_indices[:10])
+        )
+    requested_indices = [
+        _source_index_from_record(record, parser) for record in requested_records
+    ]
+    missing_indices = [index for index in requested_indices if index not in rows_by_index]
+    if missing_indices:
+        parser.error(
+            "--resume-existing did not produce all requested rows; missing: "
+            + ", ".join(str(index) for index in missing_indices[:10])
+        )
+    return [rows_by_index[index] for index in requested_indices]
 
 
 def main(argv: Sequence[str] | None = None) -> None:

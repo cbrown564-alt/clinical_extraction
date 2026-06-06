@@ -2662,3 +2662,224 @@ Next question after implementation:
 - Should the future LLM verifier be evaluated only on rows where
   `VerificationDecision` V0 emits `abstain` or `human_review`, or should it also
   replay rows where future V0 policies emit `affirm`/`reject`?
+
+### LLM Verifier Evaluation Surface Decision
+
+- Decision: the first LLM-verifier experiment evaluates only routed rows where
+  deterministic `VerificationDecision` V0 emits `abstain` or `human_review`.
+- Deferred scope:
+  - `affirm`/`reject` replay is deferred until there are real V0
+    `affirm`/`reject` rows or a predeclared proposed-outcome slice with
+    non-null proposed outcomes.
+- Rationale:
+  - current route V6 contains 5 routed rows, all null-rendered risk families;
+  - current deterministic `VerificationDecision` V0 emits 4 `abstain` actions
+    and 1 `human_review` action;
+  - evaluating imagined `affirm`/`reject` cases now would blur the boundary
+    between verifier action and replacement scorer-facing label generation.
+- Guardrail:
+  - the first LLM verifier must not review hypothetical proposed labels and
+    must not invent scorer-facing labels.
+
+Next question:
+
+- What should the LLM verifier consume?
+
+### LLM Verifier Input Contract Decision
+
+- Decision: the first LLM verifier consumes a row-local full-evidence
+  verification case, not only the compact route evidence and not the literal
+  full note text.
+- Model-visible input should include:
+  - the deterministic `VerificationDecision` V0 baseline row and action;
+  - the embedded `Verification Route`, including route families, route reasons,
+    route evidence, and source candidate ids;
+  - clinical-assessment state needed to understand the routed object;
+  - projection/render state, including proposed/rendered label state and
+    projection or render issues;
+  - all candidate evidence texts for the row;
+  - candidate ids, source ids, and source spans where available.
+- Excluded from verifier action input:
+  - gold labels;
+  - purist/pragmatic correctness;
+  - exact normalized-label match;
+  - benchmark outcome fields;
+  - score-derived route or action hints;
+  - literal full note text by default.
+- Rationale:
+  - row 3534 shows why compact summaries are insufficient: a clinical
+    assessment may overstate proxy evidence as seizure freedom, so the verifier
+    needs the candidate evidence that produced and challenged that assessment;
+  - row 5476 shows why all candidate evidence matters: medication/rescue-use
+    cadence must be compared with surrounding event evidence before deciding
+    whether automation can own the case.
+- Guardrail:
+  - full evidence means all row-local candidate evidence and source spans, not
+    gold/score context and not unrestricted note review.
+
+Next question:
+
+- What should the LLM verifier emit?
+
+### LLM Verifier Output Contract Decision
+
+- Decision: the first LLM verifier emits an evidence-grounded verifier action
+  object, not a scorer-facing label, not a selected candidate, and not a
+  rewritten clinical assessment.
+- Allowed actions:
+  - `affirm`;
+  - `reject`;
+  - `abstain`;
+  - `human_review`.
+- Required output fields should include:
+  - `source_row_index`;
+  - `component_owner`: `llm_verifier`;
+  - `schema_version`;
+  - `verifier_policy_id`;
+  - deterministic V0 baseline action for comparison;
+  - `action`;
+  - `action_basis`;
+  - cited candidate ids;
+  - cited source ids or spans where available;
+  - issue flags;
+  - concise evidence-grounded rationale;
+  - nullable proposed/final/replacement rendered-label fields.
+- Guardrails:
+  - the LLM verifier must not emit scorer-facing labels;
+  - it must not choose among candidates as a second selector;
+  - replacement/final rendered-label fields remain null for the first
+    experiment unless a separate named action policy explicitly authorizes a
+    non-null value;
+  - `reject` blocks an existing proposed outcome but does not invent the
+    replacement.
+- Rationale:
+  - row 5476 may justify `human_review` or `abstain`, but not a generated
+    `1 per month` label;
+  - row 3534 may justify blocking a proposed seizure-free outcome when one
+    exists, but current route V6 is already null-rendered and should not be
+    converted into a verifier-generated replacement label.
+
+Next question:
+
+- Is a comparator-preservation action policy needed before LLM verifier work?
+
+### Comparator Preservation Deferral Decision
+
+- Decision: no comparator-preservation action policy is needed before the first
+  LLM verifier experiment.
+- Rationale:
+  - current route V6 contains only null-rendered risk rows;
+  - there is no non-null proposed rendered outcome for a verifier to reject
+    while preserving an existing comparator or baseline output.
+- Revisit condition:
+  - revisit only when a routed slice contains a non-null proposed rendered
+    outcome that a verifier may reject and a named benchmark/action policy
+    wants to preserve an existing comparator or baseline output.
+- Guardrail:
+  - comparator preservation must remain a named action policy, not verifier
+    repair, clinical truth, or hidden projection behavior.
+
+Next question:
+
+- What aggregate counters should be predeclared before scaling beyond
+  `validation250`?
+
+### Validation750 And Full-Validation Counter Surface Decision
+
+- Decision: predeclare a broad counter surface before scaling beyond
+  `validation250`; simplify later only if the first scaled run shows the list
+  is operationally too large.
+- Route counters:
+  - total rows;
+  - structurally valid rows;
+  - routed row count and routed row rate;
+  - route family counts;
+  - route family combinations;
+  - route family counts by projection owner;
+  - route family counts by projection/render issue;
+  - null-rendered routed rows vs non-null proposed-outcome routed rows.
+- Deterministic V0 baseline action counters:
+  - `VerificationDecision` V0 action counts;
+  - action counts by route family;
+  - action counts by projection owner;
+  - `abstain`/`human_review`/`affirm`/`reject` rates;
+  - rows where V0 has a non-null `proposed_rendered_label`;
+  - rows where V0 has a non-null `final_rendered_label`.
+- LLM verifier counters:
+  - LLM action counts;
+  - LLM action counts by route family;
+  - LLM-vs-V0 action delta counts;
+  - V0 `abstain` -> LLM `affirm`/`reject`/`human_review`;
+  - V0 `human_review` -> LLM `abstain`/`affirm`/`reject`;
+  - LLM cited-evidence completeness rate;
+  - LLM invalid-output, parse-failure, and schema-failure counts.
+- Rendered-label impact counters:
+  - rows where verifier action changes rendered-label availability;
+  - rows where verifier blocks a proposed rendered label;
+  - rows where verifier affirms a proposed rendered label;
+  - rows where verifier leaves `final_rendered_label` null;
+  - any non-null replacement or final label emitted under a named action
+    policy.
+- Audit-only score counters:
+  - `score_context` presence count;
+  - score status counts for routed rows;
+  - score status counts by route family.
+- Guardrail:
+  - score counters are audit-only and must not trigger route or action behavior.
+
+Next question:
+
+- Which old components should be deleted, retained as audit-only, or renamed
+  after the reset architecture stabilizes?
+
+### Legacy Component Rationalisation Decision
+
+- Decision: delay physical deletion of legacy components until after the first
+  LLM verifier comparison, but classify legacy surfaces now so they no longer
+  masquerade as core architecture.
+- Keep as core reset architecture:
+  - `ExtractedCandidate` and `CandidateSet`;
+  - `SelectedClinicalFact` or `SelectedCandidateDecision`;
+  - deterministic normalization;
+  - projection owner policies;
+  - `Verification Route`;
+  - deterministic `VerificationDecision` V0;
+  - future LLM verifier;
+  - `Benchmark Renderer` and `FinalRenderedLabel`;
+  - score-policy audit.
+- Retain as audit/report-only for now:
+  - H6/H9/H10 sidecars;
+  - component evidence matrix;
+  - legacy score reports;
+  - failure review tables;
+  - `score_context` envelopes.
+- Rename or absorb if still needed:
+  - selective safety floor -> verifier/action policy;
+  - staged action policy -> `VerificationDecision` or action policy;
+  - projection boundary gate -> named projection owner policy or verification
+    route family;
+  - boundary/renderer typed-event layer -> projection/render policy module if
+    it maps cleanly to reset-stage schemas;
+  - untagged nonprediction release -> action fallback policy, not extraction or
+    selection.
+- Deprecate after comparison unless a clean reset-stage role remains:
+  - hybrid adjudicator raw as final labeler;
+  - adapter layer if it still changes 0 rows or only hides repair;
+  - deterministic top candidate as final answer;
+  - broad state graph projection as renderer/projector;
+  - H5 semantic repair if it changes clinical meaning instead of format.
+- Guardrail:
+  - no retained legacy component may own scorer-facing behavior unless it maps
+    cleanly to an explicit reset-stage schema and owner.
+
+### Outstanding Review Questions Closed
+
+- The outstanding questions from
+  `docs/research/gan2026_component_architecture_reset_review_plan_2026-06-05.md`
+  have been walked and resolved through the decisions above:
+  - LLM verifier evaluation surface;
+  - LLM verifier input contract;
+  - LLM verifier output contract;
+  - comparator preservation policy;
+  - validation750/full-validation counters;
+  - legacy component rationalisation.

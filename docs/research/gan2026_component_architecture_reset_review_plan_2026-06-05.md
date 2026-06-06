@@ -2,9 +2,8 @@
 
 Date: 2026-06-05
 
-Status: active plan for remaining validation250 mechanics work. Completed
-decisions, generated artifacts, row reviews, and implementation notes have been
-moved to
+Status: review questions resolved on 2026-06-06. Completed decisions,
+generated artifacts, row reviews, and implementation notes have been moved to
 `docs/research/gan2026_component_architecture_reset_completed_tasks_2026-06-05.md`.
 
 This plan does not authorize new holdout work, benchmark-comparable claims, or
@@ -46,6 +45,18 @@ Active mechanics artifacts:
   than hidden verifier repair or projection behavior.
 
 ## Outstanding Questions
+
+These questions were walked and resolved on 2026-06-06. The accepted decisions
+are recorded in
+`docs/research/gan2026_component_architecture_reset_completed_tasks_2026-06-05.md`
+under:
+
+- `LLM Verifier Evaluation Surface Decision`;
+- `LLM Verifier Input Contract Decision`;
+- `LLM Verifier Output Contract Decision`;
+- `Comparator Preservation Deferral Decision`;
+- `Validation750 And Full-Validation Counter Surface Decision`;
+- `Legacy Component Rationalisation Decision`.
 
 ### 1. LLM Verifier Evaluation Surface
 

@@ -227,6 +227,7 @@ def summarize_rows(
             *list((row.get("final_rendered_label") or {}).get("render_issues") or []),
         ]
     )
+    surface_label = f"validation{len(rows)}"
     return {
         "artifact_kind": "gan2026_clinical_assessment_projection_render",
         "schema_version": SCHEMA_VERSION,
@@ -234,7 +235,7 @@ def summarize_rows(
         "candidate_set_artifact_path": candidate_set_artifact_path,
         "row_count": len(rows),
         "claim_boundary": (
-            "Projection/render mechanics only over saved validation250 artifacts. "
+            f"Projection/render mechanics only over saved {surface_label} artifacts. "
             "This artifact renders labels when deterministic v0 policy can do so, "
             "but scoring is disabled and no benchmark-comparable claim is made."
         ),
