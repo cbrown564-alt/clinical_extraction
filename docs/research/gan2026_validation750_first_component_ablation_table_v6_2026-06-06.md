@@ -78,6 +78,18 @@ These counts are saved for report accounting only. They are not included in veri
 | `selected_source_id_invalid` | `0` | `0` | `0` | `0` |
 | `unresolved_cluster_cadence_with_per_cluster_burden` | `0` | `0` | `0` | `0` |
 
+## Scorer Audit Appendix (Global & Non-Routed Transitions)
+
+These transitions show correctness status changes from V5 -> V6. Non-routed transitions represent rows that did not trigger any verification routing.
+
+| Transition | Global Count | Routed Count | Non-Routed Count |
+| --- | ---: | ---: | ---: |
+| `C_to_C` | `481` | `148` | `333` |
+| `C_to_W` | `1` | `0` | `1` |
+| `W_to_W` | `91` | `31` | `60` |
+| `null_to_C` | `7` | `0` | `7` |
+| `null_to_null` | `170` | `136` | `34` |
+
 ## Recovery Families
 
 | Family | Stage | Status | Recovered | Newly routed | Remaining null | Provenance validity | Audit W->C | Audit C->W | Pending isolated ablation |

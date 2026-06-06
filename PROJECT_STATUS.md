@@ -153,17 +153,16 @@ Controlling thread:
 
 ### Now
 
-- Decided that the forced-choice verifier does not add performance value over the action-only baseline, making the action-only verifier the preferred pattern moving forward.
-- Progress with the next steps on verifier comparison and accounting.
+- Progress with the next steps on designing the first LLM-verifier saved-replay comparison.
 
 ### Next
 
-- Implement post-run comparison/accounting that summarizes first-verifier
-  actions against deterministic V0 by bucket and report section without
-  inventing scorer-facing replacement labels.
-- Decide whether global non-routed V5->V6 audit transitions belong in a
-  separate scorer audit appendix; the current component table reports routed
-  family counts only.
+- Design the first LLM-verifier saved-replay comparison over routed V0
+  `abstain`/`human_review` rows, using route evidence and exact source evidence
+  only; verifier output must be action-only and emit no replacement label.
+- Add component-level ablation reporting for each ported deterministic family:
+  newly rendered, newly routed, remaining null, evidence validity, route-family
+  changes, and audit-only W->C/C->W.
 
 ### Blocked
 
@@ -173,12 +172,6 @@ Controlling thread:
 
 ### Backlog
 
-- Design the first LLM-verifier saved-replay comparison over routed V0
-  `abstain`/`human_review` rows, using route evidence and exact source evidence
-  only; verifier output must be action-only and emit no replacement label.
-- Add component-level ablation reporting for each ported deterministic family:
-  newly rendered, newly routed, remaining null, evidence validity, route-family
-  changes, and audit-only W->C/C->W.
 - Decide whether comparator-label preservation can return as a named action
   policy after verifier reject/abstain.
 - Revisit prior-visit/event-date context only if refreshed residual analysis
@@ -186,6 +179,7 @@ Controlling thread:
 
 ### Done Recently
 
+- 2026-06-06: Implemented first-verifier post-run comparison/accounting script and generated cross-tabulation reports; also decided to include global non-routed V5->V6 transitions in a dedicated Scorer Audit Appendix in the component ablation table.
 - 2026-06-06: Decided that the three zero-delta projection-policy off-switches (`current_summary_rate_priority`, `previous_active_month_over_current_month_zero`, and `major_recent_relapse_over_background_frequency`) do not require targeted hard slices of the `validation750` dataset, since their functionality is already robustly verified by explicit unit tests.
 - 2026-06-06: Repaired the `27`-row candidate-trace `selected_source_id_invalid` tail by mapping unresolved source-ids to `"source_id_not_resolved"` and whitelisting acceptable non-routing statuses in routing and suspicious state checks. Regenerated validation750 projection render, route, and component ablation artifacts on disk; `selected_source_id_invalid` dropped to `0`.
 - 2026-06-06: Completed the first live forced-choice verifier run over the clean

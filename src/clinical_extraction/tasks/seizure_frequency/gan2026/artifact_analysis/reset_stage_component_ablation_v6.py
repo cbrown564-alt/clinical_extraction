@@ -426,6 +426,34 @@ def write_reset_stage_component_ablation_v6_report(
         )
     lines.extend(
         [
+            "",
+            "## Scorer Audit Appendix (Global & Non-Routed Transitions)",
+            "",
+            (
+                "These transitions show correctness status changes from V5 -> V6. "
+                "Non-routed transitions represent rows that did not trigger any verification routing."
+            ),
+            "",
+            "| Transition | Global Count | Routed Count | Non-Routed Count |",
+            "| --- | ---: | ---: | ---: |",
+        ]
+    )
+    all_transitions = sorted(set(transition_counts.get("totals", {}).keys()) | {
+        "W_to_C", "C_to_W", "null_to_C", "null_to_null", "C_to_C", "W_to_W", "C_to_null", "W_to_null"
+    })
+    for trans in all_transitions:
+        global_count = transition_counts.get("totals", {}).get(trans, 0)
+        routed_count = sum(
+            family_counts.get(trans, 0)
+            for family_counts in transition_counts.get("by_family", {}).values()
+        )
+        non_routed_count = global_count - routed_count
+        if global_count > 0 or routed_count > 0:
+            lines.append(
+                f"| `{trans}` | `{global_count}` | `{routed_count}` | `{non_routed_count}` |"
+            )
+    lines.extend(
+        [
         "",
         ]
     )
