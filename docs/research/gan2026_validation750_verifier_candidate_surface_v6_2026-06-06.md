@@ -275,3 +275,11 @@ Treat the verifier-candidate surface definition as complete for `context_repair_
 The next deterministic step should be the null-render/action taxonomy over the
 51 null rows, with the 5 rendered policy-sensitive rows kept as a separate
 action-policy appendix.
+
+Later protocol decision:
+
+- keep the full clean `56`-row surface as the broad saved comparison packet
+- for the next prompt/policy-tightening iteration, temporarily concentrate on
+  the `29`-row `mixed_window_or_vague_addition` main ambiguity table
+- return to the full `56`-row surface after the
+  `affirm`/`reject`/`human_review`/`abstain` boundary is more stable

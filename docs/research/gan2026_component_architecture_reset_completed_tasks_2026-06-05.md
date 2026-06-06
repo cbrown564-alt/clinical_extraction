@@ -31,6 +31,14 @@ completed-tasks document does not stop at the older 5-row route surface.
   clinical/policy ambiguity routes, upstream parser/policy debt, and
   provenance-only audit routes.
 
+Later update:
+
+- the intermediate candidate-trace `selected_source_id_invalid` residual tail
+  was subsequently repaired to `0`
+- the primary verifier policy is now `action_only`
+- the next prompt/policy iteration is scoped first to the `29`-row main
+  ambiguity table, not the full clean `56`-row surface
+
 ### Post-V5 Ports And Contract Decisions Preserved
 
 - Ported mature old behavior into reset-stage ownership without broad fallback:
@@ -63,6 +71,13 @@ completed-tasks document does not stop at the older 5-row route surface.
 - Keep the 220 provenance-only routed rows in audit/instrumentation appendices.
 - Use the reset-stage component inventory to define the first component-level
   ablation report surface before any broader verifier promotion language.
+
+Later boundary refinement:
+
+- keep the full clean `56`-row clinical/policy surface as the broad verifier
+  comparison packet
+- use the `29`-row main ambiguity table as the first prompt/policy-tightening
+  surface
 
 ## Work Completed On 2026-06-05
 

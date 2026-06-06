@@ -9,6 +9,28 @@ This is a report-contract decision only. It does not authorize locked-test
 inspection, benchmark-comparable claims, or silent promotion of verifier-facing
 or scorer-facing behavior.
 
+## Later Update: provenance residual changed after repair
+
+This report-contract note remains valid, but one operational surface named
+below is now historical rather than current.
+
+At the time of writing, the candidate-trace replay still exposed a
+`27`-row `selected_source_id_invalid` provenance tail. That residual has since
+been repaired, and the current candidate-trace `selected_source_id_invalid`
+tail is `0`.
+
+What remains valid from this note:
+
+- provenance route families stay visible in the component report
+- provenance-only debt stays separate from the first verifier main
+  success/failure table
+- component accounting still needs provenance validity as an explicit column
+
+What changed:
+
+- the specific `27`-row residual provenance-tail count is no longer the current
+  operational surface
+
 ## Purpose
 
 The first component ablation report should answer a narrow reset question:
@@ -29,7 +51,8 @@ The report should use the replayed post-split surfaces already adopted for V6:
 - verifier main success/failure table: `29` main ambiguity rows only
 - non-provenance routed clinical/policy surface: `55` rows
 - separate provenance follow-through tail:
-  `27` `selected_source_id_invalid` rows
+  historical intermediate replay had `27` `selected_source_id_invalid` rows;
+  current repaired candidate-trace replay has `0`
 - provenance-only audit appendix:
   `220` rows kept out of the first verifier success/failure table
 
@@ -53,7 +76,7 @@ families that are either active deterministic behavior or active route families:
 | `verify` | `relative_only_trend` | `ported_route_family_v6` | `yes` | Route family defining abstain-style action debt. |
 | `verify` | `conditional_only_trigger` | `ported_route_family_v6` | `yes` | Route family defining abstain-style action debt. |
 | `verify` | `selected_evidence_missing_exact_trace` | `ported_route_family_v6` | `yes`, appendix-emphasized | Provenance route family; do not blend into main verifier score surface. |
-| `verify` | `selected_source_id_invalid` | `ported_route_family_v6` | `yes`, appendix-emphasized | Residual provenance tail; keep clinically separate. |
+| `verify` | `selected_source_id_invalid` | `ported_route_family_v6` | `yes`, appendix-emphasized | Historical residual provenance tail in the intermediate replay; current repaired candidate-trace surface is `0`, but the family stays reportable as provenance plumbing debt. |
 | `verify` | `denominator_window_mismatch` | `ported_route_family_v6` | `yes` | Rendered-but-routed policy family. |
 | `verify` | `unresolved_cluster_cadence_with_per_cluster_burden` | `ported_route_contract_v6` | `yes` | Rendered policy-sensitive route family. |
 

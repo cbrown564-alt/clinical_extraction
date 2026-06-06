@@ -98,6 +98,14 @@ The next durable reset tasks are:
 4. Use the reset-stage component inventory to define the first component-level
    ablation report surface.
 
+Later update:
+
+- the primary verifier policy is now `action_only`
+- the next prompt/policy iteration should focus first on the `29`-row main
+  ambiguity table
+- the intermediate candidate-trace `selected_source_id_invalid` residual tail
+  has since been repaired to `0`
+
 ### 1. LLM Verifier Evaluation Surface
 
 Question:

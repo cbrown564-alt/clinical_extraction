@@ -11,6 +11,27 @@ open before LLM-verifier work or any holdout-facing protocol.
 This report does not authorize locked-test row-level review, benchmark-comparable
 claims, or promotion of a whole pipeline.
 
+## Later Update: verifier policy and provenance follow-through moved
+
+This synthesis remains the controlling reset-thread narrative, but several
+items described below are now historical intermediate states rather than the
+current working boundary.
+
+Later reset-thread decisions now fixed that:
+
+- the primary verifier policy is `action_only`
+- the next verifier prompt/policy iteration should temporarily focus on the
+  `29`-row main ambiguity table, while the full clean `56`-row surface remains
+  the broader saved comparison packet
+- the intermediate candidate-trace `selected_source_id_invalid` provenance tail
+  was later repaired to `0`
+
+The newer point-in-time reads for those updates are:
+
+- `docs/research/gan2026_validation750_first_verifier_main_ambiguity_outcome_taxonomy_v6_2026-06-06.md`
+- `docs/research/gan2026_validation750_verifier_action_policy_decision_v6_2026-06-06.md`
+- `docs/research/gan2026_validation750_provenance_only_failure_taxonomy_v6_2026-06-06.md`
+
 ## Source Context
 
 Primary reset documents:
@@ -1801,9 +1822,11 @@ The implementation now includes:
     `exact_trace`, `source_id_status`, and a source-id trace object.
 
 11. Provenance route families.
-    `selected_evidence_missing_exact_trace` and `selected_source_id_invalid`
-    are now reset-native route families rather than inferred suspicious-state
-    side effects.
+    `selected_evidence_missing_exact_trace` and
+    `selected_source_id_invalid` were introduced as reset-native route families
+    rather than inferred suspicious-state side effects. Later candidate-trace
+    follow-through repair removed the residual active
+    `selected_source_id_invalid` tail on the repaired replay.
 
 12. Denominator-window route ownership.
     Projection now carries `source_normalized_phrase` so route can flag
@@ -1927,9 +1950,10 @@ Those classes must be reported separately before any LLM-verifier experiment.
    become the first LLM-verifier target surface.
 
 3. Adjudicate provenance-route policy.
-   Decide whether `selected_evidence_missing_exact_trace` and
-   `selected_source_id_invalid` are verifier inputs, instrumentation warnings,
-   report-only audit flags, or separate human-review queues.
+   This was later resolved operationally by keeping provenance-only routes out
+   of the first verifier main table, preserving provenance sidecars as
+   secondary context on mixed clinical/policy rows, and repairing the
+   candidate-trace residual `selected_source_id_invalid` tail to `0`.
 
 4. Complete the cluster-family pass.
    Render explicit cadence plus per-cluster burden, and route unresolved
@@ -1951,10 +1975,11 @@ Those classes must be reported separately before any LLM-verifier experiment.
    audit-only W->C/C->W.
 
 8. Stabilize the route surface before LLM verifier work.
-   The first LLM verifier should run only after deterministic
-   normalization/projection and route-policy decisions are frozen. It should
-   emit action decisions only, cite evidence ids/spans, and never invent a
-   replacement scorer-facing label.
+   The first verifier policy is now fixed as action-only. The next prompt
+   iteration should run first on the `29`-row main ambiguity table, then return
+   to the broader clean `56`-row surface once the action boundary is more
+   stable. It should emit action decisions only, cite evidence ids/spans, and
+   never invent a replacement scorer-facing label.
 
 9. Keep locked holdout off-limits.
    Reset work remains validation-development mechanics until candidate code,

@@ -76,6 +76,49 @@ gan2026-llm-experiment --pipeline llm_only_claim_table_selector --mode live --li
 Record the exact local model metadata from `http://localhost:11434/api/tags`,
 including digest, parameter size, and quantization.
 
+## First Full Validation750 Qwen Rerun
+
+This is the current planned local-model rerun for the Gan 2026 reset thread.
+It should be run as a single combined pipeline command, not as a staged
+candidate-set assembly chain.
+
+Use the repo virtual environment entrypoints explicitly:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+$env:OPENAI_API_KEY = "ollama"
+
+$qwenJsonl = "experiments\gan2026_hybrid_parallel_state_candidate_reasoner_validation750_qwen36_35b_v0_live_2026-06-06.jsonl"
+$qwenMd    = "experiments\gan2026_hybrid_parallel_state_candidate_reasoner_validation750_qwen36_35b_v0_live_2026-06-06.md"
+
+.\.venv\Scripts\gan2026-llm-experiment.exe `
+  --pipeline hybrid_parallel_state_candidate_reasoner `
+  --split validation `
+  --mode live `
+  --model ollama_chat/qwen3.6:35b `
+  --api-base http://localhost:11434 `
+  --temperature 0 `
+  --max-tokens 5000 `
+  --disable-dspy-cache `
+  --progress-every 25 `
+  --escalation-reason "First full validation750 local-Qwen rerun; 250 rows are insufficient because we now need the combined end-to-end pipeline result on the full validation surface." `
+  --jsonl $qwenJsonl `
+  --markdown $qwenMd
+```
+
+Notes:
+
+- Use `ollama_chat/qwen3.6:35b` with `--api-base http://localhost:11434`, not
+  the OpenAI-compatible `/v1` route.
+- Omit `--limit` for the full locked validation750 surface.
+- If any target artifact already exists and you want to continue the live LLM
+  stages, add `--resume-existing` to the relevant
+  `gan2026-llm-experiment.exe` command. Use `--overwrite-existing` only when
+  you intentionally want to replace an existing output.
+- If we want candidate-set, projection, route, or verifier analyses after the
+  live run, generate them afterward from the saved combined-run artifact rather
+  than using them as the execution protocol.
+
 ## Portability Notes
 
 - Prefer `python -m pytest`, `python -m ruff check .`, and

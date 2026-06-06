@@ -9,6 +9,26 @@ into verifier-relevant clinical/policy routes versus provenance-audit routes.
 This is a validation-development mechanics read. It does not authorize locked
 test use, benchmark-comparable language, or verifier promotion.
 
+## Later Update: bucket contract stayed useful after provenance repair
+
+This note remains the correct split for the original V6 route artifact and for
+the logic behind the first verifier report shape.
+
+Later provenance work changed the residual state:
+
+- the candidate-trace replay collapsed the large
+  `selected_evidence_missing_exact_trace` surface
+- the later source-id repair removed the candidate-trace
+  `selected_source_id_invalid` residual tail
+
+So the exact historical counts below should be read as the original V6 route
+snapshot, not as the current repaired candidate-trace surface.
+
+What remains current is the operational principle:
+
+- keep provenance-only audit rows out of the first verifier main table
+- keep the clinically/policy-routed rows as the primary verifier action surface
+
 ## Source Artifact
 
 - Route JSONL:

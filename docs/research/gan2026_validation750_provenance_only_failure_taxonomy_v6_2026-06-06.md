@@ -16,6 +16,34 @@ to the code path that likely created it.
 This is not a benchmark claim and does not authorize locked-test inspection or
 LLM-verifier promotion.
 
+## Later Update: candidate-trace residual tail repaired
+
+This note remains the correct read of the original provenance-only audit and
+the no-call candidate-trace replay. It should now be read as a historical
+intermediate state, not as the current residual provenance surface.
+
+After this note, the remaining candidate-trace
+`selected_source_id_invalid` surface was repaired by:
+
+- mapping unresolved source ids to `source_id_not_resolved`
+- whitelisting acceptable non-routing statuses in routing and suspicious-state
+  checks
+- regenerating the validation750 projection/render, score, and route artifacts
+
+Current reset-thread consequence:
+
+- the prior `27`-row candidate-trace `selected_source_id_invalid` tail drops to
+  `0`
+- provenance-only follow-through no longer remains as an active verifier-adjacent
+  residual on the repaired replay
+
+So the main value of this note is explanatory:
+
+- why the original provenance-only explosion happened
+- why exact provenance should come from selected candidate evidence/source trace
+- why the later source-id repair was narrow plumbing debt rather than new
+  clinical logic
+
 ## Main Finding
 
 The experiment confirmed that the extra carried `source_normalized_phrase`
@@ -428,10 +456,17 @@ better stage discipline for which phrase is allowed to carry provenance.
 
 This experiment is now complete.
 
-The next deterministic follow-up is narrower:
+Historical next step from the time of this audit:
 
 1. inspect and repair the remaining `27` `selected_source_id_invalid` rows;
 2. separate the `26` provenance-only unresolved-source rows from the single
    mixed clinical/provenance row;
 3. keep the verifier target surface focused on the non-provenance `55` routed
    clinical/policy rows unless a later protocol explicitly broadens it.
+
+Current status:
+
+- step 1 is complete and the residual `selected_source_id_invalid` tail is now
+  `0`
+- steps 2 and 3 remain useful as historical explanation for why provenance was
+  kept outside the first verifier main table

@@ -1,4 +1,4 @@
-"""Run the first action-only verifier over the clean Gan 2026 validation V6 surface."""
+"""Run the action-only verifier over the main-ambiguity Gan 2026 validation V6 surface."""
 
 from __future__ import annotations
 
@@ -24,16 +24,16 @@ DATE = "2026-06-06"
 MODEL = "openai/gpt-4.1-mini"
 PROMPT_VERSION = clinical_assessment_first_verifier.POLICY_ID
 DEFAULT_INPUT_JSONL_PATH = Path(
-    "experiments/gan2026_validation750_first_verifier_experiment_input_clean29_context_repair_v6_2026-06-06.jsonl"
+    "experiments/gan2026_validation750_first_verifier_experiment_input_main29_context_repair_v6_2026-06-06.jsonl"
 )
 DEFAULT_JSONL_PATH = Path(
-    "experiments/gan2026_validation750_first_verifier_live_clean29_context_repair_v6_2026-06-06.jsonl"
+    "experiments/gan2026_validation750_first_verifier_live_main29_context_repair_v6_2026-06-06.jsonl"
 )
 DEFAULT_JSON_PATH = Path(
-    "experiments/gan2026_validation750_first_verifier_live_clean29_context_repair_v6_2026-06-06.json"
+    "experiments/gan2026_validation750_first_verifier_live_main29_context_repair_v6_2026-06-06.json"
 )
 DEFAULT_REPORT_PATH = Path(
-    "docs/research/gan2026_validation750_first_verifier_live_clean29_context_repair_v6_2026-06-06.md"
+    "docs/research/gan2026_validation750_first_verifier_live_main29_context_repair_v6_2026-06-06.md"
 )
 
 
@@ -69,17 +69,17 @@ def summarize_results(
     appendix_rows = [row for row in rows if row["appendix_policy"]["appendix_only"]]
     changed_main_rows = [row for row in main_rows if row["verifier_vs_baseline"]["action_changed"]]
     return {
-        "artifact_kind": "gan2026_validation750_first_verifier_live_clean29_summary",
+        "artifact_kind": "gan2026_validation750_first_verifier_live_main29_summary",
         "date": DATE,
         "model": model,
         "prompt_version": PROMPT_VERSION,
         "policy_name": clinical_assessment_first_verifier.POLICY_ID,
         "source_artifact": str(source_artifact),
         "claim_boundary": (
-            "Validation-development first action-only verifier run over the clean 56-row "
-            "V6 surface. This is not a scorer-label replacement protocol, does not "
-            "authorize locked-test inspection, and keeps provenance-only rows out of the "
-            "main table."
+            "Validation-development action-only verifier run over the main 29-row "
+            "ambiguity V6 surface. This is not a scorer-label replacement protocol, "
+            "does not authorize locked-test inspection, and excludes appendix and "
+            "provenance-only rows from the retuning surface."
         ),
         "row_count": len(rows),
         "metrics": {
@@ -123,7 +123,7 @@ def write_report(
 ) -> None:
     metrics = metadata["metrics"]
     lines = [
-        "# Gan 2026 Validation750 First Verifier Live Run Clean29 V6",
+        "# Gan 2026 Validation750 First Verifier Live Run Main29 V6",
         "",
         str(metadata["claim_boundary"]),
         "",
@@ -222,7 +222,7 @@ def _run_row(
         parse_errors=parse_errors,
     )
     return {
-        "artifact_kind": "gan2026_validation750_first_verifier_live_clean29_row",
+        "artifact_kind": "gan2026_validation750_first_verifier_live_main29_row",
         "source_row_index": int(row["source_row_index"]),
         "split": row.get("split", "validation"),
         "split_manifest": row.get("split_manifest", "gan2026_split_v1"),
@@ -244,7 +244,7 @@ def _run_row(
         "verifier_vs_baseline": {
             "action_changed": decision["action"] != decision["baseline_action"],
         },
-        "claim_boundary": "validation_development_first_verifier_live_clean29_v6",
+        "claim_boundary": "validation_development_first_verifier_live_main29_v6",
     }
 
 
@@ -275,7 +275,7 @@ def _interpretation(summary: Mapping[str, Any], main_rows: int) -> str:
         )
     if summary["action_counts"].get("affirm", 0) or summary["action_counts"].get("reject", 0):
         return (
-            "The first verifier produced non-abstain action decisions on the clean surface. "
+            "The verifier produced non-abstain action decisions on the main ambiguity surface. "
             f"The primary table remains the {main_rows}-row ambiguity set."
         )
     return (

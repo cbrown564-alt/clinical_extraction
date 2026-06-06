@@ -9,6 +9,30 @@ This is a report-shape and evaluation-surface decision only. It does not
 authorize locked-test inspection, benchmark-comparable language, or live
 verifier promotion.
 
+## Later Update: report shape held, provenance tail did not
+
+This predeclaration still correctly defined the first verifier report shape:
+
+- main ambiguity score table
+- abstain appendix
+- upstream-policy appendix
+- rendered policy-sensitive appendix
+- provenance-only audit appendix
+
+Later work changed one provenance detail:
+
+- the original intermediate candidate-trace
+  `selected_source_id_invalid` residual is no longer active after the later
+  source-id repair
+
+Later execution also fixed the verifier policy direction:
+
+- the primary verifier policy is now `action_only`
+- forced choice remains diagnostic only
+
+So this note should be read as the correct pre-run bucket contract, with later
+policy and provenance updates layered on top.
+
 ## Purpose
 
 The first verifier report should answer a narrow question:

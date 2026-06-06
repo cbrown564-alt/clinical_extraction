@@ -1,0 +1,13 @@
+{
+  "artifact_kind": "gan2026_first_verifier_main_ambiguity_experiment_input",
+  "claim_boundary": "Main-ambiguity-only verifier experiment input: the 29-row mixed-window-or-vague-addition action-boundary surface only. Appendix rows, provenance-only rows, gold labels, correctness fields, and audit W->C/C->W counts are excluded from verifier-visible inputs.",
+  "date": "2026-06-06",
+  "decision": "ready_for_main_ambiguity_only_verifier_run",
+  "metrics": {
+    "main_ambiguity_rows": 29,
+    "rows_excluded_from_clean56_surface": 247
+  },
+  "row_count": 29,
+  "split": "validation",
+  "split_manifest": "gan2026_split_v1"
+}

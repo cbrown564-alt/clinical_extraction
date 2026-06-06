@@ -1,0 +1,48 @@
+{
+  "action_counts": {
+    "abstain": 1,
+    "human_review": 19,
+    "reject": 9
+  },
+  "appendix_action_counts": {},
+  "artifact_kind": "gan2026_validation750_first_verifier_live_main29_summary",
+  "claim_boundary": "Validation-development action-only verifier run over the main 29-row ambiguity V6 surface. This is not a scorer-label replacement protocol, does not authorize locked-test inspection, and excludes appendix and provenance-only rows from the retuning surface.",
+  "date": "2026-06-06",
+  "decision": "action_surface_materialized",
+  "interpretation": "The verifier produced non-abstain action decisions on the main ambiguity surface. The primary table remains the 29-row ambiguity set.",
+  "main_action_counts": {
+    "abstain": 1,
+    "human_review": 19,
+    "reject": 9
+  },
+  "metrics": {
+    "abstain_rows": 1,
+    "affirm_rows": 0,
+    "appendix_rows": 0,
+    "call_ok_rows": 29,
+    "changed_action_rows": 28,
+    "contract_error_rows": 0,
+    "contract_ok_rows": 29,
+    "human_review_rows": 19,
+    "main_score_table_changed_action_rows": 28,
+    "main_score_table_rows": 29,
+    "parse_error_action_rows": 0,
+    "parse_error_rows": 0,
+    "parse_ok_rows": 29,
+    "reject_rows": 9
+  },
+  "model": "openai/gpt-4.1-mini",
+  "policy_name": "gan2026_clinical_assessment_first_verifier_v3_plain_task_prompt",
+  "prompt_version": "gan2026_clinical_assessment_first_verifier_v3_plain_task_prompt",
+  "report_section_counts": {
+    "main_ambiguity_score_table": 29
+  },
+  "row_count": 29,
+  "source_artifact": "experiments\\gan2026_validation750_first_verifier_experiment_input_main29_context_repair_v6_2026-06-06.jsonl",
+  "usage": {
+    "input_tokens": 55841,
+    "output_tokens": 8428,
+    "total_tokens": 64269,
+    "wall_clock_latency_seconds": 100.53477960044984
+  }
+}

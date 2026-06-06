@@ -12,6 +12,32 @@ artifacts.
 This is validation-development mechanics work only. It is not a locked-test
 read and does not authorize benchmark-comparable claims.
 
+## Later Update: provenance route expansion was partially transient
+
+This note remains the correct read of the original V5 versus V6 route expansion
+on the original `context_repair_v6` artifacts. It should now be read together
+with the later candidate-trace replay and the subsequent source-id repair.
+
+Later state changes:
+
+- candidate-trace provenance replay removed
+  `selected_evidence_missing_exact_trace` as an active residual family on that
+  replay
+- the remaining candidate-trace `selected_source_id_invalid` tail was later
+  repaired to `0`
+
+What remains important from this note:
+
+- V6 genuinely improved projection/render
+- provenance visibility initially broadened the route surface sharply
+- verifier-facing reporting needed to split clinical/policy ambiguity from
+  provenance auditing
+
+What is no longer current:
+
+- treating the `selected_source_id_invalid` tail as an active remaining
+  verifier-adjacent surface on the repaired candidate-trace replay
+
 ## Artifacts
 
 - Projection/render V5:
@@ -195,10 +221,17 @@ predeclarations.
    - provenance/exact-trace routes
 4. Do not let the 215 `selected_evidence_missing_exact_trace` rows silently
    redefine the first LLM-verifier evaluation surface.
-5. Continue next with:
+5. Historical next steps from the time of this read were:
    - refreshed residual null-render family read from V6
    - explicit adjudication of provenance-route policy
    - cluster-family pass on the still-null or still-routed cluster rows
+
+Current follow-through:
+
+- provenance-route policy was adjudicated by splitting provenance-only rows out
+  of the first verifier main table
+- the action-only verifier path is now the primary protocol
+- the candidate-trace `selected_source_id_invalid` tail is no longer active
 
 ## Practical Thesis After V6
 

@@ -31,78 +31,63 @@ Controlling thread:
 
 ## Current Evidence
 
-- Initial validation750 GPT-4.1-mini mechanics had 732 valid clinical
-  assessments, 498 rendered rows, 234 true null renders, and 42 routed
-  V0-abstain verifier rows.
-- Context/date/value repair passes reduced the null-render surface to 177 rows
-  after V5 while preserving split discipline.
-- Post-V5 work ported mature old component families into reset ownership:
-  selected-evidence frequency repair, vague period rates, relative/conditional
-  guards, diary date lists, current-vs-historical policies, major recent relapse
-  priority, provenance route fields, evidence-trace route families, and
-  denominator-window mismatch.
-- The latest thread standardized reset-stage issue/rule language around
-  `values` and added explicit cluster route ownership:
+- Validation750 `context_repair_v6` remains the current reset baseline:
+  `580` rendered labels, `170` null renders, `488/580` Purist-correct scored
+  rows, and full split discipline preserved.
+- The next full end-to-end local-model run is now the first validation750 Qwen
+  rerun, using the combined `hybrid_parallel_state_candidate_reasoner`
+  pipeline with `ollama_chat/qwen3.6:35b` on the native Ollama chat endpoint.
+  The runnable path is now a single live pipeline command; any candidate-set,
+  projection, route, or verifier breakdown should be treated as downstream
+  analysis over the saved run artifact rather than the execution path itself.
+- The reset thread has now ported the key mature deterministic families into
+  explicit reset-stage ownership: selected-evidence frequency repair, vague
+  period rates, relative/conditional guards, diary-date lists, current-vs-
+  historical policies, major-recent-relapse priority, provenance route fields,
+  evidence-trace route families, and denominator-window mismatch.
+- Reset-stage issue language is standardized around `values`, and cluster-route
+  ownership is explicit:
   `cluster_cadence_unknown_with_per_cluster_burden` routes as
   `unresolved_cluster_cadence_with_per_cluster_burden`.
-- Fresh validation750 replay (`context_repair_v6`) now reaches all 750 rows:
-  580 rendered labels, 170 null renders, 488/580 Purist-correct scored rows,
-  and 276 routed V0-abstain verifier rows.
-- The replay's route surface is no longer null-only. In addition to the prior
-  null-render families, it now exposes provenance-sensitive route families led
-  by `selected_evidence_missing_exact_trace` (250 rows) plus
-  `selected_source_id_invalid` (9 rows); this needs a deliberate report read,
-  not silent promotion.
-- A no-call candidate-evidence provenance replay is now complete:
-  `source_normalized_phrase` no longer gates exact provenance on this surface,
-  routed rows fall from `276` to `82`, provenance-only rows fall from `220` to
-  `26`, `selected_evidence_missing_exact_trace` disappears, and the remaining
-  provenance surface is mostly the truer `selected_source_id_invalid` tail
-  (`27` rows, including `26` provenance-only rows and `1` mixed row).
-- The first saved verifier comparison packet for `context_repair_v6` is now
-  materialized. It preserves the predeclared `29 / 4 / 18 / 5 / 220` bucket
-  split and keeps provenance sidecars visible on `39` of the `56`
-  clinical/policy rows while excluding provenance-only rows from the main score
-  table.
-- Operationally, the first verifier success/failure table is the `29`-row main
-  ambiguity set only. The `4` abstain exemplars, `18` upstream-policy rows,
-  `5` rendered policy-sensitive rows, and `220` provenance-only audit rows stay
-  as separate appendix/audit surfaces.
-- The replayed route surface is now split for execution: `55` non-provenance
-  routed clinical/policy rows are the real first verifier-target surface,
-  while provenance follow-through is a separate `27`-row
-  `selected_source_id_invalid` tail rather than part of the main clinical
-  ambiguity problem.
-- The reset-stage component inventory now defines the first component-level
-  ablation report surface: family, recovered rows, newly routed rows,
-  remaining nulls, provenance validity, and audit-only `W->C` / `C->W`.
-- The first component table now isolates the `+7` V5->V6 recovered rows across
-  active frequency families: `5` selected-evidence frequency-value recoveries,
-  `2` vague-period recoveries, and `0` diary-date-list recoveries.
-- Provenance sidecars are now split family-by-family on the `56`
-  clinical/policy rows, and saved V5->V6 audit-only `W->C` / `C->W` counts are
-  attached to the component table without entering verifier-visible packets.
-- The first clean verifier experiment input is materialized as a `56`-row
-  surface: `29` main ambiguity rows plus `4` abstain, `18` upstream-policy, and
-  `5` rendered-policy appendices; the `220` provenance-only rows are excluded.
-- Executable one-family-off switches now exist for the seizure-free and
-  projection-policy families. Validation750 replays show seizure-free duration
+- The first component ablation surface is live and machine-readable. It tracks
+  family-level recovered rows, newly routed rows, remaining nulls, provenance
+  validity, and audit-only `W->C` / `C->W`; the saved V5->V6 table isolates the
+  `+7` recovered rows as `5` selected-evidence frequency-value recoveries and
+  `2` vague-period recoveries.
+- The first clean verifier experiment input is frozen as a `56`-row
+  clinical/policy surface: `29` main ambiguity rows plus `4` abstain, `18`
+  upstream-policy, and `5` rendered-policy appendices. Provenance-only rows are
+  excluded from the main verifier score surface.
+- The first live action-only verifier run over that clean surface was
+  contract-clean: `56/56` parseable outputs, `56/56` contract-valid rows, and
+  `27` non-abstain actions overall. On the `29`-row main ambiguity table the
+  split was `1` affirm, `5` reject, `15` human_review, and `8` abstain.
+- The tightened `action_only` prompt was then rerun on the isolated
+  `29`-row main ambiguity surface. The run stayed contract-clean at `29/29`
+  parseable and `29/29` contract-valid rows, but it collapsed to
+  `29/29 human_review`, with `0` affirm, `0` reject, and `0` abstain. This
+  indicates the new policy text is conservative but currently over-biases the
+  model away from decisive contradiction and policy-aware abstention.
+- The first forced-choice verifier comparison is also complete on the same
+  `56`-row surface. It produced `40` affirm, `11` human_review, `5` reject, and
+  `0` abstain, agreeing with the action-only run on only `8/56` rows
+  (`0.1429` agreement rate); this makes forced choice look substantially more
+  aggressive than the abstain-capable baseline.
+- Post-run accounting for the action-only verifier is now materialized by route
+  bucket and report section, preserving the main-table versus appendix split.
+  Operationally, only the `29`-row ambiguity table should be treated as the
+  primary success/failure surface; appendix behavior is still audit context.
+- Candidate-trace provenance follow-through is repaired. Unresolved source ids
+  now map to `source_id_not_resolved`, acceptable non-routing statuses are
+  whitelisted, and the prior `selected_source_id_invalid` tail drops to `0`
+  after replay regeneration.
+- Executable one-family-off switches exist for seizure-free duration and the
+  current projection-policy families. On validation750, seizure-free duration
   instrumentation owns `41` rendered rows on the clean candidate-trace baseline
-  (`580 -> 539` rendered when disabled), while current-summary,
-  previous-month/current-zero, and major-recent-relapse switches execute with
-  `0` aggregate delta on this saved surface.
-- The first live action-only verifier run over the clean `56`-row V6 surface is
-  now complete and contract-clean: `56/56` calls returned parseable outputs,
-  `56/56` passed row-local contract checks, and the verifier produced non-abstain
-  actions on `27` rows overall.
-- On the predeclared `29`-row main ambiguity table, the verifier action split is
-  `1` affirm, `5` reject, `15` human_review, and `8` abstain. The `27` appendix
-  rows split `4` affirm, `2` human_review, and `21` abstain; no appendix row
-  produced `reject`.
-- Focused validation for the reset path passed:
-  `99 passed` across clinical-assessment projection/render, verification route,
-  and candidate-set clinical assessment tests.
-- Full suite status after this thread: `1320 passed`.
+  (`580 -> 539` rendered when disabled), while the three current projection-
+  policy switches execute with `0` aggregate delta on this saved surface.
+- Focused reset-path validation remains green at `99 passed`, and the full suite
+  status recorded for this thread is `1320 passed`.
 
 ## Core Artifacts
 
@@ -138,8 +123,28 @@ Controlling thread:
   `docs/research/gan2026_validation750_first_verifier_experiment_input_clean29_context_repair_v6_2026-06-06.md`.
 - First live action-only verifier run:
   `docs/research/gan2026_validation750_first_verifier_live_clean29_context_repair_v6_2026-06-06.md`.
+- First verifier post-run accounting:
+  `docs/research/gan2026_validation750_first_verifier_accounting_v6_2026-06-06.md`.
+- First forced-choice verifier comparison:
+  `docs/research/gan2026_validation750_forced_choice_verifier_live_clean29_context_repair_v6_2026-06-06.md`.
+- First main-ambiguity outcome taxonomy:
+  `docs/research/gan2026_validation750_first_verifier_main_ambiguity_outcome_taxonomy_v6_2026-06-06.md`.
+- Verifier action-policy decision memo:
+  `docs/research/gan2026_validation750_verifier_action_policy_decision_v6_2026-06-06.md`.
+- Main-ambiguity-only verifier input:
+  `docs/research/gan2026_validation750_first_verifier_experiment_input_main29_context_repair_v6_2026-06-06.md`.
+- Main-ambiguity-only verifier live run:
+  `docs/research/gan2026_validation750_first_verifier_live_main29_context_repair_v6_2026-06-06.md`.
 - First live action-only verifier summary JSON:
   `experiments/gan2026_validation750_first_verifier_live_clean29_context_repair_v6_2026-06-06.json`.
+- First verifier accounting JSON:
+  `experiments/gan2026_validation750_first_verifier_accounting_v6_2026-06-06.json`.
+- First forced-choice verifier summary JSON:
+  `experiments/gan2026_validation750_forced_choice_verifier_live_clean29_context_repair_v6_2026-06-06.json`.
+- Main-ambiguity-only verifier input JSON:
+  `experiments/gan2026_validation750_first_verifier_experiment_input_main29_context_repair_v6_2026-06-06.json`.
+- Main-ambiguity-only verifier live summary JSON:
+  `experiments/gan2026_validation750_first_verifier_live_main29_context_repair_v6_2026-06-06.json`.
 - Provenance-only failure taxonomy:
   `docs/research/gan2026_validation750_provenance_only_failure_taxonomy_v6_2026-06-06.md`.
 - Candidate-evidence provenance replay route artifact:
@@ -153,16 +158,26 @@ Controlling thread:
 
 ### Now
 
-- Progress with the next steps on designing the first LLM-verifier saved-replay comparison.
+- Run the first full validation750 Qwen rerun through the combined
+  `hybrid_parallel_state_candidate_reasoner` pipeline using the native Ollama
+  route and explicit Qwen artifact naming.
+- Keep any follow-on decomposition reads clearly marked as analysis over the
+  saved combined-run artifact, not as the primary execution protocol.
+- Continue replacing stale mentions of the intermediate
+  `selected_source_id_invalid` provenance tail in reset-thread reads as those
+  docs are touched.
 
 ### Next
 
-- Design the first LLM-verifier saved-replay comparison over routed V0
-  `abstain`/`human_review` rows, using route evidence and exact source evidence
-  only; verifier output must be action-only and emit no replacement label.
-- Add component-level ablation reporting for each ported deterministic family:
-  newly rendered, newly routed, remaining null, evidence validity, route-family
-  changes, and audit-only W->C/C->W.
+- After the Qwen validation750 run completes, decide which stage-level reset
+  analyses to replay from the saved combined-run artifact for comparison
+  against the GPT-4.1 mini baseline.
+- If the Qwen full run lands near the same residual surface, return to prompt
+  tuning on the `29`-row ambiguity table with the full-run failures as the new
+  decision surface.
+- Continue filling component-level ablation coverage for ported deterministic
+  families, keeping report fields to newly rendered, newly routed, remaining
+  null, evidence validity, route-family changes, and audit-only `W->C`/`C->W`.
 
 ### Blocked
 
@@ -179,6 +194,59 @@ Controlling thread:
 
 ### Done Recently
 
+- 2026-06-06: Corrected the first full validation750 local-Qwen rerun plan so
+  the runnable path is the combined
+  `hybrid_parallel_state_candidate_reasoner` pipeline under
+  `ollama_chat/qwen3.6:35b`; stage-specific candidate/projection/verification
+  work remains downstream analysis only.
+- 2026-06-06: Added first-class `main29` verifier input/report artifacts in
+  `src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/clinical_assessment_first_verifier_report.py`
+  and repointed the live verifier runner to
+  `main29` defaults for the next prompt iteration.
+- 2026-06-06: Materialized the `29`-row main-ambiguity-only verifier input as
+  `experiments/gan2026_validation750_first_verifier_experiment_input_main29_context_repair_v6_2026-06-06.{jsonl,json}`
+  plus
+  `docs/research/gan2026_validation750_first_verifier_experiment_input_main29_context_repair_v6_2026-06-06.md`.
+- 2026-06-06: Ran the tightened action-only verifier on the isolated
+  `29`-row main ambiguity table and generated
+  `experiments/gan2026_validation750_first_verifier_live_main29_context_repair_v6_2026-06-06.{jsonl,json}`
+  plus
+  `docs/research/gan2026_validation750_first_verifier_live_main29_context_repair_v6_2026-06-06.md`.
+  The run was contract-clean (`29/29`) but returned `29/29 human_review`,
+  showing the new prompt boundary is conservative and currently over-collapsed.
+- 2026-06-06: Tightened the action-only first-verifier prompt contract in
+  `src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/clinical_assessment_first_verifier_report.py`
+  so `affirm` requires one dominant explicit burden, `reject` requires
+  contradiction, `human_review` covers unresolved but clinically plausible
+  competing burdens, and `abstain` remains for known policy/aggregation debt
+  with no safe action move.
+- 2026-06-06: Decided that the next verifier prompt/policy iteration should
+  temporarily focus on the `29`-row main ambiguity table, while the clean
+  `56`-row surface remains the broader comparison packet for the following
+  replay.
+- 2026-06-06: Continued the reset-thread documentation cleanup so the
+  controlling synthesis, completed-tasks, and review-plan reads all mark the
+  intermediate candidate-trace `selected_source_id_invalid` tail as historical
+  rather than current.
+- 2026-06-06: Completed the `29`-row main ambiguity outcome taxonomy as
+  `docs/research/gan2026_validation750_first_verifier_main_ambiguity_outcome_taxonomy_v6_2026-06-06.md`,
+  separating the first verifier surface into one rare `affirm`, five
+  contradiction-driven `reject` rows, fifteen clinically plausible but
+  unresolved `human_review` rows, and eight policy-known unresolved `abstain`
+  rows.
+- 2026-06-06: Wrote the verifier action-policy decision memo
+  `docs/research/gan2026_validation750_verifier_action_policy_decision_v6_2026-06-06.md`
+  and fixed the primary reset-thread policy as `action_only`; the forced-choice
+  run remains diagnostic only because it over-selects dominant burdens on the
+  true ambiguity surface.
+- 2026-06-06: Updated the active reset research docs so the repaired
+  candidate-trace `selected_source_id_invalid` tail is no longer described as a
+  current residual verifier surface; the older route/provenance reads now
+  explicitly mark that state as historical intermediate context.
+- 2026-06-06: Reframed the immediate verifier task after the first live runs:
+  the action-only and forced-choice comparisons are both complete, so the next
+  step is to decide protocol direction on the `29`-row ambiguity surface rather
+  than continue “designing the first verifier comparison.”
 - 2026-06-06: Implemented first-verifier post-run comparison/accounting script and generated cross-tabulation reports; also decided to include global non-routed V5->V6 transitions in a dedicated Scorer Audit Appendix in the component ablation table.
 - 2026-06-06: Decided that the three zero-delta projection-policy off-switches (`current_summary_rate_priority`, `previous_active_month_over_current_month_zero`, and `major_recent_relapse_over_background_frequency`) do not require targeted hard slices of the `validation750` dataset, since their functionality is already robustly verified by explicit unit tests.
 - 2026-06-06: Repaired the `27`-row candidate-trace `selected_source_id_invalid` tail by mapping unresolved source-ids to `"source_id_not_resolved"` and whitelisting acceptable non-routing statuses in routing and suspicious state checks. Regenerated validation750 projection render, route, and component ablation artifacts on disk; `selected_source_id_invalid` dropped to `0`.
