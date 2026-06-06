@@ -5,32 +5,48 @@ Date: 2026-06-05
 Status: review questions resolved on 2026-06-06. Completed decisions,
 generated artifacts, row reviews, and implementation notes have been moved to
 `docs/research/gan2026_component_architecture_reset_completed_tasks_2026-06-05.md`.
+The later validation750 reset-state update, post-V5 ports, value-language
+decision, cluster route contract, and reset-stage component inventory are now
+captured in:
+
+- `docs/research/gan2026_architecture_reset_synthesis_and_next_questions_2026-06-06.md`
+- `docs/research/gan2026_validation750_context_repair_v6_read_2026-06-06.md`
+- `docs/research/gan2026_validation750_route_bucket_split_v6_2026-06-06.md`
+- `docs/research/gan2026_validation750_cluster_family_pass_v6_2026-06-06.md`
+- `docs/research/gan2026_validation750_verifier_candidate_surface_v6_2026-06-06.md`
+- `docs/research/gan2026_validation750_null_action_taxonomy_v6_2026-06-06.md`
+- `docs/research/gan2026_validation750_first_verifier_report_predeclaration_v6_2026-06-06.md`
+- `experiments/gan2026_reset_stage_component_inventory_v0_2026-06-06.md`
 
 This plan does not authorize new holdout work, benchmark-comparable claims, or
 row-level locked-test review.
 
 ## Current Position
 
-The reset has reached a clean verifier/action boundary:
+The original validation250 verifier/action review is complete and should now be
+treated as historical context. The current reset position is the validation750
+V6 development-mechanics surface:
 
-- extraction, candidate-set, clinical-assessment, projection/render,
-  score-policy, verification-route, and deterministic verification-action V0
-  mechanics have all been implemented on `validation250`;
-- route V6 contains 5 routed rows, all null-rendered risk families;
-- `VerificationDecision` V0 emits deterministic baseline actions over those 5
-  routed rows: 4 `abstain` and 1 `human_review`;
-- no remaining route V6 row receives a replacement scorer-facing label.
+- extraction, candidate-set, clinical-assessment, normalize/project ports,
+  verification-route, and deterministic verification-action mechanics all exist
+  under reset-stage ownership;
+- fresh `context_repair_v6` replay reaches all 750 validation rows;
+- rendered labels rose to 580 and true null renders fell to 170;
+- the routed surface expanded to 276 rows, driven mainly by provenance route
+  visibility rather than a clean increase in verifier-eligible clinical
+  ambiguity;
+- the first verifier comparison surface is therefore predeclared as the 56
+  mixed clinical/policy rows, with the 220 provenance-only routes kept out of
+  the first success/failure score table.
 
 Active mechanics artifacts:
 
-- Projection/render:
-  `experiments/gan2026_clinical_assessment_projection_render_validation250_v7.jsonl`
-- Score-policy audit:
-  `experiments/gan2026_clinical_assessment_projection_score_validation250_v6.jsonl`
-- Verification-route report:
-  `experiments/gan2026_validation250_verification_route_v6.jsonl`
-- VerificationDecision baseline:
-  `experiments/gan2026_validation250_verification_decision_v0.jsonl`
+- Projection/render and score artifacts under
+  `experiments/gan2026_*validation750*gpt41mini_context_repair_v6_2026-06-06.*`
+- Validation750 verification-route artifacts under
+  `experiments/gan2026_validation750_verification_route_gpt41mini_context_repair_v6_2026-06-06.*`
+- Validation750 verification-decision artifacts under
+  `experiments/gan2026_validation750_verification_decision_gpt41mini_context_repair_v6_2026-06-06.*`
 
 ## Boundary Decisions To Preserve
 
@@ -43,6 +59,12 @@ Active mechanics artifacts:
 - Score context is audit-only and must not choose route or action behavior.
 - Comparator preservation, if added later, must be a named action policy rather
   than hidden verifier repair or projection behavior.
+- Provenance-only route families are audit/instrumentation debt until explicitly
+  adjudicated; they are not silent promotion evidence and not the default first
+  verifier score table.
+- Reset-stage issue/rule language should use plain-language `values`.
+- Cluster convention rendering may coexist with verification routing when
+  cadence or axis ownership remains unresolved.
 
 ## Outstanding Questions
 
@@ -57,6 +79,24 @@ under:
 - `Comparator Preservation Deferral Decision`;
 - `Validation750 And Full-Validation Counter Surface Decision`;
 - `Legacy Component Rationalisation Decision`.
+
+The remaining live work is no longer the validation250 review checklist below.
+The next durable reset tasks are:
+
+1. Keep the 220 provenance-only routed rows out of the first verifier
+   success/failure table and track them as audit/instrumentation debt.
+2. Use the V6 null-action taxonomy operationally:
+   - 29 verifier-eligible ambiguity rows;
+   - 18 upstream policy/parser rows;
+   - 4 abstain rows.
+3. Use the predeclared first verifier report layout:
+   - 29-row main ambiguity score table;
+   - 4 abstain exemplars;
+   - 18 upstream-policy appendix;
+   - 5 rendered policy-sensitive appendix;
+   - 220 provenance-only audit appendix.
+4. Use the reset-stage component inventory to define the first component-level
+   ablation report surface.
 
 ### 1. LLM Verifier Evaluation Surface
 

@@ -9,6 +9,61 @@ This document preserves historical decisions, generated artifacts, row reviews,
 and verification notes. It does not authorize new holdout work,
 benchmark-comparable claims, or row-level locked-test review.
 
+## Validation750 Reset Addendum On 2026-06-06
+
+The reset thread later moved beyond the original validation250 verifier/action
+boundary. This addendum records the durable validation750 update so the
+completed-tasks document does not stop at the older 5-row route surface.
+
+### Validation750 V6 Mechanics State
+
+- Fresh no-call replay `context_repair_v6` reached all 750 validation rows
+  under locked split discipline.
+- Rendered-label rows increased to 580 and true null renders fell to 170.
+- Scored rendered rows reached 488/580 Purist-correct on the
+  validation-development surface.
+- The verifier route surface expanded sharply to 276 rows, but this was not a
+  simple growth in clinical ambiguity. The new route load is dominated by
+  provenance-sensitive families led by
+  `selected_evidence_missing_exact_trace` plus
+  `selected_source_id_invalid`.
+- The resulting interpretation is that reset reporting must now separate:
+  clinical/policy ambiguity routes, upstream parser/policy debt, and
+  provenance-only audit routes.
+
+### Post-V5 Ports And Contract Decisions Preserved
+
+- Ported mature old behavior into reset-stage ownership without broad fallback:
+  selected-evidence frequency repair, vague period rates, diary date-list
+  recovery, seizure-free duration/date instrumentation, current-vs-historical
+  policy nodes, major recent relapse priority, and provenance route families.
+- Standardized reset-stage issue language around plain-language `values`.
+  Parsed quantities remain deterministic stage-owned data, but artifact wording
+  is no longer parser-jargon heavy.
+- Added explicit cluster route ownership: when cadence remains unresolved but
+  per-cluster burden is renderable, the route family is
+  `unresolved_cluster_cadence_with_per_cluster_burden`.
+- Preserved the guardrail that provenance families are report/verification
+  concerns, not silent promotion triggers and not evidence to collapse into the
+  first verifier success/failure table.
+
+### Documentation Artifacts Added
+
+- `docs/research/gan2026_validation750_context_repair_v6_read_2026-06-06.md`
+- `docs/research/gan2026_validation750_route_bucket_split_v6_2026-06-06.md`
+- `docs/research/gan2026_validation750_cluster_family_pass_v6_2026-06-06.md`
+- `docs/research/gan2026_validation750_verifier_candidate_surface_v6_2026-06-06.md`
+- `docs/research/gan2026_validation750_null_action_taxonomy_v6_2026-06-06.md`
+- `docs/research/gan2026_validation750_first_verifier_report_predeclaration_v6_2026-06-06.md`
+- `experiments/gan2026_reset_stage_component_inventory_v0_2026-06-06.md`
+
+### Resume Boundary After The Addendum
+
+- Do not treat the full 276 routed rows as the first verifier score table.
+- Keep the 220 provenance-only routed rows in audit/instrumentation appendices.
+- Use the reset-stage component inventory to define the first component-level
+  ablation report surface before any broader verifier promotion language.
+
 ## Work Completed On 2026-06-05
 
 ### Phase 0 Surface

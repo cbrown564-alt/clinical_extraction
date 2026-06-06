@@ -64,6 +64,8 @@ Controlling thread:
   `docs/research/gan2026_architecture_reset_synthesis_and_next_questions_2026-06-06.md`.
 - Fresh replay comparison read:
   `docs/research/gan2026_validation750_context_repair_v6_read_2026-06-06.md`.
+- Reset-stage component inventory:
+  `experiments/gan2026_reset_stage_component_inventory_v0_2026-06-06.md`.
 - Route bucket split read:
   `docs/research/gan2026_validation750_route_bucket_split_v6_2026-06-06.md`.
 - Cluster-family pass read:
@@ -93,10 +95,9 @@ Controlling thread:
 
 ### Next
 
-- Create a reset-stage component inventory: old name, new family, portability
-  category, ablation switch, and status.
-- Update reset completed-tasks/review docs with the validation750 read, post-V5
-  ports, value-language decision, and cluster route contract.
+- Use the reset-stage component inventory to define the first component-level
+  ablation report surface: family, recovered rows, newly routed rows, remaining
+  nulls, provenance validity, and audit-only W->C/C->W.
 - Decide whether vague cluster-count cadence needs a reset-native contract, or
   should remain routed policy debt after the current verifier-candidate report.
 - Prepare the first saved verifier comparison using the predeclared layout and
@@ -126,6 +127,15 @@ Controlling thread:
 
 ### Done Recently
 
+- 2026-06-06: Updated the reset completed-tasks and review-plan docs so they
+  now acknowledge the validation750 `context_repair_v6` read, post-V5 ports,
+  plain-language `values` decision, explicit cluster route contract, and the
+  reset-stage component inventory instead of stopping at the older
+  validation250-only verifier boundary.
+- 2026-06-06: Created the reset-stage component inventory artifact as
+  `experiments/gan2026_reset_stage_component_inventory_v0_2026-06-06.{json,md}`,
+  mapping old families to reset-stage owners, portability categories, ablation
+  switches, and status so future ports stay explicit and ablatable.
 - 2026-06-06: Decided that provenance sidecars remain visible to the first
   verifier prompt on the 39 mixed clinical/policy rows, but stay secondary to
   the non-provenance action family; also predeclared the first verifier report

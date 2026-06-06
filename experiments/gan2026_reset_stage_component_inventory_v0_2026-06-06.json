@@ -1,0 +1,262 @@
+{
+  "artifact_kind": "gan2026_reset_stage_component_inventory_v0",
+  "claim_boundary": "Validation-development component inventory only. This artifact records how old Gan 2026 component families map into reset-stage owners, portability categories, and ablation switches. It authorizes no locked-test row-level inspection, no benchmark-comparable claim, and no whole-pipeline promotion.",
+  "date": "2026-06-06",
+  "inventory": [
+    {
+      "ablation_switch": "normalize_selected_evidence_frequency_value_recovery",
+      "issue_or_rule_ids": [
+        "frequency_rate_values_repaired_from_primary_candidate",
+        "frequency_rate_values_repaired_from_selected_evidence"
+      ],
+      "new_family": "selected_evidence_frequency_value_recovery",
+      "notes": "Ported as explicit reset normalization instead of hidden scorer-facing repair.",
+      "old_name": "selected-evidence frequency repair",
+      "portability_category": "seizure_frequency",
+      "reset_stage": "normalize",
+      "status": "ported_v6"
+    },
+    {
+      "ablation_switch": "normalize_vague_period_frequency_value_recovery",
+      "issue_or_rule_ids": [
+        "frequency_label_values_unparsed",
+        "frequency_rate_values_incomplete"
+      ],
+      "new_family": "vague_period_frequency_value_recovery",
+      "notes": "Covers vague weekly/monthly/yearly burden only when an explicit period exists in source-backed evidence.",
+      "old_name": "vague period rates",
+      "portability_category": "seizure_frequency",
+      "reset_stage": "normalize",
+      "status": "ported_v6"
+    },
+    {
+      "ablation_switch": "normalize_diary_date_list_frequency_recovery",
+      "issue_or_rule_ids": [
+        "frequency_rate_values_repaired_from_diary_dates"
+      ],
+      "new_family": "diary_date_list_frequency_recovery",
+      "notes": "Kept separate because diary-style aggregation is useful on Gan letters but needs explicit portability discipline.",
+      "old_name": "diary date lists",
+      "portability_category": "gan2026_specific",
+      "reset_stage": "normalize",
+      "status": "ported_v6"
+    },
+    {
+      "ablation_switch": "normalize_seizure_free_duration_date_instrumentation",
+      "issue_or_rule_ids": [
+        "seizure_free_duration_repaired_from_since_date",
+        "seizure_free_duration_repaired_from_last_event_date"
+      ],
+      "new_family": "seizure_free_duration_date_instrumentation",
+      "notes": "Owns durations, since-dates, last-event anchors, and same-note temporal carry-forward before projection.",
+      "old_name": "seizure-free duration/date handling",
+      "portability_category": "seizure_frequency",
+      "reset_stage": "normalize",
+      "status": "ported_v6"
+    },
+    {
+      "ablation_switch": "project_current_summary_rate_priority",
+      "issue_or_rule_ids": [
+        "current_summary_rate_priority"
+      ],
+      "new_family": "current_summary_rate_priority",
+      "notes": "Allows explicit current summary burden to own projection when it cleanly outranks long-window background evidence.",
+      "old_name": "summary-rate priority",
+      "portability_category": "seizure_frequency",
+      "reset_stage": "project",
+      "status": "ported_v6"
+    },
+    {
+      "ablation_switch": "project_previous_active_month_over_current_month_zero",
+      "issue_or_rule_ids": [
+        "previous_active_month_over_current_month_zero"
+      ],
+      "new_family": "previous_active_month_over_current_month_zero",
+      "notes": "Restores the narrow current-vs-historical policy family without reopening broad additive rendering.",
+      "old_name": "previous-month/current-month aggregation",
+      "portability_category": "seizure_frequency",
+      "reset_stage": "project",
+      "status": "ported_v6"
+    },
+    {
+      "ablation_switch": "project_major_recent_relapse_over_background_frequency",
+      "issue_or_rule_ids": [
+        "major_recent_relapse_over_background_frequency"
+      ],
+      "new_family": "major_recent_relapse_over_background_frequency",
+      "notes": "A dominant recent convulsive relapse can own the projected current burden when source-backed and policy-named.",
+      "old_name": "major-semiology recent relapse priority",
+      "portability_category": "clinical_epilepsy",
+      "reset_stage": "project",
+      "status": "ported_v6"
+    },
+    {
+      "ablation_switch": "route_relative_only_trend",
+      "issue_or_rule_ids": [
+        "relative_change_without_current_baseline"
+      ],
+      "new_family": "relative_only_trend",
+      "notes": "Moved out of anonymous parse failure and into an explicit route family for non-renderable trend-only evidence.",
+      "old_name": "relative-only trend guard",
+      "portability_category": "clinical_epilepsy",
+      "reset_stage": "verify",
+      "status": "ported_route_family_v6"
+    },
+    {
+      "ablation_switch": "route_conditional_only_trigger",
+      "issue_or_rule_ids": [
+        "conditional_only_trigger_without_baseline"
+      ],
+      "new_family": "conditional_only_trigger",
+      "notes": "Conditional event triggers are now explicit verification debt rather than silent unknown/null drift.",
+      "old_name": "conditional-only trigger guard",
+      "portability_category": "clinical_epilepsy",
+      "reset_stage": "verify",
+      "status": "ported_route_family_v6"
+    },
+    {
+      "ablation_switch": "route_selected_evidence_missing_exact_trace",
+      "issue_or_rule_ids": [
+        "selected_evidence_missing_exact_trace"
+      ],
+      "new_family": "selected_evidence_missing_exact_trace",
+      "notes": "Ported only after the reset gained explicit provenance fields with exact-trace and source-id status.",
+      "old_name": "selected-evidence missing exact trace",
+      "portability_category": "general",
+      "reset_stage": "verify",
+      "status": "ported_route_family_v6"
+    },
+    {
+      "ablation_switch": "route_selected_source_id_invalid",
+      "issue_or_rule_ids": [
+        "selected_source_id_invalid"
+      ],
+      "new_family": "selected_source_id_invalid",
+      "notes": "Separated from missing exact trace so provenance review can distinguish invalid ids from non-exact evidence.",
+      "old_name": "selected source id invalid",
+      "portability_category": "general",
+      "reset_stage": "verify",
+      "status": "ported_route_family_v6"
+    },
+    {
+      "ablation_switch": "route_denominator_window_mismatch",
+      "issue_or_rule_ids": [
+        "denominator_window_mismatch"
+      ],
+      "new_family": "denominator_window_mismatch",
+      "notes": "Kept as route/report ownership because the Gan-compatible label can be rendered while the denominator semantics remain review-sensitive.",
+      "old_name": "denominator-window mismatch",
+      "portability_category": "benchmark_format",
+      "reset_stage": "verify",
+      "status": "ported_route_family_v6"
+    },
+    {
+      "ablation_switch": "route_unresolved_cluster_cadence_with_per_cluster_burden",
+      "issue_or_rule_ids": [
+        "cluster_cadence_unknown_with_per_cluster_burden"
+      ],
+      "new_family": "unresolved_cluster_cadence_with_per_cluster_burden",
+      "notes": "Reset now allows a convention-compatible rendered label while routing the remaining cadence/axis ambiguity for review.",
+      "old_name": "cluster cadence versus per-cluster burden ambiguity",
+      "portability_category": "seizure_frequency",
+      "reset_stage": "verify",
+      "status": "ported_route_contract_v6"
+    },
+    {
+      "ablation_switch": "verify_named_comparator_preservation_action_policy",
+      "issue_or_rule_ids": [
+        "comparator_preservation_policy_pending"
+      ],
+      "new_family": "named_comparator_preservation_action_policy",
+      "notes": "Explicitly deferred. If it returns, it must be a named action policy rather than hidden fallback.",
+      "old_name": "comparator-label preservation",
+      "portability_category": "benchmark_format",
+      "reset_stage": "verify",
+      "status": "pending_policy_decision"
+    },
+    {
+      "ablation_switch": "report_audit_sidecars_only",
+      "issue_or_rule_ids": [
+        "h6_h9_h10_audit_only"
+      ],
+      "new_family": "audit_sidecars_only",
+      "notes": "Useful instrumentation remains available, but these no longer count as core reset pipeline stages.",
+      "old_name": "H6/H9/H10 sidecars",
+      "portability_category": "general",
+      "reset_stage": "report",
+      "status": "retained_audit_only"
+    },
+    {
+      "ablation_switch": "report_stage_owned_component_evidence_matrix",
+      "issue_or_rule_ids": [
+        "component_evidence_matrix_audit_only"
+      ],
+      "new_family": "stage_owned_component_evidence_matrix",
+      "notes": "Retained as audit/reporting debt until it is fully redesigned around the reset-stage schemas.",
+      "old_name": "component evidence matrix",
+      "portability_category": "general",
+      "reset_stage": "report",
+      "status": "retained_audit_only"
+    },
+    {
+      "ablation_switch": "retired_do_not_port_broad_hybrid_fallback",
+      "issue_or_rule_ids": [
+        "broad_hybrid_fallback_retired"
+      ],
+      "new_family": "do_not_port_broad_hybrid_fallback",
+      "notes": "Explicitly rejected because it blurred selection, projection, and fallback ownership.",
+      "old_name": "broad hybrid adjudicator fallback",
+      "portability_category": "gan2026_specific",
+      "reset_stage": "retired",
+      "status": "retired_do_not_port"
+    },
+    {
+      "ablation_switch": "retired_do_not_port_broad_state_graph_projection",
+      "issue_or_rule_ids": [
+        "broad_state_graph_projection_retired"
+      ],
+      "new_family": "do_not_port_broad_state_graph_projection",
+      "notes": "Historical evidence is preserved, but broad projection replacement stays out of the reset path.",
+      "old_name": "broad state-graph projection",
+      "portability_category": "seizure_frequency",
+      "reset_stage": "retired",
+      "status": "retired_do_not_port"
+    }
+  ],
+  "next_question": "Use this crosswalk to drive component-level ablation reporting and to keep future ports stage-owned instead of reviving broad fallback.",
+  "source_artifacts": [
+    "PROJECT_STATUS.md",
+    "docs/research/contribution_thesis.md",
+    "docs/research/gan2026_architecture_reset_synthesis_and_next_questions_2026-06-06.md",
+    "docs/research/gan2026_component_architecture_reset_completed_tasks_2026-06-05.md",
+    "docs/research/gan2026_component_architecture_reset_review_plan_2026-06-05.md"
+  ],
+  "split_manifest": "gan2026_split_v1",
+  "summary": {
+    "by_portability_category": {
+      "benchmark_format": 2,
+      "clinical_epilepsy": 3,
+      "gan2026_specific": 2,
+      "general": 4,
+      "seizure_frequency": 7
+    },
+    "by_stage": {
+      "normalize": 4,
+      "project": 3,
+      "report": 2,
+      "retired": 2,
+      "verify": 7
+    },
+    "by_status": {
+      "pending_policy_decision": 1,
+      "ported_route_contract_v6": 1,
+      "ported_route_family_v6": 5,
+      "ported_v6": 7,
+      "retained_audit_only": 2,
+      "retired_do_not_port": 2
+    },
+    "component_families": 18,
+    "pending_policy_families": 1,
+    "ported_or_retained_families": 15
+  }
+}
