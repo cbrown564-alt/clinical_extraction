@@ -11,7 +11,10 @@ ROUTE_POLICY_ID = "gan2026_validation250_verification_route_policy_v0"
 
 VerificationRouteFamily = Literal[
     "seizure_free_conflict",
+    "seizure_free_proxy_evidence_overreach",
     "cluster_axis_ambiguity",
+    "medication_cadence_ambiguity",
+    "cyclic_window_without_event_count",
     "mixed_window_or_vague_addition",
     "multiple_current_primary_facts",
     "projection_would_change_supported_comparator",

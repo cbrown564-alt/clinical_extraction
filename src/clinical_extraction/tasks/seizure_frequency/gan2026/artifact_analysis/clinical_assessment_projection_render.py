@@ -6,6 +6,7 @@ import argparse
 import json
 from collections import Counter
 from collections.abc import Mapping, Sequence
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -18,12 +19,16 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.clinical_asses
     ClinicalAssessment,
     NormalizedBurden,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
+    label_to_frequency_record,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.projection_render import (
     PROJECTION_POLICY_ID,
     RENDER_POLICY_ID,
     SCHEMA_VERSION,
     FinalRenderedLabel,
     ProjectionDecision,
+    ProjectionOwner,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     load_jsonl_rows,
@@ -34,6 +39,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
     llm_candidate_set_selector_schema_probe as selector_probe,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.selected_evidence import (
+    selected_evidence_derivation,
 )
 
 DEFAULT_ASSESSMENT_JSONL_PATH = Path(
@@ -53,6 +61,15 @@ DEFAULT_JSON_PATH = Path(
 DEFAULT_REPORT_PATH = Path(
     "experiments/gan2026_clinical_assessment_projection_render_validation250_v0.md"
 )
+
+
+@dataclass(frozen=True)
+class ProjectionOutcome:
+    label: str | None
+    basis: str
+    owner: ProjectionOwner
+    rule_id: str
+    issues: list[str]
 
 
 def build_projection_render_artifact(
@@ -138,23 +155,27 @@ def project_and_render(
     candidate_set: CandidateSet,
 ) -> tuple[ProjectionDecision, FinalRenderedLabel]:
     source_ids = _source_ids_for_assessment(assessment, candidate_set)
-    projection_label, projection_basis, projection_issues = _project_label_semantics(assessment)
+    outcome = _project_label_semantics(assessment, candidate_set=candidate_set)
     projection = ProjectionDecision(
         source_row_index=assessment.source_row_index,
-        component_owner="clinical_assessment_projection",
+        component_owner=outcome.owner,
+        projection_owner=outcome.owner,
+        projection_rule_id=outcome.rule_id,
         projection_kind=assessment.assessment_kind,
-        projection_basis=projection_basis,
-        projected_label_semantics=projection_label or "",
+        projection_basis=outcome.basis,
+        projected_label_semantics=outcome.label or "",
         source_assessment_kind=assessment.assessment_kind,
         source_aggregation_policy=assessment.aggregation_policy,
         source_candidate_ids=list(assessment.primary_candidate_ids),
         source_ids=source_ids,
-        projection_issues=[*assessment.normalization_issues, *projection_issues],
+        projection_issues=[*assessment.normalization_issues, *outcome.issues],
     )
     rendered_label, render_basis, render_issues = _render_label(projection)
     rendered = FinalRenderedLabel(
         source_row_index=assessment.source_row_index,
-        component_owner="final_label_renderer",
+        component_owner=projection.projection_owner,
+        projection_owner=projection.projection_owner,
+        projection_rule_id=projection.projection_rule_id,
         rendered_label=rendered_label,
         render_basis=render_basis,
         render_issues=render_issues,
@@ -189,6 +210,14 @@ def summarize_rows(
         for row in rows
         if row.get("final_rendered_label")
     )
+    projection_owner_counts = Counter(
+        str((row.get("projection_decision") or {}).get("projection_owner"))
+        for row in projected
+    )
+    projection_rule_counts = Counter(
+        str((row.get("projection_decision") or {}).get("projection_rule_id"))
+        for row in projected
+    )
     issue_counts = Counter(
         issue
         for row in rows
@@ -215,6 +244,8 @@ def summarize_rows(
             "null_rendered_label_rows": len(null_rendered),
             "row_issue_rows": sum(bool(row.get("row_issues")) for row in rows),
             "projection_kind_counts": dict(sorted(projection_kind_counts.items())),
+            "projection_owner_counts": dict(sorted(projection_owner_counts.items())),
+            "projection_rule_counts": dict(sorted(projection_rule_counts.items())),
             "render_basis_counts": dict(sorted(render_basis_counts.items())),
             "issue_counts": dict(sorted(issue_counts.items())),
             "null_rendered_source_row_indices": [
@@ -265,6 +296,12 @@ def write_report(
     ]
     for kind, count in summary["projection_kind_counts"].items():
         lines.append(f"- `{kind}`: {count}")
+    lines.extend(["", "## Projection Owners", ""])
+    for owner, count in summary["projection_owner_counts"].items():
+        lines.append(f"- `{owner}`: {count}")
+    lines.extend(["", "## Projection Rules", ""])
+    for rule_id, count in summary["projection_rule_counts"].items():
+        lines.append(f"- `{rule_id}`: {count}")
     lines.extend(["", "## Render Bases", ""])
     for basis, count in summary["render_basis_counts"].items():
         lines.append(f"- `{basis}`: {count}")
@@ -303,25 +340,89 @@ def _reassemble_assessment(
 
 def _project_label_semantics(
     assessment: ClinicalAssessment,
-) -> tuple[str | None, str, list[str]]:
+    *,
+    candidate_set: CandidateSet,
+) -> ProjectionOutcome:
     burden = assessment.normalized_burden
     if assessment.assessment_kind == "frequency_rate":
+        dominant_vague_label = _dominant_vague_current_burden_label(
+            assessment,
+            candidate_set,
+        )
+        if dominant_vague_label is not None:
+            return ProjectionOutcome(
+                dominant_vague_label,
+                "dominant_vague_current_burden",
+                "rate_projection_policy",
+                "dominant_vague_current_burden_v0",
+                [],
+            )
         label = _rate_label(burden)
         if label is None:
-            return None, "frequency_rate", ["frequency_rate_operands_incomplete"]
-        return label, "frequency_rate", []
+            return ProjectionOutcome(
+                None,
+                "frequency_rate",
+                "rate_projection_policy",
+                "frequency_rate_operands_v0",
+                ["frequency_rate_operands_incomplete"],
+            )
+        return ProjectionOutcome(
+            label,
+            "frequency_rate",
+            "rate_projection_policy",
+            "frequency_rate_operands_v0",
+            [],
+        )
     if assessment.assessment_kind == "cluster_frequency":
-        return _cluster_label(burden)
+        return _cluster_label(assessment, candidate_set=candidate_set)
     if assessment.assessment_kind == "seizure_free":
         label = _seizure_free_label(burden)
         if label is None:
-            return None, "seizure_free_duration", ["seizure_free_duration_required"]
-        return label, "seizure_free_duration", []
+            return ProjectionOutcome(
+                None,
+                "seizure_free_duration",
+                "boundary_projection_policy",
+                "seizure_free_duration_required_v0",
+                ["seizure_free_duration_required"],
+            )
+        if _has_seizure_free_proxy_evidence_overreach(assessment, candidate_set):
+            return ProjectionOutcome(
+                None,
+                "seizure_free_proxy_evidence",
+                "boundary_projection_policy",
+                "seizure_free_proxy_evidence_block_v0",
+                ["seizure_free_proxy_evidence_overreach"],
+            )
+        return ProjectionOutcome(
+            label,
+            "seizure_free_duration",
+            "boundary_projection_policy",
+            "seizure_free_duration_projection_v0",
+            [],
+        )
     if assessment.assessment_kind == "unknown_frequency":
-        return "unknown", "unknown_frequency_internal_state", []
+        return ProjectionOutcome(
+            "unknown",
+            "unknown_frequency_internal_state",
+            "benchmark_renderer",
+            "unknown_frequency_sentinel_render_v0",
+            [],
+        )
     if assessment.assessment_kind == "no_reference":
-        return "no seizure frequency reference", "no_reference_internal_state", []
-    return None, "unresolved_multiple", ["unresolved_multiple_not_renderable"]
+        return ProjectionOutcome(
+            "no seizure frequency reference",
+            "no_reference_internal_state",
+            "benchmark_renderer",
+            "no_reference_sentinel_render_v0",
+            [],
+        )
+    return ProjectionOutcome(
+        None,
+        "unresolved_multiple",
+        "benchmark_renderer",
+        "unresolved_multiple_no_render_v0",
+        ["unresolved_multiple_not_renderable"],
+    )
 
 
 def _render_label(projection: ProjectionDecision) -> tuple[str | None, str, list[str]]:
@@ -344,7 +445,29 @@ def _rate_label(burden: NormalizedBurden) -> str | None:
     return f"{_format_range(burden.count_low, burden.count_high)} per {_format_period(burden)}"
 
 
-def _cluster_label(burden: NormalizedBurden) -> tuple[str | None, str, list[str]]:
+def _cluster_label(
+    assessment: ClinicalAssessment,
+    *,
+    candidate_set: CandidateSet,
+) -> ProjectionOutcome:
+    burden = assessment.normalized_burden
+    medication_cadence = _has_primary_medication_cadence(assessment, candidate_set)
+    if (
+        not medication_cadence
+        and not _has_normalized_cluster_cadence(burden)
+        and _has_unknown_cadence_multiple_cluster_burden(
+            assessment,
+            candidate_set,
+        )
+    ):
+        return ProjectionOutcome(
+            "unknown, multiple per cluster",
+            "unknown_cadence_cluster_burden",
+            "cluster_projection_policy",
+            "unknown_cadence_multiple_per_cluster_v0",
+            [],
+        )
+    cyclic_window = _has_primary_cyclic_vulnerability_window(assessment, candidate_set)
     if (
         burden.cluster_count_low is None
         or burden.cluster_count_high is None
@@ -352,23 +475,54 @@ def _cluster_label(burden: NormalizedBurden) -> tuple[str | None, str, list[str]
         or burden.cluster_period_high is None
         or burden.cluster_period_unit is None
     ):
-        return None, "cluster_frequency", ["cluster_cadence_operands_incomplete"]
+        issues = ["cluster_cadence_operands_incomplete"]
+        if medication_cadence:
+            issues.append("medication_cadence_ambiguity")
+        if cyclic_window:
+            issues.append("cyclic_window_without_event_count")
+        return ProjectionOutcome(
+            None,
+            "cluster_frequency",
+            "cluster_projection_policy",
+            "cluster_cadence_operands_required_v0",
+            issues,
+        )
     cadence = (
         f"{_format_range(burden.cluster_count_low, burden.cluster_count_high)} "
         f"cluster per {_format_cluster_period(burden)}"
     )
     if burden.events_per_cluster_low is None or burden.events_per_cluster_high is None:
+        if medication_cadence:
+            return ProjectionOutcome(
+                None,
+                "cluster_frequency",
+                "cluster_projection_policy",
+                "cluster_cadence_as_event_rate_when_size_absent_v0",
+                ["medication_cadence_ambiguity"],
+            )
         simple_rate = (
             f"{_format_range(burden.cluster_count_low, burden.cluster_count_high)} "
             f"per {_format_cluster_period(burden)}"
         )
-        return simple_rate, "cluster_cadence_without_size", []
+        return ProjectionOutcome(
+            simple_rate,
+            "cluster_cadence_without_size",
+            "cluster_projection_policy",
+            "cluster_cadence_as_event_rate_when_size_absent_v0",
+            [],
+        )
     label = (
         f"{cadence}, "
         f"{_format_range(burden.events_per_cluster_low, burden.events_per_cluster_high)} "
         "per cluster"
     )
-    return label, "cluster_cadence_with_events_per_cluster", []
+    return ProjectionOutcome(
+        label,
+        "cluster_cadence_with_events_per_cluster",
+        "cluster_projection_policy",
+        "cluster_cadence_with_events_per_cluster_v0",
+        [],
+    )
 
 
 def _seizure_free_label(burden: NormalizedBurden) -> str | None:
@@ -430,6 +584,396 @@ def _source_ids_for_assessment(
             continue
         source_ids.extend(candidate.source_ids)
     return sorted(set(source_ids))
+
+
+def _has_primary_medication_cadence(
+    assessment: ClinicalAssessment,
+    candidate_set: CandidateSet,
+) -> bool:
+    by_id = {candidate.candidate_id: candidate for candidate in candidate_set.candidates}
+    return any(
+        _is_medication_cadence_text(
+            " ".join(
+                part
+                for part in [
+                    _candidate_source_phrase(candidate),
+                    candidate.evidence_span.text,
+                ]
+                if part
+            )
+        )
+        for candidate_id in assessment.primary_candidate_ids
+        for candidate in [by_id.get(candidate_id)]
+        if candidate is not None
+    )
+
+
+def _has_seizure_free_proxy_evidence_overreach(
+    assessment: ClinicalAssessment,
+    candidate_set: CandidateSet,
+) -> bool:
+    by_id = {candidate.candidate_id: candidate for candidate in candidate_set.candidates}
+    primary_candidates = [
+        candidate
+        for candidate_id in assessment.primary_candidate_ids
+        for candidate in [by_id.get(candidate_id)]
+        if candidate is not None
+    ]
+    if not primary_candidates:
+        return False
+    texts = [
+        _canonicalize_derivation_text(
+            " ".join(
+                part
+                for part in [
+                    _candidate_source_phrase(candidate),
+                    candidate.evidence_span.text,
+                ]
+                if part
+            )
+        )
+        for candidate in primary_candidates
+    ]
+    explicit = any(_is_explicit_seizure_free_text(text) for text in texts)
+    proxy_or_conditional = any(
+        _is_seizure_free_proxy_or_conditional_text(text) for text in texts
+    )
+    unresolved = any(
+        any("unresolved" in source_id for source_id in candidate.source_ids)
+        for candidate in primary_candidates
+    )
+    return (proxy_or_conditional or unresolved) and not explicit
+
+
+def _is_explicit_seizure_free_text(text: str) -> bool:
+    lower = text.lower()
+    return any(
+        marker in lower
+        for marker in (
+            "no seizures",
+            "no seizure",
+            "no events",
+            "no further events",
+            "seizure-free",
+            "seizure free",
+            "free of seizures",
+        )
+    )
+
+
+def _is_seizure_free_proxy_or_conditional_text(text: str) -> bool:
+    lower = text.lower()
+    return any(
+        marker in lower
+        for marker in (
+            "rescue medication",
+            "rescue med",
+            "required",
+            "injur",
+            "admission",
+            "attendances",
+            "if breakthrough events recur",
+            "breakthrough events recur",
+            "if this occurs",
+            "better over",
+        )
+    )
+
+
+def _dominant_vague_current_burden_label(
+    assessment: ClinicalAssessment,
+    candidate_set: CandidateSet,
+) -> str | None:
+    if assessment.aggregation_policy != "additive_same_window":
+        return None
+    by_id = {candidate.candidate_id: candidate for candidate in candidate_set.candidates}
+    derived: list[tuple[str, float, Any]] = []
+    for candidate_id in assessment.primary_candidate_ids:
+        candidate = by_id.get(candidate_id)
+        if candidate is None:
+            continue
+        if candidate.temporality not in {"current", "recent"}:
+            continue
+        text = " ".join(
+            part
+            for part in [
+                _candidate_source_phrase(candidate),
+                candidate.evidence_span.text,
+            ]
+            if part
+        )
+        text = _canonicalize_derivation_text(text)
+        if not text or _is_medication_cadence_text(text):
+            continue
+        label = selected_evidence_derivation.prediction_label_from_selected_evidence(
+            text
+        )
+        if label in {None, "unknown", "no seizure frequency reference"}:
+            continue
+        try:
+            record = label_to_frequency_record(label)
+        except ValueError:
+            continue
+        derived.append((label, float(record.monthly_frequency), candidate))
+    vague = [
+        item
+        for item in derived
+        if item[0].startswith("multiple per ")
+        and _is_dominant_vague_frequency_text(
+            " ".join(
+                part
+                for part in [
+                    _candidate_source_phrase(item[2]),
+                    item[2].evidence_span.text,
+                ]
+                if part
+            )
+        )
+    ]
+    if not vague or len(derived) < 2:
+        return None
+    dominant_label, dominant_frequency, _ = max(vague, key=lambda item: item[1])
+    context_frequencies = [
+        frequency for label, frequency, _ in derived if label != dominant_label
+    ]
+    if not context_frequencies:
+        return None
+    if all(frequency < dominant_frequency for frequency in context_frequencies):
+        return dominant_label
+    return None
+
+
+def _is_dominant_vague_frequency_text(text: str) -> bool:
+    lower = text.lower()
+    return any(
+        marker in lower
+        for marker in (
+            "most weekdays",
+            "most days",
+            "multiple days",
+            "several days",
+            "many days",
+        )
+    )
+
+
+def _canonicalize_derivation_text(text: str) -> str:
+    return text.replace("\u2013", "-").replace("\u2014", "-").replace("\u2212", "-")
+
+
+def _has_primary_cyclic_vulnerability_window(
+    assessment: ClinicalAssessment,
+    candidate_set: CandidateSet,
+) -> bool:
+    by_id = {candidate.candidate_id: candidate for candidate in candidate_set.candidates}
+    return any(
+        _is_cyclic_vulnerability_window_text(
+            " ".join(
+                part
+                for part in [
+                    _candidate_source_phrase(candidate),
+                    candidate.evidence_span.text,
+                ]
+                if part
+            )
+        )
+        and not _has_vague_multiple_burden(
+            candidate.cluster_details.events_per_cluster
+            if candidate.cluster_details is not None
+            else None
+        )
+        for candidate_id in assessment.primary_candidate_ids
+        for candidate in [by_id.get(candidate_id)]
+        if candidate is not None and candidate.candidate_kind == "cluster_frequency"
+    )
+
+
+def _has_normalized_cluster_cadence(burden: NormalizedBurden) -> bool:
+    return (
+        burden.cluster_count_low is not None
+        and burden.cluster_count_high is not None
+        and burden.cluster_period_low is not None
+        and burden.cluster_period_high is not None
+        and burden.cluster_period_unit is not None
+    )
+
+
+def _has_unknown_cadence_multiple_cluster_burden(
+    assessment: ClinicalAssessment,
+    candidate_set: CandidateSet,
+) -> bool:
+    by_id = {candidate.candidate_id: candidate for candidate in candidate_set.candidates}
+    if _has_competing_renderable_frequency_candidate(assessment, candidate_set):
+        return False
+    for candidate_id in assessment.primary_candidate_ids:
+        candidate = by_id.get(candidate_id)
+        if candidate is None or candidate.candidate_kind != "cluster_frequency":
+            continue
+        if candidate.event_type not in {"seizure", "seizure_like_event"}:
+            continue
+        if candidate.cluster_details is None:
+            continue
+        if _has_cluster_recurrence_cadence(candidate):
+            continue
+        if _has_vague_multiple_burden(candidate.cluster_details.events_per_cluster):
+            return True
+    return False
+
+
+def _has_competing_renderable_frequency_candidate(
+    assessment: ClinicalAssessment,
+    candidate_set: CandidateSet,
+) -> bool:
+    primary_ids = set(assessment.primary_candidate_ids)
+    for candidate in candidate_set.candidates:
+        if candidate.candidate_id in primary_ids:
+            continue
+        if candidate.candidate_kind != "frequency_rate" or candidate.frequency is None:
+            continue
+        text = " ".join(
+            part
+            for part in [candidate.frequency.source_phrase, candidate.evidence_span.text]
+            if part
+        )
+        if _is_medication_cadence_text(text):
+            continue
+        if _looks_renderable_frequency_text(text):
+            return True
+    return False
+
+
+def _has_cluster_recurrence_cadence(candidate: Any) -> bool:
+    assert candidate.cluster_details is not None
+    text = " ".join(
+        part
+        for part in [
+            candidate.cluster_details.cluster_frequency,
+            candidate.cluster_details.cluster_period,
+        ]
+        if part
+    ).lower()
+    if not text:
+        return False
+    if any(marker in text for marker in ("unknown", "unclear", "not specified")):
+        return False
+    if any(
+        marker in text
+        for marker in (
+            "single day",
+            "one day",
+            "24-hour",
+            "24 hour",
+            "within that day",
+        )
+    ):
+        return False
+    return any(
+        marker in text
+        for marker in (
+            "per ",
+            "every ",
+            "daily",
+            "weekly",
+            "monthly",
+            "yearly",
+            "annually",
+            "day",
+            "week",
+            "month",
+            "year",
+        )
+    )
+
+
+def _has_vague_multiple_burden(text: str | None) -> bool:
+    if not text:
+        return False
+    lower = text.lower()
+    return any(
+        marker in lower
+        for marker in (
+            "multiple",
+            "several",
+            "many",
+            "few",
+            "repeated",
+            "cluster of events",
+            "episodes",
+            "events",
+        )
+    )
+
+
+def _looks_renderable_frequency_text(text: str) -> bool:
+    lower = text.lower()
+    return any(
+        marker in lower
+        for marker in (
+            "per day",
+            "per week",
+            "per month",
+            "per year",
+            "daily",
+            "weekly",
+            "monthly",
+            "yearly",
+        )
+    )
+
+
+def _candidate_source_phrase(candidate: Any) -> str:
+    if candidate.frequency is not None:
+        return candidate.frequency.source_phrase or ""
+    if candidate.cluster_details is not None:
+        return " ".join(
+            part
+            for part in [
+                candidate.cluster_details.cluster_frequency,
+                candidate.cluster_details.events_per_cluster,
+                candidate.cluster_details.cluster_count,
+                candidate.cluster_details.cluster_period,
+            ]
+            if part
+        )
+    if candidate.seizure_free is not None:
+        return candidate.seizure_free.source_phrase or ""
+    if candidate.last_event_only is not None:
+        return candidate.last_event_only.source_phrase or ""
+    if candidate.unknown_frequency is not None:
+        return candidate.unknown_frequency.source_phrase or ""
+    if candidate.no_reference is not None:
+        return candidate.no_reference.source_phrase or ""
+    return ""
+
+
+def _is_medication_cadence_text(text: str) -> bool:
+    lower = text.lower()
+    return any(
+        marker in lower
+        for marker in (
+            "as needed",
+            "as-needed",
+            "clobazam",
+            "rescue medication",
+            "patient-led use",
+            "treated with",
+        )
+    )
+
+
+def _is_cyclic_vulnerability_window_text(text: str) -> bool:
+    lower = text.lower()
+    return any(
+        marker in lower
+        for marker in (
+            "perimenstrual",
+            "peri-menstrual",
+            "catamenial",
+            "menstrual",
+            "menstruation",
+            "period",
+        )
+    )
 
 
 def main(argv: Sequence[str] | None = None) -> int:
