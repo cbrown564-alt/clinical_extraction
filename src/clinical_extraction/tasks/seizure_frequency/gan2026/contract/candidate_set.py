@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import re
 from collections.abc import Sequence
+from datetime import datetime
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -45,6 +47,24 @@ class EvidenceSpan(BaseModel):
     text: str
     start_char: int | None = None
     end_char: int | None = None
+
+
+class ReferenceDateContext(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    date: str
+    date_precision: Literal["day"]
+    source: Literal["note_header", "email_header"]
+    source_phrase: str
+    source_span: EvidenceSpan
+    issues: list[str] = Field(default_factory=list)
+
+
+class RowContext(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    reference_date: ReferenceDateContext | None = None
+    context_issues: list[str] = Field(default_factory=list)
 
 
 class FrequencyDetails(BaseModel):
@@ -143,6 +163,7 @@ class CandidateSet(BaseModel):
     source_row_index: int
     component_owner: str
     source_artifacts: list[str]
+    row_context: RowContext = Field(default_factory=RowContext)
     candidates: list[ExtractedCandidate]
     assembly_issues: list[str] = Field(default_factory=list)
     schema_version: Literal["gan2026_candidate_set_source_near_v0"] = SCHEMA_VERSION
@@ -192,8 +213,68 @@ def deterministic_candidate_set_from_raw(
         source_row_index=source_row_index,
         component_owner=component_owner,
         source_artifacts=[source_artifact],
+        row_context=extract_row_context(note_text),
         candidates=candidates,
     )
+
+
+def extract_row_context(note_text: str) -> RowContext:
+    """Extract deterministic row-level context from note text."""
+
+    reference_date = extract_reference_date_context(note_text)
+    if reference_date is None:
+        return RowContext(context_issues=["reference_date_missing"])
+    return RowContext(reference_date=reference_date)
+
+
+def extract_reference_date_context(note_text: str) -> ReferenceDateContext | None:
+    """Extract the note reference date from deterministic header patterns."""
+
+    patterns: list[tuple[Literal["note_header", "email_header"], re.Pattern[str]]] = [
+        (
+            "note_header",
+            re.compile(
+                r"\bClinic Date:\s*(?P<date>\d{1,2}\s+[A-Za-z]+\s+\d{4})\b",
+                flags=re.IGNORECASE,
+            ),
+        ),
+        (
+            "email_header",
+            re.compile(
+                r"\bSent:\s*(?P<date>\d{1,2}\s+[A-Za-z]+\s+\d{4})"
+                r"(?:\s+\d{1,2}:\d{2})?\b",
+                flags=re.IGNORECASE,
+            ),
+        ),
+    ]
+    for source, pattern in patterns:
+        match = pattern.search(note_text)
+        if match is None:
+            continue
+        parsed = _parse_header_date(match.group("date"))
+        if parsed is None:
+            continue
+        return ReferenceDateContext(
+            date=parsed,
+            date_precision="day",
+            source=source,
+            source_phrase=match.group(0),
+            source_span=EvidenceSpan(
+                text=match.group(0),
+                start_char=match.start(),
+                end_char=match.end(),
+            ),
+        )
+    return None
+
+
+def _parse_header_date(value: str) -> str | None:
+    for fmt in ("%d %B %Y", "%d %b %Y"):
+        try:
+            return datetime.strptime(value, fmt).date().isoformat()
+        except ValueError:
+            continue
+    return None
 
 
 def extracted_candidate_from_raw(

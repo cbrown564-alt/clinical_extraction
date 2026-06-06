@@ -6,6 +6,8 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.candidate_set 
     EvidenceSpan,
     ExtractedCandidate,
     FrequencyDetails,
+    ReferenceDateContext,
+    RowContext,
 )
 
 
@@ -235,14 +237,52 @@ def test_candidate_set_union_preserves_missing_llm_candidate_set_issue() -> None
     assert metadata["summary"]["llm_call_error_rows"] == 1
 
 
+def test_candidate_set_union_preserves_deterministic_row_context() -> None:
+    deterministic = _row(
+        16,
+        [_candidate(16, "det:16:1", "deterministic_candidate", "one seizure per week")],
+        row_context=RowContext(
+            reference_date=ReferenceDateContext(
+                date="2025-10-02",
+                date_precision="day",
+                source="note_header",
+                source_phrase="Clinic Date: 02 October 2025",
+                source_span=EvidenceSpan(
+                    text="Clinic Date: 02 October 2025",
+                    start_char=20,
+                    end_char=49,
+                ),
+            )
+        ),
+    )
+    llm = _row(
+        16,
+        [_candidate(16, "llm:16:1", "llm_candidate", "one seizure per week")],
+        row_context=RowContext(context_issues=["reference_date_missing"]),
+    )
+
+    rows, _metadata = candidate_set_union.build_candidate_set_union_rows(
+        [deterministic],
+        [llm],
+    )
+
+    union_set = CandidateSet.model_validate(rows[0]["candidate_set"])
+    assert union_set.row_context.reference_date is not None
+    assert union_set.row_context.reference_date.date == "2025-10-02"
+    assert union_set.row_context.context_issues == []
+
+
 def _row(
     source_row_index: int,
     candidates: list[ExtractedCandidate],
+    *,
+    row_context: RowContext | None = None,
 ) -> dict:
     candidate_set = CandidateSet(
         source_row_index=source_row_index,
         component_owner="test",
         source_artifacts=["test"],
+        row_context=row_context or RowContext(),
         candidates=candidates,
     )
     return {

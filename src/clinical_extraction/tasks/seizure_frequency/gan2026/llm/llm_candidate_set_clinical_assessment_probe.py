@@ -7,6 +7,7 @@ import re
 import sys
 from collections import Counter
 from collections.abc import Mapping, Sequence
+from datetime import date
 from pathlib import Path
 from typing import Any, Literal
 
@@ -23,7 +24,10 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.clinical_asses
     AggregationPolicy,
     AssessmentKind,
     ClinicalAssessment,
+    ComputedDuration,
+    DateReference,
     NormalizedBurden,
+    SeizureFreeInstrumentation,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic import (
@@ -332,7 +336,7 @@ def assemble_clinical_assessment(
     if draft is None:
         return None, ["assessment_draft_missing"]
 
-    errors = _validate_candidate_references(draft, candidate_set)
+    draft, role_repair_issues = _repair_candidate_role_ids(draft)
     draft, override_issues = _apply_deterministic_assessment_overrides(
         draft,
         candidate_set=candidate_set,
@@ -341,11 +345,31 @@ def assemble_clinical_assessment(
         draft,
         candidate_set=candidate_set,
     )
+    draft, post_repair_role_issues = _repair_candidate_role_ids(draft)
+    errors = _validate_candidate_references(draft, candidate_set)
     normalized_burden, normalization_issues = normalize_assessment_burden(
         draft,
         candidate_set=candidate_set,
     )
-    normalization_issues = [*override_issues, *repair_issues, *normalization_issues]
+    seizure_free_instrumentation: SeizureFreeInstrumentation | None = None
+    if draft.assessment_kind == "seizure_free":
+        (
+            normalized_burden,
+            seizure_free_instrumentation,
+            instrumentation_issues,
+        ) = _instrument_seizure_free_duration(
+            draft,
+            candidate_set=candidate_set,
+            normalized_burden=normalized_burden,
+        )
+        normalization_issues.extend(instrumentation_issues)
+    normalization_issues = [
+        *role_repair_issues,
+        *override_issues,
+        *repair_issues,
+        *post_repair_role_issues,
+        *normalization_issues,
+    ]
     try:
         assessment = ClinicalAssessment(
             source_row_index=candidate_set.source_row_index,
@@ -356,6 +380,7 @@ def assemble_clinical_assessment(
             rejected_candidate_ids=draft.rejected_candidate_ids,
             aggregation_policy=draft.aggregation_policy,  # type: ignore[arg-type]
             normalized_burden=normalized_burden,
+            seizure_free_instrumentation=seizure_free_instrumentation,
             normalization_policy_id=NORMALIZATION_POLICY_ID,
             normalization_issues=normalization_issues,
             assessment_summary=draft.assessment_summary,
@@ -367,6 +392,82 @@ def assemble_clinical_assessment(
     if errors:
         return None, errors
     return assessment, errors
+
+
+def _repair_candidate_role_ids(draft: AssessmentDraft) -> tuple[AssessmentDraft, list[str]]:
+    """Remove recoverable duplicate and overlapping role ids from a model draft."""
+
+    repairs: list[str] = []
+    primary_ids, primary_issues = _dedupe_role_ids(
+        draft.primary_candidate_ids,
+        role_name="primary_candidate_ids",
+    )
+    supporting_ids, supporting_issues = _dedupe_role_ids(
+        draft.supporting_candidate_ids,
+        role_name="supporting_candidate_ids",
+    )
+    rejected_ids, rejected_issues = _dedupe_role_ids(
+        draft.rejected_candidate_ids,
+        role_name="rejected_candidate_ids",
+    )
+    repairs.extend([*primary_issues, *supporting_issues, *rejected_issues])
+
+    primary = set(primary_ids)
+    supporting_before = list(supporting_ids)
+    supporting_ids = [
+        candidate_id for candidate_id in supporting_ids if candidate_id not in primary
+    ]
+    for candidate_id in supporting_before:
+        if candidate_id in primary:
+            repairs.append(
+                "candidate_role_overlap_removed:"
+                f"supporting_candidate_ids:{candidate_id}:kept_primary_candidate_ids"
+            )
+
+    kept = {*primary_ids, *supporting_ids}
+    rejected_before = list(rejected_ids)
+    rejected_ids = [candidate_id for candidate_id in rejected_ids if candidate_id not in kept]
+    for candidate_id in rejected_before:
+        if candidate_id in primary:
+            repairs.append(
+                "candidate_role_overlap_removed:"
+                f"rejected_candidate_ids:{candidate_id}:kept_primary_candidate_ids"
+            )
+        elif candidate_id in supporting_ids:
+            repairs.append(
+                "candidate_role_overlap_removed:"
+                f"rejected_candidate_ids:{candidate_id}:kept_supporting_candidate_ids"
+            )
+
+    if not repairs:
+        return draft, []
+    return (
+        draft.model_copy(
+            update={
+                "primary_candidate_ids": primary_ids,
+                "supporting_candidate_ids": supporting_ids,
+                "rejected_candidate_ids": rejected_ids,
+            }
+        ),
+        repairs,
+    )
+
+
+def _dedupe_role_ids(
+    candidate_ids: Sequence[str],
+    *,
+    role_name: str,
+) -> tuple[list[str], list[str]]:
+    seen: set[str] = set()
+    deduped: list[str] = []
+    repairs: list[str] = []
+    for candidate_id in candidate_ids:
+        if candidate_id in seen:
+            repairs.append(f"candidate_role_duplicate_removed:{role_name}:{candidate_id}")
+            continue
+        seen.add(candidate_id)
+        deduped.append(candidate_id)
+    return deduped, repairs
 
 
 def _apply_deterministic_assessment_repairs(
@@ -861,6 +962,18 @@ def normalize_assessment_burden(
             issues.extend(additive_issues)
             return burden, issues
         burden, rate_issues = _frequency_burden(source_phrase)
+        if _is_unrenderable_frequency_burden(burden):
+            repaired = _frequency_burden_from_primary_candidates(primary_candidates)
+            if repaired is not None:
+                burden, repair_issues = repaired
+                issues.extend(
+                    [
+                        *rate_issues,
+                        "frequency_rate_operands_repaired_from_primary_candidate",
+                        *repair_issues,
+                    ]
+                )
+                return burden, issues
         issues.extend(rate_issues)
         return burden, issues
 
@@ -871,10 +984,140 @@ def normalize_assessment_burden(
 
     if draft.assessment_kind == "seizure_free":
         burden, seizure_free_issues = _seizure_free_burden(source_phrase)
+        if _is_unrenderable_seizure_free_burden(burden):
+            repaired = _seizure_free_burden_from_primary_candidates(primary_candidates)
+            if repaired is not None:
+                burden, repair_issues = repaired
+                issues.extend(
+                    [
+                        *seizure_free_issues,
+                        "seizure_free_duration_repaired_from_primary_candidate",
+                        *repair_issues,
+                    ]
+                )
+                return burden, issues
         issues.extend(seizure_free_issues)
         return burden, issues
 
     return NormalizedBurden(source_normalized_phrase=source_phrase), issues
+
+
+def _instrument_seizure_free_duration(
+    draft: AssessmentDraft,
+    *,
+    candidate_set: CandidateSet,
+    normalized_burden: NormalizedBurden,
+) -> tuple[NormalizedBurden, SeizureFreeInstrumentation | None, list[str]]:
+    if not _is_unrenderable_seizure_free_burden(normalized_burden):
+        return normalized_burden, None, []
+
+    primary_candidates = _candidates_by_ids(candidate_set, draft.primary_candidate_ids)
+    source_phrase = _normalization_source_phrase(draft, primary_candidates)
+    reference = candidate_set.row_context.reference_date
+    anchor: DateReference | None = None
+    anchor_issues: list[str] = []
+    instrumentation_source_phrase = source_phrase
+    for phrase in _seizure_free_instrumentation_phrases(draft, primary_candidates):
+        anchor, anchor_issues = _extract_seizure_free_anchor_date(
+            phrase,
+            reference_date=reference.date if reference is not None else None,
+        )
+        if anchor is not None:
+            instrumentation_source_phrase = phrase
+            break
+    if anchor is None:
+        if _mentions_since_anchor(source_phrase):
+            instrumentation = SeizureFreeInstrumentation(
+                state_kind="unresolved_anchor",
+                source_phrase=source_phrase,
+                source_candidate_ids=list(draft.primary_candidate_ids),
+                source_ids=_source_ids_from_candidates(primary_candidates),
+                instrumentation_issues=["seizure_free_since_date_anchor_unparsed"],
+            )
+            return (
+                normalized_burden,
+                instrumentation,
+                ["seizure_free_since_date_anchor_unparsed"],
+            )
+        return normalized_burden, None, []
+
+    if reference is None:
+        instrumentation = SeizureFreeInstrumentation(
+            state_kind="unresolved_anchor",
+            source_phrase=instrumentation_source_phrase,
+            anchor_date=anchor,
+            source_candidate_ids=list(draft.primary_candidate_ids),
+            source_ids=_source_ids_from_candidates(primary_candidates),
+            instrumentation_issues=["reference_date_missing_for_since_date"],
+        )
+        return normalized_burden, instrumentation, ["reference_date_missing_for_since_date"]
+
+    duration_months = _whole_months_between(anchor.date, reference.date)
+    if duration_months is None:
+        instrumentation = SeizureFreeInstrumentation(
+            state_kind="unresolved_anchor",
+            source_phrase=instrumentation_source_phrase,
+            anchor_date=anchor,
+            reference_date=DateReference(
+                date=reference.date,
+                date_precision=reference.date_precision,
+                source=f"candidate_set.row_context.reference_date:{reference.source}",
+                source_phrase=reference.source_phrase,
+            ),
+            source_candidate_ids=list(draft.primary_candidate_ids),
+            source_ids=_source_ids_from_candidates(primary_candidates),
+            instrumentation_issues=["seizure_free_since_date_duration_uncomputed"],
+        )
+        return (
+            normalized_burden,
+            instrumentation,
+            ["seizure_free_since_date_duration_uncomputed"],
+        )
+
+    instrumentation = SeizureFreeInstrumentation(
+        state_kind="since_date",
+        source_phrase=instrumentation_source_phrase,
+        anchor_date=anchor,
+        reference_date=DateReference(
+            date=reference.date,
+            date_precision=reference.date_precision,
+            source=f"candidate_set.row_context.reference_date:{reference.source}",
+            source_phrase=reference.source_phrase,
+        ),
+        computed_duration=ComputedDuration(
+            low=float(duration_months),
+            high=float(duration_months),
+            unit="month",
+        ),
+        source_candidate_ids=list(draft.primary_candidate_ids),
+        source_ids=_source_ids_from_candidates(primary_candidates),
+    )
+    return (
+        normalized_burden.model_copy(
+            update={
+                "seizure_free_duration_low": float(duration_months),
+                "seizure_free_duration_high": float(duration_months),
+                "seizure_free_duration_unit": "month",
+            }
+        ),
+        instrumentation,
+        ["seizure_free_duration_instrumented_from_since_date", *anchor_issues],
+    )
+
+
+def _seizure_free_instrumentation_phrases(
+    draft: AssessmentDraft,
+    primary_candidates: Sequence[ExtractedCandidate],
+) -> list[str]:
+    source_phrase = _normalization_source_phrase(draft, primary_candidates)
+    phrases = [source_phrase]
+    for candidate in primary_candidates:
+        phrases.extend(_candidate_parse_phrases(candidate))
+    return [
+        phrase
+        for phrase in _dedupe([_clean_phrase(phrase) for phrase in phrases])
+        if phrase
+    ]
 
 
 def prediction_to_assessment_draft(
@@ -929,6 +1172,30 @@ def _frequency_burden(source_phrase: str) -> tuple[NormalizedBurden, list[str]]:
         issues.append("frequency_rate_label_derivation_returned_cluster")
     if _has_seizure_free_label(label):
         issues.append("frequency_rate_label_derivation_returned_seizure_free")
+    return burden, issues
+
+
+def _frequency_burden_from_primary_candidates(
+    primary_candidates: Sequence[ExtractedCandidate],
+) -> tuple[NormalizedBurden, list[str]] | None:
+    parsed: list[tuple[tuple[int, int], NormalizedBurden, list[str]]] = []
+    for candidate in primary_candidates:
+        if candidate.candidate_kind != "frequency_rate":
+            continue
+        for phrase in _candidate_parse_phrases(candidate):
+            burden, issues = _frequency_burden(phrase)
+            if _is_unrenderable_frequency_burden(burden):
+                continue
+            parsed.append(
+                (
+                    _frequency_burden_specificity_score(burden),
+                    burden,
+                    [issue for issue in issues if issue != "vague_count"],
+                )
+            )
+    if not parsed:
+        return None
+    _score, burden, issues = max(parsed, key=lambda item: item[0])
     return burden, issues
 
 
@@ -1006,6 +1273,524 @@ def _seizure_free_burden(source_phrase: str) -> tuple[NormalizedBurden, list[str
             ["seizure_free_duration_unparsed"],
         )
     return _burden_from_label(label, source_phrase=source_phrase)
+
+
+def _seizure_free_burden_from_primary_candidates(
+    primary_candidates: Sequence[ExtractedCandidate],
+) -> tuple[NormalizedBurden, list[str]] | None:
+    parsed: list[tuple[int, NormalizedBurden, list[str]]] = []
+    for candidate in primary_candidates:
+        if candidate.candidate_kind != "seizure_free":
+            continue
+        for phrase in _candidate_parse_phrases(candidate):
+            burden, issues = _seizure_free_burden(phrase)
+            if _is_unrenderable_seizure_free_burden(burden):
+                continue
+            parsed.append((len(burden.source_normalized_phrase), burden, issues))
+    if not parsed:
+        return None
+    _score, burden, issues = max(parsed, key=lambda item: item[0])
+    return burden, issues
+
+
+def _candidate_parse_phrases(candidate: ExtractedCandidate) -> list[str]:
+    phrases = [
+        candidate_source_phrase(candidate) or "",
+        candidate.evidence_span.text,
+    ]
+    return [phrase for phrase in _dedupe([_clean_phrase(phrase) for phrase in phrases]) if phrase]
+
+
+def _is_unrenderable_frequency_burden(burden: NormalizedBurden) -> bool:
+    return not _is_renderable_frequency_burden(burden)
+
+
+def _is_unrenderable_seizure_free_burden(burden: NormalizedBurden) -> bool:
+    return (
+        burden.seizure_free_duration_low is None
+        or burden.seizure_free_duration_high is None
+        or burden.seizure_free_duration_unit is None
+    )
+
+
+def _extract_seizure_free_anchor_date(
+    source_phrase: str,
+    *,
+    reference_date: str | None,
+) -> tuple[DateReference | None, list[str]]:
+    normalized = _clean_phrase(source_phrase)
+    day_numeric = re.search(
+        r"\bsince\s+(?P<day>\d{1,2})[/-](?P<month>\d{1,2})[/-](?P<year>\d{4})\b",
+        normalized,
+        flags=re.IGNORECASE,
+    )
+    if day_numeric is not None:
+        parsed = _numeric_day_month_year_to_iso(
+            day_numeric.group("day"),
+            day_numeric.group("month"),
+            day_numeric.group("year"),
+        )
+        if parsed is not None:
+            return DateReference(
+                date=parsed,
+                date_precision="day",
+                source="seizure_free_source_phrase",
+                source_phrase=day_numeric.group(0),
+            ), []
+    day_named = re.search(
+        r"\bsince\s+(?P<day>\d{1,2})(?:\s+|-)"
+        r"(?P<month>[A-Za-z]+)(?:\s+|-)(?P<year>\d{4})\b",
+        normalized,
+        flags=re.IGNORECASE,
+    )
+    if day_named is not None:
+        parsed = _day_month_year_to_iso(
+            day_named.group("day"),
+            day_named.group("month"),
+            day_named.group("year"),
+        )
+        if parsed is not None:
+            return DateReference(
+                date=parsed,
+                date_precision="day",
+                source="seizure_free_source_phrase",
+                source_phrase=day_named.group(0),
+            ), []
+    event_day_named = re.search(
+        r"\b(?:last event on|last seizure on|last reported event was on|"
+        r"last such episode occurred on|most recent episode was on)\s+"
+        r"(?P<day>\d{1,2})(?:\s+|-)(?P<month>[A-Za-z]+)(?:\s+|-)"
+        r"(?P<year>\d{4})\b",
+        normalized,
+        flags=re.IGNORECASE,
+    )
+    if event_day_named is not None:
+        parsed = _day_month_year_to_iso(
+            event_day_named.group("day"),
+            event_day_named.group("month"),
+            event_day_named.group("year"),
+        )
+        if parsed is not None:
+            return DateReference(
+                date=parsed,
+                date_precision="day",
+                source="seizure_free_source_phrase",
+                source_phrase=event_day_named.group(0),
+            ), ["seizure_free_anchor_from_last_event_phrase"]
+    month_year = re.search(
+        r"\bsince\s+(?P<month>[A-Za-z]+)\s+(?P<year>\d{4})\b",
+        normalized,
+        flags=re.IGNORECASE,
+    )
+    if month_year is not None:
+        parsed = _month_year_to_iso(
+            month_year.group("month"),
+            month_year.group("year"),
+        )
+        if parsed is not None:
+            return DateReference(
+                date=parsed,
+                date_precision="month",
+                source="seizure_free_source_phrase",
+                source_phrase=month_year.group(0),
+            ), []
+    numeric_month_year = re.search(
+        r"\bsince\s+(?P<month>\d{1,2})\s*(?:/|-)\s*(?P<year>\d{4})\b",
+        normalized,
+        flags=re.IGNORECASE,
+    )
+    if numeric_month_year is not None:
+        parsed = _numeric_month_year_to_iso(
+            numeric_month_year.group("month"),
+            numeric_month_year.group("year"),
+        )
+        if parsed is not None:
+            return DateReference(
+                date=parsed,
+                date_precision="month",
+                source="seizure_free_source_phrase",
+                source_phrase=numeric_month_year.group(0),
+            ), []
+    event_month_year = re.search(
+        r"\b(?:since|commencing|starting|titration|titrating|dose increase|"
+        r"dose titration)(?P<context>.{0,80}?)\b(?:at|in|from)\s+"
+        r"(?:the\s+)?(?:(?P<qualifier>early|mid|late|end)(?:\s+of)?[\s-]+)?"
+        r"(?P<month>[A-Za-z]+)\s+(?P<year>\d{4})\b",
+        normalized,
+        flags=re.IGNORECASE,
+    )
+    if event_month_year is not None:
+        parsed = _month_year_to_iso(
+            event_month_year.group("month"),
+            event_month_year.group("year"),
+        )
+        if parsed is not None:
+            return DateReference(
+                date=parsed,
+                date_precision="month",
+                source="seizure_free_event_anchor_month_year",
+                source_phrase=event_month_year.group(0),
+            ), [
+                "seizure_free_anchor_from_event_phrase",
+                *(
+                    ["seizure_free_anchor_approximate_start_month_policy"]
+                    if event_month_year.group("qualifier")
+                    else []
+                ),
+            ]
+    day_month_without_year = re.search(
+        r"\b(?:since|last event on|last seizure on|last reported event was on|"
+        r"last such episode occurred on|most recent episode was on)\s+"
+        r"(?P<day>\d{1,2})\s*(?:/|-|\s+)(?P<month>[A-Za-z]+)\b",
+        normalized,
+        flags=re.IGNORECASE,
+    )
+    if day_month_without_year is not None and reference_date is not None:
+        parsed = _day_month_without_year_to_iso(
+            day_month_without_year.group("day"),
+            day_month_without_year.group("month"),
+            reference_date=reference_date,
+        )
+        if parsed is not None:
+            source = "seizure_free_source_phrase_year_inferred_from_reference_date"
+            issues = ["seizure_free_anchor_year_inferred_from_reference_date"]
+            if "last" in day_month_without_year.group(0).lower():
+                issues.append("seizure_free_anchor_from_last_event_phrase")
+            return DateReference(
+                date=parsed,
+                date_precision="day",
+                source=source,
+                source_phrase=day_month_without_year.group(0),
+            ), issues
+    numeric_day_month_without_year = re.search(
+        r"\b(?:since|last event on|last seizure on|last reported event was on|"
+        r"last such episode occurred on|most recent episode was on)\s+"
+        r"(?P<day>\d{1,2})[/-](?P<month>\d{1,2})\b",
+        normalized,
+        flags=re.IGNORECASE,
+    )
+    if numeric_day_month_without_year is not None and reference_date is not None:
+        parsed = _numeric_day_month_without_year_to_iso(
+            numeric_day_month_without_year.group("day"),
+            numeric_day_month_without_year.group("month"),
+            reference_date=reference_date,
+        )
+        if parsed is not None:
+            issues = ["seizure_free_anchor_year_inferred_from_reference_date"]
+            if "last" in numeric_day_month_without_year.group(0).lower():
+                issues.append("seizure_free_anchor_from_last_event_phrase")
+            return DateReference(
+                date=parsed,
+                date_precision="day",
+                source="seizure_free_source_phrase_year_inferred_from_reference_date",
+                source_phrase=numeric_day_month_without_year.group(0),
+            ), issues
+    approximate_year = re.search(
+        r"\bsince\s+(?P<qualifier>early|mid|late)\s+(?P<year>\d{4})\b",
+        normalized,
+        flags=re.IGNORECASE,
+    )
+    if approximate_year is not None:
+        parsed = _approximate_year_to_iso(
+            approximate_year.group("qualifier"),
+            approximate_year.group("year"),
+        )
+        if parsed is not None:
+            return DateReference(
+                date=parsed,
+                date_precision="month",
+                source="seizure_free_source_phrase_approximate_anchor_policy",
+                source_phrase=approximate_year.group(0),
+            ), ["seizure_free_anchor_approximate_start_month_policy"]
+    season_without_year = re.search(
+        r"\bsince\s+(?P<qualifier>early|mid|late)?\s*"
+        r"(?P<season>spring|summer|autumn|fall|winter)\b",
+        normalized,
+        flags=re.IGNORECASE,
+    )
+    if season_without_year is not None and reference_date is not None:
+        parsed = _season_without_year_to_iso(
+            season_without_year.group("season"),
+            qualifier=season_without_year.group("qualifier"),
+            reference_date=reference_date,
+        )
+        if parsed is not None:
+            return DateReference(
+                date=parsed,
+                date_precision="month",
+                source="seizure_free_source_phrase_approximate_anchor_policy",
+                source_phrase=season_without_year.group(0),
+            ), [
+                "seizure_free_anchor_year_inferred_from_reference_date",
+                "seizure_free_anchor_approximate_start_month_policy",
+            ]
+    event_month_without_year = re.search(
+        r"\b(?:since|commencing|starting|titration|titrating|dose increase|dose titration)"
+        r"(?P<context>.{0,80}?)\b(?:at|in|from)\s+"
+        r"(?:the\s+)?"
+        r"(?:(?P<qualifier>early|mid|late|end)(?:\s+of)?[\s-]+)?"
+        r"(?P<month>[A-Za-z]+)\b",
+        normalized,
+        flags=re.IGNORECASE,
+    )
+    if event_month_without_year is not None and reference_date is not None:
+        parsed = _month_without_year_to_iso(
+            event_month_without_year.group("month"),
+            reference_date=reference_date,
+        )
+        if parsed is not None:
+            return DateReference(
+                date=parsed,
+                date_precision="month",
+                source=(
+                    "seizure_free_event_anchor_month_"
+                    "year_inferred_from_reference_date"
+                ),
+                source_phrase=event_month_without_year.group(0),
+            ), [
+                "seizure_free_anchor_year_inferred_from_reference_date",
+                "seizure_free_anchor_from_event_phrase",
+                *(
+                    ["seizure_free_anchor_approximate_start_month_policy"]
+                    if event_month_without_year.group("qualifier")
+                    else []
+                ),
+            ]
+    month_without_year = re.search(
+        r"\bsince\s+(?:(?P<qualifier>early|mid|late)[\s-]+)?"
+        r"(?P<month>[A-Za-z]+)\b",
+        normalized,
+        flags=re.IGNORECASE,
+    )
+    if month_without_year is not None and reference_date is not None:
+        parsed = _month_without_year_to_iso(
+            month_without_year.group("month"),
+            reference_date=reference_date,
+        )
+        if parsed is not None:
+            return DateReference(
+                date=parsed,
+                date_precision="month",
+                source="seizure_free_source_phrase_year_inferred_from_reference_date",
+                source_phrase=month_without_year.group(0),
+            ), [
+                "seizure_free_anchor_year_inferred_from_reference_date",
+                *(
+                    ["seizure_free_anchor_approximate_start_month_policy"]
+                    if month_without_year.group("qualifier")
+                    else []
+                ),
+            ]
+    return None, []
+
+
+def _mentions_since_anchor(source_phrase: str) -> bool:
+    return bool(re.search(r"\bsince\b", source_phrase, flags=re.IGNORECASE))
+
+
+def _month_year_to_iso(month: str, year: str) -> str | None:
+    month_number = _month_number(month)
+    if month_number is None:
+        return None
+    return f"{int(year):04d}-{month_number:02d}"
+
+
+def _day_month_year_to_iso(day: str, month: str, year: str) -> str | None:
+    month_number = _month_number(month)
+    if month_number is None:
+        return None
+    try:
+        parsed = date(int(year), month_number, int(day))
+    except ValueError:
+        return None
+    return parsed.isoformat()
+
+
+def _numeric_day_month_year_to_iso(day: str, month: str, year: str) -> str | None:
+    try:
+        parsed = date(int(year), int(month), int(day))
+    except ValueError:
+        return None
+    return parsed.isoformat()
+
+
+def _numeric_month_year_to_iso(month: str, year: str) -> str | None:
+    try:
+        month_number = int(month)
+    except ValueError:
+        return None
+    if not 1 <= month_number <= 12:
+        return None
+    return f"{int(year):04d}-{month_number:02d}"
+
+
+def _day_month_without_year_to_iso(
+    day: str,
+    month: str,
+    *,
+    reference_date: str,
+) -> str | None:
+    month_number = _month_number(month)
+    if month_number is None:
+        return None
+    return _day_numeric_month_without_year_to_iso(
+        day,
+        str(month_number),
+        reference_date=reference_date,
+    )
+
+
+def _numeric_day_month_without_year_to_iso(
+    day: str,
+    month: str,
+    *,
+    reference_date: str,
+) -> str | None:
+    return _day_numeric_month_without_year_to_iso(
+        day,
+        month,
+        reference_date=reference_date,
+    )
+
+
+def _day_numeric_month_without_year_to_iso(
+    day: str,
+    month: str,
+    *,
+    reference_date: str,
+) -> str | None:
+    try:
+        reference = date.fromisoformat(reference_date)
+        month_number = int(month)
+        day_number = int(day)
+    except ValueError:
+        return None
+    year = reference.year
+    if month_number > reference.month:
+        year -= 1
+    try:
+        parsed = date(year, month_number, day_number)
+    except ValueError:
+        return None
+    if parsed > reference:
+        try:
+            parsed = date(year - 1, month_number, day_number)
+        except ValueError:
+            return None
+    return parsed.isoformat()
+
+
+def _approximate_year_to_iso(qualifier: str, year: str) -> str | None:
+    month = {
+        "early": 1,
+        "mid": 6,
+        "late": 10,
+    }.get(qualifier.strip().lower())
+    if month is None:
+        return None
+    return f"{int(year):04d}-{month:02d}"
+
+
+def _season_without_year_to_iso(
+    season: str,
+    *,
+    qualifier: str | None,
+    reference_date: str,
+) -> str | None:
+    season_key = season.strip().lower()
+    season_start_month = {
+        "spring": 3,
+        "summer": 6,
+        "autumn": 9,
+        "fall": 9,
+        "winter": 12,
+    }.get(season_key)
+    if season_start_month is None:
+        return None
+    offset = {
+        "early": 0,
+        "mid": 1,
+        "late": 2,
+        None: 0,
+    }.get(None if qualifier is None else qualifier.strip().lower(), 0)
+    month_number = season_start_month + offset
+    if month_number > 12:
+        month_number -= 12
+    try:
+        reference = date.fromisoformat(reference_date)
+    except ValueError:
+        return None
+    year = reference.year
+    if month_number > reference.month:
+        year -= 1
+    return f"{year:04d}-{month_number:02d}"
+
+
+def _month_without_year_to_iso(month: str, *, reference_date: str) -> str | None:
+    month_number = _month_number(month)
+    if month_number is None:
+        return None
+    try:
+        reference = date.fromisoformat(reference_date)
+    except ValueError:
+        return None
+    year = reference.year
+    if month_number > reference.month:
+        year -= 1
+    return f"{year:04d}-{month_number:02d}"
+
+
+def _month_number(month: str) -> int | None:
+    lookup = {
+        "jan": 1,
+        "january": 1,
+        "feb": 2,
+        "february": 2,
+        "mar": 3,
+        "march": 3,
+        "apr": 4,
+        "april": 4,
+        "may": 5,
+        "jun": 6,
+        "june": 6,
+        "jul": 7,
+        "july": 7,
+        "aug": 8,
+        "august": 8,
+        "sep": 9,
+        "sept": 9,
+        "september": 9,
+        "oct": 10,
+        "october": 10,
+        "nov": 11,
+        "november": 11,
+        "dec": 12,
+        "december": 12,
+    }
+    return lookup.get(month.strip().lower())
+
+
+def _whole_months_between(anchor_date: str, reference_date: str) -> int | None:
+    try:
+        reference = date.fromisoformat(reference_date)
+    except ValueError:
+        return None
+    anchor_parts = anchor_date.split("-")
+    try:
+        anchor_year = int(anchor_parts[0])
+        anchor_month = int(anchor_parts[1])
+        anchor_day = int(anchor_parts[2]) if len(anchor_parts) == 3 else 1
+        anchor = date(anchor_year, anchor_month, anchor_day)
+    except (IndexError, ValueError):
+        return None
+    months = (reference.year - anchor.year) * 12 + reference.month - anchor.month
+    if len(anchor_parts) == 3 and reference.day < anchor.day:
+        months -= 1
+    return max(months, 0)
+
+
+def _source_ids_from_candidates(candidates: Sequence[ExtractedCandidate]) -> list[str]:
+    return sorted({source_id for candidate in candidates for source_id in candidate.source_ids})
 
 
 def _cluster_phrases(candidates: Sequence[ExtractedCandidate]) -> list[str]:
@@ -1415,6 +2200,7 @@ def _candidate_set_for_prompt(candidate_set: CandidateSet) -> dict[str, Any]:
         "source_row_index": candidate_set.source_row_index,
         "component_owner": candidate_set.component_owner,
         "source_artifacts": candidate_set.source_artifacts,
+        "row_context": candidate_set.row_context.model_dump(),
         "assembly_issues": candidate_set.assembly_issues,
         "candidates": [
             {

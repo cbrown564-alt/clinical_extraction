@@ -6,6 +6,8 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.candidate_set 
     EvidenceSpan,
     ExtractedCandidate,
     FrequencyDetails,
+    ReferenceDateContext,
+    RowContext,
     SeizureFreeDetails,
     SourcePhraseOnlyDetails,
 )
@@ -425,6 +427,736 @@ def test_build_projection_render_row_contains_both_schema_objects() -> None:
     assert "benchmark-comparable" in artifact_row["claim_boundary"]
 
 
+def test_build_projection_render_repairs_duplicate_and_overlapping_role_ids() -> None:
+    row = {
+        "source_row_index": 23,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "frequency_rate",
+            "primary_candidate_ids": ["llm:23:1", "llm:23:1"],
+            "supporting_candidate_ids": ["llm:23:1"],
+            "rejected_candidate_ids": ["llm:23:1"],
+            "aggregation_policy": "single_fact",
+            "normalized_burden": {
+                "source_normalized_phrase": "two seizures per month"
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={23: _candidate_set(23, evidence="two seizures per month")},
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    assert assessment["primary_candidate_ids"] == ["llm:23:1"]
+    assert assessment["supporting_candidate_ids"] == []
+    assert assessment["rejected_candidate_ids"] == []
+    assert artifact_row["row_issues"] == []
+    assert {
+        "candidate_role_duplicate_removed:primary_candidate_ids:llm:23:1",
+        (
+            "candidate_role_overlap_removed:"
+            "supporting_candidate_ids:llm:23:1:kept_primary_candidate_ids"
+        ),
+        (
+            "candidate_role_overlap_removed:"
+            "rejected_candidate_ids:llm:23:1:kept_primary_candidate_ids"
+        ),
+    }.issubset(set(assessment["normalization_issues"]))
+    assert artifact_row["final_rendered_label"]["rendered_label"] == "2 per month"
+
+
+def test_build_projection_render_repairs_frequency_operands_from_primary_candidate() -> None:
+    row = {
+        "source_row_index": 24,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "frequency_rate",
+            "primary_candidate_ids": ["llm:24:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "single_fact",
+            "normalized_burden": {
+                "source_normalized_phrase": "the current described seizure burden"
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={24: _candidate_set(24, evidence="two seizures per month")},
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    assert (
+        "frequency_rate_operands_repaired_from_primary_candidate"
+        in assessment["normalization_issues"]
+    )
+    assert assessment["normalized_burden"]["source_normalized_phrase"] == (
+        "two seizures per month"
+    )
+    assert artifact_row["final_rendered_label"]["rendered_label"] == "2 per month"
+
+
+def test_build_projection_render_repairs_seizure_free_duration_from_primary_candidate() -> None:
+    row = {
+        "source_row_index": 25,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "seizure_free",
+            "primary_candidate_ids": ["llm:25:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "seizure_free_state",
+            "normalized_burden": {
+                "source_normalized_phrase": "currently seizure free"
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            25: CandidateSet(
+                source_row_index=25,
+                component_owner="candidate_set_union",
+                source_artifacts=["test"],
+                candidates=[
+                    _seizure_free_candidate(
+                        25,
+                        "llm:25:1",
+                        "She has had no seizures for seven months.",
+                    )
+                ],
+            )
+        },
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    assert (
+        "seizure_free_duration_repaired_from_primary_candidate"
+        in assessment["normalization_issues"]
+    )
+    assert assessment["normalized_burden"]["source_normalized_phrase"] == (
+        "She has had no seizures for seven months."
+    )
+    assert artifact_row["final_rendered_label"]["rendered_label"] == (
+        "seizure free for 7 month"
+    )
+
+
+def test_build_projection_render_instruments_seizure_free_since_date_from_row_context() -> None:
+    row = {
+        "source_row_index": 26,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "seizure_free",
+            "primary_candidate_ids": ["llm:26:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "seizure_free_state",
+            "normalized_burden": {
+                "source_normalized_phrase": "no seizures since March 2025"
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            26: CandidateSet(
+                source_row_index=26,
+                component_owner="candidate_set_union",
+                source_artifacts=["test"],
+                row_context=_row_context("2026-06-06"),
+                candidates=[
+                    _seizure_free_candidate(
+                        26,
+                        "llm:26:1",
+                        "She has had no seizures since March 2025.",
+                    )
+                ],
+            )
+        },
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    assert assessment["normalized_burden"]["seizure_free_duration_low"] == 15
+    assert assessment["normalized_burden"]["seizure_free_duration_unit"] == "month"
+    assert (
+        "seizure_free_duration_instrumented_from_since_date"
+        in assessment["normalization_issues"]
+    )
+    instrumentation = assessment["seizure_free_instrumentation"]
+    assert instrumentation["state_kind"] == "since_date"
+    assert instrumentation["anchor_date"]["date"] == "2025-03"
+    assert instrumentation["anchor_date"]["date_precision"] == "month"
+    assert instrumentation["reference_date"]["date"] == "2026-06-06"
+    assert instrumentation["computed_duration"] == {
+        "low": 15.0,
+        "high": 15.0,
+        "unit": "month",
+    }
+    assert artifact_row["final_rendered_label"]["rendered_label"] == (
+        "seizure free for 15 month"
+    )
+
+
+def test_build_projection_render_instruments_numeric_since_date() -> None:
+    row = {
+        "source_row_index": 28,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "seizure_free",
+            "primary_candidate_ids": ["llm:28:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "seizure_free_state",
+            "normalized_burden": {
+                "source_normalized_phrase": "seizure-free since 29/09/2017"
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            28: CandidateSet(
+                source_row_index=28,
+                component_owner="candidate_set_union",
+                source_artifacts=["test"],
+                row_context=_row_context("2025-10-02"),
+                candidates=[
+                    _seizure_free_candidate(
+                        28,
+                        "llm:28:1",
+                        "She has been seizure-free since 29/09/2017.",
+                    )
+                ],
+            )
+        },
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    assert assessment["seizure_free_instrumentation"]["anchor_date"]["date"] == (
+        "2017-09-29"
+    )
+    assert assessment["normalized_burden"]["seizure_free_duration_low"] == 96
+    assert artifact_row["final_rendered_label"]["rendered_label"] == (
+        "seizure free for 96 month"
+    )
+
+
+def test_build_projection_render_instruments_month_without_year_with_trace() -> None:
+    row = {
+        "source_row_index": 29,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "seizure_free",
+            "primary_candidate_ids": ["llm:29:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "seizure_free_state",
+            "normalized_burden": {
+                "source_normalized_phrase": "no further events since early August"
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            29: CandidateSet(
+                source_row_index=29,
+                component_owner="candidate_set_union",
+                source_artifacts=["test"],
+                row_context=_row_context("2025-10-02"),
+                candidates=[
+                    _seizure_free_candidate(
+                        29,
+                        "llm:29:1",
+                        "There have been no further events since early August.",
+                    )
+                ],
+            )
+        },
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    instrumentation = assessment["seizure_free_instrumentation"]
+    assert instrumentation["anchor_date"]["date"] == "2025-08"
+    assert instrumentation["anchor_date"]["date_precision"] == "month"
+    assert instrumentation["anchor_date"]["source"] == (
+        "seizure_free_source_phrase_year_inferred_from_reference_date"
+    )
+    assert (
+        "seizure_free_anchor_year_inferred_from_reference_date"
+        in assessment["normalization_issues"]
+    )
+    assert artifact_row["final_rendered_label"]["rendered_label"] == (
+        "seizure free for 2 month"
+    )
+
+
+def test_build_projection_render_instruments_last_event_day_month_anchor() -> None:
+    row = {
+        "source_row_index": 30,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "seizure_free",
+            "primary_candidate_ids": ["llm:30:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "seizure_free_state",
+            "normalized_burden": {
+                "source_normalized_phrase": (
+                    "no further seizures recorded since last event on 31-May"
+                )
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            30: CandidateSet(
+                source_row_index=30,
+                component_owner="candidate_set_union",
+                source_artifacts=["test"],
+                row_context=_row_context("2025-10-02"),
+                candidates=[
+                    _seizure_free_candidate(
+                        30,
+                        "llm:30:1",
+                        "No further seizures recorded since last event on 31-May.",
+                    )
+                ],
+            )
+        },
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    instrumentation = assessment["seizure_free_instrumentation"]
+    assert instrumentation["anchor_date"]["date"] == "2025-05-31"
+    assert (
+        "seizure_free_anchor_from_last_event_phrase"
+        in assessment["normalization_issues"]
+    )
+    assert (
+        "seizure_free_anchor_year_inferred_from_reference_date"
+        in assessment["normalization_issues"]
+    )
+    assert artifact_row["final_rendered_label"]["rendered_label"] == (
+        "seizure free for 4 month"
+    )
+
+
+def test_build_projection_render_instruments_approximate_season_anchor() -> None:
+    row = {
+        "source_row_index": 31,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "seizure_free",
+            "primary_candidate_ids": ["llm:31:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "seizure_free_state",
+            "normalized_burden": {
+                "source_normalized_phrase": "no recognized seizures since early summer"
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            31: CandidateSet(
+                source_row_index=31,
+                component_owner="candidate_set_union",
+                source_artifacts=["test"],
+                row_context=_row_context("2025-10-02"),
+                candidates=[
+                    _seizure_free_candidate(
+                        31,
+                        "llm:31:1",
+                        "No recognized seizures since early summer.",
+                    )
+                ],
+            )
+        },
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    instrumentation = assessment["seizure_free_instrumentation"]
+    assert instrumentation["anchor_date"]["date"] == "2025-06"
+    assert instrumentation["anchor_date"]["source"] == (
+        "seizure_free_source_phrase_approximate_anchor_policy"
+    )
+    assert (
+        "seizure_free_anchor_approximate_start_month_policy"
+        in assessment["normalization_issues"]
+    )
+    assert artifact_row["final_rendered_label"]["rendered_label"] == (
+        "seizure free for 4 month"
+    )
+
+
+def test_build_projection_render_instruments_approximate_year_anchor() -> None:
+    row = {
+        "source_row_index": 32,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "seizure_free",
+            "primary_candidate_ids": ["llm:32:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "seizure_free_state",
+            "normalized_burden": {
+                "source_normalized_phrase": (
+                    "she cannot recall any episodes since early 2024"
+                )
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            32: CandidateSet(
+                source_row_index=32,
+                component_owner="candidate_set_union",
+                source_artifacts=["test"],
+                row_context=_row_context("2025-10-02"),
+                candidates=[
+                    _seizure_free_candidate(
+                        32,
+                        "llm:32:1",
+                        "She cannot recall any episodes since early 2024.",
+                    )
+                ],
+            )
+        },
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    assert assessment["seizure_free_instrumentation"]["anchor_date"]["date"] == (
+        "2024-01"
+    )
+    assert (
+        "seizure_free_anchor_approximate_start_month_policy"
+        in assessment["normalization_issues"]
+    )
+    assert artifact_row["final_rendered_label"]["rendered_label"] == (
+        "seizure free for 21 month"
+    )
+
+
+def test_build_projection_render_instruments_hyphenated_mid_month_anchor() -> None:
+    row = {
+        "source_row_index": 33,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "seizure_free",
+            "primary_candidate_ids": ["llm:33:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "seizure_free_state",
+            "normalized_burden": {
+                "source_normalized_phrase": "seizure-free status since mid-January"
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            33: CandidateSet(
+                source_row_index=33,
+                component_owner="candidate_set_union",
+                source_artifacts=["test"],
+                row_context=_row_context("2025-10-02"),
+                candidates=[
+                    _seizure_free_candidate(
+                        33,
+                        "llm:33:1",
+                        "She has remained seizure-free since mid-January.",
+                    )
+                ],
+            )
+        },
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    assert assessment["seizure_free_instrumentation"]["anchor_date"]["date"] == (
+        "2025-01"
+    )
+    assert (
+        "seizure_free_anchor_approximate_start_month_policy"
+        in assessment["normalization_issues"]
+    )
+    assert artifact_row["final_rendered_label"]["rendered_label"] == (
+        "seizure free for 9 month"
+    )
+
+
+def test_build_projection_render_instruments_event_month_from_primary_candidate() -> None:
+    row = {
+        "source_row_index": 34,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "seizure_free",
+            "primary_candidate_ids": ["llm:34:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "seizure_free_state",
+            "normalized_burden": {
+                "source_normalized_phrase": (
+                    "no further seizures since starting current regimen"
+                )
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            34: CandidateSet(
+                source_row_index=34,
+                component_owner="candidate_set_union",
+                source_artifacts=["test"],
+                row_context=_row_context("2017-03-03"),
+                candidates=[
+                    _seizure_free_candidate(
+                        34,
+                        "llm:34:1",
+                        (
+                            "Since commencing the current regimen at the end of "
+                            "November, there have been no further events."
+                        ),
+                    )
+                ],
+            )
+        },
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    instrumentation = assessment["seizure_free_instrumentation"]
+    assert instrumentation["source_phrase"].startswith("Since commencing")
+    assert instrumentation["anchor_date"]["date"] == "2016-11"
+    assert instrumentation["anchor_date"]["source"] == (
+        "seizure_free_event_anchor_month_year_inferred_from_reference_date"
+    )
+    assert (
+        "seizure_free_anchor_from_event_phrase"
+        in assessment["normalization_issues"]
+    )
+    assert artifact_row["final_rendered_label"]["rendered_label"] == (
+        "seizure free for 4 month"
+    )
+
+
+def test_build_projection_render_preserves_event_month_year_from_primary_candidate() -> None:
+    row = {
+        "source_row_index": 35,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "seizure_free",
+            "primary_candidate_ids": ["llm:35:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "seizure_free_state",
+            "normalized_burden": {
+                "source_normalized_phrase": "complete seizure control"
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            35: CandidateSet(
+                source_row_index=35,
+                component_owner="candidate_set_union",
+                source_artifacts=["test"],
+                row_context=_row_context("2025-10-02"),
+                candidates=[
+                    _seizure_free_candidate(
+                        35,
+                        "llm:35:1",
+                        (
+                            "Since starting Levetiracetam in March 2023, he "
+                            "reports complete seizure control."
+                        ),
+                    )
+                ],
+            )
+        },
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    instrumentation = assessment["seizure_free_instrumentation"]
+    assert instrumentation["anchor_date"]["date"] == "2023-03"
+    assert instrumentation["anchor_date"]["source"] == (
+        "seizure_free_event_anchor_month_year"
+    )
+    assert artifact_row["final_rendered_label"]["rendered_label"] == (
+        "seizure free for 31 month"
+    )
+
+
+def test_build_projection_render_preserves_last_event_full_year_from_primary_candidate() -> None:
+    row = {
+        "source_row_index": 36,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "seizure_free",
+            "primary_candidate_ids": ["llm:36:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "seizure_free_state",
+            "normalized_burden": {
+                "source_normalized_phrase": "no events over the last year"
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            36: CandidateSet(
+                source_row_index=36,
+                component_owner="candidate_set_union",
+                source_artifacts=["test"],
+                row_context=_row_context("2025-10-02"),
+                candidates=[
+                    _seizure_free_candidate(
+                        36,
+                        "llm:36:1",
+                        (
+                            "He reports no events over the last year, with the "
+                            "last seizure on 12-Apr-2023."
+                        ),
+                    )
+                ],
+            )
+        },
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    instrumentation = assessment["seizure_free_instrumentation"]
+    assert instrumentation["anchor_date"]["date"] == "2023-04-12"
+    assert (
+        "seizure_free_anchor_from_last_event_phrase"
+        in assessment["normalization_issues"]
+    )
+    assert artifact_row["final_rendered_label"]["rendered_label"] == (
+        "seizure free for 29 month"
+    )
+
+
+def test_build_projection_render_keeps_relative_since_anchor_unresolved() -> None:
+    row = {
+        "source_row_index": 27,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "seizure_free",
+            "primary_candidate_ids": ["llm:27:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "seizure_free_state",
+            "normalized_burden": {
+                "source_normalized_phrase": "no seizures since last visit"
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            27: CandidateSet(
+                source_row_index=27,
+                component_owner="candidate_set_union",
+                source_artifacts=["test"],
+                row_context=_row_context("2026-06-06"),
+                candidates=[
+                    _seizure_free_candidate(
+                        27,
+                        "llm:27:1",
+                        "She has had no seizures since last visit.",
+                    )
+                ],
+            )
+        },
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    assert (
+        "seizure_free_since_date_anchor_unparsed"
+        in assessment["normalization_issues"]
+    )
+    assert assessment["seizure_free_instrumentation"]["state_kind"] == (
+        "unresolved_anchor"
+    )
+    assert artifact_row["final_rendered_label"]["rendered_label"] is None
+
+
 def _candidate_set(
     source_row_index: int,
     *,
@@ -471,6 +1203,22 @@ def _candidate_set(
                 clinical_or_policy="clinical",
             )
         ],
+    )
+
+
+def _row_context(reference_date: str) -> RowContext:
+    return RowContext(
+        reference_date=ReferenceDateContext(
+            date=reference_date,
+            date_precision="day",
+            source="note_header",
+            source_phrase=f"Clinic Date: {reference_date}",
+            source_span=EvidenceSpan(
+                text=f"Clinic Date: {reference_date}",
+                start_char=0,
+                end_char=len(f"Clinic Date: {reference_date}"),
+            ),
+        )
     )
 
 

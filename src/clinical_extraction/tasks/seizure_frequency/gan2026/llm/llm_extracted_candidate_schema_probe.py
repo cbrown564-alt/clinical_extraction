@@ -29,6 +29,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.candidate_set 
     SeizureFreeDetails,
     SourcePhraseOnlyDetails,
     candidate_source_phrase,
+    extract_row_context,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
@@ -476,6 +477,7 @@ def assemble_candidate_set(
         source_row_index=record.source_row_index,
         component_owner=PIPELINE_FAMILY,
         source_artifacts=[PROMPT_VERSION],
+        row_context=extract_row_context(record.note_text),
         candidates=candidates,
         assembly_issues=assembly_issues,
     )

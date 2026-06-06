@@ -397,6 +397,7 @@ def _candidate_set_for_prompt(candidate_set: CandidateSet) -> dict[str, Any]:
         "source_row_index": candidate_set.source_row_index,
         "component_owner": candidate_set.component_owner,
         "source_artifacts": candidate_set.source_artifacts,
+        "row_context": candidate_set.row_context.model_dump(),
         "assembly_issues": candidate_set.assembly_issues,
         "candidates": [
             {
