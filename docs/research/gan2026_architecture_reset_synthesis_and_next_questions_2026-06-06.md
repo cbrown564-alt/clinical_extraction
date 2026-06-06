@@ -1722,3 +1722,260 @@ This is deliberately not broad cluster review. Explicitly parsed cluster
 cadence plus explicit per-cluster burden can still render without this route.
 The new route family is for convention-supported or incomplete-axis cases where
 the label is representable but the clinical interpretation remains risky.
+
+## Recap After Context Repair V6: What Is Implemented, Answered, Changed, And Still Ahead
+
+This recap consolidates the reset thread after the implementation addenda and
+the fresh validation750 no-call replay:
+
+- `docs/research/gan2026_validation750_context_repair_v6_read_2026-06-06.md`
+- `gan2026_clinical_assessment_projection_render_validation750_gpt41mini_context_repair_v6_2026-06-06.*`
+- `gan2026_clinical_assessment_projection_score_validation750_gpt41mini_context_repair_v6_2026-06-06.*`
+- `gan2026_validation750_verification_route_gpt41mini_context_repair_v6_2026-06-06.*`
+- `gan2026_validation750_verification_decision_gpt41mini_context_repair_v6_2026-06-06.*`
+
+This remains validation-development mechanics only. It does not authorize
+locked-test row-level review, benchmark-comparable claims, or promotion of a
+whole reset pipeline.
+
+### What We Have Implemented
+
+The reset architecture itself is now executable through the intended staged
+contract:
+
+```text
+Extract -> Select / Clinical Assessment -> Normalize -> Project -> Verify -> Render / Score
+```
+
+The implementation now includes:
+
+1. Candidate-set extraction contracts.
+   `ExtractedCandidate` and `CandidateSet` keep source-near facts separate from
+   prediction-bearing answers. Candidate ids, source ids, spans, and provenance
+   are deterministic responsibilities; the LLM is not asked to behave like a
+   parser.
+
+2. GPT-4.1-mini clinical assessment replay over validation750.
+   The reset has a saved clinical-assessment surface with 750 examples, 732
+   strict valid assessments in the original run, and no model call failures.
+   Later repair passes operate by no-call replay over saved outputs.
+
+3. Clinical-assessment role-id repair.
+   Duplicate candidate ids and role overlaps are repaired before strict
+   assembly, with issue traces preserved.
+
+4. Assessment-to-normalization value repair.
+   Normalization can recover deterministic values from selected candidates and
+   selected evidence when the assessment phrase is source-backed but omitted or
+   malformed values.
+
+5. Seizure-free duration/date instrumentation.
+   The reset now handles explicit seizure-free durations, since-date evidence,
+   last-event dates, same-note antecedents such as `since then`, approximate
+   month/season/year anchors, numeric dates, and selected prior-encounter
+   context with policy traces.
+
+6. Frequency-family selected-evidence recovery.
+   Narrow current-frequency families were ported, including nightly cadence,
+   hourly EEG-style frequency, vague weekly/monthly/yearly burden with explicit
+   time period, and diary date lists.
+
+7. Current-vs-historical policy ports.
+   Explicit current summary rates can override long-window averages, and
+   previous active month evidence can override current month-to-date zero when
+   the policy family is named and source-backed.
+
+8. Competing-semiology priority.
+   `major_recent_relapse_over_background_frequency` was ported as a narrow
+   reset-native family so a dominant recent convulsive relapse can own the
+   primary normalized phrase instead of leaking a mixed summary downstream.
+
+9. Guard families for non-renderable clinical content.
+   `relative_change_without_current_baseline` and
+   `conditional_only_trigger_without_baseline` now surface as named
+   normalization/projection issues and route families instead of anonymous
+   parse misses.
+
+10. Projection provenance fields.
+    Projection decisions now carry `selected_evidence_status`, including
+    `exact_trace`, `source_id_status`, and a source-id trace object.
+
+11. Provenance route families.
+    `selected_evidence_missing_exact_trace` and `selected_source_id_invalid`
+    are now reset-native route families rather than inferred suspicious-state
+    side effects.
+
+12. Denominator-window route ownership.
+    Projection now carries `source_normalized_phrase` so route can flag
+    `denominator_window_mismatch` from the chosen wording plus the rendered
+    label.
+
+13. Cluster value-language and route contract.
+    Reset-stage issue names now use plain-language `values`, and unresolved
+    cadence/per-cluster burden can render a Gan-compatible convention label
+    while routing as `unresolved_cluster_cadence_with_per_cluster_burden`.
+
+14. Validation750 V6 replay and report.
+    The latest replay reaches all 750 validation rows and produces refreshed
+    projection/render, score, route, and deterministic V0 decision artifacts.
+
+15. Test coverage for the reset path.
+    Focused reset tests passed during the ports, and the latest project status
+    records the full suite passing at `1305 passed`.
+
+### Questions We Have Answered
+
+1. Was the architecture reset worthwhile?
+   Yes. It made component ownership legible and exposed failure surfaces that
+   the old assembly hid behind fallback, repair, and comparator preservation.
+   Short-term null renders increased at first, but the failure surface became
+   diagnosable and stage-owned.
+
+2. Should we resurrect the old staged assembly wholesale?
+   No. The old assembly had recovery power, but also broad fallback and
+   regression risk. The adopted strategy is to port old component wisdom under
+   reset boundaries, not restore the Frankenstein wiring.
+
+3. Where should mature old behavior live?
+   We have answered this for several families:
+   frequency and date arithmetic belong to normalization;
+   benchmark-policy rendering belongs to projection/render;
+   provenance/exact-trace concerns belong to route/reporting;
+   action decisions belong to verification, not hidden projection fallback.
+
+4. Should the first LLM verifier compensate for upstream missing policy?
+   No. V6 reinforces that null renders and route expansion need deterministic
+   normalization/projection and route-policy adjudication first. LLM verifier
+   work remains blocked until the route surface is stable and predeclared.
+
+5. Can null-render reduction alone define progress?
+   No. V6 is cleaner because it recovers 7 rows without introducing new nulls,
+   but it also expands routing sharply through provenance checks. Progress must
+   track recovered rows, remaining nulls, routed rows, issue ownership,
+   evidence validity, and audit-only W->C/C->W effects.
+
+6. Can provenance review be represented honestly in the reset?
+   Yes, after adding explicit `selected_evidence_status`. We decided not to
+   fake provenance families from weak hints; the route layer now has the data it
+   needs to distinguish missing exact trace from invalid source ids.
+
+7. Are cluster convention labels always projection failures?
+   No. A Gan-compatible cluster convention can be rendered while still routed
+   when cadence, burden, convention, or axis ownership remains unresolved.
+   Explicit cadence plus explicit per-cluster burden need not route by default.
+
+### How The Outcomes Have Changed
+
+The original validation750 mechanics read exposed:
+
+- 732 projection rows from valid assessments;
+- 498 rendered-label rows;
+- 234 true null renders;
+- 42 routed verifier rows;
+- 42 deterministic V0 `abstain` actions.
+
+After context/date repair through V5, the surface improved to:
+
+- 573 rendered rows;
+- 177 null renders;
+- 49 routed rows.
+
+After the V6 replay, the refreshed surface is:
+
+| Surface | Initial mechanics | V5 | V6 |
+| --- | ---: | ---: | ---: |
+| rendered rows | 498 | 573 | 580 |
+| null renders | 234 | 177 | 170 |
+| routed rows | 42 | 49 | 276 |
+| V0 `abstain` rows | 42 | 49 | 276 |
+
+V6 recovered 7 rows that were null-rendered in V5, with no new null-render
+regressions. All 7 recoveries became Purist-correct scored rows on the
+validation-development surface. The recovered families were exactly the intended
+frequency ports: nightly cadence, per-hour normalization, and vague burden with
+explicit periods.
+
+The less obvious outcome change is the verifier route surface. V6 route
+expansion is not mainly new clinical ambiguity. It is mostly provenance
+visibility:
+
+- `selected_evidence_missing_exact_trace`: 215 newly routed rows;
+- `selected_source_id_invalid`: 9 newly routed rows;
+- `unresolved_cluster_cadence_with_per_cluster_burden`: 4 newly routed rows;
+- `relative_only_trend`: 2 newly routed rows;
+- `conditional_only_trigger`: 1 newly routed row.
+
+The interpretation is therefore:
+
+```text
+V6 improves projection/render mechanics, but also reveals a second route class:
+clinical/policy ambiguity routes versus provenance/exact-trace audit routes.
+```
+
+Those classes must be reported separately before any LLM-verifier experiment.
+
+### Key Milestones Remaining
+
+1. Read the refreshed V6 residual null surface.
+   The remaining 170 null renders need a fresh family-level read. The largest
+   current issue families are seizure-free duration/date gaps, harder
+   frequency value gaps, additive period mismatch, and cluster value gaps.
+
+2. Split route reporting into two buckets.
+   Future reports should separate clinical/policy ambiguity routes from
+   provenance/exact-trace routes. The 276-row route count should not silently
+   become the first LLM-verifier target surface.
+
+3. Adjudicate provenance-route policy.
+   Decide whether `selected_evidence_missing_exact_trace` and
+   `selected_source_id_invalid` are verifier inputs, instrumentation warnings,
+   report-only audit flags, or separate human-review queues.
+
+4. Complete the cluster-family pass.
+   Render explicit cadence plus per-cluster burden, and route unresolved
+   cadence, burden, convention, or axis ownership. Keep broad cluster fallback
+   out of projection.
+
+5. Define the null-render/action taxonomy.
+   Separate clinically unknown, safely renderable `unknown`, abstain,
+   human-review, missing upstream parser/policy, and verifier-eligible
+   ambiguity.
+
+6. Build a reset-stage component inventory.
+   For each ported old family, record old name, reset-stage owner, portability
+   category, issue/rule id, ablation switch, and status.
+
+7. Add component-level ablation reporting.
+   Each ported family should report newly rendered rows, newly routed rows,
+   remaining nulls, evidence/source-id validity, route-family changes, and
+   audit-only W->C/C->W.
+
+8. Stabilize the route surface before LLM verifier work.
+   The first LLM verifier should run only after deterministic
+   normalization/projection and route-policy decisions are frozen. It should
+   emit action decisions only, cite evidence ids/spans, and never invent a
+   replacement scorer-facing label.
+
+9. Keep locked holdout off-limits.
+   Reset work remains validation-development mechanics until candidate code,
+   prompts, model identifiers, scorer, route policy, inspection policy, and
+   stop rule are frozen and explicitly authorized.
+
+### Updated Working Thesis
+
+The architecture reset is no longer just a conceptual cleanup. It has become a
+working staged substrate that can recover old mature behavior while making
+ownership, provenance, and routing visible.
+
+The main risk has also changed. The danger is no longer only that the reset is
+too sparse and leaves too many null renders. The newer danger is that improved
+instrumentation can expand review surfaces faster than the team can interpret
+them. The next milestone is therefore not just more recovery. It is disciplined
+surface management:
+
+```text
+recover deterministic gaps,
+separate clinical ambiguity from provenance audit,
+make every port ablatable,
+and only then test an LLM verifier.
+```

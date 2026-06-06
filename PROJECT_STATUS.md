@@ -45,18 +45,35 @@ Controlling thread:
   `values` and added explicit cluster route ownership:
   `cluster_cadence_unknown_with_per_cluster_burden` routes as
   `unresolved_cluster_cadence_with_per_cluster_burden`.
+- Fresh validation750 replay (`context_repair_v6`) now reaches all 750 rows:
+  580 rendered labels, 170 null renders, 488/580 Purist-correct scored rows,
+  and 276 routed V0-abstain verifier rows.
+- The replay's route surface is no longer null-only. In addition to the prior
+  null-render families, it now exposes provenance-sensitive route families led
+  by `selected_evidence_missing_exact_trace` (250 rows) plus
+  `selected_source_id_invalid` (9 rows); this needs a deliberate report read,
+  not silent promotion.
 - Focused validation for the reset path passed:
   `99 passed` across clinical-assessment projection/render, verification route,
   and candidate-set clinical assessment tests.
-- Full suite status after this thread: `1304 passed, 1 failed`. The remaining
-  failure is unrelated to the reset files:
-  `tests/test_gan2026_normalize.py::test_repair_prediction_label_with_evidence_repairs_single_count_over_window`
-  currently returns `3 per 3 month` where the test expects `3 per 7 month`.
+- Full suite status after this thread: `1305 passed`.
 
 ## Core Artifacts
 
 - Reset synthesis and decisions:
   `docs/research/gan2026_architecture_reset_synthesis_and_next_questions_2026-06-06.md`.
+- Fresh replay comparison read:
+  `docs/research/gan2026_validation750_context_repair_v6_read_2026-06-06.md`.
+- Route bucket split read:
+  `docs/research/gan2026_validation750_route_bucket_split_v6_2026-06-06.md`.
+- Cluster-family pass read:
+  `docs/research/gan2026_validation750_cluster_family_pass_v6_2026-06-06.md`.
+- Verifier-candidate surface read:
+  `docs/research/gan2026_validation750_verifier_candidate_surface_v6_2026-06-06.md`.
+- Null action taxonomy read:
+  `docs/research/gan2026_validation750_null_action_taxonomy_v6_2026-06-06.md`.
+- First verifier report predeclaration:
+  `docs/research/gan2026_validation750_first_verifier_report_predeclaration_v6_2026-06-06.md`.
 - Validation750 reset artifacts live under
   `experiments/gan2026_*validation750*gpt41mini*2026-06-06.*`.
 - June 5 staged-assembly holdout docs remain a separate frozen thread; do not
@@ -66,32 +83,30 @@ Controlling thread:
 
 ### Now
 
-- Fix or triage the unrelated normalize regression: diary evidence for
-  `3 events over 7 months` currently returns `3 per 3 month`, expected
-  `3 per 7 month`.
-- Run a fresh validation750 reset mechanics replay after the post-V5 family
-  ports and value-language/cluster-route contract changes.
-- Regenerate and compare reset reports: null-render analysis, historical
-  crosswalk, route report, V0 baseline, recovered rows, routed rows, and
-  audit-only W->C/C->W.
+- Keep the 220 provenance-only routed rows out of the first verifier
+  success/failure table and track them as audit/instrumentation debt.
+- Use the new null-action taxonomy operationally: 29 verifier-eligible
+  ambiguity rows, 18 upstream policy/parser rows, and 4 abstain rows.
+- Use the predeclared first verifier layout: 29-row main ambiguity score table,
+  4 abstain exemplars, 18 upstream-policy appendix, 5 rendered
+  policy-sensitive appendix, and 220 provenance-only audit appendix.
 
 ### Next
 
-- Review refreshed residual null-render families by count, cleanliness, and
-  transfer value; choose from refreshed evidence, not stale V5 counts.
-- Complete the cluster-family pass: render explicit cadence plus per-cluster
-  burden; route unresolved cadence, burden, convention, or axis ownership.
-- Define the null-render/action taxonomy: clinically unknown, abstain, human
-  review, missing upstream parser/policy, and verifier-eligible ambiguity.
 - Create a reset-stage component inventory: old name, new family, portability
   category, ablation switch, and status.
 - Update reset completed-tasks/review docs with the validation750 read, post-V5
   ports, value-language decision, and cluster route contract.
+- Decide whether vague cluster-count cadence needs a reset-native contract, or
+  should remain routed policy debt after the current verifier-candidate report.
+- Prepare the first saved verifier comparison using the predeclared layout and
+  visible provenance sidecars on the 39 mixed clinical/policy rows.
 
 ### Blocked
 
 - LLM-verifier work is blocked until the deterministic normalization/projection
-  and route surface is stable after a fresh validation750 replay.
+  and route surface is stable after the fresh validation750 replay is read and
+  the provenance-route expansion is adjudicated.
 - Whole-pipeline promotion remains blocked; no benchmark-comparable language or
   holdout-facing reset protocol is authorized.
 - Locked-test row-level inspection remains prohibited for development.
@@ -111,6 +126,31 @@ Controlling thread:
 
 ### Done Recently
 
+- 2026-06-06: Decided that provenance sidecars remain visible to the first
+  verifier prompt on the 39 mixed clinical/policy rows, but stay secondary to
+  the non-provenance action family; also predeclared the first verifier report
+  layout around the 29-row ambiguity set plus abstain, upstream-policy,
+  rendered-policy, and provenance-only appendices.
+- 2026-06-06: Defined the `context_repair_v6` null-render/action taxonomy for
+  the 51 null verifier rows: 29 verifier-eligible ambiguity rows, 18 missing
+  upstream policy/parser rows, 4 abstain rows, and no clean clinically-unknown
+  or human-review-first rows on this surface.
+- 2026-06-06: Defined the primary `context_repair_v6` verifier-candidate
+  surface as the 56 clinical/policy routed rows only: 51 null ambiguity rows
+  plus 5 rendered policy-sensitive rows, with the 220 provenance-only routed
+  rows explicitly kept out of the first verifier score table.
+- 2026-06-06: Completed the `context_repair_v6` cluster-family pass and found
+  no safe narrow deterministic recovery patch; the 22 routed cluster rows split
+  into 4 intentional rendered unresolved-cadence rows, 5 cyclic-window rows,
+  and 13 axis-ownership null rows that need explicit future contract decisions,
+  not hidden fallback.
+- 2026-06-06: Ran a fresh validation750 reset mechanics replay as
+  `context_repair_v6`; rendered rows increased from 573 to 580, null renders
+  fell from 177 to 170, and the verifier route surface expanded sharply to 276
+  abstain-only rows because provenance route families are now visible.
+- 2026-06-06: Fixed the unrelated normalize regression where diary evidence
+  overrode an explicit raw `3 events over 7 months` window with a shorter
+  date-span guess; full suite now passes at `1305 passed`.
 - 2026-06-06: Completed the reset synthesis and addenda covering validation750
   mechanics, context/date repairs, post-V5 family ports, provenance route
   fields, denominator-window routing, value terminology, and unresolved-cluster
