@@ -37,7 +37,7 @@ def test_project_and_render_frequency_rate_label() -> None:
 
     projection, rendered = projection_render.project_and_render(
         assessment,
-        candidate_set=_candidate_set(10),
+        candidate_set=_candidate_set(10, evidence="up to four seizures per day"),
     )
 
     assert projection.projected_label_semantics == "4 per day"
@@ -45,6 +45,17 @@ def test_project_and_render_frequency_rate_label() -> None:
     assert projection.projection_owner == "rate_projection_policy"
     assert projection.projection_rule_id == "frequency_rate_operands_v0"
     assert projection.source_ids == ["note:10:span:0-20"]
+    assert projection.selected_evidence_status == {
+        "exact_trace": True,
+        "source_id_status": "valid",
+        "source_id_trace": {
+            "selected_source_ids": ["note:10:span:0-20"],
+            "expected_source_ids": ["note:10:span:0-20"],
+            "missing_expected_source_ids": [],
+            "unexpected_source_ids": [],
+            "trace_basis": "exact_selected_evidence",
+        },
+    }
     assert rendered.rendered_label == "4 per day"
     assert rendered.projection_owner == "rate_projection_policy"
     assert rendered.scoring_enabled is False
@@ -1393,6 +1404,150 @@ def test_build_projection_render_prioritizes_major_recent_relapse_over_backgroun
     assert assessment["normalized_burden"]["count_high"] == 3.0
     assert assessment["normalized_burden"]["period_unit"] == "day"
     assert artifact_row["final_rendered_label"]["rendered_label"] == "3 per day"
+
+
+def test_build_projection_render_marks_non_exact_selected_evidence_trace() -> None:
+    row = {
+        "source_row_index": 46,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "frequency_rate",
+            "primary_candidate_ids": ["llm:46:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "single_fact",
+            "normalized_burden": {
+                "source_normalized_phrase": "patient is having about two seizures each week"
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            46: _candidate_set(
+                46,
+                evidence="having 2 seizures per week",
+            )
+        },
+    )
+
+    projection = artifact_row["projection_decision"]
+    assert projection["selected_evidence_status"]["exact_trace"] is False
+    assert projection["selected_evidence_status"]["source_id_status"] == "invalid"
+    assert projection["selected_evidence_status"]["source_id_trace"] == {
+        "selected_source_ids": ["note:46:span:0-20"],
+        "expected_source_ids": [],
+        "missing_expected_source_ids": [],
+        "unexpected_source_ids": ["note:46:span:0-20"],
+        "trace_basis": "non_exact_or_missing_evidence",
+    }
+
+
+def test_build_projection_render_marks_invalid_source_id_for_exact_trace() -> None:
+    row = {
+        "source_row_index": 47,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "frequency_rate",
+            "primary_candidate_ids": ["llm:47:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "single_fact",
+            "normalized_burden": {
+                "source_normalized_phrase": "having 2 seizures per week"
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            47: CandidateSet(
+                source_row_index=47,
+                component_owner="candidate_set_union",
+                source_artifacts=["test"],
+                candidates=[
+                    ExtractedCandidate(
+                        candidate_id="llm:47:1",
+                        component_owner="test",
+                        source_type="llm_candidate",
+                        source_artifact="test",
+                        source_row_index=47,
+                        candidate_kind="frequency_rate",
+                        event_type="seizure",
+                        frequency=FrequencyDetails(
+                            source_phrase="having 2 seizures per week"
+                        ),
+                        temporality="current",
+                        certainty="certain",
+                        assertion_status="asserted",
+                        evidence_span=EvidenceSpan(
+                            text="having 2 seizures per week",
+                            start_char=0,
+                            end_char=26,
+                        ),
+                        source_ids=["note:47:span:unresolved:0"],
+                        clinical_or_policy="clinical",
+                    )
+                ],
+            )
+        },
+    )
+
+    projection = artifact_row["projection_decision"]
+    assert projection["selected_evidence_status"]["exact_trace"] is True
+    assert projection["selected_evidence_status"]["source_id_status"] == "invalid"
+    assert projection["selected_evidence_status"]["source_id_trace"] == {
+        "selected_source_ids": ["note:47:span:unresolved:0"],
+        "expected_source_ids": ["note:47:span:unresolved:0"],
+        "missing_expected_source_ids": [],
+        "unexpected_source_ids": [],
+        "trace_basis": "exact_selected_evidence",
+    }
+
+
+def test_build_projection_render_carries_source_phrase_for_denominator_window_review() -> None:
+    row = {
+        "source_row_index": 48,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "frequency_rate",
+            "primary_candidate_ids": ["llm:48:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "single_fact",
+            "normalized_burden": {
+                "source_normalized_phrase": "brief absences occur on most weekdays"
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            48: _candidate_set(
+                48,
+                evidence="brief absences occur on most weekdays",
+            )
+        },
+    )
+
+    projection = artifact_row["projection_decision"]
+    assert projection["source_normalized_phrase"] == "brief absences occur on most weekdays"
+    assert artifact_row["final_rendered_label"]["rendered_label"] == "multiple per week"
 
 
 def test_build_projection_render_repairs_seizure_free_duration_from_primary_candidate() -> None:

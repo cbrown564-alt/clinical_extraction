@@ -1051,3 +1051,607 @@ Likely larger components to consider next:
 - ACD projection nodes;
 - route and suspicious-flag semantics;
 - event-date context only if the 177-row family review shows broad value.
+
+## Implementation Addendum: 2026-06-06 Post-V5 Family Ports And Provenance Work
+
+After the V5 stopping point, we intentionally changed tactics. We stopped
+treating the remaining null-rendered rows as a seizure-free cleanup queue and
+treated them instead as component families that should be restored from the
+older architecture in a reset-native way.
+
+This session did not run a new full validation750 mechanics replay. It was a
+code-and-contract port session over the reset path, with focused tests only.
+The goal was to recover mature old behavior without bringing back hidden
+fallback or broad hybrid adjudication.
+
+### Why We Pivoted
+
+The key interpretation after V5 was:
+
+- seizure-free/date work had recovered real rows already;
+- the remaining `177` null renders were no longer dominated by easy
+  seizure-free/date mechanics;
+- the largest remaining surface was the frequency family, especially
+  source-backed frequency text that the reset was not yet normalizing or
+  routing clearly enough;
+- several old named policy families already existed in the pre-reset work and
+  should be ported as explicit reset components rather than rediscovered one
+  phrase at a time.
+
+The important design choice was to prefer:
+
+```text
+old component wisdom + reset stage boundaries
+```
+
+and not:
+
+```text
+resume broad fallback until the null-render count drops
+```
+
+### Family-Level Interpretation
+
+The working family interpretation we used in this session was:
+
+```json
+{
+  "remaining_null_render_surface_v5": {
+    "frequency_family_is_primary_next_target": true,
+    "reason": "seizure-free/date mechanics had become lower-yield, while frequency normalization and policy families still had reusable old logic",
+    "avoid": [
+      "row-by-row phrase patching as the primary strategy",
+      "broad hidden projection fallback",
+      "using the verifier to compensate for upstream normalization gaps"
+    ]
+  }
+}
+```
+
+### Decision Boundary For Frequency Work
+
+We made one important narrowing decision before implementing anything:
+
+- use plain English names such as `seizure amount` and `time period`;
+- keep the first selected-evidence frequency repair narrow;
+- do not redesign the internal schema for multiple simultaneous frequency
+  facts yet;
+- do not let normalization decide additive policy or competing-semiology
+  policy.
+
+The rationale was that the current `NormalizedBurden` schema still has room for
+only one frequency fact. A true multi-frequency internal state would have been
+a broader contract and projection redesign, not a narrow recovery component.
+
+### Narrow Selected-Evidence Frequency Repairs
+
+We first extended reset-side frequency recovery in
+`selected_evidence_rate.py` for single clear current-frequency phrases.
+
+Added narrow support included:
+
+- `once per night` -> `1 per day`;
+- `one seizure each night` -> `1 per day`;
+- `twice per night` / `twice nightly` -> `2 per day`;
+- `three seizures nightly` -> `3 per day`;
+- vague weekly current burden such as:
+  - `several occasions each week`;
+  - `most weeks`;
+  - `several seizures each week`.
+
+Representative shape:
+
+```json
+{
+  "source_phrase": "Nocturnal seizures occurring twice per night on average.",
+  "normalized_burden": {
+    "count_low": 2.0,
+    "count_high": 2.0,
+    "period_low": 1.0,
+    "period_high": 1.0,
+    "period_unit": "day"
+  },
+  "normalization_issues": [
+    "frequency_values_recovered_from_selected_evidence"
+  ]
+}
+```
+
+The rationale for staying narrow was deliberate:
+
+- these rows were clearly source-backed and clinically current;
+- they did not require additive policy;
+- they did not require competing-semiology arbitration;
+- they gave us clean recovery without changing route semantics.
+
+### Reuse Decision: Stop One-Off Patching And Port Old Named Families
+
+After a few narrow repairs, we checked the surrounding files and confirmed the
+user's intuition: several of the remaining behaviors had already been solved in
+older components such as:
+
+- `deterministic_rate_extraction.py`;
+- `gold_policy.py`;
+- `rq5_rendering_matrix.py`;
+- `state_graph/projection.py`;
+- `suspicious_state_policy.py`.
+
+The architectural decision was:
+
+- stop accumulating one-off regex patches as the main strategy;
+- port old named behavior families into reset ownership;
+- make each family explicit, ablatable, and visible in issue traces.
+
+That was the governing rationale for everything that followed in this session.
+
+### Reset-Native Ports Added Under Normalization Ownership
+
+We ported the following families into the reset normalization path.
+
+#### 1. `vague_frequency_with_explicit_time_period`
+
+Examples:
+
+- `several seizures in a typical month` -> `multiple per month`;
+- `many events every year` -> `multiple per year`;
+- `multiple seizures each week` -> `multiple per week`.
+
+Representative state:
+
+```json
+{
+  "source_phrase": "Several seizures in a typical month despite treatment.",
+  "normalized_burden": {
+    "vague_count": "multiple",
+    "period_low": 1.0,
+    "period_high": 1.0,
+    "period_unit": "month"
+  },
+  "normalization_issues": [
+    "vague_frequency_with_explicit_time_period",
+    "vague_count"
+  ]
+}
+```
+
+Rationale:
+
+- the old system had both benchmark examples and executable behavior for this
+  family;
+- these are normalization-owned because the text already states a seizure
+  amount category and a time period;
+- projection should not have to guess a denominator when the wording already
+  supplies it.
+
+#### 2. `relative_only_trend_guard`
+
+Examples:
+
+- `Frequency increased by about 50% after dose reduction.`
+- `Frequency reduced by 0.3 after dose increase.`
+
+Representative state:
+
+```json
+{
+  "source_phrase": "Frequency increased by about 50% after dose reduction.",
+  "normalized_burden": {
+    "source_normalized_phrase": "Frequency increased by about 50% after dose reduction."
+  },
+  "normalization_issues": [
+    "relative_change_without_current_baseline"
+  ]
+}
+```
+
+Rationale:
+
+- this is not a parse failure in the ordinary sense;
+- it is a known clinical-content guard where no absolute current frequency is
+  present;
+- the right reset behavior is to surface a named issue, not to let the row die
+  as an anonymous miss.
+
+#### 3. `conditional_only_trigger_guard`
+
+Examples:
+
+- `Seizures occur only when medication doses are missed.`
+- `Seizures occur only after nights of curtailed sleep.`
+- `Events occur exclusively during the perimenstrual period.`
+
+Representative state:
+
+```json
+{
+  "source_phrase": "Seizures occur only when medication doses are missed.",
+  "normalized_burden": {
+    "source_normalized_phrase": "Seizures occur only when medication doses are missed."
+  },
+  "normalization_issues": [
+    "conditional_only_trigger_without_baseline"
+  ]
+}
+```
+
+Rationale:
+
+- the old system treated this as a known route-to-unknown family;
+- it should not be mistaken for a stable baseline seizure rate;
+- again, the reset should emit an explicit guard, not a silent parse miss.
+
+#### 4. `diary_date_listing`
+
+Examples:
+
+- `Diary lists seizures on 03-07, 03-27, 05-15, 05-19, 05-24.`
+- `Recorded seizures on March 7, March 27, May 15, May 19, and May 24.`
+
+Representative state:
+
+```json
+{
+  "source_phrase": "Recorded seizures on March 7, March 27, May 15, May 19, and May 24.",
+  "rendered_label": "5 per 2 month"
+}
+```
+
+Rationale:
+
+- old `diary.date_list` behavior already existed;
+- the reset had most of the arithmetic but not the full adapter coverage;
+- diary/list aggregation belongs upstream of the verifier when the dates are
+  explicit enough to count mechanically.
+
+### Reset-Native Ports Added Under Current-Vs-Historical Ownership
+
+We then recovered the old `current_vs_historical` family in two layers.
+
+#### 5. `current_vs_historical`: explicit current summary over long-window average
+
+Examples:
+
+- `Only seven focal impaired-awareness seizures reported so far this year. At present, his typical pattern is a focal seizure monthly.`
+- broadened variants such as `Year to date ... Currently ... monthly.`
+
+Representative state:
+
+```json
+{
+  "source_phrase": "Year to date he has had only two focal seizures. Currently, his typical pattern is a focal seizure monthly.",
+  "normalized_burden": {
+    "count_low": 1.0,
+    "count_high": 1.0,
+    "period_low": 1.0,
+    "period_high": 1.0,
+    "period_unit": "month"
+  },
+  "normalization_issues": [
+    "explicit_summary_rate_over_long_period_average"
+  ]
+}
+```
+
+Rationale:
+
+- the old system already had a broader current-summary preference;
+- the reset had a brittle single-phrase version;
+- we widened the cue phrases slightly while keeping the family narrow and
+  explicit.
+
+#### 6. `current_vs_historical`: previous active month over current month-to-date zero
+
+Examples:
+
+- `There were a handful of short focal events during the previous month. In the current month to date, no events have been recorded.`
+- broadened variants such as `Several focal events occurred last month. So far this month there have been no events.`
+
+Representative state:
+
+```json
+{
+  "source_phrase": "Several focal events occurred last month. So far this month there have been no events.",
+  "normalized_burden": {
+    "vague_count": "multiple",
+    "period_low": 1.0,
+    "period_high": 1.0,
+    "period_unit": "month"
+  },
+  "normalization_issues": [
+    "previous_month_active_rate_over_current_zero",
+    "vague_count"
+  ]
+}
+```
+
+Rationale:
+
+- this is a known projection-policy family, not a free-form paraphrase repair;
+- the reset now names the family explicitly instead of leaving it as an
+  unparsed row.
+
+### Reset-Native Port Added For Competing Semiology
+
+#### 7. `major_recent_relapse_over_background_frequency`
+
+This was the reset-side recovery of old ACD-010 behavior.
+
+Representative example:
+
+```json
+{
+  "input_candidates": {
+    "candidate_1": "three tonic-clonic seizures yesterday",
+    "candidate_2": "interictal brief auras occurring approximately once or twice per week"
+  },
+  "clinical_assessment": {
+    "primary_candidate_ids": ["llm:45:1"],
+    "supporting_candidate_ids": ["llm:45:2"],
+    "normalized_burden": {
+      "count_low": 3.0,
+      "count_high": 3.0,
+      "period_low": 1.0,
+      "period_high": 1.0,
+      "period_unit": "day",
+      "source_normalized_phrase": "three tonic-clonic seizures yesterday"
+    },
+    "normalization_issues": [
+      "major_recent_relapse_over_background_frequency"
+    ]
+  },
+  "final_rendered_label": "3 per day"
+}
+```
+
+Rationale:
+
+- the old ACD-010 logic lived in selection/projection priority, not in plain
+  rate parsing;
+- the right first reset port was therefore a narrow primary-candidate repair,
+  not a new parser rule;
+- after selecting the dominant convulsive relapse, we also had to realign the
+  normalized source phrase to the chosen primary fact, otherwise normalization
+  kept re-reading the old mixed summary.
+
+This is a good example of a key reset principle: once one stage changes
+ownership, the downstream source phrase must be updated too, or the old mixed
+state leaks back in.
+
+### Reset-Native Ports Added Under Verification-Route / Suspicious-State Ownership
+
+We then turned to old suspicious-state families. The design question here was
+important: only families whose signal survives into the reset
+projection/render artifact should be ported directly into verification route.
+
+That led to the following decisions.
+
+#### 8. `conditional_only_trigger` and `relative_only_trend` route families
+
+These were straightforward because the reset projection already carries:
+
+- `conditional_only_trigger_without_baseline`;
+- `relative_change_without_current_baseline`
+
+in `projection_issues`.
+
+Representative route shapes:
+
+```json
+{
+  "projection_issues": [
+    "conditional_only_trigger_without_baseline",
+    "frequency_rate_operands_incomplete"
+  ],
+  "verification_route": {
+    "route_families": ["conditional_only_trigger"]
+  }
+}
+```
+
+```json
+{
+  "projection_issues": [
+    "relative_change_without_current_baseline",
+    "frequency_rate_operands_incomplete"
+  ],
+  "verification_route": {
+    "route_families": ["relative_only_trend"]
+  }
+}
+```
+
+Rationale:
+
+- these families were already explicitly named upstream;
+- route can consume them honestly from structured issues;
+- this strengthens route semantics without inventing new clinical logic there.
+
+### Provenance Work Before Porting Old Evidence-Trace Families
+
+At this point we stopped and asked whether the old provenance family
+`selected_evidence_missing_exact_trace` could be ported honestly.
+
+The answer was initially no. Before this session, the reset projection artifact
+preserved:
+
+- `source_candidate_ids`;
+- `source_ids`;
+- `source_normalized_phrase`.
+
+But it did not preserve:
+
+- an explicit `exact_trace` boolean;
+- a source-id trace object;
+- a provenance status that could distinguish
+  `non-exact selected evidence` from `exact evidence but invalid source ids`.
+
+The decision was therefore:
+
+- do not fake this family from weak hints;
+- add the stronger provenance fields first;
+- then port the old family exactly.
+
+#### 9. Projection provenance block
+
+Projection decisions now carry:
+
+```json
+{
+  "selected_evidence_status": {
+    "exact_trace": true,
+    "source_id_status": "valid",
+    "source_id_trace": {
+      "selected_source_ids": ["note:10:span:0-20"],
+      "expected_source_ids": ["note:10:span:0-20"],
+      "missing_expected_source_ids": [],
+      "unexpected_source_ids": [],
+      "trace_basis": "exact_selected_evidence"
+    }
+  }
+}
+```
+
+Rationale:
+
+- provenance review families should be grounded in explicit reset-native data,
+  not inferred from comparator behavior;
+- this made the route layer truthful instead of speculative.
+
+#### 10. `selected_evidence_missing_exact_trace`
+
+Now that the provenance block exists, the old family could be ported by name.
+
+Representative state:
+
+```json
+{
+  "projection_decision": {
+    "selected_evidence_status": {
+      "exact_trace": false,
+      "source_id_status": "invalid",
+      "source_id_trace": {
+        "selected_source_ids": ["note:46:span:0-26"],
+        "expected_source_ids": [],
+        "missing_expected_source_ids": [],
+        "unexpected_source_ids": ["note:46:span:0-26"],
+        "trace_basis": "non_exact_or_missing_evidence"
+      }
+    }
+  },
+  "verification_route": {
+    "route_families": ["selected_evidence_missing_exact_trace"]
+  }
+}
+```
+
+Rationale:
+
+- this is a provenance review concern, not a clinical-content concern;
+- review is appropriate because the selected evidence may still be clinically
+  fine, but the breadcrumb trail is not exact.
+
+#### 11. `selected_source_id_invalid`
+
+Once the provenance block existed, we also ported the companion family:
+
+- exact trace is true;
+- but carried source ids are invalid.
+
+Representative state:
+
+```json
+{
+  "projection_decision": {
+    "selected_evidence_status": {
+      "exact_trace": true,
+      "source_id_status": "invalid",
+      "source_id_trace": {
+        "selected_source_ids": ["note:47:span:unresolved:0"],
+        "expected_source_ids": ["note:47:span:unresolved:0"],
+        "missing_expected_source_ids": [],
+        "unexpected_source_ids": [],
+        "trace_basis": "exact_selected_evidence"
+      }
+    }
+  },
+  "verification_route": {
+    "route_families": ["selected_source_id_invalid"]
+  }
+}
+```
+
+Rationale:
+
+- this is a distinct failure mode from missing exact trace;
+- the old suspicious-state policy already treated that distinction explicitly;
+- the reset route now does the same.
+
+#### 12. `denominator_window_mismatch`
+
+This family required one more careful decision.
+
+The old behavior was not simply an issue-code check. It depended on the chosen
+phrase itself. For example:
+
+```json
+{
+  "source_normalized_phrase": "brief absences occur on most weekdays",
+  "rendered_label": "multiple per week",
+  "verification_route": {
+    "route_families": ["denominator_window_mismatch"]
+  }
+}
+```
+
+The key point is that the rendered label is Gan-compatible, but the phrase
+describes a windowed cadence rather than a clean denominator phrase. So we
+added `source_normalized_phrase` to the projection contract and ported the old
+review family from that phrase plus the rendered label.
+
+Rationale:
+
+- route needed access to the chosen wording, not just issue codes;
+- this preserves the old caution around benchmark-compatible denominator
+  collapsing;
+- it keeps the rendered label visible while still flagging it for review.
+
+### Tests And Scope
+
+This session remained focused code-and-contract work. We did not run a new full
+validation750 replay after every port. Instead, we used focused tests and
+targeted probes.
+
+Focused suites passed throughout the session, ending with:
+
+- `uv run pytest tests/test_gan2026_clinical_assessment_projection_render.py tests/test_gan2026_clinical_assessment_verification_route.py`
+
+Final focused result at session stop:
+
+- `72 passed`
+
+### Why These Decisions Matter
+
+The main architectural rationale across the whole session was:
+
+1. Restore old mature behavior families by name.
+2. Put each family under the stage that actually owns it.
+3. Add stronger fields first when a family cannot yet be expressed honestly.
+4. Stay narrow when the current schema or ownership boundary is not ready for a
+   broader redesign.
+5. Prefer explicit issue traces and route families over hidden fallback.
+
+In other words, this was not mainly parser polishing. It was a staged recovery
+of old architectural memory under reset contracts.
+
+### Updated Next Step
+
+At this point, the next likely component family is
+`unresolved_cluster_cadence_with_per_cluster_burden`.
+
+Why that is the strongest next candidate:
+
+- cluster ambiguity remains one of the larger residual policy surfaces;
+- the old system already had named risky cluster families;
+- we have now recovered enough normalization, projection, and provenance
+  discipline that cluster route semantics can be ported cleanly rather than
+  smuggled in through broad fallback.

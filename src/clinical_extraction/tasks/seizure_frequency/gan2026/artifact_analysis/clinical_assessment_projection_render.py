@@ -12,8 +12,10 @@ from typing import Any
 
 from pydantic import ValidationError
 
+from clinical_extraction.core.evidence import evidence_is_substring
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.candidate_set import (
     CandidateSet,
+    candidate_source_phrase,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.clinical_assessment import (
     ClinicalAssessment,
@@ -155,6 +157,10 @@ def project_and_render(
     candidate_set: CandidateSet,
 ) -> tuple[ProjectionDecision, FinalRenderedLabel]:
     source_ids = _source_ids_for_assessment(assessment, candidate_set)
+    selected_evidence_status = _selected_evidence_status_for_assessment(
+        assessment,
+        candidate_set,
+    )
     outcome = _project_label_semantics(assessment, candidate_set=candidate_set)
     projection = ProjectionDecision(
         source_row_index=assessment.source_row_index,
@@ -166,8 +172,10 @@ def project_and_render(
         projected_label_semantics=outcome.label or "",
         source_assessment_kind=assessment.assessment_kind,
         source_aggregation_policy=assessment.aggregation_policy,
+        source_normalized_phrase=assessment.normalized_burden.source_normalized_phrase,
         source_candidate_ids=list(assessment.primary_candidate_ids),
         source_ids=source_ids,
+        selected_evidence_status=selected_evidence_status,
         projection_issues=[*assessment.normalization_issues, *outcome.issues],
     )
     rendered_label, render_basis, render_issues = _render_label(projection)
@@ -585,6 +593,86 @@ def _source_ids_for_assessment(
             continue
         source_ids.extend(candidate.source_ids)
     return sorted(set(source_ids))
+
+
+def _selected_evidence_status_for_assessment(
+    assessment: ClinicalAssessment,
+    candidate_set: CandidateSet,
+) -> dict[str, Any]:
+    by_id = {candidate.candidate_id: candidate for candidate in candidate_set.candidates}
+    primary_candidates = [
+        candidate
+        for candidate_id in assessment.primary_candidate_ids
+        for candidate in [by_id.get(candidate_id)]
+        if candidate is not None
+    ]
+    selected_evidence = assessment.normalized_burden.source_normalized_phrase.strip()
+    note_text = " ".join(
+        candidate.evidence_span.text for candidate in primary_candidates if candidate.evidence_span.text
+    )
+    exact_trace = bool(selected_evidence) and (
+        any(
+            selected_evidence == phrase
+            for candidate in primary_candidates
+            for phrase in _exact_trace_phrases(candidate)
+        )
+        or bool(note_text and evidence_is_substring(note_text, selected_evidence))
+    )
+    expected_source_ids = sorted(
+        set(
+            source_id
+            for candidate in primary_candidates
+            for phrase in _exact_trace_phrases(candidate)
+            if selected_evidence and selected_evidence == phrase
+            for source_id in candidate.source_ids
+        )
+    )
+    selected_source_ids = _source_ids_for_assessment(assessment, candidate_set)
+    missing_expected_source_ids = [
+        source_id for source_id in expected_source_ids if source_id not in selected_source_ids
+    ]
+    unexpected_source_ids = [
+        source_id for source_id in selected_source_ids if source_id not in expected_source_ids
+    ]
+    if not exact_trace:
+        source_id_status = "invalid"
+    elif not selected_source_ids:
+        source_id_status = "not_instrumented"
+    elif any("unresolved" in source_id for source_id in selected_source_ids):
+        source_id_status = "invalid"
+    elif missing_expected_source_ids:
+        source_id_status = "invalid"
+    else:
+        source_id_status = "valid"
+    return {
+        "exact_trace": exact_trace,
+        "source_id_status": source_id_status,
+        "source_id_trace": {
+            "selected_source_ids": selected_source_ids,
+            "expected_source_ids": expected_source_ids,
+            "missing_expected_source_ids": missing_expected_source_ids,
+            "unexpected_source_ids": unexpected_source_ids,
+            "trace_basis": (
+                "exact_selected_evidence" if exact_trace else "non_exact_or_missing_evidence"
+            ),
+        },
+    }
+
+
+def _exact_trace_phrases(candidate: Any) -> list[str]:
+    phrases = [
+        candidate_source_phrase(candidate) or "",
+        candidate.evidence_span.text,
+    ]
+    cleaned = [phrase.strip() for phrase in phrases if phrase and phrase.strip()]
+    seen: set[str] = set()
+    deduped: list[str] = []
+    for phrase in cleaned:
+        if phrase in seen:
+            continue
+        seen.add(phrase)
+        deduped.append(phrase)
+    return deduped
 
 
 def _has_primary_medication_cadence(

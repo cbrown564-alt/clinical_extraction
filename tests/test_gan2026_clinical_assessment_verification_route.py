@@ -129,6 +129,115 @@ def test_cyclic_window_without_event_count_routes_as_specific_family() -> None:
     assert route.route_families == ["cyclic_window_without_event_count"]
 
 
+def test_missing_exact_selected_evidence_trace_routes_as_specific_family() -> None:
+    route = verification_route.route_decision_for_row(
+        source_row_index=99,
+        projection_decision=_projection(
+            projection_kind="frequency_rate",
+            aggregation_policy="single_fact",
+            projection_issues=["frequency_rate_operands_incomplete"],
+            selected_evidence_status={
+                "exact_trace": False,
+                "source_id_status": "invalid",
+                "source_id_trace": {
+                    "selected_source_ids": ["note:99:span:0-20"],
+                    "expected_source_ids": [],
+                    "missing_expected_source_ids": [],
+                    "unexpected_source_ids": ["note:99:span:0-20"],
+                    "trace_basis": "non_exact_or_missing_evidence",
+                },
+            },
+        ),
+        final_rendered_label=_rendered(None, ["projection_semantics_missing"]),
+        score=_score(score_status="not_scored_null_rendered_label"),
+    )
+
+    assert route.routed is True
+    assert route.route_families == ["selected_evidence_missing_exact_trace"]
+
+
+def test_invalid_source_id_for_exact_trace_routes_as_specific_family() -> None:
+    route = verification_route.route_decision_for_row(
+        source_row_index=98,
+        projection_decision=_projection(
+            projection_kind="frequency_rate",
+            aggregation_policy="single_fact",
+            projection_issues=[],
+            selected_evidence_status={
+                "exact_trace": True,
+                "source_id_status": "invalid",
+                "source_id_trace": {
+                    "selected_source_ids": ["note:98:span:unresolved:0"],
+                    "expected_source_ids": ["note:98:span:unresolved:0"],
+                    "missing_expected_source_ids": [],
+                    "unexpected_source_ids": [],
+                    "trace_basis": "exact_selected_evidence",
+                },
+            },
+        ),
+        final_rendered_label=_rendered("2 per week", []),
+        score=_score(score_status="scored"),
+    )
+
+    assert route.routed is True
+    assert route.route_families == ["selected_source_id_invalid"]
+
+
+def test_denominator_window_mismatch_routes_as_specific_family() -> None:
+    route = verification_route.route_decision_for_row(
+        source_row_index=97,
+        projection_decision=_projection(
+            projection_kind="frequency_rate",
+            aggregation_policy="single_fact",
+            projection_issues=["vague_count"],
+            source_normalized_phrase="brief absences occur on most weekdays",
+        ),
+        final_rendered_label=_rendered("multiple per week", []),
+        score=_score(score_status="scored"),
+    )
+
+    assert route.routed is True
+    assert route.route_families == ["denominator_window_mismatch"]
+
+
+def test_conditional_only_trigger_routes_as_specific_family() -> None:
+    route = verification_route.route_decision_for_row(
+        source_row_index=100,
+        projection_decision=_projection(
+            projection_kind="frequency_rate",
+            aggregation_policy="single_fact",
+            projection_issues=[
+                "conditional_only_trigger_without_baseline",
+                "frequency_rate_operands_incomplete",
+            ],
+        ),
+        final_rendered_label=_rendered(None, ["projection_semantics_missing"]),
+        score=_score(score_status="not_scored_null_rendered_label"),
+    )
+
+    assert route.routed is True
+    assert route.route_families == ["conditional_only_trigger"]
+
+
+def test_relative_only_trend_routes_as_specific_family() -> None:
+    route = verification_route.route_decision_for_row(
+        source_row_index=101,
+        projection_decision=_projection(
+            projection_kind="frequency_rate",
+            aggregation_policy="single_fact",
+            projection_issues=[
+                "relative_change_without_current_baseline",
+                "frequency_rate_operands_incomplete",
+            ],
+        ),
+        final_rendered_label=_rendered(None, ["projection_semantics_missing"]),
+        score=_score(score_status="not_scored_null_rendered_label"),
+    )
+
+    assert route.routed is True
+    assert route.route_families == ["relative_only_trend"]
+
+
 def test_additive_vague_or_mixed_window_routes() -> None:
     route = verification_route.route_decision_for_row(
         source_row_index=13,
@@ -261,6 +370,8 @@ def _projection(
     source_candidate_ids: list[str] | None = None,
     projection_issues: list[str] | None = None,
     projection_basis: str | None = None,
+    selected_evidence_status: dict | None = None,
+    source_normalized_phrase: str = "",
 ) -> dict:
     return {
         "source_row_index": 1,
@@ -271,7 +382,9 @@ def _projection(
             else "frequency_rate"
         ),
         "source_aggregation_policy": aggregation_policy,
+        "source_normalized_phrase": source_normalized_phrase,
         "source_candidate_ids": source_candidate_ids or ["llm:1:1"],
+        "selected_evidence_status": selected_evidence_status or {},
         "projection_issues": projection_issues or [],
     }
 
