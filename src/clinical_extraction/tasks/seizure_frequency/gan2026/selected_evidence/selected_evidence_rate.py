@@ -3,6 +3,9 @@ from __future__ import annotations
 import re
 
 from .selected_evidence_text import (
+    once_twice_thrice as _once_twice_thrice,
+)
+from .selected_evidence_text import (
     format_prediction_rate as _format_prediction_rate,
 )
 from .selected_evidence_text import (
@@ -37,10 +40,59 @@ UNIT_SYNONYMS = {
 
 _UNIT = r"day|week|month|year"
 _COUNT = r"\d+(?:\s*(?:to|-|–|—|or)\s*\d+)?"
+_SMALL_COUNT = (
+    r"(?:\d+(?:\s*(?:to|-|–|—|or)\s*\d+)?|once|twice|thrice|one|two|three|four|"
+    r"five|six|seven|eight|nine|ten|eleven|twelve)"
+)
 
 
 def early_rate_label_from_selected_evidence(text: str) -> str | None:
     """Derive selected-evidence rate labels that should run before cluster parsing."""
+    vague_explicit_period = _vague_frequency_with_explicit_time_period_label(text)
+    if vague_explicit_period:
+        return vague_explicit_period
+
+    per_night = re.search(
+        rf"\b(?P<count>{_SMALL_COUNT})\s+"
+        r"(?:episodes?|events?|seizures?|spells?|absences?|convulsions?)?\s*"
+        r"(?:per|/)\s+night\b",
+        text,
+    )
+    if per_night:
+        return _format_prediction_rate(
+            _words_to_numbers(_once_twice_thrice(per_night.group("count"))),
+            "day",
+        )
+    each_night = re.search(
+        rf"\b(?P<count>{_SMALL_COUNT})\s+"
+        r"(?:episodes?|events?|seizures?|spells?|absences?|convulsions?)?\s*"
+        r"(?:each|every)\s+night\b",
+        text,
+    )
+    if each_night:
+        return _format_prediction_rate(
+            _words_to_numbers(_once_twice_thrice(each_night.group("count"))),
+            "day",
+        )
+    nightly_count = re.search(
+        rf"\b(?P<count>{_SMALL_COUNT})\s+"
+        r"(?:episodes?|events?|seizures?|spells?|absences?|convulsions?)?\s*"
+        r"nightly\b",
+        text,
+    )
+    if nightly_count:
+        return _format_prediction_rate(
+            _words_to_numbers(_once_twice_thrice(nightly_count.group("count"))),
+            "day",
+        )
+
+    hourly = re.search(
+        r"\b(?:multiple|several|many|\d+(?:\s*to\s*\d+)?)\s*(?:episodes?|events?|seizures?|spells?|absences?|convulsions?)?\s*(?:per|/)\s*(?:hour|hr|h)\b",
+        text,
+    )
+    if hourly:
+        return "multiple per day"
+
     q_interval = _q_interval_label_from_selected_evidence(text)
     if q_interval:
         return q_interval
@@ -131,6 +183,38 @@ def early_rate_label_from_selected_evidence(text: str) -> str | None:
         text,
     )
     if vague_recent_week:
+        return "multiple per week"
+
+    vague_occasions_each_week = re.search(
+        r"\b(?:on\s+)?(?:multiple|several|many)\s+occasions?\s+"
+        r"(?:each|per)\s+week\b",
+        text,
+    )
+    if vague_occasions_each_week:
+        return "multiple per week"
+
+    vague_times_each_week = re.search(
+        r"\b(?:multiple|several|many)\s+times\s+(?:each|per)\s+week\b",
+        text,
+    )
+    if vague_times_each_week:
+        return "multiple per week"
+
+    vague_each_week = re.search(
+        r"\b(?:multiple|several|many)\s+"
+        r"(?:episodes?|events?|seizures?|spells?|absences?|convulsions?)\s+"
+        r"(?:each|per)\s+week\b",
+        text,
+    )
+    if vague_each_week:
+        return "multiple per week"
+
+    most_weeks = re.search(
+        r"\b(?:episodes?|events?|seizures?|spells?|absences?|convulsions?)\b"
+        r".{0,40}\bmost\s+weeks\b",
+        text,
+    )
+    if most_weeks:
         return "multiple per week"
 
     vague_weekdays = re.search(
@@ -340,6 +424,24 @@ def evidence_describes_current_non_epileptic_events(text: str) -> bool:
             text,
         )
     )
+
+
+def _vague_frequency_with_explicit_time_period_label(text: str) -> str | None:
+    vague = r"(?:several|multiple|many|few|a few)"
+    unit = r"day|week|month|year"
+    patterns = (
+        rf"\b{vague}\s+(?:times?\s+)?(?:per|each|every)\s+(?P<unit>{unit})s?\b",
+        rf"\b{vague}\s+(?:seizures?|events?|episodes?|spells?|absences?|convulsions?)\s+"
+        rf"(?:per|each|every)\s+(?P<unit>{unit})s?\b",
+        rf"\b{vague}\s+(?:seizures?|events?|episodes?|spells?|absences?|convulsions?)\s+"
+        rf"in\s+(?:a\s+typical|the\s+past|the\s+last|this|last|past)\s+(?P<unit>{unit})s?\b",
+        rf"\b{vague}\s+(?:in\s+)?(?:the\s+)?(?:past|last|this)\s+(?P<unit>{unit})s?\b",
+    )
+    for pattern in patterns:
+        match = re.search(pattern, text)
+        if match:
+            return _format_prediction_rate("multiple", match.group("unit"))
+    return None
 
 
 def _q_interval_label_from_selected_evidence(text: str) -> str | None:

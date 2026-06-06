@@ -1,0 +1,3 @@
+FROM gemma-4-12b:latest
+PARAMETER num_ctx 1024
+PARAMETER stop <turn|>

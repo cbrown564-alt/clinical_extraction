@@ -6,6 +6,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.candidate_set 
     EvidenceSpan,
     ExtractedCandidate,
     FrequencyDetails,
+    PriorEncounterContext,
     ReferenceDateContext,
     RowContext,
     SeizureFreeDetails,
@@ -505,6 +506,893 @@ def test_build_projection_render_repairs_frequency_operands_from_primary_candida
         "two seizures per month"
     )
     assert artifact_row["final_rendered_label"]["rendered_label"] == "2 per month"
+
+
+def test_build_projection_render_repairs_once_per_night_from_primary_candidate() -> None:
+    row = {
+        "source_row_index": 26,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "frequency_rate",
+            "primary_candidate_ids": ["llm:26:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "single_fact",
+            "normalized_burden": {
+                "source_normalized_phrase": "the current described seizure burden"
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            26: _candidate_set(
+                26,
+                evidence="Nocturnal seizures occurring once per night on average.",
+            )
+        },
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    assert (
+        "frequency_rate_operands_repaired_from_primary_candidate"
+        in assessment["normalization_issues"]
+    )
+    assert assessment["normalized_burden"]["source_normalized_phrase"] == (
+        "Nocturnal seizures occurring once per night on average."
+    )
+    assert assessment["normalized_burden"]["count_low"] == 1.0
+    assert assessment["normalized_burden"]["count_high"] == 1.0
+    assert assessment["normalized_burden"]["period_low"] == 1.0
+    assert assessment["normalized_burden"]["period_high"] == 1.0
+    assert assessment["normalized_burden"]["period_unit"] == "day"
+    assert artifact_row["final_rendered_label"]["rendered_label"] == "1 per day"
+
+
+def test_build_projection_render_repairs_twice_per_night_from_primary_candidate() -> None:
+    row = {
+        "source_row_index": 27,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "frequency_rate",
+            "primary_candidate_ids": ["llm:27:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "single_fact",
+            "normalized_burden": {
+                "source_normalized_phrase": "the current described seizure burden"
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            27: _candidate_set(
+                27,
+                evidence="Nocturnal seizures occurring twice per night on average.",
+            )
+        },
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    assert (
+        "frequency_rate_operands_repaired_from_primary_candidate"
+        in assessment["normalization_issues"]
+    )
+    assert assessment["normalized_burden"]["count_low"] == 2.0
+    assert assessment["normalized_burden"]["count_high"] == 2.0
+    assert assessment["normalized_burden"]["period_low"] == 1.0
+    assert assessment["normalized_burden"]["period_high"] == 1.0
+    assert assessment["normalized_burden"]["period_unit"] == "day"
+    assert artifact_row["final_rendered_label"]["rendered_label"] == "2 per day"
+
+
+def test_build_projection_render_repairs_each_night_from_primary_candidate() -> None:
+    row = {
+        "source_row_index": 28,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "frequency_rate",
+            "primary_candidate_ids": ["llm:28:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "single_fact",
+            "normalized_burden": {
+                "source_normalized_phrase": "the current described seizure burden"
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            28: _candidate_set(
+                28,
+                evidence="One seizure each night with no daytime events.",
+            )
+        },
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    assert (
+        "frequency_rate_operands_repaired_from_primary_candidate"
+        in assessment["normalization_issues"]
+    )
+    assert assessment["normalized_burden"]["count_low"] == 1.0
+    assert assessment["normalized_burden"]["count_high"] == 1.0
+    assert assessment["normalized_burden"]["period_low"] == 1.0
+    assert assessment["normalized_burden"]["period_high"] == 1.0
+    assert assessment["normalized_burden"]["period_unit"] == "day"
+    assert artifact_row["final_rendered_label"]["rendered_label"] == "1 per day"
+
+
+def test_build_projection_render_repairs_twice_nightly_from_primary_candidate() -> None:
+    row = {
+        "source_row_index": 29,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "frequency_rate",
+            "primary_candidate_ids": ["llm:29:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "single_fact",
+            "normalized_burden": {
+                "source_normalized_phrase": "the current described seizure burden"
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            29: _candidate_set(
+                29,
+                evidence="Twice nightly focal seizures with preserved awareness.",
+            )
+        },
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    assert (
+        "frequency_rate_operands_repaired_from_primary_candidate"
+        in assessment["normalization_issues"]
+    )
+    assert assessment["normalized_burden"]["count_low"] == 2.0
+    assert assessment["normalized_burden"]["count_high"] == 2.0
+    assert assessment["normalized_burden"]["period_low"] == 1.0
+    assert assessment["normalized_burden"]["period_high"] == 1.0
+    assert assessment["normalized_burden"]["period_unit"] == "day"
+    assert artifact_row["final_rendered_label"]["rendered_label"] == "2 per day"
+
+
+def test_build_projection_render_repairs_three_seizures_nightly_from_primary_candidate() -> None:
+    row = {
+        "source_row_index": 30,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "frequency_rate",
+            "primary_candidate_ids": ["llm:30:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "single_fact",
+            "normalized_burden": {
+                "source_normalized_phrase": "the current described seizure burden"
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            30: _candidate_set(
+                30,
+                evidence="Three seizures nightly despite adherence.",
+            )
+        },
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    assert (
+        "frequency_rate_operands_repaired_from_primary_candidate"
+        in assessment["normalization_issues"]
+    )
+    assert assessment["normalized_burden"]["count_low"] == 3.0
+    assert assessment["normalized_burden"]["count_high"] == 3.0
+    assert assessment["normalized_burden"]["period_low"] == 1.0
+    assert assessment["normalized_burden"]["period_high"] == 1.0
+    assert assessment["normalized_burden"]["period_unit"] == "day"
+    assert artifact_row["final_rendered_label"]["rendered_label"] == "3 per day"
+
+
+def test_build_projection_render_repairs_several_occasions_each_week_from_primary_candidate() -> None:
+    row = {
+        "source_row_index": 31,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "frequency_rate",
+            "primary_candidate_ids": ["llm:31:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "single_fact",
+            "normalized_burden": {
+                "source_normalized_phrase": "the current described seizure burden"
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            31: _candidate_set(
+                31,
+                evidence="Brief staring spells with loss of awareness on several occasions each week.",
+            )
+        },
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    assert (
+        "frequency_rate_operands_repaired_from_primary_candidate"
+        in assessment["normalization_issues"]
+    )
+    assert assessment["normalized_burden"]["vague_count"] == "multiple"
+    assert assessment["normalized_burden"]["period_low"] == 1.0
+    assert assessment["normalized_burden"]["period_high"] == 1.0
+    assert assessment["normalized_burden"]["period_unit"] == "week"
+    assert artifact_row["final_rendered_label"]["rendered_label"] == "multiple per week"
+
+
+def test_build_projection_render_repairs_most_weeks_from_primary_candidate() -> None:
+    row = {
+        "source_row_index": 32,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "frequency_rate",
+            "primary_candidate_ids": ["llm:32:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "single_fact",
+            "normalized_burden": {
+                "source_normalized_phrase": "the current described seizure burden"
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            32: _candidate_set(
+                32,
+                evidence="Focal aware seizures most weeks, occasionally progressing to focal impaired awareness.",
+            )
+        },
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    assert (
+        "frequency_rate_operands_repaired_from_primary_candidate"
+        in assessment["normalization_issues"]
+    )
+    assert assessment["normalized_burden"]["vague_count"] == "multiple"
+    assert assessment["normalized_burden"]["period_low"] == 1.0
+    assert assessment["normalized_burden"]["period_high"] == 1.0
+    assert assessment["normalized_burden"]["period_unit"] == "week"
+    assert artifact_row["final_rendered_label"]["rendered_label"] == "multiple per week"
+
+
+def test_build_projection_render_repairs_several_seizures_each_week_as_weekly_not_daily() -> None:
+    row = {
+        "source_row_index": 33,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "frequency_rate",
+            "primary_candidate_ids": ["llm:33:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "single_fact",
+            "normalized_burden": {
+                "source_normalized_phrase": "the current described seizure burden"
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            33: _candidate_set(
+                33,
+                evidence="Several seizures each week despite treatment.",
+            )
+        },
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    assert (
+        "frequency_rate_operands_repaired_from_primary_candidate"
+        in assessment["normalization_issues"]
+    )
+    assert assessment["normalized_burden"]["vague_count"] == "multiple"
+    assert assessment["normalized_burden"]["period_unit"] == "week"
+    assert artifact_row["final_rendered_label"]["rendered_label"] == "multiple per week"
+
+
+def test_build_projection_render_repairs_several_seizures_typical_month_from_primary_candidate() -> None:
+    row = {
+        "source_row_index": 34,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "frequency_rate",
+            "primary_candidate_ids": ["llm:34:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "single_fact",
+            "normalized_burden": {
+                "source_normalized_phrase": "the current described seizure burden"
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            34: _candidate_set(
+                34,
+                evidence="Several seizures in a typical month despite treatment.",
+            )
+        },
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    assert (
+        "frequency_rate_operands_repaired_from_primary_candidate"
+        in assessment["normalization_issues"]
+    )
+    assert assessment["normalized_burden"]["vague_count"] == "multiple"
+    assert assessment["normalized_burden"]["period_unit"] == "month"
+    assert artifact_row["final_rendered_label"]["rendered_label"] == "multiple per month"
+
+
+def test_build_projection_render_repairs_many_events_every_year_from_primary_candidate() -> None:
+    row = {
+        "source_row_index": 35,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "frequency_rate",
+            "primary_candidate_ids": ["llm:35:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "single_fact",
+            "normalized_burden": {
+                "source_normalized_phrase": "the current described seizure burden"
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            35: _candidate_set(
+                35,
+                evidence="Many events every year with no reliable numeric count.",
+            )
+        },
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    assert (
+        "frequency_rate_operands_repaired_from_primary_candidate"
+        in assessment["normalization_issues"]
+    )
+    assert "vague_frequency_with_explicit_time_period" in assessment["normalization_issues"]
+    assert assessment["normalized_burden"]["vague_count"] == "multiple"
+    assert assessment["normalized_burden"]["period_unit"] == "year"
+    assert artifact_row["final_rendered_label"]["rendered_label"] == "multiple per year"
+
+
+def test_build_projection_render_relative_only_trend_stays_unrendered() -> None:
+    row = {
+        "source_row_index": 36,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "frequency_rate",
+            "primary_candidate_ids": ["llm:36:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "single_fact",
+            "normalized_burden": {
+                "source_normalized_phrase": "Frequency increased by about 50% after dose reduction."
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            36: _candidate_set(
+                36,
+                evidence="Frequency increased by about 50% after dose reduction.",
+            )
+        },
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    assert "relative_change_without_current_baseline" in assessment["normalization_issues"]
+    assert artifact_row["final_rendered_label"]["rendered_label"] is None
+    assert "frequency_rate_operands_incomplete" in artifact_row["projection_decision"]["projection_issues"]
+
+
+def test_build_projection_render_conditional_only_trigger_missed_medication_stays_unrendered() -> None:
+    row = {
+        "source_row_index": 37,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "frequency_rate",
+            "primary_candidate_ids": ["llm:37:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "single_fact",
+            "normalized_burden": {
+                "source_normalized_phrase": "Seizures occur only when medication doses are missed."
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            37: _candidate_set(
+                37,
+                evidence="Seizures occur only when medication doses are missed.",
+            )
+        },
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    assert "conditional_only_trigger_without_baseline" in assessment["normalization_issues"]
+    assert artifact_row["final_rendered_label"]["rendered_label"] is None
+    assert "frequency_rate_operands_incomplete" in artifact_row["projection_decision"]["projection_issues"]
+
+
+def test_build_projection_render_conditional_only_trigger_sleep_stays_unrendered() -> None:
+    row = {
+        "source_row_index": 38,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "frequency_rate",
+            "primary_candidate_ids": ["llm:38:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "single_fact",
+            "normalized_burden": {
+                "source_normalized_phrase": "Seizures occur only after nights of curtailed sleep."
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            38: _candidate_set(
+                38,
+                evidence="Seizures occur only after nights of curtailed sleep.",
+            )
+        },
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    assert "conditional_only_trigger_without_baseline" in assessment["normalization_issues"]
+    assert artifact_row["final_rendered_label"]["rendered_label"] is None
+    assert "frequency_rate_operands_incomplete" in artifact_row["projection_decision"]["projection_issues"]
+
+
+def test_build_projection_render_repairs_diary_prefixed_numeric_date_list() -> None:
+    row = {
+        "source_row_index": 39,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "frequency_rate",
+            "primary_candidate_ids": ["llm:39:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "single_fact",
+            "normalized_burden": {
+                "source_normalized_phrase": "the current described seizure burden"
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            39: _candidate_set(
+                39,
+                evidence="Diary lists seizures on 03-07, 03-27, 05-15, 05-19, 05-24.",
+            )
+        },
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    assert (
+        "frequency_rate_operands_repaired_from_primary_candidate"
+        in assessment["normalization_issues"]
+    )
+    assert assessment["normalized_burden"]["count_low"] == 5.0
+    assert assessment["normalized_burden"]["count_high"] == 5.0
+    assert assessment["normalized_burden"]["period_low"] == 2.0
+    assert assessment["normalized_burden"]["period_high"] == 2.0
+    assert assessment["normalized_burden"]["period_unit"] == "month"
+    assert artifact_row["final_rendered_label"]["rendered_label"] == "5 per 2 month"
+
+
+def test_build_projection_render_repairs_named_month_date_list() -> None:
+    row = {
+        "source_row_index": 40,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "frequency_rate",
+            "primary_candidate_ids": ["llm:40:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "single_fact",
+            "normalized_burden": {
+                "source_normalized_phrase": "the current described seizure burden"
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            40: _candidate_set(
+                40,
+                evidence="Recorded seizures on March 7, March 27, May 15, May 19, and May 24.",
+            )
+        },
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    assert (
+        "frequency_rate_operands_repaired_from_primary_candidate"
+        in assessment["normalization_issues"]
+    )
+    assert assessment["normalized_burden"]["count_low"] == 5.0
+    assert assessment["normalized_burden"]["count_high"] == 5.0
+    assert assessment["normalized_burden"]["period_low"] == 2.0
+    assert assessment["normalized_burden"]["period_high"] == 2.0
+    assert assessment["normalized_burden"]["period_unit"] == "month"
+    assert artifact_row["final_rendered_label"]["rendered_label"] == "5 per 2 month"
+
+
+def test_build_projection_render_marks_explicit_summary_rate_over_long_period_average() -> None:
+    row = {
+        "source_row_index": 41,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "frequency_rate",
+            "primary_candidate_ids": ["llm:41:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "single_fact",
+            "normalized_burden": {
+                "source_normalized_phrase": (
+                    "Only seven focal impaired-awareness seizures reported so far this year. "
+                    "At present, his typical pattern is a focal seizure monthly."
+                )
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            41: _candidate_set(
+                41,
+                evidence=(
+                    "Only seven focal impaired-awareness seizures reported so far this year. "
+                    "At present, his typical pattern is a focal seizure monthly."
+                ),
+            )
+        },
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    assert "explicit_summary_rate_over_long_period_average" in assessment["normalization_issues"]
+    assert assessment["normalized_burden"]["count_low"] == 1.0
+    assert assessment["normalized_burden"]["count_high"] == 1.0
+    assert assessment["normalized_burden"]["period_unit"] == "month"
+    assert artifact_row["final_rendered_label"]["rendered_label"] == "1 per month"
+
+
+def test_build_projection_render_marks_current_summary_over_year_to_date_variant() -> None:
+    row = {
+        "source_row_index": 43,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "frequency_rate",
+            "primary_candidate_ids": ["llm:43:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "single_fact",
+            "normalized_burden": {
+                "source_normalized_phrase": (
+                    "Year to date he has had only two focal seizures. "
+                    "Currently, his typical pattern is a focal seizure monthly."
+                )
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            43: _candidate_set(
+                43,
+                evidence=(
+                    "Year to date he has had only two focal seizures. "
+                    "Currently, his typical pattern is a focal seizure monthly."
+                ),
+            )
+        },
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    assert "explicit_summary_rate_over_long_period_average" in assessment["normalization_issues"]
+    assert assessment["normalized_burden"]["count_low"] == 1.0
+    assert assessment["normalized_burden"]["count_high"] == 1.0
+    assert assessment["normalized_burden"]["period_unit"] == "month"
+    assert artifact_row["final_rendered_label"]["rendered_label"] == "1 per month"
+
+
+def test_build_projection_render_repairs_previous_month_active_rate_over_current_zero() -> None:
+    row = {
+        "source_row_index": 42,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "frequency_rate",
+            "primary_candidate_ids": ["llm:42:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "single_fact",
+            "normalized_burden": {
+                "source_normalized_phrase": (
+                    "There were a handful of short focal events during the previous month. "
+                    "In the current month to date, no events have been recorded."
+                )
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            42: _candidate_set(
+                42,
+                evidence=(
+                    "There were a handful of short focal events during the previous month. "
+                    "In the current month to date, no events have been recorded."
+                ),
+            )
+        },
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    assert "previous_month_active_rate_over_current_zero" in assessment["normalization_issues"]
+    assert assessment["normalized_burden"]["vague_count"] == "multiple"
+    assert assessment["normalized_burden"]["period_unit"] == "month"
+    assert artifact_row["final_rendered_label"]["rendered_label"] == "multiple per month"
+
+
+def test_build_projection_render_repairs_last_month_active_rate_over_so_far_this_month_zero() -> None:
+    row = {
+        "source_row_index": 44,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "frequency_rate",
+            "primary_candidate_ids": ["llm:44:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "single_fact",
+            "normalized_burden": {
+                "source_normalized_phrase": (
+                    "Several focal events occurred last month. "
+                    "So far this month there have been no events."
+                )
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            44: _candidate_set(
+                44,
+                evidence=(
+                    "Several focal events occurred last month. "
+                    "So far this month there have been no events."
+                ),
+            )
+        },
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    assert "previous_month_active_rate_over_current_zero" in assessment["normalization_issues"]
+    assert assessment["normalized_burden"]["vague_count"] == "multiple"
+    assert assessment["normalized_burden"]["period_unit"] == "month"
+    assert artifact_row["final_rendered_label"]["rendered_label"] == "multiple per month"
+
+
+def test_build_projection_render_prioritizes_major_recent_relapse_over_background_aura_rate() -> None:
+    row = {
+        "source_row_index": 45,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "frequency_rate",
+            "primary_candidate_ids": ["llm:45:1", "llm:45:2"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "primary_with_context",
+            "normalized_burden": {
+                "source_normalized_phrase": (
+                    "Yesterday he experienced three tonic-clonic seizures yesterday. "
+                    "He describes interictal brief auras occurring approximately once or "
+                    "twice per week."
+                )
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            45: CandidateSet(
+                source_row_index=45,
+                component_owner="candidate_set_union",
+                source_artifacts=["test"],
+                candidates=[
+                    ExtractedCandidate(
+                        candidate_id="llm:45:1",
+                        component_owner="test",
+                        source_type="llm_candidate",
+                        source_artifact="test",
+                        source_row_index=45,
+                        candidate_kind="frequency_rate",
+                        event_type="seizure",
+                        frequency=FrequencyDetails(
+                            source_phrase="three tonic-clonic seizures yesterday"
+                        ),
+                        temporality="current",
+                        certainty="certain",
+                        assertion_status="asserted",
+                        evidence_span=EvidenceSpan(
+                            text="Yesterday he experienced three tonic-clonic seizures yesterday.",
+                            start_char=0,
+                            end_char=63,
+                        ),
+                        source_ids=["note:45:span:0-63"],
+                        clinical_or_policy="clinical",
+                    ),
+                    ExtractedCandidate(
+                        candidate_id="llm:45:2",
+                        component_owner="test",
+                        source_type="llm_candidate",
+                        source_artifact="test",
+                        source_row_index=45,
+                        candidate_kind="frequency_rate",
+                        event_type="seizure",
+                        frequency=FrequencyDetails(
+                            source_phrase=(
+                                "interictal brief auras occurring approximately once or twice per week"
+                            )
+                        ),
+                        temporality="current",
+                        certainty="certain",
+                        assertion_status="asserted",
+                        evidence_span=EvidenceSpan(
+                            text=(
+                                "He describes interictal brief auras occurring approximately once or "
+                                "twice per week."
+                            ),
+                            start_char=65,
+                            end_char=149,
+                        ),
+                        source_ids=["note:45:span:65-149"],
+                        clinical_or_policy="clinical",
+                    ),
+                ],
+            )
+        },
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    assert assessment["primary_candidate_ids"] == ["llm:45:1"]
+    assert assessment["supporting_candidate_ids"] == ["llm:45:2"]
+    assert "major_recent_relapse_over_background_frequency" in assessment["normalization_issues"]
+    assert assessment["normalized_burden"]["count_low"] == 3.0
+    assert assessment["normalized_burden"]["count_high"] == 3.0
+    assert assessment["normalized_burden"]["period_unit"] == "day"
+    assert artifact_row["final_rendered_label"]["rendered_label"] == "3 per day"
 
 
 def test_build_projection_render_repairs_seizure_free_duration_from_primary_candidate() -> None:
@@ -1107,6 +1995,287 @@ def test_build_projection_render_preserves_last_event_full_year_from_primary_can
     )
 
 
+def test_build_projection_render_resolves_since_then_from_single_summary_antecedent() -> None:
+    row = {
+        "source_row_index": 37,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "seizure_free",
+            "primary_candidate_ids": ["llm:37:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "seizure_free_state",
+            "normalized_burden": {
+                "source_normalized_phrase": "She has remained seizure-free since then."
+            },
+            "assessment_summary": (
+                "The patient experienced 2 to 3 seizures shortly after "
+                "discontinuing valproate on 10 Jul. Since then, she has "
+                "remained seizure-free with improved adherence."
+            ),
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            37: CandidateSet(
+                source_row_index=37,
+                component_owner="candidate_set_union",
+                source_artifacts=["test"],
+                row_context=_row_context("2025-10-02"),
+                candidates=[
+                    _seizure_free_candidate(
+                        37,
+                        "llm:37:1",
+                        "She has remained seizure-free since then.",
+                    )
+                ],
+            )
+        },
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    instrumentation = assessment["seizure_free_instrumentation"]
+    assert instrumentation["anchor_date"]["date"] == "2025-07-10"
+    assert instrumentation["antecedent"]["link_type"] == "local_since_then_antecedent"
+    assert instrumentation["antecedent"]["anchor_date"]["date"] == "2025-07-10"
+    assert instrumentation["antecedent"]["source_phrase"] == (
+        "The patient experienced 2 to 3 seizures shortly after "
+        "discontinuing valproate on 10 Jul"
+    )
+    assert (
+        "seizure_free_anchor_from_same_note_antecedent"
+        in assessment["normalization_issues"]
+    )
+    assert artifact_row["final_rendered_label"]["rendered_label"] == (
+        "seizure free for 2 month"
+    )
+
+
+def test_build_projection_render_keeps_since_then_with_multiple_antecedents_unresolved() -> None:
+    row = {
+        "source_row_index": 38,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "seizure_free",
+            "primary_candidate_ids": ["llm:38:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "seizure_free_state",
+            "normalized_burden": {
+                "source_normalized_phrase": "She has remained seizure-free since then."
+            },
+            "assessment_summary": (
+                "The patient had seizures after stopping valproate on 10 Jul "
+                "and another event after missed medication on 18 Aug. Since "
+                "then, she has remained seizure-free."
+            ),
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            38: CandidateSet(
+                source_row_index=38,
+                component_owner="candidate_set_union",
+                source_artifacts=["test"],
+                row_context=_row_context("2025-10-02"),
+                candidates=[
+                    _seizure_free_candidate(
+                        38,
+                        "llm:38:1",
+                        "She has remained seizure-free since then.",
+                    )
+                ],
+            )
+        },
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    assert assessment["seizure_free_instrumentation"]["state_kind"] == (
+        "unresolved_anchor"
+    )
+    assert assessment["seizure_free_instrumentation"]["antecedent"] is None
+    assert artifact_row["final_rendered_label"]["rendered_label"] is None
+
+
+def test_build_projection_render_does_not_use_antecedent_for_duration_phrase() -> None:
+    row = {
+        "source_row_index": 39,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "seizure_free",
+            "primary_candidate_ids": ["llm:39:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "seizure_free_state",
+            "normalized_burden": {
+                "source_normalized_phrase": "seizure-free for over 4 weeks"
+            },
+            "assessment_summary": (
+                "Previous focal seizure occurred on 19 May. The patient is "
+                "now seizure-free for over 4 weeks."
+            ),
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            39: CandidateSet(
+                source_row_index=39,
+                component_owner="candidate_set_union",
+                source_artifacts=["test"],
+                row_context=_row_context("2025-10-02"),
+                candidates=[
+                    _seizure_free_candidate(
+                        39,
+                        "llm:39:1",
+                        (
+                            "Previous focal seizure occurred on 19 May. The "
+                            "patient is now seizure-free for over 4 weeks."
+                        ),
+                    )
+                ],
+            )
+        },
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    assert assessment["seizure_free_instrumentation"] is None
+    assert (
+        "seizure_free_anchor_from_same_note_antecedent"
+        not in assessment["normalization_issues"]
+    )
+
+
+def test_build_projection_render_uses_prior_encounter_context_with_policy_trace() -> None:
+    row = {
+        "source_row_index": 40,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "seizure_free",
+            "primary_candidate_ids": ["llm:40:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "seizure_free_state",
+            "normalized_burden": {
+                "source_normalized_phrase": "No seizures since last visit"
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            40: CandidateSet(
+                source_row_index=40,
+                component_owner="candidate_set_union",
+                source_artifacts=["test"],
+                row_context=_row_context(
+                    "2021-11-05",
+                    prior_encounter_date="2021-05-05",
+                    prior_encounter_phrase="last appointment six months ago",
+                ),
+                candidates=[
+                    _seizure_free_candidate(
+                        40,
+                        "llm:40:1",
+                        "No seizures since last visit.",
+                    )
+                ],
+            )
+        },
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    instrumentation = assessment["seizure_free_instrumentation"]
+    assert instrumentation["anchor_date"]["date"] == "2021-05-05"
+    assert instrumentation["anchor_date"]["source"] == (
+        "candidate_set.row_context.prior_encounter:explicit_relative_interval"
+    )
+    assert (
+        "prior_encounter_derived_seizure_free_duration"
+        in assessment["normalization_issues"]
+    )
+    assert artifact_row["final_rendered_label"]["rendered_label"] == (
+        "seizure free for 6 month"
+    )
+
+
+def test_build_projection_render_traces_renderable_prior_encounter_interval() -> None:
+    row = {
+        "source_row_index": 41,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "seizure_free",
+            "primary_candidate_ids": ["llm:41:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "seizure_free_state",
+            "normalized_burden": {
+                "source_normalized_phrase": (
+                    "no events suggestive of seizures since his last review "
+                    "twelve months ago"
+                )
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            41: CandidateSet(
+                source_row_index=41,
+                component_owner="candidate_set_union",
+                source_artifacts=["test"],
+                row_context=_row_context("2025-09-21"),
+                candidates=[
+                    _seizure_free_candidate(
+                        41,
+                        "llm:41:1",
+                        (
+                            "No events suggestive of seizures since last review "
+                            "twelve months ago."
+                        ),
+                    )
+                ],
+            )
+        },
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    assert (
+        "prior_encounter_derived_seizure_free_duration"
+        in assessment["normalization_issues"]
+    )
+    assert artifact_row["final_rendered_label"]["rendered_label"] == (
+        "seizure free for 12 month"
+    )
+
+
 def test_build_projection_render_keeps_relative_since_anchor_unresolved() -> None:
     row = {
         "source_row_index": 27,
@@ -1206,7 +2375,12 @@ def _candidate_set(
     )
 
 
-def _row_context(reference_date: str) -> RowContext:
+def _row_context(
+    reference_date: str,
+    *,
+    prior_encounter_date: str | None = None,
+    prior_encounter_phrase: str | None = None,
+) -> RowContext:
     return RowContext(
         reference_date=ReferenceDateContext(
             date=reference_date,
@@ -1218,7 +2392,23 @@ def _row_context(reference_date: str) -> RowContext:
                 start_char=0,
                 end_char=len(f"Clinic Date: {reference_date}"),
             ),
-        )
+        ),
+        prior_encounter=(
+            PriorEncounterContext(
+                date=prior_encounter_date,
+                date_precision="day",
+                source="explicit_relative_interval",
+                source_phrase=prior_encounter_phrase or "",
+                source_span=EvidenceSpan(
+                    text=prior_encounter_phrase or "",
+                    start_char=0,
+                    end_char=len(prior_encounter_phrase or ""),
+                ),
+                issues=["prior_encounter_date_inferred_from_relative_interval"],
+            )
+            if prior_encounter_date is not None
+            else None
+        ),
     )
 
 

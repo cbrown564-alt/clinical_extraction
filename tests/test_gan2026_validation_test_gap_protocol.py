@@ -46,7 +46,7 @@ def test_gap_artifact_inventory_declares_provenance_and_safe_inspection() -> Non
     valid_hypothesis_ids = {item["id"] for item in registry["hypotheses"]}
 
     assert inventory["split_manifest"] == "gan2026_split_v1"
-    assert inventory["protocol"] == str(PROTOCOL_PATH.relative_to(ROOT))
+    assert inventory["protocol"] == PROTOCOL_PATH.relative_to(ROOT).as_posix()
     assert inventory["artifacts"]
 
     for artifact in inventory["artifacts"]:

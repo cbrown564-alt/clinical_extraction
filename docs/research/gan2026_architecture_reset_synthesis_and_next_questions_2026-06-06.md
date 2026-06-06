@@ -793,3 +793,261 @@ date-bearing event phrases and more about genuinely missing context:
 3. Treatment anchors without dates, such as `since titration to current dose`,
    should remain unresolved unless another selected/source-backed phrase
    provides the event date.
+
+## Implementation Addendum: 2026-06-06 Same-Note Antecedent V4 Pass
+
+We then implemented the agreed next component: a cautious same-note antecedent
+resolver for seizure-free `since then` phrases. This remains normalization
+ownership, not projection ownership.
+
+### Implemented Component
+
+`SeizureFreeInstrumentation` now has an optional `antecedent` object:
+
+```json
+{
+  "state_kind": "since_date",
+  "source_phrase": "She has remained seizure-free since then.",
+  "anchor_date": {
+    "date": "2019-07-10",
+    "date_precision": "day",
+    "source": "seizure_free_source_phrase_year_inferred_from_reference_date",
+    "source_phrase": "since 10 Jul"
+  },
+  "antecedent": {
+    "source_phrase": "The patient experienced 2 to 3 seizures shortly after discontinuing valproate on 10 Jul, including one triggered by missed medication",
+    "anchor_date": {
+      "date": "2019-07-10",
+      "date_precision": "day",
+      "source": "seizure_free_source_phrase_year_inferred_from_reference_date",
+      "source_phrase": "since 10 Jul"
+    },
+    "link_type": "local_since_then_antecedent",
+    "source_candidate_ids": ["llm:14187:2"]
+  }
+}
+```
+
+Policy constraints:
+
+- Only selected normalized phrases that explicitly say `since then` or end with
+  clipped `since` can use this path.
+- The assessment summary / selected evidence must contain exactly one
+  date-bearing antecedent.
+- Multiple possible antecedent dates remain unresolved.
+- Duration phrases such as `seizure-free for over 4 weeks` are not converted
+  through this path even if nearby text mentions a previous event date.
+
+During replay, an initial broader version recovered one extra row by looking at
+candidate evidence even when the selected normalized phrase did not say
+`since then`. We rejected that overreach and tightened the trigger before
+keeping V4.
+
+### Validation750 V4 Mechanics Delta
+
+Using the saved GPT-4.1-mini assessment artifact and the context-enriched
+candidate-set surface:
+
+- Projection rows: 750.
+- Rendered rows: 573.
+- Null-rendered rows: 177.
+- Since-date instruments: 41.
+- Same-note antecedent instruments: 2.
+- Remaining unresolved since anchors: 19.
+- Route rows: 48.
+- VerificationDecision V0 actions: 48 `abstain`.
+
+Compared with V3, this recovered 2 additional rendered rows without changing
+the verifier route surface.
+
+Recovered rows:
+
+| Row | V4 rendered label | Antecedent anchor |
+| --- | --- | --- |
+| 14187 | `seizure free for 1 month` | `10 Jul`, year inferred from reference date |
+| 14214 | `seizure free for 0 month` | `early December`, year inferred from reference date |
+
+Audit-only score context for V4:
+
+- Scored rows: 573.
+- Non-scored rows: 177.
+- Purist correct on scored rows: 482.
+- Pragmatic correct on scored rows: 514.
+- Exact normalized-label matches on scored rows: 414.
+
+### New Artifacts
+
+- `experiments/gan2026_clinical_assessment_projection_render_validation750_gpt41mini_context_repair_v4_2026-06-06.*`
+- `experiments/gan2026_clinical_assessment_projection_score_validation750_gpt41mini_context_repair_v4_2026-06-06.*`
+- `experiments/gan2026_validation750_verification_route_gpt41mini_context_repair_v4_2026-06-06.*`
+- `experiments/gan2026_validation750_verification_decision_gpt41mini_context_repair_v4_2026-06-06.*`
+
+### Tests Run
+
+- `uv run pytest tests/test_gan2026_candidate_set_contract.py tests/test_gan2026_candidate_set_union.py tests/test_gan2026_clinical_assessment_contract.py tests/test_gan2026_clinical_assessment_projection_render.py tests/test_gan2026_clinical_assessment_verification_route.py tests/test_gan2026_clinical_assessment_verification_decision.py`
+
+### Next Conversation Point
+
+The remaining since-anchor rows are now mostly true context gaps:
+
+- prior-visit anchors such as `since last visit/review/appointment`;
+- treatment anchors without dates, such as `since titration to current dose`;
+- clipped `since` or `since then` rows with multiple/no clear antecedents.
+
+Recommended next choice: do not implement prior-visit inference until a real
+prior-visit date contract exists. The safer next component is probably a
+diagnostic report over the 19 remaining unresolved anchors, grouped by which
+new source contract would be required.
+
+## Implementation Addendum: 2026-06-06 Prior-Encounter V5 and Session Stop
+
+After the V4 diagnostic pass, we accepted relative prior-encounter internals
+but routed them as policy-sensitive first. The intent was to make prior-visit
+reasoning explicit and reviewable without pretending that a phrase like
+`last review` is a direct calendar anchor.
+
+### Diagnostic Report First
+
+Before adding another repair, we produced:
+
+- `docs/research/gan2026_validation750_remaining_since_anchor_diagnostic_v4_2026-06-06.md`
+
+That report grouped the remaining unresolved since-anchor cases into source
+contract families. It found that the remaining 19 since-anchor rows were no
+longer a clean seizure-free-specific bug. They were mostly missing-context
+families:
+
+- relative prior-encounter anchors, such as `since last visit`,
+  `since last review`, and `last appointment six months ago`;
+- treatment or medication-change anchors without dates;
+- clipped `since` / `since then` cases without a unique same-note date-bearing
+  antecedent.
+
+This supported the design choice to stop treating the residual cases as
+micro-optimisation targets.
+
+### Implemented Component
+
+`RowContext` now supports a `prior_encounter` context derived from explicit
+relative prior-encounter intervals. Example schema:
+
+```json
+{
+  "row_id": 7785,
+  "row_context": {
+    "reference_date": {
+      "date": "2019-06-18",
+      "date_precision": "day",
+      "source": "row_context"
+    },
+    "prior_encounter": {
+      "interval": {
+        "value": 12,
+        "unit": "month",
+        "direction": "before_reference_date",
+        "source_phrase": "last appointment 12 months ago"
+      },
+      "anchor_date": {
+        "date": "2018-06-18",
+        "date_precision": "day",
+        "source": "explicit_relative_interval"
+      }
+    }
+  }
+}
+```
+
+The component is intentionally narrow:
+
+- It only accepts explicit relative intervals tied to prior encounters, such
+  as appointment/review/clinic/visit language.
+- It preserves this context through candidate-set union.
+- Seizure-free projection may render a relative duration from this context.
+- Verification route treats the resulting issue as
+  `rendered_label_supported_but_policy_sensitive`.
+
+Rendered example:
+
+```json
+{
+  "row_id": 7785,
+  "rendered_label": "seizure free for 12 month",
+  "instrumentation": {
+    "issue_flags": [
+      "seizure_free_anchor_from_prior_encounter_context",
+      "prior_encounter_derived_seizure_free_duration"
+    ]
+  },
+  "verification_route": {
+    "route": "rendered_label_supported_but_policy_sensitive"
+  }
+}
+```
+
+### Validation750 V5 Mechanics Delta
+
+Using the saved GPT-4.1-mini assessment artifact and the V5
+context-enriched candidate-set surface:
+
+- Projection rows: 750.
+- Prior-encounter contexts present: 8.
+- Prior-encounter contexts missing: 742.
+- Rendered rows: 573.
+- Null-rendered rows: 177.
+- Scored rows: 573.
+- Non-scored rows: 177.
+- Purist correct on scored rows: 482.
+- Pragmatic correct on scored rows: 514.
+- Exact normalized-label matches on scored rows: 414.
+- Route rows: 49.
+- VerificationDecision V0 actions: 49 `abstain`.
+
+Compared with V4, V5 changed ownership/routing for one policy-sensitive row
+but did not reduce the 177 null-rendered rows. That is the useful result: the
+prior-encounter component is clean and generalisable, but it is not the next
+high-leverage row-rescue path on this validation surface.
+
+### New Artifacts
+
+- `experiments/gan2026_validation750_candidate_set_deterministic_context_v1_2026-06-06.*`
+- `experiments/gan2026_validation750_candidate_set_v3_nested_dedupe_context_v1_2026-06-06.*`
+- `experiments/gan2026_clinical_assessment_projection_render_validation750_gpt41mini_context_repair_v5_2026-06-06.*`
+- `experiments/gan2026_clinical_assessment_projection_score_validation750_gpt41mini_context_repair_v5_2026-06-06.*`
+- `experiments/gan2026_validation750_verification_route_gpt41mini_context_repair_v5_2026-06-06.*`
+- `experiments/gan2026_validation750_verification_decision_gpt41mini_context_repair_v5_2026-06-06.*`
+
+### Tests Run
+
+- `uv run pytest tests/test_gan2026_candidate_set_contract.py tests/test_gan2026_candidate_set_union.py tests/test_gan2026_clinical_assessment_contract.py tests/test_gan2026_clinical_assessment_projection_render.py tests/test_gan2026_clinical_assessment_verification_route.py tests/test_gan2026_clinical_assessment_verification_decision.py`
+
+Result: 66 passed, with 11 DSPy deprecation warnings.
+
+### Session Stop
+
+We should stop this repair thread here. There are still 177 null-rendered rows,
+but continuing with small since-anchor optimisations is unlikely to be the
+best use of the next session.
+
+The next session should pivot from row-level cleanup to component-family
+diagnosis, with the same priorities:
+
+1. Prefer logical, clean components.
+2. Prefer generalisable ideas that help close the generalisability gap.
+3. Avoid over-engineering residual one-off rows.
+
+Recommended next move:
+
+- Review the 177 null-rendered rows by family, not row by row.
+- Choose the next component by count, conceptual cleanliness, and transfer
+  value.
+- Treat prior-visit dates, event-date inference, and since-anchor leftovers as
+  candidates only if they emerge as part of a broader family.
+- Keep LLM verifier work pending until the deterministic
+  normalization/projection surface is more stable.
+
+Likely larger components to consider next:
+
+- frequency operands / selected-evidence benchmark repair;
+- ACD projection nodes;
+- route and suspicious-flag semantics;
+- event-date context only if the 177-row family review shows broad value.

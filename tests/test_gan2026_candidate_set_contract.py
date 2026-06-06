@@ -97,6 +97,25 @@ def test_row_context_extracts_email_sent_header_date() -> None:
     assert context.context_issues == []
 
 
+def test_row_context_extracts_prior_encounter_relative_interval() -> None:
+    note_text = (
+        "Clinic Date: 05 November 2021\n\n"
+        "She has had no events since last visit. "
+        "No further attacks were reported at the last appointment six months ago."
+    )
+
+    context = extract_row_context(note_text)
+
+    prior = context.prior_encounter
+    assert prior is not None
+    assert prior.date == "2021-05-05"
+    assert prior.date_precision == "day"
+    assert prior.source == "explicit_relative_interval"
+    assert prior.source_phrase == "last appointment six months ago"
+    assert prior.source_span.start_char == note_text.index("last appointment")
+    assert prior.issues == ["prior_encounter_date_inferred_from_relative_interval"]
+
+
 def test_row_context_marks_missing_reference_date_without_guessing() -> None:
     context = extract_row_context("Current baseline is two seizures per month.")
 

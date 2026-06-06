@@ -87,9 +87,9 @@ def _select_projection_nodes(
 
     for kind in (
         FrequencyLabelKind.SEIZURE_FREE,
+        FrequencyLabelKind.UNRESOLVED_MULTIPLE,
         FrequencyLabelKind.UNKNOWN,
         FrequencyLabelKind.NO_REFERENCE,
-        FrequencyLabelKind.UNRESOLVED_MULTIPLE,
     ):
         selected = tuple(node for node in nodes if node.semantic_kind is kind)
         if selected:
@@ -135,9 +135,9 @@ def _projection_priority(node: StateGraphNode) -> tuple[int, float]:
         return 4, node.monthly_frequency
     if node.semantic_kind is FrequencyLabelKind.SEIZURE_FREE:
         return 3, node.monthly_frequency
-    if node.semantic_kind is FrequencyLabelKind.UNKNOWN:
-        return 2, node.monthly_frequency
     if node.semantic_kind is FrequencyLabelKind.UNRESOLVED_MULTIPLE:
+        return 2, node.monthly_frequency
+    if node.semantic_kind is FrequencyLabelKind.UNKNOWN:
         return 1, node.monthly_frequency
     return 0, node.monthly_frequency
 

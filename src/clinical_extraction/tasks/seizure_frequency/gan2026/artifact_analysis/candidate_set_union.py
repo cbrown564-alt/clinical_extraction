@@ -408,6 +408,10 @@ def _merge_row_context(
         deterministic_context.reference_date
         or llm_context.reference_date
     )
+    prior_encounter = (
+        deterministic_context.prior_encounter
+        or llm_context.prior_encounter
+    )
     context_issues = _dedupe(
         [
             *deterministic_context.context_issues,
@@ -418,7 +422,11 @@ def _merge_row_context(
         context_issues = [
             issue for issue in context_issues if issue != "reference_date_missing"
         ]
-    return RowContext(reference_date=reference_date, context_issues=context_issues)
+    return RowContext(
+        reference_date=reference_date,
+        prior_encounter=prior_encounter,
+        context_issues=context_issues,
+    )
 
 
 def _dedupe(values: Sequence[str]) -> list[str]:

@@ -17,6 +17,7 @@ def monthly_diary_label_from_text(text: str) -> str | None:
     """Sum source-near monthly diary counts from selected evidence or LLM events."""
     normalized = normalize_frequency_label(once_twice_thrice(words_to_numbers(text)))
     for parser in (
+        _date_list_diary_label_from_selected_evidence,
         _calendar_log_label_from_selected_evidence,
         _month_sleep_awake_log_label_from_selected_evidence,
         _general_monthly_diary_label_from_selected_evidence,
@@ -24,6 +25,64 @@ def monthly_diary_label_from_text(text: str) -> str | None:
         label = parser(normalized)
         if label:
             return label
+    return None
+
+
+def _date_list_diary_label_from_selected_evidence(text: str) -> str | None:
+    numeric_match = re.search(
+        r"\b(?:diary\s+(?:documents|lists|records):?\s+|recorded\s+)?"
+        r"(?:seizure\s+events|seizures?|events?)\s+on\s+"
+        r"(?P<dates>\d{2}-\d{2}(?:,\s*\d{2}-\d{2}){1,})\b",
+        text,
+    )
+    if numeric_match:
+        month_values = [
+            int(value)
+            for value in re.findall(r"(\d{2})-\d{2}", numeric_match.group("dates"))
+        ]
+        if month_values:
+            denominator = max(max(month_values) - min(month_values), 1)
+            return format_prediction_rate(
+                f"{len(month_values)} per {denominator}",
+                "month",
+            )
+
+    month_name_pattern = (
+        r"(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)"
+        r"[a-z]*\s+\d{1,2}"
+    )
+    named_match = re.search(
+        rf"\b(?:diary\s+(?:documents|lists|records):?\s+|recorded\s+)?"
+        rf"(?:seizure\s+events|seizures?|events?)\s+on\s+"
+        rf"(?P<dates>{month_name_pattern}(?:,\s*{month_name_pattern})*(?:,\s*and\s+{month_name_pattern}|\s+and\s+{month_name_pattern})?)\b",
+        text,
+    )
+    if named_match:
+        month_names = re.findall(
+            r"\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\b",
+            named_match.group("dates"),
+        )
+        month_order = {
+            "jan": 1,
+            "feb": 2,
+            "mar": 3,
+            "apr": 4,
+            "may": 5,
+            "jun": 6,
+            "jul": 7,
+            "aug": 8,
+            "sep": 9,
+            "oct": 10,
+            "nov": 11,
+            "dec": 12,
+        }
+        month_values = [month_order[name] for name in month_names]
+        if month_values:
+            denominator = max(max(month_values) - min(month_values), 1)
+            return format_prediction_rate(
+                f"{len(month_values)} per {denominator}",
+                "month",
+            )
     return None
 
 
