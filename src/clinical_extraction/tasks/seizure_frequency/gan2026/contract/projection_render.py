@@ -44,8 +44,10 @@ class ProjectionDecision(BaseModel):
     projected_label_semantics: str
     source_assessment_kind: str
     source_aggregation_policy: str
+    source_normalized_phrase: str = ""
     source_candidate_ids: list[str] = Field(default_factory=list)
     source_ids: list[str] = Field(default_factory=list)
+    selected_evidence_status: dict[str, object] = Field(default_factory=dict)
     projection_issues: list[str] = Field(default_factory=list)
     clinical_or_policy: Literal["benchmark_policy"] = "benchmark_policy"
     schema_version: Literal["gan2026_projection_render_v1"] = SCHEMA_VERSION

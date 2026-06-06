@@ -1,4 +1,0 @@
-interface:
-  display_name: "Clinical Extraction Research Protocol"
-  short_description: "Align experiments and attribution with paper claims"
-  default_prompt: "Use $clinical-extraction-research-protocol to design an ablation and attribution plan that supports the project research claims."

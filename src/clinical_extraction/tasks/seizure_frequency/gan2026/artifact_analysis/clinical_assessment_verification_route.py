@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from collections import Counter
 from collections.abc import Mapping, Sequence
 from pathlib import Path
@@ -86,7 +87,9 @@ def route_decision_for_row(
     projection_kind = str(projection_decision.get("projection_kind") or "")
     aggregation_policy = str(projection_decision.get("source_aggregation_policy") or "")
     projection_basis = str(projection_decision.get("projection_basis") or "")
+    source_normalized_phrase = str(projection_decision.get("source_normalized_phrase") or "")
     source_candidate_ids = list(projection_decision.get("source_candidate_ids") or [])
+    selected_evidence_status = dict(projection_decision.get("selected_evidence_status") or {})
     projection_issues = [str(issue) for issue in projection_decision.get("projection_issues") or []]
     render_issues = [str(issue) for issue in final_rendered_label.get("render_issues") or []]
     rendered_label = final_rendered_label.get("rendered_label")
@@ -98,6 +101,13 @@ def route_decision_for_row(
     if _has_seizure_free_conflict(issue_set):
         families.append("seizure_free_conflict")
         reasons.append("seizure_free conflict issue present")
+
+    if selected_evidence_status.get("exact_trace") is False:
+        families.append("selected_evidence_missing_exact_trace")
+        reasons.append("selected evidence is not an exact carried trace for the chosen primary fact")
+    elif selected_evidence_status.get("source_id_status") not in {"valid", "not_instrumented", None}:
+        families.append("selected_source_id_invalid")
+        reasons.append("selected evidence is exact but its carried source-id trace is invalid")
 
     if "seizure_free_proxy_evidence_overreach" in issue_set:
         families.append("seizure_free_proxy_evidence_overreach")
@@ -126,6 +136,25 @@ def route_decision_for_row(
     ):
         families.append("cluster_axis_ambiguity")
         reasons.append("cluster projection has unparsed or incomplete cluster-axis operands")
+
+    if "conditional_only_trigger_without_baseline" in issue_set:
+        families.append("conditional_only_trigger")
+        reasons.append(
+            "frequency statement is conditioned on a trigger without a stable baseline rate"
+        )
+
+    if "relative_change_without_current_baseline" in issue_set:
+        families.append("relative_only_trend")
+        reasons.append(
+            "frequency statement gives only a relative change without an absolute current rate"
+        )
+
+    if _has_denominator_window_mismatch(
+        source_normalized_phrase=source_normalized_phrase,
+        rendered_label=rendered_label,
+    ):
+        families.append("denominator_window_mismatch")
+        reasons.append("the chosen phrase implies a windowed cadence that may not match the rendered denominator")
 
     if (
         rendered_label is None
@@ -182,7 +211,9 @@ def route_decision_for_row(
             "projection_kind": projection_kind or None,
             "source_aggregation_policy": aggregation_policy or None,
             "projection_basis": projection_basis or None,
+            "source_normalized_phrase": source_normalized_phrase or None,
             "source_candidate_ids": source_candidate_ids,
+            "selected_evidence_status": selected_evidence_status or None,
             "projection_issues": projection_issues,
             "render_issues": render_issues,
             "rendered_label_present": rendered_label is not None,
@@ -323,6 +354,22 @@ def _has_seizure_free_conflict(issues: set[str]) -> bool:
             "breakthrough_event",
             "event_scope_conflict",
         )
+    )
+
+
+def _has_denominator_window_mismatch(
+    *,
+    source_normalized_phrase: str,
+    rendered_label: Any,
+) -> bool:
+    if not isinstance(rendered_label, str) or " per " not in rendered_label:
+        return False
+    text = source_normalized_phrase.lower()
+    if re.search(r"\bper\s+(?:day|week|month|year)\b", text):
+        return False
+    return bool(
+        re.search(r"\b(on|most|many|several)\s+(?:shifts|days|weekdays|nights)\b", text)
+        or re.search(r"\bwithin\s+\d+\s+(?:day|week|month|year)s?\b", text)
     )
 
 
