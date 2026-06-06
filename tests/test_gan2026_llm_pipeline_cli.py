@@ -1,4 +1,5 @@
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any
 
 import pytest
@@ -173,6 +174,77 @@ def test_general_llm_pipeline_cli_passes_candidate_set_jsonl_for_supported_specs
     )
 
     assert calls["kwargs"]["candidate_set_jsonl_path"] == candidate_set_path
+
+
+def test_general_llm_pipeline_cli_resume_existing_skips_completed_rows(
+    tmp_path: Path, monkeypatch
+) -> None:
+    calls: dict[str, Any] = {}
+    jsonl_path = tmp_path / "rows.jsonl"
+    markdown_path = tmp_path / "report.md"
+    jsonl_path.write_text('{"source_row_index": 101, "value": "existing"}\n')
+    records = [
+        SimpleNamespace(source_row_index=101),
+        SimpleNamespace(source_row_index=102),
+        SimpleNamespace(source_row_index=103),
+    ]
+    monkeypatch.setattr(llm_pipeline_cli, "load_records_for_split", lambda split: records)
+    monkeypatch.setattr(
+        llm_pipeline_cli,
+        "load_split_manifest",
+        lambda: {"manifest_version": "test_manifest_v1"},
+    )
+
+    def run_split(records_to_run, **kwargs):
+        calls["records"] = records_to_run
+        calls["kwargs"] = kwargs
+        return [
+            {"source_row_index": 102, "value": "new-102"},
+            {"source_row_index": 103, "value": "new-103"},
+        ], {"summary": {"examples": 2}}
+
+    def write_jsonl(rows, path):
+        calls["jsonl"] = (rows, path)
+
+    def write_report(rows, metadata, path, *, jsonl_path):
+        calls["report"] = (rows, metadata, path, jsonl_path)
+
+    spec = GanLlmPipelineCliSpec(
+        description="Run a dummy Gan LLM pipeline.",
+        default_jsonl_path=jsonl_path,
+        default_report_path=markdown_path,
+        run_split=run_split,
+        write_jsonl=write_jsonl,
+        write_report=write_report,
+        summarize_rows=lambda rows: {"examples": len(rows)},
+    )
+    monkeypatch.setattr(llm_pipeline_cli, "pipeline_specs", lambda: {"dummy": spec})
+
+    llm_pipeline_cli.run_cli(
+        [
+            "--pipeline",
+            "dummy",
+            "--limit",
+            "3",
+            "--mode",
+            "prompt-only",
+            "--resume-existing",
+        ]
+    )
+
+    assert [record.source_row_index for record in calls["records"]] == [102, 103]
+    assert calls["kwargs"]["checkpoint_jsonl_path"] == tmp_path / "rows.resume-part.jsonl"
+    assert calls["kwargs"]["checkpoint_report_path"] == tmp_path / "report.resume-part.md"
+    assert calls["jsonl"] == (
+        [
+            {"source_row_index": 101, "value": "existing"},
+            {"source_row_index": 102, "value": "new-102"},
+            {"source_row_index": 103, "value": "new-103"},
+        ],
+        jsonl_path,
+    )
+    assert calls["report"][1]["summary"] == {"examples": 3}
+    assert calls["report"][1]["resume"]["rows_run"] == 2
 
 
 def test_pipeline_registry_exposes_routine_llm_experiments() -> None:

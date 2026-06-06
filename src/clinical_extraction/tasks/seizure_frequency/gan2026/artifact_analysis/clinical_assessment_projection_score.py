@@ -179,6 +179,7 @@ def summarize_rows(
     purist_correct = sum(score.get("purist_correct") is True for score in scored)
     pragmatic_correct = sum(score.get("pragmatic_correct") is True for score in scored)
     exact = sum(score.get("exact_normalized_label_match") is True for score in scored)
+    surface_label = f"validation{len(rows)}"
     return {
         "artifact_kind": "gan2026_clinical_assessment_projection_score",
         "schema_version": SCORING_SCHEMA_VERSION,
@@ -186,7 +187,7 @@ def summarize_rows(
         "project_render_artifact_path": project_render_artifact_path,
         "row_count": len(rows),
         "claim_boundary": (
-            "Validation250 mechanics scoring over saved project/render rows only. "
+            f"{surface_label} mechanics scoring over saved project/render rows only. "
             "Scoring reuses the existing label parser plus purist/pragmatic category "
             "mappers and is not a benchmark-comparable promotion claim."
         ),

@@ -28,6 +28,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io
 )
 
 ARTIFACT_NAME = "gan2026_validation250_candidate_set_v0"
+MAX_VALIDATION_LIMIT = 750
 DEFAULT_JSONL_PATH = Path("experiments/gan2026_validation250_candidate_set_v0.jsonl")
 DEFAULT_JSON_PATH = Path("experiments/gan2026_validation250_candidate_set_v0.json")
 DEFAULT_REPORT_PATH = Path("experiments/gan2026_validation250_candidate_set_v0.md")
@@ -78,6 +79,7 @@ def summarize_candidate_set_rows(
         for row in rows
         for candidate in CandidateSet.model_validate(row["candidate_set"]).candidates
     )
+    surface_label = f"validation{len(rows)}" if split == "validation" else split
     return {
         "artifact_name": artifact_name,
         "schema_version": SCHEMA_VERSION,
@@ -85,7 +87,7 @@ def summarize_candidate_set_rows(
         "split_manifest": split_manifest,
         "row_count": len(rows),
         "claim_boundary": (
-            "Validation250 deterministic candidate-set replay only. No locked-test "
+            f"{surface_label} deterministic candidate-set replay only. No locked-test "
             "row-level work, scorer-facing claims, or final-label selection."
         ),
         "summary": {
@@ -119,7 +121,7 @@ def write_report(
 ) -> None:
     summary = metadata["summary"]
     lines = [
-        "# Gan 2026 Validation250 Candidate Set Replay",
+        f"# Gan 2026 {metadata['artifact_name']} Candidate Set Replay",
         "",
         str(metadata["claim_boundary"]),
         "",
@@ -186,8 +188,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--artifact-name", default=ARTIFACT_NAME)
     args = parser.parse_args(argv)
 
-    if args.limit > 250:
-        parser.error("candidate-set replay is capped at validation250")
+    if args.limit > MAX_VALIDATION_LIMIT:
+        parser.error(f"candidate-set replay is capped at validation{MAX_VALIDATION_LIMIT}")
     records = load_records_for_split(args.split)
     split_manifest = str(load_split_manifest().get("manifest_version", "gan2026_split_v1"))
     rows, metadata = build_validation250_candidate_set_rows(

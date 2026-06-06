@@ -60,11 +60,12 @@ def summarize_union_rows(
     kind_counts = Counter(str(candidate["candidate_kind"]) for candidate in candidates)
     source_counts = Counter(str(candidate["source_type"]) for candidate in candidates)
     per_row_counts = [len(row["candidate_set"]["candidates"]) for row in rows]
+    surface_label = f"validation{len(rows)}"
     return {
         "artifact_name": artifact_name,
         "row_count": len(rows),
         "claim_boundary": (
-            "Validation250 extract-stage deterministic+LLM candidate-set union only. "
+            f"{surface_label} extract-stage deterministic+LLM candidate-set union only. "
             "No selection, normalization, projection, scoring, or locked-test work."
         ),
         "summary": {

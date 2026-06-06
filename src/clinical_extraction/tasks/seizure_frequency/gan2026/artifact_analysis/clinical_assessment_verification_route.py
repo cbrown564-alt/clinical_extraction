@@ -211,6 +211,7 @@ def summarize_rows(
         for row in rows
         if (row.get("verification_route") or {}).get("routed")
     )
+    surface_label = f"validation{len(rows)}"
     return {
         "artifact_kind": "gan2026_verification_route",
         "schema_version": SCHEMA_VERSION,
@@ -218,7 +219,7 @@ def summarize_rows(
         "score_artifact_path": score_artifact_path,
         "row_count": len(rows),
         "claim_boundary": (
-            "Deterministic validation250 verification-route mechanics only. "
+            f"Deterministic {surface_label} verification-route mechanics only. "
             "Routes use predeclared clinical/projection risk predicates over "
             "structured projection/render fields; score fields are audit context "
             "only and no verifier action is emitted."

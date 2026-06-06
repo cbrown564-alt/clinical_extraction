@@ -27,9 +27,9 @@ DEFAULT_JSON_PATH = Path("experiments/gan2026_validation250_verification_decisio
 DEFAULT_REPORT_PATH = Path("experiments/gan2026_validation250_verification_decision_v0.md")
 
 CLAIM_BOUNDARY = (
-    "deterministic validation250 verification-action baseline over routed rows; "
-    "no verifier model call, no manual annotation, no replacement label invention, "
-    "and score context is audit-only"
+    "deterministic verification-action baseline over routed rows; no verifier "
+    "model call, no manual annotation, no replacement label invention, and score "
+    "context is audit-only"
 )
 
 
