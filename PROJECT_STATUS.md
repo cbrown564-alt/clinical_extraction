@@ -1,116 +1,123 @@
 # Project Status
 
-Last updated: 2026-06-05
+Last updated: 2026-06-06
 
 ## Active Objective
 
-Answer the Gan 2026 seizure-frequency component research questions under
-exact-evidence, attribution, hidden-family, and split-discipline constraints.
-No benchmark-comparable claim is authorized.
+Continue the Gan 2026 architecture reset as validation-development mechanics:
+make the pipeline legible, stage-owned, evidence-traced, and ablatable before
+any LLM-verifier or holdout-facing work. No benchmark-comparable claim is
+authorized. The reset path is:
 
-The active path is the validation-test generalisation gap program. Use saved
-artifacts as research instruments for component questions, not as whole-pipeline
-F1 trophies. The fully assembled
-`hybrid_multi_component_staged_assembly_v1` saved-replay validation pipeline is
-materialized, and its frozen holdout protocol addendum is written. The next
-decision is whether the validation freeze gate is clean enough to request
-explicit aggregate-only test450 authorization for one primary model variant or
-a predeclared symmetric model-swap comparison.
+```text
+Extract -> Select / Clinical Assessment -> Normalize -> Project -> Verify -> Render / Score
+```
+
+Controlling thread:
+`docs/research/gan2026_architecture_reset_synthesis_and_next_questions_2026-06-06.md`.
 
 ## Guardrails
 
 - Split `gan2026_split_v1` is locked: 300 train, 750 validation, 450 holdout.
 - Locked test is not for row-level tuning; any holdout-facing use needs a
   frozen protocol and explicit user authorization.
-- `rules_only_v1` remains the frozen transparent comparator; the current
-  validation control is `untagged_nonprediction_release_candidate_v0_assembled_candidate`.
-- `h5_repair_policy_v1_manifest` is the bounded repair contract; do not mix
-  repair-policy changes with boundary/renderer or action-policy changes.
-- `structured_projection_port_promoted_v0`, trigger-context release, last-event
-  automatic release, few-shot train-exemplar, direct-labeler targeted switch,
-  and broad action-policy widening are rejected or revise-only.
-- Final F1 is secondary to candidate recall, exact evidence, projection
-  consistency, metadata completeness, ambiguity preservation, and regression
-  accounting.
+- Treat Gan validation runs as development mechanics, not benchmark claims.
+- Keep comparator/gold context audit-only; route/verifier decisions must not
+  consume gold labels.
+- Do not resurrect broad hybrid fallback. Port old behavior only as named,
+  stage-owned, inspectable, ablatable components.
+- Prefer plain-language artifact vocabulary: reset-stage parsed quantities are
+  `values`, not parser jargon.
 
 ## Current Evidence
 
-- Conservative staged assembly on validation750: 735 prediction-bearing rows,
-  697 correct prediction rows, 37/37 H6 controls preserved, and 0 release-wrong
-  rows after untagged nonprediction releases.
-- 2026-06-05: User authorized an aggregate-only test450 audit under
-  `docs/research/gan2026_hybrid_multi_component_staged_assembly_v1_frozen_holdout_protocol_2026-06-05.md`
-  after validation freeze-gate review. Authorization applies to the saved-replay
-  frozen protocol only; no row-level test failure review, live model variant
-  winner selection, or benchmark-comparable claim is authorized.
-- `selective_safety_floor_gate_v0`: validation750 21 changes with 11 W->C and
-  0 C->W; frozen local test450 14 changes with 8 W->C and 0 C->W.
-- H5 policy v1 is frozen as bounded repair; renderer effects stay separate from
-  clinical selection.
-- `structured_projection_port_promoted_v0` was rejected on frozen aggregate-only
-  test450: base 342/450 Purist proxy 0.7600 fell to 337/450 proxy 0.7489, with
-  7 W->C, 12 C->W, and changed-label precision 0.3684.
-- Boundary/renderer typed-event is promoted only as a bounded rare-family
-  component: validation typed panel after selector revision had 6 W->C, 0 C->W,
-  0 H6 regressions, and 0 source-note-text rows.
-- Stage 4 H6/H9 sidecars are complete: 735/750 prediction-bearing rows, 9
-  abstain, 6 review, 19 deterministic-comparator fallback releases, 0
-  release-lane C->W, and 0 H6 regressions.
-- `hybrid_multi_component_staged_assembly_v1` validation750 saved replay emits
-  750/750 unique rows, 735 prediction-bearing rows, 15 abstain/review rows, 28
-  selected boundary/renderer overlays, 2 suppressed overlays, 0 H6 regressions,
-  and no final-row, sidecar, or component-matrix contract issues.
+- Initial validation750 GPT-4.1-mini mechanics had 732 valid clinical
+  assessments, 498 rendered rows, 234 true null renders, and 42 routed
+  V0-abstain verifier rows.
+- Context/date/value repair passes reduced the null-render surface to 177 rows
+  after V5 while preserving split discipline.
+- Post-V5 work ported mature old component families into reset ownership:
+  selected-evidence frequency repair, vague period rates, relative/conditional
+  guards, diary date lists, current-vs-historical policies, major recent relapse
+  priority, provenance route fields, evidence-trace route families, and
+  denominator-window mismatch.
+- The latest thread standardized reset-stage issue/rule language around
+  `values` and added explicit cluster route ownership:
+  `cluster_cadence_unknown_with_per_cluster_burden` routes as
+  `unresolved_cluster_cadence_with_per_cluster_burden`.
+- Focused validation for the reset path passed:
+  `99 passed` across clinical-assessment projection/render, verification route,
+  and candidate-set clinical assessment tests.
+- Full suite status after this thread: `1304 passed, 1 failed`. The remaining
+  failure is unrelated to the reset files:
+  `tests/test_gan2026_normalize.py::test_repair_prediction_label_with_evidence_repairs_single_count_over_window`
+  currently returns `3 per 3 month` where the test expects `3 per 7 month`.
 
 ## Core Artifacts
 
-- Assembly/holdout docs: final findings, frozen base protocol, protocol review,
-  GPT-4.1 mini variant, Qwen 3.6:35b/Ollama variant, and staged gap plan live
-  under `docs/research/gan2026_*_2026-06-05.md`.
-- Current v1 assembly artifacts: validation750 summary JSON, row JSONL, and
-  component matrix CSV under
-  `experiments/gan2026_hybrid_multi_component_staged_assembly_v1_*_2026-06-05.*`.
-- Control/policy artifacts: untagged nonprediction release control, H5 repair
-  manifest, H10 raw identity sidecar, boundary/renderer ADR 0011, and H9/H6
-  sidecars in `experiments/gan2026_*_2026-06-05.*`.
+- Reset synthesis and decisions:
+  `docs/research/gan2026_architecture_reset_synthesis_and_next_questions_2026-06-06.md`.
+- Validation750 reset artifacts live under
+  `experiments/gan2026_*validation750*gpt41mini*2026-06-06.*`.
+- June 5 staged-assembly holdout docs remain a separate frozen thread; do not
+  blend that protocol with reset validation mechanics.
 
 ## Work Board
 
 ### Now
 
-- Review the validation freeze gate from the v1 saved-replay artifacts before
-  requesting any test450 authorization.
-- Choose either one primary authorized model variant or a symmetric model-swap
-  comparison; do not use locked test as a winner-selection surface.
-- Keep `structured_projection_port_promoted_v0` and broad action-policy widening
-  rejected/revise-only.
+- Fix or triage the unrelated normalize regression: diary evidence for
+  `3 events over 7 months` currently returns `3 per 3 month`, expected
+  `3 per 7 month`.
+- Run a fresh validation750 reset mechanics replay after the post-V5 family
+  ports and value-language/cluster-route contract changes.
+- Regenerate and compare reset reports: null-render analysis, historical
+  crosswalk, route report, V0 baseline, recovered rows, routed rows, and
+  audit-only W->C/C->W.
 
 ### Next
 
-- Request explicit user authorization only after the validation freeze gate and
-  model-variant policy are reviewed.
-- If authorized, run the test450 audit once under the frozen protocol and report
-  only aggregate/predeclared-slice readouts.
+- Review refreshed residual null-render families by count, cleanliness, and
+  transfer value; choose from refreshed evidence, not stale V5 counts.
+- Complete the cluster-family pass: render explicit cadence plus per-cluster
+  burden; route unresolved cadence, burden, convention, or axis ownership.
+- Define the null-render/action taxonomy: clinically unknown, abstain, human
+  review, missing upstream parser/policy, and verifier-eligible ambiguity.
+- Create a reset-stage component inventory: old name, new family, portability
+  category, ablation switch, and status.
+- Update reset completed-tasks/review docs with the validation750 read, post-V5
+  ports, value-language decision, and cluster route contract.
 
 ### Blocked
 
-- Whole-pipeline promotion remains blocked until a holdout-facing frozen
-  protocol is authorized.
-- Stage 5 downstream provenance expansion is deferred unless live/replay drift
-  becomes relevant.
+- LLM-verifier work is blocked until the deterministic normalization/projection
+  and route surface is stable after a fresh validation750 replay.
+- Whole-pipeline promotion remains blocked; no benchmark-comparable language or
+  holdout-facing reset protocol is authorized.
 - Locked-test row-level inspection remains prohibited for development.
+
+### Backlog
+
+- Design the first LLM-verifier saved-replay comparison over routed V0
+  `abstain`/`human_review` rows, using route evidence and exact source evidence
+  only; verifier output must be action-only and emit no replacement label.
+- Add component-level ablation reporting for each ported deterministic family:
+  newly rendered, newly routed, remaining null, evidence validity, route-family
+  changes, and audit-only W->C/C->W.
+- Decide whether comparator-label preservation can return as a named action
+  policy after verifier reject/abstain.
+- Revisit prior-visit/event-date context only if refreshed residual analysis
+  shows broad value and a clean source contract.
 
 ### Done Recently
 
-- 2026-06-05: Wrote and reviewed the frozen holdout protocol addendum for
-  `hybrid_multi_component_staged_assembly_v1`; added GPT-4.1 mini and Qwen
-  3.6:35b/Ollama variants. The review records that current v1 assembly code is
-  saved-replay validation-only and that multiple model variants must not become
-  locked-test winner selection.
-- 2026-06-05: Implemented and materialized v1 saved-replay validation assembly:
-  750/750 unique validation rows, 0 H6 regressions, eligible boundary/renderer
-  attribution, suppressed rows unpromoted, and clean final-row, sidecar, and
-  component-matrix contracts.
-- 2026-06-05: Completed Stage 4 action-policy sidecars and promoted the
-  boundary/renderer typed-event layer as a bounded rare-family component; no
-  whole-pipeline promotion, holdout use, or benchmark-comparable language is
-  authorized.
+- 2026-06-06: Completed the reset synthesis and addenda covering validation750
+  mechanics, context/date repairs, post-V5 family ports, provenance route
+  fields, denominator-window routing, value terminology, and unresolved-cluster
+  route ownership.
+- 2026-06-06: Ported mature old behavior families into reset-native ownership
+  without broad fallback: frequency repair, selected-evidence/benchmark repair,
+  ACD-style projection policies, route families, and provenance checks.
+- 2026-06-05: Wrote/reviewed the separate frozen aggregate-only holdout
+  protocol for `hybrid_multi_component_staged_assembly_v1`; it does not
+  authorize reset-thread holdout use.
