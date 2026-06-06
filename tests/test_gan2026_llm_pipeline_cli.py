@@ -247,6 +247,58 @@ def test_general_llm_pipeline_cli_resume_existing_skips_completed_rows(
     assert calls["report"][1]["resume"]["rows_run"] == 2
 
 
+def test_general_llm_pipeline_cli_rejects_existing_outputs_without_resume_or_overwrite(
+    tmp_path: Path, monkeypatch, capsys
+) -> None:
+    calls: dict[str, Any] = {}
+    spec = _dummy_spec(tmp_path, calls)
+    spec.default_jsonl_path.write_text('{"source_row_index": 101}\n')
+    monkeypatch.setattr(llm_pipeline_cli, "pipeline_specs", lambda: {"dummy": spec})
+    monkeypatch.setattr(llm_pipeline_cli, "load_records_for_split", lambda split: ["row"])
+
+    with pytest.raises(SystemExit) as exc_info:
+        llm_pipeline_cli.run_cli(
+            ["--pipeline", "dummy", "--mode", "prompt-only", "--limit", "1"]
+        )
+
+    assert exc_info.value.code == 2
+    assert calls == {}
+    stderr = capsys.readouterr().err
+    assert "output artifact already exists" in stderr
+    assert "--resume-existing" in stderr
+
+
+def test_general_llm_pipeline_cli_allows_deliberate_overwrite(
+    tmp_path: Path, monkeypatch
+) -> None:
+    calls: dict[str, Any] = {}
+    spec = _dummy_spec(tmp_path, calls)
+    spec.default_jsonl_path.write_text('{"source_row_index": 101}\n')
+    spec.default_report_path.write_text("# Old report\n")
+    monkeypatch.setattr(llm_pipeline_cli, "pipeline_specs", lambda: {"dummy": spec})
+    monkeypatch.setattr(llm_pipeline_cli, "load_records_for_split", lambda split: ["row"])
+    monkeypatch.setattr(
+        llm_pipeline_cli,
+        "load_split_manifest",
+        lambda: {"manifest_version": "test_manifest_v1"},
+    )
+
+    llm_pipeline_cli.run_cli(
+        [
+            "--pipeline",
+            "dummy",
+            "--mode",
+            "prompt-only",
+            "--limit",
+            "1",
+            "--overwrite-existing",
+        ]
+    )
+
+    assert calls["records"] == ["row"]
+    assert calls["jsonl"] == ([{"source_row_index": 101}], spec.default_jsonl_path)
+
+
 def test_pipeline_registry_exposes_routine_llm_experiments() -> None:
     specs = llm_pipeline_cli.pipeline_specs()
 
