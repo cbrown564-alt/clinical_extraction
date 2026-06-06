@@ -91,10 +91,18 @@ Controlling thread:
   (`580 -> 539` rendered when disabled), while current-summary,
   previous-month/current-zero, and major-recent-relapse switches execute with
   `0` aggregate delta on this saved surface.
+- The first live action-only verifier run over the clean `56`-row V6 surface is
+  now complete and contract-clean: `56/56` calls returned parseable outputs,
+  `56/56` passed row-local contract checks, and the verifier produced non-abstain
+  actions on `27` rows overall.
+- On the predeclared `29`-row main ambiguity table, the verifier action split is
+  `1` affirm, `5` reject, `15` human_review, and `8` abstain. The `27` appendix
+  rows split `4` affirm, `2` human_review, and `21` abstain; no appendix row
+  produced `reject`.
 - Focused validation for the reset path passed:
   `99 passed` across clinical-assessment projection/render, verification route,
   and candidate-set clinical assessment tests.
-- Full suite status after this thread: `1305 passed`.
+- Full suite status after this thread: `1320 passed`.
 
 ## Core Artifacts
 
@@ -128,6 +136,10 @@ Controlling thread:
   `docs/research/gan2026_validation750_first_verifier_saved_comparison_context_repair_v6_2026-06-06.md`.
 - First clean verifier experiment input:
   `docs/research/gan2026_validation750_first_verifier_experiment_input_clean29_context_repair_v6_2026-06-06.md`.
+- First live action-only verifier run:
+  `docs/research/gan2026_validation750_first_verifier_live_clean29_context_repair_v6_2026-06-06.md`.
+- First live action-only verifier summary JSON:
+  `experiments/gan2026_validation750_first_verifier_live_clean29_context_repair_v6_2026-06-06.json`.
 - Provenance-only failure taxonomy:
   `docs/research/gan2026_validation750_provenance_only_failure_taxonomy_v6_2026-06-06.md`.
 - Candidate-evidence provenance replay route artifact:
@@ -141,18 +153,23 @@ Controlling thread:
 
 ### Now
 
-- Run the first action-only verifier implementation against the clean `56`-row
-  input surface only: `29` main rows plus the `4 / 18 / 5` appendices.
-- Repair the `27`-row candidate-trace `selected_source_id_invalid` tail without
-  merging the `26` provenance-only rows into the main verifier table.
 - Decide whether zero-delta projection-policy off-switches need targeted hard
   slices, since they execute cleanly but do not move the saved validation750
   aggregate.
+- Read the first live verifier run and decide whether any of the `1` affirm /
+  `5` reject / `15` human_review / `8` abstain main-table actions should become
+  frozen deterministic action policy versus remain prompt-only.
 
 ### Next
 
-- Implement the verifier result artifact: action, cited candidate/source ids,
-  issue flags, rationale, nullable final label, and appendix-aware reporting.
+- Run a forced-choice verifier variant that must choose among pre-selected
+  answer options rather than emit action-only output: effectively repeat the
+  candidate-selection task with the saved candidate set and a narrower verifier
+  prompt, then compare the resulting label choices and failure modes against the
+  current action-only run.
+- Implement post-run comparison/accounting that summarizes first-verifier
+  actions against deterministic V0 by bucket and report section without
+  inventing scorer-facing replacement labels.
 - Decide whether global non-routed V5->V6 audit transitions belong in a
   separate scorer audit appendix; the current component table reports routed
   family counts only.
@@ -178,6 +195,20 @@ Controlling thread:
 
 ### Done Recently
 
+- 2026-06-06: Repaired the `27`-row candidate-trace `selected_source_id_invalid` tail by mapping unresolved source-ids to `"source_id_not_resolved"` and whitelisting acceptable non-routing statuses in routing and suspicious state checks. Regenerated validation750 projection render, route, and component ablation artifacts on disk; `selected_source_id_invalid` dropped to `0`.
+- 2026-06-06: Implemented and ran the first action-only verifier over the clean
+  `56`-row V6 surface via
+  `src/clinical_extraction/tasks/seizure_frequency/gan2026/components/clinical_assessment_first_verifier.py`
+  and
+  `src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/clinical_assessment_first_verifier_experiment.py`.
+  The live run materialized
+  `experiments/gan2026_validation750_first_verifier_live_clean29_context_repair_v6_2026-06-06.{jsonl,json}`
+  plus
+  `docs/research/gan2026_validation750_first_verifier_live_clean29_context_repair_v6_2026-06-06.md`.
+  All `56` rows parsed and passed contract checks; action counts were `29`
+  abstain, `17` human_review, `5` affirm, and `5` reject, with `21` changed
+  actions on the `29`-row main ambiguity table. Full suite now passes at
+  `1320 passed`.
 - 2026-06-06: Added executable reset-stage off-switches through the
   ClinicalAssessment assembler and projection/render artifact builder:
   `normalize_seizure_free_duration_date_instrumentation`,

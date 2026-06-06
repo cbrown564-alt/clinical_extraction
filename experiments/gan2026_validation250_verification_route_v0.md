@@ -1,4 +1,4 @@
-# Gan 2026 Verification Route V0
+# Gan 2026 Verification Route Mechanics
 
 Deterministic validation250 verification-route mechanics only. Routes use predeclared clinical/projection risk predicates over structured projection/render fields; score fields are audit context only and no verifier action is emitted.
 
@@ -11,32 +11,20 @@ Deterministic validation250 verification-route mechanics only. Routes use predec
 ## Summary
 
 - Rows: 250
-- Routed rows: 13
-- Unrouted rows: 237
+- Routed rows: 2
+- Unrouted rows: 248
 
 ## Route Families
 
-- `cluster_axis_ambiguity`: 11
 - `mixed_window_or_vague_addition`: 1
 - `multiple_current_primary_facts`: 1
 
 ## Routed Score Statuses
 
-- `not_scored_null_rendered_label`: 12
+- `not_scored_null_rendered_label`: 1
 - `scored`: 1
 
 ## Routed Rows
 
-- 338: cluster_axis_ambiguity; score `not_scored_null_rendered_label`; purist `None`; reasons: cluster projection has unparsed or incomplete cluster-axis operands
-- 744: mixed_window_or_vague_addition; score `not_scored_null_rendered_label`; purist `None`; reasons: additive assessment includes mixed-window, vague, or incomplete operands
-- 1317: cluster_axis_ambiguity; score `not_scored_null_rendered_label`; purist `None`; reasons: cluster projection has unparsed or incomplete cluster-axis operands
-- 1573: cluster_axis_ambiguity; score `not_scored_null_rendered_label`; purist `None`; reasons: cluster projection has unparsed or incomplete cluster-axis operands
-- 1707: cluster_axis_ambiguity; score `not_scored_null_rendered_label`; purist `None`; reasons: cluster projection has unparsed or incomplete cluster-axis operands
-- 3468: cluster_axis_ambiguity; score `not_scored_null_rendered_label`; purist `None`; reasons: cluster projection has unparsed or incomplete cluster-axis operands
-- 3469: cluster_axis_ambiguity; score `not_scored_null_rendered_label`; purist `None`; reasons: cluster projection has unparsed or incomplete cluster-axis operands
-- 3493: cluster_axis_ambiguity; score `not_scored_null_rendered_label`; purist `None`; reasons: cluster projection has unparsed or incomplete cluster-axis operands
+- 744: mixed_window_or_vague_addition; score `not_scored_null_rendered_label`; purist `None`; reasons: additive assessment includes mixed-window, vague, or incomplete values
 - 3534: multiple_current_primary_facts; score `scored`; purist `False`; reasons: multiple primary candidate ids are present outside an additive or cluster-axis policy
-- 4173: cluster_axis_ambiguity; score `not_scored_null_rendered_label`; purist `None`; reasons: cluster projection has unparsed or incomplete cluster-axis operands
-- 4480: cluster_axis_ambiguity; score `not_scored_null_rendered_label`; purist `None`; reasons: cluster projection has unparsed or incomplete cluster-axis operands
-- 5476: cluster_axis_ambiguity; score `not_scored_null_rendered_label`; purist `None`; reasons: cluster projection has unparsed or incomplete cluster-axis operands
-- 5551: cluster_axis_ambiguity; score `not_scored_null_rendered_label`; purist `None`; reasons: cluster projection has unparsed or incomplete cluster-axis operands

@@ -8,6 +8,7 @@ Projection/render mechanics only over saved validation750 artifacts. This artifa
 - Summary JSON: `experiments\gan2026_clinical_assessment_projection_render_validation750_gpt41mini_context_repair_v6_candidate_trace_v1_2026-06-06.json`
 - Assessment source: `experiments\gan2026_candidate_set_clinical_assessment_probe_live_validation750_gpt41mini_v3nested_v3_2026-06-06.jsonl`
 - CandidateSet source: `experiments\gan2026_validation750_candidate_set_v3_nested_dedupe_context_v1_2026-06-06.jsonl`
+- Disabled ablation switches: `[]`
 
 ## Summary
 

@@ -3,6 +3,7 @@
   "assessment_artifact_path": "experiments\\gan2026_candidate_set_clinical_assessment_probe_live_validation750_gpt41mini_v3nested_v3_2026-06-06.jsonl",
   "candidate_set_artifact_path": "experiments\\gan2026_validation750_candidate_set_v3_nested_dedupe_context_v1_2026-06-06.jsonl",
   "claim_boundary": "Projection/render mechanics only over saved validation750 artifacts. This artifact renders labels when deterministic v0 policy can do so, but scoring is disabled and no benchmark-comparable claim is made.",
+  "disabled_ablation_switches": [],
   "row_count": 750,
   "schema_version": "gan2026_projection_render_v1",
   "summary": {

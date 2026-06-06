@@ -1,0 +1,57 @@
+{
+  "action_counts": {
+    "abstain": 29,
+    "affirm": 5,
+    "human_review": 17,
+    "reject": 5
+  },
+  "appendix_action_counts": {
+    "abstain": 21,
+    "affirm": 4,
+    "human_review": 2
+  },
+  "artifact_kind": "gan2026_validation750_first_verifier_live_clean29_summary",
+  "claim_boundary": "Validation-development first action-only verifier run over the clean 56-row V6 surface. This is not a scorer-label replacement protocol, does not authorize locked-test inspection, and keeps provenance-only rows out of the main table.",
+  "date": "2026-06-06",
+  "decision": "action_surface_materialized",
+  "interpretation": "The first verifier produced non-abstain action decisions on the clean surface. The primary table remains the 29-row ambiguity set.",
+  "main_action_counts": {
+    "abstain": 8,
+    "affirm": 1,
+    "human_review": 15,
+    "reject": 5
+  },
+  "metrics": {
+    "abstain_rows": 29,
+    "affirm_rows": 5,
+    "appendix_rows": 27,
+    "call_ok_rows": 56,
+    "changed_action_rows": 27,
+    "contract_error_rows": 0,
+    "contract_ok_rows": 56,
+    "human_review_rows": 17,
+    "main_score_table_changed_action_rows": 21,
+    "main_score_table_rows": 29,
+    "parse_error_action_rows": 0,
+    "parse_error_rows": 0,
+    "parse_ok_rows": 56,
+    "reject_rows": 5
+  },
+  "model": "openai/gpt-4.1-mini",
+  "policy_name": "gan2026_clinical_assessment_first_verifier_v0",
+  "prompt_version": "gan2026_clinical_assessment_first_verifier_v0",
+  "report_section_counts": {
+    "abstain_exemplar_appendix": 4,
+    "main_ambiguity_score_table": 29,
+    "rendered_policy_sensitive_appendix": 5,
+    "upstream_policy_appendix": 18
+  },
+  "row_count": 56,
+  "source_artifact": "experiments\\gan2026_validation750_first_verifier_experiment_input_clean29_context_repair_v6_2026-06-06.jsonl",
+  "usage": {
+    "input_tokens": 86175,
+    "output_tokens": 15368,
+    "total_tokens": 101543,
+    "wall_clock_latency_seconds": 219.94884549977724
+  }
+}

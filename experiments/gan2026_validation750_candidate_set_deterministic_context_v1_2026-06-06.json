@@ -1,5 +1,5 @@
 {
-  "artifact_name": "gan2026_validation750_candidate_set_deterministic_context_v1_2026-06-06",
+  "artifact_name": "gan2026_validation750_candidate_set_deterministic_context_v1",
   "claim_boundary": "validation750 deterministic candidate-set replay only. No locked-test row-level work, scorer-facing claims, or final-label selection.",
   "row_count": 750,
   "schema_version": "gan2026_candidate_set_source_near_v0",

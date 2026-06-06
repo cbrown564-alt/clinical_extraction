@@ -1,4 +1,4 @@
-# Gan 2026 gan2026_validation750_candidate_set_deterministic_context_v1_2026-06-06 Candidate Set Replay
+# Gan 2026 gan2026_validation750_candidate_set_deterministic_context_v1 Candidate Set Replay
 
 validation750 deterministic candidate-set replay only. No locked-test row-level work, scorer-facing claims, or final-label selection.
 

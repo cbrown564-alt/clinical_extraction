@@ -16,10 +16,10 @@ This saved-artifact report materializes the first reset-stage component ablation
 | V6 null rows | `170` |
 | V6 provenance-only routed rows | `220` |
 | V6 clinical/policy routed rows | `56` |
-| candidate-trace routed rows | `82` |
+| candidate-trace routed rows | `56` |
 | candidate-trace clinical/policy rows | `56` |
-| candidate-trace pure non-provenance target rows | `55` |
-| candidate-trace residual `selected_source_id_invalid` tail | `27` |
+| candidate-trace pure non-provenance target rows | `56` |
+| candidate-trace residual `selected_source_id_invalid` tail | `0` |
 
 ## Recovered Rows
 
