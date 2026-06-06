@@ -43,7 +43,7 @@ def test_project_and_render_frequency_rate_label() -> None:
     assert projection.projected_label_semantics == "4 per day"
     assert projection.projection_basis == "frequency_rate"
     assert projection.projection_owner == "rate_projection_policy"
-    assert projection.projection_rule_id == "frequency_rate_operands_v0"
+    assert projection.projection_rule_id == "frequency_rate_values_v0"
     assert projection.source_ids == ["note:10:span:0-20"]
     assert projection.selected_evidence_status == {
         "exact_trace": True,
@@ -237,7 +237,7 @@ def test_project_and_render_blocks_medication_cadence_cluster_projection() -> No
             cluster_period_unit="month",
             source_normalized_phrase="clusters approximately once monthly",
         ),
-        normalization_issues=["cluster_frequency_operands_unparsed"],
+        normalization_issues=["cluster_frequency_values_unparsed"],
     )
 
     projection, rendered = projection_render.project_and_render(
@@ -270,7 +270,7 @@ def test_project_and_render_unknown_cadence_multiple_per_cluster() -> None:
                 "cluster of multiple short seizure episodes over one day"
             ),
         ),
-        normalization_issues=["cluster_frequency_operands_unparsed"],
+        normalization_issues=["cluster_frequency_values_unparsed"],
     )
 
     projection, rendered = projection_render.project_and_render(
@@ -305,7 +305,7 @@ def test_project_and_render_cyclic_window_without_event_count_stays_null() -> No
         normalized_burden=NormalizedBurden(
             source_normalized_phrase="seizures happen perimenstrually only"
         ),
-        normalization_issues=["cluster_frequency_operands_unparsed"],
+        normalization_issues=["cluster_frequency_values_unparsed"],
     )
 
     projection, rendered = projection_render.project_and_render(
@@ -483,7 +483,7 @@ def test_build_projection_render_repairs_duplicate_and_overlapping_role_ids() ->
     assert artifact_row["final_rendered_label"]["rendered_label"] == "2 per month"
 
 
-def test_build_projection_render_repairs_frequency_operands_from_primary_candidate() -> None:
+def test_build_projection_render_repairs_frequency_values_from_primary_candidate() -> None:
     row = {
         "source_row_index": 24,
         "split": "validation",
@@ -510,7 +510,7 @@ def test_build_projection_render_repairs_frequency_operands_from_primary_candida
 
     assessment = artifact_row["clinical_assessment"]
     assert (
-        "frequency_rate_operands_repaired_from_primary_candidate"
+        "frequency_rate_values_repaired_from_primary_candidate"
         in assessment["normalization_issues"]
     )
     assert assessment["normalized_burden"]["source_normalized_phrase"] == (
@@ -551,7 +551,7 @@ def test_build_projection_render_repairs_once_per_night_from_primary_candidate()
 
     assessment = artifact_row["clinical_assessment"]
     assert (
-        "frequency_rate_operands_repaired_from_primary_candidate"
+        "frequency_rate_values_repaired_from_primary_candidate"
         in assessment["normalization_issues"]
     )
     assert assessment["normalized_burden"]["source_normalized_phrase"] == (
@@ -597,7 +597,7 @@ def test_build_projection_render_repairs_twice_per_night_from_primary_candidate(
 
     assessment = artifact_row["clinical_assessment"]
     assert (
-        "frequency_rate_operands_repaired_from_primary_candidate"
+        "frequency_rate_values_repaired_from_primary_candidate"
         in assessment["normalization_issues"]
     )
     assert assessment["normalized_burden"]["count_low"] == 2.0
@@ -640,7 +640,7 @@ def test_build_projection_render_repairs_each_night_from_primary_candidate() -> 
 
     assessment = artifact_row["clinical_assessment"]
     assert (
-        "frequency_rate_operands_repaired_from_primary_candidate"
+        "frequency_rate_values_repaired_from_primary_candidate"
         in assessment["normalization_issues"]
     )
     assert assessment["normalized_burden"]["count_low"] == 1.0
@@ -683,7 +683,7 @@ def test_build_projection_render_repairs_twice_nightly_from_primary_candidate() 
 
     assessment = artifact_row["clinical_assessment"]
     assert (
-        "frequency_rate_operands_repaired_from_primary_candidate"
+        "frequency_rate_values_repaired_from_primary_candidate"
         in assessment["normalization_issues"]
     )
     assert assessment["normalized_burden"]["count_low"] == 2.0
@@ -726,7 +726,7 @@ def test_build_projection_render_repairs_three_seizures_nightly_from_primary_can
 
     assessment = artifact_row["clinical_assessment"]
     assert (
-        "frequency_rate_operands_repaired_from_primary_candidate"
+        "frequency_rate_values_repaired_from_primary_candidate"
         in assessment["normalization_issues"]
     )
     assert assessment["normalized_burden"]["count_low"] == 3.0
@@ -737,7 +737,8 @@ def test_build_projection_render_repairs_three_seizures_nightly_from_primary_can
     assert artifact_row["final_rendered_label"]["rendered_label"] == "3 per day"
 
 
-def test_build_projection_render_repairs_several_occasions_each_week_from_primary_candidate() -> None:
+def test_build_projection_render_repairs_several_occasions_each_week_from_primary_candidate(
+) -> None:
     row = {
         "source_row_index": 31,
         "split": "validation",
@@ -762,14 +763,17 @@ def test_build_projection_render_repairs_several_occasions_each_week_from_primar
         candidate_sets={
             31: _candidate_set(
                 31,
-                evidence="Brief staring spells with loss of awareness on several occasions each week.",
+                evidence=(
+                    "Brief staring spells with loss of awareness on several "
+                    "occasions each week."
+                ),
             )
         },
     )
 
     assessment = artifact_row["clinical_assessment"]
     assert (
-        "frequency_rate_operands_repaired_from_primary_candidate"
+        "frequency_rate_values_repaired_from_primary_candidate"
         in assessment["normalization_issues"]
     )
     assert assessment["normalized_burden"]["vague_count"] == "multiple"
@@ -804,14 +808,17 @@ def test_build_projection_render_repairs_most_weeks_from_primary_candidate() -> 
         candidate_sets={
             32: _candidate_set(
                 32,
-                evidence="Focal aware seizures most weeks, occasionally progressing to focal impaired awareness.",
+                evidence=(
+                    "Focal aware seizures most weeks, occasionally progressing "
+                    "to focal impaired awareness."
+                ),
             )
         },
     )
 
     assessment = artifact_row["clinical_assessment"]
     assert (
-        "frequency_rate_operands_repaired_from_primary_candidate"
+        "frequency_rate_values_repaired_from_primary_candidate"
         in assessment["normalization_issues"]
     )
     assert assessment["normalized_burden"]["vague_count"] == "multiple"
@@ -853,7 +860,7 @@ def test_build_projection_render_repairs_several_seizures_each_week_as_weekly_no
 
     assessment = artifact_row["clinical_assessment"]
     assert (
-        "frequency_rate_operands_repaired_from_primary_candidate"
+        "frequency_rate_values_repaired_from_primary_candidate"
         in assessment["normalization_issues"]
     )
     assert assessment["normalized_burden"]["vague_count"] == "multiple"
@@ -861,7 +868,8 @@ def test_build_projection_render_repairs_several_seizures_each_week_as_weekly_no
     assert artifact_row["final_rendered_label"]["rendered_label"] == "multiple per week"
 
 
-def test_build_projection_render_repairs_several_seizures_typical_month_from_primary_candidate() -> None:
+def test_build_projection_render_repairs_several_seizures_typical_month_from_primary_candidate(
+) -> None:
     row = {
         "source_row_index": 34,
         "split": "validation",
@@ -893,7 +901,7 @@ def test_build_projection_render_repairs_several_seizures_typical_month_from_pri
 
     assessment = artifact_row["clinical_assessment"]
     assert (
-        "frequency_rate_operands_repaired_from_primary_candidate"
+        "frequency_rate_values_repaired_from_primary_candidate"
         in assessment["normalization_issues"]
     )
     assert assessment["normalized_burden"]["vague_count"] == "multiple"
@@ -933,7 +941,7 @@ def test_build_projection_render_repairs_many_events_every_year_from_primary_can
 
     assessment = artifact_row["clinical_assessment"]
     assert (
-        "frequency_rate_operands_repaired_from_primary_candidate"
+        "frequency_rate_values_repaired_from_primary_candidate"
         in assessment["normalization_issues"]
     )
     assert "vague_frequency_with_explicit_time_period" in assessment["normalization_issues"]
@@ -975,10 +983,14 @@ def test_build_projection_render_relative_only_trend_stays_unrendered() -> None:
     assessment = artifact_row["clinical_assessment"]
     assert "relative_change_without_current_baseline" in assessment["normalization_issues"]
     assert artifact_row["final_rendered_label"]["rendered_label"] is None
-    assert "frequency_rate_operands_incomplete" in artifact_row["projection_decision"]["projection_issues"]
+    assert (
+        "frequency_rate_values_incomplete"
+        in artifact_row["projection_decision"]["projection_issues"]
+    )
 
 
-def test_build_projection_render_conditional_only_trigger_missed_medication_stays_unrendered() -> None:
+def test_build_projection_render_conditional_only_trigger_missed_medication_stays_unrendered(
+) -> None:
     row = {
         "source_row_index": 37,
         "split": "validation",
@@ -1011,7 +1023,10 @@ def test_build_projection_render_conditional_only_trigger_missed_medication_stay
     assessment = artifact_row["clinical_assessment"]
     assert "conditional_only_trigger_without_baseline" in assessment["normalization_issues"]
     assert artifact_row["final_rendered_label"]["rendered_label"] is None
-    assert "frequency_rate_operands_incomplete" in artifact_row["projection_decision"]["projection_issues"]
+    assert (
+        "frequency_rate_values_incomplete"
+        in artifact_row["projection_decision"]["projection_issues"]
+    )
 
 
 def test_build_projection_render_conditional_only_trigger_sleep_stays_unrendered() -> None:
@@ -1047,7 +1062,10 @@ def test_build_projection_render_conditional_only_trigger_sleep_stays_unrendered
     assessment = artifact_row["clinical_assessment"]
     assert "conditional_only_trigger_without_baseline" in assessment["normalization_issues"]
     assert artifact_row["final_rendered_label"]["rendered_label"] is None
-    assert "frequency_rate_operands_incomplete" in artifact_row["projection_decision"]["projection_issues"]
+    assert (
+        "frequency_rate_values_incomplete"
+        in artifact_row["projection_decision"]["projection_issues"]
+    )
 
 
 def test_build_projection_render_repairs_diary_prefixed_numeric_date_list() -> None:
@@ -1082,7 +1100,7 @@ def test_build_projection_render_repairs_diary_prefixed_numeric_date_list() -> N
 
     assessment = artifact_row["clinical_assessment"]
     assert (
-        "frequency_rate_operands_repaired_from_primary_candidate"
+        "frequency_rate_values_repaired_from_primary_candidate"
         in assessment["normalization_issues"]
     )
     assert assessment["normalized_burden"]["count_low"] == 5.0
@@ -1125,7 +1143,7 @@ def test_build_projection_render_repairs_named_month_date_list() -> None:
 
     assessment = artifact_row["clinical_assessment"]
     assert (
-        "frequency_rate_operands_repaired_from_primary_candidate"
+        "frequency_rate_values_repaired_from_primary_candidate"
         in assessment["normalization_issues"]
     )
     assert assessment["normalized_burden"]["count_low"] == 5.0
@@ -1267,7 +1285,8 @@ def test_build_projection_render_repairs_previous_month_active_rate_over_current
     assert artifact_row["final_rendered_label"]["rendered_label"] == "multiple per month"
 
 
-def test_build_projection_render_repairs_last_month_active_rate_over_so_far_this_month_zero() -> None:
+def test_build_projection_render_repairs_last_month_active_rate_over_so_far_this_month_zero(
+) -> None:
     row = {
         "source_row_index": 44,
         "split": "validation",
@@ -1310,7 +1329,8 @@ def test_build_projection_render_repairs_last_month_active_rate_over_so_far_this
     assert artifact_row["final_rendered_label"]["rendered_label"] == "multiple per month"
 
 
-def test_build_projection_render_prioritizes_major_recent_relapse_over_background_aura_rate() -> None:
+def test_build_projection_render_prioritizes_major_recent_relapse_over_background_aura_rate(
+) -> None:
     row = {
         "source_row_index": 45,
         "split": "validation",
@@ -1374,7 +1394,8 @@ def test_build_projection_render_prioritizes_major_recent_relapse_over_backgroun
                         event_type="seizure",
                         frequency=FrequencyDetails(
                             source_phrase=(
-                                "interictal brief auras occurring approximately once or twice per week"
+                                "interictal brief auras occurring approximately "
+                                "once or twice per week"
                             )
                         ),
                         temporality="current",
@@ -1382,7 +1403,8 @@ def test_build_projection_render_prioritizes_major_recent_relapse_over_backgroun
                         assertion_status="asserted",
                         evidence_span=EvidenceSpan(
                             text=(
-                                "He describes interictal brief auras occurring approximately once or "
+                                "He describes interictal brief auras occurring "
+                                "approximately once or "
                                 "twice per week."
                             ),
                             start_char=65,

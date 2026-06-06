@@ -13,6 +13,7 @@ VerificationRouteFamily = Literal[
     "seizure_free_conflict",
     "seizure_free_proxy_evidence_overreach",
     "cluster_axis_ambiguity",
+    "unresolved_cluster_cadence_with_per_cluster_burden",
     "medication_cadence_ambiguity",
     "cyclic_window_without_event_count",
     "selected_evidence_missing_exact_trace",

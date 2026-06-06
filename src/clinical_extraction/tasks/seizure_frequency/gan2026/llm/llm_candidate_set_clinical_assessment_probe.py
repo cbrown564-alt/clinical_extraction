@@ -22,9 +22,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.candidate_set 
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.clinical_assessment import (
     SCHEMA_VERSION,
     AggregationPolicy,
+    AntecedentReference,
     AssessmentKind,
     ClinicalAssessment,
-    AntecedentReference,
     ComputedDuration,
     DateReference,
     NormalizedBurden,
@@ -68,7 +68,7 @@ class AssessmentDraftBurden(BaseModel):
 
     The final ClinicalAssessment still uses the strict NormalizedBurden contract.
     This draft only preserves the source-near phrase; deterministic assembly owns
-    parsed operands.
+    parsed values.
     """
 
     model_config = ConfigDict(extra="ignore")
@@ -197,7 +197,7 @@ def build_assessment_inputs(
             ),
             (
                 "Do not perform parser-like normalization. Deterministic assembly owns "
-                "count, range, period, interval, duration, and cluster operand parsing."
+                "count, range, period, interval, duration, and cluster value parsing."
             ),
             (
                 "Use primary_candidate_ids only for facts that determine the "
@@ -880,7 +880,15 @@ def _best_frequency_override_candidate(
             burden
             for burden, issues in parsed_burdens
             if _is_renderable_frequency_burden(burden)
-            and not any(issue for issue in issues if issue != "vague_count")
+            and not any(
+                issue
+                for issue in issues
+                if issue
+                not in {
+                    "vague_count",
+                    "vague_frequency_with_explicit_time_period",
+                }
+            )
         ]
         if not renderable:
             continue
@@ -981,7 +989,7 @@ def normalize_assessment_burden(
     *,
     candidate_set: CandidateSet,
 ) -> tuple[NormalizedBurden, list[str]]:
-    """Deterministically parse source-near assessment burden operands."""
+    """Deterministically parse source-near assessment burden values."""
 
     primary_candidates = _candidates_by_ids(candidate_set, draft.primary_candidate_ids)
     source_phrase = _normalization_source_phrase(draft, primary_candidates)
@@ -1005,7 +1013,7 @@ def normalize_assessment_burden(
                 issues.extend(
                     [
                         *rate_issues,
-                        "frequency_rate_operands_repaired_from_primary_candidate",
+                        "frequency_rate_values_repaired_from_primary_candidate",
                         *repair_issues,
                     ]
                 )
@@ -1212,7 +1220,13 @@ def _extract_same_note_since_then_antecedent(
             )
             if anchor is None:
                 continue
-            candidates.append((_clean_phrase(_antecedent_source_phrase(context, phrase)), anchor, issues))
+            candidates.append(
+                (
+                    _clean_phrase(_antecedent_source_phrase(context, phrase)),
+                    anchor,
+                    issues,
+                )
+            )
 
     deduped: list[tuple[str, DateReference, list[str]]] = []
     seen: set[tuple[str, str]] = set()
@@ -1405,7 +1419,7 @@ def _frequency_burden(source_phrase: str) -> tuple[NormalizedBurden, list[str]]:
     )
     if label is None:
         return NormalizedBurden(source_normalized_phrase=source_phrase), [
-            "frequency_rate_operands_unparsed"
+            "frequency_rate_values_unparsed"
         ]
     burden, issues = _burden_from_label(label, source_phrase=source_phrase)
     if (
@@ -1501,7 +1515,7 @@ def _cluster_burden(
     )
     if label is None:
         return NormalizedBurden(source_normalized_phrase=source_phrase), [
-            "cluster_frequency_operands_unparsed"
+            "cluster_frequency_values_unparsed"
         ]
     burden, issues = _cluster_burden_from_label(label, source_phrase=source_phrase)
     return burden, issues
@@ -2281,7 +2295,7 @@ def _cluster_burden_from_label(
     )
     if not match:
         return NormalizedBurden(source_normalized_phrase=source_phrase), [
-            "cluster_label_operands_unparsed"
+            "cluster_label_values_unparsed"
         ]
     count_low, count_high, count_issue = _parse_label_range(match.group("count"))
     period_low, period_high, period_issue = _parse_label_range(
@@ -2322,7 +2336,7 @@ def _rate_burden_from_label(
     )
     if not match:
         return NormalizedBurden(source_normalized_phrase=source_phrase), [
-            "frequency_label_operands_unparsed"
+            "frequency_label_values_unparsed"
         ]
     count_low, count_high, count_issue = _parse_label_range(match.group("count"))
     period_low, period_high, period_issue = _parse_label_range(
@@ -2355,7 +2369,7 @@ def _seizure_free_burden_from_label(
     )
     if not match:
         return NormalizedBurden(source_normalized_phrase=source_phrase), [
-            "seizure_free_label_operands_unparsed"
+            "seizure_free_label_values_unparsed"
         ]
     low, high, issue = _parse_label_range(match.group("count"))
     return (

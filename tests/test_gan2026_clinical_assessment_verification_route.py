@@ -53,15 +53,15 @@ def test_score_wrong_alone_does_not_route() -> None:
     assert route.score_context["purist_correct"] is False
 
 
-def test_cluster_operand_gaps_route_as_cluster_axis_ambiguity() -> None:
+def test_cluster_value_gaps_route_as_cluster_axis_ambiguity() -> None:
     route = verification_route.route_decision_for_row(
         source_row_index=12,
         projection_decision=_projection(
             projection_kind="cluster_frequency",
             aggregation_policy="cluster_axis",
             projection_issues=[
-                "cluster_frequency_operands_unparsed",
-                "cluster_cadence_operands_incomplete",
+                "cluster_frequency_values_unparsed",
+                "cluster_cadence_values_incomplete",
             ],
         ),
         final_rendered_label=_rendered(None, ["projection_semantics_missing"]),
@@ -79,8 +79,8 @@ def test_medication_cadence_routes_as_specific_family() -> None:
             projection_kind="cluster_frequency",
             aggregation_policy="primary_with_context",
             projection_issues=[
-                "cluster_frequency_operands_unparsed",
-                "cluster_cadence_operands_incomplete",
+                "cluster_frequency_values_unparsed",
+                "cluster_cadence_values_incomplete",
                 "medication_cadence_ambiguity",
             ],
         ),
@@ -92,21 +92,26 @@ def test_medication_cadence_routes_as_specific_family() -> None:
     assert route.route_families == ["medication_cadence_ambiguity"]
 
 
-def test_unknown_cadence_cluster_projection_does_not_route() -> None:
+def test_unknown_cadence_cluster_projection_routes_as_unresolved_cluster_burden() -> None:
     route = verification_route.route_decision_for_row(
         source_row_index=1317,
         projection_decision=_projection(
             projection_kind="cluster_frequency",
             aggregation_policy="single_fact",
             projection_basis="unknown_cadence_cluster_burden",
-            projection_issues=["cluster_frequency_operands_unparsed"],
+            projection_issues=[
+                "cluster_frequency_values_unparsed",
+                "cluster_cadence_unknown_with_per_cluster_burden",
+            ],
         ),
         final_rendered_label=_rendered("unknown, multiple per cluster", []),
         score=_score(score_status="scored"),
     )
 
-    assert route.routed is False
-    assert route.route_families == []
+    assert route.routed is True
+    assert route.route_families == [
+        "unresolved_cluster_cadence_with_per_cluster_burden"
+    ]
 
 
 def test_cyclic_window_without_event_count_routes_as_specific_family() -> None:
@@ -116,8 +121,8 @@ def test_cyclic_window_without_event_count_routes_as_specific_family() -> None:
             projection_kind="cluster_frequency",
             aggregation_policy="single_fact",
             projection_issues=[
-                "cluster_frequency_operands_unparsed",
-                "cluster_cadence_operands_incomplete",
+                "cluster_frequency_values_unparsed",
+                "cluster_cadence_values_incomplete",
                 "cyclic_window_without_event_count",
             ],
         ),
@@ -135,7 +140,7 @@ def test_missing_exact_selected_evidence_trace_routes_as_specific_family() -> No
         projection_decision=_projection(
             projection_kind="frequency_rate",
             aggregation_policy="single_fact",
-            projection_issues=["frequency_rate_operands_incomplete"],
+            projection_issues=["frequency_rate_values_incomplete"],
             selected_evidence_status={
                 "exact_trace": False,
                 "source_id_status": "invalid",
@@ -208,7 +213,7 @@ def test_conditional_only_trigger_routes_as_specific_family() -> None:
             aggregation_policy="single_fact",
             projection_issues=[
                 "conditional_only_trigger_without_baseline",
-                "frequency_rate_operands_incomplete",
+                "frequency_rate_values_incomplete",
             ],
         ),
         final_rendered_label=_rendered(None, ["projection_semantics_missing"]),
@@ -227,7 +232,7 @@ def test_relative_only_trend_routes_as_specific_family() -> None:
             aggregation_policy="single_fact",
             projection_issues=[
                 "relative_change_without_current_baseline",
-                "frequency_rate_operands_incomplete",
+                "frequency_rate_values_incomplete",
             ],
         ),
         final_rendered_label=_rendered(None, ["projection_semantics_missing"]),
@@ -340,7 +345,7 @@ def test_build_verification_route_artifact_summarizes_routes() -> None:
             _score_row(
                 20,
                 _projection("cluster_frequency", "cluster_axis", ["llm:20:1"], [
-                    "cluster_cadence_operands_incomplete"
+                    "cluster_cadence_values_incomplete"
                 ]),
                 _rendered(None, ["projection_semantics_missing"]),
                 _score(score_status="not_scored_null_rendered_label"),
