@@ -2072,3 +2072,446 @@ Next resume point after concrete-frequency precedence:
     repair where appropriate;
   - update artifacts so projection owner distinguishes rate, cluster, boundary,
     and benchmark-only renderer decisions.
+
+### Projection Ownership Split Decision
+
+- Decision: split projection ownership now instead of keeping the broad
+  `clinical_assessment_projection` / `final_label_renderer` attribution as the
+  conceptual owner.
+- Rationale:
+  - the current owner names obscure whether a scorer-facing label came from a
+    rate policy, cluster policy, boundary policy, or benchmark-only rendering;
+  - the split is a schema/provenance correction, not score tuning;
+  - row-specific policy decisions such as cluster fallback, unknown-cadence
+    cluster sentinels, mixed-window addition, and medication-cadence ambiguity
+    should be made only after ownership is explicit.
+- Implementation implication:
+  - the projection/render artifact may remain the orchestration wrapper, but
+    each emitted projection/render decision must carry a specific
+    `projection_owner` and rule/policy id.
+- Deprecated as conceptual owners:
+  - `clinical_assessment_projection`;
+  - `final_label_renderer`.
+- Canonical conceptual owners for the next implementation pass:
+  - `rate_projection_policy`;
+  - `cluster_projection_policy`;
+  - `boundary_projection_policy`;
+  - `benchmark_renderer`.
+- Projection/render boundary decision:
+  - when a `cluster_frequency` assessment has cluster cadence but lacks
+    events-per-cluster burden, emitting a simple rate label is owned by
+    `cluster_projection_policy`, not `benchmark_renderer`;
+  - rationale: treating cluster cadence as scorer-facing seizure cadence changes
+    the benchmark-facing interpretation of an incomplete cluster state. It is a
+    substantive projection policy, not label-formatting syntax.
+- Cluster fallback policy decision:
+  - keep `cluster_cadence_without_size -> simple rate` enabled, but rename and
+    narrow it as an explicit cluster projection rule such as
+    `cluster_cadence_as_event_rate_when_size_absent_v0`;
+  - allowed only when cluster cadence is clear and current, events-per-cluster
+    burden is absent rather than contradictory, and the evidence does not
+    describe medication cadence or another non-event cadence;
+  - block and route ambiguous cluster-axis cases instead of rendering;
+  - emit `projection_owner = cluster_projection_policy` and the specific rule
+    id on affected rows.
+- Row 1317 / unknown-cadence cluster sentinel decision:
+  - superseded by the later decision to deliberately allow unknown-cadence
+    cluster burden under a named cluster projection policy;
+  - original conservative note retained for audit context: the Gan sentinel is
+    not formatting-only and must be owned by `cluster_projection_policy`, not
+    `benchmark_renderer`.
+- Row 744 / mixed-window vague addition decision:
+  - do not add a deterministic policy to prefer a dominant vague weekly burden
+    over lower-frequency GTC context in this pass;
+  - keep row 744 routed as `mixed_window_or_vague_addition` with no
+    scorer-facing projection label;
+  - rationale: dominant vague burden selection would mix selector and
+    projection responsibilities. Mixed-window, vague-plus-concrete, or
+    event-scope-uncertain addition remains verifier or abstention territory.
+- Row 5476 / medication-cadence ambiguity decision:
+  - keep medication-cadence ambiguity blocked from projection;
+  - refine the route family away from generic `cluster_axis_ambiguity` toward
+    `medication_cadence_ambiguity` or `non_event_cadence_ambiguity`;
+  - rationale: cadence evidence may describe clobazam/rescue-medication use
+    rather than seizure or seizure-cluster occurrence. Projection must not turn
+    medication cadence into seizure frequency.
+
+### Projection Ownership Split Implementation V1
+
+- Implemented owner-aware projection/render contracts:
+  - schema version: `gan2026_projection_render_v1`;
+  - projection policy id:
+    `gan2026_clinical_assessment_projection_owner_split_v1`;
+  - render policy id: `gan2026_projection_owner_aware_label_render_v1`.
+- `ProjectionDecision` and `FinalRenderedLabel` now carry:
+  - explicit `projection_owner`;
+  - explicit `projection_rule_id`;
+  - component owner aligned to the conceptual projection owner rather than the
+    broad wrapper names.
+- Owner mapping in the validation250 mechanics artifact:
+  - `rate_projection_policy` owns frequency-rate operand projection;
+  - `cluster_projection_policy` owns cluster cadence/per-cluster projection and
+    the named cluster-cadence fallback;
+  - `boundary_projection_policy` owns seizure-free duration projection and
+    seizure-free duration-required nulls;
+  - `benchmark_renderer` owns unknown-frequency sentinel rendering.
+- Named cluster fallback rule:
+  - `cluster_cadence_as_event_rate_when_size_absent_v0`;
+  - rendered 6 validation250 rows, unchanged from V2 count, now explicitly
+    attributed to `cluster_projection_policy`.
+- Added deterministic `medication_cadence_ambiguity` projection issue when a
+  selected cluster-cadence candidate is actually medication/rescue-use cadence.
+- Added route family `medication_cadence_ambiguity`; route V2 now keeps row
+  5476 blocked from projection and routes it under the specific medication
+  cadence family rather than generic cluster-axis ambiguity.
+- Generated:
+  - `experiments/gan2026_clinical_assessment_projection_render_validation250_v3.jsonl`;
+  - `experiments/gan2026_clinical_assessment_projection_render_validation250_v3.json`;
+  - `experiments/gan2026_clinical_assessment_projection_render_validation250_v3.md`;
+  - `experiments/gan2026_clinical_assessment_projection_score_validation250_v2.jsonl`;
+  - `experiments/gan2026_clinical_assessment_projection_score_validation250_v2.json`;
+  - `experiments/gan2026_clinical_assessment_projection_score_validation250_v2.md`;
+  - `experiments/gan2026_validation250_verification_route_v2.jsonl`;
+  - `experiments/gan2026_validation250_verification_route_v2.json`;
+  - `experiments/gan2026_validation250_verification_route_v2.md`.
+- Projection/render V3 summary:
+  - rows: 250;
+  - projection rows: 247;
+  - rendered-label rows: 204;
+  - null rendered-label rows: 43;
+  - projection owner counts: 173 `rate_projection_policy`, 16
+    `cluster_projection_policy`, 41 `boundary_projection_policy`, and 17
+    `benchmark_renderer`;
+  - new issue count: 1 `medication_cadence_ambiguity`.
+- Score-policy V2 over projection/render V3:
+  - scored rows: 204;
+  - non-scored rows: 46;
+  - exact normalized-label matches on scored rows: 179/204 (0.8775);
+  - purist-correct scored rows: 194/204 (0.951);
+  - pragmatic-correct scored rows: 199/204 (0.9755).
+- Verification-route V2 summary:
+  - routed rows: 7;
+  - route family counts: 4 `cluster_axis_ambiguity`, 1
+    `medication_cadence_ambiguity`, 1 `mixed_window_or_vague_addition`, and 1
+    `multiple_current_primary_facts`;
+  - routed rows: 744, 1317, 3468, 3469, 3493, 3534, and 5476.
+- Verification:
+  `$env:PYTHONPATH='src'; .venv/Scripts/python.exe -m pytest tests/test_gan2026_clinical_assessment_projection_render.py tests/test_gan2026_clinical_assessment_projection_score.py tests/test_gan2026_clinical_assessment_verification_route.py tests/test_gan2026_llm_candidate_set_clinical_assessment_probe.py -q`
+  passed with 37 tests.
+  `$env:PYTHONPATH='src'; .venv/Scripts/python.exe -m ruff check src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/projection_render.py src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/clinical_assessment_projection_render.py src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/verification_route.py src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/clinical_assessment_verification_route.py tests/test_gan2026_clinical_assessment_projection_render.py tests/test_gan2026_clinical_assessment_verification_route.py`
+  passed.
+
+Next resume point after ownership split V1:
+
+1. Inspect the remaining 4 `cluster_axis_ambiguity` rows under route V2:
+   1317, 3468, 3469, and 3493.
+2. Decide whether row 3534 should remain routed as
+   `multiple_current_primary_facts` or receive a named selector/assessment
+   refinement.
+3. Keep score-policy V2 fixed while making any further mechanics decisions.
+
+### Unknown-Cadence Cluster Burden Decision
+
+- Decision: deliberately allow unknown-cadence cluster burden as a named cluster
+  projection policy instead of leaving all such rows routed/null.
+- Canonical term: `Unknown-Cadence Cluster Burden`.
+- Ownership:
+  - `cluster_projection_policy`, not `benchmark_renderer`;
+  - the rule must have an explicit rule id before emitting a scorer-facing
+    sentinel such as `unknown, multiple per cluster`.
+- Initial motivating row:
+  - row 1317, where the source supports multiple short episodes inside a
+    single-day cluster but does not support recurrence cadence.
+
+### Unknown-Cadence Cluster Burden Implementation V0
+
+- Implemented cluster projection rule:
+  `unknown_cadence_multiple_per_cluster_v0`.
+- The rule emits scorer-facing label `unknown, multiple per cluster` only when:
+  - the selected primary candidate is `cluster_frequency`;
+  - event type is `seizure` or `seizure_like_event`;
+  - source-near cluster details support vague multiple events per cluster;
+  - normalized cluster cadence is absent;
+  - the selected evidence is not medication/rescue-use cadence;
+  - no competing renderable current frequency-rate candidate is present.
+- Guardrail added after inspection:
+  - row 1694 already has renderable typed cluster cadence and
+    events-per-cluster operands, so it must remain
+    `cluster_cadence_with_events_per_cluster_v0` rather than being converted to
+    unknown-cadence sentinel.
+- Generated:
+  - `experiments/gan2026_clinical_assessment_projection_render_validation250_v4.jsonl`;
+  - `experiments/gan2026_clinical_assessment_projection_render_validation250_v4.json`;
+  - `experiments/gan2026_clinical_assessment_projection_render_validation250_v4.md`;
+  - `experiments/gan2026_clinical_assessment_projection_score_validation250_v3.jsonl`;
+  - `experiments/gan2026_clinical_assessment_projection_score_validation250_v3.json`;
+  - `experiments/gan2026_clinical_assessment_projection_score_validation250_v3.md`;
+  - `experiments/gan2026_validation250_verification_route_v3.jsonl`;
+  - `experiments/gan2026_validation250_verification_route_v3.json`;
+  - `experiments/gan2026_validation250_verification_route_v3.md`.
+- Projection/render V4 effects versus V3:
+  - rendered-label rows: 204 -> 205;
+  - null rendered-label rows: 43 -> 42;
+  - `unknown_cadence_multiple_per_cluster_v0`: 1 row;
+  - `cluster_cadence_operands_required_v0`: 5 -> 4;
+  - row 1317 now renders `unknown, multiple per cluster`.
+- Score-policy V3 over projection/render V4:
+  - scored rows: 205;
+  - non-scored rows: 45;
+  - exact normalized-label matches on scored rows: 180/205 (0.878);
+  - purist-correct scored rows: 195/205 (0.9512);
+  - pragmatic-correct scored rows: 200/205 (0.9756).
+- Verification-route V3:
+  - routed rows: 6;
+  - route family counts: 3 `cluster_axis_ambiguity`, 1
+    `medication_cadence_ambiguity`, 1 `mixed_window_or_vague_addition`, and 1
+    `multiple_current_primary_facts`;
+  - row 1317 is no longer routed because the named cluster projection policy
+    resolved the unknown-cadence burden;
+  - remaining `cluster_axis_ambiguity` rows are 3468, 3469, and 3493.
+- Verification:
+  `$env:PYTHONPATH='src'; .venv/Scripts/python.exe -m pytest tests/test_gan2026_clinical_assessment_projection_render.py tests/test_gan2026_clinical_assessment_projection_score.py tests/test_gan2026_clinical_assessment_verification_route.py tests/test_gan2026_llm_candidate_set_clinical_assessment_probe.py -q`
+  passed with 41 tests.
+  `$env:PYTHONPATH='src'; .venv/Scripts/python.exe -m ruff check src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/projection_render.py src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/clinical_assessment_projection_render.py src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/verification_route.py src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/clinical_assessment_verification_route.py tests/test_gan2026_clinical_assessment_projection_render.py tests/test_gan2026_clinical_assessment_verification_route.py`
+  passed.
+
+Next resume point after unknown-cadence cluster rule:
+
+1. Decide whether cyclic/perimenstrual vulnerability-window rows 3468, 3469,
+   and 3493 should remain routed/null or receive a separate named policy.
+2. Keep the unknown-cadence sentinel rule restricted to supported
+   events-per-cluster burden; do not apply it to cyclic windows without event
+   counts.
+
+### Cyclic Vulnerability Window Decision
+
+- Decision: keep cyclic/perimenstrual vulnerability-window rows routed/null for
+  now rather than adding a projection policy.
+- Canonical term: `Cyclic Vulnerability Window`.
+- Motivating rows:
+  - row 3468: seizures happen perimenstrually only, days -2 to +2;
+  - row 3469: seizures happen perimenstrually only, days -3 to +3;
+  - row 3493: seizure-like events cluster around menstrual period, roughly
+    three days before to three days after.
+- Rationale:
+  - these statements identify a recurring vulnerability window, not the number
+    of events within the window;
+  - projecting them to a frequency would invent count/burden precision;
+  - they must not use the unknown-cadence cluster sentinel because
+    events-per-cluster burden is absent.
+
+### Cyclic Window Route Split V0
+
+- Implemented `cyclic_window_without_event_count` as a specific
+  verification-route family.
+- Projection/render now emits projection issue
+  `cyclic_window_without_event_count` for cyclic/perimenstrual cluster-framed
+  rows that lack event count or burden.
+- Route priority:
+  - `medication_cadence_ambiguity` first;
+  - `cyclic_window_without_event_count` second;
+  - generic `cluster_axis_ambiguity` only for unresolved cluster-axis gaps that
+    do not match a more specific family.
+- Generated:
+  - `experiments/gan2026_clinical_assessment_projection_render_validation250_v5.jsonl`;
+  - `experiments/gan2026_clinical_assessment_projection_render_validation250_v5.json`;
+  - `experiments/gan2026_clinical_assessment_projection_render_validation250_v5.md`;
+  - `experiments/gan2026_clinical_assessment_projection_score_validation250_v4.jsonl`;
+  - `experiments/gan2026_clinical_assessment_projection_score_validation250_v4.json`;
+  - `experiments/gan2026_clinical_assessment_projection_score_validation250_v4.md`;
+  - `experiments/gan2026_validation250_verification_route_v4.jsonl`;
+  - `experiments/gan2026_validation250_verification_route_v4.json`;
+  - `experiments/gan2026_validation250_verification_route_v4.md`.
+- Projection/render V5:
+  - render counts unchanged from V4;
+  - `cyclic_window_without_event_count`: 3 projection issue rows.
+- Score-policy V4:
+  - unchanged from V3: 205 scored rows and 45 non-scored rows.
+- Verification-route V4:
+  - routed rows: 6;
+  - route family counts: 3 `cyclic_window_without_event_count`, 1
+    `medication_cadence_ambiguity`, 1 `mixed_window_or_vague_addition`, and 1
+    `multiple_current_primary_facts`;
+  - generic `cluster_axis_ambiguity` count is now 0 on validation250 route V4.
+- Verification:
+  `$env:PYTHONPATH='src'; .venv/Scripts/python.exe -m pytest tests/test_gan2026_clinical_assessment_projection_render.py tests/test_gan2026_clinical_assessment_projection_score.py tests/test_gan2026_clinical_assessment_verification_route.py tests/test_gan2026_llm_candidate_set_clinical_assessment_probe.py -q`
+  passed with 42 tests.
+  `$env:PYTHONPATH='src'; .venv/Scripts/python.exe -m ruff check src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/projection_render.py src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/clinical_assessment_projection_render.py src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/verification_route.py src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/clinical_assessment_verification_route.py tests/test_gan2026_clinical_assessment_projection_render.py tests/test_gan2026_clinical_assessment_verification_route.py`
+  passed.
+
+Next resume point after cyclic-window split:
+
+1. Review row 744 `mixed_window_or_vague_addition`.
+2. Review row 3534 `multiple_current_primary_facts`.
+3. Review row 5476 `medication_cadence_ambiguity` only if we want a verifier
+   action policy; projection remains blocked.
+
+### Dominant Vague Current Burden Policy V0
+
+- Decision: add a named policy for row 744 rather than keeping it routed/null.
+- Canonical term: `Dominant Vague Current Burden`.
+- Rule id: `dominant_vague_current_burden_v0`.
+- Ownership:
+  - `rate_projection_policy`;
+  - not additive arithmetic and not benchmark-renderer formatting.
+- Guardrails:
+  - applies only to `frequency_rate` assessments with `additive_same_window`
+    source policy;
+  - candidate evidence must derive a vague high-frequency label such as
+    `multiple per week` through the existing selected-evidence derivation
+    surface;
+  - lower-frequency contextual candidates must also derive parseable labels;
+  - the vague label must mechanically dominate the lower-frequency context;
+  - medication/rescue-use cadence is excluded;
+  - selected/recent or current primary candidates only.
+- Implementation detail:
+  - selected-evidence derivation input now normalizes dash variants before
+    parsing, so `tonic-clonic` and `tonic–clonic` evidence behave the same.
+- Generated:
+  - `experiments/gan2026_clinical_assessment_projection_render_validation250_v6.jsonl`;
+  - `experiments/gan2026_clinical_assessment_projection_render_validation250_v6.json`;
+  - `experiments/gan2026_clinical_assessment_projection_render_validation250_v6.md`;
+  - `experiments/gan2026_clinical_assessment_projection_score_validation250_v5.jsonl`;
+  - `experiments/gan2026_clinical_assessment_projection_score_validation250_v5.json`;
+  - `experiments/gan2026_clinical_assessment_projection_score_validation250_v5.md`;
+  - `experiments/gan2026_validation250_verification_route_v5.jsonl`;
+  - `experiments/gan2026_validation250_verification_route_v5.json`;
+  - `experiments/gan2026_validation250_verification_route_v5.md`.
+- Projection/render V6 effects versus V5:
+  - rendered-label rows: 205 -> 206;
+  - null rendered-label rows: 42 -> 41;
+  - `dominant_vague_current_burden_v0`: 1 row;
+  - row 744 now renders `multiple per week`.
+- Score-policy V5 over projection/render V6:
+  - scored rows: 206;
+  - non-scored rows: 44;
+  - exact normalized-label matches on scored rows: 181/206 (0.8786);
+  - purist-correct scored rows: 196/206 (0.9515);
+  - pragmatic-correct scored rows: 201/206 (0.9757).
+- Verification-route V5:
+  - routed rows: 5;
+  - route family counts: 3 `cyclic_window_without_event_count`, 1
+    `medication_cadence_ambiguity`, and 1 `multiple_current_primary_facts`;
+  - `mixed_window_or_vague_addition` count is now 0 on validation250 route V5.
+- Verification:
+  `$env:PYTHONPATH='src'; .venv/Scripts/python.exe -m pytest tests/test_gan2026_clinical_assessment_projection_render.py tests/test_gan2026_clinical_assessment_projection_score.py tests/test_gan2026_clinical_assessment_verification_route.py tests/test_gan2026_llm_candidate_set_clinical_assessment_probe.py -q`
+  passed with 44 tests.
+  `$env:PYTHONPATH='src'; .venv/Scripts/python.exe -m ruff check src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/projection_render.py src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/clinical_assessment_projection_render.py src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/verification_route.py src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/clinical_assessment_verification_route.py tests/test_gan2026_clinical_assessment_projection_render.py tests/test_gan2026_clinical_assessment_verification_route.py`
+  passed.
+
+Next resume point after dominant vague burden policy:
+
+1. Review row 3534 `multiple_current_primary_facts`.
+2. Review row 5476 `medication_cadence_ambiguity` only if a verifier/action
+   policy is needed; projection remains blocked.
+
+### Seizure-Free Proxy Evidence Overreach Block V0
+
+- Decision: block seizure-free projection when selected evidence is proxy-only
+  improvement rather than explicit no-seizure/no-event evidence.
+- Canonical term: `Seizure-Free Proxy Evidence Overreach`.
+- Rule id: `seizure_free_proxy_evidence_block_v0`.
+- Route family: `seizure_free_proxy_evidence_overreach`.
+- Ownership:
+  - `boundary_projection_policy`;
+  - not renderer formatting and not score-triggered repair.
+- Guardrails:
+  - explicit no-seizure/no-event/seizure-free evidence may still render;
+  - proxy-only evidence such as no rescue medication, no injury, no admission,
+    better control, or conditional future breakthrough-event planning must not
+    render a seizure-free duration;
+  - unresolved selected source ids contribute to the overreach block when no
+    explicit seizure-free evidence is present.
+- Motivating row:
+  - row 3534 previously rendered `seizure free for 7 month` from evidence about
+    rescue medication/injuries/admissions not being required and conditional
+    breakthrough-event planning; gold was `unknown`.
+- Generated:
+  - `experiments/gan2026_clinical_assessment_projection_render_validation250_v7.jsonl`;
+  - `experiments/gan2026_clinical_assessment_projection_render_validation250_v7.json`;
+  - `experiments/gan2026_clinical_assessment_projection_render_validation250_v7.md`;
+  - `experiments/gan2026_clinical_assessment_projection_score_validation250_v6.jsonl`;
+  - `experiments/gan2026_clinical_assessment_projection_score_validation250_v6.json`;
+  - `experiments/gan2026_clinical_assessment_projection_score_validation250_v6.md`;
+  - `experiments/gan2026_validation250_verification_route_v6.jsonl`;
+  - `experiments/gan2026_validation250_verification_route_v6.json`;
+  - `experiments/gan2026_validation250_verification_route_v6.md`.
+- Projection/render V7 effects versus V6:
+  - rendered-label rows: 206 -> 205;
+  - null rendered-label rows: 41 -> 42;
+  - `seizure_free_proxy_evidence_block_v0`: 1 row;
+  - `seizure_free_duration_projection_v0`: 17 -> 16;
+  - row 3534 now renders null with issue
+    `seizure_free_proxy_evidence_overreach`.
+- Score-policy V6 over projection/render V7:
+  - scored rows: 205;
+  - non-scored rows: 45;
+  - exact normalized-label matches on scored rows: 181/205 (0.8829);
+  - purist-correct scored rows: 196/205 (0.9561);
+  - pragmatic-correct scored rows: 201/205 (0.9805).
+- Verification-route V6:
+  - routed rows: 5;
+  - route family counts: 3 `cyclic_window_without_event_count`, 1
+    `medication_cadence_ambiguity`, and 1
+    `seizure_free_proxy_evidence_overreach`;
+  - `multiple_current_primary_facts` count is now 0 on validation250 route V6;
+  - all routed rows are null-rendered risk families.
+- Verification:
+  `$env:PYTHONPATH='src'; .venv/Scripts/python.exe -m pytest tests/test_gan2026_clinical_assessment_projection_render.py tests/test_gan2026_clinical_assessment_projection_score.py tests/test_gan2026_clinical_assessment_verification_route.py tests/test_gan2026_llm_candidate_set_clinical_assessment_probe.py -q`
+  passed with 47 tests.
+  `$env:PYTHONPATH='src'; .venv/Scripts/python.exe -m ruff check src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/projection_render.py src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/clinical_assessment_projection_render.py src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/verification_route.py src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/clinical_assessment_verification_route.py tests/test_gan2026_clinical_assessment_projection_render.py tests/test_gan2026_clinical_assessment_verification_route.py`
+  passed.
+
+Next resume point after seizure-free proxy block:
+
+1. Review row 5476 `medication_cadence_ambiguity` only if a verifier/action
+   policy is needed; projection remains blocked.
+2. Decide whether the remaining cyclic-window rows should simply stay routed
+   until a verifier action layer exists.
+
+### Current Resume Point For Next Session
+
+Active mechanics artifacts:
+
+- Projection/render:
+  `experiments/gan2026_clinical_assessment_projection_render_validation250_v7.jsonl`
+- Score-policy audit:
+  `experiments/gan2026_clinical_assessment_projection_score_validation250_v6.jsonl`
+- Verification-route report:
+  `experiments/gan2026_validation250_verification_route_v6.jsonl`
+
+Current route V6 state:
+
+- routed rows: 5;
+- all routed rows are null-rendered risk families;
+- no scored wrong routed row remains;
+- route families:
+  - 3 `cyclic_window_without_event_count` rows: 3468, 3469, 3493;
+  - 1 `seizure_free_proxy_evidence_overreach` row: 3534;
+  - 1 `medication_cadence_ambiguity` row: 5476.
+
+Resolved since the ownership split:
+
+- row 1317 now renders `unknown, multiple per cluster` through
+  `unknown_cadence_multiple_per_cluster_v0`;
+- row 744 now renders `multiple per week` through
+  `dominant_vague_current_burden_v0`;
+- row 3534 no longer renders seizure-free and is blocked by
+  `seizure_free_proxy_evidence_block_v0`;
+- generic `cluster_axis_ambiguity`, `mixed_window_or_vague_addition`, and
+  `multiple_current_primary_facts` are all at 0 on route V6.
+
+Recommended next question:
+
+- Should route V6 remain as a verifier/action backlog, or should any route
+  family receive a deterministic action policy now?
+
+Recommended answer:
+
+- Keep projection blocked for all 5 routed rows.
+- Do not add more projection rules until a separate verifier/action artifact is
+  defined.
+- If continuing implementation, define a `VerificationDecision`/action artifact
+  over route V6 with actions such as `abstain`, `human_review`, or
+  comparator-preservation policy. Do not make the verifier invent replacement
+  scorer-facing labels.

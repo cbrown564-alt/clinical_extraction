@@ -1,0 +1,89 @@
+{
+  "artifact_kind": "gan2026_clinical_assessment_projection_render",
+  "assessment_artifact_path": "experiments\\gan2026_candidate_set_clinical_assessment_probe_live_validation250_gpt41mini_v3nested_v2.jsonl",
+  "candidate_set_artifact_path": "experiments\\gan2026_validation250_candidate_set_v3_nested_dedupe.jsonl",
+  "claim_boundary": "Projection/render mechanics only over saved validation250 artifacts. This artifact renders labels when deterministic v0 policy can do so, but scoring is disabled and no benchmark-comparable claim is made.",
+  "row_count": 250,
+  "schema_version": "gan2026_projection_render_v1",
+  "summary": {
+    "issue_counts": {
+      "Value error, frequency_rate requires primary_candidate_ids": 1,
+      "Value error, supporting_candidate_ids and rejected_candidate_ids overlap": 1,
+      "additive_frequency_period_mismatch": 1,
+      "cluster_assessment_promoted_to_frequency_rate": 6,
+      "cluster_cadence_operands_incomplete": 4,
+      "cluster_frequency_operands_unparsed": 5,
+      "cyclic_window_without_event_count": 3,
+      "frequency_rate_operands_incomplete": 14,
+      "frequency_rate_operands_unparsed": 13,
+      "medication_cadence_ambiguity": 1,
+      "projection_semantics_missing": 42,
+      "rejected_candidate_ids:unknown_candidate_id:llm:5567:5": 1,
+      "seizure_free_duration_required": 24,
+      "seizure_free_duration_unparsed": 7,
+      "vague_count": 28
+    },
+    "null_rendered_label_rows": 42,
+    "null_rendered_source_row_indices": [
+      744,
+      854,
+      1695,
+      1794,
+      2609,
+      2907,
+      2932,
+      2965,
+      2992,
+      3015,
+      3118,
+      3137,
+      3297,
+      3356,
+      3371,
+      3468,
+      3469,
+      3493,
+      3507,
+      3512,
+      4345,
+      4690,
+      4694,
+      4700,
+      4709
+    ],
+    "projection_kind_counts": {
+      "cluster_frequency": 16,
+      "frequency_rate": 173,
+      "seizure_free": 41,
+      "unknown_frequency": 17
+    },
+    "projection_owner_counts": {
+      "benchmark_renderer": 17,
+      "boundary_projection_policy": 41,
+      "cluster_projection_policy": 16,
+      "rate_projection_policy": 173
+    },
+    "projection_rows": 247,
+    "projection_rule_counts": {
+      "cluster_cadence_as_event_rate_when_size_absent_v0": 6,
+      "cluster_cadence_operands_required_v0": 4,
+      "cluster_cadence_with_events_per_cluster_v0": 5,
+      "frequency_rate_operands_v0": 173,
+      "seizure_free_duration_projection_v0": 17,
+      "seizure_free_duration_required_v0": 24,
+      "unknown_cadence_multiple_per_cluster_v0": 1,
+      "unknown_frequency_sentinel_render_v0": 17
+    },
+    "render_basis_counts": {
+      "cluster_cadence_with_events_per_cluster": 5,
+      "cluster_cadence_without_size": 6,
+      "cluster_frequency": 4,
+      "frequency_rate": 173,
+      "seizure_free_duration": 41,
+      "unknown_cadence_cluster_burden": 1,
+      "unknown_frequency_internal_state": 17
+    },
+    "rendered_label_rows": 205,
+    "row_issue_rows": 3
+  }
+}

@@ -205,3 +205,44 @@ benchmark-facing label convention while preserving the input clinical state.
 It may emit scorer sentinels or Gan-specific cluster syntax, but it must not
 choose a different clinical fact.
 _Avoid_: clinical selector, semantic repair, final-label policy
+
+**Cluster Cadence As Event Rate**: A narrow cluster projection policy where a
+clear current cluster cadence may render as a simple seizure-frequency rate
+when events-per-cluster burden is absent. It is owned by
+`cluster_projection_policy`, must not apply to ambiguous cluster axes,
+medication cadence, or contradictory per-cluster evidence, and should carry an
+explicit rule id.
+_Avoid_: benchmark renderer fallback, cluster erasure, medication cadence
+
+**Medication Cadence Ambiguity**: A verification-route family where cadence
+evidence may describe medication use, rescue dosing, or another non-event
+schedule rather than seizure or seizure-cluster occurrence. Projection must not
+convert this cadence into seizure frequency without reliable event evidence.
+_Avoid_: cluster-axis ambiguity, frequency-rate projection, medication cadence as seizure frequency
+
+**Unknown-Cadence Cluster Burden**: A cluster projection state where
+events-per-cluster burden is supported, but cluster recurrence cadence is not
+known. It may render to an explicit unknown-cadence cluster sentinel only under
+a named `cluster_projection_policy` rule; it is not benchmark-renderer
+formatting.
+_Avoid_: cluster cadence fallback, simple rate projection, hidden sentinel rendering
+
+**Cyclic Vulnerability Window**: A clinical statement that events occur within
+a recurring biological or contextual window, such as a perimenstrual interval,
+without specifying the number of events in that window. It is not itself a
+seizure-frequency count or cluster-burden operand.
+_Avoid_: cluster frequency, unknown-cadence cluster burden, inferred event count
+
+**Dominant Vague Current Burden**: A rate projection policy where a vague but
+current high-frequency burden, such as events on most weekdays, may be selected
+over lower-frequency contextual burden when both labels are derivable and the
+vague burden mechanically dominates. It is a named projection policy, not
+additive arithmetic.
+_Avoid_: mixed-window addition, hidden selector preference, score-only rescue
+
+**Seizure-Free Proxy Evidence Overreach**: A boundary projection block where
+the selected evidence supports only proxy improvement, such as no rescue
+medication, no injury, no admission, better control, or conditional future
+breakthrough-event planning, rather than explicit no-seizure or no-event
+evidence. It must not render a seizure-free duration.
+_Avoid_: seizure-free state, duration projection, rescue-medication absence as seizure freedom

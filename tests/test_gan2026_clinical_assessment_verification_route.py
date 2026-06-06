@@ -20,6 +20,24 @@ def test_null_rendered_label_alone_does_not_route() -> None:
     assert route.score_context["score_status"] == "not_scored_null_rendered_label"
 
 
+def test_seizure_free_proxy_evidence_routes_as_specific_family() -> None:
+    route = verification_route.route_decision_for_row(
+        source_row_index=3534,
+        projection_decision=_projection(
+            projection_kind="seizure_free",
+            aggregation_policy="seizure_free_state",
+            source_candidate_ids=["llm:3534:2", "llm:3534:1"],
+            projection_basis="seizure_free_proxy_evidence",
+            projection_issues=["seizure_free_proxy_evidence_overreach"],
+        ),
+        final_rendered_label=_rendered(None, ["projection_semantics_missing"]),
+        score=_score(score_status="not_scored_null_rendered_label"),
+    )
+
+    assert route.routed is True
+    assert route.route_families == ["seizure_free_proxy_evidence_overreach"]
+
+
 def test_score_wrong_alone_does_not_route() -> None:
     route = verification_route.route_decision_for_row(
         source_row_index=11,
@@ -54,6 +72,63 @@ def test_cluster_operand_gaps_route_as_cluster_axis_ambiguity() -> None:
     assert route.route_families == ["cluster_axis_ambiguity"]
 
 
+def test_medication_cadence_routes_as_specific_family() -> None:
+    route = verification_route.route_decision_for_row(
+        source_row_index=5476,
+        projection_decision=_projection(
+            projection_kind="cluster_frequency",
+            aggregation_policy="primary_with_context",
+            projection_issues=[
+                "cluster_frequency_operands_unparsed",
+                "cluster_cadence_operands_incomplete",
+                "medication_cadence_ambiguity",
+            ],
+        ),
+        final_rendered_label=_rendered(None, ["projection_semantics_missing"]),
+        score=_score(score_status="not_scored_null_rendered_label"),
+    )
+
+    assert route.routed is True
+    assert route.route_families == ["medication_cadence_ambiguity"]
+
+
+def test_unknown_cadence_cluster_projection_does_not_route() -> None:
+    route = verification_route.route_decision_for_row(
+        source_row_index=1317,
+        projection_decision=_projection(
+            projection_kind="cluster_frequency",
+            aggregation_policy="single_fact",
+            projection_basis="unknown_cadence_cluster_burden",
+            projection_issues=["cluster_frequency_operands_unparsed"],
+        ),
+        final_rendered_label=_rendered("unknown, multiple per cluster", []),
+        score=_score(score_status="scored"),
+    )
+
+    assert route.routed is False
+    assert route.route_families == []
+
+
+def test_cyclic_window_without_event_count_routes_as_specific_family() -> None:
+    route = verification_route.route_decision_for_row(
+        source_row_index=3469,
+        projection_decision=_projection(
+            projection_kind="cluster_frequency",
+            aggregation_policy="single_fact",
+            projection_issues=[
+                "cluster_frequency_operands_unparsed",
+                "cluster_cadence_operands_incomplete",
+                "cyclic_window_without_event_count",
+            ],
+        ),
+        final_rendered_label=_rendered(None, ["projection_semantics_missing"]),
+        score=_score(score_status="not_scored_null_rendered_label"),
+    )
+
+    assert route.routed is True
+    assert route.route_families == ["cyclic_window_without_event_count"]
+
+
 def test_additive_vague_or_mixed_window_routes() -> None:
     route = verification_route.route_decision_for_row(
         source_row_index=13,
@@ -72,6 +147,26 @@ def test_additive_vague_or_mixed_window_routes() -> None:
 
     assert route.routed is True
     assert route.route_families == ["mixed_window_or_vague_addition"]
+
+
+def test_dominant_vague_projection_resolves_mixed_window_route() -> None:
+    route = verification_route.route_decision_for_row(
+        source_row_index=744,
+        projection_decision=_projection(
+            projection_kind="frequency_rate",
+            aggregation_policy="additive_same_window",
+            projection_basis="dominant_vague_current_burden",
+            projection_issues=[
+                "vague_count",
+                "additive_frequency_period_mismatch",
+            ],
+        ),
+        final_rendered_label=_rendered("multiple per week", []),
+        score=_score(score_status="scored"),
+    )
+
+    assert route.routed is False
+    assert route.route_families == []
 
 
 def test_multiple_primary_nonadditive_routes() -> None:
@@ -141,12 +236,16 @@ def _projection(
     aggregation_policy: str,
     source_candidate_ids: list[str] | None = None,
     projection_issues: list[str] | None = None,
-    projection_basis: str = "frequency_rate",
+    projection_basis: str | None = None,
 ) -> dict:
     return {
         "source_row_index": 1,
         "projection_kind": projection_kind,
-        "projection_basis": projection_basis,
+        "projection_basis": projection_basis or (
+            "cluster_frequency"
+            if projection_kind == "cluster_frequency"
+            else "frequency_rate"
+        ),
         "source_aggregation_policy": aggregation_policy,
         "source_candidate_ids": source_candidate_ids or ["llm:1:1"],
         "projection_issues": projection_issues or [],

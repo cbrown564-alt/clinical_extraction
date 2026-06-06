@@ -99,25 +99,54 @@ def route_decision_for_row(
         families.append("seizure_free_conflict")
         reasons.append("seizure_free conflict issue present")
 
-    if projection_kind == "cluster_frequency" and (
+    if "seizure_free_proxy_evidence_overreach" in issue_set:
+        families.append("seizure_free_proxy_evidence_overreach")
+        reasons.append(
+            "seizure-free projection is based on proxy or conditional evidence"
+        )
+
+    if "medication_cadence_ambiguity" in issue_set:
+        families.append("medication_cadence_ambiguity")
+        reasons.append(
+            "cadence evidence may describe medication or rescue use rather than events"
+        )
+    elif "cyclic_window_without_event_count" in issue_set:
+        families.append("cyclic_window_without_event_count")
+        reasons.append(
+            "cyclic vulnerability window is present without event count or burden"
+        )
+    elif (
+        projection_kind == "cluster_frequency"
+        and rendered_label is None
+        and projection_basis == "cluster_frequency"
+        and (
         "cluster_frequency_operands_unparsed" in issue_set
         or "cluster_cadence_operands_incomplete" in issue_set
+        )
     ):
         families.append("cluster_axis_ambiguity")
         reasons.append("cluster projection has unparsed or incomplete cluster-axis operands")
 
-    if aggregation_policy == "additive_same_window" and (
+    if (
+        rendered_label is None
+        and aggregation_policy == "additive_same_window"
+        and (
         "additive_frequency_period_mismatch" in issue_set
         or "vague_count" in issue_set
         or "frequency_rate_operands_incomplete" in issue_set
+        )
     ):
         families.append("mixed_window_or_vague_addition")
         reasons.append("additive assessment includes mixed-window, vague, or incomplete operands")
 
-    if len(source_candidate_ids) > 1 and aggregation_policy not in {
-        "additive_same_window",
-        "cluster_axis",
-    }:
+    if (
+        "seizure_free_proxy_evidence_overreach" not in issue_set
+        and len(source_candidate_ids) > 1
+        and aggregation_policy not in {
+            "additive_same_window",
+            "cluster_axis",
+        }
+    ):
         families.append("multiple_current_primary_facts")
         reasons.append(
             "multiple primary candidate ids are present outside an additive "
@@ -225,7 +254,7 @@ def write_report(
 ) -> None:
     summary = metadata["summary"]
     lines = [
-        "# Gan 2026 Verification Route V0",
+        "# Gan 2026 Verification Route Mechanics",
         "",
         str(metadata["claim_boundary"]),
         "",

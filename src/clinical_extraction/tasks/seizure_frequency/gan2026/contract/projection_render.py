@@ -6,9 +6,9 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-SCHEMA_VERSION = "gan2026_projection_render_v0"
-PROJECTION_POLICY_ID = "gan2026_clinical_assessment_projection_v0"
-RENDER_POLICY_ID = "gan2026_final_label_renderer_v0"
+SCHEMA_VERSION = "gan2026_projection_render_v1"
+PROJECTION_POLICY_ID = "gan2026_clinical_assessment_projection_owner_split_v1"
+RENDER_POLICY_ID = "gan2026_projection_owner_aware_label_render_v1"
 SCORING_SCHEMA_VERSION = "gan2026_rendered_label_scoring_v0"
 SCORING_POLICY_ID = "gan2026_rendered_label_scoring_policy_v0"
 
@@ -21,6 +21,13 @@ ProjectionKind = Literal[
     "unresolved_multiple",
 ]
 
+ProjectionOwner = Literal[
+    "rate_projection_policy",
+    "cluster_projection_policy",
+    "boundary_projection_policy",
+    "benchmark_renderer",
+]
+
 
 class ProjectionDecision(BaseModel):
     """Benchmark-policy projection from a normalized clinical assessment."""
@@ -28,10 +35,10 @@ class ProjectionDecision(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     source_row_index: int
-    component_owner: Literal["clinical_assessment_projection"]
-    projection_policy_id: Literal["gan2026_clinical_assessment_projection_v0"] = (
-        PROJECTION_POLICY_ID
-    )
+    component_owner: ProjectionOwner
+    projection_policy_id: str = PROJECTION_POLICY_ID
+    projection_owner: ProjectionOwner
+    projection_rule_id: str
     projection_kind: ProjectionKind
     projection_basis: str
     projected_label_semantics: str
@@ -41,7 +48,7 @@ class ProjectionDecision(BaseModel):
     source_ids: list[str] = Field(default_factory=list)
     projection_issues: list[str] = Field(default_factory=list)
     clinical_or_policy: Literal["benchmark_policy"] = "benchmark_policy"
-    schema_version: Literal["gan2026_projection_render_v0"] = SCHEMA_VERSION
+    schema_version: Literal["gan2026_projection_render_v1"] = SCHEMA_VERSION
 
 
 class FinalRenderedLabel(BaseModel):
@@ -50,14 +57,16 @@ class FinalRenderedLabel(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     source_row_index: int
-    component_owner: Literal["final_label_renderer"]
-    render_policy_id: Literal["gan2026_final_label_renderer_v0"] = RENDER_POLICY_ID
+    component_owner: ProjectionOwner
+    render_policy_id: str = RENDER_POLICY_ID
+    projection_owner: ProjectionOwner
+    projection_rule_id: str
     rendered_label: str | None
     render_basis: str
     render_issues: list[str] = Field(default_factory=list)
     scorer_facing: Literal[True] = True
     scoring_enabled: Literal[False] = False
-    schema_version: Literal["gan2026_projection_render_v0"] = SCHEMA_VERSION
+    schema_version: Literal["gan2026_projection_render_v1"] = SCHEMA_VERSION
 
 
 ScoreStatus = Literal[
