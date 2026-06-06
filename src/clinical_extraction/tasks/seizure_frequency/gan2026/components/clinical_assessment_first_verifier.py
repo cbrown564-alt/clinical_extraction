@@ -10,7 +10,7 @@ from typing import Any
 
 from pydantic import BaseModel, Field, ValidationError
 
-POLICY_ID = "gan2026_clinical_assessment_first_verifier_v0"
+POLICY_ID = "gan2026_clinical_assessment_first_verifier_v3_plain_task_prompt"
 SCHEMA_VERSION = "gan2026_clinical_assessment_first_verifier_output_v0"
 COMPONENT_OWNER = "llm_verifier"
 ALLOWED_ACTIONS = {"affirm", "reject", "abstain", "human_review"}

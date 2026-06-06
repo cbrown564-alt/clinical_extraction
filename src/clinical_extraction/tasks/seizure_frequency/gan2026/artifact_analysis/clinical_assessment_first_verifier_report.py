@@ -41,6 +41,15 @@ DEFAULT_EXPERIMENT_INPUT_JSON_PATH = Path(
 DEFAULT_EXPERIMENT_INPUT_REPORT_PATH = Path(
     "docs/research/gan2026_validation750_first_verifier_experiment_input_clean29_context_repair_v6_2026-06-06.md"
 )
+DEFAULT_MAIN_AMBIGUITY_INPUT_JSONL_PATH = Path(
+    "experiments/gan2026_validation750_first_verifier_experiment_input_main29_context_repair_v6_2026-06-06.jsonl"
+)
+DEFAULT_MAIN_AMBIGUITY_INPUT_JSON_PATH = Path(
+    "experiments/gan2026_validation750_first_verifier_experiment_input_main29_context_repair_v6_2026-06-06.json"
+)
+DEFAULT_MAIN_AMBIGUITY_INPUT_REPORT_PATH = Path(
+    "docs/research/gan2026_validation750_first_verifier_experiment_input_main29_context_repair_v6_2026-06-06.md"
+)
 
 CLAIM_BOUNDARY = (
     "saved validation-development verifier comparison packet only; no live verifier "
@@ -85,10 +94,28 @@ VERIFIER_OUTPUT_SCHEMA = {
     "replacement_rendered_label": "Null for the first experiment.",
 }
 VERIFIER_SYSTEM_PROMPT = (
-    "Review a routed seizure-frequency verification case using only the provided "
-    "row-local evidence packet. Decide whether to affirm, reject, abstain, or send "
-    "to human_review. Do not invent a new scorer-facing label, do not use gold or "
-    "score outcomes, and cite only provided candidate ids and source ids."
+    "You are reviewing one seizure-frequency case. Read only the information in "
+    "this packet. Your job is to choose one action: affirm, reject, abstain, or "
+    "human_review. Do not make up a new label or new frequency. Do not use any "
+    "information outside this packet. When you explain your answer, cite only the "
+    "candidate ids and source ids shown in the packet. "
+    "Choose reject when the proposed interpretation is directly contradicted by "
+    "other current evidence in the packet. Examples: ongoing seizures plus a "
+    "recent no-events statement, or a seizure-free claim that conflicts with "
+    "active current burden. "
+    "Choose abstain when the case is unresolved and there is no safe action to "
+    "take. Examples: time windows that cannot be combined safely, missing details "
+    "needed to decide the burden, or known combining problems without one clear answer. "
+    "Choose human_review when there are several plausible current seizure burdens "
+    "and a person needs to decide between them, even though there is no direct "
+    "contradiction. "
+    "Choose affirm only when one clear, explicit, well-supported current burden "
+    "stands out despite the flagged concerns in the case. "
+    "Do not choose affirm just because one candidate has the highest frequency "
+    "or is the most recent. "
+    "Use this order: reject for contradiction first, then abstain for no safe "
+    "action, then human_review for unresolved competing plausible burdens, and "
+    "affirm only for one clear supported answer."
 )
 
 
@@ -392,6 +419,100 @@ def write_clean_experiment_input_report(
     path.write_text("\n".join(lines), encoding="utf-8")
 
 
+def build_main_ambiguity_only_experiment_input(
+    rows: Sequence[Mapping[str, Any]],
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    included_rows = [
+        {
+            "artifact_kind": "gan2026_first_verifier_main_ambiguity_experiment_input_row",
+            "source_row_index": int(row["source_row_index"]),
+            "split": row.get("split", "validation"),
+            "split_manifest": row.get("split_manifest", "gan2026_split_v1"),
+            "route_bucket": row["route_bucket"],
+            "report_section": row["report_section"],
+            "provenance_sidecar_present": row["provenance_sidecar_present"],
+            "provenance_sidecar_families": list(
+                row.get("provenance_sidecar_families") or []
+            ),
+            "verifier_model_input": row["verifier_model_input"],
+            "appendix_policy": {
+                "main_score_table": True,
+                "appendix_only": False,
+            },
+        }
+        for row in rows
+        if row.get("route_bucket") == "verifier_eligible_ambiguity"
+    ]
+    included_rows.sort(key=lambda row: int(row["source_row_index"]))
+    return included_rows, {
+        "artifact_kind": "gan2026_first_verifier_main_ambiguity_experiment_input",
+        "claim_boundary": (
+            "Main-ambiguity-only verifier experiment input: the 29-row "
+            "mixed-window-or-vague-addition action-boundary surface only. "
+            "Appendix rows, provenance-only rows, gold labels, correctness fields, "
+            "and audit W->C/C->W counts are excluded from verifier-visible inputs."
+        ),
+        "date": "2026-06-06",
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "row_count": len(included_rows),
+        "metrics": {
+            "main_ambiguity_rows": len(included_rows),
+            "rows_excluded_from_clean56_surface": sum(
+                1 for row in rows if row.get("route_bucket") != "verifier_eligible_ambiguity"
+            ),
+        },
+        "decision": (
+            "ready_for_main_ambiguity_only_verifier_run"
+            if len(included_rows) == 29
+            else "shape_mismatch_do_not_run"
+        ),
+    }
+
+
+def write_main_ambiguity_only_experiment_input_report(
+    metadata: Mapping[str, Any],
+    path: Path,
+    *,
+    jsonl_path: Path = DEFAULT_MAIN_AMBIGUITY_INPUT_JSONL_PATH,
+    json_path: Path = DEFAULT_MAIN_AMBIGUITY_INPUT_JSON_PATH,
+) -> None:
+    metrics = metadata["metrics"]
+    lines = [
+        "# Gan 2026 Validation750 First Verifier Experiment Input Main29 V6",
+        "",
+        str(metadata["claim_boundary"]),
+        "",
+        "## Decision",
+        "",
+        f"`{metadata['decision']}`",
+        "",
+        "## Artifacts",
+        "",
+        f"- Row JSONL: `{jsonl_path}`",
+        f"- Summary JSON: `{json_path}`",
+        "",
+        "## Surface",
+        "",
+        "| Section | Rows |",
+        "| --- | ---: |",
+        f"| Main ambiguity core | {metrics['main_ambiguity_rows']} |",
+        (
+            "| Rows excluded from the broader clean56 surface | "
+            f"{metrics['rows_excluded_from_clean56_surface']} |"
+        ),
+        "",
+        "## Scope",
+        "",
+        "This packet is the action-boundary retuning surface only. It excludes the "
+        "abstain appendix, upstream-policy appendix, rendered policy-sensitive appendix, "
+        "and all provenance-only audit rows.",
+        "",
+    ]
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(lines), encoding="utf-8")
+
+
 def _build_first_verifier_row(
     route_row: Mapping[str, Any],
     decision_row: Mapping[str, Any],
@@ -623,6 +744,21 @@ def main(argv: Sequence[str] | None = None) -> int:
         type=Path,
         default=DEFAULT_EXPERIMENT_INPUT_REPORT_PATH,
     )
+    parser.add_argument(
+        "--main-ambiguity-input-jsonl-path",
+        type=Path,
+        default=DEFAULT_MAIN_AMBIGUITY_INPUT_JSONL_PATH,
+    )
+    parser.add_argument(
+        "--main-ambiguity-input-json-path",
+        type=Path,
+        default=DEFAULT_MAIN_AMBIGUITY_INPUT_JSON_PATH,
+    )
+    parser.add_argument(
+        "--main-ambiguity-input-report-path",
+        type=Path,
+        default=DEFAULT_MAIN_AMBIGUITY_INPUT_REPORT_PATH,
+    )
     args = parser.parse_args(argv)
 
     rows, metadata = build_first_verifier_report_rows(
@@ -650,6 +786,15 @@ def main(argv: Sequence[str] | None = None) -> int:
         args.clean_experiment_input_report_path,
         jsonl_path=args.clean_experiment_input_jsonl_path,
         json_path=args.clean_experiment_input_json_path,
+    )
+    main_rows, main_metadata = build_main_ambiguity_only_experiment_input(rows)
+    write_jsonl_rows(main_rows, args.main_ambiguity_input_jsonl_path)
+    write_summary_json(main_metadata, args.main_ambiguity_input_json_path)
+    write_main_ambiguity_only_experiment_input_report(
+        main_metadata,
+        args.main_ambiguity_input_report_path,
+        jsonl_path=args.main_ambiguity_input_jsonl_path,
+        json_path=args.main_ambiguity_input_json_path,
     )
     print(json.dumps(metadata["metrics"], sort_keys=True))
     return 0
