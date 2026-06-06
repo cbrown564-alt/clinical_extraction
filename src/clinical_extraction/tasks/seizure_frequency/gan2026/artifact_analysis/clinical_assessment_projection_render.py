@@ -79,15 +79,21 @@ def build_projection_render_artifact(
     candidate_sets: Mapping[int, CandidateSet],
     assessment_artifact_path: str = str(DEFAULT_ASSESSMENT_JSONL_PATH),
     candidate_set_artifact_path: str = str(DEFAULT_CANDIDATE_SET_JSONL_PATH),
+    disabled_ablation_switches: set[str] | frozenset[str] | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     rows = [
-        build_projection_render_row(row, candidate_sets=candidate_sets)
+        build_projection_render_row(
+            row,
+            candidate_sets=candidate_sets,
+            disabled_ablation_switches=disabled_ablation_switches,
+        )
         for row in assessment_rows
     ]
     return rows, summarize_rows(
         rows,
         assessment_artifact_path=assessment_artifact_path,
         candidate_set_artifact_path=candidate_set_artifact_path,
+        disabled_ablation_switches=disabled_ablation_switches,
     )
 
 
@@ -95,9 +101,11 @@ def build_projection_render_row(
     assessment_row: Mapping[str, Any],
     *,
     candidate_sets: Mapping[int, CandidateSet],
+    disabled_ablation_switches: set[str] | frozenset[str] | None = None,
 ) -> dict[str, Any]:
     source_row_index = int(assessment_row["source_row_index"])
     candidate_set = candidate_sets.get(source_row_index)
+    disabled_switches = frozenset(disabled_ablation_switches or ())
     parse_errors = list(assessment_row.get("parse_errors") or [])
     row_issues: list[str] = []
     clinical_assessment: ClinicalAssessment | None = None
@@ -108,6 +116,7 @@ def build_projection_render_row(
         clinical_assessment, assembly_issues = _reassemble_assessment(
             assessment_row,
             candidate_set=candidate_set,
+            disabled_ablation_switches=disabled_switches,
         )
         row_issues.extend(assembly_issues)
 
@@ -127,6 +136,7 @@ def build_projection_render_row(
         "schema_version": SCHEMA_VERSION,
         "projection_policy_id": PROJECTION_POLICY_ID,
         "render_policy_id": RENDER_POLICY_ID,
+        "disabled_ablation_switches": sorted(disabled_switches),
         "scoring_enabled": False,
         "claim_boundary": (
             "mechanics artifact from saved ClinicalAssessment and CandidateSet rows; "
@@ -195,6 +205,7 @@ def summarize_rows(
     *,
     assessment_artifact_path: str = str(DEFAULT_ASSESSMENT_JSONL_PATH),
     candidate_set_artifact_path: str = str(DEFAULT_CANDIDATE_SET_JSONL_PATH),
+    disabled_ablation_switches: set[str] | frozenset[str] | None = None,
 ) -> dict[str, Any]:
     projected = [row for row in rows if row.get("projection_decision")]
     rendered = [
@@ -235,11 +246,13 @@ def summarize_rows(
         ]
     )
     surface_label = f"validation{len(rows)}"
+    disabled_switches = sorted(disabled_ablation_switches or [])
     return {
         "artifact_kind": "gan2026_clinical_assessment_projection_render",
         "schema_version": SCHEMA_VERSION,
         "assessment_artifact_path": assessment_artifact_path,
         "candidate_set_artifact_path": candidate_set_artifact_path,
+        "disabled_ablation_switches": disabled_switches,
         "row_count": len(rows),
         "claim_boundary": (
             f"Projection/render mechanics only over saved {surface_label} artifacts. "
@@ -290,6 +303,7 @@ def write_report(
         f"- Summary JSON: `{json_path}`",
         f"- Assessment source: `{metadata['assessment_artifact_path']}`",
         f"- CandidateSet source: `{metadata['candidate_set_artifact_path']}`",
+        f"- Disabled ablation switches: `{metadata.get('disabled_ablation_switches') or []}`",
         "",
         "## Summary",
         "",
@@ -335,6 +349,7 @@ def _reassemble_assessment(
     row: Mapping[str, Any],
     *,
     candidate_set: CandidateSet,
+    disabled_ablation_switches: frozenset[str] = frozenset(),
 ) -> tuple[ClinicalAssessment | None, list[str]]:
     draft_payload = row.get("assessment_draft")
     if not isinstance(draft_payload, Mapping):
@@ -343,7 +358,11 @@ def _reassemble_assessment(
         draft = assessment_probe.AssessmentDraft.model_validate(draft_payload)
     except ValidationError as exc:
         return None, [f"assessment_draft_invalid:{error['msg']}" for error in exc.errors()]
-    return assessment_probe.assemble_clinical_assessment(draft, candidate_set=candidate_set)
+    return assessment_probe.assemble_clinical_assessment(
+        draft,
+        candidate_set=candidate_set,
+        disabled_ablation_switches=disabled_ablation_switches,
+    )
 
 
 def _project_label_semantics(
@@ -1078,6 +1097,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--jsonl-path", type=Path, default=DEFAULT_JSONL_PATH)
     parser.add_argument("--json-path", type=Path, default=DEFAULT_JSON_PATH)
     parser.add_argument("--report-path", type=Path, default=DEFAULT_REPORT_PATH)
+    parser.add_argument(
+        "--disable-ablation-switch",
+        action="append",
+        default=[],
+        help="Named reset-stage ablation switch to disable for this replay.",
+    )
     args = parser.parse_args(argv)
 
     candidate_sets = selector_probe.load_candidate_sets(args.candidate_set_jsonl)
@@ -1086,6 +1111,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         candidate_sets=candidate_sets,
         assessment_artifact_path=str(args.assessment_jsonl),
         candidate_set_artifact_path=str(args.candidate_set_jsonl),
+        disabled_ablation_switches=set(args.disable_ablation_switch),
     )
     write_jsonl_rows(rows, args.jsonl_path)
     write_summary_json(metadata, args.json_path)

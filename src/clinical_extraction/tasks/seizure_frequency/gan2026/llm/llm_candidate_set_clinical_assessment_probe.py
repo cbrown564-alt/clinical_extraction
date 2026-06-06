@@ -54,6 +54,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.selected_evidence impor
 PROMPT_VERSION = "gan2026_candidate_set_clinical_assessment_probe_v3"
 PIPELINE_FAMILY = "llm_candidate_set_clinical_assessment_probe"
 NORMALIZATION_POLICY_ID = "gan2026_clinical_assessment_normalization_v0"
+DISABLED_SWITCH_ISSUE_PREFIX = "ablation_switch_disabled:"
 DEFAULT_JSONL_PATH = Path(
     "experiments/gan2026_candidate_set_clinical_assessment_probe_validation25_gpt41mini_v0_2026-06-05.jsonl"
 )
@@ -331,11 +332,13 @@ def assemble_clinical_assessment(
     draft: AssessmentDraft | None,
     *,
     candidate_set: CandidateSet,
+    disabled_ablation_switches: set[str] | frozenset[str] | None = None,
 ) -> tuple[ClinicalAssessment | None, list[str]]:
     """Assemble a clinical assessment from model-owned fields."""
 
     if draft is None:
         return None, ["assessment_draft_missing"]
+    disabled_switches = frozenset(disabled_ablation_switches or ())
 
     draft, role_repair_issues = _repair_candidate_role_ids(draft)
     draft, override_issues = _apply_deterministic_assessment_overrides(
@@ -345,15 +348,21 @@ def assemble_clinical_assessment(
     draft, repair_issues = _apply_deterministic_assessment_repairs(
         draft,
         candidate_set=candidate_set,
+        disabled_ablation_switches=disabled_switches,
     )
     draft, post_repair_role_issues = _repair_candidate_role_ids(draft)
     errors = _validate_candidate_references(draft, candidate_set)
     normalized_burden, normalization_issues = normalize_assessment_burden(
         draft,
         candidate_set=candidate_set,
+        disabled_ablation_switches=disabled_switches,
     )
     seizure_free_instrumentation: SeizureFreeInstrumentation | None = None
-    if draft.assessment_kind == "seizure_free":
+    if (
+        draft.assessment_kind == "seizure_free"
+        and "normalize_seizure_free_duration_date_instrumentation"
+        not in disabled_switches
+    ):
         (
             normalized_burden,
             seizure_free_instrumentation,
@@ -364,6 +373,17 @@ def assemble_clinical_assessment(
             normalized_burden=normalized_burden,
         )
         normalization_issues.extend(instrumentation_issues)
+    elif (
+        draft.assessment_kind == "seizure_free"
+        and "normalize_seizure_free_duration_date_instrumentation"
+        in disabled_switches
+        and _is_unrenderable_seizure_free_burden(normalized_burden)
+    ):
+        normalization_issues.append(
+            _disabled_switch_issue(
+                "normalize_seizure_free_duration_date_instrumentation"
+            )
+        )
     normalization_issues = [
         *role_repair_issues,
         *override_issues,
@@ -475,6 +495,7 @@ def _apply_deterministic_assessment_repairs(
     draft: AssessmentDraft,
     *,
     candidate_set: CandidateSet,
+    disabled_ablation_switches: frozenset[str] = frozenset(),
 ) -> tuple[AssessmentDraft, list[str]]:
     """Repair recoverable model policy/role inconsistencies."""
 
@@ -503,6 +524,7 @@ def _apply_deterministic_assessment_repairs(
     repaired, multi_primary_repairs = _repair_multi_primary_nonadditive_policy(
         repaired,
         candidate_by_id=candidate_by_id,
+        disabled_ablation_switches=disabled_ablation_switches,
     )
     repairs.extend(multi_primary_repairs)
 
@@ -610,6 +632,7 @@ def _repair_multi_primary_nonadditive_policy(
     draft: AssessmentDraft,
     *,
     candidate_by_id: Mapping[str, ExtractedCandidate],
+    disabled_ablation_switches: frozenset[str] = frozenset(),
 ) -> tuple[AssessmentDraft, list[str]]:
     if len(draft.primary_candidate_ids) <= 1:
         return draft, []
@@ -630,7 +653,10 @@ def _repair_multi_primary_nonadditive_policy(
             draft.model_copy(update={"aggregation_policy": "additive_same_window"}),
             ["multi_primary_nonadditive_to_additive_same_window"],
         )
-    best_primary_id = _best_single_primary_candidate_id(primary_candidates)
+    best_primary_id = _best_single_primary_candidate_id(
+        primary_candidates,
+        disabled_ablation_switches=disabled_ablation_switches,
+    )
     if best_primary_id is None:
         return draft, ["multi_primary_nonadditive_unrepaired"]
     supporting_ids = [
@@ -647,8 +673,16 @@ def _repair_multi_primary_nonadditive_policy(
         if selected_primary is not None
         else draft.normalized_burden.source_normalized_phrase
     )
-    if selected_primary is not None and _is_major_recent_relapse_candidate(selected_primary):
+    if selected_primary is not None and _is_major_recent_relapse_candidate(
+        selected_primary
+    ):
         repair_issues = ["major_recent_relapse_over_background_frequency"]
+    elif "project_major_recent_relapse_over_background_frequency" in disabled_ablation_switches:
+        repair_issues = [
+            _disabled_switch_issue(
+                "project_major_recent_relapse_over_background_frequency"
+            )
+        ]
     else:
         repair_issues = ["multi_primary_nonadditive_demoted_to_supporting"]
     return (
@@ -759,16 +793,32 @@ def _same_frequency_window(candidates: Sequence[ExtractedCandidate]) -> bool:
 
 def _best_single_primary_candidate_id(
     candidates: Sequence[ExtractedCandidate],
+    *,
+    disabled_ablation_switches: frozenset[str] = frozenset(),
 ) -> str | None:
     if not candidates:
         return None
-    return max(candidates, key=_single_primary_priority).candidate_id
+    return max(
+        candidates,
+        key=lambda candidate: _single_primary_priority(
+            candidate,
+            disabled_ablation_switches=disabled_ablation_switches,
+        ),
+    ).candidate_id
 
 
-def _single_primary_priority(candidate: ExtractedCandidate) -> tuple[int, int, int, int]:
+def _single_primary_priority(
+    candidate: ExtractedCandidate,
+    *,
+    disabled_ablation_switches: frozenset[str] = frozenset(),
+) -> tuple[int, int, int, int]:
     phrase = candidate_source_phrase(candidate) or candidate.evidence_span.text
+    major_relapse_enabled = (
+        "project_major_recent_relapse_over_background_frequency"
+        not in disabled_ablation_switches
+    )
     return (
-        1 if _is_major_recent_relapse_candidate(candidate) else 0,
+        1 if major_relapse_enabled and _is_major_recent_relapse_candidate(candidate) else 0,
         1 if candidate.temporality in {"current", "recent"} else 0,
         1 if candidate.candidate_kind == "frequency_rate" else 0,
         1 if candidate.source_type == "deterministic_candidate" else 0,
@@ -988,6 +1038,7 @@ def normalize_assessment_burden(
     draft: AssessmentDraft,
     *,
     candidate_set: CandidateSet,
+    disabled_ablation_switches: frozenset[str] = frozenset(),
 ) -> tuple[NormalizedBurden, list[str]]:
     """Deterministically parse source-near assessment burden values."""
 
@@ -1005,9 +1056,15 @@ def normalize_assessment_burden(
             )
             issues.extend(additive_issues)
             return burden, issues
-        burden, rate_issues = _frequency_burden(source_phrase)
+        burden, rate_issues = _frequency_burden(
+            source_phrase,
+            disabled_ablation_switches=disabled_ablation_switches,
+        )
         if _is_unrenderable_frequency_burden(burden):
-            repaired = _frequency_burden_from_primary_candidates(primary_candidates)
+            repaired = _frequency_burden_from_primary_candidates(
+                primary_candidates,
+                disabled_ablation_switches=disabled_ablation_switches,
+            )
             if repaired is not None:
                 burden, repair_issues = repaired
                 issues.extend(
@@ -1380,7 +1437,11 @@ def _normalization_source_phrase(
     return _clean_phrase("; ".join(phrase for phrase in phrases if phrase))
 
 
-def _frequency_burden(source_phrase: str) -> tuple[NormalizedBurden, list[str]]:
+def _frequency_burden(
+    source_phrase: str,
+    *,
+    disabled_ablation_switches: frozenset[str] = frozenset(),
+) -> tuple[NormalizedBurden, list[str]]:
     if _is_relative_only_trend_phrase(source_phrase):
         return NormalizedBurden(source_normalized_phrase=source_phrase), [
             "relative_change_without_current_baseline"
@@ -1402,7 +1463,11 @@ def _frequency_burden(source_phrase: str) -> tuple[NormalizedBurden, list[str]]:
             source_phrase=source_phrase,
         )
         return burden, ["vague_frequency_with_explicit_time_period", *issues]
-    if _is_previous_month_active_rate_phrase(source_phrase):
+    if (
+        _is_previous_month_active_rate_phrase(source_phrase)
+        and "project_previous_active_month_over_current_month_zero"
+        not in disabled_ablation_switches
+    ):
         return (
             NormalizedBurden(
                 vague_count="multiple",
@@ -1413,6 +1478,16 @@ def _frequency_burden(source_phrase: str) -> tuple[NormalizedBurden, list[str]]:
             ),
             ["previous_month_active_rate_over_current_zero", "vague_count"],
         )
+    if (
+        _is_previous_month_active_rate_phrase(source_phrase)
+        and "project_previous_active_month_over_current_month_zero"
+        in disabled_ablation_switches
+    ):
+        return NormalizedBurden(source_normalized_phrase=source_phrase), [
+            _disabled_switch_issue(
+                "project_previous_active_month_over_current_month_zero"
+            )
+        ]
     label = _deterministic_label_from_source_phrase(
         source_phrase,
         preferred_kind=DeterministicCandidateKind.FREQUENCY_RATE,
@@ -1425,8 +1500,17 @@ def _frequency_burden(source_phrase: str) -> tuple[NormalizedBurden, list[str]]:
     if (
         not _is_unrenderable_frequency_burden(burden)
         and _is_explicit_summary_rate_phrase(source_phrase)
+        and "project_current_summary_rate_priority" not in disabled_ablation_switches
     ):
         issues = ["explicit_summary_rate_over_long_period_average", *issues]
+    elif (
+        not _is_unrenderable_frequency_burden(burden)
+        and _is_explicit_summary_rate_phrase(source_phrase)
+        and "project_current_summary_rate_priority" in disabled_ablation_switches
+    ):
+        return NormalizedBurden(source_normalized_phrase=source_phrase), [
+            _disabled_switch_issue("project_current_summary_rate_priority")
+        ]
     if _has_cluster_label(label):
         issues.append("frequency_rate_label_derivation_returned_cluster")
     if _has_seizure_free_label(label):
@@ -1436,13 +1520,18 @@ def _frequency_burden(source_phrase: str) -> tuple[NormalizedBurden, list[str]]:
 
 def _frequency_burden_from_primary_candidates(
     primary_candidates: Sequence[ExtractedCandidate],
+    *,
+    disabled_ablation_switches: frozenset[str] = frozenset(),
 ) -> tuple[NormalizedBurden, list[str]] | None:
     parsed: list[tuple[tuple[int, int], NormalizedBurden, list[str]]] = []
     for candidate in primary_candidates:
         if candidate.candidate_kind != "frequency_rate":
             continue
         for phrase in _candidate_parse_phrases(candidate):
-            burden, issues = _frequency_burden(phrase)
+            burden, issues = _frequency_burden(
+                phrase,
+                disabled_ablation_switches=disabled_ablation_switches,
+            )
             if _is_unrenderable_frequency_burden(burden):
                 continue
             parsed.append(
@@ -1456,6 +1545,10 @@ def _frequency_burden_from_primary_candidates(
         return None
     _score, burden, issues = max(parsed, key=lambda item: item[0])
     return burden, issues
+
+
+def _disabled_switch_issue(switch: str) -> str:
+    return f"{DISABLED_SWITCH_ISSUE_PREFIX}{switch}"
 
 
 def _additive_frequency_burden(

@@ -1242,6 +1242,54 @@ def test_build_projection_render_marks_current_summary_over_year_to_date_variant
     assert artifact_row["final_rendered_label"]["rendered_label"] == "1 per month"
 
 
+def test_build_projection_render_can_disable_current_summary_rate_priority() -> None:
+    row = {
+        "source_row_index": 143,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "frequency_rate",
+            "primary_candidate_ids": ["llm:143:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "single_fact",
+            "normalized_burden": {
+                "source_normalized_phrase": (
+                    "Year to date he has had only two focal seizures. "
+                    "Currently, his typical pattern is a focal seizure monthly."
+                )
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            143: _candidate_set(
+                143,
+                evidence=(
+                    "Year to date he has had only two focal seizures. "
+                    "Currently, his typical pattern is a focal seizure monthly."
+                ),
+            )
+        },
+        disabled_ablation_switches={"project_current_summary_rate_priority"},
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    assert "explicit_summary_rate_over_long_period_average" not in (
+        assessment["normalization_issues"]
+    )
+    assert (
+        "ablation_switch_disabled:project_current_summary_rate_priority"
+        in assessment["normalization_issues"]
+    )
+    assert artifact_row["final_rendered_label"]["rendered_label"] is None
+
+
 def test_build_projection_render_repairs_previous_month_active_rate_over_current_zero() -> None:
     row = {
         "source_row_index": 42,
@@ -1283,6 +1331,57 @@ def test_build_projection_render_repairs_previous_month_active_rate_over_current
     assert assessment["normalized_burden"]["vague_count"] == "multiple"
     assert assessment["normalized_burden"]["period_unit"] == "month"
     assert artifact_row["final_rendered_label"]["rendered_label"] == "multiple per month"
+
+
+def test_build_projection_render_can_disable_previous_month_active_rate_policy() -> None:
+    row = {
+        "source_row_index": 142,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "frequency_rate",
+            "primary_candidate_ids": ["llm:142:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "single_fact",
+            "normalized_burden": {
+                "source_normalized_phrase": (
+                    "There were a handful of short focal events during the previous month. "
+                    "In the current month to date, no events have been recorded."
+                )
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            142: _candidate_set(
+                142,
+                evidence=(
+                    "There were a handful of short focal events during the previous month. "
+                    "In the current month to date, no events have been recorded."
+                ),
+            )
+        },
+        disabled_ablation_switches={
+            "project_previous_active_month_over_current_month_zero"
+        },
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    assert "previous_month_active_rate_over_current_zero" not in (
+        assessment["normalization_issues"]
+    )
+    assert (
+        "ablation_switch_disabled:"
+        "project_previous_active_month_over_current_month_zero"
+        in assessment["normalization_issues"]
+    )
+    assert artifact_row["final_rendered_label"]["rendered_label"] is None
 
 
 def test_build_projection_render_repairs_last_month_active_rate_over_so_far_this_month_zero(
@@ -1426,6 +1525,109 @@ def test_build_projection_render_prioritizes_major_recent_relapse_over_backgroun
     assert assessment["normalized_burden"]["count_high"] == 3.0
     assert assessment["normalized_burden"]["period_unit"] == "day"
     assert artifact_row["final_rendered_label"]["rendered_label"] == "3 per day"
+
+
+def test_build_projection_render_can_disable_major_recent_relapse_priority() -> None:
+    row = {
+        "source_row_index": 145,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "frequency_rate",
+            "primary_candidate_ids": ["llm:145:1", "llm:145:2"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "primary_with_context",
+            "normalized_burden": {
+                "source_normalized_phrase": (
+                    "Yesterday he experienced three tonic-clonic seizures. "
+                    "He describes interictal brief auras occurring approximately "
+                    "once or twice per week."
+                )
+            },
+        },
+    }
+    candidate_set = CandidateSet(
+        source_row_index=145,
+        component_owner="candidate_set_union",
+        source_artifacts=["test"],
+        candidates=[
+            ExtractedCandidate(
+                candidate_id="llm:145:1",
+                component_owner="test",
+                source_type="llm_candidate",
+                source_artifact="test",
+                source_row_index=145,
+                candidate_kind="frequency_rate",
+                event_type="seizure",
+                frequency=FrequencyDetails(
+                    source_phrase="three tonic-clonic seizures yesterday"
+                ),
+                temporality="current",
+                certainty="certain",
+                assertion_status="asserted",
+                evidence_span=EvidenceSpan(
+                    text="Yesterday he experienced three tonic-clonic seizures.",
+                    start_char=0,
+                    end_char=54,
+                ),
+                source_ids=["note:145:span:0-54"],
+                clinical_or_policy="clinical",
+            ),
+            ExtractedCandidate(
+                candidate_id="llm:145:2",
+                component_owner="test",
+                source_type="llm_candidate",
+                source_artifact="test",
+                source_row_index=145,
+                candidate_kind="frequency_rate",
+                event_type="seizure",
+                frequency=FrequencyDetails(
+                    source_phrase=(
+                        "interictal brief auras occurring approximately "
+                        "once or twice per week"
+                    )
+                ),
+                temporality="current",
+                certainty="certain",
+                assertion_status="asserted",
+                evidence_span=EvidenceSpan(
+                    text=(
+                        "He describes interictal brief auras occurring approximately "
+                        "once or twice per week."
+                    ),
+                    start_char=56,
+                    end_char=141,
+                ),
+                source_ids=["note:145:span:56-141"],
+                clinical_or_policy="clinical",
+            ),
+        ],
+    )
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={145: candidate_set},
+        disabled_ablation_switches={
+            "project_major_recent_relapse_over_background_frequency"
+        },
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    assert assessment["primary_candidate_ids"] == ["llm:145:2"]
+    assert "major_recent_relapse_over_background_frequency" not in (
+        assessment["normalization_issues"]
+    )
+    assert (
+        "ablation_switch_disabled:project_major_recent_relapse_over_background_frequency"
+        in assessment["normalization_issues"]
+    )
+    assert artifact_row["final_rendered_label"]["rendered_label"] == (
+        "1 to 2 per week"
+    )
 
 
 def test_build_projection_render_marks_non_exact_selected_evidence_trace() -> None:
@@ -1652,6 +1854,57 @@ def test_build_projection_render_repairs_seizure_free_duration_from_primary_cand
     assert artifact_row["final_rendered_label"]["rendered_label"] == (
         "seizure free for 7 month"
     )
+
+
+def test_build_projection_render_can_disable_seizure_free_date_instrumentation() -> None:
+    row = {
+        "source_row_index": 126,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "seizure_free",
+            "primary_candidate_ids": ["llm:126:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "seizure_free_state",
+            "normalized_burden": {
+                "source_normalized_phrase": "no seizures since March 2025"
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            126: CandidateSet(
+                source_row_index=126,
+                component_owner="candidate_set_union",
+                source_artifacts=["test"],
+                row_context=_row_context("2026-06-06"),
+                candidates=[
+                    _seizure_free_candidate(
+                        126,
+                        "llm:126:1",
+                        "She has had no seizures since March 2025.",
+                    )
+                ],
+            )
+        },
+        disabled_ablation_switches={
+            "normalize_seizure_free_duration_date_instrumentation"
+        },
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    assert assessment["seizure_free_instrumentation"] is None
+    assert (
+        "ablation_switch_disabled:normalize_seizure_free_duration_date_instrumentation"
+        in assessment["normalization_issues"]
+    )
+    assert artifact_row["final_rendered_label"]["rendered_label"] is None
 
 
 def test_build_projection_render_instruments_seizure_free_since_date_from_row_context() -> None:

@@ -32,6 +32,15 @@ DEFAULT_JSON_PATH = Path(
 DEFAULT_REPORT_PATH = Path(
     "docs/research/gan2026_validation750_first_verifier_saved_comparison_context_repair_v6_2026-06-06.md"
 )
+DEFAULT_EXPERIMENT_INPUT_JSONL_PATH = Path(
+    "experiments/gan2026_validation750_first_verifier_experiment_input_clean29_context_repair_v6_2026-06-06.jsonl"
+)
+DEFAULT_EXPERIMENT_INPUT_JSON_PATH = Path(
+    "experiments/gan2026_validation750_first_verifier_experiment_input_clean29_context_repair_v6_2026-06-06.json"
+)
+DEFAULT_EXPERIMENT_INPUT_REPORT_PATH = Path(
+    "docs/research/gan2026_validation750_first_verifier_experiment_input_clean29_context_repair_v6_2026-06-06.md"
+)
 
 CLAIM_BOUNDARY = (
     "saved validation-development verifier comparison packet only; no live verifier "
@@ -70,7 +79,9 @@ VERIFIER_OUTPUT_SCHEMA = {
     "issue_flags": ["Verifier issue flags grounded in the provided row-local evidence."],
     "rationale": "Brief evidence-grounded rationale.",
     "proposed_rendered_label": "Nullable copy of the proposed rendered label from input.",
-    "final_rendered_label": "Null for the first experiment unless a later policy explicitly authorizes it.",
+    "final_rendered_label": (
+        "Null for the first experiment unless a later policy explicitly authorizes it."
+    ),
     "replacement_rendered_label": "Null for the first experiment.",
 }
 VERIFIER_SYSTEM_PROMPT = (
@@ -230,7 +241,10 @@ def write_report(
         "",
         f"- Clinical/policy rows: {metrics['clinical_policy_rows']}",
         f"- With provenance sidecar: {metrics['clinical_policy_rows_with_provenance_sidecar']}",
-        f"- Without provenance sidecar: {metrics['clinical_policy_rows_without_provenance_sidecar']}",
+        (
+            "- Without provenance sidecar: "
+            f"{metrics['clinical_policy_rows_without_provenance_sidecar']}"
+        ),
         "",
         "## Main Score Table Rows",
         "",
@@ -266,6 +280,114 @@ def write_report(
             "",
         ]
     )
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(lines), encoding="utf-8")
+
+
+def build_clean_first_verifier_experiment_input(
+    rows: Sequence[Mapping[str, Any]],
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Build the first verifier experiment surface without provenance-only rows."""
+
+    included_rows = [
+        {
+            "artifact_kind": "gan2026_first_verifier_clean_experiment_input_row",
+            "source_row_index": int(row["source_row_index"]),
+            "split": row.get("split", "validation"),
+            "split_manifest": row.get("split_manifest", "gan2026_split_v1"),
+            "route_bucket": row["route_bucket"],
+            "report_section": row["report_section"],
+            "provenance_sidecar_present": row["provenance_sidecar_present"],
+            "provenance_sidecar_families": list(
+                row.get("provenance_sidecar_families") or []
+            ),
+            "verifier_model_input": row["verifier_model_input"],
+            "appendix_policy": {
+                "main_score_table": row["route_bucket"] == "verifier_eligible_ambiguity",
+                "appendix_only": row["route_bucket"] != "verifier_eligible_ambiguity",
+            },
+        }
+        for row in rows
+        if row.get("route_bucket") != "provenance_only_audit"
+    ]
+    included_rows.sort(key=lambda row: int(row["source_row_index"]))
+    bucket_counts = Counter(str(row["route_bucket"]) for row in included_rows)
+    return included_rows, {
+        "artifact_kind": "gan2026_first_verifier_clean_experiment_input",
+        "claim_boundary": (
+            "First verifier experiment input surface only: 29-row ambiguity core "
+            "plus abstain/upstream-policy/rendered-policy appendices. Provenance-only "
+            "audit rows, gold labels, correctness fields, and audit W->C/C->W counts "
+            "are excluded from verifier-visible inputs."
+        ),
+        "date": "2026-06-06",
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "row_count": len(included_rows),
+        "metrics": {
+            "main_ambiguity_rows": bucket_counts["verifier_eligible_ambiguity"],
+            "abstain_appendix_rows": bucket_counts["abstain_exemplar"],
+            "upstream_policy_appendix_rows": bucket_counts["upstream_policy_appendix"],
+            "rendered_policy_sensitive_appendix_rows": bucket_counts[
+                "rendered_policy_sensitive_appendix"
+            ],
+            "provenance_only_rows_excluded": sum(
+                1 for row in rows if row.get("route_bucket") == "provenance_only_audit"
+            ),
+        },
+        "decision": (
+            "ready_for_first_verifier_run"
+            if bucket_counts["verifier_eligible_ambiguity"] == 29
+            and bucket_counts["abstain_exemplar"] == 4
+            and bucket_counts["upstream_policy_appendix"] == 18
+            and bucket_counts["rendered_policy_sensitive_appendix"] == 5
+            else "shape_mismatch_do_not_run"
+        ),
+    }
+
+
+def write_clean_experiment_input_report(
+    metadata: Mapping[str, Any],
+    path: Path,
+    *,
+    jsonl_path: Path = DEFAULT_EXPERIMENT_INPUT_JSONL_PATH,
+    json_path: Path = DEFAULT_EXPERIMENT_INPUT_JSON_PATH,
+) -> None:
+    metrics = metadata["metrics"]
+    lines = [
+        "# Gan 2026 Validation750 First Verifier Experiment Input Clean29 V6",
+        "",
+        str(metadata["claim_boundary"]),
+        "",
+        "## Decision",
+        "",
+        f"`{metadata['decision']}`",
+        "",
+        "## Artifacts",
+        "",
+        f"- Row JSONL: `{jsonl_path}`",
+        f"- Summary JSON: `{json_path}`",
+        "",
+        "## Surface",
+        "",
+        "| Section | Rows |",
+        "| --- | ---: |",
+        f"| Main ambiguity core | {metrics['main_ambiguity_rows']} |",
+        f"| Abstain appendix | {metrics['abstain_appendix_rows']} |",
+        f"| Upstream-policy appendix | {metrics['upstream_policy_appendix_rows']} |",
+        (
+            "| Rendered policy-sensitive appendix | "
+            f"{metrics['rendered_policy_sensitive_appendix_rows']} |"
+        ),
+        f"| Provenance-only audit rows excluded | {metrics['provenance_only_rows_excluded']} |",
+        "",
+        "## Input Hygiene",
+        "",
+        "Verifier-visible packets contain route, assessment, projection/render, "
+        "candidate evidence, and provenance sidecars only. Gold labels, score "
+        "correctness fields, and audit-only W->C/C->W counts are deliberately absent.",
+        "",
+    ]
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("\n".join(lines), encoding="utf-8")
 
@@ -486,6 +608,21 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--jsonl-path", type=Path, default=DEFAULT_JSONL_PATH)
     parser.add_argument("--json-path", type=Path, default=DEFAULT_JSON_PATH)
     parser.add_argument("--report-path", type=Path, default=DEFAULT_REPORT_PATH)
+    parser.add_argument(
+        "--clean-experiment-input-jsonl-path",
+        type=Path,
+        default=DEFAULT_EXPERIMENT_INPUT_JSONL_PATH,
+    )
+    parser.add_argument(
+        "--clean-experiment-input-json-path",
+        type=Path,
+        default=DEFAULT_EXPERIMENT_INPUT_JSON_PATH,
+    )
+    parser.add_argument(
+        "--clean-experiment-input-report-path",
+        type=Path,
+        default=DEFAULT_EXPERIMENT_INPUT_REPORT_PATH,
+    )
     args = parser.parse_args(argv)
 
     rows, metadata = build_first_verifier_report_rows(
@@ -504,6 +641,15 @@ def main(argv: Sequence[str] | None = None) -> int:
         args.report_path,
         jsonl_path=args.jsonl_path,
         json_path=args.json_path,
+    )
+    clean_rows, clean_metadata = build_clean_first_verifier_experiment_input(rows)
+    write_jsonl_rows(clean_rows, args.clean_experiment_input_jsonl_path)
+    write_summary_json(clean_metadata, args.clean_experiment_input_json_path)
+    write_clean_experiment_input_report(
+        clean_metadata,
+        args.clean_experiment_input_report_path,
+        jsonl_path=args.clean_experiment_input_jsonl_path,
+        json_path=args.clean_experiment_input_json_path,
     )
     print(json.dumps(metadata["metrics"], sort_keys=True))
     return 0
