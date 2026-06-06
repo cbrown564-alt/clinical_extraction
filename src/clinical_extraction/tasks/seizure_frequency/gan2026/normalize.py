@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import re
+
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract import label_parser as _labels
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rule_metadata import (
     AblationConfig,
@@ -21,6 +23,18 @@ from .deterministic.rules.benchmark_repair import (
 from .selected_evidence.selected_evidence_derivation import (
     prediction_label_from_selected_evidence,
     should_prefer_selected_evidence_label,
+)
+from .selected_evidence.selected_evidence_monthly_diary import (
+    monthly_diary_label_from_text,
+)
+from .selected_evidence.selected_evidence_window import (
+    range_count_over_window,
+    single_count_over_window,
+    sum_counts_over_window,
+)
+
+_SIMPLE_RATE_LABEL = re.compile(
+    r"^(?P<count>\d+)\s+per\s+(?P<denominator>\d+)\s+(?P<unit>day|week|month|year)$"
 )
 
 FrequencyLabelKind = _labels.FrequencyLabelKind
@@ -141,7 +155,12 @@ def repair_prediction_label_with_evidence(
     if raw is None:
         return repair_prediction_label(raw, ablation_config)
     raw_repaired = repair_prediction_label(raw, ablation_config)
+    raw_window_label = _raw_window_label(str(raw))
+    if raw_repaired == "no seizure frequency reference" and raw_window_label:
+        raw_repaired = repair_prediction_label(raw_window_label, ablation_config)
     evidence_label = prediction_label_from_selected_evidence(evidence, context_text)
+    if _should_preserve_raw_window_label(raw_window_label, evidence, evidence_label):
+        return raw_repaired
     if evidence_label is None and raw_repaired == "no seizure frequency reference":
         evidence_label = prediction_label_from_selected_evidence(str(raw), context_text)
     if evidence_label and should_prefer_selected_evidence_label(
@@ -152,6 +171,40 @@ def repair_prediction_label_with_evidence(
     ):
         return repair_prediction_label(evidence_label, ablation_config)
     return raw_repaired
+
+
+def _raw_window_label(raw_text: str) -> str | None:
+    normalized_raw = normalize_frequency_label(raw_text.strip().lower())
+    for derive_label in (
+        range_count_over_window,
+        sum_counts_over_window,
+        single_count_over_window,
+    ):
+        label = derive_label(normalized_raw)
+        if label:
+            return label
+    return None
+
+
+def _should_preserve_raw_window_label(
+    raw_window_label: str | None,
+    evidence: str,
+    evidence_label: str | None,
+) -> bool:
+    if raw_window_label is None or evidence_label is None:
+        return False
+    normalized_evidence = normalize_frequency_label(str(evidence).strip().lower())
+    if monthly_diary_label_from_text(normalized_evidence) != evidence_label:
+        return False
+    raw_match = _SIMPLE_RATE_LABEL.fullmatch(raw_window_label)
+    evidence_match = _SIMPLE_RATE_LABEL.fullmatch(evidence_label)
+    if raw_match is None or evidence_match is None:
+        return False
+    return (
+        raw_match.group("count") == evidence_match.group("count")
+        and raw_match.group("unit") == evidence_match.group("unit")
+        and int(raw_match.group("denominator")) > int(evidence_match.group("denominator"))
+    )
 
 
 def repair_prediction_label_with_trace(
