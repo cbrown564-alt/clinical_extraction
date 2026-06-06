@@ -1,0 +1,33 @@
+{
+  "artifact_kind": "gan2026_verification_decision",
+  "claim_boundary": "deterministic validation250 verification-action baseline over routed rows; no verifier model call, no manual annotation, no replacement label invention, and score context is audit-only",
+  "route_artifact_path": "experiments\\gan2026_validation250_verification_route_v6.jsonl",
+  "row_count": 5,
+  "schema_version": "gan2026_verification_decision_v0",
+  "summary": {
+    "action_basis_counts": {
+      "manual_review_required": 1,
+      "route_family_policy": 4
+    },
+    "action_counts": {
+      "abstain": 4,
+      "human_review": 1
+    },
+    "decision_rows": 5,
+    "decision_source_row_indices": [
+      3468,
+      3469,
+      3493,
+      3534,
+      5476
+    ],
+    "input_route_rows": 250,
+    "input_routed_rows": 5,
+    "route_family_counts": {
+      "cyclic_window_without_event_count": 3,
+      "medication_cadence_ambiguity": 1,
+      "seizure_free_proxy_evidence_overreach": 1
+    }
+  },
+  "verification_policy_id": "gan2026_validation250_verification_decision_policy_v0"
+}
