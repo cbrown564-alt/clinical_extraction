@@ -366,9 +366,18 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
             "artifact is not overwritten until the combined run succeeds."
         ),
     )
+    parser.add_argument(
+        "--overwrite-existing",
+        action="store_true",
+        help=(
+            "Allow replacing existing JSONL/Markdown output artifacts. Without this "
+            "or --resume-existing, the CLI refuses to write over existing outputs."
+        ),
+    )
     args = parser.parse_args(argv)
     spec = specs[args.pipeline]
     _validate_validation_ladder(args, parser)
+    _validate_output_overwrite_policy(args, parser)
 
     records = load_records_for_split(args.split)
     if args.limit is not None:
@@ -456,6 +465,25 @@ def _validate_validation_ladder(
         parser.error(
             "validation runs above 250 rows require --escalation-reason; "
             "use --limit 25, --limit 50, or --limit 250 for routine ladder runs"
+        )
+
+
+def _validate_output_overwrite_policy(
+    args: argparse.Namespace,
+    parser: argparse.ArgumentParser,
+) -> None:
+    if args.resume_existing and args.overwrite_existing:
+        parser.error("use either --resume-existing or --overwrite-existing, not both")
+    if args.resume_existing or args.overwrite_existing:
+        return
+    existing_paths = [
+        path for path in (args.jsonl, args.markdown) if Path(path).exists()
+    ]
+    if existing_paths:
+        parser.error(
+            "output artifact already exists; use --resume-existing to continue "
+            "or --overwrite-existing to replace: "
+            + ", ".join(str(path) for path in existing_paths)
         )
 
 
