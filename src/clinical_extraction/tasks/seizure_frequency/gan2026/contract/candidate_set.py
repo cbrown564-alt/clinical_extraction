@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import re
 from collections.abc import Sequence
-from datetime import datetime
+from calendar import monthrange
+from datetime import date, datetime, timedelta
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -60,10 +61,23 @@ class ReferenceDateContext(BaseModel):
     issues: list[str] = Field(default_factory=list)
 
 
+class PriorEncounterContext(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    date: str
+    date_precision: Literal["day"]
+    source: Literal["explicit_relative_interval"]
+    source_phrase: str
+    source_span: EvidenceSpan
+    context_role: Literal["prior_visit_date"] = "prior_visit_date"
+    issues: list[str] = Field(default_factory=list)
+
+
 class RowContext(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     reference_date: ReferenceDateContext | None = None
+    prior_encounter: PriorEncounterContext | None = None
     context_issues: list[str] = Field(default_factory=list)
 
 
@@ -224,7 +238,11 @@ def extract_row_context(note_text: str) -> RowContext:
     reference_date = extract_reference_date_context(note_text)
     if reference_date is None:
         return RowContext(context_issues=["reference_date_missing"])
-    return RowContext(reference_date=reference_date)
+    prior_encounter = extract_prior_encounter_context(
+        note_text,
+        reference_date=reference_date,
+    )
+    return RowContext(reference_date=reference_date, prior_encounter=prior_encounter)
 
 
 def extract_reference_date_context(note_text: str) -> ReferenceDateContext | None:
@@ -275,6 +293,117 @@ def _parse_header_date(value: str) -> str | None:
         except ValueError:
             continue
     return None
+
+
+def extract_prior_encounter_context(
+    note_text: str,
+    *,
+    reference_date: ReferenceDateContext,
+) -> PriorEncounterContext | None:
+    """Extract prior encounter dates only from explicit relative intervals."""
+
+    patterns = [
+        re.compile(
+            r"\b(?:last|previous)\s+"
+            r"(?P<encounter>appointment|visit|review|consultation|clinic assessment)"
+            r"\s+(?P<count>\d+|one|two|three|four|five|six|seven|eight|nine|ten|"
+            r"eleven|twelve)\s+(?P<unit>days?|weeks?|months?|years?)\s+ago\b",
+            flags=re.IGNORECASE,
+        ),
+        re.compile(
+            r"\b(?P<count>\d+|one|two|three|four|five|six|seven|eight|nine|ten|"
+            r"eleven|twelve)\s+(?P<unit>days?|weeks?|months?|years?)\s+"
+            r"(?:since|after)\s+(?:the\s+)?(?:last|previous)\s+"
+            r"(?P<encounter>appointment|visit|review|consultation|clinic assessment)\b",
+            flags=re.IGNORECASE,
+        ),
+    ]
+    parsed_reference = _date_from_iso(reference_date.date)
+    if parsed_reference is None:
+        return None
+    matches: list[PriorEncounterContext] = []
+    for pattern in patterns:
+        for match in pattern.finditer(note_text):
+            count = _number_word_to_int(match.group("count"))
+            if count is None:
+                continue
+            prior_date = _subtract_relative_interval(
+                parsed_reference,
+                count=count,
+                unit=match.group("unit"),
+            )
+            if prior_date is None:
+                continue
+            matches.append(
+                PriorEncounterContext(
+                    date=prior_date.isoformat(),
+                    date_precision="day",
+                    source="explicit_relative_interval",
+                    source_phrase=match.group(0),
+                    source_span=EvidenceSpan(
+                        text=match.group(0),
+                        start_char=match.start(),
+                        end_char=match.end(),
+                    ),
+                    issues=["prior_encounter_date_inferred_from_relative_interval"],
+                )
+            )
+    unique_dates = {match.date for match in matches}
+    if len(matches) != 1 or len(unique_dates) != 1:
+        return None
+    return matches[0]
+
+
+def _date_from_iso(value: str) -> date | None:
+    try:
+        return date.fromisoformat(value)
+    except ValueError:
+        return None
+
+
+def _number_word_to_int(value: str) -> int | None:
+    if value.isdigit():
+        return int(value)
+    return {
+        "one": 1,
+        "two": 2,
+        "three": 3,
+        "four": 4,
+        "five": 5,
+        "six": 6,
+        "seven": 7,
+        "eight": 8,
+        "nine": 9,
+        "ten": 10,
+        "eleven": 11,
+        "twelve": 12,
+    }.get(value.strip().lower())
+
+
+def _subtract_relative_interval(
+    reference: date,
+    *,
+    count: int,
+    unit: str,
+) -> date | None:
+    normalized_unit = unit.strip().lower()
+    if normalized_unit.startswith("day"):
+        return reference - timedelta(days=count)
+    if normalized_unit.startswith("week"):
+        return reference - timedelta(weeks=count)
+    if normalized_unit.startswith("month"):
+        return _subtract_months(reference, count)
+    if normalized_unit.startswith("year"):
+        return _subtract_months(reference, count * 12)
+    return None
+
+
+def _subtract_months(reference: date, months: int) -> date:
+    month_index = reference.month - 1 - months
+    year = reference.year + month_index // 12
+    month = month_index % 12 + 1
+    day = min(reference.day, monthrange(year, month)[1])
+    return date(year, month, day)
 
 
 def extracted_candidate_from_raw(

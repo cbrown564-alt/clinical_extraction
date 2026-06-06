@@ -326,24 +326,65 @@ def test_parse_structured_json_can_use_clean_scorer_facing_gold_policy() -> None
 
 
 def test_named_clean_scorer_mode_does_not_use_hybrid_semantic_repair() -> None:
-    raw = _raw_structured("most weekdays")
+    raw = json.dumps(
+        {
+            "events": [
+                {
+                    "event_id": "e1",
+                    "kind": "seizure_free",
+                    "raw_value": "seizure-free for 6 months",
+                    "applies_to": None,
+                    "time_window": "prior interval",
+                    "temporality": "historical",
+                    "assertion_status": "asserted",
+                    "evidence": "he was seizure-free for 6 months",
+                    "notes": None,
+                },
+                {
+                    "event_id": "e2",
+                    "kind": "last_event_only",
+                    "raw_value": "a focal impaired-awareness seizure occurred 2 Thursdays ago",
+                    "applies_to": "focal impaired-awareness seizure",
+                    "time_window": "2 Thursdays ago",
+                    "temporality": "recent",
+                    "assertion_status": "asserted",
+                    "evidence": "a focal impaired-awareness seizure occurred 2 Thursdays ago",
+                    "notes": None,
+                },
+            ],
+            "selection": {
+                "selected_event_ids": ["e2"],
+                "final_kind": "last_event_only",
+                "final_label": "1 event 2 weeks ago",
+                "evidence": "a focal impaired-awareness seizure occurred 2 Thursdays ago",
+                "confidence": "high",
+                "rationale": "A single recent breakthrough event after seizure freedom.",
+            },
+        }
+    )
 
     clean_extraction, _, clean_errors = parse_structured_json(
         raw,
+        note_text="Clinic Date: 10 August 2020",
         repair_config=StructuredRepairConfig.for_mode("clean_scorer_facing"),
     )
     hybrid_extraction, _, hybrid_errors = parse_structured_json(
         raw,
+        note_text="Clinic Date: 10 August 2020",
         repair_config=StructuredRepairConfig.for_mode("hybrid_full_stack"),
     )
 
     assert clean_extraction is not None
-    assert clean_extraction.selection.final_label == "multiple per week"
-    assert clean_errors == ["final_label_repaired: 'most weekdays' -> 'multiple per week'"]
+    assert clean_extraction.selection.final_label == "1 2 week ago"
+    assert clean_errors == [
+        "final_label_repaired: '1 event 2 weeks ago' -> '1 2 week ago'",
+        "unscorable_final_label: Unparsable label (raw: '1 2 week ago' / normalized: '1 2 week ago')",
+    ]
     assert hybrid_extraction is not None
-    assert hybrid_extraction.selection.final_label == "no seizure frequency reference"
+    assert hybrid_extraction.selection.final_label == "1 per 6 month"
     assert hybrid_errors == [
-        "final_label_repaired: 'most weekdays' -> 'no seizure frequency reference'"
+        "final_label_repaired: '1 event 2 weeks ago' -> 'no seizure frequency reference'",
+        "final_label_repaired: 'no seizure frequency reference' -> '1 per 6 month'",
     ]
 
 

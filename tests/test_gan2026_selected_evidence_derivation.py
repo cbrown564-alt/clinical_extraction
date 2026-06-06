@@ -43,3 +43,24 @@ def test_selected_evidence_derives_vague_daily_burden() -> None:
         )
         == "multiple per day"
     )
+
+
+def test_selected_evidence_derives_hourly_rate() -> None:
+    assert (
+        selected_evidence_derivation.prediction_label_from_selected_evidence(
+            "9 per hour"
+        )
+        == "multiple per day"
+    )
+    assert (
+        selected_evidence_derivation.prediction_label_from_selected_evidence(
+            "4/h"
+        )
+        == "multiple per day"
+    )
+    assert (
+        selected_evidence_derivation.prediction_label_from_selected_evidence(
+            "multiple seizures per hr"
+        )
+        == "multiple per day"
+    )

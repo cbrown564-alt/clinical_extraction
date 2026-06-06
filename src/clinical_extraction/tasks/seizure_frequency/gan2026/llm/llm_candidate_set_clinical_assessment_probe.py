@@ -24,6 +24,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.clinical_asses
     AggregationPolicy,
     AssessmentKind,
     ClinicalAssessment,
+    AntecedentReference,
     ComputedDuration,
     DateReference,
     NormalizedBurden,
@@ -640,14 +641,27 @@ def _repair_multi_primary_nonadditive_policy(
             if candidate_id != best_primary_id
         ],
     ]
+    selected_primary = candidate_by_id.get(best_primary_id)
+    selected_primary_phrase = (
+        candidate_source_phrase(selected_primary) or selected_primary.evidence_span.text
+        if selected_primary is not None
+        else draft.normalized_burden.source_normalized_phrase
+    )
+    if selected_primary is not None and _is_major_recent_relapse_candidate(selected_primary):
+        repair_issues = ["major_recent_relapse_over_background_frequency"]
+    else:
+        repair_issues = ["multi_primary_nonadditive_demoted_to_supporting"]
     return (
         draft.model_copy(
             update={
                 "primary_candidate_ids": [best_primary_id],
                 "supporting_candidate_ids": _dedupe(supporting_ids),
+                "normalized_burden": draft.normalized_burden.model_copy(
+                    update={"source_normalized_phrase": selected_primary_phrase}
+                ),
             }
         ),
-        ["multi_primary_nonadditive_demoted_to_supporting"],
+        repair_issues,
     )
 
 
@@ -754,6 +768,7 @@ def _best_single_primary_candidate_id(
 def _single_primary_priority(candidate: ExtractedCandidate) -> tuple[int, int, int, int]:
     phrase = candidate_source_phrase(candidate) or candidate.evidence_span.text
     return (
+        1 if _is_major_recent_relapse_candidate(candidate) else 0,
         1 if candidate.temporality in {"current", "recent"} else 0,
         1 if candidate.candidate_kind == "frequency_rate" else 0,
         1 if candidate.source_type == "deterministic_candidate" else 0,
@@ -767,6 +782,27 @@ def _current_candidate_priority(candidate: ExtractedCandidate) -> tuple[int, int
         1 if candidate.temporality == "current" else 0,
         1 if candidate.candidate_kind == "frequency_rate" else 0,
         len(phrase),
+    )
+
+
+def _is_major_recent_relapse_candidate(candidate: ExtractedCandidate) -> bool:
+    phrase = " ".join(
+        value.lower()
+        for value in [
+            candidate_source_phrase(candidate) or "",
+            candidate.evidence_span.text,
+        ]
+        if value
+    )
+    has_recent_day_cue = any(token in phrase for token in ("yesterday", "today"))
+    has_major_semiology = any(
+        token in phrase for token in ("tonic-clonic", "convulsive", "generalised", "generalized")
+    )
+    return (
+        candidate.candidate_kind == "frequency_rate"
+        and candidate.temporality in {"current", "recent"}
+        and has_recent_day_cue
+        and has_major_semiology
     )
 
 
@@ -984,6 +1020,12 @@ def normalize_assessment_burden(
 
     if draft.assessment_kind == "seizure_free":
         burden, seizure_free_issues = _seizure_free_burden(source_phrase)
+        if _is_prior_encounter_relative_interval_phrase(source_phrase):
+            seizure_free_issues = [
+                *seizure_free_issues,
+                "seizure_free_anchor_from_prior_encounter_context",
+                "prior_encounter_derived_seizure_free_duration",
+            ]
         if _is_unrenderable_seizure_free_burden(burden):
             repaired = _seizure_free_burden_from_primary_candidates(primary_candidates)
             if repaired is not None:
@@ -1016,6 +1058,7 @@ def _instrument_seizure_free_duration(
     reference = candidate_set.row_context.reference_date
     anchor: DateReference | None = None
     anchor_issues: list[str] = []
+    antecedent: AntecedentReference | None = None
     instrumentation_source_phrase = source_phrase
     for phrase in _seizure_free_instrumentation_phrases(draft, primary_candidates):
         anchor, anchor_issues = _extract_seizure_free_anchor_date(
@@ -1025,6 +1068,31 @@ def _instrument_seizure_free_duration(
         if anchor is not None:
             instrumentation_source_phrase = phrase
             break
+    if anchor is None:
+        antecedent, anchor_issues = _extract_same_note_since_then_antecedent(
+            draft,
+            primary_candidates,
+            reference_date=reference.date if reference is not None else None,
+        )
+        if antecedent is not None:
+            anchor = antecedent.anchor_date
+    if anchor is None and _mentions_prior_encounter_anchor(source_phrase):
+        prior_encounter = candidate_set.row_context.prior_encounter
+        if prior_encounter is not None:
+            anchor = DateReference(
+                date=prior_encounter.date,
+                date_precision=prior_encounter.date_precision,
+                source=(
+                    "candidate_set.row_context.prior_encounter:"
+                    f"{prior_encounter.source}"
+                ),
+                source_phrase=prior_encounter.source_phrase,
+            )
+            anchor_issues = [
+                "seizure_free_anchor_from_prior_encounter_context",
+                "prior_encounter_derived_seizure_free_duration",
+                *prior_encounter.issues,
+            ]
     if anchor is None:
         if _mentions_since_anchor(source_phrase):
             instrumentation = SeizureFreeInstrumentation(
@@ -1046,6 +1114,7 @@ def _instrument_seizure_free_duration(
             state_kind="unresolved_anchor",
             source_phrase=instrumentation_source_phrase,
             anchor_date=anchor,
+            antecedent=antecedent,
             source_candidate_ids=list(draft.primary_candidate_ids),
             source_ids=_source_ids_from_candidates(primary_candidates),
             instrumentation_issues=["reference_date_missing_for_since_date"],
@@ -1058,6 +1127,7 @@ def _instrument_seizure_free_duration(
             state_kind="unresolved_anchor",
             source_phrase=instrumentation_source_phrase,
             anchor_date=anchor,
+            antecedent=antecedent,
             reference_date=DateReference(
                 date=reference.date,
                 date_precision=reference.date_precision,
@@ -1078,6 +1148,7 @@ def _instrument_seizure_free_duration(
         state_kind="since_date",
         source_phrase=instrumentation_source_phrase,
         anchor_date=anchor,
+        antecedent=antecedent,
         reference_date=DateReference(
             date=reference.date,
             date_precision=reference.date_precision,
@@ -1120,6 +1191,143 @@ def _seizure_free_instrumentation_phrases(
     ]
 
 
+def _extract_same_note_since_then_antecedent(
+    draft: AssessmentDraft,
+    primary_candidates: Sequence[ExtractedCandidate],
+    *,
+    reference_date: str | None,
+) -> tuple[AntecedentReference | None, list[str]]:
+    if reference_date is None:
+        return None, []
+    source_phrase = _normalization_source_phrase(draft, primary_candidates)
+    if not _mentions_since_then_anchor(source_phrase):
+        return None, []
+
+    candidates: list[tuple[str, DateReference, list[str]]] = []
+    for context in _same_note_antecedent_contexts(draft, primary_candidates):
+        for phrase in _antecedent_date_phrases(context):
+            anchor, issues = _extract_seizure_free_anchor_date(
+                f"since {phrase}",
+                reference_date=reference_date,
+            )
+            if anchor is None:
+                continue
+            candidates.append((_clean_phrase(_antecedent_source_phrase(context, phrase)), anchor, issues))
+
+    deduped: list[tuple[str, DateReference, list[str]]] = []
+    seen: set[tuple[str, str]] = set()
+    for source_phrase, anchor, issues in candidates:
+        key = (anchor.date, source_phrase.lower())
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append((source_phrase, anchor, issues))
+    unique_dates = {anchor.date for _, anchor, _ in deduped}
+    if len(deduped) != 1 or len(unique_dates) != 1:
+        return None, []
+
+    source_phrase, anchor, issues = deduped[0]
+    return (
+        AntecedentReference(
+            source_phrase=source_phrase,
+            anchor_date=anchor,
+            link_type="local_since_then_antecedent",
+            source_candidate_ids=list(draft.primary_candidate_ids),
+        ),
+        [
+            "seizure_free_anchor_from_same_note_antecedent",
+            *issues,
+        ],
+    )
+
+
+def _mentions_since_then_anchor(source_phrase: str) -> bool:
+    normalized = source_phrase.strip().lower()
+    return bool(
+        re.search(r"\bsince\s+then\b", normalized)
+        or re.search(r"\bsince\s*\.?$", normalized)
+    )
+
+
+def _mentions_prior_encounter_anchor(source_phrase: str) -> bool:
+    return bool(
+        re.search(
+            r"\bsince\s+(?:(?:the|his|her|their)\s+)?(?:last|previous)\s+"
+            r"(?:appointment|visit|review|consultation|clinic assessment)\b",
+            source_phrase,
+            flags=re.IGNORECASE,
+        )
+    )
+
+
+def _is_prior_encounter_relative_interval_phrase(source_phrase: str) -> bool:
+    return bool(
+        re.search(
+            r"\bsince\s+(?:(?:the|his|her|their)\s+)?(?:last|previous)\s+"
+            r"(?:appointment|visit|review|consultation|clinic assessment)\s+"
+            r"(?:\d+|one|two|three|four|five|six|seven|eight|nine|ten|"
+            r"eleven|twelve)\s+(?:days?|weeks?|months?|years?)\s+ago\b",
+            source_phrase,
+            flags=re.IGNORECASE,
+        )
+    )
+
+
+def _same_note_antecedent_contexts(
+    draft: AssessmentDraft,
+    primary_candidates: Sequence[ExtractedCandidate],
+) -> list[str]:
+    contexts = [draft.assessment_summary]
+    for candidate in primary_candidates:
+        contexts.extend(_candidate_parse_phrases(candidate))
+    return [
+        context
+        for context in _dedupe([_clean_phrase(context) for context in contexts])
+        if context
+    ]
+
+
+def _antecedent_date_phrases(context: str) -> list[str]:
+    phrases: list[str] = []
+    month = (
+        r"(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|"
+        r"Jul(?:y)?|Aug(?:ust)?|Sep(?:t|tember)?|Oct(?:ober)?|Nov(?:ember)?|"
+        r"Dec(?:ember)?)"
+    )
+    patterns = [
+        rf"\b\d{{1,2}}(?:\s+|-){month}(?:\s+|-)\d{{4}}\b",
+        rf"\b\d{{1,2}}(?:\s+|-){month}\b",
+        rf"\b(?:early|mid|late)\s+{month}\s+\d{{4}}\b",
+        rf"\b(?:early|mid|late)\s+{month}\b",
+        rf"\b{month}\s+\d{{4}}\b",
+    ]
+    for pattern in patterns:
+        for match in re.finditer(pattern, context, flags=re.IGNORECASE):
+            phrases.append(match.group(0))
+    return _dedupe(phrases)
+
+
+def _antecedent_source_phrase(context: str, phrase: str) -> str:
+    lower_context = context.lower()
+    lower_phrase = phrase.lower()
+    position = lower_context.find(lower_phrase)
+    if position < 0:
+        return phrase
+    punctuation_before = [
+        lower_context.rfind(separator, 0, position)
+        for separator in (".", ";", ":")
+    ]
+    start = max(punctuation_before) + 1
+    punctuation_after = [
+        found
+        for separator in (".", ";", ":")
+        for found in [lower_context.find(separator, position + len(phrase))]
+        if found >= 0
+    ]
+    end = min(punctuation_after) if punctuation_after else len(context)
+    return context[start:end].strip() or phrase
+
+
 def prediction_to_assessment_draft(
     prediction: Any,
 ) -> tuple[AssessmentDraft | None, list[str]]:
@@ -1159,6 +1367,38 @@ def _normalization_source_phrase(
 
 
 def _frequency_burden(source_phrase: str) -> tuple[NormalizedBurden, list[str]]:
+    if _is_relative_only_trend_phrase(source_phrase):
+        return NormalizedBurden(source_normalized_phrase=source_phrase), [
+            "relative_change_without_current_baseline"
+        ]
+    if _is_conditional_only_trigger_phrase(source_phrase):
+        return NormalizedBurden(source_normalized_phrase=source_phrase), [
+            "conditional_only_trigger_without_baseline"
+        ]
+    selected_evidence_label = (
+        selected_evidence_derivation.prediction_label_from_selected_evidence(source_phrase)
+    )
+    if (
+        selected_evidence_label is not None
+        and selected_evidence_label.startswith("multiple per ")
+        and _is_vague_frequency_with_explicit_time_period_phrase(source_phrase)
+    ):
+        burden, issues = _burden_from_label(
+            selected_evidence_label,
+            source_phrase=source_phrase,
+        )
+        return burden, ["vague_frequency_with_explicit_time_period", *issues]
+    if _is_previous_month_active_rate_phrase(source_phrase):
+        return (
+            NormalizedBurden(
+                vague_count="multiple",
+                period_low=1,
+                period_high=1,
+                period_unit="month",
+                source_normalized_phrase=source_phrase,
+            ),
+            ["previous_month_active_rate_over_current_zero", "vague_count"],
+        )
     label = _deterministic_label_from_source_phrase(
         source_phrase,
         preferred_kind=DeterministicCandidateKind.FREQUENCY_RATE,
@@ -1168,6 +1408,11 @@ def _frequency_burden(source_phrase: str) -> tuple[NormalizedBurden, list[str]]:
             "frequency_rate_operands_unparsed"
         ]
     burden, issues = _burden_from_label(label, source_phrase=source_phrase)
+    if (
+        not _is_unrenderable_frequency_burden(burden)
+        and _is_explicit_summary_rate_phrase(source_phrase)
+    ):
+        issues = ["explicit_summary_rate_over_long_period_average", *issues]
     if _has_cluster_label(label):
         issues.append("frequency_rate_label_derivation_returned_cluster")
     if _has_seizure_free_label(label):
@@ -1263,6 +1508,9 @@ def _cluster_burden(
 
 
 def _seizure_free_burden(source_phrase: str) -> tuple[NormalizedBurden, list[str]]:
+    prior_encounter_burden = _prior_encounter_relative_duration_burden(source_phrase)
+    if prior_encounter_burden is not None:
+        return prior_encounter_burden, []
     label = _deterministic_label_from_source_phrase(
         source_phrase,
         preferred_kind=DeterministicCandidateKind.SEIZURE_FREE,
@@ -1273,6 +1521,64 @@ def _seizure_free_burden(source_phrase: str) -> tuple[NormalizedBurden, list[str
             ["seizure_free_duration_unparsed"],
         )
     return _burden_from_label(label, source_phrase=source_phrase)
+
+
+def _prior_encounter_relative_duration_burden(
+    source_phrase: str,
+) -> NormalizedBurden | None:
+    match = re.search(
+        r"\bsince\s+(?:(?:the|his|her|their)\s+)?(?:last|previous)\s+"
+        r"(?:appointment|visit|review|consultation|clinic assessment)\s+"
+        r"(?P<count>\d+|one|two|three|four|five|six|seven|eight|nine|ten|"
+        r"eleven|twelve)\s+(?P<unit>days?|weeks?|months?|years?)\s+ago\b",
+        source_phrase,
+        flags=re.IGNORECASE,
+    )
+    if match is None:
+        return None
+    count = _small_number_to_float(match.group("count"))
+    unit = _duration_unit(match.group("unit"))
+    if count is None or unit is None:
+        return None
+    return NormalizedBurden(
+        seizure_free_duration_low=count,
+        seizure_free_duration_high=count,
+        seizure_free_duration_unit=unit,
+        source_normalized_phrase=source_phrase,
+    )
+
+
+def _small_number_to_float(value: str) -> float | None:
+    if value.isdigit():
+        return float(value)
+    parsed = {
+        "one": 1,
+        "two": 2,
+        "three": 3,
+        "four": 4,
+        "five": 5,
+        "six": 6,
+        "seven": 7,
+        "eight": 8,
+        "nine": 9,
+        "ten": 10,
+        "eleven": 11,
+        "twelve": 12,
+    }.get(value.strip().lower())
+    return float(parsed) if parsed is not None else None
+
+
+def _duration_unit(value: str) -> Literal["day", "week", "month", "year"] | None:
+    normalized = value.strip().lower()
+    if normalized.startswith("day"):
+        return "day"
+    if normalized.startswith("week"):
+        return "week"
+    if normalized.startswith("month"):
+        return "month"
+    if normalized.startswith("year"):
+        return "year"
+    return None
 
 
 def _seizure_free_burden_from_primary_candidates(
@@ -1310,6 +1616,89 @@ def _is_unrenderable_seizure_free_burden(burden: NormalizedBurden) -> bool:
         burden.seizure_free_duration_low is None
         or burden.seizure_free_duration_high is None
         or burden.seizure_free_duration_unit is None
+    )
+
+
+def _is_relative_only_trend_phrase(source_phrase: str) -> bool:
+    return bool(
+        re.search(
+            r"\bfrequency\s+"
+            r"(?:increased|decreased|improved|worsened|reduced)\s+"
+            r"(?:by\s+)?(?:about\s+|approximately\s+|~)?"
+            r"(?:\d+(?:\.\d+)?\s*%|\d+(?:\.\d+)?)\b",
+            source_phrase,
+            flags=re.IGNORECASE,
+        )
+    )
+
+
+def _is_vague_frequency_with_explicit_time_period_phrase(source_phrase: str) -> bool:
+    return bool(
+        re.search(
+            r"\b(?:several|multiple|many|few|a few)\b"
+            r".{0,60}\b(?:day|week|month|year)s?\b",
+            source_phrase,
+            flags=re.IGNORECASE,
+        )
+    )
+
+
+def _is_conditional_only_trigger_phrase(source_phrase: str) -> bool:
+    return bool(
+        re.search(
+            r"\b(?:seizures?|events?|episodes?)\b.*\b(?:only|exclusively)\s+"
+            r"(?:after|when|if|with|during)\b",
+            source_phrase,
+            flags=re.IGNORECASE,
+        )
+        or re.search(
+            r"\b(?:seizures?|events?|episodes?)\b.*\b(?:when|if|with|during)\b"
+            r".{0,60}\bonly\b",
+            source_phrase,
+            flags=re.IGNORECASE,
+        )
+    )
+
+
+def _is_explicit_summary_rate_phrase(source_phrase: str) -> bool:
+    has_long_window_summary = re.search(
+        r"\b(?:so\s+far\s+this\s+year|year\s+to\s+date|this\s+year\s+to\s+date)\b",
+        source_phrase,
+        flags=re.IGNORECASE,
+    )
+    has_current_summary_cue = re.search(
+        r"\b(?:at\s+present|currently|now)\b",
+        source_phrase,
+        flags=re.IGNORECASE,
+    ) or re.search(
+        r"\b(?:his|her|their|the)\s+(?:current|typical)\s+pattern\s+is\b",
+        source_phrase,
+        flags=re.IGNORECASE,
+    )
+    has_rate_language = re.search(
+        r"\b(?:daily|weekly|monthly|yearly|annually|per\s+day|per\s+week|per\s+month|"
+        r"per\s+year|once|twice)\b",
+        source_phrase,
+        flags=re.IGNORECASE,
+    )
+    return bool(has_long_window_summary and has_current_summary_cue and has_rate_language)
+
+
+def _is_previous_month_active_rate_phrase(source_phrase: str) -> bool:
+    return bool(
+        re.search(
+            r"\b(?:handful|multiple|several|many|few)\b[^.]{0,120}\b"
+            r"(?:(?:during|in)\s+(?:the\s+)?(?:previous|last)\s+month|"
+            r"occurred\s+(?:the\s+)?last\s+month)\b",
+            source_phrase,
+            flags=re.IGNORECASE,
+        )
+        and re.search(
+            r"\b(?:(?:current|this)\s+month(?:\s+to\s+date)?|so\s+far\s+this\s+month)\b"
+            r"[^.]{0,120}\b(?:there\s+have\s+been\s+)?no\s+(?:events?|seizures?|episodes?)\b",
+            source_phrase,
+            flags=re.IGNORECASE,
+        )
     )
 
 

@@ -201,6 +201,30 @@ def test_unknown_due_to_ambiguity_routes_as_policy_sensitive_render() -> None:
     assert route.route_families == ["rendered_label_supported_but_policy_sensitive"]
 
 
+def test_prior_encounter_derived_seizure_free_duration_routes_as_policy_sensitive() -> None:
+    route = verification_route.route_decision_for_row(
+        source_row_index=3118,
+        projection_decision=_projection(
+            projection_kind="seizure_free",
+            aggregation_policy="seizure_free_state",
+            projection_basis="seizure_free_duration",
+            projection_issues=[
+                "seizure_free_anchor_from_prior_encounter_context",
+                "prior_encounter_derived_seizure_free_duration",
+            ],
+        ),
+        final_rendered_label=_rendered("seizure free for 6 month", []),
+        score=_score(score_status="scored"),
+    )
+
+    assert route.routed is True
+    assert route.route_families == ["rendered_label_supported_but_policy_sensitive"]
+    assert (
+        "seizure-free duration was derived from prior-encounter context"
+        in route.route_reasons
+    )
+
+
 def test_build_verification_route_artifact_summarizes_routes() -> None:
     rows, metadata = verification_route.build_verification_route_artifact(
         [

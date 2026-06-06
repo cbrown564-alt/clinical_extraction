@@ -285,7 +285,9 @@ def test_run_split_records_raw_strict_and_clean_scoring_layers() -> None:
         policy["policy_id"] for policy in PROMPT_POLICY_TAXONOMY
     ]
     assert metadata["required_ablations_before_ladder_runs"] == REQUIRED_ABLATIONS_BEFORE_LADDER
-    assert metadata["repair_mode_layers"]["raw_model"]["repair_family"] == "none"
+    assert metadata["repair_mode_layers"]["raw_model"]["repair_family"] == (
+        "python_literal_json_dialect_repair"
+    )
     assert metadata["repair_mode_layers"]["strict_format"]["repair_family"] == (
         "format_preserving_label_repair"
     )

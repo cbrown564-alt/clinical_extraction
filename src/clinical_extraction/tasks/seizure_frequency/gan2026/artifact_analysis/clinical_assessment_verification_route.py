@@ -161,6 +161,15 @@ def route_decision_for_row(
         families.append("rendered_label_supported_but_policy_sensitive")
         reasons.append("unknown label rendered from explicit ambiguity rather than absence")
 
+    if (
+        rendered_label is not None
+        and "prior_encounter_derived_seizure_free_duration" in issue_set
+    ):
+        families.append("rendered_label_supported_but_policy_sensitive")
+        reasons.append(
+            "seizure-free duration was derived from prior-encounter context"
+        )
+
     families = _dedupe(families)
     reasons = _dedupe(reasons)
     return VerificationRouteDecision(

@@ -71,12 +71,22 @@ class ComputedDuration(BaseModel):
     unit: Literal["month"]
 
 
+class AntecedentReference(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    source_phrase: str
+    anchor_date: DateReference
+    link_type: Literal["local_since_then_antecedent"]
+    source_candidate_ids: list[str] = Field(default_factory=list)
+
+
 class SeizureFreeInstrumentation(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     state_kind: Literal["since_date", "unresolved_anchor"]
     source_phrase: str
     anchor_date: DateReference | None = None
+    antecedent: AntecedentReference | None = None
     reference_date: DateReference | None = None
     computed_duration: ComputedDuration | None = None
     source_candidate_ids: list[str] = Field(default_factory=list)
