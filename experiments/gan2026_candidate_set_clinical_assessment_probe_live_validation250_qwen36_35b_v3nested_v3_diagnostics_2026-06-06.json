@@ -1,0 +1,887 @@
+{
+  "artifact_name": "gan2026_candidate_set_clinical_assessment_probe_live_validation25_v0_diagnostics",
+  "claim_boundary": "250-row clinical-assessment diagnostics only. This inspects role usage, context separation, and comparisons to selector artifacts; it does not score, project, or render answers.",
+  "inspection_examples": {
+    "context_leak_rows": [],
+    "flagged_rows": [
+      {
+        "aggregation_policy": "missing",
+        "assessment_kind": "missing",
+        "assessment_summary": "",
+        "diagnostic_flags": [
+          "assessment_missing"
+        ],
+        "minimal_selector_primary_relation": "not_available",
+        "primary_candidate_ids": [],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "not_available",
+        "source_row_index": 10,
+        "supporting_candidate_ids": []
+      },
+      {
+        "aggregation_policy": "missing",
+        "assessment_kind": "missing",
+        "assessment_summary": "",
+        "diagnostic_flags": [
+          "assessment_missing"
+        ],
+        "minimal_selector_primary_relation": "not_available",
+        "primary_candidate_ids": [],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "not_available",
+        "source_row_index": 40,
+        "supporting_candidate_ids": []
+      },
+      {
+        "aggregation_policy": "missing",
+        "assessment_kind": "missing",
+        "assessment_summary": "",
+        "diagnostic_flags": [
+          "assessment_missing"
+        ],
+        "minimal_selector_primary_relation": "not_available",
+        "primary_candidate_ids": [],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "not_available",
+        "source_row_index": 79,
+        "supporting_candidate_ids": []
+      },
+      {
+        "aggregation_policy": "missing",
+        "assessment_kind": "missing",
+        "assessment_summary": "",
+        "diagnostic_flags": [
+          "assessment_missing"
+        ],
+        "minimal_selector_primary_relation": "not_available",
+        "primary_candidate_ids": [],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "not_available",
+        "source_row_index": 103,
+        "supporting_candidate_ids": []
+      },
+      {
+        "aggregation_policy": "missing",
+        "assessment_kind": "missing",
+        "assessment_summary": "",
+        "diagnostic_flags": [
+          "assessment_missing"
+        ],
+        "minimal_selector_primary_relation": "not_available",
+        "primary_candidate_ids": [],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "not_available",
+        "source_row_index": 128,
+        "supporting_candidate_ids": []
+      },
+      {
+        "aggregation_policy": "missing",
+        "assessment_kind": "missing",
+        "assessment_summary": "",
+        "diagnostic_flags": [
+          "assessment_missing"
+        ],
+        "minimal_selector_primary_relation": "not_available",
+        "primary_candidate_ids": [],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "not_available",
+        "source_row_index": 156,
+        "supporting_candidate_ids": []
+      },
+      {
+        "aggregation_policy": "missing",
+        "assessment_kind": "missing",
+        "assessment_summary": "",
+        "diagnostic_flags": [
+          "assessment_missing"
+        ],
+        "minimal_selector_primary_relation": "not_available",
+        "primary_candidate_ids": [],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "not_available",
+        "source_row_index": 180,
+        "supporting_candidate_ids": []
+      },
+      {
+        "aggregation_policy": "missing",
+        "assessment_kind": "missing",
+        "assessment_summary": "",
+        "diagnostic_flags": [
+          "assessment_missing"
+        ],
+        "minimal_selector_primary_relation": "not_available",
+        "primary_candidate_ids": [],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "not_available",
+        "source_row_index": 182,
+        "supporting_candidate_ids": []
+      },
+      {
+        "aggregation_policy": "missing",
+        "assessment_kind": "missing",
+        "assessment_summary": "",
+        "diagnostic_flags": [
+          "assessment_missing"
+        ],
+        "minimal_selector_primary_relation": "not_available",
+        "primary_candidate_ids": [],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "not_available",
+        "source_row_index": 187,
+        "supporting_candidate_ids": []
+      },
+      {
+        "aggregation_policy": "missing",
+        "assessment_kind": "missing",
+        "assessment_summary": "",
+        "diagnostic_flags": [
+          "assessment_missing"
+        ],
+        "minimal_selector_primary_relation": "not_available",
+        "primary_candidate_ids": [],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "not_available",
+        "source_row_index": 190,
+        "supporting_candidate_ids": []
+      },
+      {
+        "aggregation_policy": "missing",
+        "assessment_kind": "missing",
+        "assessment_summary": "",
+        "diagnostic_flags": [
+          "assessment_missing"
+        ],
+        "minimal_selector_primary_relation": "not_available",
+        "primary_candidate_ids": [],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "not_available",
+        "source_row_index": 198,
+        "supporting_candidate_ids": []
+      },
+      {
+        "aggregation_policy": "missing",
+        "assessment_kind": "missing",
+        "assessment_summary": "",
+        "diagnostic_flags": [
+          "assessment_missing"
+        ],
+        "minimal_selector_primary_relation": "not_available",
+        "primary_candidate_ids": [],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "not_available",
+        "source_row_index": 212,
+        "supporting_candidate_ids": []
+      }
+    ],
+    "minimal_selector_differences": [
+      {
+        "aggregation_policy": "single_fact",
+        "assessment_kind": "frequency_rate",
+        "assessment_summary": "The patient reports a frequency of 3 to 5 seizures over the past week. The LLM-extracted candidate corroborates this recent event count.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "different",
+        "primary_candidate_ids": [
+          "det:1094:1"
+        ],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "assessment_primary_subset",
+        "source_row_index": 1094,
+        "supporting_candidate_ids": [
+          "llm:1094:1"
+        ]
+      },
+      {
+        "aggregation_policy": "unknown_due_to_ambiguity",
+        "assessment_kind": "unknown_frequency",
+        "assessment_summary": "The patient has frequent petit mal seizures and increasing brief absence episodes recently. There is no history of generalized tonic-clonic seizures for over a year.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "assessment_primary_superset",
+        "primary_candidate_ids": [
+          "llm:2166:1",
+          "llm:2166:3"
+        ],
+        "rejected_candidate_ids": [
+          "llm:2166:2"
+        ],
+        "rich_selector_primary_relation": "assessment_primary_superset",
+        "source_row_index": 2166,
+        "supporting_candidate_ids": []
+      },
+      {
+        "aggregation_policy": "single_fact",
+        "assessment_kind": "frequency_rate",
+        "assessment_summary": "The patient reports six to seven seizures over the last two weeks according to their diary. The deterministic candidate is corroborated by the LLM-extracted candidate.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "different",
+        "primary_candidate_ids": [
+          "llm:2456:2"
+        ],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "different",
+        "source_row_index": 2456,
+        "supporting_candidate_ids": [
+          "det:2456:1"
+        ]
+      },
+      {
+        "aggregation_policy": "additive_same_window",
+        "assessment_kind": "frequency_rate",
+        "assessment_summary": "Current burden is characterized by nightly seizures, with three specific instances of secondary generalization noted this month. Historical context of previous clustering is noted but not part of the current primary burden assessment.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "assessment_primary_superset",
+        "primary_candidate_ids": [
+          "llm:2622:2",
+          "llm:2622:3"
+        ],
+        "rejected_candidate_ids": [
+          "llm:2622:1"
+        ],
+        "rich_selector_primary_relation": "assessment_primary_superset",
+        "source_row_index": 2622,
+        "supporting_candidate_ids": []
+      },
+      {
+        "aggregation_policy": "unknown_due_to_absence",
+        "assessment_kind": "unknown_frequency",
+        "assessment_summary": "The patient's seizure frequency has increased by approximately 20% following a dose increase. The events are characterized as brief (seconds to under a minute) with preserved awareness in some instances, but no specific frequency rate or count is provided to quantify the current burden.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "assessment_primary_subset",
+        "primary_candidate_ids": [],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "assessment_primary_subset",
+        "source_row_index": 3512,
+        "supporting_candidate_ids": [
+          "llm:3512:1",
+          "llm:3512:2"
+        ]
+      },
+      {
+        "aggregation_policy": "unknown_due_to_absence",
+        "assessment_kind": "unknown_frequency",
+        "assessment_summary": "The note mentions possible auras and one episode this year, but lacks a specific frequency rate. Improvement is noted over the past seven months.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "assessment_primary_subset",
+        "primary_candidate_ids": [],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "assessment_primary_subset",
+        "source_row_index": 3534,
+        "supporting_candidate_ids": [
+          "det:3534:1",
+          "det:3534:2"
+        ]
+      },
+      {
+        "aggregation_policy": "unknown_due_to_ambiguity",
+        "assessment_kind": "unknown_frequency",
+        "assessment_summary": "The patient experiences clusters of seizure-like events with variable frequency. While 'up to seven in bad weeks' was noted, the overall pattern is characterized by variable frequency rather than a precise rate. Multiple events are reported within these clusters.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "different",
+        "primary_candidate_ids": [
+          "llm:3623:1"
+        ],
+        "rejected_candidate_ids": [
+          "det:3623:1"
+        ],
+        "rich_selector_primary_relation": "different",
+        "source_row_index": 3623,
+        "supporting_candidate_ids": [
+          "llm:3623:2"
+        ]
+      },
+      {
+        "aggregation_policy": "single_fact",
+        "assessment_kind": "frequency_rate",
+        "assessment_summary": "Current seizure frequency is 3 per year. Triggers include poor sleep and intercurrent illness. Management is stable.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "different",
+        "primary_candidate_ids": [
+          "det:3892:1"
+        ],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "different",
+        "source_row_index": 3892,
+        "supporting_candidate_ids": []
+      },
+      {
+        "aggregation_policy": "unknown_due_to_absence",
+        "assessment_kind": "unknown_frequency",
+        "assessment_summary": "The note describes frequent electrographic seizures (~9/h) on recent video-EEG, but the provided candidate set is empty due to a validation error. Consequently, no structured burden assessment can be derived from the candidates. Clinically, the patient has frequent subclinical seizures with rare clinical correlates.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "assessment_primary_subset",
+        "primary_candidate_ids": [],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "assessment_primary_subset",
+        "source_row_index": 4694,
+        "supporting_candidate_ids": []
+      },
+      {
+        "aggregation_policy": "unknown_due_to_absence",
+        "assessment_kind": "unknown_frequency",
+        "assessment_summary": "The clinical note indicates persistent focal features and frequent electrographic seizures, but the provided candidate set is empty. Therefore, a specific current seizure frequency burden cannot be quantified from the candidates. The note mentions a plan to revisit medication changes and requests a repeat MRI, implying ongoing active disease management.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "assessment_primary_subset",
+        "primary_candidate_ids": [],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "assessment_primary_subset",
+        "source_row_index": 4709,
+        "supporting_candidate_ids": []
+      },
+      {
+        "aggregation_policy": "primary_with_context",
+        "assessment_kind": "unknown_frequency",
+        "assessment_summary": "The patient reports increased seizure activity occurring in several stretches across the month, characterized by brief focal aware episodes (lip-smacking, word-finding pauses) that sometimes progress to focal impaired awareness events. Supporting context includes two instances of secondary generalization in the last six weeks, short runs of events following disrupted sleep/travel, and a history of a generalized seizure in August. The exact frequency is unknown due to the vague description of 'spells' and 'stretches'.",
+        "diagnostic_flags": [
+          "multi_primary_nonadditive_policy"
+        ],
+        "minimal_selector_primary_relation": "different",
+        "primary_candidate_ids": [
+          "llm:4771:1",
+          "llm:4771:2"
+        ],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "different",
+        "source_row_index": 4771,
+        "supporting_candidate_ids": [
+          "llm:4771:3",
+          "llm:4771:4",
+          "llm:4771:5"
+        ]
+      },
+      {
+        "aggregation_policy": "unknown_due_to_absence",
+        "assessment_kind": "unknown_frequency",
+        "assessment_summary": "The patient experiences sporadic drop attacks this year, but the overall seizure frequency remains unclear as the clinician could not provide a reliable count over recent months.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "different",
+        "primary_candidate_ids": [
+          "llm:5490:1"
+        ],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "not_available",
+        "source_row_index": 5490,
+        "supporting_candidate_ids": [
+          "llm:5490:2",
+          "llm:5490:3",
+          "llm:5490:4"
+        ]
+      }
+    ],
+    "multi_primary_rows": [
+      {
+        "aggregation_policy": "unknown_due_to_ambiguity",
+        "assessment_kind": "unknown_frequency",
+        "assessment_summary": "The patient has frequent petit mal seizures and increasing brief absence episodes recently. There is no history of generalized tonic-clonic seizures for over a year.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "assessment_primary_superset",
+        "primary_candidate_ids": [
+          "llm:2166:1",
+          "llm:2166:3"
+        ],
+        "rejected_candidate_ids": [
+          "llm:2166:2"
+        ],
+        "rich_selector_primary_relation": "assessment_primary_superset",
+        "source_row_index": 2166,
+        "supporting_candidate_ids": []
+      },
+      {
+        "aggregation_policy": "additive_same_window",
+        "assessment_kind": "frequency_rate",
+        "assessment_summary": "Current burden is characterized by nightly seizures, with three specific instances of secondary generalization noted this month. Historical context of previous clustering is noted but not part of the current primary burden assessment.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "assessment_primary_superset",
+        "primary_candidate_ids": [
+          "llm:2622:2",
+          "llm:2622:3"
+        ],
+        "rejected_candidate_ids": [
+          "llm:2622:1"
+        ],
+        "rich_selector_primary_relation": "assessment_primary_superset",
+        "source_row_index": 2622,
+        "supporting_candidate_ids": []
+      },
+      {
+        "aggregation_policy": "primary_with_context",
+        "assessment_kind": "unknown_frequency",
+        "assessment_summary": "The patient reports increased seizure activity occurring in several stretches across the month, characterized by brief focal aware episodes (lip-smacking, word-finding pauses) that sometimes progress to focal impaired awareness events. Supporting context includes two instances of secondary generalization in the last six weeks, short runs of events following disrupted sleep/travel, and a history of a generalized seizure in August. The exact frequency is unknown due to the vague description of 'spells' and 'stretches'.",
+        "diagnostic_flags": [
+          "multi_primary_nonadditive_policy"
+        ],
+        "minimal_selector_primary_relation": "different",
+        "primary_candidate_ids": [
+          "llm:4771:1",
+          "llm:4771:2"
+        ],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "different",
+        "source_row_index": 4771,
+        "supporting_candidate_ids": [
+          "llm:4771:3",
+          "llm:4771:4",
+          "llm:4771:5"
+        ]
+      }
+    ],
+    "rich_selector_differences": [
+      {
+        "aggregation_policy": "single_fact",
+        "assessment_kind": "frequency_rate",
+        "assessment_summary": "The patient reports a frequency of 3 to 5 seizures over the past week. The LLM-extracted candidate corroborates this recent event count.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "different",
+        "primary_candidate_ids": [
+          "det:1094:1"
+        ],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "assessment_primary_subset",
+        "source_row_index": 1094,
+        "supporting_candidate_ids": [
+          "llm:1094:1"
+        ]
+      },
+      {
+        "aggregation_policy": "unknown_due_to_ambiguity",
+        "assessment_kind": "unknown_frequency",
+        "assessment_summary": "The patient has frequent petit mal seizures and increasing brief absence episodes recently. There is no history of generalized tonic-clonic seizures for over a year.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "assessment_primary_superset",
+        "primary_candidate_ids": [
+          "llm:2166:1",
+          "llm:2166:3"
+        ],
+        "rejected_candidate_ids": [
+          "llm:2166:2"
+        ],
+        "rich_selector_primary_relation": "assessment_primary_superset",
+        "source_row_index": 2166,
+        "supporting_candidate_ids": []
+      },
+      {
+        "aggregation_policy": "single_fact",
+        "assessment_kind": "frequency_rate",
+        "assessment_summary": "The patient reports six to seven seizures over the last two weeks according to their diary. The deterministic candidate is corroborated by the LLM-extracted candidate.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "different",
+        "primary_candidate_ids": [
+          "llm:2456:2"
+        ],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "different",
+        "source_row_index": 2456,
+        "supporting_candidate_ids": [
+          "det:2456:1"
+        ]
+      },
+      {
+        "aggregation_policy": "additive_same_window",
+        "assessment_kind": "frequency_rate",
+        "assessment_summary": "Current burden is characterized by nightly seizures, with three specific instances of secondary generalization noted this month. Historical context of previous clustering is noted but not part of the current primary burden assessment.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "assessment_primary_superset",
+        "primary_candidate_ids": [
+          "llm:2622:2",
+          "llm:2622:3"
+        ],
+        "rejected_candidate_ids": [
+          "llm:2622:1"
+        ],
+        "rich_selector_primary_relation": "assessment_primary_superset",
+        "source_row_index": 2622,
+        "supporting_candidate_ids": []
+      },
+      {
+        "aggregation_policy": "unknown_due_to_absence",
+        "assessment_kind": "unknown_frequency",
+        "assessment_summary": "The patient's seizure frequency has increased by approximately 20% following a dose increase. The events are characterized as brief (seconds to under a minute) with preserved awareness in some instances, but no specific frequency rate or count is provided to quantify the current burden.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "assessment_primary_subset",
+        "primary_candidate_ids": [],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "assessment_primary_subset",
+        "source_row_index": 3512,
+        "supporting_candidate_ids": [
+          "llm:3512:1",
+          "llm:3512:2"
+        ]
+      },
+      {
+        "aggregation_policy": "unknown_due_to_absence",
+        "assessment_kind": "unknown_frequency",
+        "assessment_summary": "The note mentions possible auras and one episode this year, but lacks a specific frequency rate. Improvement is noted over the past seven months.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "assessment_primary_subset",
+        "primary_candidate_ids": [],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "assessment_primary_subset",
+        "source_row_index": 3534,
+        "supporting_candidate_ids": [
+          "det:3534:1",
+          "det:3534:2"
+        ]
+      },
+      {
+        "aggregation_policy": "unknown_due_to_ambiguity",
+        "assessment_kind": "unknown_frequency",
+        "assessment_summary": "The patient experiences clusters of seizure-like events with variable frequency. While 'up to seven in bad weeks' was noted, the overall pattern is characterized by variable frequency rather than a precise rate. Multiple events are reported within these clusters.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "different",
+        "primary_candidate_ids": [
+          "llm:3623:1"
+        ],
+        "rejected_candidate_ids": [
+          "det:3623:1"
+        ],
+        "rich_selector_primary_relation": "different",
+        "source_row_index": 3623,
+        "supporting_candidate_ids": [
+          "llm:3623:2"
+        ]
+      },
+      {
+        "aggregation_policy": "single_fact",
+        "assessment_kind": "frequency_rate",
+        "assessment_summary": "Current seizure frequency is 3 per year. Triggers include poor sleep and intercurrent illness. Management is stable.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "different",
+        "primary_candidate_ids": [
+          "det:3892:1"
+        ],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "different",
+        "source_row_index": 3892,
+        "supporting_candidate_ids": []
+      },
+      {
+        "aggregation_policy": "unknown_due_to_absence",
+        "assessment_kind": "unknown_frequency",
+        "assessment_summary": "The note describes frequent electrographic seizures (~9/h) on recent video-EEG, but the provided candidate set is empty due to a validation error. Consequently, no structured burden assessment can be derived from the candidates. Clinically, the patient has frequent subclinical seizures with rare clinical correlates.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "assessment_primary_subset",
+        "primary_candidate_ids": [],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "assessment_primary_subset",
+        "source_row_index": 4694,
+        "supporting_candidate_ids": []
+      },
+      {
+        "aggregation_policy": "unknown_due_to_absence",
+        "assessment_kind": "unknown_frequency",
+        "assessment_summary": "The clinical note indicates persistent focal features and frequent electrographic seizures, but the provided candidate set is empty. Therefore, a specific current seizure frequency burden cannot be quantified from the candidates. The note mentions a plan to revisit medication changes and requests a repeat MRI, implying ongoing active disease management.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "assessment_primary_subset",
+        "primary_candidate_ids": [],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "assessment_primary_subset",
+        "source_row_index": 4709,
+        "supporting_candidate_ids": []
+      },
+      {
+        "aggregation_policy": "primary_with_context",
+        "assessment_kind": "unknown_frequency",
+        "assessment_summary": "The patient reports increased seizure activity occurring in several stretches across the month, characterized by brief focal aware episodes (lip-smacking, word-finding pauses) that sometimes progress to focal impaired awareness events. Supporting context includes two instances of secondary generalization in the last six weeks, short runs of events following disrupted sleep/travel, and a history of a generalized seizure in August. The exact frequency is unknown due to the vague description of 'spells' and 'stretches'.",
+        "diagnostic_flags": [
+          "multi_primary_nonadditive_policy"
+        ],
+        "minimal_selector_primary_relation": "different",
+        "primary_candidate_ids": [
+          "llm:4771:1",
+          "llm:4771:2"
+        ],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "different",
+        "source_row_index": 4771,
+        "supporting_candidate_ids": [
+          "llm:4771:3",
+          "llm:4771:4",
+          "llm:4771:5"
+        ]
+      },
+      {
+        "aggregation_policy": "single_fact",
+        "assessment_kind": "seizure_free",
+        "assessment_summary": "Patient reports being free of seizures for 2 years with no further blackouts, convulsions, or focal neurological events. Prior investigations (EEG, MRI) were normal. No antiepileptic drugs are currently prescribed.",
+        "diagnostic_flags": [],
+        "minimal_selector_primary_relation": "same",
+        "primary_candidate_ids": [
+          "llm:4910:1"
+        ],
+        "rejected_candidate_ids": [],
+        "rich_selector_primary_relation": "assessment_primary_subset",
+        "source_row_index": 4910,
+        "supporting_candidate_ids": [
+          "llm:4910:2"
+        ]
+      }
+    ]
+  },
+  "row_count": 250,
+  "source_artifact": "experiments\\gan2026_candidate_set_clinical_assessment_probe_live_validation250_qwen36_35b_v3nested_v3_2026-06-06.jsonl",
+  "summary": {
+    "aggregation_policy_counts": {
+      "additive_same_window": 1,
+      "primary_with_context": 2,
+      "single_fact": 10,
+      "unknown_due_to_absence": 9,
+      "unknown_due_to_ambiguity": 4
+    },
+    "assessment_kind_counts": {
+      "frequency_rate": 7,
+      "seizure_free": 4,
+      "unknown_frequency": 15
+    },
+    "clinical_assessment_rows": 26,
+    "diagnostic_flag_counts": {
+      "assessment_missing": 224,
+      "multi_primary_nonadditive_policy": 1
+    },
+    "flagged_source_row_indices": [
+      10,
+      40,
+      79,
+      103,
+      128,
+      156,
+      180,
+      182,
+      187,
+      190,
+      198,
+      212,
+      218,
+      243,
+      278,
+      280,
+      338,
+      409,
+      419,
+      446,
+      466,
+      467,
+      531,
+      598,
+      659,
+      665,
+      678,
+      694,
+      704,
+      743,
+      744,
+      763,
+      790,
+      816,
+      849,
+      854,
+      869,
+      891,
+      899,
+      959,
+      960,
+      978,
+      987,
+      1030,
+      1046,
+      1070,
+      1165,
+      1171,
+      1207,
+      1223,
+      1249,
+      1281,
+      1317,
+      1357,
+      1363,
+      1413,
+      1454,
+      1486,
+      1573,
+      1591,
+      1596,
+      1597,
+      1636,
+      1640,
+      1687,
+      1694,
+      1695,
+      1706,
+      1772,
+      1773,
+      1790,
+      1794,
+      1866,
+      1880,
+      1887,
+      1914,
+      1922,
+      1923,
+      1979,
+      1980,
+      2023,
+      2080,
+      2094,
+      2114,
+      2228,
+      2233,
+      2245,
+      2259,
+      2354,
+      2366,
+      2369,
+      2374,
+      2425,
+      2427,
+      2435,
+      2437,
+      2440,
+      2459,
+      2487,
+      2513,
+      2541,
+      2548,
+      2554,
+      2558,
+      2609,
+      2678,
+      2681,
+      2698,
+      2731,
+      2740,
+      2748,
+      2759,
+      2762,
+      2765,
+      2776,
+      2789,
+      2812,
+      2822,
+      2824,
+      2877,
+      2887,
+      2907,
+      2932,
+      2938,
+      2965,
+      2992,
+      3015,
+      3048,
+      3058,
+      3082,
+      3095,
+      3113,
+      3137,
+      3224,
+      3242,
+      3261,
+      3262,
+      3281,
+      3297,
+      3325,
+      3356,
+      3371,
+      3468,
+      3469,
+      3482,
+      3493,
+      3528,
+      3643,
+      3681,
+      3682,
+      3710,
+      3753,
+      3766,
+      3774,
+      3791,
+      3801,
+      3806,
+      3827,
+      3846,
+      3849,
+      3889,
+      3940,
+      3949,
+      3988,
+      3995,
+      3999,
+      4022,
+      4026,
+      4092,
+      4100,
+      4110,
+      4116,
+      4173,
+      4243,
+      4258,
+      4337,
+      4345,
+      4368,
+      4402,
+      4410,
+      4478,
+      4480,
+      4496,
+      4562,
+      4563,
+      4574,
+      4592,
+      4597,
+      4624,
+      4631,
+      4690,
+      4700,
+      4731,
+      4732,
+      4771,
+      4839,
+      4842,
+      4919,
+      4926,
+      4951,
+      4956,
+      4992,
+      4994,
+      5040,
+      5082,
+      5110,
+      5121,
+      5136,
+      5141,
+      5210,
+      5221,
+      5248,
+      5331,
+      5345,
+      5351,
+      5379,
+      5406,
+      5476,
+      5491,
+      5504,
+      5528,
+      5534,
+      5551,
+      5567,
+      5584
+    ],
+    "invalid_reference_rows": 0,
+    "minimal_selector_primary_relation_counts": {
+      "assessment_primary_subset": 5,
+      "assessment_primary_superset": 2,
+      "different": 6,
+      "same": 10
+    },
+    "missing_assessment_rows": 224,
+    "primary_candidate_count_distribution": {
+      "0": 7,
+      "1": 16,
+      "2": 3
+    },
+    "rich_selector_primary_relation_counts": {
+      "assessment_primary_subset": 7,
+      "assessment_primary_superset": 2,
+      "different": 4,
+      "same": 8
+    },
+    "role_overlap_rows": 0,
+    "rows_with_diagnostic_flags": 225
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "artifact_kind": "gan2026_clinical_assessment_projection_score",
+  "claim_boundary": "Validation250 mechanics scoring over saved project/render rows only. Scoring reuses the existing label parser plus purist/pragmatic category mappers and is not a benchmark-comparable promotion claim.",
+  "project_render_artifact_path": "experiments\\gan2026_clinical_assessment_projection_render_validation250_qwen36_35b_v1_2026-06-06.jsonl",
+  "row_count": 250,
+  "schema_version": "gan2026_rendered_label_scoring_v0",
+  "scoring_policy_id": "gan2026_rendered_label_scoring_policy_v0",
+  "summary": {
+    "exact_normalized_label_match_rate_on_scored": 0.8182,
+    "exact_normalized_label_matches": 18,
+    "non_scored_rows": 228,
+    "non_scored_source_row_indices": [
+      10,
+      40,
+      79,
+      103,
+      128,
+      156,
+      180,
+      182,
+      187,
+      190,
+      198,
+      212,
+      218,
+      243,
+      278,
+      280,
+      338,
+      409,
+      419,
+      446,
+      466,
+      467,
+      531,
+      598,
+      659
+    ],
+    "pragmatic_accuracy_on_scored": 0.9545,
+    "pragmatic_correct": 21,
+    "purist_accuracy_on_scored": 0.9545,
+    "purist_correct": 21,
+    "score_issue_counts": {
+      "rendered_label_null": 228
+    },
+    "score_status_counts": {
+      "not_scored_null_rendered_label": 228,
+      "scored": 22
+    },
+    "scored_rows": 22
+  }
+}

@@ -110,6 +110,52 @@ def early_rate_label_from_selected_evidence(text: str) -> str | None:
     if days_per_week:
         return _format_prediction_rate(days_per_week.group("count"), "week")
 
+    vague_count_over_period = re.search(
+        r"\b(?:multiple|several|many)\s+"
+        r"(?:[a-z]+(?:-[a-z]+)?\s+){0,4}"
+        r"(?:episodes?|events?|seizures?|spells?|absences?|convulsions?)\s+"
+        r"(?:in|over|during|within)\s+(?:the\s+)?(?:past|last|current)\s+"
+        r"(?:(?P<count>\d+(?:\.\d+)?)\s+)?(?P<unit>day|week|month|year)s?\b",
+        text,
+    )
+    if vague_count_over_period:
+        denominator = vague_count_over_period.group("count") or "1"
+        count_text = "multiple" if denominator == "1" else f"multiple per {denominator}"
+        return _format_prediction_rate(
+            count_text,
+            vague_count_over_period.group("unit"),
+        )
+
+    vague_recent_week = re.search(
+        r"\b(?:multiple|several|many)\s+days?\s+within\s+(?:the\s+)?past\s+week\b",
+        text,
+    )
+    if vague_recent_week:
+        return "multiple per week"
+
+    vague_weekdays = re.search(
+        r"\b(?:most|several|multiple)\s+weekdays\b",
+        text,
+    )
+    if vague_weekdays:
+        return "multiple per week"
+
+    vague_daily = re.search(
+        r"\b(?:several|multiple|many)\s+"
+        r"(?:episodes?|events?|seizures?|spells?|absences?|convulsions?)\s+"
+        r"(?:each|per)\s+day\b",
+        text,
+    )
+    if not vague_daily:
+        vague_daily = re.search(
+            r"\b(?:episodes?|events?|seizures?|spells?|absences?|convulsions?)\s+"
+            r"(?:occur(?:ring)?\s+)?(?:several|multiple|many)\s+times\s+"
+            r"(?:each|per)\s+day\b",
+            text,
+        )
+    if vague_daily:
+        return "multiple per day"
+
     return None
 
 

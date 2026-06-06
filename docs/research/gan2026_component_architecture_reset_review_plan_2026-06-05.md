@@ -1875,3 +1875,200 @@ Next resume point after scoring V0:
    normalization, projection, render, or verifier routing.
 4. Do not tune projection/render rules directly against score without a named
    mechanics failure family and artifact evidence.
+
+### Verification Route V0
+
+- Agreed verification boundaries:
+  - verification starts only after a structurally valid clinical assessment
+    exists;
+  - verifier routes are issue/risk-family driven, not score-outcome driven;
+  - null rendered labels are symptoms, not automatic verifier routes;
+  - date arithmetic for seizure-free since-date statements belongs to
+    deterministic normalization/projection, while seizure-free conflict belongs
+    to verification;
+  - clear cluster operands belong to projection, while cluster-axis ambiguity
+    belongs to verification;
+  - same-window concrete addition belongs to projection, while mixed-window,
+    vague, or scope-uncertain addition belongs to verification or abstention;
+  - verifier rejection blocks a projected/rendered outcome but does not invent
+    a replacement scorer-facing label;
+  - comparator preservation is a separately named action policy, not hidden
+    verifier or projection behavior.
+- Added glossary terms to `CONTEXT.md` for verification decisions, routes,
+  verifier actions, null rendered labels, seizure-free date arithmetic,
+  seizure-free conflict, cluster-axis ambiguity, same-window additive
+  frequency, verifier rejection, comparator preservation action, route-report
+  boundaries, and route score-context boundaries.
+- Implemented deterministic route contract and report builder:
+  - `src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/verification_route.py`;
+  - `src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/clinical_assessment_verification_route.py`.
+- Route V0 consumes the GPT-4.1 mini validation250 scoring artifact because it
+  already embeds projection/render objects. Route predicates use only
+  structured clinical/projection/render fields and issue names; score fields
+  are audit context only.
+- Generated:
+  - `experiments/gan2026_validation250_verification_route_v0.jsonl`;
+  - `experiments/gan2026_validation250_verification_route_v0.json`;
+  - `experiments/gan2026_validation250_verification_route_v0.md`.
+- V0 route summary:
+  - rows: 250;
+  - routed rows: 13;
+  - unrouted rows: 237;
+  - route family counts: 11 `cluster_axis_ambiguity`, 1
+    `mixed_window_or_vague_addition`, and 1 `multiple_current_primary_facts`;
+  - routed score statuses: 12 `not_scored_null_rendered_label`, 1 `scored`;
+  - routed rows: 338, 744, 1317, 1573, 1707, 3468, 3469, 3493, 3534, 4173,
+    4480, 5476, and 5551.
+- Verification:
+  `$env:PYTHONPATH='src'; .venv/Scripts/python.exe -m pytest tests/test_gan2026_clinical_assessment_verification_route.py tests/test_gan2026_clinical_assessment_projection_score.py tests/test_gan2026_clinical_assessment_projection_render.py -q`
+  passed with 16 tests.
+  `$env:PYTHONPATH='src'; .venv/Scripts/python.exe -m ruff check src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/verification_route.py src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/clinical_assessment_verification_route.py tests/test_gan2026_clinical_assessment_verification_route.py`
+  passed.
+
+Next resume point after route V0:
+
+1. Inspect the 13 routed rows manually using the route report and decide which
+   families should receive an LLM verifier prompt versus deterministic
+   abstention or projection-policy refinement.
+2. Do not use the 10 purist-wrong rows as route triggers unless a wrong row
+   also maps to a predeclared route family.
+3. If comparator-preservation is needed, define it as a separate action-policy
+   artifact with its own policy id rather than adding it to route V0.
+
+### Concrete Frequency Precedence And Vague Frequency Projection V1
+
+- After row-by-row inspection of the 13 routed rows, implemented a targeted
+  deterministic normalization correction:
+  - cluster-framed clinical assessments may be promoted to `frequency_rate`
+    when a selected or supporting candidate contains renderable concrete
+    frequency burden;
+  - policy-approved vague frequency phrases such as "many convulsions in past
+    month", "multiple days within the past week", "most weekdays", and
+    "several episodes per day" now normalize through the shared
+    `selected_evidence` parser to `multiple per month`, `multiple per week`, or
+    `multiple per day`;
+  - promotion is blocked when the existing cluster burden is already renderable,
+    preserving true cluster labels such as `2 cluster per month, 4 per cluster`;
+  - medication cadence such as patient-led/as-needed clobazam use is not treated
+    as seizure frequency.
+- Added `Concrete Frequency Precedence` to `CONTEXT.md`.
+- Added regression coverage for:
+  - concrete frequency beating contextual cluster framing;
+  - supporting deterministic frequency beating an unrenderable cluster primary;
+  - shared selected-evidence vague frequency parsing;
+  - vague multiple-days-in-week normalization;
+  - cluster `events_per_cluster` phrases such as "several episodes per day";
+  - preserving already-renderable cluster burden;
+  - blocking medication-cadence promotion.
+- Generated updated artifacts:
+  - `experiments/gan2026_clinical_assessment_projection_render_validation250_v2.jsonl`;
+  - `experiments/gan2026_clinical_assessment_projection_render_validation250_v2.json`;
+  - `experiments/gan2026_clinical_assessment_projection_render_validation250_v2.md`;
+  - `experiments/gan2026_clinical_assessment_projection_score_validation250_v1.jsonl`;
+  - `experiments/gan2026_clinical_assessment_projection_score_validation250_v1.json`;
+  - `experiments/gan2026_clinical_assessment_projection_score_validation250_v1.md`;
+  - `experiments/gan2026_validation250_verification_route_v1.jsonl`;
+  - `experiments/gan2026_validation250_verification_route_v1.json`;
+  - `experiments/gan2026_validation250_verification_route_v1.md`.
+- Projection/render change versus V1:
+  - rendered-label rows: 198 -> 204;
+  - null rendered-label rows: 49 -> 43;
+  - cluster-to-frequency promotions: 6.
+- Score-policy change versus V0:
+  - scored rows: 198 -> 204;
+  - non-scored rows: 52 -> 46;
+  - exact normalized-label matches: 173 -> 179;
+  - purist-correct scored rows: 188 -> 194;
+  - pragmatic-correct scored rows: 193 -> 199.
+- Routed-row effects:
+  - row 338: null -> `multiple per month`, purist-correct;
+  - row 1573: null -> `11 per week`, purist-correct;
+  - row 1707: null -> `multiple per week`, purist-correct;
+  - row 4173: null -> `1 per 2 week`, purist-correct;
+  - row 4480: null -> `3 to 5 per week`, purist-correct;
+  - row 5551: null -> `multiple per day`, purist-correct;
+  - rows 3261 and 3643 remained correct after narrowing the override to avoid
+    renderable-cluster regressions;
+  - row 5476 remains null because monthly clobazam use is medication cadence,
+    not seizure frequency.
+- Verification-route V1 summary:
+  - routed rows: 7;
+  - route families: 5 `cluster_axis_ambiguity`, 1
+    `mixed_window_or_vague_addition`, and 1 `multiple_current_primary_facts`;
+  - routed rows: 744, 1317, 3468, 3469, 3493, 3534, and 5476.
+- Verification:
+  `$env:PYTHONPATH='src'; .venv/Scripts/python.exe -m pytest tests/test_gan2026_llm_candidate_set_clinical_assessment_probe.py tests/test_gan2026_clinical_assessment_projection_render.py tests/test_gan2026_clinical_assessment_projection_score.py tests/test_gan2026_clinical_assessment_verification_route.py -q`
+  passed with 35 tests.
+  `$env:PYTHONPATH='src'; .venv/Scripts/python.exe -m ruff check src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_candidate_set_clinical_assessment_probe.py tests/test_gan2026_llm_candidate_set_clinical_assessment_probe.py`
+  passed.
+
+Next resume point after concrete-frequency precedence:
+
+1. Inspect the remaining 7 routed rows under route V1.
+2. Decide whether row 1317 needs an explicit `unknown cadence, multiple per
+   cluster` projection policy or should remain verifier/human-review.
+3. Keep row 744 as mixed-window/vague addition unless a named policy is added
+   to prefer the dominant vague weekly burden over a low-frequency GTC context.
+4. Treat row 5476 as medication-cadence ambiguity, not a projection target.
+
+### Scoring And Projection Ownership Audit
+
+- Applied the same "are we reinventing the wheel?" lens to projection/render
+  and scoring after the parser/normalizer review.
+- Scoring is mostly correctly reused and attributed:
+  - `clinical_assessment_projection_score.py` uses the canonical Gan label
+    parser (`label_to_frequency_record`) and the existing purist/pragmatic
+    category mappers (`map_purist`, `map_pragmatic`);
+  - null or unparseable rendered labels are explicitly non-scored, rather than
+    silently repaired inside scoring;
+  - the scoring artifact is labelled as score policy and does not claim
+    benchmark-comparable promotion.
+- Projection/render is the area with real custom policy surface:
+  - `clinical_assessment_projection_render.py` hand-renders rate, cluster,
+    seizure-free, unknown, and no-reference states from `NormalizedBurden`;
+  - this is legitimate glue for the new `ClinicalAssessment` object, but the
+    local helpers overlap with already developed Gan parser, scorer-facing
+    repair, benchmark-renderer, and projection-owner components;
+  - the broad `final_label_renderer` owner name is easy to misread as the
+    shared benchmark renderer, even though the implementation currently renders
+    only ClinicalAssessment burden fields.
+- Existing reusable surfaces:
+  - scorer semantics: `contract/label_parser.py` and `labels.py`;
+  - scorer-facing label repair: `normalize.py` and
+    `contract/benchmark_prediction_repair.py`;
+  - selected-evidence label projection: `selected_evidence/final_label_projection.py`;
+  - benchmark-only rendering with frozen clinical state:
+    `components/benchmark_renderer_fixture.py`;
+  - explicit projection-owner taxonomy:
+    `components/structured_seed_projection_generator.py` and
+    `components/structured_validation_projection_panel.py`.
+- Attribution questions:
+  - Rate labels generated from typed `count/period` operands should be
+    attributed to `rate_projection_policy`, not a generic final renderer.
+  - Cluster labels generated from typed cluster cadence and per-cluster burden
+    should be attributed to `cluster_projection_policy`.
+  - Unknown/no-reference sentinels and Gan-specific cluster sentinels should be
+    attributed to `benchmark_renderer` only when clinical state is preserved.
+  - Seizure-free boundary changes should remain boundary projection policy,
+    not renderer policy.
+- Policy questions:
+  - The cluster fallback `cluster cadence without size -> simple rate` is a
+    substantive projection policy. It should stay only if we are comfortable
+    treating cluster cadence as a scorer-facing seizure cadence when
+    within-cluster load is missing; otherwise it should render null and route to
+    verification.
+  - `unknown cadence, multiple per cluster` for row 1317 is not a formatting
+    issue. It requires a named cluster projection policy if we choose to emit
+    the Gan sentinel.
+  - Scorer-facing repair should be used as render-boundary validation/cleanup,
+    not as hidden clinical projection. It repairs labels; it should not choose
+    the clinical fact.
+  - Score policy should continue to parse and compare labels, not rescue
+    projection failures.
+- Recommended next implementation step:
+  - extract shared render primitives from the ClinicalAssessment projection
+    helpers, returning both label and `projection_owner`/rule id;
+  - validate rendered labels with canonical parser or clean scorer-facing
+    repair where appropriate;
+  - update artifacts so projection owner distinguishes rate, cluster, boundary,
+    and benchmark-only renderer decisions.

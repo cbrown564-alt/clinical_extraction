@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any, Literal
 
 import dspy
-from pydantic import BaseModel, ConfigDict, Field, ValidationError
+from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_validator
 
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.candidate_set import (
     CandidateSet,
@@ -58,19 +58,74 @@ DEFAULT_REPORT_PATH = Path(
 DEFAULT_CANDIDATE_SET_JSONL_PATH = selector_probe.DEFAULT_CANDIDATE_SET_JSONL_PATH
 
 
+class AssessmentDraftBurden(BaseModel):
+    """Lenient model-facing burden draft.
+
+    The final ClinicalAssessment still uses the strict NormalizedBurden contract.
+    This draft only preserves the source-near phrase; deterministic assembly owns
+    parsed operands.
+    """
+
+    model_config = ConfigDict(extra="ignore")
+
+    count_low: float | None = None
+    count_high: float | None = None
+    vague_count: str | None = None
+    period_low: float | None = None
+    period_high: float | None = None
+    period_unit: str | None = None
+    seizure_free_duration_low: float | None = None
+    seizure_free_duration_high: float | None = None
+    seizure_free_duration_unit: str | None = None
+    cluster_count_low: float | None = None
+    cluster_count_high: float | None = None
+    cluster_period_low: float | None = None
+    cluster_period_high: float | None = None
+    cluster_period_unit: str | None = None
+    events_per_cluster_low: float | None = None
+    events_per_cluster_high: float | None = None
+    source_normalized_phrase: str = ""
+
+    @field_validator(
+        "period_unit",
+        "seizure_free_duration_unit",
+        "cluster_period_unit",
+        mode="before",
+    )
+    @classmethod
+    def _normalise_unit(cls, value: object) -> object:
+        if not isinstance(value, str):
+            return value
+        normalized = value.strip().lower().replace("_", " ")
+        singular = {
+            "days": "day",
+            "weeks": "week",
+            "months": "month",
+            "years": "year",
+        }.get(normalized, normalized)
+        return singular if singular in {"day", "week", "month", "year"} else None
+
+
 class AssessmentDraft(BaseModel):
     """Model-owned clinical assessment fields."""
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
     assessment_kind: AssessmentKind
     primary_candidate_ids: list[str]
     supporting_candidate_ids: list[str] = Field(default_factory=list)
     rejected_candidate_ids: list[str] = Field(default_factory=list)
     aggregation_policy: AggregationPolicy
-    normalized_burden: NormalizedBurden
+    normalized_burden: AssessmentDraftBurden
     assessment_summary: str = ""
     uncertainty_flags: list[str] = Field(default_factory=list)
+
+    @field_validator("normalized_burden", mode="before")
+    @classmethod
+    def _accept_final_burden_model(cls, value: object) -> object:
+        if isinstance(value, NormalizedBurden):
+            return value.model_dump()
+        return value
 
 
 class Gan2026CandidateSetClinicalAssessmentSignature(dspy.Signature):
@@ -278,10 +333,15 @@ def assemble_clinical_assessment(
         return None, ["assessment_draft_missing"]
 
     errors = _validate_candidate_references(draft, candidate_set)
+    draft, override_issues = _apply_deterministic_assessment_overrides(
+        draft,
+        candidate_set=candidate_set,
+    )
     normalized_burden, normalization_issues = normalize_assessment_burden(
         draft,
         candidate_set=candidate_set,
     )
+    normalization_issues = [*override_issues, *normalization_issues]
     try:
         assessment = ClinicalAssessment(
             source_row_index=candidate_set.source_row_index,
@@ -303,6 +363,164 @@ def assemble_clinical_assessment(
     if errors:
         return None, errors
     return assessment, errors
+
+
+def _apply_deterministic_assessment_overrides(
+    draft: AssessmentDraft,
+    *,
+    candidate_set: CandidateSet,
+) -> tuple[AssessmentDraft, list[str]]:
+    if draft.assessment_kind != "cluster_frequency":
+        return draft, []
+    primary_candidates = _candidates_by_ids(candidate_set, draft.primary_candidate_ids)
+    source_phrase = _normalization_source_phrase(draft, primary_candidates)
+    existing_cluster_burden, existing_cluster_issues = _cluster_burden(
+        primary_candidates,
+        source_phrase=source_phrase,
+    )
+    if _is_renderable_cluster_burden(existing_cluster_burden) and not existing_cluster_issues:
+        return draft, []
+    override = _best_frequency_override_candidate(draft, candidate_set=candidate_set)
+    if override is None:
+        return draft, []
+    override_candidate_id, burden = override
+    adjusted = draft.model_copy(
+        update={
+            "assessment_kind": "frequency_rate",
+            "primary_candidate_ids": [override_candidate_id],
+            "supporting_candidate_ids": [
+                referenced_candidate_id
+                for referenced_candidate_id in [
+                    *draft.primary_candidate_ids,
+                    *draft.supporting_candidate_ids,
+                ]
+                if referenced_candidate_id != override_candidate_id
+            ],
+            "aggregation_policy": "single_fact",
+            "normalized_burden": AssessmentDraftBurden(
+                source_normalized_phrase=burden.source_normalized_phrase
+            ),
+        }
+    )
+    return adjusted, ["cluster_assessment_promoted_to_frequency_rate"]
+
+
+def _best_frequency_override_candidate(
+    draft: AssessmentDraft,
+    *,
+    candidate_set: CandidateSet,
+) -> tuple[str, NormalizedBurden] | None:
+    by_id = {candidate.candidate_id: candidate for candidate in candidate_set.candidates}
+    referenced_ids = [*draft.primary_candidate_ids, *draft.supporting_candidate_ids]
+    parsed: list[tuple[tuple[int, int, int], str, NormalizedBurden]] = []
+    for position, candidate_id in enumerate(referenced_ids):
+        candidate = by_id.get(candidate_id)
+        if candidate is None:
+            continue
+        if _is_medication_cadence_candidate(candidate):
+            continue
+        parsed_burdens = [
+            _frequency_burden(phrase)
+            for phrase in _frequency_override_phrases(candidate)
+        ]
+        renderable = [
+            burden
+            for burden, issues in parsed_burdens
+            if _is_renderable_frequency_burden(burden)
+            and not any(issue for issue in issues if issue != "vague_count")
+        ]
+        if not renderable:
+            continue
+        burden = max(renderable, key=_frequency_burden_specificity_score)
+        parsed.append(
+            (
+                _frequency_override_score(candidate, burden, position),
+                candidate_id,
+                burden,
+            )
+        )
+    if not parsed:
+        return None
+    _, candidate_id, burden = max(parsed, key=lambda item: item[0])
+    return candidate_id, burden
+
+
+def _frequency_override_phrases(candidate: ExtractedCandidate) -> list[str]:
+    phrases = _cluster_phrases([candidate]) if candidate.cluster_details else []
+    phrases.append(candidate_source_phrase(candidate) or candidate.evidence_span.text)
+    phrases.append(candidate.evidence_span.text)
+    return [phrase for phrase in _dedupe(phrases) if phrase]
+
+
+def _frequency_burden_specificity_score(burden: NormalizedBurden) -> tuple[int, int]:
+    return (
+        1 if burden.count_low is not None and burden.count_high is not None else 0,
+        len(burden.source_normalized_phrase),
+    )
+
+
+def _dedupe(values: Sequence[str]) -> list[str]:
+    seen: set[str] = set()
+    deduped: list[str] = []
+    for value in values:
+        if value in seen:
+            continue
+        seen.add(value)
+        deduped.append(value)
+    return deduped
+
+
+def _frequency_override_score(
+    candidate: ExtractedCandidate,
+    burden: NormalizedBurden,
+    position: int,
+) -> tuple[int, int, int]:
+    return (
+        1 if candidate.candidate_kind == "frequency_rate" else 0,
+        1 if burden.count_low is not None and burden.count_high is not None else 0,
+        -position,
+    )
+
+
+def _is_renderable_frequency_burden(burden: NormalizedBurden) -> bool:
+    if burden.period_low is None or burden.period_high is None or burden.period_unit is None:
+        return False
+    return (
+        burden.vague_count is not None
+        or (burden.count_low is not None and burden.count_high is not None)
+    )
+
+
+def _is_renderable_cluster_burden(burden: NormalizedBurden) -> bool:
+    return (
+        burden.cluster_count_low is not None
+        and burden.cluster_count_high is not None
+        and burden.cluster_period_low is not None
+        and burden.cluster_period_high is not None
+        and burden.cluster_period_unit is not None
+    )
+
+
+def _is_medication_cadence_candidate(candidate: ExtractedCandidate) -> bool:
+    text = " ".join(
+        phrase.lower()
+        for phrase in [
+            candidate_source_phrase(candidate) or "",
+            candidate.evidence_span.text,
+        ]
+        if phrase
+    )
+    return any(
+        marker in text
+        for marker in (
+            "as needed",
+            "as-needed",
+            "clobazam",
+            "rescue medication",
+            "patient-led use",
+            "treated with",
+        )
+    )
 
 
 def normalize_assessment_burden(

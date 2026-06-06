@@ -91,3 +91,117 @@ _Avoid_: final unknown label, proof of unknown state
 because no reliable current seizure-frequency candidate is available. It is not
 the same as selecting an `unknown_frequency` extracted candidate.
 _Avoid_: extracted unknown candidate, final unknown label
+
+**VerificationDecision**: A verifier-stage action over structurally valid
+upstream clinical-assessment and projection/render objects. It may affirm,
+reject, abstain, or require human review for risky clinical or projection
+cases, but it does not repair missing drafts, malformed schema output, invalid
+candidate references, parse failures, or model call failures.
+_Avoid_: schema rescue, output repair, second selector
+
+**Verification Route**: A predeclared issue or risk-family predicate that sends
+a structurally valid clinical-assessment or projection/render object to
+verification before score outcomes are used. Routes are defined by clinical or
+projection risk, not by after-the-fact wrongness or null-label status alone.
+_Avoid_: score triage, null-label bucket, post-hoc error filter
+
+**Verifier Action**: The verifier output action for a routed object. `affirm`
+accepts the current assessment, projection, or render action; `reject` blocks
+an unsupported or unsafe current outcome; `abstain` leaves the row unresolved
+because the automated pipeline has no reliable answer; and `human_review`
+escalates a meaningful but high-risk, conflicting, or policy-sensitive case
+that automation should not own.
+_Avoid_: fallback label, repaired answer, hidden override
+
+**Null Rendered Label**: A projection/render output with no scorer-facing label.
+It is a symptom of the projection/render state, not a verifier route by itself.
+Only null labels caused by a predeclared clinical or projection risk family
+should enter verification.
+_Avoid_: automatic verifier case, scored wrong row
+
+**Seizure-Free Date Arithmetic**: A deterministic normalization or projection
+policy that converts a source-near seizure-free anchor, such as "since January
+2024", into a duration when the required dates are available and the anchor is
+policy-approved. Date arithmetic is not a verifier job by itself.
+_Avoid_: verifier repair, LLM duration inference
+
+**Seizure-Free Conflict**: A verifier-route family where a seizure-free claim is
+in tension with active-event evidence, scoped event types, breakthrough events,
+or other current seizure-burden facts. Conflict handling belongs to
+verification rather than silent projection arithmetic.
+_Avoid_: date arithmetic, duration parsing
+
+**Cluster-Axis Ambiguity**: A verifier-route family where it is unclear whether
+a cluster statement describes cluster cadence, events per cluster, cluster
+duration, or individual seizure frequency. Clear cluster operands belong to
+deterministic projection; ambiguous cluster-axis meaning belongs to
+verification.
+_Avoid_: cluster parsing, deterministic cluster render
+
+**Same-Window Additive Frequency**: A deterministic projection policy that may
+sum multiple concrete `frequency_rate` primary facts only when they share the
+same time window and compatible event scope. Mixed-window, vague-plus-concrete,
+or event-scope-uncertain addition is a verifier or abstention case.
+_Avoid_: mixed-window arithmetic, vague arithmetic, context aggregation
+
+**Verifier Rejection**: A verifier action that blocks the current projected or
+rendered outcome without inventing a replacement scorer-facing label. Any
+replacement must come from a separately named deterministic fallback or action
+policy.
+_Avoid_: hidden render override, verifier fallback label
+
+**Comparator Preservation Action**: A named fallback or action policy that may
+preserve an existing comparator or baseline output after verification judges a
+proposed projected outcome risky or unsupported. Comparator preservation is
+benchmark/action policy, not clinical truth, verifier repair, or hidden
+projection behavior.
+_Avoid_: verifier label, projection guard, clinical assessment
+
+**Verification Route Report**: A deterministic validation artifact that lists
+structurally valid rows routed to verification by predeclared risk-family
+predicates, such as seizure-free conflict, cluster-axis ambiguity,
+mixed-window or vague addition, multiple current primary facts, comparator
+preservation risk, or policy-sensitive rendered labels. It records route
+reasons and trace ids but does not run a verifier model or emit verifier
+actions.
+_Avoid_: verifier decision report, score error report, Qwen schema report
+
+**Route V0 Determinism Boundary**: The first verification-route artifact is
+generated from deterministic predicates over existing validated pipeline
+objects. Manual row annotations belong in a separate inspection layer or later
+route refinement, not inside the V0 route-generation logic.
+_Avoid_: human-coded route logic, mixed manual artifact
+
+**Route Score Context Boundary**: A verification-route report may consume a
+score-policy artifact when it already embeds projection/render objects, but
+route predicates must be based on clinical-assessment, projection, render, and
+predeclared risk fields. Score status and correctness fields are audit context,
+not route triggers.
+_Avoid_: score-triggered route, wrong-row routing
+
+**Route V0 Predicate Boundary**: The first verification-route predicates map
+existing structured contract fields and issue names to predeclared route
+families. Candidate text and detail objects may be displayed for trace review,
+but V0 route triggering does not parse evidence or discover new clinical facts.
+_Avoid_: verifier discovery, second extraction pass, raw-text routing
+
+**Concrete Frequency Precedence**: A deterministic clinical-assessment
+normalization rule where a renderable frequency-rate candidate can override a
+cluster-framed assessment when the cluster framing is contextual and the
+frequency burden is concrete or policy-approved vague frequency from the shared
+selected-evidence parser. It must not override already renderable
+cluster-burden operands or medication-use cadence.
+_Avoid_: cluster erasure, medication cadence as seizure frequency
+
+**Projection Owner**: The named policy authority responsible for turning a
+clinical state into a benchmark-facing label, such as rate projection, cluster
+projection, boundary projection, or benchmark-only rendering. Projection
+ownership must be explicit whenever a label change could be confused with a
+clinical extraction decision.
+_Avoid_: hidden renderer policy, unattributed final-label change
+
+**Benchmark Renderer**: A projection owner that changes only the
+benchmark-facing label convention while preserving the input clinical state.
+It may emit scorer sentinels or Gan-specific cluster syntax, but it must not
+choose a different clinical fact.
+_Avoid_: clinical selector, semantic repair, final-label policy

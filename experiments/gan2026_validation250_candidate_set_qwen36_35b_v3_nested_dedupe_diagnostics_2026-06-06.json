@@ -1,0 +1,440 @@
+{
+  "artifact_name": "gan2026_validation250_candidate_set_diagnostics_v0",
+  "claim_boundary": "Validation250 extract-stage diagnostics only. Compatible-kind coverage is not normalized-label recall and makes no benchmark-comparable claim.",
+  "high_burden_threshold": 4,
+  "inspection_examples": {
+    "high_burden_rows": [
+      {
+        "candidate_count": 4,
+        "candidate_evidence": [
+          "Seizure frequency currently reported as ≤ 6 to 7 per year",
+          "He reports his seizure burden remains ≤ 6 to 7 per year",
+          "Continue lamotrigine and brivaracetam at current doses given tolerability and seizure frequency of ≤ 6 to 7 per year",
+          "He describes occasional brief absences noted by colleagues during videoconferences"
+        ],
+        "candidate_kinds_present": [
+          "frequency_rate",
+          "unknown_frequency"
+        ],
+        "gold_candidate_kind": "frequency_rate",
+        "gold_label": "6 to 7 per year",
+        "note_excerpt": "KINGS NEUROSCIENCES CENTRE Clinic Date: 02 October 2025 Dr A. Patel City Gate Health Centre 12 City Gate, London EC1A 4ZZ Dear Dr A. Patel Mr Daniel Hughes, DOB: 14-03-1986, Hospital No: H928374 NHS No. 8473926150 Fla...",
+        "source_row_index": 79
+      },
+      {
+        "candidate_count": 4,
+        "candidate_evidence": [
+          "cluster every seven to nine days",
+          "events tend to cluster every seven to nine days",
+          "two nocturnal generalised tonic–clonic seizures",
+          "Daytime focal impaired awareness episodes are rare"
+        ],
+        "candidate_kinds_present": [
+          "frequency_rate",
+          "unknown_frequency"
+        ],
+        "gold_candidate_kind": "frequency_rate",
+        "gold_label": "1 per 7 to 9 day",
+        "note_excerpt": "Centre for Epilepsy Neurosciences Division Clinic Date: 01 June 2020 Dr Priya Nair Consultant Neurologist Centre for Epilepsy Kingsway Community Hospital, London Dear Dr Priya Nair, Ms Aisha Rahman, DOB: 22-08-1992, H...",
+        "source_row_index": 187
+      },
+      {
+        "candidate_count": 4,
+        "candidate_evidence": [
+          "episodes every 4 weeks",
+          "clusters every 4 weeks",
+          "clusters of brief absence episodes every 4 weeks, usually over 1–2 days",
+          "His last generalised tonic–clonic seizure was in May 2025 after a night of sleep deprivation"
+        ],
+        "candidate_kinds_present": [
+          "frequency_rate",
+          "last_event_only"
+        ],
+        "gold_candidate_kind": "frequency_rate",
+        "gold_label": "1 per 4 week",
+        "note_excerpt": "KINGS NEUROSCIENCES CENTRE Clinic Date: 02 October 2025 Dr Wang Saffron Park Hospital Saffron Park, London, E14 7JL Dear Dr Wang Alex Carter, DOB: 14-05-2006, Hospital No: P903772 NHS No. 7712390045 Flat 3, 12 Kingsbr...",
+        "source_row_index": 190
+      },
+      {
+        "candidate_count": 4,
+        "candidate_evidence": [
+          "these episodes crop up most shifts",
+          "when he takes treatment consistently, the kitchen events thin out to only the odd occurrence across a handful of shifts",
+          "he sometimes wakes disoriented on the sofa with no memory of lying down, suggesting possible unwitnessed events outside work",
+          "ongoing events arising on most working days"
+        ],
+        "candidate_kinds_present": [
+          "unknown_frequency"
+        ],
+        "gold_candidate_kind": "unknown_frequency",
+        "gold_label": "multiple per week",
+        "note_excerpt": "King's College Hospital Department of Neurosciences Clinic Date: 02 October 2025 Dr A. Patel Consultant Neurologist King's College Hospital Department of Neurosciences, Denmark Hill, London SE5 9RS Dear Dr A. Patel Co...",
+        "source_row_index": 743
+      },
+      {
+        "candidate_count": 5,
+        "candidate_evidence": [
+          "one generalised tonic–clonic seizure in the last eight weeks",
+          "months she reports brief absences occurring on most weekdays",
+          "brief absences occurring on most weekdays",
+          "one generalised tonic–clonic seizure in the last eight weeks",
+          "infrequent generalised convulsions"
+        ],
+        "candidate_kinds_present": [
+          "frequency_rate",
+          "last_event_only",
+          "unknown_frequency"
+        ],
+        "gold_candidate_kind": "unknown_frequency",
+        "gold_label": "multiple per week",
+        "note_excerpt": "St Mary's Hospital Institute of Neurology Clinic Date: 02 October 2025 Dr Ahmed St Mary's Hospital Institute of Neurology, St Mary's Hospital, London W2 1NY Dear Dr Ahmed, Sophie Williams, DOB: 23-04-1991, Hospital No...",
+        "source_row_index": 744
+      },
+      {
+        "candidate_count": 4,
+        "candidate_evidence": [
+          "persistently weekly events",
+          "ongoing events occurring roughly weekly",
+          "weekly frequency over the past three months",
+          "no change in the weekly occurrence of events"
+        ],
+        "candidate_kinds_present": [
+          "frequency_rate"
+        ],
+        "gold_candidate_kind": "frequency_rate",
+        "gold_label": "1 per week",
+        "note_excerpt": "King's College Hospital Department of Neurosciences Clinic Date: 02 October 2025 Dr Aisha Patel Consultant Neurologist King's College Hospital Department of Neurosciences, King's College Hospital, London SE5 9RS Dear ...",
+        "source_row_index": 763
+      },
+      {
+        "candidate_count": 4,
+        "candidate_evidence": [
+          "yearly seizures",
+          "describing her pattern as “yearly seizures,” with some years having one event and others none",
+          "She describes one collapse last winter at home",
+          "her current pattern is of yearly seizures"
+        ],
+        "candidate_kinds_present": [
+          "frequency_rate",
+          "unknown_frequency"
+        ],
+        "gold_candidate_kind": "frequency_rate",
+        "gold_label": "1 per year",
+        "note_excerpt": "KINGS NEUROSCIENCES CENTRE Clinic Date: 02 October 2025 Dr Amelia Hart Riverside Medical Practice 12 Brook Lane, Southwark, London SE1 3AB Dear Dr Amelia Hart Wendy Brown, DOB: 21-11-1982, Hospital No: K482715 NHS No....",
+        "source_row_index": 849
+      },
+      {
+        "candidate_count": 4,
+        "candidate_evidence": [
+          "she describes her seizures as occurring roughly yearly",
+          "the last episode in late January this year",
+          "She has had no daytime episodes",
+          "there have been no witnessed prolonged events or clusters"
+        ],
+        "candidate_kinds_present": [
+          "frequency_rate",
+          "last_event_only",
+          "seizure_free"
+        ],
+        "gold_candidate_kind": "frequency_rate",
+        "gold_label": "1 per year",
+        "note_excerpt": "St Mary's Hospital Institute of Neurology Clinic Date: 02 October 2025 Dr Ahmed St Mary's Hospital Institute of Neurology, St Mary's Hospital, London W2 1NY Dear Dr Ahmed, Sophie Turner, DOB: 12-04-1990, Hospital No: ...",
+        "source_row_index": 854
+      },
+      {
+        "candidate_count": 4,
+        "candidate_evidence": [
+          "no consistent auras reported",
+          "7 to 9 focal onset seizures in three weeks",
+          "several months of relative stability without clear events",
+          "reported 7 to 9 focal onset seizures in three weeks"
+        ],
+        "candidate_kinds_present": [
+          "frequency_rate",
+          "seizure_free",
+          "unknown_frequency"
+        ],
+        "gold_candidate_kind": "frequency_rate",
+        "gold_label": "7 to 9 per 3 week",
+        "note_excerpt": "Centre for Epilepsy Neurosciences Division Clinic Date: 02 October 2025 Dr Fiona Centre for Epilepsy Queen Square, London WC1N 3BG Dear Dr Fiona, Susan Miller, DOB: 14-05-1986, Hospital No: P948572 NHS No. 7623549812 ...",
+        "source_row_index": 1171
+      },
+      {
+        "candidate_count": 4,
+        "candidate_evidence": [
+          "21 to 28 epileptic spasms in three months",
+          "Over the last three months, he has recorded “21 to 28 epileptic spasms",
+          "increased likelihood when sleep‑deprived or after missed meals",
+          "occasionally occurring in short runs"
+        ],
+        "candidate_kinds_present": [
+          "frequency_rate",
+          "unknown_frequency"
+        ],
+        "gold_candidate_kind": "frequency_rate",
+        "gold_label": "21 to 28 per 3 month",
+        "note_excerpt": "Centre for Neurology Neurosciences Division Clinic Date: 17 September 2025 Dr Aisha Rahman Consultant Neurologist Riverside Neurology Centre 12 Millbank, London SW1P 3GE Dear Dr Aisha Rahman, Mr Thomas Green, DOB: 22-...",
+        "source_row_index": 1207
+      },
+      {
+        "candidate_count": 5,
+        "candidate_evidence": [
+          "once or twice per week",
+          "three tonic-clonic seizures yesterday",
+          "interictal brief auras occurring approximately once or twice per week",
+          "recent clustering of three tonic-clonic seizures yesterday",
+          "three tonic-clonic seizures yesterday"
+        ],
+        "candidate_kinds_present": [
+          "cluster_frequency",
+          "frequency_rate",
+          "unknown_frequency"
+        ],
+        "gold_candidate_kind": "frequency_rate",
+        "gold_label": "3 per day",
+        "note_excerpt": "King's College Hospital Department of Neurosciences Clinic Date: 02 October 2025 Dr A. Patel Consultant Neurologist King's College Hospital Department of Neurosciences, King's College Hospital, London SE5 9RS Dear Dr ...",
+        "source_row_index": 1363
+      },
+      {
+        "candidate_count": 4,
+        "candidate_evidence": [
+          "five absence seizures and seven petit mal in last month",
+          "over the past several months without clear precipitating factors. Specifically, they describe five absence seizures",
+          "variable brief episodes over the past several months",
+          "five absence seizures and seven petit mal in last month"
+        ],
+        "candidate_kinds_present": [
+          "frequency_rate",
+          "unknown_frequency"
+        ],
+        "gold_candidate_kind": "frequency_rate",
+        "gold_label": "12 per month",
+        "note_excerpt": "Centre for Neurology Services Neurosciences Division Clinic Date: 14 September 2025 Dr Alexandra Green Consultant Neurologist Riverside Neurology Clinic 1 Millbank Way, Bristol BS1 4AB Dear Dr Alexandra Green, Sam Tay...",
+        "source_row_index": 1597
+      }
+    ],
+    "incompatible_or_empty_rows": [
+      {
+        "candidate_count": 2,
+        "candidate_evidence": [
+          "Ms Hannah Cooper described a cluster of events over a single day, reporting multiple short episodes within that 24-hour period consistent with their typical events",
+          "They had previously been largely event-free for several weeks."
+        ],
+        "candidate_kinds_present": [
+          "unknown_frequency"
+        ],
+        "gold_candidate_kind": "cluster_frequency",
+        "gold_label": "unknown, multiple per cluster",
+        "note_excerpt": "Centre for Epilepsy Neurosciences Division Clinic Date: 09 August 2024 Dr Aisha Rahman Consultant Neurologist Centre for Epilepsy King’s College Hospital, Denmark Hill, London SE5 9RS Dear Dr Aisha Rahman, Ms Hannah C...",
+        "source_row_index": 1317
+      },
+      {
+        "candidate_count": 0,
+        "candidate_evidence": [],
+        "candidate_kinds_present": [],
+        "gold_candidate_kind": "unknown_frequency",
+        "gold_label": "unknown",
+        "note_excerpt": "KINGS NEUROSCIENCES CENTRE Clinic Date: 08 October 2019 Dr Patel Riverside Health Centre 1 Wharf Lane, Southwark, London SE1 2AB Dear Dr Patel Wendy Brown, DOB: 21-11-1982, Hospital No: K482715 NHS No. 6592841037 Flat...",
+        "source_row_index": 2149
+      },
+      {
+        "candidate_count": 2,
+        "candidate_evidence": [
+          "Outside this window she remains seizure-free.",
+          "Seizures happen when perimenstrual only (days -2 to +2)."
+        ],
+        "candidate_kinds_present": [
+          "cluster_frequency",
+          "seizure_free"
+        ],
+        "gold_candidate_kind": "unknown_frequency",
+        "gold_label": "unknown",
+        "note_excerpt": "Department of Neurology Clinic Date: 02 October 2025 Dr Amelia Turner St Cuthbert’s NHS Neurology Centre Level 3, Neurology Outpatients, St Cuthbert’s Hospital, Durham DH1 3LE Dear Dr Amelia Turner, Emily Carter, DOB:...",
+        "source_row_index": 3468
+      },
+      {
+        "candidate_count": 0,
+        "candidate_evidence": [],
+        "candidate_kinds_present": [],
+        "gold_candidate_kind": "unknown_frequency",
+        "gold_label": "unknown",
+        "note_excerpt": "Epilepsy Centre Neurosciences Division Clinic Date: 02 October 2025 Dr Patel Northern General Hospital Department of Neurology, Herries Road, Sheffield S5 7AU Dear Dr Patel, James Walker, DOB: 14-08-1990, Hospital No:...",
+        "source_row_index": 3532
+      },
+      {
+        "candidate_count": 0,
+        "candidate_evidence": [],
+        "candidate_kinds_present": [],
+        "gold_candidate_kind": "unknown_frequency",
+        "gold_label": "multiple per day",
+        "note_excerpt": "St Mary's Hospital Institute of Neurology Clinic Date: 02 October 2025 Dr Patel St Mary's Hospital Institute of Neurology, St Mary's Hospital, London W2 1NY Dear Dr Patel, Emily Carter, DOB: 17-08-1989, Hospital No: C...",
+        "source_row_index": 4694
+      },
+      {
+        "candidate_count": 0,
+        "candidate_evidence": [],
+        "candidate_kinds_present": [],
+        "gold_candidate_kind": "unknown_frequency",
+        "gold_label": "multiple per day",
+        "note_excerpt": "KINGS NEUROSCIENCES CENTRE Clinic Date: 02 October 2025 Dr Jonathan Hale Riverside Health Centre 12 Brook Lane, Southwark London SE1 9ZZ Dear Dr Jonathan Hale Alex Morgan, DOB: 14-03-1987, Hospital No: H927451 NHS No....",
+        "source_row_index": 4709
+      },
+      {
+        "candidate_count": 0,
+        "candidate_evidence": [],
+        "candidate_kinds_present": [],
+        "gold_candidate_kind": "unknown_frequency",
+        "gold_label": "unknown",
+        "note_excerpt": "Centre for Epilepsy Neurosciences Division Clinic Date: 02 October 2025 Dr Alice Bennett Consultant Neurologist Centre for Epilepsy King’s College Hospital, London Dear Dr Alice Bennett, Mr Daniel Harris, DOB: 22-09-1...",
+        "source_row_index": 5507
+      }
+    ],
+    "no_candidate_rows": [
+      {
+        "candidate_count": 0,
+        "candidate_evidence": [],
+        "candidate_kinds_present": [],
+        "gold_candidate_kind": "unknown_frequency",
+        "gold_label": "unknown",
+        "note_excerpt": "KINGS NEUROSCIENCES CENTRE Clinic Date: 08 October 2019 Dr Patel Riverside Health Centre 1 Wharf Lane, Southwark, London SE1 2AB Dear Dr Patel Wendy Brown, DOB: 21-11-1982, Hospital No: K482715 NHS No. 6592841037 Flat...",
+        "source_row_index": 2149
+      },
+      {
+        "candidate_count": 0,
+        "candidate_evidence": [],
+        "candidate_kinds_present": [],
+        "gold_candidate_kind": "unknown_frequency",
+        "gold_label": "unknown",
+        "note_excerpt": "Epilepsy Centre Neurosciences Division Clinic Date: 02 October 2025 Dr Patel Northern General Hospital Department of Neurology, Herries Road, Sheffield S5 7AU Dear Dr Patel, James Walker, DOB: 14-08-1990, Hospital No:...",
+        "source_row_index": 3532
+      },
+      {
+        "candidate_count": 0,
+        "candidate_evidence": [],
+        "candidate_kinds_present": [],
+        "gold_candidate_kind": "unknown_frequency",
+        "gold_label": "multiple per day",
+        "note_excerpt": "St Mary's Hospital Institute of Neurology Clinic Date: 02 October 2025 Dr Patel St Mary's Hospital Institute of Neurology, St Mary's Hospital, London W2 1NY Dear Dr Patel, Emily Carter, DOB: 17-08-1989, Hospital No: C...",
+        "source_row_index": 4694
+      },
+      {
+        "candidate_count": 0,
+        "candidate_evidence": [],
+        "candidate_kinds_present": [],
+        "gold_candidate_kind": "unknown_frequency",
+        "gold_label": "multiple per day",
+        "note_excerpt": "KINGS NEUROSCIENCES CENTRE Clinic Date: 02 October 2025 Dr Jonathan Hale Riverside Health Centre 12 Brook Lane, Southwark London SE1 9ZZ Dear Dr Jonathan Hale Alex Morgan, DOB: 14-03-1987, Hospital No: H927451 NHS No....",
+        "source_row_index": 4709
+      },
+      {
+        "candidate_count": 0,
+        "candidate_evidence": [],
+        "candidate_kinds_present": [],
+        "gold_candidate_kind": "unknown_frequency",
+        "gold_label": "unknown",
+        "note_excerpt": "Centre for Epilepsy Neurosciences Division Clinic Date: 02 October 2025 Dr Alice Bennett Consultant Neurologist Centre for Epilepsy King’s College Hospital, London Dear Dr Alice Bennett, Mr Daniel Harris, DOB: 22-09-1...",
+        "source_row_index": 5507
+      }
+    ]
+  },
+  "row_count": 250,
+  "source_artifact": "experiments\\gan2026_validation250_candidate_set_qwen36_35b_v3_nested_dedupe_2026-06-06.jsonl",
+  "summary": {
+    "by_gold_candidate_kind": {
+      "cluster_frequency": {
+        "compatible_kind_coverage_rate": 0.8571428571428571,
+        "compatible_kind_covered_rows": 6,
+        "rows": 7
+      },
+      "frequency_rate": {
+        "compatible_kind_coverage_rate": 1.0,
+        "compatible_kind_covered_rows": 161,
+        "rows": 161
+      },
+      "seizure_free": {
+        "compatible_kind_coverage_rate": 1.0,
+        "compatible_kind_covered_rows": 38,
+        "rows": 38
+      },
+      "unknown_frequency": {
+        "compatible_kind_coverage_rate": 0.8636363636363636,
+        "compatible_kind_covered_rows": 38,
+        "rows": 44
+      }
+    },
+    "candidate_kind_row_counts": {
+      "cluster_frequency": 24,
+      "frequency_rate": 186,
+      "last_event_only": 24,
+      "seizure_free": 81,
+      "unknown_frequency": 115
+    },
+    "candidate_set_missing_rows": 0,
+    "compatible_kind_coverage_rate": 0.972,
+    "compatible_kind_coverage_rows": 243,
+    "diagnostic_issue_rows": 49,
+    "high_burden_rows": 42,
+    "high_burden_source_row_indices": [
+      79,
+      187,
+      190,
+      743,
+      744,
+      763,
+      849,
+      854,
+      1171,
+      1207,
+      1363,
+      1597,
+      1687,
+      1794,
+      2374,
+      2609,
+      2681,
+      2759,
+      2822,
+      2965,
+      2992,
+      3015,
+      3261,
+      3281,
+      3371,
+      3469,
+      3482,
+      3643,
+      3988,
+      4116,
+      4478,
+      4480,
+      4563,
+      4597,
+      4771,
+      4839,
+      5121,
+      5490,
+      5491,
+      5528,
+      5551,
+      5567
+    ],
+    "incompatible_or_empty_rows": 7,
+    "incompatible_or_empty_source_row_indices": [
+      1317,
+      2149,
+      3468,
+      3532,
+      4694,
+      4709,
+      5507
+    ],
+    "no_candidate_source_row_indices": [
+      2149,
+      3532,
+      4694,
+      4709,
+      5507
+    ],
+    "rows_with_no_candidates": 5
+  }
+}
