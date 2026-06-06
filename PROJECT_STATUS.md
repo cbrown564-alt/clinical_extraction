@@ -53,6 +53,11 @@ Controlling thread:
   by `selected_evidence_missing_exact_trace` (250 rows) plus
   `selected_source_id_invalid` (9 rows); this needs a deliberate report read,
   not silent promotion.
+- The first saved verifier comparison packet for `context_repair_v6` is now
+  materialized. It preserves the predeclared `29 / 4 / 18 / 5 / 220` bucket
+  split and keeps provenance sidecars visible on `39` of the `56`
+  clinical/policy rows while excluding provenance-only rows from the main score
+  table.
 - Focused validation for the reset path passed:
   `99 passed` across clinical-assessment projection/render, verification route,
   and candidate-set clinical assessment tests.
@@ -76,6 +81,8 @@ Controlling thread:
   `docs/research/gan2026_validation750_null_action_taxonomy_v6_2026-06-06.md`.
 - First verifier report predeclaration:
   `docs/research/gan2026_validation750_first_verifier_report_predeclaration_v6_2026-06-06.md`.
+- First saved verifier comparison packet:
+  `docs/research/gan2026_validation750_first_verifier_saved_comparison_context_repair_v6_2026-06-06.md`.
 - Validation750 reset artifacts live under
   `experiments/gan2026_*validation750*gpt41mini*2026-06-06.*`.
 - June 5 staged-assembly holdout docs remain a separate frozen thread; do not
@@ -85,23 +92,26 @@ Controlling thread:
 
 ### Now
 
-- Keep the 220 provenance-only routed rows out of the first verifier
-  success/failure table and track them as audit/instrumentation debt.
-- Use the new null-action taxonomy operationally: 29 verifier-eligible
-  ambiguity rows, 18 upstream policy/parser rows, and 4 abstain rows.
-- Use the predeclared first verifier layout: 29-row main ambiguity score table,
-  4 abstain exemplars, 18 upstream-policy appendix, 5 rendered
-  policy-sensitive appendix, and 220 provenance-only audit appendix.
-
-### Next
-
+- Use the saved verifier comparison packet operationally:
+  `29` main ambiguity rows, `4` abstain exemplars, `18` upstream-policy rows,
+  `5` rendered policy-sensitive rows, and `220` provenance-only audit rows.
+- Keep the `220` provenance-only routed rows out of the first verifier
+  success/failure table and adjudicate whether they remain audit-only debt,
+  separate review queue, or prompt-visible sidecars only.
 - Use the reset-stage component inventory to define the first component-level
   ablation report surface: family, recovered rows, newly routed rows, remaining
   nulls, provenance validity, and audit-only W->C/C->W.
+
+### Next
+
 - Decide whether vague cluster-count cadence needs a reset-native contract, or
   should remain routed policy debt after the current verifier-candidate report.
-- Prepare the first saved verifier comparison using the predeclared layout and
-  visible provenance sidecars on the 39 mixed clinical/policy rows.
+- Freeze the first verifier no-call/live input-output contract against the
+  saved packet: action-only output, cited candidate/source ids, nullable final
+  rendered label, and no score-derived hints in model-visible input.
+- Decide whether the first verifier run should score only the 29-row ambiguity
+  table or also produce separate appendix readouts for the 4 abstain, 18
+  upstream-policy, and 5 rendered policy-sensitive rows.
 
 ### Blocked
 
@@ -127,6 +137,15 @@ Controlling thread:
 
 ### Done Recently
 
+- 2026-06-06: Built the first saved verifier comparison packet as
+  `experiments/gan2026_validation750_first_verifier_saved_comparison_context_repair_v6_2026-06-06.{jsonl,json}`
+  plus
+  `docs/research/gan2026_validation750_first_verifier_saved_comparison_context_repair_v6_2026-06-06.md`,
+  joining the V6 route, deterministic V0 decision, and saved assessment
+  artifacts into prompt-ready row packets with candidate evidence texts,
+  projection/render state, and visible provenance sidecars on the 39 mixed
+  clinical/policy rows while preserving the predeclared `29 / 4 / 18 / 5 / 220`
+  bucket split.
 - 2026-06-06: Updated the reset completed-tasks and review-plan docs so they
   now acknowledge the validation750 `context_repair_v6` read, post-V5 ports,
   plain-language `values` decision, explicit cluster route contract, and the

@@ -1,0 +1,47 @@
+{
+  "artifact_kind": "gan2026_first_verifier_saved_comparison",
+  "assessment_artifact_path": "experiments\\gan2026_candidate_set_clinical_assessment_probe_live_validation750_gpt41mini_v3nested_v3_2026-06-06.jsonl",
+  "bucket_counts": {
+    "abstain_exemplar": 4,
+    "provenance_only_audit": 220,
+    "rendered_policy_sensitive_appendix": 5,
+    "upstream_policy_appendix": 18,
+    "verifier_eligible_ambiguity": 29
+  },
+  "claim_boundary": "saved validation-development verifier comparison packet only; no live verifier model call, no locked-test inspection, no benchmark-comparable claim, and no replacement scorer-facing label generation are authorized",
+  "date": "2026-06-06",
+  "decision": "first_verifier_saved_comparison_ready",
+  "decision_artifact_path": "experiments\\gan2026_validation750_verification_decision_gpt41mini_context_repair_v6_2026-06-06.jsonl",
+  "metrics": {
+    "abstain_exemplar_rows": 4,
+    "clinical_policy_rows": 56,
+    "clinical_policy_rows_with_provenance_sidecar": 39,
+    "clinical_policy_rows_without_provenance_sidecar": 17,
+    "main_ambiguity_rows": 29,
+    "provenance_only_rows": 220,
+    "rendered_policy_sensitive_rows": 5,
+    "total_routed_rows": 276,
+    "upstream_policy_rows": 18
+  },
+  "non_provenance_route_family_counts": {
+    "cluster_axis_ambiguity": 13,
+    "conditional_only_trigger": 1,
+    "cyclic_window_without_event_count": 5,
+    "mixed_window_or_vague_addition": 29,
+    "relative_only_trend": 2,
+    "rendered_label_supported_but_policy_sensitive": 1,
+    "seizure_free_proxy_evidence_overreach": 1,
+    "unresolved_cluster_cadence_with_per_cluster_burden": 4
+  },
+  "report_section_counts": {
+    "abstain_exemplar_appendix": 4,
+    "main_ambiguity_score_table": 29,
+    "provenance_only_audit_appendix": 220,
+    "rendered_policy_sensitive_appendix": 5,
+    "upstream_policy_appendix": 18
+  },
+  "route_artifact_path": "experiments\\gan2026_validation750_verification_route_gpt41mini_context_repair_v6_2026-06-06.jsonl",
+  "row_count": 276,
+  "split": "validation",
+  "split_manifest": "gan2026_split_v1"
+}
