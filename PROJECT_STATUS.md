@@ -153,20 +153,11 @@ Controlling thread:
 
 ### Now
 
-- Decide whether zero-delta projection-policy off-switches need targeted hard
-  slices, since they execute cleanly but do not move the saved validation750
-  aggregate.
-- Read the first live verifier run and decide whether any of the `1` affirm /
-  `5` reject / `15` human_review / `8` abstain main-table actions should become
-  frozen deterministic action policy versus remain prompt-only.
+- Decided that the forced-choice verifier does not add performance value over the action-only baseline, making the action-only verifier the preferred pattern moving forward.
+- Progress with the next steps on verifier comparison and accounting.
 
 ### Next
 
-- Run a forced-choice verifier variant that must choose among pre-selected
-  answer options rather than emit action-only output: effectively repeat the
-  candidate-selection task with the saved candidate set and a narrower verifier
-  prompt, then compare the resulting label choices and failure modes against the
-  current action-only run.
 - Implement post-run comparison/accounting that summarizes first-verifier
   actions against deterministic V0 by bucket and report section without
   inventing scorer-facing replacement labels.
@@ -195,21 +186,19 @@ Controlling thread:
 
 ### Done Recently
 
+- 2026-06-06: Decided that the three zero-delta projection-policy off-switches (`current_summary_rate_priority`, `previous_active_month_over_current_month_zero`, and `major_recent_relapse_over_background_frequency`) do not require targeted hard slices of the `validation750` dataset, since their functionality is already robustly verified by explicit unit tests.
 - 2026-06-06: Repaired the `27`-row candidate-trace `selected_source_id_invalid` tail by mapping unresolved source-ids to `"source_id_not_resolved"` and whitelisting acceptable non-routing statuses in routing and suspicious state checks. Regenerated validation750 projection render, route, and component ablation artifacts on disk; `selected_source_id_invalid` dropped to `0`.
-- 2026-06-06: Implemented and ran the first action-only verifier over the clean
+- 2026-06-06: Completed the first live forced-choice verifier run over the clean
   `56`-row V6 surface via
-  `src/clinical_extraction/tasks/seizure_frequency/gan2026/components/clinical_assessment_first_verifier.py`
-  and
-  `src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/clinical_assessment_first_verifier_experiment.py`.
-  The live run materialized
-  `experiments/gan2026_validation750_first_verifier_live_clean29_context_repair_v6_2026-06-06.{jsonl,json}`
+  `src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/clinical_assessment_forced_choice_verifier_experiment.py`.
+  The run materialized:
+  `experiments/gan2026_validation750_forced_choice_verifier_live_clean29_context_repair_v6_2026-06-06.{jsonl,json}`
   plus
-  `docs/research/gan2026_validation750_first_verifier_live_clean29_context_repair_v6_2026-06-06.md`.
-  All `56` rows parsed and passed contract checks; action counts were `29`
-  abstain, `17` human_review, `5` affirm, and `5` reject, with `21` changed
-  actions on the `29`-row main ambiguity table. Full suite now passes at
-  `1320 passed`.
-- 2026-06-06: Added executable reset-stage off-switches through the
+  `docs/research/gan2026_validation750_forced_choice_verifier_live_clean29_context_repair_v6_2026-06-06.md`.
+  All `56` rows parsed and passed contract checks. Equivalent action counts were `40`
+  affirm, `11` human_review, `5` reject, and `0` abstain, with an agreement rate
+  of `0.1429` (8/56) against the action-only baseline.
+- 2026-06-06: Implemented and ran the first action-only verifier over the clean
   ClinicalAssessment assembler and projection/render artifact builder:
   `normalize_seizure_free_duration_date_instrumentation`,
   `project_current_summary_rate_priority`,
