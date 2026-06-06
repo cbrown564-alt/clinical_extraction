@@ -104,8 +104,14 @@ def route_decision_for_row(
 
     if selected_evidence_status.get("exact_trace") is False:
         families.append("selected_evidence_missing_exact_trace")
-        reasons.append("selected evidence is not an exact carried trace for the chosen primary fact")
-    elif selected_evidence_status.get("source_id_status") not in {"valid", "not_instrumented", None}:
+        reasons.append(
+            "selected evidence is not an exact carried trace for the chosen primary fact"
+        )
+    elif selected_evidence_status.get("source_id_status") not in {
+        "valid",
+        "not_instrumented",
+        None,
+    }:
         families.append("selected_source_id_invalid")
         reasons.append("selected evidence is exact but its carried source-id trace is invalid")
 
@@ -125,17 +131,22 @@ def route_decision_for_row(
         reasons.append(
             "cyclic vulnerability window is present without event count or burden"
         )
+    elif "cluster_cadence_unknown_with_per_cluster_burden" in issue_set:
+        families.append("unresolved_cluster_cadence_with_per_cluster_burden")
+        reasons.append(
+            "cluster burden is rendered but cadence or cluster axis remains unresolved"
+        )
     elif (
         projection_kind == "cluster_frequency"
         and rendered_label is None
         and projection_basis == "cluster_frequency"
         and (
-        "cluster_frequency_operands_unparsed" in issue_set
-        or "cluster_cadence_operands_incomplete" in issue_set
+        "cluster_frequency_values_unparsed" in issue_set
+        or "cluster_cadence_values_incomplete" in issue_set
         )
     ):
         families.append("cluster_axis_ambiguity")
-        reasons.append("cluster projection has unparsed or incomplete cluster-axis operands")
+        reasons.append("cluster projection has unparsed or incomplete cluster-axis values")
 
     if "conditional_only_trigger_without_baseline" in issue_set:
         families.append("conditional_only_trigger")
@@ -154,7 +165,10 @@ def route_decision_for_row(
         rendered_label=rendered_label,
     ):
         families.append("denominator_window_mismatch")
-        reasons.append("the chosen phrase implies a windowed cadence that may not match the rendered denominator")
+        reasons.append(
+            "the chosen phrase implies a windowed cadence that may not match "
+            "the rendered denominator"
+        )
 
     if (
         rendered_label is None
@@ -162,11 +176,11 @@ def route_decision_for_row(
         and (
         "additive_frequency_period_mismatch" in issue_set
         or "vague_count" in issue_set
-        or "frequency_rate_operands_incomplete" in issue_set
+        or "frequency_rate_values_incomplete" in issue_set
         )
     ):
         families.append("mixed_window_or_vague_addition")
-        reasons.append("additive assessment includes mixed-window, vague, or incomplete operands")
+        reasons.append("additive assessment includes mixed-window, vague, or incomplete values")
 
     if (
         "seizure_free_proxy_evidence_overreach" not in issue_set

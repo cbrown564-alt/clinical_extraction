@@ -142,7 +142,7 @@ def test_assemble_clinical_assessment_accepts_additive_same_window() -> None:
     assert assessment.normalization_issues == []
 
 
-def test_assemble_clinical_assessment_ignores_model_operand_leak() -> None:
+def test_assemble_clinical_assessment_ignores_model_value_leak() -> None:
     candidate_set = _candidate_set(
         _frequency_candidate("det:306:1", "two seizures per month"),
         _cluster_candidate("llm:306:2", "clusters after sleep loss"),

@@ -65,7 +65,7 @@ The intended division of labor was:
   answer.
 - Select / clinical assessment: synthesize the clinically relevant burden from
   candidates, preserving ambiguity and context.
-- Normalise: deterministically parse source-near facts into internal operands
+- Normalise: deterministically parse source-near facts into internal values
   without changing clinical meaning.
 - Project: deterministically apply Gan-specific benchmark policy to normalized
   clinical state.
@@ -125,7 +125,7 @@ parser-like responsibility:
 
 - candidate kind and source phrase are LLM-appropriate;
 - source ids, spans, candidate ids, and provenance are deterministic;
-- counts, ranges, intervals, durations, and canonical operands are deterministic
+- counts, ranges, intervals, durations, and canonical values are deterministic
   normalization responsibilities;
 - ambiguity and conflict are deferred to row-level route/verifier behavior.
 
@@ -208,7 +208,7 @@ deltas without emitting replacement labels.
 The 234 true null-rendered rows are not one problem. They split into themes:
 
 - `seizure_free_duration_gap`: 114;
-- `frequency_operands_gap`: 77;
+- `frequency_values_gap`: 77;
 - `additive_mixed_window_or_vague`: 24;
 - `cluster_axis_gap`: 12;
 - `cyclic_window_without_count`: 5;
@@ -303,8 +303,8 @@ old mechanisms as explicit, ablatable components in the new stage model.
    an issue trace.
 
 2. Add assessment-to-normalization repair.
-   Copy parseable operands from selected candidates and selected evidence when
-   the LLM assessment has a source phrase but omitted or malformed operands.
+   Copy parseable values from selected candidates and selected evidence when
+   the LLM assessment has a source phrase but omitted or malformed values.
 
 3. Reintroduce seizure-free duration/date instrumentation.
    Parse explicit durations, since-dates, last-event dates, and reference-date
@@ -412,7 +412,7 @@ The old components had pieces of this answer, but not one clean state schema.
 
 The LLM often sees multiple true facts and tries to combine them. The old system
 predicted many of these rows but had wrong predictions too. The reset should
-only allow `additive_same_window` when operands are parsed and same-window.
+only allow `additive_same_window` when values are parsed and same-window.
 Mixed semiology, mixed window, cluster burden, and major/minor event priority
 need explicit projection policy or verifier action.
 
@@ -485,11 +485,11 @@ claim, and score context remains audit-only.
    `candidate_role_duplicate_removed:*` and
    `candidate_role_overlap_removed:*`.
 
-2. Assessment-to-normalization operand repair.
+2. Assessment-to-normalization value repair.
    When an assessment phrase is present but unparseable, normalization can copy
-   parseable operands from selected primary candidates. This currently includes
-   frequency operands and explicit seizure-free duration operands, with traces
-   such as `frequency_rate_operands_repaired_from_primary_candidate` and
+   parseable values from selected primary candidates. This currently includes
+   frequency values and explicit seizure-free duration values, with traces
+   such as `frequency_rate_values_repaired_from_primary_candidate` and
    `seizure_free_duration_repaired_from_primary_candidate`.
 
 3. CandidateSet row context.
@@ -626,7 +626,7 @@ candidate-set surface:
 - VerificationDecision V0 actions: 48 `abstain`.
 
 For comparison, the original report recorded 498 rendered rows and 234 true
-null-rendered rows. The role/operand/date repair pass recovered 66 rendered
+null-rendered rows. The role/value/date repair pass recovered 66 rendered
 rows without broadening the verifier route surface.
 
 Audit-only score context for the final context-repair V2 replay:
@@ -1047,7 +1047,7 @@ Recommended next move:
 
 Likely larger components to consider next:
 
-- frequency operands / selected-evidence benchmark repair;
+- frequency values / selected-evidence benchmark repair;
 - ACD projection nodes;
 - route and suspicious-flag semantics;
 - event-date context only if the 177-row family review shows broad value.
@@ -1440,7 +1440,7 @@ Representative route shapes:
 {
   "projection_issues": [
     "conditional_only_trigger_without_baseline",
-    "frequency_rate_operands_incomplete"
+    "frequency_rate_values_incomplete"
   ],
   "verification_route": {
     "route_families": ["conditional_only_trigger"]
@@ -1452,7 +1452,7 @@ Representative route shapes:
 {
   "projection_issues": [
     "relative_change_without_current_baseline",
-    "frequency_rate_operands_incomplete"
+    "frequency_rate_values_incomplete"
   ],
   "verification_route": {
     "route_families": ["relative_only_trend"]
@@ -1655,3 +1655,70 @@ Why that is the strongest next candidate:
 - we have now recovered enough normalization, projection, and provenance
   discipline that cluster route semantics can be ported cleanly rather than
   smuggled in through broad fallback.
+
+## Implementation Addendum: 2026-06-06 Cluster Value Language And Route Ownership
+
+After the provenance and denominator-route ports, we made two small but
+important contract decisions before continuing cluster work.
+
+First, reset-stage clinical assessment, normalization, projection, and
+verification-route issue names should use plain-language `values`. Parsed
+counts, ranges, periods, durations, and cluster quantities remain deterministic
+stage-owned data. The wording is now easier to read in artifacts and route
+reports.
+
+Representative issue-name changes:
+
+```json
+{
+  "projection_issues": [
+    "frequency_rate_values_incomplete",
+    "cluster_frequency_values_unparsed",
+    "cluster_cadence_values_incomplete"
+  ],
+  "normalization_issues": [
+    "frequency_rate_values_repaired_from_primary_candidate",
+    "frequency_label_values_unparsed",
+    "cluster_label_values_unparsed"
+  ]
+}
+```
+
+Second, we agreed that a Gan-compatible cluster convention label may be
+rendered while still being routed for verification when cadence, burden, or
+axis ownership remains unresolved. This keeps projection/render mechanically
+useful without pretending the clinical state is fully settled.
+
+Representative route shape:
+
+```json
+{
+  "projection_decision": {
+    "projection_kind": "cluster_frequency",
+    "projection_basis": "unknown_cadence_cluster_burden",
+    "projection_issues": [
+      "cluster_frequency_values_unparsed",
+      "cluster_cadence_unknown_with_per_cluster_burden"
+    ],
+    "projected_label_semantics": "unknown, multiple per cluster"
+  },
+  "final_rendered_label": {
+    "rendered_label": "unknown, multiple per cluster",
+    "render_issues": []
+  },
+  "verification_route": {
+    "routed": true,
+    "route_families": [
+      "unresolved_cluster_cadence_with_per_cluster_burden"
+    ],
+    "route_reasons": [
+      "cluster burden is rendered but cadence or cluster axis remains unresolved"
+    ]
+  }
+}
+```
+
+This is deliberately not broad cluster review. Explicitly parsed cluster
+cadence plus explicit per-cluster burden can still render without this route.
+The new route family is for convention-supported or incomplete-axis cases where
+the label is representable but the clinical interpretation remains risky.

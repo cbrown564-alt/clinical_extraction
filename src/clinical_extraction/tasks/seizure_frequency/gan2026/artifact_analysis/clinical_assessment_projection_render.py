@@ -372,14 +372,14 @@ def _project_label_semantics(
                 None,
                 "frequency_rate",
                 "rate_projection_policy",
-                "frequency_rate_operands_v0",
-                ["frequency_rate_operands_incomplete"],
+                "frequency_rate_values_v0",
+                ["frequency_rate_values_incomplete"],
             )
         return ProjectionOutcome(
             label,
             "frequency_rate",
             "rate_projection_policy",
-            "frequency_rate_operands_v0",
+            "frequency_rate_values_v0",
             [],
         )
     if assessment.assessment_kind == "cluster_frequency":
@@ -474,7 +474,7 @@ def _cluster_label(
             "unknown_cadence_cluster_burden",
             "cluster_projection_policy",
             "unknown_cadence_multiple_per_cluster_v0",
-            [],
+            ["cluster_cadence_unknown_with_per_cluster_burden"],
         )
     cyclic_window = _has_primary_cyclic_vulnerability_window(assessment, candidate_set)
     if (
@@ -484,7 +484,7 @@ def _cluster_label(
         or burden.cluster_period_high is None
         or burden.cluster_period_unit is None
     ):
-        issues = ["cluster_cadence_operands_incomplete"]
+        issues = ["cluster_cadence_values_incomplete"]
         if medication_cadence:
             issues.append("medication_cadence_ambiguity")
         if cyclic_window:
@@ -493,7 +493,7 @@ def _cluster_label(
             None,
             "cluster_frequency",
             "cluster_projection_policy",
-            "cluster_cadence_operands_required_v0",
+            "cluster_cadence_values_required_v0",
             issues,
         )
     cadence = (
@@ -608,7 +608,9 @@ def _selected_evidence_status_for_assessment(
     ]
     selected_evidence = assessment.normalized_burden.source_normalized_phrase.strip()
     note_text = " ".join(
-        candidate.evidence_span.text for candidate in primary_candidates if candidate.evidence_span.text
+        candidate.evidence_span.text
+        for candidate in primary_candidates
+        if candidate.evidence_span.text
     )
     exact_trace = bool(selected_evidence) and (
         any(
