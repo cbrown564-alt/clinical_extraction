@@ -70,7 +70,12 @@ def _route_row(
     }
 
 
-def _decision_row(*, source_row_index: int, route_families: list[str], rendered_label: str | None) -> dict:
+def _decision_row(
+    *,
+    source_row_index: int,
+    route_families: list[str],
+    rendered_label: str | None,
+) -> dict:
     return {
         "source_row_index": source_row_index,
         "verification_decision": {
@@ -144,7 +149,10 @@ def test_build_first_verifier_report_rows_assigns_predeclared_buckets_and_sideca
     decision_rows = [
         _decision_row(
             source_row_index=101,
-            route_families=["selected_evidence_missing_exact_trace", "mixed_window_or_vague_addition"],
+            route_families=[
+                "selected_evidence_missing_exact_trace",
+                "mixed_window_or_vague_addition",
+            ],
             rendered_label=None,
         ),
         _decision_row(
@@ -217,13 +225,81 @@ def test_model_input_keeps_gold_and_score_fields_out_of_model_visible_packet() -
     model_input = rows[0]["verifier_model_input"]
     payload_text = str(model_input)
 
-    assert model_input["verification_case"]["baseline_verification_decision_v0"]["action"] == "abstain"
-    assert model_input["verification_case"]["candidate_evidence_packets"][0]["candidate_id"] == "llm:1"
+    baseline = model_input["verification_case"]["baseline_verification_decision_v0"]
+    assert baseline["action"] == "abstain"
+    candidate_packets = model_input["verification_case"]["candidate_evidence_packets"]
+    assert candidate_packets[0]["candidate_id"] == "llm:1"
     for term in [
         "gold_label",
         "purist_correct",
         "pragmatic_correct",
         "exact_normalized_label_match",
         "score_status",
+        "audit_only_w_to_c",
+        "audit_only_c_to_w",
+        "W_to_C",
+        "C_to_W",
     ]:
         assert term not in payload_text
+
+
+def test_clean_first_verifier_experiment_input_excludes_provenance_only_rows() -> None:
+    rows, _ = first_verifier_report.build_first_verifier_report_rows(
+        [
+            _route_row(
+                source_row_index=101,
+                route_families=[
+                    "selected_evidence_missing_exact_trace",
+                    "mixed_window_or_vague_addition",
+                ],
+                exact_trace=False,
+            ),
+            _route_row(
+                source_row_index=202,
+                route_families=["selected_source_id_invalid"],
+                exact_trace=False,
+            ),
+            _route_row(
+                source_row_index=303,
+                route_families=["cyclic_window_without_event_count"],
+            ),
+        ],
+        [
+            _decision_row(
+                source_row_index=101,
+                route_families=[
+                    "selected_evidence_missing_exact_trace",
+                    "mixed_window_or_vague_addition",
+                ],
+                rendered_label=None,
+            ),
+            _decision_row(
+                source_row_index=202,
+                route_families=["selected_source_id_invalid"],
+                rendered_label=None,
+            ),
+            _decision_row(
+                source_row_index=303,
+                route_families=["cyclic_window_without_event_count"],
+                rendered_label=None,
+            ),
+        ],
+        [
+            _assessment_row(source_row_index=101),
+            _assessment_row(source_row_index=202),
+            _assessment_row(source_row_index=303),
+        ],
+        route_artifact_path="route.jsonl",
+        decision_artifact_path="decision.jsonl",
+        assessment_artifact_path="assessment.jsonl",
+    )
+
+    clean_rows, metadata = first_verifier_report.build_clean_first_verifier_experiment_input(
+        rows
+    )
+
+    assert [row["source_row_index"] for row in clean_rows] == [101, 303]
+    assert metadata["metrics"]["provenance_only_rows_excluded"] == 1
+    assert clean_rows[0]["appendix_policy"]["main_score_table"] is True
+    assert clean_rows[1]["appendix_policy"]["appendix_only"] is True
+    assert "gold_label" not in str(clean_rows[0]["verifier_model_input"])

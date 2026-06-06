@@ -64,6 +64,33 @@ Controlling thread:
   split and keeps provenance sidecars visible on `39` of the `56`
   clinical/policy rows while excluding provenance-only rows from the main score
   table.
+- Operationally, the first verifier success/failure table is the `29`-row main
+  ambiguity set only. The `4` abstain exemplars, `18` upstream-policy rows,
+  `5` rendered policy-sensitive rows, and `220` provenance-only audit rows stay
+  as separate appendix/audit surfaces.
+- The replayed route surface is now split for execution: `55` non-provenance
+  routed clinical/policy rows are the real first verifier-target surface,
+  while provenance follow-through is a separate `27`-row
+  `selected_source_id_invalid` tail rather than part of the main clinical
+  ambiguity problem.
+- The reset-stage component inventory now defines the first component-level
+  ablation report surface: family, recovered rows, newly routed rows,
+  remaining nulls, provenance validity, and audit-only `W->C` / `C->W`.
+- The first component table now isolates the `+7` V5->V6 recovered rows across
+  active frequency families: `5` selected-evidence frequency-value recoveries,
+  `2` vague-period recoveries, and `0` diary-date-list recoveries.
+- Provenance sidecars are now split family-by-family on the `56`
+  clinical/policy rows, and saved V5->V6 audit-only `W->C` / `C->W` counts are
+  attached to the component table without entering verifier-visible packets.
+- The first clean verifier experiment input is materialized as a `56`-row
+  surface: `29` main ambiguity rows plus `4` abstain, `18` upstream-policy, and
+  `5` rendered-policy appendices; the `220` provenance-only rows are excluded.
+- Executable one-family-off switches now exist for the seizure-free and
+  projection-policy families. Validation750 replays show seizure-free duration
+  instrumentation owns `41` rendered rows on the clean candidate-trace baseline
+  (`580 -> 539` rendered when disabled), while current-summary,
+  previous-month/current-zero, and major-recent-relapse switches execute with
+  `0` aggregate delta on this saved surface.
 - Focused validation for the reset path passed:
   `99 passed` across clinical-assessment projection/render, verification route,
   and candidate-set clinical assessment tests.
@@ -89,8 +116,18 @@ Controlling thread:
   `docs/research/gan2026_validation750_null_action_taxonomy_v6_2026-06-06.md`.
 - First verifier report predeclaration:
   `docs/research/gan2026_validation750_first_verifier_report_predeclaration_v6_2026-06-06.md`.
+- First component ablation report surface:
+  `docs/research/gan2026_validation750_first_component_ablation_report_surface_v6_2026-06-06.md`.
+- First component ablation table:
+  `docs/research/gan2026_validation750_first_component_ablation_table_v6_2026-06-06.md`.
+- First component ablation table JSON:
+  `experiments/gan2026_validation750_first_component_ablation_table_v6_2026-06-06.json`.
+- One-family-off replay artifacts:
+  `experiments/gan2026_validation750_one_family_off_*_context_repair_v6_2026-06-06.*`.
 - First saved verifier comparison packet:
   `docs/research/gan2026_validation750_first_verifier_saved_comparison_context_repair_v6_2026-06-06.md`.
+- First clean verifier experiment input:
+  `docs/research/gan2026_validation750_first_verifier_experiment_input_clean29_context_repair_v6_2026-06-06.md`.
 - Provenance-only failure taxonomy:
   `docs/research/gan2026_validation750_provenance_only_failure_taxonomy_v6_2026-06-06.md`.
 - Candidate-evidence provenance replay route artifact:
@@ -104,36 +141,24 @@ Controlling thread:
 
 ### Now
 
-- Use the saved verifier comparison packet operationally:
-  `29` main ambiguity rows, `4` abstain exemplars, `18` upstream-policy rows,
-  `5` rendered policy-sensitive rows, and `220` provenance-only audit rows.
-- Keep the `220` provenance-only routed rows out of the first verifier
-  success/failure table; the new taxonomy shows they are mostly exact-trace
-  representation debt, not clinical ambiguity.
-- Use the replayed route surface operationally: `55` non-provenance routed
-  clinical/policy rows remain the real verifier-target surface, while the
-  residual provenance work is the `27`-row source-id tail.
-- Use the reset-stage component inventory to define the first component-level
-  ablation report surface: family, recovered rows, newly routed rows, remaining
-  nulls, provenance validity, and audit-only W->C/C->W.
+- Run the first action-only verifier implementation against the clean `56`-row
+  input surface only: `29` main rows plus the `4 / 18 / 5` appendices.
+- Repair the `27`-row candidate-trace `selected_source_id_invalid` tail without
+  merging the `26` provenance-only rows into the main verifier table.
+- Decide whether zero-delta projection-policy off-switches need targeted hard
+  slices, since they execute cleanly but do not move the saved validation750
+  aggregate.
 
 ### Next
 
-- Freeze the first verifier no-call/live input-output contract against the
-  saved packet: action-only output, cited candidate/source ids, nullable final
-  rendered label, and no score-derived hints in model-visible input.
-- Decide whether the first verifier run should score only the 29-row ambiguity
-  table or also produce separate appendix readouts for the 4 abstain, 18
-  upstream-policy, and 5 rendered policy-sensitive rows.
-- Repair the remaining `27` `selected_source_id_invalid` rows and split the
-  `26` provenance-only unresolved-source rows from the single mixed
-  clinical/provenance row.
+- Implement the verifier result artifact: action, cited candidate/source ids,
+  issue flags, rationale, nullable final label, and appendix-aware reporting.
+- Decide whether global non-routed V5->V6 audit transitions belong in a
+  separate scorer audit appendix; the current component table reports routed
+  family counts only.
 
 ### Blocked
 
-- LLM-verifier work is blocked until the deterministic normalization/projection
-  and route surface is stable after the fresh validation750 replay is read and
-  the provenance-route expansion is adjudicated.
 - Whole-pipeline promotion remains blocked; no benchmark-comparable language or
   holdout-facing reset protocol is authorized.
 - Locked-test row-level inspection remains prohibited for development.
@@ -153,6 +178,25 @@ Controlling thread:
 
 ### Done Recently
 
+- 2026-06-06: Added executable reset-stage off-switches through the
+  ClinicalAssessment assembler and projection/render artifact builder:
+  `normalize_seizure_free_duration_date_instrumentation`,
+  `project_current_summary_rate_priority`,
+  `project_previous_active_month_over_current_month_zero`, and
+  `project_major_recent_relapse_over_background_frequency`. Generated
+  validation750 one-family-off projection/render, score, and route artifacts
+  for all four switches. The seizure-free switch creates `41` newly-null rows
+  with no audit `W->C`/`C->W`; the three projection-policy switches execute but
+  have `0` rendered, route, and correctness delta on this saved surface.
+- 2026-06-06: Completed the requested saved-artifact pre-verifier pass: isolated
+  the `+7` recovered rows as `5` selected-evidence frequency-value recoveries
+  and `2` vague-period recoveries; split provenance sidecars across the `56`
+  clinical/policy rows; attached audit-only routed-family `W->C` / `C->W`
+  counts to the component table; and generated the clean first verifier input
+  as
+  `experiments/gan2026_validation750_first_verifier_experiment_input_clean29_context_repair_v6_2026-06-06.{jsonl,json}`.
+  True seizure-free/project-policy one-family-off reruns are now backfilled as
+  separate saved artifacts.
 - 2026-06-06: Completed the candidate-evidence provenance replay and updated
   `docs/research/gan2026_validation750_provenance_only_failure_taxonomy_v6_2026-06-06.md`.
   Recomputing exact provenance from selected primary candidate evidence/source
@@ -168,6 +212,28 @@ Controlling thread:
   `2` symbol-normalization rewrites; `204 / 220` still have exactly one primary
   candidate, so the surface looks largely fixable by provenance plumbing rather
   than new clinical logic.
+- 2026-06-06: Defined the first reset-stage component ablation report surface
+  in
+  `docs/research/gan2026_validation750_first_component_ablation_report_surface_v6_2026-06-06.md`,
+  freezing the per-family report contract around family, recovered rows, newly
+  routed rows, remaining nulls, provenance validity, and audit-only `W->C` /
+  `C->W`, while keeping provenance route families inside the component report
+  but outside the first verifier main success/failure table.
+- 2026-06-06: Materialized the first reset-stage component ablation table in
+  `docs/research/gan2026_validation750_first_component_ablation_table_v6_2026-06-06.md`,
+  filling the counts already supported by the V5/V6 replay and route-taxonomy
+  reads, separating `observed_now` from `pending_isolated_ablation`, and
+  keeping provenance families in the component appendix while the main verifier
+  score table stays focused on the non-provenance clinical/policy surface.
+- 2026-06-06: Added the saved-artifact analyzer
+  `src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/reset_stage_component_ablation_v6.py`
+  and generated
+  `experiments/gan2026_validation750_first_component_ablation_table_v6_2026-06-06.json`,
+  so the first reset-family ablation table is now machine-readable. The saved
+  summary computes the `+7` recovered rows, the `29 / 4 / 18 / 5 / 220` V6
+  surface split, and the candidate-trace operational split of `55` pure
+  non-provenance target rows plus the `27`-row `selected_source_id_invalid`
+  tail while still leaving unisolated one-family-off deltas as pending.
 - 2026-06-06: Resolved the open cluster-cadence contract question in
   `docs/research/gan2026_validation750_vague_cluster_count_cadence_decision_v6_2026-06-06.md`:
   vague cluster-count cadence phrases such as `multiple days`, `several
