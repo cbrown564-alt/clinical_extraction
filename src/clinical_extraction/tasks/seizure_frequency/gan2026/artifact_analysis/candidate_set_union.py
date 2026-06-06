@@ -15,6 +15,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis.candi
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.candidate_set import (
     CandidateSet,
     ExtractedCandidate,
+    RowContext,
     candidate_source_phrase,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
@@ -216,6 +217,7 @@ def _union_row(
             set(deterministic_set.source_artifacts)
             | (set(llm_set.source_artifacts) if llm_set is not None else set())
         ),
+        row_context=_merge_row_context(deterministic_set, llm_set),
         candidates=candidates,
         assembly_issues=assembly_issues,
     )
@@ -394,6 +396,40 @@ def _llm_row_issues(llm_row: Mapping[str, Any] | None) -> list[str]:
             for error in llm_row.get("parse_errors") or []
         )
     return issues
+
+
+def _merge_row_context(
+    deterministic_set: CandidateSet,
+    llm_set: CandidateSet | None,
+) -> RowContext:
+    deterministic_context = deterministic_set.row_context
+    llm_context = llm_set.row_context if llm_set is not None else RowContext()
+    reference_date = (
+        deterministic_context.reference_date
+        or llm_context.reference_date
+    )
+    context_issues = _dedupe(
+        [
+            *deterministic_context.context_issues,
+            *llm_context.context_issues,
+        ]
+    )
+    if reference_date is not None:
+        context_issues = [
+            issue for issue in context_issues if issue != "reference_date_missing"
+        ]
+    return RowContext(reference_date=reference_date, context_issues=context_issues)
+
+
+def _dedupe(values: Sequence[str]) -> list[str]:
+    seen: set[str] = set()
+    deduped: list[str] = []
+    for value in values:
+        if value in seen:
+            continue
+        seen.add(value)
+        deduped.append(value)
+    return deduped
 
 
 def _dedupe_key(candidate: ExtractedCandidate) -> tuple[str, str, str]:

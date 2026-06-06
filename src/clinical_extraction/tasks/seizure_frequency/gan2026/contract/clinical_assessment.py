@@ -53,6 +53,37 @@ class NormalizedBurden(BaseModel):
     source_normalized_phrase: str = ""
 
 
+class DateReference(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    date: str
+    date_precision: Literal["day", "month"]
+    source: str
+    source_phrase: str = ""
+    source_candidate_ids: list[str] = Field(default_factory=list)
+
+
+class ComputedDuration(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    low: float
+    high: float
+    unit: Literal["month"]
+
+
+class SeizureFreeInstrumentation(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    state_kind: Literal["since_date", "unresolved_anchor"]
+    source_phrase: str
+    anchor_date: DateReference | None = None
+    reference_date: DateReference | None = None
+    computed_duration: ComputedDuration | None = None
+    source_candidate_ids: list[str] = Field(default_factory=list)
+    source_ids: list[str] = Field(default_factory=list)
+    instrumentation_issues: list[str] = Field(default_factory=list)
+
+
 class ClinicalAssessment(BaseModel):
     """LLM-owned clinical synthesis before deterministic project/render stages."""
 
@@ -66,6 +97,7 @@ class ClinicalAssessment(BaseModel):
     rejected_candidate_ids: list[str] = Field(default_factory=list)
     aggregation_policy: AggregationPolicy
     normalized_burden: NormalizedBurden
+    seizure_free_instrumentation: SeizureFreeInstrumentation | None = None
     normalization_policy_id: str = "gan2026_clinical_assessment_normalization_v0"
     normalization_issues: list[str] = Field(default_factory=list)
     assessment_summary: str = ""

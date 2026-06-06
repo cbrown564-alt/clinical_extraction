@@ -8,6 +8,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.candidate_set 
     CandidateSet,
     ExtractedCandidate,
     deterministic_candidate_set_from_raw,
+    extract_row_context,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.candidates import (
@@ -45,6 +46,62 @@ def test_candidate_set_contract_accepts_source_near_deterministic_candidate() ->
     assert candidate.extraction_issues == [
         "deterministic_label_carried_as_extraction_provenance_only"
     ]
+    assert candidate_set.row_context.reference_date is None
+    assert candidate_set.row_context.context_issues == ["reference_date_missing"]
+
+
+def test_candidate_set_row_context_extracts_clinic_date_header() -> None:
+    note_text = (
+        "Department of Neurology\n\n"
+        "Clinic Date: 02 October 2025\n\n"
+        "Current baseline is two seizures per month."
+    )
+    raw = RawCandidate(
+        kind=CandidateKind.FREQUENCY_RATE,
+        label="2 per month",
+        evidence="two seizures per month",
+        rule_id="rate.test",
+    )
+
+    candidate_set = deterministic_candidate_set_from_raw(
+        [raw],
+        note_text=note_text,
+        source_row_index=102,
+    )
+
+    reference_date = candidate_set.row_context.reference_date
+    assert reference_date is not None
+    assert reference_date.date == "2025-10-02"
+    assert reference_date.date_precision == "day"
+    assert reference_date.source == "note_header"
+    assert reference_date.source_phrase == "Clinic Date: 02 October 2025"
+    assert reference_date.source_span.start_char == note_text.index("Clinic Date")
+    assert candidate_set.row_context.context_issues == []
+
+
+def test_row_context_extracts_email_sent_header_date() -> None:
+    note_text = (
+        "From: Dr Thomas Reid\n"
+        "Sent: 14 October 2019 10:15\n"
+        "Subject: Telephone review\n\n"
+        "Two events over the last five months."
+    )
+
+    context = extract_row_context(note_text)
+
+    reference_date = context.reference_date
+    assert reference_date is not None
+    assert reference_date.date == "2019-10-14"
+    assert reference_date.source == "email_header"
+    assert reference_date.source_phrase == "Sent: 14 October 2019 10:15"
+    assert context.context_issues == []
+
+
+def test_row_context_marks_missing_reference_date_without_guessing() -> None:
+    context = extract_row_context("Current baseline is two seizures per month.")
+
+    assert context.reference_date is None
+    assert context.context_issues == ["reference_date_missing"]
 
 
 def test_candidate_requires_matching_kind_specific_detail_object() -> None:
