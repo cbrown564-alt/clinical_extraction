@@ -94,6 +94,24 @@ RESET_COMPONENT_ENTRIES = (
         ),
     ),
     ResetComponentEntry(
+        old_name="multi-month bucket frequency value recovery",
+        reset_stage="normalize",
+        new_family="multi_month_bucket_frequency_value_recovery",
+        portability_category="general",
+        ablation_switch="normalize_frequency_multi_month_bucket_value_recovery",
+        issue_or_rule_ids=(
+            "frequency_rate_values_repaired_from_multi_month_bucket",
+            "frequency_rate_multi_month_window_from_named_buckets",
+            "frequency_rate_multi_month_window_from_source_phrase",
+            "frequency_rate_bucket_year_inferred_from_reference_date",
+        ),
+        status="ported_v7",
+        notes=(
+            "Recovers explicit multi-month count-bearing month-bucket summaries "
+            "without broad single-month rescue or per-cluster flattening."
+        ),
+    ),
+    ResetComponentEntry(
         old_name="seizure-free duration/date handling",
         reset_stage="normalize",
         new_family="seizure_free_duration_date_instrumentation",

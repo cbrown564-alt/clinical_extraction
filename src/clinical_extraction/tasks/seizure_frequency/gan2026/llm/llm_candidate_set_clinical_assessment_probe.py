@@ -1045,6 +1045,11 @@ def normalize_assessment_burden(
 
     primary_candidates = _candidates_by_ids(candidate_set, draft.primary_candidate_ids)
     source_phrase = _normalization_source_phrase(draft, primary_candidates)
+    reference_date = (
+        candidate_set.row_context.reference_date.date
+        if candidate_set.row_context.reference_date is not None
+        else None
+    )
     issues: list[str] = []
     if not source_phrase:
         issues.append("normalization_source_phrase_missing")
@@ -1083,6 +1088,42 @@ def normalize_assessment_burden(
                 return anchor_repair, issues
             if anchor_repair_matched:
                 issues.extend([*rate_issues, *anchor_repair_issues])
+                return burden, issues
+            (
+                multi_month_bucket_source_repair,
+                multi_month_bucket_source_issues,
+                multi_month_bucket_source_matched,
+            ) = _frequency_burden_from_multi_month_bucket_phrase(
+                source_phrase,
+                reference_date=reference_date,
+                disabled_ablation_switches=disabled_ablation_switches,
+            )
+            if multi_month_bucket_source_repair is not None:
+                issues.extend([*rate_issues, *multi_month_bucket_source_issues])
+                return multi_month_bucket_source_repair, issues
+            if multi_month_bucket_source_matched:
+                issues.extend([*rate_issues, *multi_month_bucket_source_issues])
+                return burden, issues
+            (
+                multi_month_bucket_repair,
+                multi_month_bucket_issues,
+                multi_month_bucket_matched,
+            ) = _frequency_burden_from_multi_month_bucket_primary_candidates(
+                primary_candidates,
+                candidate_set=candidate_set,
+                disabled_ablation_switches=disabled_ablation_switches,
+            )
+            if multi_month_bucket_repair is not None:
+                issues.extend(
+                    [
+                        *rate_issues,
+                        "frequency_rate_values_repaired_from_primary_candidate",
+                        *multi_month_bucket_issues,
+                    ]
+                )
+                return multi_month_bucket_repair, issues
+            if multi_month_bucket_matched:
+                issues.extend([*rate_issues, *multi_month_bucket_issues])
                 return burden, issues
             repaired = _frequency_burden_from_primary_candidates(
                 primary_candidates,
@@ -1590,6 +1631,150 @@ def _frequency_burden_from_anchor_window_primary_candidates(
     return None, disabled_issues, matched_any
 
 
+def _frequency_burden_from_multi_month_bucket_primary_candidates(
+    primary_candidates: Sequence[ExtractedCandidate],
+    *,
+    candidate_set: CandidateSet,
+    disabled_ablation_switches: frozenset[str] = frozenset(),
+) -> tuple[NormalizedBurden | None, list[str], bool]:
+    parsed: list[tuple[tuple[int, int], NormalizedBurden, list[str]]] = []
+    matched_any = False
+    disabled_issues: list[str] = []
+    reference_date = (
+        candidate_set.row_context.reference_date.date
+        if candidate_set.row_context.reference_date is not None
+        else None
+    )
+    for candidate in primary_candidates:
+        if candidate.candidate_kind != "frequency_rate":
+            continue
+        for phrase in _candidate_parse_phrases(candidate):
+            burden, issues, matched = _frequency_burden_from_multi_month_bucket_phrase(
+                phrase,
+                reference_date=reference_date,
+                disabled_ablation_switches=disabled_ablation_switches,
+            )
+            if not matched:
+                continue
+            matched_any = True
+            if burden is None:
+                disabled_issues = issues
+                continue
+            parsed.append(
+                (
+                    _frequency_burden_specificity_score(burden),
+                    burden,
+                    issues,
+                )
+            )
+    if parsed:
+        _score, burden, issues = max(parsed, key=lambda item: item[0])
+        return burden, issues, True
+    return None, disabled_issues, matched_any
+
+
+def _frequency_burden_from_multi_month_bucket_phrase(
+    source_phrase: str,
+    *,
+    reference_date: str | None,
+    disabled_ablation_switches: frozenset[str] = frozenset(),
+) -> tuple[NormalizedBurden | None, list[str], bool]:
+    normalized = _normalize_phrase_for_parse(source_phrase)
+    if _has_per_cluster_frequency_terms(normalized):
+        return None, [], False
+    bucket_matches = _extract_frequency_multi_month_bucket_matches(
+        normalized,
+        reference_date=reference_date,
+    )
+    current_month_bucket = _extract_frequency_current_month_bucket_match(
+        normalized,
+        reference_date=reference_date,
+    )
+    if current_month_bucket is not None and not any(
+        match["month_iso"] == current_month_bucket["month_iso"]
+        for match in bucket_matches
+    ):
+        bucket_matches.append(current_month_bucket)
+    for article_match in _extract_frequency_article_month_bucket_matches(
+        normalized,
+        reference_date=reference_date,
+    ):
+        if any(match["month_iso"] == article_match["month_iso"] for match in bucket_matches):
+            continue
+        bucket_matches.append(article_match)
+    explicit_window_months = _extract_explicit_multi_month_window_months(normalized)
+    if not bucket_matches:
+        summary_count = _extract_frequency_summary_count_with_month_list(
+            normalized,
+            reference_date=reference_date,
+        )
+        if summary_count is None or explicit_window_months is None:
+            return None, [], False
+        count_low, count_high, inferred_year = summary_count
+        if "normalize_frequency_multi_month_bucket_value_recovery" in disabled_ablation_switches:
+            return (
+                None,
+                [_disabled_switch_issue("normalize_frequency_multi_month_bucket_value_recovery")],
+                True,
+            )
+        issues = [
+            "frequency_rate_values_repaired_from_multi_month_bucket",
+            "frequency_rate_multi_month_window_from_source_phrase",
+        ]
+        if inferred_year:
+            issues.append("frequency_rate_bucket_year_inferred_from_reference_date")
+        return (
+            NormalizedBurden(
+                count_low=count_low,
+                count_high=count_high,
+                period_low=float(explicit_window_months),
+                period_high=float(explicit_window_months),
+                period_unit="month",
+                source_normalized_phrase=normalized,
+            ),
+            issues,
+            True,
+        )
+    if len(bucket_matches) < 2 and explicit_window_months is None:
+        return None, [], False
+    if "normalize_frequency_multi_month_bucket_value_recovery" in disabled_ablation_switches:
+        return (
+            None,
+            [_disabled_switch_issue("normalize_frequency_multi_month_bucket_value_recovery")],
+            True,
+        )
+    count_low = sum(match["count_low"] for match in bucket_matches)
+    count_high = sum(match["count_high"] for match in bucket_matches)
+    if explicit_window_months is not None:
+        denominator_months = explicit_window_months
+        denominator_issue = "frequency_rate_multi_month_window_from_source_phrase"
+    else:
+        denominator_months = _inclusive_month_span(
+            [match["month_iso"] for match in bucket_matches]
+        )
+        denominator_issue = "frequency_rate_multi_month_window_from_named_buckets"
+    if denominator_months is None or denominator_months <= 1:
+        return None, [], False
+    issues = [
+        "frequency_rate_values_repaired_from_multi_month_bucket",
+        denominator_issue,
+    ]
+    if any(match["year_inferred"] for match in bucket_matches):
+        issues.append("frequency_rate_bucket_year_inferred_from_reference_date")
+    return (
+        NormalizedBurden(
+            count_low=float(count_low),
+            count_high=float(count_high),
+            period_low=float(denominator_months),
+            period_high=float(denominator_months),
+            period_unit="month",
+            source_normalized_phrase=normalized,
+        ),
+        issues,
+        True,
+    )
+
+
 def _frequency_burden_from_anchor_window_phrase(
     source_phrase: str,
     *,
@@ -1830,6 +2015,276 @@ def _small_number_to_float(value: str) -> float | None:
         "twelve": 12,
     }.get(value.strip().lower())
     return float(parsed) if parsed is not None else None
+
+
+def _extract_frequency_multi_month_bucket_matches(
+    source_phrase: str,
+    *,
+    reference_date: str | None,
+) -> list[dict[str, Any]]:
+    count_token = (
+        r"\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve"
+    )
+    month_token = (
+        r"Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|"
+        r"Jul(?:y)?|Aug(?:ust)?|Sep(?:t|tember)?|Oct(?:ober)?|Nov(?:ember)?|"
+        r"Dec(?:ember)?"
+    )
+    pattern = re.compile(
+        rf"\b(?P<low>{count_token})"
+        rf"(?:\s+to\s+(?P<high>{count_token}))?"
+        r"(?:\s+[A-Za-z][A-Za-z-]*){0,6}?"
+        r"\s+(?:in|during|throughout)\s+"
+        rf"(?P<month>{month_token})(?:\s+(?P<year>\d{{4}}))?\b",
+        flags=re.IGNORECASE,
+    )
+    matches: list[dict[str, Any]] = []
+    seen: set[tuple[str, float, float]] = set()
+    for match in pattern.finditer(source_phrase):
+        count_low = _small_number_to_float(match.group("low"))
+        count_high = _small_number_to_float(match.group("high") or match.group("low"))
+        if count_low is None or count_high is None:
+            continue
+        month_iso, year_inferred = _month_token_to_iso(
+            match.group("month"),
+            year=match.group("year"),
+            reference_date=reference_date,
+        )
+        if month_iso is None:
+            continue
+        key = (month_iso, count_low, count_high)
+        if key in seen:
+            continue
+        seen.add(key)
+        matches.append(
+            {
+                "count_low": count_low,
+                "count_high": count_high,
+                "month_iso": month_iso,
+                "year_inferred": year_inferred,
+            }
+        )
+    return matches
+
+
+def _extract_frequency_current_month_bucket_match(
+    source_phrase: str,
+    *,
+    reference_date: str | None,
+) -> dict[str, Any] | None:
+    month_iso = _reference_month_iso(reference_date)
+    if month_iso is None:
+        return None
+    count_token = (
+        r"\d+|no|zero|one|two|three|four|five|six|seven|eight|nine|ten|"
+        r"eleven|twelve"
+    )
+    event_token = r"seizures?|events?|episodes?|absences?|spasms?|attacks?|jerks?"
+    patterns = [
+        re.compile(
+            rf"\b(?P<count>{count_token})\s+(?:\w+\s+){{0,3}}?(?:{event_token})\s+"
+            r"so\s+far\s+this\s+month\b",
+            flags=re.IGNORECASE,
+        ),
+        re.compile(
+            rf"\bthis\s+month\s+so\s+far\b(?:\s+\w+){{0,6}}?\s+(?P<count>{count_token})\s+"
+            rf"(?:\w+\s+){{0,3}}?(?:{event_token})\b",
+            flags=re.IGNORECASE,
+        ),
+    ]
+    for pattern in patterns:
+        match = pattern.search(source_phrase)
+        if match is None:
+            continue
+        count_value = match.groupdict().get("count")
+        if not count_value:
+            continue
+        count = _multi_month_bucket_count_to_float(count_value)
+        if count is None:
+            continue
+        return {
+            "count_low": count,
+            "count_high": count,
+            "month_iso": month_iso,
+            "year_inferred": False,
+        }
+    return None
+
+
+def _extract_frequency_article_month_bucket_matches(
+    source_phrase: str,
+    *,
+    reference_date: str | None,
+) -> list[dict[str, Any]]:
+    month_token = (
+        r"Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|"
+        r"Jul(?:y)?|Aug(?:ust)?|Sep(?:t|tember)?|Oct(?:ober)?|Nov(?:ember)?|"
+        r"Dec(?:ember)?"
+    )
+    event_token = r"seizures?|events?|episodes?|absences?|spasms?|attacks?|jerks?"
+    pattern = re.compile(
+        rf"\b(?:a|an|another)\s+(?:[A-Za-z][A-Za-z-]*\s+){{0,3}}?"
+        rf"(?P<event>(?:{event_token}))\s+(?:in|during|throughout)\s+"
+        rf"(?P<month>{month_token})(?:\s+(?P<year>\d{{4}}))?\b",
+        flags=re.IGNORECASE,
+    )
+    matches: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for match in pattern.finditer(source_phrase):
+        month_iso, year_inferred = _month_token_to_iso(
+            match.group("month"),
+            year=match.group("year"),
+            reference_date=reference_date,
+        )
+        if month_iso is None or month_iso in seen:
+            continue
+        seen.add(month_iso)
+        matches.append(
+            {
+                "count_low": 1.0,
+                "count_high": 1.0,
+                "month_iso": month_iso,
+                "year_inferred": year_inferred,
+            }
+        )
+    return matches
+
+
+def _extract_frequency_summary_count_with_month_list(
+    source_phrase: str,
+    *,
+    reference_date: str | None,
+) -> tuple[float, float, bool] | None:
+    explicit_window = _extract_explicit_multi_month_window_months(source_phrase)
+    month_mentions = _extract_month_mentions(source_phrase, reference_date=reference_date)
+    if explicit_window is None or len(month_mentions) < 2:
+        return None
+    count_match = re.search(
+        r"\b(?P<low>\d+|one|two|three|four|five|six|seven|eight|nine|ten|"
+        r"eleven|twelve)"
+        r"(?:\s+to\s+(?P<high>\d+|one|two|three|four|five|six|seven|eight|"
+        r"nine|ten|eleven|twelve))?"
+        r"(?:\s+\w+){0,4}\s+"
+        r"(?:jerks?|seizures?|events?|episodes?|absences?|spasms?)\b",
+        source_phrase,
+        flags=re.IGNORECASE,
+    )
+    if count_match is None:
+        return None
+    count_low = _small_number_to_float(count_match.group("low"))
+    count_high = _small_number_to_float(count_match.group("high") or count_match.group("low"))
+    if count_low is None or count_high is None:
+        return None
+    inferred_year = any(mention["year_inferred"] for mention in month_mentions)
+    return count_low, count_high, inferred_year
+
+
+def _extract_explicit_multi_month_window_months(source_phrase: str) -> int | None:
+    match = re.search(
+        r"\b(?:over|during|across|within)\s+(?:the\s+past\s+|past\s+|last\s+)?"
+        r"(?P<count>\d+|one|two|three|four|five|six|seven|eight|nine|ten|"
+        r"eleven|twelve)\s+months?\b",
+        source_phrase,
+        flags=re.IGNORECASE,
+    )
+    if match is None:
+        return None
+    count = _small_number_to_float(match.group("count"))
+    if count is None or count <= 1:
+        return None
+    return int(count)
+
+
+def _multi_month_bucket_count_to_float(value: str) -> float | None:
+    normalized = value.strip().lower()
+    if normalized in {"no", "zero"}:
+        return 0.0
+    return _small_number_to_float(value)
+
+
+def _extract_month_mentions(
+    source_phrase: str,
+    *,
+    reference_date: str | None,
+) -> list[dict[str, Any]]:
+    month_token = (
+        r"Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|"
+        r"Jul(?:y)?|Aug(?:ust)?|Sep(?:t|tember)?|Oct(?:ober)?|Nov(?:ember)?|"
+        r"Dec(?:ember)?"
+    )
+    pattern = re.compile(
+        rf"\b(?P<month>{month_token})(?:\s+(?P<year>\d{{4}}))?\b",
+        flags=re.IGNORECASE,
+    )
+    mentions: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for match in pattern.finditer(source_phrase):
+        month_iso, year_inferred = _month_token_to_iso(
+            match.group("month"),
+            year=match.group("year"),
+            reference_date=reference_date,
+        )
+        if month_iso is None or month_iso in seen:
+            continue
+        seen.add(month_iso)
+        mentions.append(
+            {
+                "month_iso": month_iso,
+                "year_inferred": year_inferred,
+            }
+        )
+    return mentions
+
+
+def _month_token_to_iso(
+    month: str,
+    *,
+    year: str | None,
+    reference_date: str | None,
+) -> tuple[str | None, bool]:
+    if year:
+        return _month_year_to_iso(month, year), False
+    if reference_date is None:
+        return None, False
+    return _month_without_year_to_iso(month, reference_date=reference_date), True
+
+
+def _reference_month_iso(reference_date: str | None) -> str | None:
+    if reference_date is None:
+        return None
+    parts = reference_date.split("-")
+    if len(parts) < 2:
+        return None
+    try:
+        year = int(parts[0])
+        month = int(parts[1])
+    except ValueError:
+        return None
+    if month < 1 or month > 12:
+        return None
+    return f"{year:04d}-{month:02d}"
+
+
+def _inclusive_month_span(month_isos: Sequence[str]) -> int | None:
+    if not month_isos:
+        return None
+    parsed: list[tuple[int, int]] = []
+    for month_iso in month_isos:
+        parts = month_iso.split("-")
+        try:
+            parsed.append((int(parts[0]), int(parts[1])))
+        except (IndexError, ValueError):
+            return None
+    start_year, start_month = min(parsed)
+    end_year, end_month = max(parsed)
+    return (end_year - start_year) * 12 + (end_month - start_month) + 1
+
+
+def _has_per_cluster_frequency_terms(source_phrase: str) -> bool:
+    return bool(
+        re.search(r"\bper\s+cluster\b", source_phrase, flags=re.IGNORECASE)
+        or re.search(r"\bclusters?\s+every\b", source_phrase, flags=re.IGNORECASE)
+    )
 
 
 def _duration_unit(value: str) -> Literal["day", "week", "month", "year"] | None:
