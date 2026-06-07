@@ -760,6 +760,424 @@ show final-policy variance large enough to explain the validation-test gap. A
 broader fresh-call audit with explicit request timeouts is needed before
 estimating full-gap contribution.
 
+## Implementation Plan
+
+Status: implementation-control plan for turning this synthesis into the next
+validation-development cycle. This plan is intentionally narrower than a full
+architecture roadmap: it defines what may be built, which evidence can promote
+or block it, and which claims remain off limits.
+
+### Scope And Non-Goals
+
+In scope:
+
+- validation-only mechanism work for the hypotheses already supported by this
+  report: H5 semantic-repair policy, H7 template brittleness, H8 benchmark
+  convention separation, H9 action-policy sidecars, and H10 provenance hygiene;
+- controlled component changes inside the Gan 2026 seizure-frequency task;
+- source-grounded structured event and projection ownership artifacts;
+- synthetic/adversarial panels and validation hard/control panels;
+- aggregate-only or predeclared-slice-only locked-test readouts, but only after
+  a separate freeze gate and explicit authorization.
+
+Out of scope:
+
+- new broad validation-score optimization;
+- whole-pipeline rewrites that mix extraction, repair, projection, verification,
+  rendering, and action policy in one experiment;
+- locked-test row-level failure inspection;
+- benchmark-comparable claims;
+- treating deterministic semantic repair, benchmark rendering, or fallback
+  release as LLM-owned clinical reasoning.
+
+The controlling implementation question is:
+
+```text
+Can the system replace validation-attuned label repair with source-grounded,
+auditable clinical-state selection and explicit benchmark rendering, while
+preserving safety controls and producing evidence that could plausibly transfer?
+```
+
+### Fixed Boundaries
+
+Use these boundaries for every implementation task derived from this report.
+
+| Boundary | Required Rule | Blocks Promotion If Violated |
+| --- | --- | --- |
+| Split policy | Use `gan2026_split_v1`; validation is the development surface; test is locked. | Any row-level test failure is inspected or used to choose a rule, prompt, threshold, slice, or model. |
+| Scorer policy | Report Gan-compatible Purist first; Pragmatic is a side-car for ambiguity. | Candidate success is claimed from a nonstandard scorer without an explicit contract change. |
+| Attribution | Classify post-LLM behavior by semantic effect, not module name. | Semantic repair or renderer changes are described as normalization or LLM-owned output. |
+| Component isolation | Change one prediction-bearing layer per experiment. | Repair, projection, action policy, model prompt, and scorer all move together. |
+| Evidence | Changed clinical-state rows need exact evidence or an explicit evidence-not-applicable reason. | Changed rows lack source ids, exact evidence, parse status, or projection metadata. |
+| Final-label connection | Mechanism contracts run disconnected before diagnostic candidate assembly. | A new typed field is wired into final labels before synthetic and validation contract gates pass. |
+| Artifact hygiene | Do not write raw source note text into row artifacts unless a protocol explicitly allows it. | Validation artifacts leak note text unnecessarily or locked-test row artifacts are written. |
+| Claim language | Use validation-development, diagnostic, bounded component, or frozen local holdout language as appropriate. | The result is described as benchmark-comparable or as solving the gap without frozen evidence. |
+
+### Implementation Guidelines
+
+Prefer small, named mechanisms over broad policy edits. Every new component or
+policy should have a versioned name, an explicit owner, and a row-level artifact
+schema that can be inspected without guessing where the final label came from.
+
+Assign a portability category before adding or changing deterministic logic:
+
+- `general`: reusable parsing, schema, arithmetic, or evidence bookkeeping.
+- `clinical_epilepsy`: epilepsy-domain concepts that are not Gan-specific.
+- `seizure_frequency`: frequency, cadence, denominator, interval, cluster, or
+  seizure-free logic that generalizes beyond this dataset.
+- `gan2026_specific`: behavior needed because of the Gan task construction.
+- `benchmark_format`: scorer-facing rendering or sentinel convention.
+
+Use these labels for decision ownership:
+
+- `llm_clinical_selection`: a model selected the clinically relevant state or
+  event from available evidence.
+- `deterministic_extraction_or_normalization`: source-near parsing, schema
+  cleanup, unit spelling, arithmetic over already selected evidence, or
+  deterministic candidate construction.
+- `deterministic_semantic_repair`: post-selection logic changed semantic kind,
+  sentinel state, clinical event, denominator, cluster interpretation, or
+  Purist/Pragmatic category.
+- `benchmark_renderer`: clinical state was preserved but converted to a
+  Gan-facing label or sentinel under a named benchmark policy.
+- `action_policy`: abstain, human-review, fallback release, or nonprediction
+  policy changed whether a label is emitted.
+
+Every experiment record should include:
+
+- hypothesis ids and mechanism under test;
+- split name, split manifest, row counts, and row-selection policy;
+- candidate version, control artifact, scorer, and mapping policy;
+- raw model output reuse status and cache/live-call status;
+- enabled repair families, projection policies, renderer rules, and action
+  lanes;
+- W->C, C->W, C->C, W->W, nonprediction/review counts, and changed-label
+  precision;
+- evidence validity, parse validity, source-id validity, metadata completeness,
+  and source-note-text artifact count;
+- H6 control status and H9 action summary;
+- interpretation: promote, reject, revise, or keep diagnostic.
+
+### Workstream A: Control Freeze And Artifact Contract
+
+Purpose: make the current synthesis actionable without moving the denominator.
+
+Implementation tasks:
+
+1. Create or refresh a compact control manifest that names the exact comparator
+   artifacts, split manifest, scorer policy, working-tree note, and allowed
+   inspection levels.
+2. Register the H6 selective-action controls, H9 action-summary fields, and
+   H10 provenance fields as mandatory sidecars for every candidate.
+3. Add artifact-contract tests or schema checks that fail when an experiment
+   lacks hypothesis ids, split manifest, scorer policy, artifact provenance, or
+   inspection policy.
+4. Define the first post-synthesis control candidate as the latest auditable
+   validation assembly, not as a new score target.
+
+Gate to continue:
+
+- all required control artifacts can be named and reproduced by path;
+- every planned row read is validation, synthetic, same-output replay, or
+  explicitly aggregate/predeclared test;
+- no prediction-bearing code change is bundled into the control freeze.
+
+Success indicators:
+
+- one immutable control manifest exists for the next cycle;
+- H6, H9, and H10 sidecar fields are reusable across later artifacts;
+- a future candidate can be compared without reconstructing provenance from
+  narrative notes.
+
+### Workstream B: Semantic Repair Policy Freeze
+
+Purpose: resolve the H5 finding before building new label-changing behavior.
+This workstream narrows or disables validation-attuned semantic repair; it does
+not introduce a new clinical selection mechanism.
+
+Implementation tasks:
+
+1. Inventory all repair and normalization functions that can change final label
+   meaning.
+2. Classify each family by portability category and decision ownership.
+3. Split repair reporting into a ladder:
+   raw model-selected label, format-only repair, selected-evidence arithmetic,
+   semantic repair, benchmark rendering, and final action policy.
+4. Run one-family-at-a-time same-output validation replays for semantic repair
+   families.
+5. Promote only repair that is format-preserving or source-grounded under a
+   predeclared policy; quarantine broad frequency-to-sentinel demotion and
+   validation-example-specific behavior.
+
+Gates:
+
+- no semantic repair family can be promoted without W->C, C->W,
+  semantic-kind-transition, and H6-control accounting;
+- selected-evidence arithmetic is allowed only when operands were already
+  selected and evidence remains exact;
+- benchmark convention rendering must be reported separately from clinical
+  semantic selection;
+- any repair-induced exact-threshold success remains diagnostic until
+  same-raw-output attribution is complete.
+
+Success indicators:
+
+- all semantic repair families have owner, portability category, effect, and
+  ablation status;
+- format-only repair can be separated from label-changing repair in artifacts;
+- validation exact-label loss is accepted when it removes validation-attuned
+  behavior and improves attribution clarity;
+- no future LLM-first claim depends on hidden deterministic semantic repair.
+
+### Workstream C: Structured Clinical State And Projection Ownership
+
+Purpose: replace shallow final-label switching with source-near clinical state,
+explicit projection policy, and separate Gan rendering.
+
+Implementation tasks:
+
+1. Define or refine structured state fields for candidate-bearing rows:
+   `clinical_event`, `boundary_state`, `selected_frequency_state`,
+   `projection_policy`, `clinical_final_state`, `gan_rendered_label`,
+   `benchmark_policy_id`, and `benchmark_format_rule_id`.
+2. Keep `seizure_free_boundary_event_v0` and
+   `benchmark_convention_renderer_v0` as named mechanisms until a new version
+   is justified.
+3. Build synthetic fixture coverage for seizure-free duration, last-event-only,
+   residual seizure activity, non-epileptic current events, cluster burden,
+   vague multiple frequency, unknown sentinel, and no-reference sentinel cases.
+4. Port only stable typed fields onto validation hard/control panels with final
+   label policy disconnected.
+5. Connect typed fields to a validation diagnostic assembly only after contract
+   tests pass.
+
+Gates:
+
+- synthetic mechanism contract must preserve clinical-state invariant pairs;
+- validation panel artifacts must have exact evidence, source-id validity,
+  metadata completeness, and zero raw source-note-text rows unless explicitly
+  authorized;
+- renderer fixtures must show clinical-state preservation before emitting
+  benchmark-facing labels;
+- no final-label connection is allowed while unsupported candidates or silent
+  sentinel collapses remain;
+- any C->W outside predeclared benchmark-convention or underdetermined rows
+  blocks promotion.
+
+Success indicators:
+
+- typed clinical state and Gan-rendered label can disagree visibly in the
+  artifact;
+- benchmark-format wins are counted separately from clinical extraction wins;
+- last-event-only, seizure-free interval, residual activity, and non-epileptic
+  event states do not collapse into one sentinel pathway;
+- target hard slices improve or become more interpretable without H6
+  regression;
+- the mechanism can be promoted, at most, as a bounded component before any
+  whole-pipeline claim.
+
+### Workstream D: Robustness And Template-Brittleness Stress Tests
+
+Purpose: make H7 operational. The system should preserve clinical state under
+surface paraphrase when the underlying fact is unchanged.
+
+Implementation tasks:
+
+1. Build frozen minimal-pair panels before running components on them.
+2. Vary only one surface feature per pair: wording, order, section, distractor,
+   semiology placement, time anchor, or benchmark convention wording.
+3. Run component-level stress tests with first-failure ownership.
+4. Run repair-sensitivity checks only after Workstream B repair policy is
+   frozen.
+5. Record synthetic results as mechanism evidence, not benchmark evidence.
+
+Gates:
+
+- every pair has a named invariant clinical state and one named perturbation;
+- typed boundary/renderer behavior must be more pair-consistent than the
+  deterministic comparator before it is used as robustness evidence;
+- robustness cannot be owned primarily by semantic repair;
+- failures must be assigned to candidate exposure, evidence selection,
+  boundary classification, projection, rendering, repair, or action policy.
+
+Success indicators:
+
+- pair consistency improves on predeclared H7 axes;
+- first-failure ownership identifies the next implementation target;
+- exact-evidence and metadata completeness remain high under perturbation;
+- synthetic success produces only a validation-development next step, not a
+  benchmark claim.
+
+### Workstream E: Action Policy And Verification Guardrails
+
+Purpose: keep H6 and H9 useful without letting action widening become the lead
+gap-closing story.
+
+Implementation tasks:
+
+1. Attach action summaries to every candidate:
+   prediction-bearing coverage, abstain count, human-review count, monitor
+   count, fallback release count, lane owner, and family action rates.
+2. Replay H6 controls for every label-changing candidate.
+3. If verification is used, separate route decision, verifier decision, and
+   rendered-label emission.
+4. Test release lanes one at a time after the prediction-bearing candidate is
+   frozen.
+5. Keep action-policy changes out of semantic repair and projection
+   experiments.
+
+Gates:
+
+- H6 controls must show zero or explicitly bounded C->W before promotion;
+- fallback releases need changed-label precision and release-lane ownership;
+- a lower nonprediction rate is not success unless changed labels are precise;
+- action policy cannot be described as solving the validation-test gap while
+  locked-test aggregate nonprediction burden remains low.
+
+Success indicators:
+
+- candidate artifacts show whether errors are misses, abstentions, reviews,
+  fallbacks, or rendered-label choices;
+- high-precision release lanes can remain as safety/fallback policy;
+- verifier work has a clean comparison against deterministic action baselines;
+- action summaries make later frozen audits interpretable without row-level
+  test failure inspection.
+
+### Workstream F: Provenance And Runtime Hygiene
+
+Purpose: prevent H10-class variance or replay drift from being mistaken for
+clinical generalization evidence.
+
+Implementation tasks:
+
+1. Add raw-output identity sidecars before any live-versus-replay comparison.
+2. Store prompt/program version, model id, cache status, timeout policy, parser
+   version, repair policy version, projection policy version, and renderer
+   policy version.
+3. Use same-output ladders to attribute downstream drift to parser, adapter,
+   repair, projection, safety floor, scorer, or action policy.
+4. For fresh live audits, use explicit request timeouts and compare byte-level
+   raw output, parsed labels, scorer-visible labels, and final policy labels
+   separately.
+
+Gates:
+
+- no live/replay score delta can be interpreted without raw-output reuse or
+  identity status;
+- if raw outputs differ, report raw-string variance separately from parsed-label
+  variance and final-policy variance;
+- if raw outputs match but labels change, classify the result as downstream
+  policy drift;
+- interrupted live runs are prefix diagnostics unless a completion policy is
+  predeclared.
+
+Success indicators:
+
+- model behavior, parser drift, repair drift, and action-policy drift are
+  distinguishable in artifacts;
+- same-output attribution is available before any LLM-first or verifier claim;
+- runtime variance is bounded enough to interpret future fresh-call audits.
+
+### Workstream G: Frozen Aggregate Holdout Audit
+
+Purpose: evaluate transfer only after the candidate, readout plan, and claim
+language are frozen.
+
+Preconditions:
+
+- Workstream A control manifest is complete;
+- Workstream B repair policy is frozen;
+- Workstream C or D mechanism has passed synthetic and validation hard/control
+  gates;
+- Workstream E H6/H9 sidecars are complete;
+- Workstream F provenance sidecar is complete;
+- candidate code, prompts, model ids, parser, scorer, repair policy, projection
+  policy, renderer policy, action policy, slice definitions, and output fields
+  are frozen;
+- the user explicitly authorizes the audit.
+
+Allowed readouts:
+
+- overall Purist and Pragmatic aggregate;
+- prediction-bearing coverage and action counts;
+- predeclared hidden-family aggregates;
+- predeclared component-owner aggregate summaries;
+- predeclared score-layer aggregate ladder;
+- H6 selective-action aggregate W->C/C->W when computable under the frozen plan.
+
+Disallowed readouts:
+
+- locked-test row-level failure inspection;
+- new test-derived slices;
+- post-test prompt, parser, repair, threshold, model, route, renderer, or action
+  changes treated as the same candidate;
+- final benchmark language.
+
+Gates:
+
+- if the candidate fails frozen aggregate controls, record the result and
+  restart a validation-only cycle;
+- if the candidate succeeds, report it as a frozen local holdout result with
+  explicit non-comparability boundaries;
+- no failed test aggregate can be mined for row-level fixes.
+
+Success indicators:
+
+- aggregate gap reduction occurs with preserved H6/H9 controls and clear
+  attribution;
+- predeclared slices support the same mechanism story observed on validation;
+- no development decision is made from locked-test row-level failures;
+- the final wording remains local, frozen, and non-benchmark-comparable.
+
+### Stage Gates Summary
+
+| Stage | Entry Requirement | Exit Gate | Promotion Level |
+| --- | --- | --- | --- |
+| Control freeze | Existing synthesis artifacts are available. | Control manifest, H6/H9/H10 sidecar contracts complete. | Development denominator only. |
+| Repair policy | Control manifest complete. | Semantic repair families ablated and classified. | Allowed repair policy or quarantine. |
+| Structured state | Repair policy frozen. | Contract tests pass with exact evidence and final policy disconnected. | Mechanism diagnostic. |
+| Diagnostic assembly | Structured-state contracts pass. | Target hard-slice gains, bounded C->W, H6 preserved. | Bounded component only. |
+| Robustness | Panel contract frozen. | Pair consistency and first-failure ownership reported. | Mechanism support only. |
+| Action/verification | Candidate behavior frozen. | Action summaries, release precision, H6 controls complete. | Safety/fallback guardrail. |
+| Provenance | Candidate or replay comparison exists. | Raw-output and downstream drift attribution complete. | Attribution support. |
+| Frozen holdout | All prior gates passed and user authorizes. | Aggregate/predeclared-slice result recorded with no tuning. | Frozen local holdout result. |
+
+### Global Stop Rules
+
+Stop promotion and return to validation-only diagnosis if any of these occur:
+
+- broad validation F1 improves while target hard slices or robustness panels do
+  not;
+- semantic repair changes clinical state while being reported as normalization;
+- benchmark rendering silently changes `clinical_final_state`;
+- exact evidence, source ids, parse status, or projection metadata are missing
+  for changed rows;
+- H6 controls regress;
+- H9 action widening lowers nonprediction but introduces imprecise changed
+  labels;
+- H10 provenance is unavailable for a live/replay comparison;
+- a candidate reaches a threshold only after mixed-provenance repair;
+- any locked-test row-level failure is used to design the next change.
+
+### Claim And Documentation Gates
+
+Before a result is written into project status, a report, or paper-facing notes,
+assign one of these labels:
+
+- `diagnostic_validation_development`: useful for learning, not promoted.
+- `bounded_component`: safe or useful inside a named eligible family only.
+- `hybrid_development_artifact`: score depends on deterministic semantic repair
+  or mixed provenance.
+- `llm_first_validation_result`: allowed only after same-output attribution
+  shows the prediction-bearing source is model-owned.
+- `frozen_local_holdout_result`: authorized frozen aggregate/predeclared-slice
+  holdout readout with no follow-on test tuning.
+- `not_comparable_yet`: scorer, data surface, split policy, or attribution is
+  unresolved.
+
+Documentation success means the narrative claim is no stronger than the weakest
+gate that actually passed.
+
 ## Update Log
 
 - 2026-06-05: Created initial synthesis from H2/H4/H6 selection, H2/H4
@@ -823,3 +1241,6 @@ estimating full-gap contribution.
   validation performance came from deterministic repair rules that were too
   precisely attuned to reviewed validation examples. No locked-test row-level
   artifacts were used.
+- 2026-06-07: Added an implementation-control plan with explicit scope,
+  fixed boundaries, workstreams, stage gates, success indicators, stop rules,
+  and claim/documentation gates for the next validation-development cycle.

@@ -180,7 +180,7 @@ def _mean(values: Sequence[int]) -> float:
 
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--split", choices=("validation",), default="validation")
+    parser.add_argument("--split", choices=("validation", "test", "train"), default="validation")
     parser.add_argument("--limit", type=int, default=250)
     parser.add_argument("--jsonl-path", type=Path, default=DEFAULT_JSONL_PATH)
     parser.add_argument("--json-path", type=Path, default=DEFAULT_JSON_PATH)

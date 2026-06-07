@@ -1,6 +1,6 @@
 # Project Status
 
-Last updated: 2026-06-06
+Last updated: 2026-06-07
 
 ## Active Objective
 
@@ -34,12 +34,21 @@ Controlling thread:
 - Validation750 `context_repair_v6` remains the current reset baseline:
   `580` rendered labels, `170` null renders, `488/580` Purist-correct scored
   rows, and full split discipline preserved.
-- The next full end-to-end local-model run is now the first validation750 Qwen
-  rerun, using the combined `hybrid_parallel_state_candidate_reasoner`
-  pipeline with `ollama_chat/qwen3.6:35b` on the native Ollama chat endpoint.
-  The runnable path is now a single live pipeline command; any candidate-set,
-  projection, route, or verifier breakdown should be treated as downstream
-  analysis over the saved run artifact rather than the execution path itself.
+- A reset-native no-call composition runner now exists for the saved
+  ClinicalAssessment path:
+  `src/clinical_extraction/tasks/seizure_frequency/gan2026/hybrid/reset_clinical_assessment_pipeline.py`.
+  It chains saved ClinicalAssessment rows and CandidateSet artifacts through
+  projection/render, score audit, verification route, and deterministic
+  VerificationDecision V0 without adding new clinical logic or model calls.
+- The key near-term priority is now to run and iterate the reset-native
+  composable pipeline on validation750. The first pass should use GPT-4.1-mini
+  for quick iteration; after that, run the same pipeline with Qwen
+  validation750 so model differences are measured on the reset-stage contract
+  rather than on the older parallel-adjudicator architecture.
+- The `hybrid_parallel_state_candidate_reasoner` validation750 run has
+  completed and should be treated as a comparison point for the new
+  reset-native GPT-4.1-mini and Qwen validation750 runs, not as the primary
+  execution path for the reset architecture.
 - The reset thread has now ported the key mature deterministic families into
   explicit reset-stage ownership: selected-evidence frequency repair, vague
   period rates, relative/conditional guards, diary-date lists, current-vs-
@@ -91,6 +100,12 @@ Controlling thread:
 
 ## Core Artifacts
 
+- Overfitting reduction and generalization hypotheses:
+  `docs/research/gan2026_overfitting_reduction_and_generalization_hypotheses_2026-06-07.md`.
+- Validation750 reset error analysis report:
+  `C:\Users\cbrow\.gemini\antigravity\brain\c23859fe-0530-4d64-8a6f-952cc9cb2d20\error_analysis_report.md`.
+- Validation750 reset null rendering report:
+  `C:\Users\cbrow\.gemini\antigravity\brain\c23859fe-0530-4d64-8a6f-952cc9cb2d20\null_analysis_report.md`.
 - Reset synthesis and decisions:
   `docs/research/gan2026_architecture_reset_synthesis_and_next_questions_2026-06-06.md`.
 - Fresh replay comparison read:
@@ -158,23 +173,27 @@ Controlling thread:
 
 ### Now
 
-- Run the first full validation750 Qwen rerun through the combined
-  `hybrid_parallel_state_candidate_reasoner` pipeline using the native Ollama
-  route and explicit Qwen artifact naming.
-- Keep any follow-on decomposition reads clearly marked as analysis over the
-  saved combined-run artifact, not as the primary execution protocol.
+- Make the reset-native composable ClinicalAssessment pipeline the primary
+  validation750 execution path for the reset thread.
+- Run validation750 with GPT-4.1-mini first for quick iteration on the new
+  pipeline contract and artifact bundle.
+- Use the completed `hybrid_parallel_state_candidate_reasoner` validation750
+  run only as a comparison baseline when interpreting the new reset-native
+  pipeline results.
 - Continue replacing stale mentions of the intermediate
   `selected_source_id_invalid` provenance tail in reset-thread reads as those
   docs are touched.
 
 ### Next
 
-- After the Qwen validation750 run completes, decide which stage-level reset
-  analyses to replay from the saved combined-run artifact for comparison
-  against the GPT-4.1 mini baseline.
-- If the Qwen full run lands near the same residual surface, return to prompt
-  tuning on the `29`-row ambiguity table with the full-run failures as the new
-  decision surface.
+- After the GPT-4.1-mini validation750 run on the reset-native pipeline is
+  stable, run the same reset-native pipeline with Qwen validation750.
+- Compare the reset-native GPT-4.1-mini and Qwen validation750 outputs against
+  each other and against the completed `hybrid_parallel_state_candidate_reasoner`
+  validation750 baseline.
+- If the reset-native model runs land near the same residual surface, return to
+  prompt tuning on the `29`-row ambiguity table with the full-run failures as
+  the new decision surface.
 - Continue filling component-level ablation coverage for ported deterministic
   families, keeping report fields to newly rendered, newly routed, remaining
   null, evidence validity, route-family changes, and audit-only `W->C`/`C->W`.
@@ -194,6 +213,22 @@ Controlling thread:
 
 ### Done Recently
 
+- 2026-06-07: Ran validation750 and test450 on GPT-4.1-mini using the reset-native composable ClinicalAssessment pipeline runner (`reset_clinical_assessment_pipeline.py`).
+  - The `validation750` run matched the baseline `context_repair_v6` results: 750 inputs, 580 rendered labels, 170 null renders, 488/580 Purist-correct scored rows, and 73 routed/abstain rows. Artifacts saved under `experiments/gan2026_reset_clinical_assessment_pipeline_validation750_gpt41mini_v0`.
+  - The `test450` run successfully completed: 450 inputs (449 projected), 341 rendered labels, 108 null renders, 268/341 Purist-correct scored rows (~0.7858 accuracy on rendered subset), and 43 routed/abstain rows. Artifacts saved under `experiments/gan2026_reset_clinical_assessment_pipeline_test450_gpt41mini_v0`.
+- 2026-06-07: Reprioritized the work board around the reset-native composable
+  ClinicalAssessment pipeline. The completed
+  `hybrid_parallel_state_candidate_reasoner` validation750 run is now a
+  comparison baseline, while the next execution priority is GPT-4.1-mini
+  validation750 on the reset-native pipeline followed by Qwen validation750 on
+  the same pipeline.
+- 2026-06-07: Added the reset-native composable no-call pipeline runner
+  `reset_clinical_assessment_pipeline.py`, bundling the existing
+  ClinicalAssessment projection/render, scoring audit, verification route, and
+  VerificationDecision V0 builders behind one replay CLI and report bundle.
+  Focused reset-stage tests pass at `88 passed`, and a real saved validation750
+  scratch replay completed structurally before the scratch artifacts were
+  removed.
 - 2026-06-06: Corrected the first full validation750 local-Qwen rerun plan so
   the runnable path is the combined
   `hybrid_parallel_state_candidate_reasoner` pipeline under
