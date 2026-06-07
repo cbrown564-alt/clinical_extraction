@@ -1,0 +1,91 @@
+{
+  "pipeline": "rules_only",
+  "source_row_index": 79,
+  "gold_label": "6 to 7 per year",
+  "result": {
+    "output": {
+      "final_value": "6 to 7 per year",
+      "rationale": "Selected the highest normalized current frequency candidate.",
+      "evidence": "6 to 7 per year"
+    },
+    "diagnostics": {
+      "candidate_events": [
+        {
+          "event_id": "event_1",
+          "kind": "frequency_rate",
+          "raw_value": "6 to 7 per year",
+          "evidence": "6 to 7 per year",
+          "start_char": 551,
+          "end_char": 566,
+          "rule_id": "rate.direct_count_per_period",
+          "rule_group": "portable_rate_expressions",
+          "portability": "seizure_frequency",
+          "match_groups": {
+            "count": "6 to 7",
+            "denominator": null,
+            "unit": "year"
+          }
+        }
+      ],
+      "normalized_events": [
+        {
+          "event_id": "event_1",
+          "normalized_label": "6 to 7 per year",
+          "semantic_kind": "frequency",
+          "monthly_frequency": 0.5416666666666666,
+          "validation_errors": []
+        }
+      ],
+      "final_selection": {
+        "final_label": "6 to 7 per year",
+        "final_kind": "frequency",
+        "selected_event_ids": [
+          "event_1"
+        ],
+        "rationale": "Selected the highest normalized current frequency candidate.",
+        "evidence": "6 to 7 per year",
+        "monthly_frequency": 0.5416666666666666,
+        "validation_errors": [],
+        "selected_score": {
+          "semantic_priority": 4,
+          "evidence_priority": 0,
+          "monthly_frequency_priority": 0.5416666666666666,
+          "reason": "frequency_monthly_rate"
+        },
+        "selected_decision": {
+          "event_id": "event_1",
+          "final_label": "6 to 7 per year",
+          "final_kind": "frequency",
+          "monthly_frequency": 0.5416666666666666,
+          "evidence": "6 to 7 per year",
+          "rationale": "Selected the highest normalized current frequency candidate.",
+          "validation_errors": [],
+          "score": {
+            "semantic_priority": 4,
+            "evidence_priority": 0,
+            "monthly_frequency_priority": 0.5416666666666666,
+            "reason": "frequency_monthly_rate"
+          },
+          "priority": {
+            "semantic": 4,
+            "evidence": 0,
+            "monthly_frequency": 0.5416666666666666
+          }
+        },
+        "selection_candidates": [
+          {
+            "event_id": "event_1",
+            "score": {
+              "semantic_priority": 4,
+              "evidence_priority": 0,
+              "monthly_frequency_priority": 0.5416666666666666,
+              "reason": "frequency_monthly_rate"
+            },
+            "selected": true
+          }
+        ]
+      },
+      "evidence_valid": true
+    }
+  }
+}
