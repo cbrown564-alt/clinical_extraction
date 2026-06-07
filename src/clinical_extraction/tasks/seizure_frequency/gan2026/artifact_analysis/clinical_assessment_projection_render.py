@@ -485,6 +485,24 @@ def _project_label_semantics(
 
         label = _rate_label(burden)
         if label is None:
+            is_cyclic = _has_primary_cyclic_window_pattern_general(assessment, candidate_set)
+            is_sleep = _has_primary_sleep_restricted_pattern(assessment, candidate_set)
+            if is_cyclic and "route_cyclic_window_patterns" not in disabled_switches:
+                return ProjectionOutcome(
+                    None,
+                    "cyclic_window_pattern",
+                    "boundary_projection_policy",
+                    "cyclic_window_pattern_routed_v0",
+                    ["cyclic_window_pattern_routed"],
+                )
+            if is_sleep and "route_sleep_restricted_patterns" not in disabled_switches:
+                return ProjectionOutcome(
+                    None,
+                    "sleep_restricted_pattern",
+                    "boundary_projection_policy",
+                    "sleep_restricted_pattern_routed_v0",
+                    ["sleep_restricted_pattern_routed"],
+                )
             return ProjectionOutcome(
                 None,
                 "frequency_rate",
@@ -492,11 +510,15 @@ def _project_label_semantics(
                 "frequency_rate_values_v0",
                 ["frequency_rate_values_incomplete"],
             )
+        rule_id = "frequency_rate_values_v0"
+        is_cyclic = _has_primary_cyclic_window_pattern_general(assessment, candidate_set)
+        if is_cyclic and "route_cyclic_window_patterns" not in disabled_switches:
+            rule_id = "cyclic_pattern_with_explicit_operands_rendered_v0"
         return ProjectionOutcome(
             label,
             "frequency_rate",
             "rate_projection_policy",
-            "frequency_rate_values_v0",
+            rule_id,
             [],
         )
     if assessment.assessment_kind == "cluster_frequency":
@@ -606,6 +628,23 @@ def _cluster_label(
         or burden.cluster_period_high is None
         or burden.cluster_period_unit is None
     ):
+        if cyclic_window and "route_cyclic_window_patterns" not in disabled_ablation_switches:
+            return ProjectionOutcome(
+                None,
+                "cyclic_window_pattern",
+                "boundary_projection_policy",
+                "cyclic_window_pattern_routed_v0",
+                ["cyclic_window_pattern_routed"],
+            )
+        is_sleep = _has_primary_sleep_restricted_pattern(assessment, candidate_set)
+        if is_sleep and "route_sleep_restricted_patterns" not in disabled_ablation_switches:
+            return ProjectionOutcome(
+                None,
+                "sleep_restricted_pattern",
+                "boundary_projection_policy",
+                "sleep_restricted_pattern_routed_v0",
+                ["sleep_restricted_pattern_routed"],
+            )
         issues = ["cluster_cadence_values_incomplete"]
         if medication_cadence:
             issues.append("medication_cadence_ambiguity")
@@ -633,11 +672,14 @@ def _cluster_label(
             )
         if "project_cluster_cadence_default_multiple_per_cluster" not in disabled_ablation_switches:
             default_cluster_label = f"{cadence}, multiple per cluster"
+            rule_id = "cluster_cadence_default_multiple_per_cluster_v0"
+            if cyclic_window and "route_cyclic_window_patterns" not in disabled_ablation_switches:
+                rule_id = "cyclic_pattern_with_explicit_operands_rendered_v0"
             return ProjectionOutcome(
                 default_cluster_label,
                 "cluster_cadence_without_size",
                 "cluster_projection_policy",
-                "cluster_cadence_default_multiple_per_cluster_v0",
+                rule_id,
                 [],
             )
         simple_rate = (
@@ -656,11 +698,14 @@ def _cluster_label(
         f"{_format_range(burden.events_per_cluster_low, burden.events_per_cluster_high)} "
         "per cluster"
     )
+    rule_id = "cluster_cadence_with_events_per_cluster_v0"
+    if cyclic_window and "route_cyclic_window_patterns" not in disabled_ablation_switches:
+        rule_id = "cyclic_pattern_with_explicit_operands_rendered_v0"
     return ProjectionOutcome(
         label,
         "cluster_cadence_with_events_per_cluster",
         "cluster_projection_policy",
-        "cluster_cadence_with_events_per_cluster_v0",
+        rule_id,
         [],
     )
 
@@ -1197,6 +1242,70 @@ def _is_cyclic_vulnerability_window_text(text: str) -> bool:
             "period",
         )
     )
+
+
+def _is_sleep_restricted_phrase(text: str) -> bool:
+    lower = text.lower()
+    return any(
+        marker in lower
+        for marker in (
+            "sleep deprivation",
+            "sleep-deprived",
+            "sleep deprived",
+            "curtailed sleep",
+            "disrupted sleep",
+            "lack of sleep",
+            "short on sleep",
+            "poor sleep",
+            "sleep restricted",
+            "sleep restriction",
+        )
+    )
+
+
+def _has_primary_sleep_restricted_pattern(
+    assessment: ClinicalAssessment,
+    candidate_set: CandidateSet,
+) -> bool:
+    by_id = {candidate.candidate_id: candidate for candidate in candidate_set.candidates}
+    return any(
+        _is_sleep_restricted_phrase(
+            " ".join(
+                part
+                for part in [
+                    _candidate_source_phrase(candidate),
+                    candidate.evidence_span.text,
+                ]
+                if part
+            )
+        )
+        for candidate_id in assessment.primary_candidate_ids
+        for candidate in [by_id.get(candidate_id)]
+        if candidate is not None
+    )
+
+
+def _has_primary_cyclic_window_pattern_general(
+    assessment: ClinicalAssessment,
+    candidate_set: CandidateSet,
+) -> bool:
+    by_id = {candidate.candidate_id: candidate for candidate in candidate_set.candidates}
+    return any(
+        _is_cyclic_vulnerability_window_text(
+            " ".join(
+                part
+                for part in [
+                    _candidate_source_phrase(candidate),
+                    candidate.evidence_span.text,
+                ]
+                if part
+            )
+        )
+        for candidate_id in assessment.primary_candidate_ids
+        for candidate in [by_id.get(candidate_id)]
+        if candidate is not None
+    )
+
 
 
 def main(argv: Sequence[str] | None = None) -> int:

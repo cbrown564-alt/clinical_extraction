@@ -295,7 +295,7 @@ def test_project_and_render_unknown_cadence_multiple_per_cluster() -> None:
     assert rendered.rendered_label == "unknown, multiple per cluster"
 
 
-def test_project_and_render_cyclic_window_without_event_count_stays_null() -> None:
+def test_project_and_render_cyclic_window_without_event_count_routes() -> None:
     assessment = ClinicalAssessment(
         source_row_index=18,
         component_owner="llm_candidate_set_clinical_assessment",
@@ -308,6 +308,7 @@ def test_project_and_render_cyclic_window_without_event_count_stays_null() -> No
         normalization_issues=["cluster_frequency_values_unparsed"],
     )
 
+    # 1. Default routing (switch enabled)
     projection, rendered = projection_render.project_and_render(
         assessment,
         candidate_set=_candidate_set(
@@ -318,10 +319,108 @@ def test_project_and_render_cyclic_window_without_event_count_stays_null() -> No
         ),
     )
 
-    assert projection.projection_basis == "cluster_frequency"
-    assert "cyclic_window_without_event_count" in projection.projection_issues
+    assert projection.projection_basis == "cyclic_window_pattern"
+    assert projection.projection_rule_id == "cyclic_window_pattern_routed_v0"
+    assert "cyclic_window_pattern_routed" in projection.projection_issues
     assert projection.projected_label_semantics == ""
     assert rendered.rendered_label is None
+
+    # 2. Revert to old behavior when ablation switch is disabled
+    projection_ablated, rendered_ablated = projection_render.project_and_render(
+        assessment,
+        candidate_set=_candidate_set(
+            18,
+            evidence="Seizures happen when perimenstrual only (days -3 to +3).",
+            candidate_kind="cluster_frequency",
+            cluster_frequency="perimenstrual only (days -3 to +3)",
+        ),
+        disabled_ablation_switches=frozenset(["route_cyclic_window_patterns"]),
+    )
+
+    assert projection_ablated.projection_basis == "cluster_frequency"
+    assert projection_ablated.projection_rule_id == "cluster_cadence_values_required_v0"
+    assert "cyclic_window_without_event_count" in projection_ablated.projection_issues
+    assert rendered_ablated.rendered_label is None
+
+
+def test_project_and_render_sleep_restricted_pattern_routes() -> None:
+    assessment = ClinicalAssessment(
+        source_row_index=180,
+        component_owner="llm_candidate_set_clinical_assessment",
+        assessment_kind="cluster_frequency",
+        primary_candidate_ids=["llm:180:1"],
+        aggregation_policy="single_fact",
+        normalized_burden=NormalizedBurden(
+            source_normalized_phrase="seizures after sleep deprivation"
+        ),
+        normalization_issues=["cluster_frequency_values_unparsed"],
+    )
+
+    # 1. Default routing (switch enabled)
+    projection, rendered = projection_render.project_and_render(
+        assessment,
+        candidate_set=_candidate_set(
+            180,
+            evidence="seizures only reported after sleep deprivation",
+            candidate_kind="cluster_frequency",
+            cluster_frequency="after sleep deprivation",
+        ),
+    )
+
+    assert projection.projection_basis == "sleep_restricted_pattern"
+    assert projection.projection_rule_id == "sleep_restricted_pattern_routed_v0"
+    assert "sleep_restricted_pattern_routed" in projection.projection_issues
+    assert projection.projected_label_semantics == ""
+    assert rendered.rendered_label is None
+
+    # 2. Revert to old behavior when ablation switch is disabled
+    projection_ablated, rendered_ablated = projection_render.project_and_render(
+        assessment,
+        candidate_set=_candidate_set(
+            180,
+            evidence="seizures only reported after sleep deprivation",
+            candidate_kind="cluster_frequency",
+            cluster_frequency="after sleep deprivation",
+        ),
+        disabled_ablation_switches=frozenset(["route_sleep_restricted_patterns"]),
+    )
+
+    assert projection_ablated.projection_basis == "cluster_frequency"
+    assert projection_ablated.projection_rule_id == "cluster_cadence_values_required_v0"
+    assert rendered_ablated.rendered_label is None
+
+
+def test_project_and_render_cyclic_pattern_with_explicit_operands() -> None:
+    assessment = ClinicalAssessment(
+        source_row_index=181,
+        component_owner="llm_candidate_set_clinical_assessment",
+        assessment_kind="cluster_frequency",
+        primary_candidate_ids=["llm:181:1"],
+        aggregation_policy="single_fact",
+        normalized_burden=NormalizedBurden(
+            cluster_count_low=3,
+            cluster_count_high=3,
+            cluster_period_low=1,
+            cluster_period_high=1,
+            cluster_period_unit="month",
+            source_normalized_phrase="three clusters per month perimenstrually"
+        ),
+    )
+
+    projection, rendered = projection_render.project_and_render(
+        assessment,
+        candidate_set=_candidate_set(
+            181,
+            evidence="three clusters per month perimenstrually",
+            candidate_kind="cluster_frequency",
+            cluster_frequency="perimenstrually",
+        ),
+    )
+
+    assert projection.projection_rule_id == "cyclic_pattern_with_explicit_operands_rendered_v0"
+    assert projection.projected_label_semantics == "3 cluster per month, multiple per cluster"
+    assert rendered.rendered_label == "3 cluster per month, multiple per cluster"
+
 
 
 def test_project_and_render_renderable_cluster_beats_unknown_cadence_sentinel() -> None:
@@ -1063,9 +1162,11 @@ def test_build_projection_render_conditional_only_trigger_sleep_stays_unrendered
     assert "conditional_only_trigger_without_baseline" in assessment["normalization_issues"]
     assert artifact_row["final_rendered_label"]["rendered_label"] is None
     assert (
-        "frequency_rate_values_incomplete"
+        "sleep_restricted_pattern_routed"
         in artifact_row["projection_decision"]["projection_issues"]
     )
+    assert artifact_row["projection_decision"]["projection_rule_id"] == "sleep_restricted_pattern_routed_v0"
+
 
 
 def test_build_projection_render_repairs_diary_prefixed_numeric_date_list() -> None:
