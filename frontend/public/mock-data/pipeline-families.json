@@ -1,0 +1,11 @@
+{
+  "families": [
+    {
+      "value": "rules_only",
+      "label": "Deterministic V1",
+      "executable": true,
+      "kind": "rules_only",
+      "has_replay_artifact": true
+    }
+  ]
+}
