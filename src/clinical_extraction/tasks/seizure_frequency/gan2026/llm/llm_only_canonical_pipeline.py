@@ -259,6 +259,20 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "Use no seizure frequency reference only when the note "
                 "contains no usable seizure-frequency evidence."
             ),
+            (
+                "answer_kind must be written as exactly one of these five "
+                "words, with no other wording: 'frequency' (the note gives a "
+                "usable current seizure-frequency rate or range), "
+                "'seizure_free' (the note describes a current seizure-free "
+                "duration instead of a rate), 'unknown' (seizures are "
+                "discussed but the current frequency cannot be converted to "
+                "a normalized rate), 'no_reference' (the note contains no "
+                "usable seizure-frequency evidence at all), or "
+                "'unresolved_multiple' (several current seizure-frequency "
+                "claims conflict and none can be picked as the answer). Do "
+                "not write a longer description in this field — choose "
+                "exactly one of the five words above."
+            ),
             "Evidence must be an exact substring from the note when possible.",
             (
                 "Each guidance note below starts with a short label. In "
