@@ -7,7 +7,6 @@ unified artifact generation.
 
 from __future__ import annotations
 
-import json
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
@@ -33,9 +32,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.candidate_set 
     CandidateSet,
     deterministic_candidate_set_from_raw,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.clinical_assessment import (
-    ClinicalAssessment,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
     GanFrequencyRecord,
     GanRecord,
@@ -46,6 +42,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.candidate
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rule_metadata import (
     AblationConfig,
+    RuleGroup,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
     llm_candidate_set_clinical_assessment_probe as assessment_probe,
@@ -58,7 +55,12 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline_v1 import (
     _select_final_event,
 )
 
-PipelineArchitecture = Literal["deterministic", "hybrid", "llm_only_direct_labeler", "llm_only_structured_events"]
+PipelineArchitecture = Literal[
+    "deterministic",
+    "hybrid",
+    "llm_only_direct_labeler",
+    "llm_only_structured_events",
+]
 
 
 class PipelineConfiguration(BaseModel):
@@ -89,7 +91,11 @@ class Gan2026PipelineRunner:
 
     def _configure_lm(self) -> None:
         import dspy
-        from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
+
+        from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import (
+            build_dspy_lm,
+        )
+
         lm = build_dspy_lm(
             model=self.config.model,
             temperature=self.config.temperature,
@@ -146,7 +152,6 @@ class Gan2026PipelineRunner:
             )
 
             # 4. Optional intermediate ClinicalAssessment diagnostics for visibility
-            from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rule_metadata import RuleGroup
             disabled_switches = {
                 group.value
                 for group in RuleGroup
@@ -181,7 +186,9 @@ class Gan2026PipelineRunner:
                 "normalized_events": [event.model_dump(mode="json") for event in normalized_events],
                 "final_selection": final_selection.model_dump(mode="json"),
                 "evidence_valid": evidence_is_substring(item.note_text, final_selection.evidence),
-                "clinical_assessment": clinical_assessment.model_dump() if clinical_assessment else None,
+                "clinical_assessment": (
+                    clinical_assessment.model_dump() if clinical_assessment else None
+                ),
             }
             return PipelineResult(output=output, diagnostics=diagnostics)
 
@@ -218,7 +225,6 @@ class Gan2026PipelineRunner:
 
             draft = prediction.assessment_draft
 
-            from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rule_metadata import RuleGroup
             disabled_switches = {
                 group.value
                 for group in RuleGroup
@@ -253,14 +259,20 @@ class Gan2026PipelineRunner:
             diagnostics = {
                 "candidate_set": candidate_set.model_dump(),
                 "assessment_draft": draft.model_dump() if draft else None,
-                "clinical_assessment": clinical_assessment.model_dump() if clinical_assessment else None,
+                "clinical_assessment": (
+                    clinical_assessment.model_dump() if clinical_assessment else None
+                ),
                 "projection_decision": proj_decision.model_dump() if proj_decision else None,
-                "final_rendered_label": final_rendered_label.model_dump() if final_rendered_label else None,
+                "final_rendered_label": (
+                    final_rendered_label.model_dump() if final_rendered_label else None
+                ),
             }
             return PipelineResult(output=output, diagnostics=diagnostics)
 
         elif self.config.architecture == "llm_only_direct_labeler":
-            from clinical_extraction.tasks.seizure_frequency.gan2026.llm import llm_only_direct_labeler
+            from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
+                llm_only_direct_labeler,
+            )
 
             self._configure_lm()
 
@@ -285,8 +297,9 @@ class Gan2026PipelineRunner:
             return PipelineResult(output=output, diagnostics=diagnostics)
 
         elif self.config.architecture == "llm_only_structured_events":
-            from clinical_extraction.tasks.seizure_frequency.gan2026.llm import llm_only_structured_events
-            from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_structured_events import StructuredRepairConfig
+            from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
+                llm_only_structured_events,
+            )
 
             self._configure_lm()
 
@@ -295,10 +308,12 @@ class Gan2026PipelineRunner:
             prediction = program(prompt_input_json=prompt_input_json)
             raw_output = str(prediction.structured_json)
 
-            extraction, normalized_events, parse_errors = llm_only_structured_events.parse_structured_json(
-                raw_output,
-                note_text=item.note_text,
-                repair_config=StructuredRepairConfig(),
+            extraction, normalized_events, parse_errors = (
+                llm_only_structured_events.parse_structured_json(
+                    raw_output,
+                    note_text=item.note_text,
+                    repair_config=llm_only_structured_events.StructuredRepairConfig(),
+                )
             )
 
             final_label = extraction.selection.final_label if extraction else "unknown"
@@ -317,7 +332,10 @@ class Gan2026PipelineRunner:
             return PipelineResult(output=output, diagnostics=diagnostics)
 
         else:
-            raise ValueError(f"Unsupported architecture for single-item run: {self.config.architecture}")
+            raise ValueError(
+                "Unsupported architecture for single-item run: "
+                f"{self.config.architecture}"
+            )
 
     def run_split(
         self,
@@ -458,9 +476,16 @@ def run_split(
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Execute a run split using the specified unified runner architecture."""
     if architecture == "deterministic":
-        from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import label_to_frequency_record
-        from clinical_extraction.tasks.seizure_frequency.gan2026.labels import map_purist, map_pragmatic
-        from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_metadata import build_run_metadata
+        from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
+            label_to_frequency_record,
+        )
+        from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_metadata import (
+            build_run_metadata,
+        )
+        from clinical_extraction.tasks.seizure_frequency.gan2026.labels import (
+            map_pragmatic,
+            map_purist,
+        )
 
         config = PipelineConfiguration(
             architecture="deterministic",
@@ -478,23 +503,27 @@ def run_split(
             comparison = {
                 "predicted_monthly_frequency": predicted_frequency,
                 "gold_monthly_frequency": record.gold_monthly_frequency,
-                "purist_correct": map_purist(predicted_frequency) == map_purist(record.gold_monthly_frequency),
-                "pragmatic_correct": map_pragmatic(predicted_frequency) == map_pragmatic(record.gold_monthly_frequency),
+                "purist_correct": map_purist(predicted_frequency)
+                == map_purist(record.gold_monthly_frequency),
+                "pragmatic_correct": map_pragmatic(predicted_frequency)
+                == map_pragmatic(record.gold_monthly_frequency),
             }
-            rows.append({
-                "source_row_index": record.source_row_index,
-                "split": split,
-                "split_manifest": split_manifest,
-                "final_label": final_label,
-                "evidence_valid": bool(result.diagnostics.get("evidence_valid")),
-                "diagnostics": result.diagnostics,
-                "comparison": comparison,
-                "reference": {
-                    "gold_label": record.gold_label,
-                    "gold_monthly_frequency": record.gold_monthly_frequency,
-                    "row_ok": record.row_ok,
+            rows.append(
+                {
+                    "source_row_index": record.source_row_index,
+                    "split": split,
+                    "split_manifest": split_manifest,
+                    "final_label": final_label,
+                    "evidence_valid": bool(result.diagnostics.get("evidence_valid")),
+                    "diagnostics": result.diagnostics,
+                    "comparison": comparison,
+                    "reference": {
+                        "gold_label": record.gold_label,
+                        "gold_monthly_frequency": record.gold_monthly_frequency,
+                        "row_ok": record.row_ok,
+                    },
                 }
-            })
+            )
 
         metadata = build_run_metadata(
             mode=mode,
@@ -520,7 +549,9 @@ def run_split(
         return rows, metadata
 
     elif architecture == "hybrid":
-        from clinical_extraction.tasks.seizure_frequency.gan2026.llm import llm_candidate_set_clinical_assessment_probe
+        from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
+            llm_candidate_set_clinical_assessment_probe,
+        )
         return llm_candidate_set_clinical_assessment_probe.run_split(
             records,
             split=split,
@@ -557,7 +588,9 @@ def run_split(
         )
 
     elif architecture == "llm_only_structured_events":
-        from clinical_extraction.tasks.seizure_frequency.gan2026.llm import llm_only_structured_events
+        from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
+            llm_only_structured_events,
+        )
         return llm_only_structured_events.run_split(
             records,
             split=split,
@@ -584,7 +617,9 @@ def write_deterministic_report(
     *,
     jsonl_path: Path,
 ) -> None:
-    from clinical_extraction.tasks.seizure_frequency.gan2026.reports.base import write_markdown_report
+    from clinical_extraction.tasks.seizure_frequency.gan2026.reports.base import (
+        write_markdown_report,
+    )
     summary = metadata.get("summary", {})
     lines = [
         "# Gan 2026 Deterministic Pipeline Validation Run",
@@ -619,14 +654,17 @@ def write_deterministic_report(
 
 def get_cli_specs() -> dict[str, Any]:
     from pathlib import Path
-    from clinical_extraction.tasks.seizure_frequency.gan2026.cli.llm_pipeline_cli import GanLlmPipelineCliSpec
-    from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
-        llm_only_direct_labeler,
-        llm_only_structured_events,
-        llm_candidate_set_clinical_assessment_probe,
+
+    from clinical_extraction.tasks.seizure_frequency.gan2026.cli.llm_pipeline_cli import (
+        GanLlmPipelineCliSpec,
     )
     from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
         write_jsonl_rows,
+    )
+    from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
+        llm_candidate_set_clinical_assessment_probe,
+        llm_only_direct_labeler,
+        llm_only_structured_events,
     )
 
     def write_jsonl(rows, path):
@@ -637,7 +675,11 @@ def get_cli_specs() -> dict[str, Any]:
             description="Run the Gan 2026 deterministic rules-only pipeline.",
             default_jsonl_path=Path("experiments/gan2026_deterministic_pipeline_validation.jsonl"),
             default_report_path=Path("experiments/gan2026_deterministic_pipeline_validation.md"),
-            run_split=lambda records, **kwargs: run_split(records, architecture="deterministic", **kwargs),
+            run_split=lambda records, **kwargs: run_split(
+                records,
+                architecture="deterministic",
+                **kwargs,
+            ),
             write_jsonl=write_jsonl,
             write_report=write_deterministic_report,
             default_max_tokens=900,
@@ -651,13 +693,19 @@ def get_cli_specs() -> dict[str, Any]:
             write_report=llm_candidate_set_clinical_assessment_probe.write_report,
             summarize_rows=llm_candidate_set_clinical_assessment_probe.summarize_records,
             default_max_tokens=2400,
-            default_candidate_set_jsonl_path=llm_candidate_set_clinical_assessment_probe.DEFAULT_CANDIDATE_SET_JSONL_PATH,
+            default_candidate_set_jsonl_path=(
+                llm_candidate_set_clinical_assessment_probe.DEFAULT_CANDIDATE_SET_JSONL_PATH
+            ),
         ),
         "llm_only_direct_labeler": GanLlmPipelineCliSpec(
             description="Run the Gan 2026 LLM-only direct-labeler experiment.",
             default_jsonl_path=llm_only_direct_labeler.DEFAULT_JSONL_PATH,
             default_report_path=llm_only_direct_labeler.DEFAULT_REPORT_PATH,
-            run_split=lambda records, **kwargs: run_split(records, architecture="llm_only_direct_labeler", **kwargs),
+            run_split=lambda records, **kwargs: run_split(
+                records,
+                architecture="llm_only_direct_labeler",
+                **kwargs,
+            ),
             write_jsonl=llm_only_direct_labeler.write_jsonl,
             write_report=llm_only_direct_labeler.write_report,
             summarize_rows=llm_only_direct_labeler.summarize_records,
@@ -667,7 +715,11 @@ def get_cli_specs() -> dict[str, Any]:
             description="Run the Gan 2026 LLM-only structured-events experiment.",
             default_jsonl_path=llm_only_structured_events.DEFAULT_JSONL_PATH,
             default_report_path=llm_only_structured_events.DEFAULT_REPORT_PATH,
-            run_split=lambda records, **kwargs: run_split(records, architecture="llm_only_structured_events", **kwargs),
+            run_split=lambda records, **kwargs: run_split(
+                records,
+                architecture="llm_only_structured_events",
+                **kwargs,
+            ),
             write_jsonl=llm_only_structured_events.write_jsonl,
             write_report=llm_only_structured_events.write_report,
             summarize_rows=llm_only_structured_events.summarize_records,

@@ -2,7 +2,7 @@
 
 Date: 2026-06-07
 Author: Claude
-Status: Completed removal record with follow-up corrections
+Status: Completed cleanup record with Phase F framework consolidation
 
 ---
 
@@ -10,9 +10,9 @@ Status: Completed removal record with follow-up corrections
 
 Following the completion of the rapid-iteration research phase, the codebase has been audited and consolidated around the canonical architecture surface. Across **5 sequential batches**, we removed superseded runners, exclusive components, coupled analyzers, and mirrored unit test suites representing over 75 files and ~1.2 MB of redundant code.
 
-A complete dependency audit was performed, and all necessary shared infrastructure components were preserved, cleaned, or relocated. The high-risk removal portion of the cleanup is complete. The larger Phase F goal — one parameterized runner/reporting framework — remains a follow-up consolidation task rather than something this removal sequence fully delivered.
+A complete dependency audit was performed, and all necessary shared infrastructure components were preserved, cleaned, or relocated. The high-risk removal portion of the cleanup is complete, and follow-up Phase F framework consolidation now provides one shared runner/CLI surface plus four official cluster-level analyzer modules.
 
-All remaining **995 unit and integration tests** in the Python test suite pass successfully after follow-up corrections.
+All remaining **997 unit and integration tests** in the Python test suite pass successfully after follow-up corrections.
 
 ---
 
@@ -84,7 +84,24 @@ The consolidation was executed in 5 distinct batches, with the test suite verifi
 
 ---
 
-## 4. Verification and Follow-Up Corrections
+## 4. Phase F Framework Consolidation
+
+Phase F is now complete as a shared infrastructure layer:
+
+- **Pipeline runners / CLI**: `src/clinical_extraction/tasks/seizure_frequency/gan2026/runner.py` exposes the unified runner/configuration surface for deterministic, hybrid, `llm_only_direct_labeler`, and `llm_only_structured_events` executions. The single CLI registry delegates through this surface rather than keeping the retired standalone-runner registry pattern.
+- **Hybrid/reset metadata boundary**: `hybrid/reset_clinical_assessment_pipeline.py` reuses the unified stage builder but preserves the canonical reset artifact identity (`reset_clinical_assessment_pipeline`) and reset-specific claim boundary.
+- **Reporting / artifact analysis**: `artifact_analysis/__init__.py` exposes the official Phase F analyzer registry. The four cluster-level modules are:
+  - `scoped_ablation_analyzer.py` for the ablation cluster.
+  - `boundary_diagnostic.py` for boundary/seizure-free diagnostics.
+  - `candidate_state_matrix.py` for candidate/state comparisons.
+  - `projection_scoring.py` for projection/render/scoring/routing/decision summaries.
+- Remaining `artifact_analysis/` modules are retained as source-specific producers, narrow diagnostics, or historical-read helpers. They are no longer the official cluster-level API for new report work.
+
+The consolidated analyzer registry replaces the 32 cluster-file memberships identified in the Phase A survey for the four Phase F target clusters (ablation 8, boundary/seizure-free 8, candidate/state 11, projection/render/scoring 5) without changing scoring policy.
+
+---
+
+## 5. Verification and Follow-Up Corrections
 
 ### Automated Verification
 A final execution of the Python test suite confirms that the cleanup has left the backend package in a healthy, green state:
@@ -93,8 +110,8 @@ A final execution of the Python test suite confirms that the cleanup has left th
 pytest tests/
 ```
 **Results**:
-- **Collected**: 995 items
-- **Passed**: 995 passed
+- **Collected**: 997 items
+- **Passed**: 997 passed
 - **Errors/Failures**: 0
 
 ### Follow-Up Corrections
@@ -103,7 +120,7 @@ An audit after the initial cleanup report found and fixed several sign-off gaps:
 - Removed a stale `pyproject.toml` console script that pointed at the deleted `selective_safety_floor_gate_replay.py` module.
 - Filtered retired runner families out of active Observatory `/pipeline-families` and frontend run-selection/replay surfaces while preserving historical registry rows.
 - Pruned frontend replay adapters and tests that still treated deleted runner families as supported.
-- Updated `PROJECT_STATUS.md`, the Observatory progress note, and this report to avoid overstating Phase F DRY-ification as complete.
+- Updated `PROJECT_STATUS.md` and this report to record Phase F completion and the new analyzer registry boundary.
 
 ### Repository Cleanliness
 * Follow-up corrections are intentionally left as the current working-tree changes until reviewed and committed.

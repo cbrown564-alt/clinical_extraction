@@ -6,7 +6,6 @@ candidate experiments.
 
 from __future__ import annotations
 
-import json
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
@@ -36,7 +35,11 @@ class BoundaryDiagnosticAnalyzer:
         details = []
 
         for row in rows:
-            is_sf = row.get("semantic_kind") == "seizure_free" or "seizure free" in str(row.get("normalized_label", "")).lower()
+            normalized_label = str(row.get("normalized_label", "")).lower()
+            is_sf = (
+                row.get("semantic_kind") == "seizure_free"
+                or "seizure free" in normalized_label
+            )
             if is_sf:
                 seizure_free_count += 1
 
@@ -53,6 +56,9 @@ class BoundaryDiagnosticAnalyzer:
             })
 
         return {
+            "phase_f_consolidated": True,
+            "analyzer_cluster": "boundary_seizure_free",
+            "analyzer_module": "boundary_diagnostic",
             "diagnostic_family": diagnostic_family,
             "summary": {
                 "total_rows": total,
@@ -75,7 +81,10 @@ class BoundaryDiagnosticAnalyzer:
             f"- Diagnostic family: `{analysis['diagnostic_family']}`",
             f"- Total replayed rows: {summary['total_rows']}",
             f"- Seizure-free rows: {summary['seizure_free_rows']}",
-            f"- Boundary matches: {summary['boundary_matches']} ({summary['boundary_match_rate']:.2%})",
+            (
+                f"- Boundary matches: {summary['boundary_matches']} "
+                f"({summary['boundary_match_rate']:.2%})"
+            ),
             "",
             "## Node Details",
             "",

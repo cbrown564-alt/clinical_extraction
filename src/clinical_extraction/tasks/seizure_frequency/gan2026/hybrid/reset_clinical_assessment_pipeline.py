@@ -114,12 +114,22 @@ def build_reset_clinical_assessment_pipeline_artifact(
         score_artifact_path=score_artifact_path,
         route_artifact_path=route_artifact_path,
     )
+    metadata = summarize_pipeline_artifact(
+        assessment_rows=assessment_rows,
+        projection_render_metadata=unified.metadata["stage_metadata"]["projection_render"],
+        score_metadata=unified.metadata["stage_metadata"]["score"],
+        route_metadata=unified.metadata["stage_metadata"]["route"],
+        decision_metadata=unified.metadata["stage_metadata"]["verification_decision"],
+        assessment_artifact_path=assessment_artifact_path,
+        candidate_set_artifact_path=candidate_set_artifact_path,
+        disabled_ablation_switches=disabled_ablation_switches,
+    )
     return ResetClinicalAssessmentPipelineArtifact(
         projection_render_rows=unified.projection_render_rows,
         score_rows=unified.score_rows,
         route_rows=unified.route_rows,
         decision_rows=unified.decision_rows,
-        metadata=unified.metadata,
+        metadata=metadata,
     )
 
 

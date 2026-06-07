@@ -15,9 +15,6 @@ from typing import Any
 from clinical_extraction.tasks.seizure_frequency.gan2026.evaluate import (
     evaluate_predictions,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
-    write_jsonl_rows,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.reports.base import (
     write_markdown_report,
 )
@@ -86,7 +83,10 @@ class ScopedAblationAnalyzer:
             pragmatic = evaluate_predictions(y_true, y_pred, method="pragmatic")
 
             variants_summary[variant.name] = {
-                "exact_matches": sum(bool(row["variant_results"][variant.name]["correct"]) for row in rows),
+                "exact_matches": sum(
+                    bool(row["variant_results"][variant.name]["correct"])
+                    for row in rows
+                ),
                 "purist_accuracy": purist["micro"]["accuracy"],
                 "purist_f1": purist["micro"]["f1"],
                 "pragmatic_accuracy": pragmatic["micro"]["accuracy"],
@@ -95,6 +95,9 @@ class ScopedAblationAnalyzer:
 
         metadata = {
             "artifact_kind": f"gan2026_{self.name}_ablation",
+            "phase_f_consolidated": True,
+            "analyzer_cluster": "ablation",
+            "analyzer_module": "scoped_ablation_analyzer",
             "date": "2026-06-07",
             "split": split,
             "split_manifest": split_manifest,
@@ -108,7 +111,10 @@ class ScopedAblationAnalyzer:
 
     def write_json(self, metadata: Mapping[str, Any], path: Path) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(json.dumps(metadata, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        path.write_text(
+            json.dumps(metadata, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
 
     def write_report(
         self,
@@ -155,7 +161,9 @@ class ScopedAblationAnalyzer:
                 row["variant_results"][v.name]["final_label"] for v in self.variants
             ]
             lines.append(
-                f"| {row['source_row_index']} | {row['gold_normalized_label']} | " + " | ".join(variant_cells) + " |"
+                f"| {row['source_row_index']} | {row['gold_normalized_label']} | "
+                + " | ".join(variant_cells)
+                + " |"
             )
 
         write_markdown_report(path, lines)

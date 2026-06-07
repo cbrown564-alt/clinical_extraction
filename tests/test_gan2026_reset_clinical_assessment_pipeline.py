@@ -76,6 +76,12 @@ def test_reset_pipeline_composes_existing_stage_builders(monkeypatch) -> None:
     assert artifact.score_rows[0]["stage"] == "score"
     assert artifact.route_rows[0]["verification_route"]["routed"] is True
     assert artifact.decision_rows[0]["verification_decision"]["action"] == "abstain"
+    assert artifact.metadata["artifact_kind"] == "gan2026_reset_clinical_assessment_pipeline"
+    assert artifact.metadata["pipeline_family"] == "reset_clinical_assessment_pipeline"
+    assert artifact.metadata["pipeline_version"] == "gan2026_reset_clinical_assessment_pipeline_v0"
+    assert artifact.metadata["claim_boundary"].startswith(
+        "validation-development reset-stage composition only"
+    )
     assert artifact.metadata["summary"] == {
         "input_assessment_rows": 1,
         "projection_rows": 1,

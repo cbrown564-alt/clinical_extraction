@@ -53,8 +53,8 @@ gate already proven for the HN1 frozen audit.
    ~80 mirrored test files), names one canonical runner per architecture,
    audits dependencies before any removal, consolidates retired-architecture
    documentation into one lineage summary, removes the superseded runner/code
-   lineages, and leaves Phase F runner/reporting framework DRY-ification as a
-   separate follow-up rather than pretending it is complete.
+   lineages, and finishes Phase F with a shared runner surface plus four
+   official cluster-level analyzer modules.
 
 **Sequencing decision** (resolves the open question in the user's request):
 a *select → clean → iterate* loop, not a strict before/after ordering.
@@ -372,7 +372,13 @@ full rationale.
   - Phase E removal landed in 5 lineage batches. Follow-up audit fixed the
     stale deleted-module console script, filtered retired runner families out
     of active Observatory/frontend surfaces, and corrected status/report
-    language. Phase F framework consolidation remains a separate follow-up.
+    language.
+  - Phase F framework consolidation is now complete: runner/CLI entries point
+    at `gan2026.runner`, and the official analyzer clusters are
+    `scoped_ablation_analyzer`, `boundary_diagnostic`,
+    `candidate_state_matrix`, and `projection_scoring`. Remaining
+    `artifact_analysis/` scripts are retained as source-specific producers or
+    narrow diagnostics, not as competing cluster-level APIs.
 - Run the validation750 three-way comparison from
   `gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07.md`
   Phase 1 once the canonical fully-LLM runner exists, and begin populating the
@@ -406,6 +412,17 @@ full rationale.
 
 ### Done Recently
 
+- 2026-06-07: Completed repo cleanup Phase F.
+  - `src/clinical_extraction/tasks/seizure_frequency/gan2026/runner.py`
+    provides the shared runner/configuration surface used by the CLI registry
+    and deterministic wrapper.
+  - `artifact_analysis/__init__.py` now exposes the Phase F analyzer registry:
+    ablation, boundary/seizure-free, candidate/state, and
+    projection/render/scoring. Each consolidated analyzer emits
+    `phase_f_consolidated` metadata.
+  - Reset pipeline metadata is preserved as
+    `reset_clinical_assessment_pipeline`, so the unified stage builder does not
+    blur the hybrid/reset artifact identity or claim boundary.
 - 2026-06-07: Promoted HN1 (source-near frequency value recovery) on a frozen
   `test450` aggregate audit:
   `docs/research/gan2026_test450_hn1_frozen_aggregate_audit_2026-06-07.md`.
