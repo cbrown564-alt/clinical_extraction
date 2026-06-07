@@ -44,11 +44,9 @@ def locate_evidence(note_text: str, evidence: str) -> tuple[int, int] | None:
 
 def clean_semantically_neutral_text_artifacts(text: str) -> str:
     """Normalize mojibake/control artifacts that do not alter clinical semantics."""
-    text = text.replace("\x00", "")
-
     for before, after in SEMANTICALLY_NEUTRAL_TEXT_ARTIFACTS:
         text = text.replace(before, after)
-    return text
+    return text.replace("\x00", "")
 
 
 def repair_evidence_text_if_source_exact(evidence: str, note_text: str) -> str:

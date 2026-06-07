@@ -1512,22 +1512,22 @@ def _frequency_burden(
     *,
     disabled_ablation_switches: frozenset[str] = frozenset(),
 ) -> tuple[NormalizedBurden, list[str]]:
-    source_phrase = _normalize_phrase_for_parse(source_phrase)
-    if _is_relative_only_trend_phrase(source_phrase):
+    parse_phrase = _normalize_phrase_for_parse(source_phrase)
+    if _is_relative_only_trend_phrase(parse_phrase):
         return NormalizedBurden(source_normalized_phrase=source_phrase), [
             "relative_change_without_current_baseline"
         ]
-    if _is_conditional_only_trigger_phrase(source_phrase):
+    if _is_conditional_only_trigger_phrase(parse_phrase):
         return NormalizedBurden(source_normalized_phrase=source_phrase), [
             "conditional_only_trigger_without_baseline"
         ]
     selected_evidence_label = (
-        selected_evidence_derivation.prediction_label_from_selected_evidence(source_phrase)
+        selected_evidence_derivation.prediction_label_from_selected_evidence(parse_phrase)
     )
     if (
         selected_evidence_label is not None
         and selected_evidence_label.startswith("multiple per ")
-        and _is_vague_frequency_with_explicit_time_period_phrase(source_phrase)
+        and _is_vague_frequency_with_explicit_time_period_phrase(parse_phrase)
     ):
         burden, issues = _burden_from_label(
             selected_evidence_label,
@@ -1535,7 +1535,7 @@ def _frequency_burden(
         )
         return burden, ["vague_frequency_with_explicit_time_period", *issues]
     if (
-        _is_previous_month_active_rate_phrase(source_phrase)
+        _is_previous_month_active_rate_phrase(parse_phrase)
         and "project_previous_active_month_over_current_month_zero"
         not in disabled_ablation_switches
     ):
@@ -1550,7 +1550,7 @@ def _frequency_burden(
             ["previous_month_active_rate_over_current_zero", "vague_count"],
         )
     if (
-        _is_previous_month_active_rate_phrase(source_phrase)
+        _is_previous_month_active_rate_phrase(parse_phrase)
         and "project_previous_active_month_over_current_month_zero"
         in disabled_ablation_switches
     ):
@@ -1560,7 +1560,7 @@ def _frequency_burden(
             )
         ]
     label = _deterministic_label_from_source_phrase(
-        source_phrase,
+        parse_phrase,
         preferred_kind=DeterministicCandidateKind.FREQUENCY_RATE,
     )
     if label is None:
@@ -1570,13 +1570,13 @@ def _frequency_burden(
     burden, issues = _burden_from_label(label, source_phrase=source_phrase)
     if (
         not _is_unrenderable_frequency_burden(burden)
-        and _is_explicit_summary_rate_phrase(source_phrase)
+        and _is_explicit_summary_rate_phrase(parse_phrase)
         and "project_current_summary_rate_priority" not in disabled_ablation_switches
     ):
         issues = ["explicit_summary_rate_over_long_period_average", *issues]
     elif (
         not _is_unrenderable_frequency_burden(burden)
-        and _is_explicit_summary_rate_phrase(source_phrase)
+        and _is_explicit_summary_rate_phrase(parse_phrase)
         and "project_current_summary_rate_priority" in disabled_ablation_switches
     ):
         return NormalizedBurden(source_normalized_phrase=source_phrase), [
@@ -3179,7 +3179,8 @@ def _clean_phrase(value: str) -> str:
 def _normalize_phrase_for_parse(value: str) -> str:
     text = value.lower()
     text = re.sub(r"[≈~]", "", text)
-    text = re.sub(r"(?<=\d)\s*[-–—]\s*(?=\d)", " to ", text)
+    if not re.search(r"\b\d{2}-\d{2}(?:,\s*\d{2}-\d{2})+\b", text):
+        text = re.sub(r"(?<=\d)\s*[-–—]\s*(?=\d)", " to ", text)
     text = re.sub(r"\bper\s+24\s*h(?:ours?)?\b", "per day", text)
     text = re.sub(r"\b24\s*h(?:ours?)?\b", "day", text)
     
