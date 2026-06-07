@@ -31,6 +31,35 @@ Controlling thread:
 
 ## Current Evidence
 
+- HN1 (source-near frequency value recovery) is now **promoted** on a frozen
+  `test450` aggregate audit, closing the validation-to-holdout loop from
+  `docs/research/gan2026_test450_null_reduction_synthesis_and_hypotheses_2026-06-07.md`:
+  `docs/research/gan2026_test450_hn1_frozen_aggregate_audit_2026-06-07.md`.
+  - Frozen holdout replay moved from `341 -> 358` rendered, `108 -> 91` null,
+    `271 -> 282` Purist-correct, `280 -> 294` Pragmatic-correct, and
+    `41 -> 29` routed rows, with **zero** `W->C`/`C->W`/newly-null transitions
+    on already-rendered rows and **zero** new routes.
+  - The `12`-row routed-surface contraction is concentrated in
+    `mixed_window_or_vague_addition` (`13 -> 1`); every row that left the
+    routed surface also became newly rendered, so HN1 resolved the underlying
+    additive/multi-window ambiguity upstream rather than routing nulls away.
+  - Artifacts: `experiments/gan2026_reset_clinical_assessment_pipeline_test450_hn1_frozen_audit_2026-06-07.*`.
+- While producing that audit, a pre-existing text-normalization bug was found
+  and fixed in
+  `src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_candidate_set_clinical_assessment_probe.py`:
+  `_normalize_phrase_for_parse` unconditionally rewrote every hyphen/en-dash/
+  em-dash as `" to "`, corrupting clinical compound terms (`tonic-clonic` ->
+  `tonic to clonic`) before frequency-rate parsing and silently turning
+  several previously-correct holdout renders into nulls or wrong labels
+  (rows `2795`, `7327`, `12826`, `13079`, `16253`). The regex now anchors the
+  substitution to digit-bounded numeric ranges
+  (`r"(?<=\d)\s*[-–—]\s*(?=\d)"`), preserving `24-48 hours -> 24 to 48 hours`
+  while leaving `tonic-clonic` intact. Three regression tests were added in
+  `tests/test_gan2026_llm_candidate_set_clinical_assessment_probe.py`; the
+  fix turned the first frozen-audit pass from a mixed `+11`/`-8` transition
+  profile into the clean `+17`/`0` profile reported above. Focused suite
+  (`43` tests) and the broader `gan2026`-tagged suite (`1348` passed) are
+  green, with only the same `3` pre-existing unrelated failures.
 - Validation750 `context_repair_v6` remains the current reset baseline:
   `580` rendered labels, `170` null renders, `488/580` Purist-correct scored
   rows, and full split discipline preserved.
@@ -176,6 +205,8 @@ Controlling thread:
   `docs/research/gan2026_validation750_verifier_candidate_surface_v6_2026-06-06.md`.
 - Null action taxonomy read:
   `docs/research/gan2026_validation750_null_action_taxonomy_v6_2026-06-06.md`.
+- HN1 frozen `test450` aggregate audit (promotion decision):
+  `docs/research/gan2026_test450_hn1_frozen_aggregate_audit_2026-06-07.md`.
 - HN1 month-bucket evaluation read:
   `docs/research/gan2026_validation750_hn1_month_bucket_frequency_recovery_evaluation_2026-06-07.md`.
 - HN1 multi-month rerun read:
@@ -233,6 +264,12 @@ Controlling thread:
 
 ### Now
 
+- Begin HN2 (bounded vague-with-window rendering) on validation-only proxy
+  slices, per the recommended execution order in
+  `docs/research/gan2026_test450_null_reduction_synthesis_and_hypotheses_2026-06-07.md`
+  section 8: build a `vague_count` proxy slice, an ablatable `Project`-owned
+  component, then a frozen `test450` aggregate audit using the same protocol
+  as `docs/research/gan2026_test450_hn1_frozen_aggregate_audit_2026-06-07.md`.
 - Run the reset-native pipeline on Qwen validation750 using the refreshed
   GPT-4.1-mini multi-month contract replay as the comparator state.
 - Compare the refreshed GPT-4.1-mini contract replay against both Qwen and the
@@ -274,6 +311,22 @@ Controlling thread:
 
 ### Done Recently
 
+- 2026-06-07: Promoted HN1 (source-near frequency value recovery) on a frozen
+  `test450` aggregate audit:
+  `docs/research/gan2026_test450_hn1_frozen_aggregate_audit_2026-06-07.md`.
+  - Frozen holdout replay moved `341 -> 358` rendered, `108 -> 91` null,
+    `271 -> 282` Purist-correct, `41 -> 29` routed, with `0`
+    `W->C`/`C->W`/newly-null transitions and `0` new routes — meeting every
+    promotion criterion in the synthesis doc section 7.4.
+  - Found and fixed a pre-existing bug in `_normalize_phrase_for_parse`
+    (`src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_candidate_set_clinical_assessment_probe.py`)
+    that rewrote every hyphen as `" to "`, corrupting `tonic-clonic` into
+    `tonic to clonic` and silently nulling/misrendering several holdout rows.
+    The regex now only converts digit-bounded numeric ranges
+    (`r"(?<=\d)\s*[-–—]\s*(?=\d)"`). Three regression tests were added; the
+    fix turned a mixed `+11`/`-8` first-pass result into the clean `+17`/`0`
+    promoted result.
+  - Artifacts: `experiments/gan2026_reset_clinical_assessment_pipeline_test450_hn1_frozen_audit_2026-06-07.*`.
 - 2026-06-07: Tightened the
   `multi_month_bucket_frequency_value_recovery` contract, added targeted
   regression coverage, and reran the saved GPT-4.1-mini validation750 replay.

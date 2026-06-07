@@ -3179,7 +3179,7 @@ def _clean_phrase(value: str) -> str:
 def _normalize_phrase_for_parse(value: str) -> str:
     text = value.lower()
     text = re.sub(r"[≈~]", "", text)
-    text = re.sub(r"\s*[-–—]\s*", " to ", text)
+    text = re.sub(r"(?<=\d)\s*[-–—]\s*(?=\d)", " to ", text)
     text = re.sub(r"\bper\s+24\s*h(?:ours?)?\b", "per day", text)
     text = re.sub(r"\b24\s*h(?:ours?)?\b", "day", text)
     
