@@ -16,6 +16,54 @@ Extract -> Select / Clinical Assessment -> Normalize -> Project -> Verify -> Ren
 Controlling thread:
 `docs/research/gan2026_architecture_reset_synthesis_and_next_questions_2026-06-06.md`.
 
+## Three Big-Picture Workstreams (planned 2026-06-07)
+
+With the HN1 null-reduction loop closed on a frozen `test450` audit, the
+project is moving from open-ended hybrid iteration toward three larger,
+interlocking workstreams. Each has a planning document; none is yet
+authorized for execution beyond validation-only mechanics, and any
+holdout-facing step within them requires the same explicit-authorization
+gate already proven for the HN1 frozen audit.
+
+1. **Three-way architecture comparison and cross-pollination**
+   (`docs/research/gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07.md`):
+   side-by-side validation750 comparison of the fully deterministic
+   (`Gan2026PipelineV1`), fully LLM (currently fragmented across `llm_only_*`
+   experiments — needs a canonical runner assembled), and hybrid
+   (`reset_clinical_assessment_pipeline`) architectures, then feeding the
+   hybrid reset discipline back into (a) de-overfitting the deterministic
+   pipeline's validation-tuned rules into general, source-backed principles,
+   and (b) refining fully-LLM prompts around an explicit division of labor —
+   LLM owns clinical judgment, deterministic stages own representation,
+   arithmetic, and format.
+2. **Evidence-grounded architecture thesis assessment**
+   (`docs/research/gan2026_evidence_grounded_thesis_assessment_plan_2026-06-07.md`):
+   operationalizes the project's core thesis — that modularity, task
+   decomposition, and evidence trails make a system not just easier to debug
+   but more accurate, generalizable, and scalable — into a predeclared,
+   falsifiable scoring rubric, then builds one canonical "Architecture Thesis
+   Scorecard" that aggregates existing (not new) ablation/trace/gap signal
+   across the three architectures from workstream 1.
+3. **Repo consolidation and cleanup**
+   (`docs/research/gan2026_repo_consolidation_and_cleanup_plan_2026-06-07.md`):
+   catalogs the current sprawl (4 superseded hybrid/staged lineages, ~25
+   fragmented `llm_only_*` modules, ~76 overlapping artifact-analysis files,
+   ~80 mirrored test files), names one canonical runner per architecture,
+   audits dependencies before any removal, consolidates retired-architecture
+   documentation into one lineage summary, removes the rest, and DRY-ifies
+   the shared runner/reporting/CLI infrastructure into one parameterized
+   framework.
+
+**Sequencing decision** (resolves the open question in the user's request):
+a *select → clean → iterate* loop, not a strict before/after ordering.
+First make the light canonical-runner selection that workstream 1's Phase 0
+and workstream 3's Phase B both need (one decision, consumed by both); then
+run the workstream-3 cleanup on that selected, narrowed surface so the
+comparison and thesis-assessment work that follows is built on a clean, DRY
+substrate rather than further entrenching duplication. See
+`gan2026_repo_consolidation_and_cleanup_plan_2026-06-07.md` Section 2 for the
+full rationale.
+
 ## Guardrails
 
 - Split `gan2026_split_v1` is locked: 300 train, 750 validation, 450 holdout.
@@ -183,6 +231,12 @@ Controlling thread:
 
 ## Core Artifacts
 
+- Three-way architecture comparison and cross-pollination plan:
+  `docs/research/gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07.md`.
+- Evidence-grounded architecture thesis assessment plan:
+  `docs/research/gan2026_evidence_grounded_thesis_assessment_plan_2026-06-07.md`.
+- Repo consolidation and cleanup plan:
+  `docs/research/gan2026_repo_consolidation_and_cleanup_plan_2026-06-07.md`.
 - Overfitting reduction and generalization hypotheses:
   `docs/research/gan2026_overfitting_reduction_and_generalization_hypotheses_2026-06-07.md`.
 - Validation750 reset error analysis report:
@@ -264,6 +318,22 @@ Controlling thread:
 
 ### Now
 
+- **DONE 2026-06-07**: made the light canonical-runner selection that both new
+  plans needed first — recorded in
+  `docs/research/gan2026_canonical_runner_selection_2026-06-07.md`:
+  `Gan2026PipelineV1` (deterministic) and `reset_clinical_assessment_pipeline`
+  (hybrid) confirmed; `llm_only_structured_events` selected as the canonical
+  fully-LLM Option-A runner (its "events" output decomposes along family lines
+  that map onto the reset pipeline's Normalize/Project taxonomy, and it
+  already shares contract/normalize integration seams with the reset
+  pipeline); `llm_only_minimal_evidence_selector` retained as the Option-B
+  maximal-LLM comparator. The other 9 `llm_only_*` modules are now named
+  superseded-candidates for the cleanup plan's Phase C audit.
+- Now that the selection above is recorded, **assemble** the Option-A chain:
+  wire `llm_only_structured_events` as the Select stage in front of the reset
+  pipeline's deterministic Normalize→Project→Render→Score→Route→Decision
+  stages and verify artifact-shape compatibility (comparison plan Phase 0,
+  remaining mechanical step).
 - Begin HN2 (bounded vague-with-window rendering) on validation-only proxy
   slices, per the recommended execution order in
   `docs/research/gan2026_test450_null_reduction_synthesis_and_hypotheses_2026-06-07.md`
@@ -283,6 +353,36 @@ Controlling thread:
 
 ### Next
 
+- **DONE 2026-06-07**: completed cleanup-plan Phases A-D — the removal
+  proposal is now written and ready for review before any `git rm`:
+  - Phase A catalog (396 files):
+    `docs/research/gan2026_phase_a_file_catalog_2026-06-07.csv` +
+    `..._summary_2026-06-07.md`
+  - Phase C dependency audit (41 files audited + batch verdict for 45
+    `components/*`): `docs/research/gan2026_phase_c_dependency_audit_2026-06-07.md`
+    — found 2 genuine `blocked` verdicts (`components/source_trace.py`,
+    `components/suspicious_state_policy.py` are live canonical-line
+    dependencies mis-filed under the staged-v0 directory; relocate before
+    removing `components/`), confirmed the 13 analyzers referencing
+    `hybrid_parallel_state_candidate_reasoner` are loose string-couplings (not
+    blocked), and recommends a removal-batch order: `staged_hybrid_assembly` ->
+    adjudicator lineage -> `llm_only_*` -> `staged_assembly_v1` ->
+    `hybrid_parallel_state_candidate_reasoner`.
+  - Phase D lineage doc:
+    `docs/research/gan2026_architecture_lineage_and_retired_approaches_2026-06-07.md`
+    — compresses each retired line's contribution (what it tried / taught /
+    what survived), clearing the `needs-doc-archival-first` blocker the audit
+    assigned to every lineage.
+  - **Next**: Phase E removal can now begin, lineage-by-lineage, per the
+    audit's recommended ordering and guardrails (small reviewable batches,
+    `git rm`, full suite green between batches, registry/doc updates in the
+    same batch). Each batch should run the `thermo-nuclear-code-quality-review`
+    skill before landing, per the plan's guardrails.
+- Run the validation750 three-way comparison from
+  `gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07.md`
+  Phase 1 once the canonical fully-LLM runner exists, and begin populating the
+  Architecture Thesis Scorecard from
+  `gan2026_evidence_grounded_thesis_assessment_plan_2026-06-07.md` Phase 0-2.
 - Compare the reset-native GPT-4.1-mini and Qwen validation750 outputs against
   each other and against the completed `hybrid_parallel_state_candidate_reasoner`
   validation750 baseline.

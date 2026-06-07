@@ -5,36 +5,36 @@
 - Prompt/schema version: `gan2026_candidate_set_clinical_assessment_probe_v3`
 - CandidateSet JSONL: `experiments\gan2026_validation750_candidate_set_v3_nested_dedupe_2026-06-06.jsonl`
 - Split: `validation` / `gan2026_split_v1`
-- Rows: 620
+- Rows: 750
 - Model: `ollama_chat/qwen3.6:35b`
 - Mode: `live`
 - Claim language: clinical-assessment schema-fit probe only; no score calculation and no rendered answers.
 
 ## Summary
 
-- Clinical assessment rows: 619/620
+- Clinical assessment rows: 749/750
 - Call failures: 0
 - Parse/validation failure rows: 1
 - Missing candidate-set rows: 0
 
 ## Assessment Kinds
 
-- `cluster_frequency`: 57
-- `frequency_rate`: 303
+- `cluster_frequency`: 77
+- `frequency_rate`: 387
 - `no_reference`: 17
-- `seizure_free`: 127
-- `unknown_frequency`: 115
+- `seizure_free`: 140
+- `unknown_frequency`: 128
 
 ## Aggregation Policies
 
 - `additive_same_window`: 40
 - `cluster_axis`: 1
 - `no_reference_boundary`: 17
-- `primary_with_context`: 95
+- `primary_with_context`: 126
 - `seizure_free_state`: 1
-- `single_fact`: 425
-- `unknown_due_to_absence`: 16
-- `unknown_due_to_ambiguity`: 24
+- `single_fact`: 518
+- `unknown_due_to_absence`: 17
+- `unknown_due_to_ambiguity`: 29
 
 ## Row Notes
 

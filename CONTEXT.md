@@ -240,6 +240,27 @@ vague burden mechanically dominates. It is a named projection policy, not
 additive arithmetic.
 _Avoid_: mixed-window addition, hidden selector preference, score-only rescue
 
+**Canonical Fully-LLM Pipeline (`llm_only_canonical_pipeline`)**: The single
+named end-to-end fully-LLM architecture comparator for the Gan 2026 three-way
+comparison. It is forked from `llm_only_direct_labeler`'s single-call
+scaffolding, rewritten around the now-mature deterministic rule taxonomy
+(cluster-axis ambiguity, seizure-free conflict, same-window additive frequency,
+and similar named families), and wrapped in a thin artifact-shape adapter so
+its output can be scored by the same Render/Score/Route/Decision tooling as the
+deterministic and hybrid pipelines. It supersedes the fragmented `llm_only_*`
+experiment family as that architecture's comparison-grade representative; those
+modules remain historical baselines, not candidates for the canonical role.
+_Avoid_: llm_only_direct_labeler (as canonical), llm-only experiment, fully-LLM
+runner
+
+**Evidence Text-Containment Check**: A comparison-surface metric, reported only
+for the fully-LLM architecture, that tests whether an LLM's free-text `evidence`
+string actually appears in the source note. It is a distinct, simpler measure
+from `CandidateSet` source-id validity rate and must not be merged with it or
+reported as an equivalent trace-quality signal — the difference in evidence-
+trace richness between architectures is itself a comparison finding.
+_Avoid_: source-id validity rate, evidence-trace validity, candidate trace check
+
 **Seizure-Free Proxy Evidence Overreach**: A boundary projection block where
 the selected evidence supports only proxy improvement, such as no rescue
 medication, no injury, no admission, better control, or conditional future

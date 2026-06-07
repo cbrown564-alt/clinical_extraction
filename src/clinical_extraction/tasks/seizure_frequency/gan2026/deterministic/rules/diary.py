@@ -383,7 +383,8 @@ DIARY_DATE_LIST_RULE = RuleSpec(
     portability=Portability.SEIZURE_FREQUENCY,
     description="Diary list of MM-DD seizure-event dates.",
     pattern=re.compile(
-        r"\bSeizure events on (?P<dates>\d{2}-\d{2}(?:,\s*\d{2}-\d{2})+)\b",
+        r"\b(?:Seizure events on|Diary lists seizures on) "
+        r"(?P<dates>\d{2}-\d{2}(?:,\s*\d{2}-\d{2})+)\b",
         re.IGNORECASE,
     ),
     build=_build_date_list,
@@ -392,6 +393,11 @@ DIARY_DATE_LIST_RULE = RuleSpec(
             text="Seizure events on 03-07, 03-27, 05-15, 05-19, 05-24.",
             expected_label="5 per 2 month",
             expected_evidence="Seizure events on 03-07, 03-27, 05-15, 05-19, 05-24",
+        ),
+        RuleExample(
+            text="Diary lists seizures on 03-07, 03-27, 05-15, 05-19, 05-24.",
+            expected_label="5 per 2 month",
+            expected_evidence="Diary lists seizures on 03-07, 03-27, 05-15, 05-19, 05-24",
         ),
     ),
     provenance="Diary/log V1 expression.",
