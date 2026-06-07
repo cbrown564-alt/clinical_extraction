@@ -16,10 +16,10 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis.candi
 from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis.rq1_rq2_control_panels import (  # noqa: E501
     DEFAULT_PANEL_JSONL_PATH,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.components.source_trace import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis.source_trace import (
     build_selected_source_id_trace,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.components.suspicious_state_policy import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis.suspicious_state_policy import (
     final_policy_label,
     first_failure_owner,
     routing_action,

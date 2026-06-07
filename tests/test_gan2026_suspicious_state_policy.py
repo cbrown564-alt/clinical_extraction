@@ -1,4 +1,4 @@
-from clinical_extraction.tasks.seizure_frequency.gan2026.components.suspicious_state_policy import (  # noqa: E501
+from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis.suspicious_state_policy import (
     final_policy_label,
     first_failure_owner,
     routing_action,
