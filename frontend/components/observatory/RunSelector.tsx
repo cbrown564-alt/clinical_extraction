@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { Telescope, Check, Filter, Search, X, ChevronDown, ChevronUp } from "lucide-react";
 import type { RegistryEntry } from "@/lib/types";
-import { parseRunVariant, parseSplitSize } from "./useObservatoryData";
+import { parseRunVariant } from "./useObservatoryData";
 
 interface RunSelectorProps {
   runs: RegistryEntry[];
@@ -19,32 +19,28 @@ type SortDir = "asc" | "desc";
 
 const FAMILY_LABELS: Record<string, string> = {
   rules_only: "Rules",
-  llm_only_claim_table_selector: "LLM Claim",
+  llm_only_direct_labeler: "LLM Direct",
   llm_only_structured_events: "LLM Events",
-  llm_only_minimal_evidence_selector: "LLM Minimal",
-  llm_only_typed_adapter_reasoner: "LLM Typed Adapter",
-  llm_only_typed_operations_reasoner: "LLM Typed Ops",
+  llm_structured_events: "LLM Events",
   llm_first_direct_extractor: "LLM Direct",
   llm_heavy_clinical_frequency_reasoner: "LLM Heavy",
   llm_heavy_evidence_selection_with_deterministic_adapters: "LLM Heavy+Det",
   llm_replacement_postprocessing_ablation: "LLM Repl",
-  hybrid_rules_candidates_llm_adjudicator: "Hybrid",
+  reset_clinical_assessment_pipeline: "Reset Hybrid",
   hybrid_clinical_frequency_state_graph: "Hybrid Graph",
   dspy_final_selection_adjudicator: "DSPY Adjudicator",
 };
 
 const FAMILY_ORDER = [
   "rules_only",
-  "llm_only_claim_table_selector",
+  "llm_only_direct_labeler",
   "llm_only_structured_events",
-  "llm_only_minimal_evidence_selector",
-  "llm_only_typed_adapter_reasoner",
-  "llm_only_typed_operations_reasoner",
+  "llm_structured_events",
   "llm_first_direct_extractor",
   "llm_heavy_clinical_frequency_reasoner",
   "llm_heavy_evidence_selection_with_deterministic_adapters",
   "llm_replacement_postprocessing_ablation",
-  "hybrid_rules_candidates_llm_adjudicator",
+  "reset_clinical_assessment_pipeline",
   "hybrid_clinical_frequency_state_graph",
   "dspy_final_selection_adjudicator",
 ];

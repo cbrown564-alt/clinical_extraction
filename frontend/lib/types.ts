@@ -601,7 +601,7 @@ export interface DecisionRecordArtifactRow {
 }
 
 // Group B: Events-based families
-// (llm_structured_events, llm_heavy_clinical_frequency_reasoner, llm_only_typed_adapter_reasoner)
+// (llm_structured_events, llm_only_structured_events, llm_heavy_clinical_frequency_reasoner)
 export interface EventsArtifactRow {
   source_row_index: number;
   split: string;
@@ -657,49 +657,7 @@ export interface EventsArtifactRow {
   };
 }
 
-// Group C: Operations-based families
-// (llm_only_typed_operations_reasoner)
-export interface OperationsArtifactRow {
-  source_row_index: number;
-  split: string;
-  structured_record: {
-    operations?: Array<{
-      operation_id: string;
-      operation_kind: string;
-      operands?: Record<string, unknown>;
-      raw_phrase?: string;
-      evidence: string;
-      evidence_id?: string;
-      assertion_status?: string;
-      certainty?: string;
-      clinical_note?: string;
-      temporality?: string;
-      model_normalized_clinical_label?: string;
-    }>;
-    selection?: {
-      selected_operation_ids?: string[];
-      rejected_operation_ids?: string[];
-      selected_evidence?: string;
-      selected_evidence_id?: string;
-      selection_strategy?: string;
-      target_policy?: string;
-      final_clinical_state?: string;
-      rationale?: string;
-      uncertainty_flags?: string[];
-    };
-  };
-  score_layers?: Record<string, unknown>;
-  repair_changes?: unknown[];
-  evidence_summary?: {
-    selected_evidence?: string;
-    selected_evidence_valid?: boolean;
-  };
-  reference: {
-    gold_label: string;
-  };
-}
-
-// Group D: Selected-fact / state families
+// Group C: Selected-fact families
 // (llm_heavy_evidence_selection_with_deterministic_adapters)
 export interface SelectedFactArtifactRow {
   source_row_index: number;
@@ -740,34 +698,7 @@ export interface SelectedFactArtifactRow {
   };
 }
 
-// (llm_only_simplified_selected_state_reasoner, llm_only_sparse_operands_selected_state_reasoner)
-export interface SelectedStateArtifactRow {
-  source_row_index: number;
-  split: string;
-  structured_record: {
-    selected_state?: {
-      final_kind?: string;
-      raw_llm_final_label?: string;
-      raw_source_phrase?: string;
-      selected_evidence: string;
-      selection_reason?: string;
-      uncertainty_flags?: string[];
-      operands?: Record<string, unknown>;
-      selected_operation_kind?: string;
-    };
-  };
-  score_layers?: Record<string, unknown>;
-  repair_changes?: unknown[];
-  evidence_summary?: {
-    selected_evidence?: string;
-    selected_evidence_valid?: boolean;
-  };
-  reference: {
-    gold_label: string;
-  };
-}
-
-// Group E: State-graph families
+// Group D: State-graph families
 // (hybrid_clinical_frequency_state_graph)
 export interface StateGraphArtifactRow {
   source_row_index: number;
@@ -798,81 +729,7 @@ export interface StateGraphArtifactRow {
   };
 }
 
-// Group F: Parallel hybrid
-// (hybrid_parallel_state_candidate_reasoner)
-export interface ParallelHybridArtifactRow {
-  source_row_index: number;
-  split: string;
-  component_inputs?: {
-    deterministic_candidates?: CandidateEvent[];
-    deterministic_top?: {
-      selected_event_ids?: string[];
-      selected_decision?: string;
-      selected_score?: number;
-      selection_candidates?: unknown[];
-    };
-    state_graph_nodes?: Array<{
-      semantic_kind?: string;
-      node_normalized_label?: string;
-      evidence?: string;
-      rationale?: string;
-    }>;
-    state_graph_projection?: {
-      final_label?: string;
-      final_kind?: string;
-      monthly_frequency?: number;
-      rationale?: string;
-      selected_node_ids?: string[];
-      uncertainty_flags?: string[];
-      evidence?: string;
-    };
-  };
-  structured_adjudicator_record?: {
-    final_label?: string;
-    evidence?: string;
-    rationale?: string;
-    selected_event_ids?: string[];
-    rejected_event_ids?: string[];
-  } | null;
-  structured_llm_candidate_record?: {
-    final_label?: string;
-    evidence?: string;
-    rationale?: string;
-  } | null;
-  score_layers?: Record<string, unknown>;
-  repair_changes?: unknown[];
-  diagnostics?: Record<string, unknown>;
-  reference: {
-    gold_label: string;
-  };
-}
-
-// Group G: Minimal evidence
-// (llm_only_minimal_evidence_selector)
-export interface MinimalEvidenceArtifactRow {
-  source_row_index: number;
-  split: string;
-  minimal_record?: {
-    final_label?: string;
-    evidence?: string;
-    rationale?: string;
-    confidence?: string;
-    selected_evidence?: string;
-  };
-  score_layers?: Record<string, unknown>;
-  contract_diagnostics?: Record<string, unknown>;
-  derived_diagnostics?: Record<string, unknown>;
-  evidence_summary?: {
-    selected_evidence?: string;
-    selected_evidence_valid?: boolean;
-  };
-  repair_changes?: unknown[];
-  reference: {
-    gold_label: string;
-  };
-}
-
-// Group H: Replacement postprocessing ablation
+// Group E: Replacement postprocessing ablation
 // (llm_replacement_postprocessing_ablation)
 export interface ReplacementAblationArtifactRow {
   source_row_index: number;
