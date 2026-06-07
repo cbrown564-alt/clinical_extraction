@@ -804,6 +804,26 @@ def get_cli_specs() -> dict[str, Any]:
             write_report=write_deterministic_report,
             default_max_tokens=900,
         ),
+        "deterministic_canonical_pipeline": GanLlmPipelineCliSpec(
+            description=(
+                "Run the Gan 2026 staged deterministic_canonical_pipeline "
+                "architecture (proven byte-identical to 'deterministic')."
+            ),
+            default_jsonl_path=Path(
+                "experiments/gan2026_deterministic_canonical_pipeline_validation.jsonl"
+            ),
+            default_report_path=Path(
+                "experiments/gan2026_deterministic_canonical_pipeline_validation.md"
+            ),
+            run_split=lambda records, **kwargs: run_split(
+                records,
+                architecture="deterministic_canonical_pipeline",
+                **kwargs,
+            ),
+            write_jsonl=write_jsonl,
+            write_report=write_deterministic_report,
+            default_max_tokens=900,
+        ),
         "hybrid": GanLlmPipelineCliSpec(
             description="Run the Gan 2026 CandidateSet hybrid (assessment + projection) pipeline.",
             default_jsonl_path=Path("experiments/gan2026_hybrid_pipeline_validation.jsonl"),
