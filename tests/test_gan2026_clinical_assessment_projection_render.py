@@ -2921,3 +2921,114 @@ def _seizure_free_candidate(
         source_ids=source_ids or [f"note:{source_row_index}:span:0-{len(evidence)}"],
         clinical_or_policy="clinical",
     )
+
+
+def test_project_and_render_ytd_denominator_normalizes_to_months() -> None:
+    assessment = ClinicalAssessment(
+        source_row_index=101,
+        component_owner="llm_candidate_set_clinical_assessment",
+        assessment_kind="frequency_rate",
+        primary_candidate_ids=["llm:101:1"],
+        aggregation_policy="single_fact",
+        normalized_burden=NormalizedBurden(
+            count_low=6,
+            count_high=6,
+            source_normalized_phrase="6 seizures so far this year",
+        ),
+    )
+
+    candidate_set = _candidate_set(101, evidence="6 seizures so far this year")
+    candidate_set.row_context = _row_context("2026-04-15")
+
+    projection, rendered = projection_render.project_and_render(
+        assessment,
+        candidate_set=candidate_set,
+    )
+
+    assert projection.projected_label_semantics == "6 per 4 month"
+    assert projection.projection_basis == "date_anchored_ytd_denominator"
+    assert projection.projection_rule_id == "date_anchored_ytd_denominator_v0"
+    assert rendered.rendered_label == "6 per 4 month"
+
+
+def test_project_and_render_ytd_denominator_ablation() -> None:
+    assessment = ClinicalAssessment(
+        source_row_index=102,
+        component_owner="llm_candidate_set_clinical_assessment",
+        assessment_kind="frequency_rate",
+        primary_candidate_ids=["llm:102:1"],
+        aggregation_policy="single_fact",
+        normalized_burden=NormalizedBurden(
+            count_low=6,
+            count_high=6,
+            source_normalized_phrase="6 seizures so far this year",
+        ),
+    )
+
+    candidate_set = _candidate_set(102, evidence="6 seizures so far this year")
+    candidate_set.row_context = _row_context("2026-04-15")
+
+    projection, rendered = projection_render.project_and_render(
+        assessment,
+        candidate_set=candidate_set,
+        disabled_ablation_switches={"project_date_anchored_ytd_denominator"},
+    )
+
+    # When ablated, it should fallback to the usual parsing/rendering behavior (e.g. unknown frequency rate or similar since YTD is unparsed as a standard frequency phrase)
+    assert "ablation_switch_disabled:project_date_anchored_ytd_denominator" in projection.projection_issues
+    assert projection.projected_label_semantics == ""
+    assert rendered.rendered_label is None
+
+
+def test_project_and_render_ytd_denominator_missing_reference_date() -> None:
+    assessment = ClinicalAssessment(
+        source_row_index=103,
+        component_owner="llm_candidate_set_clinical_assessment",
+        assessment_kind="frequency_rate",
+        primary_candidate_ids=["llm:103:1"],
+        aggregation_policy="single_fact",
+        normalized_burden=NormalizedBurden(
+            count_low=6,
+            count_high=6,
+            source_normalized_phrase="6 seizures so far this year",
+        ),
+    )
+
+    candidate_set = _candidate_set(103, evidence="6 seizures so far this year")
+    candidate_set.row_context = RowContext(context_issues=["reference_date_missing"])
+
+    projection, rendered = projection_render.project_and_render(
+        assessment,
+        candidate_set=candidate_set,
+    )
+
+    assert projection.projected_label_semantics == ""
+    assert rendered.rendered_label is None
+
+
+def test_project_and_render_ytd_denominator_non_ytd_yearly_phrase() -> None:
+    assessment = ClinicalAssessment(
+        source_row_index=104,
+        component_owner="llm_candidate_set_clinical_assessment",
+        assessment_kind="frequency_rate",
+        primary_candidate_ids=["llm:104:1"],
+        aggregation_policy="single_fact",
+        normalized_burden=NormalizedBurden(
+            count_low=6,
+            count_high=6,
+            source_normalized_phrase="6 seizures per year",
+        ),
+    )
+
+    candidate_set = _candidate_set(104, evidence="6 seizures per year")
+    candidate_set.row_context = _row_context("2026-04-15")
+
+    projection, rendered = projection_render.project_and_render(
+        assessment,
+        candidate_set=candidate_set,
+    )
+
+    # Since it's not YTD, it shouldn't trigger G1. It might render as unparsed or parsed if standard parser works.
+    assert projection.projection_rule_id != "date_anchored_ytd_denominator_v0"
+
+

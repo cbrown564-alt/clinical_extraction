@@ -6,13 +6,12 @@
   "schema_version": "gan2026_rendered_label_scoring_v0",
   "scoring_policy_id": "gan2026_rendered_label_scoring_policy_v0",
   "summary": {
-    "exact_normalized_label_match_rate_on_scored": 0.747,
-    "exact_normalized_label_matches": 372,
-    "non_scored_rows": 252,
+    "exact_normalized_label_match_rate_on_scored": 0.7477,
+    "exact_normalized_label_matches": 403,
+    "non_scored_rows": 211,
     "non_scored_source_row_indices": [
       1695,
       1706,
-      2609,
       2907,
       2932,
       2938,
@@ -31,22 +30,23 @@
       3512,
       3532,
       3534,
-      4345,
-      4368,
-      4690,
-      4694
+      4842,
+      4951,
+      4992,
+      4994,
+      5040
     ],
-    "pragmatic_accuracy_on_scored": 0.9157,
-    "pragmatic_correct": 456,
-    "purist_accuracy_on_scored": 0.8574,
-    "purist_correct": 427,
+    "pragmatic_accuracy_on_scored": 0.9165,
+    "pragmatic_correct": 494,
+    "purist_accuracy_on_scored": 0.8571,
+    "purist_correct": 462,
     "score_issue_counts": {
-      "rendered_label_null": 252
+      "rendered_label_null": 211
     },
     "score_status_counts": {
-      "not_scored_null_rendered_label": 252,
-      "scored": 498
+      "not_scored_null_rendered_label": 211,
+      "scored": 539
     },
-    "scored_rows": 498
+    "scored_rows": 539
   }
 }

@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
+from datetime import date
 from collections import Counter
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
@@ -126,7 +128,23 @@ def build_projection_render_row(
         projection_decision, final_rendered_label = project_and_render(
             clinical_assessment,
             candidate_set=candidate_set,
+            disabled_ablation_switches=disabled_switches,
         )
+
+    ytd_instrumentation = None
+    if projection_decision is not None:
+        cleaned_issues = []
+        for issue in projection_decision.projection_issues:
+            if issue.startswith("ytd_instrumentation:"):
+                parts = issue[len("ytd_instrumentation:"):].split(";")
+                ytd_instrumentation = {}
+                for part in parts:
+                    if "=" in part:
+                        k, v = part.split("=", 1)
+                        ytd_instrumentation[k] = int(v) if v.isdigit() else v
+            else:
+                cleaned_issues.append(issue)
+        projection_decision = projection_decision.model_copy(update={"projection_issues": cleaned_issues})
 
     return {
         "artifact_kind": "gan2026_clinical_assessment_projection_render_row",
@@ -157,6 +175,7 @@ def build_projection_render_row(
         "final_rendered_label": (
             final_rendered_label.model_dump() if final_rendered_label is not None else None
         ),
+        "ytd_instrumentation": ytd_instrumentation,
     }
 
 
@@ -164,13 +183,18 @@ def project_and_render(
     assessment: ClinicalAssessment,
     *,
     candidate_set: CandidateSet,
+    disabled_ablation_switches: set[str] | frozenset[str] | None = None,
 ) -> tuple[ProjectionDecision, FinalRenderedLabel]:
     source_ids = _source_ids_for_assessment(assessment, candidate_set)
     selected_evidence_status = _selected_evidence_status_for_assessment(
         assessment,
         candidate_set,
     )
-    outcome = _project_label_semantics(assessment, candidate_set=candidate_set)
+    outcome = _project_label_semantics(
+        assessment,
+        candidate_set=candidate_set,
+        disabled_ablation_switches=disabled_ablation_switches,
+    )
     projection = ProjectionDecision(
         source_row_index=assessment.source_row_index,
         component_owner=outcome.owner,
@@ -365,11 +389,23 @@ def _reassemble_assessment(
     )
 
 
+def _is_ytd_phrase(phrase: str) -> bool:
+    lower = phrase.strip().lower()
+    return bool(
+        re.search(
+            r"\b(?:ytd|year[- ]to[- ]date|so far this year|this year so far|since the beginning of the year|since (?:january|jan))\b",
+            lower
+        )
+    )
+
+
 def _project_label_semantics(
     assessment: ClinicalAssessment,
     *,
     candidate_set: CandidateSet,
+    disabled_ablation_switches: set[str] | frozenset[str] | None = None,
 ) -> ProjectionOutcome:
+    disabled_switches = frozenset(disabled_ablation_switches or ())
     burden = assessment.normalized_burden
     if assessment.assessment_kind == "frequency_rate":
         dominant_vague_label = _dominant_vague_current_burden_label(
@@ -384,6 +420,69 @@ def _project_label_semantics(
                 "dominant_vague_current_burden_v0",
                 [],
             )
+
+        # Check G1: Date-Anchored Temporal Arithmetic (YTD Calibration)
+        by_id = {candidate.candidate_id: candidate for candidate in candidate_set.candidates}
+        primary_candidates = [by_id[cid] for cid in assessment.primary_candidate_ids if cid in by_id]
+        
+        ytd_candidate = None
+        for candidate in primary_candidates:
+            phrase = " ".join(
+                part
+                for part in [
+                    candidate_source_phrase(candidate),
+                    candidate.evidence_span.text,
+                ]
+                if part
+            )
+            if _is_ytd_phrase(phrase):
+                ytd_candidate = candidate
+                break
+
+        is_ytd = ytd_candidate is not None or _is_ytd_phrase(burden.source_normalized_phrase)
+        if is_ytd:
+            ref_date_ctx = candidate_set.row_context.reference_date
+            if ref_date_ctx is not None:
+                if "project_date_anchored_ytd_denominator" in disabled_switches:
+                    return ProjectionOutcome(
+                        None,
+                        "frequency_rate",
+                        "rate_projection_policy",
+                        "frequency_rate_values_v0",
+                        ["frequency_rate_values_incomplete", "ablation_switch_disabled:project_date_anchored_ytd_denominator"],
+                    )
+                try:
+                    ref_date = date.fromisoformat(ref_date_ctx.date)
+                    elapsed_months = ref_date.month
+                    ytd_burden = burden.model_copy(
+                        update={
+                            "period_low": float(elapsed_months),
+                            "period_high": float(elapsed_months),
+                            "period_unit": "month"
+                        }
+                    )
+                    label = _rate_label(ytd_burden)
+                    if label is not None:
+                        source_phrase = ytd_candidate.evidence_span.text if ytd_candidate else burden.source_normalized_phrase
+                        candidate_id = ytd_candidate.candidate_id if ytd_candidate else (assessment.primary_candidate_ids[0] if assessment.primary_candidate_ids else "unknown")
+                        instrumentation_str = (
+                            f"ytd_instrumentation:"
+                            f"ytd_anchor_start={ref_date.year}-01-01;"
+                            f"ytd_reference_date={ref_date_ctx.date};"
+                            f"elapsed_months={elapsed_months};"
+                            f"source_phrase={source_phrase};"
+                            f"candidate_id={candidate_id}"
+                        )
+                        return ProjectionOutcome(
+                            label,
+                            "date_anchored_ytd_denominator",
+                            "rate_projection_policy",
+                            "date_anchored_ytd_denominator_v0",
+                            [instrumentation_str],
+                        )
+                except Exception:
+                    pass
+
         label = _rate_label(burden)
         if label is None:
             return ProjectionOutcome(

@@ -11,21 +11,21 @@ validation750 mechanics scoring over saved project/render rows only. Scoring reu
 ## Summary
 
 - Rows: 750
-- Scored rows: 498
-- Non-scored rows: 252
-- Purist correct on scored rows: 427 (0.8574)
-- Pragmatic correct on scored rows: 456 (0.9157)
-- Exact normalized-label matches on scored rows: 372 (0.747)
+- Scored rows: 539
+- Non-scored rows: 211
+- Purist correct on scored rows: 462 (0.8571)
+- Pragmatic correct on scored rows: 494 (0.9165)
+- Exact normalized-label matches on scored rows: 403 (0.7477)
 
 ## Score Statuses
 
-- `not_scored_null_rendered_label`: 252
-- `scored`: 498
+- `not_scored_null_rendered_label`: 211
+- `scored`: 539
 
 ## Score Issues
 
-- `rendered_label_null`: 252
+- `rendered_label_null`: 211
 
 ## Non-Scored Rows
 
-- First rows: 1695, 1706, 2609, 2907, 2932, 2938, 2965, 2992, 3015, 3118, 3137, 3356, 3371, 3468, 3469, 3482, 3493, 3507, 3512, 3532, 3534, 4345, 4368, 4690, 4694
+- First rows: 1695, 1706, 2907, 2932, 2938, 2965, 2992, 3015, 3118, 3137, 3356, 3371, 3468, 3469, 3482, 3493, 3507, 3512, 3532, 3534, 4842, 4951, 4992, 4994, 5040
