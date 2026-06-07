@@ -145,6 +145,22 @@ target that replaces the open-ended Option B framing:
 
 ## 3. Comparison Protocol
 
+**Status update (2026-06-07): report shape scoped, not yet run.** Mapping the
+six configs' `run_split()` output surfaces surfaced a real asymmetry this
+protocol has to account for: only `hybrid` has a routing/verification stage,
+and its lightweight `run_split` probe doesn't expose rendered/null/routed/
+purist numbers at all — those only exist via `build_unified_pipeline_artifact`
+("deep replay"). Resolved with the user (2026-06-07): compare all six on the
+universally-meaningful axes (rendered/null, Purist/Pragmatic-correct,
+evidence-trace validity, final-label distribution) in one shared table, with
+`hybrid`'s shared-table numbers sourced from its deep-replay artifact (stated
+plainly as the architectural fact it is, not hidden as a methodology quirk),
+plus a separate hybrid-only routing-taxonomy appendix drawing on that same
+replay. Full design, open data-availability questions (pragmatic-correct and
+source-id validity for the deep-replay path), and a pilot-before-full-run
+sequencing recommendation are in
+[[gan2026_three_way_comparison_phase1_report_design]].
+
 Run all three canonical runners over the **same validation750 surface** (and
 only later, as a frozen aggregate audit, over `test450` — see Section 6),
 using the existing artifact and scoring tooling so the comparison is
