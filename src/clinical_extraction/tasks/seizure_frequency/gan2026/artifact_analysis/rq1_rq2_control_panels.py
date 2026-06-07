@@ -10,8 +10,8 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis import (
-    hidden_family_atlas,
+from clinical_extraction.tasks.seizure_frequency.gan2026.labels import (
+    classify_hidden_families,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     label_to_frequency_record,
@@ -465,7 +465,7 @@ def _validation_records(*, data_path: Path, split_manifest_path: Path) -> list[d
         data_path=data_path,
         manifest_path=split_manifest_path,
     ):
-        families = hidden_family_atlas.classify_hidden_families(
+        families = classify_hidden_families(
             note_text=f"{record.note_text} {record.gold_reference}",
             gold_label=record.gold_normalized_label,
             predicted_label="",
