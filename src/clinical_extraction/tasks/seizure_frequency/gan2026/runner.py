@@ -64,6 +64,7 @@ PipelineArchitecture = Literal[
     "hybrid",
     "llm_only_direct_labeler",
     "llm_only_structured_events",
+    "llm_only_canonical_pipeline",
 ]
 
 
@@ -395,6 +396,40 @@ class Gan2026PipelineRunner:
             }
             return PipelineResult(output=output, diagnostics=diagnostics)
 
+        elif self.config.architecture == "llm_only_canonical_pipeline":
+            from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
+                llm_only_canonical_pipeline,
+            )
+
+            self._configure_lm()
+
+            prompt_input_json = llm_only_canonical_pipeline.build_prompt_input(item)
+            program = llm_only_canonical_pipeline.DspyCanonicalLlmExtractor()
+            prediction = program(prompt_input_json=prompt_input_json)
+            raw_output = str(prediction.decision_json)
+
+            decision, parse_errors = llm_only_canonical_pipeline.parse_decision_json(raw_output)
+
+            from clinical_extraction.core.evidence import evidence_is_substring
+
+            output = FinalExtraction(
+                final_value=decision.final_label if decision else "unknown",
+                rationale=decision.rationale if decision else "extraction failed",
+                evidence=decision.evidence if decision else "",
+            )
+            diagnostics = {
+                "prompt_input_json": prompt_input_json,
+                "raw_output": raw_output,
+                "parse_errors": parse_errors,
+                "decision_record": decision.model_dump() if decision else None,
+                "evidence_text_contained": (
+                    evidence_is_substring(item.note_text, decision.evidence)
+                    if decision and decision.evidence
+                    else False
+                ),
+            }
+            return PipelineResult(output=output, diagnostics=diagnostics)
+
         else:
             raise ValueError(
                 "Unsupported architecture for single-item run: "
@@ -670,6 +705,26 @@ def run_split(
             checkpoint_jsonl_path=checkpoint_jsonl_path,
             checkpoint_report_path=checkpoint_report_path,
         )
+
+    elif architecture == "llm_only_canonical_pipeline":
+        from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
+            llm_only_canonical_pipeline,
+        )
+        return llm_only_canonical_pipeline.run_split(
+            records,
+            split=split,
+            split_manifest=split_manifest,
+            model=model,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            mode=mode,
+            dspy_cache=dspy_cache,
+            api_base=api_base,
+            escalation_reason=escalation_reason,
+            progress_every=progress_every,
+            checkpoint_jsonl_path=checkpoint_jsonl_path,
+            checkpoint_report_path=checkpoint_report_path,
+        )
     else:
         raise ValueError(f"Unknown architecture: {architecture}")
 
@@ -727,6 +782,7 @@ def get_cli_specs() -> dict[str, Any]:
     )
     from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
         llm_candidate_set_clinical_assessment_probe,
+        llm_only_canonical_pipeline,
         llm_only_direct_labeler,
         llm_only_structured_events,
     )
@@ -788,5 +844,22 @@ def get_cli_specs() -> dict[str, Any]:
             write_report=llm_only_structured_events.write_report,
             summarize_rows=llm_only_structured_events.summarize_records,
             default_max_tokens=5000,
+        ),
+        "llm_only_canonical_pipeline": GanLlmPipelineCliSpec(
+            description=(
+                "Run the Gan 2026 LLM-only canonical-pipeline (purest-form, "
+                "single-shot extract/select/normalize/project/render) experiment."
+            ),
+            default_jsonl_path=llm_only_canonical_pipeline.DEFAULT_JSONL_PATH,
+            default_report_path=llm_only_canonical_pipeline.DEFAULT_REPORT_PATH,
+            run_split=lambda records, **kwargs: run_split(
+                records,
+                architecture="llm_only_canonical_pipeline",
+                **kwargs,
+            ),
+            write_jsonl=llm_only_canonical_pipeline.write_jsonl,
+            write_report=llm_only_canonical_pipeline.write_report,
+            summarize_rows=llm_only_canonical_pipeline.summarize_records,
+            default_max_tokens=1200,
         ),
     }

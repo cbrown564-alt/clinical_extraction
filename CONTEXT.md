@@ -301,21 +301,45 @@ behavior change wearing a staging-pass costume.
 _Avoid_: Verify (for this stage), VerificationDecision (for this stage),
 verifier action, affirm/reject/route semantics (here)
 
-**Canonical Fully-LLM Pipeline (planned: `llm_only_canonical_pipeline`)**: The
-planned name for a new single-shot `PipelineArchitecture` configuration on
-`Gan2026PipelineRunner` that collapses extract/select/normalize/project/render
-into one LLM call, with the now-mature deterministic rule taxonomy (cluster-
-axis ambiguity, seizure-free conflict, same-window additive frequency, and
-similar named families) embedded as prompt instructions rather than pre/post
-processing. It sits alongside, not in place of, the existing
+**Canonical Fully-LLM Pipeline (`llm_only_canonical_pipeline`)**: A
+single-shot `PipelineArchitecture` configuration on `Gan2026PipelineRunner`
+(implemented in `llm/llm_only_canonical_pipeline.py`, 2026-06-07 — the
+remaining Phase 0 item from the three-way architecture comparison plan) that
+collapses extract/select/normalize/project/render into one LLM call, with the
+now-mature deterministic rule taxonomy (cluster-axis ambiguity, seizure-free
+conflict, same-window additive frequency, and similar named families)
+embedded as prompt instructions — under `guidance_for_tricky_cases` in the
+prompt payload, written in plain clinical language rather than this
+project's internal stage/architecture vocabulary, since the model has no
+context for that vocabulary — rather than pre/post processing. It sits alongside, not in place of, the existing
 `llm_only_direct_labeler` and `llm_only_structured_events` configurations; it
-reports a distinct evidence text-containment metric (does the LLM's free-text
-evidence string appear in the source note) rather than the formal `CandidateSet`
-source-id validity rate the deterministic/hybrid configurations support, since
-forcing it through that machinery would misrepresent what a single-shot LLM
+reports a distinct evidence text-containment metric (`evidence_text_contained`
+/ `evidence_text_containment_rate` — does the LLM's free-text evidence string
+appear in the source note) rather than the formal `CandidateSet` source-id
+validity rate the deterministic/hybrid configurations support, since forcing
+it through that machinery would misrepresent what a single-shot LLM
 architecture actually produces.
 _Avoid_: llm_only_direct_labeler (as the canonical fully-LLM target), fully-LLM
 runner, source-id validity rate (for this architecture)
+
+**Model-Facing Prompt Language**: Text an LLM will actually read as part of a
+prompt — `Signature` docstrings, `InputField`/`OutputField` descriptions, and
+the keys/values/instruction strings inside JSON prompt payloads such as
+`build_prompt_input()` — must be a plain, task-oriented brief written for a
+reader with no other context about this project, and must not lean on this
+project's internal architecture/process vocabulary (extraction, selection,
+normalization, projection, rendering, deterministic/hybrid Gan 2026 pipelines,
+stage-owned/ablatable rules, rule taxonomy, scored, scorer-facing, downstream,
+benchmark, and similar terms from this glossary). Where such a term names a
+real constraint, restate the constraint itself in plain language instead of
+naming the internal concept. This applies only to model-facing strings —
+human-facing text (this glossary, experiment reports, docstrings for humans,
+ADRs) should keep using this project's vocabulary precisely. Enforced by
+`tests/test_gan2026_llm_prompt_hygiene.py`'s `INTERNAL_MODEL_FACING_PHRASES`;
+see
+`docs/decisions/0015-model-facing-prompt-language-must-drop-internal-architecture-vocabulary.md`.
+_Avoid_: internal-architecture phrasing in prompts, "collapse extract/select/
+normalize/project/render", rule-taxonomy framing in model-facing text
 
 **Seizure-Free Proxy Evidence Overreach**: A boundary projection block where
 the selected evidence supports only proxy improvement, such as no rescue

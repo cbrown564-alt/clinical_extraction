@@ -307,6 +307,7 @@ def test_pipeline_registry_exposes_routine_llm_experiments() -> None:
         "hybrid",
         "llm_only_direct_labeler",
         "llm_only_structured_events",
+        "llm_only_canonical_pipeline",
     }
 
     assert specs["deterministic"].default_max_tokens == 900
@@ -314,6 +315,7 @@ def test_pipeline_registry_exposes_routine_llm_experiments() -> None:
     assert specs["hybrid"].default_candidate_set_jsonl_path is not None
     assert specs["llm_only_direct_labeler"].default_max_tokens == 900
     assert specs["llm_only_structured_events"].default_max_tokens == 5000
+    assert specs["llm_only_canonical_pipeline"].default_max_tokens == 1200
 
 
 def _dummy_spec(

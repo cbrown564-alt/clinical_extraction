@@ -52,28 +52,32 @@ both of the other two architectures**:
 
 ## 2. Prerequisite: One Canonical Runner Per Architecture
 
-**Status update (post Phase F consolidation, 2026-06-07): substantially
-resolved.** The repo-consolidation plan's Phase F replaced the "assemble a
-fully-LLM runner" open question with a unified, parameterized
-`Gan2026PipelineRunner` (`src/.../gan2026/runner.py`) that already executes
-four named `PipelineArchitecture` configurations — `deterministic`, `hybrid`,
-`llm_only_direct_labeler`, and `llm_only_structured_events` — through one
-shared projection/render/score/route/decision artifact contract. The
-`llm_only_structured_events` configuration *is* the assembled Option-A chain
-described below: it already wires an LLM-forward Select/ClinicalAssessment
-stage through the same deterministic Normalize→Project→Render→Score→Route→
-Decision stages the hybrid configuration uses. No separate assembly step
-remains for that comparator.
+**Status update (2026-06-07): fully resolved.** The repo-consolidation plan's
+Phase F replaced the "assemble a fully-LLM runner" open question with a
+unified, parameterized `Gan2026PipelineRunner` (`src/.../gan2026/runner.py`)
+that now executes six named `PipelineArchitecture` configurations —
+`deterministic`, `deterministic_canonical_pipeline`, `hybrid`,
+`llm_only_direct_labeler`, `llm_only_structured_events`, and (as of
+2026-06-07, completing the last open Phase 0 item)
+`llm_only_canonical_pipeline` — through one shared projection/render/score/
+route/decision artifact contract. The `llm_only_structured_events`
+configuration *is* the assembled Option-A chain described below: it already
+wires an LLM-forward Select/ClinicalAssessment stage through the same
+deterministic Normalize→Project→Render→Score→Route→Decision stages the
+hybrid configuration uses. No separate assembly step remains for that
+comparator, and `llm_only_canonical_pipeline` now closes out the "purest
+form" comparator described below as well.
 
 | Architecture | Canonical runner | Status |
 | --- | --- | --- |
 | Deterministic | `Gan2026PipelineRunner` `"deterministic"` config (wraps `Gan2026PipelineV1` internals) **and**, as of 2026-06-07, the staged `"deterministic_canonical_pipeline"` config | both exist; the canonical config is now staged into named, ablatable Extract/Normalize/[[Select & Render]]/[[Evidence Trace Check]] form (`deterministic_canonical_stages.py`), proven byte-identical to `"deterministic"` by `tests/test_gan2026_deterministic_canonical_pipeline.py` — see resolution note below |
 | Hybrid | `Gan2026PipelineRunner` `"hybrid"` config / `hybrid/reset_clinical_assessment_pipeline.py` | exists, already the named "current focus" |
-| Fully LLM | `Gan2026PipelineRunner` `"llm_only_direct_labeler"` and `"llm_only_structured_events"` configs | exist and assembled (Option A is done); see `llm_only_canonical_pipeline` below for the still-open "purest form" comparator |
+| Fully LLM | `Gan2026PipelineRunner` `"llm_only_direct_labeler"`, `"llm_only_structured_events"`, **and**, as of 2026-06-07, `"llm_only_canonical_pipeline"` configs | all three exist and are assembled — Option A (`llm_only_structured_events`) and the "purest form" `llm_only_canonical_pipeline` comparator are both done; see below |
 
-**Remaining Phase 0 work** is narrower than originally scoped: add two new
-`PipelineArchitecture` configurations to the *existing* unified runner — not
-standalone forked modules (see `CONTEXT.md` for the resolved naming):
+**Phase 0 is now complete.** Both of the previously-remaining
+`PipelineArchitecture` configurations have been added to the *existing*
+unified runner — not as standalone forked modules (see `CONTEXT.md` for the
+resolved naming):
 
 - **`deterministic_canonical_pipeline`** *(done — 2026-06-07)*: the existing
   deterministic logic restructured into four named, stage-owned, ablatable
@@ -94,15 +98,28 @@ standalone forked modules (see `CONTEXT.md` for the resolved naming):
   known-row sample — the directly assertable "rules unchanged" guard. See
   `docs/decisions/0013-stage-deterministic-canonical-config-before-generalizing-its-rules.md`
   for why staging and generalizing are deliberately kept as two passes.
-- **`llm_only_canonical_pipeline`**: a new single-shot configuration that
-  collapses extract→select→normalize→project→render into one LLM call, with
-  the now-mature deterministic rule taxonomy (cluster-axis ambiguity,
-  seizure-free conflict, same-window additive frequency, and similar named
-  families) embedded as prompt instructions rather than pre/post processing —
-  the "purest form" fully-LLM comparator, sitting alongside (not replacing)
-  the existing `llm_only_direct_labeler`/`llm_only_structured_events`
-  configurations. It reports a distinct evidence text-containment metric
-  rather than the formal `CandidateSet` source-id validity rate, since forcing
+- **`llm_only_canonical_pipeline`** *(done — 2026-06-07)*: a new single-shot
+  configuration that collapses extract→select→normalize→project→render into
+  one LLM call, with the now-mature deterministic rule taxonomy (cluster-axis
+  ambiguity, seizure-free conflict, same-window additive frequency,
+  denominator-window mismatch, medication-cadence ambiguity, cluster-cadence-
+  as-event-rate, unknown-cadence cluster burden, concrete-frequency
+  precedence, dominant-vague-current-burden, seizure-free proxy evidence
+  overreach, conditional-only trigger, relative-only trend, and
+  multiple-current-primary-facts) embedded as prompt instructions — under
+  `guidance_for_tricky_cases` in the prompt payload, reworded in plain
+  clinical language rather than this project's internal stage/architecture
+  vocabulary, since the model is given no other context about those internal
+  naming conventions — rather than pre/post processing — the "purest form"
+  fully-LLM comparator, sitting
+  alongside (not replacing) the existing
+  `llm_only_direct_labeler`/`llm_only_structured_events` configurations.
+  Implemented in `llm/llm_only_canonical_pipeline.py` and wired into
+  `Gan2026PipelineRunner` (`run`, `run_split`, `get_cli_specs`); see
+  `tests/test_gan2026_llm_only_canonical_pipeline.py`. It reports a distinct
+  evidence text-containment metric (`evidence_text_contained` /
+  `evidence_text_containment_rate`, mirroring `evidence_is_substring`) rather
+  than the formal `CandidateSet` source-id validity rate, since forcing
   single-shot LLM output through that machinery would misrepresent what the
   architecture actually produces.
 
@@ -188,6 +205,17 @@ its preservation) is the correct action.
 
 ## 5. Cross-Pollination B: Refining The Fully-LLM Prompts
 
+**Governing principle for all prompt rewrites under this section**: every
+model-facing string (Signature docstrings, field descriptions, JSON payload
+keys/values/instructions) must be a plain, task-oriented brief written for a
+reader with none of this project's internal context — see
+[[0015-model-facing-prompt-language-must-drop-internal-architecture-vocabulary]]
+(established while building `llm_only_canonical_pipeline`'s
+`guidance_for_tricky_cases` block) and its enforcement test,
+`tests/test_gan2026_llm_prompt_hygiene.py`. Restate the underlying constraint
+in plain language rather than naming the internal concept (e.g.
+"normalization"/"projection"/"rule taxonomy"/"scored"/"downstream").
+
 **Problem**: the `llm_only_*` prompts currently ask the model to do
 everything — extraction, normalization, projection, and clinical judgment —
 in one pass. The hybrid reset architecture's central lesson (made explicit by
@@ -235,7 +263,7 @@ downstream representation that fails to carry it through.
 
 | Phase | Work | Gate |
 | --- | --- | --- |
-| 0 | Select/assemble one canonical runner per architecture (Section 2); confirm artifact-shape compatibility with existing scoring tooling | none — mechanical/structural work |
+| 0 | *(done — 2026-06-07)* Select/assemble one canonical runner per architecture (Section 2); confirm artifact-shape compatibility with existing scoring tooling | none — mechanical/structural work |
 | 1 | Run all three canonical runners on validation750; produce one comparison report using shared reporting machinery | none — validation-only |
 | 2 | Apply the de-overfitting rewrite to one deterministic rule family at a time; re-run and compare after each | none — validation-only, ablatable, one family at a time |
 | 3 | Apply the prompt-refinement principle to the canonical fully-LLM runner; re-run and compare after each change | none — validation-only |
