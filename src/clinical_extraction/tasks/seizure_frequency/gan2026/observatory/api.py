@@ -78,18 +78,14 @@ except Exception:  # pragma: no cover
 
 PipelineFamily = Literal[
     "rules_only",
-    "llm_only_claim_table_selector",
     "llm_only_direct_labeler",
     "llm_only_structured_events",
-    "llm_only_typed_adapter_reasoner",
 ]
 TEMPORAL_SELECTION_RULES = temporal_selection.TEMPORAL_SELECTION_RULES
 
 PROMPT_MODULES = (
-    "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_claim_table_selector",
     "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_direct_labeler",
     "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_structured_events",
-    "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_minimal_evidence_selector",
 )
 
 # Families that can actually be executed via /run/note and /run/ablation
@@ -826,10 +822,6 @@ FAMILY_SHORT_LABELS: dict[str, str] = {
     "llm_first_direct_extractor": "Direct Extractor",
     "llm_heavy_clinical_frequency_reasoner": "LLM Heavy Reasoner",
     "llm_heavy_evidence_selection_with_deterministic_adapters": "LLM Heavy + Det",
-    "llm_only_claim_table_selector": "Claim Table",
-    "llm_only_minimal_evidence_selector": "Minimal Evidence",
-    "llm_only_typed_adapter_reasoner": "Typed Adapter",
-    "llm_only_typed_operations_reasoner": "Typed Operations",
     "llm_replacement_postprocessing_ablation": "Replacement Ablation",
     "llm_structured_events": "Structured Events",
 }
