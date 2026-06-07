@@ -355,6 +355,18 @@ Resolve seizure-free statements such as `since last visit` only when row context
 - It treats `last notification period` or administrative contact periods as clinical encounter anchors without explicit policy.
 - It silently converts treatment/surgery anchors into seizure-free duration.
 
+**Results & Replay Evaluation (2026-06-07)**
+- **Status**: `promoted_component`
+- **validation750 Replay Metrics**:
+  - Scored rows: 539 (baseline 538, +1 resolved null render)
+  - Purist correct: 462 (baseline 461, +1)
+  - Pragmatic correct: 494 (baseline 493, +1)
+  - Exact normalized matches: 403 (baseline 402, +1)
+  - Purist accuracy on scored: 85.71%
+  - Pragmatic accuracy on scored: 91.65%
+  - Switch `normalize_seizure_free_prior_encounter_anchor` successfully verified via one-family-off validation750 replay (triggering on 5 prior encounter rows when enabled).
+
+
 ### 7.4 G4: Standardized Representation For Catamenial And Sleep Patterns
 
 **Implementation intent**
