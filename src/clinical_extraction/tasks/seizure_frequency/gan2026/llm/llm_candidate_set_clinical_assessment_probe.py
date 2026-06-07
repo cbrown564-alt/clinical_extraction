@@ -371,6 +371,7 @@ def assemble_clinical_assessment(
             draft,
             candidate_set=candidate_set,
             normalized_burden=normalized_burden,
+            disabled_ablation_switches=disabled_switches,
         )
         normalization_issues.extend(instrumentation_issues)
     elif (
@@ -1114,6 +1115,7 @@ def _instrument_seizure_free_duration(
     *,
     candidate_set: CandidateSet,
     normalized_burden: NormalizedBurden,
+    disabled_ablation_switches: frozenset[str] = frozenset(),
 ) -> tuple[NormalizedBurden, SeizureFreeInstrumentation | None, list[str]]:
     if not _is_unrenderable_seizure_free_burden(normalized_burden):
         return normalized_burden, None, []
@@ -1142,22 +1144,27 @@ def _instrument_seizure_free_duration(
         if antecedent is not None:
             anchor = antecedent.anchor_date
     if anchor is None and _mentions_prior_encounter_anchor(source_phrase):
-        prior_encounter = candidate_set.row_context.prior_encounter
-        if prior_encounter is not None:
-            anchor = DateReference(
-                date=prior_encounter.date,
-                date_precision=prior_encounter.date_precision,
-                source=(
-                    "candidate_set.row_context.prior_encounter:"
-                    f"{prior_encounter.source}"
-                ),
-                source_phrase=prior_encounter.source_phrase,
+        if "normalize_seizure_free_prior_encounter_anchor" in disabled_ablation_switches:
+            anchor_issues.append(
+                _disabled_switch_issue("normalize_seizure_free_prior_encounter_anchor")
             )
-            anchor_issues = [
-                "seizure_free_anchor_from_prior_encounter_context",
-                "prior_encounter_derived_seizure_free_duration",
-                *prior_encounter.issues,
-            ]
+        else:
+            prior_encounter = candidate_set.row_context.prior_encounter
+            if prior_encounter is not None:
+                anchor = DateReference(
+                    date=prior_encounter.date,
+                    date_precision=prior_encounter.date_precision,
+                    source=(
+                        "candidate_set.row_context.prior_encounter:"
+                        f"{prior_encounter.source}"
+                    ),
+                    source_phrase=prior_encounter.source_phrase,
+                )
+                anchor_issues = [
+                    "seizure_free_anchor_from_prior_encounter_context",
+                    "prior_encounter_derived_seizure_free_duration",
+                    *prior_encounter.issues,
+                ]
     if anchor is None:
         if _mentions_since_anchor(source_phrase):
             instrumentation = SeizureFreeInstrumentation(
@@ -1170,7 +1177,7 @@ def _instrument_seizure_free_duration(
             return (
                 normalized_burden,
                 instrumentation,
-                ["seizure_free_since_date_anchor_unparsed"],
+                ["seizure_free_since_date_anchor_unparsed", *anchor_issues],
             )
         return normalized_burden, None, []
 

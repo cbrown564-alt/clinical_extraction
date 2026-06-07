@@ -3032,3 +3032,55 @@ def test_project_and_render_ytd_denominator_non_ytd_yearly_phrase() -> None:
     assert projection.projection_rule_id != "date_anchored_ytd_denominator_v0"
 
 
+def test_build_projection_render_prior_encounter_context_ablation() -> None:
+    row = {
+        "source_row_index": 42,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "prompt_version": "test_prompt",
+        "schema_version": "test_schema",
+        "parse_errors": [],
+        "assessment_draft": {
+            "assessment_kind": "seizure_free",
+            "primary_candidate_ids": ["llm:42:1"],
+            "supporting_candidate_ids": [],
+            "rejected_candidate_ids": [],
+            "aggregation_policy": "seizure_free_state",
+            "normalized_burden": {
+                "source_normalized_phrase": "No seizures since last visit"
+            },
+        },
+    }
+
+    artifact_row = projection_render.build_projection_render_row(
+        row,
+        candidate_sets={
+            42: CandidateSet(
+                source_row_index=42,
+                component_owner="candidate_set_union",
+                source_artifacts=["test"],
+                row_context=_row_context(
+                    "2021-11-05",
+                    prior_encounter_date="2021-05-05",
+                    prior_encounter_phrase="last appointment six months ago",
+                ),
+                candidates=[
+                    _seizure_free_candidate(
+                        42,
+                        "llm:42:1",
+                        "No seizures since last visit.",
+                    )
+                ],
+            )
+        },
+        disabled_ablation_switches={"normalize_seizure_free_prior_encounter_anchor"},
+    )
+
+    assessment = artifact_row["clinical_assessment"]
+    instrumentation = assessment["seizure_free_instrumentation"]
+    assert "ablation_switch_disabled:normalize_seizure_free_prior_encounter_anchor" in assessment["normalization_issues"]
+    assert instrumentation["state_kind"] == "unresolved_anchor"
+    assert artifact_row["final_rendered_label"]["rendered_label"] is None
+
+
+
