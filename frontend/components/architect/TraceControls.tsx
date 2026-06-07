@@ -238,6 +238,17 @@ export default function TraceControls() {
   const error = useArchitectStore((s) => s.error);
   const trace = useArchitectStore((s) => s.trace);
 
+  // Auto-run when live specimen changes or is loaded initially
+  useEffect(() => {
+    if (isLive && noteText && recordQuery.data && !isLoading) {
+      // Check if the current trace matches the selected index and split
+      const currentTraceMatches = trace && trace.sourceRowIndex === sourceRowIndex && trace.split === split && trace.noteText === noteText;
+      if (!currentTraceMatches) {
+        handleRun();
+      }
+    }
+  }, [isLive, noteText, recordQuery.data, sourceRowIndex, split, handleRun, trace, isLoading]);
+
   const pipelineOptions = familiesQuery.data?.families ?? [];
 
   const handleOpenCustomNote = () => {

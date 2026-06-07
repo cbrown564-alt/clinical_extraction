@@ -179,8 +179,8 @@ export const useLaboratoryStore = create<LaboratoryState>((set) => ({
 
 export const useArchitectStore = create<ArchitectState>((set) => ({
   noteText: "",
-  split: null,
-  sourceRowIndex: null,
+  split: "validation",
+  sourceRowIndex: 10,
   pipelineFamily: "rules_only",
   ablationConfig: {},
   activeStage: "extract",
