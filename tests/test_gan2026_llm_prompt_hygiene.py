@@ -9,6 +9,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequenc
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
     llm_heavy_clinical_frequency_reasoner,
     llm_heavy_evidence_selection_with_deterministic_adapters,
+    llm_only_canonical_pipeline,
     llm_only_direct_labeler,
     llm_only_structured_events,
 )
@@ -69,6 +70,7 @@ def _payload_text(payload: str | dict[str, object]) -> str:
     [
         ("llm_only_direct_labeler", llm_only_direct_labeler.build_prompt_input),
         ("llm_only_structured_events", llm_only_structured_events.build_prompt_input),
+        ("llm_only_canonical_pipeline", llm_only_canonical_pipeline.build_prompt_input),
         (
             "llm_heavy_clinical_frequency_reasoner",
             llm_heavy_clinical_frequency_reasoner.build_prompt_input,
