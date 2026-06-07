@@ -500,7 +500,11 @@ def _project_label_semantics(
             [],
         )
     if assessment.assessment_kind == "cluster_frequency":
-        return _cluster_label(assessment, candidate_set=candidate_set)
+        return _cluster_label(
+            assessment,
+            candidate_set=candidate_set,
+            disabled_ablation_switches=disabled_switches,
+        )
     if assessment.assessment_kind == "seizure_free":
         label = _seizure_free_label(burden)
         if label is None:
@@ -575,6 +579,7 @@ def _cluster_label(
     assessment: ClinicalAssessment,
     *,
     candidate_set: CandidateSet,
+    disabled_ablation_switches: frozenset[str] = frozenset(),
 ) -> ProjectionOutcome:
     burden = assessment.normalized_burden
     medication_cadence = _has_primary_medication_cadence(assessment, candidate_set)
@@ -625,6 +630,15 @@ def _cluster_label(
                 "cluster_projection_policy",
                 "cluster_cadence_as_event_rate_when_size_absent_v0",
                 ["medication_cadence_ambiguity"],
+            )
+        if "project_cluster_cadence_default_multiple_per_cluster" not in disabled_ablation_switches:
+            default_cluster_label = f"{cadence}, multiple per cluster"
+            return ProjectionOutcome(
+                default_cluster_label,
+                "cluster_cadence_without_size",
+                "cluster_projection_policy",
+                "cluster_cadence_default_multiple_per_cluster_v0",
+                [],
             )
         simple_rate = (
             f"{_format_range(burden.cluster_count_low, burden.cluster_count_high)} "

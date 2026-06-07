@@ -218,10 +218,10 @@ def test_project_and_render_cluster_cadence_without_size_as_simple_rate() -> Non
     assert projection.projection_owner == "cluster_projection_policy"
     assert (
         projection.projection_rule_id
-        == "cluster_cadence_as_event_rate_when_size_absent_v0"
+        == "cluster_cadence_default_multiple_per_cluster_v0"
     )
-    assert projection.projected_label_semantics == "1 per 7 to 9 day"
-    assert rendered.rendered_label == "1 per 7 to 9 day"
+    assert projection.projected_label_semantics == "1 cluster per 7 to 9 day, multiple per cluster"
+    assert rendered.rendered_label == "1 cluster per 7 to 9 day, multiple per cluster"
 
 
 def test_project_and_render_blocks_medication_cadence_cluster_projection() -> None:
@@ -3081,6 +3081,72 @@ def test_build_projection_render_prior_encounter_context_ablation() -> None:
     assert "ablation_switch_disabled:normalize_seizure_free_prior_encounter_anchor" in assessment["normalization_issues"]
     assert instrumentation["state_kind"] == "unresolved_anchor"
     assert artifact_row["final_rendered_label"]["rendered_label"] is None
+
+
+def test_project_and_render_cluster_cadence_default_multiple_per_cluster() -> None:
+    assessment = ClinicalAssessment(
+        source_row_index=13,
+        component_owner="llm_candidate_set_clinical_assessment",
+        assessment_kind="cluster_frequency",
+        primary_candidate_ids=["llm:13:1"],
+        aggregation_policy="single_fact",
+        normalized_burden=NormalizedBurden(
+            cluster_count_low=1,
+            cluster_count_high=1,
+            cluster_period_low=7,
+            cluster_period_high=9,
+            cluster_period_unit="day",
+            source_normalized_phrase="clusters every 7 to 9 days",
+        ),
+    )
+
+    projection, rendered = projection_render.project_and_render(
+        assessment,
+        candidate_set=_candidate_set(13),
+    )
+
+    assert projection.projection_basis == "cluster_cadence_without_size"
+    assert projection.projection_owner == "cluster_projection_policy"
+    assert (
+        projection.projection_rule_id
+        == "cluster_cadence_default_multiple_per_cluster_v0"
+    )
+    assert projection.projected_label_semantics == "1 cluster per 7 to 9 day, multiple per cluster"
+    assert rendered.rendered_label == "1 cluster per 7 to 9 day, multiple per cluster"
+
+
+def test_project_and_render_cluster_cadence_default_multiple_per_cluster_ablation() -> None:
+    assessment = ClinicalAssessment(
+        source_row_index=13,
+        component_owner="llm_candidate_set_clinical_assessment",
+        assessment_kind="cluster_frequency",
+        primary_candidate_ids=["llm:13:1"],
+        aggregation_policy="single_fact",
+        normalized_burden=NormalizedBurden(
+            cluster_count_low=1,
+            cluster_count_high=1,
+            cluster_period_low=7,
+            cluster_period_high=9,
+            cluster_period_unit="day",
+            source_normalized_phrase="clusters every 7 to 9 days",
+        ),
+    )
+
+    projection, rendered = projection_render.project_and_render(
+        assessment,
+        candidate_set=_candidate_set(13),
+        disabled_ablation_switches={"project_cluster_cadence_default_multiple_per_cluster"},
+    )
+
+    assert projection.projection_basis == "cluster_cadence_without_size"
+    assert projection.projection_owner == "cluster_projection_policy"
+    assert (
+        projection.projection_rule_id
+        == "cluster_cadence_as_event_rate_when_size_absent_v0"
+    )
+    assert projection.projected_label_semantics == "1 per 7 to 9 day"
+    assert rendered.rendered_label == "1 per 7 to 9 day"
+
 
 
 
