@@ -304,6 +304,7 @@ def test_pipeline_registry_exposes_routine_llm_experiments() -> None:
 
     assert set(specs) == {
         "deterministic",
+        "deterministic_canonical_pipeline",
         "hybrid",
         "llm_only_direct_labeler",
         "llm_only_structured_events",
