@@ -3178,6 +3178,69 @@ def test_project_and_render_ytd_explicit_denominator_wins_over_ytd_phrase() -> N
     assert rendered.rendered_label == "6 per 7 month"
 
 
+def test_project_and_render_ytd_overrides_normalized_annual_period() -> None:
+    assessment = ClinicalAssessment(
+        source_row_index=106,
+        component_owner="llm_candidate_set_clinical_assessment",
+        assessment_kind="frequency_rate",
+        primary_candidate_ids=["llm:106:1"],
+        aggregation_policy="single_fact",
+        normalized_burden=NormalizedBurden(
+            count_low=6,
+            count_high=6,
+            period_low=1,
+            period_high=1,
+            period_unit="year",
+            source_normalized_phrase="6 seizures so far this year",
+        ),
+    )
+
+    candidate_set = _candidate_set(106, evidence="6 seizures so far this year")
+    candidate_set.row_context = _row_context("2026-04-15")
+
+    projection, rendered = projection_render.project_and_render(
+        assessment,
+        candidate_set=candidate_set,
+    )
+
+    assert projection.projected_label_semantics == "6 per 4 month"
+    assert projection.projection_rule_id == "date_anchored_ytd_denominator_v0"
+    assert rendered.rendered_label == "6 per 4 month"
+
+
+def test_project_and_render_plain_this_year_phrase_triggers_ytd() -> None:
+    assessment = ClinicalAssessment(
+        source_row_index=107,
+        component_owner="llm_candidate_set_clinical_assessment",
+        assessment_kind="frequency_rate",
+        primary_candidate_ids=["llm:107:1"],
+        aggregation_policy="single_fact",
+        normalized_burden=NormalizedBurden(
+            count_low=7,
+            count_high=7,
+            period_low=1,
+            period_high=1,
+            period_unit="year",
+            source_normalized_phrase="seven generalised tonic-clonic seizures this year",
+        ),
+    )
+
+    candidate_set = _candidate_set(
+        107,
+        evidence="seven generalised tonic-clonic seizures this year",
+    )
+    candidate_set.row_context = _row_context("2026-04-15")
+
+    projection, rendered = projection_render.project_and_render(
+        assessment,
+        candidate_set=candidate_set,
+    )
+
+    assert projection.projected_label_semantics == "7 per 4 month"
+    assert projection.projection_rule_id == "date_anchored_ytd_denominator_v0"
+    assert rendered.rendered_label == "7 per 4 month"
+
+
 def test_build_projection_render_prior_encounter_context_ablation() -> None:
     row = {
         "source_row_index": 42,

@@ -1,0 +1,70 @@
+{
+  "artifact_kind": "gan2026_verification_decision",
+  "claim_boundary": "deterministic verification-action baseline over routed rows; no verifier model call, no manual annotation, no replacement label invention, and score context is audit-only",
+  "route_artifact_path": "experiments\\gan2026_reset_clinical_assessment_pipeline_test450_ytd_fix_2026-06-07.route.jsonl",
+  "row_count": 41,
+  "schema_version": "gan2026_verification_decision_v0",
+  "summary": {
+    "action_basis_counts": {
+      "route_family_policy": 41
+    },
+    "action_counts": {
+      "abstain": 41
+    },
+    "decision_rows": 41,
+    "decision_source_row_indices": [
+      750,
+      892,
+      1629,
+      2597,
+      2725,
+      2749,
+      3353,
+      3514,
+      3906,
+      7993,
+      9562,
+      9786,
+      9926,
+      9942,
+      9979,
+      10009,
+      10031,
+      10186,
+      10213,
+      10441,
+      10445,
+      10538,
+      10553,
+      11401,
+      11499,
+      11576,
+      11733,
+      11787,
+      12300,
+      12330,
+      12335,
+      12392,
+      12590,
+      12643,
+      12645,
+      12948,
+      15203,
+      15255,
+      15620,
+      16718,
+      16962
+    ],
+    "input_route_rows": 450,
+    "input_routed_rows": 41,
+    "route_family_counts": {
+      "cluster_axis_ambiguity": 7,
+      "denominator_window_mismatch": 2,
+      "mixed_window_or_vague_addition": 13,
+      "relative_only_trend": 1,
+      "selected_source_id_invalid": 15,
+      "unresolved_cluster_cadence_with_per_cluster_burden": 4
+    }
+  },
+  "verification_policy_id": "gan2026_validation250_verification_decision_policy_v0"
+}

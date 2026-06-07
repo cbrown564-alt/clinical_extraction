@@ -186,6 +186,13 @@ Controlling thread:
 
 ### Next
 
+- Develop the first HN1 validation-only null-reduction component against the
+  `frequency_rate_values_unparsed` proxy slice, starting with explicit
+  date-bucket and count-plus-anchor frequency recovery rather than additive
+  multi-semiology rescue.
+- After the anchor-window HN1 component, evaluate whether explicit month-bucket
+  aggregation should become the next narrow recovery family on the same
+  validation slice.
 - After the GPT-4.1-mini validation750 run on the reset-native pipeline is
   stable, run the same reset-native pipeline with Qwen validation750.
 - Compare the reset-native GPT-4.1-mini and Qwen validation750 outputs against
@@ -213,6 +220,30 @@ Controlling thread:
 
 ### Done Recently
 
+- 2026-06-07: Implemented the first HN1 ablatable recovery component in
+  `src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_candidate_set_clinical_assessment_probe.py`.
+  - New family:
+    `anchor_window_frequency_value_recovery`
+    with ablation switch
+    `normalize_frequency_anchor_window_value_recovery`.
+  - The component recovers explicit count-plus-anchor frequency statements such
+    as `four brief morning jerks since 3/2015` and
+    `3 morning jerks since last tonic-clonic seizure in Apr 2022` by deriving a
+    bounded month window from source-backed anchors.
+  - Focused regression tests were added for positive recovery, last-event anchor
+    counting, ablation-disable behavior, and qualitative trigger-only negative
+    control behavior; the reset-stage component inventory now records the new
+    family as `general`.
+- 2026-06-07: Completed the first HN1 validation-only proxy-slice read as
+  `docs/research/gan2026_validation750_hn1_frequency_value_recovery_slice_read_2026-06-07.md`.
+  - On the `frequency_rate_values_unparsed` slice, `24 / 71` rows are already
+    rendered through source-near primary-candidate recovery, while the
+    remaining `47` null rows all still carry
+    `frequency_rate_values_incomplete`.
+  - The read narrows the next implementation target to explicit date-bucket and
+    count-plus-anchor frequency recovery inside `Normalize`, while treating
+    qualitative/trigger-only rows as guardrail negatives and additive
+    multi-semiology rows as a smaller secondary family.
 - 2026-06-07: Ran validation750 and test450 on GPT-4.1-mini using the reset-native composable ClinicalAssessment pipeline runner (`reset_clinical_assessment_pipeline.py`).
   - The `validation750` run matched the baseline `context_repair_v6` results: 750 inputs, 580 rendered labels, 170 null renders, 488/580 Purist-correct scored rows, and 73 routed/abstain rows. Artifacts saved under `experiments/gan2026_reset_clinical_assessment_pipeline_validation750_gpt41mini_v0`.
   - The `test450` run successfully completed: 450 inputs (449 projected), 341 rendered labels, 108 null renders, 268/341 Purist-correct scored rows (~0.7858 accuracy on rendered subset), and 43 routed/abstain rows. Artifacts saved under `experiments/gan2026_reset_clinical_assessment_pipeline_test450_gpt41mini_v0`.

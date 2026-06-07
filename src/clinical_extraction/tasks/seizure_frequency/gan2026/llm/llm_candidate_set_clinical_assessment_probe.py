@@ -1054,6 +1054,7 @@ def normalize_assessment_burden(
             burden, additive_issues = _additive_frequency_burden(
                 primary_candidates,
                 source_phrase=source_phrase,
+                disabled_ablation_switches=disabled_ablation_switches,
             )
             issues.extend(additive_issues)
             return burden, issues
@@ -1062,6 +1063,27 @@ def normalize_assessment_burden(
             disabled_ablation_switches=disabled_ablation_switches,
         )
         if _is_unrenderable_frequency_burden(burden):
+            (
+                anchor_repair,
+                anchor_repair_issues,
+                anchor_repair_matched,
+            ) = _frequency_burden_from_anchor_window_primary_candidates(
+                primary_candidates,
+                candidate_set=candidate_set,
+                disabled_ablation_switches=disabled_ablation_switches,
+            )
+            if anchor_repair is not None:
+                issues.extend(
+                    [
+                        *rate_issues,
+                        "frequency_rate_values_repaired_from_primary_candidate",
+                        *anchor_repair_issues,
+                    ]
+                )
+                return anchor_repair, issues
+            if anchor_repair_matched:
+                issues.extend([*rate_issues, *anchor_repair_issues])
+                return burden, issues
             repaired = _frequency_burden_from_primary_candidates(
                 primary_candidates,
                 disabled_ablation_switches=disabled_ablation_switches,
@@ -1449,6 +1471,7 @@ def _frequency_burden(
     *,
     disabled_ablation_switches: frozenset[str] = frozenset(),
 ) -> tuple[NormalizedBurden, list[str]]:
+    source_phrase = _normalize_phrase_for_parse(source_phrase)
     if _is_relative_only_trend_phrase(source_phrase):
         return NormalizedBurden(source_normalized_phrase=source_phrase), [
             "relative_change_without_current_baseline"
@@ -1525,6 +1548,103 @@ def _frequency_burden(
     return burden, issues
 
 
+def _frequency_burden_from_anchor_window_primary_candidates(
+    primary_candidates: Sequence[ExtractedCandidate],
+    *,
+    candidate_set: CandidateSet,
+    disabled_ablation_switches: frozenset[str] = frozenset(),
+) -> tuple[NormalizedBurden | None, list[str], bool]:
+    parsed: list[tuple[tuple[int, int], NormalizedBurden, list[str]]] = []
+    matched_any = False
+    disabled_issues: list[str] = []
+    reference_date = (
+        candidate_set.row_context.reference_date.date
+        if candidate_set.row_context.reference_date is not None
+        else None
+    )
+    for candidate in primary_candidates:
+        if candidate.candidate_kind != "frequency_rate":
+            continue
+        for phrase in _candidate_parse_phrases(candidate):
+            burden, issues, matched = _frequency_burden_from_anchor_window_phrase(
+                phrase,
+                reference_date=reference_date,
+                disabled_ablation_switches=disabled_ablation_switches,
+            )
+            if not matched:
+                continue
+            matched_any = True
+            if burden is None:
+                disabled_issues = issues
+                continue
+            parsed.append(
+                (
+                    _frequency_burden_specificity_score(burden),
+                    burden,
+                    issues,
+                )
+            )
+    if parsed:
+        _score, burden, issues = max(parsed, key=lambda item: item[0])
+        return burden, issues, True
+    return None, disabled_issues, matched_any
+
+
+def _frequency_burden_from_anchor_window_phrase(
+    source_phrase: str,
+    *,
+    reference_date: str | None,
+    disabled_ablation_switches: frozenset[str] = frozenset(),
+) -> tuple[NormalizedBurden | None, list[str], bool]:
+    normalized = _normalize_phrase_for_parse(source_phrase)
+    if reference_date is None:
+        return None, [], False
+    count_match = re.search(
+        r"\b(?P<low>\d+|one|two|three|four|five|six|seven|eight|nine|ten|"
+        r"eleven|twelve)"
+        r"(?:\s+to\s+(?P<high>\d+|one|two|three|four|five|six|seven|eight|"
+        r"nine|ten|eleven|twelve))?"
+        r"(?:\s+\w+){0,4}\s+"
+        r"(?:jerks?|seizures?|events?|episodes?|absences?|spasms?)\b",
+        normalized,
+        flags=re.IGNORECASE,
+    )
+    if count_match is None:
+        return None, [], False
+    low = _small_number_to_float(count_match.group("low"))
+    high = _small_number_to_float(count_match.group("high") or count_match.group("low"))
+    if low is None or high is None:
+        return None, [], False
+    anchor_date, anchor_issues, matched = _extract_frequency_anchor_window_date(
+        normalized,
+        reference_date=reference_date,
+    )
+    if anchor_date is None or not matched:
+        return None, [], False
+    if "normalize_frequency_anchor_window_value_recovery" in disabled_ablation_switches:
+        return (
+            None,
+            [_disabled_switch_issue("normalize_frequency_anchor_window_value_recovery")],
+            True,
+        )
+    elapsed_months = _whole_months_between(anchor_date, reference_date)
+    if elapsed_months is None or elapsed_months <= 0:
+        return None, [], False
+    anchor_bonus = 1 if "frequency_rate_anchor_from_last_event_phrase" in anchor_issues else 0
+    return (
+        NormalizedBurden(
+            count_low=low + anchor_bonus,
+            count_high=high + anchor_bonus,
+            period_low=float(elapsed_months),
+            period_high=float(elapsed_months),
+            period_unit="month",
+            source_normalized_phrase=normalized,
+        ),
+        ["frequency_rate_values_repaired_from_anchor_window", *anchor_issues],
+        True,
+    )
+
+
 def _frequency_burden_from_primary_candidates(
     primary_candidates: Sequence[ExtractedCandidate],
     *,
@@ -1562,9 +1682,13 @@ def _additive_frequency_burden(
     primary_candidates: Sequence[ExtractedCandidate],
     *,
     source_phrase: str,
+    disabled_ablation_switches: frozenset[str] = frozenset(),
 ) -> tuple[NormalizedBurden, list[str]]:
     parsed = [
-        _frequency_burden(candidate_source_phrase(candidate) or candidate.evidence_span.text)
+        _frequency_burden(
+            candidate_source_phrase(candidate) or candidate.evidence_span.text,
+            disabled_ablation_switches=disabled_ablation_switches,
+        )
         for candidate in primary_candidates
     ]
     issues = [issue for _, burden_issues in parsed for issue in burden_issues]
@@ -1581,11 +1705,37 @@ def _additive_frequency_burden(
         for burden in burdens
     )
     if not same_period:
+        # Fall back to the most specific single primary candidate's rate
+        fallback = _frequency_burden_from_primary_candidates(
+            primary_candidates,
+            disabled_ablation_switches=disabled_ablation_switches,
+        )
+        if fallback is not None:
+            fallback_burden, fallback_issues = fallback
+            return fallback_burden, [
+                *issues,
+                "additive_frequency_period_mismatch",
+                "additive_frequency_fallback_to_primary_candidate",
+                *fallback_issues,
+            ]
         return NormalizedBurden(source_normalized_phrase=source_phrase), [
             *issues,
             "additive_frequency_period_mismatch",
         ]
     if any(burden.count_low is None or burden.count_high is None for burden in burdens):
+        # Fall back to the most specific single primary candidate's rate
+        fallback = _frequency_burden_from_primary_candidates(
+            primary_candidates,
+            disabled_ablation_switches=disabled_ablation_switches,
+        )
+        if fallback is not None:
+            fallback_burden, fallback_issues = fallback
+            return fallback_burden, [
+                *issues,
+                "additive_frequency_count_unparsed",
+                "additive_frequency_fallback_to_primary_candidate",
+                *fallback_issues,
+            ]
         return NormalizedBurden(source_normalized_phrase=source_phrase), [
             *issues,
             "additive_frequency_count_unparsed",
@@ -1814,6 +1964,70 @@ def _is_previous_month_active_rate_phrase(source_phrase: str) -> bool:
             flags=re.IGNORECASE,
         )
     )
+
+
+def _extract_frequency_anchor_window_date(
+    source_phrase: str,
+    *,
+    reference_date: str,
+) -> tuple[str | None, list[str], bool]:
+    last_event_month_year = re.search(
+        r"\bsince\s+last\s+[^.]{0,40}?\bseizure\s+in\s+"
+        r"(?P<month>[A-Za-z]+)\s+(?P<year>\d{4})\b",
+        source_phrase,
+        flags=re.IGNORECASE,
+    )
+    if last_event_month_year is not None:
+        parsed = _month_year_to_iso(
+            last_event_month_year.group("month"),
+            last_event_month_year.group("year"),
+        )
+        if parsed is not None:
+            return parsed, ["frequency_rate_anchor_from_last_event_phrase"], True
+    since_month_year = re.search(
+        r"\bsince\s+(?P<month>[A-Za-z]+)\s+(?P<year>\d{4})\b",
+        source_phrase,
+        flags=re.IGNORECASE,
+    )
+    if since_month_year is not None:
+        parsed = _month_year_to_iso(
+            since_month_year.group("month"),
+            since_month_year.group("year"),
+        )
+        if parsed is not None:
+            return parsed, [], True
+    since_numeric_month_year = re.search(
+        r"\bsince\s+(?P<month>\d{1,2})\s*(?:/|-)\s*(?P<year>\d{4})\b",
+        source_phrase,
+        flags=re.IGNORECASE,
+    )
+    if since_numeric_month_year is not None:
+        parsed = _numeric_month_year_to_iso(
+            since_numeric_month_year.group("month"),
+            since_numeric_month_year.group("year"),
+        )
+        if parsed is not None:
+            return parsed, [], True
+    last_event_month_without_year = re.search(
+        r"\bsince\s+last\s+[^.]{0,40}?\bseizure\s+in\s+(?P<month>[A-Za-z]+)\b",
+        source_phrase,
+        flags=re.IGNORECASE,
+    )
+    if last_event_month_without_year is not None:
+        parsed = _month_without_year_to_iso(
+            last_event_month_without_year.group("month"),
+            reference_date=reference_date,
+        )
+        if parsed is not None:
+            return (
+                parsed,
+                [
+                    "frequency_rate_anchor_year_inferred_from_reference_date",
+                    "frequency_rate_anchor_from_last_event_phrase",
+                ],
+                True,
+            )
+    return None, [], False
 
 
 def _extract_seizure_free_anchor_date(
@@ -2513,6 +2727,30 @@ def _normalize_phrase_for_parse(value: str) -> str:
     text = re.sub(r"\s*[-–—]\s*", " to ", text)
     text = re.sub(r"\bper\s+24\s*h(?:ours?)?\b", "per day", text)
     text = re.sub(r"\b24\s*h(?:ours?)?\b", "day", text)
+    
+    # Normalize fortnight patterns to 2 weeks
+    text = re.sub(r"\bfortnightly\b", "every 2 weeks", text)
+    text = re.sub(r"\ba\s+fortnight\b", "2 weeks", text)
+    text = re.sub(r"\bfortnight\b", "2 weeks", text)
+    
+    # Normalize range patterns like "once every X to Y weeks" -> "1 per X to Y weeks"
+    text = re.sub(
+        r"\bonce\s+every\s+(\d+)\s+to\s+(\d+)\s+(day|week|month|year)s?\b",
+        r"1 per \1 to \2 \3s",
+        text,
+    )
+    text = re.sub(
+        r"\b(?:roughly|approximately)?\s*once\s+in\s+(\d+)\s+(day|week|month|year)s?\b",
+        r"1 per \1 \2s",
+        text,
+    )
+    text = re.sub(
+        r"\b(?:roughly|approximately)?\s*once\s+in\s+a\s+"
+        r"(day|week|month|year)\b",
+        r"1 per 1 \1",
+        text,
+    )
+    
     return " ".join(text.split())
 
 

@@ -386,7 +386,8 @@ def _is_ytd_phrase(phrase: str) -> bool:
         re.search(
             (
                 r"\b(?:ytd|year[- ]to[- ]date|so far this year|this year so far|"
-                r"since the beginning of the year|since (?:january|jan))\b"
+                r"since the beginning of the year|since (?:january|jan)|"
+                r"this year(?:\b| to date\b))"
             ),
             lower,
         )
@@ -398,6 +399,14 @@ def _has_explicit_rate_period(burden: NormalizedBurden) -> bool:
         burden.period_low is not None
         and burden.period_high is not None
         and burden.period_unit is not None
+    )
+
+
+def _has_overrideable_ytd_annual_period(burden: NormalizedBurden) -> bool:
+    return (
+        burden.period_low == 1
+        and burden.period_high == 1
+        and burden.period_unit == "year"
     )
 
 
@@ -445,8 +454,13 @@ def _project_label_semantics(
                 ytd_candidate = candidate
                 break
 
-        is_ytd = ytd_candidate is not None or _is_ytd_phrase(burden.source_normalized_phrase)
-        if is_ytd and not _has_explicit_rate_period(burden):
+        is_ytd = ytd_candidate is not None or _is_ytd_phrase(
+            burden.source_normalized_phrase
+        )
+        explicit_period_blocks_ytd = _has_explicit_rate_period(
+            burden
+        ) and not _has_overrideable_ytd_annual_period(burden)
+        if is_ytd and not explicit_period_blocks_ytd:
             ref_date_ctx = candidate_set.row_context.reference_date
             if ref_date_ctx is not None:
                 if "project_date_anchored_ytd_denominator" not in disabled_switches:

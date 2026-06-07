@@ -7,6 +7,8 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.candidate_set 
     EvidenceSpan,
     ExtractedCandidate,
     FrequencyDetails,
+    ReferenceDateContext,
+    RowContext,
     SeizureFreeDetails,
     SourcePhraseOnlyDetails,
 )
@@ -779,6 +781,154 @@ def test_assemble_clinical_assessment_repairs_historical_primary() -> None:
     )
 
 
+def test_assemble_clinical_assessment_repairs_frequency_count_since_month_year_anchor() -> None:
+    candidate_set = _candidate_set(
+        _frequency_candidate("llm:15029:1", "four brief morning jerks since 3/2015"),
+        source_row_index=15029,
+        row_context=_reference_row_context("2016-06-18"),
+    )
+    draft = assessment_probe.AssessmentDraft(
+        assessment_kind="frequency_rate",
+        primary_candidate_ids=["llm:15029:1"],
+        aggregation_policy="single_fact",
+        normalized_burden=NormalizedBurden(
+            source_normalized_phrase="four brief morning jerks since 3/2015"
+        ),
+    )
+
+    assessment, errors = assessment_probe.assemble_clinical_assessment(
+        draft,
+        candidate_set=candidate_set,
+    )
+
+    assert errors == []
+    assert assessment is not None
+    assert assessment.normalized_burden.count_low == 4
+    assert assessment.normalized_burden.count_high == 4
+    assert assessment.normalized_burden.period_low == 15
+    assert assessment.normalized_burden.period_high == 15
+    assert assessment.normalized_burden.period_unit == "month"
+    assert "frequency_rate_values_repaired_from_primary_candidate" in (
+        assessment.normalization_issues
+    )
+    assert "frequency_rate_values_repaired_from_anchor_window" in (
+        assessment.normalization_issues
+    )
+
+
+def test_assemble_clinical_assessment_repairs_frequency_since_last_event_anchor() -> None:
+    candidate_set = _candidate_set(
+        _frequency_candidate(
+            "llm:15094:1",
+            "3 morning jerks since last tonic-clonic seizure in Apr 2022",
+        ),
+        source_row_index=15094,
+        row_context=_reference_row_context("2023-05-10"),
+    )
+    draft = assessment_probe.AssessmentDraft(
+        assessment_kind="frequency_rate",
+        primary_candidate_ids=["llm:15094:1"],
+        aggregation_policy="single_fact",
+        normalized_burden=NormalizedBurden(
+            source_normalized_phrase=(
+                "3 morning jerks since last tonic-clonic seizure in Apr 2022"
+            )
+        ),
+    )
+
+    assessment, errors = assessment_probe.assemble_clinical_assessment(
+        draft,
+        candidate_set=candidate_set,
+    )
+
+    assert errors == []
+    assert assessment is not None
+    assert assessment.normalized_burden.count_low == 4
+    assert assessment.normalized_burden.count_high == 4
+    assert assessment.normalized_burden.period_low == 13
+    assert assessment.normalized_burden.period_high == 13
+    assert assessment.normalized_burden.period_unit == "month"
+    assert "frequency_rate_anchor_from_last_event_phrase" in (
+        assessment.normalization_issues
+    )
+    assert "frequency_rate_values_repaired_from_anchor_window" in (
+        assessment.normalization_issues
+    )
+
+
+def test_assemble_clinical_assessment_can_disable_anchor_window_frequency_recovery() -> None:
+    candidate_set = _candidate_set(
+        _frequency_candidate("llm:15029:1", "four brief morning jerks since 3/2015"),
+        source_row_index=15029,
+        row_context=_reference_row_context("2016-06-18"),
+    )
+    draft = assessment_probe.AssessmentDraft(
+        assessment_kind="frequency_rate",
+        primary_candidate_ids=["llm:15029:1"],
+        aggregation_policy="single_fact",
+        normalized_burden=NormalizedBurden(
+            source_normalized_phrase="four brief morning jerks since 3/2015"
+        ),
+    )
+
+    assessment, errors = assessment_probe.assemble_clinical_assessment(
+        draft,
+        candidate_set=candidate_set,
+        disabled_ablation_switches={
+            "normalize_frequency_anchor_window_value_recovery"
+        },
+    )
+
+    assert errors == []
+    assert assessment is not None
+    assert assessment.normalized_burden.count_low is None
+    assert assessment.normalized_burden.period_low is None
+    assert (
+        "ablation_switch_disabled:normalize_frequency_anchor_window_value_recovery"
+        in assessment.normalization_issues
+    )
+
+
+def test_assemble_clinical_assessment_does_not_force_trigger_only_phrase_into_numeric_rate(
+) -> None:
+    candidate_set = _candidate_set(
+        _frequency_candidate(
+            "llm:5974:1",
+            (
+                "Seizures with missed ASM doses, typically occurring within 24-48 "
+                "hours of a missed levetiracetam dose"
+            ),
+        ),
+        source_row_index=5974,
+        row_context=_reference_row_context("2025-09-20"),
+    )
+    draft = assessment_probe.AssessmentDraft(
+        assessment_kind="frequency_rate",
+        primary_candidate_ids=["llm:5974:1"],
+        aggregation_policy="single_fact",
+        normalized_burden=NormalizedBurden(
+            source_normalized_phrase=(
+                "Seizures with missed ASM doses, typically occurring within 24-48 "
+                "hours of a missed levetiracetam dose"
+            )
+        ),
+    )
+
+    assessment, errors = assessment_probe.assemble_clinical_assessment(
+        draft,
+        candidate_set=candidate_set,
+    )
+
+    assert errors == []
+    assert assessment is not None
+    assert assessment.normalized_burden.count_low is None
+    assert assessment.normalized_burden.period_low is None
+    assert "frequency_rate_values_unparsed" in assessment.normalization_issues
+    assert "frequency_rate_values_repaired_from_anchor_window" not in (
+        assessment.normalization_issues
+    )
+
+
 def test_assemble_clinical_assessment_reports_unknown_candidate_id() -> None:
     candidate_set = _candidate_set(
         _frequency_candidate("det:304:1", "two seizures per month"),
@@ -833,12 +983,31 @@ def test_run_split_prompt_only_uses_default_candidate_set_artifact(
 def _candidate_set(
     *candidates: ExtractedCandidate,
     source_row_index: int = 301,
+    row_context: RowContext | None = None,
 ) -> CandidateSet:
     return CandidateSet(
         source_row_index=source_row_index,
         component_owner="candidate_set_union",
         source_artifacts=["gan2026_validation250_candidate_set_v2_high_recall"],
+        row_context=RowContext() if row_context is None else row_context,
         candidates=list(candidates),
+    )
+
+
+def _reference_row_context(reference_date: str) -> RowContext:
+    source_phrase = f"Clinic Date: {reference_date}"
+    return RowContext(
+        reference_date=ReferenceDateContext(
+            date=reference_date,
+            date_precision="day",
+            source="note_header",
+            source_phrase=source_phrase,
+            source_span=EvidenceSpan(
+                text=source_phrase,
+                start_char=0,
+                end_char=len(source_phrase),
+            ),
+        )
     )
 
 
