@@ -85,7 +85,6 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
 
     from clinical_extraction.tasks.seizure_frequency.gan2026.hybrid import (
         hybrid_parallel_state_candidate_reasoner,
-        hybrid_rules_candidates_llm_adjudicator,
     )
     from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
         llm_candidate_set_clinical_assessment_probe,
@@ -113,28 +112,7 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
         summarize_rows=llm_only_claim_table_selector.summarize_records,
         default_max_tokens=1400,
     )
-    hybrid_rules_candidates_llm_adjudicator_spec = GanLlmPipelineCliSpec(
-        description=("Run the Gan 2026 hybrid rules-candidates LLM-adjudicator experiment."),
-        default_jsonl_path=(
-            hybrid_rules_candidates_llm_adjudicator.DEFAULT_HYBRID_RULES_CANDIDATES_LLM_ADJUDICATOR_JSONL_PATH
-        ),
-        default_report_path=(
-            hybrid_rules_candidates_llm_adjudicator.DEFAULT_HYBRID_RULES_CANDIDATES_LLM_ADJUDICATOR_REPORT_PATH
-        ),
-        run_split=(
-            hybrid_rules_candidates_llm_adjudicator.run_hybrid_rules_candidates_llm_adjudicator_split
-        ),
-        write_jsonl=(
-            hybrid_rules_candidates_llm_adjudicator.write_hybrid_rules_candidates_llm_adjudicator_jsonl
-        ),
-        write_report=(
-            hybrid_rules_candidates_llm_adjudicator.write_hybrid_rules_candidates_llm_adjudicator_report
-        ),
-        summarize_rows=(
-            hybrid_rules_candidates_llm_adjudicator.summarize_hybrid_rules_candidates_llm_adjudicator_records
-        ),
-        default_max_tokens=1100,
-    )
+
 
     return {
         "llm_only_direct_labeler": GanLlmPipelineCliSpec(
@@ -239,7 +217,7 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
             summarize_rows=llm_only_sparse_operands_selected_state_reasoner.summarize_records,
             default_max_tokens=1400,
         ),
-        "hybrid_rules_candidates_llm_adjudicator": (hybrid_rules_candidates_llm_adjudicator_spec),
+
         "hybrid_parallel_state_candidate_reasoner": GanLlmPipelineCliSpec(
             description=(
                 "Run the Gan 2026 hybrid parallel state/candidate reasoner smoke."

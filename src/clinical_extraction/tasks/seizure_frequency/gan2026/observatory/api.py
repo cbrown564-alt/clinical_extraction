@@ -82,7 +82,6 @@ PipelineFamily = Literal[
     "llm_only_direct_labeler",
     "llm_only_structured_events",
     "llm_only_typed_adapter_reasoner",
-    "hybrid_rules_candidates_llm_adjudicator",
 ]
 TEMPORAL_SELECTION_RULES = temporal_selection.TEMPORAL_SELECTION_RULES
 
@@ -91,7 +90,6 @@ PROMPT_MODULES = (
     "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_direct_labeler",
     "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_structured_events",
     "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_minimal_evidence_selector",
-    "clinical_extraction.tasks.seizure_frequency.gan2026.hybrid.hybrid_rules_candidates_llm_adjudicator",
 )
 
 # Families that can actually be executed via /run/note and /run/ablation
@@ -824,7 +822,6 @@ FAMILY_SHORT_LABELS: dict[str, str] = {
     "rules_only": "Deterministic V1",
     "dspy_final_selection_adjudicator": "DSPY Adjudicator",
     "hybrid_clinical_frequency_state_graph": "State Graph",
-    "hybrid_rules_candidates_llm_adjudicator": "Hybrid Adjudicator",
     "hybrid_parallel_state_candidate_reasoner": "Parallel Hybrid",
     "llm_first_direct_extractor": "Direct Extractor",
     "llm_heavy_clinical_frequency_reasoner": "LLM Heavy Reasoner",
