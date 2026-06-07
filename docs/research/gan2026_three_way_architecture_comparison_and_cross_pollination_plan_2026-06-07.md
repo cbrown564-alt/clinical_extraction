@@ -52,42 +52,77 @@ both of the other two architectures**:
 
 ## 2. Prerequisite: One Canonical Runner Per Architecture
 
-A fair three-way comparison requires **one** comparable end-to-end runner per
-architecture, producing the same artifact shape (projection/render rows,
-score rows, route rows, decision rows) so the existing scoring and
-null-reduction tooling can be reused unmodified.
+**Status update (post Phase F consolidation, 2026-06-07): substantially
+resolved.** The repo-consolidation plan's Phase F replaced the "assemble a
+fully-LLM runner" open question with a unified, parameterized
+`Gan2026PipelineRunner` (`src/.../gan2026/runner.py`) that already executes
+four named `PipelineArchitecture` configurations — `deterministic`, `hybrid`,
+`llm_only_direct_labeler`, and `llm_only_structured_events` — through one
+shared projection/render/score/route/decision artifact contract. The
+`llm_only_structured_events` configuration *is* the assembled Option-A chain
+described below: it already wires an LLM-forward Select/ClinicalAssessment
+stage through the same deterministic Normalize→Project→Render→Score→Route→
+Decision stages the hybrid configuration uses. No separate assembly step
+remains for that comparator.
 
 | Architecture | Canonical runner | Status |
 | --- | --- | --- |
-| Deterministic | `pipeline_v1.py` (`Gan2026PipelineV1`) | exists, single candidate — but its output shape needs to be checked against the reset artifact contract before it can be scored with the same tooling |
-| Hybrid | `hybrid/reset_clinical_assessment_pipeline.py` | exists, already the named "current focus" |
-| Fully LLM | **does not yet exist as a single runner** | must be assembled by chaining one of the `llm_only_*` selection/labeling modules through the *same* deterministic Normalize -> Project -> Render -> Score -> Route -> Decision stages the reset pipeline already composes, OR (if the thesis requires it) through an LLM-owned equivalent of those stages |
+| Deterministic | `Gan2026PipelineRunner` `"deterministic"` config (wraps `Gan2026PipelineV1` internals) **and**, as of 2026-06-07, the staged `"deterministic_canonical_pipeline"` config | both exist; the canonical config is now staged into named, ablatable Extract/Normalize/[[Select & Render]]/[[Evidence Trace Check]] form (`deterministic_canonical_stages.py`), proven byte-identical to `"deterministic"` by `tests/test_gan2026_deterministic_canonical_pipeline.py` — see resolution note below |
+| Hybrid | `Gan2026PipelineRunner` `"hybrid"` config / `hybrid/reset_clinical_assessment_pipeline.py` | exists, already the named "current focus" |
+| Fully LLM | `Gan2026PipelineRunner` `"llm_only_direct_labeler"` and `"llm_only_structured_events"` configs | exist and assembled (Option A is done); see `llm_only_canonical_pipeline` below for the still-open "purest form" comparator |
 
-**This assembly step is itself a joint prerequisite with
-[[gan2026_repo_consolidation_and_cleanup_plan]]**: picking which `llm_only_*`
-module becomes the canonical fully-LLM front end is also a "what do we keep"
-decision for cleanup. Do this selection once, in one place.
+**Remaining Phase 0 work** is narrower than originally scoped: add two new
+`PipelineArchitecture` configurations to the *existing* unified runner — not
+standalone forked modules (see `CONTEXT.md` for the resolved naming):
 
-Two sub-options for the fully-LLM runner, to be decided before Phase 1:
+- **`deterministic_canonical_pipeline`** *(done — 2026-06-07)*: the existing
+  deterministic logic restructured into four named, stage-owned, ablatable
+  stages — Extract, Normalize, [[Select & Render]] (this architecture's named
+  selection-and-rendering stage; see `CONTEXT.md` for why it is one combined
+  stage here rather than mirroring the hybrid pipeline's separate
+  Project/Render seam), and [[Evidence Trace Check]] (this architecture's
+  verify-adjacent stage, deliberately *not* named `Verify` — see
+  `docs/decisions/0014-evidence-trace-check-not-verify-for-deterministic-canonical-pipeline.md`
+  for why it does not reuse `VerificationDecision`/`Verifier Action`
+  vocabulary) — implemented in `deterministic_canonical_stages.py` as thin
+  named wrappers over the existing internals, with its current rules left
+  unchanged — a pure staging pass, so Section 4's family-by-family
+  de-overfitting rewrite has a legible, measurable starting point. Proven
+  byte-identical to `"deterministic"` (`output` and `diagnostics`, including
+  diagnostics-key shape) by
+  `tests/test_gan2026_deterministic_canonical_pipeline.py` on a small
+  known-row sample — the directly assertable "rules unchanged" guard. See
+  `docs/decisions/0013-stage-deterministic-canonical-config-before-generalizing-its-rules.md`
+  for why staging and generalizing are deliberately kept as two passes.
+- **`llm_only_canonical_pipeline`**: a new single-shot configuration that
+  collapses extract→select→normalize→project→render into one LLM call, with
+  the now-mature deterministic rule taxonomy (cluster-axis ambiguity,
+  seizure-free conflict, same-window additive frequency, and similar named
+  families) embedded as prompt instructions rather than pre/post processing —
+  the "purest form" fully-LLM comparator, sitting alongside (not replacing)
+  the existing `llm_only_direct_labeler`/`llm_only_structured_events`
+  configurations. It reports a distinct evidence text-containment metric
+  rather than the formal `CandidateSet` source-id validity rate, since forcing
+  single-shot LLM output through that machinery would misrepresent what the
+  architecture actually produces.
 
-- **Option A — minimal-difference comparator**: reuse the reset pipeline's
-  deterministic Normalize/Project/Render/Score/Route/Decision stages verbatim,
-  swapping only the Select/ClinicalAssessment stage for a more LLM-forward
-  module (e.g. `llm_only_structured_events` or
-  `llm_only_minimal_evidence_selector`). This isolates "how much does moving
+The historical "Option A vs Option B" framing below is now superseded by this
+resolution — Option A is built (`llm_only_structured_events`), and
+`llm_only_canonical_pipeline` is the new, more precisely-scoped "purest form"
+target that replaces the open-ended Option B framing:
+
+- **Option A — minimal-difference comparator** *(done — `llm_only_structured_events`)*:
+  reuse the reset pipeline's deterministic Normalize/Project/Render/Score/
+  Route/Decision stages verbatim, swapping only the Select/ClinicalAssessment
+  stage for a more LLM-forward module. This isolates "how much does moving
   more responsibility onto the LLM change the result" — the cleanest
   apples-to-apples read.
-- **Option B — maximal-LLM comparator**: chain a "claim table" or "direct
-  label" module through to a render/score boundary with as little
-  deterministic scaffolding as the contract allows. This tests the opposite
-  end of the spectrum and is the more honest test of "fully LLM," but is
-  harder to compare cleanly because more of the pipeline changes at once.
-
-Recommendation: build **Option A first**. It produces an immediately
-comparable artifact, isolates the variable under test (how much of Select
-should be LLM-owned versus deterministic), and is the natural midpoint between
-the hybrid and the eventual Option B run. Option B becomes a second-phase
-stretch target once Option A's comparator contract is stable.
+- **Option B — maximal-LLM comparator** *(superseded by `llm_only_canonical_pipeline`)*:
+  rather than the original "claim table / direct label chained to a render/score
+  boundary" framing, the resolved target is a true single-shot, rules-in-prompt
+  pipeline that owns normalize/project itself — the most honest "fully LLM"
+  test, wrapped in a thin artifact-shape adapter so the existing comparison
+  tooling still runs.
 
 ---
 

@@ -2,7 +2,7 @@
 
 Date: 2026-06-07
 Author: Claude
-Status: Completed cleanup record with Phase F framework consolidation
+Status: Completed cleanup record with Phase G sign-off
 
 ---
 
@@ -12,7 +12,7 @@ Following the completion of the rapid-iteration research phase, the codebase has
 
 A complete dependency audit was performed, and all necessary shared infrastructure components were preserved, cleaned, or relocated. The high-risk removal portion of the cleanup is complete, and follow-up Phase F framework consolidation now provides one shared runner/CLI surface plus four official cluster-level analyzer modules.
 
-All remaining **997 unit and integration tests** in the Python test suite pass successfully after follow-up corrections.
+All remaining **997 unit and integration tests** in the Python test suite pass successfully after Phase G sign-off corrections.
 
 ---
 
@@ -101,7 +101,7 @@ The consolidated analyzer registry replaces the 32 cluster-file memberships iden
 
 ---
 
-## 5. Verification and Follow-Up Corrections
+## 5. Phase G Verification And Sign-Off
 
 ### Automated Verification
 A final execution of the Python test suite confirms that the cleanup has left the backend package in a healthy, green state:
@@ -114,11 +114,44 @@ pytest tests/
 - **Passed**: 997 passed
 - **Errors/Failures**: 0
 
+Focused Ruff verification over the touched Phase F/G Python files also passes.
+Whole-repo Ruff still reports pre-existing lint in scratch files and older
+retained analyzers/tests that were outside this cleanup batch.
+
+### Observatory Registry Sign-Off
+
+`/pipeline-families` now exposes exactly:
+
+- canonical families: `rules_only`, `llm_only_direct_labeler`,
+  `llm_only_structured_events`, `reset_clinical_assessment_pipeline`;
+- retained comparators, when backed by registry rows:
+  `dspy_final_selection_adjudicator`,
+  `hybrid_clinical_frequency_state_graph`, `llm_first_direct_extractor`,
+  `llm_heavy_clinical_frequency_reasoner`,
+  `llm_heavy_evidence_selection_with_deterministic_adapters`,
+  `llm_replacement_postprocessing_ablation`, and `llm_structured_events`.
+
+Deleted and unreviewed historical registry families remain queryable through
+`/registry`, but do not repopulate active pipeline selectors.
+
+### Closing Accounting
+
+- Phase E removal batches deleted `159` tracked files and reduced the tree by a
+  net `56,476` lines.
+- Phase F replaced `32` surveyed overlap-cluster memberships with four
+  official cluster-level analyzers: `scoped_ablation_analyzer`,
+  `boundary_diagnostic`, `candidate_state_matrix`, and `projection_scoring`.
+- The surviving DRY framework is `gan2026.runner` for pipeline/CLI
+  configuration plus the Phase F analyzer registry in
+  `artifact_analysis/__init__.py`.
+
 ### Follow-Up Corrections
 An audit after the initial cleanup report found and fixed several sign-off gaps:
 
 - Removed a stale `pyproject.toml` console script that pointed at the deleted `selective_safety_floor_gate_replay.py` module.
 - Filtered retired runner families out of active Observatory `/pipeline-families` and frontend run-selection/replay surfaces while preserving historical registry rows.
+- Tightened Observatory backend filtering so only canonical families and
+  explicitly retained comparators can appear in `/pipeline-families`.
 - Pruned frontend replay adapters and tests that still treated deleted runner families as supported.
 - Updated `PROJECT_STATUS.md` and this report to record Phase F completion and the new analyzer registry boundary.
 

@@ -240,26 +240,82 @@ vague burden mechanically dominates. It is a named projection policy, not
 additive arithmetic.
 _Avoid_: mixed-window addition, hidden selector preference, score-only rescue
 
-**Canonical Fully-LLM Pipeline (`llm_only_canonical_pipeline`)**: The single
-named end-to-end fully-LLM architecture comparator for the Gan 2026 three-way
-comparison. It is forked from `llm_only_direct_labeler`'s single-call
-scaffolding, rewritten around the now-mature deterministic rule taxonomy
-(cluster-axis ambiguity, seizure-free conflict, same-window additive frequency,
-and similar named families), and wrapped in a thin artifact-shape adapter so
-its output can be scored by the same Render/Score/Route/Decision tooling as the
-deterministic and hybrid pipelines. It supersedes the fragmented `llm_only_*`
-experiment family as that architecture's comparison-grade representative; those
-modules remain historical baselines, not candidates for the canonical role.
-_Avoid_: llm_only_direct_labeler (as canonical), llm-only experiment, fully-LLM
-runner
+**Gan2026PipelineRunner (`runner.py`)**: The unified, parameterized runner built
+by the Phase F consolidation that executes the deterministic, hybrid, and
+fully-LLM architectures as named `PipelineArchitecture` configurations
+(`deterministic`, `hybrid`, `llm_only_direct_labeler`,
+`llm_only_structured_events`) inside one class, producing the shared
+projection/render/score/route/decision artifact contract. New architecture
+variants are added as new `PipelineArchitecture` values and `run()` branches
+within this framework, not as standalone forked modules.
+_Avoid_: separate canonical runner per architecture, bespoke pipeline module
 
-**Evidence Text-Containment Check**: A comparison-surface metric, reported only
-for the fully-LLM architecture, that tests whether an LLM's free-text `evidence`
-string actually appears in the source note. It is a distinct, simpler measure
-from `CandidateSet` source-id validity rate and must not be merged with it or
-reported as an equivalent trace-quality signal — the difference in evidence-
-trace richness between architectures is itself a comparison finding.
-_Avoid_: source-id validity rate, evidence-trace validity, candidate trace check
+**Canonical Deterministic Pipeline (`deterministic_canonical_pipeline`)**: A
+`PipelineArchitecture` configuration on `Gan2026PipelineRunner` that
+restructures the existing deterministic logic into four named, stage-owned,
+ablatable stages — Extract (raw note text through evidence-anchored
+`CandidateEvent`/`CandidateSet` construction), Normalize (label repair and
+frequency-record parsing), [[Select & Render]] (selection scoring and
+final-label construction), and [[Evidence Trace Check]] — while preserving its
+current rules unchanged — a pure staging pass, so a later family-by-family
+de-overfitting rewrite (the three-way comparison plan's Section 4) has a
+legible, measurable starting point. Each stage is a thin named wrapper
+function in `deterministic_canonical_stages.py` over the existing internals
+(no new wrapper schemas; existing typed objects already carry rule-id/group/
+portability/error trace fields), and its diagnostics dict is kept
+key-identical to the existing `deterministic` configuration's — proven
+byte-identical by `tests/test_gan2026_deterministic_canonical_pipeline.py`,
+the directly assertable "rules unchanged" equivalence guard. It is a
+configuration on the consolidated runner substrate, not a fork of a
+standalone module.
+_Avoid_: Gan2026PipelineV1 (as canonical), staged pipeline_v1, refactored v1,
+new diagnostics key shape, per-stage wrapper schemas
+
+**Select & Render**: The combined selection-and-rendering stage name used by
+the canonical deterministic pipeline for what `_select_final_event` already
+does in one pass — scoring and picking among normalized candidate events, then
+constructing the final rendered label and rationale together. It is named
+distinctly from the hybrid pipeline's separately-staged `Project`/`Render` seam
+(`projection_render.project_and_render`, which produces a `ProjectionDecision`
+and a `FinalRenderedLabel` as separate typed objects) because the deterministic
+selection logic has no corresponding internal seam between "decide the
+projected fact" and "render it" — splitting it to mirror hybrid naming would be
+a behavior-risking refactor, not a staging pass.
+_Avoid_: Project & Render (for the deterministic canonical pipeline), separate
+Project/Render stages here, projection_render.project_and_render (as the model
+for this stage)
+
+**Evidence Trace Check**: The canonical deterministic pipeline's new verify-
+adjacent stage, wrapping the existing `evidence_is_substring` check (does the
+selected evidence string appear verbatim in the source note) plus its
+diagnostic-only `AssessmentDraft`/`clinical_assessment` probe as a named,
+ablatable stage output — same behavior as today, new seam. It is deliberately
+*not* named `Verify` and does not reuse `VerificationDecision`/`Verifier
+Action` vocabulary or its `affirm`/`reject`/`abstain`/`human_review` action set:
+those are reserved for the hybrid pipeline's verifier stage, which acts on
+structurally valid `ClinicalAssessment` and projection/render objects that the
+deterministic pipeline does not produce. Naming this stage `Verify` would
+silently expand what the deterministic pipeline does (introducing routing/
+affirm/reject decisions where none exist), which would make the staging pass a
+behavior change wearing a staging-pass costume.
+_Avoid_: Verify (for this stage), VerificationDecision (for this stage),
+verifier action, affirm/reject/route semantics (here)
+
+**Canonical Fully-LLM Pipeline (planned: `llm_only_canonical_pipeline`)**: The
+planned name for a new single-shot `PipelineArchitecture` configuration on
+`Gan2026PipelineRunner` that collapses extract/select/normalize/project/render
+into one LLM call, with the now-mature deterministic rule taxonomy (cluster-
+axis ambiguity, seizure-free conflict, same-window additive frequency, and
+similar named families) embedded as prompt instructions rather than pre/post
+processing. It sits alongside, not in place of, the existing
+`llm_only_direct_labeler` and `llm_only_structured_events` configurations; it
+reports a distinct evidence text-containment metric (does the LLM's free-text
+evidence string appear in the source note) rather than the formal `CandidateSet`
+source-id validity rate the deterministic/hybrid configurations support, since
+forcing it through that machinery would misrepresent what a single-shot LLM
+architecture actually produces.
+_Avoid_: llm_only_direct_labeler (as the canonical fully-LLM target), fully-LLM
+runner, source-id validity rate (for this architecture)
 
 **Seizure-Free Proxy Evidence Overreach**: A boundary projection block where
 the selected evidence supports only proxy improvement, such as no rescue

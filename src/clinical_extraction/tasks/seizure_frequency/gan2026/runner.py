@@ -40,6 +40,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.candidate
     CandidateKind,
     RawCandidate,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026 import (
+    deterministic_canonical_stages as canonical_stages,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rule_metadata import (
     AblationConfig,
     RuleGroup,
@@ -57,6 +60,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline_v1 import (
 
 PipelineArchitecture = Literal[
     "deterministic",
+    "deterministic_canonical_pipeline",
     "hybrid",
     "llm_only_direct_labeler",
     "llm_only_structured_events",
@@ -186,6 +190,66 @@ class Gan2026PipelineRunner:
                 "normalized_events": [event.model_dump(mode="json") for event in normalized_events],
                 "final_selection": final_selection.model_dump(mode="json"),
                 "evidence_valid": evidence_is_substring(item.note_text, final_selection.evidence),
+                "clinical_assessment": (
+                    clinical_assessment.model_dump() if clinical_assessment else None
+                ),
+            }
+            return PipelineResult(output=output, diagnostics=diagnostics)
+
+        elif self.config.architecture == "deterministic_canonical_pipeline":
+            # Same logic as "deterministic", restructured into named, stage-owned,
+            # ablatable Extract/Normalize/Select & Render/Evidence Trace Check form
+            # (a pure staging pass — see
+            # docs/decisions/0013-stage-deterministic-canonical-config-before-generalizing-its-rules.md).
+            # Diagnostics are kept key-identical to "deterministic" so "rules
+            # unchanged" is a directly assertable equivalence.
+            raw_candidates, candidate_set, candidate_events = canonical_stages.extract_stage(
+                item.note_text,
+                source_row_index=item.source_row_index or 1,
+                ablation_config=self.config.ablation_config,
+            )
+
+            normalized_events = canonical_stages.normalize_stage(
+                candidate_events,
+                raw_candidates,
+                ablation_config=self.config.ablation_config,
+            )
+
+            final_selection = canonical_stages.select_and_render_stage(
+                candidate_events,
+                normalized_events,
+                ablation_config=self.config.ablation_config,
+            )
+
+            # Translate event_id (e.g. "event_1") to candidate_id (e.g. "det:1:1")
+            # Zipped index matches
+            selected_index = int(final_selection.selected_event_ids[0].split("_")[1]) - 1
+
+            output = FinalExtraction(
+                final_value=final_selection.final_label,
+                rationale=final_selection.rationale,
+                evidence=final_selection.evidence,
+            )
+
+            disabled_switches = {
+                group.value
+                for group in RuleGroup
+                if group not in self.config.ablation_config.enabled_groups
+            } | set(self.config.ablation_config.disabled_rule_ids)
+
+            evidence_valid, clinical_assessment = canonical_stages.evidence_trace_check_stage(
+                item.note_text,
+                final_selection=final_selection,
+                candidate_set=candidate_set,
+                selected_index=selected_index,
+                disabled_ablation_switches=disabled_switches,
+            )
+
+            diagnostics = {
+                "candidate_events": [event.model_dump(mode="json") for event in candidate_events],
+                "normalized_events": [event.model_dump(mode="json") for event in normalized_events],
+                "final_selection": final_selection.model_dump(mode="json"),
+                "evidence_valid": evidence_valid,
                 "clinical_assessment": (
                     clinical_assessment.model_dump() if clinical_assessment else None
                 ),
@@ -475,7 +539,7 @@ def run_split(
     candidate_set_jsonl_path: Path | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Execute a run split using the specified unified runner architecture."""
-    if architecture == "deterministic":
+    if architecture in ("deterministic", "deterministic_canonical_pipeline"):
         from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
             label_to_frequency_record,
         )
@@ -488,7 +552,7 @@ def run_split(
         )
 
         config = PipelineConfiguration(
-            architecture="deterministic",
+            architecture=architecture,
             model=model,
             temperature=temperature,
             max_tokens=max_tokens,
@@ -530,7 +594,7 @@ def run_split(
             model=model,
             temperature=temperature,
             max_tokens=max_tokens,
-            prompt_version="deterministic_v1",
+            prompt_version=f"{architecture}_v1",
             dspy_version="none",
             split=split,
             split_manifest=split_manifest,

@@ -27,17 +27,30 @@ gate already proven for the HN1 frozen audit.
 
 1. **Three-way architecture comparison and cross-pollination**
    (`docs/research/gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07.md`):
-   side-by-side validation750 comparison of the fully deterministic
-   (`Gan2026PipelineV1`), fully LLM (`llm_only_direct_labeler` for one-shot
-   and `llm_only_structured_events` for structured extraction), and hybrid
-   (`reset_clinical_assessment_pipeline`) architectures. The remaining
-   mechanical work is assembling the Option-A structured-events chain through
-   the reset back-half, then feeding the
-   hybrid reset discipline back into (a) de-overfitting the deterministic
-   pipeline's validation-tuned rules into general, source-backed principles,
-   and (b) refining fully-LLM prompts around an explicit division of labor —
-   LLM owns clinical judgment, deterministic stages own representation,
-   arithmetic, and format.
+   side-by-side validation750 comparison of the fully deterministic, fully LLM,
+   and hybrid architectures. Phase 0's "one canonical runner per architecture"
+   is now substantially assembled by the Phase F consolidation: the unified
+   `Gan2026PipelineRunner` (`src/.../gan2026/runner.py`) already executes
+   `deterministic`, `hybrid`, `llm_only_direct_labeler`, and
+   `llm_only_structured_events` as named `PipelineArchitecture` configurations
+   sharing one projection/render/score/route/decision artifact contract — the
+   Option-A structured-events chain described below is already wired, not
+   pending. The remaining Phase 0 work is narrower: add two new configurations
+   on this same runner — `deterministic_canonical_pipeline` (the existing
+   deterministic logic restructured into four named, stage-owned, ablatable
+   stages — Extract, Normalize, Select & Render, and Evidence Trace Check —
+   rules unchanged — a pure staging pass per
+   `docs/decisions/0013-stage-deterministic-canonical-config-before-generalizing-its-rules.md`
+   and
+   `docs/decisions/0014-evidence-trace-check-not-verify-for-deterministic-canonical-pipeline.md`)
+   and `llm_only_canonical_pipeline` (a new single-shot config collapsing
+   extract/select/normalize/project/render into one LLM call with the
+   now-mature deterministic rule taxonomy embedded as prompt instructions).
+   Once those land, feed the hybrid reset discipline back into (a)
+   de-overfitting the deterministic pipeline's validation-tuned rules into
+   general, source-backed principles, and (b) refining fully-LLM prompts around
+   an explicit division of labor — LLM owns clinical judgment, deterministic
+   stages own representation, arithmetic, and format.
 2. **Evidence-grounded architecture thesis assessment**
    (`docs/research/gan2026_evidence_grounded_thesis_assessment_plan_2026-06-07.md`):
    operationalizes the project's core thesis — that modularity, task
@@ -328,11 +341,33 @@ full rationale.
   fully-LLM baseline; `llm_only_structured_events` selected as the canonical
   fully-LLM Option-A runner. Noncanonical `llm_only_*` modules have now been
   retired into lineage documentation rather than kept as active code.
-- Now that the selection above is recorded, **assemble** the Option-A chain:
-  wire `llm_only_structured_events` as the Select stage in front of the reset
-  pipeline's deterministic Normalize→Project→Render→Score→Route→Decision
-  stages and verify artifact-shape compatibility (comparison plan Phase 0,
-  remaining mechanical step).
+- **DONE 2026-06-07** (via Phase F, not a separate step): the Option-A chain is
+  already assembled — `Gan2026PipelineRunner` (`gan2026/runner.py`) wires
+  `llm_only_direct_labeler` and `llm_only_structured_events` through the same
+  deterministic projection_render→score→route→decision stages the hybrid
+  config uses, with verified artifact-shape compatibility (comparison plan
+  Phase 0's prior "remaining mechanical step" is resolved).
+- **DONE 2026-06-07**: grilled, locked, and **implemented**
+  `deterministic_canonical_pipeline` as a new `PipelineArchitecture`
+  configuration on `Gan2026PipelineRunner` — four named, stage-owned,
+  ablatable stages (Extract, Normalize, Select & Render, Evidence Trace Check)
+  in the new `deterministic_canonical_stages.py` module, each a thin wrapper
+  over the existing `deterministic` internals with no new wrapper schemas, a
+  shared `run_split` branch with `prompt_version` derived from the
+  architecture string, and an equivalence test
+  (`tests/test_gan2026_deterministic_canonical_pipeline.py`) asserting
+  byte-identical `output`/`diagnostics` against `deterministic` on a small
+  known-row sample — the directly assertable proof that "rules unchanged"
+  held. Full gan2026 suite green at 992 passed. See
+  `docs/decisions/0013-stage-deterministic-canonical-config-before-generalizing-its-rules.md`,
+  `docs/decisions/0014-evidence-trace-check-not-verify-for-deterministic-canonical-pipeline.md`,
+  and `CONTEXT.md` ("Canonical Deterministic Pipeline", "Select & Render",
+  "Evidence Trace Check").
+- **Next for Phase 0**: implement `llm_only_canonical_pipeline` as the
+  remaining new `PipelineArchitecture` configuration on the existing unified
+  runner (see the Workstream 1 description above), rather than as a
+  standalone forked module — this is the part of Phase 0 that is genuinely
+  still open.
 - Begin HN2 (bounded vague-with-window rendering) on validation-only proxy
   slices, per the recommended execution order in
   `docs/research/gan2026_test450_null_reduction_synthesis_and_hypotheses_2026-06-07.md`
@@ -423,6 +458,15 @@ full rationale.
   - Reset pipeline metadata is preserved as
     `reset_clinical_assessment_pipeline`, so the unified stage builder does not
     blur the hybrid/reset artifact identity or claim boundary.
+- 2026-06-07: Completed repo cleanup Phase G sign-off.
+  - Full Python suite is green at `997 passed`.
+  - Observatory `/pipeline-families` is now constrained to canonical families
+    plus explicitly retained comparators; retired/unreviewed registry strings
+    remain historical `/registry` data only.
+  - Closing accounting is recorded in
+    `docs/research/gan2026_repo_consolidation_and_cleanup_plan_2026-06-07.md`:
+    `159` tracked files removed, net `56,476` lines reduced, and `32`
+    analyzer-cluster memberships replaced by four official Phase F modules.
 - 2026-06-07: Promoted HN1 (source-near frequency value recovery) on a frozen
   `test450` aggregate audit:
   `docs/research/gan2026_test450_hn1_frozen_aggregate_audit_2026-06-07.md`.

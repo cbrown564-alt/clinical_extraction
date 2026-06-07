@@ -51,6 +51,36 @@ def test_observatory_registry_rules_prompts_and_artifacts(tmp_path: Path) -> Non
                         "decision": "historical",
                     }
                 ),
+                json.dumps(
+                    {
+                        "run_id": "retained_comparator",
+                        "artifact_paths": ["experiments/example.jsonl"],
+                        "date": "2026-06-02",
+                        "pipeline_family": "llm_heavy_clinical_frequency_reasoner",
+                        "split": "validation",
+                        "row_count": 1,
+                        "model": "openai/gpt-4.1-mini",
+                        "model_role": "retained comparator",
+                        "mode": "historical",
+                        "replay_status": "analysis_only",
+                        "decision": "historical",
+                    }
+                ),
+                json.dumps(
+                    {
+                        "run_id": "unknown_family",
+                        "artifact_paths": ["experiments/example.jsonl"],
+                        "date": "2026-06-02",
+                        "pipeline_family": "unreviewed_old_family",
+                        "split": "validation",
+                        "row_count": 1,
+                        "model": "openai/gpt-4.1-mini",
+                        "model_role": "unreviewed family",
+                        "mode": "historical",
+                        "replay_status": "analysis_only",
+                        "decision": "historical",
+                    }
+                ),
             ]
         )
         + "\n",
@@ -81,11 +111,15 @@ def test_observatory_registry_rules_prompts_and_artifacts(tmp_path: Path) -> Non
     family_values = {
         family["value"] for family in client.get("/pipeline-families").json()["families"]
     }
-    assert "rules_only" in family_values
-    assert "llm_only_direct_labeler" in family_values
-    assert "llm_only_structured_events" in family_values
-    assert "reset_clinical_assessment_pipeline" in family_values
+    assert family_values == {
+        "rules_only",
+        "llm_only_direct_labeler",
+        "llm_only_structured_events",
+        "reset_clinical_assessment_pipeline",
+        "llm_heavy_clinical_frequency_reasoner",
+    }
     assert "llm_only_claim_table_selector" not in family_values
+    assert "unreviewed_old_family" not in family_values
     assert client.get("/splits/validation").json()["source_row_indices"] == [1]
     assert client.get("/artifacts/example_run").json()["content"][0]["source_row_index"] == 1
 

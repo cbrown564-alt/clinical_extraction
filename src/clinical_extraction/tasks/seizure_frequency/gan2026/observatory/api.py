@@ -104,6 +104,16 @@ RETIRED_PIPELINE_FAMILIES: set[str] = {
     "llm_only_typed_operations_reasoner",
 }
 
+RETAINED_COMPARATOR_PIPELINE_FAMILIES: set[str] = {
+    "dspy_final_selection_adjudicator",
+    "hybrid_clinical_frequency_state_graph",
+    "llm_first_direct_extractor",
+    "llm_heavy_clinical_frequency_reasoner",
+    "llm_heavy_evidence_selection_with_deterministic_adapters",
+    "llm_replacement_postprocessing_ablation",
+    "llm_structured_events",
+}
+
 CANONICAL_PIPELINE_FAMILIES: dict[str, tuple[str, str]] = {
     "rules_only": ("Deterministic V1", "rules_only"),
     "llm_only_direct_labeler": ("LLM Direct Labeler", "llm_only"),
@@ -872,6 +882,11 @@ def _build_pipeline_families(settings: ObservatorySettings) -> list[dict[str, An
         record = entry.to_json_record()
         family = record.get("pipeline_family")
         if not family or family in RETIRED_PIPELINE_FAMILIES:
+            continue
+        if (
+            family not in CANONICAL_PIPELINE_FAMILIES
+            and family not in RETAINED_COMPARATOR_PIPELINE_FAMILIES
+        ):
             continue
         by_family.setdefault(family, []).append(record)
 

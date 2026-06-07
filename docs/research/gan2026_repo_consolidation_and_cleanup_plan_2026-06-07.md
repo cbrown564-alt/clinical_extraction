@@ -4,9 +4,10 @@ Date: 2026-06-07
 
 Author: Claude
 
-Status: planning document — defines a catalog-first, dependency-audited
-cleanup. No deletion is authorized by this document; each phase below ends
-with a reviewable proposal, not an executed removal.
+Status: completed execution record — originally a catalog-first,
+dependency-audited cleanup plan; Phases A-G are now complete as of
+2026-06-07. Historical deletions were performed through git-tracked lineage
+batches, not destructive bulk operations.
 
 ---
 
@@ -260,15 +261,38 @@ per-architecture:
 
 ## 9. Phase G — Verification And Sign-Off
 
-- Full suite green after each batch and at the end of the whole effort.
-- Observatory `/pipeline-families` registry reflects exactly the three
-  canonical architectures (plus any explicitly-retained comparators) — no
-  dead entries.
-- `PROJECT_STATUS.md` rewritten to describe the *post-cleanup* state as the
-  baseline going forward, with the lineage doc as the pointer to history.
-- A short closing note records: how many files/lines were removed, how many
-  consolidated analyzers replaced how many overlapping ones, and what the
-  resulting DRY runner/reporting framework looks like.
+Completed on 2026-06-07:
+
+- Full Python suite green at sign-off: `997 passed`.
+- Observatory `/pipeline-families` now exposes exactly the canonical families
+  plus explicitly retained registry-backed comparators:
+  - canonical: `rules_only`, `llm_only_direct_labeler`,
+    `llm_only_structured_events`, `reset_clinical_assessment_pipeline`;
+  - retained comparators:
+    `dspy_final_selection_adjudicator`,
+    `hybrid_clinical_frequency_state_graph`, `llm_first_direct_extractor`,
+    `llm_heavy_clinical_frequency_reasoner`,
+    `llm_heavy_evidence_selection_with_deterministic_adapters`,
+    `llm_replacement_postprocessing_ablation`, and
+    `llm_structured_events`.
+  Retired and unreviewed registry strings remain queryable through
+  `/registry` but are filtered out of active `/pipeline-families`.
+- `PROJECT_STATUS.md` now describes the post-cleanup baseline: retired
+  lineages are historical-only, canonical runner work continues on the shared
+  runner/CLI surface, and the lineage doc is the pointer to removed
+  architecture history.
+- Closing accounting:
+  - Phase E removal batches deleted `159` tracked files and reduced the tree
+    by a net `56,476` lines across the five lineage-removal commits.
+  - Phase F replaced `32` surveyed overlap-cluster memberships with four
+    official cluster-level analyzer modules:
+    `scoped_ablation_analyzer`, `boundary_diagnostic`,
+    `candidate_state_matrix`, and `projection_scoring`.
+  - The resulting DRY framework is `gan2026.runner` for pipeline/CLI
+    configuration plus the Phase F analyzer registry in
+    `artifact_analysis/__init__.py`. Remaining `artifact_analysis/` files are
+    retained source-specific producers, narrow diagnostics, or historical-read
+    helpers, not competing cluster-level APIs.
 
 ---
 
@@ -295,24 +319,17 @@ per-architecture:
 
 ---
 
-## 11. Open Questions
+## 11. Resolved Questions
 
-1. Should the consolidated reporting framework (Phase F.2) be built *before*
-   or *as part of* the comparison study in
-   [[gan2026_three_way_architecture_comparison_and_cross_pollination_plan]]?
-   Building it first means the comparison study gets to be the framework's
-   first real user (a strong validation of the consolidation); building it
-   during means less throwaway work if the comparison study reveals reporting
-   needs the current survey didn't anticipate. Lean toward building a minimal
-   version first and letting the comparison study's real needs finish it.
-2. How aggressively should the ~80 test files be consolidated alongside the
-   ~76 analyzer files, given that test consolidation carries higher risk of
-   silently losing coverage? Recommend: prefer *retargeting* tests at the new
-   consolidated modules over deleting them outright, and treat any test whose
-   coverage cannot be cleanly retargeted as a signal to keep the corresponding
-   narrow analyzer rather than force a merge.
-3. Does the fully-LLM "Option B" maximal comparator (see the comparison plan)
-   need to be selected and preserved *before* Phase E removes the other 9
-   `llm_only_*` modules, or can it be assembled later from the lineage-doc
-   summary plus git history if it turns out to be needed? Recommend deciding
-   this explicitly in Phase B rather than discovering the need mid-removal.
+1. The consolidated reporting framework was built before the three-way
+   comparison study. The comparison study can now use the Phase F runner and
+   analyzer registries as its first real downstream consumer.
+2. Test consolidation stayed conservative. Mirrored tests for deleted lineage
+   code were removed with their owning files; surviving tests were retained or
+   retargeted, and a new Phase F consolidation test pins the official analyzer
+   registry instead of deleting narrow diagnostic coverage.
+3. The fully-LLM surface was selected before removal: `llm_only_direct_labeler`
+   remains the one-shot baseline and `llm_only_structured_events` is the
+   canonical structured fully-LLM runner. Other `llm_only_*` experiments are
+   documented through the lineage summary and recoverable from git history if
+   a future study needs them.
