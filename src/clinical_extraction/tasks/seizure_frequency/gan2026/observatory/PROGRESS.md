@@ -26,6 +26,10 @@ rows, including `llm_structured_events`,
 `dspy_final_selection_adjudicator`, and
 `llm_replacement_postprocessing_ablation`.
 
+Unreviewed registry family strings are also filtered out of
+`/pipeline-families`; they remain available only through `/registry` until a
+future explicit retention decision promotes them.
+
 Deleted runner families are preserved only in historical registry data and old
 research artifacts. They are intentionally filtered out of active selectors and
 are not replay-supported by the frontend dispatcher.
