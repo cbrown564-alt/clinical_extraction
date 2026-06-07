@@ -73,44 +73,15 @@ class Gan2026PipelineV1:
 
     def __init__(self, ablation_config: AblationConfig | None = None) -> None:
         self.ablation_config = ablation_config or AblationConfig()
+        from .runner import Gan2026PipelineRunner, PipelineConfiguration
+        config = PipelineConfiguration(
+            architecture="deterministic",
+            ablation_config=self.ablation_config
+        )
+        self._runner = Gan2026PipelineRunner(config)
 
     def run(self, item: GanRecord) -> PipelineResult[FinalExtraction]:
-        candidates = _extract_candidates(item.note_text, self.ablation_config)
-        if not candidates:
-            candidates = [
-                _RawCandidate(
-                    kind=CandidateKind.NO_REFERENCE,
-                    label="no seizure frequency reference",
-                    evidence=_fallback_evidence(item.note_text),
-                )
-            ]
-
-        candidate_events = [
-            _candidate_event(index=index, candidate=candidate, note_text=item.note_text)
-            for index, candidate in enumerate(candidates, start=1)
-        ]
-        normalized_events = [
-            _normalize_candidate(event, raw_candidate, self.ablation_config)
-            for event, raw_candidate in zip(candidate_events, candidates, strict=True)
-        ]
-        final_selection = _select_final_event(
-            candidate_events,
-            normalized_events,
-            self.ablation_config,
-        )
-        output = FinalExtraction(
-            final_value=final_selection.final_label,
-            rationale=final_selection.rationale,
-            evidence=final_selection.evidence,
-        )
-
-        diagnostics = {
-            "candidate_events": [event.model_dump(mode="json") for event in candidate_events],
-            "normalized_events": [event.model_dump(mode="json") for event in normalized_events],
-            "final_selection": final_selection.model_dump(mode="json"),
-            "evidence_valid": evidence_is_substring(item.note_text, final_selection.evidence),
-        }
-        return PipelineResult(output=output, diagnostics=diagnostics)
+        return self._runner.run(item)
 
 
 def _candidate_event(index: int, candidate: _RawCandidate, note_text: str) -> CandidateEvent:

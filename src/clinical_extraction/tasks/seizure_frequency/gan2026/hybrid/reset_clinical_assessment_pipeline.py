@@ -98,47 +98,28 @@ def build_reset_clinical_assessment_pipeline_artifact(
     route_artifact_path: str | None = None,
 ) -> ResetClinicalAssessmentPipelineArtifact:
     """Run saved ClinicalAssessment rows through all reset deterministic stages."""
+    from clinical_extraction.tasks.seizure_frequency.gan2026.runner import (
+        build_unified_pipeline_artifact,
+    )
 
-    projection_render_rows, projection_render_metadata = (
-        projection_render.build_projection_render_artifact(
-            assessment_rows,
-            candidate_sets=candidate_sets,
-            assessment_artifact_path=assessment_artifact_path,
-            candidate_set_artifact_path=candidate_set_artifact_path,
-            disabled_ablation_switches=disabled_ablation_switches,
-        )
-    )
-    score_rows, score_metadata = projection_score.build_scoring_artifact(
-        projection_render_rows,
-        gold_records=gold_records,
-        project_render_artifact_path=project_render_artifact_path or "in_memory",
-    )
-    route_rows, route_metadata = verification_route.build_verification_route_artifact(
-        score_rows,
-        score_artifact_path=score_artifact_path or "in_memory",
-    )
-    decision_rows, decision_metadata = (
-        verification_decision.build_verification_decision_artifact(
-            route_rows,
-            route_artifact_path=route_artifact_path or "in_memory",
-        )
-    )
-    metadata = summarize_pipeline_artifact(
+    unified = build_unified_pipeline_artifact(
+        architecture="hybrid",
         assessment_rows=assessment_rows,
-        projection_render_metadata=projection_render_metadata,
-        score_metadata=score_metadata,
-        route_metadata=route_metadata,
-        decision_metadata=decision_metadata,
+        candidate_sets=candidate_sets,
+        gold_records=gold_records,
         assessment_artifact_path=assessment_artifact_path,
         candidate_set_artifact_path=candidate_set_artifact_path,
         disabled_ablation_switches=disabled_ablation_switches,
+        project_render_artifact_path=project_render_artifact_path,
+        score_artifact_path=score_artifact_path,
+        route_artifact_path=route_artifact_path,
     )
     return ResetClinicalAssessmentPipelineArtifact(
-        projection_render_rows=list(projection_render_rows),
-        score_rows=list(score_rows),
-        route_rows=list(route_rows),
-        decision_rows=list(decision_rows),
-        metadata=metadata,
+        projection_render_rows=unified.projection_render_rows,
+        score_rows=unified.score_rows,
+        route_rows=unified.route_rows,
+        decision_rows=unified.decision_rows,
+        metadata=unified.metadata,
     )
 
 
