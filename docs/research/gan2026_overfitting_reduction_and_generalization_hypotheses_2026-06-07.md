@@ -300,6 +300,18 @@ Cluster cadence without an explicit event count per cluster should not be hidden
 - The rule renders cyclic/sleep/catamenial phrases without count and period operands.
 - Correct-to-wrong transitions exceed wrong-to-correct transitions on the cluster hard slice.
 
+**Results & Replay Evaluation (2026-06-07)**
+- **Status**: `promoted_component`
+- **validation750 Replay Metrics**:
+  - Input assessment rows: 750
+  - Projection rows: 750
+  - Rendered label rows: 580
+  - Null rendered label rows: 170
+  - Scored rows: 580
+  - Purist correct: 504 (baseline 494, +10)
+  - Routed rows: 73
+  - Ablation switch `project_cluster_cadence_default_multiple_per_cluster` successfully verified via one-family-off validation750 replay (reverting to baseline 494).
+
 ### 7.3 G3: Multi-Encounter Anchor Linking For Seizure Freedom
 
 **Implementation intent**
