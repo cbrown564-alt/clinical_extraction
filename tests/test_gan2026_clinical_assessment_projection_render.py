@@ -1165,7 +1165,10 @@ def test_build_projection_render_conditional_only_trigger_sleep_stays_unrendered
         "sleep_restricted_pattern_routed"
         in artifact_row["projection_decision"]["projection_issues"]
     )
-    assert artifact_row["projection_decision"]["projection_rule_id"] == "sleep_restricted_pattern_routed_v0"
+    assert (
+        artifact_row["projection_decision"]["projection_rule_id"]
+        == "sleep_restricted_pattern_routed_v0"
+    )
 
 
 
@@ -3049,6 +3052,13 @@ def test_project_and_render_ytd_denominator_normalizes_to_months() -> None:
     assert projection.projected_label_semantics == "6 per 4 month"
     assert projection.projection_basis == "date_anchored_ytd_denominator"
     assert projection.projection_rule_id == "date_anchored_ytd_denominator_v0"
+    assert projection.ytd_instrumentation == {
+        "ytd_anchor_start": "2026-01-01",
+        "ytd_reference_date": "2026-04-15",
+        "elapsed_months": 4,
+        "source_phrase": "6 seizures so far this year",
+        "candidate_id": "llm:101:1",
+    }
     assert rendered.rendered_label == "6 per 4 month"
 
 
@@ -3075,9 +3085,9 @@ def test_project_and_render_ytd_denominator_ablation() -> None:
         disabled_ablation_switches={"project_date_anchored_ytd_denominator"},
     )
 
-    # When ablated, it should fallback to the usual parsing/rendering behavior (e.g. unknown frequency rate or similar since YTD is unparsed as a standard frequency phrase)
-    assert "ablation_switch_disabled:project_date_anchored_ytd_denominator" in projection.projection_issues
+    # When ablated, it should fall back to the baseline projection path without synthetic issues.
     assert projection.projected_label_semantics == ""
+    assert projection.ytd_instrumentation is None
     assert rendered.rendered_label is None
 
 
@@ -3129,8 +3139,43 @@ def test_project_and_render_ytd_denominator_non_ytd_yearly_phrase() -> None:
         candidate_set=candidate_set,
     )
 
-    # Since it's not YTD, it shouldn't trigger G1. It might render as unparsed or parsed if standard parser works.
+    # Since it's not YTD, it shouldn't trigger G1.
+    # It might still render if the standard parser handles it.
     assert projection.projection_rule_id != "date_anchored_ytd_denominator_v0"
+
+
+def test_project_and_render_ytd_explicit_denominator_wins_over_ytd_phrase() -> None:
+    assessment = ClinicalAssessment(
+        source_row_index=105,
+        component_owner="llm_candidate_set_clinical_assessment",
+        assessment_kind="frequency_rate",
+        primary_candidate_ids=["llm:105:1"],
+        aggregation_policy="single_fact",
+        normalized_burden=NormalizedBurden(
+            count_low=6,
+            count_high=6,
+            period_low=7,
+            period_high=7,
+            period_unit="month",
+            source_normalized_phrase="6 seizures over 7 months so far this year",
+        ),
+    )
+
+    candidate_set = _candidate_set(
+        105,
+        evidence="6 seizures over 7 months so far this year",
+    )
+    candidate_set.row_context = _row_context("2026-04-15")
+
+    projection, rendered = projection_render.project_and_render(
+        assessment,
+        candidate_set=candidate_set,
+    )
+
+    assert projection.projection_rule_id == "frequency_rate_values_v0"
+    assert projection.projected_label_semantics == "6 per 7 month"
+    assert projection.ytd_instrumentation is None
+    assert rendered.rendered_label == "6 per 7 month"
 
 
 def test_build_projection_render_prior_encounter_context_ablation() -> None:
@@ -3179,7 +3224,10 @@ def test_build_projection_render_prior_encounter_context_ablation() -> None:
 
     assessment = artifact_row["clinical_assessment"]
     instrumentation = assessment["seizure_free_instrumentation"]
-    assert "ablation_switch_disabled:normalize_seizure_free_prior_encounter_anchor" in assessment["normalization_issues"]
+    assert (
+        "ablation_switch_disabled:normalize_seizure_free_prior_encounter_anchor"
+        in assessment["normalization_issues"]
+    )
     assert instrumentation["state_kind"] == "unresolved_anchor"
     assert artifact_row["final_rendered_label"]["rendered_label"] is None
 
