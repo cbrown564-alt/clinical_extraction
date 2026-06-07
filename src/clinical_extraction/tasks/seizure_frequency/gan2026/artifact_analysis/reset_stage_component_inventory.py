@@ -77,6 +77,23 @@ RESET_COMPONENT_ENTRIES = (
         ),
     ),
     ResetComponentEntry(
+        old_name="anchor-window frequency value recovery",
+        reset_stage="normalize",
+        new_family="anchor_window_frequency_value_recovery",
+        portability_category="general",
+        ablation_switch="normalize_frequency_anchor_window_value_recovery",
+        issue_or_rule_ids=(
+            "frequency_rate_values_repaired_from_anchor_window",
+            "frequency_rate_anchor_from_last_event_phrase",
+            "frequency_rate_anchor_year_inferred_from_reference_date",
+        ),
+        status="ported_v7",
+        notes=(
+            "Recovers explicit count-plus-anchor frequency statements by deriving a "
+            "bounded month window from source-backed since-date or last-event anchors."
+        ),
+    ),
+    ResetComponentEntry(
         old_name="seizure-free duration/date handling",
         reset_stage="normalize",
         new_family="seizure_free_duration_date_instrumentation",

@@ -22,6 +22,9 @@ def test_inventory_tracks_portability_stage_and_status() -> None:
     assert by_family["selected_evidence_missing_exact_trace"][
         "portability_category"
     ] == "general"
+    assert by_family["anchor_window_frequency_value_recovery"][
+        "ablation_switch"
+    ] == "normalize_frequency_anchor_window_value_recovery"
     assert by_family["named_comparator_preservation_action_policy"]["status"] == (
         "pending_policy_decision"
     )
