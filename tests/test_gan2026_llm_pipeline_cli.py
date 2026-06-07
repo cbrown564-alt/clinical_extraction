@@ -303,29 +303,16 @@ def test_pipeline_registry_exposes_routine_llm_experiments() -> None:
     specs = llm_pipeline_cli.pipeline_specs()
 
     assert set(specs) == {
-        "llm_heavy_evidence_selection_with_deterministic_adapters",
-        "llm_heavy_clinical_frequency_reasoner",
-        "llm_candidate_set_clinical_assessment_probe",
-        "llm_candidate_set_selector_schema_probe",
-        "llm_extracted_candidate_schema_probe",
+        "deterministic",
+        "hybrid",
         "llm_only_direct_labeler",
         "llm_only_structured_events",
     }
 
-    assert (
-        specs["llm_heavy_evidence_selection_with_deterministic_adapters"].default_max_tokens
-        == 1800
-    )
-    assert specs["llm_heavy_clinical_frequency_reasoner"].default_max_tokens == 1800
-    assert specs["llm_candidate_set_clinical_assessment_probe"].default_max_tokens == 2400
-    assert (
-        specs[
-            "llm_candidate_set_clinical_assessment_probe"
-        ].default_candidate_set_jsonl_path
-        is not None
-    )
-    assert specs["llm_candidate_set_selector_schema_probe"].default_max_tokens == 1800
-    assert specs["llm_extracted_candidate_schema_probe"].default_max_tokens == 5000
+    assert specs["deterministic"].default_max_tokens == 900
+    assert specs["hybrid"].default_max_tokens == 2400
+    assert specs["hybrid"].default_candidate_set_jsonl_path is not None
+    assert specs["llm_only_direct_labeler"].default_max_tokens == 900
     assert specs["llm_only_structured_events"].default_max_tokens == 5000
 
 
