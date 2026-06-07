@@ -34,6 +34,48 @@ Controlling thread:
 - Validation750 `context_repair_v6` remains the current reset baseline:
   `580` rendered labels, `170` null renders, `488/580` Purist-correct scored
   rows, and full split discipline preserved.
+- A fresh saved-artifact GPT-4.1-mini replay after the new HN1 multi-month
+  family shows the reset-native pipeline is still moving materially on
+  validation750:
+  `592` rendered labels, `158` null renders, `494/592` Purist-correct scored
+  rows, and `40` routed rows in
+  `experiments/gan2026_reset_clinical_assessment_pipeline_validation750_gpt41mini_v0_hn1_multimonth_replay_2026-06-07.*`.
+  - The whole-pipeline direction is positive, but the targeted
+    `frequency_rate_values_unparsed` slice is not yet cleanly improved because
+    the row universe expanded and the new family introduces denominator-span
+    regressions on some already-correct month-bucket rows.
+  - On the stable original `71`-row HN1 proxy slice, rendered rows move only
+    `24 -> 25` and null rows `47 -> 46`, while Purist-correct rows fall
+    `23 -> 21`; the refreshed read therefore supports fixing the current
+    multi-month contract before treating it as the stable GPT comparator for
+    Qwen.
+- After tightening the multi-month contract and reassembling the saved
+  ClinicalAssessment drafts, the refreshed GPT-4.1-mini validation750 replay
+  is now materially better again:
+  `597` rendered labels, `153` null renders, `500/597` Purist-correct scored
+  rows, and the routed surface remains `40` rows in
+  `experiments/gan2026_reset_clinical_assessment_pipeline_validation750_gpt41mini_v0_hn1_multimonth_contract_replay_2026-06-07.*`.
+  - The prior denominator-span regressions are resolved on `16084`, `16195`,
+    and `16220`, which now all render correctly at `4`-month windows again.
+  - The intended explicit multi-month target rows `16674`, `16697`, `16758`,
+    and `16833` now all render and score Purist-correct under the narrow
+    family.
+  - This refreshed replay is the current GPT-4.1-mini comparator contract for
+    the next reset-native Qwen validation750 run.
+- The validation-only null-reduction proxy slice packet now matches the
+  synthesis contract more closely for both the baseline replay and the
+  refreshed HN1 contract replay.
+  - The analyzer now consumes both score and route artifacts, reports
+    rendered/null/routed counts, audit-only `W->C` / `C->W`, newly
+    rendered/newly null rows, and exact-trace plus source-id validity checks.
+  - The refreshed comparison packet lives in
+    `docs/research/gan2026_validation750_null_reduction_slices_after_hn1_multimonth_contract_2026-06-07.md`
+    and
+    `experiments/gan2026_validation750_null_reduction_slices_after_hn1_multimonth_contract_2026-06-07.json`.
+  - On the current HN1 contract replay, the largest frequency-family proxy
+    slice expands from `71 -> 85` rows, improves rendered rows from `24 -> 31`,
+    and shows `7` audit-only `W->C` against `3` `C->W`, with only `1` routed
+    row left on that surface.
 - A reset-native no-call composition runner now exists for the saved
   ClinicalAssessment path:
   `src/clinical_extraction/tasks/seizure_frequency/gan2026/hybrid/reset_clinical_assessment_pipeline.py`.
@@ -63,6 +105,18 @@ Controlling thread:
   validity, and audit-only `W->C` / `C->W`; the saved V5->V6 table isolates the
   `+7` recovered rows as `5` selected-evidence frequency-value recoveries and
   `2` vague-period recoveries.
+- The second HN1 Normalize family is now implemented as an explicit ablatable
+  component in
+  `src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_candidate_set_clinical_assessment_probe.py`:
+  `multi_month_bucket_frequency_value_recovery` with ablation switch
+  `normalize_frequency_multi_month_bucket_value_recovery`.
+  - The component is intentionally narrow: it recovers explicit multi-month
+    count-bearing month buckets and explicit source-window summaries while
+    refusing broad single-month rescue and per-cluster flattening.
+  - Focused regression tests cover named-bucket aggregation, explicit
+    source-window summary recovery, ablation-disable behavior, and a
+    single-month negative control; the reset-stage component inventory now
+    records the family as `general`.
 - The first clean verifier experiment input is frozen as a `56`-row
   clinical/policy surface: `29` main ambiguity rows plus `4` abstain, `18`
   upstream-policy, and `5` rendered-policy appendices. Provenance-only rows are
@@ -122,6 +176,12 @@ Controlling thread:
   `docs/research/gan2026_validation750_verifier_candidate_surface_v6_2026-06-06.md`.
 - Null action taxonomy read:
   `docs/research/gan2026_validation750_null_action_taxonomy_v6_2026-06-06.md`.
+- HN1 month-bucket evaluation read:
+  `docs/research/gan2026_validation750_hn1_month_bucket_frequency_recovery_evaluation_2026-06-07.md`.
+- HN1 multi-month rerun read:
+  `docs/research/gan2026_validation750_hn1_multimonth_slice_rerun_read_2026-06-07.md`.
+- HN1 multi-month contract replay read:
+  `docs/research/gan2026_validation750_hn1_multimonth_contract_replay_read_2026-06-07.md`.
 - First verifier report predeclaration:
   `docs/research/gan2026_validation750_first_verifier_report_predeclaration_v6_2026-06-06.md`.
 - First component ablation report surface:
@@ -173,31 +233,25 @@ Controlling thread:
 
 ### Now
 
-- Make the reset-native composable ClinicalAssessment pipeline the primary
-  validation750 execution path for the reset thread.
-- Run validation750 with GPT-4.1-mini first for quick iteration on the new
-  pipeline contract and artifact bundle.
+- Run the reset-native pipeline on Qwen validation750 using the refreshed
+  GPT-4.1-mini multi-month contract replay as the comparator state.
+- Compare the refreshed GPT-4.1-mini contract replay against both Qwen and the
+  completed `hybrid_parallel_state_candidate_reasoner` validation750 baseline.
 - Use the completed `hybrid_parallel_state_candidate_reasoner` validation750
-  run only as a comparison baseline when interpreting the new reset-native
-  pipeline results.
+  run only as a comparison baseline when interpreting reset-native GPT-4.1-mini
+  and Qwen outputs.
 - Continue replacing stale mentions of the intermediate
   `selected_source_id_invalid` provenance tail in reset-thread reads as those
   docs are touched.
 
 ### Next
 
-- Develop the first HN1 validation-only null-reduction component against the
-  `frequency_rate_values_unparsed` proxy slice, starting with explicit
-  date-bucket and count-plus-anchor frequency recovery rather than additive
-  multi-semiology rescue.
-- After the anchor-window HN1 component, evaluate whether explicit month-bucket
-  aggregation should become the next narrow recovery family on the same
-  validation slice.
-- After the GPT-4.1-mini validation750 run on the reset-native pipeline is
-  stable, run the same reset-native pipeline with Qwen validation750.
 - Compare the reset-native GPT-4.1-mini and Qwen validation750 outputs against
   each other and against the completed `hybrid_parallel_state_candidate_reasoner`
   validation750 baseline.
+- Keep broad single-month rescue off the table unless a later read shows a
+  clean Normalize-owned residual family distinct from selection/window or
+  anchor debt.
 - If the reset-native model runs land near the same residual surface, return to
   prompt tuning on the `29`-row ambiguity table with the full-run failures as
   the new decision surface.
@@ -220,6 +274,67 @@ Controlling thread:
 
 ### Done Recently
 
+- 2026-06-07: Tightened the
+  `multi_month_bucket_frequency_value_recovery` contract, added targeted
+  regression coverage, and reran the saved GPT-4.1-mini validation750 replay.
+  - The contract now preserves `this month so far` denominator span, includes
+    numeric current-month counts when present, and allows the multi-month
+    family to repair from the saved assessment summary phrase when that phrase
+    already preserves the intended clinical fact.
+  - The refreshed replay in
+    `docs/research/gan2026_validation750_hn1_multimonth_contract_replay_read_2026-06-07.md`
+    improves from `592 -> 597` rendered, `158 -> 153` null, and
+    `494 -> 500` Purist-correct scored rows with routed rows unchanged at `40`.
+  - The prior denominator regressions on `16084`, `16195`, and `16220` are
+    repaired, and the intended explicit multi-month target rows `16674`,
+    `16697`, `16758`, and `16833` now all render Purist-correct.
+- 2026-06-07: Upgraded the validation null-reduction slice analyzer so the
+  proxy packets now include route-aware transition accounting rather than only
+  static score counts.
+  - `null_reduction_validation_slices.py` now reads score plus route artifacts
+    and can compare a refreshed replay against a baseline replay by
+    `source_row_index`.
+  - The refreshed packet now reports rendered/null/routed counts, newly
+    rendered/newly null rows, audit-only `W->C` / `C->W`, and exact-trace plus
+    source-id validity checks for each required synthesis family.
+  - Focused tests pass in
+    `tests/test_gan2026_null_reduction_validation_slices.py`.
+- 2026-06-07: Reran the `frequency_rate_values_unparsed` validation slice audit
+  after the HN1 multi-month family using a fresh saved-artifact GPT-4.1-mini
+  reset-native replay.
+  - Whole-pipeline validation750 replay improved from `580 -> 592` rendered,
+    `170 -> 158` null, `488 -> 494` Purist-correct scored rows, and
+    `73 -> 40` routed rows.
+  - The refreshed HN1 read in
+    `docs/research/gan2026_validation750_hn1_multimonth_slice_rerun_read_2026-06-07.md`
+    shows only a small stable-row gain on the named proxy slice (`24 -> 25`
+    rendered on the original `71` rows), while the current family still misses
+    the intended explicit multi-month target rows and regresses denominator span
+    on some already-correct month-bucket rows.
+  - Decision: residual single-month nulls still look mostly like
+    selection/window or anchor debt, not a license for broad new Normalize
+    rescue.
+- 2026-06-07: Implemented the second HN1 ablatable recovery component in
+  `src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_candidate_set_clinical_assessment_probe.py`.
+  - New family:
+    `multi_month_bucket_frequency_value_recovery`
+    with ablation switch
+    `normalize_frequency_multi_month_bucket_value_recovery`.
+  - The component recovers explicit multi-month month-bucket summaries such as
+    `3 brief absences in Dec, 5 drop attacks in Mar, and 1 tonic seizure in Apr`
+    and explicit source-window summaries such as
+    `Three seizures recorded over six months: September, November, and February`.
+  - Guardrails intentionally block broad single-month rescue and per-cluster
+    flattening; focused regression tests and the reset-stage component
+    inventory were updated alongside the implementation.
+- 2026-06-07: Evaluated whether explicit month-bucket aggregation should become
+  the next HN1 null-reduction family in
+  `docs/research/gan2026_validation750_hn1_month_bucket_frequency_recovery_evaluation_2026-06-07.md`.
+  - The validation read supports promotion only for a narrow multi-month bucket
+    aggregation family, not for broad single-month rescue.
+  - Clean next-family examples are rows like `16674`, `16697`, `16758`, and
+    `16833`, while many single-month rows appear to be broader selection/window
+    debt rather than pure Normalize loss.
 - 2026-06-07: Implemented the first HN1 ablatable recovery component in
   `src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_candidate_set_clinical_assessment_probe.py`.
   - New family:

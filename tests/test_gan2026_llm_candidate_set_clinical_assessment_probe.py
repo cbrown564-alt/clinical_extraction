@@ -889,6 +889,313 @@ def test_assemble_clinical_assessment_can_disable_anchor_window_frequency_recove
     )
 
 
+def test_assemble_clinical_assessment_recovers_multi_month_bucket_frequency_values() -> None:
+    candidate_set = _candidate_set(
+        _frequency_candidate(
+            "llm:16758:1",
+            "3 brief absences in Dec, 5 drop attacks in Mar, and 1 tonic seizure in Apr",
+        ),
+        source_row_index=16758,
+        row_context=_reference_row_context("2024-06-18"),
+    )
+    draft = assessment_probe.AssessmentDraft(
+        assessment_kind="frequency_rate",
+        primary_candidate_ids=["llm:16758:1"],
+        aggregation_policy="single_fact",
+        normalized_burden=NormalizedBurden(
+            source_normalized_phrase=(
+                "3 brief absences in Dec, 5 drop attacks in Mar, and 1 tonic seizure in Apr"
+            )
+        ),
+    )
+
+    assessment, errors = assessment_probe.assemble_clinical_assessment(
+        draft,
+        candidate_set=candidate_set,
+    )
+
+    assert errors == []
+    assert assessment is not None
+    assert assessment.normalized_burden.count_low == 9
+    assert assessment.normalized_burden.count_high == 9
+    assert assessment.normalized_burden.period_low == 5
+    assert assessment.normalized_burden.period_high == 5
+    assert assessment.normalized_burden.period_unit == "month"
+    assert "frequency_rate_values_repaired_from_multi_month_bucket" in (
+        assessment.normalization_issues
+    )
+    assert "frequency_rate_multi_month_window_from_named_buckets" in (
+        assessment.normalization_issues
+    )
+    assert "frequency_rate_bucket_year_inferred_from_reference_date" in (
+        assessment.normalization_issues
+    )
+
+
+def test_assemble_clinical_assessment_recovers_explicit_multi_month_window_summary() -> None:
+    candidate_set = _candidate_set(
+        _frequency_candidate(
+            "llm:16697:1",
+            "Three seizures recorded over six months: September, November, and February",
+        ),
+        source_row_index=16697,
+        row_context=_reference_row_context("2024-03-12"),
+    )
+    draft = assessment_probe.AssessmentDraft(
+        assessment_kind="frequency_rate",
+        primary_candidate_ids=["llm:16697:1"],
+        aggregation_policy="single_fact",
+        normalized_burden=NormalizedBurden(
+            source_normalized_phrase=(
+                "Three seizures recorded over six months: September, November, and February"
+            )
+        ),
+    )
+
+    assessment, errors = assessment_probe.assemble_clinical_assessment(
+        draft,
+        candidate_set=candidate_set,
+    )
+
+    assert errors == []
+    assert assessment is not None
+    assert assessment.normalized_burden.count_low == 3
+    assert assessment.normalized_burden.count_high == 3
+    assert assessment.normalized_burden.period_low == 6
+    assert assessment.normalized_burden.period_high == 6
+    assert assessment.normalized_burden.period_unit == "month"
+    assert "frequency_rate_values_repaired_from_multi_month_bucket" in (
+        assessment.normalization_issues
+    )
+    assert "frequency_rate_multi_month_window_from_source_phrase" in (
+        assessment.normalization_issues
+    )
+    assert "frequency_rate_bucket_year_inferred_from_reference_date" in (
+        assessment.normalization_issues
+    )
+
+
+def test_assemble_clinical_assessment_recovers_multi_month_summary_from_assessment_phrase() -> None:
+    candidate_set = _candidate_set(
+        _frequency_candidate(
+            "det:16697:1",
+            (
+                "In September a prolonged focal seizure (~10 minutes) settled "
+                "spontaneously. In November a tonic seizure were recorded, and "
+                "in February another"
+            ),
+        ),
+        source_row_index=16697,
+        row_context=_reference_row_context("2024-03-12"),
+    )
+    draft = assessment_probe.AssessmentDraft(
+        assessment_kind="frequency_rate",
+        primary_candidate_ids=["det:16697:1"],
+        aggregation_policy="single_fact",
+        normalized_burden=NormalizedBurden(
+            source_normalized_phrase=(
+                "Three seizures recorded over six months: September, November, "
+                "and February"
+            )
+        ),
+    )
+
+    assessment, errors = assessment_probe.assemble_clinical_assessment(
+        draft,
+        candidate_set=candidate_set,
+    )
+
+    assert errors == []
+    assert assessment is not None
+    assert assessment.normalized_burden.count_low == 3
+    assert assessment.normalized_burden.count_high == 3
+    assert assessment.normalized_burden.period_low == 6
+    assert assessment.normalized_burden.period_high == 6
+    assert "frequency_rate_values_repaired_from_multi_month_bucket" in (
+        assessment.normalization_issues
+    )
+    assert "frequency_rate_multi_month_window_from_source_phrase" in (
+        assessment.normalization_issues
+    )
+
+
+def test_assemble_clinical_assessment_recovers_article_month_bucket_from_assessment_phrase(
+) -> None:
+    candidate_set = _candidate_set(
+        _frequency_candidate(
+            "det:16833:1",
+            (
+                "A prolonged event occurred in Jul (approximately 12 minutes, "
+                "alternating between focal and generalised features, settled "
+                "spontaneously). In Oct she had 5 drop attacks, and in Dec two "
+                "myoclonic jerks were documented at college"
+            ),
+        ),
+        source_row_index=16833,
+        row_context=_reference_row_context("2024-12-20"),
+    )
+    draft = assessment_probe.AssessmentDraft(
+        assessment_kind="frequency_rate",
+        primary_candidate_ids=["det:16833:1"],
+        aggregation_policy="primary_with_context",
+        normalized_burden=NormalizedBurden(
+            source_normalized_phrase=(
+                "5 drop attacks in October, 2 myoclonic jerks in December, "
+                "and a prolonged event in July"
+            )
+        ),
+    )
+
+    assessment, errors = assessment_probe.assemble_clinical_assessment(
+        draft,
+        candidate_set=candidate_set,
+    )
+
+    assert errors == []
+    assert assessment is not None
+    assert assessment.normalized_burden.count_low == 8
+    assert assessment.normalized_burden.count_high == 8
+    assert assessment.normalized_burden.period_low == 6
+    assert assessment.normalized_burden.period_high == 6
+    assert "frequency_rate_values_repaired_from_multi_month_bucket" in (
+        assessment.normalization_issues
+    )
+    assert "frequency_rate_multi_month_window_from_named_buckets" in (
+        assessment.normalization_issues
+    )
+
+
+def test_multi_month_bucket_helper_keeps_current_month_zero_in_multi_month_span() -> None:
+    burden, issues, matched = (
+        assessment_probe._frequency_burden_from_multi_month_bucket_phrase(
+            (
+                "This month so far she has no seizures; earlier 4 in February, "
+                "0 in January and 7 in December"
+            ),
+            reference_date="2024-03-24",
+        )
+    )
+
+    assert matched is True
+    assert burden is not None
+    assert burden.count_low == 11
+    assert burden.count_high == 11
+    assert burden.period_low == 4
+    assert burden.period_high == 4
+    assert burden.period_unit == "month"
+    assert "frequency_rate_values_repaired_from_multi_month_bucket" in issues
+    assert "frequency_rate_multi_month_window_from_named_buckets" in issues
+
+
+def test_multi_month_bucket_helper_adds_numeric_current_month_bucket() -> None:
+    burden, issues, matched = (
+        assessment_probe._frequency_burden_from_multi_month_bucket_phrase(
+            "she has had 6 seizures so far this month, 2 in august, five in july and 3 in june",
+            reference_date="2024-09-20",
+        )
+    )
+
+    assert matched is True
+    assert burden is not None
+    assert burden.count_low == 16
+    assert burden.count_high == 16
+    assert burden.period_low == 4
+    assert burden.period_high == 4
+    assert burden.period_unit == "month"
+    assert "frequency_rate_values_repaired_from_multi_month_bucket" in issues
+    assert "frequency_rate_multi_month_window_from_named_buckets" in issues
+
+
+def test_multi_month_bucket_helper_counts_article_based_month_bucket_event() -> None:
+    burden, issues, matched = (
+        assessment_probe._frequency_burden_from_multi_month_bucket_phrase(
+            (
+                "5 drop attacks in October, 2 myoclonic jerks in December, "
+                "and a prolonged event in July"
+            ),
+            reference_date="2024-12-20",
+        )
+    )
+
+    assert matched is True
+    assert burden is not None
+    assert burden.count_low == 8
+    assert burden.count_high == 8
+    assert burden.period_low == 6
+    assert burden.period_high == 6
+    assert burden.period_unit == "month"
+    assert "frequency_rate_values_repaired_from_multi_month_bucket" in issues
+    assert "frequency_rate_multi_month_window_from_named_buckets" in issues
+
+
+def test_assemble_clinical_assessment_does_not_force_single_month_bucket_without_window() -> None:
+    candidate_set = _candidate_set(
+        _frequency_candidate("llm:14592:1", "Two seizures in June 2024 during sleep"),
+        source_row_index=14592,
+        row_context=_reference_row_context("2024-10-04"),
+    )
+    draft = assessment_probe.AssessmentDraft(
+        assessment_kind="frequency_rate",
+        primary_candidate_ids=["llm:14592:1"],
+        aggregation_policy="single_fact",
+        normalized_burden=NormalizedBurden(
+            source_normalized_phrase="Two seizures in June 2024 during sleep"
+        ),
+    )
+
+    assessment, errors = assessment_probe.assemble_clinical_assessment(
+        draft,
+        candidate_set=candidate_set,
+    )
+
+    assert errors == []
+    assert assessment is not None
+    assert assessment.normalized_burden.count_low is None
+    assert assessment.normalized_burden.period_low is None
+    assert "frequency_rate_values_repaired_from_multi_month_bucket" not in (
+        assessment.normalization_issues
+    )
+
+
+def test_assemble_clinical_assessment_can_disable_multi_month_bucket_frequency_recovery(
+) -> None:
+    candidate_set = _candidate_set(
+        _frequency_candidate(
+            "llm:16758:1",
+            "3 brief absences in Dec, 5 drop attacks in Mar, and 1 tonic seizure in Apr",
+        ),
+        source_row_index=16758,
+        row_context=_reference_row_context("2024-06-18"),
+    )
+    draft = assessment_probe.AssessmentDraft(
+        assessment_kind="frequency_rate",
+        primary_candidate_ids=["llm:16758:1"],
+        aggregation_policy="single_fact",
+        normalized_burden=NormalizedBurden(
+            source_normalized_phrase=(
+                "3 brief absences in Dec, 5 drop attacks in Mar, and 1 tonic seizure in Apr"
+            )
+        ),
+    )
+
+    assessment, errors = assessment_probe.assemble_clinical_assessment(
+        draft,
+        candidate_set=candidate_set,
+        disabled_ablation_switches={
+            "normalize_frequency_multi_month_bucket_value_recovery"
+        },
+    )
+
+    assert errors == []
+    assert assessment is not None
+    assert assessment.normalized_burden.count_low is None
+    assert assessment.normalized_burden.period_low is None
+    assert (
+        "ablation_switch_disabled:normalize_frequency_multi_month_bucket_value_recovery"
+        in assessment.normalization_issues
+    )
+
+
 def test_assemble_clinical_assessment_does_not_force_trigger_only_phrase_into_numeric_rate(
 ) -> None:
     candidate_set = _candidate_set(

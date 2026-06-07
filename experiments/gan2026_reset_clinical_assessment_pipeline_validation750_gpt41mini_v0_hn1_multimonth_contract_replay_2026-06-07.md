@@ -1,0 +1,31 @@
+# Gan 2026 Reset ClinicalAssessment Pipeline
+
+validation-development reset-stage composition only; no model calls, no locked-test inspection, no benchmark-comparable promotion claim, and score context remains audit-only
+
+## Artifacts
+
+- Summary JSON: `experiments\gan2026_reset_clinical_assessment_pipeline_validation750_gpt41mini_v0_hn1_multimonth_contract_replay_2026-06-07.json`
+- Projection/render JSONL: `experiments\gan2026_reset_clinical_assessment_pipeline_validation750_gpt41mini_v0_hn1_multimonth_contract_replay_2026-06-07.projection_render.jsonl`
+- Score JSONL: `experiments\gan2026_reset_clinical_assessment_pipeline_validation750_gpt41mini_v0_hn1_multimonth_contract_replay_2026-06-07.score.jsonl`
+- Route JSONL: `experiments\gan2026_reset_clinical_assessment_pipeline_validation750_gpt41mini_v0_hn1_multimonth_contract_replay_2026-06-07.route.jsonl`
+- VerificationDecision JSONL: `experiments\gan2026_reset_clinical_assessment_pipeline_validation750_gpt41mini_v0_hn1_multimonth_contract_replay_2026-06-07.verification_decision.jsonl`
+
+## Summary
+
+- Input assessment rows: 750
+- Projection rows: 750
+- Rendered-label rows: 597
+- Null rendered-label rows: 153
+- Scored rows: 597
+- Purist-correct scored rows: 500
+- Routed rows: 40
+- VerificationDecision rows: 40
+
+## Verification Actions
+
+- `abstain`: 40
+
+## Source Artifacts
+
+- Assessment artifact: `experiments\gan2026_candidate_set_clinical_assessment_probe_live_validation750_gpt41mini_v3nested_v3_2026-06-06.jsonl`
+- CandidateSet artifact: `experiments\gan2026_validation750_candidate_set_v3_nested_dedupe_context_v1_2026-06-06.jsonl`
