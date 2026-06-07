@@ -1,0 +1,32 @@
+{
+  "registry_path": "experiments/registry.jsonl",
+  "runs": [
+    {
+      "artifact_paths": [
+        "experiments/gan2026_rules_only_v1_baseline_2026-05-31.jsonl"
+      ],
+      "cache_reuse_source": null,
+      "claim_language_notes": "Frozen rules_only_v1 comparator; aggregate locked-test context is historical, not a tuning surface.",
+      "date": "2026-05-31",
+      "decision": "historical",
+      "evidence_validity": "Report-level deterministic evidence summary.",
+      "mode": "rules_only_v1",
+      "model": "none",
+      "model_role": "deterministic comparator",
+      "pipeline_family": "rules_only",
+      "primary_metrics": {
+        "test_pragmatic": 0.7867,
+        "test_purist": 0.76,
+        "validation_pragmatic": 0.9387,
+        "validation_purist": 0.9293
+      },
+      "repair_mode": "deterministic_v1",
+      "replay_status": "analysis_only",
+      "row_count": 1200,
+      "run_id": "gan2026_rules_only_v1_baseline_2026-05-31",
+      "split": "validation+test",
+      "superseded_by": null,
+      "supersedes": []
+    }
+  ]
+}
