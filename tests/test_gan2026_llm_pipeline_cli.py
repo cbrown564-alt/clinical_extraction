@@ -309,21 +309,14 @@ def test_pipeline_registry_exposes_routine_llm_experiments() -> None:
         "llm_candidate_set_clinical_assessment_probe",
         "llm_candidate_set_selector_schema_probe",
         "llm_extracted_candidate_schema_probe",
-        "llm_only_claim_table_selector",
         "llm_only_direct_labeler",
-        "llm_only_minimal_evidence_selector",
-        "llm_only_sparse_operands_selected_state_reasoner",
-        "llm_only_simplified_selected_state_reasoner",
         "llm_only_structured_events",
-        "llm_only_typed_adapter_reasoner",
-        "llm_only_typed_operations_reasoner",
     }
     assert specs["hybrid_parallel_state_candidate_reasoner"].default_max_tokens == 1800
     assert (
         specs["llm_heavy_evidence_selection_with_deterministic_adapters"].default_max_tokens
         == 1800
     )
-    assert specs["llm_only_claim_table_selector"].default_max_tokens == 1400
     assert specs["llm_heavy_clinical_frequency_reasoner"].default_max_tokens == 1800
     assert specs["llm_candidate_set_clinical_assessment_probe"].default_max_tokens == 2400
     assert (
@@ -334,11 +327,7 @@ def test_pipeline_registry_exposes_routine_llm_experiments() -> None:
     )
     assert specs["llm_candidate_set_selector_schema_probe"].default_max_tokens == 1800
     assert specs["llm_extracted_candidate_schema_probe"].default_max_tokens == 5000
-    assert specs["llm_only_minimal_evidence_selector"].default_max_tokens == 900
-    assert specs["llm_only_sparse_operands_selected_state_reasoner"].default_max_tokens == 1400
     assert specs["llm_only_structured_events"].default_max_tokens == 5000
-    assert specs["llm_only_typed_adapter_reasoner"].default_max_tokens == 1800
-    assert specs["llm_only_typed_operations_reasoner"].default_max_tokens == 4800
 
 
 def _dummy_spec(

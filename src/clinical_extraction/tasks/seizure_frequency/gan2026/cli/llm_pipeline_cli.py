@@ -92,26 +92,10 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
         llm_extracted_candidate_schema_probe,
         llm_heavy_clinical_frequency_reasoner,
         llm_heavy_evidence_selection_with_deterministic_adapters,
-        llm_only_claim_table_selector,
         llm_only_direct_labeler,
-        llm_only_minimal_evidence_selector,
-        llm_only_simplified_selected_state_reasoner,
-        llm_only_sparse_operands_selected_state_reasoner,
         llm_only_structured_events,
-        llm_only_typed_adapter_reasoner,
-        llm_only_typed_operations_reasoner,
     )
 
-    llm_only_claim_table_selector_spec = GanLlmPipelineCliSpec(
-        description="Run the Gan 2026 LLM-only claim-table selector experiment.",
-        default_jsonl_path=llm_only_claim_table_selector.DEFAULT_JSONL_PATH,
-        default_report_path=llm_only_claim_table_selector.DEFAULT_REPORT_PATH,
-        run_split=llm_only_claim_table_selector.run_split,
-        write_jsonl=llm_only_claim_table_selector.write_jsonl,
-        write_report=llm_only_claim_table_selector.write_report,
-        summarize_rows=llm_only_claim_table_selector.summarize_records,
-        default_max_tokens=1400,
-    )
 
 
     return {
@@ -173,50 +157,7 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
             summarize_rows=llm_only_structured_events.summarize_records,
             default_max_tokens=5000,
         ),
-        "llm_only_claim_table_selector": llm_only_claim_table_selector_spec,
-        "llm_only_minimal_evidence_selector": GanLlmPipelineCliSpec(
-            description="Run the Gan 2026 LLM-only minimal evidence-selector experiment.",
-            default_jsonl_path=llm_only_minimal_evidence_selector.DEFAULT_JSONL_PATH,
-            default_report_path=llm_only_minimal_evidence_selector.DEFAULT_REPORT_PATH,
-            run_split=llm_only_minimal_evidence_selector.run_split,
-            write_jsonl=llm_only_minimal_evidence_selector.write_jsonl,
-            write_report=llm_only_minimal_evidence_selector.write_report,
-            summarize_rows=llm_only_minimal_evidence_selector.summarize_records,
-            default_max_tokens=900,
-        ),
-        "llm_only_simplified_selected_state_reasoner": GanLlmPipelineCliSpec(
-            description=(
-                "Run the Gan 2026 LLM-only simplified selected-state reasoner A1 smoke."
-            ),
-            default_jsonl_path=(
-                llm_only_simplified_selected_state_reasoner.DEFAULT_JSONL_PATH
-            ),
-            default_report_path=(
-                llm_only_simplified_selected_state_reasoner.DEFAULT_REPORT_PATH
-            ),
-            run_split=llm_only_simplified_selected_state_reasoner.run_split,
-            write_jsonl=llm_only_simplified_selected_state_reasoner.write_jsonl,
-            write_report=llm_only_simplified_selected_state_reasoner.write_report,
-            summarize_rows=llm_only_simplified_selected_state_reasoner.summarize_records,
-            default_max_tokens=1200,
-        ),
-        "llm_only_sparse_operands_selected_state_reasoner": GanLlmPipelineCliSpec(
-            description=(
-                "Run the Gan 2026 LLM-only sparse-operands selected-state reasoner "
-                "A2 smoke."
-            ),
-            default_jsonl_path=(
-                llm_only_sparse_operands_selected_state_reasoner.DEFAULT_JSONL_PATH
-            ),
-            default_report_path=(
-                llm_only_sparse_operands_selected_state_reasoner.DEFAULT_REPORT_PATH
-            ),
-            run_split=llm_only_sparse_operands_selected_state_reasoner.run_split,
-            write_jsonl=llm_only_sparse_operands_selected_state_reasoner.write_jsonl,
-            write_report=llm_only_sparse_operands_selected_state_reasoner.write_report,
-            summarize_rows=llm_only_sparse_operands_selected_state_reasoner.summarize_records,
-            default_max_tokens=1400,
-        ),
+
 
         "hybrid_parallel_state_candidate_reasoner": GanLlmPipelineCliSpec(
             description=(
@@ -261,30 +202,7 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
             ),
             default_max_tokens=1800,
         ),
-        "llm_only_typed_adapter_reasoner": GanLlmPipelineCliSpec(
-            description=(
-                "Run the Gan 2026 LLM-only typed DSPy JSONAdapter reasoner smoke."
-            ),
-            default_jsonl_path=llm_only_typed_adapter_reasoner.DEFAULT_JSONL_PATH,
-            default_report_path=llm_only_typed_adapter_reasoner.DEFAULT_REPORT_PATH,
-            run_split=llm_only_typed_adapter_reasoner.run_split,
-            write_jsonl=llm_only_typed_adapter_reasoner.write_jsonl,
-            write_report=llm_only_typed_adapter_reasoner.write_report,
-            summarize_rows=llm_only_typed_adapter_reasoner.summarize_records,
-            default_max_tokens=1800,
-        ),
-        "llm_only_typed_operations_reasoner": GanLlmPipelineCliSpec(
-            description=(
-                "Run the Gan 2026 LLM-only typed operations and graph overlay smoke."
-            ),
-            default_jsonl_path=llm_only_typed_operations_reasoner.DEFAULT_JSONL_PATH,
-            default_report_path=llm_only_typed_operations_reasoner.DEFAULT_REPORT_PATH,
-            run_split=llm_only_typed_operations_reasoner.run_split,
-            write_jsonl=llm_only_typed_operations_reasoner.write_jsonl,
-            write_report=llm_only_typed_operations_reasoner.write_report,
-            summarize_rows=llm_only_typed_operations_reasoner.summarize_records,
-            default_max_tokens=4800,
-        ),
+
     }
 
 
