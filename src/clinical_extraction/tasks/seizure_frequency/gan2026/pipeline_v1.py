@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from clinical_extraction.core.evidence import evidence_is_substring, locate_evidence
+from clinical_extraction.core.evidence import locate_evidence
 from clinical_extraction.core.pipeline import PipelineResult
 from clinical_extraction.core.schemas import FinalExtraction
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
@@ -25,7 +25,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
 )
 
 from .deterministic.deterministic_extraction import (
-    _extract_candidates,
+    _extract_candidates as _extract_candidates,
 )
 from .deterministic.deterministic_selection import (
     select_final_event as _select_final_event,
@@ -41,6 +41,20 @@ _RawCandidate = RawCandidate
 _clinic_date = temporal.clinic_date
 _month_span_floor = temporal.month_span_floor
 _relative_note_date = temporal.relative_note_date
+
+__all__ = [
+    "CandidateKind",
+    "Gan2026PipelineV1",
+    "_RawCandidate",
+    "_candidate_event",
+    "_clinic_date",
+    "_extract_candidates",
+    "_fallback_evidence",
+    "_month_span_floor",
+    "_normalize_candidate",
+    "_relative_note_date",
+    "_select_final_event",
+]
 
 
 class CandidateEvent(BaseModel):

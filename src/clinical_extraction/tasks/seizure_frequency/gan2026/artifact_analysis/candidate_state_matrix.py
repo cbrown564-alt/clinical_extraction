@@ -5,7 +5,6 @@ Consolidates candidate set comparisons, union metrics, and decision diagnostics.
 
 from __future__ import annotations
 
-import json
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
@@ -16,7 +15,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.reports.base import (
 
 
 class CandidateStateMatrixAnalyzer:
-    """Consolidated parameterized tool for CandidateSet comparison and state decision diagnostics."""
+    """Consolidated tool for CandidateSet comparison and state decision diagnostics."""
 
     def __init__(self, name: str, description: str) -> None:
         self.name = name
@@ -48,6 +47,9 @@ class CandidateStateMatrixAnalyzer:
                 })
 
         return {
+            "phase_f_consolidated": True,
+            "analyzer_cluster": "candidate_state",
+            "analyzer_module": "candidate_state_matrix",
             "summary": {
                 "set_a_count": len(set_a_rows),
                 "set_b_count": len(set_b_rows),
