@@ -9,8 +9,8 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis import (
-    hidden_family_atlas,
+from clinical_extraction.tasks.seizure_frequency.gan2026.labels import (
+    classify_hidden_families,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
     GanFrequencyRecord,
@@ -294,7 +294,7 @@ def _families_for_row(
     record = records[source_row_index]
     variant_row = _variant_row(row, variant=variant)
     predicted_label = str(variant_row.get("final_label") or row.get("baseline_label") or "")
-    families = hidden_family_atlas.classify_hidden_families(
+    families = classify_hidden_families(
         note_text=record.note_text,
         gold_label=record.gold_normalized_label,
         predicted_label=predicted_label,

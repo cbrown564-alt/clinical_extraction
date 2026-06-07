@@ -818,7 +818,6 @@ FAMILY_SHORT_LABELS: dict[str, str] = {
     "rules_only": "Deterministic V1",
     "dspy_final_selection_adjudicator": "DSPY Adjudicator",
     "hybrid_clinical_frequency_state_graph": "State Graph",
-    "hybrid_parallel_state_candidate_reasoner": "Parallel Hybrid",
     "llm_first_direct_extractor": "Direct Extractor",
     "llm_heavy_clinical_frequency_reasoner": "LLM Heavy Reasoner",
     "llm_heavy_evidence_selection_with_deterministic_adapters": "LLM Heavy + Det",

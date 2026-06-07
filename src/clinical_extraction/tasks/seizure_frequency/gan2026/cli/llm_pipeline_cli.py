@@ -83,9 +83,7 @@ class GanLlmPipelineCliSpec:
 def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
     """Return routine LLM experiment pipelines exposed by the single CLI."""
 
-    from clinical_extraction.tasks.seizure_frequency.gan2026.hybrid import (
-        hybrid_parallel_state_candidate_reasoner,
-    )
+
     from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
         llm_candidate_set_clinical_assessment_probe,
         llm_candidate_set_selector_schema_probe,
@@ -159,18 +157,7 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
         ),
 
 
-        "hybrid_parallel_state_candidate_reasoner": GanLlmPipelineCliSpec(
-            description=(
-                "Run the Gan 2026 hybrid parallel state/candidate reasoner smoke."
-            ),
-            default_jsonl_path=hybrid_parallel_state_candidate_reasoner.DEFAULT_JSONL_PATH,
-            default_report_path=hybrid_parallel_state_candidate_reasoner.DEFAULT_REPORT_PATH,
-            run_split=hybrid_parallel_state_candidate_reasoner.run_split,
-            write_jsonl=hybrid_parallel_state_candidate_reasoner.write_jsonl,
-            write_report=hybrid_parallel_state_candidate_reasoner.write_report,
-            summarize_rows=hybrid_parallel_state_candidate_reasoner.summarize_records,
-            default_max_tokens=1800,
-        ),
+
         "llm_heavy_clinical_frequency_reasoner": GanLlmPipelineCliSpec(
             description=(
                 "Run the Gan 2026 LLM-heavy clinical frequency reasoner schema smoke."

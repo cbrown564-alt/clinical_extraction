@@ -9,11 +9,11 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis.rq10_gold_scorer_ambiguity_audit import (  # noqa: E501
-    DEFAULT_JSON_PATH as DEFAULT_RQ10_JSON_PATH,
+DEFAULT_RQ10_JSONL_PATH = Path(
+    "experiments/gan2026_rq10_gold_scorer_ambiguity_audit_2026-06-04.jsonl"
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis.rq10_gold_scorer_ambiguity_audit import (  # noqa: E501
-    DEFAULT_JSONL_PATH as DEFAULT_RQ10_JSONL_PATH,
+DEFAULT_RQ10_JSON_PATH = Path(
+    "experiments/gan2026_rq10_gold_scorer_ambiguity_audit_2026-06-04.json"
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     load_jsonl_rows,

@@ -53,3 +53,53 @@ def map_pragmatic(per_month: float) -> str:
         return SeizureFrequencyCategory.SEIZURE_FREQUENT
     return SeizureFrequencyCategory.SEIZURE_FREQ_UNKNOWN
 
+
+def _has_any(text: str, *needles: str) -> bool:
+    return any(needle in text for needle in needles)
+
+
+def classify_hidden_families(
+    *,
+    note_text: str,
+    gold_label: str,
+    predicted_label: str,
+) -> tuple[str, ...]:
+    text = " ".join([note_text, gold_label, predicted_label]).lower()
+    families: list[str] = []
+
+    if gold_label == "unknown" or predicted_label == "unknown":
+        families.append("unknown_boundary")
+    if "seizure free" in gold_label or "seizure free" in predicted_label or _has_any(
+        text, "seizure-free", "seizure free", "no seizures", "no further events", "last seizure"
+    ):
+        families.append("seizure_free_duration")
+    if _has_any(text, "cluster", "clusters", "per cluster"):
+        families.append("cluster_burden")
+    if _has_any(text, "diary", "calendar", "log", "entries"):
+        families.append("diary_or_log_aggregation")
+    if _has_any(text, "nightly", "daily", "weekly", "monthly", "yearly", "per day", "per week"):
+        families.append("rate_bucket_or_denominator")
+    if _has_any(text, "past ", "since ", "last ", "previous", "histor", "currently", "current"):
+        families.append("current_vs_historical")
+    if _has_any(
+        text,
+        "focal",
+        "generalised",
+        "generalized",
+        "absence",
+        "tonic",
+        "clonic",
+        "aura",
+        "semiology",
+    ):
+        families.append("competing_semiologies")
+    if _has_any(text, "uncertain", "unclear", "possible", "suspected", "may represent", "unknown"):
+        families.append("uncertainty_or_ambiguity")
+    if _has_any(text, "bimonthly", "biweekly", "every other", "multiple per", "most weekdays"):
+        families.append("benchmark_format_convention")
+
+    if not families:
+        families.append("unclassified")
+    return tuple(dict.fromkeys(families))
+
+
