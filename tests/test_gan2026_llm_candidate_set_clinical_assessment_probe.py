@@ -1128,6 +1128,59 @@ def test_multi_month_bucket_helper_counts_article_based_month_bucket_event() -> 
     assert "frequency_rate_multi_month_window_from_named_buckets" in issues
 
 
+def test_normalize_phrase_for_parse_keeps_hyphenated_clinical_terms_intact() -> None:
+    assert (
+        assessment_probe._normalize_phrase_for_parse("weekly tonic-clonic seizures")
+        == "weekly tonic-clonic seizures"
+    )
+    assert (
+        assessment_probe._normalize_phrase_for_parse(
+            "two brief generalised tonic–clonic seizures over the past four months"
+        )
+        == "two brief generalised tonic–clonic seizures over the past four months"
+    )
+
+
+def test_normalize_phrase_for_parse_still_converts_numeric_ranges() -> None:
+    assert (
+        assessment_probe._normalize_phrase_for_parse(
+            "seizures occurring within 24-48 hours of missed doses"
+        )
+        == "seizures occurring within 24 to 48 hours of missed doses"
+    )
+    assert (
+        assessment_probe._normalize_phrase_for_parse("3-5 seizures per week")
+        == "3 to 5 seizures per week"
+    )
+
+
+def test_assemble_clinical_assessment_parses_hyphenated_clinical_term_rate() -> None:
+    candidate_set = _candidate_set(
+        _frequency_candidate("llm:2795:1", "weekly tonic-clonic seizures"),
+        source_row_index=2795,
+    )
+    draft = assessment_probe.AssessmentDraft(
+        assessment_kind="frequency_rate",
+        primary_candidate_ids=["llm:2795:1"],
+        aggregation_policy="single_fact",
+        normalized_burden=NormalizedBurden(
+            source_normalized_phrase="weekly tonic-clonic seizures"
+        ),
+    )
+
+    assessment, errors = assessment_probe.assemble_clinical_assessment(
+        draft,
+        candidate_set=candidate_set,
+    )
+
+    assert errors == []
+    assert assessment is not None
+    assert assessment.normalized_burden.count_low == 1
+    assert assessment.normalized_burden.period_low == 1
+    assert assessment.normalized_burden.period_unit == "week"
+    assert "frequency_rate_values_unparsed" not in assessment.normalization_issues
+
+
 def test_assemble_clinical_assessment_does_not_force_single_month_bucket_without_window() -> None:
     candidate_set = _candidate_set(
         _frequency_candidate("llm:14592:1", "Two seizures in June 2024 during sleep"),
