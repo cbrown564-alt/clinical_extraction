@@ -25,7 +25,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
     load_split_manifest,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments import (
-    synthetic_hard_case_component_stress as hard_cases,
+    synthetic_hard_cases as hard_cases,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     write_jsonl_rows,
