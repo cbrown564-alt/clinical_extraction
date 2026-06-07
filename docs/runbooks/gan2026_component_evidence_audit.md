@@ -30,8 +30,8 @@ Required:
 Recommended existing tools:
 
 - `gan2026-atlas-hard-slice-diagnostic`
-- `gan2026-selective-safety-floor-gate-replay`
-- `clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis.architecture_component_ablation`
+- `clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis.rq9_router_pressure_points`
+- `clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis.rq9_abstention_pressure`
 - `clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis.llm_replacement_postprocessing_ablation`
 - hidden-family atlas artifacts under `docs/research/` and `experiments/`
 

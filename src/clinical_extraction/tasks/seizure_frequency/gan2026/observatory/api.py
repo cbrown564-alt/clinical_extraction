@@ -91,6 +91,26 @@ PROMPT_MODULES = (
 # Families that can actually be executed via /run/note and /run/ablation
 EXECUTABLE_PIPELINES: set[str] = {"rules_only"}
 
+# Historical registry rows are preserved, but deleted runner families should not
+# re-enter the active Observatory pipeline-family surface.
+RETIRED_PIPELINE_FAMILIES: set[str] = {
+    "hybrid_parallel_state_candidate_reasoner",
+    "hybrid_rules_candidates_llm_adjudicator",
+    "llm_only_claim_table_selector",
+    "llm_only_minimal_evidence_selector",
+    "llm_only_simplified_selected_state_reasoner",
+    "llm_only_sparse_operands_selected_state_reasoner",
+    "llm_only_typed_adapter_reasoner",
+    "llm_only_typed_operations_reasoner",
+}
+
+CANONICAL_PIPELINE_FAMILIES: dict[str, tuple[str, str]] = {
+    "rules_only": ("Deterministic V1", "rules_only"),
+    "llm_only_direct_labeler": ("LLM Direct Labeler", "llm_only"),
+    "llm_only_structured_events": ("LLM Structured Events", "llm_only"),
+    "reset_clinical_assessment_pipeline": ("Reset Clinical Assessment", "hybrid"),
+}
+
 
 class ObservatorySettings(BaseModel):
     """Filesystem settings for Observatory endpoints."""
@@ -818,11 +838,14 @@ FAMILY_SHORT_LABELS: dict[str, str] = {
     "rules_only": "Deterministic V1",
     "dspy_final_selection_adjudicator": "DSPY Adjudicator",
     "hybrid_clinical_frequency_state_graph": "State Graph",
+    "llm_only_direct_labeler": "LLM Direct Labeler",
+    "llm_only_structured_events": "LLM Structured Events",
     "llm_first_direct_extractor": "Direct Extractor",
     "llm_heavy_clinical_frequency_reasoner": "LLM Heavy Reasoner",
     "llm_heavy_evidence_selection_with_deterministic_adapters": "LLM Heavy + Det",
     "llm_replacement_postprocessing_ablation": "Replacement Ablation",
     "llm_structured_events": "Structured Events",
+    "reset_clinical_assessment_pipeline": "Reset Clinical Assessment",
 }
 
 
@@ -848,21 +871,26 @@ def _build_pipeline_families(settings: ObservatorySettings) -> list[dict[str, An
     for entry in entries:
         record = entry.to_json_record()
         family = record.get("pipeline_family")
-        if not family:
+        if not family or family in RETIRED_PIPELINE_FAMILIES:
             continue
         by_family.setdefault(family, []).append(record)
 
     families: list[dict[str, Any]] = []
 
-    # Always include the executable deterministic family
-    if "rules_only" not in by_family:
-        families.append({
-            "value": "rules_only",
-            "label": "Deterministic V1",
-            "executable": True,
-            "kind": "rules_only",
-            "has_replay_artifact": False,
-        })
+    # Always include canonical families, even before they have registry-backed runs.
+    for family, (label, kind) in CANONICAL_PIPELINE_FAMILIES.items():
+        if family in by_family:
+            continue
+        families.append(
+            {
+                "value": family,
+                "label": label,
+                "executable": family in EXECUTABLE_PIPELINES,
+                "kind": kind,
+                "has_replay_artifact": False,
+                "run_count": 0,
+            }
+        )
 
     for family, runs in sorted(by_family.items()):
         has_jsonl = any(

@@ -28,9 +28,11 @@ gate already proven for the HN1 frozen audit.
 1. **Three-way architecture comparison and cross-pollination**
    (`docs/research/gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07.md`):
    side-by-side validation750 comparison of the fully deterministic
-   (`Gan2026PipelineV1`), fully LLM (currently fragmented across `llm_only_*`
-   experiments — needs a canonical runner assembled), and hybrid
-   (`reset_clinical_assessment_pipeline`) architectures, then feeding the
+   (`Gan2026PipelineV1`), fully LLM (`llm_only_direct_labeler` for one-shot
+   and `llm_only_structured_events` for structured extraction), and hybrid
+   (`reset_clinical_assessment_pipeline`) architectures. The remaining
+   mechanical work is assembling the Option-A structured-events chain through
+   the reset back-half, then feeding the
    hybrid reset discipline back into (a) de-overfitting the deterministic
    pipeline's validation-tuned rules into general, source-backed principles,
    and (b) refining fully-LLM prompts around an explicit division of labor —
@@ -50,9 +52,9 @@ gate already proven for the HN1 frozen audit.
    fragmented `llm_only_*` modules, ~76 overlapping artifact-analysis files,
    ~80 mirrored test files), names one canonical runner per architecture,
    audits dependencies before any removal, consolidates retired-architecture
-   documentation into one lineage summary, removes the rest, and DRY-ifies
-   the shared runner/reporting/CLI infrastructure into one parameterized
-   framework.
+   documentation into one lineage summary, removes the superseded runner/code
+   lineages, and leaves Phase F runner/reporting framework DRY-ification as a
+   separate follow-up rather than pretending it is complete.
 
 **Sequencing decision** (resolves the open question in the user's request):
 a *select → clean → iterate* loop, not a strict before/after ordering.
@@ -322,13 +324,10 @@ full rationale.
   plans needed first — recorded in
   `docs/research/gan2026_canonical_runner_selection_2026-06-07.md`:
   `Gan2026PipelineV1` (deterministic) and `reset_clinical_assessment_pipeline`
-  (hybrid) confirmed; `llm_only_structured_events` selected as the canonical
-  fully-LLM Option-A runner (its "events" output decomposes along family lines
-  that map onto the reset pipeline's Normalize/Project taxonomy, and it
-  already shares contract/normalize integration seams with the reset
-  pipeline); `llm_only_minimal_evidence_selector` retained as the Option-B
-  maximal-LLM comparator. The other 9 `llm_only_*` modules are now named
-  superseded-candidates for the cleanup plan's Phase C audit.
+  (hybrid) confirmed; `llm_only_direct_labeler` retained as the one-shot
+  fully-LLM baseline; `llm_only_structured_events` selected as the canonical
+  fully-LLM Option-A runner. Noncanonical `llm_only_*` modules have now been
+  retired into lineage documentation rather than kept as active code.
 - Now that the selection above is recorded, **assemble** the Option-A chain:
   wire `llm_only_structured_events` as the Select stage in front of the reset
   pipeline's deterministic Normalize→Project→Render→Score→Route→Decision
@@ -342,19 +341,16 @@ full rationale.
   as `docs/research/gan2026_test450_hn1_frozen_aggregate_audit_2026-06-07.md`.
 - Run the reset-native pipeline on Qwen validation750 using the refreshed
   GPT-4.1-mini multi-month contract replay as the comparator state.
-- Compare the refreshed GPT-4.1-mini contract replay against both Qwen and the
-  completed `hybrid_parallel_state_candidate_reasoner` validation750 baseline.
-- Use the completed `hybrid_parallel_state_candidate_reasoner` validation750
-  run only as a comparison baseline when interpreting reset-native GPT-4.1-mini
-  and Qwen outputs.
+- Treat older parallel/adjudicator runs as historical evidence only; do not use
+  their deleted runner families as active execution or Observatory replay paths.
 - Continue replacing stale mentions of the intermediate
   `selected_source_id_invalid` provenance tail in reset-thread reads as those
   docs are touched.
 
 ### Next
 
-- **DONE 2026-06-07**: completed cleanup-plan Phases A-D — the removal
-  proposal is now written and ready for review before any `git rm`:
+- **DONE 2026-06-07**: completed cleanup-plan Phases A-E and follow-up
+  correctness fixes:
   - Phase A catalog (396 files):
     `docs/research/gan2026_phase_a_file_catalog_2026-06-07.csv` +
     `..._summary_2026-06-07.md`
@@ -373,19 +369,18 @@ full rationale.
     — compresses each retired line's contribution (what it tried / taught /
     what survived), clearing the `needs-doc-archival-first` blocker the audit
     assigned to every lineage.
-  - **Next**: Phase E removal can now begin, lineage-by-lineage, per the
-    audit's recommended ordering and guardrails (small reviewable batches,
-    `git rm`, full suite green between batches, registry/doc updates in the
-    same batch). Each batch should run the `thermo-nuclear-code-quality-review`
-    skill before landing, per the plan's guardrails.
+  - Phase E removal landed in 5 lineage batches. Follow-up audit fixed the
+    stale deleted-module console script, filtered retired runner families out
+    of active Observatory/frontend surfaces, and corrected status/report
+    language. Phase F framework consolidation remains a separate follow-up.
 - Run the validation750 three-way comparison from
   `gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07.md`
   Phase 1 once the canonical fully-LLM runner exists, and begin populating the
   Architecture Thesis Scorecard from
   `gan2026_evidence_grounded_thesis_assessment_plan_2026-06-07.md` Phase 0-2.
 - Compare the reset-native GPT-4.1-mini and Qwen validation750 outputs against
-  each other and against the completed `hybrid_parallel_state_candidate_reasoner`
-  validation750 baseline.
+  each other; use retired-lineage results only as historical context when a
+  lineage summary explicitly justifies the comparison.
 - Keep broad single-month rescue off the table unless a later read shows a
   clean Normalize-owned residual family distinct from selection/window or
   anchor debt.
@@ -518,7 +513,7 @@ full rationale.
 - 2026-06-07: Reprioritized the work board around the reset-native composable
   ClinicalAssessment pipeline. The completed
   `hybrid_parallel_state_candidate_reasoner` validation750 run is now a
-  comparison baseline, while the next execution priority is GPT-4.1-mini
+  historical comparison artifact, while the next execution priority is GPT-4.1-mini
   validation750 on the reset-native pipeline followed by Qwen validation750 on
   the same pipeline.
 - 2026-06-07: Added the reset-native composable no-call pipeline runner
@@ -529,10 +524,9 @@ full rationale.
   scratch replay completed structurally before the scratch artifacts were
   removed.
 - 2026-06-06: Corrected the first full validation750 local-Qwen rerun plan so
-  the runnable path is the combined
-  `hybrid_parallel_state_candidate_reasoner` pipeline under
-  `ollama_chat/qwen3.6:35b`; stage-specific candidate/projection/verification
-  work remains downstream analysis only.
+  the then-runnable path was the combined parallel-state pipeline under
+  `ollama_chat/qwen3.6:35b`. That path is now retired; future Qwen work should
+  use the reset-native pipeline or a newly assembled canonical fully-LLM chain.
 - 2026-06-06: Added first-class `main29` verifier input/report artifacts in
   `src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/clinical_assessment_first_verifier_report.py`
   and repointed the live verifier runner to

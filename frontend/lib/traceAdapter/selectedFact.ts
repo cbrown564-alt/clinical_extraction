@@ -1,7 +1,6 @@
 import type {
   PipelineTrace,
   SelectedFactArtifactRow,
-  SelectedStateArtifactRow,
   FullRecordResponse,
   TraceItem,
 } from "../types";
@@ -59,73 +58,6 @@ export function adaptSelectedFactTrace(
   const finalLabel = mechanical?.final_label ?? fact?.raw_value ?? "unknown";
   const evidence = fact?.evidence ?? row.evidence_summary?.selected_fact_evidence ?? "";
   const rationale = fact?.rationale ?? "";
-
-  return {
-    pipelineFamily: family,
-    noteText: record.note_text,
-    goldLabel: row.reference.gold_label,
-    sourceRowIndex: row.source_row_index,
-    split: row.split,
-    extract: { items: extractItems },
-    normalise: { items: normaliseItems },
-    select: {
-      finalLabel,
-      rationale,
-      evidence,
-    },
-    repair: buildRepair(row.repair_changes),
-    score: buildScoreFromLayers(row.score_layers, row.reference.gold_label),
-  };
-}
-
-// ── Selected-state adapter (llm_only_simplified/sparse_selected_state_reasoner) ──
-
-export function adaptSelectedStateTrace(
-  row: SelectedStateArtifactRow,
-  record: FullRecordResponse,
-  family: string
-): PipelineTrace {
-  const state = row.structured_record?.selected_state;
-
-  const extractItems: TraceItem[] = [];
-  if (state) {
-    const span = state.selected_evidence
-      ? findEvidenceSpan(record.note_text, state.selected_evidence)
-      : null;
-    extractItems.push({
-      id: "selected_state",
-      kind: state.final_kind || "state",
-      rawValue: state.raw_source_phrase || state.raw_llm_final_label || state.selected_evidence,
-      normalizedValue: state.raw_llm_final_label || undefined,
-      evidence: state.selected_evidence,
-      startChar: span?.start ?? null,
-      endChar: span?.end ?? null,
-      metadata: {
-        selection_reason: state.selection_reason,
-        uncertainty_flags: state.uncertainty_flags,
-        operands: state.operands,
-        selected_operation_kind: state.selected_operation_kind,
-      },
-    });
-  }
-
-  const normaliseItems: TraceItem[] = [];
-  if (state?.operands) {
-    normaliseItems.push({
-      id: "operands",
-      kind: "operands",
-      rawValue: JSON.stringify(state.operands),
-      normalizedValue: state.raw_llm_final_label || undefined,
-      evidence: state.selected_evidence,
-      startChar: null,
-      endChar: null,
-      metadata: state.operands,
-    });
-  }
-
-  const finalLabel = state?.raw_llm_final_label ?? "unknown";
-  const evidence = state?.selected_evidence ?? row.evidence_summary?.selected_evidence ?? "";
-  const rationale = state?.selection_reason ?? "";
 
   return {
     pipelineFamily: family,

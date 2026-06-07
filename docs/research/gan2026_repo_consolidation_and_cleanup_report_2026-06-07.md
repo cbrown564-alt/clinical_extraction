@@ -2,17 +2,17 @@
 
 Date: 2026-06-07
 Author: Claude
-Status: Completed / Durable Record
+Status: Completed removal record with follow-up corrections
 
 ---
 
 ## 1. Executive Summary
 
-Following the completion of the rapid-iteration research phase, the codebase has been audited and consolidated to focus exclusively on the three canonical architectures. Across **5 sequential batches**, we removed superseded runners, exclusive components, coupled analyzers, and mirrored unit test suites representing over 75 files and ~1.2 MB of redundant code.
+Following the completion of the rapid-iteration research phase, the codebase has been audited and consolidated around the canonical architecture surface. Across **5 sequential batches**, we removed superseded runners, exclusive components, coupled analyzers, and mirrored unit test suites representing over 75 files and ~1.2 MB of redundant code.
 
-A complete dependency audit was performed, and all necessary shared infrastructure components were preserved, cleaned, or relocated. The repository is now clean, DRY (Don't Repeat Yourself), and structurally ready for upcoming comparison studies and thesis assessments.
+A complete dependency audit was performed, and all necessary shared infrastructure components were preserved, cleaned, or relocated. The high-risk removal portion of the cleanup is complete. The larger Phase F goal — one parameterized runner/reporting framework — remains a follow-up consolidation task rather than something this removal sequence fully delivered.
 
-All remaining **994 unit and integration tests** in the test suite pass successfully.
+All remaining **995 unit and integration tests** in the Python test suite pass successfully after follow-up corrections.
 
 ---
 
@@ -27,7 +27,7 @@ As resolved in the Canonical-Runner Selection decision record, the following rep
 | **Fully LLM (Multi-step)** | `llm/llm_only_structured_events.py` | Base for multi-step structured extraction chains. |
 | **Hybrid** | `hybrid/reset_clinical_assessment_pipeline.py` | Active hybrid/reset focus composing LLM Select and rule-based Normalize -> Project stages. |
 
-All other experimental runners and modules were retired and cleaned up.
+Superseded experimental runners and modules were retired and cleaned up. Historical run records and research artifacts remain as provenance, but deleted runner families are no longer active execution or Observatory replay paths.
 
 ---
 
@@ -37,7 +37,7 @@ The consolidation was executed in 5 distinct batches, with the test suite verifi
 
 ### Batch 1: `staged_hybrid_assembly` (v0 Lineage)
 * **Goal**: Clean up the v0 staged hybrid assembly runner, its coupled analyzers, and its v0-specific components.
-* **Preservation/Relocation**: 
+* **Preservation/Relocation**:
   - Relocated shared infrastructure components `source_trace.py` and `suspicious_state_policy.py` from `components/` to `artifact_analysis/` and updated their import statements in `suspicious_selected_state_routing.py`.
 * **Deletions**:
   - Runner: `staged_hybrid_assembly.py` and test `test_gan2026_staged_hybrid_assembly.py`.
@@ -84,20 +84,27 @@ The consolidation was executed in 5 distinct batches, with the test suite verifi
 
 ---
 
-## 4. Verification and Clean Slate
+## 4. Verification and Follow-Up Corrections
 
 ### Automated Verification
-A final execution of the entire test suite confirms that the cleanup has left the repository in a healthy, green state:
+A final execution of the Python test suite confirms that the cleanup has left the backend package in a healthy, green state:
 
 ```powershell
 pytest tests/
 ```
 **Results**:
-- **Collected**: 994 items
-- **Passed**: 994 passed in 7.92 seconds
+- **Collected**: 995 items
+- **Passed**: 995 passed
 - **Errors/Failures**: 0
 
+### Follow-Up Corrections
+An audit after the initial cleanup report found and fixed several sign-off gaps:
+
+- Removed a stale `pyproject.toml` console script that pointed at the deleted `selective_safety_floor_gate_replay.py` module.
+- Filtered retired runner families out of active Observatory `/pipeline-families` and frontend run-selection/replay surfaces while preserving historical registry rows.
+- Pruned frontend replay adapters and tests that still treated deleted runner families as supported.
+- Updated `PROJECT_STATUS.md`, the Observatory progress note, and this report to avoid overstating Phase F DRY-ification as complete.
+
 ### Repository Cleanliness
-* No unstaged modifications remain.
-* No untracked files remain.
-* All deletions have been performed via `git rm` to preserve file history.
+* Follow-up corrections are intentionally left as the current working-tree changes until reviewed and committed.
+* The original lineage-removal batches used git-tracked deletions so file history is preserved.

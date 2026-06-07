@@ -19,20 +19,39 @@ def test_observatory_registry_rules_prompts_and_artifacts(tmp_path: Path) -> Non
     )
     registry_path = experiments / "registry.jsonl"
     registry_path.write_text(
-        json.dumps(
-            {
-                "run_id": "example_run",
-                "artifact_paths": ["experiments/example.jsonl"],
-                "date": "2026-06-02",
-                "pipeline_family": "rules_only",
-                "split": "validation",
-                "row_count": 1,
-                "model": "none",
-                "model_role": "deterministic comparator",
-                "mode": "rules_only_v1",
-                "replay_status": "analysis_only",
-                "decision": "historical",
-            }
+        "\n".join(
+            [
+                json.dumps(
+                    {
+                        "run_id": "example_run",
+                        "artifact_paths": ["experiments/example.jsonl"],
+                        "date": "2026-06-02",
+                        "pipeline_family": "rules_only",
+                        "split": "validation",
+                        "row_count": 1,
+                        "model": "none",
+                        "model_role": "deterministic comparator",
+                        "mode": "rules_only_v1",
+                        "replay_status": "analysis_only",
+                        "decision": "historical",
+                    }
+                ),
+                json.dumps(
+                    {
+                        "run_id": "retired_run",
+                        "artifact_paths": ["experiments/example.jsonl"],
+                        "date": "2026-06-02",
+                        "pipeline_family": "llm_only_claim_table_selector",
+                        "split": "validation",
+                        "row_count": 1,
+                        "model": "openai/gpt-4.1-mini",
+                        "model_role": "retired claim-table selector",
+                        "mode": "historical",
+                        "replay_status": "analysis_only",
+                        "decision": "historical",
+                    }
+                ),
+            ]
         )
         + "\n",
         encoding="utf-8",
@@ -59,6 +78,14 @@ def test_observatory_registry_rules_prompts_and_artifacts(tmp_path: Path) -> Non
 
     assert client.get("/health").json() == {"status": "ok"}
     assert client.get("/registry").json()["runs"][0]["run_id"] == "example_run"
+    family_values = {
+        family["value"] for family in client.get("/pipeline-families").json()["families"]
+    }
+    assert "rules_only" in family_values
+    assert "llm_only_direct_labeler" in family_values
+    assert "llm_only_structured_events" in family_values
+    assert "reset_clinical_assessment_pipeline" in family_values
+    assert "llm_only_claim_table_selector" not in family_values
     assert client.get("/splits/validation").json()["source_row_indices"] == [1]
     assert client.get("/artifacts/example_run").json()["content"][0]["source_row_index"] == 1
 

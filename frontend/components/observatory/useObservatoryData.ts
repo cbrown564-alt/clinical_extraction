@@ -3,6 +3,7 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchRegistry } from "@/lib/api";
+import { isActivePipelineFamily } from "@/lib/pipelineFamilies";
 import type { RegistryEntry, RowScore, RunSummary, CategoryMetrics } from "@/lib/types";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 
@@ -378,7 +379,13 @@ export function useObservatoryData() {
     queryFn: fetchRegistry,
   });
 
-  const runs = registryData?.runs ?? [];
+  const runs = useMemo(
+    () =>
+      (registryData?.runs ?? []).filter((run) =>
+        isActivePipelineFamily(run.pipeline_family)
+      ),
+    [registryData?.runs]
+  );
 
   const [selectedRunIds, setSelectedRunIds] = useState<Set<string>>(new Set());
   const [summaries, setSummaries] = useState<Map<string, RunSummary>>(new Map());
@@ -413,25 +420,7 @@ export function useObservatoryData() {
     // 3. Fall back to smart defaults
     const defaults = getDefaultSelections(runs);
     setSelectedRunIds(defaults);
-  }, [runs.length > 0, searchParams]);
-
-  // Sync state changes to searchParams
-  useEffect(() => {
-    if (runs.length === 0) return;
-    const params = new URLSearchParams(searchParams.toString());
-    if (selectedRunIds.size > 0) {
-      const runsStr = Array.from(selectedRunIds).join(",");
-      if (searchParams.get("runs") !== runsStr) {
-        params.set("runs", runsStr);
-        router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-      }
-    } else {
-      if (searchParams.has("runs")) {
-        params.delete("runs");
-        router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-      }
-    }
-  }, [selectedRunIds, runs, searchParams, router, pathname]);
+  }, [runs]);
 
   // Persist selections
   useEffect(() => {
