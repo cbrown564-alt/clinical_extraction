@@ -43,6 +43,19 @@ def test_build_prompt_input_excludes_gold_and_deterministic_candidates() -> None
     assert "deterministic_final_selection" not in prompt
 
 
+def test_build_prompt_input_instructs_short_plain_rationale() -> None:
+    # Regression guard: qwen3.6:35b filled the `rationale` field with verbose
+    # step-by-step deliberation (e.g. "Is '4 per month' definitely allowed? ...
+    # I will proceed with...") when the prompt gave it no style guidance,
+    # embedding quotes/control-characters/run-on punctuation that broke JSON
+    # parsing (PROMPT_VERSION v0.1 -> v0.2). The prompt must explicitly tell
+    # the model to keep rationale to one short, plain sentence with an example.
+    instructions = " ".join(json.loads(build_prompt_input(_record()))["instructions"])
+
+    assert "Write rationale as one short, plain-language sentence" in instructions
+    assert "Do not show step-by-step reasoning" in instructions
+
+
 def test_parse_decision_json_accepts_fenced_json_and_repairs_label() -> None:
     raw = """```json
     {
@@ -83,6 +96,48 @@ def test_parse_decision_json_repairs_common_model_aliases() -> None:
     assert decision.confidence == "high"
     assert decision.final_label == "1 per 2 day"
     assert errors == ["final_label_repaired: '1 every 2 days' -> '1 per 2 day'"]
+
+
+def test_parse_decision_json_tolerates_literal_control_characters() -> None:
+    # Regression guard: qwen3.6:35b's verbose chain-of-thought rationale text
+    # sometimes embeds raw newlines inside JSON string values instead of the
+    # escaped "\n" that json.loads requires by default. parse_decision_json
+    # must route through the shared schema-repair helper (which adds a
+    # strict=False fallback) rather than calling json.loads directly.
+    raw = (
+        '{"final_label": "2 per month", "evidence": "two seizures per month",'
+        ' "answer_kind": "frequency", "selected_seizure_type": "seizures",'
+        ' "time_window": "current", "confidence": "high",'
+        ' "rationale": "First paragraph.\n\nSecond paragraph."}'
+    )
+
+    decision, errors = parse_decision_json(raw)
+
+    assert decision is not None
+    assert decision.rationale == "First paragraph.\n\nSecond paragraph."
+    assert errors == ["json_dialect_repaired: literal_control_characters"]
+
+
+def test_parse_decision_json_accepts_null_time_window_and_seizure_type() -> None:
+    # Regression guard: qwen3.6:35b legitimately emits JSON null for
+    # time_window and/or selected_seizure_type when the note contains no
+    # usable seizure-frequency reference at all (answer_kind "no_reference"),
+    # where gpt-4.1-mini instead always emits a string (often "" for the same
+    # case). Both are valid representations of "nothing specific to report";
+    # the schema must accept null rather than raising
+    # "Input should be a valid string".
+    raw = (
+        '{"final_label": "no seizure frequency reference", "evidence": "...",'
+        ' "answer_kind": "no_reference", "selected_seizure_type": null,'
+        ' "time_window": null, "confidence": "high", "rationale": "..."}'
+    )
+
+    decision, errors = parse_decision_json(raw)
+
+    assert decision is not None
+    assert decision.selected_seizure_type is None
+    assert decision.time_window is None
+    assert errors == []
 
 
 def test_parse_decision_json_repairs_direct_labeler_answer_kind_phrases() -> None:

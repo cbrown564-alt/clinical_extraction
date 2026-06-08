@@ -1340,6 +1340,41 @@ def test_run_split_prompt_only_uses_default_candidate_set_artifact(
     assert metadata["summary"]["clinical_assessment_rows"] == 0
 
 
+def test_run_split_prompt_only_builds_candidate_sets_live_when_path_omitted() -> None:
+    rows, metadata = assessment_probe.run_split(
+        [
+            _record(
+                306,
+                "The patient reports two seizures per month, unchanged from baseline.",
+            )
+        ],
+        split="validation",
+        split_manifest="test_manifest",
+        model="test-model",
+        temperature=0.0,
+        max_tokens=100,
+        mode="prompt-only",
+    )
+
+    assert metadata["candidate_set_jsonl_path"] == "live"
+    assert metadata["candidate_set_source"] == "live_deterministic_llm_union"
+    assert metadata["summary"]["missing_candidate_set_rows"] == 0
+    assert "candidate_set_missing" not in (rows[0]["parse_errors"] or [])
+    candidate_set = rows[0]["candidate_set"]
+    assert candidate_set["source_row_index"] == 306
+    assert any(
+        candidate["candidate_kind"] == "frequency_rate" for candidate in candidate_set["candidates"]
+    )
+    assert rows[0]["candidate_set_diagnostics"] == {
+        "candidate_set_source": "live_deterministic_llm_union",
+        "llm_extraction_call_error": None,
+        "llm_extraction_parse_errors": [],
+    }
+    assert rows[0]["typed_input"]["candidate_set"]["candidates"][0]["candidate_id"].startswith(
+        "det:306:"
+    )
+
+
 def _candidate_set(
     *candidates: ExtractedCandidate,
     source_row_index: int = 301,

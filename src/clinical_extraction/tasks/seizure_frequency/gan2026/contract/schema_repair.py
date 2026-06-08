@@ -15,14 +15,23 @@ def parse_json_payload_with_schema_repair(
     """Parse model JSON, allowing explicit non-semantic JSON dialect repair.
 
     Some local models emit Python literal syntax for otherwise valid structured
-    objects, for example single-quoted keys and `None`. Treating that as a
-    schema repair keeps the clinical payload unchanged while making its impact
-    visible in run artifacts.
+    objects, for example single-quoted keys and `None`. Some also emit literal
+    control characters (e.g. raw newlines) inside string values instead of the
+    escaped `\\n` JSON requires, typically when a verbose rationale field spans
+    multiple paragraphs. Treating these as schema repairs keeps the clinical
+    payload unchanged while making their impact visible in run artifacts.
     """
 
     try:
         return json.loads(raw_payload), []
     except json.JSONDecodeError as json_error:
+        try:
+            return (
+                json.loads(raw_payload, strict=False),
+                ["json_dialect_repaired: literal_control_characters"],
+            )
+        except json.JSONDecodeError:
+            pass
         if not python_literal_dialect_repair:
             raise json_error from None
         try:
@@ -89,6 +98,11 @@ def _repair_string_alias(payload: dict[str, Any], key: str, aliases: dict[str, s
 
 def _repair_numeric_confidence(payload: dict[str, Any]) -> None:
     confidence = payload.get("confidence")
+    if isinstance(confidence, str):
+        try:
+            confidence = float(confidence)
+        except ValueError:
+            return
     if not isinstance(confidence, int | float):
         return
     if confidence >= 0.8:
@@ -105,7 +119,6 @@ _ASSERTION_ALIASES = {
     "current": "asserted",
     "certain": "asserted",
     "negative": "negated",
-    "unknown": "unclear",
 }
 
 _UNCERTAINTY_ALIASES = {

@@ -37,6 +37,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser i
     label_to_frequency_record,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.schema_repair import (
+    parse_json_payload_with_schema_repair,
     repair_decision_payload,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
@@ -58,7 +59,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.reports.base import (
     write_markdown_report,
 )
 
-PROMPT_VERSION = "gan2026_llm_only_canonical_pipeline_v0.1"
+PROMPT_VERSION = "gan2026_llm_only_canonical_pipeline_v0.2"
 DEFAULT_JSONL_PATH = Path(
     "experiments/gan2026_llm_only_canonical_pipeline_validation_gpt41mini_2026-06-07.jsonl"
 )
@@ -81,8 +82,8 @@ class CanonicalLlmDecisionRecord(BaseModel):
         "no_reference",
         "unresolved_multiple",
     ]
-    selected_seizure_type: str
-    time_window: str
+    selected_seizure_type: str | None = None
+    time_window: str | None = None
     applied_rule_families: list[str]
     confidence: Literal["low", "medium", "high"]
     rationale: str
@@ -280,6 +281,14 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "actually shaped how you read this particular note. Leave it "
                 "empty if none did."
             ),
+            (
+                "Write rationale as one short, plain-language sentence stating "
+                "only the deciding evidence and label — for example: 'The note "
+                "states two seizures per month for the current period, so the "
+                "label is 2 per month.' Do not show step-by-step reasoning, "
+                "alternative options you considered and rejected, or "
+                "self-questioning; state only the final justification."
+            ),
             "Return exactly one JSON object with no markdown.",
         ],
         "guidance_for_tricky_cases": {
@@ -312,11 +321,14 @@ def parse_decision_json(
 ) -> tuple[CanonicalLlmDecisionRecord | None, list[str]]:
     errors: list[str] = []
     try:
-        payload = _filter_decision_payload(
-            repair_decision_payload(json.loads(_extract_json_object(raw_output)))
+        raw_payload, dialect_notes = parse_json_payload_with_schema_repair(
+            _extract_json_object(raw_output)
         )
     except json.JSONDecodeError as exc:
         return None, [f"invalid_json: {exc.msg}"]
+    errors.extend(dialect_notes)
+    raw_payload = _coerce_rationale_key_typo(raw_payload)
+    payload = _filter_decision_payload(repair_decision_payload(raw_payload))
 
     payload = _coerce_applied_rule_families(payload)
 
@@ -339,6 +351,16 @@ def parse_decision_json(
         errors.append(f"unscorable_final_label: {exc}")
 
     return decision, errors
+
+
+def _coerce_rationale_key_typo(payload: Any) -> Any:
+    """Tolerate the observed local-model typo `ration` for the `rationale` field."""
+
+    if not isinstance(payload, dict) or "rationale" in payload or "ration" not in payload:
+        return payload
+    repaired = dict(payload)
+    repaired["rationale"] = repaired.pop("ration")
+    return repaired
 
 
 def _coerce_applied_rule_families(payload: Any) -> Any:

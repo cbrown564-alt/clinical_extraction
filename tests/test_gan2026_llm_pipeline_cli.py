@@ -313,7 +313,8 @@ def test_pipeline_registry_exposes_routine_llm_experiments() -> None:
 
     assert specs["deterministic"].default_max_tokens == 900
     assert specs["hybrid"].default_max_tokens == 2400
-    assert specs["hybrid"].default_candidate_set_jsonl_path is not None
+    # hybrid builds CandidateSets live by default (no static-artifact dependency).
+    assert specs["hybrid"].default_candidate_set_jsonl_path is None
     assert specs["llm_only_direct_labeler"].default_max_tokens == 900
     assert specs["llm_only_structured_events"].default_max_tokens == 5000
     assert specs["llm_only_canonical_pipeline"].default_max_tokens == 1200

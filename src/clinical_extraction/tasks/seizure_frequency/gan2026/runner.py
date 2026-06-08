@@ -833,9 +833,10 @@ def get_cli_specs() -> dict[str, Any]:
             write_report=llm_candidate_set_clinical_assessment_probe.write_report,
             summarize_rows=llm_candidate_set_clinical_assessment_probe.summarize_records,
             default_max_tokens=2400,
-            default_candidate_set_jsonl_path=(
-                llm_candidate_set_clinical_assessment_probe.DEFAULT_CANDIDATE_SET_JSONL_PATH
-            ),
+            # None -> run_split builds CandidateSets live (deterministic + LLM
+            # union) per row instead of looking them up in the static 250-row
+            # artifact, so the CLI covers the full split surface by default.
+            default_candidate_set_jsonl_path=None,
         ),
         "llm_only_direct_labeler": GanLlmPipelineCliSpec(
             description="Run the Gan 2026 LLM-only direct-labeler experiment.",

@@ -21,6 +21,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser i
     label_to_frequency_record,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.schema_repair import (
+    parse_json_payload_with_schema_repair,
     repair_decision_payload,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
@@ -42,7 +43,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.reports.base import (
     write_markdown_report,
 )
 
-PROMPT_VERSION = "gan2026_llm_only_direct_labeler_v0.1"
+PROMPT_VERSION = "gan2026_llm_only_direct_labeler_v0.2"
 PROMPT_POLICY_TAXONOMY: list[dict[str, str]] = [
     {
         "policy_id": "dl_v0.schema.strict_json_object",
@@ -110,8 +111,8 @@ class LlmOnlyDirectLabelerDecisionRecord(BaseModel):
         "no_reference",
         "unresolved_multiple",
     ]
-    selected_seizure_type: str
-    time_window: str
+    selected_seizure_type: str | None = None
+    time_window: str | None = None
     confidence: Literal["low", "medium", "high"]
     rationale: str
 
@@ -199,7 +200,29 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "For cluster labels, include both cluster rate and events per cluster when both "
                 "are stated."
             ),
+            (
+                "answer_kind must be written as exactly one of these five "
+                "words, with no other wording: 'frequency' (the note gives a "
+                "usable current seizure-frequency rate or range), "
+                "'seizure_free' (the note describes a current seizure-free "
+                "duration instead of a rate), 'unknown' (seizures are "
+                "discussed but the current frequency cannot be converted to "
+                "a normalized rate), 'no_reference' (the note contains no "
+                "usable seizure-frequency evidence at all), or "
+                "'unresolved_multiple' (several current seizure-frequency "
+                "claims conflict and none can be picked as the answer). Do "
+                "not write a longer description in this field — choose "
+                "exactly one of the five words above."
+            ),
             "Evidence must be an exact substring from the note when possible.",
+            (
+                "Write rationale as one short, plain-language sentence stating "
+                "only the deciding evidence and label — for example: 'The note "
+                "states two seizures per month for the current period, so the "
+                "label is 2 per month.' Do not show step-by-step reasoning, "
+                "alternative options you considered and rejected, or "
+                "self-questioning; state only the final justification."
+            ),
             "Return exactly one JSON object with no markdown.",
         ],
         "allowed_decision_fields": [
@@ -221,11 +244,13 @@ def parse_decision_json(
 ) -> tuple[LlmOnlyDirectLabelerDecisionRecord | None, list[str]]:
     errors: list[str] = []
     try:
-        payload = _filter_decision_payload(
-            repair_decision_payload(json.loads(_extract_json_object(raw_output)))
+        raw_payload, dialect_notes = parse_json_payload_with_schema_repair(
+            _extract_json_object(raw_output)
         )
     except json.JSONDecodeError as exc:
         return None, [f"invalid_json: {exc.msg}"]
+    errors.extend(dialect_notes)
+    payload = _filter_decision_payload(repair_decision_payload(raw_payload))
 
     try:
         decision = LlmOnlyDirectLabelerDecisionRecord.model_validate(payload)
