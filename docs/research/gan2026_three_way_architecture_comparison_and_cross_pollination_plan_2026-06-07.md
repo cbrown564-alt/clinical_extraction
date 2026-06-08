@@ -178,6 +178,77 @@ Report format: reuse `reports/base.py` and the existing
 inventing a new one — this is itself a small DRY exercise that previews
 [[gan2026_repo_consolidation_and_cleanup_plan]] Phase F.
 
+**Status update (2026-06-08): validation750 runs complete; hybrid's surface is
+scoped to a 250-row subset, by design decision (not a bug to fix before
+reporting).** All six configs have now been run over validation750 for both
+`gpt-4.1-mini` and `qwen3.6-35b` (see `experiments/gan2026_three_way_comparison_validation750_*`).
+While assembling these, `hybrid`'s run surfaced a wiring fact the phase1
+report design note didn't yet account for: `llm_candidate_set_clinical_assessment_probe.run_split`
+(the function `hybrid` delegates to) does not generate candidate sets live —
+it does a dictionary lookup against a static precomputed file
+(`DEFAULT_CANDIDATE_SET_JSONL_PATH`, currently
+`gan2026_validation250_candidate_set_v2_high_recall.jsonl`, a 250-row
+artifact), and emits a `candidate_set_missing` placeholder row for any
+`source_row_index` outside that frozen set. Concretely: of validation750's 750
+rows, only 250 produce a real clinical-assessment row; the other 500 report
+`candidate_set_missing` (see e.g.
+`experiments/gan2026_three_way_comparison_validation750_hybrid_gpt41mini_2026-06-07.md`).
+
+**Decision (2026-06-08, with the user): document `hybrid`'s comparison numbers
+as scoped to its available ~250-row subset — do not block Phase 1's report on
+fixing this first.** When the Phase 1 comparison report
+([[gan2026_three_way_comparison_phase1_report_design]]) is assembled, it must
+state plainly (in the same provenance/disclosure spirit as the deep-replay
+asymmetry already documented there) that `hybrid`'s row is computed over its
+~250-row candidate-set subset, not the full 750-row surface the other five
+architectures cover — an architectural fact about `hybrid`'s current wiring,
+not a missing-data artifact to paper over or silently average away. Wiring
+live candidate-set generation into `hybrid` so it covers the full surface is
+tracked as a separate follow-up — see Section 8a.
+
+**Status update (2026-06-08, later same day): the Section 8a follow-up shipped
+ahead of schedule, `hybrid` now covers the full 750-row surface, and the
+gpt-4.1-mini Phase 1 report is built and registered.** The user asked to move
+on this immediately rather than wait — see Section 8a for the implementation
+summary. The re-run replaced
+`gan2026_three_way_comparison_validation750_hybrid_gpt41mini_2026-06-07`
+(kept as the historical record of the 250-row-scoped numbers) with
+`gan2026_three_way_comparison_validation750_hybrid_live_candidate_sets_gpt41mini_2026-06-08`
+(750/750 rows, 0 call failures, 1 parse/validation failure,
+`missing_candidate_set_rows: 0`). The Phase 1 comparison report
+([[gan2026_three_way_comparison_phase1_report_design]]) is now assembled at
+`gan2026_three_way_comparison_phase1_report_gpt41mini_validation750_2026-06-08.{jsonl,json,md}`
+and both the re-run and the report are registered in `experiments/registry.jsonl`
+(`validate_run_registry_artifacts` passes clean, 58 entries total). **Phase 1
+is complete for the gpt-4.1-mini pass** (the qwen3.6-35b pass remains in
+flight separately and was not blocked by this work).
+
+Key findings the report surfaces, worth carrying into Phases 2-3:
+
+- **`deterministic` and `deterministic_canonical_pipeline` are numerically
+  identical** on this pass — same purist/pragmatic-correct counts (688/695 of
+  741 rendered) and the same final-label distribution. This is the directly
+  measurable confirmation that the Section 2 staging pass changed *only*
+  structure, not behavior — exactly what it was designed to prove, and a clean
+  baseline for Section 4's de-overfitting rewrite to diverge from
+  legibly.
+- **`hybrid`'s now-honest full-surface numbers are markedly different from
+  its old 250-row-scoped read**: 600/750 rendered (149 null, 42 routed),
+  511 purist-correct of rendered (0.852) — lower than every other architecture
+  except `llm_only_direct_labeler`. This is the real, full-surface hybrid
+  baseline Section 4/5's cross-pollination work should compare against, not
+  the partial one.
+- Evidence-trace metrics remain structurally non-uniform across architectures
+  (substring-presence `evidence_valid` vs. `evidence_text_contained` vs.
+  `hybrid`'s formal `candidate_set_source_id_status` rate) — the report states
+  this explicitly per architecture so it isn't misread as one accuracy axis.
+
+**Next up**: Phase 2 (de-overfitting the deterministic pipeline, Section 4)
+and/or Phase 3 (prompt refinement, Section 5) can now begin — both have a
+clean, full-surface, six-architecture baseline to diverge from and re-compare
+against. Phase 4's frozen `test450` audit remains gated on explicit user
+authorization per Section 6.
+
 ---
 
 ## 4. Cross-Pollination A: De-Overfitting The Deterministic Pipeline
@@ -280,7 +351,7 @@ downstream representation that fails to carry it through.
 | Phase | Work | Gate |
 | --- | --- | --- |
 | 0 | *(done — 2026-06-07)* Select/assemble one canonical runner per architecture (Section 2); confirm artifact-shape compatibility with existing scoring tooling | none — mechanical/structural work |
-| 1 | Run all three canonical runners on validation750; produce one comparison report using shared reporting machinery | none — validation-only |
+| 1 | *(done for gpt-4.1-mini — 2026-06-08)* Run all six canonical configs on validation750; produce one comparison report using shared reporting machinery — see Section 3 status update and [[gan2026_three_way_comparison_phase1_report_design]] (qwen3.6-35b pass still in flight separately) | none — validation-only |
 | 2 | Apply the de-overfitting rewrite to one deterministic rule family at a time; re-run and compare after each | none — validation-only, ablatable, one family at a time |
 | 3 | Apply the prompt-refinement principle to the canonical fully-LLM runner; re-run and compare after each change | none — validation-only |
 | 4 | Frozen `test450` aggregate audit of the refined deterministic, refined fully-LLM, and current hybrid pipelines, using the exact frozen-aggregate-audit protocol already proven in `gan2026_test450_hn1_frozen_aggregate_audit_2026-06-07.md` | **requires explicit user authorization**, exactly as already required for any holdout-facing reset work |
@@ -324,6 +395,99 @@ established and proven.
    from Section 5 can be expressed as a single portable prompt-design
    appendix versus needing per-task customization for future benchmark
    families beyond Gan 2026?
+
+---
+
+## 8a. Tracked Follow-Up: Wire Live Candidate-Set Generation Into `hybrid`
+
+**Status: done (2026-06-08) — shipped same-day rather than deferred, at the
+user's direction, once Phase 1's first read made the 250-row scoping visible.**
+
+Implemented exactly the chain this section named as already-existing pieces
+that just needed wiring: per record, **deterministic candidate-set extraction**
+(`deterministic_extraction._extract_candidates` →
+`deterministic_candidate_set_from_raw`, the same live path `deterministic`
+already uses) → **LLM-extracted candidate-set extraction**
+(`DspyCandidateSetExtractor` from `llm_extracted_candidate_schema_probe.py`,
+one extra model call per row) → **union**
+(`build_candidate_set_union_rows`, the same function that built the static
+`_v2_high_recall` artifact, so the live methodology faithfully replicates it).
+This replaced `run_split`'s `load_candidate_sets(candidate_set_path)`
+dictionary-lookup fallback — `candidate_set_jsonl_path` still works exactly as
+before when explicitly passed (frozen-replay/regression paths untouched);
+only the *no-path-given* default changed, from "look up in a 250-row static
+file, emit `candidate_set_missing` outside it" to "generate live, every row."
+`metadata["candidate_set_jsonl_path"]` now records `"live"` in this mode so
+downstream report/registry consumers can see which mode produced a run.
+
+Piloted on `validation25` first
+(`gan2026_three_way_comparison_pilot25_hybrid_live_candidate_sets_gpt41mini_2026-06-08`)
+to confirm behavior and cost before committing to the full re-run — confirmed
+clean (25/25 clinical-assessment rows, 0 failures). The full `validation750`
+re-run
+(`gan2026_three_way_comparison_validation750_hybrid_live_candidate_sets_gpt41mini_2026-06-08`,
+superseding the 250-row-scoped `..._hybrid_gpt41mini_2026-06-07` run, which is
+kept for the historical record) completed at 750/750 rows, 0 call failures, 1
+parse/validation failure, `missing_candidate_set_rows: 0` — `hybrid` now
+covers the same full surface as the other five architectures. See the Section
+3 status update (2026-06-08, later same day) for what this changed in the
+Phase 1 numbers.
+
+**Operational note for future long live-extraction runs**: this run also
+surfaced that the harness silently kills `run_in_background` bash tasks at
+~9 minutes regardless of actual process health (confirmed by two independent
+runs both dying at ~9-minute marks with no error trace). The workaround that
+survived past that window and ran to completion was launching via PowerShell
+`Start-Process` with explicit `-RedirectStandardOutput`/`-RedirectStandardError`
+and `-WindowStyle Hidden` — a genuinely OS-detached process outside the
+harness's process-tracking. Worth remembering for any future multi-hour live
+run on this project.
+
+<details>
+<summary>Original deferral note (superseded — kept for context)</summary>
+
+**Status: not started — explicitly deferred out of Phase 1 (2026-06-08).**
+
+`hybrid`'s canonical runner path
+(`llm_candidate_set_clinical_assessment_probe.run_split`) currently sources its
+first stage's input from a static, precomputed 250-row file
+(`DEFAULT_CANDIDATE_SET_JSONL_PATH` →
+`gan2026_validation250_candidate_set_v2_high_recall.jsonl`) via
+`load_candidate_sets`, rather than computing a `CandidateSet` live per record.
+Rows whose `source_row_index` falls outside that frozen 250-row set get a
+`candidate_set_missing` placeholder — which is why `hybrid`'s validation750 run
+(Section 3 status update, 2026-06-08) only produced real clinical-assessment
+rows for 250/750 rows.
+
+The pieces needed to wire this live already exist in the codebase as
+standalone, one-shot artifact-building scripts, just not chained into
+`run_split`:
+
+- `deterministic_candidate_set_from_raw` (`contract/candidate_set.py:207`) —
+  the deterministic-ruleset extraction step, already wired live elsewhere
+  (e.g. the `deterministic` architecture)
+- an LLM-based candidate extractor (the step that originally produced
+  `gan2026_validation250_llm_candidate_set_v0.jsonl`)
+- `build_candidate_set_union_rows` (`artifact_analysis/candidate_set_union.py:33`)
+  — combines the two into the union artifact `hybrid` currently consumes
+  frozen
+
+**The fix**: replace `run_split`'s `load_candidate_sets(candidate_set_path)`
+dictionary lookup with a live per-record call chain — deterministic extraction
+→ LLM candidate extraction → union — so `hybrid` covers the full surface (the
+same `validation750`/`test450` splits the other five architectures already
+do), rather than only the 250 rows someone happened to pre-build a candidate
+set for.
+
+**Why this is a separate task, not a Phase 1 blocker**: it is a real
+architectural change to `hybrid`'s first stage (not a quick patch — see the
+analysis that produced this entry), and `hybrid`'s validation750 numbers can be
+reported honestly as scoped to its current 250-row subset (Section 3 status
+update) without it. Doing it now would also risk destabilizing the in-flight
+qwen750 comparison run. Revisit once Phase 1's report is out and the user is
+ready to spend the live-extraction API budget this requires.
+
+</details>
 
 ---
 

@@ -14,6 +14,18 @@ def test_parse_json_payload_with_schema_repair_handles_python_literal_dialect() 
     assert notes == ["json_dialect_repaired: python_literal"]
 
 
+def test_parse_json_payload_with_schema_repair_handles_literal_control_characters() -> None:
+    # Regression guard: some local models emit raw newlines inside string
+    # values (typically in verbose multi-paragraph rationale fields) instead
+    # of the escaped "\n" JSON requires, which `json.loads` rejects by default.
+    payload, notes = parse_json_payload_with_schema_repair(
+        '{"rationale": "first paragraph.\n\nsecond paragraph."}'
+    )
+
+    assert payload == {"rationale": "first paragraph.\n\nsecond paragraph."}
+    assert notes == ["json_dialect_repaired: literal_control_characters"]
+
+
 def test_parse_json_payload_with_schema_repair_can_disable_python_literal_dialect() -> None:
     try:
         parse_json_payload_with_schema_repair(
@@ -46,6 +58,19 @@ def test_repair_decision_payload_handles_common_schema_aliases() -> None:
     }
 
 
+def test_repair_decision_payload_coerces_stringified_numeric_confidence() -> None:
+    # Regression guard: qwen3.6:35b sometimes emits a numeric confidence as a
+    # JSON string (e.g. "confidence": "0.8") rather than a bare number, which
+    # the existing int|float-only numeric-confidence repair did not catch,
+    # causing a spurious "Input should be 'low', 'medium' or 'high'" error.
+    assert repair_decision_payload({"confidence": "0.8"}) == {"confidence": "high"}
+    assert repair_decision_payload({"confidence": "0.6"}) == {"confidence": "medium"}
+    assert repair_decision_payload({"confidence": "0.2"}) == {"confidence": "low"}
+    assert repair_decision_payload({"confidence": "not-a-number"}) == {
+        "confidence": "not-a-number"
+    }
+
+
 def test_repair_decision_payload_handles_llm_answer_kind_variants() -> None:
     for answer_kind in (
         "count and window",
@@ -56,6 +81,16 @@ def test_repair_decision_payload_handles_llm_answer_kind_variants() -> None:
         "patient-reported count",
     ):
         assert repair_decision_payload({"answer_kind": answer_kind}) == {"answer_kind": "frequency"}
+
+
+def test_repair_decision_payload_leaves_already_valid_assertion_status_unchanged() -> None:
+    # Regression guard: an earlier alias entry mapped the already-valid
+    # "unknown" assertion_status to "unclear" (a temporality-only value),
+    # which made every correct "unknown" model output fail schema validation.
+    for assertion_status in ("asserted", "negated", "historical", "hypothetical", "unknown"):
+        assert repair_decision_payload({"assertion_status": assertion_status}) == {
+            "assertion_status": assertion_status
+        }
 
 
 def test_repair_decision_payload_does_not_add_parser_owned_defaults() -> None:

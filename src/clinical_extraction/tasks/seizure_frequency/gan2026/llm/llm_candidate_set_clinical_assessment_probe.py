@@ -14,10 +14,14 @@ from typing import Any, Literal
 import dspy
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_validator
 
+from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis.candidate_set_union import (  # noqa: E501
+    build_candidate_set_union_rows,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.candidate_set import (
     CandidateSet,
     ExtractedCandidate,
     candidate_source_phrase,
+    deterministic_candidate_set_from_raw,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.clinical_assessment import (
     SCHEMA_VERSION,
@@ -37,6 +41,12 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic import (
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.candidates import (
     CandidateKind as DeterministicCandidateKind,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.candidates import (
+    RawCandidate,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.deterministic_text import (
+    fallback_evidence,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     write_jsonl_rows,
 )
@@ -45,6 +55,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_metadat
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
     llm_candidate_set_selector_schema_probe as selector_probe,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
+    llm_extracted_candidate_schema_probe as candidate_extractor_probe,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 from clinical_extraction.tasks.seizure_frequency.gan2026.selected_evidence import (
@@ -3210,6 +3223,74 @@ def _normalize_phrase_for_parse(value: str) -> str:
     return " ".join(text.split())
 
 
+def _build_candidate_set_live(
+    record: GanFrequencyRecord,
+    *,
+    extractor_program: candidate_extractor_probe.DspyCandidateSetExtractor,
+    extractor_lm: Any | None,
+    extractor_adapter: Any | None,
+    mode: Literal["live", "prompt-only"],
+) -> tuple[CandidateSet, dict[str, Any]]:
+    """Build one row's CandidateSet live: deterministic + LLM extraction, unioned.
+
+    Replicates the methodology that built the static
+    `gan2026_validation250_candidate_set_v2_high_recall.jsonl` artifact
+    (deterministic_candidate_set_from_raw -> DspyCandidateSetExtractor ->
+    build_candidate_set_union_rows) per record, so `hybrid` covers the full
+    surface instead of only the 250 rows someone happened to precompute.
+    """
+    raw_candidates = deterministic_extraction._extract_candidates(record.note_text)  # noqa: SLF001
+    if not raw_candidates:
+        raw_candidates = [
+            RawCandidate(
+                kind=DeterministicCandidateKind.NO_REFERENCE,
+                label="no seizure frequency reference",
+                evidence=fallback_evidence(record.note_text),
+            )
+        ]
+    deterministic_set = deterministic_candidate_set_from_raw(
+        raw_candidates,
+        note_text=record.note_text,
+        source_row_index=record.source_row_index,
+    )
+
+    llm_set: CandidateSet | None = None
+    llm_call_error: str | None = None
+    llm_parse_errors: list[str] = []
+    if mode == "live":
+        typed_input = candidate_extractor_probe.build_candidate_set_inputs(record)
+        prediction: Any | None = None
+        try:
+            with dspy.context(lm=extractor_lm, adapter=extractor_adapter):
+                prediction = extractor_program(**typed_input)
+        except Exception as exc:  # pragma: no cover - live API only.
+            llm_call_error = f"{type(exc).__name__}: {exc}"
+        if prediction is not None:
+            draft_set, llm_parse_errors = (
+                candidate_extractor_probe.prediction_to_candidate_draft_set(prediction)
+            )
+            llm_set = candidate_extractor_probe.assemble_candidate_set(draft_set, record=record)
+
+    deterministic_row = {
+        "source_row_index": record.source_row_index,
+        "candidate_set": deterministic_set.model_dump(),
+    }
+    llm_rows = (
+        [{"source_row_index": record.source_row_index, "candidate_set": llm_set.model_dump()}]
+        if llm_set is not None
+        else []
+    )
+    union_rows, _ = build_candidate_set_union_rows([deterministic_row], llm_rows)
+    candidate_set = CandidateSet.model_validate(union_rows[0]["candidate_set"])
+
+    diagnostics = {
+        "candidate_set_source": "live_deterministic_llm_union",
+        "llm_extraction_call_error": llm_call_error,
+        "llm_extraction_parse_errors": llm_parse_errors,
+    }
+    return candidate_set, diagnostics
+
+
 def run_split(
     records: Sequence[GanFrequencyRecord],
     *,
@@ -3229,8 +3310,11 @@ def run_split(
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Run clinical-assessment schema probe over records."""
 
-    candidate_set_path = candidate_set_jsonl_path or DEFAULT_CANDIDATE_SET_JSONL_PATH
-    candidate_sets = selector_probe.load_candidate_sets(candidate_set_path)
+    live_candidate_sets = candidate_set_jsonl_path is None
+    candidate_sets: Mapping[int, CandidateSet] = {}
+    if not live_candidate_sets:
+        candidate_set_path = candidate_set_jsonl_path or DEFAULT_CANDIDATE_SET_JSONL_PATH
+        candidate_sets = selector_probe.load_candidate_sets(candidate_set_path)
     metadata = _run_metadata(
         records,
         split=split,
@@ -3243,10 +3327,18 @@ def run_split(
     )
     metadata["dspy_cache"] = dspy_cache
     metadata["escalation_reason"] = escalation_reason
-    metadata["candidate_set_jsonl_path"] = str(candidate_set_path)
+    if live_candidate_sets:
+        metadata["candidate_set_jsonl_path"] = "live"
+        metadata["candidate_set_source"] = "live_deterministic_llm_union"
+    else:
+        metadata["candidate_set_jsonl_path"] = str(candidate_set_path)
+        metadata["candidate_set_source"] = "static_artifact"
     program = DspyCandidateSetClinicalAssessment()
     lm = None
     adapter = None
+    extractor_program = None
+    extractor_lm = None
+    extractor_adapter = None
     if mode == "live":
         lm = build_dspy_lm(
             model,
@@ -3256,13 +3348,34 @@ def run_split(
             api_base=api_base,
         )
         adapter = dspy.JSONAdapter()
+    if live_candidate_sets:
+        extractor_program = candidate_extractor_probe.DspyCandidateSetExtractor()
+        if mode == "live":
+            extractor_lm = build_dspy_lm(
+                model,
+                temperature=temperature,
+                max_tokens=max_tokens,
+                cache=dspy_cache,
+                api_base=api_base,
+            )
+            extractor_adapter = dspy.JSONAdapter()
 
     rows: list[dict[str, Any]] = []
     for record in records:
-        candidate_set = candidate_sets.get(record.source_row_index)
-        if candidate_set is None:
-            rows.append(_missing_candidate_set_row(record, split, split_manifest))
-            continue
+        candidate_set_diagnostics: dict[str, Any] | None = None
+        if live_candidate_sets:
+            candidate_set, candidate_set_diagnostics = _build_candidate_set_live(
+                record,
+                extractor_program=extractor_program,
+                extractor_lm=extractor_lm,
+                extractor_adapter=extractor_adapter,
+                mode=mode,
+            )
+        else:
+            candidate_set = candidate_sets.get(record.source_row_index)
+            if candidate_set is None:
+                rows.append(_missing_candidate_set_row(record, split, split_manifest))
+                continue
         typed_input = build_assessment_inputs(record, candidate_set)
         call_error: str | None = None
         prediction: Any | None = None
@@ -3289,6 +3402,8 @@ def run_split(
             "pipeline_name": PROMPT_VERSION,
             "prompt_version": PROMPT_VERSION,
             "schema_version": SCHEMA_VERSION,
+            "candidate_set": candidate_set.model_dump(),
+            "candidate_set_diagnostics": candidate_set_diagnostics,
             "typed_input": typed_input,
             "raw_output": _raw_output_from_assessment(assessment),
             "call_error": call_error,

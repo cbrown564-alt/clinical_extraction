@@ -46,6 +46,19 @@ def test_build_prompt_input_excludes_gold_and_embeds_rule_taxonomy() -> None:
     assert any("same_window_additive_frequency" in note for note in notes)
 
 
+def test_build_prompt_input_instructs_short_plain_rationale() -> None:
+    # Regression guard: qwen3.6:35b filled the `rationale` field with verbose
+    # step-by-step deliberation (e.g. "Is '4 per month' definitely allowed? ...
+    # I will proceed with...") when the prompt gave it no style guidance,
+    # embedding quotes/control-characters/run-on punctuation that broke JSON
+    # parsing (PROMPT_VERSION v0.1 -> v0.2). The prompt must explicitly tell
+    # the model to keep rationale to one short, plain sentence with an example.
+    instructions = " ".join(json.loads(build_prompt_input(_record()))["instructions"])
+
+    assert "Write rationale as one short, plain-language sentence" in instructions
+    assert "Do not show step-by-step reasoning" in instructions
+
+
 def test_parse_decision_json_accepts_fenced_json_and_repairs_label() -> None:
     raw = """```json
     {
@@ -85,6 +98,58 @@ def test_parse_decision_json_tolerates_missing_applied_rule_families() -> None:
 
     assert decision is not None
     assert decision.applied_rule_families == []
+    assert errors == []
+
+
+def test_parse_decision_json_accepts_null_time_window_and_seizure_type() -> None:
+    # Regression guard: qwen3.6:35b legitimately emits JSON null for
+    # time_window and/or selected_seizure_type when the note contains no
+    # usable seizure-frequency reference at all (answer_kind "no_reference"),
+    # where gpt-4.1-mini instead always emits a string (often "" for the same
+    # case). Both are valid representations of "nothing specific to report";
+    # the schema must accept null rather than raising
+    # "Input should be a valid string".
+    raw = json.dumps(
+        {
+            "final_label": "no seizure frequency reference",
+            "evidence": "...",
+            "answer_kind": "no_reference",
+            "selected_seizure_type": None,
+            "time_window": None,
+            "applied_rule_families": [],
+            "confidence": "high",
+            "rationale": "...",
+        }
+    )
+
+    decision, errors = parse_decision_json(raw)
+
+    assert decision is not None
+    assert decision.selected_seizure_type is None
+    assert decision.time_window is None
+    assert errors == []
+
+
+def test_parse_decision_json_coerces_ration_typo_to_rationale() -> None:
+    # Regression guard: a local model (qwen3.6:35b) emitted the field name
+    # "ration" instead of "rationale", which otherwise fails schema validation
+    # with a spurious "Field required" error despite the content being present.
+    raw = json.dumps(
+        {
+            "final_label": "2 per month",
+            "evidence": "two seizures per month",
+            "answer_kind": "frequency",
+            "selected_seizure_type": "seizures",
+            "time_window": "current",
+            "confidence": "high",
+            "ration": "The note gives the current frequency.",
+        }
+    )
+
+    decision, errors = parse_decision_json(raw)
+
+    assert decision is not None
+    assert decision.rationale == "The note gives the current frequency."
     assert errors == []
 
 

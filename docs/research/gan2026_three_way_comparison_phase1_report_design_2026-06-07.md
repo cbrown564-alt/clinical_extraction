@@ -223,6 +223,38 @@ several of which are LLM calls):
 
 ---
 
+## 8a. Addendum (2026-06-08): `hybrid`'s validation750 surface is itself
+##     scoped to ~250 rows — the report must disclose this too
+
+Running the actual validation750 surface surfaced a second `hybrid`-specific
+asymmetry beyond the deep-replay one this note already designs around (Section
+3): `hybrid`'s `run_split` (`llm_candidate_set_clinical_assessment_probe.run_split`)
+sources its `CandidateSet` input from a static, precomputed 250-row file
+(`DEFAULT_CANDIDATE_SET_JSONL_PATH`) rather than computing one live per row, so
+500/750 validation750 rows come back `candidate_set_missing`. See the parent
+plan's Section 3 status update (2026-06-08) and the new Section 8a follow-up
+entry — [[gan2026_three_way_architecture_comparison_and_cross_pollination_plan]]
+— for the full analysis and the decision to track "wire live candidate-set
+generation into `hybrid`" as a separate, deferred task rather than a Phase 1
+blocker.
+
+**Consequence for this report's design**: when populating the shared table
+(Section 4), `hybrid`'s `Examples` cell and every other `hybrid` cell derived
+from `build_unified_pipeline_artifact` must be computed over (and explicitly
+labeled as) its available ~250-row subset — *not* the full 750-row surface the
+other five architectures' rows cover. This is a second, independent reason
+(stacked on top of the deep-replay-vs-run_split asymmetry already designed for)
+that `hybrid`'s row needs its own disclosure footnote; do not let the two blur
+together — name both explicitly:
+
+1. `hybrid`'s numbers come from the deep-replay artifact, not raw `run_split`
+   (Section 3 of this note).
+2. `hybrid`'s numbers — deep-replay or otherwise — currently cover only the
+   ~250 rows its static candidate-set file has entries for, not the full
+   750-row surface the comparison nominally runs over.
+
+---
+
 ## 9. Relationship to the parent plan
 
 This note resolves the *data-source and shape* design questions Phase 1
