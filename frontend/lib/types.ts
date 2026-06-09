@@ -454,7 +454,7 @@ export interface RunSummary {
     pragmaticAccuracy: number;
     rowCount: number;
   };
-  rows: RowScore[];
+  rows?: RowScore[];
 }
 
 // ── Laboratory (Phase 4) ──

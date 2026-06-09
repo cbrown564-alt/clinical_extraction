@@ -1,8 +1,7 @@
 "use client";
 
-import { Suspense, useState, useMemo } from "react";
+import { Suspense, useState, useMemo, useEffect } from "react";
 import {
-  Filter,
   Eye,
   ArrowRight,
   CheckCircle,
@@ -18,11 +17,8 @@ import {
   TrendingUp,
   TrendingDown,
   Target,
-  BarChart3,
   Activity,
   Layers,
-  BrainCircuit,
-  Zap,
   ExternalLink,
 } from "lucide-react";
 import Link from "next/link";
@@ -36,7 +32,6 @@ import {
   type ComparisonResult,
   type ErrorSummary,
   type ConfusedPair,
-  type FamilyBreakdown,
   ERROR_TYPE_LABELS,
   ERROR_TYPE_COLORS,
   CATEGORY_SHORT_NAMES,
@@ -48,10 +43,7 @@ import {
   sortRows,
   computeSummary,
   getTopConfusedPairs,
-  getFamilyBreakdown,
-  getSeverityDistribution,
   getDominantErrorType,
-  familyColorClass,
   comparisonStatusLabel,
   comparisonStatusColor,
 } from "@/lib/gallery-utils";
@@ -86,18 +78,16 @@ const ERROR_TYPE_ORDER: EnrichedRow["errorType"][] = [
 function ExecutiveSummary({
   summary,
   topPair,
-  worstFamily,
 }: {
   summary: ErrorSummary;
   topPair: ConfusedPair | null;
-  worstFamily: FamilyBreakdown | null;
 }) {
   const errorCount = summary.total - summary.correct;
   const errorRate = summary.total > 0 ? errorCount / summary.total : 0;
   const dominant = getDominantErrorType(summary);
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
       {/* Error rate */}
       <div className="rounded-lg border border-border bg-surface p-3">
         <div className="text-[10px] font-semibold uppercase tracking-wider text-muted mb-1">
@@ -147,24 +137,6 @@ function ExecutiveSummary({
         )}
       </div>
 
-      {/* Worst family */}
-      <div className="rounded-lg border border-border bg-surface p-3">
-        <div className="text-[10px] font-semibold uppercase tracking-wider text-muted mb-1">
-          Worst Family
-        </div>
-        {worstFamily ? (
-          <div className="flex items-baseline gap-1.5">
-            <span className="text-lg font-semibold text-foreground">
-              {worstFamily.family.replace(/_/g, " ")}
-            </span>
-            <span className="text-[10px] text-muted">
-              {(worstFamily.errorRate * 100).toFixed(0)}%
-            </span>
-          </div>
-        ) : (
-          <span className="text-[11px] text-muted">—</span>
-        )}
-      </div>
     </div>
   );
 }
@@ -245,15 +217,13 @@ function ErrorDistributionBar({
 
 function DimensionalBreakdown({
   confusedPairs,
-  familyBreakdown,
 }: {
   confusedPairs: ConfusedPair[];
-  familyBreakdown: FamilyBreakdown[];
 }) {
   const maxPairCount = Math.max(...confusedPairs.map((p) => p.count), 1);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 gap-4">
       {/* Top confused pairs */}
       <div className="rounded-lg border border-border bg-surface p-4 space-y-3">
         <div className="flex items-center gap-2">
@@ -291,68 +261,8 @@ function DimensionalBreakdown({
           </div>
         )}
       </div>
-
-      {/* Family breakdown */}
-      <div className="rounded-lg border border-border bg-surface p-4 space-y-3">
-        <div className="flex items-center gap-2">
-          <Layers className="h-3.5 w-3.5 text-muted" />
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-muted">
-            Errors by Pipeline Family
-          </span>
-        </div>
-        {familyBreakdown.length === 0 ? (
-          <p className="text-[11px] text-muted">No family data.</p>
-        ) : (
-          <div className="space-y-2.5">
-            {familyBreakdown.map((fam) => (
-              <div key={fam.family} className="space-y-1">
-                <div className="flex items-center justify-between text-[10px]">
-                  <div className="flex items-center gap-1.5">
-                    <FamilyIcon family={fam.family} />
-                    <span className="font-medium text-foreground">
-                      {fam.family.replace(/_/g, " ")}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-muted">
-                      {fam.errors} of {fam.total}
-                    </span>
-                    <span className="font-semibold text-error tabular-nums">
-                      {(fam.errorRate * 100).toFixed(0)}%
-                    </span>
-                  </div>
-                </div>
-                <div className="h-1.5 bg-surface-raised rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-error/50 rounded-full"
-                    style={{ width: `${fam.errorRate * 100}%` }}
-                  />
-                </div>
-                {fam.dominantErrorType && (
-                  <div className="text-[9px] text-muted">
-                    Mostly{" "}
-                    <span className="text-foreground">
-                      {ERROR_TYPE_LABELS[fam.dominantErrorType].toLowerCase()}
-                    </span>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
     </div>
   );
-}
-
-function FamilyIcon({ family }: { family: string }) {
-  if (family.includes("rules_only") || family.includes("deterministic")) {
-    return <Zap className="h-3 w-3 text-deterministic" />;
-  }
-  if (family.includes("hybrid")) {
-    return <BrainCircuit className="h-3 w-3 text-hybrid" />;
-  }
-  return <BarChart3 className="h-3 w-3 text-llm" />;
 }
 
 // ── Semantic Error Groups ────────────────────────────────────────────
@@ -387,6 +297,9 @@ function SemanticErrorGroups({
     () => new Set(["correct", "near_miss"])
   );
 
+  // Load-more state per group (for virtualization)
+  const [loadedAllGroups, setLoadedAllGroups] = useState<Set<EnrichedRow["errorType"]>>(new Set());
+
   const toggleGroup = (type: EnrichedRow["errorType"]) => {
     setCollapsedGroups((prev) => {
       const next = new Set(prev);
@@ -395,6 +308,16 @@ function SemanticErrorGroups({
       return next;
     });
   };
+
+  const loadMore = (type: EnrichedRow["errorType"]) => {
+    setLoadedAllGroups((prev) => {
+      const next = new Set(prev);
+      next.add(type);
+      return next;
+    });
+  };
+
+  const ROW_LIMIT = 100;
 
   const visibleTypes = ERROR_TYPE_ORDER.filter((type) => {
     const groupRows = grouped.get(type) ?? [];
@@ -470,13 +393,18 @@ function SemanticErrorGroups({
                 </div>
 
                 <div className="space-y-0.5 mt-1">
-                  {groupRows.map((row) => {
+                  {(() => {
+                    const showAll = loadedAllGroups.has(type);
+                    const visibleRows = showAll ? groupRows : groupRows.slice(0, ROW_LIMIT);
+                    return (
+                      <>
+                        {visibleRows.map((row) => {
                     const rowKey = `${row.runId}-${row.sourceRowIndex}`;
                     const isExpanded = expandedRowKey === rowKey;
 
                     let compareRow: EnrichedRow | null = null;
                     let compareStatus: ComparisonResult["status"] = "no_compare";
-                    if (compareSummary && row.sourceRowIndex < compareSummary.rows.length) {
+                    if (compareSummary && compareSummary.rows && row.sourceRowIndex < compareSummary.rows.length) {
                       const cr = compareSummary.rows[row.sourceRowIndex];
                       compareRow = enrichRow({
                         ...cr,
@@ -603,6 +531,20 @@ function SemanticErrorGroups({
                       </div>
                     );
                   })}
+                  {!showAll && groupRows.length > ROW_LIMIT && (
+                    <button
+                      onClick={() => loadMore(type)}
+                      className="w-full rounded-md border border-dashed border-border bg-surface-raised/50 py-2 text-[11px] font-medium text-muted hover:text-foreground hover:bg-surface-raised transition-colors mt-1"
+                    >
+                      Load {groupRows.length - ROW_LIMIT} more…
+                      <span className="text-muted ml-1">
+                        (showing {ROW_LIMIT} of {groupRows.length})
+                      </span>
+                    </button>
+                  )}
+                </>
+                );
+              })()}
                 </div>
               </div>
             )}
@@ -836,7 +778,7 @@ function EmptyState({ message }: { message: string }) {
 // ── Gallery Inner ────────────────────────────────────────────────────
 
 function GalleryInner() {
-  const { selectedSummaries } = useObservatoryData();
+  const { selectedSummaries, selectedRunIds, loadRunDetail } = useObservatoryData();
 
   const [errorFilter, setErrorFilter] = useState<ErrorFilter>("all_errors");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
@@ -857,9 +799,20 @@ function GalleryInner() {
     setExpandedRowKey
   );
 
+  // Lazy-load full row details for the gallery
+  useEffect(() => {
+    for (const runId of selectedRunIds) {
+      const summary = selectedSummaries.find((s) => s.runId === runId);
+      if (summary && !summary.rows) {
+        loadRunDetail(runId);
+      }
+    }
+  }, [selectedRunIds, selectedSummaries, loadRunDetail]);
+
   const allEnrichedRows = useMemo(() => {
     const rows: EnrichedRow[] = [];
     for (const summary of selectedSummaries) {
+      if (!summary.rows) continue;
       for (let i = 0; i < summary.rows.length; i++) {
         const row = summary.rows[i];
         rows.push(
@@ -896,8 +849,6 @@ function GalleryInner() {
 
   const summary = useMemo(() => computeSummary(allEnrichedRows), [allEnrichedRows]);
   const topPairs = useMemo(() => getTopConfusedPairs(allEnrichedRows, 5), [allEnrichedRows]);
-  const familyBreakdown = useMemo(() => getFamilyBreakdown(allEnrichedRows), [allEnrichedRows]);
-  const worstFamily = familyBreakdown[0] ?? null;
 
   const compareSummary = useMemo(
     () => selectedSummaries.find((s) => s.runId === compareRunId) ?? null,
@@ -915,7 +866,7 @@ function GalleryInner() {
       <div className="flex-1 overflow-y-auto">
         {selectedSummaries.length === 0 ? (
           <div className="p-5">
-            <EmptyState message="Select runs in the Observatory first to populate the gallery." />
+            <EmptyState message="Select runs in Aggregate Performance first to populate the gallery." />
           </div>
         ) : (
           <div className="max-w-[1200px] mx-auto p-5 space-y-6">
@@ -923,7 +874,6 @@ function GalleryInner() {
             <ExecutiveSummary
               summary={summary}
               topPair={topPairs[0] ?? null}
-              worstFamily={worstFamily}
             />
 
             {/* 2. Error Distribution + Controls */}
@@ -988,7 +938,6 @@ function GalleryInner() {
             {/* 3. Dimensional Breakdowns */}
             <DimensionalBreakdown
               confusedPairs={topPairs}
-              familyBreakdown={familyBreakdown}
             />
 
             {/* 4. Semantic Error Groups */}
