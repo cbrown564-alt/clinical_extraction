@@ -416,6 +416,9 @@ export interface RowScore {
   split?: string;
   evidence?: string;
   rationale?: string;
+  sourceRowIndex: number;
+  evidenceValid?: boolean;
+  repairChangesCount?: number;
 }
 
 export interface CategoryMetrics {
@@ -507,6 +510,59 @@ export interface PromptPayload {
 
 export interface PromptsResponse {
   prompts: PromptPayload[];
+}
+
+export interface PromptTemplateResponse {
+  module: string;
+  prompt_version: string;
+  system_hint: string | null;
+  user_hint: string | null;
+  output_schema_hint: string | null;
+  build_prompt_signature: string | null;
+  policy_taxonomy: PromptPolicy[];
+}
+
+// ── Error taxonomy ──
+
+export interface TagErrorResponse {
+  error_type: "correct" | "false_negative" | "false_positive" | "over_estimate" | "under_estimate" | "near_miss";
+  severity: number;
+  severity_level: "none" | "near" | "moderate" | "significant" | "severe";
+}
+
+export interface ErrorTaxonomySchemaResponse {
+  error_types: Array<{ id: string; description: string }>;
+  severity: { description: string; levels: string[] };
+}
+
+// ── Hard slices ──
+
+export interface HardSliceDefinition {
+  slice_name: string;
+  component_focus: string;
+  membership_rule: string;
+  primary_metric: string;
+}
+
+export interface HardSliceDefinitionsResponse {
+  slices: HardSliceDefinition[];
+}
+
+export interface HardSliceMembershipResponse {
+  rows: Array<{ source_row_index: number | null; hidden_families: string[] }>;
+}
+
+// ── Meta / git ──
+
+export interface MetaResponse {
+  git: {
+    branch: string | null;
+    commit: string | null;
+    dirty: boolean;
+    remote_url: string | null;
+  };
+  observatory_version: string;
+  timestamp: string;
 }
 
 // ── Artifact rows for additional pipeline families ──

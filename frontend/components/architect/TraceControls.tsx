@@ -249,6 +249,24 @@ export default function TraceControls() {
     }
   }, [isLive, noteText, recordQuery.data, sourceRowIndex, split, handleRun, trace, isLoading]);
 
+  // Auto-select replay row matching sourceRowIndex when artifacts load
+  useEffect(() => {
+    if (
+      !isLive &&
+      replayRows &&
+      replayRows.length > 0 &&
+      sourceRowIndex !== null &&
+      replayRowIndex === null
+    ) {
+      const matchIndex = replayRows.findIndex(
+        (r) => (r as { source_row_index?: number }).source_row_index === sourceRowIndex
+      );
+      if (matchIndex !== -1) {
+        handleLoadReplayRow(matchIndex);
+      }
+    }
+  }, [isLive, replayRows, sourceRowIndex, replayRowIndex, handleLoadReplayRow]);
+
   const pipelineOptions = familiesQuery.data?.families ?? [];
 
   const handleOpenCustomNote = () => {

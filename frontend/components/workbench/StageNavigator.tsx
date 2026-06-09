@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import StageCard from "./StageCard";
-import { useUiStore } from "@/lib/stores";
+import { useUiStore, useConfigStore } from "@/lib/stores";
 import type { PipelineDiagnostics } from "@/lib/types";
 import AttributionWaterfall from "./AttributionWaterfall";
 
@@ -24,6 +24,7 @@ const STAGES: Array<{
 
 export default function StageNavigator({ diagnostics }: StageNavigatorProps) {
   const { activeStage, setActiveStage } = useUiStore();
+  const { pipeline } = useConfigStore();
   const [expanded, setExpanded] = useState<Record<string, boolean>>({
     raw: true,
     extract: true,
@@ -142,7 +143,10 @@ export default function StageNavigator({ diagnostics }: StageNavigatorProps) {
                 </p>
                 <p className="mt-1 text-muted leading-relaxed">{finalSelection.rationale}</p>
               </div>
-              <AttributionWaterfall diagnostics={diagnostics} />
+              <AttributionWaterfall
+                pipelineFamily={pipeline || "rules_only"}
+                hasRepairChanges={false}
+              />
             </div>
           )}
 

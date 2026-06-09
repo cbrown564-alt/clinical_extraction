@@ -4,6 +4,7 @@ import { useState, useCallback, useMemo, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchRegistry } from "@/lib/api";
 import type { RegistryEntry, RowScore, RunSummary, CategoryMetrics } from "@/lib/types";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 
 const STORAGE_KEY = "observatory-selected-runs";
 
@@ -66,10 +67,25 @@ function extractRationale(r: Record<string, unknown>): string | undefined {
   return undefined;
 }
 
-function extractRowScore(row: unknown): RowScore | null {
+function extractRowScore(row: unknown, fallbackIndex: number): RowScore | null {
   const r = row as Record<string, unknown>;
   const evidence = extractEvidence(r);
   const rationale = extractRationale(r);
+
+  const sourceRowIndex = typeof r.source_row_index === "number"
+    ? r.source_row_index
+    : (typeof r.source_row_index === "string" ? parseInt(r.source_row_index, 10) : fallbackIndex);
+
+  const evSummary = r.evidence_summary as Record<string, any> | undefined;
+  const detDiag = r.deterministic_diagnostics as Record<string, any> | undefined;
+
+  const rawEvValid = r.evidence_valid ?? evSummary?.selected_evidence_valid ?? detDiag?.evidence_valid;
+  const evidenceValid = rawEvValid !== undefined
+    ? Boolean(rawEvValid)
+    : (typeof evSummary?.exact_evidence_valid === "number" ? evSummary.exact_evidence_valid > 0 : undefined);
+
+  const repairChanges = r.repair_changes as unknown[] | undefined;
+  const repairChangesCount = Array.isArray(repairChanges) ? repairChanges.length : undefined;
 
   // Hybrid format
   const scores = r.scores as Record<string, unknown> | undefined;
@@ -87,6 +103,9 @@ function extractRowScore(row: unknown): RowScore | null {
         split: String(r.split ?? ""),
         evidence,
         rationale,
+        sourceRowIndex,
+        evidenceValid,
+        repairChangesCount,
       };
     }
   }
@@ -112,6 +131,9 @@ function extractRowScore(row: unknown): RowScore | null {
         split: String(r.split ?? ""),
         evidence,
         rationale,
+        sourceRowIndex,
+        evidenceValid,
+        repairChangesCount,
       };
     }
   }
@@ -131,6 +153,9 @@ function extractRowScore(row: unknown): RowScore | null {
       split: String(r.split ?? ""),
       evidence,
       rationale,
+      sourceRowIndex,
+      evidenceValid,
+      repairChangesCount,
     };
   }
 
@@ -150,6 +175,9 @@ function extractRowScore(row: unknown): RowScore | null {
       split: String(r.split ?? ""),
       evidence,
       rationale,
+      sourceRowIndex,
+      evidenceValid,
+      repairChangesCount,
     };
   }
 
@@ -177,6 +205,9 @@ function extractRowScore(row: unknown): RowScore | null {
       split: String(r.split ?? ""),
       evidence,
       rationale,
+      sourceRowIndex,
+      evidenceValid,
+      repairChangesCount,
     };
   }
 
@@ -184,7 +215,7 @@ function extractRowScore(row: unknown): RowScore | null {
 }
 
 function computeSummary(entry: RegistryEntry, rows: unknown[]): RunSummary {
-  const scores = rows.map(extractRowScore).filter((s): s is RowScore => s !== null);
+  const scores = rows.map((row, index) => extractRowScore(row, index)).filter((s): s is RowScore => s !== null);
 
   const total = scores.length;
   const puristCorrect = scores.filter((s) => s.puristCorrect).length;
@@ -333,6 +364,10 @@ function getDefaultSelections(runs: RegistryEntry[]): Set<string> {
 }
 
 export function useObservatoryData() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
   const { data: registryData, isLoading: registryLoading } = useQuery({
     queryKey: ["registry"],
     queryFn: fetchRegistry,
@@ -348,6 +383,16 @@ export function useObservatoryData() {
   // Auto-select defaults on first load
   useEffect(() => {
     if (runs.length === 0) return;
+    
+    // 1. Prefer URL param if present
+    const runsParam = searchParams.get("runs");
+    if (runsParam) {
+      const ids = runsParam.split(",").filter(Boolean);
+      setSelectedRunIds(new Set(ids));
+      return;
+    }
+
+    // 2. Fall back to localStorage
     const saved = typeof window !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null;
     if (saved) {
       try {
@@ -358,9 +403,29 @@ export function useObservatoryData() {
         // ignore
       }
     }
+
+    // 3. Fall back to smart defaults
     const defaults = getDefaultSelections(runs);
     setSelectedRunIds(defaults);
-  }, [runs.length > 0]);
+  }, [runs.length > 0, searchParams]);
+
+  // Sync state changes to searchParams
+  useEffect(() => {
+    if (runs.length === 0) return;
+    const params = new URLSearchParams(searchParams.toString());
+    if (selectedRunIds.size > 0) {
+      const runsStr = Array.from(selectedRunIds).join(",");
+      if (searchParams.get("runs") !== runsStr) {
+        params.set("runs", runsStr);
+        router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+      }
+    } else {
+      if (searchParams.has("runs")) {
+        params.delete("runs");
+        router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+      }
+    }
+  }, [selectedRunIds, runs, searchParams, router, pathname]);
 
   // Persist selections
   useEffect(() => {

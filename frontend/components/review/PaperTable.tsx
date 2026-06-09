@@ -152,6 +152,19 @@ export default function PaperTable({
                 {row.map((cell, ci) => {
                   const formatted = formatCell(cell);
                   const isLong = typeof cell === "string" && cell.length > 24;
+                  const isPercentCol = headers[ci]?.endsWith("%");
+                  let sparkline = null;
+                  if (isPercentCol && typeof cell === "number" && !isNaN(cell)) {
+                    const pct = Math.min(100, Math.max(0, cell * 100));
+                    sparkline = (
+                      <div className="w-12 h-1.5 bg-border rounded-full overflow-hidden inline-block shrink-0">
+                        <div 
+                          className="h-full bg-primary rounded-full transition-all duration-300"
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                    );
+                  }
                   return (
                     <td
                       key={ci}
@@ -160,7 +173,14 @@ export default function PaperTable({
                         align?.[ci] === "right" ? "text-right font-mono" : align?.[ci] === "center" ? "text-center" : ""
                       } ${cellClasses?.[ri]?.[ci] ?? ""} ${isLong ? "max-w-[180px] truncate" : ""}`}
                     >
-                      {formatted}
+                      {sparkline ? (
+                        <div className={`inline-flex items-center gap-1.5 ${align?.[ci] === "right" ? "justify-end w-full" : ""}`}>
+                          <span>{formatted}</span>
+                          {sparkline}
+                        </div>
+                      ) : (
+                        formatted
+                      )}
                     </td>
                   );
                 })}

@@ -1,31 +1,34 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { Play, Loader2, AlertCircle, CheckCircle, XCircle, Zap, BarChart3, Layers } from "lucide-react";
+import { useMemo } from "react";
+import { Play, Loader2, AlertCircle, CheckCircle, XCircle, Zap, BarChart3, Layers, RotateCcw } from "lucide-react";
 import type { RunAblationResponse } from "@/lib/types";
 import { useLaboratoryStore } from "@/lib/stores";
 
 interface SimulationPanelProps {
-  onSimulate: (split: string, limit?: number) => void;
+  split: string;
+  limit: string;
+  onSplitChange: (split: string) => void;
+  onLimitChange: (limit: string) => void;
+  onSimulate: () => void;
   isSimulating: boolean;
+  isCached: boolean;
   result: RunAblationResponse | null;
   error: string | null;
 }
 
 export default function SimulationPanel({
+  split,
+  limit,
+  onSplitChange,
+  onLimitChange,
   onSimulate,
   isSimulating,
+  isCached,
   result,
   error,
 }: SimulationPanelProps) {
-  const [split, setSplit] = useState("validation");
-  const [limit, setLimit] = useState<string>("");
   const { ablationConfig } = useLaboratoryStore();
-
-  const handleRun = () => {
-    const n = limit.trim() ? parseInt(limit, 10) : undefined;
-    onSimulate(split, n);
-  };
 
   const configSummary = useMemo(() => {
     const enabledGroups = ablationConfig.enabled_groups;
@@ -90,7 +93,7 @@ export default function SimulationPanel({
             </label>
             <select
               value={split}
-              onChange={(e) => setSplit(e.target.value)}
+              onChange={(e) => onSplitChange(e.target.value)}
               className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-deterministic/30"
             >
               <option value="validation">validation</option>
@@ -108,7 +111,7 @@ export default function SimulationPanel({
             <input
               type="number"
               value={limit}
-              onChange={(e) => setLimit(e.target.value)}
+              onChange={(e) => onLimitChange(e.target.value)}
               placeholder="All rows"
               min={1}
               className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-xs text-foreground placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-deterministic/30"
@@ -116,7 +119,7 @@ export default function SimulationPanel({
           </div>
 
           <button
-            onClick={handleRun}
+            onClick={onSimulate}
             disabled={isSimulating}
             className="flex w-full items-center justify-center gap-2 rounded-lg bg-deterministic px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-deterministic/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors mt-2"
           >
@@ -125,6 +128,11 @@ export default function SimulationPanel({
                 <Loader2 className="h-4 w-4 animate-spin" />
                 Running against {split}…
               </>
+            ) : isCached ? (
+              <>
+                <RotateCcw className="h-4 w-4" />
+                Re-run simulation
+              </>
             ) : (
               <>
                 <Play className="h-4 w-4" />
@@ -132,6 +140,13 @@ export default function SimulationPanel({
               </>
             )}
           </button>
+
+          {isCached && !isSimulating && (
+            <div className="flex items-center gap-1.5 text-[10px] text-success">
+              <CheckCircle className="h-3 w-3" />
+              Result cached — same config will load instantly
+            </div>
+          )}
         </div>
       </div>
 

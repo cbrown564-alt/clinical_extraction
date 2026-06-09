@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Grid3X3, X } from "lucide-react";
+import Link from "next/link";
 import type { RunSummary, RowScore } from "@/lib/types";
 
 interface ConfusionMatrixProps {
@@ -96,8 +97,26 @@ function computeMergedMatrix(summaries: RunSummary[]): Map<string, Map<string, n
   return merged;
 }
 
-function findRowsForCell(summaries: RunSummary[], gold: string, predicted: string): Array<{ runId: string; label: string; goldLabel: string }> {
-  const results: Array<{ runId: string; label: string; goldLabel: string }> = [];
+function findRowsForCell(
+  summaries: RunSummary[],
+  gold: string,
+  predicted: string
+): Array<{
+  runId: string;
+  label: string;
+  goldLabel: string;
+  pipelineFamily: string;
+  sourceRowIndex: number;
+  split: string;
+}> {
+  const results: Array<{
+    runId: string;
+    label: string;
+    goldLabel: string;
+    pipelineFamily: string;
+    sourceRowIndex: number;
+    split: string;
+  }> = [];
   for (const summary of summaries) {
     for (const row of summary.rows) {
       if (row.goldCategory === gold && row.predictedCategory === predicted) {
@@ -105,6 +124,9 @@ function findRowsForCell(summaries: RunSummary[], gold: string, predicted: strin
           runId: summary.runId,
           label: row.predictedLabel,
           goldLabel: row.goldLabel,
+          pipelineFamily: summary.pipelineFamily,
+          sourceRowIndex: row.sourceRowIndex,
+          split: row.split || summary.split,
         });
       }
     }
@@ -240,8 +262,16 @@ export default function ConfusionMatrix({ summaries }: ConfusionMatrixProps) {
                   key={i}
                   className="rounded border border-border bg-surface-raised p-1.5 text-[10px]"
                 >
-                  <div className="truncate text-muted">{row.runId.slice(0, 30)}…</div>
-                  <div className="flex gap-1">
+                  <div className="flex items-center justify-between">
+                    <div className="truncate text-muted max-w-[150px]">{row.runId.slice(0, 20)}…</div>
+                    <Link
+                      href={`/workbench?pipeline=${encodeURIComponent(row.pipelineFamily)}&split=${encodeURIComponent(row.split)}&row=${row.sourceRowIndex}&stage=score`}
+                      className="text-[9px] font-semibold text-primary hover:underline shrink-0"
+                    >
+                      Workbench
+                    </Link>
+                  </div>
+                  <div className="flex gap-1 mt-0.5">
                     <span className="text-error">{row.label}</span>
                     <span className="text-muted">→</span>
                     <span className="text-success">{row.goldLabel}</span>

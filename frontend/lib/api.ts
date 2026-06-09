@@ -183,6 +183,35 @@ async function fetchMockData<T>(path: string, init?: RequestInit): Promise<T> {
     } else {
       mockPath = `/mock-data/records/${split}/${index}.json`;
     }
+  } else if (path === "/hard-slices/definitions") {
+    return {
+      slices: [
+        {
+          slice_name: "candidate_generation_rescue",
+          component_focus: "candidate generation",
+          membership_rule: "Atlas row is Purist-wrong and first_failure_owner is candidate_generation.",
+          primary_metric: "Candidate-recall rescue rate before final-label promotion; final policy keeps the deterministic safety floor unless a rescue is predeclared and ablated."
+        },
+        {
+          slice_name: "candidate_generation_unknown_seizure_free_boundary",
+          component_focus: "candidate generation",
+          membership_rule: "Atlas row is Purist-wrong, first_failure_owner is candidate_generation, and hidden_families includes unknown_boundary or seizure_free_duration.",
+          primary_metric: "Boundary-state recall without converting uncertain seizure-free language into a prediction-bearing deterministic repair."
+        },
+        {
+          slice_name: "projection_arbitration",
+          component_focus: "graph/final projection",
+          membership_rule: "Atlas row is Purist-wrong and first_failure_owner is projection or final_projection.",
+          primary_metric: "Projection-variant correction precision, mechanical-correct to projected-wrong regressions, and selected-evidence/source trace validity."
+        },
+        {
+          slice_name: "projection_unknown_seizure_free_arbitration",
+          component_focus: "graph/final projection",
+          membership_rule: "Atlas row is Purist-wrong, first_failure_owner is projection or final_projection, and hidden_families includes unknown_boundary, seizure_free_duration, or current_vs_historical.",
+          primary_metric: "Unknown/seizure-free/current-vs-historical arbitration precision with no broad validation retuning."
+        }
+      ]
+    } as unknown as T;
   } else if (path === "/health") {
     return { status: "ok" } as unknown as T;
   } else {
@@ -335,4 +364,39 @@ export function fetchGoldAuditNext(split: string = "validation") {
   return fetchJson<import("./types").GoldAuditNextResponse>(
     `/gold-audit/next?split=${encodeURIComponent(split)}`
   );
+}
+
+export function fetchPromptTemplate(moduleName: string) {
+  return fetchJson<import("./types").PromptTemplateResponse>(`/prompts/${moduleName}/template`);
+}
+
+export function tagError(params: {
+  gold_category: string;
+  predicted_category: string;
+  purist_correct?: boolean;
+  pragmatic_correct?: boolean;
+}) {
+  return fetchJson<import("./types").TagErrorResponse>("/tag-error", {
+    method: "POST",
+    body: JSON.stringify(params),
+  });
+}
+
+export function fetchErrorTaxonomySchema() {
+  return fetchJson<import("./types").ErrorTaxonomySchemaResponse>("/error-taxonomy/schema");
+}
+
+export function fetchHardSliceDefinitions() {
+  return fetchJson<import("./types").HardSliceDefinitionsResponse>("/hard-slices/definitions");
+}
+
+export function fetchHardSliceMembership(rows: unknown[]) {
+  return fetchJson<import("./types").HardSliceMembershipResponse>("/hard-slices/membership", {
+    method: "POST",
+    body: JSON.stringify({ rows }),
+  });
+}
+
+export function fetchMeta() {
+  return fetchJson<import("./types").MetaResponse>("/meta");
 }

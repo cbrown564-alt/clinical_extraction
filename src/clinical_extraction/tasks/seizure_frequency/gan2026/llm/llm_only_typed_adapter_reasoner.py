@@ -29,6 +29,45 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
 PROMPT_VERSION = "gan2026_llm_only_typed_adapter_reasoner_v0"
+PROMPT_POLICY_TAXONOMY: list[dict[str, str]] = [
+    {
+        "policy_id": "tar_v0.schema.typed_pydantic_events",
+        "controlled_variable": "typed_pydantic_event_schema_policy",
+        "portability": "general",
+        "status": "active",
+        "description": (
+            "Prompt uses strongly-typed Pydantic events with literal enums for "
+            "kind, assertion_status, temporality, and certainty."
+        ),
+    },
+    {
+        "policy_id": "tar_v0.pipeline.score_layers",
+        "controlled_variable": "score_layer_evaluation_policy",
+        "portability": "gan2026_specific",
+        "status": "active",
+        "description": (
+            "Pipeline evaluates five score layers: raw_llm, format_only, "
+            "selected_evidence_arithmetic, benchmark_aligned, and oracle_format_upper_bound."
+        ),
+    },
+    {
+        "policy_id": "tar_v0.selection.adapter_normalization",
+        "controlled_variable": "adapter_normalization_policy",
+        "portability": "benchmark_format",
+        "status": "active",
+        "description": (
+            "A downstream deterministic adapter normalizes the LLM's clinical selection "
+            "into a benchmark-facing label."
+        ),
+    },
+    {
+        "policy_id": "tar_v0.evidence.typed_evidence_field",
+        "controlled_variable": "typed_evidence_field_policy",
+        "portability": "seizure_frequency",
+        "status": "active",
+        "description": "Each typed event carries a mandatory evidence string field.",
+    },
+]
 PIPELINE_FAMILY = "llm_only_typed_adapter_reasoner"
 TYPED_OUTPUT_SCHEMA_VERSION = "typed_adapter_v0"
 SCORE_LAYER_NAMES = (

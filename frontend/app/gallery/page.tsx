@@ -23,8 +23,11 @@ import {
   Layers,
   BrainCircuit,
   Zap,
+  ExternalLink,
 } from "lucide-react";
+import Link from "next/link";
 import { useObservatoryData } from "@/components/observatory/useObservatoryData";
+import { useGalleryUrlSync } from "@/lib/hooks";
 import type { RowScore, RunSummary } from "@/lib/types";
 import {
   type EnrichedRow,
@@ -623,9 +626,20 @@ function ErrorDetail({
   compareStatus: ComparisonResult["status"];
   compareRunId: string | null;
 }) {
+  const workbenchHref = `/workbench?pipeline=${encodeURIComponent(row.pipelineFamily)}&split=${encodeURIComponent(row.split ?? "validation")}&row=${row.sourceRowIndex}&stage=score`;
+
   return (
     <div className="px-3 pb-3 pt-1 border-t border-border/50">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
+      <div className="mt-2 mb-2">
+        <Link
+          href={workbenchHref}
+          className="inline-flex items-center gap-1.5 rounded-md border border-deterministic/20 bg-deterministic/5 px-2.5 py-1 text-[10px] font-medium text-deterministic hover:bg-deterministic/10 transition-colors"
+        >
+          <ExternalLink className="h-3 w-3" />
+          Open in Workbench
+        </Link>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {/* Primary prediction */}
         <div className="space-y-2">
           <div className="text-[10px] font-semibold uppercase tracking-wider text-muted">
@@ -829,6 +843,19 @@ function GalleryInner() {
   const [sortKey, setSortKey] = useState<SortKey>("severity");
   const [compareRunId, setCompareRunId] = useState<string>("");
   const [expandedRowKey, setExpandedRowKey] = useState<string | null>(null);
+
+  useGalleryUrlSync(
+    errorFilter,
+    setErrorFilter,
+    categoryFilter,
+    setCategoryFilter,
+    sortKey,
+    setSortKey,
+    compareRunId,
+    setCompareRunId,
+    expandedRowKey,
+    setExpandedRowKey
+  );
 
   const allEnrichedRows = useMemo(() => {
     const rows: EnrichedRow[] = [];
