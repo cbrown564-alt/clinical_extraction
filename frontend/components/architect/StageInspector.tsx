@@ -4,6 +4,7 @@ import { useArchitectStore } from "@/lib/stores";
 import JsonTree from "./JsonTree";
 import type { TraceStage, TraceItem } from "@/lib/types";
 import { Highlighter, Scale, Target, Wrench, Trophy, AlertCircle, CheckCircle, Quote } from "lucide-react";
+import AttributionWaterfall from "@/components/workbench/AttributionWaterfall";
 
 const stageMeta: Record<
   TraceStage,
@@ -187,6 +188,12 @@ export default function StageInspector() {
             <div className="rounded-lg border border-border bg-surface p-3 space-y-1">
               <div className="text-[11px] font-semibold uppercase tracking-wide text-muted">Evidence</div>
               <div className="text-sm text-foreground italic">"{trace.select.evidence}"</div>
+            </div>
+            <div className="rounded-lg border border-border bg-surface p-3">
+              <AttributionWaterfall
+                pipelineFamily={trace.pipelineFamily}
+                hasRepairChanges={Boolean(trace.repair && trace.repair.changes.length > 0)}
+              />
             </div>
             {trace.select.selectedIds && trace.select.selectedIds.length > 0 && (
               <div className="rounded-lg border border-border bg-surface p-3">

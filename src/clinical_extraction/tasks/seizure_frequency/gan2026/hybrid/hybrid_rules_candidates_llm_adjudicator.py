@@ -42,6 +42,58 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.reports.hybrid_adjudica
 )
 
 PROMPT_VERSION = "gan2026_final_selection_adjudicator_v0.5_conservative"
+PROMPT_POLICY_TAXONOMY: list[dict[str, str]] = [
+    {
+        "policy_id": "ha_v0.architecture.hybrid_candidates_plus_adjudicator",
+        "controlled_variable": "hybrid_candidates_plus_adjudicator_policy",
+        "portability": "gan2026_specific",
+        "status": "active",
+        "description": (
+            "Architecture feeds deterministic candidate events into an LLM adjudicator "
+            "that accepts, rejects, or overrides the deterministic selection."
+        ),
+    },
+    {
+        "policy_id": "ha_v0.audit.candidate_evidence_review",
+        "controlled_variable": "candidate_evidence_review_policy",
+        "portability": "seizure_frequency",
+        "status": "active",
+        "description": (
+            "Adjudicator must review every candidate's evidence against the full note "
+            "and reject generic or heading-derived phrases."
+        ),
+    },
+    {
+        "policy_id": "ha_v0.output.accepted_rejected_ids",
+        "controlled_variable": "accepted_rejected_event_ids_policy",
+        "portability": "general",
+        "status": "active",
+        "description": (
+            "Output must include accepted_event_ids and rejected_event_ids drawn from "
+            "the deterministic candidate set."
+        ),
+    },
+    {
+        "policy_id": "ha_v0.safety.deterministic_floor",
+        "controlled_variable": "deterministic_safety_floor_policy",
+        "portability": "gan2026_specific",
+        "status": "active",
+        "description": (
+            "When the LLM adjudicator disagrees with the deterministic selection, "
+            "a safety-floor policy decides whether to keep the deterministic answer."
+        ),
+    },
+    {
+        "policy_id": "ha_v0.boundary.unknown_no_reference_seizure_free",
+        "controlled_variable": "prompt_boundary_answer_policy",
+        "portability": "seizure_frequency",
+        "status": "active",
+        "description": (
+            "Adjudicator separates unknown, no seizure frequency reference, and seizure-free "
+            "answers; does not reject unresolved-multiple merely because a lower numeric label exists."
+        ),
+    },
+]
 DEFAULT_DEVSET_PATH = Path("experiments/gan2026_v1_prompt_adjudicator_devset_2026-05-31.jsonl")
 DEFAULT_ADJUDICATOR_JSONL_PATH = Path(
     "experiments/gan2026_v1_dspy_adjudicator_devset_gpt41mini_2026-05-31.jsonl"

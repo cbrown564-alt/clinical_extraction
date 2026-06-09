@@ -93,6 +93,55 @@ _nearest_event_month_year = llm_structured_temporal.nearest_event_month_year
 _small_number_words_to_digits = llm_structured_temporal.small_number_words_to_digits
 
 PROMPT_VERSION = "gan2026_llm_only_structured_events_v0.5"
+PROMPT_POLICY_TAXONOMY: list[dict[str, str]] = [
+    {
+        "policy_id": "se_v0.schema.events_plus_selection",
+        "controlled_variable": "events_plus_selection_schema_policy",
+        "portability": "general",
+        "status": "active",
+        "description": (
+            "Prompt requires a two-part JSON object: a list of slim clinical events "
+            "and a separate selection block with final_label and rationale."
+        ),
+    },
+    {
+        "policy_id": "se_v0.event.source_near_raw_value",
+        "controlled_variable": "source_near_raw_value_policy",
+        "portability": "seizure_frequency",
+        "status": "active",
+        "description": (
+            "Events use raw_value for the source-near expression rather than fully "
+            "normalized labels at the extraction stage."
+        ),
+    },
+    {
+        "policy_id": "se_v0.event.kind_taxonomy",
+        "controlled_variable": "event_kind_taxonomy_policy",
+        "portability": "seizure_frequency",
+        "status": "active",
+        "description": (
+            "Events must be typed as one of frequency_rate, cluster_frequency, seizure_free, "
+            "last_event_only, unknown_frequency, or no_reference."
+        ),
+    },
+    {
+        "policy_id": "se_v0.selection.aggregation_strategy",
+        "controlled_variable": "aggregation_strategy_policy",
+        "portability": "gan2026_specific",
+        "status": "active",
+        "description": (
+            "Selection block includes an explicit aggregation_strategy describing how "
+            "the final label was derived from events."
+        ),
+    },
+    {
+        "policy_id": "se_v0.evidence.exact_substring",
+        "controlled_variable": "prompt_exact_evidence_substring_policy",
+        "portability": "seizure_frequency",
+        "status": "active",
+        "description": "Every evidence value must be an exact substring from the note.",
+    },
+]
 DEFAULT_JSONL_PATH = Path(
     "experiments/gan2026_llm_only_structured_events_validation_gpt41mini_2026-06-01.jsonl"
 )

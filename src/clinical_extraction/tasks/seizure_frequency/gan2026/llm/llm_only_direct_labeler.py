@@ -43,6 +43,51 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.reports.base import (
 )
 
 PROMPT_VERSION = "gan2026_llm_only_direct_labeler_v0.1"
+PROMPT_POLICY_TAXONOMY: list[dict[str, str]] = [
+    {
+        "policy_id": "dl_v0.schema.strict_json_object",
+        "controlled_variable": "prompt_strict_json_object_policy",
+        "portability": "general",
+        "status": "active",
+        "description": "Prompt requires exactly one JSON object with no markdown wrapper.",
+    },
+    {
+        "policy_id": "dl_v0.output.direct_label",
+        "controlled_variable": "direct_label_extraction_policy",
+        "portability": "seizure_frequency",
+        "status": "active",
+        "description": (
+            "Prompt extracts a single final label directly from the note without "
+            "intermediate event structures or candidate generation."
+        ),
+    },
+    {
+        "policy_id": "dl_v0.evidence.exact_substring",
+        "controlled_variable": "prompt_exact_evidence_substring_policy",
+        "portability": "seizure_frequency",
+        "status": "active",
+        "description": "Prompt requires evidence to be copied as an exact source substring.",
+    },
+    {
+        "policy_id": "dl_v0.boundary.unknown_no_reference_seizure_free",
+        "controlled_variable": "prompt_boundary_answer_policy",
+        "portability": "seizure_frequency",
+        "status": "active",
+        "description": (
+            "Prompt instructs separation of unknown, no seizure frequency reference, "
+            "and seizure-free answers."
+        ),
+    },
+    {
+        "policy_id": "dl_v0.selection.current_burden_precedence",
+        "controlled_variable": "prompt_current_burden_selection_policy",
+        "portability": "seizure_frequency",
+        "status": "active",
+        "description": (
+            "Prompt selects the highest current or recent seizure burden across types."
+        ),
+    },
+]
 DEFAULT_JSONL_PATH = Path(
     "experiments/gan2026_llm_only_direct_labeler_validation_gpt41mini_2026-05-31.jsonl"
 )

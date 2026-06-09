@@ -2,7 +2,7 @@
 
 import { Suspense, useState, useMemo, useCallback } from "react";
 import { Search, Grid3X3, Network, FileCode } from "lucide-react";
-import { useRules, useRunAblation } from "@/lib/hooks";
+import { useRules, useRunAblation, useLaboratoryUrlSync } from "@/lib/hooks";
 import { useLaboratoryStore } from "@/lib/stores";
 import RuleInventory from "@/components/laboratory/RuleInventory";
 import SimulationPanel from "@/components/laboratory/SimulationPanel";
@@ -17,9 +17,36 @@ function LaboratoryInner() {
   const [groupFilter, setGroupFilter] = useState<string>("all");
   const [portabilityFilter, setPortabilityFilter] = useState<string>("all");
 
+  // Lifted from SimulationPanel so useRunAblation can cache deterministically
+  const [simSplit, setSimSplit] = useState("validation");
+  const [simLimit, setSimLimit] = useState<string>("");
+
   const { ablationConfig, toggleRuleGroup, toggleRuleId, setAblationConfig } = useLaboratoryStore();
+
+  useLaboratoryUrlSync(
+    activeTab,
+    setActiveTab,
+    search,
+    setSearch,
+    groupFilter,
+    setGroupFilter,
+    portabilityFilter,
+    setPortabilityFilter,
+    simSplit,
+    setSimSplit,
+    simLimit,
+    setSimLimit,
+    ablationConfig,
+    setAblationConfig
+  );
   const rulesQuery = useRules();
-  const runAblation = useRunAblation();
+
+  const limitNum = useMemo(
+    () => (simLimit.trim() ? parseInt(simLimit, 10) : undefined),
+    [simLimit]
+  );
+
+  const runAblation = useRunAblation(simSplit, limitNum, ablationConfig);
 
   const rules = useMemo(() => rulesQuery.data?.rules ?? [], [rulesQuery.data?.rules]);
   const groups = useMemo(() => rulesQuery.data?.groups ?? [], [rulesQuery.data?.groups]);
@@ -47,17 +74,9 @@ function LaboratoryInner() {
     ).length;
   }, [rules, ablationConfig, groups]);
 
-  const handleSimulate = useCallback(
-    (split: string, limit?: number) => {
-      runAblation.mutate({
-        split,
-        pipeline: "rules_only",
-        limit,
-        ablation_config: ablationConfig,
-      });
-    },
-    [runAblation, ablationConfig]
-  );
+  const handleSimulate = useCallback(() => {
+    runAblation.refetch();
+  }, [runAblation]);
 
   const handleReset = useCallback(() => {
     setAblationConfig({});
@@ -158,8 +177,13 @@ function LaboratoryInner() {
             {/* Right: Simulation Panel */}
             <div className="w-[380px] border-l border-border bg-surface overflow-y-auto p-5">
               <SimulationPanel
+                split={simSplit}
+                limit={simLimit}
+                onSplitChange={setSimSplit}
+                onLimitChange={setSimLimit}
                 onSimulate={handleSimulate}
-                isSimulating={runAblation.isPending}
+                isSimulating={runAblation.isFetching}
+                isCached={!runAblation.isFetching && runAblation.data !== undefined}
                 result={runAblation.data ?? null}
                 error={runAblation.error ? String(runAblation.error) : null}
               />

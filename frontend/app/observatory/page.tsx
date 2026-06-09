@@ -3,6 +3,7 @@
 import { Suspense, useState } from "react";
 import { Telescope, BarChart3, Mountain, Grid3X3, Target } from "lucide-react";
 import { useObservatoryData } from "@/components/observatory/useObservatoryData";
+import { useObservatoryUrlSync } from "@/lib/hooks";
 import RunSelector from "@/components/observatory/RunSelector";
 import RunLadder from "@/components/observatory/RunLadder";
 import GeneralisationGap from "@/components/observatory/GeneralisationGap";
@@ -25,6 +26,7 @@ function ObservatoryInner() {
   } = useObservatoryData();
 
   const [activeTab, setActiveTab] = useState<VizTab>("ladder");
+  useObservatoryUrlSync(activeTab, setActiveTab);
 
   // Aggregate stats across selected runs
   const totalRows = selectedSummaries.reduce((sum, s) => sum + s.rowCount, 0);

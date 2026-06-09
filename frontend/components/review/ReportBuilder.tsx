@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import {
   BarChart3,
   Grid3X3,
@@ -8,15 +9,18 @@ import {
   ShieldCheck,
   FileText,
   CheckCircle,
+  Layers,
 } from "lucide-react";
 import { useObservatoryData } from "@/components/observatory/useObservatoryData";
+import { useReviewUrlSync } from "@/lib/hooks";
+import { fetchHardSliceDefinitions } from "@/lib/api";
 import RunSelector from "@/components/observatory/RunSelector";
 import PaperTable from "./PaperTable";
 import ExportPanel from "./ExportPanel";
 import { classifyError, ERROR_TYPE_LABELS } from "@/lib/gallery-utils";
 import type { RunSummary } from "@/lib/types";
 
-type ReviewTab = "assembly" | "comparison" | "perlabel" | "errors" | "evidence";
+type ReviewTab = "assembly" | "comparison" | "perlabel" | "errors" | "evidence" | "slices";
 
 const PURIST_CATEGORIES = [
   "currently_no_seizure",
@@ -49,9 +53,9 @@ const CATEGORY_SHORT_NAMES: Record<string, string> = {
 };
 
 function f1CellClass(f1: number): string {
-  if (f1 >= 0.8) return "text-success font-medium";
-  if (f1 >= 0.5) return "text-llm font-medium";
-  return "text-error font-medium";
+  if (f1 >= 0.8) return "bg-success/10 text-success border border-success/20 px-1.5 py-0.5 rounded-full font-medium inline-block text-center min-w-[36px]";
+  if (f1 >= 0.5) return "bg-llm/10 text-llm border border-llm/20 px-1.5 py-0.5 rounded-full font-medium inline-block text-center min-w-[36px]";
+  return "bg-error/10 text-error border border-error/20 px-1.5 py-0.5 rounded-full font-medium inline-block text-center min-w-[36px]";
 }
 
 /** Abbreviate a long run ID to something readable. */
@@ -91,17 +95,15 @@ function computeEvidenceMetrics(summary: RunSummary) {
   const total = rows.length;
   if (total === 0) return { exact: 0, valid: 0, repair: 0, unknownRate: 0, avgEvidenceLen: 0 };
 
-  // exact evidence = evidence is a verbatim substring of note text
-  // We don't have note text in RunSummary, so we approximate with evidence_valid heuristic
-  // For now, valid evidence rate is what we can compute from RowScore
-  // We'll use a placeholder for exact evidence based on pragmatic correctness proxy
-  const validEvidence = rows.filter((r) => r.evidence && r.evidence.length > 3).length;
+  const exact = rows.filter((r) => r.evidenceValid === true).length;
+  const valid = rows.filter((r) => r.evidenceValid === true).length;
+  const repair = rows.filter((r) => (r.repairChangesCount ?? 0) > 0).length;
   const unknownRate = rows.filter((r) => r.predictedCategory === "seizure_freq_unknown").length;
 
   return {
-    exact: validEvidence / total,
-    valid: validEvidence / total,
-    repair: 0, // repair_changes not available in RunSummary rows
+    exact: exact / total,
+    valid: valid / total,
+    repair: repair / total,
     unknownRate: unknownRate / total,
     avgEvidenceLen: total > 0
       ? rows.reduce((sum, r) => sum + (r.evidence?.length ?? 0), 0) / total
@@ -155,6 +157,13 @@ export default function ReportBuilder() {
   } = useObservatoryData();
 
   const [activeTab, setActiveTab] = useState<ReviewTab>("assembly");
+  useReviewUrlSync(activeTab, setActiveTab);
+
+  const { data: slicesData, isLoading: slicesLoading } = useQuery({
+    queryKey: ["hardSliceDefinitions"],
+    queryFn: fetchHardSliceDefinitions,
+  });
+  const sliceDefinitions = slicesData?.slices ?? [];
 
   // Sort summaries by purist F1 descending
   const sortedSummaries = useMemo(
@@ -320,6 +329,22 @@ export default function ReportBuilder() {
     "left", "left", "right", "right", "right", "right", "right", "right",
   ], []);
 
+  const slicesHeaders = useMemo(() => [
+    "Slice Name",
+    "Component Focus",
+    "Membership Rule",
+    "Primary Metric",
+  ], []);
+
+  const slicesRows = useMemo(() => {
+    return sliceDefinitions.map((s) => [
+      s.slice_name,
+      s.component_focus,
+      s.membership_rule,
+      s.primary_metric,
+    ]);
+  }, [sliceDefinitions]);
+
   // ── Report sections for export panel ──
   const reportSections = useMemo(
     () => [
@@ -327,12 +352,14 @@ export default function ReportBuilder() {
       { title: "Per-Label Performance", headers: perLabelHeaders, rows: perLabelRows.map((r) => r.row), align: perLabelAlign },
       { title: "Error Taxonomy", headers: errorHeaders, rows: errorRows, align: errorAlign },
       { title: "Evidence Audit", headers: evidenceHeaders, rows: evidenceRows, align: evidenceAlign },
+      { title: "Hard Slices", headers: slicesHeaders, rows: slicesRows, align: ["left", "left", "left", "left"] as ("left" | "right" | "center")[] },
     ],
     [
       comparisonHeaders, comparisonRows, comparisonAlign,
       perLabelHeaders, perLabelRows, perLabelAlign,
       errorHeaders, errorRows, errorAlign,
       evidenceHeaders, evidenceRows, evidenceAlign,
+      slicesHeaders, slicesRows,
     ]
   );
 
@@ -378,6 +405,12 @@ export default function ReportBuilder() {
           onClick={() => setActiveTab("evidence")}
           icon={<ShieldCheck className="h-3.5 w-3.5" />}
           label="Evidence Audit"
+        />
+        <TabButton
+          active={activeTab === "slices"}
+          onClick={() => setActiveTab("slices")}
+          icon={<Layers className="h-3.5 w-3.5" />}
+          label="Hard Slices"
         />
       </div>
 
@@ -501,13 +534,65 @@ export default function ReportBuilder() {
           <div className="h-full overflow-y-auto p-5 max-w-[1400px] mx-auto space-y-5">
             <PaperTable
               title="Evidence Audit"
-              caption="Evidence metrics are approximations based on artifact row fields. Exact evidence requires source-note substring verification."
+              caption="Evidence metrics calculated from source-row valid tags and repair lists. Exact evidence matches verbatim notes."
               headers={evidenceHeaders}
               rows={evidenceRows}
               align={evidenceAlign}
               cellClasses={evidenceCellClasses}
-              footer={`Repair rate requires repair_changes field in artifact rows; shown as 0 when unavailable.`}
+              footer={`Repair rate requires repair_changes field in artifact rows.`}
             />
+          </div>
+        )}
+
+        {activeTab === "slices" && (
+          <div className="h-full overflow-y-auto p-5 max-w-[1400px] mx-auto space-y-5">
+            <div className="rounded-md border border-border bg-surface-raised px-4 py-3">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground mb-1">
+                Hard Slice Atlas definitions
+              </h3>
+              <p className="text-[11px] text-muted">
+                These slices capture the most challenging edge cases across candidate generation and graph/final projection.
+              </p>
+            </div>
+
+            {slicesLoading ? (
+              <p className="text-xs text-muted">Loading slice definitions...</p>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {sliceDefinitions.map((slice) => (
+                  <div
+                    key={slice.slice_name}
+                    className="rounded-lg border border-border bg-surface p-4 space-y-3 hover:border-success/30 transition-colors"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h4 className="text-xs font-bold font-mono text-foreground uppercase tracking-wide">
+                          {slice.slice_name.replace(/_/g, " ")}
+                        </h4>
+                        <span className="inline-block mt-1 rounded bg-llm/10 px-1.5 py-0.5 text-[9px] font-semibold text-llm border border-llm/20">
+                          {slice.component_focus}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5 text-[11px]">
+                      <div>
+                        <span className="font-semibold text-muted">Membership Rule:</span>
+                        <p className="text-foreground mt-0.5 font-mono bg-surface-raised p-1.5 rounded border border-border whitespace-pre-wrap">
+                          {slice.membership_rule}
+                        </p>
+                      </div>
+                      <div>
+                        <span className="font-semibold text-muted">Primary Metric:</span>
+                        <p className="text-foreground mt-0.5">
+                          {slice.primary_metric}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>

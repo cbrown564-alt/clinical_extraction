@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { Tag } from "lucide-react";
 import TraceControls from "@/components/architect/TraceControls";
 import { useArchitectStore } from "@/lib/stores";
+import { useArchitectUrlSync } from "@/lib/hooks";
 import StageStrip from "@/components/architect/StageStrip";
 import StageInspector from "@/components/architect/StageInspector";
 import ArchitectNoteRenderer from "@/components/architect/ArchitectNoteRenderer";
@@ -47,6 +48,7 @@ function SpecimenMeta() {
 }
 
 function WorkbenchInner() {
+  useArchitectUrlSync();
   return (
     <div className="flex h-full flex-col bg-background">
       {/* Controls */}

@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import csv
 import importlib
+import inspect
 import json
 import os
+import subprocess
 from collections.abc import Iterable, Mapping, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
@@ -63,6 +65,16 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     BENCHMARK_REPAIR_RULES,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline_v1 import Gan2026PipelineV1
+
+# Hard-slice atlas imports (may fail if dependencies missing; guarded below)
+try:
+    from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis.hidden_family_atlas import (
+        ATLAS_HARD_SLICE_DEFINITIONS,
+        classify_hidden_families,
+    )
+except Exception:  # pragma: no cover
+    ATLAS_HARD_SLICE_DEFINITIONS = ()
+    classify_hidden_families = None  # type: ignore[assignment, misc]
 
 PipelineFamily = Literal[
     "rules_only",
@@ -156,6 +168,34 @@ class GoldAuditDecision(BaseModel):
     likely_gold_defect: bool = False
     timestamp: str | None = None
     auditor: str | None = None
+
+
+class TagErrorRequest(BaseModel):
+    """Request to classify a single prediction into the frontend error taxonomy."""
+
+    gold_category: str
+    predicted_category: str
+    purist_correct: bool = False
+    pragmatic_correct: bool = False
+
+
+class HardSliceMembershipRequest(BaseModel):
+    """Request to compute hard-slice membership for a set of artifact rows."""
+
+    rows: list[dict[str, Any]]
+    primary_layer: str | None = None
+
+
+class PromptTemplateResponse(BaseModel):
+    """Structured prompt metadata for a single module."""
+
+    module: str
+    prompt_version: str
+    system_hint: str | None = None
+    user_hint: str | None = None
+    output_schema_hint: str | None = None
+    build_prompt_signature: str | None = None
+    policy_taxonomy: list[dict[str, Any]]
 
 
 def create_app(
@@ -418,6 +458,85 @@ def create_app(
         if next_row is None:
             return {"split": split, "row": None, "message": "All rows have been audited."}
         return {"split": split, "row": next_row}
+
+    # ── Error taxonomy endpoints ──
+
+    @app.get("/error-taxonomy/schema")
+    def error_taxonomy_schema() -> dict[str, Any]:
+        return {
+            "error_types": [
+                {"id": "correct", "description": "Prediction exactly matches gold standard."},
+                {"id": "false_negative", "description": "Predicted no-seizure/unknown when note describes a frequency."},
+                {"id": "false_positive", "description": "Predicted a frequency when gold is no-seizure/unknown."},
+                {"id": "over_estimate", "description": "Predicted higher frequency than gold."},
+                {"id": "under_estimate", "description": "Predicted lower frequency than gold."},
+                {"id": "near_miss", "description": "Off by exactly one category bucket."},
+            ],
+            "severity": {
+                "description": "Absolute magnitude delta between gold and predicted category.",
+                "levels": ["none", "near", "moderate", "significant", "severe"],
+            },
+        }
+
+    @app.post("/tag-error")
+    def tag_error(request: TagErrorRequest) -> dict[str, Any]:
+        return _classify_error(request.gold_category, request.predicted_category, request.purist_correct)
+
+    # ── Hard-slice endpoints ──
+
+    @app.get("/hard-slices/definitions")
+    def hard_slice_definitions() -> dict[str, Any]:
+        return {
+            "slices": [
+                dict(definition) for definition in ATLAS_HARD_SLICE_DEFINITIONS
+            ],
+        }
+
+    @app.post("/hard-slices/membership")
+    def hard_slice_membership(request: HardSliceMembershipRequest) -> dict[str, Any]:
+        if classify_hidden_families is None:
+            raise HTTPException(
+                status_code=503,
+                detail="Hard-slice classification dependencies are not available.",
+            )
+        results = []
+        for row in request.rows:
+            note_text = str(row.get("note_text", ""))
+            gold_label = str(row.get("gold_label", ""))
+            predicted_label = str(row.get("predicted_label", ""))
+            families = classify_hidden_families(
+                note_text=note_text,
+                gold_label=gold_label,
+                predicted_label=predicted_label,
+            )
+            results.append(
+                {
+                    "source_row_index": row.get("source_row_index"),
+                    "hidden_families": list(families),
+                }
+            )
+        return {"rows": results}
+
+    # ── Prompt template registry ──
+
+    @app.get("/prompts/{module_name}/template")
+    def prompt_template(module_name: str) -> dict[str, Any]:
+        if module_name not in PROMPT_MODULES:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Unknown prompt module: {module_name!r}. Expected one of {list(PROMPT_MODULES)}.",
+            )
+        return _prompt_template_payload(module_name)
+
+    # ── Git / repository metadata ──
+
+    @app.get("/meta")
+    def meta() -> dict[str, Any]:
+        return {
+            "git": _git_metadata(settings.repo_root),
+            "observatory_version": "0.1.0",
+            "timestamp": datetime.now(UTC).isoformat(),
+        }
 
     return app
 
@@ -784,6 +903,144 @@ def _jsonable_mapping_sequence(items: Iterable[Any]) -> list[dict[str, Any]]:
         if isinstance(item, Mapping):
             payload.append({str(key): value for key, value in item.items()})
     return payload
+
+
+# ── Error taxonomy helpers ──
+
+# 0 = no frequency information, 1 = very low, 8 = very high
+_CATEGORY_MAGNITUDE: dict[str, int] = {
+    "currently_no_seizure": 0,
+    "seizure_freq_unknown": 0,
+    "seizure_freq_1_per_yr": 1,
+    "seizure_freq_1_per_6mon": 2,
+    "seizure_freq_more1per6mon_less1mon": 3,
+    "seizure_freq_1_per_mon": 4,
+    "seizure_freq_more1mon_less1week": 5,
+    "seizure_freq_1_per_week": 6,
+    "seizure_freq_more1week_less1day": 7,
+    "seizure_freq_1ormore_daily": 8,
+    "seizure_infrequent": 1,
+    "seizure_frequent": 8,
+}
+
+
+def _category_magnitude(cat: str) -> int:
+    return _CATEGORY_MAGNITUDE.get(cat, 0)
+
+
+def _classify_error(gold_category: str, predicted_category: str, purist_correct: bool) -> dict[str, Any]:
+    if purist_correct:
+        return {"error_type": "correct", "severity": 0, "severity_level": "none"}
+
+    gold_mag = _category_magnitude(gold_category)
+    pred_mag = _category_magnitude(predicted_category)
+    severity = abs(pred_mag - gold_mag)
+
+    if gold_mag > 0 and pred_mag == 0:
+        error_type = "false_negative"
+    elif gold_mag == 0 and pred_mag > 0:
+        error_type = "false_positive"
+    elif pred_mag > gold_mag:
+        error_type = "near_miss" if pred_mag - gold_mag == 1 else "over_estimate"
+    elif pred_mag < gold_mag:
+        error_type = "near_miss" if gold_mag - pred_mag == 1 else "under_estimate"
+    else:
+        error_type = "near_miss"
+
+    if severity == 0:
+        severity_level = "none"
+    elif severity == 1:
+        severity_level = "near"
+    elif severity <= 3:
+        severity_level = "moderate"
+    elif severity <= 5:
+        severity_level = "significant"
+    else:
+        severity_level = "severe"
+
+    return {"error_type": error_type, "severity": severity, "severity_level": severity_level}
+
+
+# ── Prompt template helpers ──
+
+def _prompt_template_payload(module_name: str) -> dict[str, Any]:
+    module = importlib.import_module(module_name)
+    prompt_version = getattr(module, "PROMPT_VERSION", module_name.rsplit(".", maxsplit=1)[-1])
+    taxonomy = getattr(module, "PROMPT_POLICY_TAXONOMY", [])
+
+    # Try to extract DSPy signature docstring as system hint
+    system_hint: str | None = None
+    for attr_name in dir(module):
+        attr = getattr(module, attr_name)
+        if isinstance(attr, type) and hasattr(attr, "__mro__"):
+            # Heuristic: DSPy Signature subclasses have InputField/OutputField
+            if any(hasattr(base, "fields") for base in attr.__mro__ if base is not object):
+                doc = inspect.getdoc(attr)
+                if doc and len(doc) > 20:
+                    system_hint = doc
+                    break
+
+    # Try to extract build_prompt_input docstring as user hint
+    user_hint: str | None = None
+    build_fn = getattr(module, "build_prompt_input", None)
+    if build_fn is not None:
+        user_hint = inspect.getdoc(build_fn)
+
+    # Try to find output schema class docstring
+    output_schema_hint: str | None = None
+    for attr_name in dir(module):
+        attr = getattr(module, attr_name)
+        if isinstance(attr, type) and issubclass(attr, BaseModel) and "Record" in attr_name:
+            doc = inspect.getdoc(attr)
+            if doc and len(doc) > 10:
+                output_schema_hint = doc
+                break
+
+    build_sig: str | None = None
+    if build_fn is not None:
+        try:
+            build_sig = str(inspect.signature(build_fn))
+        except Exception:
+            build_sig = None
+
+    return {
+        "module": module_name,
+        "prompt_version": prompt_version,
+        "system_hint": system_hint,
+        "user_hint": user_hint,
+        "output_schema_hint": output_schema_hint,
+        "build_prompt_signature": build_sig,
+        "policy_taxonomy": _jsonable_mapping_sequence(taxonomy),
+    }
+
+
+# ── Git metadata helpers ──
+
+def _git_metadata(repo_root: Path) -> dict[str, Any]:
+    def _run(cmd: list[str]) -> str:
+        try:
+            result = subprocess.run(
+                cmd,
+                cwd=str(repo_root),
+                capture_output=True,
+                text=True,
+                timeout=5,
+            )
+            return result.stdout.strip() if result.returncode == 0 else ""
+        except Exception:
+            return ""
+
+    branch = _run(["git", "rev-parse", "--abbrev-ref", "HEAD"])
+    commit = _run(["git", "rev-parse", "HEAD"])
+    dirty = _run(["git", "status", "--porcelain"]) != ""
+    remote = _run(["git", "remote", "get-url", "origin"])
+
+    return {
+        "branch": branch or None,
+        "commit": commit or None,
+        "dirty": dirty,
+        "remote_url": remote or None,
+    }
 
 
 app = create_app()
