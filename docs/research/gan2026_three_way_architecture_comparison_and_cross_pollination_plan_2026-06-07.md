@@ -249,9 +249,90 @@ clean, full-surface, six-architecture baseline to diverge from and re-compare
 against. Phase 4's frozen `test450` audit remains gated on explicit user
 authorization per Section 6.
 
+**Status update (2026-06-09): deepseek-v4-flash Phase 1 report built; qwen3.6-35b
+interim report built; full qwen3.6-35b report pending hybrid live-wired re-run.**
+The `three_way_comparison_report.py` builder was extended to accept `--model` (title
+and claim-boundary string) and `--hybrid-candidate-set-path` (fallback for pre-section-8a
+hybrid runs that do not have `candidate_set` embedded in output rows). This enables
+model-parameterized report generation without re-running the deterministic configs.
+
+- **`deepseek/deepseek-chat` (deepseek-v4-flash) — full 750-row surface**: all six
+  configs at 750/750 rows, hybrid live candidate sets. Report at
+  `experiments/gan2026_three_way_comparison_phase1_report_deepseek_validation750_2026-06-09.{jsonl,json,md}`.
+  Key finding: `llm_only_structured_events` leads LLM configs at 609/742 purist-correct
+  (0.821). Hybrid routes much more aggressively than gpt-4.1-mini: 123/604 rendered rows
+  routed (0.204), dominated by `rendered_label_supported_but_policy_sensitive` (97/123),
+  vs gpt-4.1-mini's 42/600 (0.070). Deepseek hybrid purist-correct 490/604 (0.811).
+
+- **`ollama_chat/qwen3.6:35b` interim — hybrid 250-row scoped**: the qwen hybrid
+  validation750 run was initiated before the section-8a live-wiring fix and used the
+  static 250-row candidate-set file; the remaining 500 rows are being re-run live as of
+  2026-06-09. The interim report
+  (`experiments/gan2026_three_way_comparison_phase1_report_qwen3635b_validation750_2026-06-09.{jsonl,json,md}`)
+  uses the static file as a `--hybrid-candidate-set-path` fallback and reports hybrid as
+  250-row scoped (stated explicitly in the hybrid footnote and visible as `Examples: 250`
+  in the shared table — not papered over). `llm_only_structured_events` leads at
+  624/746 (0.836). The final full-surface qwen report will supersede this once the hybrid
+  live re-run completes (see Section 8b).
+
 ---
 
 ## 4. Cross-Pollination A: De-Overfitting The Deterministic Pipeline
+
+**Status update (2026-06-09): Phase 2 iteration 1 complete — GAN_SHORTHAND
+family generalized.** See classification table and iteration 1 notes below.
+Phase 2 is ongoing; subsequent families follow the same one-family-at-a-time
+cycle.
+
+### Rule Family Classification (2026-06-09)
+
+| Family (`RuleGroup`) | Portability | Classification | Priority |
+| --- | --- | --- | --- |
+| `GAN_SHORTHAND` | `GAN2026_SPECIFIC` (was) | **Validation-phrase-shaped** — compact notation with GAN-specific embellishments (word numbers in shorthand, asterisk/X/× separator prefixes); Q_INTERVAL is general medical notation | **High — done 2026-06-09** |
+| `BENCHMARK_REPAIR` | `BENCHMARK_FORMAT` | **Format/representation** — output normalization for benchmark label format; not extractive | Low |
+| `PORTABLE_RATE_EXPRESSIONS` | `SEIZURE_FREQUENCY` | **Mostly general** — but some literal-phrase anchors (`DAILY_BASIS_CURRENT_RULE`, `THERE_HAVE_BEEN_COUNT_RULE`) may be validation-tuned | Medium — next |
+| `SEIZURE_FREE_NO_EVENT_ASSERTIONS` | `SEIZURE_FREQUENCY` / `CLINICAL_EPILEPSY` | **Mostly general** — duration computations are general; some phrases (`CURRENT_CONTROL_PHRASE_RULE`) are literal | Low-medium |
+| `CLUSTER_ARITHMETIC` | `SEIZURE_FREQUENCY` | **Mixed** — structural patterns are general; some specific notation may be validation-tuned | Medium |
+| `DIARY_LOG_AGGREGATION` | `SEIZURE_FREQUENCY` | **Mostly format-specific** — diary format patterns are real-world but may match specific validation formats | Medium |
+| `TEMPORAL_SELECTION` | `SEIZURE_FREQUENCY` | **Clinically general** — non-extractive ranking rules; genuine clinical priority | Low |
+
+### Phase 2 Iteration 1: GAN_SHORTHAND Generalization (2026-06-09)
+
+**What changed**: all four `GAN_SHORTHAND` rules rewritten from
+`GAN2026_SPECIFIC` portability to `SEIZURE_FREQUENCY` (TC/sz and absence
+shorthand) and `CLINICAL_EPILEPSY` (Q_INTERVAL). Two classes of GAN-specific
+embellishments removed:
+
+1. **Word numbers in compact shorthand** (e.g., "TC nine/mo", "sz xfour/wk",
+   "qtwo - threewk") — replaced `NUMBER_VALUE_TOKEN` with `DIGIT_RANGE_TOKEN`
+   (digit-only); real clinical notes use digit counts
+2. **Special separator prefixes** (asterisk `*`, letter `X`, `×`) before
+   counts (e.g., "TC *5/wk", "sz X7/mo") — removed the `(?:[*x×]\s*)?`
+   group; standard compact notation uses space or colon separators
+
+What kept: digit-count compact notation without special separators ("TC 5/mo",
+"sz 2/wk", "q2-3wk", "abs monthly", "abs 8 monthly").
+
+**Phase 2 vs Phase 1 comparison** (validation750, deterministic architectures
+only — LLM/hybrid configs unchanged):
+
+| Architecture | Phase 1 | Phase 2 (GAN_SHORTHAND generalized) | Delta |
+| --- | --- | --- | --- |
+| `deterministic` | 688/741 purist (0.928) | 674/741 purist (0.910) | −14 |
+| `deterministic_canonical_pipeline` | 688/741 purist (0.928) | 674/741 purist (0.910) | −14 |
+
+The −14 is the correct de-overfitting outcome: all 14 rows were previously
+correct only via GAN-specific notation that does not appear in generalized
+clinical text. Breakdown: 10 fell to "no seizure frequency reference" (lost
+sole candidate); 2 switched to "seizure free" (seizure_free candidate now wins
+over absent rate candidate); 1 gained a cluster candidate; 1 switched to "1
+per day" from "daily auras".
+
+Artifacts:
+- Phase 2 deterministic run: `experiments/gan2026_three_way_comparison_validation750_deterministic_phase2_gan_shorthand_generalized_2026-06-09.jsonl`
+- Phase 2 canonical run: `experiments/gan2026_three_way_comparison_validation750_deterministic_canonical_pipeline_phase2_gan_shorthand_generalized_2026-06-09.jsonl`
+- Phase 2 comparison report: `experiments/gan2026_three_way_comparison_phase2_report_gan_shorthand_generalized_validation750_2026-06-09.{jsonl,json,md}`
+- Tests updated: `test_gan2026_rule_metadata.py::test_gan_shorthand_rules_are_generalized_and_retain_group`, `test_gan2026_pipeline_v1.py` (GAN-specific notation examples → generalized equivalents). Full suite: 1019 passed.
 
 **Problem**: the deterministic pipeline's rules were largely written and tuned
 against validation phrasing. Some are likely genuinely general; others are
@@ -344,6 +425,64 @@ downstream representation that fails to carry it through.
    of the null-reduction synthesis as the promotion rubric, generalized to
    "prompt change" rather than "Normalize component").
 
+**Status update (2026-06-09): uncertainty signal audit complete — three
+concrete prompt fixes identified before Phase 3 begins.** An exploratory
+analysis of all confidence/uncertainty fields across the six architectures was
+run over the validation750 surface (all three models). Full findings in
+[[gan2026_uncertainty_signal_audit_2026-06-09]]; summary below.
+
+The audit revealed that the codebase has ten distinct forms of uncertainty
+expression spread across five layers, with no shared scale, vocabulary, or
+ownership model. Three specific prompt-level fixes are required before Phase 3's
+rewrite pass — they are independently ablatable, require no schema changes, and
+should each be validated individually before being combined:
+
+**Phase 3 pre-condition A — Ground the `confidence` field operationally.**
+The `confidence: Literal["low", "medium", "high"]` field on
+`llm_only_direct_labeler` and `llm_only_canonical_pipeline` is degenerate for
+gpt-4.1-mini and qwen: both models assign `"high"` to 99%+ of rows (gpt-4.1-mini
+emits non-high on 1/750 rows; qwen on 3–9/750). The field *does* carry real
+signal for deepseek — medium/low rows are 25–30pp below high rows — but only
+because deepseek populates it with a real distribution. The fix is not a schema
+change but a prompt change: define each level in plain clinical language tied to
+observable note features rather than leaving it undefined:
+- `"low"`: competing current facts that the guidance above did not resolve, or
+  the frequency can only be described as a vague range with no time window
+- `"medium"`: one fact is clearly dominant but ambiguity remains (e.g.
+  conditional trigger, vague count with a clear window, relative-only trend)
+- `"high"`: one unambiguous current fact, no competing claims, evidence is a
+  direct quote from the note
+
+**Phase 3 pre-condition B — Replace `uncertainty_flags` (hybrid) with a
+closed vocabulary.** The `uncertainty_flags: list[str]` field on
+`ClinicalAssessment` is free text; different models emit synonymous values under
+different names (deepseek: 50+ distinct strings across 123 rows; gpt-4.1-mini:
+9 strings across 24 rows; qwen: 16 strings across 19 rows — same 750-row
+dataset, not comparable). The `VerificationRouteFamily` enum (15 named values:
+`cluster_axis_ambiguity`, `seizure_free_conflict`, `conditional_only_trigger`,
+`multiple_current_primary_facts`, etc.) already names the clinically meaningful
+uncertainty types precisely. The hybrid clinical-assessment prompt should offer
+this list and ask the model to select from it rather than improvise free text.
+This makes the field aggregatable across models and links it to the routing stage
+that already acts on the same taxonomy.
+
+**Phase 3 pre-condition C — Add a decision table for `aggregation_policy` to
+the hybrid prompt.** The 8-value `AggregationPolicy` enum is the right design
+but models interpret it inconsistently: deepseek uses `unknown_due_to_ambiguity`
+on 13.1% of rows; gpt-4.1-mini on 0.1% — same data, 130× difference. A short
+decision table in the clinical-assessment prompt (parallel to the
+`guidance_for_tricky_cases` block already proven in `llm_only_canonical_pipeline`)
+stating when each value applies would make the field cross-model comparable.
+
+One counter-intuitive finding worth carrying forward: `answer_kind = "unknown"`
+rows have *higher* purist accuracy than `answer_kind = "frequency"` rows for
+gpt-4.1-mini (89% vs 74% for direct_labeler; 85% vs 75% for canonical). The
+model is correctly identifying genuinely unknowable cases — `answer_kind` is a
+classification of outcome type, not a confidence signal, and should not be
+treated as one. The lowest-accuracy kind is `"seizure_free"` (66–79% across
+models and architectures), where clinical extraction error concentrates
+regardless of expressed confidence.
+
 ---
 
 ## 6. Phasing And Authorization Gates
@@ -351,9 +490,9 @@ downstream representation that fails to carry it through.
 | Phase | Work | Gate |
 | --- | --- | --- |
 | 0 | *(done — 2026-06-07)* Select/assemble one canonical runner per architecture (Section 2); confirm artifact-shape compatibility with existing scoring tooling | none — mechanical/structural work |
-| 1 | *(done for gpt-4.1-mini — 2026-06-08)* Run all six canonical configs on validation750; produce one comparison report using shared reporting machinery — see Section 3 status update and [[gan2026_three_way_comparison_phase1_report_design]] (qwen3.6-35b pass still in flight separately) | none — validation-only |
-| 2 | Apply the de-overfitting rewrite to one deterministic rule family at a time; re-run and compare after each | none — validation-only, ablatable, one family at a time |
-| 3 | Apply the prompt-refinement principle to the canonical fully-LLM runner; re-run and compare after each change | none — validation-only |
+| 1 | *(done for gpt-4.1-mini — 2026-06-08; done for deepseek-v4-flash and qwen3.6-35b interim — 2026-06-09)* Run all six canonical configs on validation750; produce one comparison report using shared reporting machinery — see Section 3 status update. deepseek-v4-flash report (full 750-row surface) and a qwen3.6-35b interim report (hybrid 250-row scoped, pending live re-run) produced at `experiments/gan2026_three_way_comparison_phase1_report_{deepseek,qwen3635b}_validation750_2026-06-09.{jsonl,json,md}`; final full-surface qwen3.6-35b report to be produced later 2026-06-09 once the hybrid live-wired re-run completes | none — validation-only |
+| 2 | *(iteration 1 done — 2026-06-09: GAN_SHORTHAND generalized, −14 purist-correct on validation750 as expected — see Section 4 status update)* Apply the de-overfitting rewrite to one deterministic rule family at a time; re-run and compare after each | none — validation-only, ablatable, one family at a time |
+| 3 | Apply the prompt-refinement principle to the canonical fully-LLM runner; re-run and compare after each change. **Pre-conditions before starting**: complete the three uncertainty-signal prompt fixes identified in the 2026-06-09 audit (Section 5 status update / [[gan2026_uncertainty_signal_audit_2026-06-09]]): ground `confidence` operationally, replace `uncertainty_flags` with a closed vocabulary, add an `aggregation_policy` decision table to the hybrid prompt | none — validation-only |
 | 4 | Frozen `test450` aggregate audit of the refined deterministic, refined fully-LLM, and current hybrid pipelines, using the exact frozen-aggregate-audit protocol already proven in `gan2026_test450_hn1_frozen_aggregate_audit_2026-06-07.md` | **requires explicit user authorization**, exactly as already required for any holdout-facing reset work |
 
 Phases 0-3 are validation-only development mechanics and need no new
@@ -488,6 +627,73 @@ qwen750 comparison run. Revisit once Phase 1's report is out and the user is
 ready to spend the live-extraction API budget this requires.
 
 </details>
+
+---
+
+## 8b. Tracked Follow-Up: Full-Surface qwen3.6-35b Hybrid Re-Run And Final Report
+
+**Status: in progress (2026-06-09) — hybrid live-wired re-run running; 500 rows
+outstanding as of this writing.**
+
+The qwen3.6-35b hybrid was run before the section-8a live candidate-set wiring landed,
+so it produced only 250/750 real assessment rows (the rest `candidate_set_missing`).
+The remaining 500 rows are being re-run live using the same wiring as the gpt-4.1-mini
+re-run in section 8a. Once complete, produce the final full-surface qwen report using:
+
+```
+uv run python -m clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis.three_way_comparison_report \
+  --model "ollama_chat/qwen3.6:35b" \
+  --hybrid-jsonl <path-to-live-wired-750-row-hybrid-run> \
+  --llm-only-direct-labeler-jsonl experiments/gan2026_three_way_comparison_validation750_llm_only_direct_labeler_qwen3635b_2026-06-08.jsonl \
+  --llm-only-structured-events-jsonl experiments/gan2026_three_way_comparison_validation750_llm_only_structured_events_qwen3635b_2026-06-08.jsonl \
+  --llm-only-canonical-pipeline-jsonl experiments/gan2026_three_way_comparison_validation750_llm_only_canonical_pipeline_qwen3635b_2026-06-08.jsonl \
+  --jsonl-path experiments/gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09.jsonl \
+  --json-path experiments/gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09.json \
+  --report-path experiments/gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09.md
+```
+
+No `--hybrid-candidate-set-path` needed once the re-run has live candidate sets embedded.
+The interim report produced on 2026-06-09 (hybrid 250-row scoped) is kept as a historical
+record; the full-surface report supersedes it for comparison purposes.
+
+---
+
+## 8c. Tracked Follow-Up: Uncertainty Signal Harmonization (Phase 3 Pre-Condition)
+
+**Status: not started — identified 2026-06-09 via uncertainty signal audit;
+required before Phase 3's prompt-refinement pass.**
+
+An exploratory analysis of all confidence/uncertainty fields across the six
+architectures (see [[gan2026_uncertainty_signal_audit_2026-06-09]] for the full
+findings) found that the current state of uncertainty expression is incoherent
+across architectures and models: ten distinct signal forms, no shared vocabulary,
+and the only scalar confidence field (`confidence: low/medium/high` on the two
+`llm_only` decision records) is degenerate for gpt-4.1-mini and qwen (99%+ of
+rows assigned "high" — providing no calibration information). Three prompt-only
+fixes are required before Phase 3 can produce comparable uncertainty-aware results:
+
+1. **Ground `confidence` operationally** in the `llm_only_direct_labeler` and
+   `llm_only_canonical_pipeline` prompts — add plain-language definitions of each
+   level tied to observable note features (see Section 5 status update for the
+   proposed definitions). No schema change; prompt change only.
+
+2. **Replace `uncertainty_flags` free text with the `VerificationRouteFamily`
+   vocabulary** in the hybrid clinical-assessment prompt — ask the model to select
+   from the 15 named families rather than improvise free text. Deepseek currently
+   emits 50+ distinct string values for essentially the same set of concepts;
+   gpt-4.1-mini emits 9; qwen 16 — none comparable. No schema change (the field
+   stays `list[str]`); prompt change only.
+
+3. **Add an `aggregation_policy` decision table** to the hybrid prompt — state
+   when each of the 8 values applies in the same style as `guidance_for_tricky_cases`.
+   Deepseek and gpt-4.1-mini differ 130× on `unknown_due_to_ambiguity` usage over
+   the same data. No schema change; prompt change only.
+
+Each fix is independently ablatable: apply one, re-run on `validation25` to
+confirm behavior, then on `validation750` to check distribution shift before
+applying the next. The goal is not to maximize use of any particular field but to
+make the field cross-model comparable so Phase 3's prompt-refinement results can
+be interpreted cleanly.
 
 ---
 
