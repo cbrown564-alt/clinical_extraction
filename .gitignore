@@ -13,6 +13,8 @@ dist/
 build/
 *.egg-info/
 
+.worktrees/
+
 # Experiment outputs can be large; keep metadata in git and add selected artifacts intentionally.
 experiments/**/predictions*.csv
 experiments/**/predictions*.json
