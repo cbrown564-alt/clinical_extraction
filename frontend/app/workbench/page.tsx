@@ -9,7 +9,7 @@ import StageStrip from "@/components/architect/StageStrip";
 import StageInspector from "@/components/architect/StageInspector";
 import ArchitectNoteRenderer from "@/components/architect/ArchitectNoteRenderer";
 
-function SpecimenMeta() {
+function PatientNoteMeta() {
   const trace = useArchitectStore((s) => s.trace);
   const split = useArchitectStore((s) => s.split);
   const sourceRowIndex = useArchitectStore((s) => s.sourceRowIndex);
@@ -17,7 +17,7 @@ function SpecimenMeta() {
   if (!trace) {
     return (
       <span className="text-[10px] text-muted">
-        No specimen loaded
+        No patient note loaded
       </span>
     );
   }
@@ -63,9 +63,9 @@ function WorkbenchInner() {
         <div className="flex w-[55%] flex-col border-r border-border">
           <div className="flex items-center justify-between border-b border-border bg-surface-raised/50 px-4 py-1.5">
             <span className="text-[10px] font-semibold uppercase tracking-wider text-muted">
-              Specimen
+              Patient Note
             </span>
-            <SpecimenMeta />
+            <PatientNoteMeta />
           </div>
           <div className="flex-1 overflow-y-auto p-6">
             <ArchitectNoteRenderer />
@@ -87,7 +87,7 @@ export default function WorkbenchPage() {
       fallback={
         <div className="flex h-full items-center justify-center bg-background text-muted">
           <div className="text-center">
-            <p className="text-lg font-medium">Loading workbench…</p>
+            <p className="text-lg font-medium">Loading example explorer…</p>
           </div>
         </div>
       }

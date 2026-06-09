@@ -28,8 +28,8 @@ export default function ArchitectNoteRenderer() {
     return (
       <div className="flex h-full items-center justify-center rounded-xl border border-dashed border-border bg-surface p-12 text-muted">
         <div className="text-center">
-          <p className="text-lg font-medium">No specimen loaded</p>
-          <p className="mt-1 text-sm">Select a row and run the pipeline to see the note.</p>
+          <p className="text-lg font-medium">No patient note loaded</p>
+          <p className="mt-1 text-sm">Select a row and run the pipeline to see the clinical note.</p>
         </div>
       </div>
     );

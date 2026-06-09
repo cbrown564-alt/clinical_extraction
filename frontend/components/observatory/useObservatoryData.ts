@@ -214,7 +214,7 @@ function extractRowScore(row: unknown, fallbackIndex: number): RowScore | null {
   return null;
 }
 
-function computeSummary(entry: RegistryEntry, rows: unknown[]): RunSummary {
+function computeMetrics(entry: RegistryEntry, rows: unknown[]): RunSummary {
   const scores = rows.map((row, index) => extractRowScore(row, index)).filter((s): s is RowScore => s !== null);
 
   const total = scores.length;
@@ -271,7 +271,6 @@ function computeSummary(entry: RegistryEntry, rows: unknown[]): RunSummary {
     pragmaticF1: microF1,
     confusionMatrix,
     perCategoryMetrics,
-    rows: scores,
   };
 
   if (validationRows.length > 0) {
@@ -292,6 +291,12 @@ function computeSummary(entry: RegistryEntry, rows: unknown[]): RunSummary {
   }
 
   return summary;
+}
+
+function computeSummary(entry: RegistryEntry, rows: unknown[]): RunSummary {
+  const metrics = computeMetrics(entry, rows);
+  const scores = rows.map((row, index) => extractRowScore(row, index)).filter((s): s is RowScore => s !== null);
+  return { ...metrics, rows: scores };
 }
 
 /** Parse a run ID into a human-readable variant string. */
@@ -377,6 +382,7 @@ export function useObservatoryData() {
 
   const [selectedRunIds, setSelectedRunIds] = useState<Set<string>>(new Set());
   const [summaries, setSummaries] = useState<Map<string, RunSummary>>(new Map());
+  const [detailRows, setDetailRows] = useState<Map<string, RowScore[]>>(new Map());
   const [loadingRuns, setLoadingRuns] = useState<Set<string>>(new Set());
   const [runErrors, setRunErrors] = useState<Map<string, string>>(new Map());
 
@@ -486,7 +492,7 @@ export function useObservatoryData() {
       fetchArtifactWithTimeout(runId)
         .then((artifact) => {
           const allRows = artifact.content;
-          const summary = computeSummary(entry, allRows);
+          const summary = computeMetrics(entry, allRows);
           setSummaries((prev) => new Map(prev).set(runId, summary));
         })
         .catch((err) => {
@@ -536,7 +542,7 @@ export function useObservatoryData() {
         try {
           const artifact = await fetchArtifactWithTimeout(runId);
           const allRows = artifact.content;
-          const summary = computeSummary(entry, allRows);
+          const summary = computeMetrics(entry, allRows);
           setSummaries((prev) => new Map(prev).set(runId, summary));
         } catch (err) {
           setRunErrors((prev) => new Map(prev).set(runId, String(err)));
@@ -571,7 +577,7 @@ export function useObservatoryData() {
           fetchArtifactWithTimeout(runId)
             .then((artifact) => {
               const allRows = artifact.content;
-              const summary = computeSummary(entry, allRows);
+              const summary = computeMetrics(entry, allRows);
               setSummaries((prev) => new Map(prev).set(runId, summary));
             })
             .catch((err) => {
@@ -590,14 +596,58 @@ export function useObservatoryData() {
     [runs, summaries, loadingRuns, fetchArtifactWithTimeout]
   );
 
+  const loadRunDetail = useCallback(
+    async (runId: string) => {
+      if (detailRows.has(runId) || loadingRuns.has(runId)) return;
+      const entry = runs.find((r) => r.run_id === runId);
+      if (!entry) return;
+      const jsonlPaths = entry.artifact_paths.filter((p) => p.endsWith(".jsonl"));
+      if (jsonlPaths.length === 0) return;
+
+      setLoadingRuns((prev) => new Set(prev).add(runId));
+      setRunErrors((prev) => {
+        if (!prev.has(runId)) return prev;
+        const next = new Map(prev);
+        next.delete(runId);
+        return next;
+      });
+      try {
+        const artifact = await fetchArtifactWithTimeout(runId);
+        const allRows = artifact.content;
+        const scores = allRows
+          .map((row, index) => extractRowScore(row, index))
+          .filter((s): s is RowScore => s !== null);
+        setDetailRows((prev) => new Map(prev).set(runId, scores));
+        // Also update summary with full rows if not already present
+        const summary = computeSummary(entry, allRows);
+        setSummaries((prev) => new Map(prev).set(runId, summary));
+      } catch (err) {
+        setRunErrors((prev) => new Map(prev).set(runId, String(err)));
+      } finally {
+        setLoadingRuns((prev) => {
+          const next = new Set(prev);
+          next.delete(runId);
+          return next;
+        });
+      }
+    },
+    [runs, detailRows, loadingRuns, fetchArtifactWithTimeout]
+  );
+
   const selectedSummaries = useMemo(() => {
     const result: RunSummary[] = [];
     for (const runId of selectedRunIds) {
       const s = summaries.get(runId);
-      if (s) result.push(s);
+      if (!s) continue;
+      const rows = detailRows.get(runId);
+      if (rows) {
+        result.push({ ...s, rows });
+      } else {
+        result.push(s);
+      }
     }
     return result;
-  }, [selectedRunIds, summaries]);
+  }, [selectedRunIds, summaries, detailRows]);
 
   const hasTestData = useMemo(() => {
     return selectedSummaries.some((s) => s.testMetrics);
@@ -612,6 +662,7 @@ export function useObservatoryData() {
     runErrors,
     toggleRun,
     selectRuns,
+    loadRunDetail,
     hasTestData,
     runs,
   };

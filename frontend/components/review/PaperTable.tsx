@@ -159,7 +159,7 @@ export default function PaperTable({
                     sparkline = (
                       <div className="w-12 h-1.5 bg-border rounded-full overflow-hidden inline-block shrink-0">
                         <div 
-                          className="h-full bg-primary rounded-full transition-all duration-300"
+                          className="h-full bg-deterministic-alt rounded-full transition-all duration-300"
                           style={{ width: `${pct}%` }}
                         />
                       </div>

@@ -401,8 +401,6 @@ export function useGalleryUrlSync(
 
 // ── URL sync for Laboratory page ──
 export function useLaboratoryUrlSync(
-  activeTab: string,
-  setActiveTab: (tab: any) => void,
   search: string,
   setSearch: (s: string) => void,
   groupFilter: string,
@@ -422,7 +420,6 @@ export function useLaboratoryUrlSync(
 
   // Restore on mount
   useEffect(() => {
-    const tabParam = searchParams.get("tab");
     const searchParam = searchParams.get("search");
     const groupParam = searchParams.get("group");
     const portParam = searchParams.get("portability");
@@ -430,7 +427,6 @@ export function useLaboratoryUrlSync(
     const simLimitParam = searchParams.get("simLimit");
     const ablationParam = searchParams.get("ablation");
 
-    if (tabParam) setActiveTab(tabParam);
     if (searchParam) setSearch(decodeURIComponent(searchParam));
     if (groupParam) setGroupFilter(groupParam);
     if (portParam) setPortabilityFilter(portParam);
@@ -443,12 +439,6 @@ export function useLaboratoryUrlSync(
   // Sync to URL when state changes
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
-
-    if (activeTab && activeTab !== "inventory") {
-      params.set("tab", activeTab);
-    } else {
-      params.delete("tab");
-    }
 
     if (search) {
       params.set("search", encodeURIComponent(search));
@@ -491,7 +481,6 @@ export function useLaboratoryUrlSync(
     router.replace(newUrl, { scroll: false });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    activeTab,
     search,
     groupFilter,
     portabilityFilter,
@@ -522,7 +511,7 @@ export function useReviewUrlSync(
   // Sync tab state to URL
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
-    if (activeTab && activeTab !== "assembly") {
+    if (activeTab && activeTab !== "comparison") {
       params.set("tab", activeTab);
     } else {
       params.delete("tab");

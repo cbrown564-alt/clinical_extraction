@@ -2,14 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Microscope, FlaskConical, LayoutGrid, FileCheck } from "lucide-react";
+import { Microscope, LayoutGrid, FileCheck } from "lucide-react";
 
 const navItems = [
-  { href: "/workbench", label: "Workbench", color: "deterministic" },
-  { href: "/observatory", label: "Observatory", color: "llm" },
-  { href: "/laboratory", label: "Laboratory", color: "deterministic-alt" },
-  { href: "/gallery", label: "Gallery", color: "error" },
-  { href: "/review", label: "Review", color: "success" },
+  { href: "/workbench", label: "Example Explorer", color: "deterministic" },
+  { href: "/observatory", label: "Aggregate Performance", color: "llm" },
+  { href: "/laboratory", label: "Component Impact", color: "deterministic-alt" },
+  { href: "/gallery", label: "Error Gallery", color: "error" },
 ] as const;
 
 export default function Navbar() {
@@ -24,7 +23,7 @@ export default function Navbar() {
             <Microscope className="h-3.5 w-3.5 text-deterministic" />
           </div>
           <span className="text-sm font-semibold text-foreground leading-none">
-            Clinical Extraction Observatory
+            Clinical Extraction Explorer
           </span>
         </Link>
 
@@ -41,9 +40,7 @@ export default function Navbar() {
                 ? "bg-deterministic-alt/10 text-deterministic-alt border-deterministic-alt/20"
                 : item.color === "error"
                 ? "bg-error/10 text-error border-error/20"
-                : item.color === "success"
-                ? "bg-success/10 text-success border-success/20"
-                : "bg-muted/10 text-muted border-muted/20";
+                  : "bg-muted/10 text-muted border-muted/20";
 
             return (
               <Link
@@ -59,6 +56,18 @@ export default function Navbar() {
               </Link>
             );
           })}
+          <div className="w-px h-4 bg-border mx-1" />
+          <Link
+            href="/gold-audit"
+            className={`flex items-center gap-1 rounded-md px-2.5 py-1 text-[10px] font-medium transition-colors ${
+              pathname === "/gold-audit"
+                ? "text-success bg-success/10 border border-success/20"
+                : "text-muted border-transparent hover:text-foreground hover:bg-surface-raised"
+            }`}
+          >
+            <FileCheck className="h-3 w-3" />
+            Audit
+          </Link>
         </div>
       </div>
     </nav>

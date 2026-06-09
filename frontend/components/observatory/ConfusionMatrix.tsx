@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Grid3X3, X } from "lucide-react";
 import Link from "next/link";
+import { useObservatoryData } from "./useObservatoryData";
 import type { RunSummary, RowScore } from "@/lib/types";
 
 interface ConfusionMatrixProps {
@@ -42,6 +43,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 function getPresentCategories(summaries: RunSummary[]): string[] {
   const present = new Set<string>();
   for (const s of summaries) {
+    if (!s.rows) continue;
     for (const row of s.rows) {
       present.add(row.goldCategory);
       present.add(row.predictedCategory);
@@ -118,6 +120,7 @@ function findRowsForCell(
     split: string;
   }> = [];
   for (const summary of summaries) {
+    if (!summary.rows) continue;
     for (const row of summary.rows) {
       if (row.goldCategory === gold && row.predictedCategory === predicted) {
         results.push({
@@ -136,6 +139,15 @@ function findRowsForCell(
 
 export default function ConfusionMatrix({ summaries }: ConfusionMatrixProps) {
   const [selectedCell, setSelectedCell] = useState<{ gold: string; predicted: string } | null>(null);
+  const { loadRunDetail } = useObservatoryData();
+
+  useEffect(() => {
+    for (const summary of summaries) {
+      if (!summary.rows) {
+        loadRunDetail(summary.runId);
+      }
+    }
+  }, [summaries, loadRunDetail]);
 
   if (summaries.length === 0) {
     return (
@@ -256,6 +268,14 @@ export default function ConfusionMatrix({ summaries }: ConfusionMatrixProps) {
               <span className="text-muted">Count:</span>{" "}
               <span className="font-medium">{cellRows.length}</span>
             </div>
+            <div className="mb-2">
+              <Link
+                href={`/gallery?filter=all_errors&category=${encodeURIComponent(selectedCell.gold)}`}
+                className="inline-flex items-center gap-1 rounded-md border border-error/20 bg-error/5 px-2 py-0.5 text-[10px] font-medium text-error hover:bg-error/10 transition-colors"
+              >
+                View in Error Gallery →
+              </Link>
+            </div>
             <div className="flex-1 overflow-y-auto space-y-1">
               {cellRows.slice(0, 50).map((row, i) => (
                 <div
@@ -266,9 +286,9 @@ export default function ConfusionMatrix({ summaries }: ConfusionMatrixProps) {
                     <div className="truncate text-muted max-w-[150px]">{row.runId.slice(0, 20)}…</div>
                     <Link
                       href={`/workbench?pipeline=${encodeURIComponent(row.pipelineFamily)}&split=${encodeURIComponent(row.split)}&row=${row.sourceRowIndex}&stage=score`}
-                      className="text-[9px] font-semibold text-primary hover:underline shrink-0"
+                      className="text-[9px] font-semibold text-deterministic hover:underline shrink-0"
                     >
-                      Workbench
+                      Explorer
                     </Link>
                   </div>
                   <div className="flex gap-1 mt-0.5">
