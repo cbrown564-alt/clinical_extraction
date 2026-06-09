@@ -1,4 +1,4 @@
-# Gan 2026 Phase C — Dependency Audit
+﻿# Gan 2026 Phase C — Dependency Audit
 
 Date: 2026-06-07
 
@@ -183,9 +183,9 @@ dependency into the canonical line first" escape hatch (Section 5,
 | `llm_only_sparse_operands_selected_state_reasoner.py` | zero non-test/non-CLI dependents | **registered** (`cli/llm_pipeline_cli.py:225`) | `tests/test_gan2026_llm_only_sparse_operands_selected_state_reasoner.py` | not in labels; 0 rows | — | `needs-test-removal-first`, `needs-registry-update-first` |
 | `llm_only_typed_adapter_reasoner.py` | zero non-test/non-CLI dependents | **registered** (`cli/llm_pipeline_cli.py:286`) | `tests/test_gan2026_llm_only_typed_adapter_reasoner.py` | `FAMILY_SHORT_LABELS["llm_only_typed_adapter_reasoner"] = "Typed Adapter"`; 2 registry rows | — | `needs-test-removal-first`, `needs-registry-update-first` |
 | `llm_only_typed_operations_reasoner.py` | zero non-test/non-CLI dependents | **registered** (`cli/llm_pipeline_cli.py:298`) | `tests/test_gan2026_llm_only_typed_operations_reasoner.py` | `FAMILY_SHORT_LABELS["llm_only_typed_operations_reasoner"] = "Typed Operations"`; 2 registry rows | — | `needs-test-removal-first`, `needs-registry-update-first` |
-| `llm_only_structured_events_repair_ablation.py` | see Section 2.8 (item 7) | not registered | `tests/test_gan2026_llm_only_structured_events_repair_ambiguity.py`* | not in labels; 0 rows | mentioned in 2026-06-01 thermonuclear reviews + the canonical-runner-selection doc, no active-use framing | `needs-test-removal-first` |
+| `hybrid_structured_events_repair_ablation.py` | see Section 2.8 (item 7) | not registered | `tests/test_gan2026_hybrid_structured_events_repair_ambiguity.py`* | not in labels; 0 rows | mentioned in 2026-06-01 thermonuclear reviews + the canonical-runner-selection doc, no active-use framing | `needs-test-removal-first` |
 
-\* file is `tests/test_gan2026_llm_only_structured_events_repair_ablation.py`.
+\* file is `tests/test_gan2026_hybrid_structured_events_repair_ablation.py`.
 
 **Key finding**: 6 of 8 `llm_only_*` candidates are CLI-registered (the
 catalog summary's claim that the CLI is "shared-keep... but every
@@ -199,13 +199,13 @@ and `fewshot_train_exemplar_candidate_experiment` were built around
 `llm_only_direct_labeler`, which is now canonical, so they are retained for
 the canonical line rather than being treated as superseded-candidates.)
 
-### 2.8 `llm_only_structured_events_repair_ablation.py` — re-check (catalog summary item 7)
+### 2.8 `hybrid_structured_events_repair_ablation.py` — re-check (catalog summary item 7)
 
 | Check | Finding |
 | --- | --- |
-| Forward import | imports `llm.llm_only_structured_events` (the **canonical** module) — a one-directional "ablates the canonical" coupling |
-| Reverse import | the canonical `llm_only_structured_events.py` does **not** import the ablation module — confirmed no back-reference |
-| Run history | **zero** `experiments/gan2026_llm_only_structured_events_repair_ablation_*` artifacts found (no mature run history, unlike its sibling `llm_only_structured_events` which has multiple validation250 runs) |
+| Forward import | imports `llm.hybrid_structured_events` (the **canonical** module) — a one-directional "ablates the canonical" coupling |
+| Reverse import | the canonical `hybrid_structured_events.py` does **not** import the ablation module — confirmed no back-reference |
+| Run history | **zero** `experiments/gan2026_hybrid_structured_events_repair_ablation_*` artifacts found (no mature run history, unlike its sibling `hybrid_structured_events` which has multiple validation250 runs) |
 | CLI/Observatory | not registered anywhere |
 | Docs | only mentioned in the 2026-06-01 thermonuclear-review docs (structural inventory, not active-use framing) and the canonical-selection/catalog docs produced *this week* as part of this very planning effort |
 
@@ -434,7 +434,7 @@ From least to most friction:
    coupled to this lineage's removal.
 
 3. **The 8 `llm_only_*` modules + `claim_table_parser` + `reports/claim_table_report.py`
-   + `llm_only_structured_events_repair_ablation`** — heaviest CLI-registry
+   + `hybrid_structured_events_repair_ablation`** — heaviest CLI-registry
    footprint (6 of 8 are CLI-registered; 3 carry `FAMILY_SHORT_LABELS`
    entries and live registry rows for `claim_table_selector`/`typed_adapter`/
    `typed_operations`). Bundle with `claim_table_component_ablation`.
@@ -474,4 +474,4 @@ import never breaks.
 | 4 | Do the 13 `hybrid_parallel_state_candidate_reasoner`-referencing analyzers have live CLI/observatory wiring (the "blocked" scenario)? | **No** — re-check found **zero** CLI/observatory entries for any of the 13 under any name (filenames or function names). All 13 are loose string-literal artifact-path/label couplings, not code imports. **Not blocked** — `needs-doc-archival-first` + `needs-test-removal-first` (9 of 13) |
 | 5 | `cli/llm_pipeline_cli.py`/`observatory/api.py` registry entries | **Confirmed shared-keep**, confirmed every superseded-candidate runner needs explicit unwiring; additionally found the `hybrid_parallel_state_candidate_reasoner` entries are **dead** (no backing registry rows) while `hybrid_rules_candidates_llm_adjudicator`/`llm_only_claim_table_selector`/`llm_only_typed_*` entries are **live** (have registry rows) |
 | 6 | The two exclusive report writers | **Confirmed exclusive** — `reports/claim_table_report.py` imported only by `llm_only_claim_table_selector`; `reports/hybrid_adjudicator_report.py` imported only by `hybrid_rules_candidates_llm_adjudicator` |
-| 7 | `llm_only_structured_events_repair_ablation.py` re-check | **Confirmed not the active ablation mechanism** — no run history, no CLI/observatory wiring, only mentioned in this week's planning docs and a 2026-06-01 structural inventory. One-directional import of the canonical module (no reverse dependency). Joins the standard `llm_only_*` removal batch |
+| 7 | `hybrid_structured_events_repair_ablation.py` re-check | **Confirmed not the active ablation mechanism** — no run history, no CLI/observatory wiring, only mentioned in this week's planning docs and a 2026-06-01 structural inventory. One-directional import of the canonical module (no reverse dependency). Joins the standard `llm_only_*` removal batch |

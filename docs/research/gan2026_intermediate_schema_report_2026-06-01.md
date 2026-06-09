@@ -1,4 +1,4 @@
-# Gan 2026 Intermediate Schema Report
+﻿# Gan 2026 Intermediate Schema Report
 
 Date: 2026-06-01
 
@@ -15,7 +15,7 @@ extract seizure frequency from Gan 2026 synthetic clinical letters:
 1. `rules_only_v1`: deterministic rules emit candidate events, normalized
    events, and a final selection. This remains the strongest validation
    comparator and the cleanest evidence-span baseline.
-2. `llm_only_structured_events` v0.5: the LLM emits source-near events and a
+2. `hybrid_structured_events` v0.5: the LLM emits source-near events and a
    clinical selection. Its raw/clean attribution is still well below threshold;
    high scores arrive only after substantial deterministic post-processing.
 3. `llm_only_claim_table_selector` v5: the LLM emits a flat claim table plus a
@@ -129,7 +129,7 @@ broad generalization without stronger replication controls.
 ### 2. LLM-Only Structured Events V0.5
 
 Primary code:
-`src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_only_structured_events.py`
+`src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/hybrid_structured_events.py`
 
 The structured-events schema is:
 
@@ -724,6 +724,6 @@ research claim:
 - `experiments/gan2026_arch2_validation750_v01_interpretation_2026-06-01.md`
 - `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation250_gpt41mini_v02_live_2026-06-01.md`
 - `src/clinical_extraction/tasks/seizure_frequency/gan2026/pipeline_v1.py`
-- `src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_only_structured_events.py`
+- `src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/hybrid_structured_events.py`
 - `src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_only_claim_table_selector.py`
 - `src/clinical_extraction/tasks/seizure_frequency/gan2026/hybrid/hybrid_rules_candidates_llm_adjudicator.py`

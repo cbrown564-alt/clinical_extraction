@@ -1,4 +1,4 @@
-# Codebase Thermonuclear Review
+﻿# Codebase Thermonuclear Review
 
 Date: 2026-06-01
 
@@ -111,7 +111,7 @@ Files:
 
 - `src/clinical_extraction/tasks/seizure_frequency/gan2026/normalize.py`
 - `src/clinical_extraction/tasks/seizure_frequency/gan2026/pipeline_v1.py`
-- `src/clinical_extraction/tasks/seizure_frequency/gan2026/llm_only_structured_events.py`
+- `src/clinical_extraction/tasks/seizure_frequency/gan2026/hybrid_structured_events.py`
 - `src/clinical_extraction/tasks/seizure_frequency/gan2026/llm_only_claim_table_selector.py`
 - `src/clinical_extraction/tasks/seizure_frequency/gan2026/hybrid_rules_candidates_llm_adjudicator.py`
 
@@ -121,7 +121,7 @@ Current size signals:
 | --- | ---: | --- |
 | `normalize.py` | 2,332 | label parser, benchmark repair, gold policy, selected-evidence derivation, diary parsing, cluster parsing |
 | `pipeline_v1.py` | 2,119 | deterministic orchestration, schemas, rate extraction, cluster extraction, selection, temporal helpers |
-| `llm_only_structured_events.py` | 2,070 | prompt, DSPy module, schema parsing, repair stack, temporal derivation, scoring, reporting |
+| `hybrid_structured_events.py` | 2,070 | prompt, DSPy module, schema parsing, repair stack, temporal derivation, scoring, reporting |
 | `llm_only_claim_table_selector.py` | 1,241 | prompt, parser, scoring layers, component status, reporting |
 | `hybrid_rules_candidates_llm_adjudicator.py` | 1,141 | prompt, parser, deterministic candidate packaging, scoring, reporting, CLI |
 
@@ -186,8 +186,8 @@ Concrete fix:
 
 Files:
 
-- `src/clinical_extraction/tasks/seizure_frequency/gan2026/llm_only_structured_events.py`
-- `src/clinical_extraction/tasks/seizure_frequency/gan2026/llm_only_structured_events_repair_ablation.py`
+- `src/clinical_extraction/tasks/seizure_frequency/gan2026/hybrid_structured_events.py`
+- `src/clinical_extraction/tasks/seizure_frequency/gan2026/hybrid_structured_events_repair_ablation.py`
 - `src/clinical_extraction/tasks/seizure_frequency/gan2026/normalize.py`
 - `docs/research/gan2026_current_pipeline_results_report_2026-06-01.md`
 
@@ -283,7 +283,7 @@ Files:
 - `src/clinical_extraction/tasks/seizure_frequency/gan2026/evaluate.py`
 - `src/clinical_extraction/tasks/seizure_frequency/gan2026/normalize.py`
 - `src/clinical_extraction/tasks/seizure_frequency/gan2026/pipeline_v1.py`
-- `src/clinical_extraction/tasks/seizure_frequency/gan2026/llm_only_structured_events.py`
+- `src/clinical_extraction/tasks/seizure_frequency/gan2026/hybrid_structured_events.py`
 - `src/clinical_extraction/core/pipeline.py`
 
 `python -m mypy src` reports 31 errors. Some are configuration noise around
@@ -314,7 +314,7 @@ Files:
 
 - `tests/test_gan2026_pipeline_v1.py`
 - `tests/test_gan2026_normalize.py`
-- `tests/test_gan2026_llm_only_structured_events.py`
+- `tests/test_gan2026_hybrid_structured_events.py`
 
 The suite has 582 collected tests, which is excellent for a young repo. The
 problem is shape, not quantity. The largest tests encode many specific snippets

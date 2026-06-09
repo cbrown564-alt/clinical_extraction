@@ -7,7 +7,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser i
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm import llm_structured_temporal
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_structured_events import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events import (
     PROMPT_VERSION,
     StructuredExtractionRecord,
     StructuredRepairConfig,

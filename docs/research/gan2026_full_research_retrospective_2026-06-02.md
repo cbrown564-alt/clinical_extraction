@@ -1,9 +1,9 @@
-# Gan 2026 Full Research Retrospective
+﻿# Gan 2026 Full Research Retrospective
 
 Date: 2026-06-02
 
 Scope: current Gan 2026 seizure-frequency research state across
-`rules_only_v1`, `llm_only_structured_events`,
+`rules_only_v1`, `hybrid_structured_events`,
 `llm_only_claim_table_selector`, `hybrid_rules_candidates_llm_adjudicator`,
 `hybrid_clinical_frequency_state_graph`, and
 `llm_heavy_clinical_frequency_reasoner`.
@@ -69,7 +69,7 @@ suggest.
 ```mermaid
 flowchart LR
     N["Clinical note"] --> R["rules_only_v1\nDeterministic extraction + selection"]
-    N --> SE["llm_only_structured_events\nLLM event extraction + LLM selection"]
+    N --> SE["hybrid_structured_events\nLLM event extraction + LLM selection"]
     N --> CT["llm_only_claim_table_selector\nLLM claims + constrained final query"]
     N --> HC["hybrid_rules_candidates_llm_adjudicator\nRules candidates + LLM adjudication"]
     N --> SG["hybrid_clinical_frequency_state_graph\nGraph nodes + projection diagnostics"]
@@ -101,7 +101,7 @@ records, graph nodes, selected evidence, and repair-mode metadata.
 | --- | --- | ---: | --- |
 | `rules_only_v1` | validation750 | 697/750 Purist = 0.9293; 704/750 Pragmatic = 0.9387 | Strongest transparent validation comparator. |
 | `rules_only_v1` | locked test450 | about 343/450 Purist = 0.7622 by rerun; original report 0.7600; 354/450 Pragmatic = 0.7867 | Generalization gap is decisive. |
-| `llm_only_structured_events` v0.5 full stack | validation750 | 675/750 Purist = 0.9000; 690/750 Pragmatic = 0.9200 | Hits threshold only as repair-heavy hybrid behavior. |
+| `hybrid_structured_events` v0.5 full stack | validation750 | 675/750 Purist = 0.9000; 690/750 Pragmatic = 0.9200 | Hits threshold only as repair-heavy hybrid behavior. |
 | Structured-events clean attribution | 650-row saved-output replay | raw 394/650 = 0.6062; clean 438/650 = 0.6738 | Clean LLM-first endpoint remains well below target. |
 | `llm_only_claim_table_selector` v4 | validation250 then validation750 | 231/250 clean Purist, then 528/750 clean Purist | Prefix optimism; full-validation collapse. |
 | `llm_only_claim_table_selector` v5 | validation250 then test450 | 227/250 clean Purist; 301/450 clean Purist | Useful complementarity, not reliable replacement. |
@@ -178,7 +178,7 @@ it also taught us that a local rule stack can become brittle. The right role for
 `rules_only_v1` is frozen comparator, diagnostic substrate, and ablation control,
 not endlessly tuned production policy.
 
-## 2. `llm_only_structured_events`
+## 2. `hybrid_structured_events`
 
 ### Architecture
 

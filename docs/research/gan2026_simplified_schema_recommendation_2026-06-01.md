@@ -1,4 +1,4 @@
-# Gan 2026 Simplified Schema Recommendation
+﻿# Gan 2026 Simplified Schema Recommendation
 
 Date: 2026-06-01
 
@@ -57,7 +57,7 @@ The intermediate schema report shows why the existing schemas exist:
 
 - `rules_only_v1` exposes rule IDs, rule groups, candidate events,
   normalized events, selected evidence, and final selection.
-- `llm_only_structured_events` exposes source-near model events plus a model
+- `hybrid_structured_events` exposes source-near model events plus a model
   selection, then makes downstream repair measurable.
 - `llm_only_claim_table_selector` exposes competing claim rows and final query
   state.

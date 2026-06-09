@@ -1,4 +1,4 @@
-# Gan 2026 Uncertainty Signal Audit
+﻿# Gan 2026 Uncertainty Signal Audit
 
 Date: 2026-06-09
 
@@ -24,9 +24,9 @@ ownership model.
 
 | Signal | Layer | Type | Architectures |
 | --- | --- | --- | --- |
-| `certainty` (`certain`/`uncertain`) | Candidate extraction | 2-value enum | hybrid, `llm_only_structured_events` |
-| `certainty_reason` (5 values) | Candidate extraction | enum, required when uncertain | hybrid, `llm_only_structured_events` |
-| `assertion_status` (`asserted`/`negated`/`uncertain`/`conditional`) | Candidate extraction | 4-value enum | hybrid, `llm_only_structured_events` |
+| `certainty` (`certain`/`uncertain`) | Candidate extraction | 2-value enum | hybrid, `hybrid_structured_events` |
+| `certainty_reason` (5 values) | Candidate extraction | enum, required when uncertain | hybrid, `hybrid_structured_events` |
+| `assertion_status` (`asserted`/`negated`/`uncertain`/`conditional`) | Candidate extraction | 4-value enum | hybrid, `hybrid_structured_events` |
 | `selection_mode` (`ambiguous`/`conflict`/`no_reliable_candidate`) | Selection | enum (3 of 5 values express uncertainty) | hybrid |
 | `uncertainty_flags` (free text list) | Clinical assessment | unstructured | hybrid |
 | `aggregation_policy` (8 values, 2 express uncertainty) | Clinical assessment | coded enum | hybrid |
@@ -34,9 +34,9 @@ ownership model.
 | `uncertainty_flags` (tuple of strings) | Graph projection | unstructured, currently one value | `deterministic`, `deterministic_canonical_pipeline` |
 | `route_families` (15 named values) | Verification route | enum | hybrid only |
 | `confidence` (`low`/`medium`/`high`) | Final decision record | 3-value enum | `llm_only_direct_labeler`, `llm_only_canonical_pipeline` |
-| `answer_kind` (`unknown`/`unresolved_multiple` as uncertainty outcomes) | Final decision record | enum | `llm_only_direct_labeler`, `llm_only_canonical_pipeline`, `llm_only_structured_events` |
+| `answer_kind` (`unknown`/`unresolved_multiple` as uncertainty outcomes) | Final decision record | enum | `llm_only_direct_labeler`, `llm_only_canonical_pipeline`, `hybrid_structured_events` |
 
-The `llm_only_structured_events` and deterministic architectures have no scalar
+The `hybrid_structured_events` and deterministic architectures have no scalar
 confidence or uncertainty signal on the final decision record at all.
 
 ---
@@ -104,9 +104,9 @@ expresses uncertainty. The model is *confident* on seizure-free rows but more of
 
 ---
 
-## 4. llm_only_structured_events: Accuracy by Predicted Category
+## 4. hybrid_structured_events: Accuracy by Predicted Category
 
-`llm_only_structured_events` has no confidence or `answer_kind` field. The closest
+`hybrid_structured_events` has no confidence or `answer_kind` field. The closest
 uncertainty proxy is the predicted scoring category (gpt-4.1-mini run):
 
 | predicted_purist_category | correct | total | accuracy |

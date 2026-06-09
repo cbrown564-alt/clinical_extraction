@@ -1,10 +1,10 @@
-"""Exploratory analysis: do uncertainty/confidence signals correlate with accuracy?
+﻿"""Exploratory analysis: do uncertainty/confidence signals correlate with accuracy?
 
 Covers:
   - llm_only_direct_labeler: confidence (low/medium/high) x purist_correct
   - llm_only_canonical_pipeline: confidence x purist_correct
   - llm_only_direct_labeler + canonical: answer_kind x accuracy
-  - llm_only_structured_events: answer_kind (predicted_purist_category) x accuracy
+  - hybrid_structured_events: answer_kind (predicted_purist_category) x accuracy
   - hybrid: assessment_kind / aggregation_policy / uncertainty_flags distributions
     (no per-row accuracy without deep-replay; shown as distributions only)
 
@@ -48,15 +48,15 @@ FILES = {
     ),
     "structured_events_gpt41mini": Path(
         "experiments/gan2026_three_way_comparison_validation750"
-        "_llm_only_structured_events_gpt41mini_2026-06-07.jsonl"
+        "_hybrid_structured_events_gpt41mini_2026-06-07.jsonl"
     ),
     "structured_events_qwen": Path(
         "experiments/gan2026_three_way_comparison_validation750"
-        "_llm_only_structured_events_qwen3635b_2026-06-08.jsonl"
+        "_hybrid_structured_events_qwen3635b_2026-06-08.jsonl"
     ),
     "structured_events_deepseek": Path(
         "experiments/gan2026_three_way_comparison_validation750"
-        "_llm_only_structured_events_deepseek_2026-06-08.jsonl"
+        "_hybrid_structured_events_deepseek_2026-06-08.jsonl"
     ),
     "hybrid_gpt41mini": Path(
         "experiments/gan2026_three_way_comparison_validation750"
@@ -197,7 +197,7 @@ for key, (label, record_key) in AK_ARCHITECTURES.items():
     print_table(label, data)
 
 # structured_events: uses predicted_purist_category as its "kind" proxy
-print("\n### llm_only_structured_events — predicted_purist_category × accuracy")
+print("\n### hybrid_structured_events — predicted_purist_category × accuracy")
 print("    (no confidence or answer_kind field; scoring category is the closest proxy)")
 for key in ("structured_events_gpt41mini", "structured_events_qwen", "structured_events_deepseek"):
     rows = load(key)

@@ -1,11 +1,11 @@
-# Gan 2026 Structured LLM V0.5 Repair-Family Ablation
+﻿# Gan 2026 Structured LLM V0.5 Repair-Family Ablation
 
 This is a validation development no-call replay over saved raw model outputs. It is not a final holdout or benchmark result.
 
 - Split: `validation`
 - Split manifest: `gan2026_split_v1`
-- Raw-output source: `experiments\gan2026_llm_only_structured_events_validation250_qwen36_35b_max5000_overnight_2026-06-01.jsonl`
-- JSON summary: `experiments\gan2026_llm_only_structured_events_validation250_qwen36_35b_qwen_schema_repair_ablation_2026-06-04.json`
+- Raw-output source: `experiments\gan2026_hybrid_structured_events_validation250_qwen36_35b_max5000_overnight_2026-06-01.jsonl`
+- JSON summary: `experiments\gan2026_hybrid_structured_events_validation250_qwen36_35b_qwen_schema_repair_ablation_2026-06-04.json`
 
 ## Condition Summary
 

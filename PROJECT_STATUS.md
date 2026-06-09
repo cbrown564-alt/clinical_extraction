@@ -1,4 +1,4 @@
-# Project Status
+﻿# Project Status
 
 Last updated: 2026-06-07
 
@@ -32,7 +32,7 @@ gate already proven for the HN1 frozen audit.
    is now substantially assembled by the Phase F consolidation: the unified
    `Gan2026PipelineRunner` (`src/.../gan2026/runner.py`) already executes
    `deterministic`, `hybrid`, `llm_only_direct_labeler`, and
-   `llm_only_structured_events` as named `PipelineArchitecture` configurations
+   `hybrid_structured_events` as named `PipelineArchitecture` configurations
    sharing one projection/render/score/route/decision artifact contract — the
    Option-A structured-events chain described below is already wired, not
    pending. The remaining Phase 0 work is narrower: add two new configurations
@@ -338,12 +338,12 @@ full rationale.
   `docs/research/gan2026_canonical_runner_selection_2026-06-07.md`:
   `Gan2026PipelineV1` (deterministic) and `reset_clinical_assessment_pipeline`
   (hybrid) confirmed; `llm_only_direct_labeler` retained as the one-shot
-  fully-LLM baseline; `llm_only_structured_events` selected as the canonical
+  fully-LLM baseline; `hybrid_structured_events` selected as the canonical
   fully-LLM Option-A runner. Noncanonical `llm_only_*` modules have now been
   retired into lineage documentation rather than kept as active code.
 - **DONE 2026-06-07** (via Phase F, not a separate step): the Option-A chain is
   already assembled — `Gan2026PipelineRunner` (`gan2026/runner.py`) wires
-  `llm_only_direct_labeler` and `llm_only_structured_events` through the same
+  `llm_only_direct_labeler` and `hybrid_structured_events` through the same
   deterministic projection_render→score→route→decision stages the hybrid
   config uses, with verified artifact-shape compatibility (comparison plan
   Phase 0's prior "remaining mechanical step" is resolved).

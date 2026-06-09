@@ -1,11 +1,11 @@
-﻿# Gan 2026 Phase 1 Three-Way Architecture Comparison (openai/gpt-4.1-mini, validation750)
+# Gan 2026 Phase 1 Three-Way Architecture Comparison (openai/gpt-4.1-mini, validation750)
 
 Phase 1 three-way architecture comparison, openai/gpt-4.1-mini pass, validation750 only. No test450 read, no holdout-facing or benchmark-comparable claim. Compares six PipelineArchitecture configs on the axes that are universally meaningful (rendered/null disposition, Purist/Pragmatic-correct of rendered rows, evidence-trace validity, final-answer distribution); hybrid additionally carries a routing-taxonomy appendix that no other architecture has an analogous surface for.
 
 ## Artifacts
 
-- Comparison JSONL: `experiments\gan2026_three_way_comparison_phase1_report_gpt41mini_validation750_2026-06-08.jsonl`
-- Summary JSON: `experiments\gan2026_three_way_comparison_phase1_report_gpt41mini_validation750_2026-06-08.json`
+- Comparison JSONL: `C:\Users\cbrow\code\clinical_extraction\experiments\gan2026_three_way_comparison_phase3_report_gpt41mini_validation750_2026-06-09.jsonl`
+- Summary JSON: `C:\Users\cbrow\code\clinical_extraction\experiments\gan2026_three_way_comparison_phase3_report_gpt41mini_validation750_2026-06-09.json`
 - Model: `openai/gpt-4.1-mini`
 - Split: `validation`
 
@@ -13,12 +13,12 @@ Phase 1 three-way architecture comparison, openai/gpt-4.1-mini pass, validation7
 
 | Architecture | Examples | Rendered | Null | Routed | Purist-correct (of rendered) | Pragmatic-correct (of rendered) | Evidence-trace valid | Source |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| `deterministic` | 750 | 741 | 9 | N/A | 688 (0.928) | 695 (0.938) | 750 (1.000) | `run_split` |
-| `deterministic_canonical_pipeline` | 750 | 741 | 9 | N/A | 688 (0.928) | 695 (0.938) | 750 (1.000) | `run_split` |
-| `hybrid` | 750 | 589 | 160 | 42 | 500 (0.849) | 525 (0.891) | 734 (0.979) | `build_unified_pipeline_artifact_deep_replay` |
-| `llm_only_direct_labeler` | 750 | 750 | 0 | N/A | 564 (0.752) | 599 (0.799) | 711 (0.948) | `run_split` |
+| `deterministic` | 750 | 741 | 9 | N/A | 673 (0.908) | 681 (0.919) | 750 (1.000) | `run_split` |
+| `deterministic_canonical_pipeline` | 750 | 741 | 9 | N/A | 673 (0.908) | 681 (0.919) | 750 (1.000) | `run_split` |
+| `hybrid` | 750 | 597 | 152 | 48 | 526 (0.881) | 545 (0.913) | 723 (0.964) | `build_unified_pipeline_artifact_deep_replay` |
+| `llm_only_direct_labeler` | 750 | 750 | 0 | N/A | 575 (0.767) | 610 (0.813) | 695 (0.927) | `run_split` |
 | `hybrid_structured_events` | 750 | 748 | 2 | N/A | 661 (0.884) | 679 (0.908) | 691 (0.921) | `run_split` |
-| `llm_only_canonical_pipeline` | 750 | 750 | 0 | N/A | 581 (0.775) | 626 (0.835) | 700 (0.933) | `run_split` |
+| `llm_only_canonical_pipeline` | 750 | 750 | 0 | N/A | 582 (0.776) | 614 (0.819) | 688 (0.917) | `run_split` |
 
 Footnotes:
 
@@ -39,35 +39,35 @@ Footnotes:
 
 ### Final-Answer Distribution (top entries)
 
-- `deterministic`: {'no seizure frequency reference': 106, 'seizure free for multiple year': 93, '1 per day': 32, '1 per month': 21, 'multiple per week': 16, '2 per week': 11, 'unknown': 9, '4 per day': 7, '1 per 2 day': 7, 'multiple per day': 7, '1 per week': 7, '1 per 2 month': 7}
-- `deterministic_canonical_pipeline`: {'no seizure frequency reference': 106, 'seizure free for multiple year': 93, '1 per day': 32, '1 per month': 21, 'multiple per week': 16, '2 per week': 11, 'unknown': 9, '4 per day': 7, '1 per 2 day': 7, 'multiple per day': 7, '1 per week': 7, '1 per 2 month': 7}
-- `hybrid`: {'None': 177, 'unknown': 63, 'no seizure frequency reference': 30, '1 per month': 23, '1 per day': 18, 'multiple per day': 12, 'multiple per week': 11, '1 per 2 day': 7, 'seizure free for 6 month': 7, '1 to 2 per month': 7, '2 per week': 6, '1 per week': 6}
-- `llm_only_direct_labeler`: {'seizure free for multiple year': 113, 'unknown': 87, 'no seizure frequency reference': 59, '1 per day': 29, 'multiple per day': 26, '1 per month': 14, 'multiple per week': 12, '2 per week': 9, 'seizure free for 6 month': 9, '1 per 2 month': 8, '1 to 2 per month': 7, '2 to 3 per week': 7}
+- `deterministic`: {'no seizure frequency reference': 118, 'seizure free for multiple year': 95, '1 per day': 33, '1 per month': 21, 'multiple per week': 16, '2 per week': 11, 'unknown': 9, '4 per day': 7, '1 per 2 day': 7, 'multiple per day': 7, '1 per week': 7, '1 per 2 month': 7}
+- `deterministic_canonical_pipeline`: {'no seizure frequency reference': 118, 'seizure free for multiple year': 95, '1 per day': 33, '1 per month': 21, 'multiple per week': 16, '2 per week': 11, 'unknown': 9, '4 per day': 7, '1 per 2 day': 7, 'multiple per day': 7, '1 per week': 7, '1 per 2 month': 7}
+- `hybrid`: {'None': 175, 'unknown': 72, '1 per day': 31, 'no seizure frequency reference': 27, '1 per month': 18, 'multiple per day': 15, 'multiple per week': 13, '2 per week': 10, 'seizure free for 6 month': 8, '1 per 2 day': 7, '1 per week': 7, '1 per 2 to 3 week': 6}
+- `llm_only_direct_labeler`: {'seizure free for multiple year': 100, 'unknown': 94, 'no seizure frequency reference': 55, 'multiple per day': 29, '1 per day': 29, '1 per month': 18, 'multiple per week': 16, '2 to 3 per month': 15, '2 to 3 per week': 10, '2 per week': 9, '4 per day': 8, 'seizure free for 6 month': 8}
 - `hybrid_structured_events`: {'seizure_freq_unknown': 186, 'seizure_freq_more1week_less1day': 144, 'seizure_freq_more1mon_less1week': 108, 'currently_no_seizure': 108, 'seizure_freq_more1per6mon_less1mon': 81, 'seizure_freq_1ormore_daily': 54, 'seizure_freq_1_per_mon': 37, 'seizure_freq_1_per_week': 12, 'seizure_freq_1_per_6mon': 10, 'seizure_freq_1_per_yr': 8, 'None': 2}
-- `llm_only_canonical_pipeline`: {'unknown': 75, 'no seizure frequency reference': 46, 'seizure free for multiple year': 46, '1 per day': 27, 'multiple per day': 25, 'seizure free for 6 month': 22, 'multiple per week': 20, '1 per month': 19, 'seizure free for 3 month': 14, '2 per week': 9, 'multiple per month': 8, '1 per 2 month': 8}
+- `llm_only_canonical_pipeline`: {'unknown': 109, 'no seizure frequency reference': 57, 'seizure free for multiple year': 43, '1 per day': 34, 'multiple per day': 27, 'seizure free for 6 month': 21, 'multiple per week': 19, '1 per month': 19, 'seizure free for 3 month': 15, '1 per 2 month': 10, '2 per week': 8, '4 per day': 7}
 
 ## Hybrid-Only Routing Appendix
 
 No other architecture in this comparison has a routing stage; this appendix exists to characterize what `hybrid` does with the rows it doesn't render directly, not to provide a column the other five could also fill. Drawn from the same deep-replay artifact that supplies hybrid's shared-table row above.
 
-- Routed rows: 42 (0.071 of rendered)
-- Unrouted rows: 708
+- Routed rows: 48 (0.080 of rendered)
+- Unrouted rows: 702
 
 ### Route Family Counts
 
 - `cluster_axis_ambiguity`: 14
-- `conditional_only_trigger`: 2
-- `mixed_window_or_vague_addition`: 2
-- `multiple_current_primary_facts`: 1
+- `medication_cadence_ambiguity`: 1
+- `mixed_window_or_vague_addition`: 1
 - `relative_only_trend`: 2
-- `rendered_label_supported_but_policy_sensitive`: 2
+- `rendered_label_supported_but_policy_sensitive`: 1
 - `seizure_free_proxy_evidence_overreach`: 1
-- `selected_source_id_invalid`: 15
+- `selected_source_id_invalid`: 26
 - `unresolved_cluster_cadence_with_per_cluster_burden`: 4
 
 ### Verification Decision Action Counts
 
-- `abstain`: 42
+- `abstain`: 47
+- `human_review`: 1
 
 ## What This Report Does Not Claim
 

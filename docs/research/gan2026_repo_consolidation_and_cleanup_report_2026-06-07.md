@@ -1,4 +1,4 @@
-# Gan 2026 Repository Consolidation and Cleanup Report
+﻿# Gan 2026 Repository Consolidation and Cleanup Report
 
 Date: 2026-06-07
 Author: Claude
@@ -24,7 +24,7 @@ As resolved in the Canonical-Runner Selection decision record, the following rep
 | --- | --- | --- |
 | **Deterministic** | `pipeline_v1.py` (`Gan2026PipelineV1`) | Pure rule-based extraction baseline. |
 | **Fully LLM (One-shot)** | `llm/llm_only_direct_labeler.py` | Baseline for direct single-pass classification. |
-| **Fully LLM (Multi-step)** | `llm/llm_only_structured_events.py` | Base for multi-step structured extraction chains. |
+| **Fully LLM (Multi-step)** | `llm/hybrid_structured_events.py` | Base for multi-step structured extraction chains. |
 | **Hybrid** | `hybrid/reset_clinical_assessment_pipeline.py` | Active hybrid/reset focus composing LLM Select and rule-based Normalize -> Project stages. |
 
 Superseded experimental runners and modules were retired and cleaned up. Historical run records and research artifacts remain as provenance, but deleted runner families are no longer active execution or Observatory replay paths.
@@ -60,7 +60,7 @@ The consolidation was executed in 5 distinct batches, with the test suite verifi
 * **Goal**: Remove non-canonical LLM-only experiments with no unified runner.
 * **Deletions**:
   - Unwired 6 CLI-registered non-canonical LLM runners from registry and CLI spec.
-  - Deleted 8 non-canonical LLM modules: `llm_only_claim_table_selector.py`, `claim_table_parser.py`, `claim_table_report.py`, `claim_table_component_ablation.py`, `llm_only_minimal_evidence_selector.py`, `llm_only_rich_selected_state_reasoner.py`, `llm_only_simplified_selected_state_reasoner.py`, `llm_only_sparse_operands_selected_state_reasoner.py`, `llm_only_typed_adapter_reasoner.py`, `llm_only_typed_operations_reasoner.py`, and `llm_only_structured_events_repair_ablation.py`.
+  - Deleted 8 non-canonical LLM modules: `llm_only_claim_table_selector.py`, `claim_table_parser.py`, `claim_table_report.py`, `claim_table_component_ablation.py`, `llm_only_minimal_evidence_selector.py`, `llm_only_rich_selected_state_reasoner.py`, `llm_only_simplified_selected_state_reasoner.py`, `llm_only_sparse_operands_selected_state_reasoner.py`, `llm_only_typed_adapter_reasoner.py`, `llm_only_typed_operations_reasoner.py`, and `hybrid_structured_events_repair_ablation.py`.
   - Deleted all mirrored test files.
 * **Outcome**: Verified green and committed under commit `9777c8c`.
 
@@ -88,7 +88,7 @@ The consolidation was executed in 5 distinct batches, with the test suite verifi
 
 Phase F is now complete as a shared infrastructure layer:
 
-- **Pipeline runners / CLI**: `src/clinical_extraction/tasks/seizure_frequency/gan2026/runner.py` exposes the unified runner/configuration surface for deterministic, hybrid, `llm_only_direct_labeler`, and `llm_only_structured_events` executions. The single CLI registry delegates through this surface rather than keeping the retired standalone-runner registry pattern.
+- **Pipeline runners / CLI**: `src/clinical_extraction/tasks/seizure_frequency/gan2026/runner.py` exposes the unified runner/configuration surface for deterministic, hybrid, `llm_only_direct_labeler`, and `hybrid_structured_events` executions. The single CLI registry delegates through this surface rather than keeping the retired standalone-runner registry pattern.
 - **Hybrid/reset metadata boundary**: `hybrid/reset_clinical_assessment_pipeline.py` reuses the unified stage builder but preserves the canonical reset artifact identity (`reset_clinical_assessment_pipeline`) and reset-specific claim boundary.
 - **Reporting / artifact analysis**: `artifact_analysis/__init__.py` exposes the official Phase F analyzer registry. The four cluster-level modules are:
   - `scoped_ablation_analyzer.py` for the ablation cluster.
@@ -123,7 +123,7 @@ retained analyzers/tests that were outside this cleanup batch.
 `/pipeline-families` now exposes exactly:
 
 - canonical families: `rules_only`, `llm_only_direct_labeler`,
-  `llm_only_structured_events`, `reset_clinical_assessment_pipeline`;
+  `hybrid_structured_events`, `reset_clinical_assessment_pipeline`;
 - retained comparators, when backed by registry rows:
   `dspy_final_selection_adjudicator`,
   `hybrid_clinical_frequency_state_graph`, `llm_first_direct_extractor`,

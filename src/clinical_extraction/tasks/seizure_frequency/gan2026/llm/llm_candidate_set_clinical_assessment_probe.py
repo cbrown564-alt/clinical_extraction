@@ -64,7 +64,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.selected_evidence impor
     selected_evidence_derivation,
 )
 
-PROMPT_VERSION = "gan2026_candidate_set_clinical_assessment_probe_v3"
+PROMPT_VERSION = "gan2026_candidate_set_clinical_assessment_probe_v5"
 PIPELINE_FAMILY = "llm_candidate_set_clinical_assessment_probe"
 NORMALIZATION_POLICY_ID = "gan2026_clinical_assessment_normalization_v0"
 DISABLED_SWITCH_ISSUE_PREFIX = "ablation_switch_disabled:"
@@ -255,6 +255,17 @@ def build_assessment_inputs(
                 "a current or recent candidate is available."
             ),
             (
+                "When the CandidateSet contains candidates from multiple concurrent seizure "
+                "types, select the candidate with the highest frequency as primary — rank by "
+                "how often events occur (events per day over events per week over events per "
+                "month), not by clinical severity or seizure type. A daily drop attack or "
+                "daily absence seizure candidate takes precedence over a weekly or monthly "
+                "tonic-clonic seizure candidate. Exception: when candidates form a true "
+                "cluster pattern (recurring grouped episodes separated by seizure-free "
+                "intervals), use the cluster cadence candidate as primary rather than a "
+                "within-cluster daily burst rate."
+            ),
+            (
                 "If the note has no usable frequency candidate, return unknown_frequency "
                 "with unknown_due_to_absence or no_reference with no_reference_boundary; "
                 "do not return frequency_rate with zero primary candidates."
@@ -283,11 +294,31 @@ def build_assessment_inputs(
                 "For menstrual, sleep, travel, or other recurring risk windows, keep "
                 "seizure-free outside-window statements in supporting context. Do not "
                 "copy outside-window seizure-free durations into cluster or frequency "
-                "normalized_burden fields."
+                "normalized_burden fields. If the note only describes seizures within a "
+                "conditional risk window and states seizure freedom outside that window, "
+                "assessment_kind should be unknown_frequency — the conditional seizure-free "
+                "state is not an unconditional current seizure-free duration. Set "
+                "uncertainty_flags to include seizure_free_only_outside_cyclic_risk_window."
+            ),
+            (
+                "If the note describes a recent seizure burst (multiple events in a short "
+                "recent period) followed by a current seizure-free run, use the burst "
+                "candidate as primary and set assessment_kind to frequency_rate — not "
+                "seizure_free. A seizure_free assessment is appropriate only when the "
+                "absence of seizures is the primary clinical statement and no recent "
+                "burst candidate exists in the CandidateSet."
             ),
             (
                 "Preserve cluster structure: cluster cadence and events per cluster are "
                 "separate axes unless the same evidence clearly gives both."
+            ),
+            (
+                "Use assessment_kind cluster_frequency only when the CandidateSet candidate "
+                "explicitly describes a recurring clinical cluster pattern: grouped multi-event "
+                "episodes (e.g., 'seizure clusters', 'cluster days', 'clusters of events') "
+                "that recur on a cadence. Do not select cluster_frequency because a candidate's "
+                "source phrase incidentally contains the word 'cluster' or 'clustering' as a "
+                "general descriptor without describing a recurring grouped-episode pattern."
             ),
             (
                 "Do not turn vague words like several, few, many, or multiple into "
@@ -298,6 +329,22 @@ def build_assessment_inputs(
                 "from the primary burden."
             ),
             "Rationale should be one short clinical sentence.",
+            (
+                "uncertainty_flags must contain only values from this exact list; "
+                "do not write free-text descriptions: "
+                "active_seizures_contradict_seizure_free_claim, "
+                "seizure_free_inferred_from_proxy_evidence_only, "
+                "cluster_description_axis_unclear, "
+                "cluster_rate_unknown_per_cluster_count_known, "
+                "dosing_schedule_may_be_misread_as_seizure_rate, "
+                "seizure_free_only_outside_cyclic_risk_window, "
+                "stated_count_and_time_window_do_not_pair, "
+                "seizures_described_only_when_triggered, "
+                "only_relative_change_no_current_rate, "
+                "multiple_facts_not_reliably_additive, "
+                "several_current_facts_compete_unresolved, "
+                "answer_supported_but_represents_clinical_borderline."
+            ),
             "Return only assessment_draft.",
         ],
         "policy_examples": _policy_examples(),
@@ -327,6 +374,59 @@ def build_assessment_inputs(
                 "unknown_due_to_ambiguity",
                 "unknown_due_to_absence",
                 "no_reference_boundary",
+            ],
+            "aggregation_policy_when_to_use": [
+                (
+                    "single_fact — exactly one candidate is the primary current "
+                    "burden; no grouping or combination needed."
+                ),
+                (
+                    "additive_same_window — two or more concrete frequency-rate "
+                    "candidates share the same explicit time window and together "
+                    "form the combined current burden; do not use for vague facts "
+                    "or mixed windows."
+                ),
+                (
+                    "primary_with_context — one candidate is the primary burden; "
+                    "the others are contextual (historical, trigger-specific, or "
+                    "non-additive supporting facts), not additive."
+                ),
+                (
+                    "cluster_axis — the primary burden is expressed in cluster terms "
+                    "(cluster cadence, events per cluster, or both)."
+                ),
+                (
+                    "seizure_free_state — the primary assessment is a seizure-free "
+                    "duration, not a seizure rate."
+                ),
+                (
+                    "unknown_due_to_ambiguity — seizures are discussed and at least "
+                    "one candidate exists, but competing claims cannot be resolved "
+                    "into a single current rate."
+                ),
+                (
+                    "unknown_due_to_absence — seizures are discussed but no usable "
+                    "primary candidate was found; nothing is countable or datable "
+                    "enough to state a rate."
+                ),
+                (
+                    "no_reference_boundary — the note contains no seizure-frequency "
+                    "reference at all."
+                ),
+            ],
+            "uncertainty_flag_values": [
+                "active_seizures_contradict_seizure_free_claim",
+                "seizure_free_inferred_from_proxy_evidence_only",
+                "cluster_description_axis_unclear",
+                "cluster_rate_unknown_per_cluster_count_known",
+                "dosing_schedule_may_be_misread_as_seizure_rate",
+                "seizure_free_only_outside_cyclic_risk_window",
+                "stated_count_and_time_window_do_not_pair",
+                "seizures_described_only_when_triggered",
+                "only_relative_change_no_current_rate",
+                "multiple_facts_not_reliably_additive",
+                "several_current_facts_compete_unresolved",
+                "answer_supported_but_represents_clinical_borderline",
             ],
             "normalized_burden": {
                 "model_fill": ["source_normalized_phrase"],

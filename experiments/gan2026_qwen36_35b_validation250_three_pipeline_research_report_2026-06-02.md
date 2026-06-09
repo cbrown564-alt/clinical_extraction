@@ -1,4 +1,4 @@
-# Gan 2026 Qwen36 35B Validation250 Three-Pipeline Research Report
+﻿# Gan 2026 Qwen36 35B Validation250 Three-Pipeline Research Report
 
 Date: 2026-06-02
 
@@ -8,9 +8,9 @@ a held-out benchmark result.
 ## Compared Artifacts
 
 - Structured-events:
-  `experiments/gan2026_llm_only_structured_events_validation250_qwen36_35b_max5000_overnight_2026-06-01.jsonl`
+  `experiments/gan2026_hybrid_structured_events_validation250_qwen36_35b_max5000_overnight_2026-06-01.jsonl`
 - Structured-events error analysis:
-  `experiments/gan2026_llm_only_structured_events_validation250_qwen36_35b_max5000_overnight_2026-06-01_error_analysis.md`
+  `experiments/gan2026_hybrid_structured_events_validation250_qwen36_35b_max5000_overnight_2026-06-01_error_analysis.md`
 - Minimal evidence selector:
   `experiments/gan2026_llm_only_minimal_evidence_selector_validation250_qwen36_35b_max5000_overnight_2026-06-01.jsonl`
 - Minimal evidence selector error analysis:
@@ -251,7 +251,7 @@ replacement has stronger evidence and preserves kind/window compatibility.
 
 ## Recommendation
 
-Promote `llm_only_structured_events` as the Qwen candidate architecture for the
+Promote `hybrid_structured_events` as the Qwen candidate architecture for the
 next validation ladder, with explicit schema-repair work before another live
 250-row run.
 

@@ -1,4 +1,4 @@
-# Gan 2026 LLM-Structured Validation Run
+﻿# Gan 2026 LLM-Structured Validation Run
 
 Date: 2026-06-04
 
@@ -20,7 +20,7 @@ Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a
 - Runtime model display/API identifier: `ollama_chat/qwen3.6:35b`
 - Provider/execution: native Ollama chat endpoint via DSPy/LiteLLM: `http://localhost:11434`
 - Model role: LLM-only structured-events extractor and clinical selector
-- Prompt/program version: `gan2026_llm_only_structured_events_v0.5`
+- Prompt/program version: `gan2026_hybrid_structured_events_v0.5`
 - Temperature: `0.0`
 - Max tokens: `5000`
 - Mode: `live`
@@ -39,7 +39,7 @@ Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a
 - Repair config: `basic_label_repair=True`, `basic_label_repair_format_only=False`, `breakthrough_repair=True`, `clean_scorer_facing_gold_policy=False`, `dated_sequence_repair=True`, `elapsed_anchor_repair=True`, `json_dialect_repair=True`, `monthly_diary_repair=True`, `non_epileptic_repair=True`, `post_change_burst_repair=True`, `repair_mode=None`, `residual_jerk_repair=True`, `selected_evidence_repair=True`, `usual_interval_repair=True`
 - Git commit: `93aab1a`
 - Working tree note: `dirty/uncommitted local changes`
-- JSONL artifact: `experiments/gan2026_llm_only_structured_events_test_qwen36_35b_max5000_live_2026-06-04.jsonl`
+- JSONL artifact: `experiments/gan2026_hybrid_structured_events_test_qwen36_35b_max5000_live_2026-06-04.jsonl`
 
 ## Summary
 

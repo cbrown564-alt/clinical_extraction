@@ -1,4 +1,4 @@
-# Gan 2026 Architecture Lineage And Retired Approaches
+﻿# Gan 2026 Architecture Lineage And Retired Approaches
 
 Date: 2026-06-07
 
@@ -14,7 +14,7 @@ internals can later be removed without losing anything load-bearing. Each
 section below answers: what the line tried, what it taught the project, and
 what (if anything) of it survives in the canonical lines —
 `pipeline_v1.py` (deterministic), `hybrid/reset_clinical_assessment_pipeline.py`
-(hybrid), and `llm_only_direct_labeler.py` / `llm_only_structured_events.py`
+(hybrid), and `llm_only_direct_labeler.py` / `hybrid_structured_events.py`
 (fully-LLM one-shot and multi-step variants), per
 [[gan2026_canonical_runner_selection_2026-06-07]].
 
@@ -237,8 +237,8 @@ it tested:
   answer with model-derived graph projection) — i.e., pushing the
   candidate/selection idea one level more structured than claim tables, with
   the model owning the projection step rather than a deterministic stage.
-- **`llm_only_structured_events_repair_ablation`**: a no-call companion
-  ablation harness for the *canonical* `llm_only_structured_events`, meant to
+- **`hybrid_structured_events_repair_ablation`**: a no-call companion
+  ablation harness for the *canonical* `hybrid_structured_events`, meant to
   isolate which repair-family policies affect the canonical module's labels.
   Confirmed **not the active ablation mechanism** (zero run history, zero
   wiring) — its contribution is the *methodology* (ablate repair families
@@ -254,7 +254,7 @@ richer intermediates (events, claims, typed operations, selected states)
 "improved on direct label prediction" but each exposed its own new attribution
 or selection problem rather than solving the underlying one. This is precisely
 the finding that makes `llm_only_direct_labeler` (the simplest direct baseline) the
-right choice for the one-shot LLM-only version, and `llm_only_structured_events`
+right choice for the one-shot LLM-only version, and `hybrid_structured_events`
 (structured event extraction coupled with multi-step reasoning) the right choice
 for the two- and three-step variants.
 

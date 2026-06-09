@@ -1,10 +1,10 @@
-# Gan 2026 Qwen Structured-Events Validation250 Error Analysis
+﻿# Gan 2026 Qwen Structured-Events Validation250 Error Analysis
 
 Date: 2026-06-02
 
-Analyzed artifact: `experiments/gan2026_llm_only_structured_events_validation250_qwen36_35b_max5000_overnight_2026-06-01.md`
+Analyzed artifact: `experiments/gan2026_hybrid_structured_events_validation250_qwen36_35b_max5000_overnight_2026-06-01.md`
 
-JSONL inspected: `experiments/gan2026_llm_only_structured_events_validation250_qwen36_35b_max5000_overnight_2026-06-01.jsonl`
+JSONL inspected: `experiments/gan2026_hybrid_structured_events_validation250_qwen36_35b_max5000_overnight_2026-06-01.jsonl`
 
 This is an error analysis of a validation development run, not a held-out benchmark result.
 

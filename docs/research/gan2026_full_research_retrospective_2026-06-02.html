@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -445,7 +445,7 @@
 <a href="#architecture-map">Architecture Map</a>
 <a href="#performance-summary">Performance Summary</a>
 <a href="#1-rules-only-v1">1. rules_only_v1</a>
-<a href="#2-llm-only-structured-events">2. llm_only_structured_events</a>
+<a href="#2-llm-only-structured-events">2. hybrid_structured_events</a>
 <a href="#3-llm-only-claim-table-selector">3. llm_only_claim_table_selector</a>
 <a href="#4-hybrid-rules-candidates-llm-adjudicator">4. hybrid_rules_candidates_llm_adjudicator</a>
 <a href="#5-hybrid-clinical-frequency-state-graph">5. hybrid_clinical_frequency_state_graph</a>
@@ -472,7 +472,7 @@
         </div>
       </header>
       <article>
-        <p>Scope: current Gan 2026 seizure-frequency research state across <code>rules_only_v1</code>, <code>llm_only_structured_events</code>, <code>llm_only_claim_table_selector</code>, <code>hybrid_rules_candidates_llm_adjudicator</code>, <code>hybrid_clinical_frequency_state_graph</code>, and <code>llm_heavy_clinical_frequency_reasoner</code>.</p>
+        <p>Scope: current Gan 2026 seizure-frequency research state across <code>rules_only_v1</code>, <code>hybrid_structured_events</code>, <code>llm_only_claim_table_selector</code>, <code>hybrid_rules_candidates_llm_adjudicator</code>, <code>hybrid_clinical_frequency_state_graph</code>, and <code>llm_heavy_clinical_frequency_reasoner</code>.</p>
 <p>This is a research retrospective, not a benchmark-comparison claim. Validation results are development evidence under <code>gan2026_split_v1</code>; locked-test results are aggregate/frozen-audit context only and must not be used for row-level tuning.</p>
 <h2 id="executive-synthesis">Executive Synthesis</h2>
 <p>The project is materially closer to its core research goals, but not because one architecture has simply &quot;solved&quot; Gan 2026. The clearest finding is that seizure frequency extraction is a multi-stage clinical state problem: source evidence, temporality, assertion, seizure-free intervals, clusters, diary windows, competing semiologies, underdetermined frequency, and benchmark-facing label grammar all have to be represented separately before the final Gan label is safe.</p>
@@ -497,7 +497,7 @@
 <h2 id="architecture-map">Architecture Map</h2>
 <figure class="diagram"><div class="mermaid">flowchart LR
     N[&quot;Clinical note&quot;] --&gt; R[&quot;rules_only_v1\nDeterministic extraction + selection&quot;]
-    N --&gt; SE[&quot;llm_only_structured_events\nLLM event extraction + LLM selection&quot;]
+    N --&gt; SE[&quot;hybrid_structured_events\nLLM event extraction + LLM selection&quot;]
     N --&gt; CT[&quot;llm_only_claim_table_selector\nLLM claims + constrained final query&quot;]
     N --&gt; HC[&quot;hybrid_rules_candidates_llm_adjudicator\nRules candidates + LLM adjudication&quot;]
     N --&gt; SG[&quot;hybrid_clinical_frequency_state_graph\nGraph nodes + projection diagnostics&quot;]
@@ -525,7 +525,7 @@
         <tbody>
           <tr><td><code>rules_only_v1</code></td><td>validation750</td><td>697/750 Purist = 0.9293; 704/750 Pragmatic = 0.9387</td><td>Strongest transparent validation comparator.</td></tr>
 <tr><td><code>rules_only_v1</code></td><td>locked test450</td><td>about 343/450 Purist = 0.7622 by rerun; original report 0.7600; 354/450 Pragmatic = 0.7867</td><td>Generalization gap is decisive.</td></tr>
-<tr><td><code>llm_only_structured_events</code> v0.5 full stack</td><td>validation750</td><td>675/750 Purist = 0.9000; 690/750 Pragmatic = 0.9200</td><td>Hits threshold only as repair-heavy hybrid behavior.</td></tr>
+<tr><td><code>hybrid_structured_events</code> v0.5 full stack</td><td>validation750</td><td>675/750 Purist = 0.9000; 690/750 Pragmatic = 0.9200</td><td>Hits threshold only as repair-heavy hybrid behavior.</td></tr>
 <tr><td>Structured-events clean attribution</td><td>650-row saved-output replay</td><td>raw 394/650 = 0.6062; clean 438/650 = 0.6738</td><td>Clean LLM-first endpoint remains well below target.</td></tr>
 <tr><td><code>llm_only_claim_table_selector</code> v4</td><td>validation250 then validation750</td><td>231/250 clean Purist, then 528/750 clean Purist</td><td>Prefix optimism; full-validation collapse.</td></tr>
 <tr><td><code>llm_only_claim_table_selector</code> v5</td><td>validation250 then test450</td><td>227/250 clean Purist; 301/450 clean Purist</td><td>Useful complementarity, not reliable replacement.</td></tr>
@@ -575,7 +575,7 @@
 <h3 id="performance-and-lessons">Performance And Lessons</h3>
 <p>The system is excellent on validation and perfectly evidence-exact on both validation and test. But the locked-test drop is the defining warning. Evidence exactness is necessary but not sufficient: the hard operation is converting a span into a current clinical state under multiple windows, semiologies, clusters, and boundary states.</p>
 <p>Rules-only taught us that high validation F1 can be achieved transparently, but it also taught us that a local rule stack can become brittle. The right role for <code>rules_only_v1</code> is frozen comparator, diagnostic substrate, and ablation control, not endlessly tuned production policy.</p>
-<h2 id="2-llm-only-structured-events">2. <code>llm_only_structured_events</code></h2>
+<h2 id="2-llm-only-structured-events">2. <code>hybrid_structured_events</code></h2>
 <h3 id="architecture">Architecture</h3>
 <figure class="diagram"><div class="mermaid">flowchart TD
     A[&quot;Clinical note&quot;] --&gt; B[&quot;LLM structured event extractor&quot;]

@@ -1,4 +1,4 @@
-path,lineage,role,status,notes
+﻿path,lineage,role,status,notes
 src/clinical_extraction/tasks/seizure_frequency/gan2026/__init__.py,shared-infrastructure,doc,shared-keep,package init
 src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/__init__.py,shared-infrastructure,doc,shared-keep,package init for artifact_analysis/
 src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/architecture_component_ablation.py,hybrid-rules-adjudicator,analyzer,needs-decision,"overlap cluster: ablation; imports hybrid_rules_candidates_llm_adjudicator — superseded-lineage-coupled, audit in Phase C"
@@ -45,7 +45,7 @@ src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/nonpre
 src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/null_reduction_validation_slices.py,hybrid-reset-current,analyzer,shared-keep,overlap cluster: validation surfaces
 src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/projection_arbitration_ablation.py,hybrid-reset-current,analyzer,shared-keep,overlap cluster: ablation
 src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/projection_decision_matrix.py,hybrid-reset-current,analyzer,shared-keep,overlap cluster: projection/render/scoring
-src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/replay_io.py,shared-infrastructure,component,shared-keep,shared saved-output replay IO helpers used across analyzers and llm_only_structured_events
+src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/replay_io.py,shared-infrastructure,component,shared-keep,shared saved-output replay IO helpers used across analyzers and hybrid_structured_events
 src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/reset_stage_component_ablation_v6.py,hybrid-reset-current,analyzer,shared-keep,overlap cluster: ablation
 src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/reset_stage_component_inventory.py,hybrid-reset-current,analyzer,canonical,records reset-stage crosswalk from old families to current owners — directly documents the canonical reset lineage
 src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/rq10_gold_scorer_ambiguity_audit.py,hybrid-parallel-state,analyzer,needs-decision,"overlap cluster: RQ-panels; references hybrid_parallel_state_candidate_reasoner — superseded-lineage-coupled, audit in Phase C"
@@ -128,10 +128,10 @@ src/clinical_extraction/tasks/seizure_frequency/gan2026/components/trigger_relea
 src/clinical_extraction/tasks/seizure_frequency/gan2026/components/validation_surface_inventory.py,hybrid-staged-v0,component,needs-decision,pressure/policy-routing or staged-decision component named in 'staged hybrid assembly' rows (component_evidence_matrix docstring names 'staged hybrid assembly rows'); audit exclusivity to staged_hybrid_assembly v0 lineage in Phase C
 src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/__init__.py,shared-infrastructure,doc,shared-keep,package init for contract/
 src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/benchmark_prediction_repair.py,shared-infrastructure,contract-schema,shared-keep,"shared prediction-repair contract (see also experiments/repair_modes, components/benchmark_renderer_fixture)"
-src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/candidate_set.py,shared-infrastructure,contract-schema,shared-keep,core CandidateSet contract — imported by reset pipeline and llm_only_structured_events
+src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/candidate_set.py,shared-infrastructure,contract-schema,shared-keep,core CandidateSet contract — imported by reset pipeline and hybrid_structured_events
 src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/clinical_assessment.py,shared-infrastructure,contract-schema,shared-keep,merged clinical-assessment contract for the architecture reset — shared across hybrid/llm-only canonical lines
 src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/gold_policy.py,shared-infrastructure,contract-schema,shared-keep,shared gold-label policy contract
-src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/label_parser.py,shared-infrastructure,contract-schema,shared-keep,"shared label-parsing contract — imported by pipeline_v1, reset pipeline, and llm_only_structured_events/minimal_evidence_selector"
+src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/label_parser.py,shared-infrastructure,contract-schema,shared-keep,"shared label-parsing contract — imported by pipeline_v1, reset pipeline, and hybrid_structured_events/minimal_evidence_selector"
 src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/projection_render.py,shared-infrastructure,contract-schema,shared-keep,projection/render contracts for the architecture reset — shared by reset pipeline and analyzers
 src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/schema_repair.py,shared-infrastructure,contract-schema,shared-keep,shared schema-repair module — imported by reset pipeline and llm_only_* canonical/comparator runners
 src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/selected_fact.py,shared-infrastructure,contract-schema,shared-keep,minimal selector contract for candidate decisions
@@ -205,13 +205,13 @@ src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_only_minimal_evi
 src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_only_rich_selected_state_reasoner.py,llm-only,runner,superseded-candidate,named superseded-candidate (non-canonical llm_only_*)
 src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_only_simplified_selected_state_reasoner.py,llm-only,runner,superseded-candidate,named superseded-candidate (non-canonical llm_only_*)
 src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_only_sparse_operands_selected_state_reasoner.py,llm-only,runner,superseded-candidate,named superseded-candidate (non-canonical llm_only_*)
-src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_only_structured_events.py,llm-only,runner,canonical,canonical fully-LLM Option-A runner per selection decision
-src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_only_structured_events_repair_ablation.py,llm-only,runner,superseded-candidate,companion ablation harness for canonical structured_events — likely folds into lineage doc per selection note; flagged superseded-candidate pending Phase C check of whether it remains the active ablation mechanism
+src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/hybrid_structured_events.py,llm-only,runner,canonical,canonical fully-LLM Option-A runner per selection decision
+src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/hybrid_structured_events_repair_ablation.py,llm-only,runner,superseded-candidate,companion ablation harness for canonical structured_events — likely folds into lineage doc per selection note; flagged superseded-candidate pending Phase C check of whether it remains the active ablation mechanism
 src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_only_typed_adapter_reasoner.py,llm-only,runner,superseded-candidate,named superseded-candidate (non-canonical llm_only_*)
 src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_only_typed_operations_reasoner.py,llm-only,runner,superseded-candidate,named superseded-candidate (non-canonical llm_only_*)
-src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_monthly_diary.py,llm-only,component,canonical,exclusive support module for canonical llm_only_structured_events (monthly-diary repair helpers)
-src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py,llm-only,component,canonical,exclusive support module for canonical llm_only_structured_events (repair-family helpers)
-src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_temporal.py,llm-only,component,canonical,exclusive support module for canonical llm_only_structured_events / its support modules (temporal helpers)
+src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_monthly_diary.py,llm-only,component,canonical,exclusive support module for canonical hybrid_structured_events (monthly-diary repair helpers)
+src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py,llm-only,component,canonical,exclusive support module for canonical hybrid_structured_events (repair-family helpers)
+src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_temporal.py,llm-only,component,canonical,exclusive support module for canonical hybrid_structured_events / its support modules (temporal helpers)
 src/clinical_extraction/tasks/seizure_frequency/gan2026/llm_config.py,shared-infrastructure,component,shared-keep,shared LLM/dspy configuration used by all LLM-touching runners
 src/clinical_extraction/tasks/seizure_frequency/gan2026/normalize.py,shared-infrastructure,component,shared-keep,shared normalize stage — composed by pipeline_v1 and the reset pipeline; canonical 'Normalize' stage
 src/clinical_extraction/tasks/seizure_frequency/gan2026/observatory/__init__.py,shared-infrastructure,doc,shared-keep,package init for observatory/
@@ -222,7 +222,7 @@ src/clinical_extraction/tasks/seizure_frequency/gan2026/reports/__init__.py,shar
 src/clinical_extraction/tasks/seizure_frequency/gan2026/reports/base.py,shared-infrastructure,report,shared-keep,shared Markdown report helpers — base for all report writers
 src/clinical_extraction/tasks/seizure_frequency/gan2026/reports/claim_table_report.py,llm-only,report,superseded-candidate,report writer exclusively for superseded llm_only_claim_table_selector — candidate for removal alongside it
 src/clinical_extraction/tasks/seizure_frequency/gan2026/reports/hybrid_adjudicator_report.py,hybrid-rules-adjudicator,report,superseded-candidate,report writer exclusively for superseded hybrid_rules_candidates_llm_adjudicator — candidate for removal alongside it
-src/clinical_extraction/tasks/seizure_frequency/gan2026/reports/llm_structured_events_report.py,llm-only,report,canonical,report writer for canonical llm_only_structured_events
+src/clinical_extraction/tasks/seizure_frequency/gan2026/reports/llm_structured_events_report.py,llm-only,report,canonical,report writer for canonical hybrid_structured_events
 src/clinical_extraction/tasks/seizure_frequency/gan2026/reports/minimal_evidence_report.py,llm-only,report,shared-keep,report writer for retained Option-B comparator llm_only_minimal_evidence_selector
 src/clinical_extraction/tasks/seizure_frequency/gan2026/selected_evidence/__init__.py,shared-infrastructure,doc,shared-keep,package init for selected_evidence/
 src/clinical_extraction/tasks/seizure_frequency/gan2026/selected_evidence/final_label_projection.py,shared-infrastructure,component,shared-keep,selected-evidence derivation/projection helpers — shared component layer used by reset pipeline and analyzers
@@ -320,8 +320,8 @@ tests/test_gan2026_llm_only_minimal_evidence_selector.py,llm-only,test,shared-ke
 tests/test_gan2026_llm_only_rich_selected_state_reasoner.py,llm-only,test,superseded-candidate,tests llm_only_rich_selected_state_reasoner.py (llm-only/superseded-candidate)
 tests/test_gan2026_llm_only_simplified_selected_state_reasoner.py,llm-only,test,superseded-candidate,tests llm_only_simplified_selected_state_reasoner.py (llm-only/superseded-candidate)
 tests/test_gan2026_llm_only_sparse_operands_selected_state_reasoner.py,llm-only,test,superseded-candidate,tests llm_only_sparse_operands_selected_state_reasoner.py (llm-only/superseded-candidate)
-tests/test_gan2026_llm_only_structured_events.py,llm-only,test,canonical,tests llm_only_structured_events.py (llm-only/canonical)
-tests/test_gan2026_llm_only_structured_events_repair_ablation.py,llm-only,test,superseded-candidate,tests llm_only_structured_events_repair_ablation.py (llm-only/superseded-candidate)
+tests/test_gan2026_hybrid_structured_events.py,llm-only,test,canonical,tests hybrid_structured_events.py (llm-only/canonical)
+tests/test_gan2026_hybrid_structured_events_repair_ablation.py,llm-only,test,superseded-candidate,tests hybrid_structured_events_repair_ablation.py (llm-only/superseded-candidate)
 tests/test_gan2026_llm_only_typed_adapter_reasoner.py,llm-only,test,superseded-candidate,tests llm_only_typed_adapter_reasoner.py (llm-only/superseded-candidate)
 tests/test_gan2026_llm_only_typed_operations_reasoner.py,llm-only,test,superseded-candidate,tests llm_only_typed_operations_reasoner.py (llm-only/superseded-candidate)
 tests/test_gan2026_llm_pipeline_cli.py,shared-infrastructure,test,shared-keep,tests llm_pipeline_cli.py (shared-infrastructure/shared-keep)

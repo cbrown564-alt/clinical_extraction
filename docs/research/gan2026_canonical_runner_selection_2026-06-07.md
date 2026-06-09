@@ -1,4 +1,4 @@
-# Gan 2026 Canonical-Runner Selection (Phase 0 / Cleanup-Plan Phase B)
+﻿# Gan 2026 Canonical-Runner Selection (Phase 0 / Cleanup-Plan Phase B)
 
 Date: 2026-06-07
 
@@ -21,7 +21,7 @@ row).
 | Deterministic | `pipeline_v1.py` (`Gan2026PipelineV1`) | confirmed — only candidate |
 | Hybrid | `hybrid/reset_clinical_assessment_pipeline.py` | confirmed — already named "current focus" in `PROJECT_STATUS.md` |
 | Fully LLM (One-shot variant) | **`llm/llm_only_direct_labeler.py`** | **selected as canonical base** for the one-shot LLM-only version |
-| Fully LLM (Two- / Three-step variants) | **`llm/llm_only_structured_events.py`** | **selected as canonical base** for the multi-step variants |
+| Fully LLM (Two- / Three-step variants) | **`llm/hybrid_structured_events.py`** | **selected as canonical base** for the multi-step variants |
 
 The remaining **8** `llm_only_*` modules become superseded-candidates, subject
 to the Phase C dependency audit:
@@ -31,7 +31,7 @@ to the Phase C dependency audit:
 - `llm_only_rich_selected_state_reasoner.py`
 - `llm_only_simplified_selected_state_reasoner.py`
 - `llm_only_sparse_operands_selected_state_reasoner.py`
-- `llm_only_structured_events_repair_ablation.py` (companion ablation for the
+- `hybrid_structured_events_repair_ablation.py` (companion ablation for the
   canonical module — see note below; likely folds into the lineage doc rather
   than surviving as a standalone file)
 - `llm_only_typed_adapter_reasoner.py`
@@ -45,7 +45,7 @@ to the Phase C dependency audit:
 
 It serves as the canonical baseline for direct classification without intermediate step models, representing the most straightforward direct LLM application.
 
-**Why `llm_only_structured_events` as the base for the Two/Three-step variants:**
+**Why `hybrid_structured_events` as the base for the Two/Three-step variants:**
 
 1. **Output shape decomposes along family lines, not a single answer field.**
    It produces a structured intermediate ("events") with explicit per-family
@@ -68,12 +68,12 @@ It serves as the canonical baseline for direct classification without intermedia
    integration plumbing."
 4. **Already wired into CLI and observatory** (`cli/llm_pipeline_cli.py`,
    `observatory/api.py` `_PIPELINE_FAMILIES`), with a mature run history
-   (`experiments/gan2026_llm_only_structured_events_validation250_*`,
+   (`experiments/gan2026_hybrid_structured_events_validation250_*`,
    `..._test_qwen36_35b_max5000_live_2026-06-04*`) including its own repair
    ablation companion — i.e., it already has the kind of ablatable,
    trace-visible structure the reset discipline requires.
 
-**A note on `llm_only_structured_events_repair_ablation.py`**: this is a
+**A note on `hybrid_structured_events_repair_ablation.py`**: this is a
 companion ablation harness for the canonical module, not an independent
 architecture candidate. It should survive Phase C only if it remains the
 active mechanism for ablating the canonical runner's repair-family policies;
@@ -97,6 +97,6 @@ the other non-canonical `llm_only_*` modules.
 ## Revisability
 
 This is a development-mechanics selection, not a frozen claim — if Phase 1's
-apples-to-apples comparison shows `llm_only_structured_events` integrates
+apples-to-apples comparison shows `hybrid_structured_events` integrates
 poorly with the reset back-half, that is itself a Phase-1 finding and this
 selection should be revisited before Phase C removal proceeds for the other modules.

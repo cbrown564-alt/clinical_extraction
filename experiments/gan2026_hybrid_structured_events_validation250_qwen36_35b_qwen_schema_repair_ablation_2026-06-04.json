@@ -1,4 +1,4 @@
-{
+﻿{
   "conditions": [
     {
       "name": "A_strict_json_raw_llm_final_label_only",
@@ -3628,7 +3628,7 @@
     }
   ],
   "model": "ollama_chat/qwen3.6:35b",
-  "reuse_jsonl": "experiments\\gan2026_llm_only_structured_events_validation250_qwen36_35b_max5000_overnight_2026-06-01.jsonl",
+  "reuse_jsonl": "experiments\\gan2026_hybrid_structured_events_validation250_qwen36_35b_max5000_overnight_2026-06-01.jsonl",
   "split": "validation",
   "split_manifest": "gan2026_split_v1"
 }

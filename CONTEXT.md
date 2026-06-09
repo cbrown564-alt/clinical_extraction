@@ -1,4 +1,4 @@
-# Clinical Extraction
+﻿# Clinical Extraction
 
 This context covers the Gan 2026 seizure-frequency extraction work and its
 evaluation surfaces.
@@ -244,7 +244,7 @@ _Avoid_: mixed-window addition, hidden selector preference, score-only rescue
 by the Phase F consolidation that executes the deterministic, hybrid, and
 fully-LLM architectures as named `PipelineArchitecture` configurations
 (`deterministic`, `hybrid`, `llm_only_direct_labeler`,
-`llm_only_structured_events`) inside one class, producing the shared
+`hybrid_structured_events`) inside one class, producing the shared
 projection/render/score/route/decision artifact contract. New architecture
 variants are added as new `PipelineArchitecture` values and `run()` branches
 within this framework, not as standalone forked modules.
@@ -312,7 +312,7 @@ embedded as prompt instructions — under `guidance_for_tricky_cases` in the
 prompt payload, written in plain clinical language rather than this
 project's internal stage/architecture vocabulary, since the model has no
 context for that vocabulary — rather than pre/post processing. It sits alongside, not in place of, the existing
-`llm_only_direct_labeler` and `llm_only_structured_events` configurations; it
+`llm_only_direct_labeler` and `hybrid_structured_events` configurations; it
 reports a distinct evidence text-containment metric (`evidence_text_contained`
 / `evidence_text_containment_rate` — does the LLM's free-text evidence string
 appear in the source note) rather than the formal `CandidateSet` source-id

@@ -1,4 +1,4 @@
-# Research Contribution Thesis
+﻿# Research Contribution Thesis
 
 This project sits in a long line of epilepsy NLP work, summarized for this repo in:
 
@@ -40,7 +40,7 @@ Examples:
 ```text
 rules_only_v1
 llm_only_direct_labeler
-llm_only_structured_events
+hybrid_structured_events
 llm_only_claim_table_selector
 hybrid_rules_candidates_llm_adjudicator
 hybrid_llm_events_rules_normalizer

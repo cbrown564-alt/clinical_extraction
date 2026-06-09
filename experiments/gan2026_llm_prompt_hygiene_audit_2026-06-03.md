@@ -1,4 +1,4 @@
-# Gan 2026 LLM Prompt Hygiene Audit - 2026-06-03
+﻿# Gan 2026 LLM Prompt Hygiene Audit - 2026-06-03
 
 ## Summary
 
@@ -33,7 +33,7 @@ seizure-frequency reasoning.
 
 - `llm_only_direct_labeler.build_prompt_input`
 - `llm_only_claim_table_selector.build_prompt_input`
-- `llm_only_structured_events.build_prompt_input`
+- `hybrid_structured_events.build_prompt_input`
 - `llm_only_minimal_evidence_selector.build_prompt_input`
 - `llm_heavy_clinical_frequency_reasoner.build_prompt_input`
 - `llm_only_typed_adapter_reasoner.build_typed_adapter_inputs`
@@ -70,7 +70,7 @@ the text the model actually receives.
 
 ## Verification
 
-- `python -m pytest tests/test_gan2026_llm_only_claim_table_selector.py tests/test_gan2026_llm_only_direct_labeler.py tests/test_gan2026_llm_only_structured_events.py tests/test_gan2026_llm_only_minimal_evidence_selector.py tests/test_gan2026_llm_heavy_clinical_frequency_reasoner.py tests/test_gan2026_llm_only_typed_adapter_reasoner.py tests/test_gan2026_llm_heavy_evidence_selection_with_deterministic_adapters.py tests/test_gan2026_llm_prompt_hygiene.py -q`
+- `python -m pytest tests/test_gan2026_llm_only_claim_table_selector.py tests/test_gan2026_llm_only_direct_labeler.py tests/test_gan2026_hybrid_structured_events.py tests/test_gan2026_llm_only_minimal_evidence_selector.py tests/test_gan2026_llm_heavy_clinical_frequency_reasoner.py tests/test_gan2026_llm_only_typed_adapter_reasoner.py tests/test_gan2026_llm_heavy_evidence_selection_with_deterministic_adapters.py tests/test_gan2026_llm_prompt_hygiene.py -q`
   passed with 107 tests.
 
 ## Residual Risk

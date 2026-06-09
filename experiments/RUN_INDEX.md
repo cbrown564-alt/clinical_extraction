@@ -1,26 +1,26 @@
-# Gan 2026 Run Registry
+﻿# Gan 2026 Run Registry
 
 Generated from `experiments/registry.jsonl`. The JSONL file remains the canonical machine-readable registry.
 
 ## Revise
 
-### `gan2026_three_way_comparison_validation750_llm_only_structured_events_gpt41mini_2026-06-07`
+### `gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07`
 - Date/split: `2026-06-08`; `validation`; `750` rows.
-- Pipeline: `llm_only_structured_events`; mode `live`; replay `live`.
+- Pipeline: `hybrid_structured_events`; mode `live`; replay `live`.
 - Model role: LLM-only structured-events extractor and selector -- slim source-near event schema; deterministic code limited to Gan normalization, evidence validation, and scoring; model `openai/gpt-4.1-mini`.
 - Primary metrics: evidence_valid_rows=691, null_rows=2, pragmatic_correct_of_rendered=679, purist_correct_of_rendered=661, rendered_rows=748.
 - Evidence validity: 691/750 rows (92.1%) carry an evidence_valid substring-presence trace; the 2 null rows are rare parse failures, not a structural give-up signal -- see the Phase 1 report's per-architecture rendered/null derivation footnote.
 - Claim language: Phase 1 three-way architecture comparison data point (gpt-4.1-mini pass, validation750, gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07); not a standalone promote/reject verdict on its own -- see gan2026_three_way_comparison_phase1_report_gpt41mini_validation750_2026-06-08 for cross-architecture synthesis once it lands. Restarted after fixing a schema_repair.py _ASSERTION_ALIASES bug that remapped the already-valid assertion_status value 'unknown' to the invalid 'unclear'; confirmed clean via re-pilot validation25 (0 failures, 100% accuracy) before this full run (see run markdown header).
-- Artifacts: `experiments/gan2026_three_way_comparison_validation750_llm_only_structured_events_gpt41mini_2026-06-07.jsonl`, `experiments/gan2026_three_way_comparison_validation750_llm_only_structured_events_gpt41mini_2026-06-07.md`.
+- Artifacts: `experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07.jsonl`, `experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07.md`.
 
-### `gan2026_three_way_comparison_validation750_llm_only_structured_events_deepseek_2026-06-08`
+### `gan2026_three_way_comparison_validation750_hybrid_structured_events_deepseek_2026-06-08`
 - Date/split: `2026-06-08`; `validation`; `750` rows.
-- Pipeline: `llm_only_structured_events`; mode `live`; replay `live`.
+- Pipeline: `hybrid_structured_events`; mode `live`; replay `live`.
 - Model role: LLM-only structured-events extractor and selector -- slim source-near event schema; deterministic code limited to Gan normalization, evidence validation, and scoring. deepseek-chat alias for deepseek-v4-flash non-thinking mode -- calling deepseek-v4-flash directly defaults to thinking mode (emits reasoning_content blocks that exhaust max_tokens before producing JSON output); deepseek-chat is the official non-thinking-mode alias for the same underlying v4-flash model; model `deepseek/deepseek-chat`.
 - Primary metrics: call_failures=0, evidence_valid_rate=0.957, evidence_valid_rows=718, null_rows=8, parse_or_validation_failures=8, pragmatic_accuracy=0.845, pragmatic_correct=634, purist_accuracy=0.812, purist_correct=609, rendered_rows=742.
 - Evidence validity: 718/750 rows (95.7%) carry an evidence_valid substring-presence trace. 8 parse_or_validation_failures (~1%) -- within accepted noise for this architecture.
 - Claim language: Phase 1 three-way architecture comparison data point (gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07); deepseek-v4-flash pass (third model alongside gpt-4.1-mini and qwen3.6-35b). Run had two transient Windows OSError [Errno 22] crashes during checkpoint writes (likely anti-virus file-locking); both were recovered via --resume-existing without data loss. deterministic and deterministic_canonical_pipeline are rule-based (no LLM calls); their results are shared from the gpt-4.1-mini canonical artifacts (2026-06-07) -- byte-identical across models.
-- Artifacts: `experiments/gan2026_three_way_comparison_validation750_llm_only_structured_events_deepseek_2026-06-08.jsonl`, `experiments/gan2026_three_way_comparison_validation750_llm_only_structured_events_deepseek_2026-06-08.md`.
+- Artifacts: `experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_deepseek_2026-06-08.jsonl`, `experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_deepseek_2026-06-08.md`.
 
 ### `gan2026_three_way_comparison_validation750_llm_only_direct_labeler_deepseek_2026-06-08`
 - Date/split: `2026-06-08`; `validation`; `750` rows.
@@ -71,8 +71,8 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 ### `gan2026_three_way_comparison_phase1_report_gpt41mini_validation750_2026-06-08`
 - Date/split: `2026-06-08`; `validation`; `750` rows.
 - Pipeline: `three_way_comparison_phase1_report`; mode `analysis-only`; replay `analysis_only`.
-- Model role: Analysis-only synthesis -- reads six already-completed gpt-4.1-mini validation750 architecture-comparison artifacts (deterministic, deterministic_canonical_pipeline, hybrid, llm_only_direct_labeler, llm_only_structured_events, llm_only_canonical_pipeline) and assembles a shared comparison table plus a hybrid-only routing-taxonomy appendix; makes no hosted LLM calls of its own.; model `openai/gpt-4.1-mini`.
-- Primary metrics: architectures_compared=6, deterministic_canonical_pipeline_purist_correct_of_rendered=688, deterministic_purist_correct_of_rendered=688, hybrid_purist_correct_of_rendered=511, llm_only_canonical_pipeline_purist_correct_of_rendered=581, llm_only_direct_labeler_purist_correct_of_rendered=564, llm_only_structured_events_purist_correct_of_rendered=661, rows_per_architecture=750.
+- Model role: Analysis-only synthesis -- reads six already-completed gpt-4.1-mini validation750 architecture-comparison artifacts (deterministic, deterministic_canonical_pipeline, hybrid, llm_only_direct_labeler, hybrid_structured_events, llm_only_canonical_pipeline) and assembles a shared comparison table plus a hybrid-only routing-taxonomy appendix; makes no hosted LLM calls of its own.; model `openai/gpt-4.1-mini`.
+- Primary metrics: architectures_compared=6, deterministic_canonical_pipeline_purist_correct_of_rendered=688, deterministic_purist_correct_of_rendered=688, hybrid_purist_correct_of_rendered=511, llm_only_canonical_pipeline_purist_correct_of_rendered=581, llm_only_direct_labeler_purist_correct_of_rendered=564, hybrid_structured_events_purist_correct_of_rendered=661, rows_per_architecture=750.
 - Evidence validity: Surfaces, but does not collapse, the fact that evidence-trace metrics are NOT uniform across architectures: four report evidence_valid (free-text substring presence), llm_only_canonical_pipeline reports the deliberately distinct evidence_text_contained, and hybrid reports a formal CandidateSet source-id validity rate. The report's footnotes and per-architecture metric table make this explicit so readers do not compare these as one accuracy number.
 - Claim language: Phase 1 three-way architecture comparison synthesis (gpt-4.1-mini pass, validation750 only; gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07 and gan2026_three_way_comparison_phase1_report_design_2026-06-07). No test450 read, no holdout-facing or benchmark-comparable claim -- compares six PipelineArchitecture configs on universally meaningful axes (rendered/null disposition, Purist/Pragmatic-correct of rendered rows, evidence-trace validity, final-answer distribution); hybrid additionally carries a routing-taxonomy appendix with no analogous surface in the other five. hybrid's shared-table row is sourced from build_unified_pipeline_artifact deep-replay (using the live-generated CandidateSets the now-fixed hybrid run embeds in its own output rows), not raw run_split output -- this asymmetry is the architectural fact under comparison, not a methodology artifact, and the report's footnotes say so explicitly. A notable finding surfaced here: deterministic and deterministic_canonical_pipeline produce IDENTICAL purist/pragmatic/distribution numbers, i.e. the staged canonical-pipeline wrapper converges on the same rendered answers as the unstaged baseline on this pass.
 - Artifacts: `experiments/gan2026_three_way_comparison_phase1_report_gpt41mini_validation750_2026-06-08.jsonl`, `experiments/gan2026_three_way_comparison_phase1_report_gpt41mini_validation750_2026-06-08.json`, `experiments/gan2026_three_way_comparison_phase1_report_gpt41mini_validation750_2026-06-08.md`.

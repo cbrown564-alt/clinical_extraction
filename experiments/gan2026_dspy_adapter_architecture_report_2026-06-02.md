@@ -1,4 +1,4 @@
-# Gan 2026 DSPy Adapter Architecture Report
+﻿# Gan 2026 DSPy Adapter Architecture Report
 
 Date: 2026-06-02
 
@@ -35,7 +35,7 @@ Observed `dspy.settings.adapter` is `None`, so DSPy uses its default adapter
 behavior. The current pipeline signatures use a single opaque output string:
 
 - `decision_json: str` in `llm_only_direct_labeler` and the hybrid adjudicator;
-- `structured_json: str` in `llm_only_structured_events`;
+- `structured_json: str` in `hybrid_structured_events`;
 - `llm_heavy_reasoner_json: str` in `llm_heavy_clinical_frequency_reasoner`;
 - `boundary_state_graph_builder_json: str` in the boundary-state graph builder.
 

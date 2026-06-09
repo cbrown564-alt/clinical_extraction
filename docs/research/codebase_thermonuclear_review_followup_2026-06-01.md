@@ -1,4 +1,4 @@
-# Codebase Thermonuclear Review Follow-Up
+﻿# Codebase Thermonuclear Review Follow-Up
 
 Date: 2026-06-01
 
@@ -188,14 +188,14 @@ normalization.
 
 New home:
 
-- `src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_only_structured_events.py`
+- `src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/hybrid_structured_events.py`
 
 Related modules:
 
 - `llm/llm_structured_repair_families.py`
 - `llm/llm_structured_temporal.py`
 - `llm/llm_structured_monthly_diary.py`
-- `llm/llm_only_structured_events_repair_ablation.py`
+- `llm/hybrid_structured_events_repair_ablation.py`
 - `reports/llm_structured_events_report.py`
 
 What changed:

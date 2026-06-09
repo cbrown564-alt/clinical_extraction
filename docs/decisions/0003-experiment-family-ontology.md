@@ -1,4 +1,4 @@
-# 0003: Experiment Family Ontology
+﻿# 0003: Experiment Family Ontology
 
 Date: 2026-06-01
 
@@ -32,7 +32,7 @@ when describing prior runs, but runnable code should not preserve old aliases.
 ## Consequences
 
 - Current CLI choices use ontology-aligned names such as
-  `llm_only_direct_labeler`, `llm_only_structured_events`,
+  `llm_only_direct_labeler`, `hybrid_structured_events`,
   `llm_only_claim_table_selector`, and
   `hybrid_rules_candidates_llm_adjudicator`.
 - Current modules use matching names, for example

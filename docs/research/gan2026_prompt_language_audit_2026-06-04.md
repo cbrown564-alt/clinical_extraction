@@ -1,4 +1,4 @@
-# Gan 2026 Prompt Language Audit
+﻿# Gan 2026 Prompt Language Audit
 
 Date: 2026-06-04
 
@@ -71,7 +71,7 @@ coverage.
 | --- | --- | --- | --- | --- |
 | `llm/llm_only_direct_labeler.py` | Direct note-to-label extraction | Model sees `Gan 2026`, `prompt_version`, `final_label`, `denominator`; docstring mentions prompt/gold | Medium | Keep as historical baseline unless rerun; if reused, separate metadata and rename model-facing fields/descriptions. |
 | `llm/llm_only_minimal_evidence_selector.py` | Minimal evidence selector | Uses `source-near`, `final_query`, `non_seizure_or_proxy`, `proxy-only`; schema is string-description based | High | Next remediation target because it is intended to be minimal but still carries jargon. |
-| `llm/llm_only_structured_events.py` | Event extraction plus selection | Uses `source-near`, `final_label`, `Gan 2026`; mixes extraction and selection instructions | High | Rewrite if reused for single-task controls; split extraction from selection or justify combined task. |
+| `llm/hybrid_structured_events.py` | Event extraction plus selection | Uses `source-near`, `final_label`, `Gan 2026`; mixes extraction and selection instructions | High | Rewrite if reused for single-task controls; split extraction from selection or justify combined task. |
 | `llm/llm_only_claim_table_selector.py` | Claim table plus final selector | Very instruction-heavy; includes `source-near`, `selector_decision`, `cluster_axis`, `boundary_state`, `final_label`, `denominator`, `proxy`; many narrow rules | High | Treat as controlled-experiment prompt only. Do not use as default style. Build a smaller successor with typed schema descriptions. |
 | `llm/llm_heavy_clinical_frequency_reasoner.py` | Multi-stage extraction/selection/rendering | Uses stages, "model owns", `operands`, `raw_llm_final_label`, `denominator`, schema-rendering terms | High | Preserve as historical LLM-heavy condition; do not add more rules without a predeclared claim. |
 | `llm/llm_heavy_evidence_selection_with_deterministic_adapters.py` | Evidence selection with adapter-visible typed fields | Uses adapter/benchmark/operand language and internal typed-output metadata | High | Audit before any new calls; distinguish model-facing clinical task from adapter metadata. |

@@ -1,4 +1,4 @@
-# Gan 2026 ExtractedCandidate Schema Mapping Smoke
+﻿# Gan 2026 ExtractedCandidate Schema Mapping Smoke
 
 Date: 2026-06-05
 
@@ -18,7 +18,7 @@ manifest.
 | Artifact role | Source artifact | Rows checked |
 | --- | --- | ---: |
 | deterministic candidate events | `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation250_gpt41mini_v02_live_2026-06-01.jsonl` | 250 |
-| LLM structured event list | `experiments/gan2026_llm_only_structured_events_validation250_qwen36_35b_max5000_overnight_2026-06-01.jsonl` | 250 |
+| LLM structured event list | `experiments/gan2026_hybrid_structured_events_validation250_qwen36_35b_max5000_overnight_2026-06-01.jsonl` | 250 |
 | LLM selected fact with operands | `experiments/gan2026_llm_heavy_evidence_selection_with_deterministic_adapters_validation250_gpt41mini_v1_live_2026-06-03.jsonl` | 250 |
 | LLM sparse selected state | `experiments/gan2026_simplified_schema_a2_validation250_2026-06-03.jsonl` | 250 |
 

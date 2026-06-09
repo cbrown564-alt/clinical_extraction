@@ -43,7 +43,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.reports.base import (
     write_markdown_report,
 )
 
-PROMPT_VERSION = "gan2026_llm_only_direct_labeler_v0.2"
+PROMPT_VERSION = "gan2026_llm_only_direct_labeler_v0.5"
 PROMPT_POLICY_TAXONOMY: list[dict[str, str]] = [
     {
         "policy_id": "dl_v0.schema.strict_json_object",
@@ -168,12 +168,21 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "seizure free for 6 month, unknown, no seizure frequency reference."
             ),
             (
-                "Preserve explicit count-and-window labels when possible instead of converting "
-                "a stated multi-period count to a vague monthly bucket."
+                "When a note contains counts across multiple time windows, prefer the most "
+                "recent window's rate as the primary label — for example, if the note reports "
+                "six events over the year and two in the most recent month, the label is "
+                "'2 per month'."
             ),
             (
-                "If several current seizure types are present, select the highest current "
-                "seizure burden across seizure types."
+                "When multiple seizure types are present, select the type with the highest "
+                "frequency as the label — rank by how often events occur (events per day, "
+                "per week, or per month), not by clinical severity. Daily drop attacks or "
+                "daily absences take precedence over weekly or monthly tonic-clonic seizures. "
+                "Exception: when events occur in a cluster pattern (grouped multi-event "
+                "episodes separated by seizure-free intervals, recurring every few days or "
+                "weeks), label using the cluster cadence — not the per-episode daily burst "
+                "rate. Events within a single cluster day are not the same as daily ongoing "
+                "events."
             ),
             (
                 "Plural daily seizures/events should map to multiple per day unless the note "
@@ -193,12 +202,32 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "seizure-like events remain."
             ),
             (
-                "For trigger-conditioned or provoked-only events, report the stated frequency "
-                "if countable; otherwise use unknown rather than seizure-free."
+                "If the note describes a seizure burst (multiple events in a short recent "
+                "period) followed by a seizure-free run, the label is the burst frequency — "
+                "not the ensuing seizure-free duration. A seizure-free label is appropriate "
+                "only when the absence of seizures is the note's primary clinical statement, "
+                "not when a recent burst ended and no further events have since occurred."
+            ),
+            (
+                "If seizures are described only as occurring within a conditional window "
+                "(perimenstrual, sleep-deprived, missed medication, situational triggers), "
+                "do not report the outside-window seizure-free duration as the overall "
+                "current frequency — use unknown unless the note gives an unconditional "
+                "current rate. A single event reported as 'N weeks ago' or 'N occasions "
+                "since [date]' describes a total count in an observation window, not a "
+                "recurrent rate — use unknown for these constructions unless the note "
+                "explicitly states the events recur at that rate."
             ),
             (
                 "For cluster labels, include both cluster rate and events per cluster when both "
-                "are stated."
+                "are stated; use 'multiple per cluster' when the per-cluster count is described "
+                "approximately (e.g., 'about five', 'several'). If the note states how often "
+                "clusters occur (e.g., 'clusters every 3-4 weeks', 'cluster days four to five "
+                "times per week'), that cadence is a usable frequency even when per-cluster "
+                "count is unknown — use the cadence as the label and 'multiple per cluster' "
+                "unless the count is stated. Drop attacks, status epilepticus episodes, "
+                "myoclonic jerks, absence episodes, and behavioural arrest events all count "
+                "as seizure events for frequency purposes."
             ),
             (
                 "answer_kind must be written as exactly one of these five "
@@ -216,12 +245,30 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
             ),
             "Evidence must be an exact substring from the note when possible.",
             (
+                "confidence describes how certain you are about the answer based on "
+                "what the note contains: "
+                "'low' when two or more current seizure-frequency facts compete and "
+                "none clearly dominates, or when the frequency is only a vague range "
+                "with no time window at all; "
+                "'medium' when one fact is clearly dominant but some ambiguity remains "
+                "— for example, events are only described as conditional on a trigger, "
+                "the count is vague but a time window is clear, or only a relative "
+                "trend is given with no stated rate; "
+                "'high' when there is exactly one unambiguous current fact, no "
+                "competing claims, and the evidence can be quoted directly from the note."
+            ),
+            (
                 "Write rationale as one short, plain-language sentence stating "
                 "only the deciding evidence and label — for example: 'The note "
                 "states two seizures per month for the current period, so the "
                 "label is 2 per month.' Do not show step-by-step reasoning, "
                 "alternative options you considered and rejected, or "
                 "self-questioning; state only the final justification."
+            ),
+            (
+                "Before writing your final_label, verify that the rate described in your "
+                "rationale matches it: if your rationale names a concrete frequency, your "
+                "final_label must not be 'unknown' or 'no seizure frequency reference'."
             ),
             "Return exactly one JSON object with no markdown.",
         ],

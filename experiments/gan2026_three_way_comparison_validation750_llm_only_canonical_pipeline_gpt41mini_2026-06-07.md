@@ -1,4 +1,4 @@
-# Gan 2026 LLM-Only Canonical-Pipeline Validation Run
+﻿# Gan 2026 LLM-Only Canonical-Pipeline Validation Run
 
 Date: 2026-06-08
 
@@ -8,10 +8,10 @@ This is a validation development result on `gan2026_split_v1`. It is not a final
 
 Hypothesis: the 'purest form' fully-LLM comparator — a single DSPy call that collapses extract/select/normalize/project/render into one pass, with the now-mature deterministic/hybrid clinical-reasoning rule taxonomy embedded as prompt instructions rather than pre/post processing — can produce a directly scorable, fully rendered label without any deterministic normalization or projection stage downstream.
 
-Minimal change: add an `llm_only_canonical_pipeline` runner alongside (not replacing) `llm_only_direct_labeler` and `llm_only_structured_events`. No deterministic `CandidateSet` is built or consumed; final_label is the model's directly rendered answer.
+Minimal change: add an `llm_only_canonical_pipeline` runner alongside (not replacing) `llm_only_direct_labeler` and `hybrid_structured_events`. No deterministic `CandidateSet` is built or consumed; final_label is the model's directly rendered answer.
 
 Data surface: `validation` split, `gan2026_split_v1`, 750 rows.
-Rare full-validation reason: Phase 1 three-way architecture comparison (gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07): full validation750 run across all six PipelineArchitecture configs, gpt-4.1-mini pass (second resume — deterministic, deterministic_canonical_pipeline, hybrid, and llm_only_direct_labeler already completed cleanly. llm_only_structured_events restarted after fixing a schema_repair.py _ASSERTION_ALIASES bug that remapped the already-valid assertion_status value 'unknown' to the invalid 'unclear', confirmed via re-pilot validation25 with 0 failures and 100% accuracy).
+Rare full-validation reason: Phase 1 three-way architecture comparison (gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07): full validation750 run across all six PipelineArchitecture configs, gpt-4.1-mini pass (second resume — deterministic, deterministic_canonical_pipeline, hybrid, and llm_only_direct_labeler already completed cleanly. hybrid_structured_events restarted after fixing a schema_repair.py _ASSERTION_ALIASES bug that remapped the already-valid assertion_status value 'unknown' to the invalid 'unclear', confirmed via re-pilot validation25 with 0 failures and 100% accuracy).
 Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a side-car.
 
 ## Model And Prompt Metadata

@@ -1,4 +1,4 @@
-# Gan 2026 Phase A — File Catalog Summary
+﻿# Gan 2026 Phase A — File Catalog Summary
 
 Date: 2026-06-07
 
@@ -106,7 +106,7 @@ Directly named in the canonical-runner selection decision:
   `llm_only_rich_selected_state_reasoner.py`,
   `llm_only_simplified_selected_state_reasoner.py`,
   `llm_only_sparse_operands_selected_state_reasoner.py`,
-  `llm_only_structured_events_repair_ablation.py`,
+  `hybrid_structured_events_repair_ablation.py`,
   `llm_only_typed_adapter_reasoner.py`,
   `llm_only_typed_operations_reasoner.py`, plus their mirrored tests, plus
   exclusive support modules `llm/claim_table_parser.py` and
@@ -149,7 +149,7 @@ cluster for this catalog):
 
 Three analyzers sit outside all nine clusters and are exclusive
 canonical-pipeline support: `replay_io.py` (shared replay IO helper, used
-directly by `llm_only_structured_events`), `reset_stage_component_inventory.py`
+directly by `hybrid_structured_events`), `reset_stage_component_inventory.py`
 (documents the reset-lineage crosswalk), and the four
 `clinical_assessment_projection_render/score/verification_decision/route.py`
 modules that the canonical `reset_clinical_assessment_pipeline.py` imports
@@ -222,7 +222,7 @@ projection/render/scoring → 1).
    `superseded-candidate` rather than `shared-keep`, since `reports/base.py`
    (the actual shared scaffold both build on) is the load-bearing shared
    piece.
-7. **`llm_only_structured_events_repair_ablation.py`** — per the selection
+7. **`hybrid_structured_events_repair_ablation.py`** — per the selection
    decision's own note, this "should survive Phase C only if it remains the
    active mechanism for ablating the canonical runner's repair-family
    policies." Catalogued as `superseded-candidate` (matching the decision

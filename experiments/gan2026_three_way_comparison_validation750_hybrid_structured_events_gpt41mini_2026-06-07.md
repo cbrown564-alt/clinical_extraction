@@ -1,4 +1,4 @@
-# Gan 2026 LLM-Structured Validation Run
+﻿# Gan 2026 LLM-Structured Validation Run
 
 Date: 2026-06-08
 
@@ -11,7 +11,7 @@ Hypothesis: a slim source-near event schema plus LLM clinical selection can redu
 Minimal change: add an LLM-only structured-events extractor and selector. No deterministic V1 candidate diagnostics are provided to the model.
 
 Data surface: `validation` split, `gan2026_split_v1`, 750 rows.
-Rare full-validation reason: Phase 1 three-way architecture comparison (gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07): full validation750 run across all six PipelineArchitecture configs, gpt-4.1-mini pass (second resume — deterministic, deterministic_canonical_pipeline, hybrid, and llm_only_direct_labeler already completed cleanly. llm_only_structured_events restarted after fixing a schema_repair.py _ASSERTION_ALIASES bug that remapped the already-valid assertion_status value 'unknown' to the invalid 'unclear', confirmed via re-pilot validation25 with 0 failures and 100% accuracy).
+Rare full-validation reason: Phase 1 three-way architecture comparison (gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07): full validation750 run across all six PipelineArchitecture configs, gpt-4.1-mini pass (second resume — deterministic, deterministic_canonical_pipeline, hybrid, and llm_only_direct_labeler already completed cleanly. hybrid_structured_events restarted after fixing a schema_repair.py _ASSERTION_ALIASES bug that remapped the already-valid assertion_status value 'unknown' to the invalid 'unclear', confirmed via re-pilot validation25 with 0 failures and 100% accuracy).
 Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a side-car.
 
 ## Model And Prompt Metadata
@@ -20,7 +20,7 @@ Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a
 - Runtime model display/API identifier: `openai/gpt-4.1-mini`
 - Provider/execution: hosted OpenAI via DSPy/LiteLLM
 - Model role: LLM-only structured-events extractor and clinical selector
-- Prompt/program version: `gan2026_llm_only_structured_events_v0.5`
+- Prompt/program version: `gan2026_hybrid_structured_events_v0.5`
 - Temperature: `0.0`
 - Max tokens: `5000`
 - Mode: `live`
@@ -38,7 +38,7 @@ Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a
 - Repair config: `basic_label_repair=True`, `basic_label_repair_format_only=False`, `breakthrough_repair=True`, `clean_scorer_facing_gold_policy=False`, `dated_sequence_repair=True`, `elapsed_anchor_repair=True`, `json_dialect_repair=True`, `monthly_diary_repair=True`, `non_epileptic_repair=True`, `post_change_burst_repair=True`, `repair_mode=None`, `residual_jerk_repair=True`, `selected_evidence_repair=True`, `usual_interval_repair=True`
 - Git commit: `f9845eb`
 - Working tree note: `dirty/uncommitted local changes`
-- JSONL artifact: `experiments/gan2026_three_way_comparison_validation750_llm_only_structured_events_gpt41mini_2026-06-07.jsonl`
+- JSONL artifact: `experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07.jsonl`
 
 ## Summary
 

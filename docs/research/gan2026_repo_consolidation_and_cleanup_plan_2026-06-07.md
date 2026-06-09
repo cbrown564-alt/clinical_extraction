@@ -1,4 +1,4 @@
-# Gan 2026 Repo Consolidation And Cleanup Plan
+﻿# Gan 2026 Repo Consolidation And Cleanup Plan
 
 Date: 2026-06-07
 
@@ -123,7 +123,7 @@ Section 2, restated here as the cleanup-facing decision):
 | --- | --- | --- |
 | Deterministic | `pipeline_v1.py` (`Gan2026PipelineV1`) | the only fully-deterministic runner that exists; default canonical, subject to the de-overfitting refinement in the comparison plan |
 | Hybrid | `hybrid/reset_clinical_assessment_pipeline.py` | already explicitly named the "current focus" / canonical reset architecture in `PROJECT_STATUS.md` |
-| Fully LLM | **to be assembled** — no single runner exists yet; pick one `llm_only_*` module as the Select-stage front end (recommended: `llm_only_structured_events` or `llm_only_minimal_evidence_selector`, per the comparison plan's "Option A" recommendation) and chain it through the existing deterministic Normalize→Render→Score→Route→Decision stages | produces the one comparable artifact shape needed by both other workstreams |
+| Fully LLM | **to be assembled** — no single runner exists yet; pick one `llm_only_*` module as the Select-stage front end (recommended: `hybrid_structured_events` or `llm_only_minimal_evidence_selector`, per the comparison plan's "Option A" recommendation) and chain it through the existing deterministic Normalize→Render→Score→Route→Decision stages | produces the one comparable artifact shape needed by both other workstreams |
 
 **Everything else in the hybrid/staged lineage is a superseded-candidate**,
 pending the dependency audit in Phase C:
@@ -267,7 +267,7 @@ Completed on 2026-06-07:
 - Observatory `/pipeline-families` now exposes exactly the canonical families
   plus explicitly retained registry-backed comparators:
   - canonical: `rules_only`, `llm_only_direct_labeler`,
-    `llm_only_structured_events`, `reset_clinical_assessment_pipeline`;
+    `hybrid_structured_events`, `reset_clinical_assessment_pipeline`;
   - retained comparators:
     `dspy_final_selection_adjudicator`,
     `hybrid_clinical_frequency_state_graph`, `llm_first_direct_extractor`,
@@ -329,7 +329,7 @@ Completed on 2026-06-07:
    retargeted, and a new Phase F consolidation test pins the official analyzer
    registry instead of deleting narrow diagnostic coverage.
 3. The fully-LLM surface was selected before removal: `llm_only_direct_labeler`
-   remains the one-shot baseline and `llm_only_structured_events` is the
+   remains the one-shot baseline and `hybrid_structured_events` is the
    canonical structured fully-LLM runner. Other `llm_only_*` experiments are
    documented through the lineage summary and recoverable from git history if
    a future study needs them.

@@ -164,11 +164,17 @@ def test_benchmark_repair_rule_registry_is_valid() -> None:
     validate_rule_registry(BENCHMARK_REPAIR_RULES)
 
 
-def test_gan_shorthand_rules_are_dataset_specific() -> None:
+def test_gan_shorthand_rules_are_generalized_and_retain_group() -> None:
+    # Phase 2 de-overfitting (2026-06-09): GAN_SHORTHAND rules were rewritten to
+    # generalised clinical shorthand patterns; they keep the GAN_SHORTHAND group
+    # for single-switch ablation but now carry SEIZURE_FREQUENCY or
+    # CLINICAL_EPILEPSY portability instead of GAN2026_SPECIFIC.
     assert GAN_SHORTHAND_RULES
-    assert {(spec.group, spec.portability) for spec in GAN_SHORTHAND_RULES} == {
-        (RuleGroup.GAN_SHORTHAND, Portability.GAN2026_SPECIFIC)
-    }
+    groups = {spec.group for spec in GAN_SHORTHAND_RULES}
+    portabilities = {spec.portability for spec in GAN_SHORTHAND_RULES}
+    assert groups == {RuleGroup.GAN_SHORTHAND}
+    assert portabilities <= {Portability.SEIZURE_FREQUENCY, Portability.CLINICAL_EPILEPSY}
+    assert Portability.GAN2026_SPECIFIC not in portabilities
 
 
 def test_temporal_selection_rules_are_seizure_frequency_specific() -> None:
