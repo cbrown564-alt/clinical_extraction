@@ -1,4 +1,4 @@
-import json
+﻿import json
 
 import pytest
 
@@ -7,11 +7,11 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser i
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
+    hybrid_structured_events,
     llm_heavy_clinical_frequency_reasoner,
     llm_heavy_evidence_selection_with_deterministic_adapters,
     llm_only_canonical_pipeline,
     llm_only_direct_labeler,
-    llm_only_structured_events,
 )
 
 INTERNAL_MODEL_FACING_PHRASES = (
@@ -69,7 +69,7 @@ def _payload_text(payload: str | dict[str, object]) -> str:
     ("name", "builder"),
     [
         ("llm_only_direct_labeler", llm_only_direct_labeler.build_prompt_input),
-        ("llm_only_structured_events", llm_only_structured_events.build_prompt_input),
+        ("hybrid_structured_events", hybrid_structured_events.build_prompt_input),
         ("llm_only_canonical_pipeline", llm_only_canonical_pipeline.build_prompt_input),
         (
             "llm_heavy_clinical_frequency_reasoner",

@@ -1,4 +1,4 @@
-import type { PipelineTrace, FullRecordResponse } from "../types";
+﻿import type { PipelineTrace, FullRecordResponse } from "../types";
 import { adaptDeterministicTrace } from "./deterministic";
 import { adaptDecisionRecordTrace } from "./decisionRecord";
 import { adaptEventsTrace } from "./events";
@@ -20,7 +20,7 @@ function isDecisionRecordFamily(family: string): boolean {
 function isEventsFamily(family: string): boolean {
   return (
     family === "llm_structured_events" ||
-    family === "llm_only_structured_events" ||
+    family === "hybrid_structured_events" ||
     family === "llm_heavy_clinical_frequency_reasoner"
   );
 }

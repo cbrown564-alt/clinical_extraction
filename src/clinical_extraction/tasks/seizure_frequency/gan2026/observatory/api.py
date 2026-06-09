@@ -1,4 +1,4 @@
-"""Thin FastAPI wrapper for Gan 2026 Observatory data and pipelines."""
+﻿"""Thin FastAPI wrapper for Gan 2026 Observatory data and pipelines."""
 
 from __future__ import annotations
 
@@ -79,13 +79,13 @@ except Exception:  # pragma: no cover
 PipelineFamily = Literal[
     "rules_only",
     "llm_only_direct_labeler",
-    "llm_only_structured_events",
+    "hybrid_structured_events",
 ]
 TEMPORAL_SELECTION_RULES = temporal_selection.TEMPORAL_SELECTION_RULES
 
 PROMPT_MODULES = (
     "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_direct_labeler",
-    "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_structured_events",
+    "clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events",
 )
 
 # Families that can actually be executed via /run/note and /run/ablation
@@ -117,7 +117,7 @@ RETAINED_COMPARATOR_PIPELINE_FAMILIES: set[str] = {
 CANONICAL_PIPELINE_FAMILIES: dict[str, tuple[str, str]] = {
     "rules_only": ("Deterministic V1", "rules_only"),
     "llm_only_direct_labeler": ("LLM Direct Labeler", "llm_only"),
-    "llm_only_structured_events": ("LLM Structured Events", "llm_only"),
+    "hybrid_structured_events": ("Hybrid Structured Events", "hybrid"),
     "reset_clinical_assessment_pipeline": ("Reset Clinical Assessment", "hybrid"),
 }
 
@@ -849,7 +849,7 @@ FAMILY_SHORT_LABELS: dict[str, str] = {
     "dspy_final_selection_adjudicator": "DSPY Adjudicator",
     "hybrid_clinical_frequency_state_graph": "State Graph",
     "llm_only_direct_labeler": "LLM Direct Labeler",
-    "llm_only_structured_events": "LLM Structured Events",
+    "hybrid_structured_events": "Hybrid Structured Events",
     "llm_first_direct_extractor": "Direct Extractor",
     "llm_heavy_clinical_frequency_reasoner": "LLM Heavy Reasoner",
     "llm_heavy_evidence_selection_with_deterministic_adapters": "LLM Heavy + Det",

@@ -1,9 +1,16 @@
-"""Phase 1 three-way architecture comparison report (gpt-4.1-mini, validation750).
+﻿"""Phase 1 six-architecture comparison report (parameterized by model, validation750).
 
 Assembles the shared comparison table and hybrid-only routing appendix designed in
 docs/research/gan2026_three_way_comparison_phase1_report_design_2026-06-07.md by
-reading the six already-completed gpt-4.1-mini validation750 run artifacts. This
-module makes no model calls and performs no re-run.
+reading six already-completed validation750 run artifacts. This module makes no model
+calls and performs no re-run.
+
+Architecture taxonomy note: the six configs span three families, not six independent
+designs. ``hybrid_structured_events`` is architecturally a hybrid (LLM-extract +
+deterministic-normalize), not a fully-LLM pipeline — see ARCHITECTURE_FAMILY in
+runner.py for the grouping. The "three-way" in the plan section title refers to the
+three original architecture families (deterministic / hybrid / fully-LLM); the
+canonical-pipeline and structured-events configs were added to that frame.
 """
 
 from __future__ import annotations
@@ -24,6 +31,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io
     load_jsonl_rows,
     write_jsonl_rows,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_candidate_set_selector_schema_probe import (
+    load_candidate_sets,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.reports.base import write_markdown_report
 from clinical_extraction.tasks.seizure_frequency.gan2026.runner import (
     build_unified_pipeline_artifact,
@@ -34,7 +44,7 @@ ARCHITECTURES: tuple[str, ...] = (
     "deterministic_canonical_pipeline",
     "hybrid",
     "llm_only_direct_labeler",
-    "llm_only_structured_events",
+    "hybrid_structured_events",
     "llm_only_canonical_pipeline",
 )
 
@@ -55,9 +65,9 @@ DEFAULT_ARTIFACT_JSONL_PATHS: dict[str, Path] = {
         "experiments/gan2026_three_way_comparison_validation750"
         "_llm_only_direct_labeler_gpt41mini_2026-06-07.jsonl"
     ),
-    "llm_only_structured_events": Path(
+    "hybrid_structured_events": Path(
         "experiments/gan2026_three_way_comparison_validation750"
-        "_llm_only_structured_events_gpt41mini_2026-06-07.jsonl"
+        "_hybrid_structured_events_gpt41mini_2026-06-07.jsonl"
     ),
     "llm_only_canonical_pipeline": Path(
         "experiments/gan2026_three_way_comparison_validation750"
@@ -75,19 +85,20 @@ DEFAULT_REPORT_PATH = Path(
     "experiments/gan2026_three_way_comparison_phase1_report_gpt41mini_validation750_2026-06-08.md"
 )
 
-CLAIM_BOUNDARY = (
-    "Phase 1 three-way architecture comparison, gpt-4.1-mini pass, validation750 only. "
-    "No test450 read, no holdout-facing or benchmark-comparable claim. Compares six "
-    "PipelineArchitecture configs on the axes that are universally meaningful "
-    "(rendered/null disposition, Purist/Pragmatic-correct of rendered rows, "
-    "evidence-trace validity, final-answer distribution); hybrid additionally carries "
-    "a routing-taxonomy appendix that no other architecture has an analogous surface for."
-)
+def _claim_boundary(model: str) -> str:
+    return (
+        f"Phase 1 three-way architecture comparison, {model} pass, validation750 only. "
+        "No test450 read, no holdout-facing or benchmark-comparable claim. Compares six "
+        "PipelineArchitecture configs on the axes that are universally meaningful "
+        "(rendered/null disposition, Purist/Pragmatic-correct of rendered rows, "
+        "evidence-trace validity, final-answer distribution); hybrid additionally carries "
+        "a routing-taxonomy appendix that no other architecture has an analogous surface for."
+    )
 
 EVIDENCE_TRACE_FOOTNOTE = (
     "Evidence-trace metrics are NOT uniform across architectures: deterministic, "
     "deterministic_canonical_pipeline, llm_only_direct_labeler, and "
-    "llm_only_structured_events report `evidence_valid` (free-text substring presence "
+    "hybrid_structured_events report `evidence_valid` (free-text substring presence "
     "in the source note); llm_only_canonical_pipeline reports the deliberately distinct "
     "`evidence_text_contained`; hybrid reports a formal CandidateSet source-id validity "
     "rate sourced from its deep-replay projection stage. These measure different things "
@@ -95,17 +106,44 @@ EVIDENCE_TRACE_FOOTNOTE = (
     "table below the shared table)."
 )
 
-HYBRID_DATA_SOURCE_FOOTNOTE = (
-    "hybrid's row above is the only one not sourced from raw `run_split` output: its "
-    "assessment-stage probe reports schema-fit diagnostics only and has no "
-    "rendered/null/purist/routed numbers of its own (design doc Section 2-3). This "
-    "report replays its assessment rows -- using the live-generated CandidateSets the "
-    "fixed `run_split` now embeds in its own output rows, so no static-artifact "
-    "dependency or 250-row scoping applies -- through "
-    "projection_render -> score -> verification_route -> verification_decision "
-    "(`build_unified_pipeline_artifact`). This asymmetry is the architectural fact "
-    "under comparison, not a methodology artifact."
+SE_ARCHITECTURE_FOOTNOTE = (
+    "Architecture taxonomy: `hybrid_structured_events` is architecturally a hybrid, "
+    "not a fully-LLM pipeline. Its LLM stage extracts structured events from raw note "
+    "text; the same deterministic normalize/project/render/score stages used by `hybrid` "
+    "then process that output. The name reflects its LLM extraction approach, not the "
+    "presence of a deterministic downstream. Contrast with `llm_only_direct_labeler` and "
+    "`llm_only_canonical_pipeline`, which complete the full extraction-to-label pass in "
+    "one LLM call with no deterministic normalization. The two hybrid configs differ in "
+    "their LLM task: `hybrid_structured_events` asks the LLM to extract structured "
+    "events from raw text (open-text → schema); `hybrid` asks the LLM to assess a "
+    "pre-extracted deterministic candidate set. Their shared deterministic downstream "
+    "makes the performance gap between them a direct measure of how much the LLM task "
+    "and the verification/routing layer matter."
 )
+
+def _hybrid_data_source_footnote(fallback_used: bool) -> str:
+    if fallback_used:
+        candidate_set_note = (
+            "using CandidateSets loaded from the static pre-computed file supplied via "
+            "`--hybrid-candidate-set-path` (this run's `hybrid` artifact pre-dates the "
+            "live candidate-set wiring from section 8a, so candidate sets are not embedded "
+            "in the run rows; hybrid's example count reflects only the rows covered by that "
+            "static file)"
+        )
+    else:
+        candidate_set_note = (
+            "using the live-generated CandidateSets the fixed `run_split` now embeds in "
+            "its own output rows, so no static-artifact dependency or 250-row scoping applies"
+        )
+    return (
+        f"hybrid's row above is the only one not sourced from raw `run_split` output: its "
+        "assessment-stage probe reports schema-fit diagnostics only and has no "
+        "rendered/null/purist/routed numbers of its own (design doc Section 2-3). This "
+        f"report replays its assessment rows -- {candidate_set_note} -- through "
+        "projection_render -> score -> verification_route -> verification_decision "
+        "(`build_unified_pipeline_artifact`). This asymmetry is the architectural fact "
+        "under comparison, not a methodology artifact."
+    )
 
 
 def _rate(numerator: int, denominator: int) -> float:
@@ -124,7 +162,7 @@ def _rendered_split(
     structurally (every row carries a `decision_record.final_label`, even when the
     answer is a scoring category like `seizure_freq_unknown` -- that is a *scoring*
     category, not a render-failure signal, so all of their rows count as rendered);
-    llm_only_structured_events has no single rendered-label string and instead
+    hybrid_structured_events has no single rendered-label string and instead
     exposes a scorable predicted category per row, absent only on the rare parse
     failure.
     """
@@ -134,7 +172,7 @@ def _rendered_split(
         rendered = [
             row for row in rows if (row.get("decision_record") or {}).get("final_label") is not None
         ]
-    elif architecture == "llm_only_structured_events":
+    elif architecture == "hybrid_structured_events":
         rendered = [
             row
             for row in rows
@@ -169,7 +207,7 @@ def _final_label_distribution(architecture: str, rows: Sequence[Mapping[str, Any
         return Counter(str(row.get("final_label")) for row in rows)
     if architecture in ("llm_only_direct_labeler", "llm_only_canonical_pipeline"):
         return Counter(str((row.get("decision_record") or {}).get("final_label")) for row in rows)
-    if architecture == "llm_only_structured_events":
+    if architecture == "hybrid_structured_events":
         return Counter(
             str((row.get("comparison") or {}).get("predicted_purist_category")) for row in rows
         )
@@ -205,13 +243,17 @@ def _single_shot_summary_row(architecture: str, rows: Sequence[Mapping[str, Any]
     }
 
 
-def _hybrid_candidate_sets(rows: Sequence[Mapping[str, Any]]) -> dict[int, CandidateSet]:
-    """Reconstruct hybrid's CandidateSet inputs from its own (now-embedded) output rows.
+def _hybrid_candidate_sets(
+    rows: Sequence[Mapping[str, Any]],
+    *,
+    fallback_candidate_set_path: Path | None = None,
+) -> dict[int, CandidateSet]:
+    """Reconstruct hybrid's CandidateSet inputs.
 
-    The fixed `run_split` embeds the full live-generated `candidate_set` on every row
-    (see llm_candidate_set_clinical_assessment_probe.run_split), so the deep-replay
-    Mapping[int, CandidateSet] this report needs comes from the run's own artifact --
-    no static 250-row file dependency.
+    Post-section-8a runs embed `candidate_set` directly on each row (live-generated).
+    Pre-8a runs used a static file; pass `fallback_candidate_set_path` pointing to it
+    and those candidate sets will be loaded from the file for any row without an
+    embedded `candidate_set`.
     """
     candidate_sets: dict[int, CandidateSet] = {}
     for row in rows:
@@ -219,6 +261,9 @@ def _hybrid_candidate_sets(rows: Sequence[Mapping[str, Any]]) -> dict[int, Candi
         if raw_candidate_set is None:
             continue
         candidate_sets[int(row["source_row_index"])] = CandidateSet.model_validate(raw_candidate_set)
+    if fallback_candidate_set_path is not None:
+        for index, cs in load_candidate_sets(fallback_candidate_set_path).items():
+            candidate_sets.setdefault(index, cs)
     return candidate_sets
 
 
@@ -260,6 +305,7 @@ def _hybrid_summary_row(
     rows: Sequence[Mapping[str, Any]],
     *,
     gold_records: Mapping[int, GanFrequencyRecord],
+    fallback_candidate_set_path: Path | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     """Build hybrid's shared-table row AND its routing appendix from one deep-replay.
 
@@ -270,7 +316,9 @@ def _hybrid_summary_row(
     (`build_unified_pipeline_artifact`), not from raw `run_split` output. One
     assembly, two presentations: shared-table row + routing appendix.
     """
-    candidate_sets = _hybrid_candidate_sets(rows)
+    candidate_sets = _hybrid_candidate_sets(
+        rows, fallback_candidate_set_path=fallback_candidate_set_path
+    )
     artifact = build_unified_pipeline_artifact(
         architecture="hybrid",
         assessment_rows=rows,
@@ -334,6 +382,7 @@ def build_three_way_comparison_report(
     gold_records: Mapping[int, GanFrequencyRecord],
     model: str = "openai/gpt-4.1-mini",
     split: str = "validation",
+    hybrid_fallback_candidate_set_path: Path | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     missing = [name for name in ARCHITECTURES if name not in architecture_rows]
     if missing:
@@ -344,19 +393,26 @@ def build_three_way_comparison_report(
     for architecture in ARCHITECTURES:
         rows = architecture_rows[architecture]
         if architecture == "hybrid":
-            summary_row, hybrid_appendix = _hybrid_summary_row(rows, gold_records=gold_records)
+            summary_row, hybrid_appendix = _hybrid_summary_row(
+                rows,
+                gold_records=gold_records,
+                fallback_candidate_set_path=hybrid_fallback_candidate_set_path,
+            )
         else:
             summary_row = _single_shot_summary_row(architecture, rows)
         summary_rows.append(summary_row)
 
     metadata = {
         "artifact_kind": "gan2026_three_way_comparison_phase1_report",
-        "claim_boundary": CLAIM_BOUNDARY,
+        "claim_boundary": _claim_boundary(model),
         "model": model,
         "split": split,
         "row_counts": {row["architecture"]: row["examples"] for row in summary_rows},
         "evidence_trace_footnote": EVIDENCE_TRACE_FOOTNOTE,
-        "hybrid_data_source_footnote": HYBRID_DATA_SOURCE_FOOTNOTE,
+        "se_architecture_footnote": SE_ARCHITECTURE_FOOTNOTE,
+        "hybrid_data_source_footnote": _hybrid_data_source_footnote(
+            hybrid_fallback_candidate_set_path is not None
+        ),
         "hybrid_routing_appendix": hybrid_appendix,
     }
     return summary_rows, metadata
@@ -383,7 +439,7 @@ def write_report(
     json_path: Path,
 ) -> None:
     lines = [
-        "# Gan 2026 Phase 1 Three-Way Architecture Comparison (gpt-4.1-mini, validation750)",
+        f"# Gan 2026 Phase 1 Three-Way Architecture Comparison ({metadata['model']}, validation750)",
         "",
         str(metadata["claim_boundary"]),
         "",
@@ -419,6 +475,7 @@ def write_report(
             "Footnotes:",
             "",
             f"- {metadata['evidence_trace_footnote']}",
+            f"- {metadata['se_architecture_footnote']}",
             f"- {metadata['hybrid_data_source_footnote']}",
             "",
             "### Evidence-Trace Metric By Architecture",
@@ -494,6 +551,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             type=Path,
             default=DEFAULT_ARTIFACT_JSONL_PATHS[architecture],
         )
+    parser.add_argument("--model", default="openai/gpt-4.1-mini")
+    parser.add_argument("--hybrid-candidate-set-path", type=Path, default=None)
     parser.add_argument("--jsonl-path", type=Path, default=DEFAULT_JSONL_PATH)
     parser.add_argument("--json-path", type=Path, default=DEFAULT_JSON_PATH)
     parser.add_argument("--report-path", type=Path, default=DEFAULT_REPORT_PATH)
@@ -506,7 +565,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     gold_records = {
         record.source_row_index: record for record in load_records_for_split("validation")
     }
-    rows, metadata = build_three_way_comparison_report(architecture_rows, gold_records=gold_records)
+    rows, metadata = build_three_way_comparison_report(
+        architecture_rows,
+        gold_records=gold_records,
+        model=args.model,
+        hybrid_fallback_candidate_set_path=args.hybrid_candidate_set_path,
+    )
     write_jsonl(rows, args.jsonl_path)
     write_summary_json(metadata, args.json_path)
     write_report(

@@ -361,20 +361,34 @@ SEIZURE_DAYS_FRACTION_RULE = RuleSpec(
     rule_id="diary.seizure_days_fraction",
     group=RuleGroup.DIARY_LOG_AGGREGATION,
     portability=Portability.SEIZURE_FREQUENCY,
-    description="Seizure days fraction over 30 days this month.",
+    description=(
+        "Seizure days fraction over 30 days this month. "
+        "Digit-only count; word numbers in compact fraction notation are GAN-dataset-specific."
+    ),
     pattern=re.compile(
-        rf"\bSeizure\s+days:\s*(?P<count>{NUMBER_VALUE_TOKEN})\s*/\s*30\s+this\s+month\b",
+        r"\bSeizure\s+days:\s*(?P<count>\d+)\s*/\s*30\s+this\s+month\b",
         re.IGNORECASE,
     ),
     build=_build_seizure_days_fraction,
     examples=(
         RuleExample(
+            text="Seizure days: 8/30 this month.",
+            expected_label="8 per month",
+            expected_evidence="Seizure days: 8/30 this month",
+        ),
+        RuleExample(
             text="Seizure days: six/30 this month.",
-            expected_label="6 per month",
-            expected_evidence="Seizure days: six/30 this month",
+            anti_example=True,
+            note=(
+                "Word numbers in compact fraction notation are GAN-dataset-specific; "
+                "real clinical notes use digit counts."
+            ),
         ),
     ),
-    provenance="Diary/log V1 expression.",
+    provenance=(
+        "Generalized from GAN 2026 diary notation (2026-06-09 Phase 2 de-overfitting): "
+        "digit-only count in seizure-days fraction."
+    ),
 )
 
 DIARY_DATE_LIST_RULE = RuleSpec(

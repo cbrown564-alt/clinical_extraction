@@ -1,4 +1,4 @@
-# Observatory Backend — Progress Log
+﻿# Observatory Backend — Progress Log
 
 **Last updated:** 2026-06-07
 
@@ -15,7 +15,7 @@ artifacts:
 | --- | --- | --- |
 | `rules_only` | Deterministic V1 | Executable via `/run/note` and `/run/ablation`. |
 | `llm_only_direct_labeler` | LLM Direct Labeler | Canonical one-shot fully LLM runner. |
-| `llm_only_structured_events` | LLM Structured Events | Canonical structured fully LLM runner. |
+| `hybrid_structured_events` | LLM Structured Events | Canonical structured fully LLM runner. |
 | `reset_clinical_assessment_pipeline` | Reset Clinical Assessment | Canonical hybrid/reset runner. |
 
 Retained historical/comparator families may still appear when backed by registry

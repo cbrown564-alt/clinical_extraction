@@ -17,6 +17,11 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rule_meta
     RuleSpec,
 )
 
+# Digit-only range token: matches "3", "2-4", "2–3", "2 to 4" but NOT word numbers.
+# Compact cluster shorthand with word numbers is GAN-dataset-specific notation;
+# real clinical shorthand uses digit counts.
+DIGIT_RANGE_TOKEN = r"(?:\d+(?:\s*(?:to|[-–—])\s*\d+)?)"
+
 NUMBER_WORDS = {
     "one": "1",
     "two": "2",
@@ -517,11 +522,14 @@ SHORTHAND_CLUSTER_RATE_RULE = RuleSpec(
     rule_id="cluster.compact_count_per_period",
     group=RuleGroup.CLUSTER_ARITHMETIC,
     portability=Portability.SEIZURE_FREQUENCY,
-    description="Compact cluster count per period such as clusters 3x/month.",
+    description=(
+        "Compact cluster count per period such as clusters 3x/month. "
+        "Digit-only counts; no word numbers in compact shorthand."
+    ),
     pattern=re.compile(
         r"\b(?:(?:ongoing|nocturnal|morning|evening|monthly|weekly|daily)\s+){0,3}"
         r"clusters?\s+"
-        rf"(?P<count>{NUMBER_TOKEN})\s*(?:x|×|/)\s*/?\s*"
+        rf"(?P<count>{DIGIT_RANGE_TOKEN})\s*(?:x|×|/)\s*/?\s*"
         r"(?P<unit>d|day|wk|week|mo|month|yr|year)\b",
         re.IGNORECASE,
     ),
@@ -532,8 +540,24 @@ SHORTHAND_CLUSTER_RATE_RULE = RuleSpec(
             expected_label="3 cluster per month, multiple per cluster",
             expected_evidence="nocturnal clusters 3x/month",
         ),
+        RuleExample(
+            text="morning clusters 2 to 4×/month",
+            expected_label="2 to 4 cluster per month, multiple per cluster",
+            expected_evidence="morning clusters 2 to 4×/month",
+        ),
+        RuleExample(
+            text="Morning clusters one - two×/month",
+            anti_example=True,
+            note=(
+                "Word numbers in compact cluster shorthand are GAN-dataset-specific notation "
+                "and not matched by the generalized rule."
+            ),
+        ),
     ),
-    provenance="Portable V1 cluster-rate expression.",
+    provenance=(
+        "Generalized from GAN 2026 compact cluster notation (2026-06-09 Phase 2 de-overfitting): "
+        "digit-only counts in compact shorthand, SEIZURE_FREQUENCY portability."
+    ),
 )
 
 CLUSTER_COUNT_THIS_PERIOD_VAGUE_SIZE_RULE = RuleSpec(

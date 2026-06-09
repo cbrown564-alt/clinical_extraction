@@ -1,4 +1,4 @@
-export interface EvidenceSpan {
+﻿export interface EvidenceSpan {
   text: string;
   start_char: number | null;
   end_char: number | null;
@@ -601,7 +601,7 @@ export interface DecisionRecordArtifactRow {
 }
 
 // Group B: Events-based families
-// (llm_structured_events, llm_only_structured_events, llm_heavy_clinical_frequency_reasoner)
+// (llm_structured_events, hybrid_structured_events, llm_heavy_clinical_frequency_reasoner)
 export interface EventsArtifactRow {
   source_row_index: number;
   split: string;

@@ -1,4 +1,9 @@
-"""LLM-only structured-events Gan 2026 seizure-frequency extraction experiments."""
+﻿"""Hybrid structured-events Gan 2026 seizure-frequency extraction.
+
+Architecture: LLM extracts structured events from raw note text (open-text → schema);
+the same deterministic normalize/project/render/score stages used by the candidate-set
+hybrid then process the output.
+"""
 
 from __future__ import annotations
 
@@ -92,7 +97,7 @@ _nearest_event_date = llm_structured_temporal.nearest_event_date
 _nearest_event_month_year = llm_structured_temporal.nearest_event_month_year
 _small_number_words_to_digits = llm_structured_temporal.small_number_words_to_digits
 
-PROMPT_VERSION = "gan2026_llm_only_structured_events_v0.5"
+PROMPT_VERSION = "gan2026_hybrid_structured_events_v0.5"
 PROMPT_POLICY_TAXONOMY: list[dict[str, str]] = [
     {
         "policy_id": "se_v0.schema.events_plus_selection",
@@ -143,10 +148,10 @@ PROMPT_POLICY_TAXONOMY: list[dict[str, str]] = [
     },
 ]
 DEFAULT_JSONL_PATH = Path(
-    "experiments/gan2026_llm_only_structured_events_validation_gpt41mini_2026-06-01.jsonl"
+    "experiments/gan2026_hybrid_structured_events_validation_gpt41mini_2026-06-01.jsonl"
 )
 DEFAULT_REPORT_PATH = Path(
-    "experiments/gan2026_llm_only_structured_events_validation_gpt41mini_2026-06-01.md"
+    "experiments/gan2026_hybrid_structured_events_validation_gpt41mini_2026-06-01.md"
 )
 StructuredRepairMode = Literal[
     "strict_json_raw_model",

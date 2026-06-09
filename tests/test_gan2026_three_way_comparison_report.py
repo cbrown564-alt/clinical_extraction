@@ -1,4 +1,4 @@
-from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis import (
+﻿from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis import (
     three_way_comparison_report as report,
 )
 
@@ -33,7 +33,7 @@ def test_rendered_split_uses_predicted_purist_category_for_structured_events() -
         {"source_row_index": 2, "comparison": {"predicted_purist_category": None}},
     ]
 
-    rendered, null_rows = report._rendered_split("llm_only_structured_events", rows)
+    rendered, null_rows = report._rendered_split("hybrid_structured_events", rows)
 
     assert [row["source_row_index"] for row in rendered] == [1]
     assert [row["source_row_index"] for row in null_rows] == [2]

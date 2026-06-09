@@ -447,8 +447,8 @@ def test_pipeline_can_ablate_catalogued_cluster_group() -> None:
             "diary.seizure_days_per_period",
         ),
         (
-            "Seizure days: six/30 this month.",
-            "6 per month",
+            "Seizure days: 8/30 this month.",
+            "8 per month",
             "diary.seizure_days_fraction",
         ),
         (
@@ -526,7 +526,7 @@ def test_pipeline_exposes_catalogued_diary_metadata(
 
 
 def test_pipeline_can_ablate_catalogued_diary_group() -> None:
-    note_text = "Seizure days: six/30 this month."
+    note_text = "Seizure days: 8/30 this month."
 
     result = Gan2026PipelineV1(
         ablation_config=AblationConfig(
@@ -730,27 +730,34 @@ def test_pipeline_can_ablate_catalogued_portable_rate_group() -> None:
 
 
 @pytest.mark.parametrize(
-    ("note_text", "expected_label", "expected_rule_id"),
+    ("note_text", "expected_label", "expected_rule_id", "expected_portability"),
     [
         (
-            "Clinic shorthand says TC *nine/mo.",
-            "9 per month",
+            # Phase 2 de-overfitting: digit count, no special separator
+            "Clinic shorthand says TC 5/mo.",
+            "5 per month",
             "gan_shorthand.tc_sz_count_rate",
+            Portability.SEIZURE_FREQUENCY,
         ),
         (
-            "Diary shorthand says abs *monthly.",
+            # abs with no asterisk separator (generalized form)
+            "Diary shorthand says abs monthly.",
             "1 per month",
             "gan_shorthand.abs_adjective_rate",
+            Portability.SEIZURE_FREQUENCY,
         ),
         (
             "On their calendar, abs 8 monthly over the past three months.",
             "8 per month",
             "gan_shorthand.abs_count_rate",
+            Portability.SEIZURE_FREQUENCY,
         ),
         (
+            # q-interval with digit denominator (generalized form)
             "The current clinic shorthand is q2 - 3wk.",
             "1 per 2 to 3 week",
             "gan_shorthand.q_interval",
+            Portability.CLINICAL_EPILEPSY,
         ),
     ],
 )
@@ -758,6 +765,7 @@ def test_pipeline_exposes_catalogued_gan_shorthand_metadata(
     note_text: str,
     expected_label: str,
     expected_rule_id: str,
+    expected_portability: Portability,
 ) -> None:
     result = Gan2026PipelineV1().run(_record(note_text))
 
@@ -770,12 +778,13 @@ def test_pipeline_exposes_catalogued_gan_shorthand_metadata(
     )
     assert selected_event["rule_id"] == expected_rule_id
     assert selected_event["rule_group"] == RuleGroup.GAN_SHORTHAND
-    assert selected_event["portability"] == Portability.GAN2026_SPECIFIC
+    assert selected_event["portability"] == expected_portability
     assert selected_event["match_groups"]
 
 
 def test_pipeline_can_ablate_catalogued_gan_shorthand_group() -> None:
-    note_text = "Clinic shorthand says TC *nine/mo."
+    # Use digit-form that the generalized rule matches, verify ablation suppresses it
+    note_text = "Clinic shorthand says TC 5/mo."
 
     result = Gan2026PipelineV1(
         ablation_config=AblationConfig(
@@ -2995,34 +3004,25 @@ def test_pipeline_extracts_validation_cluster_patterns(
     ("note_text", "expected_label", "expected_evidence"),
     [
         (
-            "Seizure days: six/30 this month.",
-            "6 per month",
-            "Seizure days: six/30 this month",
+            "Seizure days: 8/30 this month.",
+            "8 per month",
+            "Seizure days: 8/30 this month",
         ),
         (
             "About three seizure days per week are reported.",
             "3 per week",
             "About three seizure days per week",
         ),
+        # GAN-shorthand generalized forms (digit counts, no special separators):
         (
-            "Clinic shorthand says TC *nine/mo.",
-            "9 per month",
-            "TC *nine/mo",
+            "Clinic shorthand says TC 5/mo.",
+            "5 per month",
+            "TC 5/mo",
         ),
         (
-            "Clinic shorthand says TC *5/wk.",
-            "5 per week",
-            "TC *5/wk",
-        ),
-        (
-            "Diary summary says TC nine/mo.",
-            "9 per month",
-            "TC nine/mo",
-        ),
-        (
-            "Current frequency reported as: sz ×nine/mo.",
-            "9 per month",
-            "sz ×nine/mo",
+            "Current frequency reported as: sz 2/wk.",
+            "2 per week",
+            "sz 2/wk",
         ),
         (
             "Seizures worsen, up to seven in bad weeks.",
@@ -3030,24 +3030,14 @@ def test_pipeline_extracts_validation_cluster_patterns(
             "up to seven in bad weeks",
         ),
         (
-            "Diary shorthand says abs *monthly.",
+            "Diary shorthand says abs monthly.",
             "1 per month",
-            "abs *monthly",
-        ),
-        (
-            "Diary shorthand says abs Xmonthly.",
-            "1 per month",
-            "abs Xmonthly",
+            "abs monthly",
         ),
         (
             "On their calendar, abs 8 monthly over the past three months.",
             "8 per month",
             "abs 8 monthly",
-        ),
-        (
-            "The current clinic shorthand is qtwo - threewk.",
-            "1 per 2 to 3 week",
-            "qtwo - threewk",
         ),
         (
             "The current clinic shorthand is q2 - 3wk.",
@@ -3133,10 +3123,11 @@ def test_pipeline_extracts_validation_shorthand_frequency_patterns(
             "Seizures happen when perimenstrual only (days -3 to +3)",
         ),
         (
-            "Summary mentions smoker, rolled tobacco, ~3 per day. Seizures occur abs *monthly.",
+            # Phase 2 de-overfitting: note updated to use generalized notation (no asterisk)
+            "Summary mentions smoker, rolled tobacco, ~3 per day. Seizures occur abs monthly.",
             "1 per month",
             FrequencyLabelKind.FREQUENCY,
-            "abs *monthly",
+            "abs monthly",
         ),
         (
             "Current medication is lamotrigine twice daily. "
@@ -3154,10 +3145,11 @@ def test_pipeline_extracts_validation_shorthand_frequency_patterns(
             "one brief absence episode in a typical month",
         ),
         (
-            "Currently events are occurring qone to twod on workdays, with near-daily auras.",
+            # Phase 2 de-overfitting: note updated to use generalized notation (digit q-interval)
+            "Currently events are occurring q1-2d on workdays, with near-daily auras.",
             "1 per 1 to 2 day",
             FrequencyLabelKind.FREQUENCY,
-            "qone to twod",
+            "q1-2d",
         ),
         (
             "The median inter-seizure interval ≈ two months, with occasional clustering "

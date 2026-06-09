@@ -1,4 +1,4 @@
-"""Unified parameterized runner framework for Gan 2026 pipelines.
+﻿"""Unified parameterized runner framework for Gan 2026 pipelines.
 
 This module unifies the execution sequence of the deterministic, hybrid,
 and fully-LLM architectures, providing consistent intermediate schemas and
@@ -63,9 +63,26 @@ PipelineArchitecture = Literal[
     "deterministic_canonical_pipeline",
     "hybrid",
     "llm_only_direct_labeler",
-    "llm_only_structured_events",
+    "hybrid_structured_events",
     "llm_only_canonical_pipeline",
 ]
+
+# Architecture family groupings (for reporting and taxonomy).
+# Two hybrid configs share deterministic downstream stages (normalize/project/render/score)
+# but differ in their LLM task. Contrast with "fully_llm" configs (direct_labeler,
+# canonical_pipeline) that
+# own the full extraction-to-label pass in one LLM call with no deterministic
+# normalization stage. The two hybrids differ in their LLM task:
+#   - hybrid_structured_events: LLM extracts structured events (open-text → schema)
+#   - hybrid: LLM assesses a pre-extracted deterministic candidate set
+ARCHITECTURE_FAMILY: dict[str, str] = {
+    "deterministic": "deterministic",
+    "deterministic_canonical_pipeline": "deterministic",
+    "hybrid": "hybrid",
+    "llm_only_direct_labeler": "fully_llm",
+    "hybrid_structured_events": "hybrid",
+    "llm_only_canonical_pipeline": "fully_llm",
+}
 
 
 class PipelineConfiguration(BaseModel):
@@ -361,23 +378,23 @@ class Gan2026PipelineRunner:
             }
             return PipelineResult(output=output, diagnostics=diagnostics)
 
-        elif self.config.architecture == "llm_only_structured_events":
+        elif self.config.architecture == "hybrid_structured_events":
             from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
-                llm_only_structured_events,
+                hybrid_structured_events,
             )
 
             self._configure_lm()
 
-            prompt_input_json = llm_only_structured_events.build_prompt_input(item)
-            program = llm_only_structured_events.DspyStructuredExtractor()
+            prompt_input_json = hybrid_structured_events.build_prompt_input(item)
+            program = hybrid_structured_events.DspyStructuredExtractor()
             prediction = program(prompt_input_json=prompt_input_json)
             raw_output = str(prediction.structured_json)
 
             extraction, normalized_events, parse_errors = (
-                llm_only_structured_events.parse_structured_json(
+                hybrid_structured_events.parse_structured_json(
                     raw_output,
                     note_text=item.note_text,
-                    repair_config=llm_only_structured_events.StructuredRepairConfig(),
+                    repair_config=hybrid_structured_events.StructuredRepairConfig(),
                 )
             )
 
@@ -686,11 +703,11 @@ def run_split(
             checkpoint_report_path=checkpoint_report_path,
         )
 
-    elif architecture == "llm_only_structured_events":
+    elif architecture == "hybrid_structured_events":
         from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
-            llm_only_structured_events,
+            hybrid_structured_events,
         )
-        return llm_only_structured_events.run_split(
+        return hybrid_structured_events.run_split(
             records,
             split=split,
             split_manifest=split_manifest,
@@ -781,10 +798,10 @@ def get_cli_specs() -> dict[str, Any]:
         write_jsonl_rows,
     )
     from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
+        hybrid_structured_events,
         llm_candidate_set_clinical_assessment_probe,
         llm_only_canonical_pipeline,
         llm_only_direct_labeler,
-        llm_only_structured_events,
     )
 
     def write_jsonl(rows, path):
@@ -852,18 +869,18 @@ def get_cli_specs() -> dict[str, Any]:
             summarize_rows=llm_only_direct_labeler.summarize_records,
             default_max_tokens=900,
         ),
-        "llm_only_structured_events": GanLlmPipelineCliSpec(
+        "hybrid_structured_events": GanLlmPipelineCliSpec(
             description="Run the Gan 2026 LLM-only structured-events experiment.",
-            default_jsonl_path=llm_only_structured_events.DEFAULT_JSONL_PATH,
-            default_report_path=llm_only_structured_events.DEFAULT_REPORT_PATH,
+            default_jsonl_path=hybrid_structured_events.DEFAULT_JSONL_PATH,
+            default_report_path=hybrid_structured_events.DEFAULT_REPORT_PATH,
             run_split=lambda records, **kwargs: run_split(
                 records,
-                architecture="llm_only_structured_events",
+                architecture="hybrid_structured_events",
                 **kwargs,
             ),
-            write_jsonl=llm_only_structured_events.write_jsonl,
-            write_report=llm_only_structured_events.write_report,
-            summarize_rows=llm_only_structured_events.summarize_records,
+            write_jsonl=hybrid_structured_events.write_jsonl,
+            write_report=hybrid_structured_events.write_report,
+            summarize_rows=hybrid_structured_events.summarize_records,
             default_max_tokens=5000,
         ),
         "llm_only_canonical_pipeline": GanLlmPipelineCliSpec(

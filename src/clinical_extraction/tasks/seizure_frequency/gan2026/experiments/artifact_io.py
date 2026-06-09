@@ -20,7 +20,7 @@ def write_jsonl_rows(rows: Sequence[Mapping[str, Any]], path: Path) -> None:
 def load_jsonl_rows(path: Path) -> list[dict[str, Any]]:
     """Load non-empty rows from a newline-delimited JSON artifact."""
 
-    with path.open(encoding="utf-8") as handle:
+    with path.open(encoding="utf-8-sig") as handle:
         return [json.loads(line) for line in handle if line.strip()]
 
 

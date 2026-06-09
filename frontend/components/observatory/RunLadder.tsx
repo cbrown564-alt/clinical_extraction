@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Rocket } from "lucide-react";
 import type { RunSummary } from "@/lib/types";
@@ -39,7 +39,7 @@ function familyTextClass(family: string): string {
 const FAMILY_LABELS: Record<string, string> = {
   rules_only: "Rules",
   llm_only_direct_labeler: "LLM Direct",
-  llm_only_structured_events: "LLM Events",
+  hybrid_structured_events: "LLM Events",
   llm_structured_events: "LLM Events",
   llm_first_direct_extractor: "LLM Direct",
   llm_heavy_clinical_frequency_reasoner: "LLM Heavy",

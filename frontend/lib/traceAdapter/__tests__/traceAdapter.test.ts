@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Unit tests for active trace adapters.
  */
 
@@ -57,7 +57,7 @@ async function loadFirstArtifactRow(family: string): Promise<unknown> {
       };
 
     case "llm_structured_events":
-    case "llm_only_structured_events":
+    case "hybrid_structured_events":
     case "llm_heavy_clinical_frequency_reasoner":
       return {
         source_row_index: 0,
@@ -168,7 +168,7 @@ const activeFamilies = [
   "llm_first_direct_extractor",
   "dspy_final_selection_adjudicator",
   "llm_structured_events",
-  "llm_only_structured_events",
+  "hybrid_structured_events",
   "llm_heavy_clinical_frequency_reasoner",
   "llm_heavy_evidence_selection_with_deterministic_adapters",
   "hybrid_clinical_frequency_state_graph",

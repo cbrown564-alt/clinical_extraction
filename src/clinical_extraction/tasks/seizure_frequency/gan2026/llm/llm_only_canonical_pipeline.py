@@ -1,4 +1,4 @@
-"""LLM-only canonical-pipeline Gan 2026 seizure-frequency extraction experiments.
+﻿"""LLM-only canonical-pipeline Gan 2026 seizure-frequency extraction experiments.
 
 This is the "purest form" fully-LLM comparator named in the three-way
 architecture comparison plan: a single-shot configuration that collapses
@@ -7,7 +7,7 @@ the now-mature deterministic rule taxonomy (cluster-axis ambiguity,
 seizure-free conflict, same-window additive frequency, and similar named
 families) embedded as prompt instructions rather than pre/post processing.
 It sits alongside, not in place of, `llm_only_direct_labeler` and
-`llm_only_structured_events`.
+`hybrid_structured_events`.
 
 Because this architecture produces one free-text decision rather than a
 `CandidateSet` with source ids, it reports a distinct evidence
@@ -59,7 +59,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.reports.base import (
     write_markdown_report,
 )
 
-PROMPT_VERSION = "gan2026_llm_only_canonical_pipeline_v0.2"
+PROMPT_VERSION = "gan2026_llm_only_canonical_pipeline_v0.5"
 DEFAULT_JSONL_PATH = Path(
     "experiments/gan2026_llm_only_canonical_pipeline_validation_gpt41mini_2026-06-07.jsonl"
 )
@@ -137,23 +137,45 @@ _RULE_TAXONOMY_INSTRUCTIONS: list[str] = [
         "do not guess a specific cluster rate; prefer unknown."
     ),
     (
-        "seizure_free_conflict: do not select seizure-free when active-event "
-        "evidence, scoped event types, breakthrough events, or other current "
-        "seizure-burden facts remain unresolved; a concrete current frequency "
-        "takes precedence over a seizure-free claim it conflicts with."
+        "seizure_free_conflict: active seizure evidence overrides a seizure-free claim. "
+        "Three specific patterns to apply this rule: "
+        "(1) recent burst then seizure-free — if the note describes a burst of events in "
+        "a short recent period followed by a seizure-free run, the label is the burst "
+        "frequency, not the ensuing freedom; "
+        "(2) trigger-conditional outside-window freedom — if seizures only occur in a "
+        "conditional window (perimenstrual, sleep-deprived, missed medication) and the note "
+        "reports seizure-freedom outside that window, the outside-window freedom is NOT the "
+        "overall current frequency, use unknown; "
+        "(3) plan-section seizure-freedom language — a plan entry stating 'given seizure "
+        "freedom since [date]' does not override active-frequency evidence elsewhere in the "
+        "same note. "
+        "When this rule suppresses a seizure-free label, fall back to the active frequency "
+        "or to unknown — never to no seizure frequency reference. A note that reports no "
+        "recent seizures but where the primary evidence is qualified or proxy still has "
+        "seizure-frequency content; it is unknown or the burst frequency, not absent."
     ),
     (
-        "same_window_additive_frequency: you may sum multiple concrete "
-        "frequency-rate facts only when they explicitly share the same time "
-        "window and compatible event scope; mixed-window, vague-plus-concrete, "
-        "or event-scope-uncertain combinations must not be added together."
+        "same_window_additive_frequency: sum seizure counts only when ALL of "
+        "the following hold — (1) the note explicitly states each count using "
+        "the same time denominator (e.g., both stated as 'per month'); "
+        "(2) all event types are compatible in scope (not cluster plus plain rate); "
+        "(3) no single type's count is already clearly the dominant burden. "
+        "Do NOT add when: the note lists each type separately without giving a "
+        "combined total, one type is reported daily and another monthly, or the "
+        "types use different denominators. When in doubt between adding and "
+        "selecting, select the highest-frequency type's rate rather than summing."
     ),
     (
-        "denominator_window_mismatch: keep the stated count and the stated "
-        "time-window denominator paired exactly as the source describes them; "
-        "do not silently convert a multi-period count into a different "
-        "denominator (for example, do not turn '6 over 3 months' into "
-        "'2 per month' unless the note itself states the monthly rate)."
+        "denominator_window_mismatch: preserve the exact count-window pair as stated; "
+        "do not compute a rate by applying date arithmetic to an observation window. "
+        "Specific cases to avoid: "
+        "(a) 'N events since [date]' with a known clinic date does NOT yield 'N per M months' "
+        "— it is an observation-window total, not a recurrent rate; use unknown unless "
+        "recurrence is explicitly stated; "
+        "(b) a long-window total (e.g., '6 over the past year') does not convert to a "
+        "monthly rate unless the note explicitly states the monthly rate. "
+        "Preserve the denominator the note uses; do not convert a multi-month count into "
+        "a monthly rate unless the note explicitly gives the monthly rate."
     ),
     (
         "medication_cadence_ambiguity: cadence language describing medication "
@@ -175,11 +197,18 @@ _RULE_TAXONOMY_INSTRUCTIONS: list[str] = [
         "'2 to 3 per cluster') rather than inventing a cadence."
     ),
     (
-        "concrete_frequency_precedence: a renderable concrete frequency-rate "
-        "fact can override a contextual cluster framing when the cluster "
-        "framing is incidental rather than itself the current clinical "
-        "burden being described; it must not override an already-renderable "
-        "cluster-burden operand or medication-use cadence."
+        "concrete_frequency_precedence: a concrete frequency-rate fact overrides "
+        "an incidental cluster framing only when the cluster framing is truly "
+        "background context AND the concrete rate is the higher-frequency answer. "
+        "Do NOT apply this rule to: "
+        "(a) pick a lower-frequency event over a higher-frequency one — if the "
+        "concrete fact is monthly but another type occurs daily, the daily type "
+        "takes precedence regardless of which is 'more concrete'; "
+        "(b) override an explicit clinical cluster pattern (e.g., 'cluster days', "
+        "'nocturnal clusters', 'clusters of absence seizures N times per week') — "
+        "that is a renderable cluster burden, not incidental framing; "
+        "(c) override a medication or rescue-dose cadence rather than a seizure "
+        "event rate."
     ),
     (
         "dominant_vague_current_burden: a vague but clearly current "
@@ -236,16 +265,17 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "reference."
             ),
             (
-                "If multiple seizure events occur over the same period "
-                "combine them into a single rate using the same time window (for example, "
-                "2 tonic-clonic seizures and 3 focal seizures in the last month should"
-                "combine into '5 per month')."
-            ),
-            (
-                "If multiple unrelated seizure events are present, select the "
-                "highest current seizure burden across unless "
-                "the note gives an overall current count, in which case "
-                "prefer the overall count."
+                "When multiple seizure types are present, select the type with the highest "
+                "frequency as the label — rank by how often events occur (events per day, "
+                "per week, or per month), not by clinical severity. Daily drop attacks or "
+                "daily absences take precedence over weekly or monthly tonic-clonic seizures. "
+                "Exception: when events occur in a cluster pattern (grouped multi-event "
+                "episodes separated by seizure-free intervals, recurring every few days or "
+                "weeks), label using the cluster cadence — not the per-episode daily burst "
+                "rate. Events within a single cluster day are not the same as daily ongoing "
+                "events. Sum counts only when the note explicitly gives a combined total for "
+                "events that share the same time window; do not sum separately reported type "
+                "counts."
             ),
             (
                 "Plural daily seizures/events should map to multiple per day "
@@ -259,6 +289,12 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
             (
                 "Use no seizure frequency reference only when the note "
                 "contains no usable seizure-frequency evidence."
+            ),
+            (
+                "If the note describes a seizure burst (multiple events in a short recent "
+                "period) followed by a seizure-free run, the label is the burst frequency — "
+                "not the ensuing seizure-free duration. A seizure-free label is appropriate "
+                "only when the absence of seizures is the note's primary clinical statement."
             ),
             (
                 "answer_kind must be written as exactly one of these five "
@@ -282,12 +318,38 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "empty if none did."
             ),
             (
+                "confidence describes how certain you are about the answer based on "
+                "what the note contains: "
+                "'low' when two or more current seizure-frequency facts compete and "
+                "none clearly dominates, or when the frequency is only a vague range "
+                "with no time window at all; "
+                "'medium' when one fact is clearly dominant but some ambiguity remains "
+                "— for example, events are only described as conditional on a trigger, "
+                "the count is vague but a time window is clear, or only a relative "
+                "trend is given with no stated rate; "
+                "'high' when there is exactly one unambiguous current fact, no "
+                "competing claims, and the evidence can be quoted directly from the note."
+            ),
+            (
                 "Write rationale as one short, plain-language sentence stating "
                 "only the deciding evidence and label — for example: 'The note "
                 "states two seizures per month for the current period, so the "
                 "label is 2 per month.' Do not show step-by-step reasoning, "
                 "alternative options you considered and rejected, or "
                 "self-questioning; state only the final justification."
+            ),
+            (
+                "The construction 'N events since [date]' or 'N occasions since [month]' "
+                "describes a total count over an observation window, not a stated recurring "
+                "rate — use unknown for these constructions unless the note explicitly says "
+                "the events recur at that rate. An explicit frequency statement such as "
+                "'1 per month' or 'once a week' is a stated rate regardless of how many "
+                "events are described."
+            ),
+            (
+                "Before writing your final_label, verify that the rate described in your "
+                "rationale matches it: if your rationale names a concrete frequency, your "
+                "final_label must not be 'unknown' or 'no seizure frequency reference'."
             ),
             "Return exactly one JSON object with no markdown.",
         ],
@@ -586,7 +648,7 @@ def write_report(
         "projection stage downstream.",
         "",
         "Minimal change: add an `llm_only_canonical_pipeline` runner alongside (not "
-        "replacing) `llm_only_direct_labeler` and `llm_only_structured_events`. No "
+        "replacing) `llm_only_direct_labeler` and `hybrid_structured_events`. No "
         "deterministic `CandidateSet` is built or consumed; final_label is the model's "
         "directly rendered answer.",
         "",

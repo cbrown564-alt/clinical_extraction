@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useMemo } from "react";
 import { Telescope, Check, Filter, Search, X, ChevronDown, ChevronUp } from "lucide-react";
@@ -20,7 +20,7 @@ type SortDir = "asc" | "desc";
 const FAMILY_LABELS: Record<string, string> = {
   rules_only: "Rules",
   llm_only_direct_labeler: "LLM Direct",
-  llm_only_structured_events: "LLM Events",
+  hybrid_structured_events: "LLM Events",
   llm_structured_events: "LLM Events",
   llm_first_direct_extractor: "LLM Direct",
   llm_heavy_clinical_frequency_reasoner: "LLM Heavy",
@@ -34,7 +34,7 @@ const FAMILY_LABELS: Record<string, string> = {
 const FAMILY_ORDER = [
   "rules_only",
   "llm_only_direct_labeler",
-  "llm_only_structured_events",
+  "hybrid_structured_events",
   "llm_structured_events",
   "llm_first_direct_extractor",
   "llm_heavy_clinical_frequency_reasoner",

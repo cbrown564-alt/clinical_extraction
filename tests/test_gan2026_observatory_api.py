@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import json
 from pathlib import Path
@@ -114,7 +114,7 @@ def test_observatory_registry_rules_prompts_and_artifacts(tmp_path: Path) -> Non
     assert family_values == {
         "rules_only",
         "llm_only_direct_labeler",
-        "llm_only_structured_events",
+        "hybrid_structured_events",
         "reset_clinical_assessment_pipeline",
         "llm_heavy_clinical_frequency_reasoner",
     }
