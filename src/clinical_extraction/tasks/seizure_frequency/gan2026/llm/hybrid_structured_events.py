@@ -97,7 +97,7 @@ _nearest_event_date = llm_structured_temporal.nearest_event_date
 _nearest_event_month_year = llm_structured_temporal.nearest_event_month_year
 _small_number_words_to_digits = llm_structured_temporal.small_number_words_to_digits
 
-PROMPT_VERSION = "gan2026_hybrid_structured_events_v0.5"
+PROMPT_VERSION = "gan2026_hybrid_structured_events_v0.6"
 PROMPT_POLICY_TAXONOMY: list[dict[str, str]] = [
     {
         "policy_id": "se_v0.schema.events_plus_selection",
@@ -446,6 +446,17 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "Keep seizure-free statements separate from unknown or last-event-only "
                 "statements. Do not select seizure-free if other current seizure-like events "
                 "remain active."
+            ),
+            (
+                "When both a frequency_rate or cluster_frequency event and a seizure_free "
+                "event have overlapping or adjacent recent/current windows (e.g. a recent "
+                "burst or monthly/weekly count alongside a 'seizure-free since [date]' or "
+                "'no events so far this month' claim), select the frequency_rate or "
+                "cluster_frequency event, not seizure_free. Only select seizure_free over a "
+                "co-reported recent-window frequency event when the seizure-free interval "
+                "clearly supersedes the entire frequency history — sustained remission of a "
+                "year or more, or an independent 'now well controlled' framing that is not "
+                "merely date arithmetic on the last counted event."
             ),
             (
                 "Selection must choose the highest current or recent seizure burden across "

@@ -59,7 +59,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.reports.base import (
     write_markdown_report,
 )
 
-PROMPT_VERSION = "gan2026_llm_only_canonical_pipeline_v0.5"
+PROMPT_VERSION = "gan2026_llm_only_canonical_pipeline_v0.7"
 DEFAULT_JSONL_PATH = Path(
     "experiments/gan2026_llm_only_canonical_pipeline_validation_gpt41mini_2026-06-07.jsonl"
 )
@@ -139,9 +139,17 @@ _RULE_TAXONOMY_INSTRUCTIONS: list[str] = [
     (
         "seizure_free_conflict: active seizure evidence overrides a seizure-free claim. "
         "Three specific patterns to apply this rule: "
-        "(1) recent burst then seizure-free — if the note describes a burst of events in "
-        "a short recent period followed by a seizure-free run, the label is the burst "
-        "frequency, not the ensuing freedom; "
+        "(1) recent-window seizure count co-reported with a seizure-free claim — if the note "
+        "reports a seizure-free claim AND also reports an explicit seizure count or rate for "
+        "the SAME or immediately preceding time window (e.g., five seizures last month "
+        "followed by a partial seizure-free run so far this month; a burst of events last week "
+        "followed by a week of freedom; a recent cluster immediately before the claimed "
+        "freedom began), the count or rate is the label, not the ensuing freedom. Apply this "
+        "rule ONLY when the count/rate and the seizure-free claim are temporally adjacent — "
+        "do NOT apply it when the competing frequency evidence is from a clearly older or "
+        "separate historical window. When in doubt whether the windows overlap, keep the "
+        "seizure-free label (do not fall back to unknown simply because any historical count "
+        "appears in the note); "
         "(2) trigger-conditional outside-window freedom — if seizures only occur in a "
         "conditional window (perimenstrual, sleep-deprived, missed medication) and the note "
         "reports seizure-freedom outside that window, the outside-window freedom is NOT the "
