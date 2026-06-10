@@ -592,13 +592,42 @@ regardless of expressed confidence.
 | 1 | *(done for all three models — gpt-4.1-mini 2026-06-08; deepseek-v4-flash 2026-06-09; qwen3.6-35b full-surface 2026-06-09 via Section 8b)* All six canonical configs run on validation750 for all three models; full-surface reports at `experiments/gan2026_three_way_comparison_phase1_report_{gpt41mini,deepseek,qwen3635b_full}_validation750_2026-06-09.{jsonl,json,md}`; cross-model synthesis at `docs/research/gan2026_cross_model_comparison_2026-06-09.md` | none — validation-only |
 | 2 | *(done — 2026-06-09: all families assessed, two iterations complete — GAN_SHORTHAND (iter 1, −14) + CLUSTER_ARITHMETIC/DIARY_LOG_AGGREGATION digit-only (iter 2, −1); PORTABLE_RATE_EXPRESSIONS/SEIZURE_FREE/TEMPORAL_SELECTION assessed and confirmed general; total: −15 purist-correct, 688→673 of 741 rendered = 0.928→0.908 — see Section 4 status update)* Apply the de-overfitting rewrite to one deterministic rule family at a time; re-run and compare after each | none — validation-only, ablatable, one family at a time |
 | 3 | *(done — 2026-06-09, gpt-4.1-mini: DL v0.5 +11, CP v0.5 +1, hybrid v5 +3.2pp purist; Phase 3 report at `experiments/gan2026_three_way_comparison_phase3_report_gpt41mini_validation750_2026-06-09.{jsonl,json,md}`; see Section 8c/8d)* Apply the prompt-refinement principle to the canonical fully-LLM runner; re-run and compare after each change. **Pre-conditions before starting**: complete the three uncertainty-signal prompt fixes identified in the 2026-06-09 audit (Section 5 status update / [[gan2026_uncertainty_signal_audit_2026-06-09]]): ground `confidence` operationally, replace `uncertainty_flags` with a closed vocabulary, add an `aggregation_policy` decision table to the hybrid prompt | none — validation-only |
-| 4 | Frozen `test450` aggregate audit of the refined deterministic, refined fully-LLM, and current hybrid pipelines, using the exact frozen-aggregate-audit protocol already proven in `gan2026_test450_hn1_frozen_aggregate_audit_2026-06-07.md` | **requires explicit user authorization**, exactly as already required for any holdout-facing reset work |
+| 4 | *(done — 2026-06-10, gpt-4.1-mini: DCP 329/450=73.1% purist, hybrid v5 269/334=80.5% purist (334/450 rendered, deep-replayed), SE v0.5 364/450=81.2% purist, CP v0.5 326/450=72.4% purist; report at `experiments/gan2026_test450_phase4_comparison_report_gpt41mini_2026-06-10.{jsonl,json,md}`; see Section 8e)* Frozen `test450` aggregate audit of the refined deterministic, refined fully-LLM, and current hybrid pipelines, using the exact frozen-aggregate-audit protocol already proven in `gan2026_test450_hn1_frozen_aggregate_audit_2026-06-07.md` | **authorized 2026-06-09 — scoped to 4 of 6 architectures (see below); audit complete 2026-06-10** |
 
 Phases 0-3 are validation-only development mechanics and need no new
 authorization beyond what the project's existing guardrails already grant.
 Phase 4 is the only phase that touches the locked `test450` split, and must
 follow the same frozen-aggregate, no-row-tuning discipline already
 established and proven.
+
+**Phase 4 authorization (2026-06-09)**: the user authorized a frozen `test450`
+read for **4 of the 6** architectures, explicitly excluding two on
+validation-evidence grounds:
+
+- **`deterministic`** — excluded as a duplicate read. Phase 1/2 confirmed
+  `deterministic` and `deterministic_canonical_pipeline` are numerically
+  identical (688/741 → 673/741 purist-correct, same final-label distribution,
+  same `output`/`diagnostics` shape) — they are the same rules behind two
+  staging shapes (Section 2). Reading `test450` through `deterministic` would
+  add no information beyond `deterministic_canonical_pipeline`.
+- **`llm_only_direct_labeler`** — excluded as the consistent underperformer.
+  Across all three Phase 1 models and through Phase 3's prompt refinements, DL
+  has trailed CP at every checkpoint (gpt-4.1-mini Phase 3: DL 575/750=76.7%
+  vs CP 582/750=77.6%; qwen is the only model where CP doesn't beat DL, and
+  even there the gap is small). `llm_only_canonical_pipeline` is the carrying
+  fully-LLM comparator for Phase 4.
+
+**Approved for the `test450` frozen aggregate audit**:
+
+1. `deterministic_canonical_pipeline`
+2. `hybrid` (v5 prompt)
+3. `hybrid_structured_events`
+4. `llm_only_canonical_pipeline` (v0.5 prompt)
+
+Model: gpt-4.1-mini (the Phase 3-complete model). One-shot frozen aggregate
+read per architecture, no row-level tuning, no re-runs based on results — per
+the guardrails in Section 7 and the protocol in
+`gan2026_test450_hn1_frozen_aggregate_audit_2026-06-07.md`.
 
 ---
 
@@ -935,6 +964,60 @@ Both new artifacts registered in `experiments/registry.jsonl`
 (`gan2026_hybrid_v5_validation750_gpt41mini_2026-06-09`,
 `gan2026_three_way_comparison_phase3_report_gpt41mini_validation750_2026-06-09`).
 **Phase 3 is complete for gpt-4.1-mini.**
+
+---
+
+## 8e. Phase 4 — Frozen `test450` Audit Status
+
+**Status: done (2026-06-10) — gpt-4.1-mini, 4-architecture frozen aggregate audit complete.**
+
+Per the Phase 4 authorization (Section 6), all four approved architectures were run live
+over the locked `test450` split (`gan2026_split_v1`, 450 rows) on 2026-06-09:
+
+- `gan2026_test450_phase4_frozen_audit_deterministic_canonical_pipeline_gpt41mini_2026-06-09.{jsonl,md}`
+  — deterministic, no live model calls.
+- `gan2026_test450_phase4_frozen_audit_hybrid_gpt41mini_2026-06-09.{jsonl,md}` — v5 prompt
+  (`gan2026_candidate_set_clinical_assessment_probe_v5`), 450/450 rows, 0 call/parse failures,
+  live-generated CandidateSets embedded per row. Assessment-stage probe only — no native
+  rendered/null/purist/routed numbers.
+- `gan2026_test450_phase4_frozen_audit_hybrid_structured_events_gpt41mini_2026-06-09.{jsonl,md}` —
+  v0.5 prompt (`gan2026_hybrid_structured_events_v0.5`), repair mode `hybrid_full_stack`,
+  448/450 structured records, 2 parse/schema/label issues.
+- `gan2026_test450_phase4_frozen_audit_llm_only_canonical_pipeline_gpt41mini_2026-06-09.{jsonl,md}` —
+  v0.5 prompt (`gan2026_llm_only_canonical_pipeline_v0.5`), 450/450 decision records, 0 failures.
+
+**Comparison report — complete (2026-06-10).** hybrid's assessment rows were deep-replayed
+through `build_unified_pipeline_artifact` (projection_render → score → verification_route →
+verification_decision) to produce its rendered/null/purist/routed numbers and routing
+appendix, following the same approach used for hybrid in the Phase 3 report. Built at
+`experiments/gan2026_test450_phase4_comparison_report_gpt41mini_2026-06-10.{jsonl,json,md}`
+via a new module,
+`src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/phase4_test450_frozen_audit_report.py`
+(a 4-architecture / `test` split adaptation of `three_way_comparison_report.py`, since
+`build_three_way_comparison_report` requires all six architectures).
+
+**Frozen `test450` results (gpt-4.1-mini, of-rendered):**
+
+| Architecture | Rendered | Null | Routed | Purist/rendered | Pragmatic/rendered | Evidence-trace valid |
+| --- | --- | --- | --- | --- | --- | --- |
+| `deterministic_canonical_pipeline` | 450/450 | 0 | N/A | 329 (73.1%) | 341 (75.8%) | 450/450 (100.0%) `evidence_valid` |
+| `hybrid` (v5, deep-replayed) | 334/450 | 116 | 30 | 269 (80.5%) | 281 (84.1%) | 438/450 (97.3%) `candidate_set_source_id_status==valid` |
+| `hybrid_structured_events` (v0.5) | 448/450 | 2 | N/A | 364 (81.2%) | 381 (85.0%) | 418/450 (92.9%) `evidence_valid` |
+| `llm_only_canonical_pipeline` (v0.5) | 450/450 | 0 | N/A | 326 (72.4%) | 346 (76.9%) | 415/450 (92.2%) `evidence_text_contained` |
+
+Reading: `hybrid_structured_events` leads on both purist and pragmatic of-rendered
+accuracy; `hybrid` (deep-replayed) is a close second on accuracy-of-rendered but renders
+the fewest rows (116/450 null — its routing/abstention layer abstains on 30 of its 334
+rendered rows, all under `abstain`, with route families dominated by
+`cluster_axis_ambiguity` (13) and `selected_source_id_invalid` (12)). `DCP` and `CP` both
+render all 450 rows with no abstention mechanism. These validation750→test450 results are
+directionally consistent with the Phase 3 validation750 ordering (SE > hybrid > DCP ≈ CP
+on purist-of-rendered), with the holdout numbers running a few points lower across the
+board.
+
+All five Phase 4 artifacts (4 raw runs + comparison report) registered in
+`experiments/registry.jsonl`. Per Section 7 guardrails, no row-level holdout tuning was
+performed and no re-runs are planned based on these results — **Phase 4 is complete.**
 
 ---
 
