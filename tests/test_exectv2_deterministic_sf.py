@@ -631,10 +631,17 @@ def test_all_rules_have_examples() -> None:
 # docs/research/exectv2_sf_error_analysis_2026-06-10.md for the row-level audit,
 # and docs/research/exectv2_sf_guideline_alignment_2026-06-10.md for the clauses.
 
+# Re-pinned 2026-06-10 after the gold-text repair (discoveries D16): SF gold
+# `text` is now the clean canonical term (CUIPhrase / MarkupOutput col6) instead
+# of the offset-drift–corrupted raw covered span (col5). The extractor is
+# UNCHANGED — these gains are a gold-data correction, not a model improvement.
+# Per-item precision rose 0.484→0.615, confirming genuine repair (FN+FP pairs
+# collapsing into TP) rather than a loosened matcher. Prior (raw-gold) pins were
+# phrase_only 0.382 / sf_semantic 0.272 / sf_benchmark 0.272.
 _PINNED_DEV_PER_ITEM_F1 = {
-    "phrase_only": 0.382,
-    "sf_semantic": 0.272,
-    "sf_benchmark": 0.272,
+    "phrase_only": 0.485,
+    "sf_semantic": 0.362,
+    "sf_benchmark": 0.362,
 }
 _F1_BAND = 0.02
 

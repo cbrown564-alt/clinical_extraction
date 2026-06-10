@@ -26,7 +26,10 @@ def test_ea0006_seizure_frequency_annotations() -> None:
 
     assert len(sf) == 3
     first = sf[0]
-    assert first.text == "generalised-tonic-clonic-seizures-2014"
+    # text is repaired to the clean canonical term (CUIPhrase); the corrupt
+    # raw covered span is preserved as raw_text (see data.py / discoveries D16).
+    assert first.text == "generalised-tonic-clonic-seizures"
+    assert first.raw_text == "generalised-tonic-clonic-seizures-2014"
     assert first.attributes["NumberOfSeizures"] == "2"
     assert first.attributes["YearDate"] == "2014"
     assert first.attributes["TimeSince_or_TimeOfEvent"] == "During"

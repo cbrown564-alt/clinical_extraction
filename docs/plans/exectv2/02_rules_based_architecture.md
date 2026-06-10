@@ -82,9 +82,22 @@ Dev split (140 letters, 187 gold SF mentions),
 
 | Config | per-item F1 | per-letter F1 |
 |--------|-------------|---------------|
-| `phrase_only` (text only) | 0.382 | 0.604 |
-| `sf_semantic` (guideline-aligned: drops CUI/CUIPhrase/Certainty/Negation) | 0.272 | 0.482 |
-| `sf_benchmark` (keeps CUI; phrase→CUI lexicon live; == sf_semantic) | 0.272 | 0.482 |
+| `phrase_only` (text only) | 0.485 | 0.684 |
+| `sf_semantic` (guideline-aligned: drops CUI/CUIPhrase/Certainty/Negation) | 0.362 | 0.575 |
+| `sf_benchmark` (keeps CUI; phrase→CUI lexicon live; == sf_semantic) | 0.362 | 0.575 |
+
+**Gold-text repair (2026-06-10, supersedes the prior pins).** Gold SF `text` is
+now the clean canonical term (`CUIPhrase` / MarkupOutput col6) rather than the
+offset-drift–corrupted raw covered span (col5); the col6 phrase was in the gold
+all along, in a field scoring ignored (discoveries D16). The extractor is
+**unchanged** — this is a gold-data correction, not a model gain. sf_semantic
+per-item **0.272 → 0.362**, per-letter **0.482 → 0.575**; per-item **precision
+0.484 → 0.615** (precision *rising* proves genuine repair, not a loosened
+matcher). The earlier "≈ 26.7% un-winnable noise ceiling" claim was wrong: it was
+an artifact of matching against the corrupt column, and is retracted. The same
+repair is applied to Diagnosis; the other seven entities are held for a per-entity
+phrase-basis decision (D17). Prior (raw-gold) pins: phrase_only 0.382 / sf_semantic
+0.272 / sf_benchmark 0.272.
 
 **Phase 2 completion batch (2026-06-10).** On top of the guideline-alignment +
 temporal-family + CUI-lexicon work, this batch closed the attribute-correctness
@@ -103,12 +116,12 @@ artifact. Full row-level analysis, the FN decomposition, and the noise ceiling
 are in `docs/research/exectv2_sf_error_analysis_2026-06-10.md`; clause mapping in
 `docs/research/exectv2_sf_guideline_alignment_2026-06-10.md`.
 
-**Noise ceiling (quantified, D12).** 37/187 = 19.8% of gold SF phrases are
-offset-drift–corrupted (truncations + frequency-embedding over-captures),
-un-winnable on exact phrase text; a further 13/187 = 7.0% are singular/plural
-mismatches we deliberately do not normalize away (scope decision: keep exact
-match). Combined ≈ 26.7%, so exact-match phrase recall is capped at ≈ 0.73 and
-the sf_semantic recall of 0.225 reads as a corrupt-adjusted ≈ 0.31.
+**~~Noise ceiling (D12)~~ — RETRACTED (2026-06-10, D16).** The earlier claim that
+37/187 + 13/187 ≈ 26.7% of gold SF phrases were "un-winnable on exact text" was
+wrong. The corruption was only in `text` (col5); the clean canonical phrase was
+present all along as `CUIPhrase` (col6). Repairing `text:=CUIPhrase` recovers it
+with precision *rising*, lifting sf_semantic per-item 0.272 → 0.362. The remaining
+gap to the benchmark is now genuine recall (modeling) work, not a gold ceiling.
 
 The remaining winnable gap is recall (precision is now strong): wrong-type
 association, "infrequent/under control" ⇒ FrequencyChange, Age-based bundles,
@@ -119,10 +132,9 @@ Benchmark SF F1 = **0.66 per item / 0.68 per letter** (Table 1,
 Fonferko-Shadrach 2024 — the published system's hardest entity; its overall F1
 is 0.87 per item / 0.90 per letter, carried by the easy structured ones).
 The bar to beat for SF is 0.66/0.68; the benchmark-comparable
-`sf_benchmark` config is now at 0.272 per-item / 0.482 per-letter, with the
-remaining gap dominated by the quantified noise ceiling (≈ 26.7% un-winnable on
-exact text) and a small, precision-risky recall tail. The original gap list,
-with final status:
+`sf_benchmark` config is now at 0.362 per-item / 0.575 per-letter (post gold-text
+repair), with the remaining gap being genuine recall — a small, precision-risky
+tail, no longer a gold ceiling. The original gap list, with final status:
 
 1. **CUI assignment (DONE).** All 187/187 gold SF mentions carry `CUI` (16
    distinct); the benchmark config required it and rules emitted none, pinning
@@ -203,12 +215,13 @@ tempted to fit their phrasing. Apply the Gan 2026 Phase 2 method:
 ## 7. Exit criteria
 
 - **Phase 2 (COMPLETE, 2026-06-10)**: SF deterministic extractor scored on dev
-  (`sf_benchmark` 0.272 per-item / 0.482 per-letter, 0.868 per-letter
-  precision); row-level error list + noise ceiling produced
+  (`sf_benchmark` 0.362 per-item / 0.575 per-letter post gold-text repair, 0.894
+  per-letter precision); row-level error list produced
   (`docs/research/exectv2_sf_error_analysis_2026-06-10.md`); rules
   portability-tagged (`rule_metadata.py` `Portability`); guideline 1:1 audit
-  done. Per-statement emission (D8) measured net-negative and reverted. The
-  remaining sub-benchmark gap is the quantified ≈ 26.7% gold noise ceiling plus a
-  small precision-risky recall tail, both logged.
+  done. Per-statement emission (D8) measured net-negative and reverted. Gold
+  `text` repaired to the clean canonical term (`CUIPhrase`; discoveries D16) — the
+  earlier "≈ 26.7% un-winnable noise ceiling" was retracted as a wrong-column
+  artifact. The remaining sub-benchmark gap is genuine recall (modeling), logged.
 - **Phase 6**: all 9 entities extracted; overall dev per-item/per-letter F1
   reported; rule ablation table buildable.

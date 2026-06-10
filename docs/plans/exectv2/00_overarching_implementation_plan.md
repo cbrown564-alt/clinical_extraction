@@ -58,7 +58,7 @@ held-out reads are **frozen, authorized audits**.
 | **0** | Foundation: loader, label-based scorer, thesis | (done — see §3) | none |
 | **1** | Shared core + ExECTv2 extraction contract & prediction schema; normalization reuse from Gan 2026 | (DONE — see reuse ledger §5) | none (structural) |
 | **2** | Rules-based Seizure-Frequency extractor → first dev benchmark read | **DONE (2026-06-10) — see §3a** · [[02_rules_based_architecture]] | none (dev-only) |
-| **3** | LLM-only Seizure-Frequency extractor | [[03_llm_only_architecture]] | none (dev-only) |
+| **3** | LLM-only Seizure-Frequency extractor | **DONE (2026-06-10) — per_entity phrase_only 0.486/0.698, sf_semantic 0.135/0.264; both beat det. baseline per-letter** · [[03_llm_only_architecture]] | none (dev-only) |
 | **4** | Hybrid Seizure-Frequency extractor | [[04_hybrid_architecture]] | none (dev-only) |
 | **5** | Three-way SF comparison + cross-pollination (mirror the Gan 2026 plan) | [[05_experiment_harness_and_loops]], [[07_transparency_ablations_and_paper_outputs]] | none (dev-only) |
 | **6** | Scale all three architectures to the full 9-entity set | [[02_rules_based_architecture]], [[03_llm_only_architecture]], [[04_hybrid_architecture]] | none (dev-only) |

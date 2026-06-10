@@ -13,6 +13,17 @@ uv run python -m clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.
 Pinned as a regression test in
 `tests/test_exectv2_deterministic_sf.py::test_dev_split_baseline_pinned`.
 
+> **UPDATE (2026-06-10, supersedes §1 headline and retracts §4).** After this
+> analysis, gold SF `text` was repaired to the clean canonical term (`CUIPhrase` /
+> MarkupOutput col6) instead of the offset-drift–corrupted raw covered span (col5)
+> — the clean phrase was in the gold all along (discoveries D16). With the
+> **extractor unchanged**, sf_semantic per-item F1 **0.272 → 0.362**, per-letter
+> **0.482 → 0.575**, per-item precision **0.484 → 0.615**. Precision *rising*
+> proves genuine repair, not a loosened matcher. **§4's "≈ 26.7% un-winnable noise
+> ceiling" is retracted** — it was an artifact of matching against the corrupt
+> column. The §2/§3 row-level analysis below remains valid as process history; the
+> headline numbers are the repaired ones above.
+
 ## 1. Headline scores
 
 `rule_set = deterministic_sf_v2_anchor_association`. Three match configs (see
@@ -96,7 +107,12 @@ Net-negative, reverted:
 | Other no-phrase-match (clean gold phrase) | 74 | Partly (wrong-type association, uncovered statement forms, "infrequent/under control") |
 | Offset-drift–corrupted gold phrase | 37 | **No** (see §4) |
 
-## 4. Noise ceiling (D12) — quantified
+## 4. ~~Noise ceiling (D12) — quantified~~ — RETRACTED (see top-of-file UPDATE; D16)
+
+> The analysis below is retained for the record but its conclusion is **wrong**:
+> the "un-winnable" corruption was only in the `text` column; the clean phrase was
+> available as `CUIPhrase` and is now used for matching. There is no ~27% gold
+> ceiling.
 
 **Corrupt slice: 37 / 187 = 19.8%.** Gold SF `text` values that do not normalize
 to a clean seizure-term phrase, because spelling was corrected in the letters

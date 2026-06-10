@@ -187,7 +187,10 @@ offsets.
 **LLM implication.** Don't ask the model for character offsets and don't score
 them; evidence-substring checks must be offset-free (verbatim-substring, not
 index-based).
-Status: **firm.**
+Status: **firm.** **Caveat (2026-06-10):** the "label" being matched is gold
+`text`, which is *itself* the drifted col5 covered span and is NOT reliable (D12);
+the reliable clean label is `CUIPhrase` (col6). "Score on labels" only holds once
+`text` is repaired to the canonical term — see D16.
 
 ### D12 — Gold `text` itself is partly corrupted by the same offset drift `[SF]`
 **Discovery.** Some gold SF `text` values are truncated or over-captured because
@@ -197,20 +200,22 @@ the stored phrase was sliced by drifted offsets — e.g. `'convulsive seizur'`,
 appointment'`.
 **Evidence.** Row-level error list from `run_deterministic_sf`; contradicts D7
 (text should be the seizure term only).
-**Rules implication.** A slice of phrase-exact recall is **un-winnable**.
+**Rules implication.** ~~A slice of phrase-exact recall is **un-winnable**.~~
 **Quantified (2026-06-10, dev):** 37/187 = 19.8% of gold SF phrases are
 offset-drift–corrupted (truncations + frequency-embedding over-captures); a
-further 13/187 = 7.0% are singular/plural mismatches. Combined ≈ 26.7%, capping
-exact-match phrase recall at ≈ 0.73. **Scope decision: keep exact match** (do not
-singularize or key on a normalized seizure-term), report the ceiling instead — so
-the headline stays benchmark-comparable. See `exectv2_sf_error_analysis_2026-06-10.md`
-§4.
+further 13/187 = 7.0% are singular/plural mismatches.
 **LLM implication.** The LLM will (correctly) produce the clean seizure phrase and
 be penalised against corrupt gold — so the *phrase* component of any score
-understates true quality for both architectures. Report the corrupt-gold-adjusted
-number (≈ 0.31 corrupt-adjusted sf_semantic recall), and don't tune prompts to
-reproduce corruption.
-Status: **firm; corrupt slice quantified (19.8% corruption + 7.0% plural).**
+understates true quality for both architectures.
+Status: ~~firm; corrupt slice quantified.~~ **Partly falsified / superseded by D16
+(2026-06-10).** The corruption is real but it is **not un-winnable**: the clean
+canonical term was present in the gold all along as `CUIPhrase` (MarkupOutput
+col6); only `text` (col5, the raw covered span) was corrupt. Repairing
+`text:=CUIPhrase` recovers it — and *precision rises*, proving genuine repair, not
+loosened matching. The earlier "keep exact match, report a ≈26.7% un-winnable
+ceiling" scope decision was wrong; the ceiling was an artifact of matching against
+the wrong column. Re-measured on dev: text≠CUIPhrase on **74/187 = 39.6%** of SF
+mentions. See D16.
 
 ### D13 — Closed vocabularies drift: gold extends the guideline's enumerations `[SF]`
 **Discovery.** Gold uses `PointInTime` values `Last_Month`, `Last_Week` that the
@@ -233,6 +238,57 @@ accepted miss, don't add rules to reproduce noise.
 **LLM implication.** These cap achievable F1 a few tenths of a percent; don't
 prompt-engineer toward them. Useful as a "ceiling" line in results.
 Status: **firm.**
+
+### D16 — The authoritative clean phrase is `CUIPhrase` (MarkupOutput col6); gold `text` is the raw col5 span `[all]`
+**Discovery.** The benchmark's per-entity `MarkupOutput_200_SyntheticEpilepsyLetters/*.csv`
+carry **two** phrase columns: col5 = the raw covered span (drifted/corrupt), col6 =
+the clean canonical term. The `Json/` builder put col5 → `text` and col6 →
+`CUIPhrase`. So the clean phrase D12 called "un-winnable" was in the gold all along,
+in a field scoring *ignores*. The published GATE system (F1 0.66 SF) cannot have
+been scored on col5; it used col6/offset-overlap.
+**Evidence.** `MarkupSeizureFrequency.csv` rows vs `Json/`: e.g. EA0008
+col5 `focal-seizures-with-altered-awarenes` / col6 `…awareness` →
+JSON `text` / `CUIPhrase` exactly. `CUIPhrase` coverage = 99–100% on all 9
+entities (full corpus). SF dev: repairing `text:=CUIPhrase`, **extractor
+unchanged**, sf_semantic per-item F1 0.272→**0.362**, per-letter 0.482→**0.575**,
+phrase_only per-item 0.382→**0.485**; per-item **precision 0.484→0.615** (precision
+*rising* ⇒ genuine repair, not a loosened matcher). Probe:
+`experiments/_sf_gold_repair_probe.py`.
+**Rules implication.** Score SF against `text:=CUIPhrase`. The remaining gap to
+0.66/0.68 is now genuine modeling (recall), not gold noise. Re-pin
+`test_dev_split_baseline_pinned`; strike the D12 "un-winnable ceiling" from plan 02
+§3a and the SF error-analysis §4.
+**LLM implication.** Score the LLM family against the *same* repaired gold or the
+comparison is not apples-to-apples; the LLM was being penalised against a column
+the benchmark never scored.
+Status: **firm (SF, dev, measured 2026-06-10).** Generalization gated by D17.
+
+### D17 — `text` vs `CUIPhrase` divergence is NOT uniform corruption across entities `[all]`
+**Discovery.** The col5/col6 gap is a clean-up *only* for SF and Diagnosis. For
+the structured entities col6 is an ontology normalization that changes meaning, so
+`text:=CUIPhrase` is a per-entity decision, not a blanket repair.
+**Evidence.** Full-corpus text≠CUIPhrase rate: SF 37%, Diagnosis 22% (mostly real
+typo/over-capture fixes: `focal-seziures`→`focal-seizures`,
+`generalised-tonic-chronic`→`…clonic`) **vs** Investigations **90%**, WhenDiagnosed
+**82%**, Prescription **71%**. Samples:
+- **Investigations** — col6 *encodes the finding*: `EEG`→`abnormal-eeg`,
+  `MRI-`→`normal-mri`, `CT-scan`→`abnormal-ct`, inconsistently `EEG-normal`→`EEG`.
+  `text:=CUIPhrase` would be **wrong** (extractor emits "EEG", gold becomes
+  "abnormal-eeg").
+- **Prescription** — col6 is the bare drug concept (`Lamotrigine-200mg-twice-a-day`
+  →`lamotrigine`); defensible match basis (dose/freq live in attributes) but a
+  semantic decision, and it mixes in real typo fixes (`zobisamide`→`zonisamide`).
+- **WhenDiagnosed** — collapses to canonical `epilepsy`; mixes truncation fixes
+  with over-capture stripping.
+- A few col6 values are themselves bad (`Complex-partial-seizure`→`complex`,
+  `cluster`→`seizure-cluster`), so col6 is far cleaner than col5 but not flawless.
+**Rules implication.** Apply `text:=CUIPhrase` to **SF + Diagnosis** now;
+hold Investigations/Prescription/WhenDiagnosed/EpilepsyCause/Onset/BirthHistory/
+PatientHistory for a per-entity review (decide whether the match phrase should be
+surface span, col6 canonical, or a finding-aware key). Do **not** blanket-map.
+**LLM implication.** Per-entity phrase target differs; the LLM prompt/eval must
+match each entity's chosen phrase basis, not one rule for all nine.
+Status: **firm (full corpus, 2026-06-10).**
 
 ---
 

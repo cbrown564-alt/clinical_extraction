@@ -2,6 +2,11 @@
 
 import pytest
 
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
+    llm_only_per_entity as exectv2_per_entity,
+    llm_only_single_pass as exectv2_single_pass,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     label_to_frequency_record,
 )
@@ -59,6 +64,13 @@ def _record() -> GanFrequencyRecord:
     )
 
 
+def _exect_letter() -> ExectLetter:
+    return ExectLetter(
+        letter_id="TEST001",
+        note_text="Clinic note: two seizures per month. Last seizure was yesterday.",
+    )
+
+
 def _payload_text(payload: str | dict[str, object]) -> str:
     if isinstance(payload, str):
         return payload
@@ -66,26 +78,32 @@ def _payload_text(payload: str | dict[str, object]) -> str:
 
 
 @pytest.mark.parametrize(
-    ("name", "builder"),
+    ("name", "builder", "arg"),
     [
-        ("llm_only_direct_labeler", llm_only_direct_labeler.build_prompt_input),
-        ("hybrid_structured_events", hybrid_structured_events.build_prompt_input),
-        ("llm_only_canonical_pipeline", llm_only_canonical_pipeline.build_prompt_input),
+        ("llm_only_direct_labeler", llm_only_direct_labeler.build_prompt_input, "_record"),
+        ("hybrid_structured_events", hybrid_structured_events.build_prompt_input, "_record"),
+        ("llm_only_canonical_pipeline", llm_only_canonical_pipeline.build_prompt_input, "_record"),
         (
             "llm_heavy_clinical_frequency_reasoner",
             llm_heavy_clinical_frequency_reasoner.build_prompt_input,
+            "_record",
         ),
         (
             "llm_heavy_evidence_selection_with_deterministic_adapters",
             llm_heavy_evidence_selection_with_deterministic_adapters.build_typed_inputs,
+            "_record",
         ),
+        ("exectv2_single_pass", exectv2_single_pass.build_prompt_input, "_letter"),
+        ("exectv2_per_entity", exectv2_per_entity.build_prompt_input, "_letter"),
     ],
 )
 def test_llm_model_facing_payloads_do_not_expose_internal_protocol_language(
     name: str,
     builder,
+    arg: str,
 ) -> None:
-    text = _payload_text(builder(_record()))
+    input_obj = _record() if arg == "_record" else _exect_letter()
+    text = _payload_text(builder(input_obj))
 
     leaked_phrases = [
         phrase for phrase in INTERNAL_MODEL_FACING_PHRASES if phrase in text
