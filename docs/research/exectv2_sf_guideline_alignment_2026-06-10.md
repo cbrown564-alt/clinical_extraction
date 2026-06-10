@@ -21,7 +21,8 @@ gap 7). The same template extends to the other eight entities.
    `full_features` config (which requires them) is scoring against the wrong
    target. Action: add a guideline-aligned scoring config
    `sf_benchmark = ignore {CUIPhrase, Certainty, Negation}` keeping `CUI` +
-   semantics. This is the config our ~0.56 benchmark comparison should use.
+   semantics. This is the config our benchmark comparison should use (the SF bar
+   is 0.66 per item / 0.68 per letter, Table 1 Fonferko-Shadrach 2024).
 
 2. **The biggest recall miss is a single mandated default we don't implement:**
    bare plural "seizures" with no quantifier ⇒ `NumberOfSeizures = 2`

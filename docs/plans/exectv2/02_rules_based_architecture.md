@@ -8,9 +8,10 @@ Status: planning. Dev-split only until the Phase 7 audit.
 Build the deterministic ExECTv2 extractor — the portability baseline and the
 like-for-like comparator to the benchmark's own rule-based GATE pipeline.
 Seizure Frequency first (Phase 2), then all nine entities (Phase 6). This is the
-architecture that, if it clears the benchmark per-entity F1s — overall > 0.90
-across the nine entities, but only ≈ 0.56 on Seizure Frequency, the hardest
-entity for rules — makes a rules-vs-rules win against the published system.
+architecture that, if it clears the benchmark per-entity F1s — overall 0.87 per
+item / 0.90 per letter across the nine entities, but only 0.66 per item / 0.68
+per letter on Seizure Frequency, the hardest entity (Table 1, Fonferko-Shadrach
+2024) — makes a rules-vs-rules win against the published system.
 
 ## 1. Shape
 
@@ -114,9 +115,10 @@ association, "infrequent/under control" ⇒ FrequencyChange, Age-based bundles,
 Last_Year-as-PointInTime, and DrugChange-without-"since". Each is small (1–4
 mentions) and several risk precision, so they are logged not forced.
 
-Benchmark SF F1 ≈ 0.56 (the published system's hardest entity; its overall
-F1 across the nine entities is > 0.90, carried by the easy structured ones).
-The bar to beat for SF specifically is ≈ 0.56; the benchmark-comparable
+Benchmark SF F1 = **0.66 per item / 0.68 per letter** (Table 1,
+Fonferko-Shadrach 2024 — the published system's hardest entity; its overall F1
+is 0.87 per item / 0.90 per letter, carried by the easy structured ones).
+The bar to beat for SF is 0.66/0.68; the benchmark-comparable
 `sf_benchmark` config is now at 0.272 per-item / 0.482 per-letter, with the
 remaining gap dominated by the quantified noise ceiling (≈ 26.7% un-winnable on
 exact text) and a small, precision-risky recall tail. The original gap list,

@@ -19,6 +19,8 @@ against the consensus gold standard, **with all features**:
 - Per-entity per-item F1 (gold): Birth History 0.97, Diagnosis 0.85, Epilepsy
   Cause 0.90, Investigations 0.95, Onset 0.96, Patient History 0.78, Prescription
   0.87, **Seizure Frequency 0.66**, When Diagnosed 0.91.
+- **Seizure Frequency per letter 0.68** (the SF lowest; 260 gold annotations) —
+  the specific SF bar we track in [[02_rules_based_architecture]].
 - Human IAA overall 0.73 (SF 0.47) — context, not the target.
 
 "Beat the benchmark" = exceed **overall** 0.87 per item / 0.90 per letter on the

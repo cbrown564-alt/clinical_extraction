@@ -30,8 +30,8 @@ Three tiers, from `reliability_thesis.md` §7:
 
 The headline benchmark number is **overall across all 9 entities**. Seizure
 Frequency is the bridge entity we build and prove the machinery on first
-(deepest reasoning, weakest benchmark cell at 0.66 per item), then we generalize
-to the full entity set.
+(deepest reasoning, weakest benchmark cell at **0.66 per item / 0.68 per letter**
+— Table 1, Fonferko-Shadrach 2024), then we generalize to the full entity set.
 
 ---
 
@@ -56,8 +56,8 @@ held-out reads are **frozen, authorized audits**.
 | Phase | Goal | Satellite | Gate |
 | --- | --- | --- | --- |
 | **0** | Foundation: loader, label-based scorer, thesis | (done — see §3) | none |
-| **1** | Shared core + ExECTv2 extraction contract & prediction schema; normalization reuse from Gan 2026 | [[01_shared_core_and_extraction_contract]] | none (structural) |
-| **2** | Rules-based Seizure-Frequency extractor → first dev benchmark read | [[02_rules_based_architecture]] | none (dev-only) |
+| **1** | Shared core + ExECTv2 extraction contract & prediction schema; normalization reuse from Gan 2026 | (DONE — see reuse ledger §5) | none (structural) |
+| **2** | Rules-based Seizure-Frequency extractor → first dev benchmark read | **DONE (2026-06-10) — see §3a** · [[02_rules_based_architecture]] | none (dev-only) |
 | **3** | LLM-only Seizure-Frequency extractor | [[03_llm_only_architecture]] | none (dev-only) |
 | **4** | Hybrid Seizure-Frequency extractor | [[04_hybrid_architecture]] | none (dev-only) |
 | **5** | Three-way SF comparison + cross-pollination (mirror the Gan 2026 plan) | [[05_experiment_harness_and_loops]], [[07_transparency_ablations_and_paper_outputs]] | none (dev-only) |
@@ -92,6 +92,38 @@ Already shipped this session:
 
 This means: **the moment any architecture emits `ExectLetter` predictions, we
 can score them against the benchmark axes.**
+
+---
+
+## 3a. Phase 2 — Rules-based Seizure Frequency (DONE, 2026-06-10)
+
+The deterministic SF extractor is built, scored on the dev split, error-analysed,
+and portability-tagged — the first real benchmark signal of the whole task.
+Detail and gap analysis: [[02_rules_based_architecture]] §3a; row-level error
+analysis and noise ceiling: `docs/research/exectv2_sf_error_analysis_2026-06-10.md`.
+
+- **Result (dev, 140 letters / 187 gold SF mentions)**: per-item F1 `phrase_only`
+  **0.382** / `sf_semantic` **0.272** / `sf_benchmark` **0.272**; per-letter
+  0.604 / 0.482 / 0.482; per-letter precision **0.868**. Pinned in
+  `tests/test_exectv2_deterministic_sf.py::test_dev_split_baseline_pinned`.
+- **Shape**: anchor + association pipeline (`deterministic/{pipeline,association,
+  overlap}.py`) with named, portability-tagged rule families (anchor / rate /
+  seizure_free / change / temporal) and a finite phrase→CUI lexicon. The largest
+  precision lever was a same-sentence, bounded-gap association rule.
+- **De-overfitting result**: per-statement emission (D8) was implemented and
+  measured **net-negative** on dev, so reverted — recorded, not hidden.
+- **Noise ceiling (quantified)**: ≈26.7% of gold SF mentions are un-winnable on
+  exact text (19.8% offset-drift corruption + 7.0% singular/plural). Scoring kept
+  as exact match per the scope decision; the corrupt-adjusted `sf_semantic`
+  recall is ≈0.31.
+- **Still below the SF benchmark bar (0.66 per item / 0.68 per letter).** The
+  remaining gap is the noise ceiling plus a small, precision-risky recall tail
+  (logged in 02 §3a), not a missing mechanism. The architecture and tests are
+  ready to generalize in Phase 6.
+
+Phases 1 (shared core + contract) and 2 are complete; the next SF architectures
+(Phases 3–4, LLM-only and hybrid) and the all-entity scale-up (Phase 6) are the
+open work.
 
 ---
 

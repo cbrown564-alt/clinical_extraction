@@ -25,8 +25,9 @@ ignores `CUIPhrase`/`Certainty`/`Negation` per guideline L17/L19).
 | `sf_semantic` | 0.344 / 0.225 / **0.272** | 0.868 / 0.333 / **0.482** |
 | `sf_benchmark` | 0.344 / 0.225 / **0.272** | 0.868 / 0.333 / **0.482** |
 
-Predicted 122 mentions vs 187 gold. Benchmark SF F1 to beat ≈ 0.56 (the
-published system's hardest entity).
+Predicted 122 mentions vs 187 gold. Benchmark SF F1 to beat = **0.66 per item /
+0.68 per letter** (Table 1, Fonferko-Shadrach 2024 — the published system's
+hardest entity; overall 0.87/0.90).
 
 ### Trajectory (the two 2026-06-10 batches)
 
