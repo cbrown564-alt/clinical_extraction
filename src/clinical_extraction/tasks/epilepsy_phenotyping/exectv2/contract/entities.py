@@ -25,8 +25,24 @@ _SHARED_CUI_ATTRS: frozenset[str] = frozenset({"CUI", "CUIPhrase"})
 _SHARED_CERTAINTY: frozenset[str] = frozenset({"Certainty"})
 _SHARED_NEGATION: frozenset[str] = frozenset({"Negation"})
 
-_NEGATION_VOCAB: frozenset[str] = frozenset({"Affirmed", "Negated"})
+# Closed-vocabulary domains.
+#
+# Physical-unit, binary, and scale attributes are validated against their full
+# legal domain — NOT merely the values that happen to occur in the 200-letter
+# gold corpus.  The gate validates *predictions*, and a prediction may carry a
+# correct-but-unseen value (e.g. MRI_Results="Unknown", Negation="Negated",
+# Certainty="2" on an entity gold only ever showed at 4/5).  Restricting these
+# to observed-gold values would mark such correct predictions invalid and turn
+# the validity-rate metric into a measure of the gold's incidental value
+# distribution.  Semantic categoricals (DiagCategory, FrequencyChange,
+# DrugName, EEG_Type, PrematureBirth, PointInTime, ...) stay observed-only
+# because their domains are genuinely enumerated by the annotation scheme.
 _CERTAINTY_VOCAB: frozenset[str] = frozenset({"1", "2", "3", "4", "5"})
+_NEGATION_VOCAB: frozenset[str] = frozenset({"Affirmed", "Negated"})
+_PERFORMED_VOCAB: frozenset[str] = frozenset({"Yes", "No"})
+_RESULTS_VOCAB: frozenset[str] = frozenset({"Normal", "Abnormal", "Unknown"})
+_AGE_UNIT_VOCAB: frozenset[str] = frozenset({"Year", "Month"})
+_TIME_PERIOD_VOCAB: frozenset[str] = frozenset({"Day", "Week", "Month", "Year"})
 
 BIRTH_HISTORY = EntitySpec(
     name="BirthHistory",
@@ -44,7 +60,7 @@ BIRTH_HISTORY = EntitySpec(
             "37+_TermBirth",
         }),
         "Certainty": _CERTAINTY_VOCAB,
-        "Negation": frozenset({"Affirmed"}),
+        "Negation": _NEGATION_VOCAB,
     },
 )
 
@@ -60,7 +76,7 @@ DIAGNOSIS = EntitySpec(
         # EA0138 uses lowercase 'epilepsy' — annotation inconsistency, both accepted.
         "DiagCategory": frozenset({"Epilepsy", "epilepsy", "MultipleSeizures", "SingleSeizure"}),
         "Certainty": _CERTAINTY_VOCAB,
-        "Negation": frozenset({"Affirmed"}),
+        "Negation": _NEGATION_VOCAB,
     },
 )
 
@@ -73,7 +89,7 @@ EPILEPSY_CAUSE = EntitySpec(
     }),
     closed_vocab={
         "Certainty": _CERTAINTY_VOCAB,
-        "Negation": frozenset({"Affirmed"}),
+        "Negation": _NEGATION_VOCAB,
     },
 )
 
@@ -86,12 +102,12 @@ INVESTIGATIONS = EntitySpec(
         *_SHARED_CUI_ATTRS,
     }),
     closed_vocab={
-        "MRI_Performed": frozenset({"Yes"}),
-        "MRI_Results": frozenset({"Normal", "Abnormal"}),
-        "CT_Performed": frozenset({"Yes"}),
-        "CT_Results": frozenset({"Normal", "Abnormal", "Unknown"}),
-        "EEG_Performed": frozenset({"Yes"}),
-        "EEG_Results": frozenset({"Normal", "Abnormal", "Unknown"}),
+        "MRI_Performed": _PERFORMED_VOCAB,
+        "MRI_Results": _RESULTS_VOCAB,
+        "CT_Performed": _PERFORMED_VOCAB,
+        "CT_Results": _RESULTS_VOCAB,
+        "EEG_Performed": _PERFORMED_VOCAB,
+        "EEG_Results": _RESULTS_VOCAB,
         "EEG_Type": frozenset({"Standard", "SleepDeprived", "VideoTelemetry"}),
     },
 )
@@ -107,11 +123,11 @@ ONSET = EntitySpec(
         *_SHARED_NEGATION,
     }),
     closed_vocab={
-        "AgeUnit": frozenset({"Year", "Month"}),
-        "TimePeriod": frozenset({"Year", "Month", "Week", "Day"}),
+        "AgeUnit": _AGE_UNIT_VOCAB,
+        "TimePeriod": _TIME_PERIOD_VOCAB,
         "PointInTime": frozenset({"From_Birth"}),
         "Certainty": _CERTAINTY_VOCAB,
-        "Negation": frozenset({"Affirmed"}),
+        "Negation": _NEGATION_VOCAB,
     },
 )
 
@@ -127,8 +143,8 @@ PATIENT_HISTORY = EntitySpec(
         *_SHARED_NEGATION,
     }),
     closed_vocab={
-        "AgeUnit": frozenset({"Year", "Month"}),
-        "TimePeriod": frozenset({"Year", "Month", "Week", "Day"}),
+        "AgeUnit": _AGE_UNIT_VOCAB,
+        "TimePeriod": _TIME_PERIOD_VOCAB,
         "PointInTime": frozenset({"Last_Year", "Surgery"}),
         "Certainty": _CERTAINTY_VOCAB,
         "Negation": _NEGATION_VOCAB,
@@ -170,16 +186,16 @@ SEIZURE_FREQUENCY = EntitySpec(
     closed_vocab={
         "TimeSince_or_TimeOfEvent": frozenset({"During", "Since"}),
         "FrequencyChange": frozenset({"Decreased", "Frequent", "Increased", "Infrequent", "Same"}),
-        # "days" appears once (annotation noise for "Day"); accept both to avoid
-        # spurious validation errors on gold itself.
-        "TimePeriod": frozenset({"Day", "Week", "Month", "Year", "days"}),
+        # "days" appears once — annotation noise (plural form of "Day"); kept as a
+        # legal value so gold validates clean (see noise summary in the profile).
+        "TimePeriod": _TIME_PERIOD_VOCAB | frozenset({"days"}),
         "PointInTime": frozenset({
             "Birthday", "DrugChange", "LastClinic",
             "Last_Month", "Last_Week", "Last_Year", "Surgery",
         }),
-        "AgeUnit": frozenset({"Year", "Month"}),
+        "AgeUnit": _AGE_UNIT_VOCAB,
         "Certainty": _CERTAINTY_VOCAB,
-        "Negation": frozenset({"Affirmed"}),
+        "Negation": _NEGATION_VOCAB,
     },
     # DiagCategory appears on two SF mentions — annotation noise from the Diagnosis
     # entity schema.  Documented here, not validated.
@@ -197,10 +213,10 @@ WHEN_DIAGNOSED = EntitySpec(
         *_SHARED_NEGATION,
     }),
     closed_vocab={
-        "AgeUnit": frozenset({"Year", "Month"}),
-        "TimePeriod": frozenset({"Year", "Month"}),
+        "AgeUnit": _AGE_UNIT_VOCAB,
+        "TimePeriod": _TIME_PERIOD_VOCAB,
         "Certainty": _CERTAINTY_VOCAB,
-        "Negation": frozenset({"Affirmed"}),
+        "Negation": _NEGATION_VOCAB,
     },
 )
 

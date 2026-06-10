@@ -1,7 +1,7 @@
 # Satellite 01 — Shared Core & ExECTv2 Extraction Contract
 
 Parent: [[00_overarching_implementation_plan]] · Phase 1
-Status: **COMPLETE** — 2026-06-09. All deliverables shipped; exit criteria met; 1054 tests green.
+Status: **COMPLETE** — 2026-06-09. All deliverables shipped; exit criteria met; 1057 tests green.
 
 ## Purpose
 
@@ -111,6 +111,17 @@ of SF mentions) is documented, not silently inherited.
 Validity rate and repair rate are first-class reported metrics
 (reliability_thesis §3.1). Repairs are limited to semantically-neutral fixes
 (the existing evidence repair ladder); no clinical-fact invention.
+
+**Closed-vocab policy (post-review).** Because the gate validates *predictions*,
+physical-unit/binary/scale vocabs are widened to their full legal domain
+(`Negation`, `*_Results`, `*_Performed`, `Certainty`, `AgeUnit`, `TimePeriod`),
+not the values that happen to occur in the 200-letter gold — otherwise a
+correct-but-unseen prediction would be marked invalid and validity-rate would
+measure the gold's incidental value distribution. Semantic categoricals stay
+observed-only. A drift guard (`tests/test_exectv2_contract.py`) re-derives the
+schema from `load_letters()` and asserts entity/attribute sets match the
+registry exactly while closed vocabs cover gold; the profile is regenerable via
+`experiments/profile_exectv2_gold_schema.py`.
 
 ## 5. Normalization reuse (the transfer test)
 

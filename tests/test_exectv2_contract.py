@@ -47,6 +47,59 @@ def test_seizure_frequency_spec_has_closed_vocab():
 
 
 # ---------------------------------------------------------------------------
+# Registry ⟷ gold drift guard
+#
+# Derives the schema live from load_letters() and asserts the registry stays in
+# lockstep with the gold corpus: entity set and attribute set must match
+# *exactly* (no spurious or missing entries), while closed-vocab values need
+# only *cover* gold — physical-unit/binary/scale attributes are deliberately
+# widened past observed gold (see entities.py).  This is the automated form of
+# exit criterion 3 ("registry matches the committed gold profile exactly").
+# ---------------------------------------------------------------------------
+
+
+def _gold_schema() -> dict[str, dict[str, set[str]]]:
+    from collections import defaultdict
+
+    schema: dict[str, dict[str, set[str]]] = defaultdict(lambda: defaultdict(set))
+    for letter in load_letters():
+        for ann in letter.annotations:
+            for key, value in ann.attributes.items():
+                schema[ann.entity][key].add(value)
+    return schema
+
+
+def test_registry_entity_set_matches_gold_exactly():
+    assert set(_gold_schema()) == set(ENTITY_REGISTRY)
+
+
+def test_registry_attribute_set_matches_gold_exactly():
+    schema = _gold_schema()
+    for name, spec in ENTITY_REGISTRY.items():
+        observed = set(schema[name])
+        # legal attributes must be exactly the gold-observed keys minus documented noise
+        assert observed - spec.noise_attributes == spec.legal_attributes, (
+            f"{name}: gold(non-noise)={sorted(observed - spec.noise_attributes)} "
+            f"!= legal={sorted(spec.legal_attributes)}"
+        )
+        # every declared noise attribute must actually occur in gold
+        assert spec.noise_attributes <= observed, (
+            f"{name}: declared noise {sorted(spec.noise_attributes - observed)} absent from gold"
+        )
+
+
+def test_registry_closed_vocab_covers_gold_values():
+    schema = _gold_schema()
+    for name, spec in ENTITY_REGISTRY.items():
+        for attr, vocab in spec.closed_vocab.items():
+            assert attr in spec.legal_attributes, f"{name}.{attr} is closed-vocab but not legal"
+            observed = schema[name].get(attr, set())
+            assert observed <= vocab, (
+                f"{name}.{attr}: gold values {sorted(observed - vocab)} not in vocab {sorted(vocab)}"
+            )
+
+
+# ---------------------------------------------------------------------------
 # Adapter: PredictedLetter → ExectLetter
 # ---------------------------------------------------------------------------
 

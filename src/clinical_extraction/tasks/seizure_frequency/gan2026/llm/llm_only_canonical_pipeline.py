@@ -59,7 +59,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.reports.base import (
     write_markdown_report,
 )
 
-PROMPT_VERSION = "gan2026_llm_only_canonical_pipeline_v0.7"
+PROMPT_VERSION = "gan2026_llm_only_canonical_pipeline_v0.8"
 DEFAULT_JSONL_PATH = Path(
     "experiments/gan2026_llm_only_canonical_pipeline_validation_gpt41mini_2026-06-07.jsonl"
 )
@@ -245,6 +245,29 @@ _RULE_TAXONOMY_INSTRUCTIONS: list[str] = [
         "which one is dominant, prefer unresolved_multiple or unknown over "
         "guessing a single rate."
     ),
+    (
+        "abstention_calibration: the suppression rules above cover specific "
+        "high-risk situations — they are not a general license to use unknown "
+        "whenever any ambiguity exists. Commit to extraction when the note "
+        "contains a usable frequency fact: "
+        "(a) approximate denominators are usable — 'monthly', 'weekly', "
+        "'every few weeks', 'over the past month', 'over the past 6 months' "
+        "are all valid time windows; apply denominator_window_mismatch only "
+        "when the time reference is completely absent, not when it is rounded "
+        "or approximate; "
+        "(b) an explicit cluster cadence is renderable regardless of whether "
+        "per-cluster event count is known — 'clusters twice a month', "
+        "'weekly clusters', 'three nocturnal clusters per month' is a usable "
+        "label; apply cluster_axis_ambiguity only when you genuinely cannot "
+        "determine which axis (cadence, events-per-cluster, or duration) the "
+        "cluster statement describes; "
+        "(c) a stated current burden is extractable even when vague — "
+        "'daily events', 'events most days', 'weekly episodes', 'several "
+        "times a week' are extractable cadences; contextual uncertainty about "
+        "the exact count does not prevent labeling the stated cadence. "
+        "If your rationale already names a specific frequency, that frequency "
+        "is your final_label — unknown is not an option when a rate is stated."
+    ),
 ]
 
 
@@ -293,6 +316,14 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "Use unknown when seizures or seizure-like events are "
                 "discussed but the current frequency cannot be converted to a "
                 "normalized rate."
+            ),
+            (
+                "A frequency can be converted when the note gives a count with "
+                "a time window, even if approximate. Approximate and colloquial "
+                "denominators — 'monthly', 'weekly', 'a few per week', 'one or "
+                "two per month', 'events most days', 'every couple of weeks' — "
+                "are all normalizable. Reserve unknown for notes where genuinely "
+                "no rate, count, or cadence can be estimated at all."
             ),
             (
                 "Use no seizure frequency reference only when the note "

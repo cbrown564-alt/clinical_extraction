@@ -1,7 +1,25 @@
 # ExECTv2 Gold Schema Profile — 2026-06-09
 
-One-shot profile of all 200 ExECTv2 letters (`load_letters()`).  The entity
-registry in `contract/entities.py` is derived from this document.
+Profile of all 200 ExECTv2 letters (`load_letters()`).  The entity registry in
+`contract/entities.py` is derived from this document.
+
+**Regenerate:** `uv run python experiments/profile_exectv2_gold_schema.py` emits
+the machine-readable companion `exectv2_gold_schema_profile_<date>.json` (per
+entity: every attribute key, its value set, and counts).
+`tests/test_exectv2_contract.py` re-derives this schema live and asserts the
+registry stays in lockstep (entity + attribute sets exact; closed-vocab values
+covered), so registry/gold drift fails CI rather than going unnoticed.
+
+**Closed-vocab policy.** The validation gate validates *predictions*, not gold,
+so physical-unit / binary / scale attributes are widened to their full legal
+domain rather than the values that happen to appear below: `Negation ∈
+{Affirmed, Negated}`, `*_Results ∈ {Normal, Abnormal, Unknown}`, `*_Performed ∈
+{Yes, No}`, `Certainty ∈ {1..5}`, `AgeUnit ∈ {Year, Month}`, `TimePeriod ∈
+{Day, Week, Month, Year}`.  A correct-but-unseen prediction (e.g. a negated
+Diagnosis, an Unknown MRI result) must not be flagged invalid.  Semantic
+categoricals (`DiagCategory`, `FrequencyChange`, `DrugName`, `EEG_Type`,
+`PrematureBirth`, `PointInTime`) stay observed-only.  The "Observed values"
+column below therefore records what gold contains, not the full legal vocab.
 
 ## Corpus totals
 
