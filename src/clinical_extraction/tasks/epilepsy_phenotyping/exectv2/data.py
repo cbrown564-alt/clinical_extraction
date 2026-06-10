@@ -14,24 +14,48 @@ DEFAULT_SPLITS_DIR = DEFAULT_DATA_DIR / "splits"
 DEFAULT_SPLIT_MANIFEST = DEFAULT_SPLITS_DIR / "exectv2_split_v1.json"
 
 SEIZURE_FREQUENCY = "SeizureFrequency"
+DIAGNOSIS = "Diagnosis"
+
+# Entities whose gold ``text`` is repaired to its ``CUIPhrase`` at load time.
+# The gold JSON was derived from the benchmark MarkupOutput CSVs, which carry two
+# phrase columns: col5 (the raw covered span) → ``text`` and col6 (the clean
+# canonical term) → ``CUIPhrase``. col5 is offset-drift–corrupted (truncations,
+# over-captures, spelling); col6 is the authoritative clean phrase the published
+# system was scored against. For these entities col6 is unambiguously the clean
+# seizure-/diagnosis-term phrase, so matching on it is both correct and
+# benchmark-faithful (see docs/research/exectv2_data_discoveries_log.md D16).
+#
+# Deliberately NOT every entity: for Investigations col6 encodes the finding
+# (``EEG``→``abnormal-eeg``), and for Prescription/WhenDiagnosed it is an ontology
+# concept stripped of dose/date — there col6 is a semantic change, not a repair,
+# and is held for a per-entity decision (D17).
+_CUIPHRASE_REPAIR_ENTITIES = frozenset({SEIZURE_FREQUENCY, DIAGNOSIS})
 
 
 @dataclass(frozen=True)
 class ExectAnnotation:
     """One gold entity mention in an ExECTv2 letter.
 
-    ``text`` is the annotated phrase as stored in the gold JSON, where spaces are
-    rendered as hyphens. ``start_index``/``end_index`` are the gold character
-    offsets, retained for provenance but DELIBERATELY NOT USED for matching:
-    spelling was corrected in the letters after annotation without updating the
-    offsets, so they drift against ``note_text`` (see
-    docs/design/reliability_thesis.md). Scoring matches on labels, not spans."""
+    ``text`` is the phrase used for label matching. For entities in
+    ``_CUIPHRASE_REPAIR_ENTITIES`` (SeizureFrequency, Diagnosis) it is the clean
+    canonical term (``CUIPhrase`` / MarkupOutput col6); for all other entities it
+    is the raw annotated span as stored in the gold JSON. ``raw_text`` always
+    preserves the original stored span (col5) for provenance — for repaired
+    mentions it is the corrupt phrase, for the rest it equals ``text``. Spaces are
+    rendered as hyphens in both.
+
+    ``start_index``/``end_index`` are the gold character offsets, retained for
+    provenance but DELIBERATELY NOT USED for matching: spelling was corrected in
+    the letters after annotation without updating the offsets, so they drift
+    against ``note_text`` (see docs/design/reliability_thesis.md). Scoring matches
+    on labels, not spans."""
 
     entity: str
     text: str
     attributes: Mapping[str, str]
     start_index: int | None = None
     end_index: int | None = None
+    raw_text: str | None = None
 
 
 @dataclass(frozen=True)
@@ -50,13 +74,23 @@ def load_annotations(path: Path) -> tuple[ExectAnnotation, ...]:
     rows = json.loads(path.read_text(encoding="utf-8"))
     annotations: list[ExectAnnotation] = []
     for row in rows:
+        entity = str(row["entity"])
+        raw_text = str(row["text"])
+        attributes = {str(k): str(v) for k, v in dict(row["attributes"]).items()}
+        cui_phrase = attributes.get("CUIPhrase")
+        text = (
+            cui_phrase
+            if entity in _CUIPHRASE_REPAIR_ENTITIES and cui_phrase
+            else raw_text
+        )
         annotations.append(
             ExectAnnotation(
-                entity=str(row["entity"]),
-                text=str(row["text"]),
-                attributes={str(k): str(v) for k, v in dict(row["attributes"]).items()},
+                entity=entity,
+                text=text,
+                attributes=attributes,
                 start_index=_optional_int(row.get("start_index")),
                 end_index=_optional_int(row.get("end_index")),
+                raw_text=raw_text,
             )
         )
     return tuple(annotations)
