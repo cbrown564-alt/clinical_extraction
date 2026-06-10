@@ -141,7 +141,9 @@ full bundle when the pattern is unambiguous (EA0009 range+period, EA0025
 FrequencyChange). sf_benchmark = 0 because LLM doesn't produce CUI (D3; CUI
 is a shared post-step, not per-architecture).
 
-**Full dev results (140 letters, gpt-4.1-mini, D16 repaired gold):**
+**Full dev results (140 letters, D16 repaired gold) — two model conditions:**
+
+#### gpt-4.1-mini
 
 | config | per-item P / R / F1 | per-letter P / R / F1 |
 |--------|--------------------|-----------------------|
@@ -152,21 +154,40 @@ is a shared post-step, not per-architecture).
 
 Gate health: 0 call failures, 0 parse failures on both.
 Evidence validity: single_pass 195/199 (97.5%), per_entity 183/190 (96.3%).
-Deterministic baseline (repaired gold, dev): phrase_only 0.485 per-item / 0.604 per-letter.
+
+#### qwen3.6:35b
+
+| config | per-item P / R / F1 | per-letter P / R / F1 |
+|--------|--------------------|-----------------------|
+| single_pass phrase_only | 0.381 / 0.385 / **0.383** | 0.679 / 0.576 / **0.623** |
+| single_pass sf_semantic | 0.090 / 0.091 / 0.090 | 0.357 / 0.151 / 0.213 |
+| per_entity phrase_only | 0.391 / 0.412 / **0.401** | 0.682 / 0.606 / **0.642** |
+| per_entity sf_semantic | 0.035 / 0.037 / **0.036** | 0.200 / 0.071 / **0.104** |
+
+Gate health: single_pass 2 parse failures / per_entity 0 parse failures; 0 call failures on both.
+Evidence validity: single_pass 189/200 (94.5%), per_entity 197/205 (96.1%).
+
+Deterministic baseline (repaired gold, dev): phrase_only 0.382 per-item / 0.604 per-letter.
 
 **Key findings:**
-- **per_entity beats single_pass** on sf_semantic per-item by 44% (0.135 vs 0.094) and
-  per-letter by 34% (0.264 vs 0.197) — focused entity prompt improves attribute matching.
-- **Both LLM configs beat deterministic on per-letter** (0.701/0.698 vs 0.604) while
-  trading precision for recall (more FPs per letter, but more letters detected).
-- **phrase_only per-letter ≥ 0.698 exceeds the SF benchmark target (0.68)** for both.
-  Per-item (0.466/0.486) is below the 0.66 per-item benchmark target.
-- **sf_semantic gap** is attribute-convention mismatches (MonthDate numeric encoding,
-  range vs single-count, extra keys), not phrase errors. Targeted at Phase 5 prompt
-  cross-pollination or hybrid deterministic normalization.
-- **sf_benchmark = 0.000**: LLM omits CUI (D3); CUI lookup is the shared post-step.
+- **gpt-4.1-mini beats qwen on phrase extraction**: per-letter phrase_only 0.701/0.698 vs
+  0.623/0.642 — ~11% gap. Both models beat deterministic baseline (0.604) per-letter.
+- **gpt-4.1-mini phrase_only per-letter ≥ 0.698 exceeds SF benchmark target (0.68)**;
+  qwen (0.623/0.642) does not.
+- **gpt-4.1-mini per_entity dramatically better on sf_semantic**: 0.135/0.264 vs qwen
+  per_entity 0.036/0.104. The focused per_entity prompt helps gpt-4.1-mini (+44% vs its
+  single_pass) but hurts qwen (worse than qwen single_pass 0.090/0.213). Model-dependent
+  response to prompt structure.
+- **qwen single_pass sf_semantic per-letter 0.213 slightly beats gpt-4.1-mini 0.197** —
+  qwen is marginally better at attributes in the single-pass regime.
+- **sf_benchmark = 0.000 for both**: LLM omits CUI (D3); CUI lookup is the shared post-step.
+- **Per-item below 0.66 benchmark target** for all configs/models; per-letter gap narrower.
+  The per-item gap is partly FP proliferation (LLM emits more mentions than gold).
 
-Artifacts: `exectv2_llm_only_single_pass_dev140_gpt41mini_20260610.{jsonl,md}` and
-`exectv2_llm_only_per_entity_dev140_gpt41mini_20260610.{jsonl,md}`
+Artifacts:
+- `exectv2_llm_only_single_pass_dev140_gpt41mini_20260610.{jsonl,md}`
+- `exectv2_llm_only_per_entity_dev140_gpt41mini_20260610.{jsonl,md}`
+- `exectv2_llm_only_single_pass_dev140_qwen3635b_20260610.{jsonl,md}`
+- `exectv2_llm_only_per_entity_dev140_qwen3635b_20260610.{jsonl,md}`
 
-**Next:** Register artifacts; Phase 4 hybrid extractor.
+**Next:** Phase 4 hybrid extractor.
