@@ -622,8 +622,9 @@ def test_all_rules_have_examples() -> None:
 #   sf_benchmark   per-item F1 = 0.272  (per-letter 0.482; keeps CUI, == sf_semantic)
 # Trajectory across the two 2026-06-10 batches: sf_semantic per-item
 # 0.156→0.272 (+74%), per-letter 0.313→0.482; per-letter precision 0.479→0.868.
-# Benchmark SF F1 to beat ~0.56 (the published system's hardest entity; its
-# overall F1 across the nine entities is >0.90). The remaining recall ceiling is
+# Benchmark SF F1 to beat = 0.66 per item / 0.68 per letter (Table 1,
+# Fonferko-Shadrach 2024; the published system's hardest entity; overall
+# 0.87 per item / 0.90 per letter). The remaining recall ceiling is
 # dominated by offset-drift–corrupted gold phrases (~20% of mentions, un-winnable
 # on exact text) plus singular/plural phrase mismatches and a hard tail.
 # See docs/plans/exectv2/02_rules_based_architecture.md for the gap analysis,
