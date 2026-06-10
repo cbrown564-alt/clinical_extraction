@@ -70,23 +70,41 @@ def _collect_attributes(text: str, ablation: AblationConfig) -> list[AttributeEx
 _COUNT_ATTRS = ("NumberOfSeizures", "LowerNumberOfSeizures", "UpperNumberOfSeizures")
 _PLURAL_SEIZURE_NOUN = re.compile(r"\b(?:seizures|absences|jerks)\b", re.IGNORECASE)
 _SINGULAR_SEIZURE_NOUN = re.compile(r"\b(?:seizure|absence|jerk)\b", re.IGNORECASE)
+# A negated frequency statement implies zero events, not the default plural=2.
+# "no (further) seizures since …", "has not had any …", "remains seizure free",
+# "denies …", "without …". Checked in a window just before the anchor.
+_NEGATION_CUE = re.compile(
+    r"\b(?:no|not|none|never|without|nil|denies|denied|negative\s+for)\b",
+    re.IGNORECASE,
+)
 
 
-def _apply_implied_count(anchor: AnchorCandidate, attributes: dict[str, str]) -> dict[str, str]:
+def _apply_implied_count(
+    anchor: AnchorCandidate, attributes: dict[str, str], text: str = ""
+) -> dict[str, str]:
     """Guideline v9 L989: when a frequency statement carries no explicit count
     and no other quantifier, a plural 'seizures' implies NumberOfSeizures=2 and a
     singular 'seizure' implies 1. Only applied to mentions that already have a
     frequency attribute (period/date/change), so it never fabricates mentions —
-    it fills the implied count gold annotates by default."""
+    it fills the implied count gold annotates by default.
+
+    Exception: if the statement is negated (a negation cue sits just before the
+    anchor, e.g. "no further seizures since …"), the implied count is 0, not the
+    positive default — gold annotates "no seizures since <point in time>" as
+    NumberOfSeizures=0 (L249), and the default plural=2 was the single largest
+    source of count-value misses on temporal mentions."""
     if any(k in attributes for k in _COUNT_ATTRS) or "FrequencyChange" in attributes:
         return attributes
-    text = anchor.text.lower()
-    if _PLURAL_SEIZURE_NOUN.search(text):
-        implied = "2"
-    elif _SINGULAR_SEIZURE_NOUN.search(text):
-        implied = "1"
-    else:
+    phrase = anchor.text.lower()
+    if not (_PLURAL_SEIZURE_NOUN.search(phrase) or _SINGULAR_SEIZURE_NOUN.search(phrase)):
         return attributes
+    window = text[max(0, anchor.span[0] - 30): anchor.span[0]]
+    if _NEGATION_CUE.search(window):
+        implied = "0"
+    elif _PLURAL_SEIZURE_NOUN.search(phrase):
+        implied = "2"
+    else:
+        implied = "1"
     return {**attributes, "NumberOfSeizures": implied}
 
 
@@ -144,7 +162,7 @@ def extract_seizure_frequency(
     mentions = tuple(
         _mention_from_pair(anchor, merged)
         for anchor, attrs in pairs
-        for merged in (_apply_implied_count(anchor, attrs),)
+        for merged in (_apply_implied_count(anchor, attrs, text),)
         if not _is_bare_nonzero_count(merged)
     )
     return PredictedLetter(

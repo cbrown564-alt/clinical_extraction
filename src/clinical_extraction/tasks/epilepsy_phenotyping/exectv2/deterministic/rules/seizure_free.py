@@ -32,6 +32,29 @@ from ..rule_metadata import (
 
 _UNIT = r"day|week|month|year|days|weeks|months|years"
 _COUNT = NUMBER_TOKEN
+# Approximation qualifiers that precede a duration count ("seizure free for more
+# than five years", "for almost 2 years") — gold keeps the count, dropping the
+# qualifier, so they must not block the duration match.
+_DUR_QUALIFIER = r"(?:over|more\s+than|at\s+least|nearly|almost|around|about|approximately|the\s+past)"
+
+# A "no <seizure>" / control phrase is NOT a current seizure-frequency statement
+# when it sits in a history / family-history / risk / investigation-marker frame:
+# "no history of febrile seizures", "no significant seizure markers", "no witness
+# descriptions", "no previous history of seizures". These are existence/absence
+# statements about the past or about findings, which the guideline (L255) does
+# not treat as a frequency statement. QUALIFIED_SEIZURE_TERMS allows up to four
+# filler words before the noun, so these slip past the bare "no <seizure>" intent.
+_NONCLINICAL_CONTEXT = re.compile(
+    r"\b(?:history|family|risk|marker|markers|witness|descriptions?|warning|"
+    r"driv\w*|licen\w*|dvla|allowed\s+to)\b",
+    re.IGNORECASE,
+)
+
+
+def _is_nonclinical_zero_context(match: re.Match[str], context: ExtractionContext) -> bool:
+    lo = max(0, match.start() - 30)
+    hi = min(len(context.text), match.end() + 15)
+    return bool(_NONCLINICAL_CONTEXT.search(context.text[lo:hi]))
 
 
 def _sf_attrs(
@@ -91,7 +114,7 @@ SF_WITH_DURATION_RULE = RuleSpec(
     description="Seizure-free with an explicit duration.",
     pattern=re.compile(
         rf"\bseizure(?:[-‐-―\s])free\s+"
-        rf"(?:for\s+(?:over\s+)?)?(?:the\s+past\s+)?"
+        rf"(?:for\s+)?(?:{_DUR_QUALIFIER}\s+)*"
         rf"(?P<count>{_COUNT})\s+(?P<unit>{_UNIT})\b",
         re.IGNORECASE,
     ),
@@ -197,6 +220,7 @@ NO_SEIZURES_DURATION_RULE = RuleSpec(
         re.IGNORECASE,
     ),
     build=_build_no_seizures_duration,
+    exclude=(_is_nonclinical_zero_context,),
     examples=(
         RuleExample(
             text="There have been no seizures for 6 months.",
@@ -251,6 +275,7 @@ CONTROL_PHRASE_RULE = RuleSpec(
     description="Standard clinical control phrases encoding seizure freedom.",
     pattern=_CONTROL_PHRASES,
     build=_build_control_phrase,
+    exclude=(_is_nonclinical_zero_context,),
     examples=(
         RuleExample(
             text="She demonstrates complete seizure control on current medication.",

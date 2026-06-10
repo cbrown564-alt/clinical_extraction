@@ -49,7 +49,11 @@ _DESCRIPTOR = (
     r"bilateral|nocturnal|drop"
 )
 
-_AWARENESS_SUFFIX = r"(?:\s+with\s+(?:loss|altered|impaired)\s+of\s+awareness)?"
+# "with loss of awareness" but also "with altered/impaired awareness" (no "of") —
+# gold's most common qualified phrase is "focal seizures with altered awareness"
+# (6 mentions), which has no "of"; requiring it dropped the qualifier and broke
+# both phrase match and the CUI lookup.
+_AWARENESS_SUFFIX = r"(?:\s+with\s+(?:loss|altered|impaired)\s+(?:of\s+)?awareness)?"
 
 # SF-specific head nouns. Guideline v9 L227: "Seizures, specific seizures,
 # absences, and myoclonic jerks are to be annotated. Events, episodes, or other
