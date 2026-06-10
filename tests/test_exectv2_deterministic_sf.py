@@ -142,8 +142,14 @@ def test_adverbial_twice_weekly() -> None:
 
 
 def test_adverbial_fortnightly() -> None:
-    results = _apply(ADVERBIAL_RULE, "Clusters occur fortnightly.")
+    # A bare adverbial only fires in seizure context (gate against "daily
+    # headaches" / "daily living" / medication-titration "daily").
+    results = _apply(ADVERBIAL_RULE, "Her seizure clusters occur fortnightly.")
     assert any(c.attributes["TimePeriod"] == "Week" and c.attributes["NumberOfTimePeriods"] == "2" for c in results)
+
+
+def test_adverbial_outside_seizure_context_suppressed() -> None:
+    assert not _apply(ADVERBIAL_RULE, "She continues to get chronic daily headaches.")
 
 
 def test_count_in_last_period_with_count() -> None:
@@ -152,7 +158,10 @@ def test_count_in_last_period_with_count() -> None:
     c = results[0]
     assert c.attributes["NumberOfSeizures"] == "5"
     assert c.attributes["NumberOfTimePeriods"] == "3"
-    assert c.attributes["TimeSince_or_TimeOfEvent"] == "Since"
+    assert c.attributes["TimePeriod"] == "Month"
+    # No TimeSince: "in the last N months" is a period, not a date/point-in-time
+    # (guideline D9/Ex3 L231/L237). Emitting Since here was an over-application.
+    assert "TimeSince_or_TimeOfEvent" not in c.attributes
 
 
 def test_sf_with_duration() -> None:
@@ -596,25 +605,35 @@ def test_all_rules_have_examples() -> None:
 # regression below the floor fails CI; a gain above the ceiling also fails, as
 # a prompt to re-pin and record the improvement in the error-analysis artifact.
 #
-# Captured 2026-06-10 after the guideline-alignment fixes (List 11 counts, SF
-# anchor slang removal, implied NumberOfSeizures default, guideline-aligned
-# scoring), the temporal-anchoring family (dates, PointInTime, TimeSince,
-# "last seizure was <date> ⇒ 0 Since", bare-count + SF-context gate +
-# bare-nonzero-count filter), AND the phrase→CUI lexicon (deterministic/lexicon.py):
-#   phrase_only    per-item F1 = 0.356  (per-letter 0.575)
-#   sf_semantic    per-item F1 = 0.156  (per-letter 0.313; ignores CUI/CUIPhrase/Certainty/Negation)
-#   sf_benchmark   per-item F1 = 0.156  (keeps CUI; now == sf_semantic — the
-#                  lexicon assigns the correct CUI to every semantically-matching
-#                  mention, so CUI no longer caps the benchmark config at 0)
+# Captured 2026-06-10 (Phase 2 completion batch) on top of the earlier
+# guideline-alignment + temporal-family + CUI-lexicon work. This batch added:
+# the awareness-suffix fix ("with altered awareness", no "of"); range rules
+# accepting a seizure noun / "times" before "per"; dropping TimeSince from
+# count_in_last_period (D9); negation-aware implied count (negated ⇒ 0); a
+# Christmas⇒December date rule; medication-dose and adverbial seizure-context
+# gates; a non-clinical/history/driving zero gate; flexible seizure-free
+# duration and "after"/drug-stop point-in-time triggers; "the beginning of
+# <month>" date filler; and — the largest precision lever — a same-sentence,
+# bounded-gap association rule (drop an extraction with no nearby anchor instead
+# of gluing it onto a distant one). Per-statement emission (D8) was implemented
+# and measured net-negative, so reverted (see association.py).
+#   phrase_only    per-item F1 = 0.382  (per-letter 0.604)
+#   sf_semantic    per-item F1 = 0.272  (per-letter 0.482; ignores CUI/CUIPhrase/Certainty/Negation)
+#   sf_benchmark   per-item F1 = 0.272  (per-letter 0.482; keeps CUI, == sf_semantic)
+# Trajectory across the two 2026-06-10 batches: sf_semantic per-item
+# 0.156→0.272 (+74%), per-letter 0.313→0.482; per-letter precision 0.479→0.868.
 # Benchmark SF F1 to beat ~0.56 (the published system's hardest entity; its
-# overall F1 across the nine entities is >0.90).
-# See docs/plans/exectv2/02_rules_based_architecture.md for the gap analysis and
-# docs/research/exectv2_sf_guideline_alignment_2026-06-10.md for the audit.
+# overall F1 across the nine entities is >0.90). The remaining recall ceiling is
+# dominated by offset-drift–corrupted gold phrases (~20% of mentions, un-winnable
+# on exact text) plus singular/plural phrase mismatches and a hard tail.
+# See docs/plans/exectv2/02_rules_based_architecture.md for the gap analysis,
+# docs/research/exectv2_sf_error_analysis_2026-06-10.md for the row-level audit,
+# and docs/research/exectv2_sf_guideline_alignment_2026-06-10.md for the clauses.
 
 _PINNED_DEV_PER_ITEM_F1 = {
-    "phrase_only": 0.356,
-    "sf_semantic": 0.156,
-    "sf_benchmark": 0.156,
+    "phrase_only": 0.382,
+    "sf_semantic": 0.272,
+    "sf_benchmark": 0.272,
 }
 _F1_BAND = 0.02
 

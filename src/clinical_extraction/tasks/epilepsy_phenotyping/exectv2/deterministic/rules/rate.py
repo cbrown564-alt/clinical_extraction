@@ -43,7 +43,10 @@ _PER = r"per|a|each|every"
 # Optional seizure type qualifier before the count: "3 focal seizures per month"
 _SEQ_PREFIX = rf"(?:(?:{QUALIFIED_SEIZURE_TERMS}),?\s+)?"
 
-_DOSE_UNIT = r"mg|g|mcg|ml|micrograms?"
+# Dose units include the spelled-out and plural forms ("250 milligrams twice a
+# day", "250mgs once a day") — the abbreviated-only list missed those and let
+# medication dosing leak in as seizure frequency.
+_DOSE_UNIT = r"mgs?|g|mcg|ml|microgram(?:me)?s?|milligram(?:me)?s?|gram(?:me)?s?|units?"
 
 
 def _is_medication_dose_context(match: re.Match[str], context: ExtractionContext) -> bool:
@@ -51,6 +54,21 @@ def _is_medication_dose_context(match: re.Match[str], context: ExtractionContext
     seizure frequency, e.g. "lamotrigine 75 mg twice a day"."""
     preceding = context.text[max(0, match.start() - 25): match.start()]
     return bool(re.search(rf"\b\d+\s*(?:{_DOSE_UNIT})\b\W*$", preceding, re.IGNORECASE))
+
+
+# A bare adverbial ("daily", "weekly") is only a seizure frequency when a seizure
+# noun sits nearby — otherwise it fires on "daily headaches", "daily living", or
+# a medication-titration "daily". Rate expressions that carry their own count and
+# period are far less ambiguous, so this gate is applied to the adverbial rule only.
+_SF_CONTEXT = re.compile(r"seizures?|absences?|jerks?|seizure[\s-]?free|fits?", re.IGNORECASE)
+
+
+def _adverbial_outside_seizure_context(
+    match: re.Match[str], context: ExtractionContext
+) -> bool:
+    lo = max(0, match.start() - 45)
+    hi = min(len(context.text), match.end() + 20)
+    return not _SF_CONTEXT.search(context.text[lo:hi])
 
 
 def _attrs(
@@ -234,7 +252,7 @@ RANGE_PER_PERIOD_RULE = RuleSpec(
     pattern=re.compile(
         rf"\b{_SEQ_PREFIX}"
         rf"(?P<lower>{_DIGIT_OR_WORD})\s*[-–—]\s*(?P<upper>{_DIGIT_OR_WORD})"
-        rf"\s+(?:{_PER})\s+(?P<unit>{_UNIT})\b",
+        rf"\s+(?:(?:{QUALIFIED_SEIZURE_TERMS}|times?)\s+)?(?:{_PER})\s+(?P<unit>{_UNIT})\b",
         re.IGNORECASE,
     ),
     build=_build_range_per_period,
@@ -280,7 +298,7 @@ RANGE_TO_PER_PERIOD_RULE = RuleSpec(
     pattern=re.compile(
         rf"\b{_SEQ_PREFIX}"
         rf"(?P<lower>{_DIGIT_OR_WORD})\s+(?:to|or)\s+(?P<upper>{_DIGIT_OR_WORD})"
-        rf"\s+(?:{_PER})\s+(?P<unit>{_UNIT})\b",
+        rf"\s+(?:(?:{QUALIFIED_SEIZURE_TERMS}|times?)\s+)?(?:{_PER})\s+(?P<unit>{_UNIT})\b",
         re.IGNORECASE,
     ),
     build=_build_range_to_per_period,
@@ -330,7 +348,7 @@ RANGE_PER_N_PERIODS_RULE = RuleSpec(
     pattern=re.compile(
         rf"\b{_SEQ_PREFIX}"
         rf"(?P<lower>{_DIGIT_OR_WORD})\s*[-–—]\s*(?P<upper>{_DIGIT_OR_WORD})"
-        rf"\s+per\s+(?P<period_count>\d+)\s+(?P<unit>{_UNIT})\b",
+        rf"\s+(?:(?:{QUALIFIED_SEIZURE_TERMS}|times?)\s+)?per\s+(?P<period_count>\d+)\s+(?P<unit>{_UNIT})\b",
         re.IGNORECASE,
     ),
     build=_build_range_per_n_periods,
@@ -451,7 +469,7 @@ ADVERBIAL_RULE = RuleSpec(
         re.IGNORECASE,
     ),
     build=_build_adverbial,
-    exclude=(_is_medication_dose_context,),
+    exclude=(_is_medication_dose_context, _adverbial_outside_seizure_context),
     examples=(
         RuleExample(
             text="She experiences absence seizures daily.",
@@ -489,7 +507,9 @@ def _build_count_in_last_period(
             count=match.group("count"),
             unit=match.group("unit"),
             period_count=period_count,
-            time_since="Since",
+            # No TimeSince: "in the last N months" is a time *period*, not a date
+            # or point-in-time. Guideline D9/Ex3 (L231/L237): TimeSince is set
+            # only with a date or named point-in-time, never a bare period.
         ),
         rule_id="rate.count_in_last_period",
         rule_group=RuleGroup.RATE_EXPRESSIONS,

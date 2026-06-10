@@ -143,9 +143,19 @@ semantic 0.123→0.132→**0.156**; per-letter F1: phrase 0.526→**0.575**, sem
 5. **Word-number mappings** — **PARTIAL**. `normalize_count` now: few/couple/
    multiple/number→2, several→3, none→0 (List 11). Still TODO: "under control"/
    "well controlled" ⇒ FrequencyChange=Infrequent (control-phrase rule).
-6. **Per-statement emission** (architectural; larger). Not started.
+6. **Per-statement emission** (architectural; larger). **DONE — net-negative,
+   reverted.** Splitting a numeric statement from a co-located FrequencyChange
+   was measured net-negative on dev (per-item 0.272→0.264) and reverted; the
+   single-merged-statement default wins. See D8 and the error-analysis artifact.
 7. **CUI lexicon**: SF seizure-term → CUI (16 distinct) for the headline metric.
-   Not started — the only thing that lifts `sf_benchmark` off 0.000.
+   **DONE** (`deterministic/lexicon.py`); `sf_benchmark` == `sf_semantic`.
+
+Phase 2 completion batch (2026-06-10) additionally landed: awareness-suffix fix,
+range "times"/noun handling, count_in_last_period TimeSince drop (§3), Christmas
+⇒ December, "after"/drug-stop point-in-time + date filler + flexible seizure-free
+duration, medication-dose/adverbial/non-clinical gates, and the same-sentence
+bounded-gap association rule. sf_semantic per-item 0.156→0.272. Still TODO (item
+5): "under/well controlled" ⇒ FrequencyChange=Infrequent.
 
 ## Method / regeneration
 

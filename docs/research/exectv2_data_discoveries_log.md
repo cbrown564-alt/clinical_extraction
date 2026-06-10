@@ -134,14 +134,21 @@ when multiple time frames are present.
 **Evidence.** Guideline Ex1 "5 seizures in May, but none since" → 2 mentions;
 Ex5 "since last being seen, she had two seizures in March" → 2 mentions (L233,
 L243).
-**Rules implication.** The current anchor+association model merges all nearby
-attributes onto ONE anchor (`setdefault`) and structurally cannot emit these —
-this is the dominant remaining precision/recall ceiling. Needs per-statement
-segmentation.
-**LLM implication.** This is a natural *advantage* for the LLM (it can split by
-clause), but it must be explicitly instructed and few-shot'd, or it will emit one
-merged mention like the rules do. A concrete place to expect LLM > rules.
-Status: **firm.**
+**Rules implication.** The anchor+association model merges all nearby attributes
+onto ONE anchor (`setdefault`). Per-statement segmentation **was implemented**
+(split a numeric statement from a co-located FrequencyChange into two mentions)
+**and measured net-negative on dev** (sf_semantic per-item 0.272→0.264,
+per-letter 0.482→0.471) — the small upside (~11 candidate mentions) is outweighed
+by split-induced FP, so it was reverted. The single-merged-statement default is
+the better deterministic operating point on dev. The genuine multi-statement
+gold (Ex1/Ex5) is rare (~11/187) and mostly entangled with the offset-drift
+noise; it is **not** the dominant ceiling — phrase recall + the gold noise
+ceiling (D12) are. See `exectv2_sf_error_analysis_2026-06-10.md` §2.11.
+**LLM implication.** Still a natural *advantage* for the LLM (it can split by
+clause without the FP cost the rules pay), but given how few gold mentions
+actually require the split, expect a small effect; few-shot the Ex1/Ex5 cases but
+don't over-weight them.
+Status: **firm; per-statement net-negative for rules (measured 2026-06-10).**
 
 ### D9 — `TimeSince_or_TimeOfEvent` only with a date or point-in-time `[SF]`
 **Discovery.** `TimeSince` (Since/During) is set only when a date or named
@@ -190,14 +197,20 @@ the stored phrase was sliced by drifted offsets — e.g. `'convulsive seizur'`,
 appointment'`.
 **Evidence.** Row-level error list from `run_deterministic_sf`; contradicts D7
 (text should be the seizure term only).
-**Rules implication.** A slice of phrase-exact recall is **un-winnable**. Consider
-scoring SF phrase match on a normalized seizure-term key rather than the raw gold
-string; quantify the corrupt slice as a noise ceiling.
+**Rules implication.** A slice of phrase-exact recall is **un-winnable**.
+**Quantified (2026-06-10, dev):** 37/187 = 19.8% of gold SF phrases are
+offset-drift–corrupted (truncations + frequency-embedding over-captures); a
+further 13/187 = 7.0% are singular/plural mismatches. Combined ≈ 26.7%, capping
+exact-match phrase recall at ≈ 0.73. **Scope decision: keep exact match** (do not
+singularize or key on a normalized seizure-term), report the ceiling instead — so
+the headline stays benchmark-comparable. See `exectv2_sf_error_analysis_2026-06-10.md`
+§4.
 **LLM implication.** The LLM will (correctly) produce the clean seizure phrase and
 be penalised against corrupt gold — so the *phrase* component of any score
-understates true quality for both architectures. Report a corrupt-gold-adjusted
-number, and don't tune prompts to reproduce corruption.
-Status: **firm; needs the corrupt slice quantified.**
+understates true quality for both architectures. Report the corrupt-gold-adjusted
+number (≈ 0.31 corrupt-adjusted sf_semantic recall), and don't tune prompts to
+reproduce corruption.
+Status: **firm; corrupt slice quantified (19.8% corruption + 7.0% plural).**
 
 ### D13 — Closed vocabularies drift: gold extends the guideline's enumerations `[SF]`
 **Discovery.** Gold uses `PointInTime` values `Last_Month`, `Last_Week` that the
