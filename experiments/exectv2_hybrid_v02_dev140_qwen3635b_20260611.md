@@ -5,31 +5,31 @@
 - Split: `dev`
 - Model: `ollama_chat/qwen3.6:35b`
 - Mode: `live`
-- Letters: 50
+- Letters: 140
 
 ## Gate & routing summary
 
 - Call failures: 0
-- Parse/schema failures: 0
-- Candidates offered: 240
-- Mentions kept by LLM: 126
-- Mentions scored (post verify/route): 89
-- Routed (excluded): 21
-- Routed taxonomy: {'no_frequency_attributes': 14, 'bare_nonzero_count': 3, 'empty_evidence': 4}
+- Parse/schema failures: 1
+- Candidates offered: 639
+- Mentions kept by LLM: 313
+- Mentions scored (post verify/route): 235
+- Routed (excluded): 45
+- Routed taxonomy: {'no_frequency_attributes': 25, 'bare_nonzero_count': 13, 'empty_evidence': 5, 'evidence_not_substring': 2}
 
 ## Scores
 
 ### phrase_only
 
-  per-item: P=0.539 R=0.667 F1=0.596 (TP=48 FP=41 FN=24)
-  per-letter: P=0.784 R=0.853 F1=0.817 (TP=29 FP=8 FN=5)
+  per-item: P=0.447 R=0.561 F1=0.498 (TP=105 FP=130 FN=82)
+  per-letter: P=0.723 R=0.737 F1=0.730 (TP=73 FP=28 FN=26)
 
 ### sf_semantic
 
-  per-item: P=0.270 R=0.333 F1=0.298 (TP=24 FP=65 FN=48)
-  per-letter: P=0.667 R=0.471 F1=0.552 (TP=16 FP=8 FN=18)
+  per-item: P=0.204 R=0.257 F1=0.228 (TP=48 FP=187 FN=139)
+  per-letter: P=0.569 R=0.374 F1=0.451 (TP=37 FP=28 FN=62)
 
 ### sf_benchmark
 
-  per-item: P=0.270 R=0.333 F1=0.298 (TP=24 FP=65 FN=48)
-  per-letter: P=0.667 R=0.471 F1=0.552 (TP=16 FP=8 FN=18)
+  per-item: P=0.204 R=0.257 F1=0.228 (TP=48 FP=187 FN=139)
+  per-letter: P=0.569 R=0.374 F1=0.451 (TP=37 FP=28 FN=62)

@@ -62,7 +62,7 @@ held-out reads are **frozen, authorized audits**.
 | **4** | Hybrid Seizure-Frequency extractor | **DONE (2026-06-11) — dev140 gpt-4.1-mini: phrase_only 0.585/0.781 (best of any family; only per-letter to clear the 0.68 SF target), sf_benchmark 0.327/0.578; registered** · [[04_hybrid_architecture]] | none (dev-only) |
 | **5** | Three-way SF comparison + cross-pollination (mirror the Gan 2026 plan) | **Comparison harness DONE (2026-06-11) — `reports/three_way_comparison.py` + first dev artifact; cross-pollination ongoing** · [[05_experiment_harness_and_loops]], [[07_transparency_ablations_and_paper_outputs]] | none (dev-only) |
 | **6** | Scale all three architectures to the full 9-entity set | [[02_rules_based_architecture]], [[03_llm_only_architecture]], [[04_hybrid_architecture]] | none (dev-only) |
-| **7** | Full benchmark assault: clear 0.87/0.90 overall with all three; held-out + frozen full-200 audit | [[06_evaluation_and_benchmark_protocol]] | **explicit user authorization** for held-out / full-200 audit |
+| **7** | Full benchmark assault: clear 0.87/0.90 overall with all three; held-out + frozen full-200 audit | **SF-cell audit DONE (2026-06-11, authorized) — frozen full-200 run once per architecture; none clears 0.66/0.68 (best: rules 0.321/0.539); overall all-9 audit gated on Phase 6** · [[06_evaluation_and_benchmark_protocol]] §8 | **explicit user authorization** for held-out / full-200 audit |
 | **8** | Consolidate transparency, ablations, error analysis, paper tables/figures | [[07_transparency_ablations_and_paper_outputs]], [[08_paper_outputs_and_milestones]] | authorization for any final holdout numbers reported |
 
 Phases 1–6 are development mechanics on the dev split and need no new
@@ -123,8 +123,21 @@ analysis and noise ceiling: `docs/research/exectv2_sf_error_analysis_2026-06-10.
 
 Phases 1–5 are complete on Seizure Frequency: shared core + contract (1), the
 deterministic (2), LLM-only (3), and hybrid (4) SF extractors, and the three-way
-comparison harness (5) are all built, run on dev, and registered. The all-entity
-scale-up (Phase 6) and the frozen benchmark audit (Phase 7) are the open work.
+comparison harness (5) are all built, run on dev, and registered. The **Phase 7
+frozen SF-cell audit is also done** (2026-06-11, authorized): `run_phase7_audit`
+ran each architecture once over the full 200, with bootstrap CIs and the
+dev→audit gap, registered immutably (06 §8). **No architecture clears the SF cell
+0.66/0.68** on the with-CUI headline — best is rules at 0.321/0.539, hybrid
+0.246/0.470, llm_only 0.000 (emits no CUI). The open work is the **all-entity
+scale-up (Phase 6)**, which then unlocks the *overall* 0.87/0.90 audit.
+
+A note on the audit ordering: Phase 7 is normally "after dev is locked" for the
+whole entity set, but SF is locked and is the benchmark's hardest cell, so the
+SF-cell audit was run now as the honest frozen read of where the machine stands.
+It is not the overall headline (that needs the 9 entities); it is the
+benchmark-comparable SF number, and it says the single-architecture SF cell is
+not yet beaten — the remaining gap is the documented noise ceiling plus
+hybrid's attribute generalization, not a missing mechanism.
 
 ---
 
