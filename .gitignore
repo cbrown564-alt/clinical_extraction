@@ -19,3 +19,18 @@ build/
 experiments/**/predictions*.csv
 experiments/**/predictions*.json
 experiments/**/traces/
+
+# Scratch run scripts/outputs under experiments/ and scripts/ (underscore-prefixed by
+# convention) and captured run logs/streams. Registered artifacts are added explicitly.
+experiments/_*
+scripts/_*
+experiments/*.log
+experiments/*.stderr
+experiments/*.stdout
+scripts/*.log
+scripts/*.stderr
+scripts/*.stdout
+experiments/*_stderr.txt
+experiments/*_stdout.txt
+scripts/*_stderr.txt
+scripts/*_stdout.txt
