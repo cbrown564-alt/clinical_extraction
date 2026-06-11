@@ -59,8 +59,8 @@ held-out reads are **frozen, authorized audits**.
 | **1** | Shared core + ExECTv2 extraction contract & prediction schema; normalization reuse from Gan 2026 | (DONE — see reuse ledger §5) | none (structural) |
 | **2** | Rules-based Seizure-Frequency extractor → first dev benchmark read | **DONE (2026-06-10) — see §3a** · [[02_rules_based_architecture]] | none (dev-only) |
 | **3** | LLM-only Seizure-Frequency extractor | **DONE (2026-06-10) — per_entity phrase_only 0.486/0.698, sf_semantic 0.135/0.264; both beat det. baseline per-letter** · [[03_llm_only_architecture]] | none (dev-only) |
-| **4** | Hybrid Seizure-Frequency extractor | [[04_hybrid_architecture]] | none (dev-only) |
-| **5** | Three-way SF comparison + cross-pollination (mirror the Gan 2026 plan) | [[05_experiment_harness_and_loops]], [[07_transparency_ablations_and_paper_outputs]] | none (dev-only) |
+| **4** | Hybrid Seizure-Frequency extractor | **DONE (2026-06-11) — dev140 gpt-4.1-mini: phrase_only 0.585/0.781 (best of any family; only per-letter to clear the 0.68 SF target), sf_benchmark 0.327/0.578; registered** · [[04_hybrid_architecture]] | none (dev-only) |
+| **5** | Three-way SF comparison + cross-pollination (mirror the Gan 2026 plan) | **Comparison harness DONE (2026-06-11) — `reports/three_way_comparison.py` + first dev artifact; cross-pollination ongoing** · [[05_experiment_harness_and_loops]], [[07_transparency_ablations_and_paper_outputs]] | none (dev-only) |
 | **6** | Scale all three architectures to the full 9-entity set | [[02_rules_based_architecture]], [[03_llm_only_architecture]], [[04_hybrid_architecture]] | none (dev-only) |
 | **7** | Full benchmark assault: clear 0.87/0.90 overall with all three; held-out + frozen full-200 audit | [[06_evaluation_and_benchmark_protocol]] | **explicit user authorization** for held-out / full-200 audit |
 | **8** | Consolidate transparency, ablations, error analysis, paper tables/figures | [[07_transparency_ablations_and_paper_outputs]], [[08_paper_outputs_and_milestones]] | authorization for any final holdout numbers reported |
@@ -121,9 +121,10 @@ analysis and noise ceiling: `docs/research/exectv2_sf_error_analysis_2026-06-10.
   (logged in 02 §3a), not a missing mechanism. The architecture and tests are
   ready to generalize in Phase 6.
 
-Phases 1 (shared core + contract) and 2 are complete; the next SF architectures
-(Phases 3–4, LLM-only and hybrid) and the all-entity scale-up (Phase 6) are the
-open work.
+Phases 1–5 are complete on Seizure Frequency: shared core + contract (1), the
+deterministic (2), LLM-only (3), and hybrid (4) SF extractors, and the three-way
+comparison harness (5) are all built, run on dev, and registered. The all-entity
+scale-up (Phase 6) and the frozen benchmark audit (Phase 7) are the open work.
 
 ---
 
@@ -170,7 +171,7 @@ what is reused, lifted, or net-new. It is maintained as the build proceeds;
 | Rule taxonomy + portability metadata pattern | **reused pattern**, new rule instances | exectv2 deterministic |
 | Runner / `PipelineArchitecture` config pattern | **reused pattern**, new ExECTv2 runner | exectv2 |
 | Run registry + `validate_run_registry_artifacts` | **reused as-is** | `experiments/registry.jsonl` |
-| Report base (`reports/base.py`) + three-way comparison shape | **reused / generalized** | exectv2 reports |
+| Report base (`reports/base.py`) + three-way comparison shape | **DONE — `reports/three_way_comparison.py`** (model-parameterized rules/llm_only/hybrid table over the six shared axes; `ARCHITECTURE_FAMILY` grouping; rules computed live, llm_only/hybrid from the registry; entity-parameterized for the Phase 6 all-9 table) | `tasks/epilepsy_phenotyping/exectv2/reports/` |
 | Observatory | **reused / extended** if useful | observatory |
 
 Where "lift" appears, the rule is: extract the genuinely task-neutral part into
