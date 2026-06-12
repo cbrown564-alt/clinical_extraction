@@ -1,0 +1,846 @@
+{
+  "artifact_kind": "gan2026_validation_hard50_source_row_manifest",
+  "date": "2026-06-12",
+  "inspection_policy": "Validation row-level review is allowed for aggregate, condition-final labels, changed labels, call failures, parse/schema failures, and slice-family summaries. Do not change scorer or tune from test rows.",
+  "records": [
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "unknown",
+      "hidden_families": [
+        "unknown_boundary",
+        "seizure_free_duration",
+        "uncertainty_or_ambiguity"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue",
+        "candidate_generation_unknown_seizure_free_boundary"
+      ],
+      "source_row_index": 3356
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "unknown",
+      "hidden_families": [
+        "unknown_boundary",
+        "seizure_free_duration",
+        "current_vs_historical",
+        "competing_semiologies",
+        "uncertainty_or_ambiguity"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue",
+        "candidate_generation_unknown_seizure_free_boundary"
+      ],
+      "source_row_index": 3528
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "multiple per day",
+      "hidden_families": [
+        "seizure_free_duration",
+        "rate_bucket_or_denominator",
+        "current_vs_historical",
+        "benchmark_format_convention"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue",
+        "candidate_generation_unknown_seizure_free_boundary"
+      ],
+      "source_row_index": 4690
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "1 per multiple month",
+      "hidden_families": [
+        "seizure_free_duration",
+        "current_vs_historical",
+        "competing_semiologies"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue",
+        "candidate_generation_unknown_seizure_free_boundary"
+      ],
+      "source_row_index": 5534
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "unknown",
+      "hidden_families": [
+        "unknown_boundary",
+        "seizure_free_duration",
+        "uncertainty_or_ambiguity"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue",
+        "candidate_generation_unknown_seizure_free_boundary"
+      ],
+      "source_row_index": 5974
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "unknown",
+      "hidden_families": [
+        "unknown_boundary",
+        "seizure_free_duration",
+        "uncertainty_or_ambiguity"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue",
+        "candidate_generation_unknown_seizure_free_boundary"
+      ],
+      "source_row_index": 6077
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "3 per month",
+      "hidden_families": [
+        "rate_bucket_or_denominator"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue"
+      ],
+      "source_row_index": 6094
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "unknown",
+      "hidden_families": [
+        "unknown_boundary",
+        "seizure_free_duration",
+        "current_vs_historical",
+        "competing_semiologies",
+        "uncertainty_or_ambiguity"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue",
+        "candidate_generation_unknown_seizure_free_boundary"
+      ],
+      "source_row_index": 6131
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "9 per month",
+      "hidden_families": [
+        "unclassified"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue"
+      ],
+      "source_row_index": 6153
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "multiple per day",
+      "hidden_families": [
+        "rate_bucket_or_denominator",
+        "benchmark_format_convention"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue"
+      ],
+      "source_row_index": 6209
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "unknown",
+      "hidden_families": [
+        "unknown_boundary",
+        "seizure_free_duration",
+        "uncertainty_or_ambiguity"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue",
+        "candidate_generation_unknown_seizure_free_boundary"
+      ],
+      "source_row_index": 6244
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "unknown",
+      "hidden_families": [
+        "unknown_boundary",
+        "rate_bucket_or_denominator",
+        "uncertainty_or_ambiguity"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue",
+        "candidate_generation_unknown_seizure_free_boundary"
+      ],
+      "source_row_index": 6321
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "unknown",
+      "hidden_families": [
+        "unknown_boundary",
+        "uncertainty_or_ambiguity"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue",
+        "candidate_generation_unknown_seizure_free_boundary"
+      ],
+      "source_row_index": 6368
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "unknown",
+      "hidden_families": [
+        "unknown_boundary",
+        "seizure_free_duration",
+        "cluster_burden",
+        "competing_semiologies",
+        "uncertainty_or_ambiguity"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue",
+        "candidate_generation_unknown_seizure_free_boundary"
+      ],
+      "source_row_index": 6501
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "unknown",
+      "hidden_families": [
+        "unknown_boundary",
+        "seizure_free_duration",
+        "uncertainty_or_ambiguity"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue",
+        "candidate_generation_unknown_seizure_free_boundary"
+      ],
+      "source_row_index": 6571
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "unknown",
+      "hidden_families": [
+        "unknown_boundary",
+        "seizure_free_duration",
+        "current_vs_historical",
+        "competing_semiologies",
+        "uncertainty_or_ambiguity"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue",
+        "candidate_generation_unknown_seizure_free_boundary"
+      ],
+      "source_row_index": 6987
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "unknown",
+      "hidden_families": [
+        "unknown_boundary",
+        "current_vs_historical",
+        "competing_semiologies",
+        "uncertainty_or_ambiguity"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue",
+        "candidate_generation_unknown_seizure_free_boundary"
+      ],
+      "source_row_index": 7168
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "3 to 7 per month",
+      "hidden_families": [
+        "competing_semiologies"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue"
+      ],
+      "source_row_index": 7615
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "6 per 12 month",
+      "hidden_families": [
+        "rate_bucket_or_denominator",
+        "competing_semiologies"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue"
+      ],
+      "source_row_index": 9496
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "unknown",
+      "hidden_families": [
+        "unknown_boundary",
+        "seizure_free_duration",
+        "current_vs_historical",
+        "competing_semiologies",
+        "uncertainty_or_ambiguity"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue",
+        "candidate_generation_unknown_seizure_free_boundary"
+      ],
+      "source_row_index": 9888
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "1 cluster per month, multiple per cluster",
+      "hidden_families": [
+        "cluster_burden",
+        "rate_bucket_or_denominator",
+        "uncertainty_or_ambiguity",
+        "benchmark_format_convention"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue"
+      ],
+      "source_row_index": 9937
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "1 cluster per 4 to 5 week, multiple per cluster",
+      "hidden_families": [
+        "cluster_burden",
+        "rate_bucket_or_denominator",
+        "uncertainty_or_ambiguity",
+        "benchmark_format_convention"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue"
+      ],
+      "source_row_index": 9943
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "1 cluster per month, multiple per cluster",
+      "hidden_families": [
+        "cluster_burden",
+        "rate_bucket_or_denominator",
+        "uncertainty_or_ambiguity",
+        "benchmark_format_convention"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue"
+      ],
+      "source_row_index": 9955
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "unknown",
+      "hidden_families": [
+        "unknown_boundary",
+        "cluster_burden",
+        "diary_or_log_aggregation",
+        "uncertainty_or_ambiguity"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue",
+        "candidate_generation_unknown_seizure_free_boundary"
+      ],
+      "source_row_index": 10266
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "unknown, 4 to 6 per cluster",
+      "hidden_families": [
+        "seizure_free_duration",
+        "cluster_burden",
+        "competing_semiologies",
+        "uncertainty_or_ambiguity"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue",
+        "candidate_generation_unknown_seizure_free_boundary"
+      ],
+      "source_row_index": 10618
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "1 cluster per month, multiple per cluster",
+      "hidden_families": [
+        "cluster_burden",
+        "rate_bucket_or_denominator",
+        "current_vs_historical",
+        "benchmark_format_convention"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue"
+      ],
+      "source_row_index": 10677
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "1 to 2 cluster per month, 4 per cluster",
+      "hidden_families": [
+        "cluster_burden",
+        "benchmark_format_convention"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue"
+      ],
+      "source_row_index": 10996
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "1 per day",
+      "hidden_families": [
+        "rate_bucket_or_denominator",
+        "competing_semiologies"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue"
+      ],
+      "source_row_index": 12422
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "1 per day",
+      "hidden_families": [
+        "rate_bucket_or_denominator",
+        "competing_semiologies"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue"
+      ],
+      "source_row_index": 12438
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "1 per day",
+      "hidden_families": [
+        "rate_bucket_or_denominator",
+        "competing_semiologies"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue"
+      ],
+      "source_row_index": 12456
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "1 per day",
+      "hidden_families": [
+        "rate_bucket_or_denominator",
+        "competing_semiologies"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue"
+      ],
+      "source_row_index": 12460
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "1 per day",
+      "hidden_families": [
+        "rate_bucket_or_denominator",
+        "competing_semiologies"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue"
+      ],
+      "source_row_index": 12468
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "seizure free for multiple month",
+      "hidden_families": [
+        "seizure_free_duration",
+        "diary_or_log_aggregation",
+        "current_vs_historical"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue",
+        "candidate_generation_unknown_seizure_free_boundary"
+      ],
+      "source_row_index": 13843
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "seizure free for multiple month",
+      "hidden_families": [
+        "seizure_free_duration",
+        "diary_or_log_aggregation",
+        "current_vs_historical"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue",
+        "candidate_generation_unknown_seizure_free_boundary"
+      ],
+      "source_row_index": 13858
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "seizure free for multiple month",
+      "hidden_families": [
+        "seizure_free_duration",
+        "current_vs_historical"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue",
+        "candidate_generation_unknown_seizure_free_boundary"
+      ],
+      "source_row_index": 13889
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "unknown",
+      "hidden_families": [
+        "unknown_boundary",
+        "seizure_free_duration",
+        "current_vs_historical",
+        "competing_semiologies",
+        "uncertainty_or_ambiguity"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue",
+        "candidate_generation_unknown_seizure_free_boundary"
+      ],
+      "source_row_index": 14025
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "unknown",
+      "hidden_families": [
+        "unknown_boundary",
+        "seizure_free_duration",
+        "current_vs_historical",
+        "competing_semiologies",
+        "uncertainty_or_ambiguity"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue",
+        "candidate_generation_unknown_seizure_free_boundary"
+      ],
+      "source_row_index": 14076
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "1 per month",
+      "hidden_families": [
+        "seizure_free_duration",
+        "current_vs_historical",
+        "competing_semiologies"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue",
+        "candidate_generation_unknown_seizure_free_boundary"
+      ],
+      "source_row_index": 14810
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "1 per month",
+      "hidden_families": [
+        "seizure_free_duration",
+        "current_vs_historical",
+        "competing_semiologies"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue",
+        "candidate_generation_unknown_seizure_free_boundary"
+      ],
+      "source_row_index": 14821
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "multiple per 15 month",
+      "hidden_families": [
+        "seizure_free_duration",
+        "current_vs_historical",
+        "competing_semiologies",
+        "benchmark_format_convention"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue",
+        "candidate_generation_unknown_seizure_free_boundary"
+      ],
+      "source_row_index": 15168
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "multiple per 13 month",
+      "hidden_families": [
+        "seizure_free_duration",
+        "current_vs_historical",
+        "competing_semiologies",
+        "benchmark_format_convention"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue",
+        "candidate_generation_unknown_seizure_free_boundary"
+      ],
+      "source_row_index": 15193
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "1 cluster per 5 day, 2 to 4 per cluster",
+      "hidden_families": [
+        "cluster_burden",
+        "current_vs_historical"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue"
+      ],
+      "source_row_index": 15593
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "1 per day",
+      "hidden_families": [
+        "cluster_burden",
+        "rate_bucket_or_denominator",
+        "current_vs_historical"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue"
+      ],
+      "source_row_index": 15672
+    },
+    {
+      "first_failure_owner": "candidate_generation",
+      "first_failure_reason": "gold state absent from candidate set",
+      "gold_label": "5 per week",
+      "hidden_families": [
+        "rate_bucket_or_denominator",
+        "current_vs_historical"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "candidate_generation_rescue"
+      ],
+      "source_row_index": 15834
+    },
+    {
+      "first_failure_owner": "final_projection",
+      "first_failure_reason": "final projection regressed a mechanical-correct row",
+      "gold_label": "1 per month",
+      "hidden_families": [
+        "rate_bucket_or_denominator",
+        "competing_semiologies"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "projection_arbitration"
+      ],
+      "source_row_index": 2748
+    },
+    {
+      "first_failure_owner": "final_projection",
+      "first_failure_reason": "final projection regressed a mechanical-correct row",
+      "gold_label": "5 per 2 month",
+      "hidden_families": [
+        "diary_or_log_aggregation"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "projection_arbitration"
+      ],
+      "source_row_index": 4368
+    },
+    {
+      "first_failure_owner": "projection",
+      "first_failure_reason": "gold appears representable but projection is wrong",
+      "gold_label": "1 per 6 to 8 week",
+      "hidden_families": [
+        "rate_bucket_or_denominator"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "projection_arbitration"
+      ],
+      "source_row_index": 5921
+    },
+    {
+      "first_failure_owner": "projection",
+      "first_failure_reason": "gold appears representable but projection is wrong",
+      "gold_label": "multiple per week",
+      "hidden_families": [
+        "rate_bucket_or_denominator",
+        "benchmark_format_convention"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "projection_arbitration"
+      ],
+      "source_row_index": 6889
+    },
+    {
+      "first_failure_owner": "projection",
+      "first_failure_reason": "gold appears representable but projection is wrong",
+      "gold_label": "1 cluster per week, 2 to 3 per cluster",
+      "hidden_families": [
+        "cluster_burden",
+        "rate_bucket_or_denominator",
+        "current_vs_historical"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "projection_arbitration",
+        "projection_unknown_seizure_free_arbitration"
+      ],
+      "source_row_index": 10386
+    },
+    {
+      "first_failure_owner": "projection",
+      "first_failure_reason": "gold appears representable but projection is wrong",
+      "gold_label": "unknown",
+      "hidden_families": [
+        "unknown_boundary",
+        "seizure_free_duration",
+        "current_vs_historical",
+        "competing_semiologies",
+        "uncertainty_or_ambiguity"
+      ],
+      "selection_policy": "first_unique_row_in_source_manifest_order",
+      "slice_names": [
+        "projection_arbitration",
+        "projection_unknown_seizure_free_arbitration"
+      ],
+      "source_row_index": 11216
+    }
+  ],
+  "row_count": 50,
+  "source_manifest": "experiments\\gan2026_atlas_candidate_generation_projection_hard_slices_2026-06-03.json",
+  "source_policy": "Validation-development atlas rows only; no locked-test row-level inspection. First 50 unique source rows in source-manifest order selected before running agentic hard-slice experiments.",
+  "source_row_indices": [
+    3356,
+    3528,
+    4690,
+    5534,
+    5974,
+    6077,
+    6094,
+    6131,
+    6153,
+    6209,
+    6244,
+    6321,
+    6368,
+    6501,
+    6571,
+    6987,
+    7168,
+    7615,
+    9496,
+    9888,
+    9937,
+    9943,
+    9955,
+    10266,
+    10618,
+    10677,
+    10996,
+    12422,
+    12438,
+    12456,
+    12460,
+    12468,
+    13843,
+    13858,
+    13889,
+    14025,
+    14076,
+    14810,
+    14821,
+    15168,
+    15193,
+    15593,
+    15672,
+    15834,
+    2748,
+    4368,
+    5921,
+    6889,
+    10386,
+    11216
+  ],
+  "split": "validation",
+  "split_manifest": "gan2026_split_v1",
+  "stop_rule": "Proceed toward broader validation only if hard50 has no systemic call/parse failures and yields an interpretable promote/revise/reject signal; otherwise revise prompt/tool/role design or add narrower hard panels.",
+  "targeted_question": "Differentiate matched-budget single-agent and multi-agent agentic conditions on known validation hard families before any full-validation escalation."
+}

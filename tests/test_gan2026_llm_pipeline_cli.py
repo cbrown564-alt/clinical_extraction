@@ -207,6 +207,64 @@ def test_agentic_cli_passes_condition_filter(tmp_path: Path, monkeypatch) -> Non
     assert calls["kwargs"]["conditions"] == ["single_greedy", "single_agent_tools"]
 
 
+def test_general_llm_pipeline_cli_filters_source_row_indices_in_requested_order(
+    tmp_path: Path, monkeypatch
+) -> None:
+    calls: dict[str, Any] = {}
+    spec = _dummy_spec(tmp_path, calls)
+    records = [
+        SimpleNamespace(source_row_index=101),
+        SimpleNamespace(source_row_index=102),
+        SimpleNamespace(source_row_index=103),
+    ]
+    index_file = tmp_path / "indices.txt"
+    index_file.write_text("# fixed hard slice\n103\n101\n", encoding="utf-8")
+    monkeypatch.setattr(llm_pipeline_cli, "pipeline_specs", lambda: {"dummy": spec})
+    monkeypatch.setattr(llm_pipeline_cli, "load_records_for_split", lambda split: records)
+    monkeypatch.setattr(
+        llm_pipeline_cli,
+        "load_split_manifest",
+        lambda: {"manifest_version": "test_manifest_v1"},
+    )
+
+    llm_pipeline_cli.run_cli(
+        [
+            "--pipeline",
+            "dummy",
+            "--mode",
+            "prompt-only",
+            "--source-row-index-file",
+            str(index_file),
+        ]
+    )
+
+    assert [record.source_row_index for record in calls["records"]] == [103, 101]
+
+
+def test_general_llm_pipeline_cli_rejects_source_indices_outside_split(
+    tmp_path: Path, monkeypatch, capsys
+) -> None:
+    spec = _dummy_spec(tmp_path)
+    records = [SimpleNamespace(source_row_index=101)]
+    monkeypatch.setattr(llm_pipeline_cli, "pipeline_specs", lambda: {"dummy": spec})
+    monkeypatch.setattr(llm_pipeline_cli, "load_records_for_split", lambda split: records)
+
+    with pytest.raises(SystemExit) as exc_info:
+        llm_pipeline_cli.run_cli(
+            [
+                "--pipeline",
+                "dummy",
+                "--mode",
+                "prompt-only",
+                "--source-row-indices",
+                "102",
+            ]
+        )
+
+    assert exc_info.value.code == 2
+    assert "not present in the selected split" in capsys.readouterr().err
+
+
 def test_general_llm_pipeline_cli_resume_existing_skips_completed_rows(
     tmp_path: Path, monkeypatch
 ) -> None:

@@ -16,16 +16,14 @@ docs: `docs/research/gan2026_closeoff_report_2026-06-12.md` and
 - `hybrid_structured_events` remains the close-off candidate: GPT-4.1-mini
   validation750 `661/748` Purist rendered-correct; frozen `test450` aggregate
   audit `364/448` Purist and `381/448` Pragmatic rendered-correct.
-- `agentic_matched_budget` now exposes deterministic normalized-label voting:
-  raw model labels, normalized vote labels, vote counts, repair-event counts,
-  and `raw_model_plus_deterministic_format_vote` attribution are recorded per
-  condition when voting/format repair affects the final label.
-- Post-voting validation25 single-agent live smoke is complete:
-  `150/150` decision records, `0` call failures, `0` blocking parse/validation
-  failures, `70` normalized-label vote repairs, and all three active
-  single-agent conditions at `25/25` Purist/Pragmatic condition-final accuracy.
-  Five rows still have scoring-equivalent condition-label disagreements; row
-  `187` remains `1 per 7 to 9 day` versus `2 per month`.
+- Post-voting validation25 active single-agent conditions and
+  `multi_agent_matched` all reached `25/25` Purist/Pragmatic condition-final
+  accuracy, making the prefix a smoke surface rather than a discriminator.
+- A fixed validation hard50 slice is now predeclared from the validation-only
+  atlas manifest. On that slice, `single_greedy` (`34/50` Purist) and
+  same-model self-consistency (`32/50`) outperform `single_agent_tools`
+  (`20/50`) and `multi_agent_matched` (`22/50`), so tool/multi-agent variants
+  are revise/reject signals unless redesigned.
 
 ## Guardrails
 
@@ -39,25 +37,27 @@ docs: `docs/research/gan2026_closeoff_report_2026-06-12.md` and
   deterministic normalization/projection, not fully LLM-only.
 - Do not claim multi-agent value until compared with a single-agent condition
   under matched model-call, token, tool-call, and aggregation budget.
+- Do not escalate current `single_agent_tools` or `multi_agent_matched` to full
+  validation; they must first improve on the fixed hard50 slice without
+  introducing high-cost regressions.
 
 ## Active Priorities
 
-1. Run `multi_agent_matched` now that the single-agent comparator and
-   aggregation/repair policy are stable.
-2. Produce the compact failure-mode comparison table for paper-facing Gan
-   close-off once the agentic comparator is settled.
+1. Produce the compact failure-mode comparison table for paper-facing Gan
+   close-off, using the hard50 agentic result as the agentic decision gate.
+2. Populate the Architecture Thesis Scorecard from existing Gan artifacts.
 
 ## Work Board
 
 ### Now
 
-- Run `multi_agent_matched` under the same model-call, token, tool-call, and
-  aggregation budget as the stabilized single-agent comparator.
+- Produce a compact failure-mode table for `hybrid_structured_events` versus
+  deterministic, fully LLM, single-agent, and `multi_agent_matched` comparators;
+  include the validation hard50 agentic regressions.
 
 ### Next
 
-- Produce a compact failure-mode table for `hybrid_structured_events` versus
-  deterministic and fully LLM comparators; reuse it for agentic hard slices.
+- Populate the Architecture Thesis Scorecard from existing Gan artifacts.
 
 ### Blocked
 
@@ -65,34 +65,39 @@ docs: `docs/research/gan2026_closeoff_report_2026-06-12.md` and
   explicit frozen-protocol authorization.
 - Any multi-agent superiority claim is blocked until matched-budget
   single-agent evidence is stable.
+- Full-validation escalation for current tool-using or multi-agent agentic
+  conditions is blocked by hard50 regressions.
 
 ### Backlog
 
-- Populate the Architecture Thesis Scorecard from existing Gan artifacts.
+- Run targeted validation hard-slice panels if the failure-mode table cannot
+  distinguish single-agent and multi-agent mechanisms from existing artifacts.
+- Redesign agentic tool/role context only if paper framing still needs an
+  agentic comparison beyond the hard50 revise/reject signal.
 
 ### Done Recently
 
+- 2026-06-12: Predeclared and ran validation hard50 active-condition agentic
+  comparison:
+  `experiments/gan2026_agentic_matched_budget_validation_hard50_active_conditions_live_prompt_v1_2026-06-12.md`.
+  Result: `500` calls, `0` failures, `0` blocking parse/validation failures;
+  condition-final Purist `single_greedy 34/50`, self-consistency `32/50`,
+  `single_agent_tools 20/50`, `multi_agent_matched 22/50`. Current tool/multi
+  variants should not move to full validation.
 - 2026-06-12: Added deterministic normalized-label voting to
-  `agentic_matched_budget` with explicit raw-label, normalized-label,
-  vote-count, repair-event, and attribution fields. Verification: full pytest
-  `1205 passed`; touched-file Ruff passed. Full-repo Ruff remains blocked by
-  unrelated pre-existing lint debt outside this change.
-- 2026-06-12: Re-ran validation25 single-agent live smoke after deterministic
-  normalized-label voting:
+  `agentic_matched_budget`, aligned condition-final voting to parser-repaired
+  decision labels, and completed validation25 single-agent/multi-agent smokes.
+  Key artifacts:
   `experiments/gan2026_agentic_matched_budget_validation25_single_agent_live_prompt_v1_post_vote_2026-06-12.md`.
-  Result: `150` calls, `0` failures, `0` blocking parse/validation failures,
-  condition-final Purist/Pragmatic `25/25` for all three active single-agent
-  conditions; row `187` remains a scoring-equivalent label disagreement.
-- 2026-06-12: Re-ran validation25 single-agent live smoke under
-  `gan2026_agentic_matched_budget_prompt_v1`:
-  `experiments/gan2026_agentic_matched_budget_validation25_single_agent_live_prompt_v1_2026-06-12.md`.
-  Result: `150` calls, `0` failures, `0` blocking parse/validation failures,
-  condition-final Purist/Pragmatic `25/25` for all three active single-agent
-  conditions; row `187` remains a scoring-equivalent label disagreement.
+  Verification: focused pytest/Ruff passed; earlier full pytest was
+  `1205 passed`; full-repo Ruff remains blocked by unrelated pre-existing lint
+  debt.
 ## Core Artifacts
 
 - `docs/research/gan2026_closeoff_report_2026-06-12.md`
 - `docs/research/gan2026_agentic_pipeline_phase_plan_2026-06-12.md`
 - `experiments/gan2026_agentic_matched_budget_validation25_single_agent_live_prompt_v1_post_vote_2026-06-12.md`
-- `experiments/gan2026_agentic_matched_budget_validation25_single_agent_live_prompt_v1_2026-06-12.md`
+- `experiments/gan2026_agentic_matched_budget_validation25_multi_agent_live_prompt_v1_2026-06-12.md`
+- `experiments/gan2026_agentic_matched_budget_validation_hard50_active_conditions_live_prompt_v1_2026-06-12.md`
+- `experiments/gan2026_agentic_validation_hard50_manifest_2026-06-12.json`
 - `experiments/gan2026_agentic_validation25_format_repair_analysis_2026-06-12.md`
