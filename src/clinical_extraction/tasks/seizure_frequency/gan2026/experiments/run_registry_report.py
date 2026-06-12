@@ -6,14 +6,22 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path
 
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry import (
+    MetricValue,
     RunDecision,
     RunRegistryEntry,
 )
 
 DECISION_RENDER_ORDER: tuple[RunDecision, ...] = (
     "promote",
+    "promote_hybrid_structured_events_direction",
+    "promote_to_phase3_report",
     "revise",
     "reject",
+    "inform_phase7",
+    "phase4_complete",
+    "inform_phase4",
+    "phase3_complete_gpt41mini",
+    "inform_phase3",
     "superseded",
     "historical",
 )
@@ -29,7 +37,11 @@ def render_run_registry_markdown(entries: Sequence[RunRegistryEntry]) -> str:
         "machine-readable registry.",
         "",
     ]
-    for decision in DECISION_RENDER_ORDER:
+    ordered_decisions = [
+        *DECISION_RENDER_ORDER,
+        *sorted({entry.decision for entry in entries} - set(DECISION_RENDER_ORDER)),
+    ]
+    for decision in ordered_decisions:
         group = sorted(
             (entry for entry in entries if entry.decision == decision),
             key=lambda entry: (entry.date, entry.run_id),
@@ -82,7 +94,7 @@ def _entry_markdown_lines(entry: RunRegistryEntry) -> list[str]:
     return lines
 
 
-def _format_metrics(metrics: Mapping[str, int | float | str | None]) -> str:
+def _format_metrics(metrics: Mapping[str, MetricValue]) -> str:
     return ", ".join(f"{key}={metrics[key]}" for key in sorted(metrics))
 
 

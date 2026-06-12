@@ -22,8 +22,9 @@ Controlling synthesis: `docs/research/gan2026_closeoff_report_2026-06-12.md`.
     `661/748` Purist-correct, `679/748` Pragmatic-correct.
   - Frozen GPT-4.1-mini `test450` Phase 4 aggregate audit: `448/450`
     rendered, `364/448` Purist-correct, `381/448` Pragmatic-correct.
-  - DeepSeek and Qwen validation250 prompt checks both improved by `+5/250`
-    Purist-correct with SE v0.6.
+  - User-approved SE v0.6 validation750 confirmations completed:
+    DeepSeek `622/745` Purist-correct and `646/745` Pragmatic-correct;
+    Qwen `638/746` Purist-correct and `656/746` Pragmatic-correct.
 - Reset-native CandidateSet hybrid remains important for the transparency and
   verifier thesis, but is not the current implementation headline: on frozen
   `test450` it scored `269/334` Purist-correct with `116` null rows and `30`
@@ -52,30 +53,25 @@ Controlling synthesis: `docs/research/gan2026_closeoff_report_2026-06-12.md`.
 
 ## Active Priorities
 
-1. Accept or revise the Gan close-off synthesis.
-2. Decide whether optional validation750 confirmations are worth the model
-   budget: Qwen CP v0.8 and/or DeepSeek CP v0.7 / SE v0.6.
-3. If confirmations are deferred, mark Gan closed for this cycle and resume
-   ExECTv2 on `dev`.
+1. Mark Gan closed for this cycle unless the close-off report needs a final
+   wording patch from the SE v0.6 confirmation runs.
+2. Populate the Architecture Thesis Scorecard from existing Gan artifacts:
+   validation performance, frozen holdout performance, validation-to-test gap,
+   evidence trace caveats, and modularity/auditability signal.
+3. Resume ExECTv2 planning on `dev`; hybrid all-9 is the likely next family.
 
 ## Work Board
 
 ### Now
 
-- Review `docs/research/gan2026_closeoff_report_2026-06-12.md`.
-- Either authorize the optional validation750 confirmations or explicitly defer
-  them.
+- Decide whether the Gan close-off report needs a short addendum for the
+  completed DeepSeek/Qwen SE v0.6 validation750 confirmations.
+- Then mark Gan closed for this cycle and resume ExECTv2.
 
 ### Next
 
-- Populate the Architecture Thesis Scorecard from existing Gan artifacts:
-  validation performance, frozen holdout performance, validation-to-test gap,
-  evidence trace caveats, and modularity/auditability signal.
 - Produce a compact failure-mode table for `hybrid_structured_events` versus
   deterministic and fully LLM comparators.
-- Resume ExECTv2 planning on `dev`; hybrid all-9 is the likely next family
-  because the single-pass all-entity LLM-only result was structurally reliable
-  but far below target.
 
 ### Blocked
 
@@ -93,6 +89,9 @@ Controlling synthesis: `docs/research/gan2026_closeoff_report_2026-06-12.md`.
 
 ### Done Recently
 
+- 2026-06-12: Completed user-approved SE v0.6 validation750 confirmations from
+  the existing validation250 prefixes: DeepSeek `622/745` Purist and Qwen
+  `638/746` Purist rendered-correct validation-only results.
 - 2026-06-12: Added the Gan close-off synthesis and registry entry:
   `gan2026_closeoff_report_2026-06-12`.
 - 2026-06-12: Completed ExECTv2 Phase 6 LLM-only all-9 dev140 and frozen
@@ -114,6 +113,9 @@ Controlling synthesis: `docs/research/gan2026_closeoff_report_2026-06-12.md`.
   `experiments/gan2026_three_way_comparison_phase3_report_gpt41mini_validation750_2026-06-09.md`
 - Cross-model comparison:
   `docs/research/gan2026_cross_model_comparison_2026-06-09.md`
+- SE v0.6 validation750 confirmations:
+  `experiments/gan2026_v06_validation750_hybrid_structured_events_deepseek_2026-06-12.md`;
+  `experiments/gan2026_v06_validation750_hybrid_structured_events_qwen3635b_2026-06-12.md`
 - Three-way architecture plan:
   `docs/research/gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07.md`
 - Architecture thesis scorecard plan:

@@ -1,26 +1,109 @@
-﻿# Gan 2026 Run Registry
+# Gan 2026 Run Registry
 
 Generated from `experiments/registry.jsonl`. The JSONL file remains the canonical machine-readable registry.
 
+## Promote Hybrid Structured Events Direction
+
+### `gan2026_closeoff_report_2026-06-12`
+- Date/split: `2026-06-12`; `validation+test`; `1200` rows.
+- Pipeline: `gan2026_closeoff_synthesis`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Synthesis-only close-off report over existing Gan 2026 comparison, prompt-optimization, and frozen aggregate audit artifacts.; model `none`.
+- Primary metrics: deepseek_se_v06_validation250_delta_purist_correct=5, gpt41mini_test450_se_pragmatic_correct_of_rendered=381, gpt41mini_test450_se_purist_correct_of_rendered=364, gpt41mini_test450_se_rendered=448, gpt41mini_validation750_se_purist_correct_of_rendered=661, gpt41mini_validation750_se_rendered=748, promoted_architecture=hybrid_structured_events, qwen_se_v06_validation250_delta_purist_correct=5.
+- Evidence validity: Surfaces that evidence metrics differ by architecture: evidence_valid, evidence_text_contained, and CandidateSet source-id validity are not interchangeable.
+- Claim language: Close-off implementation-direction synthesis. Promotes hybrid_structured_events as the current Gan 2026 direction while preserving split discipline: validation is development evidence; completed test450 audit is aggregate-only; no row-level holdout tuning or new benchmark claim is authorized.
+- Artifacts: `docs/research/gan2026_closeoff_report_2026-06-12.md`.
+
+## Promote To Phase3 Report
+
+### `gan2026_hybrid_v5_validation750_gpt41mini_2026-06-09`
+- Date/split: `2026-06-09`; `validation`; `750` rows.
+- Pipeline: `hybrid`; mode `live`; replay `assessment_stage_only`.
+- Model role: hybrid clinical assessment probe (v5): CandidateSet -> clinical assessment schema; deterministic downstream (normalize/project/render/score/route) applied in deep-replay.; model `openai/gpt-4.1-mini`.
+- Primary metrics: call_errors=0, parse_errors=1, prompt_version=gan2026_candidate_set_clinical_assessment_probe_v5, rows=750.
+- Evidence validity: Assessment-stage probe only -- CandidateSet source-id validity rates are computed in deep-replay during report build, not in this artifact directly.
+- Supersedes: `gan2026_three_way_comparison_validation750_hybrid_live_candidate_sets_gpt41mini_2026-06-08`.
+- Claim language: Phase 3 hybrid v5 prompt run (validation750, gpt-4.1-mini). Prompt bumped from v4 to gan2026_candidate_set_clinical_assessment_probe_v5. Four new instructions added to address Phase 3 failure modes: FM-6 (highest-frequency-type selection, not highest-severity), FM-2a (menstrual/cyclic risk-window seizure-free FP suppression), FM-2b (recent burst + seizure-free run stays frequency_rate not seizure_free), FM-5b (cluster_frequency only for true recurring grouped-episode patterns, not incidental use of word cluster). 750/750 rows, 0 call errors, 1 parse error, all at v5. Supersedes Phase 1 hybrid run (v4 prompt, gan2026_candidate_set_clinical_assessment_probe_v4).
+- Artifacts: `experiments/gan2026_hybrid_v5_validation750_gpt41mini_2026-06-09.jsonl`.
+
 ## Revise
 
-### `gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07`
-- Date/split: `2026-06-08`; `validation`; `750` rows.
+### `gan2026_v06_validation750_hybrid_structured_events_qwen3635b_2026-06-12`
+- Date/split: `2026-06-12`; `validation`; `750` rows.
 - Pipeline: `hybrid_structured_events`; mode `live`; replay `live`.
-- Model role: LLM-only structured-events extractor and selector -- slim source-near event schema; deterministic code limited to Gan normalization, evidence validation, and scoring; model `openai/gpt-4.1-mini`.
-- Primary metrics: evidence_valid_rows=691, null_rows=2, pragmatic_correct_of_rendered=679, purist_correct_of_rendered=661, rendered_rows=748.
-- Evidence validity: 691/750 rows (92.1%) carry an evidence_valid substring-presence trace; the 2 null rows are rare parse failures, not a structural give-up signal -- see the Phase 1 report's per-architecture rendered/null derivation footnote.
-- Claim language: Phase 1 three-way architecture comparison data point (gpt-4.1-mini pass, validation750, gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07); not a standalone promote/reject verdict on its own -- see gan2026_three_way_comparison_phase1_report_gpt41mini_validation750_2026-06-08 for cross-architecture synthesis once it lands. Restarted after fixing a schema_repair.py _ASSERTION_ALIASES bug that remapped the already-valid assertion_status value 'unknown' to the invalid 'unclear'; confirmed clean via re-pilot validation25 (0 failures, 100% accuracy) before this full run (see run markdown header).
-- Artifacts: `experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07.jsonl`, `experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07.md`.
+- Model role: Local Qwen LLM structured-events extractor and selector using SE v0.6; deterministic code limited to Gan normalization, evidence validation, and scoring/repair after structured model selection.; model `ollama_chat/qwen3.6:35b`.
+- Repair mode/config: `hybrid_full_stack`.
+- Primary metrics: call_failures=0, evidence_valid_rows=581, json_dialect_repairs=746, parse_or_validation_failures=4, pragmatic_accuracy=0.8747, pragmatic_correct=656, prompt_version=gan2026_hybrid_structured_events_v0.6, purist_accuracy=0.8507, purist_correct=638, rendered_rows=746, structured_records=746.
+- Evidence validity: 581/750 rows carry an evidence_valid substring-presence trace; 0 call failures; 4 unrendered rows in the combined summary. Qwen still relies heavily on JSON dialect repair.
+- Cache/reuse source: Resumed from completed validation250 prefix artifact experiments/gan2026_v06_validation250_hybrid_structured_events_qwen3635b_2026-06-11.jsonl; --resume-existing skipped 250 completed rows and ran the remaining 500 validation rows live through local Ollama.
+- Supersedes: `gan2026_v06_validation250_hybrid_structured_events_qwen3635b_2026-06-11`.
+- Claim language: User-approved close-off confirmation for SE v0.6 on the full validation750 surface. Validation development evidence only, not a holdout or benchmark claim. Qwen SE v0.6 improves over the Phase 1 validation750 SE result, with 638/746 Purist rendered-correct versus the earlier 624/746 and 656/746 Pragmatic rendered-correct.
+- Artifacts: `experiments/gan2026_v06_validation750_hybrid_structured_events_qwen3635b_2026-06-12.jsonl`, `experiments/gan2026_v06_validation750_hybrid_structured_events_qwen3635b_2026-06-12.md`.
 
-### `gan2026_three_way_comparison_validation750_hybrid_structured_events_deepseek_2026-06-08`
-- Date/split: `2026-06-08`; `validation`; `750` rows.
+### `gan2026_v06_validation750_hybrid_structured_events_deepseek_2026-06-12`
+- Date/split: `2026-06-12`; `validation`; `750` rows.
 - Pipeline: `hybrid_structured_events`; mode `live`; replay `live`.
-- Model role: LLM-only structured-events extractor and selector -- slim source-near event schema; deterministic code limited to Gan normalization, evidence validation, and scoring. deepseek-chat alias for deepseek-v4-flash non-thinking mode -- calling deepseek-v4-flash directly defaults to thinking mode (emits reasoning_content blocks that exhaust max_tokens before producing JSON output); deepseek-chat is the official non-thinking-mode alias for the same underlying v4-flash model; model `deepseek/deepseek-chat`.
-- Primary metrics: call_failures=0, evidence_valid_rate=0.957, evidence_valid_rows=718, null_rows=8, parse_or_validation_failures=8, pragmatic_accuracy=0.845, pragmatic_correct=634, purist_accuracy=0.812, purist_correct=609, rendered_rows=742.
-- Evidence validity: 718/750 rows (95.7%) carry an evidence_valid substring-presence trace. 8 parse_or_validation_failures (~1%) -- within accepted noise for this architecture.
-- Claim language: Phase 1 three-way architecture comparison data point (gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07); deepseek-v4-flash pass (third model alongside gpt-4.1-mini and qwen3.6-35b). Run had two transient Windows OSError [Errno 22] crashes during checkpoint writes (likely anti-virus file-locking); both were recovered via --resume-existing without data loss. deterministic and deterministic_canonical_pipeline are rule-based (no LLM calls); their results are shared from the gpt-4.1-mini canonical artifacts (2026-06-07) -- byte-identical across models.
-- Artifacts: `experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_deepseek_2026-06-08.jsonl`, `experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_deepseek_2026-06-08.md`.
+- Model role: LLM structured-events extractor and selector using SE v0.6; deterministic code limited to Gan normalization, evidence validation, and scoring/repair after structured model selection.; model `deepseek/deepseek-chat`.
+- Repair mode/config: `hybrid_full_stack`.
+- Primary metrics: call_failures=0, evidence_valid_rows=719, parse_or_validation_failures=5, pragmatic_accuracy=0.8613, pragmatic_correct=646, prompt_version=gan2026_hybrid_structured_events_v0.6, purist_accuracy=0.8293, purist_correct=622, rendered_rows=745, structured_records=745.
+- Evidence validity: 719/750 rows carry an evidence_valid substring-presence trace; 0 call failures; 5 unrendered rows in the combined summary.
+- Cache/reuse source: Resumed from completed validation250 prefix artifact experiments/gan2026_v06_validation250_hybrid_structured_events_deepseek_2026-06-10.jsonl; --resume-existing skipped 250 completed rows and ran the remaining 500 validation rows live.
+- Supersedes: `gan2026_v06_validation250_hybrid_structured_events_deepseek_2026-06-10`.
+- Claim language: User-approved close-off confirmation for SE v0.6 on the full validation750 surface. Validation development evidence only, not a holdout or benchmark claim. Compared to the earlier DeepSeek SE Phase 1 validation750 result, v0.6 improves Purist from 609/742 rendered to 622/745 rendered and Pragmatic from 634/742 to 646/745.
+- Artifacts: `experiments/gan2026_v06_validation750_hybrid_structured_events_deepseek_2026-06-12.jsonl`, `experiments/gan2026_v06_validation750_hybrid_structured_events_deepseek_2026-06-12.md`.
+
+### `gan2026_three_way_comparison_validation750_deterministic_phase2_gan_shorthand_generalized_2026-06-09`
+- Date/split: `2026-06-09`; `validation`; `750` rows.
+- Pipeline: `deterministic`; mode `live`; replay `live`.
+- Model role: deterministic baseline comparator -- rules-only candidate extraction, normalization, and projection; no model calls. Phase 2 iteration 1: GAN_SHORTHAND group de-overfitted (word-number patterns removed, separator-prefix patterns removed).; model `none (deterministic rules pipeline; no LLM calls)`.
+- Primary metrics: evidence_valid_rows=750, null_rows=9, pragmatic_correct_of_rendered=683, purist_correct_of_rendered=674, rendered_rows=741.
+- Evidence validity: 750/750 rows carry an evidence_valid substring-presence trace (this architecture's reported evidence-trace metric); formal CandidateSet source-id validity is not computed for single-shot architectures.
+- Claim language: Phase 2 de-overfitting iteration 1 data point (validation750, gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07 Section 4): GAN_SHORTHAND rules rewritten to generalized clinical shorthand patterns -- digit-only counts, no special separator prefixes (asterisk/X/times), portability promoted from GAN2026_SPECIFIC to SEIZURE_FREQUENCY or CLINICAL_EPILEPSY. Expected and intentional regression of 14 rows (688 -> 674 purist-correct) -- these rows depended on benchmark-specific notation not present in real clinical documentation. Not a standalone promote/reject verdict -- see gan2026_three_way_comparison_phase2_report_gan_shorthand_generalized_validation750_2026-06-09 for cross-architecture synthesis.
+- Artifacts: `experiments/gan2026_three_way_comparison_validation750_deterministic_phase2_gan_shorthand_generalized_2026-06-09.jsonl`.
+
+### `gan2026_three_way_comparison_validation750_deterministic_phase2_cluster_diary_digit_2026-06-09`
+- Date/split: `2026-06-09`; `validation`; `750` rows.
+- Pipeline: `deterministic`; mode `live`; replay `live`.
+- Model role: deterministic baseline comparator -- rules-only candidate extraction, normalization, and projection; no model calls. Phase 2 iteration 2: CLUSTER_ARITHMETIC (cluster.compact_count_per_period) and DIARY_LOG_AGGREGATION (diary.seizure_days_fraction) de-overfitted to digit-only compact shorthand.; model `none (deterministic rules pipeline; no LLM calls)`.
+- Primary metrics: evidence_valid_rows=750, null_rows=9, pragmatic_correct_of_rendered=681, purist_correct_of_rendered=673, rendered_rows=741.
+- Evidence validity: 750/750 rows carry an evidence_valid substring-presence trace.
+- Claim language: Phase 2 de-overfitting iteration 2 data point (validation750, gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07 Section 4): CLUSTER_ARITHMETIC and DIARY_LOG_AGGREGATION rules generalized -- cluster.compact_count_per_period and diary.seizure_days_fraction now require digit-only counts in compact shorthand notation (word numbers in compact notation are GAN-dataset-specific). Word numbers in running prose (PORTABLE_RATE_EXPRESSIONS family) assessed and confirmed NOT GAN-specific; no change to that family. Expected and intentional regression of 1 row (674 -> 673 purist-correct) relative to iteration 1: row 148 (Seizure days: six/30 this month) depended on GAN-specific compact notation. Not a standalone promote/reject verdict -- see gan2026_three_way_comparison_phase2_report_cluster_diary_digit_validation750_2026-06-09 for cross-architecture synthesis.
+- Artifacts: `experiments/gan2026_three_way_comparison_validation750_deterministic_phase2_cluster_diary_digit_2026-06-09.jsonl`.
+
+### `gan2026_three_way_comparison_validation750_deterministic_canonical_pipeline_phase2_gan_shorthand_generalized_2026-06-09`
+- Date/split: `2026-06-09`; `validation`; `750` rows.
+- Pipeline: `deterministic_canonical_pipeline`; mode `live`; replay `live`.
+- Model role: deterministic baseline comparator routed through the staged canonical-pipeline architecture -- rules-only; no model calls. Phase 2 iteration 1: GAN_SHORTHAND group de-overfitted (word-number patterns removed, separator-prefix patterns removed).; model `none (deterministic rules pipeline; no LLM calls)`.
+- Primary metrics: evidence_valid_rows=750, null_rows=9, pragmatic_correct_of_rendered=683, purist_correct_of_rendered=674, rendered_rows=741.
+- Evidence validity: 750/750 rows carry an evidence_valid substring-presence trace; identical to the deterministic architecture's numbers on this split -- the staged canonical-pipeline wrapper converges on the same rendered answers as the unstaged baseline (confirmed in Phase 1 and still holds in Phase 2).
+- Claim language: Phase 2 de-overfitting iteration 1 data point (validation750, gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07 Section 4): same GAN_SHORTHAND rule rewrite as the deterministic counterpart, routed through the staged canonical-pipeline architecture. Produces identical purist/pragmatic/distribution numbers as the unstaged deterministic architecture (staged wrapper converges on the same rendered answers). Expected and intentional regression of 14 rows (688 -> 674 purist-correct). Not a standalone promote/reject verdict -- see gan2026_three_way_comparison_phase2_report_gan_shorthand_generalized_validation750_2026-06-09 for cross-architecture synthesis.
+- Artifacts: `experiments/gan2026_three_way_comparison_validation750_deterministic_canonical_pipeline_phase2_gan_shorthand_generalized_2026-06-09.jsonl`.
+
+### `gan2026_three_way_comparison_validation750_deterministic_canonical_pipeline_phase2_cluster_diary_digit_2026-06-09`
+- Date/split: `2026-06-09`; `validation`; `750` rows.
+- Pipeline: `deterministic_canonical_pipeline`; mode `live`; replay `live`.
+- Model role: deterministic baseline comparator routed through the staged canonical-pipeline architecture -- rules-only candidate extraction, normalization, and projection; no model calls. Phase 2 iteration 2: CLUSTER_ARITHMETIC (cluster.compact_count_per_period) and DIARY_LOG_AGGREGATION (diary.seizure_days_fraction) de-overfitted to digit-only compact shorthand.; model `none (deterministic rules pipeline; no LLM calls)`.
+- Primary metrics: evidence_valid_rows=750, null_rows=9, pragmatic_correct_of_rendered=681, purist_correct_of_rendered=673, rendered_rows=741.
+- Evidence validity: 750/750 rows carry an evidence_valid substring-presence trace.
+- Claim language: Phase 2 de-overfitting iteration 2 data point (validation750, gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07 Section 4): same CLUSTER_ARITHMETIC and DIARY_LOG_AGGREGATION rule generalization as the deterministic counterpart; routed through the staged canonical-pipeline architecture -- cluster.compact_count_per_period and diary.seizure_days_fraction now require digit-only counts in compact shorthand notation (word numbers in compact notation are GAN-dataset-specific). Word numbers in running prose (PORTABLE_RATE_EXPRESSIONS family) assessed and confirmed NOT GAN-specific; no change to that family. Expected and intentional regression of 1 row (674 -> 673 purist-correct) relative to iteration 1: row 148 (Seizure days: six/30 this month) depended on GAN-specific compact notation. Not a standalone promote/reject verdict -- see gan2026_three_way_comparison_phase2_report_cluster_diary_digit_validation750_2026-06-09 for cross-architecture synthesis.
+- Artifacts: `experiments/gan2026_three_way_comparison_validation750_deterministic_canonical_pipeline_phase2_cluster_diary_digit_2026-06-09.jsonl`.
+
+### `gan2026_three_way_comparison_phase2_report_gan_shorthand_generalized_validation750_2026-06-09`
+- Date/split: `2026-06-09`; `validation`; `750` rows.
+- Pipeline: `three_way_comparison_phase2_report`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Analysis-only synthesis -- reads Phase 2 deterministic/deterministic_canonical_pipeline artifacts and Phase 1 LLM-architecture artifacts; assembles a shared comparison table plus a hybrid-only routing-taxonomy appendix; makes no hosted LLM calls of its own.; model `openai/gpt-4.1-mini`.
+- Primary metrics: architectures_compared=6, deterministic_canonical_pipeline_purist_correct_of_rendered=674, deterministic_purist_correct_of_rendered=674, hybrid_purist_correct_of_rendered=500, hybrid_structured_events_purist_correct_of_rendered=661, llm_only_canonical_pipeline_purist_correct_of_rendered=581, llm_only_direct_labeler_purist_correct_of_rendered=564, rows_per_architecture=750.
+- Evidence validity: Surfaces, but does not collapse, the fact that evidence-trace metrics are NOT uniform across architectures: four report evidence_valid (free-text substring presence), llm_only_canonical_pipeline reports the deliberately distinct evidence_text_contained, and hybrid reports a formal CandidateSet source-id validity rate. The report footnotes and per-architecture metric table make this explicit.
+- Claim language: Phase 2 de-overfitting iteration 1 comparison report synthesis (validation750 only; gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07 Section 4). No test450 read, no holdout-facing or benchmark-comparable claim. Compares six PipelineArchitecture configs; deterministic and deterministic_canonical_pipeline are from Phase 2 runs (GAN_SHORTHAND de-overfitted); hybrid, llm_only_direct_labeler, hybrid_structured_events, llm_only_canonical_pipeline are from the Phase 1 gpt-4.1-mini pass (unchanged). Key finding: expected and intentional 14-row regression on deterministic architectures (674 vs 688 purist-correct); validates that the removed rules were GAN-dataset-specific and not genuinely generalizable clinical patterns.
+- Artifacts: `experiments/gan2026_three_way_comparison_phase2_report_gan_shorthand_generalized_validation750_2026-06-09.jsonl`, `experiments/gan2026_three_way_comparison_phase2_report_gan_shorthand_generalized_validation750_2026-06-09.json`, `experiments/gan2026_three_way_comparison_phase2_report_gan_shorthand_generalized_validation750_2026-06-09.md`.
+
+### `gan2026_three_way_comparison_phase2_report_cluster_diary_digit_validation750_2026-06-09`
+- Date/split: `2026-06-09`; `validation`; `750` rows.
+- Pipeline: `three_way_comparison_phase2_report`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Analysis-only synthesis -- reads Phase 2 iteration 2 deterministic/deterministic_canonical_pipeline artifacts and Phase 1 LLM-architecture artifacts; assembles a shared comparison table plus a hybrid-only routing-taxonomy appendix; makes no hosted LLM calls of its own.; model `openai/gpt-4.1-mini`.
+- Primary metrics: architectures_compared=6, deterministic_canonical_pipeline_purist_correct_of_rendered=673, deterministic_purist_correct_of_rendered=673, hybrid_purist_correct_of_rendered=500, hybrid_structured_events_purist_correct_of_rendered=661, llm_only_canonical_pipeline_purist_correct_of_rendered=581, llm_only_direct_labeler_purist_correct_of_rendered=564, rows_per_architecture=750.
+- Evidence validity: Surfaces, but does not collapse, the fact that evidence-trace metrics are NOT uniform across architectures: four report evidence_valid (free-text substring presence), llm_only_canonical_pipeline reports the deliberately distinct evidence_text_contained, and hybrid reports a formal CandidateSet source-id validity rate.
+- Claim language: Phase 2 de-overfitting iteration 2 comparison report synthesis (validation750 only; gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07 Section 4). No test450 read, no holdout-facing or benchmark-comparable claim. Compares six PipelineArchitecture configs; deterministic and deterministic_canonical_pipeline are from Phase 2 iteration 2 runs (GAN_SHORTHAND + CLUSTER_ARITHMETIC + DIARY_LOG_AGGREGATION de-overfitted); hybrid, llm_only_direct_labeler, hybrid_structured_events, llm_only_canonical_pipeline are from the Phase 1 gpt-4.1-mini pass (unchanged). Key finding: expected and intentional total regression of 15 rows across both de-overfitting iterations (688 -> 673 purist-correct); validates that the removed rules depended on GAN-dataset-specific notation.
+- Artifacts: `experiments/gan2026_three_way_comparison_phase2_report_cluster_diary_digit_validation750_2026-06-09.jsonl`, `experiments/gan2026_three_way_comparison_phase2_report_cluster_diary_digit_validation750_2026-06-09.json`, `experiments/gan2026_three_way_comparison_phase2_report_cluster_diary_digit_validation750_2026-06-09.md`.
 
 ### `gan2026_three_way_comparison_validation750_llm_only_direct_labeler_deepseek_2026-06-08`
 - Date/split: `2026-06-08`; `validation`; `750` rows.
@@ -49,6 +132,24 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Claim language: Phase 1 three-way architecture comparison data point (gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07); deepseek-v4-flash pass (third model alongside gpt-4.1-mini and qwen3.6-35b). Run had two transient Windows OSError [Errno 22] crashes during checkpoint writes (likely anti-virus file-locking); both were recovered via --resume-existing without data loss. deterministic and deterministic_canonical_pipeline are rule-based (no LLM calls); their results are shared from the gpt-4.1-mini canonical artifacts (2026-06-07) -- byte-identical across models.
 - Artifacts: `experiments/gan2026_three_way_comparison_validation750_llm_only_canonical_pipeline_deepseek_2026-06-08.jsonl`, `experiments/gan2026_three_way_comparison_validation750_llm_only_canonical_pipeline_deepseek_2026-06-08.md`.
 
+### `gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07`
+- Date/split: `2026-06-08`; `validation`; `750` rows.
+- Pipeline: `hybrid_structured_events`; mode `live`; replay `live`.
+- Model role: LLM-only structured-events extractor and selector -- slim source-near event schema; deterministic code limited to Gan normalization, evidence validation, and scoring; model `openai/gpt-4.1-mini`.
+- Primary metrics: evidence_valid_rows=691, null_rows=2, pragmatic_correct_of_rendered=679, purist_correct_of_rendered=661, rendered_rows=748.
+- Evidence validity: 691/750 rows (92.1%) carry an evidence_valid substring-presence trace; the 2 null rows are rare parse failures, not a structural give-up signal -- see the Phase 1 report's per-architecture rendered/null derivation footnote.
+- Claim language: Phase 1 three-way architecture comparison data point (gpt-4.1-mini pass, validation750, gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07); not a standalone promote/reject verdict on its own -- see gan2026_three_way_comparison_phase1_report_gpt41mini_validation750_2026-06-08 for cross-architecture synthesis once it lands. Restarted after fixing a schema_repair.py _ASSERTION_ALIASES bug that remapped the already-valid assertion_status value 'unknown' to the invalid 'unclear'; confirmed clean via re-pilot validation25 (0 failures, 100% accuracy) before this full run (see run markdown header).
+- Artifacts: `experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07.jsonl`, `experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07.md`.
+
+### `gan2026_three_way_comparison_validation750_hybrid_structured_events_deepseek_2026-06-08`
+- Date/split: `2026-06-08`; `validation`; `750` rows.
+- Pipeline: `hybrid_structured_events`; mode `live`; replay `live`.
+- Model role: LLM-only structured-events extractor and selector -- slim source-near event schema; deterministic code limited to Gan normalization, evidence validation, and scoring. deepseek-chat alias for deepseek-v4-flash non-thinking mode -- calling deepseek-v4-flash directly defaults to thinking mode (emits reasoning_content blocks that exhaust max_tokens before producing JSON output); deepseek-chat is the official non-thinking-mode alias for the same underlying v4-flash model; model `deepseek/deepseek-chat`.
+- Primary metrics: call_failures=0, evidence_valid_rate=0.957, evidence_valid_rows=718, null_rows=8, parse_or_validation_failures=8, pragmatic_accuracy=0.845, pragmatic_correct=634, purist_accuracy=0.812, purist_correct=609, rendered_rows=742.
+- Evidence validity: 718/750 rows (95.7%) carry an evidence_valid substring-presence trace. 8 parse_or_validation_failures (~1%) -- within accepted noise for this architecture.
+- Claim language: Phase 1 three-way architecture comparison data point (gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07); deepseek-v4-flash pass (third model alongside gpt-4.1-mini and qwen3.6-35b). Run had two transient Windows OSError [Errno 22] crashes during checkpoint writes (likely anti-virus file-locking); both were recovered via --resume-existing without data loss. deterministic and deterministic_canonical_pipeline are rule-based (no LLM calls); their results are shared from the gpt-4.1-mini canonical artifacts (2026-06-07) -- byte-identical across models.
+- Artifacts: `experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_deepseek_2026-06-08.jsonl`, `experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_deepseek_2026-06-08.md`.
+
 ### `gan2026_three_way_comparison_validation750_hybrid_live_candidate_sets_gpt41mini_2026-06-08`
 - Date/split: `2026-06-08`; `validation`; `750` rows.
 - Pipeline: `hybrid`; mode `live`; replay `live`.
@@ -72,7 +173,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Date/split: `2026-06-08`; `validation`; `750` rows.
 - Pipeline: `three_way_comparison_phase1_report`; mode `analysis-only`; replay `analysis_only`.
 - Model role: Analysis-only synthesis -- reads six already-completed gpt-4.1-mini validation750 architecture-comparison artifacts (deterministic, deterministic_canonical_pipeline, hybrid, llm_only_direct_labeler, hybrid_structured_events, llm_only_canonical_pipeline) and assembles a shared comparison table plus a hybrid-only routing-taxonomy appendix; makes no hosted LLM calls of its own.; model `openai/gpt-4.1-mini`.
-- Primary metrics: architectures_compared=6, deterministic_canonical_pipeline_purist_correct_of_rendered=688, deterministic_purist_correct_of_rendered=688, hybrid_purist_correct_of_rendered=511, llm_only_canonical_pipeline_purist_correct_of_rendered=581, llm_only_direct_labeler_purist_correct_of_rendered=564, hybrid_structured_events_purist_correct_of_rendered=661, rows_per_architecture=750.
+- Primary metrics: architectures_compared=6, deterministic_canonical_pipeline_purist_correct_of_rendered=688, deterministic_purist_correct_of_rendered=688, hybrid_purist_correct_of_rendered=511, hybrid_structured_events_purist_correct_of_rendered=661, llm_only_canonical_pipeline_purist_correct_of_rendered=581, llm_only_direct_labeler_purist_correct_of_rendered=564, rows_per_architecture=750.
 - Evidence validity: Surfaces, but does not collapse, the fact that evidence-trace metrics are NOT uniform across architectures: four report evidence_valid (free-text substring presence), llm_only_canonical_pipeline reports the deliberately distinct evidence_text_contained, and hybrid reports a formal CandidateSet source-id validity rate. The report's footnotes and per-architecture metric table make this explicit so readers do not compare these as one accuracy number.
 - Claim language: Phase 1 three-way architecture comparison synthesis (gpt-4.1-mini pass, validation750 only; gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07 and gan2026_three_way_comparison_phase1_report_design_2026-06-07). No test450 read, no holdout-facing or benchmark-comparable claim -- compares six PipelineArchitecture configs on universally meaningful axes (rendered/null disposition, Purist/Pragmatic-correct of rendered rows, evidence-trace validity, final-answer distribution); hybrid additionally carries a routing-taxonomy appendix with no analogous surface in the other five. hybrid's shared-table row is sourced from build_unified_pipeline_artifact deep-replay (using the live-generated CandidateSets the now-fixed hybrid run embeds in its own output rows), not raw run_split output -- this asymmetry is the architectural fact under comparison, not a methodology artifact, and the report's footnotes say so explicitly. A notable finding surfaced here: deterministic and deterministic_canonical_pipeline produce IDENTICAL purist/pragmatic/distribution numbers, i.e. the staged canonical-pipeline wrapper converges on the same rendered answers as the unstaged baseline on this pass.
 - Artifacts: `experiments/gan2026_three_way_comparison_phase1_report_gpt41mini_validation750_2026-06-08.jsonl`, `experiments/gan2026_three_way_comparison_phase1_report_gpt41mini_validation750_2026-06-08.json`, `experiments/gan2026_three_way_comparison_phase1_report_gpt41mini_validation750_2026-06-08.md`.
@@ -631,7 +732,201 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Claim language: Reject for holdout; full validation exposed cluster-axis and boundary-state collapse.
 - Artifacts: `experiments/gan2026_section_claim_table_validation750_gpt41mini_v4_2026-06-01.jsonl`, `experiments/gan2026_section_claim_table_validation750_gpt41mini_v4_2026-06-01.md`, `experiments/gan2026_section_claim_table_validation750_v4_interpretation_2026-06-01.md`.
 
+## Inform Phase7
+
+### `exectv2_llm_only_all_entities_dev140_gpt41mini_20260612`
+- Date/split: `2026-06-12`; `dev`; `140` rows.
+- Pipeline: `exectv2_llm_only_all_entities`; mode `live`; replay `native_run_split`.
+- Model role: ExECTv2 LLM-only all-entity single-pass extractor (one call per letter, all nine entities).; model `openai/gpt-4.1-mini`.
+- Primary metrics: benchmark_per_item_f1=0.0, benchmark_per_letter_f1=0.0, call_failures=0, evidence_validity_rate=0.9418, mentions_scored=988, mentions_total=1049, parse_failures=0, phrase_only_per_item_f1=0.143, phrase_only_per_letter_f1=0.346, prompt_version=exectv2_llm_only_all_entities_v0.1, semantic_per_item_f1=0.087, semantic_per_letter_f1=0.236.
+- Evidence validity: evidence_is_substring; 988/1049 valid, 61 dropped.
+- Claim language: ExECTv2 Phase 6 LLM-only all-9 dev140 gpt-4.1-mini. Contract-clean (0 call/parse failures), evidence validity 94.18%, but low semantic overall F1 0.087/0.236 and benchmark with-CUI 0.000/0.000; suitable as locked all-entity LLM-only baseline for the authorized overall audit, not a competitive result.
+- Artifacts: `experiments/exectv2_llm_only_all_entities_dev140_gpt41mini_20260612.jsonl`, `experiments/exectv2_llm_only_all_entities_dev140_gpt41mini_20260612.md`.
+
+## Phase4 Complete
+
+### `gan2026_test450_phase4_comparison_report_gpt41mini_2026-06-10`
+- Date/split: `2026-06-10`; `test`; `450` rows.
+- Pipeline: `phase4_test450_frozen_audit_report`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Analysis-only synthesis: reads the four Phase 4 test450 frozen-audit artifacts (DCP, hybrid v5 with deep-replay via build_unified_pipeline_artifact, SE v0.5, CP v0.5); assembles the shared comparison table plus the hybrid-only routing appendix; makes no hosted LLM calls of its own.; model `openai/gpt-4.1-mini`.
+- Primary metrics: architectures_compared=4, deterministic_canonical_pipeline_purist_correct_of_rendered=329, deterministic_canonical_pipeline_purist_rate=0.731, deterministic_canonical_pipeline_rendered_rows=450, hybrid_null_rows=116, hybrid_purist_correct_of_rendered=269, hybrid_purist_rate=0.805, hybrid_rendered_rows=334, hybrid_routed_rows=30, hybrid_structured_events_purist_correct_of_rendered=364, hybrid_structured_events_purist_rate=0.812, hybrid_structured_events_rendered_rows=448, llm_only_canonical_pipeline_purist_correct_of_rendered=326, llm_only_canonical_pipeline_purist_rate=0.724, llm_only_canonical_pipeline_rendered_rows=450, rows_per_architecture=450.
+- Evidence validity: Surfaces, but does not collapse, that evidence-trace metrics are NOT uniform across architectures: DCP and SE report evidence_valid (substring presence), llm_only_canonical_pipeline reports evidence_text_contained, hybrid reports a CandidateSet source-id validity rate from deep-replay.
+- Claim language: Phase 4 frozen test450 aggregate audit report (authorized 2026-06-09, plan Section 6): one-shot frozen aggregate read of the locked test450 split for deterministic_canonical_pipeline, hybrid (v5 prompt, deep-replayed), hybrid_structured_events (v0.5), and llm_only_canonical_pipeline (v0.5); deterministic and llm_only_direct_labeler intentionally excluded (Section 6 rationale). Of-rendered purist/pragmatic accuracy: DCP 0.731/0.758 (450/450 rendered), hybrid 0.805/0.841 (334/450 rendered, 30 routed all abstained), SE 0.812/0.850 (448/450 rendered), CP 0.724/0.769 (450/450 rendered). SE leads on both purist and pragmatic of-rendered accuracy; hybrid is second on accuracy of-rendered but renders the fewest rows (116 null/unscored of 450). No row-level holdout tuning; no re-runs based on these results.
+- Artifacts: `experiments/gan2026_test450_phase4_comparison_report_gpt41mini_2026-06-10.jsonl`, `experiments/gan2026_test450_phase4_comparison_report_gpt41mini_2026-06-10.json`, `experiments/gan2026_test450_phase4_comparison_report_gpt41mini_2026-06-10.md`.
+
+### `gan2026_test450_phase4_frozen_audit_llm_only_canonical_pipeline_gpt41mini_2026-06-09`
+- Date/split: `2026-06-09`; `test`; `450` rows.
+- Pipeline: `llm_only_canonical_pipeline`; mode `live`; replay `native_run_split`.
+- Model role: fully-LLM canonical-pipeline labeler (v0.5): single LLM call -> decision_record with rule-taxonomy self-report.; model `openai/gpt-4.1-mini`.
+- Primary metrics: call_failures=0, evidence_text_contained=415, evidence_text_contained_rate=0.9222, parse_or_validation_failures=0, pragmatic_accuracy=0.7689, pragmatic_correct=346, prompt_version=gan2026_llm_only_canonical_pipeline_v0.5, purist_accuracy=0.7244, purist_correct=326, repair_notes=227, rows=450.
+- Evidence validity: evidence_text_contained reported per row (deliberately distinct from evidence_valid).
+- Claim language: Phase 4 frozen test450 aggregate audit (authorized 2026-06-09, plan Section 6) -- llm_only_canonical_pipeline v0.5 prompt (gan2026_llm_only_canonical_pipeline_v0.5) over the locked test450 split. 450/450 decision records, 0 call failures, 0 parse/schema/label issues, 227 deterministic repair notes, evidence_text_contained 415/450 (0.9222). Purist accuracy 0.7244 (326/450), Pragmatic accuracy 0.7689 (346/450).
+- Artifacts: `experiments/gan2026_test450_phase4_frozen_audit_llm_only_canonical_pipeline_gpt41mini_2026-06-09.jsonl`, `experiments/gan2026_test450_phase4_frozen_audit_llm_only_canonical_pipeline_gpt41mini_2026-06-09.md`, `experiments/gan2026_test450_phase4_cp_gpt41mini_2026-06-09_stdout.txt`, `experiments/gan2026_test450_phase4_cp_gpt41mini_2026-06-09_stderr.txt`.
+
+### `gan2026_test450_phase4_frozen_audit_hybrid_structured_events_gpt41mini_2026-06-09`
+- Date/split: `2026-06-09`; `test`; `450` rows.
+- Pipeline: `hybrid_structured_events`; mode `live`; replay `native_run_split`.
+- Model role: structured-events extraction (v0.5): raw note text -> structured events; deterministic normalize/project/render/score/route downstream.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `hybrid_full_stack`.
+- Primary metrics: call_failures=0, evidence_valid=418, evidence_valid_rate=0.929, parse_or_validation_failures=2, pragmatic_accuracy=0.8467, pragmatic_correct=381, prompt_version=gan2026_hybrid_structured_events_v0.5, purist_accuracy=0.8089, purist_correct=364, repair_notes=306, rows=450, structured_records=448.
+- Evidence validity: evidence_valid (free-text substring presence) reported per row.
+- Claim language: Phase 4 frozen test450 aggregate audit (authorized 2026-06-09, plan Section 6) -- hybrid_structured_events v0.5 prompt (gan2026_hybrid_structured_events_v0.5) over the locked test450 split, repair_mode hybrid_full_stack. Structured records 448/450, 0 call failures, 2 parse/schema/label issues, 306 deterministic repair notes, evidence_valid 418/450 (0.929). Purist accuracy 0.8089 (364/450), Pragmatic accuracy 0.8467 (381/450).
+- Artifacts: `experiments/gan2026_test450_phase4_frozen_audit_hybrid_structured_events_gpt41mini_2026-06-09.jsonl`, `experiments/gan2026_test450_phase4_frozen_audit_hybrid_structured_events_gpt41mini_2026-06-09.md`, `experiments/gan2026_test450_phase4_se_gpt41mini_2026-06-09_stdout.txt`, `experiments/gan2026_test450_phase4_se_gpt41mini_2026-06-09_stderr.txt`.
+
+### `gan2026_test450_phase4_frozen_audit_hybrid_gpt41mini_2026-06-09`
+- Date/split: `2026-06-09`; `test`; `450` rows.
+- Pipeline: `hybrid`; mode `live`; replay `assessment_stage_only`.
+- Model role: hybrid clinical assessment probe (v5): CandidateSet -> clinical assessment schema; deterministic downstream (normalize/project/render/score/route) applied in deep-replay.; model `openai/gpt-4.1-mini`.
+- Primary metrics: call_failures=0, missing_candidate_set_rows=0, parse_or_validation_failures=0, prompt_version=gan2026_candidate_set_clinical_assessment_probe_v5, rows=450.
+- Evidence validity: Assessment-stage probe only -- CandidateSet source-id validity rate computed in deep-replay during report build, not in this artifact directly.
+- Claim language: Phase 4 frozen test450 aggregate audit (authorized 2026-06-09, plan Section 6) -- hybrid v5 prompt (gan2026_candidate_set_clinical_assessment_probe_v5) clinical-assessment probe over the locked test450 split, live-generated CandidateSets embedded per row. 450/450 rows, 0 call failures, 0 parse/validation failures, 0 missing candidate sets. Assessment-stage probe only -- no rendered/null/purist/routed numbers of its own; those are produced via deep-replay in gan2026_test450_phase4_comparison_report_gpt41mini_2026-06-10.
+- Artifacts: `experiments/gan2026_test450_phase4_frozen_audit_hybrid_gpt41mini_2026-06-09.jsonl`, `experiments/gan2026_test450_phase4_frozen_audit_hybrid_gpt41mini_2026-06-09.md`, `experiments/gan2026_test450_phase4_hybrid_gpt41mini_2026-06-09_stdout.txt`, `experiments/gan2026_test450_phase4_hybrid_gpt41mini_2026-06-09_stderr.txt`.
+
+### `gan2026_test450_phase4_frozen_audit_deterministic_canonical_pipeline_gpt41mini_2026-06-09`
+- Date/split: `2026-06-09`; `test`; `450` rows.
+- Pipeline: `deterministic_canonical_pipeline`; mode `deterministic`; replay `native_run_split`.
+- Model role: Deterministic canonical-pipeline baseline; no model calls.; model `none`.
+- Primary metrics: pragmatic_accuracy=0.7578, pragmatic_correct=341, purist_accuracy=0.7311, purist_correct=329, rows=450.
+- Evidence validity: evidence_valid (free-text substring presence) reported per row.
+- Claim language: Phase 4 frozen test450 aggregate audit (authorized 2026-06-09, plan Section 6) -- deterministic_canonical_pipeline over the locked test450 split. Fully deterministic pipeline, no live model calls (gpt41mini in the filename reflects the comparison cohort label, not a model dependency). One-shot frozen aggregate read; no row-level tuning, no re-runs based on results.
+- Artifacts: `experiments/gan2026_test450_phase4_frozen_audit_deterministic_canonical_pipeline_gpt41mini_2026-06-09.jsonl`, `experiments/gan2026_test450_phase4_frozen_audit_deterministic_canonical_pipeline_gpt41mini_2026-06-09.md`.
+
+## Inform Phase4
+
+### `exectv2_hybrid_dev140_qwen3635b_20260611`
+- Date/split: `2026-06-11`; `dev`; `140` rows.
+- Pipeline: `exectv2_hybrid`; mode `live`; replay `native_run_split`.
+- Model role: ExECTv2 hybrid candidate-set + clinical-assessment extractor (deterministic candidates -> LLM keep/route/attribute -> deterministic normalize, SeizureFrequency only).; model `ollama_chat/qwen3.6:35b`.
+- Primary metrics: call_failures=0, candidates_offered=639, mentions_kept=313, mentions_routed=45, mentions_scored=235, parse_failures=1, phrase_only_per_item_f1=0.498, phrase_only_per_letter_f1=0.73, prompt_version=exectv2_hybrid_candidate_assessment_v0.2, sf_benchmark_per_item_f1=0.228, sf_benchmark_per_letter_f1=0.451, sf_semantic_per_item_f1=0.228, sf_semantic_per_letter_f1=0.451.
+- Evidence validity: evidence_is_substring (exact source-text substring check); routing taxonomy {no_frequency_attributes:25, bare_nonzero_count:13, empty_evidence:5, evidence_not_substring:2}.
+- Supersedes: `exectv2_hybrid_dev50partial_qwen3635b_20260611`.
+- Claim language: ExECTv2 Phase 4 - hybrid (candidate + assessment) full dev run (140 letters, D16 gold, SeizureFrequency only), qwen3.6:35b. Completed by RESUMING from a 50/140 checkpoint after a power interruption (core.run_resume; n_resumed=50) - no work re-spent. phrase_only per-item F1 0.498, per-letter 0.730 - below gpt-4.1-mini hybrid (0.585/0.781) but above the deterministic baseline per-letter (0.604) and the qwen LLM-only per_entity (0.642). sf_semantic == sf_benchmark per-item 0.228, per-letter 0.451 - below gpt hybrid (0.327/0.578) and deterministic (0.362/0.575), far above qwen LLM-only (0.036/0.104). 639 candidates offered, 313 kept by LLM, 235 scored, 45 routed; 0 call failures, 1 parse failure (one max_tokens=3000 truncation). gpt-4.1-mini > qwen on hybrid, mirroring the LLM-only result.
+- Artifacts: `experiments/exectv2_hybrid_v02_dev140_qwen3635b_20260611.jsonl`, `experiments/exectv2_hybrid_v02_dev140_qwen3635b_20260611.md`.
+
+### `exectv2_hybrid_dev140_gpt41mini_20260611`
+- Date/split: `2026-06-11`; `dev`; `140` rows.
+- Pipeline: `exectv2_hybrid`; mode `live`; replay `native_run_split`.
+- Model role: ExECTv2 hybrid candidate-set + clinical-assessment extractor (deterministic candidates -> LLM keep/route/attribute -> deterministic normalize, SeizureFrequency only).; model `openai/gpt-4.1-mini`.
+- Primary metrics: call_failures=0, candidates_offered=639, mentions_kept=288, mentions_routed=37, mentions_scored=247, parse_failures=0, phrase_only_per_item_f1=0.585, phrase_only_per_letter_f1=0.781, prompt_version=exectv2_hybrid_candidate_assessment_v0.2, sf_benchmark_per_item_f1=0.327, sf_benchmark_per_letter_f1=0.578, sf_semantic_per_item_f1=0.327, sf_semantic_per_letter_f1=0.578.
+- Evidence validity: evidence_is_substring (exact source-text substring check); routing taxonomy {no_frequency_attributes:7, bare_nonzero_count:29, evidence_not_substring:1}.
+- Claim language: ExECTv2 Phase 4 - hybrid (candidate + assessment) full dev run (140 letters, D16 gold, SeizureFrequency only). phrase_only per-item F1 0.585, per-letter 0.781 - best phrase recall of any family and the only architecture whose per-letter clears the SF benchmark target 0.68. sf_semantic == sf_benchmark per-item 0.327, per-letter 0.578 - best attribute-aware per-letter of any architecture (above deterministic 0.575 and far above LLM-only), marginally below deterministic on per-item (0.362). 639 candidates offered, 288 kept by LLM, 247 scored, 37 routed; 0 call/parse failures.
+- Artifacts: `experiments/exectv2_hybrid_v02_dev140_gpt41mini_20260611.jsonl`, `experiments/exectv2_hybrid_v02_dev140_gpt41mini_20260611.md`.
+
+### `exectv2_llm_only_single_pass_dev140_qwen3635b_20260610`
+- Date/split: `2026-06-10`; `dev`; `140` rows.
+- Pipeline: `exectv2_llm_only_single_pass`; mode `live`; replay `native_run_split`.
+- Model role: ExECTv2 LLM-only single-pass extractor (one call per letter, all SF mentions + attributes + evidence).; model `ollama_chat/qwen3.6:35b`.
+- Primary metrics: call_failures=0, evidence_validity_rate=0.945, mentions_scored=189, mentions_total=200, parse_failures=2, phrase_only_per_item_f1=0.383, phrase_only_per_letter_f1=0.623, prompt_version=exectv2_llm_only_single_pass_v0.2, sf_benchmark_per_item_f1=0.0, sf_benchmark_per_letter_f1=0.0, sf_semantic_per_item_f1=0.09, sf_semantic_per_letter_f1=0.213.
+- Evidence validity: evidence_is_substring; 189/200 valid, 11 dropped.
+- Claim language: ExECTv2 Phase 3 — qwen3.6:35b single_pass dev140. phrase_only per-letter 0.623 (below gpt-4.1-mini 0.701 by 11%). sf_semantic per-letter 0.213 (above gpt-4.1-mini 0.197 by 8%). 2 parse failures. 94.5% evidence validity. sf_benchmark 0.000 (CUI D3).
+- Artifacts: `experiments/exectv2_llm_only_single_pass_dev140_qwen3635b_20260610.jsonl`, `experiments/exectv2_llm_only_single_pass_dev140_qwen3635b_20260610.md`.
+
+### `exectv2_llm_only_single_pass_dev140_gpt41mini_20260610`
+- Date/split: `2026-06-10`; `dev`; `140` rows.
+- Pipeline: `exectv2_llm_only_single_pass`; mode `live`; replay `native_run_split`.
+- Model role: ExECTv2 LLM-only single-pass extractor (one call per letter, all SF mentions + attributes + evidence).; model `openai/gpt-4.1-mini`.
+- Primary metrics: call_failures=0, evidence_validity_rate=0.9749, mentions_scored=195, mentions_total=199, parse_failures=0, phrase_only_per_item_f1=0.466, phrase_only_per_letter_f1=0.701, prompt_version=exectv2_llm_only_single_pass_v0.2, sf_benchmark_per_item_f1=0.0, sf_benchmark_per_letter_f1=0.0, sf_semantic_per_item_f1=0.094, sf_semantic_per_letter_f1=0.197.
+- Evidence validity: evidence_is_substring (exact source-text substring check); 195/199 valid, 4 dropped.
+- Claim language: ExECTv2 Phase 3 — LLM-only single-pass full dev run (140 letters, D16 gold, SeizureFrequency only). phrase_only per-item F1 0.466, per-letter 0.701 (exceeds SF benchmark target 0.68). sf_semantic near-zero (attribute-convention mismatch). sf_benchmark 0.000 (CUI lookup is shared post-step D3). Deterministic baseline: phrase_only 0.382/0.604.
+- Artifacts: `experiments/exectv2_llm_only_single_pass_dev140_gpt41mini_20260610.jsonl`, `experiments/exectv2_llm_only_single_pass_dev140_gpt41mini_20260610.md`.
+
+### `exectv2_llm_only_per_entity_dev140_qwen3635b_20260610`
+- Date/split: `2026-06-10`; `dev`; `140` rows.
+- Pipeline: `exectv2_llm_only_per_entity`; mode `live`; replay `native_run_split`.
+- Model role: ExECTv2 LLM-only per-entity extractor (one focused call per entity type per letter, SF only).; model `ollama_chat/qwen3.6:35b`.
+- Primary metrics: call_failures=0, evidence_validity_rate=0.961, mentions_scored=197, mentions_total=205, parse_failures=0, phrase_only_per_item_f1=0.401, phrase_only_per_letter_f1=0.642, prompt_version=exectv2_llm_only_per_entity_v0.2, sf_benchmark_per_item_f1=0.0, sf_benchmark_per_letter_f1=0.0, sf_semantic_per_item_f1=0.036, sf_semantic_per_letter_f1=0.104.
+- Evidence validity: evidence_is_substring; 197/205 valid, 8 dropped.
+- Claim language: ExECTv2 Phase 3 — qwen3.6:35b per_entity dev140. phrase_only per-letter 0.642 (below gpt-4.1-mini 0.698 by 8%). sf_semantic per-item 0.036, per-letter 0.104 — dramatically worse than gpt-4.1-mini per_entity (0.135/0.264). Unlike gpt-4.1-mini, qwen does NOT benefit from focused per_entity prompt for attributes; sf_semantic is even worse than qwen single_pass (0.090/0.213). 0 parse failures, 96.1% evidence validity. sf_benchmark 0.000 (CUI D3).
+- Artifacts: `experiments/exectv2_llm_only_per_entity_dev140_qwen3635b_20260610.jsonl`, `experiments/exectv2_llm_only_per_entity_dev140_qwen3635b_20260610.md`.
+
+### `exectv2_llm_only_per_entity_dev140_gpt41mini_20260610`
+- Date/split: `2026-06-10`; `dev`; `140` rows.
+- Pipeline: `exectv2_llm_only_per_entity`; mode `live`; replay `native_run_split`.
+- Model role: ExECTv2 LLM-only per-entity extractor (one focused call per entity type per letter, SF only).; model `openai/gpt-4.1-mini`.
+- Primary metrics: call_failures=0, evidence_validity_rate=0.9632, mentions_scored=183, mentions_total=190, parse_failures=0, phrase_only_per_item_f1=0.486, phrase_only_per_letter_f1=0.698, prompt_version=exectv2_llm_only_per_entity_v0.1, sf_benchmark_per_item_f1=0.0, sf_benchmark_per_letter_f1=0.0, sf_semantic_per_item_f1=0.135, sf_semantic_per_letter_f1=0.264.
+- Evidence validity: evidence_is_substring (exact source-text substring check); 183/190 valid, 7 dropped.
+- Claim language: ExECTv2 Phase 3 — LLM-only per-entity full dev run (140 letters, D16 gold, SeizureFrequency only). phrase_only per-item F1 0.486, per-letter 0.698 (exceeds SF benchmark target 0.68). sf_semantic 0.135/0.264 — 44% better than single_pass per-item (0.094), 34% better per-letter (0.197). sf_benchmark 0.000 (CUI D3). Best LLM-only config for attribute matching. Deterministic baseline: phrase_only 0.382/0.604.
+- Artifacts: `experiments/exectv2_llm_only_per_entity_dev140_gpt41mini_20260610.jsonl`, `experiments/exectv2_llm_only_per_entity_dev140_gpt41mini_20260610.md`.
+
+## Phase3 Complete Gpt41Mini
+
+### `gan2026_three_way_comparison_phase3_report_gpt41mini_validation750_2026-06-09`
+- Date/split: `2026-06-09`; `validation`; `750` rows.
+- Pipeline: `three_way_comparison_phase3_report`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Analysis-only synthesis: reads Phase 2 deterministic/DCP artifacts, Phase 3 hybrid v5 artifact (with deep-replay for rendered/null/purist/routed numbers), Phase 3 DL v0.5 / CP v0.5 artifacts, Phase 1 SE artifact; assembles shared comparison table plus hybrid-only routing appendix; makes no hosted LLM calls of its own.; model `openai/gpt-4.1-mini`.
+- Primary metrics: architectures_compared=6, deterministic_canonical_pipeline_purist_correct_of_rendered=673, deterministic_purist_correct_of_rendered=673, hybrid_purist_correct_of_rendered=526, hybrid_purist_rate=0.881, hybrid_rendered_rows=597, hybrid_structured_events_purist_correct_of_rendered=661, llm_only_canonical_pipeline_purist_correct_of_rendered=582, llm_only_direct_labeler_purist_correct_of_rendered=575, rows_per_architecture=750.
+- Evidence validity: Surfaces, but does not collapse, that evidence-trace metrics are NOT uniform across architectures: four report evidence_valid (substring presence), llm_only_canonical_pipeline reports evidence_text_contained, hybrid reports CandidateSet source-id validity rate.
+- Supersedes: `gan2026_three_way_comparison_phase2_report_cluster_diary_digit_validation750_2026-06-09`.
+- Claim language: Phase 3 three-way architecture comparison report (validation750, gpt-4.1-mini). Deterministic/DCP from Phase 2 iteration 2 (digit-only de-overfitting); hybrid from v5 run (FM-2/FM-5b/FM-6 prompt fixes); DL v0.5 / CP v0.5 from Phase 3 LLM-only runs; SE from Phase 1 (no SE-specific Phase 3 changes). Key Phase 3 vs Phase 2 delta for hybrid (gpt-4.1-mini): 597 rendered vs 589 (+8 more rendered), 526/597 purist = 88.1% vs 500/589 = 84.9% (+3.2pp); 545/597 pragmatic = 91.3%. hybrid_structured_events leads purist at 661/748=88.4%. deterministic/DCP ceiling: 673/741=90.8%. No test450 read; no holdout-facing claim.
+- Artifacts: `experiments/gan2026_three_way_comparison_phase3_report_gpt41mini_validation750_2026-06-09.jsonl`, `experiments/gan2026_three_way_comparison_phase3_report_gpt41mini_validation750_2026-06-09.json`, `experiments/gan2026_three_way_comparison_phase3_report_gpt41mini_validation750_2026-06-09.md`.
+
+## Inform Phase3
+
+### `gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09`
+- Date/split: `2026-06-09`; `validation`; `750` rows.
+- Pipeline: `three_way_comparison_phase1_report`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Analysis-only synthesis -- reads completed validation750 run artifacts; assembles shared comparison table plus hybrid-only routing appendix; makes no hosted LLM calls.; model `ollama_chat/qwen3.6:35b`.
+- Primary metrics: architectures_compared=6, deterministic_canonical_pipeline_purist_correct_of_rendered=688, deterministic_purist_correct_of_rendered=688, hybrid_purist_correct_of_rendered=291, hybrid_rendered_rows=400, hybrid_structured_events_purist_correct_of_rendered=624, llm_only_canonical_pipeline_purist_correct_of_rendered=544, llm_only_direct_labeler_purist_correct_of_rendered=550, rows_per_architecture=750.
+- Evidence validity: Surfaces, but does not collapse, the fact that evidence-trace metrics are NOT uniform across architectures.
+- Supersedes: `gan2026_three_way_comparison_phase1_report_qwen3635b_validation750_2026-06-09`.
+- Claim language: Phase 1 three-way architecture comparison, ollama_chat/qwen3.6:35b pass, validation750 only (gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07 Section 3 + Section 8b). Full 750-row surface: hybrid now uses the live-wired candidate-set generation (section 8a) merged from the resume-part into the 2026-06-08 file; 0 candidate_set_missing rows. Supersedes the interim 250-row-scoped hybrid report (gan2026_three_way_comparison_phase1_report_qwen3635b_validation750_2026-06-09). Key findings: hybrid_structured_events leads at 624/746 (0.836); hybrid renders only 400/750 rows (much lower surface than gpt-4.1-mini 589/750 or deepseek 604/750), with 62 routed (15.5%); llm_only_direct_labeler and llm_only_canonical_pipeline nearly tied (550/749=0.734 vs 544/748=0.727). Closes Section 8b.
+- Artifacts: `experiments/gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09.jsonl`, `experiments/gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09.json`, `experiments/gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09.md`.
+
+### `gan2026_phase3_error_analysis_2026-06-09`
+- Date/split: `2026-06-09`; `validation`; `750` rows.
+- Pipeline: `three_way_comparison_phase3_error_analysis`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Error analysis and failure taxonomy for Phase 3 prompt engineering; model `none`.
+- Primary metrics: architectures_analysed=4, cp_failures=169, cp_rule_fire_failure_rate_max=0.426, dl_failures=186, hybrid_failures=88, named_failure_modes=8, se_failures=89, universal_failures=20.
+- Evidence validity: Analysis draws directly from Phase 1 validation750 JSONL artifacts; row-by-row tables verified against source prediction and gold records.
+- Claim language: Phase 3 error analysis: row-by-row + thematic failure catalogue over Phase 1 validation750 results for four architectures (gpt-4.1-mini). Documents 8 named failure modes (FM-1 through FM-8) across 532 total failures. Critical finding: four highest-failure-rate CP rules (seizure_free_conflict 42.6%, same_window_additive_frequency 34.7%, denominator_window_mismatch 30.3%, concrete_frequency_precedence 27.8%) account for 143/169 CP failures where a rule was cited — model cites rule then violates it. 20 universal failures (all 4 architectures). Priority ranking: FM-2 seizure-free FP (97) > FM-1 denominator window (~66 LLM-improvable) > FM-3 unknown FP (132) > FM-6 highest-type selection (~25 universal). Input to Phase 3 prompt-engineering decisions.
+- Artifacts: `docs/research/gan2026_phase3_error_analysis_2026-06-09.md`.
+
+### `gan2026_cross_model_comparison_2026-06-09`
+- Date/split: `2026-06-09`; `validation`; `750` rows.
+- Pipeline: `cross_model_comparison`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Cross-model synthesis document -- no model calls; reads existing Phase 1 artifacts and computed failure breakdowns.; model `none`.
+- Primary metrics: architectures_compared=6, deepseek_dl_sf_false_pos=56, deepseek_hybrid_rendered=604, deepseek_se_purist_rate=0.821, gpt41mini_dl_unknown_false_pos=59, gpt41mini_hybrid_rendered=589, gpt41mini_se_purist_rate=0.884, models_compared=3, qwen_dl_unknown_false_pos=91, qwen_hybrid_rendered=400, qwen_se_purist_rate=0.836.
+- Evidence validity: Derived from Phase 1 per-row JSONL comparison fields for DL, CP, SE; aggregate numbers from Phase 1 report JSONLs for hybrid and all architectures.
+- Claim language: Cross-model synthesis comparing all three Phase 1 models (gpt-4.1-mini, deepseek-v4-flash, qwen3.6-35b) across all six architecture configurations on validation750. Includes per-row failure category breakdowns for DL, CP, SE (hybrid row-level data not available for deepseek/qwen without deep-replay extraction). Key findings: (1) SE is consistently best across models but gpt-4.1-mini leads by 5-6pp; (2) qwen dominant failure is unknown_false_pos (91 DL vs 59 gpt-4.1-mini) -- reverse of deepseek (highest seizure_free_false_pos: 56 DL); (3) CP guidance block helps gpt-4.1-mini (+2.3pp) but harms qwen (-0.7pp); (4) FM-6 drop-attack selection is gpt-4.1-mini-specific -- qwen and deepseek already correct; (5) qwen hybrid renders only 400/750 rows vs 589/604 for gpt/deepseek; (6) deepseek hybrid routing dominated by rendered_label_supported_but_policy_sensitive (97/123) driven by its SF over-confidence.
+- Artifacts: `docs/research/gan2026_cross_model_comparison_2026-06-09.md`.
+
 ## Historical
+
+### `exectv2_audit_llm_only_all_entities_full200_gpt41mini_20260612`
+- Date/split: `2026-06-12`; `full200_overall_audit`; `200` rows.
+- Pipeline: `exectv2_llm_only_all_entities`; mode `live`; replay `live`.
+- Model role: ExECTv2 Phase 7 frozen full-200 overall all-entity LLM-only audit.; model `openai/gpt-4.1-mini`.
+- Primary metrics: authorization=full-200 overall read authorized by user 2026-06-12 (Phase 6/7), benchmark_per_item_ci=[0.0, 0.0], benchmark_per_item_f1=0.0, benchmark_per_letter_ci=[0.0, 0.0], benchmark_per_letter_f1=0.0, call_failures=0, evidence_validity_rate=0.9323, git_head=8d7ecfbc101f+dirty, mentions_raw=1492, mentions_scored=1391, parse_failures=0, phrase_only_per_item_f1=0.147, phrase_only_per_letter_f1=0.362, prompt_version=exectv2_llm_only_all_entities_v0.1, semantic_per_item_ci=[0.0711, 0.0985], semantic_per_item_f1=0.0844, semantic_per_letter_ci=[0.2007, 0.2632], semantic_per_letter_f1=0.2317.
+- Evidence validity: frozen audit; exact substring evidence gate recorded in report.
+- Claim language: Phase 7 frozen overall all-entity audit. Semantic overall F1 0.084/0.232; benchmark with-CUI F1 0.000/0.000; locked at git 8d7ecfbc101f+dirty.
+- Artifacts: `experiments/exectv2_audit_llm_only_all_entities_full200_gpt41mini_20260612.jsonl`, `experiments/exectv2_audit_llm_only_all_entities_full200_gpt41mini_20260612.md`.
+
+### `exectv2_audit_rules_full200_modelindependent_20260611`
+- Date/split: `2026-06-11`; `full200_audit`; `200` rows.
+- Pipeline: `exectv2_deterministic`; mode `deterministic`; replay `analysis_only`.
+- Model role: ExECTv2 Phase 7 frozen full-200 SF audit (rules).; model `(model-independent)`.
+- Primary metrics: authorization=full-200 read authorized by user 2026-06-11 (Phase 7), call_failures=0, git_head=ab0d8d5cb7aa, parse_failures=0, phrase_only_per_item_f1=0.4725, phrase_only_per_letter_f1=0.6756, prompt_version=n/a (deterministic rules), sf_benchmark_per_item_ci=[0.2538, 0.3879], sf_benchmark_per_item_f1=0.3211, sf_benchmark_per_letter_ci=[0.451, 0.6184], sf_benchmark_per_letter_f1=0.5392, sf_semantic_per_item_f1=0.3211, sf_semantic_per_letter_f1=0.5392.
+- Evidence validity: frozen audit; gates recorded in the audit report.
+- Claim language: Phase 7 frozen SF audit over all 200 letters (authorized 2026-06-11). Headline sf_benchmark per-item F1 0.321 (CI 0.254-0.388), per-letter F1 0.539 (CI 0.451-0.618) vs published 0.66/0.68. Immutable; locked at git ab0d8d5cb7aa.
+- Artifacts: `experiments/exectv2_audit_rules_full200_modelindependent_20260611.md`, `experiments/exectv2_audit_rules_full200_modelindependent_20260611.jsonl`.
+
+### `exectv2_audit_llm_only_per_entity_full200_gpt41mini_20260611`
+- Date/split: `2026-06-11`; `full200_audit`; `200` rows.
+- Pipeline: `exectv2_llm_only_per_entity`; mode `live`; replay `live`.
+- Model role: ExECTv2 Phase 7 frozen full-200 SF audit (llm_only_per_entity/per_entity).; model `openai/gpt-4.1-mini`.
+- Primary metrics: authorization=full-200 read authorized by user 2026-06-11 (Phase 7), call_failures=0, git_head=ab0d8d5cb7aa, parse_failures=0, phrase_only_per_item_f1=0.4627, phrase_only_per_letter_f1=0.6766, prompt_version=exectv2_llm_only_per_entity_v0.2, sf_benchmark_per_item_ci=[0.0, 0.0], sf_benchmark_per_item_f1=0.0, sf_benchmark_per_letter_ci=[0.0, 0.0], sf_benchmark_per_letter_f1=0.0, sf_semantic_per_item_f1=0.1216, sf_semantic_per_letter_f1=0.2463.
+- Evidence validity: frozen audit; gates recorded in the audit report.
+- Claim language: Phase 7 frozen SF audit over all 200 letters (authorized 2026-06-11). Headline sf_benchmark per-item F1 0.000 (CI 0.000-0.000), per-letter F1 0.000 (CI 0.000-0.000) vs published 0.66/0.68. Immutable; locked at git ab0d8d5cb7aa.
+- Artifacts: `experiments/exectv2_audit_llm_only_per_entity_full200_gpt41mini_20260611.md`, `experiments/exectv2_audit_llm_only_per_entity_full200_gpt41mini_20260611.jsonl`.
+
+### `exectv2_audit_hybrid_full200_gpt41mini_20260611`
+- Date/split: `2026-06-11`; `full200_audit`; `200` rows.
+- Pipeline: `exectv2_hybrid`; mode `live`; replay `live`.
+- Model role: ExECTv2 Phase 7 frozen full-200 SF audit (hybrid).; model `openai/gpt-4.1-mini`.
+- Primary metrics: authorization=full-200 read authorized by user 2026-06-11 (Phase 7), call_failures=0, git_head=ab0d8d5cb7aa, parse_failures=0, phrase_only_per_item_f1=0.5482, phrase_only_per_letter_f1=0.7778, prompt_version=exectv2_hybrid_candidate_assessment_v0.2, sf_benchmark_per_item_ci=[0.1924, 0.3008], sf_benchmark_per_item_f1=0.2458, sf_benchmark_per_letter_ci=[0.3874, 0.5462], sf_benchmark_per_letter_f1=0.4696, sf_semantic_per_item_f1=0.2458, sf_semantic_per_letter_f1=0.4696.
+- Evidence validity: frozen audit; gates recorded in the audit report.
+- Claim language: Phase 7 frozen SF audit over all 200 letters (authorized 2026-06-11). Headline sf_benchmark per-item F1 0.246 (CI 0.192-0.301), per-letter F1 0.470 (CI 0.387-0.546) vs published 0.66/0.68. Immutable; locked at git ab0d8d5cb7aa.
+- Artifacts: `experiments/exectv2_audit_hybrid_full200_gpt41mini_20260611.md`, `experiments/exectv2_audit_hybrid_full200_gpt41mini_20260611.jsonl`.
 
 ### `gan2026_llm_heavy_clinical_frequency_reasoner_v1_validation50_live_2026-06-02`
 - Date/split: `2026-06-02`; `validation`; `50` rows.

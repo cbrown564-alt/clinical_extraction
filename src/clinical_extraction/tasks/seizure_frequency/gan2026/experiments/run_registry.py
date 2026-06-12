@@ -10,25 +10,57 @@ from typing import Any, Literal, cast
 
 RunDecision = Literal[
     "promote",
+    "promote_to_phase3_report",
+    "promote_hybrid_structured_events_direction",
     "revise",
     "reject",
+    "inform_phase3",
+    "phase3_complete_gpt41mini",
+    "inform_phase4",
+    "phase4_complete",
+    "inform_phase7",
     "superseded",
     "historical",
 ]
 
 ReplayStatus = Literal[
     "live",
+    "native_run_split",
     "cache_first",
     "schema_replay",
     "saved_output_replay",
+    "assessment_stage_only",
     "analysis_only",
 ]
 
+MetricValue = int | float | str | None | list[int | float | str | None]
+
 RUN_DECISIONS: frozenset[RunDecision] = frozenset(
-    ("promote", "revise", "reject", "superseded", "historical")
+    (
+        "promote",
+        "promote_to_phase3_report",
+        "promote_hybrid_structured_events_direction",
+        "revise",
+        "reject",
+        "inform_phase3",
+        "phase3_complete_gpt41mini",
+        "inform_phase4",
+        "phase4_complete",
+        "inform_phase7",
+        "superseded",
+        "historical",
+    )
 )
 REPLAY_STATUSES: frozenset[ReplayStatus] = frozenset(
-    ("live", "cache_first", "schema_replay", "saved_output_replay", "analysis_only")
+    (
+        "live",
+        "native_run_split",
+        "cache_first",
+        "schema_replay",
+        "saved_output_replay",
+        "assessment_stage_only",
+        "analysis_only",
+    )
 )
 
 
@@ -47,7 +79,7 @@ class RunRegistryEntry:
     mode: str
     replay_status: ReplayStatus
     decision: RunDecision
-    primary_metrics: Mapping[str, int | float | str | None] = field(default_factory=dict)
+    primary_metrics: Mapping[str, MetricValue] = field(default_factory=dict)
     repair_mode: str | None = None
     cache_reuse_source: str | None = None
     evidence_validity: str | None = None
@@ -235,17 +267,28 @@ def _string_tuple(value: Any, *, field_name: str) -> tuple[str, ...]:
     return tuple(value)
 
 
-def _metrics(value: Any) -> Mapping[str, int | float | str | None]:
+def _metrics(value: Any) -> Mapping[str, MetricValue]:
     if not isinstance(value, Mapping):
         raise ValueError("primary_metrics must be an object")
-    parsed: dict[str, int | float | str | None] = {}
+    parsed: dict[str, MetricValue] = {}
     for key, metric in value.items():
         if not isinstance(key, str):
             raise ValueError("primary_metrics keys must be strings")
-        if metric is not None and not isinstance(metric, int | float | str):
-            raise ValueError("primary_metrics values must be strings, numbers, or null")
+        if not _is_metric_value(metric):
+            raise ValueError(
+                "primary_metrics values must be strings, numbers, null, "
+                "or flat lists of those values"
+            )
         parsed[key] = metric
     return parsed
+
+
+def _is_metric_value(value: Any) -> bool:
+    if value is None or isinstance(value, int | float | str):
+        return True
+    if isinstance(value, list):
+        return all(item is None or isinstance(item, int | float | str) for item in value)
+    return False
 
 
 def render_run_registry_markdown(entries: Sequence[RunRegistryEntry]) -> str:
