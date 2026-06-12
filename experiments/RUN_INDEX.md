@@ -60,6 +60,17 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Claim language: Planning artifact only. Does not authorize new holdout use, test-row inspection, or benchmark-facing claims. Establishes that multi-agent claims must be compared against single-agent self-consistency under matched model-call, token, tool-call, and aggregation budgets.
 - Artifacts: `docs/research/gan2026_agentic_pipeline_phase_plan_2026-06-12.md`.
 
+### `gan2026_agentic_matched_budget_validation25_single_agent_live_prompt_v1_post_vote_2026-06-12`
+- Date/split: `2026-06-12`; `validation`; `25` rows.
+- Pipeline: `agentic_matched_budget`; mode `live`; replay `native_run_split`.
+- Model role: Gan Phase 6 validation25 post-voting live single-agent comparison restricted to single_greedy, single_self_consistency_temperature, and single_agent_tools; cross-model and multi-agent conditions intentionally skipped until the single-agent comparator is stable.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `direct-label parser/schema repair + deterministic normalized-label vote`.
+- Primary metrics: call_failures=0, condition_disagreement_rows=5, conditions=3, decision_records=150, holdout_authorized=no, model_calls_attempted=150, normalized_label_vote_repairs=70, parse_or_validation_failures=0, pragmatic_correct_call_level=150, prediction_bearing_rows=25, purist_correct_call_level=150, row187_status=scoring_equivalent_disagreement, row_final_pragmatic_correct=25, row_final_purist_correct=25, rows=25, single_agent_tools_purist_correct=25, single_greedy_purist_correct=25, single_self_consistency_temperature_purist_correct=25, tool_smoke_calls=52.
+- Evidence validity: Prediction-bearing validation development smoke: 150/150 decision records, 0 call failures, 0 blocking parse/validation failures, 52 parser/guide tool smoke calls, 70 normalized-label vote repairs, and no holdout use.
+- Supersedes: `gan2026_agentic_matched_budget_validation25_single_agent_live_2026-06-12`.
+- Claim language: Validation development result only, not a benchmark claim. Deterministic normalized-label voting stabilizes all three active single-agent condition finals at 25/25 Purist/Pragmatic with no call or blocking parse failures. Five condition-label disagreements remain scoring-equivalent; row 187 remains 1 per 7 to 9 day versus 2 per month. This clears the planned single-agent comparator gate before spending matched multi_agent_matched calls.
+- Artifacts: `experiments/gan2026_agentic_matched_budget_validation25_single_agent_live_prompt_v1_post_vote_2026-06-12.jsonl`, `experiments/gan2026_agentic_matched_budget_validation25_single_agent_live_prompt_v1_post_vote_2026-06-12.md`.
+
 ### `gan2026_agentic_matched_budget_validation25_single_agent_live_2026-06-12`
 - Date/split: `2026-06-12`; `validation`; `25` rows.
 - Pipeline: `agentic_matched_budget`; mode `live`; replay `native_run_split`.
