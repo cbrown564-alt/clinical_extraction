@@ -16,18 +16,13 @@ docs: `docs/research/gan2026_closeoff_report_2026-06-12.md` and
 - `hybrid_structured_events` remains the close-off candidate: GPT-4.1-mini
   validation750 `661/748` Purist rendered-correct; frozen `test450` aggregate
   audit `364/448` Purist and `381/448` Pragmatic rendered-correct.
-- User-approved SE v0.6 validation750 confirmations completed: DeepSeek
-  `622/745` Purist and Qwen `638/746` Purist; validation-only evidence.
-- Agentic Phase 6 is now live on validation development surfaces. The
-  validation25 single-agent run used condition filtering to skip cross-model and
-  multi-agent calls: `150/150` decision records, `0` call failures, `0` blocking
-  parse failures. Condition-final Purist: `single_greedy 24/25`,
-  `single_self_consistency_temperature 25/25`, `single_agent_tools 24/25`.
-- The validation25 format-repair review found underscore-separated labels and a
-  bare selected-evidence rate gap behind rows `10`, `278`, and `419`. No-call
-  diagnostic reparse now aligns all three active single-agent conditions on
-  those rows and gives row-final `25/25` Purist/Pragmatic under the parser
-  replay; live prompt v1 smoke is still required.
+- Agentic Phase 6 prompt-v1 validation25 single-agent live smoke is complete:
+  `150/150` decision records, `0` call failures, `0` blocking parse/validation
+  failures, and all three active single-agent conditions at `25/25`
+  Purist/Pragmatic condition-final accuracy. The former repair rows `10`,
+  `278`, and `419` now align across conditions; row `187` still has a
+  non-blocking label disagreement (`1 per 7 to 9 day` versus `2 per month`) that
+  scores correct under current mapping.
 - ExECTv2 Phase 6/7 is complete and parked; all-entity LLM-only full-200
   semantic F1 was `0.084` per-item / `0.232` per-letter.
 
@@ -46,10 +41,10 @@ docs: `docs/research/gan2026_closeoff_report_2026-06-12.md` and
 
 ## Active Priorities
 
-1. Re-run validation25 single-agent live smoke under agentic prompt v1 and the
-   updated repair contract.
-2. Add deterministic normalized-label voting once the live v1 single-agent
-   comparator is stable.
+1. Add deterministic normalized-label voting now that the live prompt-v1
+   single-agent comparator is stable on validation25.
+2. Re-run validation25 single-agent smoke with deterministic voting and compare
+   row `187` plus any vote/repair attribution changes.
 3. Run `multi_agent_matched` only after the single-agent comparator and
    aggregation/repair policy are stable.
 
@@ -57,15 +52,13 @@ docs: `docs/research/gan2026_closeoff_report_2026-06-12.md` and
 
 ### Now
 
-- Re-run validation25 single-agent smoke under
-  `gan2026_agentic_matched_budget_prompt_v1` and confirm call failures,
-  parse/repair notes, condition-final accuracy, and any remaining disagreement
-  rows.
+- Add deterministic normalized-label voting to `agentic_matched_budget` and keep
+  repair attribution explicit.
 
 ### Next
 
-- Add deterministic normalized-label voting once live repair attribution is
-  clean.
+- Re-run validation25 single-agent smoke after voting; compare row `187` and
+  any vote/repair attribution changes against the prompt-v1 live artifact.
 - Compare `multi_agent_matched` only after the single-agent comparator uses the
   same model-call, token, tool-call, and aggregation budget.
 - Produce a compact failure-mode table for `hybrid_structured_events` versus
@@ -86,23 +79,23 @@ docs: `docs/research/gan2026_closeoff_report_2026-06-12.md` and
 
 ### Done Recently
 
-- 2026-06-12: Analyzed validation25 agentic direct-label repair families and
-  rows `10`, `278`, `419`; added underscore-label format repair, bare
-  selected-evidence rate parsing, and agentic prompt v1. No-call diagnostic
-  reparse of the saved raw outputs resolves the `3` condition-final
-  disagreement rows and changes preferred row-final replay from `24/25` to
-  `25/25` Purist/Pragmatic.
-- 2026-06-12: Added agentic condition filtering and ran validation25
-  single-agent live smoke:
-  `experiments/gan2026_agentic_matched_budget_validation25_single_agent_live_2026-06-12`
-  (`150` calls, `150` decision records, `0` call failures, `0` blocking parse
-  failures; condition-final Purist `24/25`, `25/25`, `24/25`).
-- 2026-06-12: Added live-call execution to `agentic_matched_budget` and saved
-  validation1 all-condition transport smoke (`14` calls, `0` failures).
-- 2026-06-12: Added Phase 6 prompt-only runner and validation25 no-call smoke;
-  Phase 5 contracts and phase plan are complete.
+- 2026-06-12: Re-ran validation25 single-agent live smoke under
+  `gan2026_agentic_matched_budget_prompt_v1`:
+  `experiments/gan2026_agentic_matched_budget_validation25_single_agent_live_prompt_v1_2026-06-12.md`.
+  Result: `150` calls attempted, `150` decision records, `0` call failures,
+  `0` blocking parse/validation failures, `93` non-blocking direct-label repair
+  notes, and condition-final Purist/Pragmatic `25/25` for `single_greedy`,
+  `single_self_consistency_temperature`, and `single_agent_tools`. Rows `10`,
+  `278`, and `419` now align; row `187` remains a scoring-equivalent label
+  disagreement.
+- 2026-06-12: Added agentic live-call execution, condition filtering, prompt v1,
+  underscore-label repair, bare selected-evidence rate parsing, and no-call
+  repair analysis for rows `10`, `278`, and `419`; prior prompt-v0 live smoke
+  was `150` calls, `0` failures, condition-final Purist `24/25`, `25/25`,
+  `24/25`.
 - 2026-06-12: Completed Gan close-off synthesis and SE v0.6 validation750
-  DeepSeek/Qwen confirmations.
+  DeepSeek/Qwen confirmations: DeepSeek `622/745` Purist, Qwen `638/746`
+  Purist; validation-only evidence.
 - 2026-06-10: Completed Gan Phase 4 frozen GPT-4.1-mini `test450` aggregate
   audit; `hybrid_structured_events` led compared architectures.
 
@@ -110,9 +103,8 @@ docs: `docs/research/gan2026_closeoff_report_2026-06-12.md` and
 
 - `docs/research/gan2026_closeoff_report_2026-06-12.md`
 - `docs/research/gan2026_agentic_pipeline_phase_plan_2026-06-12.md`
+- `experiments/gan2026_agentic_matched_budget_validation25_single_agent_live_prompt_v1_2026-06-12.md`
 - `experiments/gan2026_agentic_validation25_format_repair_analysis_2026-06-12.md`
 - `experiments/gan2026_agentic_matched_budget_validation25_single_agent_live_2026-06-12.md`
-- `experiments/gan2026_agentic_matched_budget_validation1_live_smoke_2026-06-12.md`
 - `experiments/gan2026_agentic_matched_budget_validation25_prompt_only_2026-06-12.md`
 - `experiments/gan2026_test450_phase4_comparison_report_gpt41mini_2026-06-10.md`
-- `experiments/gan2026_three_way_comparison_phase3_report_gpt41mini_validation750_2026-06-09.md`
