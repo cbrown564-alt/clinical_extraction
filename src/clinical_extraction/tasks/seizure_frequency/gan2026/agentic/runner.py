@@ -40,7 +40,7 @@ DEFAULT_CONDITIONS: tuple[ConditionName, ...] = (
 
 DEFAULT_JSONL_PATH = Path("experiments/gan2026_agentic_matched_budget_validation.jsonl")
 DEFAULT_REPORT_PATH = Path("experiments/gan2026_agentic_matched_budget_validation.md")
-PROMPT_VERSION = "gan2026_agentic_matched_budget_prompt_v0"
+PROMPT_VERSION = "gan2026_agentic_matched_budget_prompt_v1"
 
 
 def run_split(
@@ -587,6 +587,11 @@ def _build_prompt_input(
             (
                 "final_label must be a normalized Gan-style seizure-frequency label, "
                 "seizure-free duration, unknown, or no seizure frequency reference."
+            ),
+            (
+                "Write frequency labels with spaces, not underscores: use "
+                "'multiple per day' instead of 'multiple_per_day' and '2 per year' "
+                "instead of 'twice_per_year'."
             ),
             "Evidence should be copied as an exact source substring when possible.",
             (

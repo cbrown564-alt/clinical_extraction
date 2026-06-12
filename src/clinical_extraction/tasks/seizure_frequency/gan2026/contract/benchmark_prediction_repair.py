@@ -97,6 +97,10 @@ def _words_to_numbers(text: str) -> str:
     )
 
 
+def _underscore_label_separators(text: str) -> str:
+    return re.sub(r"(?<=[a-z0-9])_(?=[a-z0-9])", " ", text)
+
+
 def _normalize_units(text: str) -> str:
     unit_pattern = "|".join(map(re.escape, sorted(UNIT_SYNONYMS, key=len, reverse=True)))
     text = re.sub(rf"\b({unit_pattern})\b", lambda m: UNIT_SYNONYMS[m.group(0)], text)
@@ -571,6 +575,11 @@ BENCHMARK_REPAIR_STEPS = (
         apply=_normalize_unknown_no_reference,
     ),
     BenchmarkRepairStep(
+        rule_id="benchmark_repair.underscore_label_separators",
+        description="Convert underscore-separated model labels into ordinary label tokens.",
+        apply=_underscore_label_separators,
+    ),
+    BenchmarkRepairStep(
         rule_id="benchmark_repair.word_numbers",
         description="Convert number words used in labels to digits.",
         apply=_words_to_numbers,
@@ -737,6 +746,11 @@ FORMAT_PRESERVING_BENCHMARK_REPAIR_STEPS = (
         rule_id="benchmark_repair.unknown_no_reference",
         description="Normalize explicit unknown and no-reference prediction phrases.",
         apply=_normalize_unknown_no_reference,
+    ),
+    BenchmarkRepairStep(
+        rule_id="benchmark_repair.underscore_label_separators",
+        description="Convert underscore-separated model labels into ordinary label tokens.",
+        apply=_underscore_label_separators,
     ),
     BenchmarkRepairStep(
         rule_id="benchmark_repair.word_numbers",

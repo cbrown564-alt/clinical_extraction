@@ -203,6 +203,26 @@ def test_parse_decision_json_repairs_benchmark_format_without_changing_interpret
     assert errors == ["final_label_repaired: '≤ four per week' -> '4 per week'"]
 
 
+def test_parse_decision_json_repairs_underscore_frequency_label_format() -> None:
+    raw = json.dumps(
+        {
+            "final_label": "multiple_per_day",
+            "evidence": "four per day",
+            "answer_kind": "frequency",
+            "selected_seizure_type": "seizures",
+            "time_window": "current",
+            "confidence": "high",
+            "rationale": "The note states multiple daily seizures.",
+        }
+    )
+
+    decision, errors = parse_decision_json(raw)
+
+    assert decision is not None
+    assert decision.final_label == "4 per day"
+    assert errors == ["final_label_repaired: 'multiple_per_day' -> '4 per day'"]
+
+
 def test_prompt_only_run_writes_not_run_records(tmp_path: Path) -> None:
     rows, metadata = run_split(
         [_record()],

@@ -23,8 +23,11 @@ docs: `docs/research/gan2026_closeoff_report_2026-06-12.md` and
   multi-agent calls: `150/150` decision records, `0` call failures, `0` blocking
   parse failures. Condition-final Purist: `single_greedy 24/25`,
   `single_self_consistency_temperature 25/25`, `single_agent_tools 24/25`.
-- The validation25 run exposed frequent direct-label format repairs and `3`
-  disagreement rows; resolve before spending matched multi-agent calls.
+- The validation25 format-repair review found underscore-separated labels and a
+  bare selected-evidence rate gap behind rows `10`, `278`, and `419`. No-call
+  diagnostic reparse now aligns all three active single-agent conditions on
+  those rows and gives row-final `25/25` Purist/Pragmatic under the parser
+  replay; live prompt v1 smoke is still required.
 - ExECTv2 Phase 6/7 is complete and parked; all-entity LLM-only full-200
   semantic F1 was `0.084` per-item / `0.232` per-letter.
 
@@ -43,10 +46,10 @@ docs: `docs/research/gan2026_closeoff_report_2026-06-12.md` and
 
 ## Active Priorities
 
-1. Inspect validation25 agentic format repairs and the `3` disagreement rows
-   before scaling or adding multi-agent calls.
-2. Decide whether label-format repair belongs in prompt wording, parser repair,
-   or a stricter output contract; keep semantic repair attribution explicit.
+1. Re-run validation25 single-agent live smoke under agentic prompt v1 and the
+   updated repair contract.
+2. Add deterministic normalized-label voting once the live v1 single-agent
+   comparator is stable.
 3. Run `multi_agent_matched` only after the single-agent comparator and
    aggregation/repair policy are stable.
 
@@ -54,16 +57,15 @@ docs: `docs/research/gan2026_closeoff_report_2026-06-12.md` and
 
 ### Now
 
-- Analyze
-  `experiments/gan2026_agentic_matched_budget_validation25_single_agent_live_2026-06-12.jsonl`
-  for direct-label repair families and rows `10`, `278`, `419`.
-- Tighten the agentic direct-label output contract or parser repair so labels
-  like `multiple_per_day` do not silently become `no seizure frequency reference`.
+- Re-run validation25 single-agent smoke under
+  `gan2026_agentic_matched_budget_prompt_v1` and confirm call failures,
+  parse/repair notes, condition-final accuracy, and any remaining disagreement
+  rows.
 
 ### Next
 
-- Add deterministic normalized-label voting once repair attribution is clean.
-- Re-run validation25 single-agent smoke after the repair/contract decision.
+- Add deterministic normalized-label voting once live repair attribution is
+  clean.
 - Compare `multi_agent_matched` only after the single-agent comparator uses the
   same model-call, token, tool-call, and aggregation budget.
 - Produce a compact failure-mode table for `hybrid_structured_events` versus
@@ -84,6 +86,12 @@ docs: `docs/research/gan2026_closeoff_report_2026-06-12.md` and
 
 ### Done Recently
 
+- 2026-06-12: Analyzed validation25 agentic direct-label repair families and
+  rows `10`, `278`, `419`; added underscore-label format repair, bare
+  selected-evidence rate parsing, and agentic prompt v1. No-call diagnostic
+  reparse of the saved raw outputs resolves the `3` condition-final
+  disagreement rows and changes preferred row-final replay from `24/25` to
+  `25/25` Purist/Pragmatic.
 - 2026-06-12: Added agentic condition filtering and ran validation25
   single-agent live smoke:
   `experiments/gan2026_agentic_matched_budget_validation25_single_agent_live_2026-06-12`
@@ -102,6 +110,7 @@ docs: `docs/research/gan2026_closeoff_report_2026-06-12.md` and
 
 - `docs/research/gan2026_closeoff_report_2026-06-12.md`
 - `docs/research/gan2026_agentic_pipeline_phase_plan_2026-06-12.md`
+- `experiments/gan2026_agentic_validation25_format_repair_analysis_2026-06-12.md`
 - `experiments/gan2026_agentic_matched_budget_validation25_single_agent_live_2026-06-12.md`
 - `experiments/gan2026_agentic_matched_budget_validation1_live_smoke_2026-06-12.md`
 - `experiments/gan2026_agentic_matched_budget_validation25_prompt_only_2026-06-12.md`

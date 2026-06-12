@@ -183,6 +183,9 @@ def test_live_runner_uses_model_outputs_and_scores_each_condition(monkeypatch) -
     assert trace["model_call_results"][0]["decision_record"]["final_label"] == "2 per week"
     assert trace["model_call_results"][0]["comparison"]["purist_correct"] is True
     assert trace["model_call_results"][0]["prompt_version"] == PROMPT_VERSION
+    prompt_input = trace["model_call_results"][0]["prompt_input_json"]
+    assert "spaces, not underscores" in prompt_input
+    assert "multiple_per_day" in prompt_input
 
 
 def test_live_runner_can_filter_to_single_agent_conditions(monkeypatch) -> None:
