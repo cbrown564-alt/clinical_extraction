@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections import Counter
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any, Literal
@@ -16,6 +17,10 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.tools import (
     parse_seizure_frequency_candidates,
     read_boundary_guide,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.contract.schema_repair import (
+    parse_json_payload_with_schema_repair,
+    repair_decision_payload,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_metadata import (
     build_run_metadata,
@@ -23,9 +28,13 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_metadat
 from clinical_extraction.tasks.seizure_frequency.gan2026.labels import map_pragmatic, map_purist
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_direct_labeler import (
     LlmOnlyDirectLabelerDecisionRecord,
+    _extract_json_object,
     parse_decision_json,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
+from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
+    repair_prediction_label_format_preserving_with_trace,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.reports.base import (
     write_markdown_report,
 )
@@ -145,6 +154,7 @@ def summarize_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     parse_or_validation_failures = 0
     purist_correct = 0
     pragmatic_correct = 0
+    normalized_label_vote_repairs = 0
     for row in rows:
         if row.get("final_label") is not None:
             prediction_bearing_rows += 1
@@ -164,6 +174,9 @@ def summarize_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
                 comparison = result.get("comparison") or {}
                 purist_correct += int(bool(comparison.get("purist_correct")))
                 pragmatic_correct += int(bool(comparison.get("pragmatic_correct")))
+                normalized_label_vote_repairs += len(
+                    result.get("normalized_vote_repair_events") or []
+                )
     return {
         "rows": len(rows),
         "conditions": _conditions_from_rows(rows),
@@ -175,6 +188,7 @@ def summarize_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         "parse_or_validation_failures": parse_or_validation_failures,
         "purist_correct_call_level": purist_correct,
         "pragmatic_correct_call_level": pragmatic_correct,
+        "normalized_label_vote_repairs": normalized_label_vote_repairs,
     }
 
 
@@ -278,14 +292,18 @@ def _build_row_trace(
         )
         for condition in conditions
     }
-    final_label = _select_row_final_label(condition_traces)
+    final_trace = _select_row_final_trace(condition_traces)
+    final_label = str(final_trace["final_label"]) if final_trace is not None else None
+    attribution_layer = (
+        str(final_trace.get("attribution_layer")) if final_trace is not None else "no_prediction"
+    )
     return {
         "source_row_index": record.source_row_index,
         "split": split,
         "split_manifest": split_manifest,
         "artifact_mode": mode,
         "final_label": final_label,
-        "attribution_layer": "raw_model" if final_label is not None else "no_prediction",
+        "attribution_layer": attribution_layer,
         "condition_traces": condition_traces,
     }
 
@@ -323,7 +341,8 @@ def _condition_trace(
             for plan in model_call_plans
         ]
     )
-    final_label = _select_trace_final_label(model_call_results)
+    vote = _normalized_label_vote(model_call_results)
+    final_label = vote["selected_label"]
     return {
         "condition": condition,
         "budget": budget.model_dump(mode="json"),
@@ -332,7 +351,11 @@ def _condition_trace(
         "tool_calls": _tool_calls(condition, parser_result, guide_results),
         "aggregation": _aggregation_plan(condition),
         "final_label": final_label,
-        "attribution_layer": "raw_model" if final_label is not None else "no_prediction",
+        "attribution_layer": _trace_attribution_layer(
+            final_label=final_label,
+            model_call_results=model_call_results,
+        ),
+        "normalized_label_vote": vote,
         "trace_warnings": (
             ["prompt_only_no_prediction"] if mode == "prompt-only" else []
         ),
@@ -542,6 +565,9 @@ def _execute_model_call(
         "prompt_version": PROMPT_VERSION,
         "prompt_input_json": prompt_input_json,
         "raw_output": raw_output,
+        "raw_model_final_label": _extract_raw_model_final_label(raw_output)
+        if raw_output
+        else None,
         "call_error": call_error,
         "parse_errors": parse_errors,
         "decision_record": decision.model_dump() if decision else None,
@@ -624,20 +650,72 @@ def _build_prompt_input(
     return json.dumps(payload, ensure_ascii=False, sort_keys=True)
 
 
-def _select_trace_final_label(results: Sequence[Mapping[str, Any]]) -> str | None:
-    labels = [
-        result["decision_record"]["final_label"]
-        for result in results
-        if result.get("decision_record")
+def _normalized_label_vote(results: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
+    vote_records = [_vote_record(result) for result in results if result.get("decision_record")]
+    labels = [record["normalized_label"] for record in vote_records]
+    selected_label = _majority_label(labels) if labels else None
+    counts = Counter(labels)
+    repair_event_counts = Counter(
+        event["rule_id"]
+        for record in vote_records
+        for event in record["repair_events"]
+    )
+    return {
+        "method": "deterministic_normalized_label_vote",
+        "selected_label": selected_label,
+        "raw_labels": [record["raw_label"] for record in vote_records],
+        "normalized_labels": labels,
+        "vote_counts": dict(counts),
+        "tie_break": "first_normalized_label_in_call_order",
+        "repair_event_counts": dict(repair_event_counts),
+    }
+
+
+def _vote_record(result: Mapping[str, Any]) -> dict[str, Any]:
+    decision_record = dict(result.get("decision_record") or {})
+    raw_label = result.get("raw_model_final_label") or decision_record.get("final_label")
+    trace = repair_prediction_label_format_preserving_with_trace(str(raw_label))
+    repair_events = [
+        {
+            "rule_id": event.rule_id,
+            "group": str(event.group),
+            "portability": str(event.portability),
+            "before": event.before,
+            "after": event.after,
+        }
+        for event in trace.events
     ]
-    if not labels:
-        return None
-    return _majority_label(labels)
+    if isinstance(result, dict):
+        result["normalized_vote_label"] = trace.final_label
+        result["normalized_vote_repair_events"] = repair_events
+    return {
+        "raw_label": raw_label,
+        "normalized_label": trace.final_label,
+        "repair_events": repair_events,
+    }
 
 
-def _select_row_final_label(
+def _trace_attribution_layer(
+    *,
+    final_label: str | None,
+    model_call_results: Sequence[Mapping[str, Any]],
+) -> str:
+    if final_label is None:
+        return "no_prediction"
+    has_vote_repair = any(
+        result.get("normalized_vote_repair_events") for result in model_call_results
+    )
+    has_multiple_predictions = (
+        sum(result.get("decision_record") is not None for result in model_call_results) > 1
+    )
+    if has_vote_repair or has_multiple_predictions:
+        return "raw_model_plus_deterministic_format_vote"
+    return "raw_model"
+
+
+def _select_row_final_trace(
     condition_traces: Mapping[ConditionName, Mapping[str, Any]]
-) -> str | None:
+) -> Mapping[str, Any] | None:
     preferred_order: tuple[ConditionName, ...] = (
         "single_agent_tools",
         "single_self_consistency_temperature",
@@ -648,9 +726,9 @@ def _select_row_final_label(
     for condition in preferred_order:
         if condition not in condition_traces:
             continue
-        label = condition_traces[condition].get("final_label")
-        if label is not None:
-            return str(label)
+        trace = condition_traces[condition]
+        if trace.get("final_label") is not None:
+            return trace
     return None
 
 
@@ -681,6 +759,20 @@ def _compare_to_gold(
         "pragmatic_correct": map_pragmatic(predicted_monthly)
         == map_pragmatic(record.gold_monthly_frequency),
     }
+
+
+def _extract_raw_model_final_label(raw_output: str) -> str | None:
+    try:
+        payload, _dialect_notes = parse_json_payload_with_schema_repair(
+            _extract_json_object(raw_output)
+        )
+    except Exception:
+        return None
+    repaired_payload = repair_decision_payload(payload)
+    if not isinstance(repaired_payload, Mapping):
+        return None
+    final_label = repaired_payload.get("final_label")
+    return str(final_label) if final_label is not None else None
 
 
 def _has_blocking_parse_issue(errors: Any) -> bool:
