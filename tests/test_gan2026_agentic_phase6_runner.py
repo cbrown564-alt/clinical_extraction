@@ -290,19 +290,64 @@ def test_live_runner_votes_over_deterministically_normalized_labels(monkeypatch)
         "method": "deterministic_normalized_label_vote",
         "selected_label": "2 per week",
         "raw_labels": ["two_per_week", "2 per week", "2/month", "two per week"],
+        "vote_input_labels": ["2 per week", "2 per week", "2 per month", "2 per week"],
         "normalized_labels": ["2 per week", "2 per week", "2 per month", "2 per week"],
         "vote_counts": {"2 per week": 3, "2 per month": 1},
         "tie_break": "first_normalized_label_in_call_order",
-        "repair_event_counts": {
-            "benchmark_repair.underscore_label_separators": 1,
-            "benchmark_repair.word_numbers": 2,
-            "benchmark_repair.slash_per_forms": 1,
-        },
+        "repair_event_counts": {},
     }
-    assert metadata["summary"]["normalized_label_vote_repairs"] == 4
+    assert metadata["summary"]["normalized_label_vote_repairs"] == 0
     assert trace["model_call_results"][0]["raw_model_final_label"] == "two_per_week"
+    assert trace["model_call_results"][0]["normalized_vote_input_label"] == "2 per week"
     assert trace["model_call_results"][0]["normalized_vote_label"] == "2 per week"
-    assert trace["model_call_results"][0]["normalized_vote_repair_events"]
+    assert trace["model_call_results"][0]["normalized_vote_repair_events"] == []
+
+
+def test_live_runner_votes_over_parser_repaired_decision_labels(monkeypatch) -> None:
+    def fake_model_call(prompt_input_json: str, *, model: str, temperature: float, max_tokens: int):
+        del prompt_input_json, model, temperature, max_tokens
+        return (
+            '{"final_label":"1 per month","evidence":"one seizure every three to four weeks",'
+            '"answer_kind":"frequency","selected_seizure_type":"seizure",'
+            '"time_window":"current","confidence":"high",'
+            '"rationale":"The note states one seizure every three to four weeks."}'
+        )
+
+    monkeypatch.setattr(agentic_runner, "_run_model_call", fake_model_call)
+
+    rows, _metadata = run_split(
+        [
+            _record(
+                108,
+                "Clinic Date: 12 June 2026\nShe has one seizure every three to four weeks.",
+                gold_label="1 per 3 to 4 week",
+                gold_monthly_frequency=1.267361111111111,
+            )
+        ],
+        split="validation",
+        split_manifest="gan2026_split_v1",
+        model="openai/gpt-4.1-mini",
+        temperature=0.0,
+        max_tokens=900,
+        mode="live",
+        dspy_cache=True,
+        api_base=None,
+        escalation_reason=None,
+        progress_every=None,
+        checkpoint_jsonl_path=None,
+        checkpoint_report_path=None,
+        conditions=("multi_agent_matched",),
+    )
+
+    trace = rows[0]["condition_traces"]["multi_agent_matched"]
+
+    assert trace["final_label"] == "1 per 3 to 4 week"
+    assert trace["normalized_label_vote"]["raw_labels"] == ["1 per month"] * 4
+    assert trace["normalized_label_vote"]["vote_input_labels"] == ["1 per 3 to 4 week"] * 4
+    assert trace["model_call_results"][0]["raw_model_final_label"] == "1 per month"
+    assert trace["model_call_results"][0]["decision_record"]["final_label"] == (
+        "1 per 3 to 4 week"
+    )
 
 
 def test_live_runner_keeps_failed_calls_non_prediction(monkeypatch) -> None:

@@ -128,6 +128,23 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
     parser.add_argument("--mode", choices=("live", "prompt-only"), default="live")
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument(
+        "--source-row-indices",
+        default=None,
+        help=(
+            "Comma-separated source_row_index values to run, in the requested order. "
+            "Use for fixed validation hard slices."
+        ),
+    )
+    parser.add_argument(
+        "--source-row-index-file",
+        type=Path,
+        default=None,
+        help=(
+            "Text file containing source_row_index values, one per line or comma-separated. "
+            "Lines starting with # are ignored."
+        ),
+    )
+    parser.add_argument(
         "--disable-dspy-cache",
         action="store_true",
         help="Disable DSPy/LiteLLM cache for new model calls.",
@@ -162,12 +179,19 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
     )
     args = parser.parse_args(argv)
     spec = specs[args.pipeline]
-    _validate_validation_ladder(args, parser)
+    requested_source_indices = _parse_requested_source_indices(args, parser)
     _validate_output_overwrite_policy(args, parser)
 
     records = load_records_for_split(args.split)
+    if requested_source_indices is not None:
+        records = _filter_records_by_source_indices(
+            records,
+            requested_source_indices=requested_source_indices,
+            parser=parser,
+        )
     if args.limit is not None:
         records = records[: args.limit]
+    _validate_validation_ladder(args, parser, row_count=len(records))
 
     manifest = load_split_manifest()
     split_manifest = str(manifest.get("manifest_version", "gan2026_split_v1"))
@@ -265,13 +289,83 @@ def _parse_agentic_conditions(
     return conditions
 
 
+def _parse_requested_source_indices(
+    args: argparse.Namespace,
+    parser: argparse.ArgumentParser,
+) -> list[int] | None:
+    values: list[str] = []
+    if args.source_row_indices:
+        values.extend(_split_source_index_text(str(args.source_row_indices)))
+    if args.source_row_index_file:
+        if not args.source_row_index_file.exists():
+            parser.error(f"--source-row-index-file does not exist: {args.source_row_index_file}")
+        lines = args.source_row_index_file.read_text(encoding="utf-8").splitlines()
+        for line in lines:
+            stripped = line.strip()
+            if not stripped or stripped.startswith("#"):
+                continue
+            values.extend(_split_source_index_text(stripped))
+    if not values:
+        return None
+    indices: list[int] = []
+    invalid: list[str] = []
+    for value in values:
+        try:
+            indices.append(int(value))
+        except ValueError:
+            invalid.append(value)
+    if invalid:
+        parser.error("invalid source_row_index value(s): " + ", ".join(invalid[:10]))
+    duplicates = _duplicates(indices)
+    if duplicates:
+        parser.error(
+            "duplicate source_row_index value(s): "
+            + ", ".join(str(index) for index in duplicates[:10])
+        )
+    return indices
+
+
+def _split_source_index_text(value: str) -> list[str]:
+    return [part.strip() for part in value.replace(",", "\n").splitlines() if part.strip()]
+
+
+def _filter_records_by_source_indices(
+    records: Sequence[GanFrequencyRecord],
+    *,
+    requested_source_indices: Sequence[int],
+    parser: argparse.ArgumentParser,
+) -> list[GanFrequencyRecord]:
+    records_by_index = {
+        _source_index_from_record(record, parser): record for record in records
+    }
+    missing = [index for index in requested_source_indices if index not in records_by_index]
+    if missing:
+        parser.error(
+            "requested source_row_index value(s) are not present in the selected split: "
+            + ", ".join(str(index) for index in missing[:10])
+        )
+    return [records_by_index[index] for index in requested_source_indices]
+
+
+def _duplicates(values: Sequence[int]) -> list[int]:
+    seen: set[int] = set()
+    duplicates: list[int] = []
+    for value in values:
+        if value in seen and value not in duplicates:
+            duplicates.append(value)
+        seen.add(value)
+    return duplicates
+
+
 def _validate_validation_ladder(
     args: argparse.Namespace,
     parser: argparse.ArgumentParser,
+    *,
+    row_count: int,
 ) -> None:
     if args.split != "validation" or args.escalation_reason:
         return
-    if args.limit is None or args.limit > 250:
+    if row_count > 250:
         parser.error(
             "validation runs above 250 rows require --escalation-reason; "
             "use --limit 25, --limit 50, or --limit 250 for routine ladder runs"

@@ -664,6 +664,7 @@ def _normalized_label_vote(results: Sequence[Mapping[str, Any]]) -> dict[str, An
         "method": "deterministic_normalized_label_vote",
         "selected_label": selected_label,
         "raw_labels": [record["raw_label"] for record in vote_records],
+        "vote_input_labels": [record["vote_input_label"] for record in vote_records],
         "normalized_labels": labels,
         "vote_counts": dict(counts),
         "tie_break": "first_normalized_label_in_call_order",
@@ -674,7 +675,8 @@ def _normalized_label_vote(results: Sequence[Mapping[str, Any]]) -> dict[str, An
 def _vote_record(result: Mapping[str, Any]) -> dict[str, Any]:
     decision_record = dict(result.get("decision_record") or {})
     raw_label = result.get("raw_model_final_label") or decision_record.get("final_label")
-    trace = repair_prediction_label_format_preserving_with_trace(str(raw_label))
+    vote_input_label = decision_record.get("final_label") or raw_label
+    trace = repair_prediction_label_format_preserving_with_trace(str(vote_input_label))
     repair_events = [
         {
             "rule_id": event.rule_id,
@@ -686,10 +688,12 @@ def _vote_record(result: Mapping[str, Any]) -> dict[str, Any]:
         for event in trace.events
     ]
     if isinstance(result, dict):
+        result["normalized_vote_input_label"] = vote_input_label
         result["normalized_vote_label"] = trace.final_label
         result["normalized_vote_repair_events"] = repair_events
     return {
         "raw_label": raw_label,
+        "vote_input_label": vote_input_label,
         "normalized_label": trace.final_label,
         "repair_events": repair_events,
     }
