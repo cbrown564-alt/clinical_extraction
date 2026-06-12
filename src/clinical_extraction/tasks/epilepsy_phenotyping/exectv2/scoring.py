@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from collections.abc import Hashable, Iterable, Sequence
+from collections.abc import Callable, Hashable, Iterable, Sequence
 from dataclasses import dataclass, field
 
 from pydantic import BaseModel
@@ -17,6 +17,7 @@ DEFAULT_IGNORE_ATTRIBUTES: frozenset[str] = frozenset({"CUIPhrase"})
 
 _QUOTES = str.maketrans("", "", "\"'“”‘’‚‛")
 _WHITESPACE = re.compile(r"\s+")
+_LOWERCASE_ATTRIBUTE_VALUES: frozenset[str] = frozenset({"DrugName", "DoseUnit"})
 
 
 def normalize_phrase(text: str) -> str:
@@ -28,6 +29,20 @@ def normalize_phrase(text: str) -> str:
 
     lowered = text.translate(_QUOTES).replace("-", " ").lower()
     return _WHITESPACE.sub(" ", lowered).strip()
+
+
+def canonicalize_attribute_value(key: str, value: str) -> str:
+    """Apply format-only canonicalization before attribute matching.
+
+    This deliberately cannot create a missing attribute or infer a clinical
+    category. It only removes quote/whitespace noise and normalizes attributes
+    where case is a spelling artifact under the ExECTv2 contract.
+    """
+
+    normalized = _WHITESPACE.sub(" ", str(value).translate(_QUOTES)).strip()
+    if key in _LOWERCASE_ATTRIBUTE_VALUES:
+        normalized = normalized.lower()
+    return normalized
 
 
 @dataclass(frozen=True)
@@ -116,18 +131,62 @@ class EntityScore(BaseModel):
     per_letter: PRF1
 
 
+class OverallScore(BaseModel):
+    model_config = {"frozen": True}
+
+    per_item: PRF1
+    per_letter: PRF1
+    per_entity: dict[str, EntityScore]
+
+
+class SourceNearEntityDiagnostic(BaseModel):
+    model_config = {"frozen": True}
+
+    entity: str
+    overlap: PRF1
+    attribute_agreement_tp: int
+    attribute_agreement_total: int
+    attribute_agreement_rate: float
+
+
+class SourceNearOverallDiagnostic(BaseModel):
+    model_config = {"frozen": True}
+
+    overlap: PRF1
+    attribute_agreement_tp: int
+    attribute_agreement_total: int
+    attribute_agreement_rate: float
+
+
+class SourceNearDiagnostic(BaseModel):
+    model_config = {"frozen": True}
+
+    overall: SourceNearOverallDiagnostic
+    per_entity: dict[str, SourceNearEntityDiagnostic]
+
+
 def match_key(annotation: ExectAnnotation, config: MatchConfig = PHRASE_AND_FEATURES) -> Hashable:
     phrase = normalize_phrase(annotation.text)
     if not config.include_attributes:
         return (annotation.entity, phrase)
     attributes = tuple(
         sorted(
-            (k, v)
+            (k, canonicalize_attribute_value(k, v))
             for k, v in annotation.attributes.items()
             if k not in config.ignore_attributes
         )
     )
     return (annotation.entity, phrase, attributes)
+
+
+def _attribute_key(annotation: ExectAnnotation, config: MatchConfig) -> Hashable:
+    return tuple(
+        sorted(
+            (k, canonicalize_attribute_value(k, v))
+            for k, v in annotation.attributes.items()
+            if k not in config.ignore_attributes
+        )
+    )
 
 
 def _keys(annotations: Iterable[ExectAnnotation], config: MatchConfig) -> list[Hashable]:
@@ -185,3 +244,121 @@ def score_entity(
         per_item=sum_prf1(per_letter_item_scores),
         per_letter=prf1_from_counts(letter_tp, letter_fp, letter_fn),
     )
+
+
+def score_overall(
+    gold_letters: Sequence[ExectLetter],
+    pred_letters: Sequence[ExectLetter],
+    entities: Sequence[str],
+    config_for: Callable[[str], MatchConfig],
+) -> OverallScore:
+    """Score all requested entities with micro-averaged overall PRF1.
+
+    Overall per-item F1 sums true/false positives and false negatives over every
+    mention of every entity. Overall per-letter F1 sums the same counts over
+    every ``(letter, entity)`` presence cell, so a letter can contribute once per
+    entity. The benchmark reports only an overall point estimate; this helper
+    keeps the same micro-average headline while also returning the per-entity
+    breakdown used by the Phase 6 all-entity audit.
+    """
+
+    per_entity = {
+        entity: score_entity(gold_letters, pred_letters, entity, config_for(entity))
+        for entity in entities
+    }
+    return OverallScore(
+        per_item=sum_prf1(score.per_item for score in per_entity.values()),
+        per_letter=sum_prf1(score.per_letter for score in per_entity.values()),
+        per_entity=per_entity,
+    )
+
+
+def source_near_diagnostic(
+    gold_letters: Sequence[ExectLetter],
+    pred_letters: Sequence[ExectLetter],
+    entities: Sequence[str],
+    config_for: Callable[[str], MatchConfig],
+) -> SourceNearDiagnostic:
+    """Report same-entity substring-overlap and attribute agreement.
+
+    This is diagnostic only. It answers whether a prediction selected a source-
+    near phrase for the same ExECT entity, then separately checks whether the
+    non-ignored attributes agree on those overlapped pairs.
+    """
+
+    per_entity = {
+        entity: _source_near_entity(gold_letters, pred_letters, entity, config_for(entity))
+        for entity in entities
+    }
+    overlap = sum_prf1(score.overlap for score in per_entity.values())
+    attr_tp = sum(score.attribute_agreement_tp for score in per_entity.values())
+    attr_total = sum(score.attribute_agreement_total for score in per_entity.values())
+    overall = SourceNearOverallDiagnostic(
+        overlap=overlap,
+        attribute_agreement_tp=attr_tp,
+        attribute_agreement_total=attr_total,
+        attribute_agreement_rate=attr_tp / attr_total if attr_total else 0.0,
+    )
+    return SourceNearDiagnostic(overall=overall, per_entity=per_entity)
+
+
+def _source_near_entity(
+    gold_letters: Sequence[ExectLetter],
+    pred_letters: Sequence[ExectLetter],
+    entity: str,
+    config: MatchConfig,
+) -> SourceNearEntityDiagnostic:
+    gold_by_id = _letters_by_id(gold_letters)
+    pred_by_id = _letters_by_id(pred_letters)
+    all_ids = sorted(gold_by_id.keys() | pred_by_id.keys())
+
+    tp = fp = fn = 0
+    attr_tp = attr_total = 0
+    for letter_id in all_ids:
+        gold_mentions = (
+            list(gold_by_id[letter_id].entities(entity)) if letter_id in gold_by_id else []
+        )
+        pred_mentions = (
+            list(pred_by_id[letter_id].entities(entity)) if letter_id in pred_by_id else []
+        )
+        used_pred: set[int] = set()
+
+        for gold in gold_mentions:
+            pred_index = _first_overlapping_prediction(gold, pred_mentions, used_pred)
+            if pred_index is None:
+                fn += 1
+                continue
+
+            tp += 1
+            used_pred.add(pred_index)
+            attr_total += 1
+            if _attribute_key(gold, config) == _attribute_key(pred_mentions[pred_index], config):
+                attr_tp += 1
+
+        fp += len(pred_mentions) - len(used_pred)
+
+    attr_rate = attr_tp / attr_total if attr_total else 0.0
+    return SourceNearEntityDiagnostic(
+        entity=entity,
+        overlap=prf1_from_counts(tp, fp, fn),
+        attribute_agreement_tp=attr_tp,
+        attribute_agreement_total=attr_total,
+        attribute_agreement_rate=attr_rate,
+    )
+
+
+def _first_overlapping_prediction(
+    gold: ExectAnnotation,
+    predictions: Sequence[ExectAnnotation],
+    used_pred: set[int],
+) -> int | None:
+    gold_phrase = normalize_phrase(gold.text)
+    if not gold_phrase:
+        return None
+    for i, pred in enumerate(predictions):
+        if i in used_pred:
+            continue
+        pred_phrase = normalize_phrase(pred.text)
+        if pred_phrase and (gold_phrase in pred_phrase or pred_phrase in gold_phrase):
+            return i
+    return None

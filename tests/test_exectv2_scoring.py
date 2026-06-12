@@ -1,6 +1,10 @@
 from dataclasses import replace
 
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
+    ENTITY_REGISTRY,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
+    DIAGNOSIS,
     SEIZURE_FREQUENCY,
     ExectAnnotation,
     ExectLetter,
@@ -9,9 +13,12 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     PHRASE_AND_FEATURES,
     PHRASE_ONLY,
+    benchmark_config_for,
     match_key,
     normalize_phrase,
     score_entity,
+    score_overall,
+    source_near_diagnostic,
 )
 
 
@@ -40,6 +47,13 @@ def test_phrase_only_ignores_attributes() -> None:
     assert match_key(a, PHRASE_AND_FEATURES) != match_key(b, PHRASE_AND_FEATURES)
 
 
+def test_match_key_canonicalizes_format_only_attribute_values() -> None:
+    a = _ann("Prescription", "levetiracetam", DrugName="Levetiracetam", DoseUnit="MG")
+    b = _ann("Prescription", "levetiracetam", DrugName="levetiracetam", DoseUnit="mg")
+
+    assert match_key(a, PHRASE_AND_FEATURES) == match_key(b, PHRASE_AND_FEATURES)
+
+
 def test_gold_scored_against_itself_is_perfect() -> None:
     letters = load_letters()
     score = score_entity(letters, letters, SEIZURE_FREQUENCY)
@@ -47,6 +61,63 @@ def test_gold_scored_against_itself_is_perfect() -> None:
     assert score.per_letter.f1 == 1.0
     assert score.per_item.tp == 263
     assert score.per_letter.tp == 142
+
+
+def test_all_entity_gold_scored_against_itself_is_perfect() -> None:
+    letters = load_letters()
+    entities = tuple(ENTITY_REGISTRY)
+    score = score_overall(letters, letters, entities, benchmark_config_for)
+
+    assert score.per_item.f1 == 1.0
+    assert score.per_letter.f1 == 1.0
+    assert set(score.per_entity) == set(entities)
+    assert all(entity_score.per_item.f1 == 1.0 for entity_score in score.per_entity.values())
+    assert all(entity_score.per_letter.f1 == 1.0 for entity_score in score.per_entity.values())
+
+
+def test_score_overall_micro_averages_item_and_entity_presence_cells() -> None:
+    gold = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(SEIZURE_FREQUENCY, "two-seizures", NumberOfSeizures="2"),
+                _ann(SEIZURE_FREQUENCY, "absence-seizures", NumberOfSeizures="1"),
+                _ann(DIAGNOSIS, "epilepsy", DiagCategory="Epilepsy"),
+            ),
+        ),
+        ExectLetter("L2", "note", (_ann(DIAGNOSIS, "single-seizure"),)),
+    ]
+    pred = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(SEIZURE_FREQUENCY, "two-seizures", NumberOfSeizures="2"),
+                _ann(DIAGNOSIS, "wrong-diagnosis", DiagCategory="Epilepsy"),
+            ),
+        ),
+        ExectLetter(
+            "L2",
+            "note",
+            (
+                _ann(DIAGNOSIS, "single-seizure"),
+                _ann(SEIZURE_FREQUENCY, "spurious-seizures", NumberOfSeizures="2"),
+            ),
+        ),
+    ]
+
+    score = score_overall(
+        gold,
+        pred,
+        (SEIZURE_FREQUENCY, DIAGNOSIS),
+        lambda _e: PHRASE_AND_FEATURES,
+    )
+
+    assert (score.per_item.tp, score.per_item.fp, score.per_item.fn) == (2, 2, 2)
+    assert score.per_item.f1 == 0.5
+    assert (score.per_letter.tp, score.per_letter.fp, score.per_letter.fn) == (2, 1, 1)
+    assert score.per_letter.f1 == 2 / 3
 
 
 def test_empty_predictions_score_zero_recall() -> None:
@@ -118,3 +189,44 @@ def test_wrong_attribute_breaks_full_feature_match_but_not_phrase_match() -> Non
     assert strict.per_item.fp == 1
     assert strict.per_item.fn == 1
     assert lenient.per_item.f1 == 1.0
+
+
+def test_source_near_diagnostic_counts_same_entity_substring_overlap() -> None:
+    gold = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann("Prescription", "lamotrigine", DrugName="lamotrigine", DoseUnit="mg"),
+                _ann(SEIZURE_FREQUENCY, "focal seizures", NumberOfSeizures="2"),
+            ),
+        )
+    ]
+    pred = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    "Prescription",
+                    "lamotrigine 200mg bd",
+                    DrugName="Lamotrigine",
+                    DoseUnit="MG",
+                ),
+                _ann(SEIZURE_FREQUENCY, "2 focal seizures per month", NumberOfSeizures="3"),
+            ),
+        )
+    ]
+
+    diagnostic = source_near_diagnostic(
+        gold,
+        pred,
+        ("Prescription", SEIZURE_FREQUENCY),
+        benchmark_config_for,
+    )
+
+    assert diagnostic.per_entity["Prescription"].overlap.tp == 1
+    assert diagnostic.per_entity["Prescription"].attribute_agreement_tp == 1
+    assert diagnostic.per_entity[SEIZURE_FREQUENCY].overlap.tp == 1
+    assert diagnostic.per_entity[SEIZURE_FREQUENCY].attribute_agreement_tp == 0
+    assert diagnostic.overall.attribute_agreement_rate == 0.5
