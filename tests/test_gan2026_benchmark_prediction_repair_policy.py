@@ -51,3 +51,9 @@ def test_explicit_no_reference_sentinel_is_preserved() -> None:
     assert repair_prediction_label("no seizure frequency reference") == (
         "no seizure frequency reference"
     )
+
+
+def test_underscore_separated_model_labels_are_format_repaired() -> None:
+    assert repair_prediction_label("multiple_per_day") == "multiple per day"
+    assert repair_prediction_label("multiple_per_week") == "multiple per week"
+    assert repair_prediction_label("twice_per_year") == "2 per year"

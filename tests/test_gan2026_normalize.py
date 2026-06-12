@@ -112,6 +112,16 @@ def test_repair_prediction_label_with_evidence_preserves_selected_upper_bound() 
     )
 
 
+def test_repair_prediction_label_with_evidence_uses_bare_selected_rate() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "multiple_per_day",
+            "four per day",
+        )
+        == "4 per day"
+    )
+
+
 def test_repair_prediction_label_with_evidence_preserves_quarter_window() -> None:
     assert (
         repair_prediction_label_with_evidence(

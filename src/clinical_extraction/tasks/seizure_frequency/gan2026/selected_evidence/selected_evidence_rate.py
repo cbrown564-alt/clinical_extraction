@@ -3,10 +3,10 @@ from __future__ import annotations
 import re
 
 from .selected_evidence_text import (
-    once_twice_thrice as _once_twice_thrice,
+    format_prediction_rate as _format_prediction_rate,
 )
 from .selected_evidence_text import (
-    format_prediction_rate as _format_prediction_rate,
+    once_twice_thrice as _once_twice_thrice,
 )
 from .selected_evidence_text import (
     words_to_numbers as _words_to_numbers,
@@ -266,6 +266,18 @@ def late_rate_label_from_selected_evidence(
     context_text: str | None = None,
 ) -> str | None:
     """Derive selected-evidence rate labels that should run after count-window parsing."""
+    bare_rate = re.fullmatch(
+        rf"(?P<count>multiple|{_COUNT})\s+per\s+"
+        rf"(?:(?P<denominator>{_COUNT})\s+)?(?P<unit>{_UNIT})s?",
+        text,
+    )
+    if bare_rate:
+        denominator = bare_rate.group("denominator")
+        count_text = bare_rate.group("count")
+        if denominator:
+            count_text = f"{count_text} per {denominator}"
+        return _format_prediction_rate(count_text, bare_rate.group("unit"))
+
     slash_week = re.search(
         r"\b(?P<count>\d+)\s*/\s*7\b",
         text,
