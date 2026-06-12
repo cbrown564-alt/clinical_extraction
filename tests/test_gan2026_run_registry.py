@@ -94,13 +94,14 @@ def test_run_registry_parses_json_record_into_typed_entry() -> None:
             "model_role": "analysis only",
             "mode": "analysis",
             "replay_status": "analysis_only",
-            "primary_metrics": {"purist_correct": 243},
+            "primary_metrics": {"purist_correct": 243, "purist_ci": [0.8, 0.9]},
             "decision": "historical",
         }
     )
 
     assert entry.run_id == "gan2026_analysis"
     assert entry.primary_metrics["purist_correct"] == 243
+    assert entry.primary_metrics["purist_ci"] == [0.8, 0.9]
 
 
 def test_run_registry_rejects_unknown_decision() -> None:
