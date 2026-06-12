@@ -34,3 +34,4 @@ experiments/*_stderr.txt
 experiments/*_stdout.txt
 scripts/*_stderr.txt
 scripts/*_stdout.txt
+logs/
