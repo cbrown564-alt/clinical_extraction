@@ -63,6 +63,51 @@ SF_SEMANTIC = MatchConfig(
 )
 
 
+# ── Per-entity match policy (Phase 6 all-9 generalization) ────────────────────
+#
+# The SF configs above pin one entity's policy. Phase 6 scores all nine entities,
+# and each entity's ignored-attribute set is read from its guideline scope, NOT
+# inherited from SF (protocol §2). Two facts drive the per-entity policy:
+#
+#   - CUIPhrase is always ignored (mirrors the phrase; redundant with the key).
+#   - Certainty and Negation are in scope for every entity EXCEPT SeizureFrequency
+#     (guideline v9 L17/L19: Certainty is not allocated to SF, and Negation is
+#     assigned to "all concepts except Seizure Frequency"). Investigations and
+#     Prescription never carry them at all (not in their legal-attribute set), so
+#     keeping them in the ignore set is a no-op there; listing SF explicitly is
+#     what matters.
+#
+# CUI is kept in the benchmark headline (the published "with all features"
+# reading) and dropped in the semantic variant — the same two-tier shape the SF
+# audit used, now per entity. The LLM-only family emits no CUI (discoveries D3),
+# so its with-CUI headline collapses to 0 on every entity by construction; that
+# divergence is surfaced, not hidden (protocol §2), and the semantic config is
+# its real attribute-level quality.
+_SF_ENTITY_NAME = "SeizureFrequency"
+
+
+def benchmark_ignore_for(entity: str) -> frozenset[str]:
+    """Attributes ignored under the benchmark (with-CUI) match for ``entity``."""
+    if entity == _SF_ENTITY_NAME:
+        return SF_GUIDELINE_IGNORED
+    return DEFAULT_IGNORE_ATTRIBUTES
+
+
+def semantic_ignore_for(entity: str) -> frozenset[str]:
+    """Attributes ignored under the CUI-dropped semantic match for ``entity``."""
+    return benchmark_ignore_for(entity) | frozenset({"CUI"})
+
+
+def benchmark_config_for(entity: str) -> MatchConfig:
+    """The benchmark-comparable (with-CUI, all-features) config for ``entity``."""
+    return MatchConfig(include_attributes=True, ignore_attributes=benchmark_ignore_for(entity))
+
+
+def semantic_config_for(entity: str) -> MatchConfig:
+    """The CUI-dropped semantic config for ``entity`` (attribute-level quality)."""
+    return MatchConfig(include_attributes=True, ignore_attributes=semantic_ignore_for(entity))
+
+
 class EntityScore(BaseModel):
     model_config = {"frozen": True}
 
