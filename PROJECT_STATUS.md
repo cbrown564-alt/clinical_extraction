@@ -4,161 +4,106 @@ Last updated: 2026-06-12
 
 ## Active Objective
 
-Complete the final Gan 2026 agentic-pipeline phases before returning to
-ExECTv2.
+Close the final Gan 2026 agentic-pipeline phases before returning to ExECTv2.
 
-Current promoted Gan direction: `hybrid_structured_events` - an LLM extracts
-structured seizure-frequency events from raw note text, then deterministic
-normalization, projection, rendering, and scoring produce Gan-compatible output.
-
-Controlling synthesis: `docs/research/gan2026_closeoff_report_2026-06-12.md`.
-Next phase control surface:
+Promoted Gan direction: `hybrid_structured_events` - LLM structured-event
+extraction plus deterministic normalization/projection/rendering/scoring. Control
+docs: `docs/research/gan2026_closeoff_report_2026-06-12.md` and
 `docs/research/gan2026_agentic_pipeline_phase_plan_2026-06-12.md`.
 
 ## Recent Context
 
-- Gan 2026 now has a complete comparison spine across deterministic, hybrid,
-  and LLM architectures on the shared `gan2026/runner.py` and
-  `gan2026/cli/llm_pipeline_cli.py` surface.
-- `hybrid_structured_events` is the best current close-off candidate:
-  - GPT-4.1-mini validation750 Phase 3: `748/750` rendered,
-    `661/748` Purist-correct, `679/748` Pragmatic-correct.
-  - Frozen GPT-4.1-mini `test450` Phase 4 aggregate audit: `448/450`
-    rendered, `364/448` Purist-correct, `381/448` Pragmatic-correct.
-  - User-approved SE v0.6 validation750 confirmations completed:
-    DeepSeek `622/745` Purist-correct and `646/745` Pragmatic-correct;
-    Qwen `638/746` Purist-correct and `656/746` Pragmatic-correct.
-- Reset-native CandidateSet hybrid remains important for the transparency and
-  verifier thesis, but is not the current implementation headline: on frozen
-  `test450` it scored `269/334` Purist-correct with `116` null rows and `30`
-  routed rows.
-- Deterministic canonical remains a useful comparator and de-overfitting lesson:
-  it stayed strong on validation but dropped to `329/450` Purist-correct on
-  frozen `test450`, reinforcing that validation score alone is not enough.
-- ExECTv2 Phase 6 is complete and parked. The all-entity LLM-only full-200
-  audit was contract-clean but not competitive: semantic overall F1 `0.084`
-  per-item / `0.232` per-letter, benchmark with-CUI `0.000` / `0.000`.
-- User reframed Gan as having two final phases: define and implement a
-  matched-budget agentic comparison, then test tool-using single agents against
-  multi-agent pipelines before Gan is accepted as closed for this cycle.
+- `hybrid_structured_events` remains the close-off candidate: GPT-4.1-mini
+  validation750 `661/748` Purist rendered-correct; frozen `test450` aggregate
+  audit `364/448` Purist and `381/448` Pragmatic rendered-correct.
+- User-approved SE v0.6 validation750 confirmations completed: DeepSeek
+  `622/745` Purist and Qwen `638/746` Purist; validation-only evidence.
+- Agentic Phase 6 is now live on validation development surfaces. The
+  validation25 single-agent run used condition filtering to skip cross-model and
+  multi-agent calls: `150/150` decision records, `0` call failures, `0` blocking
+  parse failures. Condition-final Purist: `single_greedy 24/25`,
+  `single_self_consistency_temperature 25/25`, `single_agent_tools 24/25`.
+- The validation25 run exposed frequent direct-label format repairs and `3`
+  disagreement rows; resolve before spending matched multi-agent calls.
+- ExECTv2 Phase 6/7 is complete and parked; all-entity LLM-only full-200
+  semantic F1 was `0.084` per-item / `0.232` per-letter.
 
 ## Guardrails
 
 - Gan split `gan2026_split_v1` is locked: 300 train, 750 validation, 450 holdout.
-- Validation is development evidence, not a benchmark claim.
-- Locked `test450` is aggregate-only. No row-level holdout tuning or error
-  inspection is authorized.
-- Any new holdout-facing Gan work requires a fresh frozen aggregate protocol and
-  explicit user authorization.
-- Evidence metrics are not uniform across architectures: `evidence_valid`,
-  `evidence_text_contained`, and CandidateSet source-id validity are separate
-  signals and should not be collapsed into one accuracy number.
+- Validation is development evidence. Locked `test450` is aggregate-only; no
+  row-level holdout tuning or error inspection is authorized.
+- New holdout-facing Gan work requires explicit frozen-protocol authorization.
+- Keep evidence metrics architecture-specific: `evidence_valid`,
+  `evidence_text_contained`, and CandidateSet source-id validity are different.
 - Describe `hybrid_structured_events` as hybrid LLM extraction plus
-  deterministic normalization/projection, not as fully LLM-only.
+  deterministic normalization/projection, not fully LLM-only.
+- Do not claim multi-agent value until compared with a single-agent condition
+  under matched model-call, token, tool-call, and aggregation budget.
 
 ## Active Priorities
 
-1. Scale the live `agentic_matched_budget` smoke from validation1 to
-   validation25, starting with single-agent comparator interpretation before any
-   multi-agent value claim.
-2. Add condition filtering or staged execution if validation25 all-condition
-   cost is too high for one run.
-3. Keep ExECTv2 parked until the agentic Gan phases are either completed or
-   explicitly deferred.
+1. Inspect validation25 agentic format repairs and the `3` disagreement rows
+   before scaling or adding multi-agent calls.
+2. Decide whether label-format repair belongs in prompt wording, parser repair,
+   or a stricter output contract; keep semantic repair attribution explicit.
+3. Run `multi_agent_matched` only after the single-agent comparator and
+   aggregation/repair policy are stable.
 
 ## Work Board
 
 ### Now
 
-- Run validation25 live smoke for `single_greedy`,
-  `single_self_consistency_temperature`, and `single_agent_tools`; compare
-  against the validation1 all-condition transport smoke before scaling.
-- Add condition filtering if the next live run should avoid spending
-  multi-agent calls before the single-agent comparator is understood.
+- Analyze
+  `experiments/gan2026_agentic_matched_budget_validation25_single_agent_live_2026-06-12.jsonl`
+  for direct-label repair families and rows `10`, `278`, `419`.
+- Tighten the agentic direct-label output contract or parser repair so labels
+  like `multiple_per_day` do not silently become `no seizure frequency reference`.
 
 ### Next
 
-- Add deterministic normalized-label voting and optional budget-matched
-  adjudication once prediction-bearing outputs exist.
+- Add deterministic normalized-label voting once repair attribution is clean.
+- Re-run validation25 single-agent smoke after the repair/contract decision.
 - Compare `multi_agent_matched` only after the single-agent comparator uses the
   same model-call, token, tool-call, and aggregation budget.
 - Produce a compact failure-mode table for `hybrid_structured_events` versus
-  deterministic and fully LLM comparators, then reuse it to seed hard-slice
-  panels for the agentic comparison.
+  deterministic and fully LLM comparators; reuse it for agentic hard slices.
 
 ### Blocked
 
 - Any Gan holdout-facing rerun or row-level test analysis is blocked without
   explicit frozen-protocol authorization.
-- Any claim that a multi-agent pipeline is better is blocked until it is
-  compared against a single-agent condition with matched model-call, token,
-  tool-call, and aggregation budget.
+- Any multi-agent superiority claim is blocked until matched-budget
+  single-agent evidence is stable.
 
 ### Backlog
 
-- Decide whether reset-native verifier/action-policy work should continue as a
-  paper-facing transparency thread after the implementation close-off.
-- Populate the Architecture Thesis Scorecard from existing Gan artifacts:
-  validation performance, frozen holdout performance, validation-to-test gap,
-  evidence trace caveats, and modularity/auditability signal.
-- Revisit comparator-label preservation only if verifier reject/abstain policy
-  becomes active again.
-- Revisit prior-visit/event-date context only if future residual analysis shows
-  broad value and a clean source contract.
+- Decide whether reset-native verifier/action-policy work continues after
+  implementation close-off.
+- Populate the Architecture Thesis Scorecard from existing Gan artifacts.
 
 ### Done Recently
 
+- 2026-06-12: Added agentic condition filtering and ran validation25
+  single-agent live smoke:
+  `experiments/gan2026_agentic_matched_budget_validation25_single_agent_live_2026-06-12`
+  (`150` calls, `150` decision records, `0` call failures, `0` blocking parse
+  failures; condition-final Purist `24/25`, `25/25`, `24/25`).
 - 2026-06-12: Added live-call execution to `agentic_matched_budget` and saved
-  validation1 live smoke:
-  `experiments/gan2026_agentic_matched_budget_validation1_live_smoke_2026-06-12`
-  (`14` calls, `14` decision records, `0` call failures, `0` parse failures).
-- 2026-06-12: Added the Phase 6 `agentic_matched_budget` prompt-only runner,
-  registered it on the shared CLI, and saved the validation25 no-call smoke:
-  `experiments/gan2026_agentic_matched_budget_validation25_prompt_only_2026-06-12`.
-- 2026-06-12: Completed Gan Phase 5 contract scaffolding:
-  `AgentBudget`/`MatchedBudgetComparison`,
-  `parse_seizure_frequency_candidates`, split-neutral `read_boundary_guide`,
-  tests, and `docs/design/gan2026_agentic_phase5_contracts.md`.
-- 2026-06-12: Added the Gan agentic-pipeline phase plan, making matched-budget
-  single-agent versus multi-agent tool-use comparison the next major Gan phase.
-- 2026-06-12: Completed user-approved SE v0.6 validation750 confirmations from
-  the existing validation250 prefixes: DeepSeek `622/745` Purist and Qwen
-  `638/746` Purist rendered-correct validation-only results.
-- 2026-06-12: Added the Gan close-off synthesis and registry entry:
-  `gan2026_closeoff_report_2026-06-12`.
-- 2026-06-12: Completed ExECTv2 Phase 6 LLM-only all-9 dev140 and frozen
-  full-200 overall audit. Result is historical context, not the active task.
+  validation1 all-condition transport smoke (`14` calls, `0` failures).
+- 2026-06-12: Added Phase 6 prompt-only runner and validation25 no-call smoke;
+  Phase 5 contracts and phase plan are complete.
+- 2026-06-12: Completed Gan close-off synthesis and SE v0.6 validation750
+  DeepSeek/Qwen confirmations.
 - 2026-06-10: Completed Gan Phase 4 frozen GPT-4.1-mini `test450` aggregate
-  audit; `hybrid_structured_events` led the compared architectures.
-- 2026-06-09: Completed Gan Phase 3 GPT-4.1-mini validation750 comparison and
-  cross-model Phase 1 synthesis.
-- 2026-06-07: Completed Gan repo cleanup/consolidation Phases A-G and moved
-  active Gan experimentation onto the shared runner/CLI surface.
+  audit; `hybrid_structured_events` led compared architectures.
 
 ## Core Artifacts
 
-- Gan close-off report:
-  `docs/research/gan2026_closeoff_report_2026-06-12.md`
-- Gan agentic-pipeline phase plan:
-  `docs/research/gan2026_agentic_pipeline_phase_plan_2026-06-12.md`
-- Gan agentic Phase 5 contracts:
-  `docs/design/gan2026_agentic_phase5_contracts.md`
-- Gan agentic Phase 6 prompt-only smoke:
-  `experiments/gan2026_agentic_matched_budget_validation25_prompt_only_2026-06-12.md`
-- Gan agentic Phase 6 live smoke:
-  `experiments/gan2026_agentic_matched_budget_validation1_live_smoke_2026-06-12.md`
-- Frozen `test450` Phase 4 comparison:
-  `experiments/gan2026_test450_phase4_comparison_report_gpt41mini_2026-06-10.md`
-- GPT-4.1-mini Phase 3 validation750 comparison:
-  `experiments/gan2026_three_way_comparison_phase3_report_gpt41mini_validation750_2026-06-09.md`
-- Cross-model comparison:
-  `docs/research/gan2026_cross_model_comparison_2026-06-09.md`
-- SE v0.6 validation750 confirmations:
-  `experiments/gan2026_v06_validation750_hybrid_structured_events_deepseek_2026-06-12.md`;
-  `experiments/gan2026_v06_validation750_hybrid_structured_events_qwen3635b_2026-06-12.md`
-- Three-way architecture plan:
-  `docs/research/gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07.md`
-- Architecture thesis scorecard plan:
-  `docs/research/gan2026_evidence_grounded_thesis_assessment_plan_2026-06-07.md`
-- Repo consolidation record:
-  `docs/research/gan2026_repo_consolidation_and_cleanup_plan_2026-06-07.md`
+- `docs/research/gan2026_closeoff_report_2026-06-12.md`
+- `docs/research/gan2026_agentic_pipeline_phase_plan_2026-06-12.md`
+- `experiments/gan2026_agentic_matched_budget_validation25_single_agent_live_2026-06-12.md`
+- `experiments/gan2026_agentic_matched_budget_validation1_live_smoke_2026-06-12.md`
+- `experiments/gan2026_agentic_matched_budget_validation25_prompt_only_2026-06-12.md`
+- `experiments/gan2026_test450_phase4_comparison_report_gpt41mini_2026-06-10.md`
+- `experiments/gan2026_three_way_comparison_phase3_report_gpt41mini_validation750_2026-06-09.md`

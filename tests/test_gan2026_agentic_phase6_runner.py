@@ -185,6 +185,59 @@ def test_live_runner_uses_model_outputs_and_scores_each_condition(monkeypatch) -
     assert trace["model_call_results"][0]["prompt_version"] == PROMPT_VERSION
 
 
+def test_live_runner_can_filter_to_single_agent_conditions(monkeypatch) -> None:
+    calls: list[dict] = []
+
+    def fake_model_call(prompt_input_json: str, *, model: str, temperature: float, max_tokens: int):
+        del prompt_input_json, temperature, max_tokens
+        calls.append({"model": model})
+        return (
+            '{"final_label":"2 per week","evidence":"2 seizures per week",'
+            '"answer_kind":"frequency","selected_seizure_type":"seizure",'
+            '"time_window":"current","confidence":"high",'
+            '"rationale":"The note states 2 seizures per week."}'
+        )
+
+    monkeypatch.setattr(agentic_runner, "_run_model_call", fake_model_call)
+
+    active_conditions = (
+        "single_greedy",
+        "single_self_consistency_temperature",
+        "single_agent_tools",
+    )
+    rows, metadata = run_split(
+        [
+            _record(
+                106,
+                "Clinic Date: 12 June 2026\nShe has 2 seizures per week.",
+                gold_label="2 per week",
+                gold_monthly_frequency=8.666666666666666,
+            )
+        ],
+        split="validation",
+        split_manifest="gan2026_split_v1",
+        model="openai/gpt-4.1-mini",
+        temperature=0.0,
+        max_tokens=900,
+        mode="live",
+        dspy_cache=True,
+        api_base=None,
+        escalation_reason=None,
+        progress_every=None,
+        checkpoint_jsonl_path=None,
+        checkpoint_report_path=None,
+        conditions=active_conditions,
+    )
+
+    assert set(rows[0]["condition_traces"]) == set(active_conditions)
+    assert "multi_agent_matched" not in rows[0]["condition_traces"]
+    assert "single_self_consistency_cross_model" not in rows[0]["condition_traces"]
+    assert metadata["summary"]["conditions"] == list(active_conditions)
+    assert metadata["summary"]["model_calls_attempted"] == 6
+    assert metadata["matched_budget"].keys() == set(active_conditions)
+    assert len(calls) == 6
+
+
 def test_live_runner_keeps_failed_calls_non_prediction(monkeypatch) -> None:
     def failing_model_call(
         prompt_input_json: str, *, model: str, temperature: float, max_tokens: int

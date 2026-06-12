@@ -60,6 +60,37 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Claim language: Planning artifact only. Does not authorize new holdout use, test-row inspection, or benchmark-facing claims. Establishes that multi-agent claims must be compared against single-agent self-consistency under matched model-call, token, tool-call, and aggregation budgets.
 - Artifacts: `docs/research/gan2026_agentic_pipeline_phase_plan_2026-06-12.md`.
 
+### `gan2026_agentic_matched_budget_validation25_single_agent_live_2026-06-12`
+- Date/split: `2026-06-12`; `validation`; `25` rows.
+- Pipeline: `agentic_matched_budget`; mode `live`; replay `native_run_split`.
+- Model role: Gan Phase 6 validation25 live single-agent comparison restricted to single_greedy, single_self_consistency_temperature, and single_agent_tools; cross-model and multi-agent conditions intentionally skipped until the single-agent comparator is understood.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `direct-label parser/schema repair only`.
+- Primary metrics: call_failures=0, condition_disagreement_rows=3, conditions=3, decision_records=150, holdout_authorized=no, model_calls_attempted=150, parse_or_validation_failures=0, pragmatic_correct_call_level=147, prediction_bearing_rows=25, purist_correct_call_level=147, row_final_pragmatic_correct=24, row_final_purist_correct=24, rows=25, single_agent_tools_purist_correct=24, single_greedy_purist_correct=24, single_self_consistency_temperature_purist_correct=25, tool_smoke_calls=52.
+- Evidence validity: Prediction-bearing validation development smoke: 150/150 decision records, 0 call failures, 0 blocking parse/validation failures, 52 parser/guide tool smoke calls, and no holdout use. Format repairs were common and should be treated as direct-label parser/schema repair, not semantic promotion.
+- Supersedes: `gan2026_agentic_matched_budget_validation1_live_smoke_2026-06-12`.
+- Claim language: Validation development result only, not a benchmark claim. The condition filter prevented multi_agent_matched and single_self_consistency_cross_model calls; single_self_consistency_temperature was 25/25 Purist-correct at condition-final level, while single_greedy and single_agent_tools were each 24/25. Next work should inspect/repair label-format normalization and disagreement rows before spending matched multi-agent calls.
+- Artifacts: `experiments/gan2026_agentic_matched_budget_validation25_single_agent_live_2026-06-12.jsonl`, `experiments/gan2026_agentic_matched_budget_validation25_single_agent_live_2026-06-12.md`.
+
+### `gan2026_agentic_matched_budget_validation25_prompt_only_2026-06-12`
+- Date/split: `2026-06-12`; `validation`; `25` rows.
+- Pipeline: `agentic_matched_budget`; mode `prompt-only`; replay `native_run_split`.
+- Model role: Gan Phase 6 prompt-only/no-call matched-budget runner surface covering single_greedy, single_self_consistency_temperature, single_self_consistency_cross_model, single_agent_tools, and multi_agent_matched conditions.; model `openai/gpt-4.1-mini`.
+- Primary metrics: conditions=5, holdout_authorized=no, prediction_bearing_rows=0, rows=25, tool_smoke_calls=104.
+- Evidence validity: No prediction-bearing evidence metric. Tool contract smoke emitted parser/guide traces only: 104 tool smoke calls and 0 prediction-bearing rows.
+- Claim language: Phase 6 runner-surface contract artifact only. Validation25 prompt-only run made no model calls and produces no accuracy claim. It verifies shared CLI wiring, matched budget trace shape, parser-as-tool output, boundary-guide retrieval, and no-prediction attribution before live agentic comparisons.
+- Artifacts: `experiments/gan2026_agentic_matched_budget_validation25_prompt_only_2026-06-12.jsonl`, `experiments/gan2026_agentic_matched_budget_validation25_prompt_only_2026-06-12.md`.
+
+### `gan2026_agentic_matched_budget_validation1_live_smoke_2026-06-12`
+- Date/split: `2026-06-12`; `validation`; `1` rows.
+- Pipeline: `agentic_matched_budget`; mode `live`; replay `native_run_split`.
+- Model role: Gan Phase 6 live matched-budget smoke over all five initial conditions: single_greedy, single_self_consistency_temperature, single_self_consistency_cross_model, single_agent_tools, and multi_agent_matched.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `direct-label parser/schema repair only`.
+- Primary metrics: call_failures=0, conditions=5, decision_records=14, holdout_authorized=no, model_calls_attempted=14, parse_or_validation_failures=0, pragmatic_correct_call_level=11, prediction_bearing_rows=1, purist_correct_call_level=11, rows=1.
+- Evidence validity: First live transport smoke only; 14 model calls attempted, 14 decision records, 0 call failures, 0 parse/validation failures, and tool traces preserved for tool-using conditions.
+- Supersedes: `gan2026_agentic_matched_budget_validation25_prompt_only_2026-06-12`.
+- Claim language: Validation development live smoke only, not an accuracy comparison or benchmark claim. Confirms that the agentic matched-budget runner can make live calls, parse prediction-bearing labels, score call-level outputs, and preserve tool/no-tool trace attribution. Validation25 live comparison remains the next scale-up before any multi-agent value claim.
+- Artifacts: `experiments/gan2026_agentic_matched_budget_validation1_live_smoke_2026-06-12.jsonl`, `experiments/gan2026_agentic_matched_budget_validation1_live_smoke_2026-06-12.md`.
+
 ### `gan2026_three_way_comparison_validation750_deterministic_phase2_gan_shorthand_generalized_2026-06-09`
 - Date/split: `2026-06-09`; `validation`; `750` rows.
 - Pipeline: `deterministic`; mode `live`; replay `live`.
