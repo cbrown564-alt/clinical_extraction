@@ -43,21 +43,19 @@ docs: `docs/research/gan2026_closeoff_report_2026-06-12.md` and
 
 ## Active Priorities
 
-1. Produce the compact failure-mode comparison table for paper-facing Gan
-   close-off, using the hard50 agentic result as the agentic decision gate.
-2. Populate the Architecture Thesis Scorecard from existing Gan artifacts.
+1. Populate the Architecture Thesis Scorecard from existing Gan artifacts,
+   using the compact failure-mode comparison as the failure-family input.
 
 ## Work Board
 
 ### Now
 
-- Produce a compact failure-mode table for `hybrid_structured_events` versus
-  deterministic, fully LLM, single-agent, and `multi_agent_matched` comparators;
-  include the validation hard50 agentic regressions.
+- Populate the Architecture Thesis Scorecard from existing Gan artifacts.
 
 ### Next
 
-- Populate the Architecture Thesis Scorecard from existing Gan artifacts.
+- Decide whether Gan close-off needs any optional validation750 model
+  confirmations, or explicitly defer them before returning to ExECTv2.
 
 ### Blocked
 
@@ -70,13 +68,16 @@ docs: `docs/research/gan2026_closeoff_report_2026-06-12.md` and
 
 ### Backlog
 
-- Run targeted validation hard-slice panels if the failure-mode table cannot
-  distinguish single-agent and multi-agent mechanisms from existing artifacts.
 - Redesign agentic tool/role context only if paper framing still needs an
   agentic comparison beyond the hard50 revise/reject signal.
 
 ### Done Recently
 
+- 2026-06-12: Produced compact paper-facing Gan failure-mode comparison table:
+  `docs/research/gan2026_failure_mode_comparison_table_2026-06-12.md`.
+  It consolidates Phase 3 validation750 failure counts, Phase 4 aggregate
+  `test450` reads, and the validation hard50 agentic revise/reject gate without
+  new holdout analysis.
 - 2026-06-12: Predeclared and ran validation hard50 active-condition agentic
   comparison:
   `experiments/gan2026_agentic_matched_budget_validation_hard50_active_conditions_live_prompt_v1_2026-06-12.md`.
@@ -95,6 +96,7 @@ docs: `docs/research/gan2026_closeoff_report_2026-06-12.md` and
 ## Core Artifacts
 
 - `docs/research/gan2026_closeoff_report_2026-06-12.md`
+- `docs/research/gan2026_failure_mode_comparison_table_2026-06-12.md`
 - `docs/research/gan2026_agentic_pipeline_phase_plan_2026-06-12.md`
 - `experiments/gan2026_agentic_matched_budget_validation25_single_agent_live_prompt_v1_post_vote_2026-06-12.md`
 - `experiments/gan2026_agentic_matched_budget_validation25_multi_agent_live_prompt_v1_2026-06-12.md`

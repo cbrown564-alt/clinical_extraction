@@ -4,6 +4,15 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Promote Hybrid Structured Events Direction
 
+### `gan2026_failure_mode_comparison_table_2026-06-12`
+- Date/split: `2026-06-12`; `validation+test_aggregate`; `1200` rows.
+- Pipeline: `gan2026_failure_mode_comparison`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Paper-facing consolidation of existing Gan 2026 failure-mode evidence for deterministic, fully LLM, hybrid_structured_events, CandidateSet hybrid, tool-using single-agent, and matched multi-agent comparators.; model `none`.
+- Primary metrics: agentic_hard50_multi_agent_matched_purist=22, agentic_hard50_single_agent_tools_purist=20, agentic_hard50_single_greedy_purist=34, holdout_row_level_analysis=no, se_test450_purist_correct_of_rendered=364, se_test450_rendered=448, se_validation750_purist_correct_of_rendered=661, se_validation750_rendered=748.
+- Evidence validity: No new run. Consolidates architecture-specific evidence metrics from existing validation750, aggregate test450, and validation hard50 artifacts; evidence metrics are not treated as interchangeable.
+- Claim language: Analysis-only close-off table. Validation results are development evidence; locked test450 values are aggregate-only. Does not authorize row-level holdout tuning or any benchmark-comparable claim. Describes hybrid_structured_events as hybrid LLM extraction plus deterministic normalization/projection.
+- Artifacts: `docs/research/gan2026_failure_mode_comparison_table_2026-06-12.md`.
+
 ### `gan2026_closeoff_report_2026-06-12`
 - Date/split: `2026-06-12`; `validation+test`; `1200` rows.
 - Pipeline: `gan2026_closeoff_synthesis`; mode `analysis-only`; replay `analysis_only`.
