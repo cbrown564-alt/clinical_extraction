@@ -2,10 +2,15 @@
 
 Date: 2026-06-12
 
-Status: next major Gan 2026 development phase. This plan supersedes the
+Status: Phase 5 contracts implemented; Phase 6 runner work is next. This plan supersedes the
 previous assumption that Gan 2026 should close immediately after the
 `hybrid_structured_events` close-off report. It does not authorize new holdout
 use, test-row inspection, or benchmark-facing claims.
+
+Phase 5 implementation note: the tested contract surface lives in
+`docs/design/gan2026_agentic_phase5_contracts.md`,
+`src/clinical_extraction/tasks/seizure_frequency/gan2026/agentic/`, and
+`tests/test_gan2026_agentic_phase5_contracts.py`.
 
 ## Decision
 
