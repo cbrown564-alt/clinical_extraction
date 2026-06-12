@@ -201,8 +201,7 @@ Artifacts:
 
 ## 3b. Phase 6 — All-9 LLM-only scale-up (execution plan, 2026-06-12)
 
-**Status: in progress — scoring foundation landed, extractor/runner/audit + runs
-remain.** This section is the pick-up point for the next session. The user
+**Status: complete for the LLM-only-first all-9 slice (2026-06-12).** The user
 authorized Phase 6 *and* the Phase 7 full-200 audit (2026-06-12) and chose to do
 the **LLM-only family first, end-to-end, with gpt-4.1-mini only** — i.e. take one
 architecture from SF-only to all-9 entities on dev and through the frozen
@@ -221,7 +220,7 @@ deferred to a later pass.
    registered immutably, with the overall headline and per-entity table vs
    0.87/0.90, bootstrap CI, and dev→audit gap — the benchmark-comparable number.
 
-### Already done (2026-06-12, committed as the foundation)
+### Completed implementation and runs (2026-06-12)
 
 - **Per-entity match policy in `scoring.py`** (the protocol §2 generalization):
   `benchmark_ignore_for(entity)` / `semantic_ignore_for(entity)` and the
@@ -229,67 +228,55 @@ deferred to a later pass.
   builders. Policy encoded: CUIPhrase always ignored; **Certainty + Negation
   ignored for SeizureFrequency only** (guideline L17/L19), in scope for every
   other entity; CUI kept in the benchmark headline, dropped in the semantic
-  variant. Smoke-tested; `tests/test_exectv2_scoring.py` still green (8/8).
-  This is the only code landed; everything below is still to build.
+  variant.
+- **Overall scorer in `scoring.py`**: `score_overall(gold, pred, entities,
+  config_for)` micro-averages per-item mention counts and per-letter
+  `(letter, entity)` presence cells while returning the per-entity breakdown.
+  Gold-vs-gold overall/per-entity behavior is pinned in
+  `tests/test_exectv2_scoring.py`.
+- **All-9 LLM-only single-pass extractor**:
+  `llm/llm_only_all_entities.py` adds the entity-tagged output schema,
+  registry-generated prompt vocabulary, unknown-entity drop, per-mention
+  entity-aware attribute repair, evidence gate, mixed-entity row schema, and
+  semantic/benchmark/phrase-only summaries.
+- **Dev runner**: `runners/run_llm_only_all.py` mirrors the SF runner with
+  `--mode {live,prompt-only}`, `--pilot`, `--resume`, `--max-tokens 4000`, JSONL
+  checkpoints, Markdown reports, and overall + per-entity score tables.
+- Verification: focused ExECTv2 suite `146 passed`; 2-letter prompt-only runner
+  smoke completed and scratch artifacts were removed.
+- **Live pilot/dev runs**:
+  - Pilot25: `0` call failures, `0` parse failures, `162/170`
+    evidence-valid mentions; semantic overall F1 `0.108` per-item / `0.262`
+    per-letter; phrase-only `0.190` / `0.420`; benchmark with-CUI `0.000`.
+  - Dev140: `0` call failures, `0` parse failures, `988/1049`
+    evidence-valid mentions; semantic overall F1 `0.087` per-item / `0.236`
+    per-letter; phrase-only `0.143` / `0.346`; benchmark with-CUI `0.000`.
+    Per-entity semantic item F1 is noncompetitive across the board, with the
+    best cells Diagnosis `0.176` and Investigations `0.328`.
+- **Frozen full-200 overall audit**:
+  `experiments/exectv2_audit_llm_only_all_entities_full200_gpt41mini_20260612.md`
+  and `.jsonl`, registered as
+  `exectv2_audit_llm_only_all_entities_full200_gpt41mini_20260612`.
+  Audit result: `0` call failures, `0` parse failures, `1391/1492`
+  evidence-valid mentions; semantic overall F1 `0.084` per-item
+  (`95% CI 0.071-0.099`) / `0.232` per-letter (`0.201-0.263`), phrase-only
+  `0.147` / `0.362`, benchmark with-CUI `0.000` / `0.000`.
 
-### Build steps (in order)
+### Result interpretation
 
-1. **Overall scorer** — add to `scoring.py` a `score_overall(gold, pred,
-   entities, config_for)` that returns `(overall EntityScore, per_entity dict)`.
-   Aggregation: per-item = `sum_prf1` over the per-entity `per_item` PRF1s
-   (micro-average across every mention of every entity); per-letter = `sum_prf1`
-   over the per-entity `per_letter` PRF1s (micro-average across every
-   (letter, entity) presence cell). `config_for` is `benchmark_config_for` for
-   the headline and `semantic_config_for` for the CUI-dropped variant. Document
-   the aggregation choice (micro over entity cells) in the docstring — the
-   benchmark's own overall-aggregation method is a point estimate; ours adds the
-   per-entity breakdown and a CI at audit. Pin gold-vs-gold = 1.0 overall and
-   per entity in `tests/test_exectv2_scoring.py`.
+The all-9 single-pass LLM-only architecture is **contract-clean but not
+competitive**. The prompt reliably produces parseable JSON with exact-substring
+evidence on most mentions, but it over-emits broad surface phrases (for example,
+medication phrase including dose/frequency where gold uses a narrower basis),
+misses exact benchmark attribute bundles, and fails rare/structured cells such as
+BirthHistory, Onset, and WhenDiagnosed. The dev→audit gap is small
+(`0.087 -> 0.084` per-item semantic; `0.236 -> 0.232` per-letter semantic), so
+the poor result generalizes rather than indicating a dev-only accident.
 
-2. **All-9 extractor** — new `llm/llm_only_all_entities.py` (do **not** overload
-   the SF-only `llm_only_single_pass.py`; reuse its gates). Design:
-   - `MentionRecord` gains an `entity` field (one of the nine names). Reuse
-     `parse_extraction_json`, `_coerce_payload`, `check_evidence`,
-     `repair_attributes` from `llm_only_single_pass` — but `repair_attributes`
-     must look up the spec **per mention's entity** (`ENTITY_REGISTRY[m.entity]`),
-     not a single fixed spec. Drop mentions whose `entity` is not a registry key
-     (logged), same neutral-repair discipline.
-   - `to_predicted_letter` builds `PredictedMention(entity=m.entity, …)` so a
-     letter carries mixed-entity mentions; scoring already filters by entity via
-     `ExectLetter.entities(entity)`.
-   - **Prompt** (`build_prompt_input`): one brief covering all nine entities.
-     Generate the per-entity attribute vocabulary + closed-vocab values
-     **from `ENTITY_REGISTRY`** (don't hand-transcribe — drift risk), plus a
-     short plain-clinical definition per entity and 1–2 worked examples for the
-     high-frequency entities (PatientHistory 656, Diagnosis 572, Prescription
-     294, SF 263 mentions — these dominate the overall micro-F1, so spend the
-     prompt budget there). Keep ADR 0015 hygiene (no internal architecture
-     vocabulary); add a hygiene assertion to the test. `PROMPT_VERSION =
-     "exectv2_llm_only_all_entities_v0.1"`. Bump `max_tokens` (all-9 output is
-     much larger than SF-only — start ~4000, watch for truncation parse fails).
-   - Reuse the resume/checkpoint plumbing verbatim from `llm_only_single_pass`
-     (`read_completed`/`pending_items`/`merge_rows`, key=`letter_id`); the row
-     schema must carry `entity` on each predicted/gold mention so the audit's
-     `_reconstruct_from_rows` can rebuild mixed-entity letters.
-
-3. **Dev runner** — `runners/run_llm_only_all.py` mirroring `run_llm_only_sf`
-   (`--model`, `--mode {live,prompt-only}`, `--pilot N`, `--resume`). Report:
-   overall per-item/per-letter F1 (benchmark + semantic) and a per-entity table
-   vs the published per-entity cells (BirthHistory 0.97, Diagnosis 0.85,
-   EpilepsyCause 0.90, Investigations 0.95, Onset 0.96, PatientHistory 0.78,
-   Prescription 0.87, SF 0.66, WhenDiagnosed 0.91; overall 0.87/0.90 — protocol
-   §1). Pilot 25 → confirm 0 failures → full dev 140 (detached `Start-Process`;
-   resume is in place).
-
-4. **Overall Phase 7 audit** — add an `--entities all` (or a sibling
-   `run_phase7_audit_overall.py`) path that runs the all-9 extractor over
-   `load_letters()` (full 200) and scores `score_overall`. Reuse the bootstrap
-   CI (resample letters; aggregate overall F1 on each resample — extend
-   `_LetterRecord` to hold per-entity tallies, or bootstrap on the overall
-   per-letter item counts), the dev→audit gap, the immutable report + registry
-   row. Headline target becomes **overall 0.87 / 0.90**, with the per-entity
-   table as the breakdown. Keep the SF-cell audit runner untouched (immutable
-   record); generalize by parameter, not by editing the frozen path.
+The with-CUI benchmark headline remains `0.000` by construction because the
+LLM-only slice emits no CUI. Semantic (CUI-dropped) is the meaningful LLM-only
+quality read for this pass. A true with-CUI headline requires the shared
+all-entity phrase→CUI lexicon/post-step, not more free-form CUI prompting.
 
 ### Known traps (decided, so the next session doesn't re-litigate)
 
@@ -319,7 +306,7 @@ deferred to a later pass.
 
 ### Exit criteria for the slice
 
-All-9 LLM-only scores on dev (overall + per-entity, both configs, 0 unexplained
-failures); the frozen full-200 audit is registered immutably with the overall
-headline vs 0.87/0.90, CI, and dev→audit gap; satellites 03/06 and the phase map
-(00 §2) updated with the numbers; discoveries log D17/D18 finalized.
+Met for the LLM-only-first scope: all-9 LLM-only scored on dev and full-200
+audit; frozen audit registered immutably with overall headline, CI, dev→audit
+gap, and per-entity table. Deterministic and hybrid all-9 builds remain deferred
+as separate Phase 6-family work, not part of this completed LLM-only slice.

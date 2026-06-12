@@ -1,20 +1,24 @@
 ﻿# Project Status
 
-Last updated: 2026-06-07
+Last updated: 2026-06-12
 
 ## Active Objective
 
-Continue the Gan 2026 architecture reset as validation-development mechanics:
-make the pipeline legible, stage-owned, evidence-traced, and ablatable before
-any LLM-verifier or holdout-facing work. No benchmark-comparable claim is
-authorized. The reset path is:
+Continue ExECTv2 all-entity scale-up after completing the LLM-only Phase 6 slice.
+The LLM-only family now has a dev140 read and frozen full-200 overall audit; the
+next work is deciding whether to build the hybrid all-9 path or the deterministic
+per-entity engines first. The completed LLM-only slice is:
 
 ```text
-Extract -> Select / Clinical Assessment -> Normalize -> Project -> Verify -> Render / Score
+All-entity LLM call -> schema/evidence gates -> mixed-entity prediction -> overall scoring
 ```
 
 Controlling thread:
-`docs/research/gan2026_architecture_reset_synthesis_and_next_questions_2026-06-06.md`.
+`docs/plans/exectv2/03_llm_only_architecture.md` §3b.
+
+The user authorized Phase 6 plus the frozen full-200 Phase 7 overall audit on
+2026-06-12. The LLM-only all-9 audit is complete; future hybrid/deterministic
+all-9 work should return to `dev` before any further full-200 audit.
 
 ## Three Big-Picture Workstreams (planned 2026-06-07)
 
@@ -333,56 +337,20 @@ full rationale.
 
 ### Now
 
-- **DONE 2026-06-07**: made the light canonical-runner selection that both new
-  plans needed first — recorded in
-  `docs/research/gan2026_canonical_runner_selection_2026-06-07.md`:
-  `Gan2026PipelineV1` (deterministic) and `reset_clinical_assessment_pipeline`
-  (hybrid) confirmed; `llm_only_direct_labeler` retained as the one-shot
-  fully-LLM baseline; `hybrid_structured_events` selected as the canonical
-  fully-LLM Option-A runner. Noncanonical `llm_only_*` modules have now been
-  retired into lineage documentation rather than kept as active code.
-- **DONE 2026-06-07** (via Phase F, not a separate step): the Option-A chain is
-  already assembled — `Gan2026PipelineRunner` (`gan2026/runner.py`) wires
-  `llm_only_direct_labeler` and `hybrid_structured_events` through the same
-  deterministic projection_render→score→route→decision stages the hybrid
-  config uses, with verified artifact-shape compatibility (comparison plan
-  Phase 0's prior "remaining mechanical step" is resolved).
-- **DONE 2026-06-07**: grilled, locked, and **implemented**
-  `deterministic_canonical_pipeline` as a new `PipelineArchitecture`
-  configuration on `Gan2026PipelineRunner` — four named, stage-owned,
-  ablatable stages (Extract, Normalize, Select & Render, Evidence Trace Check)
-  in the new `deterministic_canonical_stages.py` module, each a thin wrapper
-  over the existing `deterministic` internals with no new wrapper schemas, a
-  shared `run_split` branch with `prompt_version` derived from the
-  architecture string, and an equivalence test
-  (`tests/test_gan2026_deterministic_canonical_pipeline.py`) asserting
-  byte-identical `output`/`diagnostics` against `deterministic` on a small
-  known-row sample — the directly assertable proof that "rules unchanged"
-  held. Full gan2026 suite green at 992 passed. See
-  `docs/decisions/0013-stage-deterministic-canonical-config-before-generalizing-its-rules.md`,
-  `docs/decisions/0014-evidence-trace-check-not-verify-for-deterministic-canonical-pipeline.md`,
-  and `CONTEXT.md` ("Canonical Deterministic Pipeline", "Select & Render",
-  "Evidence Trace Check").
-- **Next for Phase 0**: implement `llm_only_canonical_pipeline` as the
-  remaining new `PipelineArchitecture` configuration on the existing unified
-  runner (see the Workstream 1 description above), rather than as a
-  standalone forked module — this is the part of Phase 0 that is genuinely
-  still open.
-- Begin HN2 (bounded vague-with-window rendering) on validation-only proxy
-  slices, per the recommended execution order in
-  `docs/research/gan2026_test450_null_reduction_synthesis_and_hypotheses_2026-06-07.md`
-  section 8: build a `vague_count` proxy slice, an ablatable `Project`-owned
-  component, then a frozen `test450` aggregate audit using the same protocol
-  as `docs/research/gan2026_test450_hn1_frozen_aggregate_audit_2026-06-07.md`.
-- Run the reset-native pipeline on Qwen validation750 using the refreshed
-  GPT-4.1-mini multi-month contract replay as the comparator state.
-- Treat older parallel/adjudicator runs as historical evidence only; do not use
-  their deleted runner families as active execution or Observatory replay paths.
-- Continue replacing stale mentions of the intermediate
-  `selected_source_id_invalid` provenance tail in reset-thread reads as those
-  docs are touched.
+- Decide the next all-entity architecture family: hybrid all-9 first is likely
+  more promising than a broad deterministic build because the all-entity
+  LLM-only result is contract-clean but far below target on exact phrase/feature
+  bundles.
+- If continuing LLM-only, do it as a new prompt iteration on `dev` only; do not
+  tune against the full-200 audit rows.
 
 ### Next
+
+- Build a hybrid all-9 plan around entity-specific surface phrase shaping and
+  deterministic representation/CUI post-steps, using the LLM-only failure mode
+  as evidence that one broad single-pass prompt is not enough.
+- Keep the shared all-entity phrase-to-CUI lexicon as the gating item for any
+  with-CUI benchmark headline in LLM-only or hybrid outputs.
 
 - **DONE 2026-06-07**: completed cleanup-plan Phases A-E and follow-up
   correctness fixes:
@@ -447,6 +415,31 @@ full rationale.
 
 ### Done Recently
 
+- 2026-06-12: Completed the ExECTv2 Phase 6 LLM-only all-9 slice end to end.
+  - Pilot25 and dev140 were contract-clean (`0` call failures, `0` parse
+    failures). Dev140: `988/1049` evidence-valid mentions, semantic overall
+    F1 `0.087` per-item / `0.236` per-letter, phrase-only `0.143` / `0.346`,
+    benchmark with-CUI `0.000` / `0.000`.
+  - Frozen full-200 overall audit is registered as
+    `exectv2_audit_llm_only_all_entities_full200_gpt41mini_20260612`:
+    `1391/1492` evidence-valid mentions, semantic overall F1 `0.084`
+    (`95% CI 0.071-0.099`) per-item / `0.232` (`0.201-0.263`) per-letter,
+    phrase-only `0.147` / `0.362`, benchmark with-CUI `0.000` / `0.000`.
+  - Reading: the single-pass all-entity prompt is structurally reliable but not
+    competitive; it over-emits broad phrases and misses exact benchmark
+    phrase/attribute bundles. With-CUI remains zero by construction because the
+    LLM-only slice emits no CUI.
+- 2026-06-12: Picked up Phase 6 from commit `8d7ecfbc` and landed the
+  executable all-9 LLM-only foundation.
+  - Added `score_overall` in `exectv2/scoring.py`, micro-averaging per-item
+    mentions and per-letter `(letter, entity)` cells over all requested
+    entities; gold-vs-gold overall/per-entity tests are pinned.
+  - Added `llm/llm_only_all_entities.py` and
+    `runners/run_llm_only_all.py`: registry-generated all-entity prompt,
+    entity-aware schema repair, evidence gate, mixed-entity row schema,
+    semantic/benchmark/phrase-only summaries, and prompt-only/resumable runner.
+  - Focused ExECTv2 suite is green at `146 passed`; a 2-letter prompt-only
+    runner smoke test completed and scratch artifacts were removed.
 - 2026-06-07: Completed repo cleanup Phase F.
   - `src/clinical_extraction/tasks/seizure_frequency/gan2026/runner.py`
     provides the shared runner/configuration surface used by the CLI registry

@@ -1,13 +1,13 @@
 # Satellite 06 — Evaluation & Benchmark Protocol
 
 Parent: [[00_overarching_implementation_plan]] · Phase 7 (+ governs all phases)
-Status: **SF audit executed (2026-06-11, authorized).** The match policy, split
-protocol, and sensitivity reporting are fixed and wired into the SF scorer and
-report builders, and the authorized frozen **full-200 SF audit has been run once
-per architecture** (rules / llm_only / hybrid) with bootstrap CIs and the
-dev→audit gap (see §8). Headline result: **no single architecture clears the SF
-cell (0.66/0.68)** on the with-CUI headline; best is rules at 0.321/0.539. The
-all-entity overall audit remains gated on the Phase 6 9-entity build.
+Status: **SF audit executed (2026-06-11, authorized) and first all-entity overall
+audit executed for LLM-only (2026-06-12, authorized).** The frozen full-200 SF
+audit has been run once per SF architecture (rules / llm_only / hybrid); no
+single architecture clears the SF cell (0.66/0.68), best rules at 0.321/0.539.
+The all-entity LLM-only audit is contract-clean but not competitive: semantic
+overall F1 0.084 per-item / 0.232 per-letter; benchmark with-CUI 0.000/0.000.
+Overall audits for hybrid and deterministic all-9 remain future gated work.
 
 ## Purpose
 
@@ -155,11 +155,14 @@ result, which is the paper's contribution.
   `sf_benchmark` side-by-side; the Phase 7 audit runner
   (`runners/run_phase7_audit.py`) adds the bootstrap CI over letters and the
   dev→audit gap columns (see §8).
-- ~~Exit (Phase 7): authorized full-200 audit for each architecture~~ —
+- ~~Exit (Phase 7): authorized full-200 audit for each SF architecture~~ —
   **DONE for the SF cell** (2026-06-11): rules / llm_only / hybrid each audited
   once over the frozen full-200, registered immutably, with CIs + gap + gates.
-  No architecture clears 0.66/0.68 (§8). The **overall all-entity** audit stays
-  open behind the Phase 6 9-entity build.
+  No architecture clears 0.66/0.68 (§8).
+- **DONE for the LLM-only all-entity overall slice** (2026-06-12): the all-9
+  single-pass LLM-only extractor was audited once over the frozen full-200
+  surface with bootstrap CI, dev→audit gap, gates, and per-entity table (§8).
+  It does not clear the 0.87/0.90 target.
 
 ## 8. Implementation status (2026-06-11)
 
@@ -227,17 +230,39 @@ Readings:
 - 0 call/parse failures on all live runs; hybrid routed 54/397 with the standing
   taxonomy. Full gates in each `experiments/exectv2_audit_*` report.
 
+**All-entity LLM-only overall audit — DONE (2026-06-12, authorized).**
+`runners/run_phase7_audit_overall.py` ran the all-9 LLM-only extractor over
+`load_letters()` and scored `score_overall` under semantic (CUI dropped),
+benchmark (with CUI), and phrase-only configs. It writes
+`experiments/exectv2_audit_llm_only_all_entities_full200_gpt41mini_20260612.*`
+and registers
+`exectv2_audit_llm_only_all_entities_full200_gpt41mini_20260612`.
+
+Result — full 200, gpt-4.1-mini, all nine entities:
+
+| Config | per-item F1 | 95% CI | per-letter F1 | 95% CI | dev→audit |
+| --- | ---: | ---: | ---: | ---: | --- |
+| semantic (CUI dropped) | **0.084** | 0.071-0.099 | **0.232** | 0.201-0.263 | 0.087→0.084 / 0.236→0.232 |
+| benchmark (with CUI) | **0.000** | 0.000-0.000 | **0.000** | 0.000-0.000 | 0.000→0.000 / 0.000→0.000 |
+| phrase_only | 0.147 | — | 0.362 | — | 0.143→0.147 / 0.346→0.362 |
+
+Gate health: `0` call failures, `0` parse/schema failures, `1391/1492`
+evidence-valid mentions (`0.9323`). Per-entity semantic item F1 remains far
+below the published cells: Diagnosis `0.169`, Investigations `0.324`,
+EpilepsyCause `0.032`, PatientHistory `0.011`, SeizureFrequency `0.004`, and
+BirthHistory/Onset/WhenDiagnosed `0.000`.
+
+Reading: the LLM-only all-entity single-pass path is structurally reliable but
+not competitive. It over-emits broad phrases and misses exact benchmark
+phrase/attribute bundles. The benchmark with-CUI score is structurally zero
+because the LLM-only slice emits no CUI; semantic is the meaningful quality read
+for this architecture.
+
 **Open items:**
 
 1. The `test` split (60) remains untouched; a single confirmatory `test` read is
    available under §3 but was not needed for this SF-cell audit (the full-200 is
    the benchmark-comparable surface). It stays reserved.
-2. The **overall all-entity** audit (the 0.87/0.90 headline) is gated on the
-   Phase 6 9-entity build; the same `run_phase7_audit` extends to it by
-   parameterizing the entity set. **In progress (2026-06-12):** the LLM-only-first
-   slice (LLM-only all-9 on dev → frozen full-200 overall audit, gpt-4.1-mini) is
-   chosen and authorized; the overall audit path runs the all-9 LLM-only extractor
-   over `load_letters()` and scores `score_overall` (benchmark + semantic) with
-   per-entity breakdown vs the published cells. Build steps and decided traps:
-   [[03_llm_only_architecture]] §3b. Keep the immutable SF-cell audit runner path
-   untouched — generalize by parameter/sibling, not by editing the frozen record.
+2. The **overall all-entity audits for hybrid and deterministic** remain gated on
+   building those all-9 architectures. Keep the immutable SF-cell audit runner
+   untouched; use sibling/parameterized paths for future overall audits.

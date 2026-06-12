@@ -339,7 +339,10 @@ mention of every entity, overall per-letter = micro-average over every
 with-CUI `benchmark` overall collapses toward 0 on every entity, exactly as the
 SF-cell audit showed.
 **Evidence.** SF-cell Phase 7 audit: llm_only headline (with CUI) 0.000 while
-`sf_semantic` 0.122/0.246 (protocol 06 §8).
+`sf_semantic` 0.122/0.246 (protocol 06 §8). Full all-entity LLM-only audit
+(2026-06-12): semantic overall F1 `0.084` per-item / `0.232` per-letter, while
+with-CUI benchmark overall is `0.000` / `0.000`; phrase-only is `0.147` /
+`0.362`, confirming nontrivial extraction is erased by the CUI-strict headline.
 **Rules/LLM implication.** Report the LLM-only overall under **both** configs,
 lead with the CUI-dropped `semantic` overall (its real attribute-level quality),
 and state plainly that the literal with-CUI 0.87 bar needs the **shared
@@ -347,7 +350,9 @@ phrase→CUI lexicon extended to all 9 entities** (a shared post-step, SF's live
 `deterministic/lexicon.py`) — a documented gating item, not an LLM-only defect.
 The dev→audit gap and per-entity breakdown carry the generalization story
 regardless of the CUI headline.
-Status: **firm (decided 2026-06-12); aggregation pending `score_overall` landing.**
+Status: **firm (decided and audited 2026-06-12); aggregation landed in
+`score_overall`, gold-vs-gold overall/per-entity behavior is pinned in tests,
+and the first all-entity LLM-only full-200 audit confirms the reporting caveat.**
 
 ---
 

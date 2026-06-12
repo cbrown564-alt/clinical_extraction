@@ -40,13 +40,13 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     SEIZURE_FREQUENCY,
     ExectAnnotation,
     ExectLetter,
-    load_letters_for_split,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     PHRASE_ONLY,
     SF_BENCHMARK,
     SF_SEMANTIC,
     EntityScore,
+    canonicalize_attribute_value,
     score_entity,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
@@ -237,8 +237,14 @@ def build_prompt_input(letter: ExectLetter) -> str:
             "LowerNumberOfTimePeriods": "lower end of period range",
             "UpperNumberOfTimePeriods": "upper end of period range",
             "TimePeriod": "exactly 'Day', 'Week', 'Month', or 'Year'",
-            "FrequencyChange": "exactly one of 'Decreased', 'Frequent', 'Increased', 'Infrequent', 'Same'",
-            "PointInTime": "exactly one of 'Birthday', 'DrugChange', 'LastClinic', 'Last_Month', 'Last_Week', 'Last_Year', 'Surgery'",
+            "FrequencyChange": (
+                "exactly one of 'Decreased', 'Frequent', 'Increased', "
+                "'Infrequent', 'Same'"
+            ),
+            "PointInTime": (
+                "exactly one of 'Birthday', 'DrugChange', 'LastClinic', "
+                "'Last_Month', 'Last_Week', 'Last_Year', 'Surgery'"
+            ),
             "TimeSince_or_TimeOfEvent": "exactly 'During' or 'Since'",
             "DayDate": "day of month as string",
             "MonthDate": "month as string",
@@ -390,13 +396,18 @@ def repair_attributes(
         if key not in spec.legal_attributes:
             warnings.append(f"dropped_illegal_attribute: {key!r}")
             continue
-        if key in spec.closed_vocab and value not in spec.closed_vocab[key]:
+        normalized_value = canonicalize_attribute_value(key, value)
+        if normalized_value != value:
             warnings.append(
-                f"dropped_illegal_value: {key!r}={value!r} not in "
+                f"normalized_attribute_value: {key!r}={value!r} -> {normalized_value!r}"
+            )
+        if key in spec.closed_vocab and normalized_value not in spec.closed_vocab[key]:
+            warnings.append(
+                f"dropped_illegal_value: {key!r}={normalized_value!r} not in "
                 f"{sorted(spec.closed_vocab[key])}"
             )
             continue
-        repaired[key] = value
+        repaired[key] = normalized_value
     return repaired, warnings
 
 
@@ -700,14 +711,6 @@ def _reconstruct_gold_letters(rows: Sequence[dict[str, Any]]) -> list[ExectLette
 def _reconstruct_pred_letters(rows: Sequence[dict[str, Any]]) -> list[ExectLetter]:
     letters: list[ExectLetter] = []
     for row in rows:
-        annotations = tuple(
-            ExectAnnotation(
-                entity=ENTITY_NAME,
-                text=m["text"],
-                attributes=m["attributes"],
-            )
-            for m in (row.get("predicted_mentions") or [])
-        )
         pred_letter = PredictedLetter(
             letter_id=row["letter_id"],
             mentions=tuple(
@@ -745,7 +748,7 @@ def write_report(
     summary = metadata.get("summary") or summarize_rows(rows)
     scores = summary.get("scores", {})
     lines = [
-        f"# ExECTv2 LLM-Only Single-Pass — SeizureFrequency",
+        "# ExECTv2 LLM-Only Single-Pass — SeizureFrequency",
         "",
         f"- JSONL: `{jsonl_path}`",
         f"- Prompt version: `{metadata.get('prompt_version', PROMPT_VERSION)}`",
@@ -814,7 +817,13 @@ def _emit_checkpoint(
     if report_path is not None and jsonl_path is not None:
         write_report(
             rows,
-            {"prompt_version": PROMPT_VERSION, "split": split, "model": model, "mode": mode, "summary": summary},
+            {
+                "prompt_version": PROMPT_VERSION,
+                "split": split,
+                "model": model,
+                "mode": mode,
+                "summary": summary,
+            },
             report_path,
             jsonl_path=jsonl_path,
         )
