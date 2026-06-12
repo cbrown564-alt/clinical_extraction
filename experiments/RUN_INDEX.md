@@ -51,6 +51,15 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Claim language: User-approved close-off confirmation for SE v0.6 on the full validation750 surface. Validation development evidence only, not a holdout or benchmark claim. Compared to the earlier DeepSeek SE Phase 1 validation750 result, v0.6 improves Purist from 609/742 rendered to 622/745 rendered and Pragmatic from 634/742 to 646/745.
 - Artifacts: `experiments/gan2026_v06_validation750_hybrid_structured_events_deepseek_2026-06-12.jsonl`, `experiments/gan2026_v06_validation750_hybrid_structured_events_deepseek_2026-06-12.md`.
 
+### `gan2026_agentic_pipeline_phase_plan_2026-06-12`
+- Date/split: `2026-06-12`; `none`; `0` rows.
+- Pipeline: `gan2026_agentic_pipeline_plan`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Research and implementation plan defining the final Gan 2026 agentic phases: matched-budget self-consistency, tool-using single-agent pipelines, and matched-budget multi-agent comparison.; model `none`.
+- Primary metrics: holdout_authorized=no, planned_phase_5=agent definition and matched-budget protocol, planned_phase_6=tool-using single-agent versus matched-budget multi-agent evaluation.
+- Evidence validity: No data run. The plan requires future tool traces to report evidence validity with architecture-specific definitions and explicit attribution.
+- Claim language: Planning artifact only. Does not authorize new holdout use, test-row inspection, or benchmark-facing claims. Establishes that multi-agent claims must be compared against single-agent self-consistency under matched model-call, token, tool-call, and aggregation budgets.
+- Artifacts: `docs/research/gan2026_agentic_pipeline_phase_plan_2026-06-12.md`.
+
 ### `gan2026_three_way_comparison_validation750_deterministic_phase2_gan_shorthand_generalized_2026-06-09`
 - Date/split: `2026-06-09`; `validation`; `750` rows.
 - Pipeline: `deterministic`; mode `live`; replay `live`.

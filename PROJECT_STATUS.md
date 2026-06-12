@@ -4,13 +4,16 @@ Last updated: 2026-06-12
 
 ## Active Objective
 
-Close off the Gan 2026 seizure-frequency pipeline before returning to ExECTv2.
+Complete the final Gan 2026 agentic-pipeline phases before returning to
+ExECTv2.
 
 Current promoted Gan direction: `hybrid_structured_events` - an LLM extracts
 structured seizure-frequency events from raw note text, then deterministic
 normalization, projection, rendering, and scoring produce Gan-compatible output.
 
 Controlling synthesis: `docs/research/gan2026_closeoff_report_2026-06-12.md`.
+Next phase control surface:
+`docs/research/gan2026_agentic_pipeline_phase_plan_2026-06-12.md`.
 
 ## Recent Context
 
@@ -35,7 +38,9 @@ Controlling synthesis: `docs/research/gan2026_closeoff_report_2026-06-12.md`.
 - ExECTv2 Phase 6 is complete and parked. The all-entity LLM-only full-200
   audit was contract-clean but not competitive: semantic overall F1 `0.084`
   per-item / `0.232` per-letter, benchmark with-CUI `0.000` / `0.000`.
-  Resume ExECTv2 only after Gan is accepted as closed for this cycle.
+- User reframed Gan as having two final phases: define and implement a
+  matched-budget agentic comparison, then test tool-using single agents against
+  multi-agent pipelines before Gan is accepted as closed for this cycle.
 
 ## Guardrails
 
@@ -53,35 +58,50 @@ Controlling synthesis: `docs/research/gan2026_closeoff_report_2026-06-12.md`.
 
 ## Active Priorities
 
-1. Mark Gan closed for this cycle unless the close-off report needs a final
-   wording patch from the SE v0.6 confirmation runs.
-2. Populate the Architecture Thesis Scorecard from existing Gan artifacts:
-   validation performance, frozen holdout performance, validation-to-test gap,
-   evidence trace caveats, and modularity/auditability signal.
-3. Resume ExECTv2 planning on `dev`; hybrid all-9 is the likely next family.
+1. Execute Gan Phase 5: define the repo's agent concept, matched-budget
+   comparison protocol, and tool contracts.
+2. Design Gan Phase 6 implementation around single-agent self-consistency,
+   parser-as-tool, boundary-guide retrieval, and matched-budget multi-agent
+   comparison.
+3. Keep ExECTv2 parked until the agentic Gan phases are either completed or
+   explicitly deferred.
 
 ## Work Board
 
 ### Now
 
-- Decide whether the Gan close-off report needs a short addendum for the
-  completed DeepSeek/Qwen SE v0.6 validation750 confirmations.
-- Then mark Gan closed for this cycle and resume ExECTv2.
+- Turn the agentic phase plan into implementation tickets: runner surface,
+  budget accounting, parser-tool contract, boundary-guide reader contract, and
+  trace schema.
+- Predeclare the first validation-only smoke surface for matched-budget
+  single-agent self-consistency.
 
 ### Next
 
+- Prototype `parse_seizure_frequency_candidates` as an agent-callable tool,
+  with attribution separating tool-discovered candidates from model-selected
+  final answers.
+- Prototype a bounded `read_boundary_guide` tool over curated split-neutral
+  guidance snippets.
 - Produce a compact failure-mode table for `hybrid_structured_events` versus
-  deterministic and fully LLM comparators.
+  deterministic and fully LLM comparators, then reuse it to seed hard-slice
+  panels for the agentic comparison.
 
 ### Blocked
 
 - Any Gan holdout-facing rerun or row-level test analysis is blocked without
   explicit frozen-protocol authorization.
+- Any claim that a multi-agent pipeline is better is blocked until it is
+  compared against a single-agent condition with matched model-call, token,
+  tool-call, and aggregation budget.
 
 ### Backlog
 
 - Decide whether reset-native verifier/action-policy work should continue as a
   paper-facing transparency thread after the implementation close-off.
+- Populate the Architecture Thesis Scorecard from existing Gan artifacts:
+  validation performance, frozen holdout performance, validation-to-test gap,
+  evidence trace caveats, and modularity/auditability signal.
 - Revisit comparator-label preservation only if verifier reject/abstain policy
   becomes active again.
 - Revisit prior-visit/event-date context only if future residual analysis shows
@@ -89,6 +109,8 @@ Controlling synthesis: `docs/research/gan2026_closeoff_report_2026-06-12.md`.
 
 ### Done Recently
 
+- 2026-06-12: Added the Gan agentic-pipeline phase plan, making matched-budget
+  single-agent versus multi-agent tool-use comparison the next major Gan phase.
 - 2026-06-12: Completed user-approved SE v0.6 validation750 confirmations from
   the existing validation250 prefixes: DeepSeek `622/745` Purist and Qwen
   `638/746` Purist rendered-correct validation-only results.
@@ -107,6 +129,8 @@ Controlling synthesis: `docs/research/gan2026_closeoff_report_2026-06-12.md`.
 
 - Gan close-off report:
   `docs/research/gan2026_closeoff_report_2026-06-12.md`
+- Gan agentic-pipeline phase plan:
+  `docs/research/gan2026_agentic_pipeline_phase_plan_2026-06-12.md`
 - Frozen `test450` Phase 4 comparison:
   `experiments/gan2026_test450_phase4_comparison_report_gpt41mini_2026-06-10.md`
 - GPT-4.1-mini Phase 3 validation750 comparison:
