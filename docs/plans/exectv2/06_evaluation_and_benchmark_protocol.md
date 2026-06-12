@@ -75,6 +75,30 @@ headline is the strict, with-CUI cell, shown next to the lenient phrase-only
 cell. Phase 6 generalizes the same three-tier shape per entity
 (`phrase_only` / `<entity>_semantic` / `<entity>_benchmark`).
 
+**Phase 6 per-entity policy (landed 2026-06-12).** The per-entity ignored-set is
+now in code: `scoring.py:benchmark_config_for(entity)` /
+`semantic_config_for(entity)`. Each entity ignores `{CUIPhrase}` under the
+benchmark config (plus `{CUI}` under semantic); **SeizureFrequency additionally
+ignores `{Certainty, Negation}`** as the sole guideline carve-out (D2/D18,
+L17/L19). These builders are the single source of truth the all-9 scorer and
+runners read — no per-entity ignore-set is hand-transcribed.
+
+**Overall aggregation (Phase 6).** "Overall" F1 = micro-average across entity
+cells: per-item sums tp/fp/fn over every mention of every entity; per-letter sums
+over every (letter, entity) presence cell (`score_overall` via `sum_prf1` over the
+per-entity PRF1s). The per-entity breakdown is reported alongside so a single weak
+cell (SF, PatientHistory) is visible, not buried in the micro-average. The
+benchmark reports an overall point estimate; we add the breakdown and a bootstrap
+CI at audit.
+
+**LLM-only with-CUI caveat (D19).** The LLM-only family emits no CUI, so its
+`benchmark` (with-CUI) overall collapses toward 0 on every entity by construction.
+Its real quality is the `semantic` (CUI-dropped) overall; both are reported,
+leading with semantic. The literal with-CUI 0.87 bar requires the shared
+phrase→CUI lexicon extended to all 9 entities — a shared post-step (SF's is
+`deterministic/lexicon.py`), flagged as the gating item, not built in the
+LLM-only slice.
+
 ## 3. Split usage
 
 - **`dev`**: all development, iteration, ablation, prompt tuning. Unlimited reads.
@@ -210,4 +234,10 @@ Readings:
    the benchmark-comparable surface). It stays reserved.
 2. The **overall all-entity** audit (the 0.87/0.90 headline) is gated on the
    Phase 6 9-entity build; the same `run_phase7_audit` extends to it by
-   parameterizing the entity set.
+   parameterizing the entity set. **In progress (2026-06-12):** the LLM-only-first
+   slice (LLM-only all-9 on dev → frozen full-200 overall audit, gpt-4.1-mini) is
+   chosen and authorized; the overall audit path runs the all-9 LLM-only extractor
+   over `load_letters()` and scores `score_overall` (benchmark + semantic) with
+   per-entity breakdown vs the published cells. Build steps and decided traps:
+   [[03_llm_only_architecture]] §3b. Keep the immutable SF-cell audit runner path
+   untouched — generalize by parameter/sibling, not by editing the frozen record.

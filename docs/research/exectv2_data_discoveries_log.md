@@ -288,7 +288,66 @@ PatientHistory for a per-entity review (decide whether the match phrase should b
 surface span, col6 canonical, or a finding-aware key). Do **not** blanket-map.
 **LLM implication.** Per-entity phrase target differs; the LLM prompt/eval must
 match each entity's chosen phrase basis, not one rule for all nine.
-Status: **firm (full corpus, 2026-06-10).**
+Status: **firm (full corpus, 2026-06-10).** **RESOLVED (2026-06-12, Phase 6
+LLM-only slice):** the per-entity phrase basis is decided as **repair
+`text:=CUIPhrase` for {SeizureFrequency, Diagnosis} only** (col6 there is a clean
+surface-phrase cleanup), and **keep the raw col5 span for the other seven**
+(Investigations / Prescription / WhenDiagnosed / EpilepsyCause / Onset /
+BirthHistory / PatientHistory). Rationale: for the structured entities col6 is a
+*finding/concept normalization* (`EEG`→`abnormal-eeg`, `Lamotrigine-200mg…`→
+`lamotrigine`, often a non-substring), so it is not a valid phrase-match target;
+matching against it would score the LLM's surface phrase as wrong even when
+correct. Cost: phrase recall on Investigations (90% col5≠col6), WhenDiagnosed
+(82%), Prescription (71%) is understated against drifted col5 — a documented
+ceiling, reported per-entity in the audit (a `text≠CUIPhrase` divergence note),
+not silently absorbed. This is the loader's existing behavior
+(`data.py:_CUIPHRASE_REPAIR_ENTITIES`); the decision formalizes it as the policy
+rather than a placeholder. A future finding-aware match key for Investigations
+(score against the encoded finding, not the surface phrase) could lift those
+cells but is out of scope for the LLM-only slice.
+
+### D18 — Per-entity feature scope: Certainty/Negation apply to all entities except SeizureFrequency `[all]`
+**Discovery.** The benchmark "with all features" match includes `Certainty` and
+`Negation` for **every entity except SeizureFrequency**. SF is the sole carve-out
+(D2). Investigations and Prescription never carry them at all.
+**Evidence.** Guideline v9 L17 ("not allocating Certainty to Seizure Frequency"),
+L19 ("Negation should be assigned to all concepts except Seizure Frequency"); the
+gold profile shows Certainty/Negation populated on BirthHistory, Diagnosis,
+EpilepsyCause, Onset, PatientHistory, WhenDiagnosed, absent on Investigations and
+Prescription (not in their legal-attribute sets), and noise-only on SF.
+**Rules implication.** The deterministic all-9 build must emit Certainty/Negation
+for the six entities that take them; omitting them is a guaranteed exact-set miss
+(D1).
+**LLM implication.** The all-9 prompt must ask for Certainty/Negation on the six
+in-scope entities and **must not** ask for them on SF (it will hallucinate
+plausible values and tank the exact-set match). Per-entity feature scope, not one
+schema for nine.
+**Implementation.** Encoded in `scoring.py:benchmark_ignore_for(entity)` /
+`semantic_ignore_for(entity)` (2026-06-12): SF ignores `{CUIPhrase, Certainty,
+Negation}`; every other entity ignores only `{CUIPhrase}` under the benchmark
+config (plus `{CUI}` under the semantic config). The `*_config_for(entity)`
+builders are the single source of truth the all-9 scorer and runners read.
+Status: **firm (guideline + profile, 2026-06-12).**
+
+### D19 — Overall F1 is micro-averaged across entity cells; the LLM-only family cannot clear the with-CUI bar by construction `[all]`
+**Discovery.** The project headline ("beat overall 0.87 per item / 0.90 per
+letter with all features") aggregates across all nine entities. Two facts shape
+how the LLM-only slice reports it: (a) overall per-item = micro-average over every
+mention of every entity, overall per-letter = micro-average over every
+(letter, entity) presence cell — the aggregation chosen for `score_overall`
+(`sum_prf1` over the per-entity PRF1s); (b) the LLM emits **no CUI** (D3), so the
+with-CUI `benchmark` overall collapses toward 0 on every entity, exactly as the
+SF-cell audit showed.
+**Evidence.** SF-cell Phase 7 audit: llm_only headline (with CUI) 0.000 while
+`sf_semantic` 0.122/0.246 (protocol 06 §8).
+**Rules/LLM implication.** Report the LLM-only overall under **both** configs,
+lead with the CUI-dropped `semantic` overall (its real attribute-level quality),
+and state plainly that the literal with-CUI 0.87 bar needs the **shared
+phrase→CUI lexicon extended to all 9 entities** (a shared post-step, SF's lives in
+`deterministic/lexicon.py`) — a documented gating item, not an LLM-only defect.
+The dev→audit gap and per-entity breakdown carry the generalization story
+regardless of the CUI headline.
+Status: **firm (decided 2026-06-12); aggregation pending `score_overall` landing.**
 
 ---
 
@@ -309,7 +368,9 @@ Status: **firm (dev split).**
 
 ---
 
-_Next candidate discoveries to confirm: per-entity feature-scope table (which of
-Certainty/Negation/CUI apply to each of the 9 entities); the SF-vs-Diagnosis vs
-SF-vs-PatientHistory boundary rules (L131); whether the `Seizure type and
-frequency:` header reliably bounds SF context._
+_Next candidate discoveries to confirm: ~~per-entity feature-scope table~~
+(DONE — D18); the SF-vs-Diagnosis vs SF-vs-PatientHistory boundary rules (L131);
+whether the `Seizure type and frequency:` header reliably bounds SF context; the
+SF-vs-PatientHistory/Diagnosis count boundary at the all-9 scale (the LLM must
+keep a standalone history count out of SF — D4 — without dropping it from
+PatientHistory)._

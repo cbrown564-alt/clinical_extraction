@@ -61,7 +61,7 @@ held-out reads are **frozen, authorized audits**.
 | **3** | LLM-only Seizure-Frequency extractor | **DONE (2026-06-10) — per_entity phrase_only 0.486/0.698, sf_semantic 0.135/0.264; both beat det. baseline per-letter** · [[03_llm_only_architecture]] | none (dev-only) |
 | **4** | Hybrid Seizure-Frequency extractor | **DONE (2026-06-11) — dev140 gpt-4.1-mini: phrase_only 0.585/0.781 (best of any family; only per-letter to clear the 0.68 SF target), sf_benchmark 0.327/0.578; registered** · [[04_hybrid_architecture]] | none (dev-only) |
 | **5** | Three-way SF comparison + cross-pollination (mirror the Gan 2026 plan) | **Comparison harness DONE (2026-06-11) — `reports/three_way_comparison.py` + first dev artifact; cross-pollination ongoing** · [[05_experiment_harness_and_loops]], [[07_transparency_ablations_and_paper_outputs]] | none (dev-only) |
-| **6** | Scale all three architectures to the full 9-entity set | [[02_rules_based_architecture]], [[03_llm_only_architecture]], [[04_hybrid_architecture]] | none (dev-only) |
+| **6** | Scale all three architectures to the full 9-entity set | **IN PROGRESS (2026-06-12) — LLM-only-first slice chosen + authorized; per-entity match policy landed in `scoring.py`; extractor/runner/audit + runs remain. Full execution plan: [[03_llm_only_architecture]] §3b** · [[02_rules_based_architecture]], [[04_hybrid_architecture]] (deterministic + hybrid all-9 deferred) | none (dev-only) |
 | **7** | Full benchmark assault: clear 0.87/0.90 overall with all three; held-out + frozen full-200 audit | **SF-cell audit DONE (2026-06-11, authorized) — frozen full-200 run once per architecture; none clears 0.66/0.68 (best: rules 0.321/0.539); overall all-9 audit gated on Phase 6** · [[06_evaluation_and_benchmark_protocol]] §8 | **explicit user authorization** for held-out / full-200 audit |
 | **8** | Consolidate transparency, ablations, error analysis, paper tables/figures | [[07_transparency_ablations_and_paper_outputs]], [[08_paper_outputs_and_milestones]] | authorization for any final holdout numbers reported |
 
@@ -130,6 +130,17 @@ dev→audit gap, registered immutably (06 §8). **No architecture clears the SF 
 0.66/0.68** on the with-CUI headline — best is rules at 0.321/0.539, hybrid
 0.246/0.470, llm_only 0.000 (emits no CUI). The open work is the **all-entity
 scale-up (Phase 6)**, which then unlocks the *overall* 0.87/0.90 audit.
+
+**Phase 6 is now under way (2026-06-12).** The user authorized Phase 6 + the
+Phase 7 overall audit and chose the **LLM-only family first, end-to-end with
+gpt-4.1-mini**: take one architecture from SF-only to all-9 on dev and through the
+frozen full-200 audit before building the hybrid all-9 or the eight deterministic
+per-entity engines. The shared scoring foundation (per-entity match policy:
+`benchmark_config_for`/`semantic_config_for` in `scoring.py`) is landed and
+tested; the all-9 extractor (`llm/llm_only_all_entities.py`), its dev runner, the
+overall-aggregate scorer, and the overall Phase 7 audit path are the remaining
+build. Step-by-step execution plan with decided traps (CUI=0 headline is honest;
+D17 phrase basis resolved; output sizing): [[03_llm_only_architecture]] §3b.
 
 A note on the audit ordering: Phase 7 is normally "after dev is locked" for the
 whole entity set, but SF is locked and is the benchmark's hardest cell, so the
