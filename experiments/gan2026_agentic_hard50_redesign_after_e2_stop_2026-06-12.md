@@ -1,0 +1,408 @@
+# Gan 2026 Agentic Hard50 Redesign After E2 Stop
+
+Date: 2026-06-12
+
+Status: complete validation-cycle redesign artifact.
+
+## Scope
+
+This design responds to the completed fixed validation hard50 follow-up:
+
+```text
+E5 -> E1 -> E2, then stop before E3/E4
+```
+
+It supersedes only the unrun E3/E4 live designs in
+`experiments/gan2026_agentic_hard50_error_analysis_experiment_design_2026-06-12.md`.
+It does not change the scorer, split manifest, hard50 row list, prior run
+metrics, or holdout policy.
+
+The immediate question is now narrower:
+
+```text
+Can the boundary-guide signal be converted into high-precision, rescue-only
+action without parser candidates, broad context stuffing, or multi-agent roles
+that act as parallel final-labelers?
+```
+
+## Protocol Position
+
+- Work class: validation hard-slice redesign after a failed promotion gate.
+- Split: `gan2026_split_v1` validation only.
+- Primary surface: fixed validation hard50 manifest,
+  `experiments/gan2026_agentic_validation_hard50_manifest_2026-06-12.json`.
+- Scorer: existing Gan-compatible Purist first, Pragmatic side-car.
+- Saturation context: validation25 is no longer discriminative for agentic
+  variants; hard-slice, replay, and targeted panels remain the useful surfaces.
+- Holdout policy: no locked-test row inspection, no scorer change, and no
+  holdout-facing claim.
+
+## Evidence From E5/E1/E2
+
+| Artifact | Finding | Design implication |
+| --- | --- | --- |
+| E5 selective fallback replay | No promotable saved-trace policy; eligible policies made `0` wrong-to-correct changes. | Existing `single_agent_tools` and `multi_agent_matched` traces are not enough. Do not rescue the old branch by post-hoc fallback. |
+| E1 tool-context ablation | `direct_boundary_guide_only` reached `34/50` Purist with `5` wins and `1` loss versus no-tool; parser-only reached `21/50`; parser-plus-guide reached `19/50`. | Boundary guides are the only currently non-harmful tool context. Parser candidates must be excluded from new prediction-bearing prompts. |
+| E2 boundary-guide self-consistency | `34/50` Purist, `35/50` Pragmatic, `4` wins and `2` losses versus `single_self_consistency_temperature`; gate required at least `5` wins and at most `2` losses. | Four calls plus boundary guides contain signal, but not enough for promotion. The next branch must be rescue-only and explicitly block boundary demotions. |
+
+Concrete row pattern from validation hard50:
+
+| Source | Wins | Losses |
+| --- | --- | --- |
+| E1 boundary-guide-only vs no-tool | `7615`, `10677`, `10996`, `15193`, `15834` | `6131` |
+| E2 boundary-guide self-consistency vs reference | `6368`, `7615`, `10677`, `10996` | `5534`, `6131` |
+
+The E2 wins are mostly cluster, high-burden, benchmark-format, and
+current-versus-historical rescues. The losses are seizure-free or boundary
+demotions where the safer answer should have remained the comparator.
+
+## Redesign Principles
+
+1. Parser candidates are prohibited from prediction-bearing prompts in this
+   branch. They may appear only in no-call diagnostics or later attribution
+   audits.
+2. The default action is fallback to the direct or self-consistency comparator.
+   New designs must earn every changed label.
+3. Boundary guides should answer narrow clinical boundary questions, not dump
+   many rules into the prompt.
+4. The first rescue branch may only promote frequency-bearing, cluster-burden,
+   or higher-current-burden answers. It may not introduce seizure-free,
+   unknown, or no-reference labels over a frequency-bearing comparator.
+5. Multi-agent roles, if reopened, must produce typed intermediate evidence.
+   They must not be four independent final-labelers plus a coordinator.
+6. No validation250 or full-validation escalation is allowed until hard50 shows
+   high-precision rescues with bounded regressions.
+
+## New Experiment Sequence
+
+### D0 - Boundary-Guide Rescue Gate Replay
+
+Hypothesis: the saved E1/E2 boundary-guide traces contain a narrower
+rescue-only policy that was hidden by the broad E2 voting gate.
+
+Minimal change:
+
+- Replay saved E1 and E2 JSONL artifacts without model calls.
+- Use `single_self_consistency_temperature` as the default fallback comparator
+  for E2-derived policies.
+- Use `direct_no_tool_context` as the default fallback comparator for E1-derived
+  policies.
+- Evaluate only inference-available features: final labels, normalized label
+  kinds, vote counts, vote entropy, repair notes, raw decision labels, and
+  whether the candidate introduces a boundary label.
+
+Candidate policies:
+
+| Policy | Description | Promotion eligibility |
+| --- | --- | --- |
+| `unanimous_frequency_or_cluster_override` | Accept E2 boundary-guide self-consistency only when all four votes normalize to the same frequency-bearing or cluster label. | Eligible. |
+| `guide_and_vote_agree_override` | Accept only when E1 boundary-guide-only and E2 voted final agree after normalization and the agreed label is not seizure-free, unknown, or no-reference. | Eligible. |
+| `cluster_restore_only` | Accept a boundary-guide label only when it contains explicit cluster burden and the fallback lacks cluster burden. | Eligible as a narrow hybrid rule. |
+| `higher_burden_only` | Accept only frequency-bearing candidates that are strictly higher burden than a frequency-bearing fallback. | Eligible only if burden comparison uses existing label parser semantics and reports category changes. |
+| `boundary_demotion_block` | Always fallback when the boundary-guide candidate introduces seizure-free, unknown, or no-reference over a frequency-bearing or cluster fallback. | Eligible as a conservative guard. |
+
+Metrics:
+
+- Purist and Pragmatic accuracy.
+- Changed-label count.
+- Wrong-to-correct and correct-to-wrong transitions.
+- Changed-label precision.
+- Fallback rate.
+- Action counts by semantic kind transition.
+- Diagnostic hidden-family summaries, clearly marked non-runtime.
+
+Gate:
+
+- Promote a no-call policy only if it has at least `3` net Purist gains versus
+  its fallback, changed-label precision at or above `0.60`, and no more than `1`
+  Purist regression.
+- Any policy that uses hidden families, row IDs, gold labels, or source-order
+  facts is diagnostic only.
+- If no policy passes, D0 remains diagnostic and the branch moves to D1.
+
+Expected artifacts:
+
+```text
+experiments/gan2026_agentic_hard50_boundary_guide_rescue_replay_2026-06-12.jsonl
+experiments/gan2026_agentic_hard50_boundary_guide_rescue_replay_2026-06-12.md
+```
+
+### D1 - Boundary Audit Prompt V2
+
+Hypothesis: the model needs a compact boundary audit scaffold, not parser
+candidates or a larger prompt.
+
+Minimal change:
+
+- Add a one-call prompt variant with boundary-guide-only context.
+- Require the model to emit a structured audit before the final label:
+  - current frequency-bearing evidence;
+  - active semiologies and relative burden;
+  - cluster cadence and events-per-cluster burden;
+  - seizure-free, unknown, and no-reference hazards;
+  - rejected lower-burden or historical alternatives;
+  - final label and supporting evidence.
+- Keep model, scorer, repair, and output schema otherwise fixed.
+- Do not mention validation row IDs, gold labels, or hard50 family tags in the
+  prompt.
+
+Surface and row policy:
+
+- First run a validation micro-panel built from the already-reviewed hard50
+  signal:
+  `6368`, `7615`, `10677`, `10996`, `5534`, `6131`, `15193`, `15834`,
+  `3356`, `4690`, `9955`, `12422`.
+- The panel contains E2 rescues, E2 regressions, extra E1 rescues, and parser
+  harm sentinels.
+- Row IDs are for evaluation only; prompt text must remain row-agnostic.
+- Rerun fixed hard50 only if the panel passes.
+
+Metrics:
+
+- Purist and Pragmatic accuracy.
+- Wins and losses versus `single_self_consistency_temperature`.
+- Boundary demotion count.
+- Cluster-burden preservation count.
+- Evidence exact-substring rate where the artifact supports it.
+- Output-contract failures and schema/label repair counts.
+
+Gate:
+
+- On the micro-panel: at least `9/12` Purist correct, all E2 loss sentinels
+  must avoid boundary demotion, and no parser-context dependency.
+- On hard50: at least `5` wins and at most `1` loss versus
+  `single_self_consistency_temperature`, or changed-label precision at or above
+  `0.70` with no more than `1` regression.
+- If the prompt improves only by broad over-instruction, mark it diagnostic and
+  do not escalate.
+
+Expected artifacts:
+
+```text
+experiments/gan2026_agentic_boundary_audit_prompt_v2_panel_2026-06-12.jsonl
+experiments/gan2026_agentic_boundary_audit_prompt_v2_panel_2026-06-12.md
+experiments/gan2026_agentic_boundary_audit_prompt_v2_hard50_2026-06-12.jsonl
+experiments/gan2026_agentic_boundary_audit_prompt_v2_hard50_2026-06-12.md
+```
+
+### D2 - Direct Plus Boundary Critic Rescue-Only
+
+Hypothesis: boundary reasoning is useful as a critic over a direct answer, not
+as a replacement labeler.
+
+Minimal change:
+
+- Call 1: direct no-tool final-label prediction.
+- Call 2: boundary critic sees the note, direct answer, and compact boundary
+  guide. It emits one action:
+  - `keep`;
+  - `restore_cluster_burden`;
+  - `raise_current_burden`;
+  - `block_boundary_demotion`;
+  - `abstain`.
+- Deterministic action policy:
+  - accept `restore_cluster_burden` only when the critic cites cluster cadence
+    and events-per-cluster evidence;
+  - accept `raise_current_burden` only when the critic cites a current
+    higher-burden frequency-bearing event;
+  - never accept a critic override that introduces seizure-free, unknown, or
+    no-reference in v1;
+  - fallback to the direct answer for `keep`, `block_boundary_demotion`, and
+    `abstain`.
+
+Surface and row policy:
+
+- Run the D1 micro-panel first.
+- Run fixed hard50 only if panel output has no systemic schema, evidence, or
+  over-correction failure.
+- No validation250 escalation from D2 unless hard50 passes.
+
+Metrics:
+
+- Direct answer accuracy.
+- Critic raw proposed-label accuracy.
+- Conservative gated-final accuracy.
+- Changed-label precision for accepted critic actions.
+- Action counts by `restore_cluster_burden`, `raise_current_burden`,
+  `block_boundary_demotion`, and `abstain`.
+- Correct-to-wrong regressions caused by accepted critic actions.
+
+Gate:
+
+- Panel gate: no accepted boundary demotion and at least `4` correct accepted
+  rescue actions.
+- Hard50 gate: at least `5` wins and at most `1` loss versus
+  `single_self_consistency_temperature`, plus changed-label precision at or
+  above `0.70`.
+- If raw critic helps but gated critic does not, keep the raw critic artifact as
+  diagnostic and revise the action policy before any larger run.
+
+Expected artifacts:
+
+```text
+experiments/gan2026_agentic_direct_boundary_critic_rescue_panel_2026-06-12.jsonl
+experiments/gan2026_agentic_direct_boundary_critic_rescue_panel_2026-06-12.md
+experiments/gan2026_agentic_direct_boundary_critic_rescue_hard50_2026-06-12.jsonl
+experiments/gan2026_agentic_direct_boundary_critic_rescue_hard50_2026-06-12.md
+```
+
+### D3 - Evidence-First Role Redesign
+
+Hypothesis: multi-agent value, if any, should come from typed evidence coverage,
+not from multiple final labels.
+
+Minimal change:
+
+- Replace final-label specialist roles with bounded evidence roles:
+  - `frequency_fact_lister`: current frequency-bearing facts and active
+    semiologies only;
+  - `boundary_hazard_lister`: seizure-free, unknown, no-reference, negation,
+    and historical hazards only;
+  - `cluster_burden_lister`: cluster cadence, events per cluster, and whether
+    cluster burden changes the final label;
+  - `resolver`: one final label plus cited evidence role outputs.
+- Evidence roles cannot emit final labels.
+- Resolver must explicitly reject lower-burden and boundary alternatives when
+  it changes the fallback answer.
+
+Surface and row policy:
+
+- Run only if D1 or D2 passes its hard50 gate.
+- Compare against the best single-agent or two-call rescue-only condition under
+  a matched budget, not against an already-rejected weak branch.
+- Start on the D1 micro-panel, then fixed hard50.
+
+Metrics:
+
+- Resolver Purist and Pragmatic accuracy.
+- Evidence-role coverage counts.
+- Unsupported resolver selection count.
+- Wins/losses versus both `single_self_consistency_temperature` and the best
+  D1/D2 comparator.
+- Cost and model-call budget per row.
+
+Gate:
+
+- Panel: at least equal to the best D1/D2 condition with no unsupported
+  resolver selections.
+- Hard50: at least `5` wins and at most `1` loss versus the matched single-agent
+  comparator.
+- If D3 improves over old `multi_agent_matched` but not over the matched
+  D1/D2 comparator, it is diagnostic, not promoted.
+
+Expected artifacts:
+
+```text
+experiments/gan2026_agentic_evidence_first_roles_panel_2026-06-12.jsonl
+experiments/gan2026_agentic_evidence_first_roles_panel_2026-06-12.md
+experiments/gan2026_agentic_evidence_first_roles_hard50_2026-06-12.jsonl
+experiments/gan2026_agentic_evidence_first_roles_hard50_2026-06-12.md
+```
+
+### D4 - Split-Neutral Boundary Robustness Panel
+
+Hypothesis: a design that passes hard50 should also show mechanism-level
+robustness on split-neutral cases before validation250 escalation.
+
+Minimal change:
+
+- Create synthetic or source-near cases with predeclared labels and rationales.
+- Cover:
+  - current frequency versus remote seizure-free statements;
+  - cluster cadence plus events-per-cluster burden;
+  - multiple active semiologies with different burdens;
+  - unknown frequency versus no seizure-frequency reference;
+  - last-event-only statements;
+  - negated or hypothetical seizure statements;
+  - vague recurrence terms.
+- Run the best D1/D2/D3 candidate and its matched comparator.
+
+Metrics:
+
+- Pairwise consistency across paraphrases.
+- Purist correctness on synthetic expected labels.
+- Boundary demotion rate.
+- Cluster-burden preservation rate.
+- Evidence containment where synthetic text supports exact spans.
+
+Gate:
+
+- Use D4 as a mechanism check, not benchmark evidence.
+- A candidate with hard50 gains but poor D4 robustness is revise-only.
+- A candidate passing hard50 and D4 may be proposed for a validation250
+  development run with a separate written escalation reason.
+
+Expected artifacts:
+
+```text
+experiments/gan2026_agentic_boundary_robustness_panel_2026-06-12.jsonl
+experiments/gan2026_agentic_boundary_robustness_panel_2026-06-12.md
+```
+
+## Execution Order
+
+```text
+D0 -> D1 -> D2 -> D3 -> D4
+```
+
+D0 is the cheapest next action. D1 and D2 are the prediction-bearing redesign
+branches. D3 is blocked until at least one single-agent or two-call rescue-only
+branch passes hard50. D4 is a mechanism check before any broader validation run.
+
+## Rejected Or Deferred Paths
+
+- Parser-candidate prompt context is rejected for this branch because E1 showed
+  strong harm on hard50.
+- Broad parser-plus-guide context is rejected for this branch.
+- The original E3 boundary-safe prompt and E4 multi-agent role redesign remain
+  historical designs unless rewritten to satisfy this artifact's rescue-only
+  and no-parser constraints.
+- Validation250 and full validation750 are deferred until a hard50 gate passes.
+- Locked test450 remains unavailable for development or row-level analysis.
+
+## Attribution And Reporting Requirements
+
+Every D1-D4 live artifact must report:
+
+- raw model final label;
+- parser/schema-repaired decision label;
+- normalized vote or gated-final label, when applicable;
+- repair counts and semantic-kind transitions;
+- raw-wrong to final-correct and raw-correct to final-wrong transitions;
+- fallback, abstention, and accepted-action counts;
+- whether a changed label was model-owned, guide-owned, deterministic-gate-owned,
+  or mixed-provenance;
+- parser context disabled status.
+
+Do not describe any successful D-series artifact as `llm_only`. These are
+hybrid or mixed-provenance development artifacts whenever deterministic repair,
+voting, gating, or guide retrieval affects the final scorer-facing label.
+
+## Stop Rules
+
+- Stop the D-series branch if D0 and D1 both fail to produce any positive
+  changed-label precision.
+- Stop before D3 unless D1 or D2 passes hard50.
+- Stop before validation250 unless hard50 shows at least `5` wins with at most
+  `1` loss versus the matched comparator or a changed-label precision profile at
+  or above `0.70`.
+- Stop any branch that reintroduces parser candidates into prediction-bearing
+  prompts without a separate parser-context ablation.
+- Do not tune prompts, tools, gates, or repair logic from locked-test results.
+
+## Claim Boundary
+
+This is a validation-development redesign artifact. It can authorize no-call
+replay, validation micro-panel work, and fixed hard50 redesign experiments. It
+cannot support benchmark, holdout, or generalization claims.
+
+Paper-facing language should be limited to:
+
+```text
+After the first matched-budget tool and multi-agent variants regressed on a
+predeclared validation hard50 slice, follow-up validation analyses showed parser
+candidate context was harmful while boundary-guide-only context contained a
+small rescue signal. A second validation-cycle design therefore reframed agentic
+work as rescue-only boundary auditing with explicit fallback and attribution
+gates, rather than broad tool context or parallel final-labeling agents.
+```

@@ -111,6 +111,26 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Claim language: Validation development live smoke only, not an accuracy comparison or benchmark claim. Confirms that the agentic matched-budget runner can make live calls, parse prediction-bearing labels, score call-level outputs, and preserve tool/no-tool trace attribution. Validation25 live comparison remains the next scale-up before any multi-agent value claim.
 - Artifacts: `experiments/gan2026_agentic_matched_budget_validation1_live_smoke_2026-06-12.jsonl`, `experiments/gan2026_agentic_matched_budget_validation1_live_smoke_2026-06-12.md`.
 
+### `gan2026_agentic_hard50_tool_context_ablation_2026-06-12`
+- Date/split: `2026-06-12`; `validation`; `50` rows.
+- Pipeline: `agentic_tool_context_ablation`; mode `live`; replay `live`.
+- Model role: E1 one-call direct-label context ablation over fixed validation hard50: no tool context, parser only, boundary guide only, and parser plus boundary guide.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `direct-label parser/schema repair + deterministic normalized-label vote`.
+- Primary metrics: call_failures=0, decision_records=200, direct_boundary_guide_only_purist_correct=34, direct_no_tool_context_purist_correct=30, direct_parser_only_purist_correct=21, direct_parser_plus_boundary_guide_purist_correct=19, holdout_authorized=no, model_calls_attempted=200, non_harmful_contexts=['direct_boundary_guide_only'], parse_or_validation_failures=0, rows=50.
+- Evidence validity: Prediction-bearing validation hard50 development run: 200/200 decision records, 0 call failures, 0 parse/schema/label failures. Evidence substring metric not computed for this ablation artifact.
+- Claim language: Validation-development hard-slice result only. Parser context was harmful, while boundary-guide-only was non-harmful and improved to 34/50 Purist; E2 therefore used boundary guides only and excluded parser candidates.
+- Artifacts: `experiments/gan2026_agentic_hard50_tool_context_ablation_2026-06-12.jsonl`, `experiments/gan2026_agentic_hard50_tool_context_ablation_2026-06-12.md`.
+
+### `gan2026_agentic_hard50_redesign_after_e2_stop_2026-06-12`
+- Date/split: `2026-06-12`; `validation`; `50` rows.
+- Pipeline: `agentic_redesign_protocol`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Analysis-only validation-cycle redesign after E2 hard50 stop; reframes follow-up work as rescue-only boundary auditing with parser context excluded.; model `none`.
+- Primary metrics: e1_boundary_guide_only_purist_correct=34, e1_parser_only_purist_correct=21, e2_losses_vs_reference=2, e2_purist_correct=34, e2_wins_vs_reference=4, holdout_authorized=no, rows=50.
+- Evidence validity: No new prediction evidence. Consolidates E5/E1/E2 validation hard50 artifacts and predeclares D0-D4 surfaces, gates, and attribution requirements.
+- Supersedes: `gan2026_agentic_hard50_tool_self_consistency_2026-06-12`.
+- Claim language: Validation-development design artifact only. It supersedes only unrun E3/E4 live designs from the prior hard50 plan and does not authorize holdout use, scorer changes, or validation250/full-validation escalation without a D-series hard50 gate.
+- Artifacts: `experiments/gan2026_agentic_hard50_redesign_after_e2_stop_2026-06-12.md`.
+
 ### `gan2026_three_way_comparison_validation750_deterministic_phase2_gan_shorthand_generalized_2026-06-09`
 - Date/split: `2026-06-09`; `validation`; `750` rows.
 - Pipeline: `deterministic`; mode `live`; replay `live`.
@@ -672,6 +692,28 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Artifacts: `experiments/gan2026_section_claim_table_validation250_gpt41mini_v4_schema_replay_2026-06-01.jsonl`, `experiments/gan2026_section_claim_table_validation250_gpt41mini_v4_schema_replay_2026-06-01.md`.
 
 ## Reject
+
+### `gan2026_agentic_hard50_tool_self_consistency_2026-06-12`
+- Date/split: `2026-06-12`; `validation`; `50` rows.
+- Pipeline: `agentic_tool_self_consistency`; mode `live`; replay `live`.
+- Model role: E2 four-call boundary-guide-only tool self-consistency with deterministic normalized-label voting, compared against saved single_self_consistency_temperature hard50 condition.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `direct-label parser/schema repair + deterministic normalized-label vote`.
+- Primary metrics: call_failures=0, decision_records=200, gate_max_losses=2, gate_required_wins=5, holdout_authorized=no, losses_vs_single_self_consistency_temperature=2, model_calls_attempted=200, parse_or_validation_failures=0, pragmatic_correct=35, purist_correct=34, rows=50, wins_vs_single_self_consistency_temperature=4.
+- Evidence validity: Prediction-bearing validation hard50 development run: 200/200 decision records, 0 call failures, 0 parse/schema/label failures. Evidence substring metric not computed for this ablation artifact.
+- Supersedes: `gan2026_agentic_hard50_tool_context_ablation_2026-06-12`.
+- Claim language: Validation-development hard-slice result only. E2 missed the promotion gate by one rescue (4 wins, 2 losses; gate required at least 5 wins and at most 2 losses), so E3 and E4 were not run under the predeclared stop rule.
+- Artifacts: `experiments/gan2026_agentic_hard50_tool_self_consistency_2026-06-12.jsonl`, `experiments/gan2026_agentic_hard50_tool_self_consistency_2026-06-12.md`.
+
+### `gan2026_agentic_hard50_selective_fallback_replay_2026-06-12`
+- Date/split: `2026-06-12`; `validation`; `50` rows.
+- Pipeline: `agentic_selective_fallback_replay`; mode `no_call_replay`; replay `saved_output_replay`.
+- Model role: No-call selective fallback replay over saved hard50 matched-budget agentic traces, using single_self_consistency_temperature as fallback comparator.; model `none`.
+- Repair mode/config: `saved-output policy replay; no scorer or label repair changes`.
+- Primary metrics: all_agree_multi_accept_net_purist_gain=-6, all_agree_tool_accept_net_purist_gain=-12, boundary_coordinator_agree_net_purist_gain=-3, diagnostic_policy_count=1, holdout_authorized=no, promoted_policy_count=0, raw_repair_disagreement_fallback_net_purist_gain=-6, rows=50.
+- Evidence validity: No new prediction evidence. Replay uses saved validation hard50 condition traces, final labels, role labels, normalized votes, and manifest slice tags for validation-only analysis.
+- Cache/reuse source: experiments/gan2026_agentic_matched_budget_validation_hard50_active_conditions_live_prompt_v1_2026-06-12.jsonl.
+- Claim language: Validation-development replay only. No promotable selective fallback policy produced any wrong-to-correct changes; all eligible policies were reject signals, so the branch moved to E1 tool-context ablation rather than new live multi-agent calls.
+- Artifacts: `experiments/gan2026_agentic_hard50_selective_fallback_replay_2026-06-12.jsonl`, `experiments/gan2026_agentic_hard50_selective_fallback_replay_2026-06-12.md`.
 
 ### `gan2026_llm_heavy_evidence_selection_decision0007_v1_validation25_live_2026-06-03`
 - Date/split: `2026-06-03`; `validation`; `25` rows.
