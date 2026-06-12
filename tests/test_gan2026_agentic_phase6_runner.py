@@ -2,8 +2,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import runner as agentic_runner
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.runner import (
     DEFAULT_CONDITIONS,
+    PROMPT_VERSION,
     run_split,
     summarize_rows,
     write_report,
@@ -102,7 +104,7 @@ def test_runner_writes_jsonl_and_markdown_report(tmp_path: Path) -> None:
 
     assert jsonl_path.read_text(encoding="utf-8").count("\n") == 1
     report = report_path.read_text(encoding="utf-8")
-    assert "# Gan 2026 Agentic Matched-Budget Prompt-Only Trace" in report
+    assert "# Gan 2026 Agentic Matched-Budget Trace" in report
     assert "single_agent_tools" in report
     assert "no-call contract smoke" in report
 
@@ -131,11 +133,99 @@ def test_summarize_rows_counts_tool_smoke_activity() -> None:
     assert summary["prediction_bearing_rows"] == 0
 
 
-def _record(source_row_index: int, note_text: str) -> GanFrequencyRecord:
+def test_live_runner_uses_model_outputs_and_scores_each_condition(monkeypatch) -> None:
+    calls: list[dict] = []
+
+    def fake_model_call(prompt_input_json: str, *, model: str, temperature: float, max_tokens: int):
+        del prompt_input_json, model, temperature, max_tokens
+        calls.append({"called": True})
+        return (
+            '{"final_label":"2 per week","evidence":"2 seizures per week",'
+            '"answer_kind":"frequency","selected_seizure_type":"seizure",'
+            '"time_window":"current","confidence":"high",'
+            '"rationale":"The note states 2 seizures per week."}'
+        )
+
+    monkeypatch.setattr(agentic_runner, "_run_model_call", fake_model_call)
+
+    rows, metadata = run_split(
+        [
+            _record(
+                104,
+                "Clinic Date: 12 June 2026\nShe has 2 seizures per week.",
+                gold_label="2 per week",
+                gold_monthly_frequency=8.666666666666666,
+            )
+        ],
+        split="validation",
+        split_manifest="gan2026_split_v1",
+        model="openai/gpt-4.1-mini",
+        temperature=0.0,
+        max_tokens=900,
+        mode="live",
+        dspy_cache=True,
+        api_base=None,
+        escalation_reason=None,
+        progress_every=None,
+        checkpoint_jsonl_path=None,
+        checkpoint_report_path=None,
+    )
+
+    assert len(calls) == 14
+    assert metadata["summary"]["prediction_bearing_rows"] == 1
+    assert metadata["summary"]["model_calls_attempted"] == 14
+    assert metadata["summary"]["decision_records"] == 14
+    assert rows[0]["final_label"] == "2 per week"
+
+    trace = rows[0]["condition_traces"]["single_greedy"]
+    assert trace["final_label"] == "2 per week"
+    assert trace["attribution_layer"] == "raw_model"
+    assert trace["model_call_results"][0]["decision_record"]["final_label"] == "2 per week"
+    assert trace["model_call_results"][0]["comparison"]["purist_correct"] is True
+    assert trace["model_call_results"][0]["prompt_version"] == PROMPT_VERSION
+
+
+def test_live_runner_keeps_failed_calls_non_prediction(monkeypatch) -> None:
+    def failing_model_call(
+        prompt_input_json: str, *, model: str, temperature: float, max_tokens: int
+    ):
+        del prompt_input_json, model, temperature, max_tokens
+        raise RuntimeError("no test transport")
+
+    monkeypatch.setattr(agentic_runner, "_run_model_call", failing_model_call)
+
+    rows, metadata = run_split(
+        [_record(105, "Clinic Date: 12 June 2026\nMedication reviewed.")],
+        split="validation",
+        split_manifest="gan2026_split_v1",
+        model="openai/gpt-4.1-mini",
+        temperature=0.0,
+        max_tokens=900,
+        mode="live",
+        dspy_cache=True,
+        api_base=None,
+        escalation_reason=None,
+        progress_every=None,
+        checkpoint_jsonl_path=None,
+        checkpoint_report_path=None,
+    )
+
+    assert rows[0]["final_label"] is None
+    assert rows[0]["attribution_layer"] == "no_prediction"
+    assert metadata["summary"]["call_failures"] == 14
+
+
+def _record(
+    source_row_index: int,
+    note_text: str,
+    *,
+    gold_label: str = "unknown",
+    gold_monthly_frequency: float = -1.0,
+) -> GanFrequencyRecord:
     return GanFrequencyRecord(
         source_row_index=source_row_index,
         note_text=note_text,
-        gold_label="unknown",
+        gold_label=gold_label,
         gold_reference="",
         labels_match_all_categories=True,
         quotes_ok_all_categories=True,
@@ -144,5 +234,5 @@ def _record(source_row_index: int, note_text: str) -> GanFrequencyRecord:
         gold_normalized_label="unknown",
         gold_label_kind=FrequencyLabelKind.UNKNOWN,
         gold_yearly_bounds=None,
-        gold_monthly_frequency=-1.0,
+        gold_monthly_frequency=gold_monthly_frequency,
     )

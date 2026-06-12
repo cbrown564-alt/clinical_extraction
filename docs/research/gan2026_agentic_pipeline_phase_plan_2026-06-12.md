@@ -20,6 +20,13 @@ validation25 prompt-only/no-call smoke artifact is
 it records matched budgets, planned model calls, parser/guide tool traces, and
 `no_prediction` attribution for all five initial conditions.
 
+Live execution note: the first validation1 live smoke is
+`experiments/gan2026_agentic_matched_budget_validation1_live_smoke_2026-06-12.md`.
+It attempted all 14 planned model calls for one validation row, produced 14
+decision records, and had 0 call or parse failures. This is a transport and
+trace-readiness artifact only; validation25 remains the first meaningful live
+development surface.
+
 ## Decision
 
 Gan 2026 has two remaining paper-relevant phases before ExECTv2 becomes the

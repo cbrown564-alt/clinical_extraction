@@ -58,11 +58,11 @@ Next phase control surface:
 
 ## Active Priorities
 
-1. Run Gan Phase 6 live validation25 comparisons from the new
-   `agentic_matched_budget` surface, starting with single-agent
-   self-consistency and tool-using single-agent traces.
-2. Add prediction parsing/aggregation and scoring summaries once live calls
-   produce candidate labels.
+1. Scale the live `agentic_matched_budget` smoke from validation1 to
+   validation25, starting with single-agent comparator interpretation before any
+   multi-agent value claim.
+2. Add condition filtering or staged execution if validation25 all-condition
+   cost is too high for one run.
 3. Keep ExECTv2 parked until the agentic Gan phases are either completed or
    explicitly deferred.
 
@@ -70,11 +70,11 @@ Next phase control surface:
 
 ### Now
 
-- Implement live-call execution for `agentic_matched_budget`, preserving the
-  prompt-only trace schema and matched-budget caps.
 - Run validation25 live smoke for `single_greedy`,
-  `single_self_consistency_temperature`, and `single_agent_tools` before any
-  multi-agent claim.
+  `single_self_consistency_temperature`, and `single_agent_tools`; compare
+  against the validation1 all-condition transport smoke before scaling.
+- Add condition filtering if the next live run should avoid spending
+  multi-agent calls before the single-agent comparator is understood.
 
 ### Next
 
@@ -108,6 +108,10 @@ Next phase control surface:
 
 ### Done Recently
 
+- 2026-06-12: Added live-call execution to `agentic_matched_budget` and saved
+  validation1 live smoke:
+  `experiments/gan2026_agentic_matched_budget_validation1_live_smoke_2026-06-12`
+  (`14` calls, `14` decision records, `0` call failures, `0` parse failures).
 - 2026-06-12: Added the Phase 6 `agentic_matched_budget` prompt-only runner,
   registered it on the shared CLI, and saved the validation25 no-call smoke:
   `experiments/gan2026_agentic_matched_budget_validation25_prompt_only_2026-06-12`.
@@ -141,6 +145,8 @@ Next phase control surface:
   `docs/design/gan2026_agentic_phase5_contracts.md`
 - Gan agentic Phase 6 prompt-only smoke:
   `experiments/gan2026_agentic_matched_budget_validation25_prompt_only_2026-06-12.md`
+- Gan agentic Phase 6 live smoke:
+  `experiments/gan2026_agentic_matched_budget_validation1_live_smoke_2026-06-12.md`
 - Frozen `test450` Phase 4 comparison:
   `experiments/gan2026_test450_phase4_comparison_report_gpt41mini_2026-06-10.md`
 - GPT-4.1-mini Phase 3 validation750 comparison:
