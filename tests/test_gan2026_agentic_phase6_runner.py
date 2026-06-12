@@ -241,6 +241,70 @@ def test_live_runner_can_filter_to_single_agent_conditions(monkeypatch) -> None:
     assert len(calls) == 6
 
 
+def test_live_runner_votes_over_deterministically_normalized_labels(monkeypatch) -> None:
+    raw_labels = iter(("two_per_week", "2 per week", "2/month", "two per week"))
+
+    def fake_model_call(prompt_input_json: str, *, model: str, temperature: float, max_tokens: int):
+        del prompt_input_json, model, temperature, max_tokens
+        label = next(raw_labels)
+        return (
+            f'{{"final_label":"{label}","evidence":"2 seizures per week",'
+            '"answer_kind":"frequency","selected_seizure_type":"seizure",'
+            '"time_window":"current","confidence":"high",'
+            '"rationale":"The note states 2 seizures per week."}'
+        )
+
+    monkeypatch.setattr(agentic_runner, "_run_model_call", fake_model_call)
+
+    rows, metadata = run_split(
+        [
+            _record(
+                107,
+                "Clinic Date: 12 June 2026\nShe has 2 seizures per week.",
+                gold_label="2 per week",
+                gold_monthly_frequency=8.666666666666666,
+            )
+        ],
+        split="validation",
+        split_manifest="gan2026_split_v1",
+        model="openai/gpt-4.1-mini",
+        temperature=0.0,
+        max_tokens=900,
+        mode="live",
+        dspy_cache=True,
+        api_base=None,
+        escalation_reason=None,
+        progress_every=None,
+        checkpoint_jsonl_path=None,
+        checkpoint_report_path=None,
+        conditions=("single_self_consistency_temperature",),
+    )
+
+    trace = rows[0]["condition_traces"]["single_self_consistency_temperature"]
+
+    assert trace["final_label"] == "2 per week"
+    assert trace["attribution_layer"] == "raw_model_plus_deterministic_format_vote"
+    assert rows[0]["final_label"] == "2 per week"
+    assert rows[0]["attribution_layer"] == "raw_model_plus_deterministic_format_vote"
+    assert trace["normalized_label_vote"] == {
+        "method": "deterministic_normalized_label_vote",
+        "selected_label": "2 per week",
+        "raw_labels": ["two_per_week", "2 per week", "2/month", "two per week"],
+        "normalized_labels": ["2 per week", "2 per week", "2 per month", "2 per week"],
+        "vote_counts": {"2 per week": 3, "2 per month": 1},
+        "tie_break": "first_normalized_label_in_call_order",
+        "repair_event_counts": {
+            "benchmark_repair.underscore_label_separators": 1,
+            "benchmark_repair.word_numbers": 2,
+            "benchmark_repair.slash_per_forms": 1,
+        },
+    }
+    assert metadata["summary"]["normalized_label_vote_repairs"] == 4
+    assert trace["model_call_results"][0]["raw_model_final_label"] == "two_per_week"
+    assert trace["model_call_results"][0]["normalized_vote_label"] == "2 per week"
+    assert trace["model_call_results"][0]["normalized_vote_repair_events"]
+
+
 def test_live_runner_keeps_failed_calls_non_prediction(monkeypatch) -> None:
     def failing_model_call(
         prompt_input_json: str, *, model: str, temperature: float, max_tokens: int
