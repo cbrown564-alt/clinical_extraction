@@ -1,0 +1,35 @@
+﻿{
+  "artifact_kind": "gan2026_three_way_comparison_phase1_report",
+  "claim_boundary": "Phase 1 three-way architecture comparison, openai/gpt-4.1-mini pass, validation750 only. No test450 read, no holdout-facing or benchmark-comparable claim. Compares six PipelineArchitecture configs on the axes that are universally meaningful (rendered/null disposition, Purist/Pragmatic-correct of rendered rows, evidence-trace validity, final-answer distribution); hybrid additionally carries a routing-taxonomy appendix that no other architecture has an analogous surface for.",
+  "evidence_trace_footnote": "Evidence-trace metrics are NOT uniform across architectures: deterministic, deterministic_canonical_pipeline, llm_only_direct_labeler, and hybrid_structured_events report `evidence_valid` (free-text substring presence in the source note); llm_only_canonical_pipeline reports the deliberately distinct `evidence_text_contained`; hybrid reports a formal CandidateSet source-id validity rate sourced from its deep-replay projection stage. These measure different things -- do not read them as comparable accuracy numbers (see the per-architecture metric table below the shared table).",
+  "hybrid_data_source_footnote": "hybrid's row above is the only one not sourced from raw `run_split` output: its assessment-stage probe reports schema-fit diagnostics only and has no rendered/null/purist/routed numbers of its own (design doc Section 2-3). This report replays its assessment rows -- using the live-generated CandidateSets the fixed `run_split` now embeds in its own output rows, so no static-artifact dependency or 250-row scoping applies -- through projection_render -> score -> verification_route -> verification_decision (`build_unified_pipeline_artifact`). This asymmetry is the architectural fact under comparison, not a methodology artifact.",
+  "hybrid_routing_appendix": {
+    "action_counts": {
+      "abstain": 43
+    },
+    "route_family_counts": {
+      "cluster_axis_ambiguity": 15,
+      "conditional_only_trigger": 2,
+      "mixed_window_or_vague_addition": 2,
+      "multiple_current_primary_facts": 1,
+      "relative_only_trend": 2,
+      "rendered_label_supported_but_policy_sensitive": 2,
+      "seizure_free_proxy_evidence_overreach": 1,
+      "selected_source_id_invalid": 15,
+      "unresolved_cluster_cadence_with_per_cluster_burden": 4
+    },
+    "routed_rate_of_rendered": 0.07312925170068027,
+    "routed_rows": 43,
+    "unrouted_rows": 707
+  },
+  "model": "openai/gpt-4.1-mini",
+  "row_counts": {
+    "deterministic": 750,
+    "deterministic_canonical_pipeline": 750,
+    "hybrid": 750,
+    "llm_only_canonical_pipeline": 750,
+    "llm_only_direct_labeler": 750,
+    "hybrid_structured_events": 750
+  },
+  "split": "validation"
+}
