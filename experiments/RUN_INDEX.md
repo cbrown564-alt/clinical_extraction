@@ -2,6 +2,31 @@
 
 Generated from `experiments/registry.jsonl`. The JSONL file remains the canonical machine-readable registry.
 
+## Promote
+
+### `gan2026_agentic_hard50_boundary_guide_rescue_replay_2026-06-12`
+- Date/split: `2026-06-12`; `validation`; `50` rows.
+- Pipeline: `agentic_boundary_guide_rescue_replay`; mode `no_call_replay`; replay `saved_output_replay`.
+- Model role: D0 no-call boundary-guide rescue replay over saved E1/E2 validation hard50 traces; tests rescue-only policies using direct_no_tool_context and single_self_consistency_temperature fallbacks.; model `none`.
+- Repair mode/config: `saved-output policy replay; no scorer or label repair changes`.
+- Primary metrics: best_promotable_policy=higher_burden_only, cluster_restore_only_correct_to_wrong=0, cluster_restore_only_wrong_to_correct=2, higher_burden_only_changed_label_precision=0.75, higher_burden_only_changed_labels=4, higher_burden_only_correct_to_wrong=0, higher_burden_only_net_purist_gain=3, higher_burden_only_pragmatic_correct=36, higher_burden_only_purist_correct=35, higher_burden_only_wrong_to_correct=3, holdout_authorized=no, promoted_policy_count=1, rows=50.
+- Evidence validity: No new prediction evidence. Replay uses saved validation hard50 E1/E2 final labels, normalized vote features, repair notes, and manifest slice tags for validation-only analysis.
+- Cache/reuse source: experiments/gan2026_agentic_hard50_tool_context_ablation_2026-06-12.jsonl; experiments/gan2026_agentic_hard50_tool_self_consistency_2026-06-12.jsonl.
+- Claim language: Validation-development no-call replay only. higher_burden_only passed the D0 gate (3 wrong-to-correct, 0 correct-to-wrong, precision 0.750), but this does not by itself authorize holdout use, benchmark claims, or live validation250 escalation.
+- Artifacts: `experiments/gan2026_agentic_hard50_boundary_guide_rescue_replay_2026-06-12.jsonl`, `experiments/gan2026_agentic_hard50_boundary_guide_rescue_replay_2026-06-12.md`.
+
+### `gan2026_agentic_boundary_audit_prompt_v2_panel_2026-06-12`
+- Date/split: `2026-06-12`; `validation`; `12` rows.
+- Pipeline: `agentic_boundary_audit_prompt_v2`; mode `saved_output_reparse`; replay `saved_output_replay`.
+- Model role: D1 one-call boundary-audit prompt v2 over the predeclared validation micro-panel; fixed boundary-guide context only, parser candidates disabled.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `format-only audit-field shape repair plus existing label/evidence repair; parser candidates disabled as prompt context`.
+- Primary metrics: call_failures=0, changed_label_precision=0.4286, changed_labels_vs_reference=7, e2_loss_sentinel_regressions=0, holdout_authorized=no, losses_vs_single_self_consistency_temperature=1, panel_gate=pass, parse_or_validation_failures=0, pragmatic_correct=10, purist_correct=10, rows=12, wins_vs_single_self_consistency_temperature=3.
+- Evidence validity: 10/12 exact evidence substrings after saved-output reparse; no new prediction evidence during reparse.
+- Cache/reuse source: live raw outputs in experiments/gan2026_agentic_boundary_audit_prompt_v2_panel_2026-06-12.jsonl.
+- Supersedes: `gan2026_agentic_hard50_boundary_guide_rescue_replay_2026-06-12`.
+- Claim language: Validation micro-panel development result only. Panel gate passed and authorized D1 hard50, but this artifact does not authorize broader validation or holdout use.
+- Artifacts: `experiments/gan2026_agentic_boundary_audit_prompt_v2_panel_2026-06-12.jsonl`, `experiments/gan2026_agentic_boundary_audit_prompt_v2_panel_2026-06-12.md`.
+
 ## Promote Hybrid Structured Events Direction
 
 ### `gan2026_failure_mode_comparison_table_2026-06-12`
@@ -714,6 +739,17 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: experiments/gan2026_agentic_matched_budget_validation_hard50_active_conditions_live_prompt_v1_2026-06-12.jsonl.
 - Claim language: Validation-development replay only. No promotable selective fallback policy produced any wrong-to-correct changes; all eligible policies were reject signals, so the branch moved to E1 tool-context ablation rather than new live multi-agent calls.
 - Artifacts: `experiments/gan2026_agentic_hard50_selective_fallback_replay_2026-06-12.jsonl`, `experiments/gan2026_agentic_hard50_selective_fallback_replay_2026-06-12.md`.
+
+### `gan2026_agentic_boundary_audit_prompt_v2_hard50_2026-06-12`
+- Date/split: `2026-06-12`; `validation`; `50` rows.
+- Pipeline: `agentic_boundary_audit_prompt_v2`; mode `live`; replay `live`.
+- Model role: D1 one-call boundary-audit prompt v2 over the fixed validation hard50 slice; fixed boundary-guide context only, parser candidates disabled.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `format-only audit-field shape repair plus existing label/evidence repair; parser candidates disabled as prompt context`.
+- Primary metrics: boundary_demotion_count=1, call_failures=0, changed_label_precision=0.3636, changed_labels_vs_reference=22, evidence_exact_substrings=35, hard50_gate=reject_or_revise, holdout_authorized=no, losses_vs_single_self_consistency_temperature=2, parse_or_validation_failures=0, pragmatic_correct=38, purist_correct=38, rows=50, schema_or_label_repair_rows=44, wins_vs_single_self_consistency_temperature=8.
+- Evidence validity: 35/50 exact evidence substrings. Prediction-bearing hard50 run had 50/50 decision records, 0 call failures, and 0 parse/schema/label failures after format-only audit repair.
+- Supersedes: `gan2026_agentic_boundary_audit_prompt_v2_panel_2026-06-12`.
+- Claim language: Validation hard-slice development result only. Despite 8 rescues, D1 missed the hard50 gate because it caused 2 regressions and changed-label precision was 0.3636; do not escalate D1 to validation250, D3, or holdout.
+- Artifacts: `experiments/gan2026_agentic_boundary_audit_prompt_v2_hard50_2026-06-12.jsonl`, `experiments/gan2026_agentic_boundary_audit_prompt_v2_hard50_2026-06-12.md`.
 
 ### `gan2026_llm_heavy_evidence_selection_decision0007_v1_validation25_live_2026-06-03`
 - Date/split: `2026-06-03`; `validation`; `25` rows.

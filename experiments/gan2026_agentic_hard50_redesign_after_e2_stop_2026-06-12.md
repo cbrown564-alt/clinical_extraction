@@ -127,6 +127,21 @@ experiments/gan2026_agentic_hard50_boundary_guide_rescue_replay_2026-06-12.jsonl
 experiments/gan2026_agentic_hard50_boundary_guide_rescue_replay_2026-06-12.md
 ```
 
+Completed D0 result:
+
+- Artifact:
+  `experiments/gan2026_agentic_hard50_boundary_guide_rescue_replay_2026-06-12.md`.
+- Mode: no-call replay over saved E1/E2 validation hard50 traces.
+- Promoted policy: `higher_burden_only`.
+- Summary: `35/50` Purist, `36/50` Pragmatic, `4` changed labels,
+  `3` wrong-to-correct, `0` correct-to-wrong, net `+3`, changed-label
+  precision `0.750`.
+- Gate: passed the D0 no-call promotion gate. This is a validation-development
+  rescue-policy signal only; it makes no holdout, benchmark, or broader
+  validation claim.
+- Notable diagnostic side result: `cluster_restore_only` made `2` changes, both
+  wrong-to-correct, but missed the D0 net-gain gate.
+
 ### D1 - Boundary Audit Prompt V2
 
 Hypothesis: the model needs a compact boundary audit scaffold, not parser
@@ -184,6 +199,22 @@ experiments/gan2026_agentic_boundary_audit_prompt_v2_panel_2026-06-12.md
 experiments/gan2026_agentic_boundary_audit_prompt_v2_hard50_2026-06-12.jsonl
 experiments/gan2026_agentic_boundary_audit_prompt_v2_hard50_2026-06-12.md
 ```
+
+Completed D1 result:
+
+- Panel artifact:
+  `experiments/gan2026_agentic_boundary_audit_prompt_v2_panel_2026-06-12.md`.
+- Panel result after format-only audit-field repair: `10/12` Purist,
+  `10/12` Pragmatic, `0` parse/schema/label failures, `0` E2 loss-sentinel
+  regressions. Gate passed, authorizing the fixed hard50 run.
+- Hard50 artifact:
+  `experiments/gan2026_agentic_boundary_audit_prompt_v2_hard50_2026-06-12.md`.
+- Hard50 result: `38/50` Purist, `38/50` Pragmatic, `8` wins and `2` losses
+  versus `single_self_consistency_temperature`, `22` changed labels, changed-label
+  precision `0.3636`, `0` parse/schema/label failures.
+- Gate: rejected/revise after hard50. The run exceeded the rescue-count target
+  but violated the max-loss gate (`2` losses; gate allowed at most `1`) and had
+  low changed-label precision. Do not escalate D1 to validation250 or D3.
 
 ### D2 - Direct Plus Boundary Critic Rescue-Only
 
@@ -345,9 +376,15 @@ experiments/gan2026_agentic_boundary_robustness_panel_2026-06-12.md
 D0 -> D1 -> D2 -> D3 -> D4
 ```
 
-D0 is the cheapest next action. D1 and D2 are the prediction-bearing redesign
-branches. D3 is blocked until at least one single-agent or two-call rescue-only
-branch passes hard50. D4 is a mechanism check before any broader validation run.
+D0 and D1 are now complete. D0 `higher_burden_only` passed as saved-output
+rescue evidence; D1 boundary-audit prompt v2 passed the panel but failed the
+fixed hard50 gate because it had `2` regressions and low changed-label
+precision. D1 is therefore revise/reject, not a validation250 or D3 trigger.
+
+The remaining decision is whether to stop with D0 as narrow saved-trace
+close-off evidence, or spend live-call budget on D2 direct-plus-boundary-critic
+as the next rescue-only prediction-bearing branch. D3 remains blocked unless D2
+passes hard50. D4 remains a mechanism check before any broader validation run.
 
 ## Rejected Or Deferred Paths
 
@@ -382,7 +419,8 @@ voting, gating, or guide retrieval affects the final scorer-facing label.
 
 - Stop the D-series branch if D0 and D1 both fail to produce any positive
   changed-label precision.
-- Stop before D3 unless D1 or D2 passes hard50.
+- Stop before D3 unless D1 or D2 passes hard50. In the current state, D1 has
+  failed hard50, so only a future D2 pass could reopen D3.
 - Stop before validation250 unless hard50 shows at least `5` wins with at most
   `1` loss versus the matched comparator or a changed-label precision profile at
   or above `0.70`.
