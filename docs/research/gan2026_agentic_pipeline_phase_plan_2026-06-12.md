@@ -2,7 +2,8 @@
 
 Date: 2026-06-12
 
-Status: Phase 5 contracts implemented; Phase 6 runner work is next. This plan supersedes the
+Status: Phase 5 contracts implemented; Phase 6 prompt-only runner surface implemented.
+Live Phase 6 prediction-bearing comparisons are next. This plan supersedes the
 previous assumption that Gan 2026 should close immediately after the
 `hybrid_structured_events` close-off report. It does not authorize new holdout
 use, test-row inspection, or benchmark-facing claims.
@@ -11,6 +12,13 @@ Phase 5 implementation note: the tested contract surface lives in
 `docs/design/gan2026_agentic_phase5_contracts.md`,
 `src/clinical_extraction/tasks/seizure_frequency/gan2026/agentic/`, and
 `tests/test_gan2026_agentic_phase5_contracts.py`.
+
+Phase 6 implementation note: the first shared runner surface is
+`agentic_matched_budget` on the existing `gan2026-llm-experiment` CLI. The
+validation25 prompt-only/no-call smoke artifact is
+`experiments/gan2026_agentic_matched_budget_validation25_prompt_only_2026-06-12.md`;
+it records matched budgets, planned model calls, parser/guide tool traces, and
+`no_prediction` attribution for all five initial conditions.
 
 ## Decision
 

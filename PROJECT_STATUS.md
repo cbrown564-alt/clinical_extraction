@@ -58,11 +58,11 @@ Next phase control surface:
 
 ## Active Priorities
 
-1. Begin Gan Phase 6 implementation around single-agent self-consistency,
-   parser-as-tool, boundary-guide retrieval, and matched-budget multi-agent
-   comparison.
-2. Wire the Phase 5 agentic contracts into a single experiment surface with
-   budget accounting and trace emission.
+1. Run Gan Phase 6 live validation25 comparisons from the new
+   `agentic_matched_budget` surface, starting with single-agent
+   self-consistency and tool-using single-agent traces.
+2. Add prediction parsing/aggregation and scoring summaries once live calls
+   produce candidate labels.
 3. Keep ExECTv2 parked until the agentic Gan phases are either completed or
    explicitly deferred.
 
@@ -70,17 +70,18 @@ Next phase control surface:
 
 ### Now
 
-- Wire the Phase 5 contracts into a Phase 6 runner surface for `single_greedy`,
-  `single_self_consistency_temperature`, and `single_agent_tools`.
-- Predeclare the first validation25 contract smoke for matched-budget
-  single-agent self-consistency and parser/guide tool traces.
+- Implement live-call execution for `agentic_matched_budget`, preserving the
+  prompt-only trace schema and matched-budget caps.
+- Run validation25 live smoke for `single_greedy`,
+  `single_self_consistency_temperature`, and `single_agent_tools` before any
+  multi-agent claim.
 
 ### Next
 
-- Add trace schema/artifact writing for per-row model calls, tool calls,
-  tool-output token estimates, final selection, and attribution layer.
-- Add the first no-call or prompt-only runner mode to exercise Phase 6
-  orchestration without spending model calls.
+- Add deterministic normalized-label voting and optional budget-matched
+  adjudication once prediction-bearing outputs exist.
+- Compare `multi_agent_matched` only after the single-agent comparator uses the
+  same model-call, token, tool-call, and aggregation budget.
 - Produce a compact failure-mode table for `hybrid_structured_events` versus
   deterministic and fully LLM comparators, then reuse it to seed hard-slice
   panels for the agentic comparison.
@@ -107,6 +108,9 @@ Next phase control surface:
 
 ### Done Recently
 
+- 2026-06-12: Added the Phase 6 `agentic_matched_budget` prompt-only runner,
+  registered it on the shared CLI, and saved the validation25 no-call smoke:
+  `experiments/gan2026_agentic_matched_budget_validation25_prompt_only_2026-06-12`.
 - 2026-06-12: Completed Gan Phase 5 contract scaffolding:
   `AgentBudget`/`MatchedBudgetComparison`,
   `parse_seizure_frequency_candidates`, split-neutral `read_boundary_guide`,
@@ -135,6 +139,8 @@ Next phase control surface:
   `docs/research/gan2026_agentic_pipeline_phase_plan_2026-06-12.md`
 - Gan agentic Phase 5 contracts:
   `docs/design/gan2026_agentic_phase5_contracts.md`
+- Gan agentic Phase 6 prompt-only smoke:
+  `experiments/gan2026_agentic_matched_budget_validation25_prompt_only_2026-06-12.md`
 - Frozen `test450` Phase 4 comparison:
   `experiments/gan2026_test450_phase4_comparison_report_gpt41mini_2026-06-10.md`
 - GPT-4.1-mini Phase 3 validation750 comparison:
