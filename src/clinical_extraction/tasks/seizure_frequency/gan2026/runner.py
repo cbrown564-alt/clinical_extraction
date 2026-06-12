@@ -16,6 +16,9 @@ from pydantic import BaseModel, ConfigDict
 
 from clinical_extraction.core.pipeline import PipelineResult
 from clinical_extraction.core.schemas import FinalExtraction
+from clinical_extraction.tasks.seizure_frequency.gan2026 import (
+    deterministic_canonical_stages as canonical_stages,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis import (
     clinical_assessment_projection_render as projection_render,
 )
@@ -39,9 +42,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.candidates import (
     CandidateKind,
     RawCandidate,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026 import (
-    deterministic_canonical_stages as canonical_stages,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rule_metadata import (
     AblationConfig,
@@ -217,8 +217,7 @@ class Gan2026PipelineRunner:
         elif self.config.architecture == "deterministic_canonical_pipeline":
             # Same logic as "deterministic", restructured into named, stage-owned,
             # ablatable Extract/Normalize/Select & Render/Evidence Trace Check form
-            # (a pure staging pass — see
-            # docs/decisions/0013-stage-deterministic-canonical-config-before-generalizing-its-rules.md).
+            # (a pure staging pass; see decision 0013).
             # Diagnostics are kept key-identical to "deterministic" so "rules
             # unchanged" is a directly assertable equivalence.
             raw_candidates, candidate_set, candidate_events = canonical_stages.extract_stage(
@@ -791,6 +790,9 @@ def write_deterministic_report(
 def get_cli_specs() -> dict[str, Any]:
     from pathlib import Path
 
+    from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
+        runner as agentic_runner,
+    )
     from clinical_extraction.tasks.seizure_frequency.gan2026.cli.llm_pipeline_cli import (
         GanLlmPipelineCliSpec,
     )
@@ -808,6 +810,19 @@ def get_cli_specs() -> dict[str, Any]:
         write_jsonl_rows(rows, path)
 
     return {
+        "agentic_matched_budget": GanLlmPipelineCliSpec(
+            description=(
+                "Run the Gan 2026 agentic matched-budget prompt-only/no-call "
+                "trace surface."
+            ),
+            default_jsonl_path=agentic_runner.DEFAULT_JSONL_PATH,
+            default_report_path=agentic_runner.DEFAULT_REPORT_PATH,
+            run_split=agentic_runner.run_split,
+            write_jsonl=write_jsonl,
+            write_report=agentic_runner.write_report,
+            summarize_rows=agentic_runner.summarize_rows,
+            default_max_tokens=900,
+        ),
         "deterministic": GanLlmPipelineCliSpec(
             description="Run the Gan 2026 deterministic rules-only pipeline.",
             default_jsonl_path=Path("experiments/gan2026_deterministic_pipeline_validation.jsonl"),
