@@ -59,11 +59,14 @@ def run_split(
     checkpoint_jsonl_path: Path | None,
     checkpoint_report_path: Path | None,
     candidate_set_jsonl_path: Path | None = None,
+    conditions: Sequence[ConditionName] | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Build matched-budget traces for agentic conditions."""
 
     del escalation_reason, progress_every, checkpoint_jsonl_path
     del checkpoint_report_path, candidate_set_jsonl_path
+    active_conditions = tuple(conditions or DEFAULT_CONDITIONS)
+    _validate_conditions(active_conditions)
     if mode == "live":
         dspy.configure(
             lm=build_dspy_lm(
@@ -85,6 +88,7 @@ def run_split(
             max_tokens=max_tokens,
             mode=mode,
             budgets=budgets,
+            conditions=active_conditions,
         )
         for record in records
     ]
@@ -110,15 +114,26 @@ def run_split(
                 "use, no row-level test inspection, and no benchmark claim"
             ),
             "dspy_cache": dspy_cache,
-            "conditions": list(DEFAULT_CONDITIONS),
+            "conditions": list(active_conditions),
+            "condition_filter": list(active_conditions),
             "matched_budget": {
                 condition: budget.model_dump(mode="json")
                 for condition, budget in budgets.items()
+                if condition in active_conditions
             },
         }
     )
     metadata["summary"] = summarize_rows(rows)
     return rows, metadata
+
+
+def _validate_conditions(conditions: Sequence[ConditionName]) -> None:
+    invalid = [condition for condition in conditions if condition not in DEFAULT_CONDITIONS]
+    if invalid:
+        valid = ", ".join(DEFAULT_CONDITIONS)
+        raise ValueError(f"Unknown agentic condition(s): {invalid}. Valid conditions: {valid}")
+    if not conditions:
+        raise ValueError("At least one agentic condition is required")
 
 
 def summarize_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
@@ -151,7 +166,7 @@ def summarize_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
                 pragmatic_correct += int(bool(comparison.get("pragmatic_correct")))
     return {
         "rows": len(rows),
-        "conditions": list(DEFAULT_CONDITIONS),
+        "conditions": _conditions_from_rows(rows),
         "tool_smoke_calls": tool_smoke_calls,
         "prediction_bearing_rows": prediction_bearing_rows,
         "model_calls_attempted": model_calls_attempted,
@@ -161,6 +176,15 @@ def summarize_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         "purist_correct_call_level": purist_correct,
         "pragmatic_correct_call_level": pragmatic_correct,
     }
+
+
+def _conditions_from_rows(rows: Sequence[Mapping[str, Any]]) -> list[str]:
+    seen: list[str] = []
+    for row in rows:
+        for condition in dict(row.get("condition_traces") or {}):
+            if condition not in seen:
+                seen.append(condition)
+    return seen or list(DEFAULT_CONDITIONS)
 
 
 def write_report(
@@ -236,6 +260,7 @@ def _build_row_trace(
     max_tokens: int,
     mode: Literal["live", "prompt-only"],
     budgets: Mapping[ConditionName, AgentBudget],
+    conditions: Sequence[ConditionName],
 ) -> dict[str, Any]:
     parser_result = parse_seizure_frequency_candidates(record.note_text)
     guide_results = _boundary_guides_for_parser_result(parser_result.model_dump(mode="json"))
@@ -251,7 +276,7 @@ def _build_row_trace(
             parser_result=parser_result.model_dump(mode="json"),
             guide_results=guide_results,
         )
-        for condition in DEFAULT_CONDITIONS
+        for condition in conditions
     }
     final_label = _select_row_final_label(condition_traces)
     return {
@@ -616,6 +641,8 @@ def _select_row_final_label(
         "multi_agent_matched",
     )
     for condition in preferred_order:
+        if condition not in condition_traces:
+            continue
         label = condition_traces[condition].get("final_label")
         if label is not None:
             return str(label)

@@ -176,6 +176,37 @@ def test_general_llm_pipeline_cli_passes_candidate_set_jsonl_for_supported_specs
     assert calls["kwargs"]["candidate_set_jsonl_path"] == candidate_set_path
 
 
+def test_agentic_cli_passes_condition_filter(tmp_path: Path, monkeypatch) -> None:
+    calls: dict[str, Any] = {}
+    spec = _dummy_spec(tmp_path, calls)
+    monkeypatch.setattr(
+        llm_pipeline_cli,
+        "pipeline_specs",
+        lambda: {"agentic_matched_budget": spec},
+    )
+    monkeypatch.setattr(llm_pipeline_cli, "load_records_for_split", lambda split: ["row"])
+    monkeypatch.setattr(
+        llm_pipeline_cli,
+        "load_split_manifest",
+        lambda: {"manifest_version": "test_manifest_v1"},
+    )
+
+    llm_pipeline_cli.run_cli(
+        [
+            "--pipeline",
+            "agentic_matched_budget",
+            "--mode",
+            "prompt-only",
+            "--limit",
+            "1",
+            "--conditions",
+            "single_greedy,single_agent_tools",
+        ]
+    )
+
+    assert calls["kwargs"]["conditions"] == ["single_greedy", "single_agent_tools"]
+
+
 def test_general_llm_pipeline_cli_resume_existing_skips_completed_rows(
     tmp_path: Path, monkeypatch
 ) -> None:
@@ -303,6 +334,7 @@ def test_pipeline_registry_exposes_routine_llm_experiments() -> None:
     specs = llm_pipeline_cli.pipeline_specs()
 
     assert set(specs) == {
+        "agentic_matched_budget",
         "deterministic",
         "deterministic_canonical_pipeline",
         "hybrid",
@@ -311,6 +343,7 @@ def test_pipeline_registry_exposes_routine_llm_experiments() -> None:
         "llm_only_canonical_pipeline",
     }
 
+    assert specs["agentic_matched_budget"].default_max_tokens == 900
     assert specs["deterministic"].default_max_tokens == 900
     assert specs["hybrid"].default_max_tokens == 2400
     # hybrid builds CandidateSets live by default (no static-artifact dependency).
