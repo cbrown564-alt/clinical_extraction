@@ -245,6 +245,36 @@ def test_replay_attaches_family_holdout_cv_on_validation() -> None:
     assert cv["aggregate"]["wrong_to_correct"] == 1
 
 
+def test_replay_attaches_precision_gated_selector_on_validation() -> None:
+    # The same single-band fix surfaces as a decision-layer selector: band_unknown
+    # is the only band that switches, and on this lone row the band policy keeps
+    # it while the leave-one-out estimate (no neighbours) refuses it.
+    _, metadata = run_exact_label_consensus_replay(
+        [
+            _rules_row(
+                source_row_index=1,
+                baseline_label="seizure free for multiple year",
+                note_text="patient reports being seizure-free for several years",
+            )
+        ],
+        {
+            "gpt": [_agent_row(source_row_index=1, label="unknown")],
+            "qwen": [_agent_row(source_row_index=1, label="unknown")],
+            "deepseek": [_agent_row(source_row_index=1, label="unknown")],
+        },
+        split="validation",
+        split_manifest="gan2026_split_v1",
+        source_artifacts={"rules": "rules.jsonl"},
+    )
+
+    selector = metadata["precision_gated_selector"]
+    assert selector["selector"] == "precision_gated_band_selector_v0"
+    assert selector["switches_total"] == 1
+    assert selector["bands"]["band_unknown"]["allowed"] is True
+    assert selector["gated_net_purist_gain"] == 1
+    assert selector["leave_one_out"]["switches_kept"] == 0
+
+
 def test_replay_omits_summary_by_family_on_holdout() -> None:
     _, metadata = run_exact_label_consensus_replay(
         [_rules_row(source_row_index=1)],
@@ -260,3 +290,4 @@ def test_replay_omits_summary_by_family_on_holdout() -> None:
 
     assert "summary_by_family" not in metadata
     assert "family_holdout_cv" not in metadata
+    assert "precision_gated_selector" not in metadata

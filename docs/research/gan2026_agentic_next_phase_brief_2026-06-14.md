@@ -121,9 +121,9 @@ a scalar against a target we cannot decompose.
 ## Work completed (2026-06-14)
 
 Checklist step 5 (per-family transition reporting, the prerequisite for step 1)
-is implemented, and checklist step 1 (held-out-family CV promotion) now builds on
-it — see the dedicated section below. Steps 2, 3, and 4 remain open
-design/experiment work.
+is implemented, checklist step 1 (held-out-family CV promotion) builds on it, and
+checklist step 2 (precision-gated decision selector) builds on both — see the
+dedicated sections below. Steps 3 and 4 remain open design/experiment work.
 
 - New shared module `agentic/family_transitions.py`:
   - `note_text_from_rules_row` — attached `note_text` field, else parse
@@ -240,9 +240,57 @@ Touched: `labels.py` (`BOUNDARY_BANDS`),
 `tests/test_gan2026_agentic_structured_event_consensus.py`.
 
 This closes checklist step 1. Step 2 (make changed-label precision the primary
-selector gate at the *decision* layer, not just the audit layer), step 3
-(uncertainty-gated V12 replace), and step 4 (panel/source symmetry hard-gate)
-remain open.
+selector gate at the *decision* layer, not just the audit layer) is now also
+closed — see the dedicated section below. Step 3 (uncertainty-gated V12 replace)
+and step 4 (panel/source symmetry hard-gate) remain open.
+
+### Precision-gated decision selector (2026-06-14, checklist step 2)
+
+Step 1 turned changed-label precision into a whole-candidate *verdict* that never
+changes what the pipeline emits. Step 2 turns the same signal into a *selector*
+that edits the output. The new module `agentic/precision_gated_selector.py`
+(`summarize_precision_gated_selector`) keeps agreement as the candidate-generating
+feature — the upstream selector still proposes a switch — but only *applies* a
+proposed switch inside boundary bands whose changed-label precision clears the bar
+(default 0.5) and whose net Purist gain is non-negative. The allow-set is a frozen
+per-band policy, learned on validation and meant to be frozen before any held-out
+application; a `leave_one_out` field recomputes each row's gate with that row
+excluded from its band's statistics, so no band is credited for a switch whose own
+outcome set its gate. The module is schema-agnostic via the same `*_PATHS` presets
+as `family_transitions`, and is wired into both
+`structured_event_consensus.py` and `fresh_evidence_reasoner.py` as
+`metadata["precision_gated_selector"]`, **gated on `split != "test"`** alongside
+`summary_by_family` and `family_holdout_cv`.
+
+Measured on the real validation750 consensus replay, the selector does at the
+decision layer what step 1's verdict only flagged. Agreement proposed 122
+switches; precision kept 6:
+
+| Band | switched | net Purist gain | changed-label precision | allowed |
+| --- | ---: | ---: | ---: | :---: |
+| band_zero | 17 | +0 | 0.12 | no |
+| band_unknown | 47 | +5 | 0.17 | no |
+| band_submonthly | 9 | +0 | 0.11 | no |
+| band_monthly | 16 | +3 | 0.31 | no |
+| band_weekly | 27 | **-3** | 0.19 | no |
+| band_daily | 6 | +6 | 1.00 | **yes** |
+
+The ungated candidate scores 708/750 (+11 over the 697 baseline) — the number
+that "won" validation. The gated selector keeps only `band_daily`'s clean +6 and
+reverts the other five bands, landing at **703/750 (gated net +6)**. In doing so
+it suppresses 16 correct->wrong regressions and 79 category-neutral churn switches
+(the "agents agree but the baseline was already right" case of Insight 2) at the
+cost of forgoing 21 fixes that lived in the low-precision, distribution-shift
+-fragile bands. The leave-one-out estimate is identical (+6, 6 switches kept):
+`band_daily`'s six unanimous fixes survive removal of any one, so the retained
+gain is the generalizing portion, not a single-row artifact. This is Insight 1's
+overfit signature (+11 riding on borrowed deterministic components) converted into
+an actual, gold-free-at-decision-time output policy.
+
+Touched: `agentic/precision_gated_selector.py` (new),
+`agentic/structured_event_consensus.py`, `agentic/fresh_evidence_reasoner.py`,
+`tests/test_gan2026_precision_gated_selector.py` (new),
+`tests/test_gan2026_agentic_structured_event_consensus.py`.
 
 ## Source artifacts
 
@@ -252,6 +300,7 @@ remain open.
 - `src/clinical_extraction/tasks/seizure_frequency/gan2026/agentic/structured_event_consensus.py`
 - `src/clinical_extraction/tasks/seizure_frequency/gan2026/agentic/family_transitions.py`
 - `src/clinical_extraction/tasks/seizure_frequency/gan2026/agentic/family_cv_promotion.py`
+- `src/clinical_extraction/tasks/seizure_frequency/gan2026/agentic/precision_gated_selector.py`
 - `src/clinical_extraction/tasks/seizure_frequency/gan2026/agentic/fresh_evidence_reasoner.py`
 - `tests/test_gan2026_agentic_structured_event_consensus.py`
 - `tests/test_gan2026_family_transitions.py`

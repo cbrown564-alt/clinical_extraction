@@ -29,6 +29,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
     family_cv_promotion,
     family_transitions,
     llm_event_reasoner,
+    precision_gated_selector,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     label_to_frequency_record,
@@ -246,6 +247,11 @@ def run_split(
         metadata["summary_by_family"] = summary_by_family
         metadata["family_holdout_cv"] = (
             family_cv_promotion.summarize_family_holdout_cv(summary_by_family)
+        )
+        metadata["precision_gated_selector"] = (
+            precision_gated_selector.summarize_precision_gated_selector(
+                rows, **family_transitions.FRESH_EVIDENCE_PATHS
+            )
         )
     metadata["gate"] = llm_event_reasoner.gate_interpretation(metadata["summary"])
     return rows, metadata
