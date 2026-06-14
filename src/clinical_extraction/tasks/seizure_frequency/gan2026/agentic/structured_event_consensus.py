@@ -22,6 +22,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.family_transiti
     summarize_transitions_by_family,
     tag_hidden_families,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.precision_gated_selector import (
+    summarize_precision_gated_selector,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     label_to_frequency_record,
 )
@@ -171,6 +174,9 @@ def run_exact_label_consensus_replay(
         )
         metadata["summary_by_family"] = summary_by_family
         metadata["family_holdout_cv"] = summarize_family_holdout_cv(summary_by_family)
+        metadata["precision_gated_selector"] = summarize_precision_gated_selector(
+            replay_rows, **CONSENSUS_PATHS
+        )
     return replay_rows, metadata
 
 
