@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from enum import StrEnum
 
 
@@ -100,5 +101,71 @@ def classify_hidden_families(
 
     if not families:
         families.append("unclassified")
+    return tuple(dict.fromkeys(families))
+
+
+def boundary_band(per_month: float | None) -> str:
+    """Coarsen a gold monthly rate into a partitioning frequency-boundary band.
+
+    The bands collapse ``map_purist``'s twelve categories into six
+    mutually-exclusive bins keyed off the *gold* rate, so every scored row lands
+    in exactly one band regardless of what any candidate predicts. They map onto
+    the val->test gap candidates named in the 2026-06-14 next-phase brief
+    (denominator/window across the rate bands; unknown/no-reference as
+    ``band_unknown``). Thresholds mirror ``map_purist`` exactly.
+    """
+
+    if per_month is None:
+        return "band_unknown"
+    if per_month == 0:
+        return "band_zero"
+    if per_month == 1000:
+        return "band_unknown"
+    if 0 < per_month <= 0.99:
+        return "band_submonthly"
+    if 0.99 < per_month <= 3.9:
+        return "band_monthly"
+    if 3.9 < per_month <= 29:
+        return "band_weekly"
+    if 29 < per_month <= 999:
+        return "band_daily"
+    return "band_unknown"
+
+
+# Word-boundary qualitative families for gap decomposition. Unlike the legacy
+# ``classify_hidden_families`` keyword set, these are anchored on word
+# boundaries and scanned over note text only, so they do not saturate on
+# substrings ("log" in "neurological") or near-universal label tokens. Only the
+# two families that stayed discriminating on validation750 are kept; semiology
+# presence was dropped because it fires on a majority of epilepsy notes and so
+# cannot isolate the gap.
+_CLUSTER_BURDEN_RE = re.compile(r"\bclusters?\b", re.IGNORECASE)
+_SEIZURE_FREE_DURATION_RE = re.compile(
+    r"\bseizure[- ]free\b|\bno seizures\b|\blast seizure\b"
+    r"|\bno further (?:events|seizures)\b",
+    re.IGNORECASE,
+)
+
+
+def classify_boundary_families(
+    *,
+    note_text: str,
+    gold_per_month: float | None,
+) -> tuple[str, ...]:
+    """Sharpened, gap-discriminating family taxonomy for transition readouts.
+
+    Returns the row's partitioning ``boundary_band`` (always exactly one) plus
+    any cleaned qualitative families it triggers. This is the taxonomy the
+    per-family transition instrumentation uses; the legacy
+    ``classify_hidden_families`` is intentionally left untouched because frozen
+    pre-registrations (``selective_boundary_candidate_predeclaration``) and the
+    ``rq1_rq2`` control panels depend on its exact family names.
+    """
+
+    families: list[str] = [boundary_band(gold_per_month)]
+    if _CLUSTER_BURDEN_RE.search(note_text):
+        families.append("cluster_burden")
+    if _SEIZURE_FREE_DURATION_RE.search(note_text):
+        families.append("seizure_free_duration")
     return tuple(dict.fromkeys(families))
 

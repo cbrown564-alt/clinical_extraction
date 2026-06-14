@@ -37,8 +37,9 @@ def _rules_row(
     baseline_label: str = "seizure free for multiple year",
     gold_monthly: float = 1000.0,
     baseline_correct: bool = False,
+    note_text: str | None = None,
 ) -> dict:
-    return {
+    row = {
         "source_row_index": source_row_index,
         "scores": {
             "deterministic_top": {
@@ -50,6 +51,9 @@ def _rules_row(
         },
         "reference": {"gold_monthly_frequency": gold_monthly},
     }
+    if note_text is not None:
+        row["note_text"] = note_text
+    return row
 
 
 def _agent_row(*, source_row_index: int = 1, label: str | None = "unknown") -> dict:
@@ -185,7 +189,13 @@ def test_summarize_consensus_rows_counts_regressions() -> None:
 
 def test_replay_summary_by_family_decomposes_transitions() -> None:
     replay_rows, metadata = run_exact_label_consensus_replay(
-        [_rules_row(source_row_index=1, baseline_label="seizure free for multiple year")],
+        [
+            _rules_row(
+                source_row_index=1,
+                baseline_label="seizure free for multiple year",
+                note_text="patient reports being seizure-free for several years",
+            )
+        ],
         {
             "gpt": [_agent_row(source_row_index=1, label="unknown")],
             "qwen": [_agent_row(source_row_index=1, label="unknown")],
@@ -198,6 +208,9 @@ def test_replay_summary_by_family_decomposes_transitions() -> None:
 
     assert all("hidden_families" in row for row in replay_rows)
     by_family = metadata["summary_by_family"]["families"]
+    # Partitioning band from the gold rate (1000 -> unknown) plus the
+    # note-text-derived qualitative family.
+    assert "band_unknown" in by_family
     assert "seizure_free_duration" in by_family
     assert by_family["seizure_free_duration"]["wrong_to_correct"] == 1
     assert metadata["summary_by_family"]["total_rows"] == 1

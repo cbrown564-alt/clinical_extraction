@@ -769,10 +769,7 @@ def _build_row(
         "hidden_families": list(
             family_transitions.tag_hidden_families(
                 note_text=record.note_text,
-                gold_label=record.gold_label,
-                baseline_label=dict(v0_reference.get("comparison") or {}).get(
-                    "final_label"
-                ),
+                gold_per_month=record.gold_monthly_frequency,
             )
         ),
         "model_call_attempted": model_call_attempted,

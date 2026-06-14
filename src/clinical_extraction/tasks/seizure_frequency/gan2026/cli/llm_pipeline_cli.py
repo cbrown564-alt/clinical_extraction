@@ -224,7 +224,6 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
     args = parser.parse_args(raw_argv)
     spec = specs[args.pipeline]
     requested_source_indices = _parse_requested_source_indices(args, parser)
-    _validate_output_overwrite_policy(args, parser)
 
     records = load_records_for_split(args.split)
     if requested_source_indices is not None:
@@ -235,6 +234,9 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
         )
     if args.limit is not None:
         records = records[: args.limit]
+    # Frozen-path / audit / ladder policy violations are reported before the
+    # generic output-overwrite guard: using the wrong artifact path is a more
+    # fundamental error than the correct path already existing.
     _validate_test_audit_policy(
         args,
         parser,
@@ -242,6 +244,7 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
         explicit_source_override_options=_explicit_source_override_options(raw_argv),
     )
     _validate_validation_ladder(args, parser, row_count=len(records))
+    _validate_output_overwrite_policy(args, parser)
 
     manifest = load_split_manifest()
     split_manifest = str(manifest.get("manifest_version", "gan2026_split_v1"))

@@ -148,15 +148,50 @@ is implemented. The other four items remain open design/experiment work.
 - Smoke on the real validation750 rules artifact: `note_text` threaded on all
   750 rows; every family populates.
 
-**Caveat that gates this work's usefulness:** the reused
-`classify_hidden_families` taxonomy is too permissive to discriminate the gap.
-On validation750 `current_vs_historical` fires 739/750 and
+**Caveat that gated this work's usefulness (now resolved — see update below):**
+the reused `classify_hidden_families` taxonomy was too permissive to
+discriminate the gap. On validation750 `current_vs_historical` fired 739/750 and
 `diary_or_log_aggregation` 727/750 — near-universal families cannot isolate
 where validation diverges from test. Before this readout is trusted for a freeze
 decision, the taxonomy needs tighter, more mutually-exclusive families (or
 splitting the heavy families by rate bucket / boundary category). The
 instrumentation is correct; its signal is only as sharp as the family
 definitions.
+
+### Taxonomy sharpening (2026-06-14, follow-up)
+
+The caveat above is resolved. A new dedicated classifier
+`labels.classify_boundary_families` (plus `labels.boundary_band`) replaces the
+saturated keyword taxonomy *for the transition readout only*; the legacy
+`classify_hidden_families` is left untouched because frozen pre-registrations
+(`selective_boundary_candidate_predeclaration`) and the `rq1_rq2` control panels
+hardcode its exact family names. `family_transitions.tag_hidden_families` now
+takes `gold_per_month` (not gold/baseline label text) and the two agentic call
+sites thread `reference.gold_monthly_frequency` through.
+
+The new taxonomy has two axes:
+
+- **Partitioning boundary bands** from the *gold* monthly rate (a coarsened
+  `map_purist`): `band_zero`, `band_unknown`, `band_submonthly`, `band_monthly`,
+  `band_weekly`, `band_daily`. Exactly one per row; on validation750 they sum to
+  750 and no band exceeds 24%. These map onto the brief's denominator/window and
+  unknown/no-reference gap candidates.
+- **Cleaned qualitative families**, word-boundary regex over note text only:
+  `cluster_burden` (43%) and `seizure_free_duration` (15%). Semiology was dropped
+  — it fires on a majority of epilepsy notes at any threshold (59% at >=2 distinct
+  types) and so cannot isolate the gap.
+
+Measured impact on the validation750 consensus replay: per-band changed-label
+precision now spans 0.11 -> 1.00 (the old taxonomy was a uniform ~0.22
+aggregate), and the readout localizes the consensus override's damage — it nets
+-3 on `band_weekly` (8 correct->wrong vs 5 wrong->correct) while `band_daily` is a
+clean 6/6. This operationalizes Insights 2 and 5 together and unblocks checklist
+step 1 (held-out-family CV promotion).
+
+Touched: `labels.py`, `agentic/family_transitions.py`,
+`agentic/structured_event_consensus.py`, `agentic/fresh_evidence_reasoner.py`,
+`tests/test_gan2026_family_transitions.py`,
+`tests/test_gan2026_agentic_structured_event_consensus.py`.
 
 ## Source artifacts
 
