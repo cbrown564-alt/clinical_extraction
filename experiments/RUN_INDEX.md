@@ -4,6 +4,51 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Promote
 
+### `gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13`
+- Date/split: `2026-06-13`; `validation`; `750` rows.
+- Pipeline: `fresh_evidence_reasoner`; mode `live`; replay `live`.
+- Model role: V12 LLM-owned fresh-evidence reviewer over saved GPT/Qwen/DeepSeek structured-event scaffolding; the model may keep the original GPT structured-event final or replace it with a direct label grounded in exact raw-note evidence.; model `openai/gpt-4.1`.
+- Repair mode/config: `format-only label repair, exact-substring evidence filtering, and predeclared safety gates; fallback is only to the original GPT structured-event LLM final, not deterministic top.`.
+- Primary metrics: call_failures=0, changed_label_precision_vs_v0=0.2857, changed_labels_vs_v0=147, correct_to_wrong_vs_v0=22, evidence_exact_substrings=703, final_minus_v0_purist_correct=21, final_pragmatic_correct=698, final_purist_correct=682, format_only_purist_correct=676, fresh_evidence_gate_fallbacks=8, fresh_evidence_replace_actions=182, net_purist_gain_vs_v0=20, parse_or_validation_failures=0, prediction_bearing_rows=749, raw_model_purist_correct=676, rows=750, v0_pragmatic_correct=679, v0_purist_correct=661, wrong_to_correct_vs_v0=42.
+- Evidence validity: 703/750 final decisions cite exact raw-note evidence substrings after filtering; 0 call failures and 0 parse/schema/label failures.
+- Cache/reuse source: Saved validation structured-event artifacts used as prompt scaffolding; no gold labels, row IDs, split labels, or deterministic top labels are provided to the model.
+- Supersedes: `gan2026_cross_model_challenge_gated_adjudicator_v0_1_validation_ladder_2026-06-13`.
+- Claim language: Validation-development promotion only: V12 v0.4 passed validation25, fixed hard50, family-slice, validation250, and full validation750 transfer checks. It is frozen as the current candidate for one explicit aggregate-only test450 authorization request; it is not yet a holdout result or benchmark-comparable claim.
+- Artifacts: `experiments/gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.jsonl`, `experiments/gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.md`.
+
+### `gan2026_fresh_evidence_reasoner_frozen_test450_protocol_2026-06-13`
+- Date/split: `2026-06-13`; `test_planned`; `0` rows.
+- Pipeline: `fresh_evidence_reasoner_frozen_test_protocol`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Analysis-only frozen-protocol authorization packet for the V12 fresh-evidence reasoner; pins the exact candidate, hashes, command, permitted aggregate readout, aggregate-only Markdown report behavior, CLI launch guard, deterministic preflight, and stop rule.; model `openai/gpt-4.1`.
+- Repair mode/config: `no new repair; protocol freezes V12 v0.4 format repair, evidence filtering, and safety gates`.
+- Primary metrics: authorization_required=yes, confirm_test_audit_required=yes, focused_frozen_gate_tests_passed=72, gan2026_pytest_modules_passed=1172, partial_test_subsets_allowed=no, preflight_ok=yes, ruff_guard_status=passed, target_test450_purist_correct=383, target_test450_purist_rate=0.8511, test_markdown_row_table_allowed=no, test_rows_read=0, v12_hard50_final_purist_correct=42, v12_validation250_final_purist_correct=242, v12_validation750_final_purist_correct=682, v12_validation750_v0_purist_correct=661.
+- Evidence validity: No new prediction evidence. The protocol pins validation750 exact-evidence summary at 703/750, requires the CLI test-audit guard, has a passing deterministic preflight, emits aggregate-only test Markdown, and forbids row-level test inspection. Focused frozen gate tests pass 72/72, Ruff passes, and the full offline Gan pytest module suite passes 1172/1172 before authorization.
+- Cache/reuse source: Protocol summarizes completed validation artifacts; makes no model calls and reads no test rows.
+- Supersedes: `gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13`.
+- Claim language: Pre-registration only, not a holdout result and not user authorization by itself. Use only if the user explicitly authorizes one frozen aggregate-only test450 audit.
+- Artifacts: `docs/research/gan2026_fresh_evidence_reasoner_frozen_test450_protocol_2026-06-13.md`.
+
+### `gan2026_agentic_structured_event_consensus_unanimous_exact_validation750_2026-06-13`
+- Date/split: `2026-06-13`; `validation`; `750` rows.
+- Pipeline: `agentic_structured_event_consensus`; mode `no_call_replay`; replay `saved_output_replay`.
+- Model role: deterministic tool floor plus structured-event agent unanimity selector; model `panel: deterministic_rules_tool + gpt-4.1-mini + qwen3-235b-a22b + deepseek`.
+- Repair mode/config: `exact_label_unanimity_over_structured_events`.
+- Primary metrics: baseline_pragmatic_correct=704, baseline_purist_correct=697, changed_label_precision=0.22131147540983606, consensus_pragmatic_correct=713, consensus_purist_correct=708, correct_to_wrong=16, net_purist_gain=11, switched_labels=122, wrong_to_correct=27.
+- Evidence validity: Validation-development saved-output replay over deterministic top plus three saved structured-event agent outputs; gold labels used only for post-hoc scoring.
+- Claim language: First tool-floor + structured-event multi-agent consensus replay to exceed 700/750 Purist on validation. Promote the selector direction, with regression-filter hardening required before holdout.
+- Artifacts: `experiments/gan2026_agentic_structured_event_consensus_unanimous_exact_validation750_2026-06-13.jsonl`, `experiments/gan2026_agentic_structured_event_consensus_unanimous_exact_validation750_2026-06-13.md`.
+
+### `gan2026_agentic_structured_event_patch_recent_unresolved_burden_validation750_qwen3635b_2026-06-12`
+- Date/split: `2026-06-12`; `validation`; `750` rows.
+- Pipeline: `agentic_structured_event_patch`; mode `validation750 no-call structured-event selection patch replay`; replay `saved_output_replay`.
+- Model role: No-call tool/agent selection-patch replay over Qwen SE v0.6 structured events; the source LLM owns event extraction and baseline selection, while the patcher may only select an already extracted event through conservative gates.; model `none; saved ollama_chat/qwen3.6:35b structured-events outputs only`.
+- Repair mode/config: `recent_unresolved_burden_v0 selection patch: non-selected frequency_rate event, temporality=recent, assertion_status=asserted, semantic_kind=unresolved_multiple, exact evidence, normalized label contains multiple`.
+- Primary metrics: accepted_patches=2, baseline_pragmatic_correct=656, baseline_purist_accuracy=0.8507, baseline_purist_correct=638, changed_label_precision=1.0, changed_labels=2, correct_to_wrong=0, patched_pragmatic_correct=658, patched_purist_accuracy=0.8533, patched_purist_correct=640, row_count=750, wrong_to_correct=2.
+- Evidence validity: Accepted patch evidence was exact-substring gated: 2/2 accepted patches passed; source artifact evidence_valid was 581/750.
+- Cache/reuse source: experiments/gan2026_v06_validation750_hybrid_structured_events_qwen3635b_2026-06-12.jsonl.
+- Claim language: Promoted only as validation-development evidence that a narrow structured-event patch can improve the already successful Qwen SE substrate. No new model calls, no holdout rows, no row-level test inspection, and no multi-agent superiority claim.
+- Artifacts: `experiments/gan2026_agentic_structured_event_patch_recent_unresolved_burden_validation750_qwen3635b_2026-06-12.jsonl`, `experiments/gan2026_agentic_structured_event_patch_recent_unresolved_burden_validation750_qwen3635b_2026-06-12.md`.
+
 ### `gan2026_agentic_hard50_boundary_guide_rescue_replay_2026-06-12`
 - Date/split: `2026-06-12`; `validation`; `50` rows.
 - Pipeline: `agentic_boundary_guide_rescue_replay`; mode `no_call_replay`; replay `saved_output_replay`.
@@ -60,6 +105,47 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Artifacts: `experiments/gan2026_hybrid_v5_validation750_gpt41mini_2026-06-09.jsonl`.
 
 ## Revise
+
+### `gan2026_hybrid_structured_events_agentic_consensus_fresh_evidence_analysis_2026-06-14`
+- Date/split: `2026-06-14`; `validation+test_aggregate`; `1200` rows.
+- Pipeline: `gan2026_agentic_fresh_evidence_synthesis`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Analysis-only synthesis of hybrid structured events, agentic/consensus variants, and V12 fresh-evidence reasoning after the frozen aggregate-only V12 test450 audit.; model `none`.
+- Primary metrics: agentic_major_variant_families_summarized=14, best_completed_test450_pragmatic_correct=394, best_completed_test450_purist_correct=379, consensus_test450_purist_correct=365, consensus_validation750_purist_correct=708, hybrid_structured_events_test450_pragmatic_correct=381, hybrid_structured_events_test450_purist_correct=364, hybrid_structured_events_validation750_purist_correct=661, hybrid_structured_events_validation750_rendered_rows=748, row_level_holdout_inspection=no, v12_target_reached=false, v12_target_test450_purist_correct=383, v12_test450_pragmatic_correct=394, v12_test450_purist_correct=379, v12_validation750_pragmatic_correct=698, v12_validation750_purist_correct=682.
+- Evidence validity: No new prediction evidence. Uses validation-development metrics and aggregate-only locked-test metrics; V12 test row-level failures, rationales, evidence, selected events, and transitions were not inspected.
+- Cache/reuse source: Existing Gan 2026 registry, RUN_INDEX, project status, validation reports, and aggregate-only locked-test reports; no new model calls and no row-level test artifact inspection.
+- Claim language: Post-audit analysis-only synthesis. Summarizes why hybrid structured events remain the durable substrate, why agentic/consensus variants mostly failed or failed to transfer, and why V12 fresh_evidence_reasoner is the best completed holdout result but still missed the 383/450 Purist target. Does not authorize a new test run or any test-row tuning.
+- Artifacts: `docs/research/gan2026_hybrid_structured_events_agentic_consensus_fresh_evidence_analysis_2026-06-14.md`.
+
+### `gan2026_llm_reasoning_agentic_test085_experiment_plan_2026-06-13`
+- Date/split: `2026-06-13`; `validation_planned_then_frozen_test`; `0` rows.
+- Pipeline: `agentic_llm_reasoning_plan`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Analysis-only experiment plan for LLM-owned structured-event reasoning, tool-calling agents, and matched-budget multi-agent variants.; model `none`.
+- Primary metrics: current_best_test450_structured_events_purist_correct=364, first_gate=validation25_contract_then_fixed_hard50_and_family_hard_slices, required_test450_gain_over_best_structured_events=19, second_gate=validation250, target_test450_purist_correct=383.
+- Evidence validity: Plan artifact only. No new model calls, no scorer changes, no test-row inspection.
+- Claim language: Next-cycle plan after deterministic-floor consensus failed to generalize. Requires LLM-owned selection over structured events, validation hard-slice and validation250 gates, and a frozen aggregate test audit only after explicit authorization.
+- Artifacts: `docs/research/gan2026_llm_reasoning_agentic_test085_experiment_plan_2026-06-13.md`.
+
+### `gan2026_llm_event_reasoner_validation25_live_gpt41mini_v1_3_2026-06-13`
+- Date/split: `2026-06-13`; `validation`; `25` rows.
+- Pipeline: `llm_event_reasoner`; mode `live`; replay `live`.
+- Model role: V1 single LLM-owned event reasoner over saved GPT structured-event V0; deterministic code limited to prompt assembly, format-only label repair, evidence validation, and scoring.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `format-only label repair plus enum/shape schema repair; no semantic fallback`.
+- Primary metrics: call_failures=0, evidence_exact_substrings=24, final_purist_correct=25, format_only_purist_correct=25, model_calls_attempted=25, net_purist_gain_vs_v0=0, parse_or_validation_failures=0, raw_model_purist_correct=25, rows=25, v0_purist_correct=25.
+- Evidence validity: 24/25 final decisions cited exact evidence substrings; one case retained a correct label with non-exact evidence casing/context.
+- Cache/reuse source: Structured-event source: experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07.jsonl.
+- Supersedes: `gan2026_llm_event_reasoner_validation25_live_gpt41mini_v1_2_2026-06-13`.
+- Claim language: Validation-development contract smoke only. v1.3 clears schema/evidence smoke and authorizes fixed hard50, but does not by itself authorize family slices, validation250, holdout use, or benchmark claims.
+- Artifacts: `experiments/gan2026_llm_event_reasoner_validation25_live_gpt41mini_v1_3_2026-06-13.jsonl`, `experiments/gan2026_llm_event_reasoner_validation25_live_gpt41mini_v1_3_2026-06-13.md`.
+
+### `gan2026_agentic_structured_event_consensus_available_two_agent_exact_test450_2026-06-13`
+- Date/split: `2026-06-13`; `test`; `450` rows.
+- Pipeline: `agentic_structured_event_consensus`; mode `no_call_replay`; replay `saved_output_replay`.
+- Model role: deterministic tool floor plus available structured-event agent exact-label unanimity selector; model `panel: deterministic_rules_tool + gpt-4.1-mini + qwen3.6:35b; DeepSeek test450 artifact unavailable`.
+- Repair mode/config: `available_two_agent_exact_label_unanimity_over_test450_structured_events`.
+- Primary metrics: changed_label_precision=0.39473684210526316, constrained_consensus_pragmatic_correct=375, constrained_consensus_purist_correct=365, correct_to_wrong=23, deterministic_floor_pragmatic_correct=354, deterministic_floor_purist_correct=343, exact_three_agent_test450_available=no, net_purist_gain=22, switched_labels=114, validation_three_agent_consensus_purist_correct=708, wrong_to_correct=45.
+- Evidence validity: Final holdout aggregate saved-output replay. Exact validation policy cannot be fully replayed because no DeepSeek test450 structured-event artifact is available on disk; no test-row failure inspection or tuning.
+- Claim language: Constrained two-agent holdout audit improves the weak deterministic test floor but drops far below validation consensus rate; reject robust-final-claim interpretation and start any follow-up from validation only.
+- Artifacts: `experiments/gan2026_agentic_structured_event_consensus_available_two_agent_exact_test450_2026-06-13.jsonl`, `experiments/gan2026_agentic_structured_event_consensus_available_two_agent_exact_test450_2026-06-13.md`, `experiments/gan2026_agentic_structured_event_patch_recent_unresolved_burden_test450_qwen3635b_2026-06-13.jsonl`.
 
 ### `gan2026_v06_validation750_hybrid_structured_events_qwen3635b_2026-06-12`
 - Date/split: `2026-06-12`; `validation`; `750` rows.
@@ -718,6 +804,114 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Reject
 
+### `gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_4_2026-06-13`
+- Date/split: `2026-06-14`; `test`; `450` rows.
+- Pipeline: `fresh_evidence_reasoner`; mode `live`; replay `live`.
+- Model role: V12 LLM-owned fresh-evidence reviewer over frozen GPT/Qwen test450 structured-event scaffolding; DeepSeek test source unavailable; model may keep the original GPT structured-event final or replace it with exact raw-note evidence.; model `openai/gpt-4.1`.
+- Repair mode/config: `format-only label repair, exact-substring evidence filtering, and predeclared safety gates; fallback only to the original GPT structured-event LLM final, not deterministic top.`.
+- Primary metrics: authorization_date=2026-06-14, call_failures=0, changed_label_precision_vs_v0=0.3171, changed_labels_vs_v0=82, correct_to_wrong_vs_v0=13, evidence_exact_substrings=423, final_pragmatic_correct=394, final_pragmatic_rate=0.8755555555555555, final_purist_correct=379, final_purist_rate=0.8422222222222222, format_only_pragmatic_correct=387, format_only_purist_correct=372, fresh_evidence_gate_fallbacks=9, fresh_evidence_keep_original_actions=332, fresh_evidence_replace_actions=118, model_calls_attempted=450, net_purist_gain_vs_v0=13, parse_or_validation_failures=0, prediction_bearing_rows=450, raw_model_pragmatic_correct=387, raw_model_purist_correct=372, row_level_holdout_inspection=no, rows=450, target_purist_correct=383, target_purist_rate=0.8511111111111112, target_reached=false, v0_pragmatic_correct=381, v0_purist_correct=364, wrong_to_correct_vs_v0=26.
+- Evidence validity: Aggregate-only frozen test readout: 423/450 final decisions cite exact raw-note evidence substrings after filtering; 0 call failures and 0 parse/schema/label failures. First readout used the pinned aggregate-only Markdown helper; no row-level holdout failures, rationales, evidence, selected events, or transitions were inspected.
+- Cache/reuse source: Frozen split-aware test sources: GPT structured-event test450 artifact and Qwen patched structured-event test450 artifact; no source overrides.
+- Supersedes: `gan2026_fresh_evidence_reasoner_frozen_test450_protocol_2026-06-13`.
+- Claim language: Explicitly authorized frozen aggregate-only test450 audit. Final Purist 379/450 (0.8422) missed the preregistered 383/450 target, so the >0.85 goal is not achieved. Treat as final-evaluation evidence; any follow-up must start from validation only and must not tune from test row-level data.
+- Artifacts: `experiments/gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_4_2026-06-13.jsonl`, `experiments/gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_4_2026-06-13.md`, `experiments/gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_4_2026-06-13.stdout.txt`, `experiments/gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_4_2026-06-13.stderr.txt`.
+
+### `gan2026_temporal_sentinel_specialist_v0_3_validation_ladder_2026-06-13`
+- Date/split: `2026-06-13`; `validation`; `475` rows.
+- Pipeline: `temporal_sentinel_specialist`; mode `live`; replay `live`.
+- Model role: V9 temporal/sentinel specialist over saved GPT-4.1-mini pure structured-event V0 rows; the model owns keep-or-replace actions, while deterministic code renders model-selected existing normalized events and applies a high-precision safety gate back to the original LLM structured-event final when a proposed replacement falls outside predeclared safe patterns.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `action-rendered keep_original_structured_event_final or replace_with_existing_event only; prompt version gan2026_temporal_sentinel_specialist_v0_1 plus safety gate gan2026_temporal_sentinel_safety_gate_v0_2; no deterministic top, no free recomputation, fallback only to original LLM structured-event final`.
+- Primary metrics: hard50_changed_label_precision_vs_v0=1.0, hard50_correct_to_wrong_vs_v0=0, hard50_final_purist_correct=42, hard50_net_purist_gain_vs_v0=3, hard50_v0_purist_correct=39, hard50_wrong_to_correct_vs_v0=3, seizure_free_last_event_final_purist_correct_raw_v0_2_slice=18, seizure_free_last_event_final_purist_correct_safety_replay=16, seizure_free_last_event_v0_purist_correct=15, unknown_no_reference_final_purist_correct_raw_v0_2_slice=36, unknown_no_reference_final_purist_correct_safety_replay=35, unknown_no_reference_v0_purist_correct=34, validation250_changed_label_precision_vs_v0=1.0, validation250_correct_to_wrong_vs_v0=0, validation250_final_purist_correct=237, validation250_net_purist_gain_vs_v0=1, validation250_parse_or_validation_failures=2, validation250_v0_purist_correct=236, validation250_wrong_to_correct_vs_v0=1, validation25_final_purist_correct=25, validation25_v0_purist_correct=25.
+- Evidence validity: validation25 exact evidence 24/25; hard50 exact evidence 48/50; validation250 exact evidence 239/250. The two validation250 parse failures are rows missing the structured-event substrate/original final, not safety-gate regressions.
+- Cache/reuse source: Input substrate: experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07.jsonl; fixed hard50 source rows and Stage 0 temporal/sentinel validation50 family slices. v0.3 validation250 reused cached v0.1 prompt outputs with a stricter safety gate.
+- Supersedes: `gan2026_represented_event_normalizer_v0_2_validation_ladder_2026-06-13`.
+- Claim language: Validation-development V9 diagnostic. The specialist plus safety gate is safe and useful on fixed hard50 (+3 net, 0 regressions), but validation250 transfer is only +1 net and misses the predeclared +5 validation250 gate. Do not escalate to validation750 or frozen test450; use the result as evidence that high-precision original-LLM fallback gates are safer than free recomputation, but too weak for the >0.85 test objective.
+- Artifacts: `experiments/gan2026_temporal_sentinel_specialist_validation25_live_gpt41mini_v0_3_2026-06-13.jsonl`, `experiments/gan2026_temporal_sentinel_specialist_validation25_live_gpt41mini_v0_3_2026-06-13.md`, `experiments/gan2026_temporal_sentinel_specialist_hard50_live_gpt41mini_v0_3_2026-06-13.jsonl`, `experiments/gan2026_temporal_sentinel_specialist_hard50_live_gpt41mini_v0_3_2026-06-13.md`, `experiments/gan2026_temporal_sentinel_specialist_unknown_no_reference_validation50_live_gpt41mini_v0_2_2026-06-13.jsonl`, `experiments/gan2026_temporal_sentinel_specialist_unknown_no_reference_validation50_live_gpt41mini_v0_2_2026-06-13.md`, `experiments/gan2026_temporal_sentinel_specialist_seizure_free_last_event_validation50_live_gpt41mini_v0_2_2026-06-13.jsonl`, `experiments/gan2026_temporal_sentinel_specialist_seizure_free_last_event_validation50_live_gpt41mini_v0_2_2026-06-13.md`, `experiments/gan2026_temporal_sentinel_specialist_validation250_live_gpt41mini_v0_3_2026-06-13.jsonl`, `experiments/gan2026_temporal_sentinel_specialist_validation250_live_gpt41mini_v0_3_2026-06-13.md`.
+
+### `gan2026_targeted_boundary_router_validation_ladder_2026-06-13`
+- Date/split: `2026-06-13`; `validation`; `150` rows.
+- Pipeline: `targeted_boundary_router`; mode `live`; replay `live`.
+- Model role: V3 targeted boundary router over saved GPT-4.1-mini pure structured-event V0 rows; the model owns keep-or-replace action and routed profile, while deterministic code renders only the model-selected existing normalized structured-event candidate and scores afterward.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `action-rendered keep_original_structured_event_final or replace_with_existing_event only; no deterministic top or final-label fallback; v0.4 adds split-neutral router_hints diagnostics but still requires model-owned action`.
+- Primary metrics: v0_1_hard50_changed_label_precision_vs_v0=0.5, v0_1_hard50_correct_to_wrong_vs_v0=2, v0_1_hard50_final_purist_correct=40, v0_1_hard50_wrong_to_correct_vs_v0=3, v0_2_hard50_changed_label_precision_vs_v0=1.0, v0_2_hard50_final_purist_correct=40, v0_2_hard50_net_purist_gain_vs_v0=1, v0_2_validation25_final_purist_correct=25, v0_4_hard50_correct_to_wrong_vs_v0=1, v0_4_hard50_final_purist_correct=39, v0_4_hard50_wrong_to_correct_vs_v0=1.
+- Evidence validity: All recorded router variants had 0 parse/action-render failures. v0.2 validation25 exact evidence 24/25 and hard50 exact evidence 46/50; v0.4 validation25 exact evidence 24/25 and hard50 exact evidence 46/50.
+- Cache/reuse source: Input substrate: experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07.jsonl. v0.1-v0.4 prompt variants were run on validation25 and fixed hard50 only; v0.2 was the safest variant, v0.4 added split-neutral router hints but did not improve the gate.
+- Supersedes: `gan2026_structured_event_verifier_v0_5_validation_ladder_2026-06-13`.
+- Claim language: Validation-development V3 targeted-router attempt. The implementation is auditable and LLM-owned over saved structured-event rows, but no variant passed the Stage 2 gate. v0.1 found 3 hard50 wins but also 2 losses (changed-label precision 0.50); v0.2 was safe but weak at +1 net; v0.3 made no label changes; v0.4 with router_hints regressed to V0 parity with one win and one loss. Do not escalate this branch to validation250, validation750, or holdout.
+- Artifacts: `experiments/gan2026_targeted_boundary_router_validation25_live_gpt41mini_v0_2_2026-06-13.jsonl`, `experiments/gan2026_targeted_boundary_router_validation25_live_gpt41mini_v0_2_2026-06-13.md`, `experiments/gan2026_targeted_boundary_router_hard50_live_gpt41mini_v0_2_2026-06-13.jsonl`, `experiments/gan2026_targeted_boundary_router_hard50_live_gpt41mini_v0_2_2026-06-13.md`, `experiments/gan2026_targeted_boundary_router_validation25_live_gpt41mini_v0_4_2026-06-13.jsonl`, `experiments/gan2026_targeted_boundary_router_validation25_live_gpt41mini_v0_4_2026-06-13.md`, `experiments/gan2026_targeted_boundary_router_hard50_live_gpt41mini_v0_4_2026-06-13.jsonl`, `experiments/gan2026_targeted_boundary_router_hard50_live_gpt41mini_v0_4_2026-06-13.md`.
+
+### `gan2026_structured_event_verifier_v0_5_validation_ladder_2026-06-13`
+- Date/split: `2026-06-13`; `validation`; `175` rows.
+- Pipeline: `structured_event_verifier`; mode `live`; replay `live`.
+- Model role: V4 structured-event verifier over saved GPT-4.1-mini pure structured-event V0 rows; the model owns an explicit keep-or-replace action, while deterministic code renders only the model-selected action against existing normalized structured-event candidates and scores afterward.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `action-rendered keep_original_structured_event_final or replace_with_existing_event only; free recomputation and abstention disabled in prompt v0.5; format-only label repair recorded as a separate score layer`.
+- Primary metrics: frequency_denominator_final_purist_correct=8, frequency_denominator_net_purist_gain_vs_v0=1, frequency_denominator_v0_purist_correct=7, hard50_changed_label_precision_vs_v0=1.0, hard50_final_purist_correct=40, hard50_net_purist_gain_vs_v0=1, hard50_v0_purist_correct=39, unknown_no_reference_final_purist_correct=34, unknown_no_reference_net_purist_gain_vs_v0=0, unknown_no_reference_v0_purist_correct=34, validation25_final_purist_correct=25, validation25_v0_purist_correct=25.
+- Evidence validity: validation25 exact evidence 24/25; hard50 exact evidence 46/50; frequency_denominator validation50 exact evidence 46/50; unknown_no_reference validation50 exact evidence 44/50. All runs had 0 parse/action-render failures.
+- Cache/reuse source: Input substrate: experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07.jsonl. Prompt iterations v0.1-v0.4 were used only to harden the v0.5 contract before this recorded ladder.
+- Supersedes: `gan2026_llm_event_reasoner_hard50_live_gpt41mini_v1_3_2026-06-13`.
+- Claim language: Validation-development V4 verifier-first attempt. v0.5 is safe where it acts (hard50 +1 net, 1.0 changed-label precision, 0 losses; frequency-denominator slice +1 net, 0 losses) but far below the predeclared +4 hard50 and +5 validation250 promotion gates. Do not escalate this branch to validation250, validation750, or holdout; next work should use a different specialist/selector rather than free recomputation.
+- Artifacts: `experiments/gan2026_structured_event_verifier_validation25_live_gpt41mini_v0_5_2026-06-13.jsonl`, `experiments/gan2026_structured_event_verifier_validation25_live_gpt41mini_v0_5_2026-06-13.md`, `experiments/gan2026_structured_event_verifier_hard50_live_gpt41mini_v0_5_2026-06-13.jsonl`, `experiments/gan2026_structured_event_verifier_hard50_live_gpt41mini_v0_5_2026-06-13.md`, `experiments/gan2026_structured_event_verifier_frequency_denominator_validation50_live_gpt41mini_v0_5_2026-06-13.jsonl`, `experiments/gan2026_structured_event_verifier_frequency_denominator_validation50_live_gpt41mini_v0_5_2026-06-13.md`, `experiments/gan2026_structured_event_verifier_unknown_no_reference_validation50_live_gpt41mini_v0_5_2026-06-13.jsonl`, `experiments/gan2026_structured_event_verifier_unknown_no_reference_validation50_live_gpt41mini_v0_5_2026-06-13.md`.
+
+### `gan2026_represented_event_normalizer_v0_2_validation_ladder_2026-06-13`
+- Date/split: `2026-06-13`; `validation`; `75` rows.
+- Pipeline: `represented_event_normalizer`; mode `live`; replay `live`.
+- Model role: V8 represented-event normalizer over saved GPT-4.1-mini pure structured-event V0 rows; the model owns keep-or-recompute action over selected existing event evidence, while deterministic code validates membership, format, evidence substrings, and scoring afterward.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `action-rendered keep_original_structured_event_final or replace_with_recomputed_fact_from_selected_evidence only; replace_with_existing_event disabled in prompt v0.2 after v0.1 caused a saturated validation25 regression; recompute requires selected existing event IDs and a scorable model label`.
+- Primary metrics: all_recorded_action_render_failures=0, all_recorded_parse_or_validation_failures=0, hard50_changed_label_precision_vs_v0=0.0, hard50_correct_to_wrong_vs_v0=1, hard50_final_purist_correct=38, hard50_net_purist_gain_vs_v0=-1, hard50_recomputed_fact_actions=3, hard50_v0_purist_correct=39, hard50_wrong_to_correct_vs_v0=0, validation25_final_purist_correct=25, validation25_recomputed_fact_actions=1, validation25_v0_purist_correct=25.
+- Evidence validity: validation25 exact evidence 24/25; hard50 exact evidence 46/50. Both recorded v0.2 runs had 0 call failures, 0 parse/schema/action-render failures.
+- Cache/reuse source: Input substrate: experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07.jsonl; fixed hard50 source rows from experiments/gan2026_agentic_validation_hard50_source_rows_2026-06-12.txt.
+- Supersedes: `gan2026_event_completion_reasoner_v0_3_validation_ladder_2026-06-13`.
+- Claim language: Validation-development V8 diagnostic. The represented-event recompute contract is clean, but fixed hard50 regressed from V0 39/50 to 38/50: 3 recompute actions, 0 wins, and 1 regression, mainly from over-selecting seizure-free evidence. Do not escalate to family slices, validation250, validation750, or holdout. Next work should use a more explicit specialist gate rather than free recomputation.
+- Artifacts: `experiments/gan2026_represented_event_normalizer_validation25_live_gpt41mini_v0_2_2026-06-13.jsonl`, `experiments/gan2026_represented_event_normalizer_validation25_live_gpt41mini_v0_2_2026-06-13.md`, `experiments/gan2026_represented_event_normalizer_hard50_live_gpt41mini_v0_2_2026-06-13.jsonl`, `experiments/gan2026_represented_event_normalizer_hard50_live_gpt41mini_v0_2_2026-06-13.md`.
+
+### `gan2026_llm_event_reasoner_hard50_live_gpt41mini_v1_3_2026-06-13`
+- Date/split: `2026-06-13`; `validation_hard50`; `50` rows.
+- Pipeline: `llm_event_reasoner`; mode `live`; replay `live`.
+- Model role: V1 single LLM-owned event reasoner over saved GPT structured-event V0 on the fixed validation hard50 source-row file.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `format-only label repair plus enum/shape schema repair; no semantic fallback`.
+- Primary metrics: call_failures=0, changed_label_precision_vs_v0=0.0769, correct_to_wrong_vs_v0=5, evidence_exact_substrings=46, final_purist_correct=35, format_only_purist_correct=35, model_calls_attempted=50, net_purist_gain_vs_v0=-4, parse_or_validation_failures=0, raw_model_purist_correct=35, rows=50, v0_purist_correct=39, wrong_to_correct_vs_v0=1.
+- Evidence validity: 46/50 final decisions cited exact evidence substrings; evidence quality did not prevent semantic regressions on seizure-free boundaries.
+- Cache/reuse source: Structured-event source: experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07.jsonl; source rows: experiments/gan2026_agentic_validation_hard50_source_rows_2026-06-12.txt.
+- Supersedes: `gan2026_llm_event_reasoner_hard50_live_gpt41mini_v1_2_2026-06-13`.
+- Claim language: Validation-development fixed hard50 rejection. v1.3 regressed from V0 39/50 Purist to 35/50, so V1 free second-pass reasoning is blocked from family-slice, validation250, validation750, or holdout escalation.
+- Artifacts: `experiments/gan2026_llm_event_reasoner_hard50_live_gpt41mini_v1_3_2026-06-13.jsonl`, `experiments/gan2026_llm_event_reasoner_hard50_live_gpt41mini_v1_3_2026-06-13.md`.
+
+### `gan2026_event_completion_reasoner_v0_3_validation_ladder_2026-06-13`
+- Date/split: `2026-06-13`; `validation`; `275` rows.
+- Pipeline: `event_completion_reasoner`; mode `live`; replay `live`.
+- Model role: V7 event-completion reasoner over saved GPT-4.1-mini pure structured-event V0 rows; the model owns an explicit keep-or-create action, while deterministic code renders only the model-selected action and scores afterward.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `action-rendered keep_original_structured_event_final or create_completed_event_final only; keep ignores irrelevant completed_event payloads, create requires completed_event_1 and a scorable model label; format-only label repair recorded as a separate score layer`.
+- Primary metrics: all_recorded_action_render_failures=0, all_recorded_completed_event_actions=0, all_recorded_parse_or_validation_failures=0, cluster_axis_final_purist_correct=7, cluster_axis_v0_purist_correct=7, frequency_denominator_final_purist_correct=7, frequency_denominator_v0_purist_correct=7, hard50_final_purist_correct=39, hard50_net_purist_gain_vs_v0=0, hard50_v0_purist_correct=39, multi_semiology_burden_final_purist_correct=7, multi_semiology_burden_v0_purist_correct=7, seizure_free_last_event_final_purist_correct=15, seizure_free_last_event_v0_purist_correct=15, validation25_final_purist_correct=25, validation25_v0_purist_correct=25.
+- Evidence validity: validation25 exact evidence 24/25; hard50 exact evidence 46/50; seizure_free_last_event 45/50; frequency_denominator 46/50; cluster_axis 46/50; multi_semiology_burden 46/50. All recorded runs had 0 call failures, 0 parse/schema/action-render failures, and 0 completed-event actions.
+- Cache/reuse source: Input substrate: experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07.jsonl. Family source-row files from Stage 0 validation-only manifests.
+- Supersedes: `gan2026_targeted_boundary_router_validation_ladder_2026-06-13`.
+- Claim language: Validation-development V7 diagnostic. The contract is clean and safe, but the strict event-absence framing produced no create actions on hard50 or the four omission-heavy family slices, so it cannot clear the Stage 2 gate or support validation250, validation750, or holdout escalation. The result suggests many misses are represented in the event table but not normalized/selected correctly, rather than literally absent from the extracted events.
+- Artifacts: `experiments/gan2026_event_completion_reasoner_validation25_live_gpt41mini_v0_3b_2026-06-13.jsonl`, `experiments/gan2026_event_completion_reasoner_validation25_live_gpt41mini_v0_3b_2026-06-13.md`, `experiments/gan2026_event_completion_reasoner_hard50_live_gpt41mini_v0_3_2026-06-13.jsonl`, `experiments/gan2026_event_completion_reasoner_hard50_live_gpt41mini_v0_3_2026-06-13.md`, `experiments/gan2026_event_completion_reasoner_seizure_free_last_event_validation50_live_gpt41mini_v0_3_2026-06-13.jsonl`, `experiments/gan2026_event_completion_reasoner_seizure_free_last_event_validation50_live_gpt41mini_v0_3_2026-06-13.md`, `experiments/gan2026_event_completion_reasoner_frequency_denominator_validation50_live_gpt41mini_v0_3_2026-06-13.jsonl`, `experiments/gan2026_event_completion_reasoner_frequency_denominator_validation50_live_gpt41mini_v0_3_2026-06-13.md`, `experiments/gan2026_event_completion_reasoner_cluster_axis_validation50_live_gpt41mini_v0_3_2026-06-13.jsonl`, `experiments/gan2026_event_completion_reasoner_cluster_axis_validation50_live_gpt41mini_v0_3_2026-06-13.md`, `experiments/gan2026_event_completion_reasoner_multi_semiology_burden_validation50_live_gpt41mini_v0_3_2026-06-13.jsonl`, `experiments/gan2026_event_completion_reasoner_multi_semiology_burden_validation50_live_gpt41mini_v0_3_2026-06-13.md`.
+
+### `gan2026_cross_model_structured_event_adjudicator_v0_4_validation_ladder_2026-06-13`
+- Date/split: `2026-06-13`; `validation`; `75` rows.
+- Pipeline: `cross_model_structured_event_adjudicator`; mode `live`; replay `live`.
+- Model role: V10 cross-model structured-event adjudicator over saved GPT, Qwen, and DeepSeek structured-event finals; the model owns selected-agent action choice while deterministic code renders the selected saved final.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `selected saved-agent final with high-precision peer-selection gate; fallback only to original GPT structured-event final; no deterministic top or final-label fallback`.
+- Primary metrics: all_recorded_action_render_failures=0, all_recorded_parse_or_validation_failures=0, hard50_correct_to_wrong_vs_v0=0, hard50_final_purist_correct=40, hard50_net_purist_gain_vs_v0=1, hard50_v0_purist_correct=39, hard50_wrong_to_correct_vs_v0=1, validation25_final_purist_correct=25, validation25_v0_purist_correct=25.
+- Evidence validity: validation25 and fixed hard50 had 0 parse/schema/action-render failures; evidence and selected-agent traces are recorded in the run artifacts.
+- Cache/reuse source: Saved GPT/Qwen/DeepSeek validation structured-event artifacts plus validation25 and fixed hard50 source rows.
+- Supersedes: `gan2026_temporal_sentinel_specialist_v0_3_validation_ladder_2026-06-13`.
+- Claim language: Validation-development V10 diagnostic only. The high-precision peer gate is safe but too weak: fixed hard50 improves by only +1, below the +4 gate, so do not escalate to validation250, validation750, or holdout.
+- Artifacts: `experiments/gan2026_cross_model_structured_event_adjudicator_validation25_live_gpt41mini_v0_4_2026-06-13.jsonl`, `experiments/gan2026_cross_model_structured_event_adjudicator_validation25_live_gpt41mini_v0_4_2026-06-13.md`, `experiments/gan2026_cross_model_structured_event_adjudicator_hard50_live_gpt41mini_v0_4_2026-06-13.jsonl`, `experiments/gan2026_cross_model_structured_event_adjudicator_hard50_live_gpt41mini_v0_4_2026-06-13.md`.
+
+### `gan2026_cross_model_challenge_gated_adjudicator_v0_1_validation_ladder_2026-06-13`
+- Date/split: `2026-06-13`; `validation`; `325` rows.
+- Pipeline: `cross_model_challenge_adjudicator`; mode `live plus no-call validation250 upper-bound diagnostic`; replay `live`.
+- Model role: V11 cross-model peer challenge adjudicator over saved GPT, Qwen, and DeepSeek structured-event finals; the model challenges agent disagreements and selects a saved agent final, with deterministic code limited to rendering, evidence validation, scoring, and the high-precision gate.; model `openai/gpt-4.1`.
+- Repair mode/config: `model-owned selected-agent action with high-precision peer gate; fallback only to original GPT structured-event final; escaped-list-item quote JSON dialect repair; no deterministic top or final-label fallback`.
+- Primary metrics: all_recorded_action_render_failures=0, all_recorded_parse_or_validation_failures=0, cluster_axis_final_purist_correct=8, cluster_axis_v0_purist_correct=7, frequency_denominator_final_purist_correct=8, frequency_denominator_v0_purist_correct=7, hard50_correct_to_wrong_vs_v0=0, hard50_final_purist_correct=41, hard50_net_purist_gain_vs_v0=2, hard50_v0_purist_correct=39, hard50_wrong_to_correct_vs_v0=2, multi_semiology_burden_final_purist_correct=8, multi_semiology_burden_v0_purist_correct=7, seizure_free_last_event_final_purist_correct=16, seizure_free_last_event_v0_purist_correct=15, unknown_no_reference_final_purist_correct=35, unknown_no_reference_v0_purist_correct=34, validation250_prefix_upper_bound_net_gain=2, validation250_prefix_upper_bound_optimistic_purist_correct=238, validation250_prefix_upper_bound_v0_purist_correct=236, validation25_final_purist_correct=25, validation25_v0_purist_correct=25.
+- Evidence validity: Gated GPT-4.1 V11: validation25 exact evidence 24/25, hard50 50/50, and each validation50 family slice 49/50; all recorded gated runs had 0 call failures and 0 parse/schema/action-render failures after dialect repair.
+- Cache/reuse source: Saved GPT/Qwen/DeepSeek structured-event validation artifacts; live validation25, fixed hard50, and five validation50 family slices. The validation250 prefix value is a no-call upper-bound diagnostic, not a live score.
+- Supersedes: `gan2026_cross_model_structured_event_adjudicator_v0_4_validation_ladder_2026-06-13`.
+- Claim language: Validation-development V11 diagnostic only. The open challenge prompt found real peer rescues but regressed on seizure-free and GPT-unknown-to-peer-numeric overreach. The high-precision gate removed hard50 regressions and improved five family slices by +1 each, but hard50 +2 misses the +4 gate and the validation250 prefix upper bound is only +2, below the +5 gate; do not escalate to validation250 live, validation750, frozen test450, or benchmark claims.
+- Artifacts: `experiments/gan2026_cross_model_challenge_gated_adjudicator_validation25_live_gpt41_v0_1_2026-06-13.jsonl`, `experiments/gan2026_cross_model_challenge_gated_adjudicator_validation25_live_gpt41_v0_1_2026-06-13.md`, `experiments/gan2026_cross_model_challenge_gated_adjudicator_hard50_live_gpt41_v0_1_2026-06-13.jsonl`, `experiments/gan2026_cross_model_challenge_gated_adjudicator_hard50_live_gpt41_v0_1_2026-06-13.md`, `experiments/gan2026_cross_model_challenge_gated_adjudicator_unknown_no_reference_validation50_live_gpt41_v0_1_2026-06-13.jsonl`, `experiments/gan2026_cross_model_challenge_gated_adjudicator_unknown_no_reference_validation50_live_gpt41_v0_1_2026-06-13.md`, `experiments/gan2026_cross_model_challenge_gated_adjudicator_frequency_denominator_validation50_live_gpt41_v0_1_2026-06-13.jsonl`, `experiments/gan2026_cross_model_challenge_gated_adjudicator_frequency_denominator_validation50_live_gpt41_v0_1_2026-06-13.md`, `experiments/gan2026_cross_model_challenge_gated_adjudicator_cluster_axis_validation50_live_gpt41_v0_1_2026-06-13.jsonl`, `experiments/gan2026_cross_model_challenge_gated_adjudicator_cluster_axis_validation50_live_gpt41_v0_1_2026-06-13.md`, `experiments/gan2026_cross_model_challenge_gated_adjudicator_multi_semiology_burden_validation50_live_gpt41_v0_1_2026-06-13.jsonl`, `experiments/gan2026_cross_model_challenge_gated_adjudicator_multi_semiology_burden_validation50_live_gpt41_v0_1_2026-06-13.md`, `experiments/gan2026_cross_model_challenge_gated_adjudicator_seizure_free_last_event_validation50_live_gpt41_v0_1_2026-06-13.jsonl`, `experiments/gan2026_cross_model_challenge_gated_adjudicator_seizure_free_last_event_validation50_live_gpt41_v0_1_2026-06-13.md`.
+
 ### `gan2026_agentic_hard50_tool_self_consistency_2026-06-12`
 - Date/split: `2026-06-12`; `validation`; `50` rows.
 - Pipeline: `agentic_tool_self_consistency`; mode `live`; replay `live`.
@@ -739,6 +933,17 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: experiments/gan2026_agentic_matched_budget_validation_hard50_active_conditions_live_prompt_v1_2026-06-12.jsonl.
 - Claim language: Validation-development replay only. No promotable selective fallback policy produced any wrong-to-correct changes; all eligible policies were reject signals, so the branch moved to E1 tool-context ablation rather than new live multi-agent calls.
 - Artifacts: `experiments/gan2026_agentic_hard50_selective_fallback_replay_2026-06-12.jsonl`, `experiments/gan2026_agentic_hard50_selective_fallback_replay_2026-06-12.md`.
+
+### `gan2026_agentic_direct_boundary_critic_rescue_panel_2026-06-12`
+- Date/split: `2026-06-12`; `validation`; `12` rows.
+- Pipeline: `agentic_direct_boundary_critic_rescue`; mode `live_then_saved_output_replay`; replay `saved_output_replay`.
+- Model role: D2 two-call direct-plus-boundary-critic rescue-only micro-panel; direct no-tool answer plus fixed boundary-guide critic, parser candidates disabled.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `format-only critic-field shape repair plus existing direct-label repair; parser candidates disabled as prompt context`.
+- Primary metrics: accepted_action_regressions=0, accepted_boundary_demotions=0, accepted_rescue_correct=0, changed_label_precision=0.4, changed_labels_vs_reference=5, direct_purist_correct=10, fallback_rate=1.0, hard50_authorized=no, holdout_authorized=no, losses_vs_single_self_consistency_temperature=0, model_calls_attempted=24, panel_gate=reject_or_revise_before_hard50, parse_or_validation_failures=0, pragmatic_correct=10, purist_correct=10, raw_critic_proposed_purist_correct=0, rows=12, schema_or_label_repair_rows=9, wins_vs_single_self_consistency_temperature=2.
+- Evidence validity: 24/24 exact evidence substrings after saved-output format repair; no new prediction evidence during replay.
+- Cache/reuse source: live raw outputs in experiments/gan2026_agentic_direct_boundary_critic_rescue_panel_2026-06-12.jsonl.
+- Claim language: Validation micro-panel development result only. D2 failed the panel gate after format-only repair because the critic accepted 0 rescue actions; do not run D2 hard50, D3, D4, validation250, or holdout from this branch.
+- Artifacts: `experiments/gan2026_agentic_direct_boundary_critic_rescue_panel_2026-06-12.jsonl`, `experiments/gan2026_agentic_direct_boundary_critic_rescue_panel_2026-06-12.md`, `experiments/gan2026_agentic_direct_boundary_critic_rescue_panel_format_repair_replay_2026-06-12.jsonl`, `experiments/gan2026_agentic_direct_boundary_critic_rescue_panel_format_repair_replay_2026-06-12.md`.
 
 ### `gan2026_agentic_boundary_audit_prompt_v2_hard50_2026-06-12`
 - Date/split: `2026-06-12`; `validation`; `50` rows.

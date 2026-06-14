@@ -277,6 +277,27 @@ experiments/gan2026_agentic_direct_boundary_critic_rescue_hard50_2026-06-12.json
 experiments/gan2026_agentic_direct_boundary_critic_rescue_hard50_2026-06-12.md
 ```
 
+Completed D2 result:
+
+- Live panel artifact:
+  `experiments/gan2026_agentic_direct_boundary_critic_rescue_panel_2026-06-12.md`.
+- Format-only saved-output replay artifact:
+  `experiments/gan2026_agentic_direct_boundary_critic_rescue_panel_format_repair_replay_2026-06-12.md`.
+- Mode: 12-row validation micro-panel, 24 live model calls, then no-call
+  reparse of the same raw outputs after critic-field shape repair.
+- Parser context: disabled in both calls. The critic saw only the note, direct
+  answer, and fixed boundary-guide set.
+- Clean replay result: direct answer `10/12` Purist, gated final `10/12`
+  Purist and `10/12` Pragmatic, `0` parse/schema/label failures, `0`
+  accepted rescues, `0` accepted regressions, `0` accepted boundary demotions,
+  fallback on all `12/12` rows.
+- Versus `single_self_consistency_temperature`: `2` wins, `0` losses, `5`
+  changed labels, changed-label precision `0.400`.
+- Gate: rejected/revise before hard50. D2 did not meet the panel requirement of
+  at least `4` correct accepted rescue actions, so D2 hard50 is not authorized.
+  This closes the D-series live branch unless a new redesign is explicitly
+  proposed.
+
 ### D3 - Evidence-First Role Redesign
 
 Hypothesis: multi-agent value, if any, should come from typed evidence coverage,
@@ -330,6 +351,10 @@ experiments/gan2026_agentic_evidence_first_roles_hard50_2026-06-12.jsonl
 experiments/gan2026_agentic_evidence_first_roles_hard50_2026-06-12.md
 ```
 
+Current status: blocked/not run. D1 failed hard50 and D2 failed the micro-panel,
+so no D-series condition passed the prerequisite needed to reopen multi-agent
+evidence-first roles.
+
 ### D4 - Split-Neutral Boundary Robustness Panel
 
 Hypothesis: a design that passes hard50 should also show mechanism-level
@@ -370,21 +395,25 @@ experiments/gan2026_agentic_boundary_robustness_panel_2026-06-12.jsonl
 experiments/gan2026_agentic_boundary_robustness_panel_2026-06-12.md
 ```
 
+Current status: not reached. D4 is a mechanism check only after a candidate
+passes hard50, and no D-series live condition passed its gate.
+
 ## Execution Order
 
 ```text
 D0 -> D1 -> D2 -> D3 -> D4
 ```
 
-D0 and D1 are now complete. D0 `higher_burden_only` passed as saved-output
-rescue evidence; D1 boundary-audit prompt v2 passed the panel but failed the
-fixed hard50 gate because it had `2` regressions and low changed-label
-precision. D1 is therefore revise/reject, not a validation250 or D3 trigger.
+D0, D1, and D2 are now complete. D0 `higher_burden_only` passed as
+saved-output rescue evidence; D1 boundary-audit prompt v2 passed the panel but
+failed the fixed hard50 gate because it had `2` regressions and low
+changed-label precision. D2 direct-plus-boundary-critic failed its micro-panel:
+after format-only saved-output replay it made `0` accepted rescues and fell
+back on all `12/12` rows.
 
-The remaining decision is whether to stop with D0 as narrow saved-trace
-close-off evidence, or spend live-call budget on D2 direct-plus-boundary-critic
-as the next rescue-only prediction-bearing branch. D3 remains blocked unless D2
-passes hard50. D4 remains a mechanism check before any broader validation run.
+The D-series branch is closed with D0 as narrow saved-trace close-off evidence
+and D1/D2 as rejected live-call branches. D2 hard50, D3, D4, validation250, and
+holdout escalation are not authorized from this branch.
 
 ## Rejected Or Deferred Paths
 
@@ -394,6 +423,11 @@ passes hard50. D4 remains a mechanism check before any broader validation run.
 - The original E3 boundary-safe prompt and E4 multi-agent role redesign remain
   historical designs unless rewritten to satisfy this artifact's rescue-only
   and no-parser constraints.
+- D2 hard50 is rejected/deferred because the D2 micro-panel failed its gate
+  after format-only saved-output replay.
+- D3 evidence-first roles are blocked because neither D1 nor D2 passed hard50.
+- D4 split-neutral robustness is not reached because no D-series candidate
+  passed hard50.
 - Validation250 and full validation750 are deferred until a hard50 gate passes.
 - Locked test450 remains unavailable for development or row-level analysis.
 
@@ -419,8 +453,9 @@ voting, gating, or guide retrieval affects the final scorer-facing label.
 
 - Stop the D-series branch if D0 and D1 both fail to produce any positive
   changed-label precision.
-- Stop before D3 unless D1 or D2 passes hard50. In the current state, D1 has
-  failed hard50, so only a future D2 pass could reopen D3.
+- Stop before D3 unless D1 or D2 passes hard50. In the current state, D1 failed
+  hard50 and D2 failed before hard50, so D3 is closed unless a separate future
+  redesign reopens it with a new predeclared gate.
 - Stop before validation250 unless hard50 shows at least `5` wins with at most
   `1` loss versus the matched comparator or a changed-label precision profile at
   or above `0.70`.

@@ -1,37 +1,84 @@
 # Project Status
 
-Last updated: 2026-06-12
+Last updated: 2026-06-14
 
 ## Active Objective
 
-Close the final Gan 2026 agentic-pipeline phases before returning to ExECTv2.
+Surpass `0.85` Purist accuracy on locked Gan 2026 `test450` with a frozen,
+LLM-owned, evidence-grounded structured-event reasoning pipeline. Success
+requires at least `383/450` Purist on one explicitly authorized aggregate-only
+audit, with no deterministic final-label fallback and no tuning from test
+row-level failures.
 
-Promoted Gan direction: `hybrid_structured_events` - LLM structured-event
-extraction plus deterministic normalization/projection/rendering/scoring. Control
-docs: `docs/research/gan2026_closeoff_report_2026-06-12.md` and
-`docs/research/gan2026_agentic_pipeline_phase_plan_2026-06-12.md`.
+Latest frozen audit result: V12 `fresh_evidence_reasoner` v0.4,
+`openai/gpt-4.1`, reached `379/450` Purist on the authorized aggregate-only
+`test450` audit, below the `383/450` target. The goal is not achieved.
 
 ## Recent Context
 
-- `hybrid_structured_events` remains the close-off candidate: GPT-4.1-mini
-  validation750 `661/748` Purist rendered-correct; frozen `test450` aggregate
-  audit `364/448` Purist and `381/448` Pragmatic rendered-correct.
-- The fixed validation hard50 agentic follow-up completed E5/E1/E2 and stopped
-  before E3/E4. The D-series redesign supersedes unrun E3/E4 live designs and
-  prohibits parser candidates as prediction-bearing prompt context:
-  `experiments/gan2026_agentic_hard50_redesign_after_e2_stop_2026-06-12.md`.
-- D0 no-call boundary-guide rescue replay is complete:
-  `experiments/gan2026_agentic_hard50_boundary_guide_rescue_replay_2026-06-12.md`.
-  `higher_burden_only` passed the D0 gate with `35/50` Purist, `36/50`
-  Pragmatic, `4` changed labels, `3` wrong-to-correct, `0` correct-to-wrong,
-  net `+3`, and changed-label precision `0.750`. This is validation-development
-  saved-output replay only.
-- D1 boundary-audit prompt v2 is complete:
-  `experiments/gan2026_agentic_boundary_audit_prompt_v2_panel_2026-06-12.md`
-  passed the micro-panel gate (`10/12` Purist), but
-  `experiments/gan2026_agentic_boundary_audit_prompt_v2_hard50_2026-06-12.md`
-  failed the hard50 gate (`38/50` Purist, `8` wins, `2` losses; max allowed
-  losses was `1`). D1 must not escalate to validation250 or D3.
+- Follow-on plan:
+  `docs/research/gan2026_llm_reasoning_agentic_test085_experiment_plan_2026-06-13.md`.
+  It requires validation hard slices, validation250, full validation only for a
+  freeze decision, then one frozen aggregate-only `test450` audit after explicit
+  authorization.
+- V12 `fresh_evidence_reasoner` is registered on the shared Gan CLI. It uses
+  saved structured-event traces only as scaffolding; the model may keep the
+  original GPT structured-event final or replace it with a raw-evidence-grounded
+  final label. Deterministic code is limited to prompt assembly, schema/format
+  repair, exact-substring evidence filtering, predeclared safety gates,
+  rendering, and scoring.
+- V12 v0.4 passed the ladder without test row inspection: validation25 `25/25`,
+  fixed hard50 `42/50` versus V0 `39/50`, validation250 `242/250` versus V0
+  `236/250`, and validation750 `682/750` versus V0 `661/750`. Validation750 had
+  `0` call failures, `0` parse/schema/label failures, `42` wrong-to-correct,
+  `22` correct-to-wrong, `703/750` exact evidence substrings, and final
+  Pragmatic `698/750`.
+- Frozen audit packet:
+  `docs/research/gan2026_fresh_evidence_reasoner_frozen_test450_protocol_2026-06-13.md`.
+  It pins the exact command, hashes, source substrate, aggregate-only readout,
+  technical recovery policy, and stop rule. It is not authorization by itself.
+- On 2026-06-14, the user explicitly authorized the one frozen V12 aggregate-only
+  `test450` audit. The exact pinned command ran to completion with `450/450`
+  rows, `0` call failures, and `0` parse/schema/label failures. The pinned
+  aggregate-only readout helper reports final Purist `379/450` (`0.8422`),
+  raw model Purist `372/450`, format-only Purist `372/450`, V0 Purist
+  `364/450`, final Pragmatic `394/450`, exact evidence substrings `423/450`,
+  and `target_reached=false`. No row-level holdout failures were inspected.
+- Post-audit synthesis:
+  `docs/research/gan2026_hybrid_structured_events_agentic_consensus_fresh_evidence_analysis_2026-06-14.md`
+  records the architecture rationale, pipeline diagrams, validation/test
+  performance, and major explored journeys for hybrid structured events,
+  agentic/consensus variants, and V12 `fresh_evidence_reasoner`.
+- Current preflight:
+  `python -m clinical_extraction.tasks.seizure_frequency.gan2026.cli.frozen_test_preflight --json`
+  reports `"ok": true`. It verifies the exact live command, model/token budget,
+  artifact hashes, split count, frozen GPT/Qwen test source hashes and coverage,
+  explicit DeepSeek test-source unavailability, absence of V12 test and
+  `.resume-part` outputs, prompt-input hygiene, and aggregate-only output
+  redaction, including synthetic report compatibility with the pinned
+  aggregate-only readout helper.
+- Verification status before authorization: focused frozen-gate tests pass
+  `72/72`, the full offline Gan pytest module suite passes `1172/1172`, Ruff is
+  clean for the frozen V12/readout/CLI files, and the pinned V12 `test450`
+  output/resume artifacts are still absent.
+- Post-run first readout is also pinned:
+  `python -m clinical_extraction.tasks.seizure_frequency.gan2026.cli.frozen_test_readout --json`
+  reads only the pinned aggregate-only Markdown report, rejects alternate report
+  paths, row-level sections, and unpinned JSONL-artifact markers, and reports
+  whether final Purist reached `383/450`, with raw/format-only/final
+  Purist/Pragmatic aggregate attribution counts, without opening the JSONL.
+- The shared Gan LLM CLI requires `--confirm-test-audit` for `--split test`,
+  requires live mode with temperature `0.0`, rejects partial test subsets,
+  overwrites, source-artifact override flags (`--structured-event-jsonl`,
+  `--candidate-set-jsonl`), prompt-only test mode, `--api-base`, and
+  `--disable-dspy-cache`; for V12 it also rejects model/token drift from
+  `openai/gpt-4.1` and `2800`, plus JSONL/Markdown output-path drift from the
+  pinned frozen audit artifacts. It permits `--resume-existing` only for
+  documented technical recovery with an existing JSONL.
+- Prior aggregate-only structured-event consensus `test450` audit reached only
+  `365/450` Purist. No row-level holdout failures were inspected or tuned.
+  Earlier V1, V3, V4, V7, V8, V9, V10, and V11 branches are rejected for
+  escalation except as historical comparison artifacts.
 
 ## Guardrails
 
@@ -40,85 +87,79 @@ docs: `docs/research/gan2026_closeoff_report_2026-06-12.md` and
   row-level holdout tuning or error inspection is authorized.
 - New holdout-facing Gan work requires explicit frozen-protocol authorization.
 - Keep evidence metrics architecture-specific: `evidence_valid`,
-  `evidence_text_contained`, and CandidateSet source-id validity are different.
-- Describe `hybrid_structured_events` as hybrid LLM extraction plus
-  deterministic normalization/projection, not fully LLM-only.
-- Do not claim multi-agent value until compared with a single-agent condition
-  under matched model-call, token, tool-call, and aggregation budget.
-- Do not escalate current agentic conditions to full validation. Original E3/E4
-  live designs remain blocked; reopened branches must follow the D-series
-  rescue-only redesign and pass its hard50 gates first.
+  `evidence_text_contained`, exact raw-note substring checks, and CandidateSet
+  source-id validity are different.
+- Do not claim multi-agent value without matched-budget single-agent evidence.
+  V12 is a single-model fresh-evidence candidate.
 
 ## Active Priorities
 
-1. Decide whether to run D2 direct-plus-boundary-critic rescue-only, or stop
-   reopened agentic work with D0 promoted as a no-call rescue signal and D1
-   rejected on hard50.
-2. Populate the Architecture Thesis Scorecard from existing Gan artifacts,
-   using the compact failure-mode comparison and E5/E1/E2/D-series hard50
-   artifacts as the agentic failure-family input.
-3. Decide whether Gan close-off needs any optional validation750 model
-   confirmations, or explicitly defer them before returning to ExECTv2.
+1. Record the V12 `test450` audit as final-evaluation evidence, not a success.
+2. Preserve the no-test-tuning boundary: do not inspect row-level holdout
+   failures, rationales, evidence, selected events, or transitions.
+3. If continuing toward the `>0.85` objective, start a new validation-only
+   candidate cycle from validation artifacts and predeclare any later holdout
+   protocol separately.
 
 ## Work Board
 
 ### Now
 
-- Decide whether to run D2 direct-plus-boundary-critic rescue-only or close the
-  agentic branch after D1 hard50 rejection.
+- Record the authorized V12 v0.4 aggregate-only `test450` audit as below target:
+  final Purist `379/450` versus required `383/450`.
 
 ### Next
 
+- If pursuing another attempt, open a new validation-only design cycle; do not
+  tune prompts, gates, normalization, model choice, source artifacts, or scorer
+  from the V12 holdout result.
 - Populate the Architecture Thesis Scorecard from existing Gan artifacts.
-- Decide whether Gan close-off needs any optional validation750 model
-  confirmations, or explicitly defer them before returning to ExECTv2.
 
 ### Blocked
 
-- Any Gan holdout-facing rerun or row-level test analysis is blocked without
-  explicit frozen-protocol authorization.
-- Multi-agent superiority claims and full-validation escalation for current
-  tool-using or multi-agent conditions remain blocked without stable
-  matched-budget single-agent evidence and a separate frozen escalation reason.
-  D0 is saved-output replay, not validation250-ready by itself.
-- D1 boundary-audit prompt v2 is blocked from validation250 and D3 escalation
-  because it missed the hard50 gate with `2` regressions.
-- Original E3/E4 live runs are blocked by the E2 gate failure. D3 is blocked
-  until D1 or D2 passes the D-series hard50 gate.
+- Any Gan holdout-facing rerun, row-level test analysis, or post-test tuning is
+  blocked without explicit authorization and a frozen-protocol note.
+- V1, V3, V4, V7, V8, V9, V10, V11, and historical E3/E4 live designs are
+  blocked from escalation except as comparison artifacts.
 
 ### Backlog
 
-- If agentic work continues beyond D0, keep parser candidates out of
-  prediction-bearing prompts and start with D1 boundary-audit or D2
-  direct-plus-boundary-critic rescue-only designs. Do not reuse E3/E4 as-is.
+- Optional: summarize V12 report profile dumps in future Markdown reports.
+- Optional: add an Architecture Thesis Scorecard entry contrasting V12
+  single-model fresh-evidence reasoning with saved-output consensus.
 
 ### Done Recently
 
-- 2026-06-12: Completed the D-series hard50 redesign, D0 replay, and D1
-  boundary-audit prompt v2. D0 `higher_burden_only` passed as saved-output
-  rescue evidence; D1 panel passed but hard50 failed (`8` wins, `2` losses).
-- 2026-06-12: Executed E5/E1/E2 hard50 follow-up and stopped before E3/E4 by
-  gate. Parser candidates were harmful as prompt context; boundary-guide-only
-  context supplied the rescue signal used by D0.
-- 2026-06-12: Produced compact paper-facing Gan failure-mode comparison table:
-  `docs/research/gan2026_failure_mode_comparison_table_2026-06-12.md`.
-  It consolidates Phase 3 validation750 failure counts, Phase 4 aggregate
-  `test450` reads, and the validation hard50 agentic revise/reject gate without
-  new holdout analysis.
-- 2026-06-12: Completed validation25 smokes, deterministic normalized-label
-  voting, and the fixed hard50 active-condition comparison that made the
-  agentic hard-slice follow-up necessary.
+- 2026-06-13: Added, tested, registered, and froze V12
+  `fresh_evidence_reasoner`; completed validation25, hard50, family-slice,
+  validation250, and validation750 gates without test row inspection.
+- 2026-06-14: Ran the explicitly authorized V12 frozen aggregate-only `test450`
+  audit and pinned readout. Result missed the goal: final Purist `379/450`
+  (`target_reached=false`), final Pragmatic `394/450`, with `0` call failures
+  and `0` parse/schema/label failures. No row-level holdout analysis was done.
+- 2026-06-14: Added a detailed research synthesis covering hybrid structured
+  events, early agentic/matched-budget variants, structured-event consensus,
+  V1-V11 agentic variants, and V12 `fresh_evidence_reasoner`, with Mermaid
+  pipeline diagrams and aggregate validation/test performance tables.
+- 2026-06-13: Hardened V12 frozen test preflight and shared CLI launch guards:
+  split-matched GPT/Qwen test substrates, DeepSeek test-source caveat,
+  live-mode, temperature, model, token-budget, API-base, and cache-policy locks,
+  JSONL/Markdown output-path locks, singleton protocol command checks,
+  source-override rejection, stale `.resume-part` rejection, prompt hygiene,
+  aggregate-only redaction, pinned raw/format-only/final Purist/Pragmatic
+  readout checks, synthetic readout-parser compatibility, and broad offline
+  Gan test-suite verification.
+- 2026-06-13: Built Stage 0 validation-only family hard-slice manifests and V0
+  pure structured-event comparator report, then rejected prior agentic branches
+  and the `365/450` structured-event consensus holdout result as insufficient.
 
 ## Core Artifacts
 
-- `docs/research/gan2026_closeoff_report_2026-06-12.md`
-- `docs/research/gan2026_failure_mode_comparison_table_2026-06-12.md`
-- `docs/research/gan2026_agentic_pipeline_phase_plan_2026-06-12.md`
-- `experiments/gan2026_agentic_hard50_redesign_after_e2_stop_2026-06-12.md`
-- `experiments/gan2026_agentic_hard50_boundary_guide_rescue_replay_2026-06-12.md`
-- `experiments/gan2026_agentic_boundary_audit_prompt_v2_panel_2026-06-12.md`
-- `experiments/gan2026_agentic_boundary_audit_prompt_v2_hard50_2026-06-12.md`
-- Agentic validation25/hard50 matched-budget, fallback, tool-context, and
-  self-consistency runs are indexed in `experiments/RUN_INDEX.md`.
-- `experiments/gan2026_agentic_validation_hard50_manifest_2026-06-12.json`
-- `experiments/gan2026_agentic_validation25_format_repair_analysis_2026-06-12.md`
+- `docs/research/gan2026_llm_reasoning_agentic_test085_experiment_plan_2026-06-13.md`
+- `docs/research/gan2026_hybrid_structured_events_agentic_consensus_fresh_evidence_analysis_2026-06-14.md`
+- `docs/research/gan2026_fresh_evidence_reasoner_frozen_test450_protocol_2026-06-13.md`
+- `experiments/gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.md`
+- `experiments/gan2026_fresh_evidence_reasoner_validation250_live_gpt41_v0_4_2026-06-13.md`
+- `experiments/gan2026_fresh_evidence_reasoner_hard50_live_gpt41_v0_4_2026-06-13.md`
+- `experiments/gan2026_llm_reasoning_stage0_v0_comparators_2026-06-13.md`
+- `experiments/RUN_INDEX.md`
