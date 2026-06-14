@@ -13,6 +13,12 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict
 
+from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.family_transitions import (
+    CONSENSUS_PATHS,
+    note_text_from_rules_row,
+    summarize_transitions_by_family,
+    tag_hidden_families,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     label_to_frequency_record,
 )
@@ -113,10 +119,17 @@ def run_exact_label_consensus_replay(
         )
         consensus_comparison = _comparison_for_label(decision.final_label, rules_row)
         baseline_comparison = _rules_top_comparison(rules_row)
+        reference = dict(rules_row.get("reference") or {})
+        hidden_families = tag_hidden_families(
+            note_text=note_text_from_rules_row(rules_row),
+            gold_label=reference.get("gold_label"),
+            baseline_label=baseline_label,
+        )
         replay_rows.append(
             {
                 "source_row_index": source_row_index,
-                "reference": dict(rules_row.get("reference") or {}),
+                "reference": reference,
+                "hidden_families": list(hidden_families),
                 "baseline_label": baseline_label,
                 "baseline_comparison": baseline_comparison,
                 "consensus_decision": decision.model_dump(mode="json"),
@@ -147,6 +160,12 @@ def run_exact_label_consensus_replay(
         ),
         "summary": summarize_consensus_rows(replay_rows),
     }
+    if split != "test":
+        # Per-family breakdown is a validation-only instrument; the holdout
+        # audit is aggregate-only, so it is not attached for `test`.
+        metadata["summary_by_family"] = summarize_transitions_by_family(
+            replay_rows, **CONSENSUS_PATHS
+        )
     return replay_rows, metadata
 
 
