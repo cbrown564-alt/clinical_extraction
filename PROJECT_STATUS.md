@@ -49,6 +49,15 @@ Latest frozen audit result: V12 `fresh_evidence_reasoner` v0.4,
   records the architecture rationale, pipeline diagrams, validation/test
   performance, and major explored journeys for hybrid structured events,
   agentic/consensus variants, and V12 `fresh_evidence_reasoner`.
+- The missing DeepSeek structured-events `test450` source artifact has now been
+  filled. On 2026-06-14, the user authorized a live DeepSeek SE v0.6 full
+  `test450` source-coverage run, producing
+  `experiments/gan2026_v06_test450_hybrid_structured_events_deepseek_2026-06-14.jsonl`
+  and `.md`. Aggregate health: `446/450` structured records, `0` call failures,
+  `4` parse/schema/label issues, `440/450` exact evidence substrings, Purist
+  `354/450`, Pragmatic `368/450`. This corrects the source-coverage gap for
+  future frozen aggregate-only consensus/scaffolding audits; it is not a new
+  promoted candidate and no row-level holdout failure analysis was performed.
 - Current preflight:
   `python -m clinical_extraction.tasks.seizure_frequency.gan2026.cli.frozen_test_preflight --json`
   reports `"ok": true`. It verifies the exact live command, model/token budget,
@@ -141,6 +150,10 @@ Latest frozen audit result: V12 `fresh_evidence_reasoner` v0.4,
   events, early agentic/matched-budget variants, structured-event consensus,
   V1-V11 agentic variants, and V12 `fresh_evidence_reasoner`, with Mermaid
   pipeline diagrams and aggregate validation/test performance tables.
+- 2026-06-14: Generated the missing DeepSeek SE v0.6 `test450` structured-event
+  artifact as an aggregate-only source-coverage run: Purist `354/450`,
+  Pragmatic `368/450`, `446/450` structured records, `0` call failures, and
+  `440/450` exact evidence substrings.
 - 2026-06-13: Hardened V12 frozen test preflight and shared CLI launch guards:
   split-matched GPT/Qwen test substrates, DeepSeek test-source caveat,
   live-mode, temperature, model, token-budget, API-base, and cache-policy locks,
@@ -161,5 +174,6 @@ Latest frozen audit result: V12 `fresh_evidence_reasoner` v0.4,
 - `experiments/gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.md`
 - `experiments/gan2026_fresh_evidence_reasoner_validation250_live_gpt41_v0_4_2026-06-13.md`
 - `experiments/gan2026_fresh_evidence_reasoner_hard50_live_gpt41_v0_4_2026-06-13.md`
+- `experiments/gan2026_v06_test450_hybrid_structured_events_deepseek_2026-06-14.md`
 - `experiments/gan2026_llm_reasoning_stage0_v0_comparators_2026-06-13.md`
 - `experiments/RUN_INDEX.md`

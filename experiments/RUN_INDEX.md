@@ -1136,6 +1136,16 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Inform Phase4
 
+### `gan2026_v06_test450_hybrid_structured_events_deepseek_2026-06-14`
+- Date/split: `2026-06-14`; `test`; `450` rows.
+- Pipeline: `hybrid_structured_events`; mode `live`; replay `live`.
+- Model role: LLM structured-events extractor and selector using SE v0.6 on the locked test450 split; deterministic code limited to Gan normalization, evidence validation, and scoring/repair after structured model selection.; model `deepseek/deepseek-chat`.
+- Repair mode/config: `hybrid_full_stack`.
+- Primary metrics: call_failures=0, evidence_valid_rows=440, parse_or_validation_failures=4, pragmatic_accuracy=0.8178, pragmatic_correct=368, prompt_version=gan2026_hybrid_structured_events_v0.6, purist_accuracy=0.7867, purist_correct=354, rendered_rows=446, structured_records=446.
+- Evidence validity: 440/450 rows carry an evidence_valid substring-presence trace; 0 call failures; 4 parse/schema/label issues; 446 structured records.
+- Claim language: User-authorized DeepSeek structured-events test450 source-coverage run to correct the missing cross-model holdout artifact noted in the 2026-06-14 structured-events/agentic synthesis. Aggregate artifact generation only; no row-level holdout failure analysis or post-test tuning is authorized by this entry. This fills the DeepSeek SE source gap for future frozen aggregate-only consensus/scaffolding audits, but is not itself a promoted final-answer architecture.
+- Artifacts: `experiments/gan2026_v06_test450_hybrid_structured_events_deepseek_2026-06-14.jsonl`, `experiments/gan2026_v06_test450_hybrid_structured_events_deepseek_2026-06-14.md`.
+
 ### `exectv2_hybrid_dev140_qwen3635b_20260611`
 - Date/split: `2026-06-11`; `dev`; `140` rows.
 - Pipeline: `exectv2_hybrid`; mode `live`; replay `native_run_split`.

@@ -126,6 +126,7 @@ candidate ranking.
 | Run | Test result | Health | Interpretation |
 | --- | ---: | --- | --- |
 | GPT `hybrid_structured_events` Phase 4 frozen audit | `364/450` Purist, `381/450` Pragmatic | `448/450` structured records, `0` call failures, `2` parse/schema/label issues, `418/450` evidence-valid | Best Phase 4 locked-test architecture, but only `0.8089` Purist over all 450 rows and below the `0.85` target. |
+| DeepSeek SE v0.6 source-coverage run | `354/450` Purist, `368/450` Pragmatic | `446/450` structured records, `0` call failures, `4` parse/schema/label issues, `440/450` evidence-valid | Added after this synthesis was first written to correct the missing DeepSeek `test450` structured-event source gap; aggregate-only artifact generation, not a promoted candidate. |
 
 The test result made SE the baseline to beat. The later `0.85` plan therefore
 set the target as `383/450`, requiring roughly `+19` Purist rows over the
@@ -206,9 +207,13 @@ or self-consistency baselines.
 
 The consensus journey was the most instructive negative result. On validation,
 agreement looked like signal. On test, the deterministic floor had already
-dropped, DeepSeek was unavailable, and exact-label voting mostly preserved the
-generalization gap. The reset plan therefore rejected deterministic top as a
-prediction-bearing fallback and required LLM-owned final clinical selection.
+dropped, DeepSeek was unavailable for the original replay, and exact-label voting
+mostly preserved the generalization gap. A later 2026-06-14 DeepSeek SE v0.6
+`test450` source-coverage run filled the missing artifact gap for future frozen
+aggregate-only replays, but it does not change the historical interpretation of
+that earlier two-agent consensus audit. The reset plan therefore rejected
+deterministic top as a prediction-bearing fallback and required LLM-owned final
+clinical selection.
 
 ### V1-V11 LLM-Owned Agentic Ladder
 
@@ -389,3 +394,4 @@ Purist on locked `test450`.
 - `experiments/gan2026_fresh_evidence_reasoner_validation250_live_gpt41_v0_4_2026-06-13.md`
 - `experiments/gan2026_fresh_evidence_reasoner_hard50_live_gpt41_v0_4_2026-06-13.md`
 - `experiments/gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_4_2026-06-13.md`
+- `experiments/gan2026_v06_test450_hybrid_structured_events_deepseek_2026-06-14.md`
