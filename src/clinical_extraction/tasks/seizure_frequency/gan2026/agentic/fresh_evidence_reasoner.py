@@ -26,6 +26,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
     event_completion_reasoner,
+    family_transitions,
     llm_event_reasoner,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
@@ -234,6 +235,14 @@ def run_split(
             )
 
     metadata["summary"] = summarize_rows(rows, split=split)
+    if split != "test":
+        # Per-family breakdown is a validation-only instrument; the holdout
+        # protocol is aggregate-only, so it is not attached for `test`.
+        metadata["summary_by_family"] = (
+            family_transitions.summarize_transitions_by_family(
+                rows, **family_transitions.FRESH_EVIDENCE_PATHS
+            )
+        )
     metadata["gate"] = llm_event_reasoner.gate_interpretation(metadata["summary"])
     return rows, metadata
 
@@ -757,6 +766,15 @@ def _build_row(
             for agent_id in cross_model_base.AGENT_IDS
         },
         "v0_reference": v0_reference,
+        "hidden_families": list(
+            family_transitions.tag_hidden_families(
+                note_text=record.note_text,
+                gold_label=record.gold_label,
+                baseline_label=dict(v0_reference.get("comparison") or {}).get(
+                    "final_label"
+                ),
+            )
+        ),
         "model_call_attempted": model_call_attempted,
         "prompt_input_json": prompt_input_json,
         "raw_output": raw_output,

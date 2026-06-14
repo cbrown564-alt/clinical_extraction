@@ -1,3 +1,28 @@
+"""Tests for the exact-label structured-event consensus selector.
+
+These tests pin the *mechanic*: switch off the deterministic baseline only when
+every agent emits the same non-null exact label. That is intentionally narrow,
+and the narrowness is the point — two-agent majorities were net-negative in the
+validation error analysis, so the selector trades recall for precision.
+
+What the tests deliberately do NOT assert is that unanimity is a good *signal*,
+because the replay evidence says it is not robust:
+
+- Validation750: 122 changed labels but only 27 wrong->correct / 16
+  correct->wrong (precision 0.2213). Most "changes" were category-neutral.
+- Test450: with DeepSeek's artifact missing the policy silently degraded to two
+  agents and landed at 365/450 (0.8111), barely above pure GPT structured-events
+  and well below the 0.9440 validation rate.
+
+Read together these say unanimity is a proxy for "easy row," not "correct on a
+hard row": three models agreeing means the row was easy, while 16-23 already
+-correct rows get broken. The durable selector metric is changed-label
+precision, not raw switch count, and any cross-model policy must guarantee
+identical panel/source coverage on both splits. See
+docs/research/gan2026_agentic_next_phase_brief_2026-06-14.md for the full
+rationale and the next-phase gates this surface should be measured against.
+"""
+
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.structured_event_consensus import (
     AgentVote,
     build_exact_label_consensus_decision,
@@ -156,3 +181,39 @@ def test_summarize_consensus_rows_counts_regressions() -> None:
     assert summary["switched_labels"] == 1
     assert summary["correct_to_wrong"] == 1
     assert summary["net_purist_gain"] == -1
+
+
+def test_replay_summary_by_family_decomposes_transitions() -> None:
+    replay_rows, metadata = run_exact_label_consensus_replay(
+        [_rules_row(source_row_index=1, baseline_label="seizure free for multiple year")],
+        {
+            "gpt": [_agent_row(source_row_index=1, label="unknown")],
+            "qwen": [_agent_row(source_row_index=1, label="unknown")],
+            "deepseek": [_agent_row(source_row_index=1, label="unknown")],
+        },
+        split="validation",
+        split_manifest="gan2026_split_v1",
+        source_artifacts={"rules": "rules.jsonl"},
+    )
+
+    assert all("hidden_families" in row for row in replay_rows)
+    by_family = metadata["summary_by_family"]["families"]
+    assert "seizure_free_duration" in by_family
+    assert by_family["seizure_free_duration"]["wrong_to_correct"] == 1
+    assert metadata["summary_by_family"]["total_rows"] == 1
+
+
+def test_replay_omits_summary_by_family_on_holdout() -> None:
+    _, metadata = run_exact_label_consensus_replay(
+        [_rules_row(source_row_index=1)],
+        {
+            "gpt": [_agent_row(source_row_index=1, label="unknown")],
+            "qwen": [_agent_row(source_row_index=1, label="unknown")],
+            "deepseek": [_agent_row(source_row_index=1, label="unknown")],
+        },
+        split="test",
+        split_manifest="gan2026_split_v1",
+        source_artifacts={"rules": "rules.jsonl"},
+    )
+
+    assert "summary_by_family" not in metadata
