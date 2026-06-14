@@ -9,7 +9,9 @@ the pipeline registry.
 from __future__ import annotations
 
 import argparse
+import inspect
 import json
+import sys
 import time
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
@@ -45,6 +47,7 @@ class PipelineRunFn(Protocol):
         checkpoint_jsonl_path: Path | None,
         checkpoint_report_path: Path | None,
         candidate_set_jsonl_path: Path | None = None,
+        structured_event_jsonl_path: Path | None = None,
     ) -> tuple[list[dict[str, Any]], dict[str, Any]]: ...
 
 
@@ -78,6 +81,31 @@ class GanLlmPipelineCliSpec:
     default_model: str = "openai/gpt-4.1-mini"
     default_max_tokens: int = 900
     default_candidate_set_jsonl_path: Path | None = None
+    default_structured_event_jsonl_path: Path | None = None
+
+
+@dataclass(frozen=True)
+class FrozenTestLaunchSpec:
+    """Exact launch tuple for a frozen locked-test audit."""
+
+    model: str
+    max_tokens: int
+    jsonl_path: Path
+    report_path: Path
+
+
+FROZEN_TEST_PIPELINE_LAUNCH_SPECS: Mapping[str, FrozenTestLaunchSpec] = {
+    "fresh_evidence_reasoner": FrozenTestLaunchSpec(
+        model="openai/gpt-4.1",
+        max_tokens=2800,
+        jsonl_path=Path(
+            "experiments/gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_4_2026-06-13.jsonl"
+        ),
+        report_path=Path(
+            "experiments/gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_4_2026-06-13.md"
+        ),
+    ),
+}
 
 
 def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
@@ -88,10 +116,11 @@ def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
 
 
 def run_cli(argv: Sequence[str] | None = None) -> None:
+    raw_argv = list(argv) if argv is not None else sys.argv[1:]
     specs = pipeline_specs()
     pipeline_parser = argparse.ArgumentParser(add_help=False)
     pipeline_parser.add_argument("--pipeline", choices=sorted(specs), required=True)
-    pipeline_args, _ = pipeline_parser.parse_known_args(argv)
+    pipeline_args, _ = pipeline_parser.parse_known_args(raw_argv)
     spec = specs[pipeline_args.pipeline]
 
     parser = argparse.ArgumentParser(description=spec.description, parents=[pipeline_parser])
@@ -115,6 +144,13 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
             type=Path,
             default=spec.default_candidate_set_jsonl_path,
             help="CandidateSet JSONL artifact to use for CandidateSet-backed probes.",
+        )
+    if spec.default_structured_event_jsonl_path is not None:
+        parser.add_argument(
+            "--structured-event-jsonl",
+            type=Path,
+            default=spec.default_structured_event_jsonl_path,
+            help="Saved structured-event JSONL artifact to use as the V0 input substrate.",
         )
     if pipeline_args.pipeline == "agentic_matched_budget":
         parser.add_argument(
@@ -155,6 +191,14 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
         help="Reason for a rare broader validation run; recorded in the report.",
     )
     parser.add_argument(
+        "--confirm-test-audit",
+        action="store_true",
+        help=(
+            "Required with --split test to confirm this is an explicitly authorized "
+            "frozen aggregate holdout audit. Test runs must cover the full split."
+        ),
+    )
+    parser.add_argument(
         "--progress-every",
         type=int,
         default=10,
@@ -177,7 +221,7 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
             "or --resume-existing, the CLI refuses to write over existing outputs."
         ),
     )
-    args = parser.parse_args(argv)
+    args = parser.parse_args(raw_argv)
     spec = specs[args.pipeline]
     requested_source_indices = _parse_requested_source_indices(args, parser)
     _validate_output_overwrite_policy(args, parser)
@@ -191,6 +235,12 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
         )
     if args.limit is not None:
         records = records[: args.limit]
+    _validate_test_audit_policy(
+        args,
+        parser,
+        row_count=len(records),
+        explicit_source_override_options=_explicit_source_override_options(raw_argv),
+    )
     _validate_validation_ladder(args, parser, row_count=len(records))
 
     manifest = load_split_manifest()
@@ -231,6 +281,8 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
     }
     if spec.default_candidate_set_jsonl_path is not None:
         run_kwargs["candidate_set_jsonl_path"] = args.candidate_set_jsonl
+    if spec.default_structured_event_jsonl_path is not None:
+        run_kwargs["structured_event_jsonl_path"] = args.structured_event_jsonl
     if pipeline_args.pipeline == "agentic_matched_budget" and args.conditions:
         run_kwargs["conditions"] = _parse_agentic_conditions(args.conditions, parser)
     rows, metadata = (
@@ -255,7 +307,11 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
             "resume_checkpoint_report_path": str(resume_checkpoint_report_path),
         }
         if spec.summarize_rows is not None:
-            metadata["summary"] = spec.summarize_rows(rows)
+            metadata["summary"] = _summarize_rows_for_split(
+                spec.summarize_rows,
+                rows,
+                split=args.split,
+            )
     _attach_run_timing(
         metadata,
         started_at=run_started_at,
@@ -370,6 +426,118 @@ def _validate_validation_ladder(
             "validation runs above 250 rows require --escalation-reason; "
             "use --limit 25, --limit 50, or --limit 250 for routine ladder runs"
         )
+
+
+def _summarize_rows_for_split(
+    summarize_rows: PipelineSummarizer,
+    rows: Sequence[Mapping[str, Any]],
+    *,
+    split: str,
+) -> dict[str, Any]:
+    signature = inspect.signature(summarize_rows)
+    parameters = signature.parameters
+    accepts_split = "split" in parameters or any(
+        parameter.kind == inspect.Parameter.VAR_KEYWORD
+        for parameter in parameters.values()
+    )
+    if accepts_split:
+        return summarize_rows(rows, split=split)  # type: ignore[call-arg]
+    return summarize_rows(rows)
+
+
+def _validate_test_audit_policy(
+    args: argparse.Namespace,
+    parser: argparse.ArgumentParser,
+    *,
+    row_count: int,
+    explicit_source_override_options: Sequence[str] = (),
+) -> None:
+    if args.split != "test":
+        if args.confirm_test_audit:
+            parser.error("--confirm-test-audit may only be used with --split test")
+        return
+    if not args.confirm_test_audit:
+        parser.error(
+            "test split runs require --confirm-test-audit after explicit "
+            "frozen-protocol authorization"
+        )
+    if not args.escalation_reason:
+        parser.error("test split runs require --escalation-reason naming the frozen audit")
+    if args.limit is not None:
+        parser.error("test split runs must cover the full locked split; do not use --limit")
+    if args.source_row_indices or args.source_row_index_file:
+        parser.error(
+            "test split runs must not use --source-row-indices or --source-row-index-file"
+        )
+    if explicit_source_override_options:
+        parser.error(
+            "test split runs must not use source-artifact override option(s): "
+            + ", ".join(explicit_source_override_options)
+            + "; use the frozen pipeline defaults"
+        )
+    if args.overwrite_existing:
+        parser.error(
+            "test split runs must not use --overwrite-existing; use --resume-existing "
+            "only for documented technical recovery"
+        )
+    if args.resume_existing:
+        if not args.jsonl.exists():
+            parser.error(
+                "test split --resume-existing requires an existing JSONL artifact "
+                "for documented technical recovery"
+            )
+        if "technical recovery" not in args.escalation_reason.lower():
+            parser.error(
+                "test split --resume-existing requires --escalation-reason to "
+                "describe technical recovery"
+            )
+    if args.progress_every != 0:
+        parser.error("test split runs must use --progress-every 0")
+    if args.mode != "live":
+        parser.error("test split runs must use --mode live")
+    if args.temperature != 0.0:
+        parser.error("test split runs must use --temperature 0.0")
+    if args.api_base is not None:
+        parser.error("test split runs must not use --api-base")
+    if args.disable_dspy_cache:
+        parser.error("test split runs must not use --disable-dspy-cache")
+    frozen_launch_spec = FROZEN_TEST_PIPELINE_LAUNCH_SPECS.get(args.pipeline)
+    if frozen_launch_spec is not None:
+        if args.model != frozen_launch_spec.model:
+            parser.error(
+                f"{args.pipeline} test split runs must use --model "
+                f"{frozen_launch_spec.model}"
+            )
+        if args.max_tokens != frozen_launch_spec.max_tokens:
+            parser.error(
+                f"{args.pipeline} test split runs must use --max-tokens "
+                f"{frozen_launch_spec.max_tokens}"
+            )
+        if not _same_cli_path(args.jsonl, frozen_launch_spec.jsonl_path):
+            parser.error(
+                f"{args.pipeline} test split runs must use --jsonl "
+                f"{frozen_launch_spec.jsonl_path}"
+            )
+        if not _same_cli_path(args.markdown, frozen_launch_spec.report_path):
+            parser.error(
+                f"{args.pipeline} test split runs must use --markdown "
+                f"{frozen_launch_spec.report_path}"
+            )
+    if row_count == 0:
+        parser.error("test split run selected zero rows")
+
+
+def _same_cli_path(path: Path, expected_path: Path) -> bool:
+    return path.resolve(strict=False) == expected_path.resolve(strict=False)
+
+
+def _explicit_source_override_options(argv: Sequence[str]) -> tuple[str, ...]:
+    source_options = ("--candidate-set-jsonl", "--structured-event-jsonl")
+    return tuple(
+        option
+        for option in source_options
+        if any(arg == option or arg.startswith(f"{option}=") for arg in argv)
+    )
 
 
 def _validate_output_overwrite_policy(
