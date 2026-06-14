@@ -13,6 +13,9 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict
 
+from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.family_cv_promotion import (
+    summarize_family_holdout_cv,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.family_transitions import (
     CONSENSUS_PATHS,
     note_text_from_rules_row,
@@ -160,11 +163,14 @@ def run_exact_label_consensus_replay(
         "summary": summarize_consensus_rows(replay_rows),
     }
     if split != "test":
-        # Per-family breakdown is a validation-only instrument; the holdout
-        # audit is aggregate-only, so it is not attached for `test`.
-        metadata["summary_by_family"] = summarize_transitions_by_family(
+        # Per-family breakdown and the held-out-family CV promotion verdict are
+        # validation-only instruments; the holdout audit is aggregate-only, so
+        # neither is attached for `test`.
+        summary_by_family = summarize_transitions_by_family(
             replay_rows, **CONSENSUS_PATHS
         )
+        metadata["summary_by_family"] = summary_by_family
+        metadata["family_holdout_cv"] = summarize_family_holdout_cv(summary_by_family)
     return replay_rows, metadata
 
 

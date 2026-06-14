@@ -121,7 +121,9 @@ a scalar against a target we cannot decompose.
 ## Work completed (2026-06-14)
 
 Checklist step 5 (per-family transition reporting, the prerequisite for step 1)
-is implemented. The other four items remain open design/experiment work.
+is implemented, and checklist step 1 (held-out-family CV promotion) now builds on
+it — see the dedicated section below. Steps 2, 3, and 4 remain open
+design/experiment work.
 
 - New shared module `agentic/family_transitions.py`:
   - `note_text_from_rules_row` — attached `note_text` field, else parse
@@ -193,6 +195,55 @@ Touched: `labels.py`, `agentic/family_transitions.py`,
 `tests/test_gan2026_family_transitions.py`,
 `tests/test_gan2026_agentic_structured_event_consensus.py`.
 
+### Held-out-family CV promotion (2026-06-14, checklist step 1)
+
+Step 1 is implemented on top of the sharpened taxonomy. The new module
+`agentic/family_cv_promotion.py` (`summarize_family_holdout_cv`) turns the
+per-family transition summary into a promotion *gate* instead of a readout. It
+runs leave-one-band-out CV over the six partitioning boundary bands (the
+canonical fold set is now exported as `labels.BOUNDARY_BANDS`): for each fold the
+held-out band's own transitions are the generalization estimate and the union of
+the remaining bands is the retained/selection set. A candidate is `gap_robust`
+only if (a) the aggregate net Purist gain is positive, (b) no held-out band
+regresses (net Purist gain >= 0), and (c) every band that changes labels clears a
+changed-label precision bar (default 0.5, parameterized). Conditions (b) and (c)
+fold Insights 1 and 2 into the gate: agreement/aggregate count is never the
+trigger, and a band carried by distribution-shift-fragile borrowing is caught.
+
+Wired into `structured_event_consensus.py` and `fresh_evidence_reasoner.py` as
+`metadata["family_holdout_cv"]`, **gated on `split != "test"`** alongside
+`summary_by_family`, so the verdict is a validation-only instrument.
+
+Measured on the real validation750 consensus replay (the only run to clear
+700/750), the gate does exactly what the brief argues it should: it **refuses**
+the candidate that won validation.
+
+| Band | rows | held-out net gain | changed-label precision |
+| --- | ---: | ---: | ---: |
+| band_zero | 112 | +0 | 0.12 |
+| band_unknown | 170 | +5 | 0.17 |
+| band_submonthly | 87 | +0 | 0.11 |
+| band_monthly | 141 | +3 | 0.31 |
+| band_weekly | 177 | **-3** | 0.19 |
+| band_daily | 63 | +6 | 1.00 |
+
+Aggregate net gain is **+11** (the number promote-on-peak-validation would have
+used) but `gap_robust = False`: `band_weekly` regresses (5 wrong->correct vs 8
+correct->wrong) and five of six bands fall below the 0.5 precision bar. This is
+the overfit signature of Insight 1 made into a hard verdict — a positive
+aggregate riding on `band_daily` while a held-out band is silently sacrificed.
+
+Touched: `labels.py` (`BOUNDARY_BANDS`),
+`agentic/family_cv_promotion.py` (new),
+`agentic/structured_event_consensus.py`, `agentic/fresh_evidence_reasoner.py`,
+`tests/test_gan2026_family_cv_promotion.py` (new),
+`tests/test_gan2026_agentic_structured_event_consensus.py`.
+
+This closes checklist step 1. Step 2 (make changed-label precision the primary
+selector gate at the *decision* layer, not just the audit layer), step 3
+(uncertainty-gated V12 replace), and step 4 (panel/source symmetry hard-gate)
+remain open.
+
 ## Source artifacts
 
 - `docs/research/gan2026_hybrid_structured_events_agentic_consensus_fresh_evidence_analysis_2026-06-14.md`
@@ -200,6 +251,7 @@ Touched: `labels.py`, `agentic/family_transitions.py`,
 - `experiments/gan2026_agentic_structured_event_consensus_available_two_agent_exact_test450_2026-06-13.md`
 - `src/clinical_extraction/tasks/seizure_frequency/gan2026/agentic/structured_event_consensus.py`
 - `src/clinical_extraction/tasks/seizure_frequency/gan2026/agentic/family_transitions.py`
+- `src/clinical_extraction/tasks/seizure_frequency/gan2026/agentic/family_cv_promotion.py`
 - `src/clinical_extraction/tasks/seizure_frequency/gan2026/agentic/fresh_evidence_reasoner.py`
 - `tests/test_gan2026_agentic_structured_event_consensus.py`
 - `tests/test_gan2026_family_transitions.py`

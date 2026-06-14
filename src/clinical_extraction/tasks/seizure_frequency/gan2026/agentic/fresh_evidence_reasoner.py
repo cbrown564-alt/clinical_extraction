@@ -26,6 +26,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
     event_completion_reasoner,
+    family_cv_promotion,
     family_transitions,
     llm_event_reasoner,
 )
@@ -236,12 +237,15 @@ def run_split(
 
     metadata["summary"] = summarize_rows(rows, split=split)
     if split != "test":
-        # Per-family breakdown is a validation-only instrument; the holdout
-        # protocol is aggregate-only, so it is not attached for `test`.
-        metadata["summary_by_family"] = (
-            family_transitions.summarize_transitions_by_family(
-                rows, **family_transitions.FRESH_EVIDENCE_PATHS
-            )
+        # Per-family breakdown and the held-out-family CV promotion verdict are
+        # validation-only instruments; the holdout protocol is aggregate-only,
+        # so neither is attached for `test`.
+        summary_by_family = family_transitions.summarize_transitions_by_family(
+            rows, **family_transitions.FRESH_EVIDENCE_PATHS
+        )
+        metadata["summary_by_family"] = summary_by_family
+        metadata["family_holdout_cv"] = (
+            family_cv_promotion.summarize_family_holdout_cv(summary_by_family)
         )
     metadata["gate"] = llm_event_reasoner.gate_interpretation(metadata["summary"])
     return rows, metadata

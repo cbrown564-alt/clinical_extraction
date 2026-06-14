@@ -104,6 +104,19 @@ def classify_hidden_families(
     return tuple(dict.fromkeys(families))
 
 
+# The six partitioning frequency-boundary bands, in ascending-rate order. Every
+# scored row lands in exactly one, so this tuple is the canonical leave-one-out
+# fold set for held-out-family CV promotion (next-phase brief checklist step 1).
+BOUNDARY_BANDS: tuple[str, ...] = (
+    "band_zero",
+    "band_unknown",
+    "band_submonthly",
+    "band_monthly",
+    "band_weekly",
+    "band_daily",
+)
+
+
 def boundary_band(per_month: float | None) -> str:
     """Coarsen a gold monthly rate into a partitioning frequency-boundary band.
 
