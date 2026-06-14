@@ -122,8 +122,7 @@ def run_exact_label_consensus_replay(
         reference = dict(rules_row.get("reference") or {})
         hidden_families = tag_hidden_families(
             note_text=note_text_from_rules_row(rules_row),
-            gold_label=reference.get("gold_label"),
-            baseline_label=baseline_label,
+            gold_per_month=reference.get("gold_monthly_frequency"),
         )
         replay_rows.append(
             {

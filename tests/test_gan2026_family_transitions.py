@@ -33,22 +33,42 @@ def test_note_text_degrades_to_empty_string() -> None:
     assert note_text_from_rules_row({"prompt_input_json": "not json"}) == ""
 
 
-def test_tag_hidden_families_uses_baseline_label_and_handles_none() -> None:
+def test_tag_hidden_families_emits_band_and_qualitative_families() -> None:
     families = tag_hidden_families(
-        note_text="seizures recorded in a diary, clustered nightly",
-        gold_label="unknown",
-        baseline_label=None,
+        note_text="seizures recorded in clusters; seizure-free for two months prior",
+        gold_per_month=4.0,
     )
-    assert "unknown_boundary" in families
+    # Exactly one partitioning band, plus the qualitative families it triggers.
+    assert families[0] == "band_weekly"
+    assert sum(f.startswith("band_") for f in families) == 1
     assert "cluster_burden" in families
-    assert "diary_or_log_aggregation" in families
+    assert "seizure_free_duration" in families
+
+
+def test_tag_hidden_families_band_only_when_no_keywords() -> None:
+    families = tag_hidden_families(note_text="routine review, no relevant terms", gold_per_month=0.0)
+    assert families == ("band_zero",)
+
+
+def test_tag_hidden_families_unknown_band_for_missing_rate() -> None:
+    assert tag_hidden_families(note_text="", gold_per_month=None) == ("band_unknown",)
+    assert tag_hidden_families(note_text="", gold_per_month=1000.0) == ("band_unknown",)
+
+
+def test_tag_hidden_families_does_not_saturate_on_substrings() -> None:
+    # "log" in "neurological" and "current" must not trigger legacy families.
+    families = tag_hidden_families(
+        note_text="neurological review, currently stable on medication",
+        gold_per_month=2.0,
+    )
+    assert families == ("band_monthly",)
 
 
 def test_summarize_transitions_by_family_multilabel_and_math() -> None:
     rows = [
         # In two families; a genuine wrong->correct fix.
         {
-            "hidden_families": ["cluster_burden", "diary_or_log_aggregation"],
+            "hidden_families": ["cluster_burden", "band_weekly"],
             "consensus_transition": {
                 "purist_transition": "wrong_to_correct",
                 "label_changed": True,
@@ -96,10 +116,10 @@ def test_summarize_transitions_by_family_multilabel_and_math() -> None:
     assert cluster["baseline_purist_correct"] == 1
     assert cluster["candidate_purist_correct"] == 1
 
-    diary = families["diary_or_log_aggregation"]
-    assert diary["rows"] == 1
-    assert diary["net_purist_gain"] == 1
-    assert diary["changed_label_precision"] == 1.0
+    band = families["band_weekly"]
+    assert band["rows"] == 1
+    assert band["net_purist_gain"] == 1
+    assert band["changed_label_precision"] == 1.0
 
     free = families["seizure_free_duration"]
     assert free["changed_labels"] == 0

@@ -12,10 +12,11 @@ dicts, so the same decomposition serves the structured-event consensus replay
 and the V12 fresh-evidence reasoner even though their rows differ. Convenience
 path presets for both are provided below.
 
-Families come from ``labels.classify_hidden_families`` and are multi-label: a
-row can belong to several families, so per-family counts intentionally do not
-partition the total row count. ``summarize_transitions_by_family`` returns that
-caveat alongside the counts so the result is never misread as a partition.
+Families come from ``labels.classify_boundary_families``: every row gets exactly
+one partitioning frequency-boundary band plus any qualitative families it
+triggers. The qualitative families overlap the bands, so per-family counts do
+not partition the total row count. ``summarize_transitions_by_family`` returns
+that caveat alongside the counts so the result is never misread as a partition.
 """
 
 from __future__ import annotations
@@ -26,7 +27,7 @@ from collections.abc import Mapping, Sequence
 from typing import Any
 
 from clinical_extraction.tasks.seizure_frequency.gan2026.labels import (
-    classify_hidden_families,
+    classify_boundary_families,
 )
 
 # Key-path presets for the two replay row schemas this module currently serves.
@@ -87,21 +88,21 @@ def note_text_from_rules_row(
 def tag_hidden_families(
     *,
     note_text: str,
-    gold_label: str | None,
-    baseline_label: str | None,
+    gold_per_month: float | None,
 ) -> tuple[str, ...]:
     """Stable family membership for a row.
 
-    Classification uses ``baseline_label`` (the floor / V0 prediction) rather
-    than the candidate label so a row's family set does not shift when the
-    candidate flips it. That keeps per-family wrong/correct attribution
-    unambiguous across the baseline and candidate columns.
+    Classification uses the *gold* monthly rate for the partitioning boundary
+    band and the row's note text for the qualitative families, so a row's
+    family set never shifts when a candidate flips its label. That keeps
+    per-family wrong/correct attribution unambiguous across the baseline and
+    candidate columns. See ``labels.classify_boundary_families`` for why this is
+    a separate, sharper taxonomy than the legacy ``classify_hidden_families``.
     """
 
-    return classify_hidden_families(
+    return classify_boundary_families(
         note_text=note_text,
-        gold_label=str(gold_label) if gold_label is not None else "",
-        predicted_label=str(baseline_label) if baseline_label is not None else "",
+        gold_per_month=gold_per_month,
     )
 
 
