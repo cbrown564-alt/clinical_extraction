@@ -216,6 +216,35 @@ def test_replay_summary_by_family_decomposes_transitions() -> None:
     assert metadata["summary_by_family"]["total_rows"] == 1
 
 
+def test_replay_attaches_family_holdout_cv_on_validation() -> None:
+    # A unanimous unknown vote that flips a seizure-free baseline: one band
+    # (band_unknown) with a single fix. The CV verdict must be present and
+    # structurally complete on validation.
+    _, metadata = run_exact_label_consensus_replay(
+        [
+            _rules_row(
+                source_row_index=1,
+                baseline_label="seizure free for multiple year",
+                note_text="patient reports being seizure-free for several years",
+            )
+        ],
+        {
+            "gpt": [_agent_row(source_row_index=1, label="unknown")],
+            "qwen": [_agent_row(source_row_index=1, label="unknown")],
+            "deepseek": [_agent_row(source_row_index=1, label="unknown")],
+        },
+        split="validation",
+        split_manifest="gan2026_split_v1",
+        source_artifacts={"rules": "rules.jsonl"},
+    )
+
+    cv = metadata["family_holdout_cv"]
+    assert cv["fold_kind"] == "leave_one_boundary_band_out"
+    assert cv["fold_families_present"] == ["band_unknown"]
+    assert "gap_robust" in cv
+    assert cv["aggregate"]["wrong_to_correct"] == 1
+
+
 def test_replay_omits_summary_by_family_on_holdout() -> None:
     _, metadata = run_exact_label_consensus_replay(
         [_rules_row(source_row_index=1)],
@@ -230,3 +259,4 @@ def test_replay_omits_summary_by_family_on_holdout() -> None:
     )
 
     assert "summary_by_family" not in metadata
+    assert "family_holdout_cv" not in metadata
