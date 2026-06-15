@@ -19,6 +19,11 @@ from .graph import (
     build_state_graph_from_atomic_claims,
     graph_invariance_signature,
 )
+from .claim_table import (
+    NORMALIZED_CLAIM_RULE_ID,
+    atomic_claim_from_table_claim,
+    atomic_claims_from_structured_record,
+)
 from .edges import GraphEdge, GraphEdgeKind, derive_edges
 from .ontology import (
     ADMISSIBLE_STATES,
@@ -38,9 +43,13 @@ from .validation import (
 from .resolve import GraphLabelResolution, resolve_label
 from .projection import GanGraphProjection, ProjectionPolicy, project_graph_to_gan
 from .coverage import (
+    AtomicClaimViabilitySummary,
     BandCoverage,
+    NodeAdmissionStats,
     OntologyCoverageSummary,
     OracleCoverageSummary,
+    ResolveInterpretability,
+    atomic_claim_viability_summary,
     graph_node_labels,
     ontology_coverage_summary,
     oracle_coverage_summary,
@@ -48,10 +57,14 @@ from .coverage import (
 
 __all__ = [
     "ADMISSIBLE_STATES",
+    "NORMALIZED_CLAIM_RULE_ID",
     "UNKNOWN_ONLY_SHAPES",
     "AdmissibilityResult",
     "AdmissibleStateOntology",
+    "AtomicClaimViabilitySummary",
     "BandCoverage",
+    "NodeAdmissionStats",
+    "ResolveInterpretability",
     "ClinicalFrequencyStateGraph",
     "EdgeValidation",
     "EvidenceShape",
@@ -67,6 +80,9 @@ __all__ = [
     "OracleCoverageSummary",
     "ProjectionPolicy",
     "StateGraphNode",
+    "atomic_claim_from_table_claim",
+    "atomic_claim_viability_summary",
+    "atomic_claims_from_structured_record",
     "build_state_graph",
     "build_state_graph_from_atomic_claims",
     "classify_evidence_shape",

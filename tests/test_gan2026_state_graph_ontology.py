@@ -20,6 +20,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.state_graph import (
     GraphEdgeKind,
     GraphNodeKind,
     StateGraphNode,
+    atomic_claim_from_table_claim,
+    atomic_claim_viability_summary,
+    atomic_claims_from_structured_record,
     build_state_graph,
     build_state_graph_from_atomic_claims,
     classify_evidence_shape,
@@ -314,6 +317,107 @@ def _record(source_row_index: int, note_text: str, gold_label: str) -> GanFreque
         gold_yearly_bounds=record.yearly_bounds,
         gold_monthly_frequency=record.monthly_frequency,
     )
+
+
+# --------------------------------------------------------------------------- #
+# Stage B - atomic-claim graph viability gate (gold-free)
+# --------------------------------------------------------------------------- #
+
+
+def test_claim_table_normalizes_raw_frequency_into_gan_label() -> None:
+    claim = {
+        "claim_type": "frequency",
+        "evidence": "17 per month",
+        "raw_frequency": "17 per month",
+        "assertion_status": "asserted",
+        "temporality": "current",
+        "semiology": "GTCS",
+    }
+    converted = atomic_claim_from_table_claim(claim)
+    assert converted["normalized_label"] == "17 per month"
+    assert converted["kind"] == "frequency"
+    assert converted["applies_to"] == "GTCS"
+
+
+def test_claim_table_leaves_label_unset_when_no_raw_frequency() -> None:
+    claim = {"claim_type": "cluster_frequency", "evidence": "variable clustering"}
+    assert atomic_claim_from_table_claim(claim)["normalized_label"] is None
+
+
+def test_claim_table_normalization_exercises_the_over_inference_guard() -> None:
+    # A last-event mention whose raw_frequency parses to a rate is the over-inference
+    # the C2 guard must catch once the claim is given a quantifying label.
+    record = {
+        "claims": [
+            {
+                "claim_type": "last_event_only",
+                "evidence": "including two episodes witnessed by a friend",
+                "raw_frequency": "two episodes",
+                "assertion_status": "asserted",
+                "temporality": "recent",
+            }
+        ]
+    }
+    claims = atomic_claims_from_structured_record(record)
+    graph = build_state_graph_from_atomic_claims(
+        "He had a rough spell including two episodes witnessed by a friend.",
+        claims,
+    )
+    node = graph.nodes[0]
+    assert node.semantic_kind is FrequencyLabelKind.FREQUENCY
+    assert node.kind is GraphNodeKind.LAST_EVENT_ONLY
+    result = AdmissibleStateOntology().is_admissible_assignment(node)
+    assert result.admissible is False
+    assert result.reason.startswith("over_inference_out_of_unknown")
+
+
+def test_atomic_claim_viability_summary_counts_admission_and_resolution() -> None:
+    # A clean quantified node (admitted, localized) plus an over-inference mint
+    # (rejected by the C2 guard) plus a structurally-broken node (phantom evidence).
+    clean = build_state_graph_from_atomic_claims(
+        "He reports about 2 seizures per week.",
+        [_claim("2 per week", "about 2 seizures per week", kind="frequency_rate")],
+    )
+    over_inference = build_state_graph_from_atomic_claims(
+        "Last seizure was 6 months ago.",
+        [_claim("1 per 6 month", "Last seizure was 6 months ago", kind="frequency_rate")],
+    )
+    broken = build_state_graph_from_atomic_claims(
+        "no matching text here",
+        [_claim("2 per week", "phantom evidence not in note", kind="frequency_rate")],
+    )
+
+    summary = atomic_claim_viability_summary([clean, over_inference, broken])
+    assert summary.row_count == 3
+    admission = summary.node_admission
+    assert admission.total_nodes == 3
+    # The over-inference mint is the C2 guard's target; the phantom-evidence node
+    # is a structural rejection. The two are reported apart.
+    assert admission.over_inference_rejected == 1
+    assert admission.structural_rejected == 1
+    assert admission.admitted == 1
+    assert admission.exact_evidence == 2
+
+    resolve = summary.resolve
+    assert resolve.rows_with_decision_trace == 3
+    # Only the clean row is component-localized; the over-inference and broken rows
+    # both default to no-reference because their only node is rejected.
+    assert resolve.rows_with_localized_selection == 1
+    assert resolve.rows_defaulted_no_admission == 2
+
+
+def test_atomic_claim_viability_summary_guard_silent_on_unknown_only_nodes() -> None:
+    # When the builder mints only unknown-state nodes (the v3 atomic-claim shape),
+    # the over-inference guard has nothing to police and fires zero times, yet the
+    # structural and interpretability sub-gates still pass.
+    graph = build_state_graph_from_atomic_claims(
+        "Last seizure was 6 months ago.",
+        [_claim("unknown", "Last seizure was 6 months ago", kind="unknown")],
+    )
+    summary = atomic_claim_viability_summary([graph])
+    assert summary.node_admission.over_inference_rejected == 0
+    assert summary.node_admission.admitted == 1
+    assert summary.resolve.rows_with_localized_selection == 1
 
 
 def test_ontology_coverage_summary_reports_by_band() -> None:
