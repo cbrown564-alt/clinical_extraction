@@ -321,6 +321,51 @@ RANGE_TO_PER_PERIOD_RULE = RuleSpec(
 )
 
 
+def _build_between_range_per_period(
+    match: re.Match[str], _ctx: ExtractionContext
+) -> AttributeExtraction:
+    return _candidate(
+        match,
+        kind=AttributeKind.RATE,
+        attributes=_attrs(
+            lower=match.group("lower"),
+            upper=match.group("upper"),
+            unit=match.group("unit"),
+            period_count="1",
+        ),
+        rule_id="rate.between_range_per_period",
+        rule_group=RuleGroup.RATE_EXPRESSIONS,
+        portability=Portability.SEIZURE_FREQUENCY,
+    )
+
+
+BETWEEN_RANGE_PER_PERIOD_RULE = RuleSpec(
+    rule_id="rate.between_range_per_period",
+    group=RuleGroup.RATE_EXPRESSIONS,
+    portability=Portability.SEIZURE_FREQUENCY,
+    description="'between lower and upper per period' — range count in one period.",
+    pattern=re.compile(
+        rf"\bbetween\s+(?P<lower>{_DIGIT_OR_WORD})\s+and\s+(?P<upper>{_DIGIT_OR_WORD})"
+        rf"\s+(?:(?:{QUALIFIED_SEIZURE_TERMS}|times?)\s+)?(?:{_PER})\s+(?P<unit>{_UNIT})\b",
+        re.IGNORECASE,
+    ),
+    build=_build_between_range_per_period,
+    examples=(
+        RuleExample(
+            text="She is having between 3 and 4 seizures per week.",
+            expected_evidence="between 3 and 4 seizures per week",
+            expected_attributes={
+                "LowerNumberOfSeizures": "3",
+                "UpperNumberOfSeizures": "4",
+                "NumberOfTimePeriods": "1",
+                "TimePeriod": "Week",
+            },
+        ),
+    ),
+    provenance="ExECTv2 narrative range variant observed in dev residual errors.",
+)
+
+
 def _build_range_of_seizure_terms(
     match: re.Match[str], _ctx: ExtractionContext
 ) -> AttributeExtraction:
@@ -985,6 +1030,53 @@ COUNT_OVER_PERIOD_RULE = RuleSpec(
 )
 
 
+def _build_range_over_period(
+    match: re.Match[str], _ctx: ExtractionContext
+) -> AttributeExtraction:
+    return _candidate(
+        match,
+        kind=AttributeKind.RATE,
+        attributes=_attrs(
+            lower=match.group("lower"),
+            upper=match.group("upper"),
+            unit=match.group("unit"),
+            period_count=match.group("period_count"),
+        ),
+        rule_id="rate.range_over_period",
+        rule_group=RuleGroup.RATE_EXPRESSIONS,
+        portability=Portability.SEIZURE_FREQUENCY,
+    )
+
+
+RANGE_OVER_PERIOD_RULE = RuleSpec(
+    rule_id="rate.range_over_period",
+    group=RuleGroup.RATE_EXPRESSIONS,
+    portability=Portability.SEIZURE_FREQUENCY,
+    description="lower-upper events over N periods — range count spread over a period.",
+    pattern=re.compile(
+        rf"\b{_SEQ_PREFIX}"
+        rf"(?P<lower>{_DIGIT_OR_WORD})\s*[-–—]\s*(?P<upper>{_DIGIT_OR_WORD})\s+"
+        rf"(?:of\s+(?:these\s+)?(?:{SEIZURE_TERMS})\s+)?"
+        rf"over\s+(?P<period_count>\d+|{NUMBER_WORD_PATTERN})\s+(?P<unit>{_UNIT})\b",
+        re.IGNORECASE,
+    ),
+    build=_build_range_over_period,
+    examples=(
+        RuleExample(
+            text="She had around 10-15 of these seizures over 2 days.",
+            expected_evidence="10-15 of these seizures over 2 days",
+            expected_attributes={
+                "LowerNumberOfSeizures": "10",
+                "UpperNumberOfSeizures": "15",
+                "NumberOfTimePeriods": "2",
+                "TimePeriod": "Day",
+            },
+        ),
+    ),
+    provenance="ExECTv2 cluster-count range variant observed in dev residual errors.",
+)
+
+
 # ---------------------------------------------------------------------------
 # Rule 9: bare seizure count  ("5 seizures", "3 focal seizures") with no period.
 # Supplies NumberOfSeizures for date/point-in-time mentions ("5 seizures in
@@ -1090,9 +1182,11 @@ RATE_RULES: list[RuleSpec] = [
     RANGE_PER_N_PERIODS_RULE,
     RANGE_PER_PERIOD_RULE,
     RANGE_TO_PER_PERIOD_RULE,
+    BETWEEN_RANGE_PER_PERIOD_RULE,
     RANGE_OF_SEIZURE_TERMS_RULE,
     COUNT_PER_N_PERIODS_RULE,
     COUNT_IN_LAST_PERIOD_RULE,
+    RANGE_OVER_PERIOD_RULE,
     COUNT_OVER_PERIOD_RULE,
     COUNT_PER_PERIOD_RULE,
     COUNT_PER_FORTNIGHT_RULE,

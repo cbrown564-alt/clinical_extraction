@@ -21,7 +21,6 @@ import re
 from ..candidates import AnchorCandidate
 from ..normalizer import clean_span
 from ..rule_metadata import (
-    AblationConfig,
     ExtractionContext,
     Portability,
     RuleExample,

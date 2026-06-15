@@ -36,19 +36,19 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectLetter,
 )
 
+from ..scoring import normalize_phrase
 from .association import associate_attributes_to_anchors
 from .candidates import AnchorCandidate, AttributeExtraction
 from .frequency_section import frequency_section_mentions
 from .lexicon import assign_cui
 from .overlap import resolve_overlapping_anchors, resolve_overlapping_attributes
 from .rule_metadata import DEFAULT_ABLATION, AblationConfig, ExtractionContext
-from .statement_parser import statement_mentions
-from ..scoring import normalize_phrase
 from .rules.anchor import ANCHOR_RULES
 from .rules.change import CHANGE_RULES
 from .rules.rate import RATE_RULES
 from .rules.seizure_free import SEIZURE_FREE_RULES
 from .rules.temporal import TEMPORAL_RULES
+from .statement_parser import statement_mentions
 
 
 def _collect_anchors(text: str, ablation: AblationConfig) -> list[AnchorCandidate]:
@@ -235,7 +235,7 @@ def _projection_alias_texts(mention: PredictedMention) -> tuple[str, ...]:
 def _projection_attribute_aliases(mention: PredictedMention) -> tuple[dict[str, str], ...]:
     attrs = dict(mention.attributes)
     aliases: list[dict[str, str]] = []
-    if "FrequencyChange" in attrs and any(
+    if attrs.get("CUI") != "C1299590" and "FrequencyChange" in attrs and any(
         key in attrs for key in ("NumberOfSeizures", "TimePeriod", "NumberOfTimePeriods")
     ):
         aliases.append(
@@ -293,6 +293,79 @@ def _projection_alias_mentions(
     return tuple(aliases)
 
 
+def _should_keep_mention(mention: PredictedMention) -> bool:
+    phrase = normalize_phrase(mention.text)
+    semantic_keys = set(mention.attributes) - {"CUI", "CUIPhrase"}
+
+    # Bare generic "0 seizure(s)" is usually a history/diagnosis artifact in
+    # this corpus; true zero-frequency SF mentions almost always carry a date,
+    # duration, point-in-time, or drug-change qualifier.
+    if (
+        phrase in {"seizure", "seizures"}
+        and mention.attributes.get("NumberOfSeizures") == "0"
+        and semantic_keys == {"NumberOfSeizures"}
+        and not mention.component_owner.startswith("deterministic_statement_parser")
+    ):
+        return False
+
+    # The full "seizure free" bare-zero surface is over-produced in narrative
+    # driving/mental-health contexts. Qualified seizure-free durations/dates are
+    # retained.
+    if (
+        phrase == "seizure free"
+        and mention.attributes.get("NumberOfSeizures") == "0"
+        and semantic_keys == {"NumberOfSeizures"}
+    ):
+        return False
+
+    # Carry-forward statement parsing is intentionally narrow; these generic
+    # follow-on anchors were empirically noisy after the same-sentence layer was
+    # added.
+    if mention.component_owner.startswith("deterministic_statement_parser") and phrase in {
+        "jerk",
+        "jerks",
+        "focal seizures",
+        "focal seizures with altered awareness",
+        "generalised seizures",
+    }:
+        return False
+
+    if mention.component_owner.startswith("deterministic_statement_parser"):
+        evidence = mention.evidence.lower()
+        if (
+            "between" in evidence
+            and "NumberOfSeizures" in mention.attributes
+            and "LowerNumberOfSeizures" not in mention.attributes
+        ):
+            return False
+        if (
+            phrase == "seizure"
+            and mention.attributes.get("CUI") == "C1299590"
+            and semantic_keys == {"NumberOfSeizures"}
+        ):
+            return False
+        if "epilepsy is well controlled" in evidence:
+            return False
+        if (
+            "relatively frequent tonic clonic seizures" in evidence
+            and phrase == "tonic clonic seizures"
+            and (
+                mention.attributes.get("TimeSince_or_TimeOfEvent") == "During"
+                or semantic_keys == {"FrequencyChange"}
+            )
+        ):
+            return False
+
+    if (
+        "+projection_alias" in mention.component_owner
+        and phrase == "focal to bilateral convulsive seizure"
+        and mention.attributes.get("NumberOfSeizures") == "0"
+    ):
+        return False
+
+    return True
+
+
 def extract_seizure_frequency(
     letter: ExectLetter,
     ablation: AblationConfig = DEFAULT_ABLATION,
@@ -330,6 +403,7 @@ def extract_seizure_frequency(
     )
     mentions = (*associated_mentions, *structured_mentions)
     mentions = (*mentions, *_projection_alias_mentions(mentions))
+    mentions = tuple(mention for mention in mentions if _should_keep_mention(mention))
     return PredictedLetter(
         letter_id=letter.letter_id,
         mentions=mentions,

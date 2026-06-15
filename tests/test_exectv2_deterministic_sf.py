@@ -46,6 +46,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.rate import (
     ADVERBIAL_RULE,
     ARTICLE_SEIZURE_COUNT_RULE,
+    BETWEEN_RANGE_PER_PERIOD_RULE,
     COUNT_IN_LAST_PERIOD_RULE,
     COUNT_PER_FORTNIGHT_RULE,
     COUNT_PER_PERIOD_RULE,
@@ -55,6 +56,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.
     N_TIMES_PER_PERIOD_RULE,
     PERIOD_RANGE_RULE,
     RANGE_OF_SEIZURE_TERMS_RULE,
+    RANGE_OVER_PERIOD_RULE,
     RANGE_PER_PERIOD_RULE,
     RATE_RULES,
 )
@@ -142,6 +144,16 @@ def test_range_of_seizure_terms() -> None:
     assert c.attributes["UpperNumberOfSeizures"] == "3"
 
 
+def test_between_range_per_period() -> None:
+    results = _apply(BETWEEN_RANGE_PER_PERIOD_RULE, "She is having between 3 and 4 seizures per week.")
+    assert len(results) == 1
+    c = results[0]
+    assert c.attributes["LowerNumberOfSeizures"] == "3"
+    assert c.attributes["UpperNumberOfSeizures"] == "4"
+    assert c.attributes["NumberOfTimePeriods"] == "1"
+    assert c.attributes["TimePeriod"] == "Week"
+
+
 def test_n_times_per_period() -> None:
     results = _apply(N_TIMES_PER_PERIOD_RULE, "She has events 3 times per week.")
     assert len(results) == 1
@@ -219,6 +231,16 @@ def test_several_times_per_period() -> None:
     attrs = results[0].attributes
     assert attrs["NumberOfSeizures"] == "2"
     assert attrs["NumberOfTimePeriods"] == "1"
+    assert attrs["TimePeriod"] == "Day"
+
+
+def test_range_over_period() -> None:
+    results = _apply(RANGE_OVER_PERIOD_RULE, "Last week she had around 10-15 of these seizures over 2 days.")
+    assert len(results) == 1
+    attrs = results[0].attributes
+    assert attrs["LowerNumberOfSeizures"] == "10"
+    assert attrs["UpperNumberOfSeizures"] == "15"
+    assert attrs["NumberOfTimePeriods"] == "2"
     assert attrs["TimePeriod"] == "Day"
 
 
@@ -857,6 +879,61 @@ def test_pipeline_frequency_section_statement_rows() -> None:
     )
 
 
+def test_pipeline_statement_dated_range_rate() -> None:
+    text = "Although she did have a cluster of seizures in August, 2017 where she had 6-9 seizures every week."
+    letter = _make_letter("T006H", text)
+    result = extract_seizure_frequency(letter)
+    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY]
+
+    assert any(
+        m.text.lower() == "seizures"
+        and m.attributes.get("LowerNumberOfSeizures") == "6"
+        and m.attributes.get("UpperNumberOfSeizures") == "9"
+        and m.attributes.get("TimePeriod") == "Week"
+        and m.attributes.get("MonthDate") == "8"
+        and m.attributes.get("YearDate") == "2017"
+        and m.attributes.get("TimeSince_or_TimeOfEvent") == "During"
+        for m in sf
+    )
+
+
+def test_pipeline_statement_seizure_free_projection_keeps_c129_same() -> None:
+    text = "Richard tells me that he remains seizure free which is good news."
+    letter = _make_letter("T006I", text)
+    result = extract_seizure_frequency(letter)
+    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY]
+
+    assert any(
+        m.text.lower() == "seizure"
+        and m.attributes.get("CUI") == "C1299590"
+        and m.attributes.get("NumberOfSeizures") == "0"
+        and m.attributes.get("FrequencyChange") == "Same"
+        for m in sf
+    )
+    assert not any(
+        m.text.lower() == "seizure"
+        and m.attributes.get("CUI") == "C1299590"
+        and set(m.attributes) <= {"NumberOfSeizures", "CUI", "CUIPhrase"}
+        for m in sf
+    )
+
+
+def test_pipeline_statement_normalizes_feburary_date() -> None:
+    text = "However, since Feburary 6th he has not had any more seizures."
+    letter = _make_letter("T006J", text)
+    result = extract_seizure_frequency(letter)
+    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY]
+
+    assert any(
+        m.text.lower() == "seizures"
+        and m.attributes.get("NumberOfSeizures") == "0"
+        and m.attributes.get("MonthDate") == "2"
+        and m.attributes.get("DayDate") == "6"
+        and m.attributes.get("TimeSince_or_TimeOfEvent") == "Since"
+        for m in sf
+    )
+
+
 def test_pipeline_splits_rate_and_last_event_date_for_same_anchor() -> None:
     text = (
         "He has secondary generalised seizures, they happen about every year, "
@@ -1128,14 +1205,14 @@ def test_all_rules_have_examples() -> None:
 # call LastClinic, and dose-increase DrugChange triggers.
 # Re-pinned again after adding structured frequency-section rows, narrative
 # pronoun carry-forward, projection aliases for ExECTv2 singular/plural and
-# spelling quirks, and two conservative attribute aliases. Strict per-item F1 is
-# improved but still below the active >0.7 development goal.
-# Deterministic strict per-item F1 is still below the active >0.7 goal; the
-# phrase-only and per-letter axes are included here only as diagnostics.
+# spelling quirks, two conservative attribute aliases, same-sentence statement
+# parsing, date/rate composition templates, and explicit post-extraction
+# precision filters. Deterministic strict per-item F1 now exceeds the active
+# >0.7 development goal; the phrase-only and per-letter axes remain diagnostics.
 _PINNED_DEV_PER_ITEM_F1 = {
-    "phrase_only": 0.679,
-    "sf_semantic": 0.581,
-    "sf_benchmark": 0.581,
+    "phrase_only": 0.756,
+    "sf_semantic": 0.705,
+    "sf_benchmark": 0.705,
 }
 _F1_BAND = 0.02
 
