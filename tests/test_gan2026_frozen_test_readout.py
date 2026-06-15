@@ -7,8 +7,8 @@ import pytest
 from clinical_extraction.tasks.seizure_frequency.gan2026.cli import frozen_test_readout
 
 PINNED_TEST_JSONL = (
-    "experiments\\gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_4_"
-    "2026-06-13.jsonl"
+    "experiments\\gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_6_"
+    "safety_v0_9_2026-06-15.jsonl"
 )
 
 
@@ -130,7 +130,7 @@ def test_frozen_test_readout_rejects_unpinned_jsonl_artifact(
     assert readout.ok is False
     assert any(
         "report missing aggregate-only marker: - JSONL artifact: "
-        "`experiments\\gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_4_2026-06-13.jsonl`"
+        "`experiments\\gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_6_safety_v0_9_2026-06-15.jsonl`"
         in failure
         for failure in readout.failures
     )
@@ -157,7 +157,7 @@ def test_frozen_test_readout_cli_rejects_alternate_markdown_path(
     assert exc_info.value.code == 2
     assert (
         "frozen test readout must use --markdown "
-        "experiments\\gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_4_2026-06-13.md"
+        "experiments\\gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_6_safety_v0_9_2026-06-15.md"
         in capsys.readouterr().err
     )
 
@@ -184,7 +184,7 @@ The model may replace the GPT structured-event final only from exact raw-note ev
 - Split: `test`, manifest `gan2026_split_v1`.
 - Mode: `live`
 - Model: `openai/gpt-4.1`
-- Prompt version: `gan2026_fresh_evidence_reasoner_v0_4`
+- Prompt version: `gan2026_fresh_evidence_reasoner_v0_6`
 - JSONL artifact: `{jsonl_artifact}`
 
 ## Summary

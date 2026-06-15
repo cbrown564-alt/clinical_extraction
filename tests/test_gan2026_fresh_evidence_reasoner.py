@@ -99,6 +99,77 @@ def test_fresh_evidence_prompt_excludes_forbidden_context() -> None:
     )
 
 
+def test_fresh_evidence_prompt_pins_unknown_frequency_boundary_policy() -> None:
+    record = _record(
+        951,
+        (
+            "Clinic Date: 12 June 2026\n"
+            "The patient has had several drop attacks since starting treatment, "
+            "with the latest one on 05 Sep."
+        ),
+    )
+
+    prompt_input_json = fresh_evidence_reasoner.build_prompt_input(
+        record,
+        {
+            "gpt": _structured_event_row(
+                951,
+                final_label="multiple per month",
+                final_kind="frequency",
+                evidence="several drop attacks since starting treatment",
+                purist_correct=False,
+            ),
+            "qwen": None,
+            "deepseek": None,
+        },
+    )
+    payload = json.loads(prompt_input_json)
+    instructions = "\n".join(payload["instructions"])
+    instructions_lower = instructions.lower()
+
+    assert "Last-event-only evidence is unknown" in instructions
+    assert "both the number of events and the relevant time period" in instructions
+    assert "open-ended 'since starting/beginning medication or diet'" in instructions_lower
+    assert "last seizure date plus no seizures since" in instructions_lower
+    assert "single provoked breakthrough event" in instructions_lower
+    assert "medication or diet start date alone is not a denominator" in instructions_lower
+    assert "explicit seizure count plus a usable follow-up period" in instructions
+
+
+def test_fresh_evidence_prompt_requires_ambiguity_classification() -> None:
+    record = _record(
+        952,
+        (
+            "Clinic Date: 12 June 2026\n"
+            "Last seizure was on 20 Dec with no seizures since."
+        ),
+    )
+
+    prompt_input_json = fresh_evidence_reasoner.build_prompt_input(
+        record,
+        {
+            "gpt": _structured_event_row(
+                952,
+                final_label="seizure free for 3 month",
+                final_kind="seizure_free",
+                evidence="no seizures since",
+                purist_correct=False,
+            ),
+            "qwen": None,
+            "deepseek": None,
+        },
+    )
+    payload = json.loads(prompt_input_json)
+    schema = payload["required_output_schema"]
+    instructions = "\n".join(payload["instructions"])
+
+    assert schema["ambiguity_classification"] == list(
+        fresh_evidence_reasoner.AMBIGUITY_CLASSIFICATION_VALUES
+    )
+    assert "Before choosing final_label, set ambiguity_classification" in instructions
+    assert "unknown_count_or_window" in instructions
+
+
 def test_keep_action_renders_original_gpt_structured_event_final() -> None:
     parsed = fresh_evidence_reasoner.parse_fresh_evidence_decision_json(
         json.dumps(
@@ -140,6 +211,58 @@ def test_keep_action_renders_original_gpt_structured_event_final() -> None:
     assert (
         "fresh_evidence_action_rendered:keep_original_structured_event_final"
         in parsed.action_render_events
+    )
+
+
+def test_unknown_count_or_window_classification_permits_selective_unknown() -> None:
+    parsed = fresh_evidence_reasoner.parse_fresh_evidence_decision_json(
+        json.dumps(
+            {
+                "action": "replace_with_fresh_evidence_final",
+                "final_label": "unknown",
+                "final_kind": "unknown",
+                "selected_event_ids": ["fresh_evidence_1"],
+                "rejected_event_ids": ["e1"],
+                "evidence": [
+                    "several drop attacks since starting the ketogenic diet",
+                    "latest one on 05 Sep",
+                ],
+                "boundary_profile": [
+                    "unknown-frequency boundary",
+                    "treatment start date unclear",
+                ],
+                "ambiguity_classification": "unknown_count_or_window",
+                "calculation_trace": None,
+                "clinical_rationale": (
+                    "The note gives seizure evidence and a latest event date, "
+                    "but not the diet start date or a defined observation window."
+                ),
+                "uncertainty": "low",
+                "tool_calls": [],
+                "attribution": "llm_selected_tool_rendered",
+            }
+        ),
+        note_text=(
+            "The patient has had several drop attacks since starting the "
+            "ketogenic diet, with the latest one on 05 Sep."
+        ),
+        structured_event_row=_structured_event_row(
+            952,
+            final_label="multiple per month",
+            final_kind="frequency",
+            evidence="several drop attacks",
+            purist_correct=True,
+        ),
+    )
+
+    assert parsed.raw_fresh_decision is not None
+    assert parsed.raw_fresh_decision.ambiguity_classification == (
+        "unknown_count_or_window"
+    )
+    assert parsed.final_decision is not None
+    assert parsed.final_decision.final_label == "unknown"
+    assert "fresh_evidence_gate_fallback: unknown_replacement_not_selective" not in (
+        parsed.parse_errors
     )
 
 
@@ -464,6 +587,526 @@ def test_safety_gate_blocks_seizure_free_demotions_and_bare_replacements() -> No
     assert (
         "fresh_evidence_gate_fallback: multiple_label_for_explicit_numeric_frequency"
         in multiple.parse_errors
+    )
+
+
+def test_safety_gate_blocks_unknown_replacements_as_nonselective() -> None:
+    parsed = fresh_evidence_reasoner.parse_fresh_evidence_decision_json(
+        json.dumps(
+            {
+                "action": "replace_with_fresh_evidence_final",
+                "final_label": "unknown",
+                "final_kind": "unknown",
+                "selected_event_ids": ["fresh_evidence_1"],
+                "rejected_event_ids": ["e1"],
+                "evidence": ["frequency is difficult to quantify"],
+                "boundary_profile": ["unknown boundary"],
+                "calculation_trace": None,
+                "clinical_rationale": "Frequency evidence exists but is hard to quantify.",
+                "uncertainty": "low",
+                "tool_calls": [],
+                "attribution": "llm_selected_tool_rendered",
+            }
+        ),
+        note_text="The current seizure frequency is difficult to quantify.",
+        structured_event_row=_structured_event_row(
+            958,
+            final_label="1 per month",
+            final_kind="frequency",
+            evidence="one seizure per month",
+            purist_correct=True,
+        ),
+    )
+
+    assert parsed.final_decision is not None
+    assert parsed.final_decision.final_label == "1 per month"
+    assert (
+        "fresh_evidence_gate_fallback: unknown_replacement_not_selective"
+        in parsed.parse_errors
+    )
+
+
+def test_no_reference_replacement_with_unclear_seizure_evidence_repairs_to_unknown() -> None:
+    parsed = fresh_evidence_reasoner.parse_fresh_evidence_decision_json(
+        json.dumps(
+            {
+                "action": "replace_with_fresh_evidence_final",
+                "final_label": "no seizure frequency reference",
+                "final_kind": "no_reference",
+                "selected_event_ids": ["fresh_evidence_1"],
+                "rejected_event_ids": ["e1"],
+                "evidence": [
+                    "She has had 3-4 generalised tonic-clonic seizures since beginning Clobazam",
+                    "the most recent seizure was on 23 December",
+                ],
+                "boundary_profile": [
+                    "unknown-frequency boundary",
+                    "last seizure date does not define the observation window",
+                ],
+                "calculation_trace": "Count exists, but the relevant period is unclear.",
+                "clinical_rationale": (
+                    "There is seizure evidence, but the number and relevant time "
+                    "period cannot be converted into a current frequency label."
+                ),
+                "uncertainty": "low",
+                "tool_calls": [],
+                "attribution": "llm_selected_tool_rendered",
+            }
+        ),
+        note_text=(
+            "She has had 3-4 generalised tonic-clonic seizures since beginning "
+            "Clobazam, and the most recent seizure was on 23 December."
+        ),
+        structured_event_row=_structured_event_row(
+            970,
+            final_label="3 to 4 per month",
+            final_kind="frequency",
+            evidence="3-4 generalised tonic-clonic seizures since beginning Clobazam",
+            purist_correct=False,
+        ),
+    )
+
+    assert parsed.final_decision is not None
+    assert parsed.final_decision.final_label == "unknown"
+    assert parsed.final_decision.final_kind == "unknown"
+    assert (
+        "fresh_evidence_semantic_repaired:no_reference_to_unknown"
+        in parsed.action_render_events
+    )
+
+
+def test_no_reference_replacement_stays_no_reference_without_seizure_frequency_evidence() -> None:
+    parsed = fresh_evidence_reasoner.parse_fresh_evidence_decision_json(
+        json.dumps(
+            {
+                "action": "replace_with_fresh_evidence_final",
+                "final_label": "no seizure frequency reference",
+                "final_kind": "no_reference",
+                "selected_event_ids": ["fresh_evidence_1"],
+                "rejected_event_ids": ["e1"],
+                "evidence": ["This is an administrative medication letter"],
+                "boundary_profile": ["no seizure frequency evidence"],
+                "calculation_trace": None,
+                "clinical_rationale": "The note contains no seizure frequency evidence.",
+                "uncertainty": "low",
+                "tool_calls": [],
+                "attribution": "llm_selected_tool_rendered",
+            }
+        ),
+        note_text="This is an administrative medication letter.",
+        structured_event_row=_structured_event_row(
+            971,
+            final_label="unknown",
+            final_kind="unknown",
+            evidence="frequency is unknown",
+            purist_correct=False,
+        ),
+    )
+
+    assert parsed.final_decision is not None
+    assert parsed.final_decision.final_label == "no seizure frequency reference"
+    assert not any(
+        event == "fresh_evidence_semantic_repaired:no_reference_to_unknown"
+        for event in parsed.action_render_events
+    )
+
+
+def test_no_reference_safety_fallback_repairs_to_unknown_when_window_unclear() -> None:
+    parsed = fresh_evidence_reasoner.parse_fresh_evidence_decision_json(
+        json.dumps(
+            {
+                "action": "replace_with_fresh_evidence_final",
+                "final_label": "3 to 4 per 3 months",
+                "final_kind": "frequency",
+                "selected_event_ids": ["fresh_evidence_1"],
+                "rejected_event_ids": ["e1"],
+                "evidence": [
+                    "3-4 generalised tonic-clonic seizures since beginning Clobazam",
+                    "the most recent seizure was on 23 December",
+                ],
+                "boundary_profile": ["unknown-frequency boundary"],
+                "calculation_trace": (
+                    "3-4 seizures since beginning Clobazam, but the start date "
+                    "of Clobazam is not specified."
+                ),
+                "clinical_rationale": (
+                    "There are seizure events, but the relevant period is unclear."
+                ),
+                "uncertainty": "low",
+                "tool_calls": [],
+                "attribution": "llm_selected_tool_rendered",
+            }
+        ),
+        note_text=(
+            "She has had 3-4 generalised tonic-clonic seizures since beginning "
+            "Clobazam, and the most recent seizure was on 23 December."
+        ),
+        structured_event_row=_structured_event_row(
+            972,
+            final_label="no seizure frequency reference",
+            final_kind="no_reference",
+            evidence="seizure frequency not recorded",
+            purist_correct=False,
+        ),
+    )
+
+    assert parsed.final_decision is not None
+    assert parsed.final_decision.final_label == "unknown"
+    assert parsed.final_decision.final_kind == "unknown"
+    assert (
+        "fresh_evidence_gate_fallback: open_ended_treatment_start_denominator"
+        in parsed.action_render_events
+    )
+    assert (
+        "fresh_evidence_semantic_repaired:original_no_reference_to_unknown"
+        in parsed.action_render_events
+    )
+    assert (
+        "fresh_evidence_action_rendered:fallback_original_structured_event_final"
+        not in parsed.action_render_events
+    )
+
+
+def test_safety_gate_allows_selective_unknown_from_last_event_only_seizure_free() -> None:
+    parsed = fresh_evidence_reasoner.parse_fresh_evidence_decision_json(
+        json.dumps(
+            {
+                "action": "replace_with_fresh_evidence_final",
+                "final_label": "unknown",
+                "final_kind": "unknown",
+                "selected_event_ids": ["fresh_evidence_1"],
+                "rejected_event_ids": ["e1"],
+                "evidence": [
+                    "last seizure on 20/Dec",
+                    "There have been no seizures since then",
+                ],
+                "boundary_profile": [
+                    "last-event-only evidence is unknown",
+                    "last seizure date plus no seizures since",
+                ],
+                "calculation_trace": None,
+                "clinical_rationale": (
+                    "A last seizure date plus no seizures since is not a Gan "
+                    "seizure-free duration label."
+                ),
+                "uncertainty": "low",
+                "tool_calls": [],
+                "attribution": "llm_selected_tool_rendered",
+            }
+        ),
+        note_text=(
+            "The patient had her last seizure on 20/Dec. "
+            "There have been no seizures since then."
+        ),
+        structured_event_row=_structured_event_row(
+            959,
+            final_label="seizure free for 3 month",
+            final_kind="seizure_free",
+            evidence="There have been no seizures since then",
+            purist_correct=True,
+        ),
+    )
+
+    assert parsed.final_decision is not None
+    assert parsed.final_decision.final_label == "unknown"
+    assert not any("fresh_evidence_gate_fallback" in item for item in parsed.parse_errors)
+
+
+def test_safety_gate_blocks_unknown_from_no_seizures_since_visit() -> None:
+    parsed = fresh_evidence_reasoner.parse_fresh_evidence_decision_json(
+        json.dumps(
+            {
+                "action": "replace_with_fresh_evidence_final",
+                "final_label": "unknown",
+                "final_kind": "unknown",
+                "selected_event_ids": ["fresh_evidence_1"],
+                "rejected_event_ids": ["e1"],
+                "evidence": ["No seizures since last visit"],
+                "boundary_profile": ["last-event-only evidence", "unknown-frequency boundary"],
+                "calculation_trace": None,
+                "clinical_rationale": (
+                    "No seizures since last visit does not define a Gan duration."
+                ),
+                "uncertainty": "low",
+                "tool_calls": [],
+                "attribution": "llm_selected_tool_rendered",
+            }
+        ),
+        note_text="No seizures since last visit.",
+        structured_event_row=_structured_event_row(
+            961,
+            final_label="seizure free for multiple month",
+            final_kind="seizure_free",
+            evidence="No seizures since last visit",
+            purist_correct=True,
+        ),
+    )
+
+    assert parsed.final_decision is not None
+    assert parsed.final_decision.final_label == "seizure free for multiple month"
+    assert (
+        "fresh_evidence_gate_fallback: original_seizure_free_to_unknown_or_no_reference"
+        in parsed.parse_errors
+    )
+
+
+def test_safety_gate_blocks_unknown_from_frequency_original_recent_event_boundary() -> None:
+    parsed = fresh_evidence_reasoner.parse_fresh_evidence_decision_json(
+        json.dumps(
+            {
+                "action": "replace_with_fresh_evidence_final",
+                "final_label": "unknown",
+                "final_kind": "unknown",
+                "selected_event_ids": ["fresh_evidence_1"],
+                "rejected_event_ids": ["e1"],
+                "evidence": [
+                    "in August a single generalised tonic-clonic seizure was reported",
+                    (
+                        "Since adopting structured reminders in late August, "
+                        "she has had no further events"
+                    ),
+                ],
+                "boundary_profile": [
+                    "last-event-only boundary",
+                    "short seizure-free interval",
+                    "explicit no further events since late August",
+                ],
+                "calculation_trace": None,
+                "clinical_rationale": (
+                    "The note gives one recent event and no further events since then."
+                ),
+                "uncertainty": "low",
+                "tool_calls": [],
+                "attribution": "llm_selected_tool_rendered",
+            }
+        ),
+        note_text=(
+            "In August a single generalised tonic-clonic seizure was reported. "
+            "Since adopting structured reminders in late August, she has had no further events."
+        ),
+        structured_event_row=_structured_event_row(
+            962,
+            final_label="6 per 7 month",
+            final_kind="frequency",
+            evidence="six seizures over seven months",
+            purist_correct=True,
+        ),
+    )
+
+    assert parsed.final_decision is not None
+    assert parsed.final_decision.final_label == "6 per 7 month"
+    assert (
+        "fresh_evidence_gate_fallback: unknown_replacement_not_selective"
+        in parsed.parse_errors
+    )
+
+
+def test_safety_gate_blocks_open_ended_treatment_start_denominator() -> None:
+    parsed = fresh_evidence_reasoner.parse_fresh_evidence_decision_json(
+        json.dumps(
+            {
+                "action": "replace_with_fresh_evidence_final",
+                "final_label": "3 to 4 per 3 months",
+                "final_kind": "frequency",
+                "selected_event_ids": ["fresh_evidence_1"],
+                "rejected_event_ids": ["e1"],
+                "evidence": [
+                    "since beginning Clobazam he has had 3 - 4 seizures",
+                    "Clobazam commenced by local team 3 months ago",
+                ],
+                "boundary_profile": [
+                    "explicit seizure count and time window",
+                    "frequency label supported by count and interval",
+                ],
+                "calculation_trace": "3-4 seizures since beginning Clobazam 3 months ago.",
+                "clinical_rationale": (
+                    "The note gives a count since beginning Clobazam and a "
+                    "medication start date."
+                ),
+                "uncertainty": "low",
+                "tool_calls": [],
+                "attribution": "llm_selected_tool_rendered",
+            }
+        ),
+        note_text=(
+            "Clobazam commenced by local team 3 months ago. "
+            "Since beginning Clobazam he has had 3 - 4 seizures."
+        ),
+        structured_event_row=_structured_event_row(
+            960,
+            final_label="no seizure frequency reference",
+            final_kind="frequency",
+            evidence="no seizure frequency reference",
+            purist_correct=True,
+        ),
+    )
+
+    assert parsed.final_decision is not None
+    assert parsed.final_decision.final_label == "unknown"
+    assert (
+        "fresh_evidence_gate_fallback: open_ended_treatment_start_denominator"
+        in parsed.action_render_events
+    )
+    assert (
+        "fresh_evidence_semantic_repaired:original_no_reference_to_unknown"
+        in parsed.action_render_events
+    )
+
+
+def test_safety_gate_blocks_seizure_free_replacement_of_frequency_original() -> None:
+    parsed = fresh_evidence_reasoner.parse_fresh_evidence_decision_json(
+        json.dumps(
+            {
+                "action": "replace_with_fresh_evidence_final",
+                "final_label": "seizure free for 3 month",
+                "final_kind": "seizure_free",
+                "selected_event_ids": ["fresh_evidence_1"],
+                "rejected_event_ids": ["e1"],
+                "evidence": [
+                    "confirming current seizure-free status since mid-January",
+                    "seizure-free interval",
+                ],
+                "boundary_profile": [
+                    "seizure_free boundary",
+                    "explicit duration",
+                    "historical frequency not current",
+                    "no current/recent seizures",
+                ],
+                "calculation_trace": "seizure-free since mid-January, about 3 months",
+                "clinical_rationale": (
+                    "The old 3 to 4 per 3 month frequency is historical because "
+                    "there are no current seizures."
+                ),
+                "uncertainty": "low",
+                "tool_calls": [],
+                "attribution": "llm_selected_tool_rendered",
+            }
+        ),
+        note_text=(
+            "Previously 3 to 4 seizures over 3 months. "
+            "The letter is confirming current seizure-free status since mid-January "
+            "and describes this as a seizure-free interval."
+        ),
+        structured_event_row=_structured_event_row(
+            963,
+            final_label="3 to 4 per 3 month",
+            final_kind="seizure_free",
+            evidence="3 to 4 seizures over 3 months",
+            purist_correct=True,
+        ),
+    )
+
+    assert parsed.final_decision is not None
+    assert parsed.final_decision.final_label == "3 to 4 per 3 month"
+    assert (
+        "fresh_evidence_gate_fallback: seizure_free_replacement_of_frequency_original"
+        in parsed.parse_errors
+    )
+
+
+def test_safety_gate_blocks_vague_multiple_exactification() -> None:
+    parsed = fresh_evidence_reasoner.parse_fresh_evidence_decision_json(
+        json.dumps(
+            {
+                "action": "replace_with_fresh_evidence_final",
+                "final_label": "5 to 7 per month",
+                "final_kind": "frequency",
+                "selected_event_ids": ["fresh_evidence_1"],
+                "rejected_event_ids": ["e1"],
+                "evidence": [
+                    (
+                        "a few events in the preceding month, describing "
+                        "a couple of significant turns and several brief spells"
+                    )
+                ],
+                "boundary_profile": [
+                    "represented-evidence: frequency denominator/window",
+                    "represented-evidence: current/recent frequency",
+                ],
+                "calculation_trace": (
+                    "A couple of significant turns (2) plus several brief spells "
+                    "(3-5) gives 5-7 events in the preceding month."
+                ),
+                "clinical_rationale": (
+                    "The vague words a couple and several can be counted as "
+                    "5 to 7 events per month."
+                ),
+                "uncertainty": "low",
+                "tool_calls": [],
+                "attribution": "llm_selected_tool_rendered",
+            }
+        ),
+        note_text=(
+            "There were a few events in the preceding month, describing a couple "
+            "of significant turns and several brief spells."
+        ),
+        structured_event_row=_structured_event_row(
+            964,
+            final_label="multiple per month",
+            final_kind="frequency",
+            evidence="a few events in the preceding month",
+            purist_correct=True,
+        ),
+    )
+
+    assert parsed.final_decision is not None
+    assert parsed.final_decision.final_label == "multiple per month"
+    assert (
+        "fresh_evidence_gate_fallback: vague_multiple_exactification"
+        in parsed.parse_errors
+    )
+
+
+def test_safety_gate_blocks_same_day_cluster_downgrade() -> None:
+    parsed = fresh_evidence_reasoner.parse_fresh_evidence_decision_json(
+        json.dumps(
+            {
+                "action": "replace_with_fresh_evidence_final",
+                "final_label": "2 per week",
+                "final_kind": "frequency",
+                "selected_event_ids": ["fresh_evidence_1"],
+                "rejected_event_ids": ["e1"],
+                "evidence": [
+                    "Yesterday he experienced three tonic-clonic seizures",
+                    "brief auras occurring approximately once or twice per week",
+                ],
+                "boundary_profile": [
+                    "current/recent frequency",
+                    "cluster burden",
+                    "highest active semiology",
+                ],
+                "calculation_trace": (
+                    "3 tonic-clonic seizures in 1 day = 3 per day for that day "
+                    "only; no evidence this is a recurring daily rate. Ongoing "
+                    "auras are 1-2 per week."
+                ),
+                "clinical_rationale": (
+                    "The same-day cluster should not be extrapolated to a daily "
+                    "rate, so the lower aura rate is selected."
+                ),
+                "uncertainty": "low",
+                "tool_calls": [],
+                "attribution": "llm_selected_tool_rendered",
+            }
+        ),
+        note_text=(
+            "Yesterday he experienced three tonic-clonic seizures. "
+            "He describes brief auras occurring approximately once or twice per week."
+        ),
+        structured_event_row=_structured_event_row(
+            965,
+            final_label="3 per day",
+            final_kind="frequency",
+            evidence="three tonic-clonic seizures",
+            purist_correct=True,
+        ),
+    )
+
+    assert parsed.final_decision is not None
+    assert parsed.final_decision.final_label == "3 per day"
+    assert (
+        "fresh_evidence_gate_fallback: same_day_cluster_downgrade"
+        in parsed.parse_errors
     )
 
 

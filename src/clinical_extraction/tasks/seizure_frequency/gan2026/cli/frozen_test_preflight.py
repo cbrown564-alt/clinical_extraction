@@ -34,16 +34,16 @@ DEFAULT_PROTOCOL_PATH = Path(
     "docs/research/gan2026_fresh_evidence_reasoner_frozen_test450_protocol_2026-06-13.md"
 )
 DEFAULT_TEST_JSONL_PATH = Path(
-    "experiments/gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_4_2026-06-13.jsonl"
+    "experiments/gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_6_safety_v0_9_2026-06-15.jsonl"
 )
 DEFAULT_TEST_REPORT_PATH = Path(
-    "experiments/gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_4_2026-06-13.md"
+    "experiments/gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_6_safety_v0_9_2026-06-15.md"
 )
 EXPECTED_PIPELINE = "fresh_evidence_reasoner"
 EXPECTED_MODEL = "openai/gpt-4.1"
 EXPECTED_MAX_TOKENS = 2800
-EXPECTED_PROMPT_VERSION = "gan2026_fresh_evidence_reasoner_v0_4"
-EXPECTED_SAFETY_GATE_VERSION = "gan2026_fresh_evidence_safety_gate_v0_3"
+EXPECTED_PROMPT_VERSION = "gan2026_fresh_evidence_reasoner_v0_6"
+EXPECTED_SAFETY_GATE_VERSION = "gan2026_fresh_evidence_safety_gate_v0_9"
 EXPECTED_SPLIT_MANIFEST = "gan2026_split_v1"
 EXPECTED_TEST_ROW_COUNT = 450
 EXPECTED_TARGET_PURIST = "383/450"
@@ -57,6 +57,7 @@ SYNTHETIC_PROMPT_NOTE_EVIDENCE = "current seizures are twice per week"
 EXPECTED_TEST_SOURCE_ARTIFACTS = (
     ("gpt", fresh_evidence_reasoner.TEST_GPT_STRUCTURED_EVENT_JSONL_PATH),
     ("qwen", fresh_evidence_reasoner.TEST_QWEN_STRUCTURED_EVENT_JSONL_PATH),
+    ("deepseek", fresh_evidence_reasoner.TEST_DEEPSEEK_STRUCTURED_EVENT_JSONL_PATH),
 )
 
 HASH_LINE_RE = re.compile(r"^([0-9a-f]{64})\s+(.+?)\s*$", re.MULTILINE)
@@ -83,8 +84,12 @@ class PreflightConfig:
         "tests/test_gan2026_frozen_test_readout.py",
         "experiments/gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.jsonl",
         "experiments/gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.md",
+        "experiments/gan2026_fresh_evidence_reasoner_safety_v0_4_validation750_no_call_replay_2026-06-15.md",
+        "experiments/gan2026_fresh_evidence_reasoner_validation250_nocall_replay_v0_6_safety_v0_9_2026-06-15.md",
+        "experiments/gan2026_fresh_evidence_reasoner_unknown_policy_trigger_full_validation_nocall_replay_v0_6_safety_v0_9_2026-06-15.md",
         "experiments/gan2026_test450_phase4_frozen_audit_hybrid_structured_events_gpt41mini_2026-06-09.jsonl",
         "experiments/gan2026_agentic_structured_event_patch_recent_unresolved_burden_test450_qwen3635b_2026-06-13.jsonl",
+        "experiments/gan2026_v06_test450_hybrid_structured_events_deepseek_2026-06-14.jsonl",
         "data/Gan (2026)/splits/gan2026_split_v1.json",
     )
 
@@ -157,8 +162,8 @@ def _check_protocol_text(
         "Qwen test source artifact": (
             fresh_evidence_reasoner.TEST_QWEN_STRUCTURED_EVENT_JSONL_PATH.as_posix()
         ),
-        "DeepSeek test source caveat": (
-            "DeepSeek test450 structured-event artifact is unavailable"
+        "DeepSeek test source artifact": (
+            fresh_evidence_reasoner.TEST_DEEPSEEK_STRUCTURED_EVENT_JSONL_PATH.as_posix()
         ),
     }
     for label, text in required_text.items():
@@ -398,16 +403,11 @@ def _check_v12_test_source_artifacts(
     deepseek_path = source_paths.get("deepseek")
     if deepseek_path != fresh_evidence_reasoner.TEST_DEEPSEEK_STRUCTURED_EVENT_JSONL_PATH:
         failures.append(
-            "V12 test DeepSeek source placeholder drifted: "
+            "V12 test DeepSeek structured-event source drifted: "
             f"got {deepseek_path}"
         )
-    elif deepseek_path.exists():
-        failures.append(
-            "V12 test DeepSeek placeholder unexpectedly exists; update and refreeze "
-            "the source-artifact contract before launch"
-        )
     else:
-        checks.append("V12 test DeepSeek source is explicitly unavailable")
+        checks.append("V12 test DeepSeek source uses frozen test450 artifact")
 
     for agent_id, expected_path in EXPECTED_TEST_SOURCE_ARTIFACTS:
         _check_test_source_artifact_coverage(
