@@ -13,7 +13,6 @@ from clinical_extraction.tasks.shared.epilepsy.terms import QUALIFIED_SEIZURE_TE
 from ..candidates import AttributeExtraction, AttributeKind
 from ..normalizer import clean_span
 from ..rule_metadata import (
-    AblationConfig,
     ExtractionContext,
     Portability,
     RuleExample,

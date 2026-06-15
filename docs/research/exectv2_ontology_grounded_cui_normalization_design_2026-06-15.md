@@ -44,9 +44,10 @@ ablatable step that is *not* the LLM's job to hallucinate.
 Current SF dev status after the 2026-06-15 deterministic iteration:
 
 - Deterministic dev140 now reaches `sf_benchmark` per-item P/R/F1
-  **0.559/0.604/0.581** (`113/89/74`) and phrase-only **0.653/0.706/0.679**
-  (`132/70/55`). `sf_semantic == sf_benchmark`, so remaining SF misses are not
-  primarily CUI-limited.
+  **0.667/0.749/0.705** (`140/70/47`) and phrase-only **0.714/0.802/0.756**
+  (`150/60/37`). `sf_semantic == sf_benchmark`, so remaining SF misses are not
+  primarily CUI-limited. The active deterministic strict per-item `>0.7`
+  development target is now met on dev140.
 - The local Qwen LLM-only dev25 pilot remains worse than deterministic on the
   comparable item surface: phrase-only F1 0.533, semantic F1 0.100, benchmark
   F1 0.000 because no CUI is emitted. Its errors are anchor rewrites and
@@ -55,10 +56,11 @@ Current SF dev status after the 2026-06-15 deterministic iteration:
   benchmark and over-keeps noisy evidence fragments. The useful design lesson is
   that an LLM should select evidence or candidate IDs, while deterministic code
   renders exact ExECTv2 phrases, attributes, and CUI.
-- To close the strict SF gap, the next build is not another CUI layer. It is a
-  statement model: explicit multi-mention extraction for dated/rate/control
-  statements, projection-aware singular/plural aliases, and precision gates for
-  generic `seizures`/`seizure-free` contexts. See
+- The rule families that closed the strict dev gap were statement-level
+  extraction for dated/rate/control statements, projection-aware singular/plural
+  aliases, typo-tolerant date normalization scoped to SF statements, and
+  precision gates for generic `seizures`/`seizure-free` contexts. The next work
+  is robustness/generalization, not CUI normalization. See
   `docs/research/exectv2_sf_item_error_analysis_2026-06-15.md` for item-level
   failure counts and representative examples.
 
@@ -229,6 +231,13 @@ Implemented rule families, all deterministic and guideline-shaped:
   `last one was on Christmas day 2009`, and `last event 3 years ago`;
 - zero/control statements: `has not had any further seizures` and
   `focal seizures are completely under control`;
+- statement-level dated/rate composition: `in August, 2017 ... 6-9 seizures
+  every week`, `3-4 ... seizures per week from May to August`, and `On Sunday
+  and Monday ... generalised tonic clonic seizures`;
+- typo-tolerant date statements: `Feburary 6th`, `Novemebr 2015`, and
+  seizure-free spelling drift (`seizrue free`) only inside SF statements;
+- projection precision filters for bare generic zero mentions, statement-parser
+  exact-count artifacts, and over-broad seizure-free aliases;
 - follow-up point-in-time trigger: `since my previous phone call` ->
   `PointInTime=LastClinic`, `TimeSince_or_TimeOfEvent=Since`;
 - dose-increase drug-change triggers: `since increasing levetiracetam` ->
@@ -238,18 +247,18 @@ Development result on `exectv2_split_v1` dev140, deterministic rules:
 
 | Config | Per-item F1 | Per-letter F1 | Reading |
 | --- | ---: | ---: | --- |
-| `phrase_only` | 0.609 | **0.811** | Crosses `>0.7` on the phrase-only per-letter axis, but not on the active per-item target. |
-| `sf_semantic` | 0.475 | **0.716** | Crosses `>0.7` only on the per-letter semantic axis; strict per-item remains below target. |
-| `sf_benchmark` | 0.475 | **0.716** | Equal to semantic; CUI is no longer the limiter for deterministic SF. |
+| `phrase_only` | **0.756** | **0.942** | Crosses `>0.7` on the active per-item axis and remains high per-letter. |
+| `sf_semantic` | **0.705** | **0.925** | Crosses `>0.7` on strict semantic attributes; equal to benchmark because deterministic CUI is emitted. |
+| `sf_benchmark` | **0.705** | **0.925** | Active deterministic strict per-item target is met on dev140. |
 
 Interpretation: this is a **validation development result**, not a new frozen
-full-200 audit. It does **not** complete the active per-item `>0.7` target.
-The stricter with-CUI benchmark axis remains below 0.7 because exact guideline
+full-200 audit. It completes the active dev140 deterministic strict per-item
+`>0.7` target. The remaining misses still concentrate in exact guideline
 attributes, especially `PointInTime`, `TimeSince_or_TimeOfEvent`, and
-change/rate splits, still dominate the misses. The ontology-grounded CUI
-normalization design remains valuable for LLM-only and future all-entity paths
-where CUI is structurally absent, but deterministic SF now needs attribute-rule
-work rather than more CUI normalization.
+change/rate splits. The ontology-grounded CUI normalization design remains
+valuable for LLM-only and future all-entity paths where CUI is structurally
+absent, but deterministic SF's next need is robustness and held-out validation
+rather than more CUI normalization.
 
 LLM fallback status from the same iteration:
 

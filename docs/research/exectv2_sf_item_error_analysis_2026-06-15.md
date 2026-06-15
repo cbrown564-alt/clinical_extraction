@@ -15,9 +15,9 @@ Scope: dev split only. The local LLM artifacts are pilot slices, not full-dev ev
 | `deterministic_dev140` | dev140 | `phrase_only` | 0.665/0.561/0.609 | 105/53/82 | 0.811 |
 | `deterministic_dev140` | dev140 | `sf_semantic` | 0.519/0.439/0.475 | 82/76/105 | 0.716 |
 | `deterministic_dev140` | dev140 | `sf_benchmark` | 0.519/0.439/0.475 | 82/76/105 | 0.716 |
-| `deterministic_dev140_current` | dev140 | `phrase_only` | 0.653/0.706/0.679 | 132/70/55 | 0.882 |
-| `deterministic_dev140_current` | dev140 | `sf_semantic` | 0.559/0.604/0.581 | 113/89/74 | 0.811 |
-| `deterministic_dev140_current` | dev140 | `sf_benchmark` | 0.559/0.604/0.581 | 113/89/74 | 0.811 |
+| `deterministic_dev140_current` | dev140 | `phrase_only` | 0.714/0.802/0.756 | 150/60/37 | 0.942 |
+| `deterministic_dev140_current` | dev140 | `sf_semantic` | 0.667/0.749/0.705 | 140/70/47 | 0.925 |
+| `deterministic_dev140_current` | dev140 | `sf_benchmark` | 0.667/0.749/0.705 | 140/70/47 | 0.925 |
 | `deterministic_dev25` | dev25_matched_to_llm | `phrase_only` | 0.794/0.871/0.831 | 27/7/4 | 0.966 |
 | `deterministic_dev25` | dev25_matched_to_llm | `sf_semantic` | 0.618/0.677/0.646 | 21/13/10 | 0.929 |
 | `deterministic_dev25` | dev25_matched_to_llm | `sf_benchmark` | 0.618/0.677/0.646 | 21/13/10 | 0.929 |
@@ -31,17 +31,18 @@ Scope: dev split only. The local LLM artifacts are pilot slices, not full-dev ev
 ## Failure Category Counts (sf_benchmark)
 
 ### deterministic_dev140_current
-- Outcomes: TP=113, FP=89, FN=74
-- Residual FN families from item inspection: zero/control/date since statements
-  (27), FrequencyChange-only projections (21), rate/period attributes (20), and
-  dated count/PIT statements (10).
-- Residual phrase-only ceiling is close but still under the active item-level
-  goal: phrase-only F1=0.679. Strict F1 remains attribute-limited at 0.581.
-- The latest deterministic additions that improved the score were structured
-  frequency-section rows, narrative pronoun carry-forward, seizure-free
-  precision gates, projection aliases for ExECTv2 singular/plural and spelling
-  quirks, and conservative attribute aliases for change-only and range-only
-  projections.
+- Outcomes: TP=140, FP=70, FN=47
+- Residual FN families from item inspection: zero/control/date-since statements,
+  remaining projection-specific phrase truncations, rate/period attributes, and
+  dated count/PIT statements. The tail is smaller but still dominated by exact
+  ExECTv2 projection conventions rather than CUI assignment.
+- The active deterministic strict item-level goal is met:
+  `sf_benchmark` per-item F1=0.705 and phrase-only F1=0.756.
+- The latest deterministic additions that crossed the threshold were structured
+  same-sentence statements, dated/rate composition templates, typo-tolerant
+  month/date handling scoped to SF statements, seizure-free C129 projection
+  handling, and explicit post-extraction precision filters for generic
+  `seizures`/`seizure-free` artifacts.
 
 ### deterministic_dev140
 - Outcomes: TP=82, FP=76, FN=105
@@ -127,8 +128,8 @@ but the local model still over-keeps weak/noisy candidates.
 ## Main Failure Modes
 
 1. **Deterministic extraction is no longer CUI-limited for SF.** `sf_semantic` and `sf_benchmark` are equal for deterministic outputs; remaining strict misses are phrase/attribute extraction errors.
-2. **The deterministic full-dev gap is attribute-heavy.** Phrase-only full-dev F1 is much higher than strict F1, so many items have a plausible anchor but missing, extra, or wrong temporal/rate attributes.
-3. **Header/list templates are still a major deterministic recall hole.** Multi-line `Seizure type and frequency` sections contain rates or dates on continuation lines, repeated seizure types, and date lists that the current one-anchor/one-merged-attribute association model does not fully represent.
+2. **The deterministic full-dev gap was attribute-heavy, and the current patch closes enough of it to pass dev140 strict `>0.7`.** Remaining errors are still mostly exact temporal/rate/change projection issues rather than CUI gaps.
+3. **Header/list and statement templates remain the main residual risk.** Multi-line `Seizure type and frequency` sections and narrative statements contain continuation-line rates, repeated seizure types, date lists, and projection-specific phrase truncations that still need robustness work before any held-out claim.
 4. **The local LLM is not a reliable replacement.** On dev25 it has no call or parse failures and good evidence validity, but phrase-only item F1 is below deterministic, semantic attributes are poor, and benchmark F1 is zero because no CUI is emitted.
 5. **Local hybrid candidate adjudication over-keeps and rewrites clinical facts.** The dev5 hybrid pilot keeps noisy candidates and, before deterministic anchor rendering, rewrites anchors into non-gold phrases. Even after re-rendering, it does not beat deterministic on the comparable slice.
 
@@ -144,10 +145,10 @@ but the local model still over-keeps weak/noisy candidates.
 
 ## What We Need To Build To Close The Gap
 
-1. **A multi-mention statement model for repeated anchors.** The current deterministic association emits one merged mention per anchor span. We need a statement-level representation that can emit multiple mentions for the same phrase when gold has separate dates/rates, without reintroducing the broad per-attribute FP problem measured earlier.
+1. **Harden the statement model against held-out variation.** The current deterministic association plus statement parser can now emit multiple mentions for the same phrase and crosses the dev target, but several rules are intentionally narrow and should be stress-tested before broad claims.
 2. **A frequency-section parser.** Treat `Seizure type and frequency` blocks as structured mini-tables: anchor lines, continuation rate lines, comma-separated `last event` fields, and date lists. This should be a clinical-epilepsy/seizure-frequency rule family with its own ablation, not a global newline relaxation.
 3. **Temporal/date normalization upgrades.** Add typo-tolerant month handling only where tied to a seizure-frequency statement; add explicit support for age windows, `teenage years`, `since reaching/current dose`, and `last event/last one` variants. Keep these separate from benchmark-format CUI logic.
-4. **A precision gate for zero/control statements.** Several deterministic FPs are over-broad seizure-free/control statements, especially driving/status/history contexts. We need context gates that distinguish current clinical frequency from non-frequency safety/history prose.
+4. **Continue precision gates for zero/control statements.** Several remaining deterministic FPs are over-broad seizure-free/control statements, especially driving/status/history contexts. The new filters help, but this remains the core precision risk.
 5. **LLM role redesign: evidence/statement selector, not attribute formatter.** Local Qwen is weak at exact ExECTv2 attributes and CUI. If used, it should select candidate statements/evidence; deterministic code should render attributes/CUI. The current pilot shows this is not yet better than deterministic, so the next LLM experiment should be a purpose-built selector prompt with deterministic candidate IDs and no free-form attributes.
 6. **Gold-aware but non-cheating diagnostics.** Keep dev-only item tables, hard slices, and rule ablations. Do not optimize against locked/full holdout row failures; document each deterministic rule as `clinical_epilepsy`, `seizure_frequency`, or `benchmark_format` depending on what it actually does.
 

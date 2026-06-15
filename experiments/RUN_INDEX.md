@@ -4,6 +4,17 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Promote
 
+### `gan2026_state_graph_ontology_stage_d_promotion_gate_2026-06-15`
+- Date/split: `2026-06-15`; `validation`; `250` rows.
+- Pipeline: `hybrid_clinical_frequency_state_graph`; mode `no-call replay`; replay `saved_output_replay`.
+- Model role: Stage D promotion gate: rebuilds the resolve_label graph query deterministically from the validation750 v4 claim-table and feeds it as a P2-gated fourth component to the frozen v0.9 selector replay on a predeclared 250-row residual-inclusive slice. No model calls and no holdout rows are read.; model `none`.
+- Repair mode/config: `state_graph_resolve_label_promotion_gate_v1`.
+- Primary metrics: graph_component_purist_correct=99, graph_mints_correct_for_no_correct=7, graph_mints_correct_for_predeclared_residual=7, no_correct_pool_rows=11, p1_unilateral_correct_to_wrong=147, p2_corroborated_correct_to_wrong=0, p2_corroborated_net_purist_gain=1, p2_corroborated_wrong_to_correct=1, p3_unknown_only_correct_to_wrong=71, predeclared_residual_rows=11, rows=250, v09_selected_purist_correct=238.
+- Evidence validity: Validation-only saved-output replay on a predeclared 250-row slice containing all 11/750 no-correct residual rows (residual UNION first 239 non-residual rows in source order). Gold-free graph rebuild from the v4 claim-table (raw_frequency normalized, no diary/window arithmetic; v3->v4 extractor change is a declared confound held constant across the slice); gold labels used only for post-hoc Purist scoring. No holdout rows are read and no model calls are made.
+- Cache/reuse source: claim_table:gan2026_section_claim_table_validation750_gpt41mini_v4_2026-06-01.jsonl;selector:gan2026_consensus_fresh_agreement_selector_v0_9_validation750_no_call_replay_2026-06-15.jsonl;residual_audit:gan2026_consensus_fresh_agreement_selector_v0_9_residual_component_generation_audit_2026-06-15.json.
+- Claim language: Stage D promotion gate for the graph-as-component generator. Not a holdout-facing candidate; a promote decision clears the validation ladder only and test450 remains locked behind a separate frozen protocol. The graph enters the selector only under independent-corroboration gating (P2, the Stage C survivor); P1/P3 are effect bounds. Evaluated where the no-correct residual actually lives.
+- Artifacts: `experiments/gan2026_state_graph_ontology_stage_d_promotion_gate_2026-06-15.json`, `experiments/gan2026_state_graph_ontology_stage_d_promotion_gate_2026-06-15.md`, `experiments/gan2026_state_graph_ontology_stage_d_promotion_gate_2026-06-15_graphs.jsonl`, `experiments/gan2026_state_graph_ontology_stage_d_promotion_gate_2026-06-15_rows.jsonl`.
+
 ### `gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13`
 - Date/split: `2026-06-13`; `validation`; `750` rows.
 - Pipeline: `fresh_evidence_reasoner`; mode `live`; replay `live`.

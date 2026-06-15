@@ -298,7 +298,20 @@ both zero W→C), and only the independent-corroboration posture (P2) is
 regression-safe — and exactly neutral. Stage C decision: `revise` — the graph may
 enter the selector only under corroboration gating, and the component-starvation
 uplift must be tested where the residual lives under a separate predeclared
-protocol (not by slice-shopping within Stage C).** The four
+protocol (not by slice-shopping within Stage C). Stage D has now run (§8.6 below):
+the same P2-gated component at 250-row scale on a predeclared, residual-inclusive
+slice (11 no-correct rows ∪ first 239 non-residual in source order, rebuilt from
+the v4 claim-table — the only no-call source covering the residual). Arm 1 shows
+the generator finally does its job: a Purist-correct competing component now exists
+for `7/11` residual rows, localized to the ontology-guard families
+(`unknown_over_quantified_rate` 5/5, `last_event_or_seizure_free_overinfer` 5/6).
+P2 is regression-safe (C→W 0, `band_unknown` override precision 0.96), so the
+predeclared gate returns `promote` — but only of the *generator*: P2 *recovers*
+`0/7` of those residual rows at selection time (corroboration cannot fire where
+every other component is wrong), so realized end-to-end uplift is nil (+1
+incidental). Stage D decision: `promote` clears the validation ladder, **not** a
+holdout authorization; the binding problem moves from component generation to a
+corroboration-free selection trust rule.** The four
 code lines exist and are tested. Stage A on the deterministic graph regressed as built
 (−82 Purist, §8.2 below) — exactly the literature caveat in §1 and the Stage A
 *reject* condition in §6 — but the regression was diagnostic, not fatal: it
@@ -490,11 +503,19 @@ B/C/D (items 5–6) remain.
    quantifying graph components add correct candidates without correct→wrong
    regression.
 
-   **Stage C done (§8.5); Stage D not started.** Stage C fed the graph query as
+   **Stage C done (§8.5); Stage D done (§8.6).** Stage C fed the graph query as
    a fourth component to the v0.9 selector on the first-50 rows and returned
-   `revise`. Stage D requires the same wiring at 250-row scale, on a slice that
-   actually contains the no-correct residual, under a separate predeclared
-   protocol.
+   `revise`. Stage D re-ran the same P2-gated wiring at 250-row scale on a
+   predeclared slice that *does* contain all 11/750 no-correct residual rows. The
+   generator clears the ladder on component availability (Arm 1: a correct
+   component now exists for **7/11** residual rows, concentrated in the
+   ontology-guard families), and the safe posture is regression-free (P2 C→W 0).
+   But the safe posture **recovers 0/7** of those residual rows at selection time
+   — corroboration cannot fire where every other component is wrong — so the
+   realized end-to-end uplift is nil (+1 net, on an incidental non-residual row).
+   The binding problem has therefore moved from *component generation* to
+   *selection*: a corroboration-free trust rule for the graph's clean `unknown`
+   that avoids P3's regressions. **No holdout is authorized.**
 
 6. **C3** is documentation-only (cluster syntax preserved iff a within-cluster
    count exists; scoring multiplies count·burden — one rule, two enforcement homes
@@ -628,3 +649,83 @@ no-correct residual. Stage D must therefore wire the same P2-gated graph compone
 at 250-row scale on a slice that actually contains the `11/750` residual, under
 its own predeclared protocol, and is the only place the component-starvation claim
 can be honestly tested.
+
+### 8.6 Stage D — 250-row promotion gate on the residual (2026-06-15)
+
+Stage D is the §5 promotion gate, run exactly as §8.5 mandated: the **same
+P2-gated** `resolve_label` graph component, at 250-row scale, on a **predeclared
+slice that actually contains all 11/750 no-correct residual rows**. Runner:
+`experiments/build_gan2026_state_graph_ontology_stage_d_promotion_gate.py`;
+artifacts `…_stage_d_promotion_gate_2026-06-15.{json,md}` plus the rebuilt-graphs
+and per-row accounting JSONL. Decision: **`promote` (clears the validation ladder
+only — not a holdout authorization)**.
+
+**Predeclared protocol (fixed before the run, no slice-shopping).**
+
+- *Slice.* The 250-row slice = the **11 no-correct residual rows** (from the
+  frozen v0.9 residual component-generation audit) ∪ the **first 239 non-residual
+  validation rows in `source_row_index` order**. One deterministic, reproducible
+  rule: residual-inclusive by construction, 250-row scale, chosen by source order
+  (not by outcome).
+- *Claim extractor.* Graphs are rebuilt from the **validation750 v4** section
+  claim-table — the *only* no-call source that covers the residual, because the v3
+  table the earlier ladder used was never run past the first 250 validation rows
+  (10 of the 11 residual rows are unreachable under v3 without new model calls).
+  The v3→v4 change is a **declared confound**, held constant across the whole
+  slice; a v3↔v4 cross-check on the one overlap residual row (5534) resolves to
+  the **same Purist class** (`unknown` both ways), so the extractor swap does not,
+  on the one row we can check, change the graph's verdict.
+- *Component & posture.* Identical ontology/edge/`resolve_label` query; **P2
+  (corroborated)** is the promotion-decision posture (the only Stage C survivor);
+  P1/P3 are reported as effect bounds.
+
+**Arm 1 — component availability (the component-starvation fix).** The graph now
+mints a Purist-correct competing component for **7/11** predeclared residual rows
+(`5534, 6321, 6368, 6571, 11254, 11272, 14025`). The coverage localizes exactly to
+the ontology guard's two target families — `unknown_over_quantified_rate` **5/5**
+and `last_event_or_seizure_free_overinfer_unknown` **5/6** — and is **0/2** on
+`cluster_burden_component_failure` and **0/1** on the
+`highest_semiology_or_denominator_conflict` row, which the guard was never built to
+address. This is the first direct evidence that the anchored, ontology-constrained
+generator does what the whole branch was proposed to do: produce a correct
+component where none existed.
+
+**Arm 2 — selection contribution (P2, the promotion posture).**
+
+| Posture | Overrides | Final Purist | W→C | C→W | Net | C→W bands |
+|---|--:|--:|--:|--:|--:|---|
+| `P1_unilateral` | 188 | 99/250 | 8 | 147 | −139 | daily 14, monthly 35, submonthly 11, weekly 50, zero 37 |
+| `P2_corroborated` (promotion) | 28 | 239/250 | 1 | **0** | +1 | — |
+| `P3_unknown_only` | 90 | 174/250 | 7 | 71 | −64 | daily 5, monthly 15, submonthly 5, weekly 23, zero 23 |
+
+P2 is regression-safe — **0 C→W**, no `band_weekly`/`band_unknown` regression — and
+its changed-label precision is **26/27 = 0.96 on `band_unknown`** (the one
+`band_monthly` override is a wrong→wrong, not a regression). The unconditional
+postures confirm the §1 caveat a third time: P1 −139, P3 −64, both driven by the
+atomic-claim extractor over-routing real-rate rows to `unknown`/`no_reference`.
+
+**The decisive honesty number: 0/7 realized.** Of the 7 residual rows for which the
+graph mints a correct component, P2 **recovers 0** at selection time. The single
+net +1 is an *incidental non-residual* corroborated override. This is structural,
+not bad luck: corroboration requires an independent component to agree, and the
+no-correct residual is *defined* by every other component being wrong — so the one
+posture that is safe is exactly the one that cannot harvest the residual. Arm 1
+(availability) and Arm 2 (realized) therefore diverge completely on the rows that
+matter.
+
+**Reading against §6.** The predeclared gate returns `promote` because, for the P2
+posture, §6's literal criteria hold: gains localize to the named ontology
+constraint, exact evidence is intact (dual validation), correct→wrong is zero, and
+new correct components exist for the residual (not a mere re-derivation of the
+deterministic component → not the §6 *pause* trigger). What `promote` means here is
+narrow and must not be overstated: **the component *generator* clears the
+validation ladder; the end-to-end *selection* benefit under the safe posture is
+nil (0/7 residual recovered, +1 incidental).** The binding constraint has moved
+from component generation (now demonstrably addressable) to **selection**: the open
+problem is a corroboration-free trust rule that admits the graph's clean,
+dual-validated `unknown` on the no-correct residual *without* re-introducing P3's
+71 `C→W` regressions. **Holdout remains unauthorized.** `test450` stays locked; any
+holdout protocol is separate, frozen, and explicitly authorized (§4), and must
+first weigh whether a realized selection uplift this thin justifies the spend — on
+today's evidence it does not, and the next work is the selector trust rule, not a
+holdout run.
