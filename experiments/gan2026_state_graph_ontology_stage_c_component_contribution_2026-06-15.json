@@ -1,0 +1,122 @@
+{
+  "date": "2026-06-15",
+  "decision": "revise",
+  "graph_builder": "llm-sg-stage-c-v3-raw-frequency-normalized",
+  "purpose": "Stage C component-contribution test. Feeds the resolve_label graph query as a fourth component to the frozen v0.9 consensus+fresh selector on the predeclared first-50 validation rows. Reports component-pool coverage of the no-correct residual and selection contribution (W->C / C->W) under three transparent override postures. Validation-only; no holdout rows and no model calls.",
+  "rebuilt_graphs_artifact": "experiments/gan2026_state_graph_ontology_stage_c_component_contribution_2026-06-15_graphs.jsonl",
+  "rows_artifact": "experiments/gan2026_state_graph_ontology_stage_c_component_contribution_2026-06-15_rows.jsonl",
+  "run_id": "gan2026_state_graph_ontology_stage_c_component_contribution_2026-06-15",
+  "source_claim_table": "experiments/gan2026_section_claim_table_validation50_gpt41mini_v3_2026-06-01.jsonl",
+  "split": "validation",
+  "split_manifest": "gan2026_split_v1",
+  "summary": {
+    "arm1_component_pool_coverage": {
+      "graph_minted_source_row_indices": [],
+      "graph_mints_correct_for_no_correct": 0,
+      "no_correct_pool_rows": 0,
+      "no_correct_source_row_indices": [],
+      "pool_correct_rows": 50,
+      "rows": 50
+    },
+    "arm2_selection_contribution": {
+      "P1_unilateral": {
+        "correct_to_wrong": 20,
+        "final_purist_correct": 30,
+        "net_purist_gain": -20,
+        "overrides": 28,
+        "regression_bands": {
+          "band_daily": 1,
+          "band_monthly": 6,
+          "band_submonthly": 3,
+          "band_weekly": 10
+        },
+        "transitions": {
+          "C->C": 30,
+          "C->W": 20
+        },
+        "wrong_to_correct": 0
+      },
+      "P2_corroborated": {
+        "correct_to_wrong": 0,
+        "final_purist_correct": 50,
+        "net_purist_gain": 0,
+        "overrides": 5,
+        "regression_bands": {},
+        "transitions": {
+          "C->C": 50
+        },
+        "wrong_to_correct": 0
+      },
+      "P3_unknown_only": {
+        "correct_to_wrong": 5,
+        "final_purist_correct": 45,
+        "net_purist_gain": -5,
+        "overrides": 8,
+        "regression_bands": {
+          "band_monthly": 2,
+          "band_weekly": 3
+        },
+        "transitions": {
+          "C->C": 45,
+          "C->W": 5
+        },
+        "wrong_to_correct": 0
+      }
+    },
+    "by_band": {
+      "band_daily": {
+        "graph_component_purist_correct": 2,
+        "no_correct_pool_rows": 0,
+        "p1_correct_to_wrong": 1,
+        "p3_correct_to_wrong": 0,
+        "rows": 3,
+        "v09_selected_purist_correct": 3
+      },
+      "band_monthly": {
+        "graph_component_purist_correct": 5,
+        "no_correct_pool_rows": 0,
+        "p1_correct_to_wrong": 6,
+        "p3_correct_to_wrong": 2,
+        "rows": 11,
+        "v09_selected_purist_correct": 11
+      },
+      "band_submonthly": {
+        "graph_component_purist_correct": 9,
+        "no_correct_pool_rows": 0,
+        "p1_correct_to_wrong": 3,
+        "p3_correct_to_wrong": 0,
+        "rows": 12,
+        "v09_selected_purist_correct": 12
+      },
+      "band_unknown": {
+        "graph_component_purist_correct": 6,
+        "no_correct_pool_rows": 0,
+        "p1_correct_to_wrong": 0,
+        "p3_correct_to_wrong": 0,
+        "rows": 6,
+        "v09_selected_purist_correct": 6
+      },
+      "band_weekly": {
+        "graph_component_purist_correct": 8,
+        "no_correct_pool_rows": 0,
+        "p1_correct_to_wrong": 10,
+        "p3_correct_to_wrong": 3,
+        "rows": 18,
+        "v09_selected_purist_correct": 18
+      }
+    },
+    "claim_boundary": "Validation-only no-call replay. The graph query is rebuilt deterministically from the validation50 v3 section claim-table; the deterministic/consensus/fresh components and the v0.9 selected baseline come from the saved v0.9 replay. Gold labels are used only for post-hoc scoring; no holdout rows are read.",
+    "decision": "revise",
+    "decision_rationale": "On the predeclared first-50 validation slice the v0.9 pool is already Purist-correct on 50/50 rows (0 no-correct), so Arm 1 has 0 residual targets and the graph mints a correct component for 0 of them - the component-starvation benefit cannot be demonstrated where the 11/750 residual does not live. In Arm 2 an unconditional graph component only regresses (P1 unilateral net -20, C->W 20; P3 unknown-only net -5, C->W 5) - the literature caveat made concrete. Only the independent-corroboration posture (P2) is regression-safe (W->C 0, C->W 0, net 0), and it is exactly neutral here. Stage C therefore does not promote the graph as an unconditional component: it must enter the selector under corroboration gating, and the no-correct-residual uplift must be evaluated on the rows where the residual actually lives under a separate predeclared protocol (no slice-shopping within Stage C).",
+    "graph_component_purist_correct": 30,
+    "graph_kind_counts": {
+      "frequency": 28,
+      "no_reference": 6,
+      "unknown": 9,
+      "unresolved_multiple": 7
+    },
+    "rows": 50,
+    "v09_selected_purist_correct": 50
+  },
+  "v09_replay_artifact": "experiments/gan2026_consensus_fresh_agreement_selector_v0_9_validation750_no_call_replay_2026-06-15.jsonl"
+}

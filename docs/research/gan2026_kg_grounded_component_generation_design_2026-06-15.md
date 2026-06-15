@@ -290,7 +290,15 @@ frequency / 7 unresolved_multiple / 4 unknown / 1 no_reference, no longer unifor
 `unknown`) and the guard is exercised — it fired once, an
 `over_inference_out_of_unknown:last_event_only` rejection of a `two episodes`
 mention that parsed to a rate. Stage B is therefore a structural + interpretability
-pass with the guard now demonstrably live; Stage C is the next gate.** The four
+pass with the guard now demonstrably live. Stage C has now run (§8.5 below): on
+the predeclared first-50 validation rows the v0.9 pool is already Purist-correct
+on all 50, so the no-correct residual is not in this slice and Arm 1 has zero
+targets; in Arm 2 an unconditional graph component only regresses (P1 −20, P3 −5,
+both zero W→C), and only the independent-corroboration posture (P2) is
+regression-safe — and exactly neutral. Stage C decision: `revise` — the graph may
+enter the selector only under corroboration gating, and the component-starvation
+uplift must be tested where the residual lives under a separate predeclared
+protocol (not by slice-shopping within Stage C).** The four
 code lines exist and are tested. Stage A on the deterministic graph regressed as built
 (−82 Purist, §8.2 below) — exactly the literature caveat in §1 and the Stage A
 *reject* condition in §6 — but the regression was diagnostic, not fatal: it
@@ -482,8 +490,11 @@ B/C/D (items 5–6) remain.
    quantifying graph components add correct candidates without correct→wrong
    regression.
 
-   **Stages C/D not started.** They require feeding the graph query as a fourth
-   component to the v0.9 consensus+fresh selector.
+   **Stage C done (§8.5); Stage D not started.** Stage C fed the graph query as
+   a fourth component to the v0.9 selector on the first-50 rows and returned
+   `revise`. Stage D requires the same wiring at 250-row scale, on a slice that
+   actually contains the no-correct residual, under a separate predeclared
+   protocol.
 
 6. **C3** is documentation-only (cluster syntax preserved iff a within-cluster
    count exists; scoring multiplies count·burden — one rule, two enforcement homes
@@ -558,3 +569,62 @@ the v0.9 selector: does the selector prefer the graph `unknown` over the
 deterministic over-read on `band_unknown`, and do the quantified graph components
 add correct candidates with near-zero correct→wrong regression (the §6 stop
 condition)? Stage B is a pass; the guard's rejection arm is now live and audited.
+
+### 8.5 Stage C — 50-row component-contribution test (2026-06-15)
+
+Stage C feeds the `resolve_label` graph query as a fourth component to the frozen
+v0.9 consensus+fresh selector, on the predeclared first-50 validation rows. It is
+a no-call replay: the graph is rebuilt deterministically from the validation50 v3
+section claim-table (the strict superset of the Stage B validation25 source,
+`raw_frequency` normalized, no diary/window arithmetic); the
+deterministic/consensus/fresh components and the v0.9 selected baseline come from
+the saved v0.9 validation750 replay. Runner:
+`experiments/build_gan2026_state_graph_ontology_stage_c_component_contribution.py`;
+artifacts `…_stage_c_component_contribution_2026-06-15.{json,md}` plus the
+rebuilt-graphs and per-row accounting JSONL. Decision: **`revise`**.
+
+**Headline.** v0.9 selected Purist is **50/50** on this slice; the graph component
+standalone is 30/50 (kinds: 28 frequency / 9 unknown / 7 unresolved_multiple / 6
+no_reference).
+
+**Arm 1 — component-pool coverage.** The existing pool ({deterministic, consensus,
+fresh}) is already Purist-correct on **all 50** rows, so there are **0 no-correct
+targets** in the first-50 slice and the graph mints a correct component for 0 of
+them. The `11/750` no-correct residual simply does not live in the first 50 rows
+(it includes none of the `band_unknown` over-reads here — all 6 `band_unknown`
+rows are already correct, and the graph independently resolves all 6 to a correct
+`unknown`). This is a slice fact, not a verdict on the mechanism: the
+component-starvation benefit — the entire reason for the generator — cannot be
+demonstrated where the residual is absent, and honoring the predeclared slice
+forbids shopping for the rows where it is present.
+
+**Arm 2 — selection contribution.** With the graph added as a fourth candidate,
+final labels scored against the v0.9 selected baseline (C→W is the §6 kill metric):
+
+| Posture | Overrides | Final Purist | W→C | C→W | Net | C→W bands |
+|---|--:|--:|--:|--:|--:|---|
+| `P1_unilateral` (override on any disagreement) | 28 | 30/50 | 0 | 20 | −20 | weekly 10, monthly 6, submonthly 3, daily 1 |
+| `P2_corroborated` (override only if consensus/fresh agree) | 5 | 50/50 | 0 | 0 | 0 | — |
+| `P3_unknown_only` (override only on graph `unknown`) | 8 | 45/50 | 0 | 5 | −5 | weekly 3, monthly 2 |
+
+An *unconditional* graph component only regresses (P1 −20, P3 −5; both zero W→C) —
+the §1 literature caveat and the v0.10 deterministic-repair `−8/−10` lesson made
+concrete a second time, now from the graph side. The P3 regressions are the
+mirror image of the C2 story: the atomic-claim graph over-routes 5 real-rate rows
+(weekly/monthly) to `unknown` (a claim-extraction recall gap, not a guard
+firing), so an unknown-routing override zeroes out rows v0.9 got right. Only the
+**independent-corroboration posture (P2)** is regression-safe — and on this solved
+slice it is exactly neutral (0 W→C, 0 C→W), because the graph never contradicts a
+consensus/fresh-corroborated label.
+
+**Reading against §6.** Stage C does not clear the promotion bar: there is no net
+component uplift to show here (no headroom), an unconditional component breaks
+band cases the pool already handled (the explicit *reject* trigger), and the only
+safe integration — corroboration gating — adds nothing on this slice. The honest
+decision is `revise`, not `reject`: the mechanism is not falsified (it is
+regression-safe under P2 and correct on all 6 true-`unknown` rows), but its raison
+d'être is untested because the predeclared 50-row slice contains none of the
+no-correct residual. Stage D must therefore wire the same P2-gated graph component
+at 250-row scale on a slice that actually contains the `11/750` residual, under
+its own predeclared protocol, and is the only place the component-starvation claim
+can be honestly tested.

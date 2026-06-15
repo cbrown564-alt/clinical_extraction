@@ -117,6 +117,17 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Claim language: Adds a hard-negative ambiguity-classification contract for unknown-frequency cases. This is prerequisite validation infrastructure, not a promoted test450 candidate.
 - Artifacts: `experiments/gan2026_unknown_frequency_ambiguity_panel_2026-06-15.json`, `experiments/gan2026_unknown_frequency_ambiguity_panel_2026-06-15.md`.
 
+### `gan2026_state_graph_ontology_stage_c_component_contribution_2026-06-15`
+- Date/split: `2026-06-15`; `validation`; `50` rows.
+- Pipeline: `hybrid_clinical_frequency_state_graph`; mode `no-call replay`; replay `saved_output_replay`.
+- Model role: Stage C component-contribution test: rebuilds the resolve_label graph query deterministically from the validation50 v3 claim-table and feeds it as a fourth component to the frozen v0.9 selector replay. No model calls and no holdout rows are read.; model `none`.
+- Repair mode/config: `state_graph_resolve_label_component_contribution_v1`.
+- Primary metrics: graph_component_purist_correct=30, graph_mints_correct_for_no_correct=0, no_correct_pool_rows=0, p1_unilateral_correct_to_wrong=20, p2_corroborated_correct_to_wrong=0, p2_corroborated_net_purist_gain=0, p3_unknown_only_correct_to_wrong=5, rows=50, v09_selected_purist_correct=50.
+- Evidence validity: Validation-only saved-output replay over the first-50 validation rows. Gold-free graph rebuild (raw_frequency normalized, no diary/window arithmetic); gold labels used only for post-hoc Purist scoring. No holdout rows are read and no model calls are made. The pool already covers all 50 rows, so Arm 1 has no no-correct targets in this slice.
+- Cache/reuse source: claim_table:gan2026_section_claim_table_validation50_gpt41mini_v3_2026-06-01.jsonl;selector:gan2026_consensus_fresh_agreement_selector_v0_9_validation750_no_call_replay_2026-06-15.jsonl.
+- Claim language: Stage C gate for the graph-as-component generator. Not a holdout-facing candidate. Finds the graph component regression-safe only under independent-corroboration gating (P2), neutral on the solved first-50 slice; an unconditional graph component regresses (P1/P3). The no-correct-residual uplift is untested here because the residual is not in this slice.
+- Artifacts: `experiments/gan2026_state_graph_ontology_stage_c_component_contribution_2026-06-15.json`, `experiments/gan2026_state_graph_ontology_stage_c_component_contribution_2026-06-15.md`, `experiments/gan2026_state_graph_ontology_stage_c_component_contribution_2026-06-15_graphs.jsonl`, `experiments/gan2026_state_graph_ontology_stage_c_component_contribution_2026-06-15_rows.jsonl`.
+
 ### `gan2026_state_graph_ontology_stage_b_viability_2026-06-15`
 - Date/split: `2026-06-15`; `validation`; `25` rows.
 - Pipeline: `hybrid_clinical_frequency_state_graph`; mode `analysis-only`; replay `analysis_only`.
