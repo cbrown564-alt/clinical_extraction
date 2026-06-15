@@ -1,0 +1,1208 @@
+{
+  "cases": [
+    {
+      "case_id": "denominator_window_current_rate_positive",
+      "consensus_label": "11 per 3 month",
+      "desired_action": "accept_parseable_denominator_window_refinement",
+      "deterministic_label": "1 per 5 to 7 day",
+      "family": "denominator_window_positive",
+      "fresh_boundary_profile": [
+        "current/recent frequency",
+        "denominator/window"
+      ],
+      "fresh_label": "11 per 3 month",
+      "gold_band": "band_monthly",
+      "gold_label": "11 per 3 month",
+      "gold_monthly_frequency": 3.717592592592593,
+      "note_text": "The current review documents 11 seizures over the last three months; the daily estimate in the baseline is too high.",
+      "rationale": "Fresh and consensus agree on a parseable count/window label.",
+      "risk_type": "intended_positive"
+    },
+    {
+      "case_id": "explicit_current_frequency_range_denominator_positive",
+      "consensus_label": "1 per 6 to 8 week",
+      "desired_action": "accept_parseable_denominator_window_refinement",
+      "deterministic_label": "1 per day",
+      "family": "explicit_current_frequency_positive",
+      "fresh_boundary_profile": [
+        "explicit current frequency",
+        "no seizure-free or unknown boundary",
+        "cluster/seizure frequency clearly stated"
+      ],
+      "fresh_label": "1 per 6 to 8 week",
+      "gold_band": "band_submonthly",
+      "gold_label": "1 per 6 to 8 week",
+      "gold_monthly_frequency": 0.6336805555555555,
+      "note_text": "The note states the current seizure frequency is one seizure every six to eight weeks, not daily.",
+      "rationale": "The denominator range is explicit and current.",
+      "risk_type": "intended_positive"
+    },
+    {
+      "case_id": "explicit_count_over_window_cluster_count_positive",
+      "consensus_label": "4 per 2 month",
+      "desired_action": "accept_parseable_denominator_window_refinement",
+      "deterministic_label": "3 per week",
+      "family": "explicit_count_window_positive",
+      "fresh_boundary_profile": [
+        "explicit count of 5 events over approximately 6 weeks",
+        "no evidence for seizure-free, unknown, or no_reference",
+        "highest current/recent frequency is cluster count"
+      ],
+      "fresh_label": "4 per 2 month",
+      "gold_band": "band_monthly",
+      "gold_label": "3 per month",
+      "gold_monthly_frequency": 3.0416666666666665,
+      "note_text": "There were five cluster events over approximately six weeks; no seizure-free or unknown boundary is described.",
+      "rationale": "The profile identifies an explicit count over a usable window.",
+      "risk_type": "intended_positive"
+    },
+    {
+      "case_id": "highest_active_semiology_negative",
+      "consensus_label": "2 to 3 per 15 month",
+      "desired_action": "keep_deterministic_baseline",
+      "deterministic_label": "3 to 4 per 15 month",
+      "family": "highest_semiology_negative",
+      "fresh_boundary_profile": [
+        "current/recent frequency",
+        "highest active semiology"
+      ],
+      "fresh_label": "2 to 3 per 15 month",
+      "gold_band": "band_submonthly",
+      "gold_label": "3 to 4 per 15 month",
+      "gold_monthly_frequency": 0.23657407407407405,
+      "note_text": "Several semiologies are discussed; the lower burden semiology has a cleaner denominator but is not the highest active burden.",
+      "rationale": "Highest-semiology profiles were unsafe in the v0.7 residual audit.",
+      "risk_type": "intended_negative"
+    },
+    {
+      "case_id": "seizure_free_interval_negative",
+      "consensus_label": "8 per 2 month",
+      "desired_action": "keep_deterministic_baseline",
+      "deterministic_label": "9 per 3 month",
+      "family": "seizure_free_interval_negative",
+      "fresh_boundary_profile": [
+        "explicit recent seizure counts",
+        "no seizure-free interval",
+        "current/recent frequency evidence"
+      ],
+      "fresh_label": "8 per 2 month",
+      "gold_band": "band_monthly",
+      "gold_label": "9 per 3 month",
+      "gold_monthly_frequency": 3.0416666666666665,
+      "note_text": "The note mixes recent counts with a seizure-free interval; the baseline label should not be overridden by the cleaner count.",
+      "rationale": "Any seizure-free interval marker blocks this refinement family.",
+      "risk_type": "intended_negative"
+    },
+    {
+      "case_id": "last_event_only_negative",
+      "consensus_label": "1 per 4 month",
+      "desired_action": "keep_deterministic_baseline",
+      "deterministic_label": "unknown",
+      "family": "last_event_negative",
+      "fresh_boundary_profile": [
+        "last event",
+        "current/recent frequency"
+      ],
+      "fresh_label": "1 per 4 month",
+      "gold_band": "band_unknown",
+      "gold_label": "unknown",
+      "gold_monthly_frequency": 1000.0,
+      "note_text": "The last seizure date is stated, but no count over the denominator is given.",
+      "rationale": "Last-event-only evidence stays unknown.",
+      "risk_type": "intended_negative"
+    },
+    {
+      "case_id": "boundary_origin_not_relaxed_negative",
+      "consensus_label": "2 per 6 week",
+      "desired_action": "keep_deterministic_baseline",
+      "deterministic_label": "seizure free for multiple year",
+      "family": "boundary_origin_negative",
+      "fresh_boundary_profile": [
+        "current/recent frequency",
+        "denominator/window"
+      ],
+      "fresh_label": "2 per 6 week",
+      "gold_band": "band_unknown",
+      "gold_label": "unknown",
+      "gold_monthly_frequency": 1000.0,
+      "note_text": "A seizure-free baseline and a parseable frequency candidate are present, but v0.8 is not a boundary-origin relaxation.",
+      "rationale": "Boundary origins remain handled only by the v0.6/v0.7 gates.",
+      "risk_type": "intended_negative"
+    },
+    {
+      "case_id": "fresh_consensus_disagreement_negative",
+      "consensus_label": "11 per 3 month",
+      "desired_action": "keep_deterministic_baseline",
+      "deterministic_label": "1 per 5 to 7 day",
+      "family": "agreement_control",
+      "fresh_boundary_profile": [
+        "current/recent frequency",
+        "denominator/window"
+      ],
+      "fresh_label": "10 per 3 month",
+      "gold_band": "band_monthly",
+      "gold_label": "11 per 3 month",
+      "gold_monthly_frequency": 3.717592592592593,
+      "note_text": "Consensus and fresh evidence disagree about the denominator.",
+      "rationale": "The parseable refinement still requires exact agreement.",
+      "risk_type": "intended_negative"
+    },
+    {
+      "case_id": "unparseable_replacement_negative",
+      "consensus_label": "several per month",
+      "desired_action": "keep_deterministic_baseline",
+      "deterministic_label": "1 per day",
+      "family": "parseability_control",
+      "fresh_boundary_profile": [
+        "current/recent frequency",
+        "denominator/window"
+      ],
+      "fresh_label": "several per month",
+      "gold_band": "band_monthly",
+      "gold_label": "3 per month",
+      "gold_monthly_frequency": 3.0416666666666665,
+      "note_text": "The profile is strong, but the replacement is not parseable.",
+      "rationale": "v0.8 does not promote parser-incompatible labels.",
+      "risk_type": "intended_negative"
+    },
+    {
+      "case_id": "current_recent_only_negative",
+      "consensus_label": "4 per 2 month",
+      "desired_action": "keep_deterministic_baseline",
+      "deterministic_label": "4 per month",
+      "family": "missing_profile_negative",
+      "fresh_boundary_profile": [
+        "current/recent frequency"
+      ],
+      "fresh_label": "4 per 2 month",
+      "gold_band": "band_weekly",
+      "gold_label": "4 per month",
+      "gold_monthly_frequency": 4.055555555555555,
+      "note_text": "The profile says current/recent but gives no denominator/window cue.",
+      "rationale": "Current/recent alone is too broad for the refinement gate.",
+      "risk_type": "intended_negative"
+    },
+    {
+      "case_id": "multiple_active_semiologies_negative",
+      "consensus_label": "1 per 2 month",
+      "desired_action": "keep_deterministic_baseline",
+      "deterministic_label": "2 per week",
+      "family": "multi_semiology_negative",
+      "fresh_boundary_profile": [
+        "explicit numeric frequency for highest-burden seizure type",
+        "current/recent frequency window",
+        "multiple active semiologies, highest burden selected"
+      ],
+      "fresh_label": "1 per 2 month",
+      "gold_band": "band_weekly",
+      "gold_label": "2 per week",
+      "gold_monthly_frequency": 8.690476190476192,
+      "note_text": "Multiple active semiologies are present; the lower-burden one has the cleaner denominator.",
+      "rationale": "Multi-semiology highest-burden cases are blocked.",
+      "risk_type": "intended_negative"
+    }
+  ],
+  "date": "2026-06-15",
+  "purpose": "Synthetic hard-negative probe for v0.8 parseable denominator/window refinement.",
+  "rows": [
+    {
+      "consensus_label": "11 per 3 month",
+      "decision_features": {
+        "consensus_reason": "synthetic_predeclared_case",
+        "fresh_action": "synthetic_component_output",
+        "fresh_boundary_profile": [
+          "current/recent frequency",
+          "denominator/window"
+        ],
+        "fresh_uncertainty": "low"
+      },
+      "desired_action_match": true,
+      "deterministic_label": "1 per 5 to 7 day",
+      "fresh_evidence_label": "11 per 3 month",
+      "pipeline_family": "consensus_fresh_agreement_selector",
+      "reference": {
+        "gold_label": "11 per 3 month",
+        "gold_monthly_frequency": 3.717592592592593,
+        "row_ok": true
+      },
+      "score_layers": {
+        "consensus": {
+          "comparison": {
+            "purist_correct": true
+          },
+          "final_label": "11 per 3 month",
+          "source": "consensus"
+        },
+        "deterministic": {
+          "comparison": {
+            "purist_correct": false
+          },
+          "final_label": "1 per 5 to 7 day",
+          "source": "deterministic"
+        },
+        "fresh_evidence": {
+          "comparison": {
+            "purist_correct": true
+          },
+          "final_label": "11 per 3 month",
+          "source": "fresh_evidence"
+        },
+        "selected": {
+          "comparison": {
+            "purist_correct": true
+          },
+          "final_label": "11 per 3 month",
+          "source": "fresh_evidence"
+        }
+      },
+      "selected_label": "11 per 3 month",
+      "selector_action": "accept_parseable_denominator_window_refinement",
+      "selector_gate": "parseable_denominator_window_refinement_v0_8:profile_supported_parseable_refinement",
+      "selector_version": "gan2026_consensus_fresh_agreement_selector_v0_8",
+      "source_row_index": 930001,
+      "synthetic_case": {
+        "case_id": "denominator_window_current_rate_positive",
+        "consensus_label": "11 per 3 month",
+        "desired_action": "accept_parseable_denominator_window_refinement",
+        "deterministic_label": "1 per 5 to 7 day",
+        "family": "denominator_window_positive",
+        "fresh_boundary_profile": [
+          "current/recent frequency",
+          "denominator/window"
+        ],
+        "fresh_label": "11 per 3 month",
+        "gold_band": "band_monthly",
+        "gold_label": "11 per 3 month",
+        "gold_monthly_frequency": 3.717592592592593,
+        "note_text": "The current review documents 11 seizures over the last three months; the daily estimate in the baseline is too high.",
+        "rationale": "Fresh and consensus agree on a parseable count/window label.",
+        "risk_type": "intended_positive"
+      },
+      "transition_vs_deterministic": {
+        "label_changed": true,
+        "purist": "wrong_to_correct"
+      }
+    },
+    {
+      "consensus_label": "1 per 6 to 8 week",
+      "decision_features": {
+        "consensus_reason": "synthetic_predeclared_case",
+        "fresh_action": "synthetic_component_output",
+        "fresh_boundary_profile": [
+          "explicit current frequency",
+          "no seizure-free or unknown boundary",
+          "cluster/seizure frequency clearly stated"
+        ],
+        "fresh_uncertainty": "low"
+      },
+      "desired_action_match": true,
+      "deterministic_label": "1 per day",
+      "fresh_evidence_label": "1 per 6 to 8 week",
+      "pipeline_family": "consensus_fresh_agreement_selector",
+      "reference": {
+        "gold_label": "1 per 6 to 8 week",
+        "gold_monthly_frequency": 0.6336805555555555,
+        "row_ok": true
+      },
+      "score_layers": {
+        "consensus": {
+          "comparison": {
+            "purist_correct": true
+          },
+          "final_label": "1 per 6 to 8 week",
+          "source": "consensus"
+        },
+        "deterministic": {
+          "comparison": {
+            "purist_correct": false
+          },
+          "final_label": "1 per day",
+          "source": "deterministic"
+        },
+        "fresh_evidence": {
+          "comparison": {
+            "purist_correct": true
+          },
+          "final_label": "1 per 6 to 8 week",
+          "source": "fresh_evidence"
+        },
+        "selected": {
+          "comparison": {
+            "purist_correct": true
+          },
+          "final_label": "1 per 6 to 8 week",
+          "source": "fresh_evidence"
+        }
+      },
+      "selected_label": "1 per 6 to 8 week",
+      "selector_action": "accept_parseable_denominator_window_refinement",
+      "selector_gate": "parseable_denominator_window_refinement_v0_8:profile_supported_parseable_refinement",
+      "selector_version": "gan2026_consensus_fresh_agreement_selector_v0_8",
+      "source_row_index": 930002,
+      "synthetic_case": {
+        "case_id": "explicit_current_frequency_range_denominator_positive",
+        "consensus_label": "1 per 6 to 8 week",
+        "desired_action": "accept_parseable_denominator_window_refinement",
+        "deterministic_label": "1 per day",
+        "family": "explicit_current_frequency_positive",
+        "fresh_boundary_profile": [
+          "explicit current frequency",
+          "no seizure-free or unknown boundary",
+          "cluster/seizure frequency clearly stated"
+        ],
+        "fresh_label": "1 per 6 to 8 week",
+        "gold_band": "band_submonthly",
+        "gold_label": "1 per 6 to 8 week",
+        "gold_monthly_frequency": 0.6336805555555555,
+        "note_text": "The note states the current seizure frequency is one seizure every six to eight weeks, not daily.",
+        "rationale": "The denominator range is explicit and current.",
+        "risk_type": "intended_positive"
+      },
+      "transition_vs_deterministic": {
+        "label_changed": true,
+        "purist": "wrong_to_correct"
+      }
+    },
+    {
+      "consensus_label": "4 per 2 month",
+      "decision_features": {
+        "consensus_reason": "synthetic_predeclared_case",
+        "fresh_action": "synthetic_component_output",
+        "fresh_boundary_profile": [
+          "explicit count of 5 events over approximately 6 weeks",
+          "no evidence for seizure-free, unknown, or no_reference",
+          "highest current/recent frequency is cluster count"
+        ],
+        "fresh_uncertainty": "low"
+      },
+      "desired_action_match": true,
+      "deterministic_label": "3 per week",
+      "fresh_evidence_label": "4 per 2 month",
+      "pipeline_family": "consensus_fresh_agreement_selector",
+      "reference": {
+        "gold_label": "3 per month",
+        "gold_monthly_frequency": 3.0416666666666665,
+        "row_ok": true
+      },
+      "score_layers": {
+        "consensus": {
+          "comparison": {
+            "purist_correct": true
+          },
+          "final_label": "4 per 2 month",
+          "source": "consensus"
+        },
+        "deterministic": {
+          "comparison": {
+            "purist_correct": false
+          },
+          "final_label": "3 per week",
+          "source": "deterministic"
+        },
+        "fresh_evidence": {
+          "comparison": {
+            "purist_correct": true
+          },
+          "final_label": "4 per 2 month",
+          "source": "fresh_evidence"
+        },
+        "selected": {
+          "comparison": {
+            "purist_correct": true
+          },
+          "final_label": "4 per 2 month",
+          "source": "fresh_evidence"
+        }
+      },
+      "selected_label": "4 per 2 month",
+      "selector_action": "accept_parseable_denominator_window_refinement",
+      "selector_gate": "parseable_denominator_window_refinement_v0_8:profile_supported_parseable_refinement",
+      "selector_version": "gan2026_consensus_fresh_agreement_selector_v0_8",
+      "source_row_index": 930003,
+      "synthetic_case": {
+        "case_id": "explicit_count_over_window_cluster_count_positive",
+        "consensus_label": "4 per 2 month",
+        "desired_action": "accept_parseable_denominator_window_refinement",
+        "deterministic_label": "3 per week",
+        "family": "explicit_count_window_positive",
+        "fresh_boundary_profile": [
+          "explicit count of 5 events over approximately 6 weeks",
+          "no evidence for seizure-free, unknown, or no_reference",
+          "highest current/recent frequency is cluster count"
+        ],
+        "fresh_label": "4 per 2 month",
+        "gold_band": "band_monthly",
+        "gold_label": "3 per month",
+        "gold_monthly_frequency": 3.0416666666666665,
+        "note_text": "There were five cluster events over approximately six weeks; no seizure-free or unknown boundary is described.",
+        "rationale": "The profile identifies an explicit count over a usable window.",
+        "risk_type": "intended_positive"
+      },
+      "transition_vs_deterministic": {
+        "label_changed": true,
+        "purist": "wrong_to_correct"
+      }
+    },
+    {
+      "consensus_label": "2 to 3 per 15 month",
+      "decision_features": {
+        "consensus_reason": "synthetic_predeclared_case",
+        "fresh_action": "synthetic_component_output",
+        "fresh_boundary_profile": [
+          "current/recent frequency",
+          "highest active semiology"
+        ],
+        "fresh_uncertainty": "low"
+      },
+      "desired_action_match": true,
+      "deterministic_label": "3 to 4 per 15 month",
+      "fresh_evidence_label": "2 to 3 per 15 month",
+      "pipeline_family": "consensus_fresh_agreement_selector",
+      "reference": {
+        "gold_label": "3 to 4 per 15 month",
+        "gold_monthly_frequency": 0.23657407407407405,
+        "row_ok": true
+      },
+      "score_layers": {
+        "consensus": {
+          "comparison": {
+            "purist_correct": false
+          },
+          "final_label": "2 to 3 per 15 month",
+          "source": "consensus"
+        },
+        "deterministic": {
+          "comparison": {
+            "purist_correct": true
+          },
+          "final_label": "3 to 4 per 15 month",
+          "source": "deterministic"
+        },
+        "fresh_evidence": {
+          "comparison": {
+            "purist_correct": false
+          },
+          "final_label": "2 to 3 per 15 month",
+          "source": "fresh_evidence"
+        },
+        "selected": {
+          "comparison": {
+            "purist_correct": true
+          },
+          "final_label": "3 to 4 per 15 month",
+          "source": "deterministic"
+        }
+      },
+      "selected_label": "3 to 4 per 15 month",
+      "selector_action": "keep_deterministic_baseline",
+      "selector_gate": "parseable_denominator_window_refinement_v0_8:unsafe_parseable_refinement_profile",
+      "selector_version": "gan2026_consensus_fresh_agreement_selector_v0_8",
+      "source_row_index": 930004,
+      "synthetic_case": {
+        "case_id": "highest_active_semiology_negative",
+        "consensus_label": "2 to 3 per 15 month",
+        "desired_action": "keep_deterministic_baseline",
+        "deterministic_label": "3 to 4 per 15 month",
+        "family": "highest_semiology_negative",
+        "fresh_boundary_profile": [
+          "current/recent frequency",
+          "highest active semiology"
+        ],
+        "fresh_label": "2 to 3 per 15 month",
+        "gold_band": "band_submonthly",
+        "gold_label": "3 to 4 per 15 month",
+        "gold_monthly_frequency": 0.23657407407407405,
+        "note_text": "Several semiologies are discussed; the lower burden semiology has a cleaner denominator but is not the highest active burden.",
+        "rationale": "Highest-semiology profiles were unsafe in the v0.7 residual audit.",
+        "risk_type": "intended_negative"
+      },
+      "transition_vs_deterministic": {
+        "label_changed": false,
+        "purist": "unchanged_correct"
+      }
+    },
+    {
+      "consensus_label": "8 per 2 month",
+      "decision_features": {
+        "consensus_reason": "synthetic_predeclared_case",
+        "fresh_action": "synthetic_component_output",
+        "fresh_boundary_profile": [
+          "explicit recent seizure counts",
+          "no seizure-free interval",
+          "current/recent frequency evidence"
+        ],
+        "fresh_uncertainty": "low"
+      },
+      "desired_action_match": true,
+      "deterministic_label": "9 per 3 month",
+      "fresh_evidence_label": "8 per 2 month",
+      "pipeline_family": "consensus_fresh_agreement_selector",
+      "reference": {
+        "gold_label": "9 per 3 month",
+        "gold_monthly_frequency": 3.0416666666666665,
+        "row_ok": true
+      },
+      "score_layers": {
+        "consensus": {
+          "comparison": {
+            "purist_correct": false
+          },
+          "final_label": "8 per 2 month",
+          "source": "consensus"
+        },
+        "deterministic": {
+          "comparison": {
+            "purist_correct": true
+          },
+          "final_label": "9 per 3 month",
+          "source": "deterministic"
+        },
+        "fresh_evidence": {
+          "comparison": {
+            "purist_correct": false
+          },
+          "final_label": "8 per 2 month",
+          "source": "fresh_evidence"
+        },
+        "selected": {
+          "comparison": {
+            "purist_correct": true
+          },
+          "final_label": "9 per 3 month",
+          "source": "deterministic"
+        }
+      },
+      "selected_label": "9 per 3 month",
+      "selector_action": "keep_deterministic_baseline",
+      "selector_gate": "parseable_denominator_window_refinement_v0_8:unsafe_parseable_refinement_profile",
+      "selector_version": "gan2026_consensus_fresh_agreement_selector_v0_8",
+      "source_row_index": 930005,
+      "synthetic_case": {
+        "case_id": "seizure_free_interval_negative",
+        "consensus_label": "8 per 2 month",
+        "desired_action": "keep_deterministic_baseline",
+        "deterministic_label": "9 per 3 month",
+        "family": "seizure_free_interval_negative",
+        "fresh_boundary_profile": [
+          "explicit recent seizure counts",
+          "no seizure-free interval",
+          "current/recent frequency evidence"
+        ],
+        "fresh_label": "8 per 2 month",
+        "gold_band": "band_monthly",
+        "gold_label": "9 per 3 month",
+        "gold_monthly_frequency": 3.0416666666666665,
+        "note_text": "The note mixes recent counts with a seizure-free interval; the baseline label should not be overridden by the cleaner count.",
+        "rationale": "Any seizure-free interval marker blocks this refinement family.",
+        "risk_type": "intended_negative"
+      },
+      "transition_vs_deterministic": {
+        "label_changed": false,
+        "purist": "unchanged_correct"
+      }
+    },
+    {
+      "consensus_label": "1 per 4 month",
+      "decision_features": {
+        "consensus_reason": "synthetic_predeclared_case",
+        "fresh_action": "synthetic_component_output",
+        "fresh_boundary_profile": [
+          "last event",
+          "current/recent frequency"
+        ],
+        "fresh_uncertainty": "low"
+      },
+      "desired_action_match": true,
+      "deterministic_label": "unknown",
+      "fresh_evidence_label": "1 per 4 month",
+      "pipeline_family": "consensus_fresh_agreement_selector",
+      "reference": {
+        "gold_label": "unknown",
+        "gold_monthly_frequency": 1000.0,
+        "row_ok": true
+      },
+      "score_layers": {
+        "consensus": {
+          "comparison": {
+            "purist_correct": false
+          },
+          "final_label": "1 per 4 month",
+          "source": "consensus"
+        },
+        "deterministic": {
+          "comparison": {
+            "purist_correct": true
+          },
+          "final_label": "unknown",
+          "source": "deterministic"
+        },
+        "fresh_evidence": {
+          "comparison": {
+            "purist_correct": false
+          },
+          "final_label": "1 per 4 month",
+          "source": "fresh_evidence"
+        },
+        "selected": {
+          "comparison": {
+            "purist_correct": true
+          },
+          "final_label": "unknown",
+          "source": "deterministic"
+        }
+      },
+      "selected_label": "unknown",
+      "selector_action": "keep_deterministic_baseline",
+      "selector_gate": "parseable_denominator_window_refinement_v0_8:unsafe_or_unclear_window_profile",
+      "selector_version": "gan2026_consensus_fresh_agreement_selector_v0_8",
+      "source_row_index": 930006,
+      "synthetic_case": {
+        "case_id": "last_event_only_negative",
+        "consensus_label": "1 per 4 month",
+        "desired_action": "keep_deterministic_baseline",
+        "deterministic_label": "unknown",
+        "family": "last_event_negative",
+        "fresh_boundary_profile": [
+          "last event",
+          "current/recent frequency"
+        ],
+        "fresh_label": "1 per 4 month",
+        "gold_band": "band_unknown",
+        "gold_label": "unknown",
+        "gold_monthly_frequency": 1000.0,
+        "note_text": "The last seizure date is stated, but no count over the denominator is given.",
+        "rationale": "Last-event-only evidence stays unknown.",
+        "risk_type": "intended_negative"
+      },
+      "transition_vs_deterministic": {
+        "label_changed": false,
+        "purist": "unchanged_correct"
+      }
+    },
+    {
+      "consensus_label": "2 per 6 week",
+      "decision_features": {
+        "consensus_reason": "synthetic_predeclared_case",
+        "fresh_action": "synthetic_component_output",
+        "fresh_boundary_profile": [
+          "current/recent frequency",
+          "denominator/window"
+        ],
+        "fresh_uncertainty": "low"
+      },
+      "desired_action_match": true,
+      "deterministic_label": "seizure free for multiple year",
+      "fresh_evidence_label": "2 per 6 week",
+      "pipeline_family": "consensus_fresh_agreement_selector",
+      "reference": {
+        "gold_label": "unknown",
+        "gold_monthly_frequency": 1000.0,
+        "row_ok": true
+      },
+      "score_layers": {
+        "consensus": {
+          "comparison": {
+            "purist_correct": false
+          },
+          "final_label": "2 per 6 week",
+          "source": "consensus"
+        },
+        "deterministic": {
+          "comparison": {
+            "purist_correct": false
+          },
+          "final_label": "seizure free for multiple year",
+          "source": "deterministic"
+        },
+        "fresh_evidence": {
+          "comparison": {
+            "purist_correct": false
+          },
+          "final_label": "2 per 6 week",
+          "source": "fresh_evidence"
+        },
+        "selected": {
+          "comparison": {
+            "purist_correct": false
+          },
+          "final_label": "seizure free for multiple year",
+          "source": "deterministic"
+        }
+      },
+      "selected_label": "seizure free for multiple year",
+      "selector_action": "keep_deterministic_baseline",
+      "selector_gate": "parseable_denominator_window_refinement_v0_8:boundary_origin_not_relaxed",
+      "selector_version": "gan2026_consensus_fresh_agreement_selector_v0_8",
+      "source_row_index": 930007,
+      "synthetic_case": {
+        "case_id": "boundary_origin_not_relaxed_negative",
+        "consensus_label": "2 per 6 week",
+        "desired_action": "keep_deterministic_baseline",
+        "deterministic_label": "seizure free for multiple year",
+        "family": "boundary_origin_negative",
+        "fresh_boundary_profile": [
+          "current/recent frequency",
+          "denominator/window"
+        ],
+        "fresh_label": "2 per 6 week",
+        "gold_band": "band_unknown",
+        "gold_label": "unknown",
+        "gold_monthly_frequency": 1000.0,
+        "note_text": "A seizure-free baseline and a parseable frequency candidate are present, but v0.8 is not a boundary-origin relaxation.",
+        "rationale": "Boundary origins remain handled only by the v0.6/v0.7 gates.",
+        "risk_type": "intended_negative"
+      },
+      "transition_vs_deterministic": {
+        "label_changed": false,
+        "purist": "unchanged_wrong"
+      }
+    },
+    {
+      "consensus_label": "11 per 3 month",
+      "decision_features": {
+        "consensus_reason": "synthetic_predeclared_case",
+        "fresh_action": "synthetic_component_output",
+        "fresh_boundary_profile": [
+          "current/recent frequency",
+          "denominator/window"
+        ],
+        "fresh_uncertainty": "low"
+      },
+      "desired_action_match": true,
+      "deterministic_label": "1 per 5 to 7 day",
+      "fresh_evidence_label": "10 per 3 month",
+      "pipeline_family": "consensus_fresh_agreement_selector",
+      "reference": {
+        "gold_label": "11 per 3 month",
+        "gold_monthly_frequency": 3.717592592592593,
+        "row_ok": true
+      },
+      "score_layers": {
+        "consensus": {
+          "comparison": {
+            "purist_correct": true
+          },
+          "final_label": "11 per 3 month",
+          "source": "consensus"
+        },
+        "deterministic": {
+          "comparison": {
+            "purist_correct": false
+          },
+          "final_label": "1 per 5 to 7 day",
+          "source": "deterministic"
+        },
+        "fresh_evidence": {
+          "comparison": {
+            "purist_correct": true
+          },
+          "final_label": "10 per 3 month",
+          "source": "fresh_evidence"
+        },
+        "selected": {
+          "comparison": {
+            "purist_correct": false
+          },
+          "final_label": "1 per 5 to 7 day",
+          "source": "deterministic"
+        }
+      },
+      "selected_label": "1 per 5 to 7 day",
+      "selector_action": "keep_deterministic_baseline",
+      "selector_gate": "fresh_evidence_disagrees_with_consensus",
+      "selector_version": "gan2026_consensus_fresh_agreement_selector_v0_8",
+      "source_row_index": 930008,
+      "synthetic_case": {
+        "case_id": "fresh_consensus_disagreement_negative",
+        "consensus_label": "11 per 3 month",
+        "desired_action": "keep_deterministic_baseline",
+        "deterministic_label": "1 per 5 to 7 day",
+        "family": "agreement_control",
+        "fresh_boundary_profile": [
+          "current/recent frequency",
+          "denominator/window"
+        ],
+        "fresh_label": "10 per 3 month",
+        "gold_band": "band_monthly",
+        "gold_label": "11 per 3 month",
+        "gold_monthly_frequency": 3.717592592592593,
+        "note_text": "Consensus and fresh evidence disagree about the denominator.",
+        "rationale": "The parseable refinement still requires exact agreement.",
+        "risk_type": "intended_negative"
+      },
+      "transition_vs_deterministic": {
+        "label_changed": false,
+        "purist": "unchanged_wrong"
+      }
+    },
+    {
+      "consensus_label": "several per month",
+      "decision_features": {
+        "consensus_reason": "synthetic_predeclared_case",
+        "fresh_action": "synthetic_component_output",
+        "fresh_boundary_profile": [
+          "current/recent frequency",
+          "denominator/window"
+        ],
+        "fresh_uncertainty": "low"
+      },
+      "desired_action_match": true,
+      "deterministic_label": "1 per day",
+      "fresh_evidence_label": "several per month",
+      "pipeline_family": "consensus_fresh_agreement_selector",
+      "reference": {
+        "gold_label": "3 per month",
+        "gold_monthly_frequency": 3.0416666666666665,
+        "row_ok": true
+      },
+      "score_layers": {
+        "consensus": {
+          "comparison": {
+            "purist_correct": false
+          },
+          "final_label": "several per month",
+          "source": "consensus"
+        },
+        "deterministic": {
+          "comparison": {
+            "purist_correct": false
+          },
+          "final_label": "1 per day",
+          "source": "deterministic"
+        },
+        "fresh_evidence": {
+          "comparison": {
+            "purist_correct": false
+          },
+          "final_label": "several per month",
+          "source": "fresh_evidence"
+        },
+        "selected": {
+          "comparison": {
+            "purist_correct": false
+          },
+          "final_label": "1 per day",
+          "source": "deterministic"
+        }
+      },
+      "selected_label": "1 per day",
+      "selector_action": "keep_deterministic_baseline",
+      "selector_gate": "parseable_denominator_window_refinement_v0_8:replacement_not_parseable_specific_rate",
+      "selector_version": "gan2026_consensus_fresh_agreement_selector_v0_8",
+      "source_row_index": 930009,
+      "synthetic_case": {
+        "case_id": "unparseable_replacement_negative",
+        "consensus_label": "several per month",
+        "desired_action": "keep_deterministic_baseline",
+        "deterministic_label": "1 per day",
+        "family": "parseability_control",
+        "fresh_boundary_profile": [
+          "current/recent frequency",
+          "denominator/window"
+        ],
+        "fresh_label": "several per month",
+        "gold_band": "band_monthly",
+        "gold_label": "3 per month",
+        "gold_monthly_frequency": 3.0416666666666665,
+        "note_text": "The profile is strong, but the replacement is not parseable.",
+        "rationale": "v0.8 does not promote parser-incompatible labels.",
+        "risk_type": "intended_negative"
+      },
+      "transition_vs_deterministic": {
+        "label_changed": false,
+        "purist": "unchanged_wrong"
+      }
+    },
+    {
+      "consensus_label": "4 per 2 month",
+      "decision_features": {
+        "consensus_reason": "synthetic_predeclared_case",
+        "fresh_action": "synthetic_component_output",
+        "fresh_boundary_profile": [
+          "current/recent frequency"
+        ],
+        "fresh_uncertainty": "low"
+      },
+      "desired_action_match": true,
+      "deterministic_label": "4 per month",
+      "fresh_evidence_label": "4 per 2 month",
+      "pipeline_family": "consensus_fresh_agreement_selector",
+      "reference": {
+        "gold_label": "4 per month",
+        "gold_monthly_frequency": 4.055555555555555,
+        "row_ok": true
+      },
+      "score_layers": {
+        "consensus": {
+          "comparison": {
+            "purist_correct": false
+          },
+          "final_label": "4 per 2 month",
+          "source": "consensus"
+        },
+        "deterministic": {
+          "comparison": {
+            "purist_correct": true
+          },
+          "final_label": "4 per month",
+          "source": "deterministic"
+        },
+        "fresh_evidence": {
+          "comparison": {
+            "purist_correct": false
+          },
+          "final_label": "4 per 2 month",
+          "source": "fresh_evidence"
+        },
+        "selected": {
+          "comparison": {
+            "purist_correct": true
+          },
+          "final_label": "4 per month",
+          "source": "deterministic"
+        }
+      },
+      "selected_label": "4 per month",
+      "selector_action": "keep_deterministic_baseline",
+      "selector_gate": "parseable_denominator_window_refinement_v0_8:missing_parseable_refinement_profile",
+      "selector_version": "gan2026_consensus_fresh_agreement_selector_v0_8",
+      "source_row_index": 930010,
+      "synthetic_case": {
+        "case_id": "current_recent_only_negative",
+        "consensus_label": "4 per 2 month",
+        "desired_action": "keep_deterministic_baseline",
+        "deterministic_label": "4 per month",
+        "family": "missing_profile_negative",
+        "fresh_boundary_profile": [
+          "current/recent frequency"
+        ],
+        "fresh_label": "4 per 2 month",
+        "gold_band": "band_weekly",
+        "gold_label": "4 per month",
+        "gold_monthly_frequency": 4.055555555555555,
+        "note_text": "The profile says current/recent but gives no denominator/window cue.",
+        "rationale": "Current/recent alone is too broad for the refinement gate.",
+        "risk_type": "intended_negative"
+      },
+      "transition_vs_deterministic": {
+        "label_changed": false,
+        "purist": "unchanged_correct"
+      }
+    },
+    {
+      "consensus_label": "1 per 2 month",
+      "decision_features": {
+        "consensus_reason": "synthetic_predeclared_case",
+        "fresh_action": "synthetic_component_output",
+        "fresh_boundary_profile": [
+          "explicit numeric frequency for highest-burden seizure type",
+          "current/recent frequency window",
+          "multiple active semiologies, highest burden selected"
+        ],
+        "fresh_uncertainty": "low"
+      },
+      "desired_action_match": true,
+      "deterministic_label": "2 per week",
+      "fresh_evidence_label": "1 per 2 month",
+      "pipeline_family": "consensus_fresh_agreement_selector",
+      "reference": {
+        "gold_label": "2 per week",
+        "gold_monthly_frequency": 8.690476190476192,
+        "row_ok": true
+      },
+      "score_layers": {
+        "consensus": {
+          "comparison": {
+            "purist_correct": false
+          },
+          "final_label": "1 per 2 month",
+          "source": "consensus"
+        },
+        "deterministic": {
+          "comparison": {
+            "purist_correct": true
+          },
+          "final_label": "2 per week",
+          "source": "deterministic"
+        },
+        "fresh_evidence": {
+          "comparison": {
+            "purist_correct": false
+          },
+          "final_label": "1 per 2 month",
+          "source": "fresh_evidence"
+        },
+        "selected": {
+          "comparison": {
+            "purist_correct": true
+          },
+          "final_label": "2 per week",
+          "source": "deterministic"
+        }
+      },
+      "selected_label": "2 per week",
+      "selector_action": "keep_deterministic_baseline",
+      "selector_gate": "parseable_denominator_window_refinement_v0_8:unsafe_parseable_refinement_profile",
+      "selector_version": "gan2026_consensus_fresh_agreement_selector_v0_8",
+      "source_row_index": 930011,
+      "synthetic_case": {
+        "case_id": "multiple_active_semiologies_negative",
+        "consensus_label": "1 per 2 month",
+        "desired_action": "keep_deterministic_baseline",
+        "deterministic_label": "2 per week",
+        "family": "multi_semiology_negative",
+        "fresh_boundary_profile": [
+          "explicit numeric frequency for highest-burden seizure type",
+          "current/recent frequency window",
+          "multiple active semiologies, highest burden selected"
+        ],
+        "fresh_label": "1 per 2 month",
+        "gold_band": "band_weekly",
+        "gold_label": "2 per week",
+        "gold_monthly_frequency": 8.690476190476192,
+        "note_text": "Multiple active semiologies are present; the lower-burden one has the cleaner denominator.",
+        "rationale": "Multi-semiology highest-burden cases are blocked.",
+        "risk_type": "intended_negative"
+      },
+      "transition_vs_deterministic": {
+        "label_changed": false,
+        "purist": "unchanged_correct"
+      }
+    }
+  ],
+  "run_id": "gan2026_consensus_fresh_agreement_selector_v0_8_parseable_refinement_synthetic_stress_2026-06-15",
+  "selector_summary": {
+    "actions": {
+      "accept_parseable_denominator_window_refinement": 3,
+      "keep_deterministic_baseline": 8
+    },
+    "changed_label_precision": 1.0,
+    "changed_labels": 3,
+    "claim_boundary": "Validation-only no-call selector over saved deterministic, consensus, and V12 fresh-evidence artifacts. Gold labels are used only for post-hoc scoring and band summaries; this is not a holdout result.",
+    "consensus_purist_correct": 4,
+    "correct_to_correct": 0,
+    "correct_to_wrong": 0,
+    "deterministic_purist_correct": 5,
+    "fresh_evidence_purist_correct": 4,
+    "net_purist_gain_vs_deterministic": 3,
+    "rows": 11,
+    "selected_purist_correct": 8,
+    "selector": "gan2026_consensus_fresh_agreement_selector_v0_8",
+    "summary_by_band": {
+      "band_daily": {
+        "changed_label_precision": null,
+        "changed_labels": 0,
+        "correct_to_wrong": 0,
+        "deterministic_purist_correct": 0,
+        "net_purist_gain": 0,
+        "rows": 0,
+        "selected_purist_correct": 0,
+        "wrong_to_correct": 0
+      },
+      "band_monthly": {
+        "changed_label_precision": 1.0,
+        "changed_labels": 2,
+        "correct_to_wrong": 0,
+        "deterministic_purist_correct": 1,
+        "net_purist_gain": 2,
+        "rows": 5,
+        "selected_purist_correct": 3,
+        "wrong_to_correct": 2
+      },
+      "band_submonthly": {
+        "changed_label_precision": 1.0,
+        "changed_labels": 1,
+        "correct_to_wrong": 0,
+        "deterministic_purist_correct": 1,
+        "net_purist_gain": 1,
+        "rows": 2,
+        "selected_purist_correct": 2,
+        "wrong_to_correct": 1
+      },
+      "band_unknown": {
+        "changed_label_precision": null,
+        "changed_labels": 0,
+        "correct_to_wrong": 0,
+        "deterministic_purist_correct": 1,
+        "net_purist_gain": 0,
+        "rows": 2,
+        "selected_purist_correct": 1,
+        "wrong_to_correct": 0
+      },
+      "band_weekly": {
+        "changed_label_precision": null,
+        "changed_labels": 0,
+        "correct_to_wrong": 0,
+        "deterministic_purist_correct": 2,
+        "net_purist_gain": 0,
+        "rows": 2,
+        "selected_purist_correct": 2,
+        "wrong_to_correct": 0
+      },
+      "band_zero": {
+        "changed_label_precision": null,
+        "changed_labels": 0,
+        "correct_to_wrong": 0,
+        "deterministic_purist_correct": 0,
+        "net_purist_gain": 0,
+        "rows": 0,
+        "selected_purist_correct": 0,
+        "wrong_to_correct": 0
+      }
+    },
+    "wrong_to_correct": 3,
+    "wrong_to_wrong": 0
+  },
+  "stress_summary": {
+    "actions": {
+      "accept_parseable_denominator_window_refinement": 3,
+      "keep_deterministic_baseline": 8
+    },
+    "by_risk_type": {
+      "intended_negative": {
+        "consensus_purist_correct": 1,
+        "desired_action_matches": 8,
+        "deterministic_purist_correct": 5,
+        "fresh_purist_correct": 1,
+        "rows": 8,
+        "selected_purist_correct": 5
+      },
+      "intended_positive": {
+        "consensus_purist_correct": 3,
+        "desired_action_matches": 3,
+        "deterministic_purist_correct": 0,
+        "fresh_purist_correct": 3,
+        "rows": 3,
+        "selected_purist_correct": 3
+      }
+    },
+    "consensus_purist_correct": 4,
+    "conservative_false_negative_case_ids": [
+      "fresh_consensus_disagreement_negative"
+    ],
+    "current_rule_false_positive_case_ids": [],
+    "desired_action_matches": 11,
+    "desired_action_miss_case_ids": [],
+    "deterministic_purist_correct": 5,
+    "fresh_purist_correct": 4,
+    "gates": {
+      "fresh_evidence_disagrees_with_consensus": 1,
+      "parseable_denominator_window_refinement_v0_8:boundary_origin_not_relaxed": 1,
+      "parseable_denominator_window_refinement_v0_8:missing_parseable_refinement_profile": 1,
+      "parseable_denominator_window_refinement_v0_8:profile_supported_parseable_refinement": 3,
+      "parseable_denominator_window_refinement_v0_8:replacement_not_parseable_specific_rate": 1,
+      "parseable_denominator_window_refinement_v0_8:unsafe_or_unclear_window_profile": 1,
+      "parseable_denominator_window_refinement_v0_8:unsafe_parseable_refinement_profile": 3
+    },
+    "rows": 11,
+    "safety_success_case_ids": [
+      "highest_active_semiology_negative",
+      "seizure_free_interval_negative",
+      "last_event_only_negative",
+      "current_recent_only_negative",
+      "multiple_active_semiologies_negative"
+    ],
+    "selected_purist_correct": 8,
+    "selector_version": "gan2026_consensus_fresh_agreement_selector_v0_8"
+  }
+}

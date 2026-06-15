@@ -1,0 +1,64 @@
+{
+  "claim_boundary": "Development validation analysis only. Gold labels are used post-hoc to test a counterfactual selector relaxation; no holdout rows are read.",
+  "date": "2026-06-15",
+  "purpose": "Validation-only probe of a tempting v0.5 relaxation: accept V12-agreed consensus switches out of deterministic unknown origins.",
+  "rows": [
+    {
+      "consensus_label": "multiple per month",
+      "current_selector_gate": "cluster_cadence_precision_v0_4:deterministic_boundary_origin:unknown",
+      "deterministic_label": "unknown",
+      "estimated_relaxed_transition": "would_correct_to_correct",
+      "fresh_evidence_label": "multiple per month",
+      "gold_band": "band_unknown",
+      "gold_label": "multiple per month",
+      "source_row_index": 338
+    },
+    {
+      "consensus_label": "no seizure frequency reference",
+      "current_selector_gate": "cluster_cadence_precision_v0_4:deterministic_boundary_origin:unknown",
+      "deterministic_label": "unknown",
+      "estimated_relaxed_transition": "would_correct_to_correct",
+      "fresh_evidence_label": "no seizure frequency reference",
+      "gold_band": "band_unknown",
+      "gold_label": "unknown",
+      "source_row_index": 3482
+    },
+    {
+      "consensus_label": "seizure free for 7 month",
+      "current_selector_gate": "cluster_cadence_precision_v0_4:deterministic_boundary_origin:unknown",
+      "deterministic_label": "unknown",
+      "estimated_relaxed_transition": "would_correct_to_wrong",
+      "fresh_evidence_label": "seizure free for 7 month",
+      "gold_band": "band_unknown",
+      "gold_label": "unknown",
+      "source_row_index": 3534
+    },
+    {
+      "consensus_label": "1 per 4 month",
+      "current_selector_gate": "cluster_cadence_precision_v0_4:deterministic_boundary_origin:unknown",
+      "deterministic_label": "unknown",
+      "estimated_relaxed_transition": "would_correct_to_wrong",
+      "fresh_evidence_label": "1 per 4 month",
+      "gold_band": "band_unknown",
+      "gold_label": "unknown",
+      "source_row_index": 11282
+    }
+  ],
+  "run_id": "gan2026_consensus_fresh_agreement_selector_v0_4_unknown_origin_relaxation_probe_2026-06-15",
+  "source_artifact": "experiments\\gan2026_consensus_fresh_agreement_selector_v0_4_validation750_no_call_replay_2026-06-15.jsonl",
+  "summary": {
+    "by_band": {
+      "band_unknown": {
+        "would_correct_to_correct": 2,
+        "would_correct_to_wrong": 2
+      }
+    },
+    "net_if_accept_all_unknown_origin": -2,
+    "rows": 4,
+    "source_rows": 750,
+    "would_correct_to_correct": 2,
+    "would_correct_to_wrong": 2,
+    "would_wrong_to_correct": 0,
+    "would_wrong_to_wrong": 0
+  }
+}

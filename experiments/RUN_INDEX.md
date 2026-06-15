@@ -106,6 +106,333 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Revise
 
+### `gan2026_unknown_frequency_ambiguity_panel_2026-06-15`
+- Date/split: `2026-06-15`; `validation`; `6` rows.
+- Pipeline: `fresh_evidence_reasoner_ambiguity_panel`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Supervisor-seeded unknown-frequency ambiguity component contract; parser and safety-gate replay only.; model `none`.
+- Repair mode/config: `optional model-owned ambiguity_classification field before fresh-evidence final-label rendering`.
+- Primary metrics: panel_failed=0, panel_passed=6, panel_rows=6, prompt_version=gan2026_fresh_evidence_reasoner_v0_6, safety_gate_version=gan2026_fresh_evidence_safety_gate_v0_9.
+- Evidence validity: Synthetic validation-only policy panel derived from supervisor clarification. No model calls, no scorer changes, and no locked test row inspection.
+- Supersedes: `gan2026_fresh_evidence_reasoner_unknown_policy_v0_6_safety_v0_9_replay_2026-06-15`.
+- Claim language: Adds a hard-negative ambiguity-classification contract for unknown-frequency cases. This is prerequisite validation infrastructure, not a promoted test450 candidate.
+- Artifacts: `experiments/gan2026_unknown_frequency_ambiguity_panel_2026-06-15.json`, `experiments/gan2026_unknown_frequency_ambiguity_panel_2026-06-15.md`.
+
+### `gan2026_source_near_contrast_panel_2026-06-15`
+- Date/split: `2026-06-15`; `validation`; `6` rows.
+- Pipeline: `fresh_evidence_reasoner_source_near_contrast_panel`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Paired source-near hard-negative ambiguity contract; parser and safety-gate replay only, no model calls.; model `none`.
+- Repair mode/config: `optional model-owned ambiguity_classification field before fresh-evidence final-label rendering`.
+- Primary metrics: cases=6, failed=0, pairs_both_directions_pass=3, passed=6, prompt_version=gan2026_fresh_evidence_reasoner_v0_6, safety_gate_version=gan2026_fresh_evidence_safety_gate_v0_9.
+- Evidence validity: Synthetic validation-only contrast panel derived from the supervisor distinctions. No model calls, no scorer changes, no locked test row inspection. Static passing is necessary but not sufficient for the live run.
+- Claim language: Adds paired source-near hard negatives stressing the ambiguous-vs-determinate distinction. Prerequisite validation infrastructure for the live ambiguity run, not a promoted test450 candidate.
+- Artifacts: `experiments/gan2026_source_near_contrast_panel_2026-06-15.json`, `experiments/gan2026_source_near_contrast_panel_2026-06-15.md`.
+
+### `gan2026_residual_component_diversity_audit_2026-06-15`
+- Date/split: `2026-06-15`; `validation`; `17` rows.
+- Pipeline: `consensus_fresh_agreement_selector_component_diversity`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Deterministic re-analysis of saved v0.9 residual component labels; normalizes each component to its Purist bucket to measure correlated versus independent failure.; model `none`.
+- Repair mode/config: `none`.
+- Primary metrics: correlated_failure_fraction=0.6364, no_correct_correlated_one_bucket=7, no_correct_rows=11, no_correct_split_across_buckets=4.
+- Evidence validity: Validation-only re-analysis of saved component labels. No model calls, no scorer changes, no locked test rows read.
+- Cache/reuse source: C:\Users\cbrow\Code\clinical_extraction\experiments\gan2026_consensus_fresh_agreement_selector_v0_9_residual_component_generation_audit_2026-06-15.json.
+- Claim language: Quantifies whether the no-correct residual is correlated (single-bucket) or independent (split) failure. Diagnostic instrumentation for the component-generation bet, not a holdout-facing candidate.
+- Artifacts: `experiments/gan2026_residual_component_diversity_audit_2026-06-15.json`, `experiments/gan2026_residual_component_diversity_audit_2026-06-15.md`.
+
+### `gan2026_fresh_evidence_reasoner_unknown_policy_v0_6_safety_v0_9_replay_2026-06-15`
+- Date/split: `2026-06-15`; `validation`; `250` rows.
+- Pipeline: `fresh_evidence_reasoner`; mode `no-call-replay`; replay `saved_output_replay`.
+- Model role: V12 fresh-evidence reasoner replay testing safety-gate v0.9 over saved validation raw outputs; no new prediction-bearing model calls.; model `none; no-call replay over saved openai/gpt-4.1 v0.6 raw outputs`.
+- Repair mode/config: `safety gate v0.9: unknown-boundary safeguards, vague-multiple exactification and same-day cluster downgrade fallbacks, plus scorer-neutral no-reference-to-unknown semantic repair when seizure evidence exists but count/window is unclear`.
+- Primary metrics: trigger_full_correct_to_wrong=0, trigger_full_final_purist_correct=109, trigger_full_rows=123, trigger_full_semantic_no_reference_to_unknown_repairs=4, trigger_full_v0_purist_correct=105, trigger_full_wrong_to_correct=4, v0_4_validation250_comparator_correct=242, validation250_correct_to_wrong=0, validation250_final_purist_correct=240, validation250_semantic_no_reference_to_unknown_repairs=5, validation250_v0_purist_correct=236, validation250_wrong_to_correct=4.
+- Evidence validity: No-call replay preserves 239/250 exact evidence substrings on validation250 and 115/123 on the trigger panel; no call failures or parse/schema/label failures; semantic no-reference-to-unknown repairs are scorer-neutral.
+- Cache/reuse source: Raw outputs from gan2026_fresh_evidence_reasoner_validation250_live_gpt41_v0_6_safety_v0_7_2026-06-15 and trigger_full v0.6/safety-v0.7 artifacts.
+- Claim language: Validation diagnostic only. Safety v0.9 preserves the v0.8 Purist counts, repairs no-reference fallbacks to unknown on 5 validation250 rows and 4 trigger-panel rows, and still trails the v0.4 validation250 comparator (240/250 vs 242/250), so it is not a promoted holdout candidate and does not authorize a test450 run.
+- Artifacts: `docs/research/gan2026_unknown_frequency_policy_audit_2026-06-15.md`, `experiments/gan2026_fresh_evidence_reasoner_unknown_policy_trigger_full_validation_nocall_replay_v0_6_safety_v0_9_2026-06-15.jsonl`, `experiments/gan2026_fresh_evidence_reasoner_unknown_policy_trigger_full_validation_nocall_replay_v0_6_safety_v0_9_2026-06-15.md`, `experiments/gan2026_fresh_evidence_reasoner_validation250_nocall_replay_v0_6_safety_v0_9_2026-06-15.jsonl`, `experiments/gan2026_fresh_evidence_reasoner_validation250_nocall_replay_v0_6_safety_v0_9_2026-06-15.md`.
+
+### `gan2026_consensus_fresh_agreement_selector_validation750_replay_2026-06-15`
+- Date/split: `2026-06-15`; `validation`; `750` rows.
+- Pipeline: `consensus_fresh_agreement_selector`; mode `no-call replay`; replay `saved_output_replay`.
+- Model role: Hybrid saved-output selector: deterministic baseline is the floor; exact consensus switch is accepted only when V12 independently emits the same final label.; model `panel: deterministic_rules_tool + exact structured-event consensus + V12 fresh-evidence reasoner`.
+- Primary metrics: changed_label_precision=0.2385, changed_labels=109, correct_to_wrong=11, deterministic_purist_correct=697, fresh_evidence_v12_purist_correct=682, net_purist_gain_vs_deterministic=15, selected_purist_correct=712, validation750_rows=750, wrong_to_correct=26.
+- Evidence validity: No new model evidence. Reuses saved deterministic, consensus, and V12 validation artifacts; scoring and boundary-band summaries are post-hoc validation instrumentation only.
+- Cache/reuse source: Saved validation artifacts: deterministic gpt41mini 2026-06-07, exact consensus 2026-06-13, and V12 fresh_evidence_reasoner v0.4 2026-06-13.
+- Claim language: Validation-only no-call selector replay. It improves aggregate validation750 to 712/750 by accepting exact consensus switches only when V12 fresh-evidence independently agrees, but changed-label precision remains low outside band_daily; revise, do not freeze or request holdout.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_validation750_no_call_replay_2026-06-15.jsonl`, `experiments/gan2026_consensus_fresh_agreement_selector_validation750_no_call_replay_2026-06-15.md`.
+
+### `gan2026_consensus_fresh_agreement_selector_v0_9_validation750_no_call_replay_2026-06-15`
+- Date/split: `2026-06-15`; `validation`; `750` rows.
+- Pipeline: `consensus_fresh_agreement_selector`; mode `no-call replay`; replay `saved_output_replay`.
+- Model role: No-call replay of selector v0.9 over saved v0.8 validation selector rows reconstructed into component rows.; model `none`.
+- Repair mode/config: `selector_v0_9_semantic_equiv_unknown_uncertainty`.
+- Primary metrics: changed_label_precision=0.7347, changed_labels=49, consensus_purist_correct=708, correct_to_wrong=0, deterministic_purist_correct=697, fresh_evidence_purist_correct=682, selected_purist_correct=733, wrong_to_correct=36.
+- Evidence validity: Saved-output validation replay; gold labels are used only for post-hoc scoring. No holdout rows are read.
+- Cache/reuse source: C:\Users\cbrow\Code\clinical_extraction\experiments\gan2026_consensus_fresh_agreement_selector_v0_8_validation750_no_call_replay_2026-06-15.jsonl.
+- Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_8_validation750_no_call_replay_2026-06-15`.
+- Claim language: v0.9 improves saved validation through two narrow residual selector gates. Still validation-only and not holdout authorization.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_9_validation750_no_call_replay_2026-06-15.jsonl`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_9_validation750_no_call_replay_2026-06-15.md`.
+
+### `gan2026_consensus_fresh_agreement_selector_v0_9_semantic_equiv_unknown_synthetic_stress_2026-06-15`
+- Date/split: `2026-06-15`; `synthetic_semantic_equiv_unknown_probe`; `7` rows.
+- Pipeline: `consensus_fresh_agreement_selector_synthetic_v09_stress`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Analysis-only synthetic probe over hand-specified v0.9 stress cases; no model calls and no Gan rows are read.; model `none`.
+- Repair mode/config: `selector_v0_9_semantic_equiv_unknown_uncertainty`.
+- Primary metrics: changed_label_precision=1.0, conservative_false_negative_count=1, correct_to_wrong=0, current_rule_false_positive_count=0, desired_action_matches=7, selected_purist_correct=6, wrong_to_correct=2.
+- Evidence validity: Synthetic mechanism evidence only; no validation or holdout records are read.
+- Cache/reuse source: Synthetic hand-specified component outputs only.
+- Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_8_parseable_refinement_synthetic_stress_2026-06-15`.
+- Claim language: v0.9 passes source-near hard negatives for two narrow residual selector gates, but does not authorize a frozen holdout audit.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_9_semantic_equiv_unknown_synthetic_stress_2026-06-15.json`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_9_semantic_equiv_unknown_synthetic_stress_2026-06-15.md`.
+
+### `gan2026_consensus_fresh_agreement_selector_v0_9_residual_component_generation_audit_2026-06-15`
+- Date/split: `2026-06-15`; `validation`; `750` rows.
+- Pipeline: `consensus_fresh_agreement_selector_residual_audit`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Validation-only residual analysis over saved v0.9 selector rows; no model calls and no holdout rows are read.; model `none`.
+- Repair mode/config: `selector_v0_9_residual_component_generation_audit`.
+- Primary metrics: correct_component_available=6, no_correct_component=11, residual_component_generation_required=11, residual_selector_only_headroom=6, selected_correct=733, selected_wrong=17, selector_only_oracle_correct=739.
+- Evidence validity: Validation-only saved-output audit. Gold labels are used only for post-hoc component availability and residual taxonomy; no holdout rows are read.
+- Cache/reuse source: C:\Users\cbrow\Code\clinical_extraction\experiments\gan2026_consensus_fresh_agreement_selector_v0_9_validation750_no_call_replay_2026-06-15.jsonl.
+- Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_9_validation750_no_call_replay_2026-06-15`.
+- Claim language: Identifies component-generation bottlenecks in the v0.9 validation residual, especially unknown-frequency over-inference. Not a holdout-facing candidate.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_9_residual_component_generation_audit_2026-06-15.json`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_9_residual_component_generation_audit_2026-06-15.md`.
+
+### `gan2026_consensus_fresh_agreement_selector_v0_8_validation750_no_call_replay_2026-06-15`
+- Date/split: `2026-06-15`; `validation`; `750` rows.
+- Pipeline: `consensus_fresh_agreement_selector`; mode `no-call replay`; replay `saved_output_replay`.
+- Model role: No-call replay of selector v0.8 over saved v0.7 validation selector rows reconstructed into component rows.; model `none`.
+- Repair mode/config: `selector_v0_8_parseable_denominator_window_refinement`.
+- Primary metrics: changed_label_precision=0.7234, changed_labels=47, consensus_purist_correct=708, correct_to_wrong=0, deterministic_purist_correct=697, fresh_evidence_purist_correct=682, selected_purist_correct=731, wrong_to_correct=34.
+- Evidence validity: Saved-output validation replay; gold labels are used only for post-hoc scoring. No holdout rows are read.
+- Cache/reuse source: C:\Users\cbrow\Code\clinical_extraction\experiments\gan2026_consensus_fresh_agreement_selector_v0_7_validation750_no_call_replay_2026-06-15.jsonl.
+- Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_7_validation750_no_call_replay_2026-06-15`.
+- Claim language: v0.8 improves saved validation through a narrow parseable denominator/window refinement gate. Still validation-only and not holdout authorization.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_8_validation750_no_call_replay_2026-06-15.jsonl`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_8_validation750_no_call_replay_2026-06-15.md`.
+
+### `gan2026_consensus_fresh_agreement_selector_v0_8_parseable_refinement_synthetic_stress_2026-06-15`
+- Date/split: `2026-06-15`; `synthetic_parseable_refinement_probe`; `11` rows.
+- Pipeline: `consensus_fresh_agreement_selector_synthetic_refinement_stress`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Analysis-only synthetic probe over hand-specified parseable refinement stress cases; no model calls and no Gan rows are read.; model `none`.
+- Repair mode/config: `selector_v0_8_parseable_denominator_window_refinement`.
+- Primary metrics: changed_label_precision=1.0, conservative_false_negative_count=1, correct_to_wrong=0, current_rule_false_positive_count=0, desired_action_matches=11, selected_purist_correct=8, wrong_to_correct=3.
+- Evidence validity: Synthetic mechanism evidence only; no validation or holdout records are read.
+- Cache/reuse source: Synthetic hand-specified component outputs only.
+- Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_7_unknown_count_window_synthetic_stress_2026-06-15`.
+- Claim language: v0.8 passes source-near parseable-refinement hard negatives, but does not authorize a frozen holdout audit.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_8_parseable_refinement_synthetic_stress_2026-06-15.json`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_8_parseable_refinement_synthetic_stress_2026-06-15.md`.
+
+### `gan2026_consensus_fresh_agreement_selector_v0_7_validation750_no_call_replay_2026-06-15`
+- Date/split: `2026-06-15`; `validation`; `750` rows.
+- Pipeline: `consensus_fresh_agreement_selector`; mode `no-call replay`; replay `saved_output_replay`.
+- Model role: No-call replay of selector v0.7 over saved v0.6 validation selector rows reconstructed into component rows.; model `none`.
+- Repair mode/config: `selector_v0_7_unknown_count_window_rescue`.
+- Primary metrics: changed_label_precision=0.775, changed_labels=40, consensus_purist_correct=708, correct_to_wrong=0, deterministic_purist_correct=697, fresh_evidence_purist_correct=682, selected_purist_correct=728, wrong_to_correct=31.
+- Evidence validity: Saved-output validation replay; gold labels are used only for post-hoc scoring. No holdout rows are read.
+- Cache/reuse source: C:\Users\cbrow\Code\clinical_extraction\experiments\gan2026_consensus_fresh_agreement_selector_v0_6_validation750_no_call_replay_2026-06-15.jsonl.
+- Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_6_validation750_no_call_replay_2026-06-15`.
+- Claim language: v0.7 preserves the v0.6 validation score and adds a guarded unknown-origin count-window mechanism. Still validation-only and not holdout authorization.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_7_validation750_no_call_replay_2026-06-15.jsonl`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_7_validation750_no_call_replay_2026-06-15.md`.
+
+### `gan2026_consensus_fresh_agreement_selector_v0_7_unknown_count_window_synthetic_stress_2026-06-15`
+- Date/split: `2026-06-15`; `synthetic_unknown_count_window_probe`; `12` rows.
+- Pipeline: `consensus_fresh_agreement_selector_synthetic_boundary_stress`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Analysis-only synthetic probe over hand-specified unknown count-window stress cases; no model calls and no Gan rows are read.; model `none`.
+- Repair mode/config: `selector_v0_7_unknown_count_window_rescue`.
+- Primary metrics: changed_label_precision=1.0, conservative_false_negative_count=2, correct_to_wrong=0, current_rule_false_positive_count=0, desired_action_matches=12, selected_purist_correct=10, wrong_to_correct=5.
+- Evidence validity: Synthetic mechanism evidence only; no validation or holdout records are read.
+- Cache/reuse source: Synthetic hand-specified component outputs only.
+- Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_6_boundary_rescue_synthetic_stress_2026-06-15`.
+- Claim language: v0.7 passes a source-near unknown count-window synthetic mechanism probe, but it does not improve saved validation and does not authorize a frozen holdout audit.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_7_unknown_count_window_synthetic_stress_2026-06-15.json`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_7_unknown_count_window_synthetic_stress_2026-06-15.md`.
+
+### `gan2026_consensus_fresh_agreement_selector_v0_7_residual_headroom_audit_2026-06-15`
+- Date/split: `2026-06-15`; `validation`; `750` rows.
+- Pipeline: `consensus_fresh_agreement_selector_residual_audit`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Validation-only residual analysis over saved v0.7 selector rows; no model calls and no holdout rows are read.; model `none`.
+- Repair mode/config: `selector_v0_7_residual_headroom_audit`.
+- Primary metrics: oracle_correct_available=11, oracle_correct_unavailable=11, parseable_other_candidate_actions=27, parseable_other_correct_to_wrong=5, parseable_other_net_purist_gain=-1, parseable_other_wrong_to_correct=4, selected_correct=728, selected_wrong=22.
+- Evidence validity: Validation-only saved-output audit. Gold labels are used only for post-hoc scoring and transition accounting; no holdout rows are read.
+- Cache/reuse source: C:\Users\cbrow\Code\clinical_extraction\experiments\gan2026_consensus_fresh_agreement_selector_v0_7_validation750_no_call_replay_2026-06-15.jsonl.
+- Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_7_validation750_no_call_replay_2026-06-15`.
+- Claim language: Identifies residual selector headroom and rejects broad parseable-other relaxation as validation-negative. Not a holdout-facing candidate.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_7_residual_headroom_audit_2026-06-15.json`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_7_residual_headroom_audit_2026-06-15.md`.
+
+### `gan2026_consensus_fresh_agreement_selector_v0_6_validation750_no_call_replay_2026-06-15`
+- Date/split: `2026-06-15`; `validation`; `750` rows.
+- Pipeline: `consensus_fresh_agreement_selector`; mode `no-call replay`; replay `saved_output_replay`.
+- Model role: No-call replay of selector v0.6 over saved v0.5 validation selector rows reconstructed into component rows.; model `none`.
+- Repair mode/config: `selector_v0_6_profile_guard_boundary_rescue`.
+- Primary metrics: changed_label_precision=0.775, changed_labels=40, consensus_purist_correct=708, correct_to_wrong=0, deterministic_purist_correct=697, fresh_evidence_purist_correct=682, selected_purist_correct=728, wrong_to_correct=31.
+- Evidence validity: Saved-output validation replay; gold labels are used only for post-hoc scoring. No holdout rows are read.
+- Cache/reuse source: C:\Users\cbrow\Code\clinical_extraction\experiments\gan2026_consensus_fresh_agreement_selector_v0_5_validation750_no_call_replay_2026-06-15.jsonl.
+- Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_5_validation750_no_call_replay_2026-06-15`.
+- Claim language: v0.6 preserves the v0.5 validation score while adding a profile guard motivated by a synthetic hard-negative panel. Still validation-only and not holdout authorization.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_6_validation750_no_call_replay_2026-06-15.jsonl`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_6_validation750_no_call_replay_2026-06-15.md`.
+
+### `gan2026_consensus_fresh_agreement_selector_v0_6_boundary_rescue_synthetic_stress_2026-06-15`
+- Date/split: `2026-06-15`; `synthetic_boundary_rescue_probe`; `12` rows.
+- Pipeline: `consensus_fresh_agreement_selector_synthetic_boundary_stress`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Analysis-only synthetic replay over hand-specified v0.5 boundary-rescue stress cases; no model calls and no Gan rows are read.; model `none`.
+- Repair mode/config: `selector_v0_6_profile_guard_boundary_rescue`.
+- Primary metrics: changed_label_precision=1.0, conservative_false_negative_count=1, correct_to_wrong=0, current_rule_false_positive_count=0, desired_future_action_matches=11, selected_purist_correct=11, wrong_to_correct=5.
+- Evidence validity: Synthetic mechanism evidence only; no validation or holdout records are read.
+- Cache/reuse source: C:\Users\cbrow\Code\clinical_extraction\experiments\gan2026_consensus_fresh_agreement_selector_v0_5_boundary_rescue_synthetic_stress_2026-06-15.json.
+- Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_5_boundary_rescue_synthetic_stress_2026-06-15`.
+- Claim language: v0.6 blocks v0.5's synthetic hard-negative false positives and keeps intended positives. This supports revision but does not authorize a frozen holdout audit.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_6_boundary_rescue_synthetic_stress_2026-06-15.json`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_6_boundary_rescue_synthetic_stress_2026-06-15.md`.
+
+### `gan2026_consensus_fresh_agreement_selector_v0_5_validation750_no_call_replay_2026-06-15`
+- Date/split: `2026-06-15`; `validation`; `750` rows.
+- Pipeline: `consensus_fresh_agreement_selector`; mode `no-call replay`; replay `saved_output_replay`.
+- Model role: Hybrid saved-output selector: v0.4 consensus+fresh agreement plus narrow V12 fresh boundary rescue for deterministic seizure-free/no-reference overreach.; model `panel: deterministic_rules_tool + exact structured-event consensus + V12 fresh-evidence reasoner`.
+- Repair mode/config: `fresh_boundary_rescue_v0_5 over saved deterministic/consensus/V12 labels`.
+- Primary metrics: changed_label_precision=0.775, changed_labels=40, consensus_purist_correct=708, correct_to_wrong=0, deterministic_purist_correct=697, fresh_boundary_rescue_actions=14, fresh_evidence_v12_purist_correct=682, net_purist_gain_vs_deterministic=31, selected_purist_correct=728, validation750_rows=750, wrong_to_correct=31.
+- Evidence validity: No new model evidence. Reuses saved deterministic, consensus, and V12 validation artifacts; gold labels are used only for post-hoc scoring and band summaries.
+- Cache/reuse source: Saved validation artifacts: deterministic gpt41mini 2026-06-07, exact consensus 2026-06-13, and V12 fresh_evidence_reasoner v0.4 2026-06-13.
+- Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_4_validation750_replay_2026-06-15`.
+- Claim language: Validation-only no-call selector replay. v0.5 improves the saved validation aggregate by rescuing deterministic seizure-free/no-reference boundary overreach with V12 fresh evidence, but it remains mined on validation and needs targeted robustness evidence before any holdout-facing protocol.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_5_validation750_no_call_replay_2026-06-15.jsonl`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_5_validation750_no_call_replay_2026-06-15.md`.
+
+### `gan2026_consensus_fresh_agreement_selector_v0_5_boundary_rescue_synthetic_stress_2026-06-15`
+- Date/split: `2026-06-15`; `synthetic_boundary_rescue_probe`; `12` rows.
+- Pipeline: `consensus_fresh_agreement_selector_synthetic_boundary_stress`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Analysis-only synthetic boundary-rescue probe over hand-specified deterministic, consensus, and V12 fresh-evidence labels; no model calls and no Gan rows are read.; model `none`.
+- Repair mode/config: `selector_v0_5_fresh_boundary_rescue`.
+- Primary metrics: consensus_purist_correct=6, conservative_false_negative_count=1, current_rule_false_positive_count=3, desired_future_action_matches=8, deterministic_purist_correct=6, expected_v05_action_matches=12, fresh_purist_correct=6, rows=12, safety_success_count=3, selected_purist_correct=8.
+- Evidence validity: Synthetic mechanism evidence only: source-near note fragments and hand-specified labels are scored through the current Gan Purist mapping; no validation or holdout records are read.
+- Cache/reuse source: Synthetic hand-specified component outputs only.
+- Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_5_boundary_rescue_audit_2026-06-15`.
+- Claim language: Predeclared synthetic component-stress probe for selector v0.5. Supports deterministic seizure-free/no-reference overreach rescue as a direction, but exposes hard-negative false positives from the label-only rescue rule. Does not authorize a frozen holdout audit.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_5_boundary_rescue_synthetic_stress_2026-06-15.json`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_5_boundary_rescue_synthetic_stress_2026-06-15.md`.
+
+### `gan2026_consensus_fresh_agreement_selector_v0_5_boundary_rescue_audit_2026-06-15`
+- Date/split: `2026-06-15`; `validation`; `750` rows.
+- Pipeline: `consensus_fresh_agreement_selector_boundary_rescue_audit`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Analysis-only hard-slice audit of v0.5 fresh-boundary-rescue actions over saved validation selector rows.; model `none; analysis-only replay over saved v0.5 selector rows`.
+- Repair mode/config: `fresh_boundary_rescue_v0_5_audit`.
+- Primary metrics: fresh_boundary_rescue_actions=14, fresh_boundary_rescue_correct_to_wrong=0, fresh_boundary_rescue_wrong_to_correct=14, v05_changed_label_precision=0.775, v05_changed_labels=40, v05_correct_to_wrong=0, v05_selected_purist_correct=728, v05_wrong_to_correct=31.
+- Evidence validity: No new prediction evidence. Uses saved validation v0.5 selector rows; gold labels are used only after reproducible action membership for scoring.
+- Cache/reuse source: experiments\gan2026_consensus_fresh_agreement_selector_v0_5_validation750_no_call_replay_2026-06-15.jsonl.
+- Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_5_validation750_no_call_replay_2026-06-15`.
+- Claim language: Validation-only audit. v0.5 fresh-boundary-rescue actions are 14/14 wrong-to-correct on saved validation, but this remains validation-mined evidence requiring robustness before holdout.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_5_boundary_rescue_audit_2026-06-15.json`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_5_boundary_rescue_audit_2026-06-15.md`.
+
+### `gan2026_consensus_fresh_agreement_selector_v0_4_validation750_replay_2026-06-15`
+- Date/split: `2026-06-15`; `validation`; `750` rows.
+- Pipeline: `consensus_fresh_agreement_selector`; mode `no-call replay`; replay `saved_output_replay`.
+- Model role: Hybrid saved-output selector: deterministic baseline is the floor; v0.4 accepts exact consensus plus V12 agreement after unknown/ambiguous safeguards and cluster-cadence preservation.; model `panel: deterministic_rules_tool + exact structured-event consensus + V12 fresh-evidence reasoner`.
+- Repair mode/config: `cluster_cadence_precision_v0_4`.
+- Primary metrics: band_weekly_changed_label_precision=0.4, band_weekly_correct_to_wrong=0, band_weekly_net_gain=4, changed_label_precision=0.6538, changed_labels=26, consensus_purist_correct=708, correct_to_wrong=0, deterministic_purist_correct=697, fresh_evidence_v12_purist_correct=682, net_purist_gain_vs_deterministic=17, selected_purist_correct=714, validation750_rows=750, wrong_to_correct=17.
+- Evidence validity: No new model evidence. Reuses saved deterministic, consensus, and V12 validation artifacts; scoring and boundary-band summaries are post-hoc validation instrumentation only.
+- Cache/reuse source: Saved validation artifacts: deterministic gpt41mini 2026-06-07, exact consensus 2026-06-13, and V12 fresh_evidence_reasoner v0.4 2026-06-13.
+- Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_3_validation750_replay_2026-06-15`.
+- Claim language: Validation-only no-call selector replay. v0.4 improves the selector-family front-runner to 714/750, removes all correct-to-wrong regressions in changed labels, and raises changed-label precision to 0.6538. Still revise-only: it needs predeclared hard-slice/robustness evidence and a frozen protocol before any holdout-facing claim.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_4_validation750_no_call_replay_2026-06-15.jsonl`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_4_validation750_no_call_replay_2026-06-15.md`.
+
+### `gan2026_consensus_fresh_agreement_selector_v0_4_unknown_origin_relaxation_probe_2026-06-15`
+- Date/split: `2026-06-15`; `validation`; `750` rows.
+- Pipeline: `consensus_fresh_agreement_selector_unknown_origin_relaxation_probe`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Validation-only counterfactual probe of a label-only unknown-origin relaxation for selector v0.4; no model calls.; model `none; analysis-only replay over saved selector rows`.
+- Repair mode/config: `counterfactual_unknown_origin_relaxation_over_v0_4_selector_rows`.
+- Primary metrics: counterfactual_correct_to_correct=2, counterfactual_correct_to_wrong=2, counterfactual_wrong_to_correct=0, counterfactual_wrong_to_wrong=0, net_if_accept_all_unknown_origin=-2, source_rows=750, unknown_origin_blocked_switches=4.
+- Evidence validity: No new prediction evidence. Uses saved validation selector rows; gold labels score only a counterfactual action policy.
+- Cache/reuse source: experiments/gan2026_consensus_fresh_agreement_selector_v0_4_validation750_no_call_replay_2026-06-15.jsonl.
+- Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_4_synthetic_component_stress_2026-06-15`.
+- Claim language: Validation-only counterfactual showing that a label-only relaxation out of deterministic unknown origins would be net negative; keep v0.4 until an evidence-based explicit count-window feature is tested.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_4_unknown_origin_relaxation_probe_2026-06-15.json`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_4_unknown_origin_relaxation_probe_2026-06-15.md`.
+
+### `gan2026_consensus_fresh_agreement_selector_v0_4_synthetic_component_stress_2026-06-15`
+- Date/split: `2026-06-15`; `synthetic_validation_probe`; `20` rows.
+- Pipeline: `consensus_fresh_agreement_selector_synthetic_component_stress`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Analysis-only synthetic component-stress probe over hand-specified deterministic, consensus, and V12 fresh-evidence labels; no model calls and no Gan rows are read.; model `none`.
+- Repair mode/config: `selector_v0_4_cluster_cadence_precision`.
+- Primary metrics: consensus_purist_correct=11, desired_future_action_matches=18, deterministic_purist_correct=13, expected_v04_action_matches=20, false_negative_count=2, fresh_purist_correct=12, rows=20, safety_success_count=9, selected_purist_correct=18.
+- Evidence validity: Synthetic mechanism evidence only: source-near note fragments and hand-specified labels are scored through the current Gan Purist mapping; no validation or holdout records are read.
+- Cache/reuse source: Synthetic hand-specified component outputs only.
+- Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_4_hard_slice_audit_2026-06-15`.
+- Claim language: Predeclared synthetic component-stress probe for selector v0.4. Supports the cluster-cadence and unknown-boundary mechanics, exposes the conservative unknown-origin false-negative cost, and does not authorize a frozen holdout audit.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_4_synthetic_component_stress_2026-06-15.json`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_4_synthetic_component_stress_2026-06-15.md`.
+
+### `gan2026_consensus_fresh_agreement_selector_v0_4_hard_slice_audit_2026-06-15`
+- Date/split: `2026-06-15`; `validation`; `750` rows.
+- Pipeline: `consensus_fresh_agreement_selector_hard_slice_audit`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Analysis-only hard-slice audit of v0.4 selector actions over saved deterministic, consensus, and V12 validation artifacts.; model `none; analysis-only replay over saved selector rows`.
+- Repair mode/config: `cluster_cadence_precision_v0_4_hard_slice_audit`.
+- Primary metrics: suppressed_cluster_cadence_changes=1, suppressed_cluster_demotions=1, suppressed_v3_to_v4=2, suppressed_v3_to_v4_correct_to_wrong=2, v04_block_count_with_regression=0, v04_changed_label_precision=0.6538, v04_changed_labels=26, v04_correct_to_wrong=0, v04_selected_purist_correct=714, v04_wrong_to_correct=17.
+- Evidence validity: No new prediction evidence. Uses saved validation selector rows; gold labels are used only after reproducible slice membership for scoring.
+- Cache/reuse source: Saved v0.1-v0.4 consensus_fresh_agreement_selector validation750 replay artifacts from 2026-06-15.
+- Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_4_validation750_replay_2026-06-15`.
+- Claim language: Validation-only hard-slice audit. Supports v0.4 cluster-cadence gate: the two v0.3 switches suppressed by v0.4 were both correct-to-wrong regressions, while v0.4 keeps all 17 wrong-to-correct changes. Still revise-only; next evidence should be predeclared synthetic/robustness panel before any holdout-facing claim.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_4_hard_slice_audit_2026-06-15.json`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_4_hard_slice_audit_2026-06-15.md`.
+
+### `gan2026_consensus_fresh_agreement_selector_v0_3_validation750_replay_2026-06-15`
+- Date/split: `2026-06-15`; `validation`; `750` rows.
+- Pipeline: `consensus_fresh_agreement_selector`; mode `no-call replay`; replay `saved_output_replay`.
+- Model role: Hybrid saved-output selector: deterministic baseline is the floor; v0.3 accepts exact consensus plus V12 agreement only when the deterministic origin is not unknown/no-reference and the agreed replacement is a specific non-ambiguous label.; model `panel: deterministic_rules_tool + exact structured-event consensus + V12 fresh-evidence reasoner`.
+- Repair mode/config: `specific_label_precision_v0_3`.
+- Primary metrics: band_unknown_net_gain=5, band_weekly_changed_label_precision=0.3333, changed_label_precision=0.6071, changed_labels=28, consensus_purist_correct=708, correct_to_wrong=2, deterministic_purist_correct=697, fresh_evidence_v12_purist_correct=682, net_purist_gain_vs_deterministic=15, selected_purist_correct=712, validation750_rows=750, wrong_to_correct=17.
+- Evidence validity: No new model evidence. Reuses saved deterministic, consensus, and V12 validation artifacts; scoring and boundary-band summaries are post-hoc validation instrumentation only.
+- Cache/reuse source: Saved validation artifacts: deterministic gpt41mini 2026-06-07, exact consensus 2026-06-13, and V12 fresh_evidence_reasoner v0.4 2026-06-13.
+- Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_2_validation750_replay_2026-06-15`.
+- Claim language: Validation-only no-call selector replay. v0.3 restores the v0.1 aggregate 712/750 while reducing changed labels to 28 and raising changed-label precision to 0.6071, but weekly-band precision remains weak; revise, do not freeze or request holdout.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_3_validation750_no_call_replay_2026-06-15.jsonl`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_3_validation750_no_call_replay_2026-06-15.md`.
+
+### `gan2026_consensus_fresh_agreement_selector_v0_2_validation750_replay_2026-06-15`
+- Date/split: `2026-06-15`; `validation`; `750` rows.
+- Pipeline: `consensus_fresh_agreement_selector`; mode `no-call replay`; replay `saved_output_replay`.
+- Model role: Hybrid saved-output selector: deterministic baseline is the floor; v0.2 accepts exact consensus plus V12 agreement only for non-boundary precision cases.; model `panel: deterministic_rules_tool + exact structured-event consensus + V12 fresh-evidence reasoner`.
+- Repair mode/config: `nonboundary_precision_v0_2`.
+- Primary metrics: changed_label_precision=0.3621, changed_labels=58, correct_to_wrong=8, deterministic_purist_correct=697, fresh_evidence_v12_purist_correct=682, net_purist_gain_vs_deterministic=13, selected_purist_correct=710, validation750_rows=750, wrong_to_correct=21.
+- Evidence validity: No new model evidence. Reuses saved deterministic, consensus, and V12 validation artifacts; scoring and boundary-band summaries are post-hoc validation instrumentation only.
+- Cache/reuse source: Saved validation artifacts: deterministic gpt41mini 2026-06-07, exact consensus 2026-06-13, and V12 fresh_evidence_reasoner v0.4 2026-06-13.
+- Supersedes: `gan2026_consensus_fresh_agreement_selector_validation750_replay_2026-06-15`.
+- Claim language: Validation-only no-call selector replay. v0.2 suppresses no-reference-origin switches and unknown/seizure-free consensus replacements, improving changed-label precision from v0.1 0.2385 to 0.3621 while retaining 710/750 Purist. Still revise-only: submonthly/monthly/weekly changed-label precision remains below the promotion bar.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_2_validation750_no_call_replay_2026-06-15.jsonl`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_2_validation750_no_call_replay_2026-06-15.md`.
+
+### `gan2026_ambiguity_slice_semantic_scorer_v0_7_2026-06-15`
+- Date/split: `2026-06-15`; `validation`; `22` rows.
+- Pipeline: `fresh_evidence_reasoner_ambiguity_semantic_scorer`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Deterministic semantic / over-specificity overlay on the saved live ambiguity slice; scores clinical decision kind alongside Purist and flags re-bucketing and class/label incoherence.; model `none`.
+- Repair mode/config: `none`.
+- Primary metrics: class_label_incoherent_count=3, over_specific_rebucket_count=0, purist_correct=8, purist_minus_semantic=0, rows=22, semantic_correct=8.
+- Evidence validity: Validation-only diagnostic overlay on saved live outputs. No model calls, no scorer policy change, no locked test rows read. The frozen Purist scorer is unchanged; this is an additional view used to keep the live run honest about re-bucketing.
+- Cache/reuse source: C:\Users\cbrow\Code\clinical_extraction\experiments\gan2026_fresh_evidence_reasoner_residual_slice_live_gpt41_v0_7_safety_v0_9_2026-06-15.jsonl.
+- Claim language: Adds a semantic / over-specificity view so the live ambiguity run cannot be credited for Purist re-bucketing. Diagnostic instrumentation, not a holdout-facing candidate or a scorer replacement.
+- Artifacts: `experiments/gan2026_ambiguity_slice_semantic_scorer_v0_7_2026-06-15.json`, `experiments/gan2026_ambiguity_slice_semantic_scorer_v0_7_2026-06-15.md`, `experiments/gan2026_fresh_evidence_reasoner_residual_slice_live_gpt41_v0_7_safety_v0_9_2026-06-15.jsonl`.
+
+### `gan2026_ambiguity_slice_semantic_scorer_2026-06-15`
+- Date/split: `2026-06-15`; `validation`; `22` rows.
+- Pipeline: `fresh_evidence_reasoner_ambiguity_semantic_scorer`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Deterministic semantic / over-specificity overlay on the saved live ambiguity slice; scores clinical decision kind alongside Purist and flags re-bucketing and class/label incoherence.; model `none`.
+- Repair mode/config: `none`.
+- Primary metrics: class_label_incoherent_count=2, over_specific_rebucket_count=0, purist_correct=12, purist_minus_semantic=0, rows=22, semantic_correct=12.
+- Evidence validity: Validation-only diagnostic overlay on saved live outputs. No model calls, no scorer policy change, no locked test rows read. The frozen Purist scorer is unchanged; this is an additional view used to keep the live run honest about re-bucketing.
+- Cache/reuse source: C:\Users\cbrow\Code\clinical_extraction\experiments\gan2026_fresh_evidence_reasoner_residual_slice_live_gpt41_v0_6_safety_v0_9_2026-06-15.jsonl.
+- Claim language: Adds a semantic / over-specificity view so the live ambiguity run cannot be credited for Purist re-bucketing. Diagnostic instrumentation, not a holdout-facing candidate or a scorer replacement.
+- Artifacts: `experiments/gan2026_ambiguity_slice_semantic_scorer_2026-06-15.json`, `experiments/gan2026_ambiguity_slice_semantic_scorer_2026-06-15.md`, `experiments/gan2026_fresh_evidence_reasoner_residual_slice_live_gpt41_v0_6_safety_v0_9_2026-06-15.jsonl`.
+
+### `gan2026_ambiguity_live_component_generation_audit_v0_7_2026-06-15`
+- Date/split: `2026-06-15`; `validation`; `22` rows.
+- Pipeline: `fresh_evidence_reasoner_ambiguity_component_generation`; mode `live`; replay `live`.
+- Model role: Live v0.7 + safety-v0.9 ambiguity-aware fresh-evidence generation over a predeclared 22-row validation hard slice. Scored against gold for component availability; no holdout rows are read.; model `openai/gpt-4.1`.
+- Repair mode/config: `ambiguity_classification_component_generation`.
+- Primary metrics: new_oracle_ceiling=739, no_correct_rows=11, no_correct_rows_fixed_by_live_fresh=1, oracle_ceiling_delta=0, prior_oracle_ceiling=739, recoverable_rows_fresh_preserved=5, supervisor_panel_pass=2.
+- Evidence validity: Validation-only live generation. Gold labels are used post-hoc for component availability and the supervisor panel; no locked test rows are read and no scorer policy changes.
+- Cache/reuse source: C:\Users\cbrow\Code\clinical_extraction\experiments\gan2026_fresh_evidence_reasoner_residual_slice_live_gpt41_v0_7_safety_v0_9_2026-06-15.jsonl.
+- Supersedes: `gan2026_ambiguity_live_component_generation_audit_2026-06-15`.
+- Claim language: Measures whether the ambiguity contract lifts the component oracle ceiling on the predeclared residual slice. Not a holdout-facing candidate; a wider validation replay and held-out-family CV are required before any freeze.
+- Artifacts: `experiments/gan2026_ambiguity_live_component_generation_audit_v0_7_2026-06-15.json`, `experiments/gan2026_ambiguity_live_component_generation_audit_v0_7_2026-06-15.md`, `experiments/gan2026_fresh_evidence_reasoner_residual_slice_live_gpt41_v0_7_safety_v0_9_2026-06-15.jsonl`.
+
+### `gan2026_ambiguity_live_component_generation_audit_2026-06-15`
+- Date/split: `2026-06-15`; `validation`; `22` rows.
+- Pipeline: `fresh_evidence_reasoner_ambiguity_component_generation`; mode `live`; replay `live`.
+- Model role: Live v0.6 + safety-v0.9 ambiguity-aware fresh-evidence generation over a predeclared 22-row validation hard slice. Scored against gold for component availability; no holdout rows are read.; model `openai/gpt-4.1`.
+- Repair mode/config: `ambiguity_classification_component_generation`.
+- Primary metrics: new_oracle_ceiling=741, no_correct_rows=11, no_correct_rows_fixed_by_live_fresh=3, oracle_ceiling_delta=2, prior_oracle_ceiling=739, recoverable_rows_fresh_preserved=5, supervisor_panel_pass=5.
+- Evidence validity: Validation-only live generation. Gold labels are used post-hoc for component availability and the supervisor panel; no locked test rows are read and no scorer policy changes.
+- Cache/reuse source: C:\Users\cbrow\Code\clinical_extraction\experiments\gan2026_fresh_evidence_reasoner_residual_slice_live_gpt41_v0_6_safety_v0_9_2026-06-15.jsonl.
+- Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_9_residual_component_generation_audit_2026-06-15`.
+- Claim language: Measures whether the ambiguity contract lifts the component oracle ceiling on the predeclared residual slice. Not a holdout-facing candidate; a wider validation replay and held-out-family CV are required before any freeze.
+- Artifacts: `experiments/gan2026_ambiguity_live_component_generation_audit_2026-06-15.json`, `experiments/gan2026_ambiguity_live_component_generation_audit_2026-06-15.md`, `experiments/gan2026_fresh_evidence_reasoner_residual_slice_live_gpt41_v0_6_safety_v0_9_2026-06-15.jsonl`.
+
 ### `gan2026_hybrid_structured_events_agentic_consensus_fresh_evidence_analysis_2026-06-14`
 - Date/split: `2026-06-14`; `validation+test_aggregate`; `1200` rows.
 - Pipeline: `gan2026_agentic_fresh_evidence_synthesis`; mode `analysis-only`; replay `analysis_only`.
@@ -803,6 +1130,30 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Artifacts: `experiments/gan2026_section_claim_table_validation250_gpt41mini_v4_schema_replay_2026-06-01.jsonl`, `experiments/gan2026_section_claim_table_validation250_gpt41mini_v4_schema_replay_2026-06-01.md`.
 
 ## Reject
+
+### `gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_6_safety_v0_9_2026-06-15`
+- Date/split: `2026-06-15`; `test`; `450` rows.
+- Pipeline: `fresh_evidence_reasoner`; mode `live`; replay `live`.
+- Model role: V12 LLM-owned fresh-evidence reviewer over frozen GPT/Qwen/DeepSeek test450 structured-event scaffolding using prompt v0.6 + safety gate v0.9; model may keep the original GPT structured-event final or replace it with exact raw-note evidence.; model `openai/gpt-4.1`.
+- Repair mode/config: `format-only label repair, exact-substring evidence filtering, and predeclared safety gates; fallback only to the original GPT structured-event LLM final, not deterministic top.`.
+- Primary metrics: authorization_date=2026-06-15, call_failures=0, changed_label_precision_vs_v0=0.2205, changed_labels_vs_v0=127, correct_to_wrong_vs_v0=42, evidence_exact_substrings=423, final_pragmatic_correct=362, final_pragmatic_rate=0.8044444444444444, final_purist_correct=351, final_purist_rate=0.78, format_only_pragmatic_correct=357, format_only_purist_correct=349, fresh_evidence_gate_fallbacks=6, fresh_evidence_keep_original_actions=293, fresh_evidence_replace_actions=157, model_calls_attempted=450, net_purist_gain_vs_v0=-14, parse_or_validation_failures=0, prediction_bearing_rows=449, prompt_version=gan2026_fresh_evidence_reasoner_v0_6, raw_model_pragmatic_correct=357, raw_model_purist_correct=349, row_level_holdout_inspection=no, rows=450, safety_gate_version=gan2026_fresh_evidence_safety_gate_v0_9, target_purist_correct=383, target_purist_rate=0.8511111111111112, target_reached=false, v0_pragmatic_correct=381, v0_purist_correct=364, wrong_to_correct_vs_v0=28.
+- Evidence validity: Aggregate-only frozen test readout: 423/450 final decisions cite exact raw-note evidence substrings after filtering; 0 call failures and 0 parse/schema/label failures. Preflight passed ok=true after recomputing the drifted fresh_evidence_reasoner.py and test hashes to match the current working tree. First readout used the pinned aggregate-only Markdown helper; no row-level holdout failures, rationales, evidence, selected events, or transitions were inspected.
+- Cache/reuse source: Frozen split-aware test sources: GPT, Qwen, and DeepSeek structured-event test450 artifacts; no source overrides. Saved traces used only as prompt scaffolding (no gold labels, row IDs, split labels, or deterministic top labels).
+- Supersedes: `gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_4_2026-06-13`.
+- Claim language: User-authorized frozen aggregate-only test450 holdout of v0.6 + safety-v0.9; v0.6 had never been run on test450. Final Purist 351/450 (0.7800) missed the 383/450 target and fell below the V0 baseline 364/450 (net -14), so the >0.85 goal is not achieved and v0.6/safety-v0.9 is a measured-and-rejected holdout config. v0.4 (379/450) remains the best comparator. Treat as final-evaluation evidence; any follow-up must start from validation only and must not tune from test row-level data.
+- Artifacts: `experiments/gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_6_safety_v0_9_2026-06-15.jsonl`, `experiments/gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_6_safety_v0_9_2026-06-15.md`.
+
+### `gan2026_consensus_fresh_agreement_selector_v0_10_component_repair_probe_2026-06-15`
+- Date/split: `2026-06-15`; `validation`; `750` rows.
+- Pipeline: `consensus_fresh_agreement_selector_component_repair_probe`; mode `no-call replay`; replay `saved_output_replay`.
+- Model role: Validation-only no-call component-repair probe over saved v0.9 selector rows; no model calls and no holdout rows are read.; model `none`.
+- Repair mode/config: `deterministic_last_event_to_unknown_component_probe`.
+- Primary metrics: baseline_selected_purist_correct=733, best_probe_delta_selected_purist_correct=0, best_probe_selected_purist_correct=733, rules_tested=3.
+- Evidence validity: Validation-only saved-output replay. Gold labels are used only for post-hoc scoring and transition accounting; no holdout rows are read.
+- Cache/reuse source: C:\Users\cbrow\Code\clinical_extraction\experiments\gan2026_consensus_fresh_agreement_selector_v0_9_validation750_no_call_replay_2026-06-15.jsonl.
+- Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_9_residual_component_generation_audit_2026-06-15`.
+- Claim language: Rejects broad deterministic last-event-to-unknown component repair as validation-negative or non-improving. Supports a model-owned ambiguity-classification redesign instead.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_10_component_repair_probe_2026-06-15.json`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_10_component_repair_probe_2026-06-15.md`.
 
 ### `gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_4_2026-06-13`
 - Date/split: `2026-06-14`; `test`; `450` rows.

@@ -1,15 +1,22 @@
 # Gan 2026 V12 Frozen Test450 Audit Protocol
 
 Date: 2026-06-13
+Updated: 2026-06-15 for prompt v0.6 unknown-frequency policy,
+safety-gate v0.9, and three-source test symmetry
 
-Status: frozen-protocol authorization packet. This document does not authorize
-the `test450` run by itself. It records the exact candidate, command, permitted
-readout, and stop rule to use if the user explicitly authorizes the audit.
+Status: frozen-protocol packet. This document does not authorize the `test450`
+run by itself. The current v0.6/safety-v0.9 line is diagnostic/revise evidence,
+not a promoted holdout candidate: v0.9 preserves the v0.8 Purist counts while
+repairing `no seizure frequency reference` to `unknown` when seizure evidence
+exists but count/window is unclear, and the broader validation250 result still
+trails the earlier v0.4 comparator. If the user explicitly authorizes this exact
+audit anyway, this packet records the exact candidate, command, permitted
+readout, and stop rule.
 
 ## Objective
 
 Run one aggregate-only locked `test450` audit for V12
-`fresh_evidence_reasoner` v0.4 after explicit authorization.
+`fresh_evidence_reasoner` v0.6 after explicit authorization.
 
 Success criterion:
 
@@ -20,8 +27,8 @@ Success criterion:
 ## Frozen Candidate
 
 - Pipeline: `fresh_evidence_reasoner`
-- Prompt version: `gan2026_fresh_evidence_reasoner_v0_4`
-- Safety gate version: `gan2026_fresh_evidence_safety_gate_v0_3`
+- Prompt version: `gan2026_fresh_evidence_reasoner_v0_6`
+- Safety gate version: `gan2026_fresh_evidence_safety_gate_v0_9`
 - Model: `openai/gpt-4.1`
 - Temperature: CLI default `0.0`
 - Max tokens: `2800`
@@ -35,10 +42,8 @@ Success criterion:
     `experiments/gan2026_test450_phase4_frozen_audit_hybrid_structured_events_gpt41mini_2026-06-09.jsonl`
   - Qwen:
     `experiments/gan2026_agentic_structured_event_patch_recent_unresolved_burden_test450_qwen3635b_2026-06-13.jsonl`
-  - DeepSeek test450 structured-event artifact is unavailable and is not
-    loaded. The prompt therefore exposes the DeepSeek agent as a missing source
-    on `test`, while validation used the available DeepSeek validation
-    structured-event source.
+  - DeepSeek:
+    `experiments/gan2026_v06_test450_hybrid_structured_events_deepseek_2026-06-14.jsonl`
 - Deterministic code role: prompt assembly, JSON/schema repair, format-only
   label repair, exact-substring evidence filtering, predeclared safety gates,
   rendering, and scoring.
@@ -47,7 +52,8 @@ Success criterion:
 
 ## Freeze Evidence
 
-Validation ladder passed before this protocol:
+Validation ladder passed by the v0.4 comparator before the v0.6
+unknown-frequency policy prompt was added:
 
 | Surface | V12 Purist | V0 Purist | Notes |
 | --- | ---: | ---: | --- |
@@ -56,7 +62,7 @@ Validation ladder passed before this protocol:
 | validation250 | `242/250` | `236/250` | `8` wrong-to-correct, `3` correct-to-wrong |
 | validation750 | `682/750` | `661/750` | `42` wrong-to-correct, `22` correct-to-wrong |
 
-Full validation750 artifact:
+Full v0.4 validation750 artifact:
 
 - JSONL:
   `experiments/gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.jsonl`
@@ -82,6 +88,20 @@ Validation750 summary:
 - Fresh-evidence replacement actions: `182`
 - Evidence-gate fallbacks: `8`
 
+Unknown-frequency policy diagnostic after Yujian's clarification:
+
+| Surface | V0 Purist | V12 v0.6/safety-v0.9 Purist | Notes |
+| --- | ---: | ---: | --- |
+| supervisor6 | `4/6` | `5/6` | `1` wrong-to-correct, `0` correct-to-wrong |
+| trigger25 | `21/25` | `22/25` | `1` wrong-to-correct, `0` correct-to-wrong |
+| trigger_full | `105/123` | `109/123` | `4` wrong-to-correct, `0` correct-to-wrong |
+| validation250 no-call replay | `236/250` | `240/250` | `4` wrong-to-correct, `0` correct-to-wrong; 5 scorer-neutral no-reference-to-unknown semantic repairs; below v0.4 comparator `242/250` |
+
+Interpretation: v0.6/safety-v0.9 captures useful unknown-frequency boundary
+rules, removes two safety-v0.7 validation250 regressions in replay, and aligns
+fallback semantics with Yujian's `unknown` guidance, but it is not stronger than
+the previously frozen v0.4 validation path.
+
 ## Current-State Hashes
 
 Repository HEAD when this protocol was written:
@@ -94,19 +114,23 @@ The working tree contains uncommitted Gan 2026 experiment work. The following
 SHA-256 hashes pin the frozen V12 code and validation artifact state:
 
 ```text
-47a2a93db9641e582727a32c2230045341695b851183f9ae4029dade81a6c6ab  src/clinical_extraction/tasks/seizure_frequency/gan2026/agentic/fresh_evidence_reasoner.py
+975dc1912a16c2c611526564c6b036d94ef7a61df380102c2e4034f3fa1b8ca2  src/clinical_extraction/tasks/seizure_frequency/gan2026/agentic/fresh_evidence_reasoner.py
 a191d9e4e364cd0d628a28c3788717dcca44081593c349cf1b92659dd1a7a8fd  src/clinical_extraction/tasks/seizure_frequency/gan2026/runner.py
-ea509667aeb1e3485f0d8c6fc2456a709fa216ed3e5a91b55885b7a1cc70e598  src/clinical_extraction/tasks/seizure_frequency/gan2026/cli/llm_pipeline_cli.py
-4a317b2a56901510052aa77a78552909395f8931ec75a8564667ee65465ec4b0  src/clinical_extraction/tasks/seizure_frequency/gan2026/cli/frozen_test_preflight.py
+bb5610478b31bc12ac33aa89051cf0566c6ce2f2b33a6d6888ca30172fdcc42d  src/clinical_extraction/tasks/seizure_frequency/gan2026/cli/llm_pipeline_cli.py
+947a1176e057a16376b9eab73544fd9354939360f61d57a1c6084c3a963e95f2  src/clinical_extraction/tasks/seizure_frequency/gan2026/cli/frozen_test_preflight.py
 7aecd6a21886843d4d576421b8644f2a678e768c1b9b3c5ca74f03ce567b08e0  src/clinical_extraction/tasks/seizure_frequency/gan2026/cli/frozen_test_readout.py
-7be9e3f53830ae034d0003f1de98c2f8e7e6819eb6c91a38ae9b48b02640417a  tests/test_gan2026_fresh_evidence_reasoner.py
-3ea21277afc085ca997b963996da2874f297fd90672ad1b6405ff69a19c88d83  tests/test_gan2026_llm_pipeline_cli.py
-bebaf896be847c854d22c90e1669f1a93ec3ed797215993c8be623c386aed355  tests/test_gan2026_frozen_test_preflight.py
-821ded174c3f45d6524edaae78cd337a4469cb5b62fa55847c1c058db592f264  tests/test_gan2026_frozen_test_readout.py
+075d73b1577038f66c82f7765468baf0b1f0cfd19cc63a756ba0c8cbd8a86c20  tests/test_gan2026_fresh_evidence_reasoner.py
+a2fb55be83f531ac620352e072cdf8a4e3a8bae440c045aa9c571d2af11e993f  tests/test_gan2026_llm_pipeline_cli.py
+e0c77a15b92c7851d1d071ca06ef124e0d00a9a9d9946fbe019923a7b2f43fd2  tests/test_gan2026_frozen_test_preflight.py
+76bbe46c6428fc860eede4589c21f61d90af7c071ff0b88cd2499c4446037944  tests/test_gan2026_frozen_test_readout.py
 d89634d8d376bec6e47e8a8dbe3dc37ac889807c7e91bf9dc0185c99bbdd3b2f  experiments/gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.jsonl
 e4886614bc24354355a4a2d513c0f6ecce9fd1c23da1a705b4e226876dc55d58  experiments/gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.md
+b2856286a6a78394fafa89ed914a6154a7d3d26b63c27bdc590789205175f77a  experiments/gan2026_fresh_evidence_reasoner_safety_v0_4_validation750_no_call_replay_2026-06-15.md
+7e1e7e9dfecbe86cf2802ae521672f9516e44974dd5a34941878abdc76eb857b  experiments/gan2026_fresh_evidence_reasoner_validation250_nocall_replay_v0_6_safety_v0_9_2026-06-15.md
+9e661720966be63401e2b153d2fc6b2e110cde49033b5ff41f14cadd836cbc47  experiments/gan2026_fresh_evidence_reasoner_unknown_policy_trigger_full_validation_nocall_replay_v0_6_safety_v0_9_2026-06-15.md
 0c9bd96a49cfd22e57f2f9c421dbc78bf0e3a0f16233a67e09c853c174c2b40c  experiments/gan2026_test450_phase4_frozen_audit_hybrid_structured_events_gpt41mini_2026-06-09.jsonl
 61ac7d12c9580188c3f5c467a41d55d4962cf7f81052e5617dd19868ef997f59  experiments/gan2026_agentic_structured_event_patch_recent_unresolved_burden_test450_qwen3635b_2026-06-13.jsonl
+d57dc30c7c859c47e072e9278df3f2be1e70c56a9e62acae0e16f43f5c0cddca  experiments/gan2026_v06_test450_hybrid_structured_events_deepseek_2026-06-14.jsonl
 5dd39c552bcb60a40f0c79245a9f7346fd27a064cd27263c902e879af3bf7c57  data/Gan (2026)/splits/gan2026_split_v1.json
 ```
 
@@ -141,8 +165,8 @@ Do not launch the audit unless the preflight reports `"ok": true`. The preflight
 checks frozen hashes, the exact launch command and singleton launch options,
 split-manifest count, absence of prior V12 `test` outputs or stale
 `.resume-part` outputs, source-artifact hashes and locked-row coverage for the
-frozen GPT and Qwen test substrates, explicit DeepSeek test-source
-unavailability, a synthetic prompt-input hygiene check that fails if row ids,
+frozen GPT, Qwen, and DeepSeek test substrates, a synthetic prompt-input
+hygiene check that fails if row ids,
 gold labels, split metadata, raw-record fields, or deterministic-top tokens enter
 the model prompt, and a synthetic aggregate-only output-contract check that fails
 if V12 `test` Markdown or stdout summaries expose row-level details, profile
@@ -157,10 +181,10 @@ also be parseable by the pinned aggregate-only readout helper before launch.
   --model openai/gpt-4.1 `
   --max-tokens 2800 `
   --confirm-test-audit `
-  --jsonl experiments\gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_4_2026-06-13.jsonl `
-  --markdown experiments\gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_4_2026-06-13.md `
+  --jsonl experiments\gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_6_safety_v0_9_2026-06-15.jsonl `
+  --markdown experiments\gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_6_safety_v0_9_2026-06-15.md `
   --progress-every 0 `
-  --escalation-reason "User-authorized frozen aggregate-only test450 audit of V12 v0.4 fresh_evidence_reasoner; candidate prompt, safety gates, model ID, scorer, split manifest, and inspection policy frozen before first readout."
+  --escalation-reason "User-authorized frozen aggregate-only test450 audit of V12 v0.6 fresh_evidence_reasoner with safety gate v0.9; candidate prompt, safety gates, model ID, scorer, split manifest, and inspection policy frozen before first readout."
 ```
 
 Do not pass `--limit`. Do not pass `--source-row-indices` or

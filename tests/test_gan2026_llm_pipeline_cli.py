@@ -495,7 +495,7 @@ def test_general_llm_pipeline_cli_rejects_fresh_evidence_test_jsonl_path_drift(
     assert exc_info.value.code == 2
     assert (
         "fresh_evidence_reasoner test split runs must use --jsonl "
-        "experiments\\gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_4_2026-06-13.jsonl"
+        "experiments\\gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_6_safety_v0_9_2026-06-15.jsonl"
         in capsys.readouterr().err
     )
 
@@ -529,7 +529,7 @@ def test_general_llm_pipeline_cli_rejects_fresh_evidence_test_markdown_path_drif
                 "--max-tokens",
                 "2800",
                 "--jsonl",
-                "experiments/gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_4_2026-06-13.jsonl",
+                "experiments/gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_6_safety_v0_9_2026-06-15.jsonl",
                 "--markdown",
                 str(tmp_path / "alternate.md"),
                 "--confirm-test-audit",
@@ -543,7 +543,7 @@ def test_general_llm_pipeline_cli_rejects_fresh_evidence_test_markdown_path_drif
     assert exc_info.value.code == 2
     assert (
         "fresh_evidence_reasoner test split runs must use --markdown "
-        "experiments\\gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_4_2026-06-13.md"
+        "experiments\\gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_6_safety_v0_9_2026-06-15.md"
         in capsys.readouterr().err
     )
 

@@ -99,10 +99,10 @@ FROZEN_TEST_PIPELINE_LAUNCH_SPECS: Mapping[str, FrozenTestLaunchSpec] = {
         model="openai/gpt-4.1",
         max_tokens=2800,
         jsonl_path=Path(
-            "experiments/gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_4_2026-06-13.jsonl"
+            "experiments/gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_6_safety_v0_9_2026-06-15.jsonl"
         ),
         report_path=Path(
-            "experiments/gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_4_2026-06-13.md"
+            "experiments/gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_6_safety_v0_9_2026-06-15.md"
         ),
     ),
 }

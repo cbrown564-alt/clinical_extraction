@@ -1,0 +1,324 @@
+{
+  "comparator_artifact": "experiments\\gan2026_consensus_fresh_agreement_selector_v0_4_validation750_no_call_replay_2026-06-15.jsonl",
+  "date": "2026-06-15",
+  "rows": [
+    {
+      "deterministic_label": "seizure free for multiple year",
+      "fresh_evidence_label": "no seizure frequency reference",
+      "gold_band": "band_unknown",
+      "gold_label": "unknown",
+      "selected_label": "no seizure frequency reference",
+      "selector_gate": "fresh_boundary_rescue_v0_5:deterministic_seizure_free_to_fresh_uncertain_boundary",
+      "source_row_index": 3528,
+      "transition": "wrong_to_correct",
+      "v04_selected_label": "seizure free for multiple year"
+    },
+    {
+      "deterministic_label": "seizure free for 8 month",
+      "fresh_evidence_label": "no seizure frequency reference",
+      "gold_band": "band_unknown",
+      "gold_label": "unknown",
+      "selected_label": "no seizure frequency reference",
+      "selector_gate": "fresh_boundary_rescue_v0_5:deterministic_seizure_free_to_fresh_uncertain_boundary",
+      "source_row_index": 6077,
+      "transition": "wrong_to_correct",
+      "v04_selected_label": "seizure free for 8 month"
+    },
+    {
+      "deterministic_label": "seizure free for 6 month",
+      "fresh_evidence_label": "no seizure frequency reference",
+      "gold_band": "band_unknown",
+      "gold_label": "unknown",
+      "selected_label": "no seizure frequency reference",
+      "selector_gate": "fresh_boundary_rescue_v0_5:deterministic_seizure_free_to_fresh_uncertain_boundary",
+      "source_row_index": 6131,
+      "transition": "wrong_to_correct",
+      "v04_selected_label": "seizure free for 6 month"
+    },
+    {
+      "deterministic_label": "seizure free for multiple year",
+      "fresh_evidence_label": "unknown",
+      "gold_band": "band_unknown",
+      "gold_label": "unknown",
+      "selected_label": "unknown",
+      "selector_gate": "fresh_boundary_rescue_v0_5:deterministic_seizure_free_to_fresh_uncertain_boundary",
+      "source_row_index": 6244,
+      "transition": "wrong_to_correct",
+      "v04_selected_label": "seizure free for multiple year"
+    },
+    {
+      "deterministic_label": "seizure free for multiple year",
+      "fresh_evidence_label": "unknown",
+      "gold_band": "band_unknown",
+      "gold_label": "unknown",
+      "selected_label": "unknown",
+      "selector_gate": "fresh_boundary_rescue_v0_5:deterministic_seizure_free_to_fresh_uncertain_boundary",
+      "source_row_index": 6501,
+      "transition": "wrong_to_correct",
+      "v04_selected_label": "seizure free for multiple year"
+    },
+    {
+      "deterministic_label": "seizure free for multiple year",
+      "fresh_evidence_label": "unknown",
+      "gold_band": "band_unknown",
+      "gold_label": "unknown",
+      "selected_label": "unknown",
+      "selector_gate": "fresh_boundary_rescue_v0_5:deterministic_seizure_free_to_fresh_uncertain_boundary",
+      "source_row_index": 6987,
+      "transition": "wrong_to_correct",
+      "v04_selected_label": "seizure free for multiple year"
+    },
+    {
+      "deterministic_label": "seizure free for multiple year",
+      "fresh_evidence_label": "no seizure frequency reference",
+      "gold_band": "band_unknown",
+      "gold_label": "unknown",
+      "selected_label": "no seizure frequency reference",
+      "selector_gate": "fresh_boundary_rescue_v0_5:deterministic_seizure_free_to_fresh_uncertain_boundary",
+      "source_row_index": 9888,
+      "transition": "wrong_to_correct",
+      "v04_selected_label": "seizure free for multiple year"
+    },
+    {
+      "deterministic_label": "seizure free for multiple year",
+      "fresh_evidence_label": "no seizure frequency reference",
+      "gold_band": "band_unknown",
+      "gold_label": "unknown, 4 to 6 per cluster",
+      "selected_label": "no seizure frequency reference",
+      "selector_gate": "fresh_boundary_rescue_v0_5:deterministic_seizure_free_to_fresh_uncertain_boundary",
+      "source_row_index": 10618,
+      "transition": "wrong_to_correct",
+      "v04_selected_label": "seizure free for multiple year"
+    },
+    {
+      "deterministic_label": "seizure free for multiple year",
+      "fresh_evidence_label": "unknown",
+      "gold_band": "band_unknown",
+      "gold_label": "unknown",
+      "selected_label": "unknown",
+      "selector_gate": "fresh_boundary_rescue_v0_5:deterministic_seizure_free_to_fresh_uncertain_boundary",
+      "source_row_index": 11259,
+      "transition": "wrong_to_correct",
+      "v04_selected_label": "seizure free for multiple year"
+    },
+    {
+      "deterministic_label": "no seizure frequency reference",
+      "fresh_evidence_label": "seizure free for multiple year",
+      "gold_band": "band_zero",
+      "gold_label": "seizure free for multiple month",
+      "selected_label": "seizure free for multiple year",
+      "selector_gate": "fresh_boundary_rescue_v0_5:deterministic_no_reference_to_fresh_seizure_free",
+      "source_row_index": 13843,
+      "transition": "wrong_to_correct",
+      "v04_selected_label": "no seizure frequency reference"
+    },
+    {
+      "deterministic_label": "no seizure frequency reference",
+      "fresh_evidence_label": "seizure free for multiple year",
+      "gold_band": "band_zero",
+      "gold_label": "seizure free for multiple month",
+      "selected_label": "seizure free for multiple year",
+      "selector_gate": "fresh_boundary_rescue_v0_5:deterministic_no_reference_to_fresh_seizure_free",
+      "source_row_index": 13858,
+      "transition": "wrong_to_correct",
+      "v04_selected_label": "no seizure frequency reference"
+    },
+    {
+      "deterministic_label": "no seizure frequency reference",
+      "fresh_evidence_label": "seizure free for multiple year",
+      "gold_band": "band_zero",
+      "gold_label": "seizure free for multiple month",
+      "selected_label": "seizure free for multiple year",
+      "selector_gate": "fresh_boundary_rescue_v0_5:deterministic_no_reference_to_fresh_seizure_free",
+      "source_row_index": 13889,
+      "transition": "wrong_to_correct",
+      "v04_selected_label": "no seizure frequency reference"
+    },
+    {
+      "deterministic_label": "seizure free for multiple year",
+      "fresh_evidence_label": "unknown",
+      "gold_band": "band_unknown",
+      "gold_label": "unknown",
+      "selected_label": "unknown",
+      "selector_gate": "fresh_boundary_rescue_v0_5:deterministic_seizure_free_to_fresh_uncertain_boundary",
+      "source_row_index": 14076,
+      "transition": "wrong_to_correct",
+      "v04_selected_label": "seizure free for multiple year"
+    },
+    {
+      "deterministic_label": "seizure free for multiple year",
+      "fresh_evidence_label": "unknown",
+      "gold_band": "band_unknown",
+      "gold_label": "multiple per 13 month",
+      "selected_label": "unknown",
+      "selector_gate": "fresh_boundary_rescue_v0_5:deterministic_seizure_free_to_fresh_uncertain_boundary",
+      "source_row_index": 15193,
+      "transition": "wrong_to_correct",
+      "v04_selected_label": "seizure free for multiple year"
+    }
+  ],
+  "run_id": "gan2026_consensus_fresh_agreement_selector_v0_5_boundary_rescue_audit_2026-06-15",
+  "source_artifact": "experiments\\gan2026_consensus_fresh_agreement_selector_v0_5_validation750_no_call_replay_2026-06-15.jsonl",
+  "summary": {
+    "added_vs_v04": {
+      "changed": 14,
+      "correct_to_correct": 0,
+      "correct_to_wrong": 0,
+      "net": 14,
+      "precision": 1.0,
+      "rows": 14,
+      "wrong_to_correct": 14,
+      "wrong_to_wrong": 0
+    },
+    "blocks": [
+      {
+        "changed": 0,
+        "correct_to_correct": 0,
+        "correct_to_wrong": 0,
+        "net": 0,
+        "precision": null,
+        "rows": 0,
+        "validation_positions": [
+          1,
+          125
+        ],
+        "wrong_to_correct": 0,
+        "wrong_to_wrong": 0
+      },
+      {
+        "changed": 1,
+        "correct_to_correct": 0,
+        "correct_to_wrong": 0,
+        "net": 1,
+        "precision": 1.0,
+        "rows": 1,
+        "validation_positions": [
+          126,
+          250
+        ],
+        "wrong_to_correct": 1,
+        "wrong_to_wrong": 0
+      },
+      {
+        "changed": 5,
+        "correct_to_correct": 0,
+        "correct_to_wrong": 0,
+        "net": 5,
+        "precision": 1.0,
+        "rows": 5,
+        "validation_positions": [
+          251,
+          375
+        ],
+        "wrong_to_correct": 5,
+        "wrong_to_wrong": 0
+      },
+      {
+        "changed": 3,
+        "correct_to_correct": 0,
+        "correct_to_wrong": 0,
+        "net": 3,
+        "precision": 1.0,
+        "rows": 3,
+        "validation_positions": [
+          376,
+          500
+        ],
+        "wrong_to_correct": 3,
+        "wrong_to_wrong": 0
+      },
+      {
+        "changed": 4,
+        "correct_to_correct": 0,
+        "correct_to_wrong": 0,
+        "net": 4,
+        "precision": 1.0,
+        "rows": 4,
+        "validation_positions": [
+          501,
+          625
+        ],
+        "wrong_to_correct": 4,
+        "wrong_to_wrong": 0
+      },
+      {
+        "changed": 1,
+        "correct_to_correct": 0,
+        "correct_to_wrong": 0,
+        "net": 1,
+        "precision": 1.0,
+        "rows": 1,
+        "validation_positions": [
+          626,
+          750
+        ],
+        "wrong_to_correct": 1,
+        "wrong_to_wrong": 0
+      }
+    ],
+    "by_band": {
+      "band_unknown": {
+        "changed": 11,
+        "correct_to_correct": 0,
+        "correct_to_wrong": 0,
+        "net": 11,
+        "precision": 1.0,
+        "rows": 11,
+        "wrong_to_correct": 11,
+        "wrong_to_wrong": 0
+      },
+      "band_zero": {
+        "changed": 3,
+        "correct_to_correct": 0,
+        "correct_to_wrong": 0,
+        "net": 3,
+        "precision": 1.0,
+        "rows": 3,
+        "wrong_to_correct": 3,
+        "wrong_to_wrong": 0
+      }
+    },
+    "by_gate": {
+      "fresh_boundary_rescue_v0_5:deterministic_no_reference_to_fresh_seizure_free": {
+        "changed": 3,
+        "correct_to_correct": 0,
+        "correct_to_wrong": 0,
+        "net": 3,
+        "precision": 1.0,
+        "rows": 3,
+        "wrong_to_correct": 3,
+        "wrong_to_wrong": 0
+      },
+      "fresh_boundary_rescue_v0_5:deterministic_seizure_free_to_fresh_uncertain_boundary": {
+        "changed": 11,
+        "correct_to_correct": 0,
+        "correct_to_wrong": 0,
+        "net": 11,
+        "precision": 1.0,
+        "rows": 11,
+        "wrong_to_correct": 11,
+        "wrong_to_wrong": 0
+      }
+    },
+    "v05_all_changed": {
+      "changed": 40,
+      "correct_to_correct": 9,
+      "correct_to_wrong": 0,
+      "net": 31,
+      "precision": 0.775,
+      "rows": 40,
+      "wrong_to_correct": 31,
+      "wrong_to_wrong": 0
+    },
+    "v05_fresh_boundary_rescue_actions": {
+      "changed": 14,
+      "correct_to_correct": 0,
+      "correct_to_wrong": 0,
+      "net": 14,
+      "precision": 1.0,
+      "rows": 14,
+      "wrong_to_correct": 14,
+      "wrong_to_wrong": 0
+    }
+  }
+}

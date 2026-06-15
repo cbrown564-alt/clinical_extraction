@@ -1,0 +1,293 @@
+{
+  "date": "2026-06-15",
+  "purpose": "Validation-only semantic / over-specificity overlay on the live ambiguity slice. Scores each row on the clinical decision (unknown vs seizure-free vs frequency), flags over-specific re-bucketing that Purist credits (Insight 5), and flags class/label incoherence (Insight 4).",
+  "rows": [
+    {
+      "ambiguity_classification": "unknown_count_or_window",
+      "class_label_incoherent": false,
+      "gold_decision": "unknown_decision",
+      "gold_label": "unknown",
+      "over_specific_rebucket": false,
+      "predicted_decision": "unknown_decision",
+      "predicted_label": "unknown",
+      "purist_correct": true,
+      "semantic_correct": true,
+      "source_row_index": 3356
+    },
+    {
+      "ambiguity_classification": "last_event_only_unknown",
+      "class_label_incoherent": false,
+      "gold_decision": "unknown_decision",
+      "gold_label": "1 per multiple month",
+      "over_specific_rebucket": false,
+      "predicted_decision": "unknown_decision",
+      "predicted_label": "unknown",
+      "purist_correct": true,
+      "semantic_correct": true,
+      "source_row_index": 5534
+    },
+    {
+      "ambiguity_classification": "explicit_count_window",
+      "class_label_incoherent": false,
+      "gold_decision": "frequency_decision",
+      "gold_label": "9 per month",
+      "over_specific_rebucket": false,
+      "predicted_decision": "frequency_decision",
+      "predicted_label": "9 per 4 week",
+      "purist_correct": true,
+      "semantic_correct": true,
+      "source_row_index": 6153
+    },
+    {
+      "ambiguity_classification": "explicit_count_window",
+      "class_label_incoherent": false,
+      "gold_decision": "unknown_decision",
+      "gold_label": "unknown",
+      "over_specific_rebucket": false,
+      "predicted_decision": "frequency_decision",
+      "predicted_label": "2 per 3 month",
+      "purist_correct": false,
+      "semantic_correct": false,
+      "source_row_index": 6321
+    },
+    {
+      "ambiguity_classification": "explicit_count_window",
+      "class_label_incoherent": false,
+      "gold_decision": "unknown_decision",
+      "gold_label": "unknown",
+      "over_specific_rebucket": false,
+      "predicted_decision": "frequency_decision",
+      "predicted_label": "3 per 6 week",
+      "purist_correct": false,
+      "semantic_correct": false,
+      "source_row_index": 6368
+    },
+    {
+      "ambiguity_classification": "last_event_only_unknown",
+      "class_label_incoherent": false,
+      "gold_decision": "unknown_decision",
+      "gold_label": "unknown",
+      "over_specific_rebucket": false,
+      "predicted_decision": "unknown_decision",
+      "predicted_label": "unknown",
+      "purist_correct": true,
+      "semantic_correct": true,
+      "source_row_index": 6571
+    },
+    {
+      "ambiguity_classification": "unknown_count_or_window",
+      "class_label_incoherent": false,
+      "gold_decision": "unknown_decision",
+      "gold_label": "unknown",
+      "over_specific_rebucket": false,
+      "predicted_decision": "unknown_decision",
+      "predicted_label": "unknown",
+      "purist_correct": true,
+      "semantic_correct": true,
+      "source_row_index": 7168
+    },
+    {
+      "ambiguity_classification": "explicit_count_window",
+      "class_label_incoherent": false,
+      "gold_decision": "frequency_decision",
+      "gold_label": "3 to 7 per month",
+      "over_specific_rebucket": false,
+      "predicted_decision": "frequency_decision",
+      "predicted_label": "3 to 6 per month",
+      "purist_correct": true,
+      "semantic_correct": true,
+      "source_row_index": 7615
+    },
+    {
+      "ambiguity_classification": "explicit_count_window",
+      "class_label_incoherent": false,
+      "gold_decision": "frequency_decision",
+      "gold_label": "6 per 12 month",
+      "over_specific_rebucket": false,
+      "predicted_decision": "frequency_decision",
+      "predicted_label": "6 per 12 month",
+      "purist_correct": true,
+      "semantic_correct": true,
+      "source_row_index": 9496
+    },
+    {
+      "ambiguity_classification": "unknown_count_or_window",
+      "class_label_incoherent": false,
+      "gold_decision": "frequency_decision",
+      "gold_label": "1 cluster per month, multiple per cluster",
+      "over_specific_rebucket": false,
+      "predicted_decision": "unknown_decision",
+      "predicted_label": "unknown",
+      "purist_correct": false,
+      "semantic_correct": false,
+      "source_row_index": 9937
+    },
+    {
+      "ambiguity_classification": "unknown_count_or_window",
+      "class_label_incoherent": false,
+      "gold_decision": "frequency_decision",
+      "gold_label": "1 cluster per 4 to 5 week, multiple per cluster",
+      "over_specific_rebucket": false,
+      "predicted_decision": "unknown_decision",
+      "predicted_label": "unknown",
+      "purist_correct": false,
+      "semantic_correct": false,
+      "source_row_index": 9943
+    },
+    {
+      "ambiguity_classification": "explicit_seizure_free_duration",
+      "class_label_incoherent": false,
+      "gold_decision": "unknown_decision",
+      "gold_label": "unknown",
+      "over_specific_rebucket": false,
+      "predicted_decision": "seizure_free_decision",
+      "predicted_label": "seizure free for 4 month",
+      "purist_correct": false,
+      "semantic_correct": false,
+      "source_row_index": 11216
+    },
+    {
+      "ambiguity_classification": "explicit_seizure_free_duration",
+      "class_label_incoherent": false,
+      "gold_decision": "unknown_decision",
+      "gold_label": "unknown",
+      "over_specific_rebucket": false,
+      "predicted_decision": "seizure_free_decision",
+      "predicted_label": "seizure free for 3 month",
+      "purist_correct": false,
+      "semantic_correct": false,
+      "source_row_index": 11254
+    },
+    {
+      "ambiguity_classification": "last_event_only_unknown",
+      "class_label_incoherent": false,
+      "gold_decision": "unknown_decision",
+      "gold_label": "unknown",
+      "over_specific_rebucket": false,
+      "predicted_decision": "unknown_decision",
+      "predicted_label": "unknown",
+      "purist_correct": true,
+      "semantic_correct": true,
+      "source_row_index": 11272
+    },
+    {
+      "ambiguity_classification": "last_event_only_unknown",
+      "class_label_incoherent": false,
+      "gold_decision": "unknown_decision",
+      "gold_label": "unknown",
+      "over_specific_rebucket": false,
+      "predicted_decision": "unknown_decision",
+      "predicted_label": "unknown",
+      "purist_correct": true,
+      "semantic_correct": true,
+      "source_row_index": 11337
+    },
+    {
+      "ambiguity_classification": "explicit_count_window",
+      "class_label_incoherent": false,
+      "gold_decision": "frequency_decision",
+      "gold_label": "1 per 8 month",
+      "over_specific_rebucket": false,
+      "predicted_decision": "frequency_decision",
+      "predicted_label": "1 per 4 to 5 week",
+      "purist_correct": false,
+      "semantic_correct": false,
+      "source_row_index": 13209
+    },
+    {
+      "ambiguity_classification": "unknown_count_or_window",
+      "class_label_incoherent": false,
+      "gold_decision": "frequency_decision",
+      "gold_label": "2 per 5 month",
+      "over_specific_rebucket": false,
+      "predicted_decision": "unknown_decision",
+      "predicted_label": "unknown",
+      "purist_correct": false,
+      "semantic_correct": false,
+      "source_row_index": 13267
+    },
+    {
+      "ambiguity_classification": "explicit_count_window",
+      "class_label_incoherent": false,
+      "gold_decision": "unknown_decision",
+      "gold_label": "unknown",
+      "over_specific_rebucket": false,
+      "predicted_decision": "frequency_decision",
+      "predicted_label": "2 per 6 week",
+      "purist_correct": false,
+      "semantic_correct": false,
+      "source_row_index": 14025
+    },
+    {
+      "ambiguity_classification": "unknown_count_or_window",
+      "class_label_incoherent": false,
+      "gold_decision": "unknown_decision",
+      "gold_label": "unknown",
+      "over_specific_rebucket": false,
+      "predicted_decision": "unknown_decision",
+      "predicted_label": "unknown",
+      "purist_correct": true,
+      "semantic_correct": true,
+      "source_row_index": 14029
+    },
+    {
+      "ambiguity_classification": "explicit_count_window",
+      "class_label_incoherent": true,
+      "gold_decision": "unknown_decision",
+      "gold_label": "unknown",
+      "over_specific_rebucket": false,
+      "predicted_decision": "unknown_decision",
+      "predicted_label": "unknown",
+      "purist_correct": true,
+      "semantic_correct": true,
+      "source_row_index": 14137
+    },
+    {
+      "ambiguity_classification": "last_event_only_unknown",
+      "class_label_incoherent": true,
+      "gold_decision": "frequency_decision",
+      "gold_label": "2 per 2 month",
+      "over_specific_rebucket": false,
+      "predicted_decision": "frequency_decision",
+      "predicted_label": "2 per 2 month",
+      "purist_correct": true,
+      "semantic_correct": true,
+      "source_row_index": 14454
+    },
+    {
+      "ambiguity_classification": "last_event_only_unknown",
+      "class_label_incoherent": false,
+      "gold_decision": "frequency_decision",
+      "gold_label": "1 per month",
+      "over_specific_rebucket": false,
+      "predicted_decision": "unknown_decision",
+      "predicted_label": "unknown",
+      "purist_correct": false,
+      "semantic_correct": false,
+      "source_row_index": 14821
+    }
+  ],
+  "run_id": "gan2026_ambiguity_slice_semantic_scorer_2026-06-15",
+  "source_artifact": "C:\\Users\\cbrow\\Code\\clinical_extraction\\experiments\\gan2026_fresh_evidence_reasoner_residual_slice_live_gpt41_v0_6_safety_v0_9_2026-06-15.jsonl",
+  "summary": {
+    "decision_confusion": {
+      "frequency_decision->frequency_decision": 5,
+      "frequency_decision->unknown_decision": 4,
+      "unknown_decision->frequency_decision": 3,
+      "unknown_decision->seizure_free_decision": 2,
+      "unknown_decision->unknown_decision": 8
+    },
+    "headline": {
+      "class_label_incoherent_rows": [
+        14454,
+        14137
+      ],
+      "over_specific_rebucket_rows": [],
+      "purist_correct": 12,
+      "purist_minus_semantic": 0,
+      "rows": 22,
+      "semantic_correct": 12
+    },
+    "purist_correct_but_not_semantic_rows": []
+  }
+}

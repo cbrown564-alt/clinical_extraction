@@ -444,9 +444,14 @@ def test_frozen_test_preflight_rejects_test_source_coverage_drift(
     frozen_file.write_text("frozen = True\n", encoding="utf-8")
     gpt_source = tmp_path / "gpt_test.jsonl"
     qwen_source = tmp_path / "qwen_test.jsonl"
-    deepseek_placeholder = tmp_path / "missing_deepseek_test.jsonl"
+    deepseek_source = tmp_path / "deepseek_test.jsonl"
     gpt_source.write_text('{"source_row_index": 1, "split": "test"}\n', encoding="utf-8")
     qwen_source.write_text(
+        '{"source_row_index": 1, "split": "test"}\n'
+        '{"source_row_index": 2, "split": "test"}\n',
+        encoding="utf-8",
+    )
+    deepseek_source.write_text(
         '{"source_row_index": 1, "split": "test"}\n'
         '{"source_row_index": 2, "split": "test"}\n',
         encoding="utf-8",
@@ -465,12 +470,12 @@ def test_frozen_test_preflight_rejects_test_source_coverage_drift(
     monkeypatch.setattr(
         frozen_test_preflight.fresh_evidence_reasoner,
         "TEST_DEEPSEEK_STRUCTURED_EVENT_JSONL_PATH",
-        deepseek_placeholder,
+        deepseek_source,
     )
     monkeypatch.setattr(
         frozen_test_preflight,
         "EXPECTED_TEST_SOURCE_ARTIFACTS",
-        (("gpt", gpt_source), ("qwen", qwen_source)),
+        (("gpt", gpt_source), ("qwen", qwen_source), ("deepseek", deepseek_source)),
     )
     protocol = _write_protocol(tmp_path, {str(frozen_file): _sha256(frozen_file)})
     monkeypatch.setattr(
@@ -536,21 +541,26 @@ def _write_protocol(
         .TEST_QWEN_STRUCTURED_EVENT_JSONL_PATH
         .as_posix()
     )
+    deepseek_source = (
+        frozen_test_preflight.fresh_evidence_reasoner
+        .TEST_DEEPSEEK_STRUCTURED_EVENT_JSONL_PATH
+        .as_posix()
+    )
     protocol = tmp_path / "protocol.md"
     protocol.write_text(
         f"""# Protocol
 
 Pipeline `fresh_evidence_reasoner`
 Model `openai/gpt-4.1`
-Prompt `gan2026_fresh_evidence_reasoner_v0_4`
-Gate `gan2026_fresh_evidence_safety_gate_v0_3`
+Prompt `gan2026_fresh_evidence_reasoner_v0_6`
+Gate `gan2026_fresh_evidence_safety_gate_v0_9`
 Target `383/450`
 Use aggregate-only readout.
 No deterministic final-label fallback.
 Post-run aggregate readout uses frozen_test_readout.
 GPT source `{gpt_source}`
 Qwen source `{qwen_source}`
-DeepSeek test450 structured-event artifact is unavailable.
+DeepSeek source `{deepseek_source}`
 
 ```text
 {hash_lines}

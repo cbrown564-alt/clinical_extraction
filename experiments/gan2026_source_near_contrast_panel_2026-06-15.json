@@ -1,0 +1,169 @@
+{
+  "date": "2026-06-15",
+  "prompt_version": "gan2026_fresh_evidence_reasoner_v0_6",
+  "purpose": "Validation-only paired source-near hard-negative contract for ambiguity-class generation. Each pair shares surface cues but requires opposite calls; the gate must preserve both directions.",
+  "records": [
+    {
+      "action_render_events": [
+        "fresh_evidence_action_rendered:replace_with_fresh_evidence_final"
+      ],
+      "case_id": "last_event_only",
+      "direction": "ambiguous",
+      "distinction": "last seizure date only",
+      "expected_ambiguity_classification": "last_event_only_unknown",
+      "expected_final_kind": "unknown",
+      "expected_final_label": "unknown",
+      "gate_fallback": false,
+      "observed_ambiguity_classification": "last_event_only_unknown",
+      "observed_final_kind": "unknown",
+      "observed_final_label": "unknown",
+      "pair_id": "last_event",
+      "parse_errors": [
+        "decision_field_shape_repaired:selected_event_ids",
+        "decision_field_shape_repaired:rejected_event_ids",
+        "decision_field_shape_repaired:evidence",
+        "decision_field_shape_repaired:boundary_profile"
+      ],
+      "passed": true
+    },
+    {
+      "action_render_events": [
+        "fresh_evidence_action_rendered:replace_with_fresh_evidence_final"
+      ],
+      "case_id": "last_event_plus_duration",
+      "direction": "determinate",
+      "distinction": "last seizure date plus independently stated duration",
+      "expected_ambiguity_classification": "explicit_seizure_free_duration",
+      "expected_final_kind": "seizure_free",
+      "expected_final_label": "seizure free for 6 month",
+      "gate_fallback": false,
+      "observed_ambiguity_classification": "explicit_seizure_free_duration",
+      "observed_final_kind": "seizure_free",
+      "observed_final_label": "seizure free for 6 month",
+      "pair_id": "last_event",
+      "parse_errors": [
+        "decision_field_shape_repaired:selected_event_ids",
+        "decision_field_shape_repaired:rejected_event_ids",
+        "decision_field_shape_repaired:evidence",
+        "decision_field_shape_repaired:boundary_profile"
+      ],
+      "passed": true
+    },
+    {
+      "action_render_events": [
+        "fresh_evidence_action_rendered:replace_with_fresh_evidence_final"
+      ],
+      "case_id": "open_ended_since_treatment",
+      "direction": "ambiguous",
+      "distinction": "open-ended since-medication count",
+      "expected_ambiguity_classification": "unknown_count_or_window",
+      "expected_final_kind": "unknown",
+      "expected_final_label": "unknown",
+      "gate_fallback": false,
+      "observed_ambiguity_classification": "unknown_count_or_window",
+      "observed_final_kind": "unknown",
+      "observed_final_label": "unknown",
+      "pair_id": "since_treatment_count",
+      "parse_errors": [
+        "decision_field_shape_repaired:selected_event_ids",
+        "decision_field_shape_repaired:rejected_event_ids",
+        "decision_field_shape_repaired:evidence",
+        "decision_field_shape_repaired:boundary_profile"
+      ],
+      "passed": true
+    },
+    {
+      "action_render_events": [
+        "fresh_evidence_action_rendered:replace_with_fresh_evidence_final"
+      ],
+      "case_id": "explicit_count_plus_window",
+      "direction": "determinate",
+      "distinction": "explicit count plus defined follow-up period",
+      "expected_ambiguity_classification": "explicit_count_window",
+      "expected_final_kind": "frequency",
+      "expected_final_label": "3 per 6 month",
+      "gate_fallback": false,
+      "observed_ambiguity_classification": "explicit_count_window",
+      "observed_final_kind": "frequency",
+      "observed_final_label": "3 per 6 month",
+      "pair_id": "since_treatment_count",
+      "parse_errors": [
+        "decision_field_shape_repaired:selected_event_ids",
+        "decision_field_shape_repaired:rejected_event_ids",
+        "decision_field_shape_repaired:evidence",
+        "decision_field_shape_repaired:boundary_profile"
+      ],
+      "passed": true
+    },
+    {
+      "action_render_events": [
+        "fresh_evidence_action_rendered:replace_with_fresh_evidence_final"
+      ],
+      "case_id": "cluster_cadence_no_per_cluster",
+      "direction": "ambiguous",
+      "distinction": "cluster cadence without events-per-cluster",
+      "expected_ambiguity_classification": "cluster_axis_incomplete",
+      "expected_final_kind": "unknown",
+      "expected_final_label": "unknown",
+      "gate_fallback": false,
+      "observed_ambiguity_classification": "cluster_axis_incomplete",
+      "observed_final_kind": "unknown",
+      "observed_final_label": "unknown",
+      "pair_id": "cluster_cadence",
+      "parse_errors": [
+        "decision_field_shape_repaired:selected_event_ids",
+        "decision_field_shape_repaired:rejected_event_ids",
+        "decision_field_shape_repaired:evidence",
+        "decision_field_shape_repaired:boundary_profile"
+      ],
+      "passed": true
+    },
+    {
+      "action_render_events": [
+        "fresh_evidence_action_rendered:replace_with_fresh_evidence_final"
+      ],
+      "case_id": "cluster_cadence_with_per_cluster",
+      "direction": "determinate",
+      "distinction": "cluster cadence plus events-per-cluster",
+      "expected_ambiguity_classification": "cluster_axis_complete",
+      "expected_final_kind": "frequency",
+      "expected_final_label": "1 cluster per month, multiple per cluster",
+      "gate_fallback": false,
+      "observed_ambiguity_classification": "cluster_axis_complete",
+      "observed_final_kind": "frequency",
+      "observed_final_label": "1 cluster per month, multiple per cluster",
+      "pair_id": "cluster_cadence",
+      "parse_errors": [
+        "decision_field_shape_repaired:selected_event_ids",
+        "decision_field_shape_repaired:rejected_event_ids",
+        "decision_field_shape_repaired:evidence",
+        "decision_field_shape_repaired:boundary_profile"
+      ],
+      "passed": true
+    }
+  ],
+  "run_id": "gan2026_source_near_contrast_panel_2026-06-15",
+  "safety_gate_version": "gan2026_fresh_evidence_safety_gate_v0_9",
+  "summary": {
+    "cases": 6,
+    "class_distribution": {
+      "cluster_axis_complete": 1,
+      "cluster_axis_incomplete": 1,
+      "explicit_count_window": 1,
+      "explicit_seizure_free_duration": 1,
+      "last_event_only_unknown": 1,
+      "unknown_count_or_window": 1
+    },
+    "failed": 0,
+    "failed_cases": [],
+    "pair_pass": {
+      "cluster_cadence": true,
+      "last_event": true,
+      "since_treatment_count": true
+    },
+    "pairs": 3,
+    "pairs_both_directions_pass": 3,
+    "panel_passed": true,
+    "passed": 6
+  }
+}

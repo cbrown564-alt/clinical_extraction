@@ -1,0 +1,815 @@
+{
+  "date": "2026-06-15",
+  "purpose": "Validation-only residual headroom audit for selector v0.7; no holdout rows and no model calls.",
+  "run_id": "gan2026_consensus_fresh_agreement_selector_v0_7_residual_headroom_audit_2026-06-15",
+  "source_artifact": "C:\\Users\\cbrow\\Code\\clinical_extraction\\experiments\\gan2026_consensus_fresh_agreement_selector_v0_7_validation750_no_call_replay_2026-06-15.jsonl",
+  "summary": {
+    "oracle_correct_available": 11,
+    "oracle_correct_unavailable": 11,
+    "parseable_other_relaxation_probe": {
+      "by_band": {
+        "band_monthly": {
+          "correct_to_correct": 6,
+          "correct_to_wrong": 2,
+          "wrong_to_correct": 2
+        },
+        "band_submonthly": {
+          "correct_to_correct": 5,
+          "correct_to_wrong": 1,
+          "wrong_to_correct": 1
+        },
+        "band_unknown": {
+          "wrong_to_wrong": 2
+        },
+        "band_weekly": {
+          "correct_to_correct": 5,
+          "correct_to_wrong": 2,
+          "wrong_to_correct": 1
+        }
+      },
+      "candidate_actions": 27,
+      "correct_to_correct": 16,
+      "correct_to_wrong": 5,
+      "decision": "reject_broad_parseable_other_relaxation",
+      "examples": [
+        {
+          "deterministic_label": "5 to 7 per year",
+          "fresh_boundary_profile": [
+            "explicit numeric frequency",
+            "current/recent frequency",
+            "no seizure-free statement"
+          ],
+          "fresh_evidence_label": "5 to 7 per 10 month",
+          "gold_band": "band_submonthly",
+          "gold_label": "5 to 7 per year",
+          "source_row_index": 1281,
+          "transition_if_accepted": "correct_to_correct"
+        },
+        {
+          "deterministic_label": "1 cluster per 2 week, 3 per cluster",
+          "fresh_boundary_profile": [
+            "recent cluster frequency",
+            "explicit numerator and denominator",
+            "historical stability does not override recent events"
+          ],
+          "fresh_evidence_label": "3 per 2 week",
+          "gold_band": "band_weekly",
+          "gold_label": "1 cluster per 2 week, 3 per cluster",
+          "source_row_index": 1694,
+          "transition_if_accepted": "correct_to_correct"
+        },
+        {
+          "deterministic_label": "4 per month",
+          "fresh_boundary_profile": [
+            "current/recent frequency",
+            "highest active semiology"
+          ],
+          "fresh_evidence_label": "4 per 1 month",
+          "gold_band": "band_weekly",
+          "gold_label": "4 per month",
+          "source_row_index": 4345,
+          "transition_if_accepted": "correct_to_correct"
+        },
+        {
+          "deterministic_label": "6 per 3 month",
+          "fresh_boundary_profile": [
+            "explicit numeric frequency",
+            "recent window",
+            "highest active semiology"
+          ],
+          "fresh_evidence_label": "2 per 3 month",
+          "gold_band": "band_monthly",
+          "gold_label": "2 per month",
+          "source_row_index": 5763,
+          "transition_if_accepted": "correct_to_wrong"
+        },
+        {
+          "deterministic_label": "1 per day",
+          "fresh_boundary_profile": [
+            "explicit current frequency",
+            "no seizure-free or unknown boundary",
+            "cluster/seizure frequency clearly stated"
+          ],
+          "fresh_evidence_label": "1 per 6 to 8 week",
+          "gold_band": "band_submonthly",
+          "gold_label": "1 per 6 to 8 week",
+          "source_row_index": 5921,
+          "transition_if_accepted": "wrong_to_correct"
+        },
+        {
+          "deterministic_label": "3 per week",
+          "fresh_boundary_profile": [
+            "explicit count of 5 events over ~6 weeks",
+            "no evidence for seizure-free, unknown, or no_reference",
+            "highest current/recent frequency is cluster count"
+          ],
+          "fresh_evidence_label": "4 per 2 month",
+          "gold_band": "band_monthly",
+          "gold_label": "3 per month",
+          "source_row_index": 6094,
+          "transition_if_accepted": "wrong_to_correct"
+        },
+        {
+          "deterministic_label": "1 per 1 to 2 week",
+          "fresh_boundary_profile": [
+            "current/recent frequency",
+            "highest active semiology"
+          ],
+          "fresh_evidence_label": "9 per 4 week",
+          "gold_band": "band_weekly",
+          "gold_label": "9 per month",
+          "source_row_index": 6153,
+          "transition_if_accepted": "wrong_to_correct"
+        },
+        {
+          "deterministic_label": "seizure free for multiple year",
+          "fresh_boundary_profile": [
+            "explicit seizure-free interval",
+            "no conflicting current/recent frequency evidence",
+            "last event in early June 2025",
+            "explicit statement: 'no further events reported' since mid-June 2025"
+          ],
+          "fresh_evidence_label": "1 per 4 month",
+          "gold_band": "band_unknown",
+          "gold_label": "unknown",
+          "source_row_index": 6571,
+          "transition_if_accepted": "wrong_to_wrong"
+        },
+        {
+          "deterministic_label": "3 per 3 month",
+          "fresh_boundary_profile": [
+            "explicit recent frequency count",
+            "no seizure-free statement",
+            "no cluster multiplication possible",
+            "window and numerator both explicit"
+          ],
+          "fresh_evidence_label": "3 per 12 week",
+          "gold_band": "band_monthly",
+          "gold_label": "1 per month",
+          "source_row_index": 7275,
+          "transition_if_accepted": "correct_to_correct"
+        },
+        {
+          "deterministic_label": "3 per year",
+          "fresh_boundary_profile": [
+            "recent cluster event",
+            "historical seizure-free period superseded by recent event",
+            "no explicit recurring rate or longer seizure-free interval"
+          ],
+          "fresh_evidence_label": "3 per 1 year",
+          "gold_band": "band_submonthly",
+          "gold_label": "3 per year",
+          "source_row_index": 13122,
+          "transition_if_accepted": "correct_to_correct"
+        },
+        {
+          "deterministic_label": "64 per 12 month",
+          "fresh_boundary_profile": [
+            "recent explicit seizure frequency evidence",
+            "no current seizure-free statement",
+            "no evidence for unknown or no_reference"
+          ],
+          "fresh_evidence_label": "20 per 3 month",
+          "gold_band": "band_weekly",
+          "gold_label": "64 per 12 month",
+          "source_row_index": 13627,
+          "transition_if_accepted": "correct_to_correct"
+        },
+        {
+          "deterministic_label": "77 per 12 month",
+          "fresh_boundary_profile": [
+            "explicit numeric seizure-day counts per month",
+            "no seizure-free interval",
+            "no unknown or no_reference boundary",
+            "current/recent frequency window"
+          ],
+          "fresh_evidence_label": "26 per 6 month",
+          "gold_band": "band_weekly",
+          "gold_label": "77 per 12 month",
+          "source_row_index": 13721,
+          "transition_if_accepted": "correct_to_correct"
+        },
+        {
+          "deterministic_label": "52 per 8 month",
+          "fresh_boundary_profile": [
+            "explicit recent seizure-day counts",
+            "no seizure-free interval",
+            "no evidence for unknown or no_reference",
+            "highest current/recent frequency"
+          ],
+          "fresh_evidence_label": "16 per 3 month",
+          "gold_band": "band_weekly",
+          "gold_label": "52 per 8 month",
+          "source_row_index": 13732,
+          "transition_if_accepted": "correct_to_correct"
+        },
+        {
+          "deterministic_label": "seizure free for multiple year",
+          "fresh_boundary_profile": [
+            "current/recent frequency",
+            "highest active semiology"
+          ],
+          "fresh_evidence_label": "2 per 6 week",
+          "gold_band": "band_unknown",
+          "gold_label": "unknown",
+          "source_row_index": 14025,
+          "transition_if_accepted": "wrong_to_wrong"
+        },
+        {
+          "deterministic_label": "1 per month",
+          "fresh_boundary_profile": [
+            "explicit seizure-free interval",
+            "recent last event date",
+            "no conflicting current/recent frequency evidence"
+          ],
+          "fresh_evidence_label": "1 per 1 month",
+          "gold_band": "band_monthly",
+          "gold_label": "1 per month",
+          "source_row_index": 14765,
+          "transition_if_accepted": "correct_to_correct"
+        },
+        {
+          "deterministic_label": "1 per month",
+          "fresh_boundary_profile": [
+            "last_event_only boundary",
+            "explicit seizure-free interval",
+            "no conflicting current/recent frequency"
+          ],
+          "fresh_evidence_label": "1 per 1 month",
+          "gold_band": "band_monthly",
+          "gold_label": "1 per month",
+          "source_row_index": 14973,
+          "transition_if_accepted": "correct_to_correct"
+        },
+        {
+          "deterministic_label": "4 per 13 month",
+          "fresh_boundary_profile": [
+            "current/recent frequency",
+            "denominator/window"
+          ],
+          "fresh_evidence_label": "3 per 13 month",
+          "gold_band": "band_submonthly",
+          "gold_label": "4 per 13 month",
+          "source_row_index": 15094,
+          "transition_if_accepted": "correct_to_correct"
+        },
+        {
+          "deterministic_label": "3 to 4 per 15 month",
+          "fresh_boundary_profile": [
+            "current/recent frequency",
+            "highest active semiology"
+          ],
+          "fresh_evidence_label": "2 to 3 per 15 month",
+          "gold_band": "band_submonthly",
+          "gold_label": "3 to 4 per 15 month",
+          "source_row_index": 15108,
+          "transition_if_accepted": "correct_to_wrong"
+        },
+        {
+          "deterministic_label": "5 per 13 month",
+          "fresh_boundary_profile": [
+            "current/recent frequency",
+            "denominator/window"
+          ],
+          "fresh_evidence_label": "4 per 13 month",
+          "gold_band": "band_submonthly",
+          "gold_label": "5 per 13 month",
+          "source_row_index": 15127,
+          "transition_if_accepted": "correct_to_correct"
+        },
+        {
+          "deterministic_label": "4 to 5 per 15 month",
+          "fresh_boundary_profile": [
+            "current/recent frequency",
+            "denominator/window"
+          ],
+          "fresh_evidence_label": "3 to 4 per 15 month",
+          "gold_band": "band_submonthly",
+          "gold_label": "4 to 5 per 15 month",
+          "source_row_index": 15141,
+          "transition_if_accepted": "correct_to_correct"
+        },
+        {
+          "deterministic_label": "1 cluster per 2 month, 4 per cluster",
+          "fresh_boundary_profile": [
+            "cluster frequency",
+            "recurring seizure-free intervals with breakthrough clusters",
+            "highest current clinically active burden"
+          ],
+          "fresh_evidence_label": "4 per 2 month",
+          "gold_band": "band_monthly",
+          "gold_label": "1 cluster per 2 month, 4 per cluster",
+          "source_row_index": 15429,
+          "transition_if_accepted": "correct_to_correct"
+        },
+        {
+          "deterministic_label": "1 per 5 to 7 day",
+          "fresh_boundary_profile": [
+            "current/recent frequency",
+            "denominator/window"
+          ],
+          "fresh_evidence_label": "11 per 3 month",
+          "gold_band": "band_monthly",
+          "gold_label": "11 per 3 month",
+          "source_row_index": 15986,
+          "transition_if_accepted": "wrong_to_correct"
+        },
+        {
+          "deterministic_label": "9 per 3 month",
+          "fresh_boundary_profile": [
+            "explicit recent seizure counts",
+            "no seizure-free interval",
+            "current/recent frequency evidence"
+          ],
+          "fresh_evidence_label": "8 per 2 month",
+          "gold_band": "band_monthly",
+          "gold_label": "9 per 3 month",
+          "source_row_index": 16203,
+          "transition_if_accepted": "correct_to_wrong"
+        },
+        {
+          "deterministic_label": "6 per 2 month",
+          "fresh_boundary_profile": [
+            "explicit recent seizure counts",
+            "clear 3-month window",
+            "no seizure-free or unknown boundary",
+            "no cluster multiplication possible"
+          ],
+          "fresh_evidence_label": "7 per 3 month",
+          "gold_band": "band_monthly",
+          "gold_label": "7 per 3 month",
+          "source_row_index": 16335,
+          "transition_if_accepted": "correct_to_correct"
+        },
+        {
+          "deterministic_label": "7 per 6 month",
+          "fresh_boundary_profile": [
+            "current/recent frequency",
+            "denominator/window"
+          ],
+          "fresh_evidence_label": "6 per 4 month",
+          "gold_band": "band_monthly",
+          "gold_label": "7 per 6 month",
+          "source_row_index": 16674,
+          "transition_if_accepted": "correct_to_correct"
+        },
+        {
+          "deterministic_label": "2 per week",
+          "fresh_boundary_profile": [
+            "explicit numeric frequency for highest-burden seizure type",
+            "current/recent frequency window",
+            "multiple active semiologies, highest burden selected"
+          ],
+          "fresh_evidence_label": "1 per 2 month",
+          "gold_band": "band_weekly",
+          "gold_label": "2 per week",
+          "source_row_index": 16938,
+          "transition_if_accepted": "correct_to_wrong"
+        },
+        {
+          "deterministic_label": "2 per week",
+          "fresh_boundary_profile": [
+            "explicit numeric frequency",
+            "highest current clinically active semiology",
+            "current/recent frequency"
+          ],
+          "fresh_evidence_label": "1 per 2 month",
+          "gold_band": "band_weekly",
+          "gold_label": "2 per week",
+          "source_row_index": 16947,
+          "transition_if_accepted": "correct_to_wrong"
+        }
+      ],
+      "net_purist_gain": -1,
+      "wrong_to_correct": 4,
+      "wrong_to_wrong": 2
+    },
+    "rows": 750,
+    "selected_correct": 728,
+    "selected_wrong": 22,
+    "selected_wrong_by_action": {
+      "keep_deterministic_baseline": 22
+    },
+    "selected_wrong_by_band": {
+      "band_monthly": 6,
+      "band_submonthly": 3,
+      "band_unknown": 11,
+      "band_weekly": 2
+    },
+    "selected_wrong_by_component_availability": {
+      "consensus+fresh_evidence": 6,
+      "fresh_evidence": 5,
+      "none": 11
+    },
+    "selected_wrong_records": [
+      {
+        "consensus_label": "seizure free for multiple year",
+        "correct_components": [
+          "fresh_evidence"
+        ],
+        "deterministic_label": "seizure free for multiple year",
+        "fresh_boundary_profile": [
+          "conditional frequency",
+          "no explicit count",
+          "recent 3-month window",
+          "not seizure free",
+          "not unknown",
+          "not no_reference"
+        ],
+        "fresh_evidence_label": "multiple per year",
+        "gold_band": "band_unknown",
+        "gold_label": "unknown",
+        "selected_label": "seizure free for multiple year",
+        "selector_action": "keep_deterministic_baseline",
+        "selector_gate": "consensus_matches_deterministic",
+        "source_row_index": 3356
+      },
+      {
+        "consensus_label": "seizure free for multiple year",
+        "correct_components": [],
+        "deterministic_label": "seizure free for multiple year",
+        "fresh_boundary_profile": [
+          "recent single event",
+          "explicit time window",
+          "no evidence for recurring rate",
+          "no explicit seizure-free duration"
+        ],
+        "fresh_evidence_label": "1 per 2 week",
+        "gold_band": "band_unknown",
+        "gold_label": "1 per multiple month",
+        "selected_label": "seizure free for multiple year",
+        "selector_action": "keep_deterministic_baseline",
+        "selector_gate": "consensus_matches_deterministic",
+        "source_row_index": 5534
+      },
+      {
+        "consensus_label": "1 per 6 to 8 week",
+        "correct_components": [
+          "consensus",
+          "fresh_evidence"
+        ],
+        "deterministic_label": "1 per day",
+        "fresh_boundary_profile": [
+          "explicit current frequency",
+          "no seizure-free or unknown boundary",
+          "cluster/seizure frequency clearly stated"
+        ],
+        "fresh_evidence_label": "1 per 6 to 8 week",
+        "gold_band": "band_submonthly",
+        "gold_label": "1 per 6 to 8 week",
+        "selected_label": "1 per day",
+        "selector_action": "keep_deterministic_baseline",
+        "selector_gate": "unknown_count_window_rescue_v0_7:uncertain_or_ambiguous_replacement:other",
+        "source_row_index": 5921
+      },
+      {
+        "consensus_label": "4 per 2 month",
+        "correct_components": [
+          "consensus",
+          "fresh_evidence"
+        ],
+        "deterministic_label": "3 per week",
+        "fresh_boundary_profile": [
+          "explicit count of 5 events over ~6 weeks",
+          "no evidence for seizure-free, unknown, or no_reference",
+          "highest current/recent frequency is cluster count"
+        ],
+        "fresh_evidence_label": "4 per 2 month",
+        "gold_band": "band_monthly",
+        "gold_label": "3 per month",
+        "selected_label": "3 per week",
+        "selector_action": "keep_deterministic_baseline",
+        "selector_gate": "unknown_count_window_rescue_v0_7:uncertain_or_ambiguous_replacement:other",
+        "source_row_index": 6094
+      },
+      {
+        "consensus_label": "9 per 4 week",
+        "correct_components": [
+          "consensus",
+          "fresh_evidence"
+        ],
+        "deterministic_label": "1 per 1 to 2 week",
+        "fresh_boundary_profile": [
+          "current/recent frequency",
+          "highest active semiology"
+        ],
+        "fresh_evidence_label": "9 per 4 week",
+        "gold_band": "band_weekly",
+        "gold_label": "9 per month",
+        "selected_label": "1 per 1 to 2 week",
+        "selector_action": "keep_deterministic_baseline",
+        "selector_gate": "unknown_count_window_rescue_v0_7:uncertain_or_ambiguous_replacement:other",
+        "source_row_index": 6153
+      },
+      {
+        "consensus_label": "1 per day",
+        "correct_components": [],
+        "deterministic_label": "1 per day",
+        "fresh_boundary_profile": [
+          "current/recent frequency",
+          "denominator/window"
+        ],
+        "fresh_evidence_label": "2 per 3 month",
+        "gold_band": "band_unknown",
+        "gold_label": "unknown",
+        "selected_label": "1 per day",
+        "selector_action": "keep_deterministic_baseline",
+        "selector_gate": "consensus_matches_deterministic",
+        "source_row_index": 6321
+      },
+      {
+        "consensus_label": "1 per 1 to 2 week",
+        "correct_components": [],
+        "deterministic_label": "1 per 1 to 2 week",
+        "fresh_boundary_profile": [
+          "current/recent frequency",
+          "denominator/window",
+          "cluster burden"
+        ],
+        "fresh_evidence_label": "3 per 6 week",
+        "gold_band": "band_unknown",
+        "gold_label": "unknown",
+        "selected_label": "1 per 1 to 2 week",
+        "selector_action": "keep_deterministic_baseline",
+        "selector_gate": "consensus_matches_deterministic",
+        "source_row_index": 6368
+      },
+      {
+        "consensus_label": "1 per 4 month",
+        "correct_components": [],
+        "deterministic_label": "seizure free for multiple year",
+        "fresh_boundary_profile": [
+          "explicit seizure-free interval",
+          "no conflicting current/recent frequency evidence",
+          "last event in early June 2025",
+          "explicit statement: 'no further events reported' since mid-June 2025"
+        ],
+        "fresh_evidence_label": "1 per 4 month",
+        "gold_band": "band_unknown",
+        "gold_label": "unknown",
+        "selected_label": "seizure free for multiple year",
+        "selector_action": "keep_deterministic_baseline",
+        "selector_gate": "unknown_count_window_rescue_v0_7:uncertain_or_ambiguous_replacement:other",
+        "source_row_index": 6571
+      },
+      {
+        "consensus_label": "2 per year",
+        "correct_components": [
+          "fresh_evidence"
+        ],
+        "deterministic_label": "2 per year",
+        "fresh_boundary_profile": [
+          "highest current clinically active burden",
+          "cluster burden",
+          "current/recent frequency"
+        ],
+        "fresh_evidence_label": "multiple per week",
+        "gold_band": "band_unknown",
+        "gold_label": "unknown",
+        "selected_label": "2 per year",
+        "selector_action": "keep_deterministic_baseline",
+        "selector_gate": "consensus_matches_deterministic",
+        "source_row_index": 7168
+      },
+      {
+        "consensus_label": "2 per year",
+        "correct_components": [
+          "fresh_evidence"
+        ],
+        "deterministic_label": "2 per year",
+        "fresh_boundary_profile": [
+          "highest current clinically active burden",
+          "explicit numeric frequency for brief focal clusters",
+          "cluster frequency with clear numerator and denominator"
+        ],
+        "fresh_evidence_label": "3 to 6 per month",
+        "gold_band": "band_weekly",
+        "gold_label": "3 to 7 per month",
+        "selected_label": "2 per year",
+        "selector_action": "keep_deterministic_baseline",
+        "selector_gate": "consensus_matches_deterministic",
+        "source_row_index": 7615
+      },
+      {
+        "consensus_label": "2 per week",
+        "correct_components": [
+          "fresh_evidence"
+        ],
+        "deterministic_label": "2 per week",
+        "fresh_boundary_profile": [
+          "current/recent frequency",
+          "denominator/window"
+        ],
+        "fresh_evidence_label": "6 per 12 month",
+        "gold_band": "band_submonthly",
+        "gold_label": "6 per 12 month",
+        "selected_label": "2 per week",
+        "selector_action": "keep_deterministic_baseline",
+        "selector_gate": "consensus_matches_deterministic",
+        "source_row_index": 9496
+      },
+      {
+        "consensus_label": "1 per multiple week",
+        "correct_components": [],
+        "deterministic_label": "1 per multiple week",
+        "fresh_boundary_profile": [
+          "cluster_frequency",
+          "current/recent frequency",
+          "unknown/no-reference boundary"
+        ],
+        "fresh_evidence_label": "multiple per month",
+        "gold_band": "band_monthly",
+        "gold_label": "1 cluster per month, multiple per cluster",
+        "selected_label": "1 per multiple week",
+        "selector_action": "keep_deterministic_baseline",
+        "selector_gate": "consensus_matches_deterministic",
+        "source_row_index": 9937
+      },
+      {
+        "consensus_label": "1 per 4 to 5 week",
+        "correct_components": [],
+        "deterministic_label": "1 per 4 to 5 week",
+        "fresh_boundary_profile": [
+          "cluster pattern with known cluster interval but unknown number per cluster",
+          "no explicit numeric or range frequency for events within clusters",
+          "no evidence for seizure free, unknown, or no_reference boundary"
+        ],
+        "fresh_evidence_label": "1 per 4 to 5 week",
+        "gold_band": "band_monthly",
+        "gold_label": "1 cluster per 4 to 5 week, multiple per cluster",
+        "selected_label": "1 per 4 to 5 week",
+        "selector_action": "keep_deterministic_baseline",
+        "selector_gate": "consensus_matches_deterministic",
+        "source_row_index": 9943
+      },
+      {
+        "consensus_label": "unknown",
+        "correct_components": [
+          "consensus",
+          "fresh_evidence"
+        ],
+        "deterministic_label": "1 per 5 day",
+        "fresh_boundary_profile": [
+          "unknown_frequency",
+          "no explicit count or rate",
+          "device logs suggest clusters but no counts",
+          "patient unsure if episodes correspond to device alerts"
+        ],
+        "fresh_evidence_label": "unknown",
+        "gold_band": "band_unknown",
+        "gold_label": "unknown",
+        "selected_label": "1 per 5 day",
+        "selector_action": "keep_deterministic_baseline",
+        "selector_gate": "unknown_count_window_rescue_v0_7:uncertain_or_ambiguous_replacement:unknown",
+        "source_row_index": 10266
+      },
+      {
+        "consensus_label": "seizure free for 4 month",
+        "correct_components": [],
+        "deterministic_label": "seizure free for 4 month",
+        "fresh_boundary_profile": [
+          "explicit seizure-free statement",
+          "explicit last event date",
+          "no conflicting current/recent frequency evidence",
+          "duration since last event >3 months"
+        ],
+        "fresh_evidence_label": "seizure free for 4 month",
+        "gold_band": "band_unknown",
+        "gold_label": "unknown",
+        "selected_label": "seizure free for 4 month",
+        "selector_action": "keep_deterministic_baseline",
+        "selector_gate": "consensus_matches_deterministic",
+        "source_row_index": 11216
+      },
+      {
+        "consensus_label": "seizure free for multiple year",
+        "correct_components": [],
+        "deterministic_label": "seizure free for multiple year",
+        "fresh_boundary_profile": [
+          "explicit last event date",
+          "explicit no further events since last event",
+          "duration of seizure freedom is approximately 3 months (31-May to 01-Sep-2021)",
+          "no conflicting current/recent frequency evidence"
+        ],
+        "fresh_evidence_label": "seizure free for 3 month",
+        "gold_band": "band_unknown",
+        "gold_label": "unknown",
+        "selected_label": "seizure free for multiple year",
+        "selector_action": "keep_deterministic_baseline",
+        "selector_gate": "consensus_matches_deterministic",
+        "source_row_index": 11254
+      },
+      {
+        "consensus_label": "seizure free for multiple year",
+        "correct_components": [],
+        "deterministic_label": "seizure free for multiple year",
+        "fresh_boundary_profile": [
+          "explicit last event date",
+          "explicit statement of no seizures since last event",
+          "seizure-free interval is approximately 3 months (from 20/Dec to 23 March 2017)",
+          "no conflicting current/recent frequency evidence"
+        ],
+        "fresh_evidence_label": "seizure free for 3 month",
+        "gold_band": "band_unknown",
+        "gold_label": "unknown",
+        "selected_label": "seizure free for multiple year",
+        "selector_action": "keep_deterministic_baseline",
+        "selector_gate": "consensus_matches_deterministic",
+        "source_row_index": 11272
+      },
+      {
+        "consensus_label": "1 per 4 to 5 week",
+        "correct_components": [],
+        "deterministic_label": "1 per 4 to 5 week",
+        "fresh_boundary_profile": [
+          "current/recent frequency",
+          "denominator/window",
+          "highest active semiology"
+        ],
+        "fresh_evidence_label": "1 per 4 to 5 week",
+        "gold_band": "band_submonthly",
+        "gold_label": "1 per 8 month",
+        "selected_label": "1 per 4 to 5 week",
+        "selector_action": "keep_deterministic_baseline",
+        "selector_gate": "consensus_matches_deterministic",
+        "source_row_index": 13209
+      },
+      {
+        "consensus_label": "2 per 6 week",
+        "correct_components": [],
+        "deterministic_label": "seizure free for multiple year",
+        "fresh_boundary_profile": [
+          "current/recent frequency",
+          "highest active semiology"
+        ],
+        "fresh_evidence_label": "2 per 6 week",
+        "gold_band": "band_unknown",
+        "gold_label": "unknown",
+        "selected_label": "seizure free for multiple year",
+        "selector_action": "keep_deterministic_baseline",
+        "selector_gate": "unknown_count_window_rescue_v0_7:uncertain_or_ambiguous_replacement:other",
+        "source_row_index": 14025
+      },
+      {
+        "consensus_label": "1 per 1 month",
+        "correct_components": [
+          "consensus",
+          "fresh_evidence"
+        ],
+        "deterministic_label": "12 per month",
+        "fresh_boundary_profile": [
+          "explicit last event date",
+          "explicit seizure-free interval",
+          "duration since last event is just over 4 weeks",
+          "no conflicting current/recent frequency evidence"
+        ],
+        "fresh_evidence_label": "1 per month",
+        "gold_band": "band_monthly",
+        "gold_label": "1 per month",
+        "selected_label": "12 per month",
+        "selector_action": "keep_deterministic_baseline",
+        "selector_gate": "fresh_evidence_disagrees_with_consensus",
+        "source_row_index": 14810
+      },
+      {
+        "consensus_label": "17 per month",
+        "correct_components": [
+          "fresh_evidence"
+        ],
+        "deterministic_label": "17 per month",
+        "fresh_boundary_profile": [
+          "explicit last event date",
+          "explicit seizure-free interval",
+          "interval less than 2 months",
+          "no conflicting current/recent frequency evidence"
+        ],
+        "fresh_evidence_label": "1 per month",
+        "gold_band": "band_monthly",
+        "gold_label": "1 per month",
+        "selected_label": "17 per month",
+        "selector_action": "keep_deterministic_baseline",
+        "selector_gate": "consensus_matches_deterministic",
+        "source_row_index": 14821
+      },
+      {
+        "consensus_label": "11 per 3 month",
+        "correct_components": [
+          "consensus",
+          "fresh_evidence"
+        ],
+        "deterministic_label": "1 per 5 to 7 day",
+        "fresh_boundary_profile": [
+          "current/recent frequency",
+          "denominator/window"
+        ],
+        "fresh_evidence_label": "11 per 3 month",
+        "gold_band": "band_monthly",
+        "gold_label": "11 per 3 month",
+        "selected_label": "1 per 5 to 7 day",
+        "selector_action": "keep_deterministic_baseline",
+        "selector_gate": "unknown_count_window_rescue_v0_7:uncertain_or_ambiguous_replacement:other",
+        "source_row_index": 15986
+      }
+    ]
+  }
+}

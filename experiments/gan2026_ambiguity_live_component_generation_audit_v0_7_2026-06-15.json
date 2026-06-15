@@ -1,0 +1,387 @@
+{
+  "date": "2026-06-15",
+  "prior_residual_audit": "C:\\Users\\cbrow\\Code\\clinical_extraction\\experiments\\gan2026_consensus_fresh_agreement_selector_v0_9_residual_component_generation_audit_2026-06-15.json",
+  "purpose": "Decisive validation-only audit: does live v0.7 + safety-v0.9 ambiguity-aware fresh-evidence generation produce a Purist-correct component on rows where none existed, lifting the selector oracle ceiling above 739/750?",
+  "run_id": "gan2026_ambiguity_live_component_generation_audit_v0_7_2026-06-15",
+  "slice_artifact": "C:\\Users\\cbrow\\Code\\clinical_extraction\\experiments\\gan2026_fresh_evidence_reasoner_residual_slice_live_gpt41_v0_7_safety_v0_9_2026-06-15.jsonl",
+  "summary": {
+    "headline": {
+      "new_oracle_ceiling": 739,
+      "no_correct_rows": 11,
+      "no_correct_rows_fixed_by_live_fresh": 1,
+      "oracle_ceiling_delta": 0,
+      "prior_oracle_ceiling": 739,
+      "supervisor_panel_pass": 2,
+      "supervisor_panel_total": 6
+    },
+    "no_correct_rows": [
+      {
+        "action": "replace_with_fresh_evidence_final",
+        "ambiguity_classification": "last_event_only_unknown",
+        "audit_categories": [
+          "last_event_or_seizure_free_overinfer_unknown",
+          "unknown_over_quantified_rate"
+        ],
+        "consensus_label": "seizure free for multiple year",
+        "deterministic_label": "seizure free for multiple year",
+        "fresh_v04_label": "1 per 2 week",
+        "gate_fallback": [],
+        "gold_band": "band_unknown",
+        "gold_label": "1 per multiple month",
+        "new_fresh_label": "unknown",
+        "new_fresh_purist_correct": true,
+        "prior_fresh_correct": false,
+        "source_row_index": 5534
+      },
+      {
+        "action": "replace_with_fresh_evidence_final",
+        "ambiguity_classification": "explicit_count_window",
+        "audit_categories": [
+          "unknown_over_quantified_rate"
+        ],
+        "consensus_label": "1 per day",
+        "deterministic_label": "1 per day",
+        "fresh_v04_label": "2 per 3 month",
+        "gate_fallback": [],
+        "gold_band": "band_unknown",
+        "gold_label": "unknown",
+        "new_fresh_label": "2 per 3 month",
+        "new_fresh_purist_correct": false,
+        "prior_fresh_correct": false,
+        "source_row_index": 6321
+      },
+      {
+        "action": "replace_with_fresh_evidence_final",
+        "ambiguity_classification": "explicit_count_window",
+        "audit_categories": [
+          "unknown_over_quantified_rate"
+        ],
+        "consensus_label": "1 per 1 to 2 week",
+        "deterministic_label": "1 per 1 to 2 week",
+        "fresh_v04_label": "3 per 6 week",
+        "gate_fallback": [],
+        "gold_band": "band_unknown",
+        "gold_label": "unknown",
+        "new_fresh_label": "3 per 6 week",
+        "new_fresh_purist_correct": false,
+        "prior_fresh_correct": false,
+        "source_row_index": 6368
+      },
+      {
+        "action": "replace_with_fresh_evidence_final",
+        "ambiguity_classification": "explicit_seizure_free_duration",
+        "audit_categories": [
+          "last_event_or_seizure_free_overinfer_unknown",
+          "unknown_over_quantified_rate"
+        ],
+        "consensus_label": "1 per 4 month",
+        "deterministic_label": "seizure free for multiple year",
+        "fresh_v04_label": "1 per 4 month",
+        "gate_fallback": [
+          "fresh_evidence_gate_fallback: evidence_not_exact"
+        ],
+        "gold_band": "band_unknown",
+        "gold_label": "unknown",
+        "new_fresh_label": "1 per 4 month",
+        "new_fresh_purist_correct": false,
+        "prior_fresh_correct": false,
+        "source_row_index": 6571
+      },
+      {
+        "action": "keep_original_structured_event_final",
+        "ambiguity_classification": "unknown_count_or_window",
+        "audit_categories": [
+          "cluster_burden_component_failure"
+        ],
+        "consensus_label": "1 per multiple week",
+        "deterministic_label": "1 per multiple week",
+        "fresh_v04_label": "multiple per month",
+        "gate_fallback": [],
+        "gold_band": "band_monthly",
+        "gold_label": "1 cluster per month, multiple per cluster",
+        "new_fresh_label": "multiple per month",
+        "new_fresh_purist_correct": false,
+        "prior_fresh_correct": false,
+        "source_row_index": 9937
+      },
+      {
+        "action": "keep_original_structured_event_final",
+        "ambiguity_classification": "cluster_axis_incomplete",
+        "audit_categories": [
+          "cluster_burden_component_failure"
+        ],
+        "consensus_label": "1 per 4 to 5 week",
+        "deterministic_label": "1 per 4 to 5 week",
+        "fresh_v04_label": "1 per 4 to 5 week",
+        "gate_fallback": [],
+        "gold_band": "band_monthly",
+        "gold_label": "1 cluster per 4 to 5 week, multiple per cluster",
+        "new_fresh_label": "1 per 4 to 5 week",
+        "new_fresh_purist_correct": false,
+        "prior_fresh_correct": false,
+        "source_row_index": 9943
+      },
+      {
+        "action": "keep_original_structured_event_final",
+        "ambiguity_classification": "explicit_seizure_free_duration",
+        "audit_categories": [
+          "last_event_or_seizure_free_overinfer_unknown"
+        ],
+        "consensus_label": "seizure free for 4 month",
+        "deterministic_label": "seizure free for 4 month",
+        "fresh_v04_label": "seizure free for 4 month",
+        "gate_fallback": [],
+        "gold_band": "band_unknown",
+        "gold_label": "unknown",
+        "new_fresh_label": "seizure free for 4 month",
+        "new_fresh_purist_correct": false,
+        "prior_fresh_correct": false,
+        "source_row_index": 11216
+      },
+      {
+        "action": "replace_with_fresh_evidence_final",
+        "ambiguity_classification": "explicit_seizure_free_duration",
+        "audit_categories": [
+          "last_event_or_seizure_free_overinfer_unknown"
+        ],
+        "consensus_label": "seizure free for multiple year",
+        "deterministic_label": "seizure free for multiple year",
+        "fresh_v04_label": "seizure free for 3 month",
+        "gate_fallback": [],
+        "gold_band": "band_unknown",
+        "gold_label": "unknown",
+        "new_fresh_label": "seizure free for 3 month",
+        "new_fresh_purist_correct": false,
+        "prior_fresh_correct": false,
+        "source_row_index": 11254
+      },
+      {
+        "action": "replace_with_fresh_evidence_final",
+        "ambiguity_classification": "explicit_seizure_free_duration",
+        "audit_categories": [
+          "last_event_or_seizure_free_overinfer_unknown"
+        ],
+        "consensus_label": "seizure free for multiple year",
+        "deterministic_label": "seizure free for multiple year",
+        "fresh_v04_label": "seizure free for 3 month",
+        "gate_fallback": [],
+        "gold_band": "band_unknown",
+        "gold_label": "unknown",
+        "new_fresh_label": "seizure free for 3 month",
+        "new_fresh_purist_correct": false,
+        "prior_fresh_correct": false,
+        "source_row_index": 11272
+      },
+      {
+        "action": "keep_original_structured_event_final",
+        "ambiguity_classification": "explicit_count_window",
+        "audit_categories": [
+          "highest_semiology_or_denominator_conflict"
+        ],
+        "consensus_label": "1 per 4 to 5 week",
+        "deterministic_label": "1 per 4 to 5 week",
+        "fresh_v04_label": "1 per 4 to 5 week",
+        "gate_fallback": [],
+        "gold_band": "band_submonthly",
+        "gold_label": "1 per 8 month",
+        "new_fresh_label": "1 per 4 to 5 week",
+        "new_fresh_purist_correct": false,
+        "prior_fresh_correct": false,
+        "source_row_index": 13209
+      },
+      {
+        "action": "keep_original_structured_event_final",
+        "ambiguity_classification": "explicit_count_window",
+        "audit_categories": [
+          "last_event_or_seizure_free_overinfer_unknown",
+          "unknown_over_quantified_rate"
+        ],
+        "consensus_label": "2 per 6 week",
+        "deterministic_label": "seizure free for multiple year",
+        "fresh_v04_label": "2 per 6 week",
+        "gate_fallback": [],
+        "gold_band": "band_unknown",
+        "gold_label": "unknown",
+        "new_fresh_label": "2 per 6 week",
+        "new_fresh_purist_correct": false,
+        "prior_fresh_correct": false,
+        "source_row_index": 14025
+      }
+    ],
+    "recoverable_fresh_regressions": [
+      14821
+    ],
+    "recoverable_rows": [
+      {
+        "action": "replace_with_fresh_evidence_final",
+        "ambiguity_classification": "unknown_count_or_window",
+        "audit_categories": [
+          "last_event_or_seizure_free_overinfer_unknown",
+          "unknown_over_quantified_rate",
+          "fresh_only_correct_candidate"
+        ],
+        "consensus_label": "seizure free for multiple year",
+        "deterministic_label": "seizure free for multiple year",
+        "fresh_v04_label": "multiple per year",
+        "gate_fallback": [],
+        "gold_band": "band_unknown",
+        "gold_label": "unknown",
+        "new_fresh_label": "unknown",
+        "new_fresh_purist_correct": true,
+        "prior_fresh_correct": true,
+        "source_row_index": 3356
+      },
+      {
+        "action": "keep_original_structured_event_final",
+        "ambiguity_classification": "explicit_count_window",
+        "audit_categories": [
+          "consensus_fresh_correct_but_blocked",
+          "highest_semiology_or_denominator_conflict"
+        ],
+        "consensus_label": "9 per 4 week",
+        "deterministic_label": "1 per 1 to 2 week",
+        "fresh_v04_label": "9 per 4 week",
+        "gate_fallback": [],
+        "gold_band": "band_weekly",
+        "gold_label": "9 per month",
+        "new_fresh_label": "9 per 4 week",
+        "new_fresh_purist_correct": true,
+        "prior_fresh_correct": true,
+        "source_row_index": 6153
+      },
+      {
+        "action": "replace_with_fresh_evidence_final",
+        "ambiguity_classification": "unknown_count_or_window",
+        "audit_categories": [
+          "unknown_over_quantified_rate",
+          "fresh_only_correct_candidate"
+        ],
+        "consensus_label": "2 per year",
+        "deterministic_label": "2 per year",
+        "fresh_v04_label": "multiple per week",
+        "gate_fallback": [],
+        "gold_band": "band_unknown",
+        "gold_label": "unknown",
+        "new_fresh_label": "unknown",
+        "new_fresh_purist_correct": true,
+        "prior_fresh_correct": true,
+        "source_row_index": 7168
+      },
+      {
+        "action": "replace_with_fresh_evidence_final",
+        "ambiguity_classification": "explicit_count_window",
+        "audit_categories": [
+          "fresh_only_correct_candidate"
+        ],
+        "consensus_label": "2 per year",
+        "deterministic_label": "2 per year",
+        "fresh_v04_label": "3 to 6 per month",
+        "gate_fallback": [],
+        "gold_band": "band_weekly",
+        "gold_label": "3 to 7 per month",
+        "new_fresh_label": "3 to 6 per month",
+        "new_fresh_purist_correct": true,
+        "prior_fresh_correct": true,
+        "source_row_index": 7615
+      },
+      {
+        "action": "replace_with_fresh_evidence_final",
+        "ambiguity_classification": "explicit_count_window",
+        "audit_categories": [
+          "fresh_only_correct_candidate",
+          "highest_semiology_or_denominator_conflict"
+        ],
+        "consensus_label": "2 per week",
+        "deterministic_label": "2 per week",
+        "fresh_v04_label": "6 per 12 month",
+        "gate_fallback": [],
+        "gold_band": "band_submonthly",
+        "gold_label": "6 per 12 month",
+        "new_fresh_label": "6 per 12 month",
+        "new_fresh_purist_correct": true,
+        "prior_fresh_correct": true,
+        "source_row_index": 9496
+      },
+      {
+        "action": "replace_with_fresh_evidence_final",
+        "ambiguity_classification": "last_event_only_unknown",
+        "audit_categories": [
+          "fresh_only_correct_candidate"
+        ],
+        "consensus_label": "17 per month",
+        "deterministic_label": "17 per month",
+        "fresh_v04_label": "1 per month",
+        "gate_fallback": [],
+        "gold_band": "band_monthly",
+        "gold_label": "1 per month",
+        "new_fresh_label": "unknown",
+        "new_fresh_purist_correct": false,
+        "prior_fresh_correct": true,
+        "source_row_index": 14821
+      }
+    ],
+    "recoverable_rows_count": 6,
+    "recoverable_rows_fresh_preserved": 5,
+    "residual_rows_with_correct_component_now": 6,
+    "supervisor_panel": {
+      "cases": [
+        {
+          "class_matches_expected": false,
+          "expected_class": "last_event_only_unknown",
+          "expected_label": "unknown",
+          "label_purist_correct": false,
+          "new_ambiguity_classification": "explicit_seizure_free_duration",
+          "new_fresh_label": "seizure free for 3 month",
+          "source_row_index": 11272
+        },
+        {
+          "class_matches_expected": false,
+          "expected_class": "unknown_count_or_window",
+          "expected_label": "unknown",
+          "label_purist_correct": false,
+          "new_ambiguity_classification": "explicit_count_window",
+          "new_fresh_label": "1 per 8 week",
+          "source_row_index": 11337
+        },
+        {
+          "class_matches_expected": false,
+          "expected_class": "explicit_count_window",
+          "expected_label": "2 per 5 month",
+          "label_purist_correct": false,
+          "new_ambiguity_classification": "unknown_count_or_window",
+          "new_fresh_label": "unknown",
+          "source_row_index": 13267
+        },
+        {
+          "class_matches_expected": true,
+          "expected_class": "unknown_count_or_window",
+          "expected_label": "unknown",
+          "label_purist_correct": true,
+          "new_ambiguity_classification": "unknown_count_or_window",
+          "new_fresh_label": "unknown",
+          "source_row_index": 14029
+        },
+        {
+          "class_matches_expected": false,
+          "expected_class": "unknown_count_or_window",
+          "expected_label": "unknown",
+          "label_purist_correct": true,
+          "new_ambiguity_classification": "explicit_count_window",
+          "new_fresh_label": "unknown",
+          "source_row_index": 14137
+        },
+        {
+          "class_matches_expected": false,
+          "expected_class": "explicit_count_window",
+          "expected_label": "2 per 2 month",
+          "label_purist_correct": false,
+          "new_ambiguity_classification": "last_event_only_unknown",
+          "new_fresh_label": "unknown",
+          "source_row_index": 14454
+        }
+      ],
+      "passed": 2,
+      "total": 6
+    }
+  }
+}

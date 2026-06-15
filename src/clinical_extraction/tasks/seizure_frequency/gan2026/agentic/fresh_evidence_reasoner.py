@@ -54,8 +54,8 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.reports.base import (
     write_markdown_report,
 )
 
-PROMPT_VERSION = "gan2026_fresh_evidence_reasoner_v0_4"
-SAFETY_GATE_VERSION = "gan2026_fresh_evidence_safety_gate_v0_3"
+PROMPT_VERSION = "gan2026_fresh_evidence_reasoner_v0_6"
+SAFETY_GATE_VERSION = "gan2026_fresh_evidence_safety_gate_v0_9"
 PIPELINE_FAMILY = "fresh_evidence_reasoner"
 DEFAULT_STRUCTURED_EVENT_JSONL_PATH = llm_event_reasoner.DEFAULT_STRUCTURED_EVENT_JSONL_PATH
 DEFAULT_QWEN_STRUCTURED_EVENT_JSONL_PATH = (
@@ -75,7 +75,7 @@ TEST_QWEN_STRUCTURED_EVENT_JSONL_PATH = Path(
     "test450_qwen3635b_2026-06-13.jsonl"
 )
 TEST_DEEPSEEK_STRUCTURED_EVENT_JSONL_PATH = Path(
-    "experiments/gan2026_missing_deepseek_test450_structured_events.jsonl"
+    "experiments/gan2026_v06_test450_hybrid_structured_events_deepseek_2026-06-14.jsonl"
 )
 DEFAULT_JSONL_PATH = Path("experiments/gan2026_fresh_evidence_reasoner_validation.jsonl")
 DEFAULT_REPORT_PATH = Path("experiments/gan2026_fresh_evidence_reasoner_validation.md")
@@ -87,6 +87,62 @@ FreshEvidenceAction = Literal[
 FRESH_EVIDENCE_ACTION_VALUES = (
     "keep_original_structured_event_final",
     "replace_with_fresh_evidence_final",
+)
+AmbiguityClassification = Literal[
+    "explicit_count_window",
+    "unknown_count_or_window",
+    "last_event_only_unknown",
+    "explicit_seizure_free_duration",
+    "no_seizure_frequency_reference",
+    "cluster_axis_complete",
+    "cluster_axis_incomplete",
+    "not_applicable",
+]
+AMBIGUITY_CLASSIFICATION_VALUES = (
+    "explicit_count_window",
+    "unknown_count_or_window",
+    "last_event_only_unknown",
+    "explicit_seizure_free_duration",
+    "no_seizure_frequency_reference",
+    "cluster_axis_complete",
+    "cluster_axis_incomplete",
+    "not_applicable",
+)
+UNKNOWN_FREQUENCY_POLICY_INSTRUCTIONS = (
+    (
+        "Unknown-frequency boundary: when either the number of seizures or the "
+        "relevant time period is unclear, prefer unknown over an inferred rate."
+    ),
+    (
+        "Last-event-only evidence is unknown: a most-recent seizure date does "
+        "not prove one seizure in a defined period, and no-seizures-since-last-event "
+        "does not by itself create a Gan frequency or seizure-free label."
+    ),
+    (
+        "Do not label seizure_free when the support is only a last seizure date "
+        "plus no seizures since; choose unknown unless the note independently "
+        "states a seizure-free/no-seizures duration as the current frequency state."
+    ),
+    (
+        "Open-ended 'since starting/beginning medication or diet' evidence is "
+        "unknown unless both the number of events and the relevant time period "
+        "are explicit enough to define the denominator."
+    ),
+    (
+        "A medication or diet start date alone is not a denominator for 'N events "
+        "since starting X'; choose unknown unless the note defines the observation "
+        "or follow-up period for the event count."
+    ),
+    (
+        "A single provoked breakthrough event on a date is a single event, not a "
+        "frequency; use unknown unless the note defines the observation period "
+        "for that count."
+    ),
+    (
+        "An explicit seizure count plus a usable follow-up period can support a "
+        "frequency label, especially when the surrounding timeline defines the "
+        "period and states no further seizures after those counted events."
+    ),
 )
 
 
@@ -102,6 +158,7 @@ class FreshEvidenceDecision(BaseModel):
     rejected_event_ids: tuple[str, ...] = Field(default_factory=tuple)
     evidence: tuple[str, ...] = Field(default_factory=tuple)
     boundary_profile: tuple[str, ...] = Field(default_factory=tuple)
+    ambiguity_classification: AmbiguityClassification | None = None
     calculation_trace: str | None = None
     clinical_rationale: str
     uncertainty: llm_event_reasoner.Uncertainty
@@ -330,6 +387,13 @@ def build_prompt_input(
                 "into rates unless the interval length or recurring cadence is explicit."
             ),
             (
+                "Before choosing final_label, set ambiguity_classification to the "
+                "boundary class that explains whether count and window are usable. "
+                "Use unknown_count_or_window when seizure evidence exists but either "
+                "the number of events or the relevant time period is unclear."
+            ),
+            *UNKNOWN_FREQUENCY_POLICY_INSTRUCTIONS,
+            (
                 "Do not replace explicit numeric or range frequency evidence such as "
                 "'twice per week' with 'multiple per week'; render the numeric/range "
                 "frequency or keep the original structured-event final."
@@ -396,6 +460,7 @@ def build_prompt_input(
             "rejected_event_ids": "saved event IDs or agent finals explicitly rejected",
             "evidence": "list of exact evidence substrings supporting the final choice",
             "boundary_profile": "list of targeted profile keys driving the choice",
+            "ambiguity_classification": list(AMBIGUITY_CLASSIFICATION_VALUES),
             "calculation_trace": "short arithmetic or boundary trace, or null",
             "clinical_rationale": "brief clinical rationale",
             "uncertainty": "one string: low | medium | high",
@@ -867,6 +932,7 @@ def _repair_fresh_shape(payload: Any) -> tuple[Any, list[str]]:
         notes.append("decision_field_shape_repaired:tool_calls")
     for field_name, allowed_values in (
         ("action", FRESH_EVIDENCE_ACTION_VALUES),
+        ("ambiguity_classification", AMBIGUITY_CLASSIFICATION_VALUES),
         ("uncertainty", llm_event_reasoner.UNCERTAINTY_VALUES),
         ("attribution", llm_event_reasoner.DECISION_ATTRIBUTION_VALUES),
     ):
@@ -955,19 +1021,45 @@ def _render_fresh_action(
         )
 
     original_reference = llm_event_reasoner._v0_reference(structured_event_row)
+    render_notes: list[str] = []
     safety_reason = _fresh_evidence_safety_gate_reason(
         raw_fresh,
         format_decision,
         original_reference=original_reference,
     )
     if safety_reason is not None:
-        return _fallback_to_original(
-            format_decision,
-            structured_event_row,
-            safety_reason,
+        unknown_fallback_reason = _original_no_reference_should_fallback_to_unknown_reason(
+            raw_fresh,
+            original_reference=original_reference,
         )
+        if unknown_fallback_reason is None:
+            return _fallback_to_original(
+                format_decision,
+                structured_event_row,
+                safety_reason,
+            )
+        format_decision = format_decision.model_copy(
+            update={
+                "final_label": "unknown",
+                "final_kind": "unknown",
+                "attribution": "llm_selected_format_repaired",
+            }
+        )
+        render_notes.extend([safety_reason, unknown_fallback_reason])
 
-    render_notes: list[str] = []
+    unknown_repair_reason = _no_reference_should_be_unknown_reason(
+        raw_fresh,
+        format_decision,
+    )
+    if unknown_repair_reason is not None:
+        format_decision = format_decision.model_copy(
+            update={
+                "final_label": "unknown",
+                "final_kind": "unknown",
+                "attribution": "llm_selected_format_repaired",
+            }
+        )
+        render_notes.append(unknown_repair_reason)
     try:
         label_to_frequency_record(format_decision.final_label)
     except ValueError as exc:
@@ -1037,6 +1129,17 @@ def _fresh_evidence_safety_gate_reason(
 
     original_kind = str(original_reference.get("final_kind") or "")
     original_label = str(original_reference.get("final_label") or "")
+    original_is_boundary_state = original_kind in {"unknown", "no_reference"} or (
+        original_label.strip().lower() in {"unknown", "no seizure frequency reference"}
+    )
+    if _is_open_ended_treatment_start_denominator(raw_fresh) and original_is_boundary_state:
+        return "fresh_evidence_gate_fallback: open_ended_treatment_start_denominator"
+    if _is_seizure_free_replacement_of_frequency_original(raw_fresh, original_label):
+        return "fresh_evidence_gate_fallback: seizure_free_replacement_of_frequency_original"
+    if _is_vague_multiple_exactification(raw_fresh, original_label):
+        return "fresh_evidence_gate_fallback: vague_multiple_exactification"
+    if _is_same_day_cluster_downgrade(raw_fresh, original_label):
+        return "fresh_evidence_gate_fallback: same_day_cluster_downgrade"
     original_is_seizure_free = (
         original_kind == "seizure_free"
         or original_label.strip().lower().startswith("seizure free")
@@ -1045,11 +1148,18 @@ def _fresh_evidence_safety_gate_reason(
         "unknown",
         "no_reference",
     }
-    if original_is_seizure_free and replacement_is_boundary_state:
+    selective_unknown_boundary = _is_selective_unknown_frequency_boundary(raw_fresh)
+    if (
+        original_is_seizure_free
+        and replacement_is_boundary_state
+        and not selective_unknown_boundary
+    ):
         return (
             "fresh_evidence_gate_fallback: "
             "original_seizure_free_to_unknown_or_no_reference"
         )
+    if format_decision.final_kind == "unknown" and not selective_unknown_boundary:
+        return "fresh_evidence_gate_fallback: unknown_replacement_not_selective"
     if raw_fresh.final_kind == "seizure_free" and original_kind == "frequency":
         decision_text = " ".join(
             (
@@ -1091,6 +1201,311 @@ def _fresh_evidence_safety_gate_reason(
                 "multiple_label_for_explicit_numeric_frequency"
             )
     return None
+
+
+def _no_reference_should_be_unknown_reason(
+    raw_fresh: FreshEvidenceDecision,
+    format_decision: llm_event_reasoner.ReasonedFrequencyDecision,
+) -> str | None:
+    """Preserve the unknown/no-reference semantic boundary.
+
+    Gan scoring collapses both labels, but the annotation rule does not: when
+    the note contains seizure evidence and either count or period is unclear,
+    the safer semantic label is ``unknown``, not ``no seizure frequency
+    reference``.
+    """
+
+    if format_decision.final_kind != "no_reference":
+        return None
+    decision_text = _fresh_decision_text(raw_fresh)
+    if _decision_text_supports_unknown_frequency(decision_text):
+        return "fresh_evidence_semantic_repaired:no_reference_to_unknown"
+    return None
+
+
+def _original_no_reference_should_fallback_to_unknown_reason(
+    raw_fresh: FreshEvidenceDecision,
+    *,
+    original_reference: Mapping[str, Any],
+) -> str | None:
+    original_kind = str(original_reference.get("final_kind") or "")
+    original_label = str(original_reference.get("final_label") or "").strip().lower()
+    if original_kind != "no_reference" and original_label != "no seizure frequency reference":
+        return None
+    decision_text = _fresh_decision_text(raw_fresh)
+    if _decision_text_supports_unknown_frequency(decision_text):
+        return "fresh_evidence_semantic_repaired:original_no_reference_to_unknown"
+    return None
+
+
+def _fresh_decision_text(raw_fresh: FreshEvidenceDecision) -> str:
+    return " ".join(
+        (
+            raw_fresh.final_label,
+            raw_fresh.calculation_trace or "",
+            raw_fresh.clinical_rationale,
+            raw_fresh.ambiguity_classification or "",
+            " ".join(raw_fresh.boundary_profile),
+            " ".join(raw_fresh.evidence),
+        )
+    ).lower()
+
+
+def _decision_text_supports_unknown_frequency(decision_text: str) -> bool:
+    absence_of_frequency_evidence = (
+        "no seizure frequency evidence" in decision_text
+        or "absence of seizure frequency evidence" in decision_text
+        or "no seizure frequency information" in decision_text
+        or "no clinical data" in decision_text
+        or "diagnosis only" in decision_text
+        or "administrative" in decision_text
+    )
+    if absence_of_frequency_evidence:
+        return False
+    seizure_evidence_present = any(
+        token in decision_text
+        for token in (
+            "seizure",
+            "seizures",
+            "event",
+            "events",
+            "attack",
+            "attacks",
+            "drop",
+            "tonic-clonic",
+            "myoclonic",
+            "convulsion",
+            "convulsive",
+            "absence",
+            "cluster",
+        )
+    )
+    unclear_count_or_window = any(
+        token in decision_text
+        for token in (
+            "unknown",
+            "unclear",
+            "not fully specified",
+            "not specified",
+            "cannot calculate",
+            "cannot be converted",
+            "cannot determine",
+            "no explicit count",
+            "no explicit denominator",
+            "no defined period",
+            "no defined window",
+            "no time window",
+            "last-event-only",
+            "last event only",
+            "last seizure date",
+            "most recent seizure",
+            "since starting",
+            "since beginning",
+            "since commencing",
+        )
+    )
+    if seizure_evidence_present and unclear_count_or_window:
+        return True
+    return False
+
+
+def _is_selective_last_event_unknown_boundary(raw_fresh: FreshEvidenceDecision) -> bool:
+    if raw_fresh.final_kind != "unknown":
+        return False
+    decision_text_without_profiles = " ".join(
+        (
+            raw_fresh.final_label,
+            raw_fresh.calculation_trace or "",
+            raw_fresh.clinical_rationale,
+            " ".join(raw_fresh.evidence),
+        )
+    ).lower()
+    has_last_event_evidence = (
+        "last seizure on" in decision_text_without_profiles
+        or "last seizure was" in decision_text_without_profiles
+        or "last seizure occurred" in decision_text_without_profiles
+        or "last event on" in decision_text_without_profiles
+        or "last event was" in decision_text_without_profiles
+        or "last cluster was" in decision_text_without_profiles
+        or "most recent seizure on" in decision_text_without_profiles
+    )
+    has_no_since_boundary = (
+        "no seizures since" in decision_text_without_profiles
+        or "no-seizures-since" in decision_text_without_profiles
+    )
+    return has_last_event_evidence and has_no_since_boundary
+
+
+def _is_selective_unknown_frequency_boundary(raw_fresh: FreshEvidenceDecision) -> bool:
+    if raw_fresh.final_kind != "unknown":
+        return False
+    if raw_fresh.ambiguity_classification in {
+        "unknown_count_or_window",
+        "last_event_only_unknown",
+        "cluster_axis_incomplete",
+    }:
+        return True
+    return _is_selective_last_event_unknown_boundary(raw_fresh)
+
+
+def _is_open_ended_treatment_start_denominator(raw_fresh: FreshEvidenceDecision) -> bool:
+    if raw_fresh.final_kind != "frequency":
+        return False
+    decision_text = " ".join(
+        (
+            raw_fresh.final_label,
+            raw_fresh.calculation_trace or "",
+            raw_fresh.clinical_rationale,
+            " ".join(raw_fresh.boundary_profile),
+            " ".join(raw_fresh.evidence),
+        )
+    ).lower()
+    has_since_treatment_start = (
+        "since beginning" in decision_text
+        or "since starting" in decision_text
+        or "since commencing" in decision_text
+        or "since commenced" in decision_text
+    )
+    has_treatment_anchor = any(
+        token in decision_text
+        for token in (
+            "clobazam",
+            "ketogenic diet",
+            "medication",
+            "treatment",
+            "topiramate",
+            "drug",
+        )
+    )
+    has_usable_followup_exception = any(
+        token in decision_text
+        for token in (
+            "remission",
+            "follow-up period",
+            "follow up period",
+            "no seizures since",
+            "no further seizures",
+            "no further events",
+            "soon afterwards",
+        )
+    )
+    return (
+        has_since_treatment_start
+        and has_treatment_anchor
+        and not has_usable_followup_exception
+    )
+
+
+def _is_seizure_free_replacement_of_frequency_original(
+    raw_fresh: FreshEvidenceDecision,
+    original_label: str,
+) -> bool:
+    if raw_fresh.final_kind != "seizure_free":
+        return False
+    original_label_lower = original_label.strip().lower()
+    original_label_is_frequency = (
+        original_label_lower
+        and original_label_lower not in {"unknown", "no seizure frequency reference"}
+        and not original_label_lower.startswith("seizure free")
+    )
+    if not original_label_is_frequency:
+        return False
+    decision_text = " ".join(
+        (
+            raw_fresh.final_label,
+            raw_fresh.calculation_trace or "",
+            raw_fresh.clinical_rationale,
+            " ".join(raw_fresh.boundary_profile),
+            " ".join(raw_fresh.evidence),
+        )
+    ).lower()
+    return "historical frequency" in decision_text
+
+
+def _is_vague_multiple_exactification(
+    raw_fresh: FreshEvidenceDecision,
+    original_label: str,
+) -> bool:
+    if raw_fresh.final_kind != "frequency":
+        return False
+    original_label_lower = original_label.strip().lower()
+    if not original_label_lower.startswith("multiple per "):
+        return False
+    final_label_lower = raw_fresh.final_label.strip().lower()
+    if "multiple per " in final_label_lower:
+        return False
+    decision_text = " ".join(
+        (
+            raw_fresh.final_label,
+            raw_fresh.calculation_trace or "",
+            raw_fresh.clinical_rationale,
+            " ".join(raw_fresh.boundary_profile),
+            " ".join(raw_fresh.evidence),
+        )
+    ).lower()
+    vague_quantifier_present = any(
+        token in decision_text
+        for token in (
+            "a few",
+            "few events",
+            "couple of",
+            "several",
+        )
+    )
+    exactified_vague_count = any(
+        token in decision_text
+        for token in (
+            "3-5",
+            "3 to 5",
+            "5-7",
+            "5 to 7",
+        )
+    )
+    return vague_quantifier_present and exactified_vague_count
+
+
+def _is_same_day_cluster_downgrade(
+    raw_fresh: FreshEvidenceDecision,
+    original_label: str,
+) -> bool:
+    if raw_fresh.final_kind != "frequency":
+        return False
+    original_label_lower = original_label.strip().lower()
+    final_label_lower = raw_fresh.final_label.strip().lower()
+    if " per day" not in original_label_lower or " per day" in final_label_lower:
+        return False
+    decision_text = " ".join(
+        (
+            raw_fresh.final_label,
+            raw_fresh.calculation_trace or "",
+            raw_fresh.clinical_rationale,
+            " ".join(raw_fresh.boundary_profile),
+            " ".join(raw_fresh.evidence),
+        )
+    ).lower()
+    has_same_day_cluster = (
+        "yesterday" in decision_text
+        or "today" in decision_text
+        or "single day" in decision_text
+    ) and any(
+        token in decision_text
+        for token in (
+            "cluster",
+            "tonic-clonic seizures",
+            "seizures in 1 day",
+            "seizures yesterday",
+        )
+    )
+    rejects_daily_rate = any(
+        token in decision_text
+        for token in (
+            "not a recurring daily rate",
+            "no evidence that this is a recurring daily rate",
+            "for that day only",
+            "should not be extrapolated to a daily rate",
+        )
+    )
+    return has_same_day_cluster and rejects_daily_rate
 
 
 def _emit_progress_checkpoint(
