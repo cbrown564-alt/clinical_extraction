@@ -47,12 +47,29 @@ _NONCLINICAL_CONTEXT = re.compile(
     r"driv\w*|licen\w*|dvla|allowed\s+to)\b",
     re.IGNORECASE,
 )
+_SEIZURE_FREE_DISTRACTOR_CONTEXT = re.compile(
+    r"\b(?:driv\w*|dvla|licen\w*|refrain|before\s+the\s+seizure|"
+    r"up\s+to\s+\w+\s+\w+\s+seizure\s+free|mother\s+used\s+to|family\s+history)\b",
+    re.IGNORECASE,
+)
 
 
 def _is_nonclinical_zero_context(match: re.Match[str], context: ExtractionContext) -> bool:
     lo = max(0, match.start() - 30)
     hi = min(len(context.text), match.end() + 15)
     return bool(_NONCLINICAL_CONTEXT.search(context.text[lo:hi]))
+
+
+def _is_seizure_free_distractor_context(
+    match: re.Match[str], context: ExtractionContext
+) -> bool:
+    lo = max(0, match.start() - 80)
+    hi = min(len(context.text), match.end() + 90)
+    window = context.text[lo:hi]
+    if _SEIZURE_FREE_DISTRACTOR_CONTEXT.search(window):
+        return True
+    following = context.text[match.end(): match.end() + 90]
+    return bool(re.search(r"\b(?:however|but)\b.{0,50}\b(?:had|another)\s+(?:a\s+)?seizure\b", following, re.IGNORECASE))
 
 
 def _sf_attrs(
@@ -117,6 +134,7 @@ SF_WITH_DURATION_RULE = RuleSpec(
         re.IGNORECASE,
     ),
     build=_build_sf_with_duration,
+    exclude=(_is_seizure_free_distractor_context,),
     examples=(
         RuleExample(
             text="She has been seizure free for 3 months.",
@@ -171,7 +189,7 @@ SF_BARE_RULE = RuleSpec(
         re.IGNORECASE,
     ),
     build=_build_sf_bare,
-    exclude=(_is_sf_bare_distractor,),
+    exclude=(_is_sf_bare_distractor, _is_seizure_free_distractor_context),
     examples=(
         RuleExample(
             text="He is currently seizure free.",
@@ -232,6 +250,50 @@ NO_SEIZURES_DURATION_RULE = RuleSpec(
         ),
     ),
     provenance="Adapted from Gan2026 no-event rules.",
+)
+
+
+# ---------------------------------------------------------------------------
+# Rule 3a: "has not had <specific seizure type> for N years"
+# ---------------------------------------------------------------------------
+
+def _build_no_had_duration(
+    match: re.Match[str], _ctx: ExtractionContext
+) -> AttributeExtraction:
+    return _sf_candidate(
+        match,
+        rule_id="sf.no_had_duration",
+        portability=Portability.CLINICAL_EPILEPSY,
+        period_count=match.group("count"),
+        unit=match.group("unit"),
+    )
+
+
+NO_HAD_DURATION_RULE = RuleSpec(
+    rule_id="sf.no_had_duration",
+    group=RuleGroup.SEIZURE_FREE,
+    portability=Portability.CLINICAL_EPILEPSY,
+    description="'has not had <seizure type> for N periods' and pronoun variants.",
+    pattern=re.compile(
+        rf"\b(?:"
+        rf"(?:has|have|had)\s+not\s+had\s+"
+        rf"(?:any\s+|any\s+more\s+|one\s+of\s+(?:his|her|their)\s+(?:bigger|larger|major)\s+|a\s+)?"
+        rf"(?:{QUALIFIED_SEIZURE_TERMS})|"
+        rf"(?:hasn't|haven't|hadn't)\s+(?:had\s+)?(?:any\s+|a\s+)?(?:{QUALIFIED_SEIZURE_TERMS})|"
+        rf"(?:they|these)\s+(?:have\s+|has\s+)?(?:not\s+happen(?:ed)?|haven't\s+happened|hasn't\s+happened)"
+        rf")\s+(?:now\s+)?for\s+(?:around\s+|about\s+|at\s+least\s+|over\s+|more\s+than\s+)?"
+        rf"(?P<count>{_COUNT})\s+(?P<unit>{_UNIT})\b",
+        re.IGNORECASE,
+    ),
+    build=_build_no_had_duration,
+    examples=(
+        RuleExample(
+            text="He has not had one of his bigger focal to bilateral convulsive seizure for three years now.",
+            expected_evidence="has not had one of his bigger focal to bilateral convulsive seizure for three years",
+            expected_attributes={"NumberOfSeizures": "0", "NumberOfTimePeriods": "3", "TimePeriod": "Year"},
+        ),
+    ),
+    provenance="Clinical zero-duration statements in ExECTv2 narrative follow-up.",
 )
 
 
@@ -345,6 +407,7 @@ SEIZURE_FREE_RULES: list[RuleSpec] = [
     SF_WITH_DURATION_RULE,       # duration form before bare form
     ZERO_COUNT_RULE,
     NO_SEIZURES_DURATION_RULE,
+    NO_HAD_DURATION_RULE,
     CONTROL_PHRASE_RULE,
     SF_BARE_RULE,                # bare last to avoid shadowing duration form
 ]

@@ -47,23 +47,32 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.
     ADVERBIAL_RULE,
     ARTICLE_SEIZURE_COUNT_RULE,
     COUNT_IN_LAST_PERIOD_RULE,
+    COUNT_PER_FORTNIGHT_RULE,
     COUNT_PER_PERIOD_RULE,
+    EVERY_N_PERIODS_RULE,
+    EVERY_PERIOD_RULE,
+    HEADER_CONTINUATION_RATE_RULE,
     N_TIMES_PER_PERIOD_RULE,
     PERIOD_RANGE_RULE,
+    RANGE_OF_SEIZURE_TERMS_RULE,
     RANGE_PER_PERIOD_RULE,
     RATE_RULES,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.seizure_free import (
     CONTROL_PHRASE_RULE,
+    NO_HAD_DURATION_RULE,
     SEIZURE_FREE_RULES,
     SF_BARE_RULE,
     SF_WITH_DURATION_RULE,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.temporal import (
     DATE_MY_RULE,
+    LAST_EVENT_DATE_RULE,
     LAST_SEIZURE_DATE_RULE,
     PIT_SINCE_RULE,
     PIT_STANDALONE_DURING_RULE,
+    SEIZURE_TERM_MONTH_YEAR_RULE,
+    SEIZURE_TERM_YEAR_RULE,
     TEMPORAL_RULES,
 )
 
@@ -125,6 +134,14 @@ def test_range_per_period() -> None:
     assert c.attributes["TimePeriod"] == "Month"
 
 
+def test_range_of_seizure_terms() -> None:
+    results = _apply(RANGE_OF_SEIZURE_TERMS_RULE, "In March she had 2 to 3 of her focal seizures.")
+    assert len(results) == 1
+    c = results[0]
+    assert c.attributes["LowerNumberOfSeizures"] == "2"
+    assert c.attributes["UpperNumberOfSeizures"] == "3"
+
+
 def test_n_times_per_period() -> None:
     results = _apply(N_TIMES_PER_PERIOD_RULE, "She has events 3 times per week.")
     assert len(results) == 1
@@ -139,6 +156,79 @@ def test_period_range_every_three_to_four_weeks() -> None:
     assert attrs["NumberOfSeizures"] == "1"
     assert attrs["LowerNumberOfTimePeriods"] == "3"
     assert attrs["UpperNumberOfTimePeriods"] == "4"
+    assert attrs["TimePeriod"] == "Week"
+
+
+def test_range_every_period() -> None:
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.rate import (
+        RANGE_EVERY_PERIOD_RULE,
+    )
+
+    results = _apply(RANGE_EVERY_PERIOD_RULE, "Generalised tonic clonic seizures 1 to 2 every month.")
+    assert len(results) == 1
+    attrs = results[0].attributes
+    assert attrs["LowerNumberOfSeizures"] == "1"
+    assert attrs["UpperNumberOfSeizures"] == "2"
+    assert attrs["NumberOfTimePeriods"] == "1"
+    assert attrs["TimePeriod"] == "Month"
+
+
+def test_every_n_periods_digits() -> None:
+    results = _apply(EVERY_N_PERIODS_RULE, "Focal seizures occur every 3 weeks.")
+    assert len(results) == 1
+    attrs = results[0].attributes
+    assert attrs["NumberOfSeizures"] == "1"
+    assert attrs["NumberOfTimePeriods"] == "3"
+    assert attrs["TimePeriod"] == "Week"
+
+
+def test_every_n_periods_word_number() -> None:
+    results = _apply(EVERY_N_PERIODS_RULE, "Convulsive seizure approximately every five years.")
+    assert len(results) == 1
+    attrs = results[0].attributes
+    assert attrs["NumberOfSeizures"] == "1"
+    assert attrs["NumberOfTimePeriods"] == "5"
+    assert attrs["TimePeriod"] == "Year"
+
+
+def test_every_period_without_number() -> None:
+    results = _apply(EVERY_PERIOD_RULE, "Secondary generalised seizures, they happen about every year.")
+    assert len(results) == 1
+    attrs = results[0].attributes
+    assert attrs["NumberOfSeizures"] == "1"
+    assert attrs["NumberOfTimePeriods"] == "1"
+    assert attrs["TimePeriod"] == "Year"
+
+
+def test_count_per_fortnight() -> None:
+    results = _apply(COUNT_PER_FORTNIGHT_RULE, "Focal seizures with altered awareness approximately 1 per fortnight.")
+    assert len(results) == 1
+    attrs = results[0].attributes
+    assert attrs["NumberOfSeizures"] == "1"
+    assert attrs["NumberOfTimePeriods"] == "2"
+    assert attrs["TimePeriod"] == "Week"
+
+
+def test_several_times_per_period() -> None:
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.rate import (
+        SEVERAL_TIMES_PER_PERIOD_RULE,
+    )
+
+    results = _apply(SEVERAL_TIMES_PER_PERIOD_RULE, "The absences happen several times a day.")
+    assert len(results) == 1
+    attrs = results[0].attributes
+    assert attrs["NumberOfSeizures"] == "2"
+    assert attrs["NumberOfTimePeriods"] == "1"
+    assert attrs["TimePeriod"] == "Day"
+
+
+def test_header_continuation_rate() -> None:
+    text = "focal seizures with altered awareness (right arm movement)\n\t\t1 per week"
+    results = _apply(HEADER_CONTINUATION_RATE_RULE, text)
+    assert len(results) == 1
+    attrs = results[0].attributes
+    assert attrs["NumberOfSeizures"] == "1"
+    assert attrs["NumberOfTimePeriods"] == "1"
     assert attrs["TimePeriod"] == "Week"
 
 
@@ -196,6 +286,43 @@ def test_sf_with_duration() -> None:
 
 def test_sf_with_duration_hyphenated() -> None:
     results = _apply(SF_WITH_DURATION_RULE, "Patient is seizure-free for 2 years.")
+    assert results
+    assert results[0].attributes["NumberOfSeizures"] == "0"
+    assert results[0].attributes["TimePeriod"] == "Year"
+
+
+def test_sf_with_duration_suppresses_driving_period() -> None:
+    results = _apply(
+        SF_WITH_DURATION_RULE,
+        "She should refrain from driving until she has been seizure free for 12 months.",
+    )
+    assert not results
+
+
+def test_sf_with_duration_suppresses_prior_interval() -> None:
+    results = _apply(
+        SF_WITH_DURATION_RULE,
+        "Before the seizure she had been seizure free for 3 years.",
+    )
+    assert not results
+
+
+def test_no_had_duration_specific_type() -> None:
+    results = _apply(
+        NO_HAD_DURATION_RULE,
+        "He has not had one of his bigger focal to bilateral convulsive seizure for three years now.",
+    )
+    assert results
+    assert results[0].attributes["NumberOfSeizures"] == "0"
+    assert results[0].attributes["NumberOfTimePeriods"] == "3"
+    assert results[0].attributes["TimePeriod"] == "Year"
+
+
+def test_no_happened_duration_pronoun() -> None:
+    results = _apply(
+        NO_HAD_DURATION_RULE,
+        "He also gets focal to bilateral convulsive seizures and these haven't happened for several years now.",
+    )
     assert results
     assert results[0].attributes["NumberOfSeizures"] == "0"
     assert results[0].attributes["TimePeriod"] == "Year"
@@ -268,6 +395,13 @@ def test_pit_since_last_clinic() -> None:
     assert results[0].attributes["TimeSince_or_TimeOfEvent"] == "Since"
 
 
+def test_pit_since_previous_phone_call() -> None:
+    results = _apply(PIT_SINCE_RULE, "Since my previous phone call she has had one focal motor seizure.")
+    assert results
+    assert results[0].attributes["PointInTime"] == "LastClinic"
+    assert results[0].attributes["TimeSince_or_TimeOfEvent"] == "Since"
+
+
 def test_pit_since_drug_change() -> None:
     results = _apply(PIT_SINCE_RULE, "Since starting lamotrigine his seizure frequency improved.")
     assert results
@@ -291,6 +425,16 @@ def test_pit_standalone_last_week_during() -> None:
     assert results[0].attributes["TimeSince_or_TimeOfEvent"] == "During"
 
 
+def test_pit_standalone_last_week_before_anchor() -> None:
+    results = _apply(
+        PIT_STANDALONE_DURING_RULE,
+        "He forgot carbamazepine last week and had a generalised tonic clonic seizure.",
+    )
+    assert results
+    assert results[0].attributes["PointInTime"] == "Last_Week"
+    assert results[0].attributes["TimeSince_or_TimeOfEvent"] == "During"
+
+
 def test_date_month_year_during() -> None:
     results = _apply(DATE_MY_RULE, "He had 3 seizures in March 2014.")
     assert results
@@ -298,6 +442,76 @@ def test_date_month_year_during() -> None:
     assert c.attributes["MonthDate"] == "3"
     assert c.attributes["YearDate"] == "2014"
     assert c.attributes["TimeSince_or_TimeOfEvent"] == "During"
+
+
+def test_date_month_year_with_comma() -> None:
+    results = _apply(DATE_MY_RULE, "She had a cluster of seizures in August, 2017.")
+    assert results
+    c = results[0]
+    assert c.attributes["MonthDate"] == "8"
+    assert c.attributes["YearDate"] == "2017"
+    assert c.attributes["TimeSince_or_TimeOfEvent"] == "During"
+
+
+def test_date_month_forward_seizure_context() -> None:
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.temporal import (
+        DATE_MONTH_RULE,
+    )
+
+    results = _apply(DATE_MONTH_RULE, "In March she had 2 to 3 of her focal seizures.")
+    assert results
+    assert results[0].attributes["MonthDate"] == "3"
+    assert results[0].attributes["TimeSince_or_TimeOfEvent"] == "During"
+
+
+def test_date_month_since_last_month_name() -> None:
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.temporal import (
+        DATE_MONTH_RULE,
+    )
+
+    results = _apply(DATE_MONTH_RULE, "Since last October she had 4 generalised tonic clonic seizures.")
+    assert results
+    assert results[0].attributes["MonthDate"] == "10"
+    assert results[0].attributes["TimeSince_or_TimeOfEvent"] == "Since"
+
+
+def test_seizure_term_year_with_explicit_count() -> None:
+    results = _apply(SEIZURE_TERM_YEAR_RULE, "2 generalised tonic clonic seizures 2014.")
+    assert results
+    c = results[0]
+    assert c.attributes["NumberOfSeizures"] == "2"
+    assert c.attributes["YearDate"] == "2014"
+    assert c.attributes["TimeSince_or_TimeOfEvent"] == "During"
+
+
+def test_seizure_term_year_default_count() -> None:
+    results = _apply(SEIZURE_TERM_YEAR_RULE, "absence like seizures 2014.")
+    assert results
+    c = results[0]
+    assert c.attributes["NumberOfSeizures"] == "1"
+    assert c.attributes["YearDate"] == "2014"
+    assert c.attributes["TimeSince_or_TimeOfEvent"] == "During"
+
+
+def test_seizure_term_month_year_default_count() -> None:
+    results = _apply(
+        SEIZURE_TERM_MONTH_YEAR_RULE,
+        "Focal to bilateral convulsive seizures August 2014.",
+    )
+    assert results
+    c = results[0]
+    assert c.attributes["NumberOfSeizures"] == "1"
+    assert c.attributes["MonthDate"] == "8"
+    assert c.attributes["YearDate"] == "2014"
+    assert c.attributes["TimeSince_or_TimeOfEvent"] == "During"
+
+
+def test_seizure_term_month_year_does_not_rewrite_last_event() -> None:
+    results = _apply(
+        SEIZURE_TERM_MONTH_YEAR_RULE,
+        "Generalised tonic clonic seizure-last event July 2016. Previous event December 2015.",
+    )
+    assert results == []
 
 
 def test_date_outside_seizure_context_suppressed() -> None:
@@ -314,6 +528,50 @@ def test_last_seizure_date_zero_since() -> None:
     assert c.attributes["MonthDate"] == "9"
     assert c.attributes["YearDate"] == "2012"
     assert c.attributes["TimeSince_or_TimeOfEvent"] == "Since"
+
+
+def test_last_event_date_zero_since() -> None:
+    results = _apply(LAST_EVENT_DATE_RULE, "Focal to bilateral convulsive seizures, last event October 2019.")
+    assert results
+    c = results[0]
+    assert c.attributes["NumberOfSeizures"] == "0"
+    assert c.attributes["MonthDate"] == "10"
+    assert c.attributes["YearDate"] == "2019"
+    assert c.attributes["TimeSince_or_TimeOfEvent"] == "Since"
+
+
+def test_last_event_christmas_year_zero_since() -> None:
+    results = _apply(LAST_EVENT_DATE_RULE, "Convulsive seizures, last event around Christmas 2017.")
+    assert results
+    c = results[0]
+    assert c.attributes["NumberOfSeizures"] == "0"
+    assert c.attributes["MonthDate"] == "12"
+    assert c.attributes["YearDate"] == "2017"
+    assert c.attributes["TimeSince_or_TimeOfEvent"] == "Since"
+
+
+def test_last_one_christmas_day_year_zero_since() -> None:
+    results = _apply(LAST_EVENT_DATE_RULE, "Secondary generalised seizures, his last one was on Christmas day 2009.")
+    assert results
+    c = results[0]
+    assert c.attributes["NumberOfSeizures"] == "0"
+    assert c.attributes["DayDate"] == "25"
+    assert c.attributes["MonthDate"] == "12"
+    assert c.attributes["YearDate"] == "2009"
+    assert c.attributes["TimeSince_or_TimeOfEvent"] == "Since"
+
+
+def test_last_event_ago_zero_period() -> None:
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.temporal import (
+        LAST_EVENT_AGO_RULE,
+    )
+
+    results = _apply(LAST_EVENT_AGO_RULE, "Focal seizures with altered awareness, last event 3 years ago.")
+    assert results
+    c = results[0]
+    assert c.attributes["NumberOfSeizures"] == "0"
+    assert c.attributes["NumberOfTimePeriods"] == "3"
+    assert c.attributes["TimePeriod"] == "Year"
 
 
 def test_no_default_negation_attribute() -> None:
@@ -372,6 +630,25 @@ def test_anchor_secondary_generalised_seizures() -> None:
 def test_anchor_myoclonic_jerks() -> None:
     results = _apply_anchors(SEIZURE_TYPE_ANCHOR_RULE, "Myoclonic jerks have become more frequent.")
     assert any("myoclonic jerks" in c.text.lower() for c in results)
+
+
+def test_anchor_motor_and_dyscognitive_phrases() -> None:
+    text = "Partial motor seizures monthly. Focal motor seizures weekly. Dyscognitive seizures are frequent."
+    results = _apply_anchors(SEIZURE_TYPE_ANCHOR_RULE, text)
+    assert [r.text.lower() for r in results] == [
+        "partial motor seizures",
+        "focal motor seizures",
+        "dyscognitive seizures",
+    ]
+
+
+def test_anchor_frontal_lobe_and_convulsion_phrases() -> None:
+    text = "Frontal lobe seizures occur monthly. He has not had generalised convulsions for years."
+    results = _apply_anchors(SEIZURE_TYPE_ANCHOR_RULE, text)
+    assert [r.text.lower() for r in results] == [
+        "frontal lobe seizures",
+        "generalised convulsions",
+    ]
 
 
 def test_anchor_bare_seizures() -> None:
@@ -521,6 +798,152 @@ def test_pipeline_multiple_mentions_in_one_letter() -> None:
     result = extract_seizure_frequency(letter)
     sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY]
     assert len(sf) >= 2
+
+
+def test_pipeline_frequency_section_date_list_emits_multiple_mentions() -> None:
+    text = (
+        "Seizure type and frequency: focal seizures with altered awareness (right arm movement)\n"
+        "                1 per week\n"
+        "                Focal to bilateral convulsive seizures August 2014 and September 2015\n"
+        "Current medication: Lamotrigine 150mg bd\n"
+    )
+    letter = _make_letter("T006A", text)
+    result = extract_seizure_frequency(letter)
+    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY]
+
+    assert any(
+        m.text.lower() == "focal seizures with altered awareness"
+        and m.attributes.get("NumberOfSeizures") == "1"
+        and m.attributes.get("TimePeriod") == "Week"
+        for m in sf
+    )
+    dated = [
+        m for m in sf
+        if m.text.lower() == "focal to bilateral convulsive seizures"
+        and m.attributes.get("NumberOfSeizures") == "1"
+    ]
+    assert {m.attributes.get("MonthDate") for m in dated} == {"8", "9"}
+    assert {m.attributes.get("YearDate") for m in dated} == {"2014", "2015"}
+
+
+def test_pipeline_frequency_section_statement_rows() -> None:
+    text = (
+        "Seizure type and frequency: generalised tonic clonic seizures, 1 since previous appointment\n"
+        "Myoclonic jerks weekly\n"
+        "Occasional absences.\n"
+        "Current medication: Lamotrigine 150mg bd\n"
+    )
+    letter = _make_letter("T006C", text)
+    result = extract_seizure_frequency(letter)
+    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY]
+
+    assert any(
+        m.text.lower() == "generalised tonic clonic seizures"
+        and m.attributes.get("NumberOfSeizures") == "1"
+        and m.attributes.get("PointInTime") == "LastClinic"
+        and m.attributes.get("TimeSince_or_TimeOfEvent") == "Since"
+        for m in sf
+    )
+    assert any(
+        m.text.lower() == "myoclonic jerks"
+        and m.attributes.get("NumberOfSeizures") == "1"
+        and m.attributes.get("TimePeriod") == "Week"
+        for m in sf
+    )
+    assert any(
+        m.text.lower() == "absences"
+        and m.attributes.get("FrequencyChange") == "Infrequent"
+        for m in sf
+    )
+
+
+def test_pipeline_splits_rate_and_last_event_date_for_same_anchor() -> None:
+    text = (
+        "He has secondary generalised seizures, they happen about every year, "
+        "his last one was on Christmas day 2009."
+    )
+    letter = _make_letter("T006B", text)
+    result = extract_seizure_frequency(letter)
+    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY]
+
+    assert any(
+        m.text.lower() == "secondary generalised seizures"
+        and m.attributes.get("NumberOfSeizures") == "1"
+        and m.attributes.get("TimePeriod") == "Year"
+        and "MonthDate" not in m.attributes
+        for m in sf
+    )
+    assert any(
+        m.text.lower() == "secondary generalised seizures"
+        and m.attributes.get("NumberOfSeizures") == "0"
+        and m.attributes.get("DayDate") == "25"
+        and m.attributes.get("MonthDate") == "12"
+        and m.attributes.get("YearDate") == "2009"
+        and m.attributes.get("TimeSince_or_TimeOfEvent") == "Since"
+        for m in sf
+    )
+
+
+def test_pipeline_pronoun_rate_uses_previous_anchor() -> None:
+    text = "He has partial motor seizures involving left arm twitching. He gets these every month."
+    letter = _make_letter("T006D", text)
+    result = extract_seizure_frequency(letter)
+    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY]
+
+    assert any(
+        m.text.lower() == "partial motor seizures"
+        and m.attributes.get("NumberOfSeizures") == "1"
+        and m.attributes.get("NumberOfTimePeriods") == "1"
+        and m.attributes.get("TimePeriod") == "Month"
+        for m in sf
+    )
+
+
+def test_pipeline_pronoun_zero_duration_uses_previous_anchor() -> None:
+    text = (
+        "He used to have focal motor seizures without changes in awareness. "
+        "He has not had a seizure like this for around two years now."
+    )
+    letter = _make_letter("T006E", text)
+    result = extract_seizure_frequency(letter)
+    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY]
+
+    assert any(
+        m.text.lower() == "focal motor seizures"
+        and m.attributes.get("NumberOfSeizures") == "0"
+        and m.attributes.get("NumberOfTimePeriods") == "2"
+        and m.attributes.get("TimePeriod") == "Year"
+        for m in sf
+    )
+
+
+def test_pipeline_projection_alias_for_singular_range_phrase() -> None:
+    text = "Seizure type and frequency: Complex partial seizures 1-2 per month"
+    letter = _make_letter("T006F", text)
+    result = extract_seizure_frequency(letter)
+    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY]
+
+    assert any(
+        m.text.lower() == "complex partial seizure"
+        and m.attributes.get("LowerNumberOfSeizures") == "1"
+        and m.attributes.get("UpperNumberOfSeizures") == "2"
+        and m.attributes.get("CUI") == "C0149958"
+        for m in sf
+    )
+
+
+def test_pipeline_projection_alias_for_change_only() -> None:
+    text = "His seizure frequency has reduced from about once a year to one seizure every two years."
+    letter = _make_letter("T006G", text)
+    result = extract_seizure_frequency(letter)
+    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY]
+
+    assert any(
+        m.text.lower() == "seizure"
+        and m.attributes.get("FrequencyChange") == "Decreased"
+        and "TimePeriod" not in m.attributes
+        for m in sf
+    )
 
 
 def test_pipeline_anchor_without_nearby_frequency_is_dropped() -> None:
@@ -694,18 +1117,25 @@ def test_all_rules_have_examples() -> None:
 # collapsing into TP) rather than a loosened matcher. Prior (raw-gold) pins were
 # phrase_only 0.382 / sf_semantic 0.272 / sf_benchmark 0.272.
 #
-# Re-pinned 2026-06-15 after a focused deterministic-rule iteration added:
-# period-range frequencies ("every 3 to 4 weeks"), article count events ("a
-# seizure last week"), standalone Last_Week/Last_Month/Last_Year During point-in-
-# time triggers, control phrases with "any further seizures", under-control
-# seizure-free statements, and dose-increase DrugChange triggers. This crosses
-# the user-requested >0.7 threshold on phrase-only per-letter F1 (0.732) while
-# the stricter sf_benchmark axis remains attribute-limited (0.391 per-item /
-# 0.613 per-letter).
+# Re-pinned 2026-06-15 after continued deterministic iteration added:
+# period-range and period-gap frequencies ("every 3 to 4 weeks", "every five
+# years", "every year"), "per fortnight", header continuation rates, article
+# count events ("a seizure last week"), range-of-type counts ("2 to 3 of her
+# focal seizures"), bare header years/month-years ("2 seizures 2014", "seizures
+# August 2014"), standalone Last_Week/Last_Month/Last_Year During point-in-time
+# triggers, "last event/one" date and period-ago forms, control phrases with
+# "any further seizures", under-control seizure-free statements, previous-phone-
+# call LastClinic, and dose-increase DrugChange triggers.
+# Re-pinned again after adding structured frequency-section rows, narrative
+# pronoun carry-forward, projection aliases for ExECTv2 singular/plural and
+# spelling quirks, and two conservative attribute aliases. Strict per-item F1 is
+# improved but still below the active >0.7 development goal.
+# Deterministic strict per-item F1 is still below the active >0.7 goal; the
+# phrase-only and per-letter axes are included here only as diagnostics.
 _PINNED_DEV_PER_ITEM_F1 = {
-    "phrase_only": 0.517,
-    "sf_semantic": 0.391,
-    "sf_benchmark": 0.391,
+    "phrase_only": 0.679,
+    "sf_semantic": 0.581,
+    "sf_benchmark": 0.581,
 }
 _F1_BAND = 0.02
 

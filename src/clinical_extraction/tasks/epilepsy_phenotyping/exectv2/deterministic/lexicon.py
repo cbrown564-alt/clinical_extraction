@@ -102,7 +102,7 @@ SF_CUI_LEXICON: dict[str, tuple[str, ...]] = {
     # Convulsive seizure (3).
     "C0751494": ("convulsive seizure",),
     # Frontal lobe seizure (1).
-    "C0085541": ("frontal lobe seizure",),
+    "C0085541": ("frontal lobe seizure", "frontal lobe seizures", "focal frontal lobe seizures"),
     # Typical absences (1).
     "C4316903": ("typical absences",),
 }

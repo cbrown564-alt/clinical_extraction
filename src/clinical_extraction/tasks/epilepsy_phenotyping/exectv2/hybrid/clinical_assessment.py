@@ -443,8 +443,10 @@ def render_mentions(
         if not a.keep:
             continue
         cand = by_id.get(a.candidate_id)
-        # text: prefer the LLM's phrase if it is a substring, else the candidate's.
-        text = a.text if (a.text and a.text in note_text) else (cand.anchor_text if cand else a.text)
+        # Candidate anchor representation is deterministic. The LLM judges and
+        # corrects attributes; letting it rewrite the anchor can turn a valid
+        # candidate into a non-gold phrase such as "seizures per year".
+        text = cand.anchor_text if cand else a.text
         evidence = cand.evidence if cand else ""
         raw_attrs = dict(a.attributes) or (dict(cand.suggested_attributes) if cand else {})
         attrs = normalize_attributes(raw_attrs)

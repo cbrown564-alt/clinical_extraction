@@ -60,6 +60,10 @@ def _is_medication_dose_context(match: re.Match[str], context: ExtractionContext
 # a medication-titration "daily". Rate expressions that carry their own count and
 # period are far less ambiguous, so this gate is applied to the adverbial rule only.
 _SF_CONTEXT = re.compile(r"seizures?|absences?|jerks?|seizure[\s-]?free|fits?", re.IGNORECASE)
+_HEADER_ANCHOR = (
+    r"(?:[a-z][a-z\-]*\s+){0,8}(?:seizures?|absences?|jerks?)"
+    r"(?:\s+with\s+(?:loss|altered|impaired)\s+(?:of\s+)?awareness)?"
+)
 
 
 def _adverbial_outside_seizure_context(
@@ -317,6 +321,47 @@ RANGE_TO_PER_PERIOD_RULE = RuleSpec(
 )
 
 
+def _build_range_of_seizure_terms(
+    match: re.Match[str], _ctx: ExtractionContext
+) -> AttributeExtraction:
+    return _candidate(
+        match,
+        kind=AttributeKind.RATE,
+        attributes=_attrs(
+            lower=match.group("lower"),
+            upper=match.group("upper"),
+        ),
+        rule_id="rate.range_of_seizure_terms",
+        rule_group=RuleGroup.RATE_EXPRESSIONS,
+        portability=Portability.SEIZURE_FREQUENCY,
+    )
+
+
+RANGE_OF_SEIZURE_TERMS_RULE = RuleSpec(
+    rule_id="rate.range_of_seizure_terms",
+    group=RuleGroup.RATE_EXPRESSIONS,
+    portability=Portability.SEIZURE_FREQUENCY,
+    description="lower to upper of <seizure terms> — range count without an explicit period.",
+    pattern=re.compile(
+        rf"\b(?P<lower>{_DIGIT_OR_WORD})\s+(?:to|or)\s+(?P<upper>{_DIGIT_OR_WORD})"
+        rf"\s+of\s+(?:his|her|their|the)?\s*(?:{QUALIFIED_SEIZURE_TERMS})\b",
+        re.IGNORECASE,
+    ),
+    build=_build_range_of_seizure_terms,
+    examples=(
+        RuleExample(
+            text="In March she had 2 to 3 of her focal seizures.",
+            expected_evidence="2 to 3 of her focal seizures",
+            expected_attributes={
+                "LowerNumberOfSeizures": "2",
+                "UpperNumberOfSeizures": "3",
+            },
+        ),
+    ),
+    provenance="Guideline range count variant observed in dev letter EA0002.",
+)
+
+
 # ---------------------------------------------------------------------------
 # Rule 4: range per N periods  ("2-5 per 2 months")
 # ---------------------------------------------------------------------------
@@ -417,8 +462,151 @@ N_TIMES_PER_PERIOD_RULE = RuleSpec(
 
 
 # ---------------------------------------------------------------------------
-# Rule 5b: every lower-upper periods  ("every 3 to 4 weeks")
+# Rule 5a: N per fortnight  ("1 per fortnight")
 # ---------------------------------------------------------------------------
+
+def _build_count_per_fortnight(
+    match: re.Match[str], _ctx: ExtractionContext
+) -> AttributeExtraction:
+    return _candidate(
+        match,
+        kind=AttributeKind.RATE,
+        attributes=_attrs(
+            count=match.group("count"),
+            period_count="2",
+            unit="week",
+        ),
+        rule_id="rate.count_per_fortnight",
+        rule_group=RuleGroup.RATE_EXPRESSIONS,
+        portability=Portability.SEIZURE_FREQUENCY,
+    )
+
+
+COUNT_PER_FORTNIGHT_RULE = RuleSpec(
+    rule_id="rate.count_per_fortnight",
+    group=RuleGroup.RATE_EXPRESSIONS,
+    portability=Portability.SEIZURE_FREQUENCY,
+    description="N per fortnight — exact count over two weeks.",
+    pattern=re.compile(
+        rf"\b{_SEQ_PREFIX}"
+        rf"(?P<count>{_COUNT})\s+(?:(?:{QUALIFIED_SEIZURE_TERMS})\s+)?(?:per|a|each|every)\s+fortnights?\b",
+        re.IGNORECASE,
+    ),
+    build=_build_count_per_fortnight,
+    exclude=(_is_medication_dose_context,),
+    examples=(
+        RuleExample(
+            text="Focal seizures with altered awareness approximately 1 per fortnight.",
+            expected_evidence="1 per fortnight",
+            expected_attributes={
+                "NumberOfSeizures": "1",
+                "NumberOfTimePeriods": "2",
+                "TimePeriod": "Week",
+            },
+        ),
+    ),
+    provenance="ExECTv2 gold maps fortnight to NumberOfTimePeriods=2, TimePeriod=Week.",
+)
+
+
+# ---------------------------------------------------------------------------
+# Rule 5b: header continuation rate
+#          ("focal seizures (...)\n 1 per week")
+# ---------------------------------------------------------------------------
+
+def _build_header_continuation_rate(
+    match: re.Match[str], _ctx: ExtractionContext
+) -> AttributeExtraction:
+    return _candidate(
+        match,
+        kind=AttributeKind.RATE,
+        attributes=_attrs(
+            count=match.group("count"),
+            period_count="1",
+            unit=match.group("unit"),
+        ),
+        rule_id="rate.header_continuation_rate",
+        rule_group=RuleGroup.RATE_EXPRESSIONS,
+        portability=Portability.SEIZURE_FREQUENCY,
+    )
+
+
+HEADER_CONTINUATION_RATE_RULE = RuleSpec(
+    rule_id="rate.header_continuation_rate",
+    group=RuleGroup.RATE_EXPRESSIONS,
+    portability=Portability.SEIZURE_FREQUENCY,
+    description="Header/list seizure anchor followed on the next line by an exact rate.",
+    pattern=re.compile(
+        rf"\b(?:{_HEADER_ANCHOR})(?:\s*\([^)]{{1,80}}\))?"
+        rf"\s*(?:\r?\n)[\t ]*(?P<count>{_COUNT})\s+"
+        rf"(?:(?:{QUALIFIED_SEIZURE_TERMS}|times?)\s+)?(?:{_PER})\s+(?P<unit>{_UNIT})\b",
+        re.IGNORECASE,
+    ),
+    build=_build_header_continuation_rate,
+    exclude=(_is_medication_dose_context,),
+    examples=(
+        RuleExample(
+            text="focal seizures with altered awareness (right arm movement)\n\t\t1 per week",
+            expected_evidence="focal seizures with altered awareness (right arm movement)\n\t\t1 per week",
+            expected_attributes={
+                "NumberOfSeizures": "1",
+                "NumberOfTimePeriods": "1",
+                "TimePeriod": "Week",
+            },
+        ),
+    ),
+    provenance="Frequency-section continuation lines observed in dev letter EA0054.",
+)
+
+
+# ---------------------------------------------------------------------------
+# Rule 5c: every lower-upper periods  ("every 3 to 4 weeks")
+# ---------------------------------------------------------------------------
+
+def _build_range_every_period(
+    match: re.Match[str], _ctx: ExtractionContext
+) -> AttributeExtraction:
+    return _candidate(
+        match,
+        kind=AttributeKind.RATE,
+        attributes=_attrs(
+            lower=match.group("lower"),
+            upper=match.group("upper"),
+            period_count="1",
+            unit=match.group("unit"),
+        ),
+        rule_id="rate.range_every_period",
+        rule_group=RuleGroup.RATE_EXPRESSIONS,
+        portability=Portability.SEIZURE_FREQUENCY,
+    )
+
+
+RANGE_EVERY_PERIOD_RULE = RuleSpec(
+    rule_id="rate.range_every_period",
+    group=RuleGroup.RATE_EXPRESSIONS,
+    portability=Portability.SEIZURE_FREQUENCY,
+    description="lower-upper every period — range count in one period.",
+    pattern=re.compile(
+        rf"\b(?P<lower>{_DIGIT_OR_WORD})\s+(?:to|or)\s+(?P<upper>{_DIGIT_OR_WORD})"
+        rf"\s+(?:{_PER})\s+(?P<unit>{_UNIT})\b",
+        re.IGNORECASE,
+    ),
+    build=_build_range_every_period,
+    examples=(
+        RuleExample(
+            text="Generalised tonic clonic seizures 1 to 2 every month.",
+            expected_evidence="1 to 2 every month",
+            expected_attributes={
+                "LowerNumberOfSeizures": "1",
+                "UpperNumberOfSeizures": "2",
+                "NumberOfTimePeriods": "1",
+                "TimePeriod": "Month",
+            },
+        ),
+    ),
+    provenance="Portable SF range cadence variant observed in header lists.",
+)
+
 
 def _build_period_range(
     match: re.Match[str], _ctx: ExtractionContext
@@ -462,6 +650,155 @@ PERIOD_RANGE_RULE = RuleSpec(
         ),
     ),
     provenance="Guideline v9 period-range frequency expression.",
+)
+
+
+# ---------------------------------------------------------------------------
+# Rule 5d: every N periods  ("every 3 weeks", "every five years")
+# ---------------------------------------------------------------------------
+
+def _build_every_n_periods(
+    match: re.Match[str], _ctx: ExtractionContext
+) -> AttributeExtraction:
+    return _candidate(
+        match,
+        kind=AttributeKind.RATE,
+        attributes=_attrs(
+            count="1",
+            period_count=match.group("period_count"),
+            unit=match.group("unit"),
+        ),
+        rule_id="rate.every_n_periods",
+        rule_group=RuleGroup.RATE_EXPRESSIONS,
+        portability=Portability.SEIZURE_FREQUENCY,
+    )
+
+
+EVERY_N_PERIODS_RULE = RuleSpec(
+    rule_id="rate.every_n_periods",
+    group=RuleGroup.RATE_EXPRESSIONS,
+    portability=Portability.SEIZURE_FREQUENCY,
+    description="One event every N periods, e.g. every 3 weeks.",
+    pattern=re.compile(
+        rf"\bevery\s+(?P<period_count>{_DIGIT_OR_WORD})\s+(?P<unit>{_UNIT})\b",
+        re.IGNORECASE,
+    ),
+    build=_build_every_n_periods,
+    exclude=(_adverbial_outside_seizure_context,),
+    examples=(
+        RuleExample(
+            text="Focal seizures occur every 3 weeks.",
+            expected_evidence="every 3 weeks",
+            expected_attributes={
+                "NumberOfSeizures": "1",
+                "NumberOfTimePeriods": "3",
+                "TimePeriod": "Week",
+            },
+        ),
+        RuleExample(
+            text="Convulsive seizure approximately every five years.",
+            expected_evidence="every five years",
+            expected_attributes={
+                "NumberOfSeizures": "1",
+                "NumberOfTimePeriods": "5",
+                "TimePeriod": "Year",
+            },
+        ),
+    ),
+    provenance="Guideline v9 period frequency expression; dev errors EA0008/EA0039.",
+)
+
+
+# ---------------------------------------------------------------------------
+# Rule 5e: every period  ("every month", "every year")
+# ---------------------------------------------------------------------------
+
+def _build_every_period(
+    match: re.Match[str], _ctx: ExtractionContext
+) -> AttributeExtraction:
+    return _candidate(
+        match,
+        kind=AttributeKind.RATE,
+        attributes=_attrs(
+            count="1",
+            period_count="1",
+            unit=match.group("unit"),
+        ),
+        rule_id="rate.every_period",
+        rule_group=RuleGroup.RATE_EXPRESSIONS,
+        portability=Portability.SEIZURE_FREQUENCY,
+    )
+
+
+EVERY_PERIOD_RULE = RuleSpec(
+    rule_id="rate.every_period",
+    group=RuleGroup.RATE_EXPRESSIONS,
+    portability=Portability.SEIZURE_FREQUENCY,
+    description="One event every period, e.g. every year.",
+    pattern=re.compile(
+        rf"\bevery\s+(?P<unit>{_UNIT})\b",
+        re.IGNORECASE,
+    ),
+    build=_build_every_period,
+    exclude=(_adverbial_outside_seizure_context,),
+    examples=(
+        RuleExample(
+            text="Secondary generalised seizures, they happen about every year.",
+            expected_evidence="every year",
+            expected_attributes={
+                "NumberOfSeizures": "1",
+                "NumberOfTimePeriods": "1",
+                "TimePeriod": "Year",
+            },
+        ),
+    ),
+    provenance="Pronoun cadence variant in dev letters, e.g. 'they happen every year'.",
+)
+
+
+# ---------------------------------------------------------------------------
+# Rule 5f: several times per period
+# ---------------------------------------------------------------------------
+
+def _build_several_times_per_period(
+    match: re.Match[str], _ctx: ExtractionContext
+) -> AttributeExtraction:
+    return _candidate(
+        match,
+        kind=AttributeKind.RATE,
+        attributes=_attrs(
+            count="2",
+            period_count="1",
+            unit=match.group("unit"),
+        ),
+        rule_id="rate.several_times_per_period",
+        rule_group=RuleGroup.RATE_EXPRESSIONS,
+        portability=Portability.SEIZURE_FREQUENCY,
+    )
+
+
+SEVERAL_TIMES_PER_PERIOD_RULE = RuleSpec(
+    rule_id="rate.several_times_per_period",
+    group=RuleGroup.RATE_EXPRESSIONS,
+    portability=Portability.SEIZURE_FREQUENCY,
+    description="'several times a/per period' → approximate count 2 in one period.",
+    pattern=re.compile(
+        rf"\bseveral\s+times?\s+(?:{_PER})\s+(?P<unit>{_UNIT})\b",
+        re.IGNORECASE,
+    ),
+    build=_build_several_times_per_period,
+    examples=(
+        RuleExample(
+            text="The absences happen several times a day.",
+            expected_evidence="several times a day",
+            expected_attributes={
+                "NumberOfSeizures": "2",
+                "NumberOfTimePeriods": "1",
+                "TimePeriod": "Day",
+            },
+        ),
+    ),
+    provenance="ExECTv2 projection maps 'several times' to NumberOfSeizures=2.",
 )
 
 
@@ -753,12 +1090,19 @@ RATE_RULES: list[RuleSpec] = [
     RANGE_PER_N_PERIODS_RULE,
     RANGE_PER_PERIOD_RULE,
     RANGE_TO_PER_PERIOD_RULE,
+    RANGE_OF_SEIZURE_TERMS_RULE,
     COUNT_PER_N_PERIODS_RULE,
     COUNT_IN_LAST_PERIOD_RULE,
     COUNT_OVER_PERIOD_RULE,
     COUNT_PER_PERIOD_RULE,
+    COUNT_PER_FORTNIGHT_RULE,
+    HEADER_CONTINUATION_RATE_RULE,
     N_TIMES_PER_PERIOD_RULE,
+    RANGE_EVERY_PERIOD_RULE,
     PERIOD_RANGE_RULE,
+    EVERY_N_PERIODS_RULE,
+    EVERY_PERIOD_RULE,
+    SEVERAL_TIMES_PER_PERIOD_RULE,
     ADVERBIAL_RULE,
     BARE_COUNT_RULE,
     ARTICLE_SEIZURE_COUNT_RULE,

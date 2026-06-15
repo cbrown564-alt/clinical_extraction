@@ -41,6 +41,27 @@ least speculative: resolve extracted surface phrases to a controlled vocabulary
 within a fixed ontological boundary, as a deterministic, precision-first,
 ablatable step that is *not* the LLM's job to hallucinate.
 
+Current SF dev status after the 2026-06-15 deterministic iteration:
+
+- Deterministic dev140 now reaches `sf_benchmark` per-item P/R/F1
+  **0.559/0.604/0.581** (`113/89/74`) and phrase-only **0.653/0.706/0.679**
+  (`132/70/55`). `sf_semantic == sf_benchmark`, so remaining SF misses are not
+  primarily CUI-limited.
+- The local Qwen LLM-only dev25 pilot remains worse than deterministic on the
+  comparable item surface: phrase-only F1 0.533, semantic F1 0.100, benchmark
+  F1 0.000 because no CUI is emitted. Its errors are anchor rewrites and
+  attribute/projection drift, not transport failures.
+- The local Qwen hybrid dev5 pilot reaches only 0.480 on phrase/semantic/
+  benchmark and over-keeps noisy evidence fragments. The useful design lesson is
+  that an LLM should select evidence or candidate IDs, while deterministic code
+  renders exact ExECTv2 phrases, attributes, and CUI.
+- To close the strict SF gap, the next build is not another CUI layer. It is a
+  statement model: explicit multi-mention extraction for dated/rate/control
+  statements, projection-aware singular/plural aliases, and precision gates for
+  generic `seizures`/`seizure-free` contexts. See
+  `docs/research/exectv2_sf_item_error_analysis_2026-06-15.md` for item-level
+  failure counts and representative examples.
+
 ---
 
 ## 2. What already exists (the pattern to generalize)
@@ -187,12 +208,29 @@ Implemented rule families, all deterministic and guideline-shaped:
 
 - period-range frequency: `every 3 to 4 weeks` -> `NumberOfSeizures=1`,
   `LowerNumberOfTimePeriods=3`, `UpperNumberOfTimePeriods=4`, `TimePeriod=Week`;
+- period-gap frequency: `every five years` / `every year` ->
+  `NumberOfSeizures=1` with the corresponding `NumberOfTimePeriods` and
+  `TimePeriod`;
+- fortnight frequency: `1 per fortnight` -> `NumberOfSeizures=1`,
+  `NumberOfTimePeriods=2`, `TimePeriod=Week`;
+- header continuation rates: a seizure-type line followed by `1 per week` on
+  the next line;
+- range-of-type counts: `2 to 3 of her focal seizures` ->
+  `LowerNumberOfSeizures=2`, `UpperNumberOfSeizures=3`;
+- bare header years: `2 generalised tonic clonic seizures 2014` and
+  `absence like seizures 2014` -> dated `During` events;
+- bare header month-years: `focal to bilateral convulsive seizures August 2014`
+  -> dated `During` events;
 - article count events: `a generalised tonic clonic seizure last week` ->
   `NumberOfSeizures=1`;
 - standalone point-in-time triggers: `last week` / `last month` / `last year`
   in seizure context -> `TimeSince_or_TimeOfEvent=During`;
+- last-event/list temporal variants: `last event October 2019`,
+  `last one was on Christmas day 2009`, and `last event 3 years ago`;
 - zero/control statements: `has not had any further seizures` and
   `focal seizures are completely under control`;
+- follow-up point-in-time trigger: `since my previous phone call` ->
+  `PointInTime=LastClinic`, `TimeSince_or_TimeOfEvent=Since`;
 - dose-increase drug-change triggers: `since increasing levetiracetam` ->
   `PointInTime=DrugChange`, `TimeSince_or_TimeOfEvent=Since`.
 
@@ -200,15 +238,31 @@ Development result on `exectv2_split_v1` dev140, deterministic rules:
 
 | Config | Per-item F1 | Per-letter F1 | Reading |
 | --- | ---: | ---: | --- |
-| `phrase_only` | 0.517 | **0.732** | Crosses the user-requested `>0.7` deterministic SF threshold on the phrase-recall letter axis. |
-| `sf_semantic` | 0.391 | 0.613 | Improved but still attribute-limited. |
-| `sf_benchmark` | 0.391 | 0.613 | Equal to semantic; CUI is no longer the limiter for deterministic SF. |
+| `phrase_only` | 0.609 | **0.811** | Crosses `>0.7` on the phrase-only per-letter axis, but not on the active per-item target. |
+| `sf_semantic` | 0.475 | **0.716** | Crosses `>0.7` only on the per-letter semantic axis; strict per-item remains below target. |
+| `sf_benchmark` | 0.475 | **0.716** | Equal to semantic; CUI is no longer the limiter for deterministic SF. |
 
 Interpretation: this is a **validation development result**, not a new frozen
-full-200 audit. It completes the near-term deterministic-rule target only on the
-phrase-only per-letter axis. The stricter with-CUI benchmark axis remains below
-0.7 because exact guideline attributes, especially `PointInTime`,
-`TimeSince_or_TimeOfEvent`, and change/rate splits, still dominate the misses.
-The ontology-grounded CUI normalization design remains valuable for LLM-only and
-future all-entity paths where CUI is structurally absent, but deterministic SF
-now needs attribute-rule work rather than more CUI normalization.
+full-200 audit. It does **not** complete the active per-item `>0.7` target.
+The stricter with-CUI benchmark axis remains below 0.7 because exact guideline
+attributes, especially `PointInTime`, `TimeSince_or_TimeOfEvent`, and
+change/rate splits, still dominate the misses. The ontology-grounded CUI
+normalization design remains valuable for LLM-only and future all-entity paths
+where CUI is structurally absent, but deterministic SF now needs attribute-rule
+work rather than more CUI normalization.
+
+LLM fallback status from the same iteration:
+
+- OpenAI-backed hybrid pilot with `openai/gpt-4.1` did not execute clinically:
+  every call failed with API quota exhaustion, so the resulting zero score is an
+  infrastructure failure rather than model evidence.
+- Local Ollama `ollama_chat/qwen3.6:35b` hybrid candidate-assessment pilot was
+  technically healthy but clinically weak on the 5-letter slice
+  (`sf_benchmark` per-item F1 0.48 before deterministic anchor rendering, 0.56
+  when existing raw outputs are re-rendered through deterministic candidate
+  anchors).
+- Local Ollama LLM-only single-pass pilot on the same 5-letter slice reached
+  `phrase_only` per-item F1 0.737, but strict `sf_benchmark` was 0.0 before
+  adding deterministic CUI/attribute normalization. This suggests the useful
+  LLM role may be phrase selection, while exact attributes should remain
+  deterministic or verifier-owned.

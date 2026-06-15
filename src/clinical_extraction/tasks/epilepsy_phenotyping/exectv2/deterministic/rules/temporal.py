@@ -22,7 +22,11 @@ from __future__ import annotations
 
 import re
 
-from clinical_extraction.tasks.shared.epilepsy.terms import NUMBER_WORD_PATTERN
+from clinical_extraction.tasks.shared.epilepsy.terms import (
+    NUMBER_VALUE_TOKEN,
+    NUMBER_WORD_PATTERN,
+    QUALIFIED_SEIZURE_TERMS,
+)
 
 from ..candidates import AttributeExtraction, AttributeKind
 from ..normalizer import (
@@ -48,7 +52,7 @@ _YEAR = r"(?:19|20)\d\d"
 _PREP = r"since|after|in|on|during"
 # "since the beginning of July", "in early March" — descriptive filler between
 # the preposition and the month name; gold keeps only the month.
-_DATE_FILLER = r"(?:the\s+)?(?:beginning|start|early|end|middle|mid|late)\s+(?:of\s+)?"
+_DATE_FILLER = r"(?:the\s+)?(?:beginning|start|early|end|middle|mid|late|last)\s+(?:of\s+)?"
 _SF_NOUN = r"seizures?|absences?|jerks?"
 # "last [<descriptor words>] seizure" — up to 3 descriptor words before the noun.
 _LAST_SEIZURE = rf"last\s+(?:[a-z][a-z\-]*\s+){{0,3}}?(?:{_SF_NOUN})"
@@ -67,8 +71,18 @@ _SF_CONTEXT = re.compile(r"seizures?|absences?|jerks?|seizure[\s-]?free|fits?", 
 
 def _outside_seizure_context(match: re.Match[str], context: ExtractionContext) -> bool:
     lo = max(0, match.start() - 45)
-    hi = min(len(context.text), match.end() + 25)
+    hi = min(len(context.text), match.end() + 80)
     return not _SF_CONTEXT.search(context.text[lo:hi])
+
+
+def _outside_pit_seizure_context(match: re.Match[str], context: ExtractionContext) -> bool:
+    lo = max(0, match.start() - 45)
+    hi = min(len(context.text), match.end() + 80)
+    return not _SF_CONTEXT.search(context.text[lo:hi])
+
+
+def _is_event_history_label(match: re.Match[str], _context: ExtractionContext) -> bool:
+    return bool(re.search(r"\b(?:last|previous)\s+(?:event|one)\b", match.group(0), re.IGNORECASE))
 
 
 def _extraction(
@@ -93,6 +107,7 @@ def _extraction(
 
 _PIT_TRIGGER = (
     r"last\s+clinic|last\s+(?:seen|review(?:ed)?|appointment|visit)|being\s+seen|"
+    r"previous\s+(?:phone\s+)?call|"
     r"start(?:ing|ed)?|commenc(?:ing|ed)|introduc\w+|increas\w+|reduc\w+|"
     r"stop(?:ping|ped)?|discontinu\w+|withdraw\w+|"
     r"dose\s+(?:increase|change|adjustment)|(?:drug|medication)\s+change|"
@@ -105,7 +120,7 @@ _PIT_TRIGGER = (
 
 def _pit_value(trigger: str) -> str | None:
     t = trigger.lower()
-    if any(w in t for w in ("clinic", "seen", "review", "appointment", "visit")):
+    if any(w in t for w in ("clinic", "seen", "review", "appointment", "visit", "call")):
         return "LastClinic"
     if (
         t.startswith(
@@ -168,7 +183,7 @@ PIT_SINCE_RULE = RuleSpec(
         re.IGNORECASE,
     ),
     build=_build_pit_since,
-    exclude=(_outside_seizure_context,),
+    exclude=(_outside_pit_seizure_context,),
     examples=(
         RuleExample(
             text="She had two seizures since last being seen.",
@@ -214,7 +229,7 @@ PIT_STANDALONE_DURING_RULE = RuleSpec(
         re.IGNORECASE,
     ),
     build=_build_pit_standalone_during,
-    exclude=(_outside_seizure_context,),
+    exclude=(_outside_pit_seizure_context,),
     examples=(
         RuleExample(
             text="He had a generalised tonic clonic seizure last week.",
@@ -286,7 +301,7 @@ DATE_MY_RULE = RuleSpec(
     portability=Portability.CLINICAL_EPILEPSY,
     description="<prep> <month> <year> → MonthDate/YearDate + TimeSince.",
     pattern=re.compile(
-        rf"\b(?P<prep>{_PREP})\s+(?:{_DATE_FILLER})?(?P<month>{MONTH_NAME_PATTERN})\s+(?P<year>{_YEAR})\b",
+        rf"\b(?P<prep>{_PREP})\s+(?:{_DATE_FILLER})?(?P<month>{MONTH_NAME_PATTERN}),?\s+(?P<year>{_YEAR})\b",
         re.IGNORECASE,
     ),
     build=_build_date_my,
@@ -460,6 +475,226 @@ LAST_SEIZURE_DATE_RULE = RuleSpec(
 
 
 # ---------------------------------------------------------------------------
+# "last event <date>" → NumberOfSeizures=0 + Since + date
+# ---------------------------------------------------------------------------
+
+def _last_event_date_attrs(match: re.Match[str]) -> dict[str, str] | None:
+    month = match.groupdict().get("month")
+    year = match.groupdict().get("year")
+    day = match.groupdict().get("day")
+    christmas = match.groupdict().get("christmas")
+    christmas_qualifier = match.groupdict().get("christmas_qualifier")
+    if christmas:
+        month = "December"
+        if christmas_qualifier and christmas_qualifier.lower() == "day":
+            day = "25"
+    if not (month or year):
+        return None
+
+    attrs: dict[str, str] = {
+        "NumberOfSeizures": "0",
+        "TimeSince_or_TimeOfEvent": "Since",
+    }
+    if day:
+        attrs["DayDate"] = day
+    if month:
+        attrs["MonthDate"] = normalize_month(month)
+    if year:
+        attrs["YearDate"] = year
+    return attrs
+
+
+def _build_last_event_date(
+    match: re.Match[str], _ctx: ExtractionContext
+) -> AttributeExtraction | None:
+    attrs = _last_event_date_attrs(match)
+    if attrs is None:
+        return None
+    return _extraction(match, attrs, rule_id="temporal.last_event_date")
+
+
+LAST_EVENT_DATE_RULE = RuleSpec(
+    rule_id="temporal.last_event_date",
+    group=RuleGroup.TEMPORAL_ANCHOR,
+    portability=Portability.CLINICAL_EPILEPSY,
+    description="'last event/one <date>' → NumberOfSeizures=0 + Since + date.",
+    pattern=re.compile(
+        rf"\blast\s+(?:event|one)\s+(?:was\s+|being\s+)?(?:around\s+|about\s+|in\s+|on\s+|at\s+)?"
+        rf"(?:(?P<day>\d{{1,2}})(?:st|nd|rd|th)?\s+)?"
+        rf"(?:(?P<christmas>christmas)(?:\s+(?P<christmas_qualifier>day|time))?|"
+        rf"(?P<month>{MONTH_NAME_PATTERN}))?\s*"
+        rf"(?P<year>{_YEAR})?\b",
+        re.IGNORECASE,
+    ),
+    build=_build_last_event_date,
+    exclude=(_outside_seizure_context,),
+    examples=(
+        RuleExample(
+            text="Focal to bilateral convulsive seizures, last event October 2019.",
+            expected_attributes={
+                "NumberOfSeizures": "0",
+                "MonthDate": "10",
+                "YearDate": "2019",
+                "TimeSince_or_TimeOfEvent": "Since",
+            },
+        ),
+        RuleExample(
+            text="Convulsive seizures, last event around Christmas 2017.",
+            expected_attributes={
+                "NumberOfSeizures": "0",
+                "MonthDate": "12",
+                "YearDate": "2017",
+                "TimeSince_or_TimeOfEvent": "Since",
+            },
+        ),
+    ),
+    provenance="Header/list variant of guideline Ex6 last-seizure date semantics.",
+)
+
+
+# ---------------------------------------------------------------------------
+# "last event/one was N <period> ago" → 0 + period (NO TimeSince per Ex3)
+# ---------------------------------------------------------------------------
+
+def _build_last_event_ago(
+    match: re.Match[str], _ctx: ExtractionContext
+) -> AttributeExtraction:
+    return _extraction(
+        match,
+        {
+            "NumberOfSeizures": "0",
+            "NumberOfTimePeriods": normalize_count(match.group("count")),
+            "TimePeriod": normalize_unit(match.group("unit")),
+        },
+        rule_id="temporal.last_event_ago",
+    )
+
+
+LAST_EVENT_AGO_RULE = RuleSpec(
+    rule_id="temporal.last_event_ago",
+    group=RuleGroup.TEMPORAL_ANCHOR,
+    portability=Portability.CLINICAL_EPILEPSY,
+    description="'last event/one was N <period> ago' → 0 + period, no TimeSince.",
+    pattern=re.compile(
+        rf"\blast\s+(?:event|one)\s+(?:was\s+|being\s+)?(?:around\s+|about\s+|more\s+than\s+)?"
+        rf"(?P<count>\d+|{NUMBER_WORD_PATTERN})\s+(?P<unit>day|week|month|year)s?\s+ago\b",
+        re.IGNORECASE,
+    ),
+    build=_build_last_event_ago,
+    examples=(
+        RuleExample(
+            text="Focal seizures with altered awareness, last event 3 years ago.",
+            expected_attributes={
+                "NumberOfSeizures": "0",
+                "NumberOfTimePeriods": "3",
+                "TimePeriod": "Year",
+            },
+        ),
+    ),
+    provenance="Header/list variant of guideline Ex3 period-ago last-event semantics.",
+)
+
+
+# ---------------------------------------------------------------------------
+# "<count?> <seizure term> <year>" → dated event in that year
+# ---------------------------------------------------------------------------
+
+def _build_seizure_term_year(
+    match: re.Match[str], _ctx: ExtractionContext
+) -> AttributeExtraction:
+    count = match.groupdict().get("count") or "1"
+    return _extraction(
+        match,
+        {
+            "NumberOfSeizures": normalize_count(count),
+            "YearDate": match.group("year"),
+            "TimeSince_or_TimeOfEvent": "During",
+        },
+        rule_id="temporal.seizure_term_year",
+    )
+
+
+SEIZURE_TERM_YEAR_RULE = RuleSpec(
+    rule_id="temporal.seizure_term_year",
+    group=RuleGroup.TEMPORAL_ANCHOR,
+    portability=Portability.CLINICAL_EPILEPSY,
+    description="Optional count + seizure term + bare year, e.g. '2 seizures 2014'.",
+    pattern=re.compile(
+        rf"\b(?:(?P<count>{NUMBER_VALUE_TOKEN})\s+)?(?:{QUALIFIED_SEIZURE_TERMS})\s+(?P<year>{_YEAR})\b",
+        re.IGNORECASE,
+    ),
+    build=_build_seizure_term_year,
+    exclude=(_is_event_history_label,),
+    examples=(
+        RuleExample(
+            text="2 generalised tonic clonic seizures 2014.",
+            expected_attributes={
+                "NumberOfSeizures": "2",
+                "YearDate": "2014",
+                "TimeSince_or_TimeOfEvent": "During",
+            },
+        ),
+        RuleExample(
+            text="absence like seizures 2014.",
+            expected_attributes={
+                "NumberOfSeizures": "1",
+                "YearDate": "2014",
+                "TimeSince_or_TimeOfEvent": "During",
+            },
+        ),
+    ),
+    provenance="Header/list shorthand in ExECTv2 dev letters, e.g. EA0006.",
+)
+
+
+# ---------------------------------------------------------------------------
+# "<count?> <seizure term> <month> <year>" -> dated event in that month/year
+# ---------------------------------------------------------------------------
+
+def _build_seizure_term_month_year(
+    match: re.Match[str], _ctx: ExtractionContext
+) -> AttributeExtraction:
+    count = match.groupdict().get("count") or "1"
+    return _extraction(
+        match,
+        {
+            "NumberOfSeizures": normalize_count(count),
+            "MonthDate": normalize_month(match.group("month")),
+            "YearDate": match.group("year"),
+            "TimeSince_or_TimeOfEvent": "During",
+        },
+        rule_id="temporal.seizure_term_month_year",
+    )
+
+
+SEIZURE_TERM_MONTH_YEAR_RULE = RuleSpec(
+    rule_id="temporal.seizure_term_month_year",
+    group=RuleGroup.TEMPORAL_ANCHOR,
+    portability=Portability.CLINICAL_EPILEPSY,
+    description="Optional count + seizure term + bare month/year, e.g. 'seizures August 2014'.",
+    pattern=re.compile(
+        rf"\b(?:(?P<count>{NUMBER_VALUE_TOKEN})\s+)?(?:{QUALIFIED_SEIZURE_TERMS})\s+"
+        rf"(?P<month>{MONTH_NAME_PATTERN}),?\s+(?P<year>{_YEAR})\b",
+        re.IGNORECASE,
+    ),
+    build=_build_seizure_term_month_year,
+    exclude=(_is_event_history_label,),
+    examples=(
+        RuleExample(
+            text="Focal to bilateral convulsive seizures August 2014.",
+            expected_attributes={
+                "NumberOfSeizures": "1",
+                "MonthDate": "8",
+                "YearDate": "2014",
+                "TimeSince_or_TimeOfEvent": "During",
+            },
+        ),
+    ),
+    provenance="Header/list shorthand in ExECTv2 dev letters, e.g. EA0054.",
+)
+
+
+# ---------------------------------------------------------------------------
 # "last seizure was N <period> ago" → 0 + period (NO TimeSince per Ex3)
 # ---------------------------------------------------------------------------
 
@@ -508,7 +743,11 @@ LAST_SEIZURE_AGO_RULE = RuleSpec(
 
 TEMPORAL_RULES: list[RuleSpec] = [
     LAST_SEIZURE_DATE_RULE,
+    LAST_EVENT_DATE_RULE,
     LAST_SEIZURE_AGO_RULE,
+    LAST_EVENT_AGO_RULE,
+    SEIZURE_TERM_MONTH_YEAR_RULE,
+    SEIZURE_TERM_YEAR_RULE,
     CHRISTMAS_SINCE_RULE,
     PIT_SINCE_RULE,
     PIT_STANDALONE_DURING_RULE,

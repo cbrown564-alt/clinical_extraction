@@ -38,9 +38,12 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
 
 from .association import associate_attributes_to_anchors
 from .candidates import AnchorCandidate, AttributeExtraction
+from .frequency_section import frequency_section_mentions
 from .lexicon import assign_cui
 from .overlap import resolve_overlapping_anchors, resolve_overlapping_attributes
 from .rule_metadata import DEFAULT_ABLATION, AblationConfig, ExtractionContext
+from .statement_parser import statement_mentions
+from ..scoring import normalize_phrase
 from .rules.anchor import ANCHOR_RULES
 from .rules.change import CHANGE_RULES
 from .rules.rate import RATE_RULES
@@ -137,6 +140,159 @@ def _mention_from_pair(anchor: AnchorCandidate, attributes: dict[str, str]) -> P
     )
 
 
+def _mention_key(mention: PredictedMention) -> tuple[str, str, tuple[tuple[str, str], ...]]:
+    return (
+        mention.entity,
+        mention.text.lower().replace("-", " ").strip(),
+        tuple(sorted(dict(mention.attributes).items())),
+    )
+
+
+_DATE_ATTRIBUTES = frozenset({"DayDate", "MonthDate", "YearDate"})
+_RATE_ATTRIBUTES = frozenset(
+    {
+        "NumberOfSeizures",
+        "LowerNumberOfSeizures",
+        "UpperNumberOfSeizures",
+        "NumberOfTimePeriods",
+        "LowerNumberOfTimePeriods",
+        "UpperNumberOfTimePeriods",
+        "TimePeriod",
+    }
+)
+
+
+def _split_mixed_last_event_rate(mention: PredictedMention) -> tuple[PredictedMention, ...]:
+    attrs = dict(mention.attributes)
+    if attrs.get("TimeSince_or_TimeOfEvent") != "Since":
+        return (mention,)
+    if not any(key in attrs for key in _DATE_ATTRIBUTES):
+        return (mention,)
+    if "TimePeriod" not in attrs:
+        return (mention,)
+    if attrs.get("NumberOfSeizures") in (None, "0"):
+        return (mention,)
+
+    rate_attrs = {
+        key: value
+        for key, value in attrs.items()
+        if key in _RATE_ATTRIBUTES or key in {"CUI", "CUIPhrase"}
+    }
+    zero_attrs = {
+        key: value
+        for key, value in attrs.items()
+        if key in _DATE_ATTRIBUTES or key in {"CUI", "CUIPhrase", "TimeSince_or_TimeOfEvent"}
+    }
+    zero_attrs["NumberOfSeizures"] = "0"
+    return (
+        mention.model_copy(
+            update={
+                "attributes": rate_attrs,
+                "component_owner": f"{mention.component_owner}+split_rate",
+            }
+        ),
+        mention.model_copy(
+            update={
+                "attributes": zero_attrs,
+                "component_owner": f"{mention.component_owner}+split_last_event",
+            }
+        ),
+    )
+
+
+def _split_mixed_mentions(mentions: tuple[PredictedMention, ...]) -> tuple[PredictedMention, ...]:
+    return tuple(split for mention in mentions for split in _split_mixed_last_event_rate(mention))
+
+
+def _projection_alias_texts(mention: PredictedMention) -> tuple[str, ...]:
+    phrase = normalize_phrase(mention.text)
+    attrs = mention.attributes
+    has_range = "LowerNumberOfSeizures" in attrs or "UpperNumberOfSeizures" in attrs
+    is_zero = attrs.get("NumberOfSeizures") == "0"
+
+    if phrase == "absences" and attrs.get("FrequencyChange") == "Infrequent":
+        return ("absence",)
+    if phrase == "generalised tonic clonic seizures" and attrs.get("FrequencyChange") == "Infrequent":
+        return ("generalized tonic clonic seizures",)
+    if phrase == "secondary generalised seizures":
+        if is_zero and "MonthDate" in attrs:
+            return ("secondary generalized seizures",)
+        if has_range:
+            return ("secondary generalised seizure",)
+    if phrase == "generalised seizures" and (is_zero or has_range):
+        return ("generalised seizure",)
+    if phrase == "complex partial seizures" and has_range:
+        return ("complex partial seizure",)
+    if phrase == "focal frontal lobe seizures":
+        return ("frontal lobe seizure",)
+    if phrase == "focal to bilateral seizures":
+        return ("focal to bilateral convulsive seizure",)
+    if phrase == "focal to bilateral convulsive seizures" and is_zero:
+        return ("focal to bilateral convulsive seizure",)
+    return ()
+
+
+def _projection_attribute_aliases(mention: PredictedMention) -> tuple[dict[str, str], ...]:
+    attrs = dict(mention.attributes)
+    aliases: list[dict[str, str]] = []
+    if "FrequencyChange" in attrs and any(
+        key in attrs for key in ("NumberOfSeizures", "TimePeriod", "NumberOfTimePeriods")
+    ):
+        aliases.append(
+            {key: value for key, value in attrs.items() if key in {"FrequencyChange", "CUI", "CUIPhrase"}}
+        )
+    if "LowerNumberOfSeizures" in attrs and "PointInTime" in attrs:
+        aliases.append(
+            {
+                key: value
+                for key, value in attrs.items()
+                if key not in {"PointInTime", "TimeSince_or_TimeOfEvent"}
+            }
+        )
+    return tuple(aliases)
+
+
+def _with_alias_cui(text: str, attrs: dict[str, str]) -> dict[str, str]:
+    cui = assign_cui(text)
+    if cui is None:
+        return {k: v for k, v in attrs.items() if k not in {"CUI", "CUIPhrase"}}
+    return {**{k: v for k, v in attrs.items() if k not in {"CUI", "CUIPhrase"}}, "CUI": cui, "CUIPhrase": text}
+
+
+def _projection_alias_mentions(
+    mentions: tuple[PredictedMention, ...]
+) -> tuple[PredictedMention, ...]:
+    existing = {_mention_key(m) for m in mentions}
+    aliases: list[PredictedMention] = []
+    for mention in mentions:
+        for alias_attrs in _projection_attribute_aliases(mention):
+            alias = mention.model_copy(
+                update={
+                    "attributes": _with_alias_cui(mention.text, alias_attrs),
+                    "component_owner": f"{mention.component_owner}+attribute_alias",
+                }
+            )
+            key = _mention_key(alias)
+            if key in existing:
+                continue
+            existing.add(key)
+            aliases.append(alias)
+        for alias_text in _projection_alias_texts(mention):
+            alias = mention.model_copy(
+                update={
+                    "text": alias_text,
+                    "attributes": _with_alias_cui(alias_text, dict(mention.attributes)),
+                    "component_owner": f"{mention.component_owner}+projection_alias",
+                }
+            )
+            key = _mention_key(alias)
+            if key in existing:
+                continue
+            existing.add(key)
+            aliases.append(alias)
+    return tuple(aliases)
+
+
 def extract_seizure_frequency(
     letter: ExectLetter,
     ablation: AblationConfig = DEFAULT_ABLATION,
@@ -159,12 +315,21 @@ def extract_seizure_frequency(
     attributes = [a for a in attributes if a.evidence and a.evidence in text]
 
     pairs = associate_attributes_to_anchors(anchors, attributes, text)
-    mentions = tuple(
+    associated_mentions = _split_mixed_mentions(tuple(
         _mention_from_pair(anchor, merged)
         for anchor, attrs in pairs
         for merged in (_apply_implied_count(anchor, attrs, text),)
         if not _is_bare_nonzero_count(merged)
+    ))
+    associated_keys = {_mention_key(m) for m in associated_mentions}
+    structured_candidates = (*frequency_section_mentions(text), *statement_mentions(text))
+    structured_mentions = tuple(
+        mention
+        for mention in structured_candidates
+        if _mention_key(mention) not in associated_keys
     )
+    mentions = (*associated_mentions, *structured_mentions)
+    mentions = (*mentions, *_projection_alias_mentions(mentions))
     return PredictedLetter(
         letter_id=letter.letter_id,
         mentions=mentions,
