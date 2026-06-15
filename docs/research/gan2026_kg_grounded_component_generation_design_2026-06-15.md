@@ -280,8 +280,18 @@ nothing further.
 ## 8. Implementation status (2026-06-15)
 
 Status: **the predeclared edits are implemented and tested; the re-scoped Stage A
-is clean (641/641, zero regressions). Stage B is the next gate.** The four code
-lines exist and are tested. Stage A on the deterministic graph regressed as built
+is clean (641/641, zero regressions); Stage B has now run in two passes (§8.4
+below). The first pass replayed the stale 2026-06-02 atomic-claim graphs and the
+C2 over-inference guard fired 0 times — but that was an artifact defect (the
+conversion had dropped `raw_frequency`, minting every node `unknown`), not a guard
+defect. The rebuilt pass re-converts the same v3 claim-table with `raw_frequency`
+normalization; the graph now mints quantifying states (resolve final-kinds 13
+frequency / 7 unresolved_multiple / 4 unknown / 1 no_reference, no longer uniformly
+`unknown`) and the guard is exercised — it fired once, an
+`over_inference_out_of_unknown:last_event_only` rejection of a `two episodes`
+mention that parsed to a rate. Stage B is therefore a structural + interpretability
+pass with the guard now demonstrably live; Stage C is the next gate.** The four
+code lines exist and are tested. Stage A on the deterministic graph regressed as built
 (−82 Purist, §8.2 below) — exactly the literature caveat in §1 and the Stage A
 *reject* condition in §6 — but the regression was diagnostic, not fatal: it
 surfaced contradiction **C2**, now resolved (ADR `0017`). With the guard scoped
@@ -455,14 +465,96 @@ B/C/D (items 5–6) remain.
    the guard actually fires on uncurated over-inference. Artifacts:
    `experiments/gan2026_state_graph_ontology_oracle_uplift_stage_a_2026-06-15.{json,md}`.
 
-5. **Stages B/C/D not started.** They require the existing LLM atomic-claim +
-   evidence artifacts and feeding the graph query as a fourth component to the
-   v0.9 consensus+fresh selector. Stage B is the *first* place the C2 guard is
-   actually exercised (uncurated over-inference). Stage C measures whether the
-   selector picks the clean graph `unknown` over the deterministic over-read — the
-   empirical resolution of C2 *per row* (ADR `0017`: C2 is resolved "at
-   generation," not "for every row"). Gated on Stage B viability.
+5. **Done — Stage B run in two passes (guard now exercised).** Full reading in
+   §8.4. The first pass replayed the stale 2026-06-02 atomic-claim graphs: the
+   structural + interpretability sub-gates passed but the guard fired 0 times,
+   because that conversion had dropped `raw_frequency` and minted every node
+   `unknown`. The rebuilt pass re-converts the *same* v3 claim-table with
+   `raw_frequency` normalization (`state_graph/claim_table.py`, scorer-facing
+   grammar only — no diary/window arithmetic): the graph now mints quantifying
+   states (resolve final-kinds 13 frequency / 7 unresolved_multiple / 4 unknown /
+   1 no_reference) and the guard is **exercised**, firing once on an
+   `over_inference_out_of_unknown:last_event_only` mint (a `two episodes` mention
+   parsed to `2 per month`). Both sub-gates still pass (80/80 schema-valid + exact
+   evidence; 25/25 component-localized). Stage C is now twofold: (a) does the
+   selector pick the clean graph `unknown` over the deterministic over-read on the
+   `band_unknown` residual (ADR `0017`, C2 per-row), and (b) do the newly-minted
+   quantifying graph components add correct candidates without correct→wrong
+   regression.
+
+   **Stages C/D not started.** They require feeding the graph query as a fourth
+   component to the v0.9 consensus+fresh selector.
 
 6. **C3** is documentation-only (cluster syntax preserved iff a within-cluster
    count exists; scoring multiplies count·burden — one rule, two enforcement homes
    that must agree). **C5** stays deferred. Both require no further code here.
+
+### 8.4 Stage B — atomic-claim viability gate (2026-06-15)
+
+Stage B is the gold-free, no-model-spend viability gate of §5. The summariser is
+`state_graph/coverage.py::atomic_claim_viability_summary` (gold-free; tests in
+`tests/test_gan2026_state_graph_ontology.py`, now 23 passing). It ran in two
+passes: a diagnostic replay of the stale 2026-06-02 graphs, then a rebuilt pass
+that normalizes `raw_frequency` so the guard is actually exercised.
+
+#### 8.4.1 First pass (diagnostic) — guard unexercised
+
+Replayed the saved validation25 atomic-claim graphs
+(`…llm_atomic_claim_rows_validation25_2026-06-02.jsonl`, from the gpt-4.1-mini
+section claim-table v3). Runner:
+`experiments/build_gan2026_state_graph_ontology_stage_b_viability.py`; artifacts
+`experiments/gan2026_state_graph_ontology_stage_b_viability_2026-06-15.{json,md}`.
+
+| Sub-gate | Metric | Reading |
+|---|--:|---|
+| Structural (shape) | schema-valid 79/80; exact-evidence 79/80 | pass — the lone reject is `atomic_claim_evidence_not_exact` |
+| Semantic (ontology) | over-inference rejections **0/80** | **unexercised** |
+| Interpretability | 25/25 decision-traced; 25/25 component-localized | pass |
+| Final label | `unknown` 25/25 | the graph minted only `unknown` |
+
+The guard fired 0 times because the 2026-06-02 conversion **dropped each claim's
+`raw_frequency`**, so the builder minted every node `semantic_kind ∈ {unknown,
+no_reference}` — even the 16 nodes whose *evidence shape* is `quantified`. With no
+quantifying state minted, the guard (keyed on `FREQUENCY`/`SEIZURE_FREE` out of an
+unknown-only shape) had nothing to police. This is an artifact defect, not a guard
+defect: the conversion threw away the information the guard exists to check.
+
+#### 8.4.2 Rebuilt pass — `raw_frequency` normalized, guard exercised
+
+Re-converts the *same* v3 claim-table, but maps each claim's `raw_frequency`
+through the project scorer-facing grammar (`state_graph/claim_table.py::
+atomic_claims_from_structured_record`, plain `repair_prediction_label` — the
+allowed source-near→Gan conversion of §4, **no** diary/window arithmetic), then
+rebuilds via the frozen `build_state_graph_from_atomic_claims`. The node *kind*
+still comes from the claim type, so a `last_event_only` shape survives even when
+its raw frequency parses to a rate — which is exactly what the guard must catch.
+Runner: `experiments/build_gan2026_state_graph_ontology_stage_b_rebuild.py`;
+artifacts `…_stage_b_rebuild_2026-06-15.{json,md}` plus the rebuilt-graphs replay
+artifact `…_stage_b_rebuild_2026-06-15_graphs.jsonl`.
+
+| Sub-gate | Metric | Reading |
+|---|--:|---|
+| Structural (shape) | schema-valid 80/80; exact-evidence 80/80 | pass |
+| Semantic (ontology) | over-inference rejections **1/80** (`…:last_event_only`) | **exercised** — the guard fires on a genuine over-read |
+| Interpretability | 25/25 decision-traced; 25/25 component-localized; 0 defaulted | pass |
+| Final label | frequency 13 / unresolved_multiple 7 / unknown 4 / no_reference 1 | the graph now contributes quantified candidates, not only `unknown` |
+
+The single firing is the textbook case: row 278's claim *"including two episodes
+witnessed by a friend"* (claim type `last_event_only`, `raw_frequency` `"two
+episodes"`) normalizes to `2 per month` [`frequency`], and the guard rejects the
+uncurated mint as `over_inference_out_of_unknown:last_event_only`. The node is
+retained with provenance, never silently dropped, and the row falls through to its
+other admitted components. Only one firing, because the normalizer routes vague
+quantities (`rare`, `occasional`, `≤ four per day`) to `unresolved_multiple` /
+`no_reference` rather than a bare `FREQUENCY`, so those never reach the guard —
+itself an upstream form of unknown-boundary discipline.
+
+**What this means for the ladder.** The rebuilt graph is no longer a pure
+`unknown`-minter: it supplies both (a) clean competing `unknown` components for the
+`band_unknown` over-inference residual (the ADR `0017` C2 target) and (b) genuine
+quantified components for the rate bands, with the guard demonstrably blocking the
+one uncurated over-read it should. Stage C therefore has both arms to test against
+the v0.9 selector: does the selector prefer the graph `unknown` over the
+deterministic over-read on `band_unknown`, and do the quantified graph components
+add correct candidates with near-zero correct→wrong regression (the §6 stop
+condition)? Stage B is a pass; the guard's rejection arm is now live and audited.

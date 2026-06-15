@@ -117,6 +117,28 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Claim language: Adds a hard-negative ambiguity-classification contract for unknown-frequency cases. This is prerequisite validation infrastructure, not a promoted test450 candidate.
 - Artifacts: `experiments/gan2026_unknown_frequency_ambiguity_panel_2026-06-15.json`, `experiments/gan2026_unknown_frequency_ambiguity_panel_2026-06-15.md`.
 
+### `gan2026_state_graph_ontology_stage_b_viability_2026-06-15`
+- Date/split: `2026-06-15`; `validation`; `25` rows.
+- Pipeline: `hybrid_clinical_frequency_state_graph`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Stage B gold-free viability gate replaying saved LLM atomic-claim graphs through the ontology dual-validation + resolve_label query; no model calls and no holdout rows are read.; model `none`.
+- Repair mode/config: `state_graph_ontology_dual_validation_resolve_label_v1`.
+- Primary metrics: admitted=79, exact_evidence=79, over_inference_rejected=0, rows_component_localized=25, structural_rejected=1, structural_valid=79, total_nodes=80.
+- Evidence validity: Validation-only viability gate over a saved atomic-claim artifact. Gold-free: no gold labels, no holdout rows, and no model calls. The C2 over-inference guard fired 0 times because the v3 atomic-claim builder mints no quantifying states; the gate's structural and interpretability sub-gates pass.
+- Cache/reuse source: artifact:gan2026_clinical_frequency_state_graph_llm_atomic_claim_rows_validation25_2026-06-02.jsonl.
+- Claim language: Stage B viability gate for the ontology + typed-edge atomic-claim component generator. Not a holdout-facing candidate. The guard's rejection mechanism is unexercised on this artifact; informs whether and how the ladder proceeds to Stage C.
+- Artifacts: `experiments/gan2026_state_graph_ontology_stage_b_viability_2026-06-15.json`, `experiments/gan2026_state_graph_ontology_stage_b_viability_2026-06-15.md`.
+
+### `gan2026_state_graph_ontology_stage_b_rebuild_2026-06-15`
+- Date/split: `2026-06-15`; `validation`; `25` rows.
+- Pipeline: `hybrid_clinical_frequency_state_graph`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Stage B (rebuilt) viability gate: re-converts the v3 claim-table with deterministic raw_frequency normalization, then runs the ontology dual-validation + resolve_label query. No model calls and no holdout rows are read.; model `none`.
+- Repair mode/config: `state_graph_ontology_dual_validation_resolve_label_v1`.
+- Primary metrics: admitted=79, exact_evidence=80, over_inference_rejected=1, rows_component_localized=25, structural_rejected=0, structural_valid=80, total_nodes=80.
+- Evidence validity: Validation-only viability gate over rebuilt atomic-claim graphs. Gold-free: no gold labels, no holdout rows, and no model calls. raw_frequency is normalized with the project scorer-facing grammar (no diary/window arithmetic). The C2 over-inference guard fired 1 time(s) on uncurated quantifying mints out of unknown-only evidence shapes.
+- Cache/reuse source: claim_table:gan2026_section_claim_table_validation25_gpt41mini_v3_2026-06-01.jsonl.
+- Claim language: Stage B (rebuilt) gate for the ontology + typed-edge atomic-claim component generator. Not a holdout-facing candidate. The guard is now exercised; informs whether the ladder proceeds to Stage C.
+- Artifacts: `experiments/gan2026_state_graph_ontology_stage_b_rebuild_2026-06-15.json`, `experiments/gan2026_state_graph_ontology_stage_b_rebuild_2026-06-15.md`, `experiments/gan2026_state_graph_ontology_stage_b_rebuild_2026-06-15_graphs.jsonl`.
+
 ### `gan2026_state_graph_ontology_oracle_uplift_stage_a_2026-06-15`
 - Date/split: `2026-06-15`; `validation`; `750` rows.
 - Pipeline: `hybrid_clinical_frequency_state_graph`; mode `analysis-only`; replay `analysis_only`.

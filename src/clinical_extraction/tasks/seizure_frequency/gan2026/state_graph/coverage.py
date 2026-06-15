@@ -12,7 +12,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequenc
 from clinical_extraction.tasks.seizure_frequency.gan2026.labels import boundary_band, map_purist
 
 from .graph import ClinicalFrequencyStateGraph, StateGraphNode, build_state_graph
-from .ontology import AdmissibleStateOntology
+from .ontology import AdmissibleStateOntology, classify_evidence_shape
 from .projection import project_graph_to_gan
 from .resolve import resolve_label
 from .validation import dual_validate_graph
@@ -214,3 +214,145 @@ def _node_labels(
 
 def _purist_correct(record: GanFrequencyRecord, predicted_monthly: float) -> bool:
     return map_purist(predicted_monthly) == map_purist(record.gold_monthly_frequency)
+
+
+# --------------------------------------------------------------------------- #
+# Stage B - atomic-claim graph viability gate (gold-free, no model spend).
+# --------------------------------------------------------------------------- #
+
+
+_OVER_INFERENCE_PREFIX = "over_inference_out_of_unknown"
+
+
+class NodeAdmissionStats(BaseModel):
+    """Node-level admission outcomes over a set of atomic-claim graphs.
+
+    ``over_inference_rejected`` is the count of nodes the ontology guard blocks
+    for over-inferring a quantified state out of an unknown-only evidence shape -
+    the C2 guard's target. ``structural_rejected`` is the count failing the shape
+    gate (e.g. evidence not an exact note substring). The two are reported apart
+    so a clean run is distinguishable from one where the guard never fired.
+    """
+
+    model_config = ConfigDict(frozen=True)
+
+    total_nodes: int
+    structural_valid: int
+    exact_evidence: int
+    semantic_valid: int
+    admitted: int
+    over_inference_rejected: int
+    structural_rejected: int
+    rejection_reasons: dict[str, int]
+    evidence_shape_counts: dict[str, int]
+
+
+class ResolveInterpretability(BaseModel):
+    """Whether ``resolve_label`` produces interpretable, component-localized output.
+
+    A row is *component-localized* when its final label is attributable to one or
+    more admitted nodes of that same graph (non-empty ``selected_node_ids``, all
+    admitted). Rows that default to no-reference because nothing was admitted carry
+    a decision trace but no node-localized selection, and are counted separately.
+    """
+
+    model_config = ConfigDict(frozen=True)
+
+    row_count: int
+    rows_with_decision_trace: int
+    rows_with_localized_selection: int
+    rows_defaulted_no_admission: int
+    final_kind_counts: dict[str, int]
+
+
+class AtomicClaimViabilitySummary(BaseModel):
+    """Stage B readout: the LLM atomic-claim graph as a candidate component pool.
+
+    Stage B is the viability gate of the validation-only ladder - gold-free, no
+    model spend. It asks whether the atomic-claim graph (a) is schema-valid with
+    exact evidence, (b) is policed by the ontology over-inference guard, and (c)
+    resolves to an interpretable, component-localized label. It is the first place
+    the C2 guard runs over uncurated (``llm-sg-``) nodes; whether the guard
+    actually fires depends on whether the atomic-claim builder mints quantifying
+    states for it to police (see ``over_inference_rejected``).
+    """
+
+    model_config = ConfigDict(frozen=True)
+
+    ontology_id: str
+    row_count: int
+    node_admission: NodeAdmissionStats
+    resolve: ResolveInterpretability
+
+
+def atomic_claim_viability_summary(
+    graphs: Sequence[ClinicalFrequencyStateGraph],
+    *,
+    ontology: AdmissibleStateOntology | None = None,
+) -> AtomicClaimViabilitySummary:
+    """Compute the Stage B viability gate over pre-built atomic-claim graphs."""
+
+    ontology = ontology or AdmissibleStateOntology()
+
+    total = struct_valid = exact = sem_valid = admitted = 0
+    over_inference = structural_rejected = 0
+    reasons: Counter[str] = Counter()
+    shapes: Counter[str] = Counter()
+
+    rows_trace = rows_localized = rows_defaulted = 0
+    final_kinds: Counter[str] = Counter()
+
+    for graph in graphs:
+        validation = dual_validate_graph(graph, ontology=ontology)
+        for node, node_validation in zip(graph.nodes, validation.node_validations):
+            total += 1
+            struct_valid += int(node_validation.structural_valid)
+            exact += int(node.evidence.start_char is not None)
+            sem_valid += int(node_validation.semantic_valid)
+            admitted += int(node_validation.admitted)
+            shapes[classify_evidence_shape(node).value] += 1
+            if not node_validation.admitted:
+                for failure in node_validation.failures:
+                    reasons[failure] += 1
+                if not node_validation.structural_valid:
+                    structural_rejected += 1
+                if not node_validation.semantic_valid and any(
+                    failure.startswith(_OVER_INFERENCE_PREFIX)
+                    for failure in node_validation.failures
+                ):
+                    over_inference += 1
+
+        resolution = resolve_label(graph, ontology=ontology, validation=validation)
+        final_kinds[resolution.final_kind.value] += 1
+        if resolution.decision_trace:
+            rows_trace += 1
+        admitted_ids = validation.admitted_node_ids
+        if resolution.selected_node_ids and all(
+            node_id in admitted_ids for node_id in resolution.selected_node_ids
+        ):
+            rows_localized += 1
+        elif not resolution.selected_node_ids:
+            rows_defaulted += 1
+
+    return AtomicClaimViabilitySummary(
+        ontology_id=ontology.ontology_id,
+        row_count=len(graphs),
+        node_admission=NodeAdmissionStats(
+            total_nodes=total,
+            structural_valid=struct_valid,
+            exact_evidence=exact,
+            semantic_valid=sem_valid,
+            admitted=admitted,
+            over_inference_rejected=over_inference,
+            structural_rejected=structural_rejected,
+            rejection_reasons=dict(sorted(reasons.items())),
+            evidence_shape_counts=dict(sorted(shapes.items())),
+        ),
+        resolve=ResolveInterpretability(
+            row_count=len(graphs),
+            rows_with_decision_trace=rows_trace,
+            rows_with_localized_selection=rows_localized,
+            rows_defaulted_no_admission=rows_defaulted,
+            final_kind_counts=dict(sorted(final_kinds.items())),
+        ),
+    )
