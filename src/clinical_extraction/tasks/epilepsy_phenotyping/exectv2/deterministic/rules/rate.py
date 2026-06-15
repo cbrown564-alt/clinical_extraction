@@ -24,7 +24,6 @@ from clinical_extraction.tasks.shared.epilepsy.terms import (
 from ..candidates import AttributeExtraction, AttributeKind
 from ..normalizer import clean_span, normalize_count, normalize_unit
 from ..rule_metadata import (
-    AblationConfig,
     ExtractionContext,
     Portability,
     RuleExample,
@@ -418,6 +417,55 @@ N_TIMES_PER_PERIOD_RULE = RuleSpec(
 
 
 # ---------------------------------------------------------------------------
+# Rule 5b: every lower-upper periods  ("every 3 to 4 weeks")
+# ---------------------------------------------------------------------------
+
+def _build_period_range(
+    match: re.Match[str], _ctx: ExtractionContext
+) -> AttributeExtraction:
+    return _candidate(
+        match,
+        kind=AttributeKind.RATE,
+        attributes=_attrs(
+            count="1",
+            lower_period=match.group("lower_period"),
+            upper_period=match.group("upper_period"),
+            unit=match.group("unit"),
+        ),
+        rule_id="rate.period_range",
+        rule_group=RuleGroup.RATE_EXPRESSIONS,
+        portability=Portability.SEIZURE_FREQUENCY,
+    )
+
+
+PERIOD_RANGE_RULE = RuleSpec(
+    rule_id="rate.period_range",
+    group=RuleGroup.RATE_EXPRESSIONS,
+    portability=Portability.SEIZURE_FREQUENCY,
+    description="One event every lower-upper periods, e.g. every 3 to 4 weeks.",
+    pattern=re.compile(
+        rf"\bevery\s+(?P<lower_period>{_DIGIT_OR_WORD})\s+(?:to|or)\s+"
+        rf"(?P<upper_period>{_DIGIT_OR_WORD})\s+(?P<unit>{_UNIT})\b",
+        re.IGNORECASE,
+    ),
+    build=_build_period_range,
+    examples=(
+        RuleExample(
+            text="She has seizures every 3 to 4 weeks.",
+            expected_evidence="every 3 to 4 weeks",
+            expected_attributes={
+                "NumberOfSeizures": "1",
+                "LowerNumberOfTimePeriods": "3",
+                "UpperNumberOfTimePeriods": "4",
+                "TimePeriod": "Week",
+            },
+        ),
+    ),
+    provenance="Guideline v9 period-range frequency expression.",
+)
+
+
+# ---------------------------------------------------------------------------
 # Rule 6: adverbial frequencies  (daily, weekly, monthly, fortnightly, ...)
 # With optional multiplier: twice daily, three times weekly.
 # ---------------------------------------------------------------------------
@@ -657,6 +705,46 @@ BARE_COUNT_RULE = RuleSpec(
 
 
 # ---------------------------------------------------------------------------
+# Rule 10: article count  ("a seizure", "an absence")
+# Supplies NumberOfSeizures=1 for dated/point-in-time mentions where the count is
+# expressed by the indefinite article rather than a digit/number word.
+# ---------------------------------------------------------------------------
+
+def _build_article_count(
+    match: re.Match[str], _ctx: ExtractionContext
+) -> AttributeExtraction:
+    return _candidate(
+        match,
+        kind=AttributeKind.RATE,
+        attributes=_attrs(count="1"),
+        rule_id="rate.article_seizure_count",
+        rule_group=RuleGroup.RATE_EXPRESSIONS,
+        portability=Portability.SEIZURE_FREQUENCY,
+    )
+
+
+ARTICLE_SEIZURE_COUNT_RULE = RuleSpec(
+    rule_id="rate.article_seizure_count",
+    group=RuleGroup.RATE_EXPRESSIONS,
+    portability=Portability.SEIZURE_FREQUENCY,
+    description="Indefinite article count before a seizure noun: a/an seizure type.",
+    pattern=re.compile(
+        rf"\b(?:a|an)\s+(?:[a-z][a-z\-]*\s+){{0,4}}?(?:{_SF_COUNT_NOUN})\b",
+        re.IGNORECASE,
+    ),
+    build=_build_article_count,
+    examples=(
+        RuleExample(
+            text="He had a generalised tonic clonic seizure last week.",
+            expected_evidence="a generalised tonic clonic seizure",
+            expected_attributes={"NumberOfSeizures": "1"},
+        ),
+    ),
+    provenance="Portable count expression; needed when a dated event uses an article.",
+)
+
+
+# ---------------------------------------------------------------------------
 # Ordered rule list (order matters for overlap resolution priority)
 # ---------------------------------------------------------------------------
 
@@ -670,6 +758,8 @@ RATE_RULES: list[RuleSpec] = [
     COUNT_OVER_PERIOD_RULE,
     COUNT_PER_PERIOD_RULE,
     N_TIMES_PER_PERIOD_RULE,
+    PERIOD_RANGE_RULE,
     ADVERBIAL_RULE,
     BARE_COUNT_RULE,
+    ARTICLE_SEIZURE_COUNT_RULE,
 ]

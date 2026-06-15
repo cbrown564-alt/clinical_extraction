@@ -14,7 +14,6 @@ import re
 
 from clinical_extraction.tasks.shared.epilepsy.terms import (
     NUMBER_TOKEN,
-    NUMBER_WORD_PATTERN,
     QUALIFIED_SEIZURE_TERMS,
     SEIZURE_TERMS,
 )
@@ -22,7 +21,6 @@ from clinical_extraction.tasks.shared.epilepsy.terms import (
 from ..candidates import AttributeExtraction, AttributeKind
 from ..normalizer import clean_span, normalize_count, normalize_unit
 from ..rule_metadata import (
-    AblationConfig,
     ExtractionContext,
     Portability,
     RuleExample,
@@ -252,7 +250,9 @@ _CONTROL_PHRASES = re.compile(
     rf"no\s+events\s+of\s+concern|"
     rf"no\s+breakthrough\s+(?:{SEIZURE_TERMS})|"
     rf"interval\s+history\s+negative\s+for\s+seizures|"
-    rf"has\s+not\s+(?:experienced|reported|had)\s+any\s+(?:{SEIZURE_TERMS})"
+    rf"has\s+not\s+(?:experienced|reported|had)\s+any\s+(?:further\s+)?(?:{SEIZURE_TERMS})|"
+    rf"(?:{QUALIFIED_SEIZURE_TERMS})\s+(?:are|is|seem|seems|remain|remains)\s+"
+    rf"(?:completely\s+)?(?:well\s+)?under\s+control"
     rf")\b",
     re.IGNORECASE,
 )
@@ -285,6 +285,16 @@ CONTROL_PHRASE_RULE = RuleSpec(
         RuleExample(
             text="Seizure freedom maintained since starting lamotrigine.",
             expected_evidence="Seizure freedom maintained",
+            expected_attributes={"NumberOfSeizures": "0"},
+        ),
+        RuleExample(
+            text="She has not had any further seizures.",
+            expected_evidence="has not had any further seizures",
+            expected_attributes={"NumberOfSeizures": "0"},
+        ),
+        RuleExample(
+            text="The focal seizures are completely under control.",
+            expected_evidence="focal seizures are completely under control",
             expected_attributes={"NumberOfSeizures": "0"},
         ),
     ),

@@ -93,7 +93,7 @@ def _extraction(
 
 _PIT_TRIGGER = (
     r"last\s+clinic|last\s+(?:seen|review(?:ed)?|appointment|visit)|being\s+seen|"
-    r"start(?:ing|ed)?|commenc(?:ing|ed)|introduc\w+|"
+    r"start(?:ing|ed)?|commenc(?:ing|ed)|introduc\w+|increas\w+|reduc\w+|"
     r"stop(?:ping|ped)?|discontinu\w+|withdraw\w+|"
     r"dose\s+(?:increase|change|adjustment)|(?:drug|medication)\s+change|"
     r"chang(?:ing|ed)\s+(?:the\s+)?(?:dose|drug|medication)|"
@@ -108,7 +108,19 @@ def _pit_value(trigger: str) -> str | None:
     if any(w in t for w in ("clinic", "seen", "review", "appointment", "visit")):
         return "LastClinic"
     if (
-        t.startswith(("start", "commenc", "introduc", "chang", "stop", "discontinu", "withdraw"))
+        t.startswith(
+            (
+                "start",
+                "commenc",
+                "introduc",
+                "increas",
+                "reduc",
+                "chang",
+                "stop",
+                "discontinu",
+                "withdraw",
+            )
+        )
         or "dose" in t
         or "drug change" in t
         or "medication" in t
@@ -172,6 +184,44 @@ PIT_SINCE_RULE = RuleSpec(
         ),
     ),
     provenance="Guideline v9 Ex4/Ex5 (L239/L243); List 4 points in time.",
+)
+
+
+# ---------------------------------------------------------------------------
+# Standalone point in time: "last week/month/year" in seizure context.
+# ---------------------------------------------------------------------------
+
+def _build_pit_standalone_during(
+    match: re.Match[str], _ctx: ExtractionContext
+) -> AttributeExtraction | None:
+    value = _pit_value(match.group("trig"))
+    if value is None:
+        return None
+    return _extraction(
+        match,
+        {"PointInTime": value, "TimeSince_or_TimeOfEvent": "During"},
+        rule_id="temporal.point_in_time_standalone_during",
+    )
+
+
+PIT_STANDALONE_DURING_RULE = RuleSpec(
+    rule_id="temporal.point_in_time_standalone_during",
+    group=RuleGroup.TEMPORAL_ANCHOR,
+    portability=Portability.CLINICAL_EPILEPSY,
+    description="Standalone point-in-time trigger in seizure context -> During.",
+    pattern=re.compile(
+        r"\b(?P<trig>last\s+week|last\s+month|last\s+year|this\s+year)\b",
+        re.IGNORECASE,
+    ),
+    build=_build_pit_standalone_during,
+    exclude=(_outside_seizure_context,),
+    examples=(
+        RuleExample(
+            text="He had a generalised tonic clonic seizure last week.",
+            expected_attributes={"PointInTime": "Last_Week", "TimeSince_or_TimeOfEvent": "During"},
+        ),
+    ),
+    provenance="Guideline point-in-time vocabulary for dated frequency statements.",
 )
 
 
@@ -461,6 +511,7 @@ TEMPORAL_RULES: list[RuleSpec] = [
     LAST_SEIZURE_AGO_RULE,
     CHRISTMAS_SINCE_RULE,
     PIT_SINCE_RULE,
+    PIT_STANDALONE_DURING_RULE,
     DATE_DMY_RULE,
     DATE_MY_RULE,
     DATE_MONTH_RULE,
