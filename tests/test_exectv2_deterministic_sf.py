@@ -8,8 +8,10 @@ Tests are at four levels:
 """
 from __future__ import annotations
 
-import pytest
-
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
+    SEIZURE_FREQUENCY,
+    ExectLetter,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.association import (
     associate_attributes_to_anchors,
 )
@@ -43,13 +45,16 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.rate import (
     ADVERBIAL_RULE,
+    ARTICLE_SEIZURE_COUNT_RULE,
     COUNT_IN_LAST_PERIOD_RULE,
     COUNT_PER_PERIOD_RULE,
     N_TIMES_PER_PERIOD_RULE,
+    PERIOD_RANGE_RULE,
     RANGE_PER_PERIOD_RULE,
     RATE_RULES,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.seizure_free import (
+    CONTROL_PHRASE_RULE,
     SEIZURE_FREE_RULES,
     SF_BARE_RULE,
     SF_WITH_DURATION_RULE,
@@ -58,13 +63,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.
     DATE_MY_RULE,
     LAST_SEIZURE_DATE_RULE,
     PIT_SINCE_RULE,
+    PIT_STANDALONE_DURING_RULE,
     TEMPORAL_RULES,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
-    SEIZURE_FREQUENCY,
-    ExectLetter,
-)
-
 
 # ---------------------------------------------------------------------------
 # Normalizer
@@ -131,6 +132,16 @@ def test_n_times_per_period() -> None:
     assert results[0].attributes["TimePeriod"] == "Week"
 
 
+def test_period_range_every_three_to_four_weeks() -> None:
+    results = _apply(PERIOD_RANGE_RULE, "She has seizures every 3 to 4 weeks.")
+    assert len(results) == 1
+    attrs = results[0].attributes
+    assert attrs["NumberOfSeizures"] == "1"
+    assert attrs["LowerNumberOfTimePeriods"] == "3"
+    assert attrs["UpperNumberOfTimePeriods"] == "4"
+    assert attrs["TimePeriod"] == "Week"
+
+
 def test_adverbial_daily() -> None:
     results = _apply(ADVERBIAL_RULE, "Focal onset seizures are now daily.")
     assert any(c.attributes["TimePeriod"] == "Day" and c.attributes["NumberOfSeizures"] == "1" for c in results)
@@ -164,6 +175,15 @@ def test_count_in_last_period_with_count() -> None:
     assert "TimeSince_or_TimeOfEvent" not in c.attributes
 
 
+def test_article_seizure_count() -> None:
+    results = _apply(
+        ARTICLE_SEIZURE_COUNT_RULE,
+        "He had a generalised tonic clonic seizure last week.",
+    )
+    assert results
+    assert results[0].attributes["NumberOfSeizures"] == "1"
+
+
 def test_sf_with_duration() -> None:
     results = _apply(SF_WITH_DURATION_RULE, "She has been seizure free for 3 months.")
     assert len(results) == 1
@@ -187,6 +207,18 @@ def test_sf_bare_basic() -> None:
     assert results[0].attributes["NumberOfSeizures"] == "0"
 
 
+def test_control_phrase_not_had_any_further_seizures() -> None:
+    results = _apply(CONTROL_PHRASE_RULE, "She has not had any further seizures.")
+    assert results
+    assert results[0].attributes["NumberOfSeizures"] == "0"
+
+
+def test_control_phrase_under_control() -> None:
+    results = _apply(CONTROL_PHRASE_RULE, "The focal seizures are completely under control.")
+    assert results
+    assert results[0].attributes["NumberOfSeizures"] == "0"
+
+
 def test_sf_bare_suppresses_required_period() -> None:
     results = _apply(SF_BARE_RULE, "The required seizure-free period is 12 months.")
     assert not results
@@ -198,21 +230,27 @@ def test_sf_bare_suppresses_driving_interval() -> None:
 
 
 def test_change_decreased() -> None:
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.change import DECREASED_RULE
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.change import (
+        DECREASED_RULE,
+    )
     results = _apply(DECREASED_RULE, "Seizure frequency has decreased since starting medication.")
     assert results
     assert results[0].attributes["FrequencyChange"] == "Decreased"
 
 
 def test_change_increased() -> None:
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.change import INCREASED_RULE
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.change import (
+        INCREASED_RULE,
+    )
     results = _apply(INCREASED_RULE, "Seizure frequency has increased over the past month.")
     assert results
     assert results[0].attributes["FrequencyChange"] == "Increased"
 
 
 def test_change_same() -> None:
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.change import SAME_RULE
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.change import (
+        SAME_RULE,
+    )
     results = _apply(SAME_RULE, "Seizure frequency remains unchanged.")
     assert results
     assert results[0].attributes["FrequencyChange"] == "Same"
@@ -234,6 +272,23 @@ def test_pit_since_drug_change() -> None:
     results = _apply(PIT_SINCE_RULE, "Since starting lamotrigine his seizure frequency improved.")
     assert results
     assert results[0].attributes["PointInTime"] == "DrugChange"
+
+
+def test_pit_since_dose_increase_drug_change() -> None:
+    results = _apply(PIT_SINCE_RULE, "She has had no seizures since increasing levetiracetam.")
+    assert results
+    assert results[0].attributes["PointInTime"] == "DrugChange"
+    assert results[0].attributes["TimeSince_or_TimeOfEvent"] == "Since"
+
+
+def test_pit_standalone_last_week_during() -> None:
+    results = _apply(
+        PIT_STANDALONE_DURING_RULE,
+        "He had a generalised tonic clonic seizure last week.",
+    )
+    assert results
+    assert results[0].attributes["PointInTime"] == "Last_Week"
+    assert results[0].attributes["TimeSince_or_TimeOfEvent"] == "During"
 
 
 def test_date_month_year_during() -> None:
@@ -638,10 +693,19 @@ def test_all_rules_have_examples() -> None:
 # Per-item precision rose 0.484→0.615, confirming genuine repair (FN+FP pairs
 # collapsing into TP) rather than a loosened matcher. Prior (raw-gold) pins were
 # phrase_only 0.382 / sf_semantic 0.272 / sf_benchmark 0.272.
+#
+# Re-pinned 2026-06-15 after a focused deterministic-rule iteration added:
+# period-range frequencies ("every 3 to 4 weeks"), article count events ("a
+# seizure last week"), standalone Last_Week/Last_Month/Last_Year During point-in-
+# time triggers, control phrases with "any further seizures", under-control
+# seizure-free statements, and dose-increase DrugChange triggers. This crosses
+# the user-requested >0.7 threshold on phrase-only per-letter F1 (0.732) while
+# the stricter sf_benchmark axis remains attribute-limited (0.391 per-item /
+# 0.613 per-letter).
 _PINNED_DEV_PER_ITEM_F1 = {
-    "phrase_only": 0.485,
-    "sf_semantic": 0.362,
-    "sf_benchmark": 0.362,
+    "phrase_only": 0.517,
+    "sf_semantic": 0.391,
+    "sf_benchmark": 0.391,
 }
 _F1_BAND = 0.02
 
@@ -666,7 +730,7 @@ def test_dev_split_baseline_pinned() -> None:
     gold = load_letters_for_split("dev")
     preds = run_on_letters(gold)
     pred_exect = [
-        to_exect_letter(p, note_text=g.note_text) for p, g in zip(preds, gold)
+        to_exect_letter(p, note_text=g.note_text) for p, g in zip(preds, gold, strict=True)
     ]
 
     configs = {
