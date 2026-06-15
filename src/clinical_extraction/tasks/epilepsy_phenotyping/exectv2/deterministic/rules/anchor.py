@@ -39,6 +39,7 @@ _DESCRIPTOR = (
     r"secondary\s+generalised|secondary\s+generalized|"
     r"generalised\s+tonic[\s-]clonic|generalized\s+tonic[\s-]clonic|"
     r"focal\s+to\s+bilateral|"
+    r"focal\s+motor|partial\s+motor|frontal\s+lobe|dyscognitive|"
     r"focal|"
     r"generalised|generalized|"
     r"tonic[\s-]clonic|tonic|clonic|"
@@ -60,7 +61,7 @@ _AWARENESS_SUFFIX = r"(?:\s+with\s+(?:loss|altered|impaired)\s+(?:of\s+)?awarene
 # slang terms should not." So SF anchors use this narrow set, NOT the shared
 # SEIZURE_TERMS (which includes events/episodes/spells/attacks/auras for the
 # other tasks). "jerks" is reached via the "myoclonic" descriptor.
-_SF_ANCHOR_TERMS = r"seizures?|absences?|jerks?"
+_SF_ANCHOR_TERMS = r"seizures?|absences?|jerks?|convulsions?"
 
 
 def _build_seizure_type_anchor(match: re.Match[str], _ctx: ExtractionContext) -> AnchorCandidate:
