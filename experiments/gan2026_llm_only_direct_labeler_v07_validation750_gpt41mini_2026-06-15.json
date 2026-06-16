@@ -1,0 +1,219 @@
+{
+  "baseline": "llm_only_direct_labeler prompt v0.5 re-parsed from gan2026_llm_only_direct_labeler_v05_validation750_gpt41mini_2026-06-09.jsonl (no new calls)",
+  "candidate": "llm_only_direct_labeler prompt v0.7 (label binding) live, temp 0",
+  "correct_to_wrong_vs_v05": 149,
+  "date": "2026-06-15",
+  "evidence_validity": "validation750 development split (gan2026_split_v1), NOT a holdout or test450 result. Live gpt-4.1-mini, temperature 0. Family CV is within-validation leave-one-boundary-band-out; gap_robust is a promotion-stability estimate, not a test450 number.",
+  "family_cv": {
+    "aggregate": {
+      "changed_label_precision": 0.1178,
+      "changed_labels": 365,
+      "correct_to_wrong": 149,
+      "net_purist_gain": -106,
+      "rows": 750,
+      "wrong_to_correct": 43
+    },
+    "fold_families_absent": [],
+    "fold_families_present": [
+      "band_zero",
+      "band_unknown",
+      "band_submonthly",
+      "band_monthly",
+      "band_weekly",
+      "band_daily"
+    ],
+    "fold_kind": "leave_one_boundary_band_out",
+    "folds": [
+      {
+        "held_out": {
+          "changed_label_precision": 0.0244,
+          "changed_labels": 41,
+          "correct_to_wrong": 4,
+          "net_purist_gain": -3,
+          "rows": 112,
+          "wrong_to_correct": 1
+        },
+        "held_out_family": "band_zero",
+        "retained": {
+          "changed_label_precision": 0.1296,
+          "changed_labels": 324,
+          "correct_to_wrong": 145,
+          "net_purist_gain": -103,
+          "rows": 638,
+          "wrong_to_correct": 42
+        }
+      },
+      {
+        "held_out": {
+          "changed_label_precision": 0.2879,
+          "changed_labels": 66,
+          "correct_to_wrong": 8,
+          "net_purist_gain": 11,
+          "rows": 170,
+          "wrong_to_correct": 19
+        },
+        "held_out_family": "band_unknown",
+        "retained": {
+          "changed_label_precision": 0.0803,
+          "changed_labels": 299,
+          "correct_to_wrong": 141,
+          "net_purist_gain": -117,
+          "rows": 580,
+          "wrong_to_correct": 24
+        }
+      },
+      {
+        "held_out": {
+          "changed_label_precision": 0.0,
+          "changed_labels": 43,
+          "correct_to_wrong": 20,
+          "net_purist_gain": -20,
+          "rows": 87,
+          "wrong_to_correct": 0
+        },
+        "held_out_family": "band_submonthly",
+        "retained": {
+          "changed_label_precision": 0.1335,
+          "changed_labels": 322,
+          "correct_to_wrong": 129,
+          "net_purist_gain": -86,
+          "rows": 663,
+          "wrong_to_correct": 43
+        }
+      },
+      {
+        "held_out": {
+          "changed_label_precision": 0.0476,
+          "changed_labels": 84,
+          "correct_to_wrong": 40,
+          "net_purist_gain": -36,
+          "rows": 141,
+          "wrong_to_correct": 4
+        },
+        "held_out_family": "band_monthly",
+        "retained": {
+          "changed_label_precision": 0.1388,
+          "changed_labels": 281,
+          "correct_to_wrong": 109,
+          "net_purist_gain": -70,
+          "rows": 609,
+          "wrong_to_correct": 39
+        }
+      },
+      {
+        "held_out": {
+          "changed_label_precision": 0.1481,
+          "changed_labels": 108,
+          "correct_to_wrong": 61,
+          "net_purist_gain": -45,
+          "rows": 177,
+          "wrong_to_correct": 16
+        },
+        "held_out_family": "band_weekly",
+        "retained": {
+          "changed_label_precision": 0.1051,
+          "changed_labels": 257,
+          "correct_to_wrong": 88,
+          "net_purist_gain": -61,
+          "rows": 573,
+          "wrong_to_correct": 27
+        }
+      },
+      {
+        "held_out": {
+          "changed_label_precision": 0.1304,
+          "changed_labels": 23,
+          "correct_to_wrong": 16,
+          "net_purist_gain": -13,
+          "rows": 63,
+          "wrong_to_correct": 3
+        },
+        "held_out_family": "band_daily",
+        "retained": {
+          "changed_label_precision": 0.117,
+          "changed_labels": 342,
+          "correct_to_wrong": 133,
+          "net_purist_gain": -93,
+          "rows": 687,
+          "wrong_to_correct": 40
+        }
+      }
+    ],
+    "gap_robust": false,
+    "low_precision_held_out_families": [
+      "band_zero",
+      "band_unknown",
+      "band_submonthly",
+      "band_monthly",
+      "band_weekly",
+      "band_daily"
+    ],
+    "min_changed_label_precision": 0.5,
+    "note": "Promotion gate: a candidate is gap_robust only if every held-out boundary band holds up (net Purist gain >= 0 and, where it changes labels, changed-label precision >= the bar). A positive aggregate with a regressing held-out band is the overfit signature the next-phase brief warns against.",
+    "reasons": [
+      "aggregate net Purist gain -106 <= 0",
+      "held-out bands regress (net Purist gain < 0): band_zero, band_submonthly, band_monthly, band_weekly, band_daily",
+      "held-out bands below changed-label precision 0.5: band_zero, band_unknown, band_submonthly, band_monthly, band_weekly, band_daily"
+    ],
+    "regressing_held_out_families": [
+      "band_zero",
+      "band_submonthly",
+      "band_monthly",
+      "band_weekly",
+      "band_daily"
+    ],
+    "worst_held_out_fold": {
+      "family": "band_weekly",
+      "net_purist_gain": -45
+    }
+  },
+  "model": "openai/gpt-4.1-mini",
+  "net_purist_vs_v05": -106,
+  "predeclaration": "experiments\\gan2026_label_binding_v0_7_predeclaration_2026-06-15.md",
+  "rows": 750,
+  "run_id": "gan2026_llm_only_direct_labeler_v07_validation750_gpt41mini_2026-06-15",
+  "summary_by_family": {
+    "families": {
+      "band_daily": {
+        "changed_labels": 23,
+        "correct_to_wrong": 16,
+        "rows": 63,
+        "wrong_to_correct": 3
+      },
+      "band_monthly": {
+        "changed_labels": 84,
+        "correct_to_wrong": 40,
+        "rows": 141,
+        "wrong_to_correct": 4
+      },
+      "band_submonthly": {
+        "changed_labels": 43,
+        "correct_to_wrong": 20,
+        "rows": 87,
+        "wrong_to_correct": 0
+      },
+      "band_unknown": {
+        "changed_labels": 66,
+        "correct_to_wrong": 8,
+        "rows": 170,
+        "wrong_to_correct": 19
+      },
+      "band_weekly": {
+        "changed_labels": 108,
+        "correct_to_wrong": 61,
+        "rows": 177,
+        "wrong_to_correct": 16
+      },
+      "band_zero": {
+        "changed_labels": 41,
+        "correct_to_wrong": 4,
+        "rows": 112,
+        "wrong_to_correct": 1
+      }
+    }
+  },
+  "temperature": 0.0,
+  "v05_baseline_purist": 575,
+  "v07_purist": 469,
+  "wrong_to_correct_vs_v05": 43
+}

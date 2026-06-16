@@ -1,0 +1,112 @@
+{
+  "schema": "gan2026_f1_orchestrator_state/v1",
+  "updated": "2026-06-15",
+  "goal": {
+    "metric": "micro_f1_purist_eq_accuracy",
+    "target_test450": 405,
+    "target_test450_fraction": 0.9,
+    "split_size": 450,
+    "model": "gpt-4.1-mini",
+    "pipeline_kinds": ["llm_only", "hybrid"],
+    "generalisation_target": "real KCL letters (distribution shift vs GAN-synthetic Gan 2026)"
+  },
+  "protocol_doc": "docs/research/gan2026_f1_dynamic_workflow_protocol_2026-06-15.md",
+  "situation": {
+    "validation750_saturated": true,
+    "selector_only_oracle_ceiling_validation": "739/750",
+    "no_correct_component_rows_validation": 11,
+    "live_v0_7_component_generation_fixed_no_correct_rows": "1/11",
+    "component_wall": true,
+    "frontier_hypothesis": "change the evidence the model sees, not the decision contract; validate primarily on OOD battery",
+    "model_constraint": "user target is gpt-4.1-mini specifically. Prior fresh_evidence holdout used openai/gpt-4.1 (full) per FROZEN_TEST_PIPELINE_LAUNCH_SPECS; battery baseline + any holdout candidate MUST run on gpt-4.1-mini.",
+    "robustness_battery_finding": "Cycle 1: component wall is a GENUINE clinical gap, not surface overfit. KCL-style OOD (Panel C) barely dents accuracy (87.5%) while minimal-pair/synonym traps (Panels A,B) fail. Model quantifies counts but cannot WITHHOLD quantification when a count does not establish a habitual rate.",
+    "weakest_axis": "cluster_axis_retention (3 failures across all panels); then provoked/transient/adherence-confound over-quantification and last-event->seizure-free over-inference."
+  },
+  "champions": {
+    "best_test450_authorised": {
+      "name": "V12 fresh-evidence v0.4 (live gpt-4.1-mini)",
+      "purist": "379/450",
+      "fraction": 0.842,
+      "note": "Best authorised holdout to date; predates unknown-frequency policy v0.6/safety-v0.9."
+    },
+    "best_validation_no_call": {
+      "name": "consensus + fresh agreement selector v0.9",
+      "purist": "733/750",
+      "note": "Saturated; selector oracle ceiling 739/750. Not a holdout signal."
+    },
+    "robustness_certified": null
+  },
+  "gates": {
+    "predeclaration_required": true,
+    "test450_requires_freeze_warden_certification": true,
+    "robustness_battery_is_primary_pretest_gate": true,
+    "source_symmetry_preflight": "cli/frozen_test_preflight.py",
+    "matched_budget_comparator_required_for_runtime_agents": true,
+    "user_conditional_test_authorisation": "approved tonight IF candidate meets agreed standard (gap-robust + OOD-survivable + clinically principled); judgment delegated to Freeze Warden"
+  },
+  "experiment_queue": [
+    {
+      "id": "STRATEGIC-FORK",
+      "status": "awaiting_user",
+      "summary": "Cycle 3 showed battery-perfect != distribution-robust (-106 on validation750). Feasibility reality: bare llm_only direct labeler on gpt-4.1-mini is weak (575/750=0.767 validation), low ceiling even with perfect unknown handling. Strong hybrid/selector family scored 733-739 validation but 379/450=0.842 test ON FULL gpt-4.1, not mini. Fork: (a) gated-coerce v0.8 refinement of weak llm_only [low ceiling]; (b) evaluate the strong hybrid/V12 family ON gpt-4.1-mini [more plausible but likely <=379]; (c) calibration test run; (d) reset 0.90 expectation. Surfaced to user."
+    }
+  ],
+  "cycles": [
+    {
+      "id": "C1-robustness-battery",
+      "date": "2026-06-15",
+      "owner": "gan2026-generalization-adversary (via general-purpose)",
+      "candidate": "llm_only_direct_labeler prompt v0.5, live gpt-4.1-mini @ temp 0",
+      "verdict": "overfit -> revise; does NOT proceed to Freeze Warden/test450",
+      "panel_A_minimal_pairs": "2/6 pairs both-correct; 3 overfit-only pairs (FAIL)",
+      "panel_B_source_near": "5/7 (FAIL, bar >=6/7)",
+      "panel_C_kcl_ood": "7/8 = 87.5% (PASS, bar >=80%)",
+      "weakest_axis": "cluster_axis_retention",
+      "key_insight": "Component wall is a genuine clinical gap, not surface overfit. Model quantifies counts but cannot withhold quantification when a count does not establish a habitual rate.",
+      "artifacts": [
+        "experiments/gan2026_robustness_battery_v1_predeclaration_2026-06-15.md",
+        "experiments/gan2026_robustness_battery_v1_cases.json",
+        "experiments/build_gan2026_robustness_battery_v1.py",
+        "experiments/gan2026_robustness_battery_v1_gpt41mini_2026-06-15.json",
+        "experiments/gan2026_robustness_battery_v1_gpt41mini_2026-06-15.md"
+      ],
+      "evidence_validity": "Live gpt-4.1-mini on authored OOD cases (NOT Gan rows, NOT holdout). Development/robustness evidence."
+    },
+    {
+      "id": "C2-evidence-presentation",
+      "date": "2026-06-15",
+      "owner": "gan2026-rule-designer + experiment-runner (via general-purpose)",
+      "candidate": "llm_only_direct_labeler v0.6 (triage scaffold), live gpt-4.1-mini @ temp 0",
+      "verdict": "overfit -> revise; gate NOT cleared; validation750 not run (stop rule)",
+      "panel_A_minimal_pairs": "3/6 pairs both-correct, 2 overfit-only (FAIL)",
+      "panel_B_source_near": "5/7 (FAIL)",
+      "panel_C_kcl_ood": "8/8 = 100% (PASS); no genuine-rate regression",
+      "key_insight": "Triage scaffold makes the model FORM the correct finding (answer_kind/rationale correct on 4/5 residual failures) but final_label does not bind to it (A6a rationale=unknown emits 2 per 6 month; A4a names cluster cadence emits multiple per day). Fix is to bind label to the model's own emitted answer_kind/triage.",
+      "artifacts": [
+        "experiments/gan2026_evidence_presentation_v0_6_predeclaration_2026-06-15.md",
+        "experiments/build_gan2026_robustness_battery_v1_evidence_v0_6.py",
+        "llm_only_direct_labeler.py: prompt version gan2026_llm_only_direct_labeler_v0.6 (additive; v0.5 still default)"
+      ],
+      "evidence_validity": "Live gpt-4.1-mini on authored OOD cases. Development/robustness evidence; not holdout."
+    },
+    {
+      "id": "C3-label-binding-v0.7",
+      "date": "2026-06-15",
+      "owner": "gan2026-experiment-runner (via general-purpose)",
+      "candidate": "llm_only_direct_labeler v0.7 (label bound to answer_kind/triage), live gpt-4.1-mini",
+      "verdict": "REJECT/revise; battery PERFECT but validation750 catastrophic regression; family-CV gap_robust=FALSE",
+      "battery": "Panel A 6/6, B 7/7, C 8/8 -> transfers, zero failures",
+      "validation750": "469/750 vs v0.5 baseline 575/750 = NET -106 (W->C 43, C->W 149)",
+      "family_cv_gap_robust": false,
+      "per_band_net": "band_unknown +11 (target helped) but band_weekly -45, band_monthly -36, band_submonthly -20, band_daily -13",
+      "methodological_win": "Battery passing 100% is necessary NOT sufficient. The two-tier gate (battery THEN held-out-family CV) caught a -106 overfit the battery alone would have promoted to test450. Root cause: coerce-to-unknown over-demotes genuine-rate rows because mini emits answer_kind=unknown noisily across the full distribution.",
+      "clean_parts": "cluster-render and seizure-free-sharpening were clean; only coerce-to-unknown was too aggressive",
+      "artifacts": [
+        "experiments/gan2026_label_binding_v0_7_predeclaration_2026-06-15.md",
+        "experiments/gan2026_robustness_battery_v1_evidence_v0_7_gpt41mini_2026-06-15.md",
+        "llm_only_direct_labeler.py: prompt version gan2026_llm_only_direct_labeler_v0.7 (additive; v0.5 still default)"
+      ],
+      "evidence_validity": "Live gpt-4.1-mini, validation750 + authored battery. Development evidence; test450 never read."
+    }
+  ]
+}

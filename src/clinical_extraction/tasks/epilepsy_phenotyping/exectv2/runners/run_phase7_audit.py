@@ -27,16 +27,19 @@ SF-first strategy was built to clear.
 Usage::
 
     # rules — instant, model-independent
-    uv run python -m clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.run_phase7_audit \\
+    uv run python -m \\
+        clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.run_phase7_audit \\
         --architecture rules
 
     # llm_only (per_entity) — live, long; use the detached Start-Process pattern
-    uv run python -m clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.run_phase7_audit \\
+    uv run python -m \\
+        clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.run_phase7_audit \\
         --architecture llm_only --config per_entity --model openai/gpt-4.1-mini \\
         --mode live --resume
 
     # hybrid — live, long
-    uv run python -m clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.run_phase7_audit \\
+    uv run python -m \\
+        clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.run_phase7_audit \\
         --architecture hybrid --model openai/gpt-4.1-mini --mode live --resume
 """
 
@@ -49,6 +52,7 @@ import subprocess
 import sys
 from collections.abc import Sequence
 from datetime import date
+from importlib import import_module
 from pathlib import Path
 from typing import Any
 
@@ -56,9 +60,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
     to_exect_letter,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
+    SEIZURE_FREQUENCY,
     ExectAnnotation,
     ExectLetter,
-    SEIZURE_FREQUENCY,
     load_letters,
     load_letters_for_split,
 )
@@ -71,9 +75,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     SF_SEMANTIC,
     EntityScore,
     MatchConfig,
-    multiset_prf1,
     _keys,
     _letters_by_id,
+    multiset_prf1,
     prf1_from_counts,
     score_entity,
 )
@@ -99,8 +103,29 @@ _PIPELINE_FAMILY = {
     "rules": "exectv2_deterministic",
     "llm_only_single_pass": "exectv2_llm_only_single_pass",
     "llm_only_per_entity": "exectv2_llm_only_per_entity",
+    "llm_only_clinical_findings": "exectv2_llm_only_clinical_findings",
     "hybrid": "exectv2_hybrid",
 }
+
+_LLM_RUNNER_MODULES = {
+    "single_pass": (
+        "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm."
+        "llm_only_single_pass"
+    ),
+    "per_entity": (
+        "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm."
+        "llm_only_per_entity"
+    ),
+    "clinical_findings": (
+        "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm."
+        "llm_only_clinical_findings"
+    ),
+}
+
+_HYBRID_RUNNER_MODULE = (
+    "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.hybrid."
+    "clinical_assessment"
+)
 
 
 # ── per-letter bookkeeping (shared by point estimate and bootstrap) ────────────
@@ -130,8 +155,16 @@ def _letter_records(
     pred_by_id = _letters_by_id(pred_letters)
     records: list[_LetterRecord] = []
     for letter_id in sorted(gold_by_id.keys() | pred_by_id.keys()):
-        gold_m = gold_by_id[letter_id].entities(SEIZURE_FREQUENCY) if letter_id in gold_by_id else ()
-        pred_m = pred_by_id[letter_id].entities(SEIZURE_FREQUENCY) if letter_id in pred_by_id else ()
+        gold_m = (
+            gold_by_id[letter_id].entities(SEIZURE_FREQUENCY)
+            if letter_id in gold_by_id
+            else ()
+        )
+        pred_m = (
+            pred_by_id[letter_id].entities(SEIZURE_FREQUENCY)
+            if letter_id in pred_by_id
+            else ()
+        )
         item = multiset_prf1(_keys(gold_m, config), _keys(pred_m, config))
         records.append(
             _LetterRecord(
@@ -259,23 +292,12 @@ def _run_llm_family(
     report_path: Path,
 ) -> tuple[list[ExectLetter], list[ExectLetter], dict[str, Any]]:
     if architecture == "hybrid":
-        from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.hybrid.clinical_assessment import (
-            run_split,
-            write_jsonl,
-            write_report,
-        )
-    elif config == "single_pass":
-        from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
-            run_split,
-            write_jsonl,
-            write_report,
-        )
+        runner_module = import_module(_HYBRID_RUNNER_MODULE)
     else:
-        from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_per_entity import (
-            run_split,
-            write_jsonl,
-            write_report,
-        )
+        runner_module = import_module(_LLM_RUNNER_MODULES[config])
+    run_split = runner_module.run_split
+    write_jsonl = runner_module.write_jsonl
+    write_report = runner_module.write_report
 
     rows, metadata = run_split(
         list(letters),
@@ -329,7 +351,10 @@ def _dev_reference(
         dev = load_letters_for_split("dev")
         pred, _ = _run_rules(dev)
         scores = _score_all(dev, pred)
-        return {name: (round(s.per_item.f1, 4), round(s.per_letter.f1, 4)) for name, s in scores.items()}
+        return {
+            name: (round(s.per_item.f1, 4), round(s.per_letter.f1, 4))
+            for name, s in scores.items()
+        }
 
     family = _PIPELINE_FAMILY[architecture]
     best: dict | None = None
@@ -435,7 +460,8 @@ def render_audit_markdown(
         "",
         "## Scores under all three match configs (sensitivity)",
         "",
-        "| Config | per-item P | R | F1 | per-letter P | R | F1 | dev→audit per-item | dev→audit per-letter |",
+        "| Config | per-item P | R | F1 | per-letter P | R | F1 "
+        "| dev→audit per-item | dev→audit per-letter |",
         "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
     for name, _ in _CONFIGS:
@@ -445,8 +471,10 @@ def render_audit_markdown(
         bold = "**" if name == "sf_benchmark" else ""
         lines.append(
             f"| {bold}`{name}`{bold} "
-            f"| {s.per_item.precision:.3f} | {s.per_item.recall:.3f} | {bold}{s.per_item.f1:.3f}{bold} "
-            f"| {s.per_letter.precision:.3f} | {s.per_letter.recall:.3f} | {bold}{s.per_letter.f1:.3f}{bold} "
+            f"| {s.per_item.precision:.3f} | {s.per_item.recall:.3f} "
+            f"| {bold}{s.per_item.f1:.3f}{bold} "
+            f"| {s.per_letter.precision:.3f} | {s.per_letter.recall:.3f} "
+            f"| {bold}{s.per_letter.f1:.3f}{bold} "
             f"| {di} | {dl} |"
         )
 
@@ -581,8 +609,12 @@ def main() -> None:
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     p.add_argument("--architecture", required=True, choices=["rules", "llm_only", "hybrid"])
-    p.add_argument("--config", choices=["single_pass", "per_entity"], default="per_entity",
-                   help="LLM-only configuration (ignored for rules/hybrid).")
+    p.add_argument(
+        "--config",
+        choices=["single_pass", "per_entity", "clinical_findings"],
+        default="per_entity",
+        help="LLM-only configuration (ignored for rules/hybrid).",
+    )
     p.add_argument("--model", default="openai/gpt-4.1-mini")
     p.add_argument("--mode", choices=["live", "prompt-only"], default="live")
     p.add_argument("--temperature", type=float, default=0.0)

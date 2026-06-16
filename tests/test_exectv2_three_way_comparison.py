@@ -40,6 +40,7 @@ def test_architecture_family_mapping_covers_all_four_families() -> None:
     assert ARCHITECTURE_FAMILY["exectv2_deterministic"] == "rules"
     assert ARCHITECTURE_FAMILY["exectv2_llm_only_single_pass"] == "llm_only"
     assert ARCHITECTURE_FAMILY["exectv2_llm_only_per_entity"] == "llm_only"
+    assert ARCHITECTURE_FAMILY["exectv2_llm_only_clinical_findings"] == "llm_only"
     assert ARCHITECTURE_FAMILY["exectv2_hybrid"] == "hybrid"
 
 

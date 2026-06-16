@@ -1,0 +1,638 @@
+{
+  "candidate": "llm_only_direct_labeler (prompt v0.5, post-unknown-policy state) live on openai/gpt-4.1-mini, temperature 0",
+  "cases_artifact": "experiments\\gan2026_robustness_battery_v1_cases.json",
+  "date": "2026-06-15",
+  "evidence_validity": "Authored-fresh OOD/adversarial cases (NOT Gan rows, NOT test450). Gold monthly frequency and Purist category computed from each authored gold_label via the project normalizer + labels.map_purist. Live gpt-4.1-mini, temperature 0. This is a transfer/overfit estimate, not a holdout benchmark.",
+  "max_tokens": 900,
+  "model": "openai/gpt-4.1-mini",
+  "panels": {
+    "A_minimal_pairs": {
+      "call_failures": 0,
+      "cases": 12,
+      "pairs": {
+        "both_correct_pairs": 2,
+        "overfit_only_pairs": 3,
+        "pairs": 6,
+        "records": [
+          {
+            "axis": "provoked_situational_vs_habitual",
+            "both_correct": true,
+            "overfit_only": false,
+            "pair": "A1",
+            "quantify_side_correct": true,
+            "sides": [
+              {
+                "expected_unknown": true,
+                "id": "A1a",
+                "predicted_label": "unknown",
+                "purist_correct": true
+              },
+              {
+                "expected_unknown": false,
+                "id": "A1b",
+                "predicted_label": "2 per 3 month",
+                "purist_correct": true
+              }
+            ],
+            "unknown_side_correct": true
+          },
+          {
+            "axis": "transient_exacerbation_vs_habitual",
+            "both_correct": false,
+            "overfit_only": true,
+            "pair": "A2",
+            "quantify_side_correct": true,
+            "sides": [
+              {
+                "expected_unknown": true,
+                "id": "A2a",
+                "predicted_label": "3 per 6 week",
+                "purist_correct": false
+              },
+              {
+                "expected_unknown": false,
+                "id": "A2b",
+                "predicted_label": "3 per 6 week",
+                "purist_correct": true
+              }
+            ],
+            "unknown_side_correct": false
+          },
+          {
+            "axis": "descriptive_semiology_vs_stated_rate",
+            "both_correct": true,
+            "overfit_only": false,
+            "pair": "A3",
+            "quantify_side_correct": true,
+            "sides": [
+              {
+                "expected_unknown": true,
+                "id": "A3a",
+                "predicted_label": "no seizure frequency reference",
+                "purist_correct": true
+              },
+              {
+                "expected_unknown": false,
+                "id": "A3b",
+                "predicted_label": "1 per month",
+                "purist_correct": true
+              }
+            ],
+            "unknown_side_correct": true
+          },
+          {
+            "axis": "cluster_axis_retention",
+            "both_correct": false,
+            "overfit_only": false,
+            "pair": "A4",
+            "quantify_side_correct": false,
+            "sides": [
+              {
+                "expected_unknown": false,
+                "id": "A4a",
+                "predicted_label": "multiple per day",
+                "purist_correct": false
+              },
+              {
+                "expected_unknown": false,
+                "id": "A4b",
+                "predicted_label": "1 per 4 to 5 week",
+                "purist_correct": true
+              }
+            ],
+            "unknown_side_correct": null
+          },
+          {
+            "axis": "true_seizure_free_vs_last_event_only",
+            "both_correct": false,
+            "overfit_only": true,
+            "pair": "A5",
+            "quantify_side_correct": true,
+            "sides": [
+              {
+                "expected_unknown": false,
+                "id": "A5a",
+                "predicted_label": "seizure free for 4 month",
+                "purist_correct": true
+              },
+              {
+                "expected_unknown": true,
+                "id": "A5b",
+                "predicted_label": "seizure free for 4 month",
+                "purist_correct": false
+              }
+            ],
+            "unknown_side_correct": false
+          },
+          {
+            "axis": "adherence_confound_vs_baseline",
+            "both_correct": false,
+            "overfit_only": true,
+            "pair": "A6",
+            "quantify_side_correct": true,
+            "sides": [
+              {
+                "expected_unknown": true,
+                "id": "A6a",
+                "predicted_label": "2 per 6 week",
+                "purist_correct": false
+              },
+              {
+                "expected_unknown": false,
+                "id": "A6b",
+                "predicted_label": "2 per 6 week",
+                "purist_correct": true
+              }
+            ],
+            "unknown_side_correct": false
+          }
+        ]
+      },
+      "panel": "A_minimal_pairs",
+      "purist_correct": 8,
+      "rows": [
+        {
+          "axis": "provoked_situational_vs_habitual",
+          "call_error": null,
+          "expected_unknown": true,
+          "gold_label": "unknown",
+          "gold_purist": "seizure_freq_unknown",
+          "id": "A1a",
+          "pair": "A1",
+          "parse_errors": [],
+          "predicted_label": "unknown",
+          "predicted_purist": "seizure_freq_unknown",
+          "purist_correct": true
+        },
+        {
+          "axis": "provoked_situational_vs_habitual",
+          "call_error": null,
+          "expected_unknown": false,
+          "gold_label": "2 per 3 month",
+          "gold_purist": "seizure_freq_more1per6mon_less1mon",
+          "id": "A1b",
+          "pair": "A1",
+          "parse_errors": [
+            "final_label_repaired: '2 per 3 months' -> '2 per 3 month'"
+          ],
+          "predicted_label": "2 per 3 month",
+          "predicted_purist": "seizure_freq_more1per6mon_less1mon",
+          "purist_correct": true
+        },
+        {
+          "axis": "transient_exacerbation_vs_habitual",
+          "call_error": null,
+          "expected_unknown": true,
+          "gold_label": "unknown",
+          "gold_purist": "seizure_freq_unknown",
+          "id": "A2a",
+          "pair": "A2",
+          "parse_errors": [
+            "final_label_repaired: 'unknown' -> '3 per 6 week'"
+          ],
+          "predicted_label": "3 per 6 week",
+          "predicted_purist": "seizure_freq_more1mon_less1week",
+          "purist_correct": false
+        },
+        {
+          "axis": "transient_exacerbation_vs_habitual",
+          "call_error": null,
+          "expected_unknown": false,
+          "gold_label": "3 per 6 week",
+          "gold_purist": "seizure_freq_more1mon_less1week",
+          "id": "A2b",
+          "pair": "A2",
+          "parse_errors": [
+            "final_label_repaired: '3 per 6 weeks' -> '3 per 6 week'"
+          ],
+          "predicted_label": "3 per 6 week",
+          "predicted_purist": "seizure_freq_more1mon_less1week",
+          "purist_correct": true
+        },
+        {
+          "axis": "descriptive_semiology_vs_stated_rate",
+          "call_error": null,
+          "expected_unknown": true,
+          "gold_label": "unknown",
+          "gold_purist": "seizure_freq_unknown",
+          "id": "A3a",
+          "pair": "A3",
+          "parse_errors": [],
+          "predicted_label": "no seizure frequency reference",
+          "predicted_purist": "seizure_freq_unknown",
+          "purist_correct": true
+        },
+        {
+          "axis": "descriptive_semiology_vs_stated_rate",
+          "call_error": null,
+          "expected_unknown": false,
+          "gold_label": "1 per month",
+          "gold_purist": "seizure_freq_1_per_mon",
+          "id": "A3b",
+          "pair": "A3",
+          "parse_errors": [],
+          "predicted_label": "1 per month",
+          "predicted_purist": "seizure_freq_1_per_mon",
+          "purist_correct": true
+        },
+        {
+          "axis": "cluster_axis_retention",
+          "call_error": null,
+          "expected_unknown": false,
+          "gold_label": "1 cluster per 4 to 5 week, multiple per cluster",
+          "gold_purist": "seizure_freq_more1mon_less1week",
+          "id": "A4a",
+          "pair": "A4",
+          "parse_errors": [
+            "final_label_repaired: '1 cluster every 4 to 5 weeks, multiple per cluster' -> 'multiple per day'"
+          ],
+          "predicted_label": "multiple per day",
+          "predicted_purist": "seizure_freq_unknown",
+          "purist_correct": false
+        },
+        {
+          "axis": "cluster_axis_retention",
+          "call_error": null,
+          "expected_unknown": false,
+          "gold_label": "1 per 4 to 5 week",
+          "gold_purist": "seizure_freq_more1per6mon_less1mon",
+          "id": "A4b",
+          "pair": "A4",
+          "parse_errors": [
+            "final_label_repaired: '1 per month' -> '1 per 4 to 5 week'"
+          ],
+          "predicted_label": "1 per 4 to 5 week",
+          "predicted_purist": "seizure_freq_more1per6mon_less1mon",
+          "purist_correct": true
+        },
+        {
+          "axis": "true_seizure_free_vs_last_event_only",
+          "call_error": null,
+          "expected_unknown": false,
+          "gold_label": "seizure free for 4 month",
+          "gold_purist": "currently_no_seizure",
+          "id": "A5a",
+          "pair": "A5",
+          "parse_errors": [],
+          "predicted_label": "seizure free for 4 month",
+          "predicted_purist": "currently_no_seizure",
+          "purist_correct": true
+        },
+        {
+          "axis": "true_seizure_free_vs_last_event_only",
+          "call_error": null,
+          "expected_unknown": true,
+          "gold_label": "unknown",
+          "gold_purist": "seizure_freq_unknown",
+          "id": "A5b",
+          "pair": "A5",
+          "parse_errors": [],
+          "predicted_label": "seizure free for 4 month",
+          "predicted_purist": "currently_no_seizure",
+          "purist_correct": false
+        },
+        {
+          "axis": "adherence_confound_vs_baseline",
+          "call_error": null,
+          "expected_unknown": true,
+          "gold_label": "unknown",
+          "gold_purist": "seizure_freq_unknown",
+          "id": "A6a",
+          "pair": "A6",
+          "parse_errors": [
+            "final_label_repaired: '2 per 6 weeks' -> '2 per 6 week'"
+          ],
+          "predicted_label": "2 per 6 week",
+          "predicted_purist": "seizure_freq_more1mon_less1week",
+          "purist_correct": false
+        },
+        {
+          "axis": "adherence_confound_vs_baseline",
+          "call_error": null,
+          "expected_unknown": false,
+          "gold_label": "2 per 6 week",
+          "gold_purist": "seizure_freq_more1mon_less1week",
+          "id": "A6b",
+          "pair": "A6",
+          "parse_errors": [
+            "final_label_repaired: '2 per month' -> '2 per 6 week'"
+          ],
+          "predicted_label": "2 per 6 week",
+          "predicted_purist": "seizure_freq_more1mon_less1week",
+          "purist_correct": true
+        }
+      ]
+    },
+    "B_source_near_perturbations": {
+      "call_failures": 0,
+      "cases": 7,
+      "panel": "B_source_near_perturbations",
+      "purist_correct": 5,
+      "rows": [
+        {
+          "axis": "provoked_situational_vs_habitual",
+          "call_error": null,
+          "expected_unknown": true,
+          "gold_label": "unknown",
+          "gold_purist": "seizure_freq_unknown",
+          "id": "B1",
+          "pair": null,
+          "parse_errors": [],
+          "predicted_label": "unknown",
+          "predicted_purist": "seizure_freq_unknown",
+          "purist_correct": true
+        },
+        {
+          "axis": "transient_exacerbation_vs_habitual",
+          "call_error": null,
+          "expected_unknown": true,
+          "gold_label": "unknown",
+          "gold_purist": "seizure_freq_unknown",
+          "id": "B2",
+          "pair": null,
+          "parse_errors": [],
+          "predicted_label": "unknown",
+          "predicted_purist": "seizure_freq_unknown",
+          "purist_correct": true
+        },
+        {
+          "axis": "last_event_only_vs_recurrent_rate",
+          "call_error": null,
+          "expected_unknown": true,
+          "gold_label": "unknown",
+          "gold_purist": "seizure_freq_unknown",
+          "id": "B3",
+          "pair": null,
+          "parse_errors": [
+            "final_label_repaired: 'seizure free for multiple month' -> 'seizure free for multiple year'"
+          ],
+          "predicted_label": "seizure free for multiple year",
+          "predicted_purist": "currently_no_seizure",
+          "purist_correct": false
+        },
+        {
+          "axis": "adherence_supply_confound_vs_baseline",
+          "call_error": null,
+          "expected_unknown": true,
+          "gold_label": "unknown",
+          "gold_purist": "seizure_freq_unknown",
+          "id": "B4",
+          "pair": null,
+          "parse_errors": [],
+          "predicted_label": "unknown",
+          "predicted_purist": "seizure_freq_unknown",
+          "purist_correct": true
+        },
+        {
+          "axis": "descriptive_semiology_vs_stated_rate",
+          "call_error": null,
+          "expected_unknown": true,
+          "gold_label": "unknown",
+          "gold_purist": "seizure_freq_unknown",
+          "id": "B5",
+          "pair": null,
+          "parse_errors": [],
+          "predicted_label": "no seizure frequency reference",
+          "predicted_purist": "seizure_freq_unknown",
+          "purist_correct": true
+        },
+        {
+          "axis": "cluster_axis_retention",
+          "call_error": null,
+          "expected_unknown": false,
+          "gold_label": "1 cluster per 4 to 5 week, multiple per cluster",
+          "gold_purist": "seizure_freq_more1mon_less1week",
+          "id": "B6",
+          "pair": null,
+          "parse_errors": [
+            "final_label_repaired: '1 cluster per 4 to 5 weeks' -> '1 per 4 to 5 week'"
+          ],
+          "predicted_label": "1 per 4 to 5 week",
+          "predicted_purist": "seizure_freq_more1per6mon_less1mon",
+          "purist_correct": false
+        },
+        {
+          "axis": "true_seizure_free_vs_last_event_only",
+          "call_error": null,
+          "expected_unknown": true,
+          "gold_label": "unknown",
+          "gold_purist": "seizure_freq_unknown",
+          "id": "B7",
+          "pair": null,
+          "parse_errors": [],
+          "predicted_label": "unknown",
+          "predicted_purist": "seizure_freq_unknown",
+          "purist_correct": true
+        }
+      ]
+    },
+    "C_kcl_style_ood": {
+      "call_failures": 0,
+      "cases": 8,
+      "panel": "C_kcl_style_ood",
+      "purist_correct": 7,
+      "rows": [
+        {
+          "axis": "transient_exacerbation_vs_habitual",
+          "call_error": null,
+          "expected_unknown": true,
+          "gold_label": "unknown",
+          "gold_purist": "seizure_freq_unknown",
+          "id": "C1",
+          "pair": null,
+          "parse_errors": [],
+          "predicted_label": "unknown",
+          "predicted_purist": "seizure_freq_unknown",
+          "purist_correct": true
+        },
+        {
+          "axis": "provoked_situational_vs_habitual",
+          "call_error": null,
+          "expected_unknown": true,
+          "gold_label": "unknown",
+          "gold_purist": "seizure_freq_unknown",
+          "id": "C2",
+          "pair": null,
+          "parse_errors": [],
+          "predicted_label": "unknown",
+          "predicted_purist": "seizure_freq_unknown",
+          "purist_correct": true
+        },
+        {
+          "axis": "true_seizure_free_vs_last_event_only",
+          "call_error": null,
+          "expected_unknown": false,
+          "gold_label": "seizure free for 6 month",
+          "gold_purist": "currently_no_seizure",
+          "id": "C3",
+          "pair": null,
+          "parse_errors": [],
+          "predicted_label": "seizure free for 6 month",
+          "predicted_purist": "currently_no_seizure",
+          "purist_correct": true
+        },
+        {
+          "axis": "genuine_rate_positive",
+          "call_error": null,
+          "expected_unknown": false,
+          "gold_label": "2 per month",
+          "gold_purist": "seizure_freq_more1mon_less1week",
+          "id": "C4",
+          "pair": null,
+          "parse_errors": [],
+          "predicted_label": "2 per month",
+          "predicted_purist": "seizure_freq_more1mon_less1week",
+          "purist_correct": true
+        },
+        {
+          "axis": "genuine_rate_positive",
+          "call_error": null,
+          "expected_unknown": false,
+          "gold_label": "1 per week",
+          "gold_purist": "seizure_freq_more1week_less1day",
+          "id": "C5",
+          "pair": null,
+          "parse_errors": [],
+          "predicted_label": "1 per week",
+          "predicted_purist": "seizure_freq_more1week_less1day",
+          "purist_correct": true
+        },
+        {
+          "axis": "cluster_axis_retention",
+          "call_error": null,
+          "expected_unknown": false,
+          "gold_label": "1 cluster per 3 week, multiple per cluster",
+          "gold_purist": "seizure_freq_more1mon_less1week",
+          "id": "C6",
+          "pair": null,
+          "parse_errors": [
+            "final_label_repaired: '1 cluster per 3 week' -> 'unknown'"
+          ],
+          "predicted_label": "unknown",
+          "predicted_purist": "seizure_freq_unknown",
+          "purist_correct": false
+        },
+        {
+          "axis": "adherence_confound_vs_baseline",
+          "call_error": null,
+          "expected_unknown": true,
+          "gold_label": "unknown",
+          "gold_purist": "seizure_freq_unknown",
+          "id": "C7",
+          "pair": null,
+          "parse_errors": [],
+          "predicted_label": "unknown",
+          "predicted_purist": "seizure_freq_unknown",
+          "purist_correct": true
+        },
+        {
+          "axis": "descriptive_semiology_vs_stated_rate",
+          "call_error": null,
+          "expected_unknown": true,
+          "gold_label": "unknown",
+          "gold_purist": "seizure_freq_unknown",
+          "id": "C8",
+          "pair": null,
+          "parse_errors": [],
+          "predicted_label": "unknown",
+          "predicted_purist": "seizure_freq_unknown",
+          "purist_correct": true
+        }
+      ]
+    }
+  },
+  "predeclaration": "experiments\\gan2026_robustness_battery_v1_predeclaration_2026-06-15.md",
+  "run_id": "gan2026_robustness_battery_v1_gpt41mini_2026-06-15",
+  "summary": {
+    "axis_failure_counts": {
+      "adherence_confound_vs_baseline": 1,
+      "cluster_axis_retention": 3,
+      "last_event_only_vs_recurrent_rate": 1,
+      "transient_exacerbation_vs_habitual": 1,
+      "true_seizure_free_vs_last_event_only": 1
+    },
+    "failing_cases": [
+      {
+        "axis": "transient_exacerbation_vs_habitual",
+        "gold_purist": "seizure_freq_unknown",
+        "id": "A2a",
+        "panel": "A_minimal_pairs",
+        "predicted_label": "3 per 6 week",
+        "predicted_purist": "seizure_freq_more1mon_less1week"
+      },
+      {
+        "axis": "cluster_axis_retention",
+        "gold_purist": "seizure_freq_more1mon_less1week",
+        "id": "A4a",
+        "panel": "A_minimal_pairs",
+        "predicted_label": "multiple per day",
+        "predicted_purist": "seizure_freq_unknown"
+      },
+      {
+        "axis": "true_seizure_free_vs_last_event_only",
+        "gold_purist": "seizure_freq_unknown",
+        "id": "A5b",
+        "panel": "A_minimal_pairs",
+        "predicted_label": "seizure free for 4 month",
+        "predicted_purist": "currently_no_seizure"
+      },
+      {
+        "axis": "adherence_confound_vs_baseline",
+        "gold_purist": "seizure_freq_unknown",
+        "id": "A6a",
+        "panel": "A_minimal_pairs",
+        "predicted_label": "2 per 6 week",
+        "predicted_purist": "seizure_freq_more1mon_less1week"
+      },
+      {
+        "axis": "last_event_only_vs_recurrent_rate",
+        "gold_purist": "seizure_freq_unknown",
+        "id": "B3",
+        "panel": "B_source_near_perturbations",
+        "predicted_label": "seizure free for multiple year",
+        "predicted_purist": "currently_no_seizure"
+      },
+      {
+        "axis": "cluster_axis_retention",
+        "gold_purist": "seizure_freq_more1mon_less1week",
+        "id": "B6",
+        "panel": "B_source_near_perturbations",
+        "predicted_label": "1 per 4 to 5 week",
+        "predicted_purist": "seizure_freq_more1per6mon_less1mon"
+      },
+      {
+        "axis": "cluster_axis_retention",
+        "gold_purist": "seizure_freq_more1mon_less1week",
+        "id": "C6",
+        "panel": "C_kcl_style_ood",
+        "predicted_label": "unknown",
+        "predicted_purist": "seizure_freq_unknown"
+      }
+    ],
+    "panel_A": {
+      "bar": "every pair both-correct, zero overfit-only pairs",
+      "both_correct_pairs": 2,
+      "case_purist_correct": 8,
+      "cases": 12,
+      "overfit_only_pairs": 3,
+      "pairs": 6,
+      "pass": false
+    },
+    "panel_B": {
+      "bar": ">= 6/7 correct, trigger-word-independent",
+      "cases": 7,
+      "pass": false,
+      "purist_correct": 5
+    },
+    "panel_C": {
+      "bar": ">= 80% correct",
+      "cases": 8,
+      "fraction": 0.875,
+      "pass": true,
+      "purist_correct": 7
+    },
+    "verdict": "overfit",
+    "weakest_axis": "cluster_axis_retention"
+  },
+  "temperature": 0.0
+}

@@ -15,6 +15,17 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Claim language: Stage D promotion gate for the graph-as-component generator. Not a holdout-facing candidate; a promote decision clears the validation ladder only and test450 remains locked behind a separate frozen protocol. The graph enters the selector only under independent-corroboration gating (P2, the Stage C survivor); P1/P3 are effect bounds. Evaluated where the no-correct residual actually lives.
 - Artifacts: `experiments/gan2026_state_graph_ontology_stage_d_promotion_gate_2026-06-15.json`, `experiments/gan2026_state_graph_ontology_stage_d_promotion_gate_2026-06-15.md`, `experiments/gan2026_state_graph_ontology_stage_d_promotion_gate_2026-06-15_graphs.jsonl`, `experiments/gan2026_state_graph_ontology_stage_d_promotion_gate_2026-06-15_rows.jsonl`.
 
+### `gan2026_robustness_battery_v1_evidence_v0_7_gpt41mini_2026-06-15`
+- Date/split: `2026-06-15`; `validation`; `27` rows.
+- Pipeline: `robustness_battery_generalization_adversary`; mode `live`; replay `live`.
+- Model role: LLM-only direct labeler (prompt v0.7 label-binding) scored live on authored-fresh OOD / adversarial cases for synthetic-artifact overfit and transfer.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `robustness_battery_v1`.
+- Primary metrics: panel_A_both_correct_pairs=6, panel_A_overfit_only_pairs=0, panel_A_pairs=6, panel_A_pass=True, panel_B_cases=7, panel_B_correct=7, panel_B_pass=True, panel_C_cases=8, panel_C_correct=8, panel_C_fraction=1.0, panel_C_pass=True, verdict=transfers, weakest_axis=None.
+- Evidence validity: Authored-fresh OOD/adversarial cases (NOT Gan rows, NOT test450 holdout). Gold Purist computed from authored labels via the project normalizer + labels.map_purist. Live gpt-4.1-mini, temperature 0. Transfer/overfit estimate, not a holdout benchmark.
+- Cache/reuse source: experiments\gan2026_robustness_battery_v1_evidence_v0_7_checkpoints.
+- Claim language: Cycle-3 fitness tier 2 robustness gate for the v0.7 label-binding candidate. 'transfers' is necessary (not sufficient) for Freeze Warden test450 authorisation; any failed bar returns the candidate as revise.
+- Artifacts: `experiments/gan2026_robustness_battery_v1_evidence_v0_7_gpt41mini_2026-06-15.json`, `experiments/gan2026_robustness_battery_v1_evidence_v0_7_gpt41mini_2026-06-15.md`, `experiments/gan2026_robustness_battery_v1_cases.json`.
+
 ### `gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13`
 - Date/split: `2026-06-13`; `validation`; `750` rows.
 - Pipeline: `fresh_evidence_reasoner`; mode `live`; replay `live`.
@@ -182,6 +193,28 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Claim language: Adds paired source-near hard negatives stressing the ambiguous-vs-determinate distinction. Prerequisite validation infrastructure for the live ambiguity run, not a promoted test450 candidate.
 - Artifacts: `experiments/gan2026_source_near_contrast_panel_2026-06-15.json`, `experiments/gan2026_source_near_contrast_panel_2026-06-15.md`.
 
+### `gan2026_robustness_battery_v1_gpt41mini_2026-06-15`
+- Date/split: `2026-06-15`; `validation`; `27` rows.
+- Pipeline: `robustness_battery_generalization_adversary`; mode `live`; replay `live`.
+- Model role: LLM-only direct labeler scored live on authored-fresh OOD / adversarial cases for synthetic-artifact overfit and transfer.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `robustness_battery_v1`.
+- Primary metrics: panel_A_both_correct_pairs=2, panel_A_overfit_only_pairs=3, panel_A_pairs=6, panel_A_pass=False, panel_B_cases=7, panel_B_correct=5, panel_B_pass=False, panel_C_cases=8, panel_C_correct=7, panel_C_fraction=0.875, panel_C_pass=True, verdict=overfit, weakest_axis=cluster_axis_retention.
+- Evidence validity: Authored-fresh OOD/adversarial cases (NOT Gan rows, NOT test450 holdout). Gold Purist computed from authored labels via the project normalizer + labels.map_purist. Live gpt-4.1-mini, temperature 0. Transfer/overfit estimate, not a holdout benchmark.
+- Cache/reuse source: experiments\gan2026_robustness_battery_v1_checkpoints.
+- Claim language: Fitness tier 2 robustness gate. 'transfers' is necessary (not sufficient) for Freeze Warden test450 authorisation; any failed bar returns the candidate as revise.
+- Artifacts: `experiments/gan2026_robustness_battery_v1_gpt41mini_2026-06-15.json`, `experiments/gan2026_robustness_battery_v1_gpt41mini_2026-06-15.md`, `experiments/gan2026_robustness_battery_v1_cases.json`.
+
+### `gan2026_robustness_battery_v1_evidence_v0_6_gpt41mini_2026-06-15`
+- Date/split: `2026-06-15`; `validation`; `27` rows.
+- Pipeline: `robustness_battery_generalization_adversary`; mode `live`; replay `live`.
+- Model role: LLM-only direct labeler (prompt v0.6 triage-scaffold evidence presentation) scored live on authored-fresh OOD / adversarial cases for synthetic-artifact overfit and transfer.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `robustness_battery_v1`.
+- Primary metrics: panel_A_both_correct_pairs=3, panel_A_overfit_only_pairs=2, panel_A_pairs=6, panel_A_pass=False, panel_B_cases=7, panel_B_correct=5, panel_B_pass=False, panel_C_cases=8, panel_C_correct=8, panel_C_fraction=1.0, panel_C_pass=True, verdict=overfit, weakest_axis=cluster_axis_retention.
+- Evidence validity: Authored-fresh OOD/adversarial cases (NOT Gan rows, NOT test450 holdout). Gold Purist computed from authored labels via the project normalizer + labels.map_purist. Live gpt-4.1-mini, temperature 0. Transfer/overfit estimate, not a holdout benchmark.
+- Cache/reuse source: experiments\gan2026_robustness_battery_v1_evidence_v0_6_checkpoints.
+- Claim language: Fitness tier 2 robustness gate. 'transfers' is necessary (not sufficient) for Freeze Warden test450 authorisation; any failed bar returns the candidate as revise.
+- Artifacts: `experiments/gan2026_robustness_battery_v1_evidence_v0_6_gpt41mini_2026-06-15.json`, `experiments/gan2026_robustness_battery_v1_evidence_v0_6_gpt41mini_2026-06-15.md`, `experiments/gan2026_robustness_battery_v1_cases.json`.
+
 ### `gan2026_residual_component_diversity_audit_2026-06-15`
 - Date/split: `2026-06-15`; `validation`; `17` rows.
 - Pipeline: `consensus_fresh_agreement_selector_component_diversity`; mode `analysis-only`; replay `analysis_only`.
@@ -192,6 +225,17 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: C:\Users\cbrow\Code\clinical_extraction\experiments\gan2026_consensus_fresh_agreement_selector_v0_9_residual_component_generation_audit_2026-06-15.json.
 - Claim language: Quantifies whether the no-correct residual is correlated (single-bucket) or independent (split) failure. Diagnostic instrumentation for the component-generation bet, not a holdout-facing candidate.
 - Artifacts: `experiments/gan2026_residual_component_diversity_audit_2026-06-15.json`, `experiments/gan2026_residual_component_diversity_audit_2026-06-15.md`.
+
+### `gan2026_llm_only_direct_labeler_v07_validation750_gpt41mini_2026-06-15`
+- Date/split: `2026-06-15`; `validation`; `750` rows.
+- Pipeline: `llm_only_direct_labeler`; mode `live`; replay `live`.
+- Model role: LLM-only direct labeler prompt v0.7 (label binding) live on validation750; v0.5 re-parsed baseline; held-out-family CV.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `v0_7_label_binding`.
+- Primary metrics: aggregate_net_purist_gain=-106, correct_to_wrong_vs_v05=149, gap_robust=False, net_purist_vs_v05=-106, v05_baseline_purist=575, v07_purist=469, wrong_to_correct_vs_v05=43.
+- Evidence validity: validation750 development split (gan2026_split_v1), NOT a holdout or test450 result. Live gpt-4.1-mini, temperature 0. Family CV is within-validation leave-one-boundary-band-out; gap_robust is a promotion-stability estimate, not a test450 number.
+- Cache/reuse source: experiments\gan2026_llm_only_direct_labeler_v07_validation750_gpt41mini_2026-06-15.jsonl.
+- Claim language: Cycle-3 validation750 + family-CV gate for v0.7 label binding. gap_robust + positive net is necessary, NOT sufficient, for test450 authorisation. Not a holdout result.
+- Artifacts: `experiments/gan2026_llm_only_direct_labeler_v07_validation750_gpt41mini_2026-06-15.json`, `experiments/gan2026_llm_only_direct_labeler_v07_validation750_gpt41mini_2026-06-15.md`, `experiments/gan2026_llm_only_direct_labeler_v07_validation750_gpt41mini_2026-06-15.jsonl`.
 
 ### `gan2026_fresh_evidence_reasoner_unknown_policy_v0_6_safety_v0_9_replay_2026-06-15`
 - Date/split: `2026-06-15`; `validation`; `250` rows.

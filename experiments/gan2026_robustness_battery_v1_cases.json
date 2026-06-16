@@ -1,0 +1,182 @@
+{
+  "schema": "gan2026_robustness_battery/v1",
+  "date": "2026-06-15",
+  "note": "Authored-fresh cases (NOT Gan rows). gold_label is the Gan label; the scoring driver normalizes it to a monthly frequency and Purist category via the project normalizer + labels.map_purist (do not hardcode Purist). Panel A is the seeded minimal-pair set; Panels B and C are completed by the Generalization Adversary. axis = the clinical distinction under test. expected_unknown means the correct label is 'unknown' because no habitual rate is established.",
+  "panels": {
+    "A_minimal_pairs": [
+      {
+        "id": "A1a", "pair": "A1", "axis": "provoked_situational_vs_habitual", "expected_unknown": true,
+        "gold_label": "unknown",
+        "note": "Dear Dr Nair,\n\nRe: Thomas Green. Epilepsy; Levetiracetam 750 mg twice daily, adherence good. Seizures: spells are uncommon when meals are regular. On the two occasions in the last three months when he went many hours without food, he had a brief collapse with confusion. No injuries, no auras, no events otherwise.\n\nThese were clearly precipitated by missed meals.",
+        "rationale": "Two events, but explicitly provoked by missed meals and otherwise uncommon; no habitual baseline rate -> unknown."
+      },
+      {
+        "id": "A1b", "pair": "A1", "axis": "provoked_situational_vs_habitual", "expected_unknown": false,
+        "gold_label": "2 per 3 month",
+        "note": "Dear Dr Nair,\n\nRe: Thomas Green. Epilepsy; Levetiracetam 750 mg twice daily, adherence good. Seizures: over the last three months he has had two seizures, occurring spontaneously with no identifiable trigger and no relation to meals, sleep, or medication. This represents his usual baseline.",
+        "rationale": "Two unprovoked seizures over a defined 3-month baseline window -> habitual rate 2 per 3 month."
+      },
+      {
+        "id": "A2a", "pair": "A2", "axis": "transient_exacerbation_vs_habitual", "expected_unknown": true,
+        "gold_label": "unknown",
+        "note": "Dear Dr Rahman,\n\nRe: Michael Turner. Recurrent seizure episodes of uncertain classification, EEG pending. Lamotrigine 75 mg twice daily. Over the past six weeks, during a period of marked circadian disruption following recent long-haul travel across several time zones, he describes three events. He attributes them to the disrupted sleep. Telephone review in 4 weeks.",
+        "rationale": "Three events during a transient sleep-deprivation exacerbation, classification uncertain, work-up pending -> not a habitual rate -> unknown."
+      },
+      {
+        "id": "A2b", "pair": "A2", "axis": "transient_exacerbation_vs_habitual", "expected_unknown": false,
+        "gold_label": "3 per 6 week",
+        "note": "Dear Dr Rahman,\n\nRe: Michael Turner. Established focal epilepsy, stable classification. Lamotrigine 75 mg twice daily, unchanged for two years. Over the past six weeks he has had three seizures, with no change in sleep, travel, or medication. This is in keeping with his long-standing stable pattern.",
+        "rationale": "Three seizures over six weeks described as the stable long-term pattern -> habitual rate 3 per 6 week."
+      },
+      {
+        "id": "A3a", "pair": "A3", "axis": "descriptive_semiology_vs_stated_rate", "expected_unknown": true,
+        "gold_label": "unknown",
+        "note": "Dear Dr A. Rahman,\n\nRe: Daniel Harper. Epilepsy; lamotrigine 50 mg AM / 75 mg PM. Lamotrigine level 12 Sep 2025: 3.4 mg/L. Seizures: typical event duration about twenty seconds, brief behavioural arrest with preserved awareness per family report. No statement of how often these occur.",
+        "rationale": "Note characterises semiology and dosing only; no frequency or count is stated -> unknown."
+      },
+      {
+        "id": "A3b", "pair": "A3", "axis": "descriptive_semiology_vs_stated_rate", "expected_unknown": false,
+        "gold_label": "1 per month",
+        "note": "Dear Dr A. Rahman,\n\nRe: Daniel Harper. Epilepsy; lamotrigine 50 mg AM / 75 mg PM. Seizures: brief behavioural arrest with preserved awareness, typical duration about twenty seconds. These episodes occur approximately once a month and have been stable at that rate.",
+        "rationale": "Same semiology plus an explicit stable rate of about once a month -> 1 per month."
+      },
+      {
+        "id": "A4a", "pair": "A4", "axis": "cluster_axis_retention", "expected_unknown": false,
+        "gold_label": "1 cluster per 4 to 5 week, multiple per cluster",
+        "note": "Dear colleague,\n\nRe: Daniel Walker. Focal epilepsy. Regarding periodicity, he and his partner report that the events group together over several days in a repeating pattern, with several seizures within each grouping, and that these groupings recur about every 4 to 5 weeks.",
+        "rationale": "Explicit cluster pattern: clusters recur every 4-5 weeks with multiple events per cluster -> cluster label must be retained, not flattened."
+      },
+      {
+        "id": "A4b", "pair": "A4", "axis": "cluster_axis_retention", "expected_unknown": false,
+        "gold_label": "1 per 4 to 5 week",
+        "note": "Dear colleague,\n\nRe: Daniel Walker. Focal epilepsy. Regarding periodicity, he and his partner report a single isolated seizure roughly every 4 to 5 weeks, occurring on its own with no grouping or clustering.",
+        "rationale": "Single isolated seizure every 4-5 weeks with no clustering -> plain rate, distinct Purist bucket from the cluster case."
+      },
+      {
+        "id": "A5a", "pair": "A5", "axis": "true_seizure_free_vs_last_event_only", "expected_unknown": false,
+        "gold_label": "seizure free for 4 month",
+        "note": "Dear Dr Patel,\n\nRe: a patient with focal epilepsy on carbamazepine. He reports that he has been completely free of all seizures for the last four months, with no events of any kind during that period.",
+        "rationale": "Asserted continuous seizure-free interval of four months -> seizure free for 4 month."
+      },
+      {
+        "id": "A5b", "pair": "A5", "axis": "true_seizure_free_vs_last_event_only", "expected_unknown": true,
+        "gold_label": "unknown",
+        "note": "Dear Dr Patel,\n\nRe: a patient with focal epilepsy on carbamazepine. His last recorded seizure was around four months ago. Follow-up since has been limited and he has not been seen in the interim; current seizure status is not clearly documented.",
+        "rationale": "Last-event date only, with no asserted seizure-free interval and limited follow-up -> not a seizure-free duration -> unknown."
+      },
+      {
+        "id": "A6a", "pair": "A6", "axis": "adherence_confound_vs_baseline", "expected_unknown": true,
+        "gold_label": "unknown",
+        "note": "Dear Dr Susan,\n\nRe: William Harris. Generalised epilepsy; levetiracetam and sodium valproate. Social history notable for previous gaps in pharmacy supply and historically variable adherence. He has had two seizures in the past six weeks, during a period when medication supply was interrupted.",
+        "rationale": "Two events over six weeks but confounded by an interrupted-supply/non-adherence period -> not a baseline rate -> unknown."
+      },
+      {
+        "id": "A6b", "pair": "A6", "axis": "adherence_confound_vs_baseline", "expected_unknown": false,
+        "gold_label": "2 per 6 week",
+        "note": "Dear Dr Susan,\n\nRe: William Harris. Generalised epilepsy; levetiracetam and sodium valproate, supervised and fully adherent for the past year. He has had two seizures in the past six weeks, consistent with his stable baseline on current treatment.",
+        "rationale": "Two seizures over six weeks on stable adherent treatment described as baseline -> habitual rate 2 per 6 week."
+      }
+    ],
+    "B_source_near_perturbations": [
+      {
+        "id": "B1", "axis": "provoked_situational_vs_habitual", "expected_unknown": true,
+        "gold_label": "unknown",
+        "note": "Dear Dr Okafor,\n\nRe: a young man with epilepsy on levetiracetam. He has noticed that on the rare occasions he skips meals and goes a long stretch without eating, he can have a brief blackout with muddled thinking; this happened perhaps a couple of times over the autumn. When he eats regularly he is essentially event-free.",
+        "rationale": "Reworded missed-meals provocation (different lexis: 'goes a long stretch without eating') -> still unknown; must not depend on the word 'meals'. Source-near to row 6321.",
+        "source_situation": "6321 provoked-by-irregular-eating"
+      },
+      {
+        "id": "B2", "axis": "transient_exacerbation_vs_habitual", "expected_unknown": true,
+        "gold_label": "unknown",
+        "note": "Dear Dr Mensah,\n\nRe: Michael Turner. Episodes of as-yet-unsettled type; nerve-conduction and EEG still outstanding. Carbamazepine continued. He has gone through a rough fortnight or two of badly broken nights after a work trip abroad spanning multiple time zones, and in that window noticed a handful of episodes which he puts down to the upended body clock. Before that he had been quiet for a long while.",
+        "rationale": "Reworded transient jet-lag/sleep-disruption exacerbation (different trigger lexis: 'upended body clock', 'broken nights'); classification pending -> unknown. Source-near to row 6368; must not depend on the phrase 'long-haul travel'.",
+        "source_situation": "6368 transient-sleep-deprivation-exacerbation"
+      },
+      {
+        "id": "B3", "axis": "last_event_only_vs_recurrent_rate", "expected_unknown": true,
+        "gold_label": "unknown",
+        "note": "Dear Dr Beaumont,\n\nRe: Emily Carter. Generalised epilepsy, levetiracetam unchanged. She mentions one short blank spell with a bit of eyelid flicker a fortnight back, the first thing of its kind for a good many months. Nothing else has happened and she remains well; this looks like a one-off against an otherwise quiet background.",
+        "rationale": "Reworded single recent isolated event after a long quiet interval -> a count in an observation window, not a recurrent rate -> unknown. Source-near to row 5534; must not depend on 'isolated' phrasing.",
+        "source_situation": "5534 single-recent-event-not-a-rate"
+      },
+      {
+        "id": "B4", "axis": "adherence_supply_confound_vs_baseline", "expected_unknown": true,
+        "gold_label": "unknown",
+        "note": "Dear Dr Iyer,\n\nRe: William Harris. Generalised epilepsy on levetiracetam and valproate; he lives in supported housing. Over roughly the last six weeks the parents counted two drop attacks, but this coincided with a stretch where the dispensing chemist repeatedly ran short and doses were missed before the carers took over supervision. No clear pattern otherwise.",
+        "rationale": "Reworded interrupted-supply / non-adherence confound (different lexis: 'dispensing chemist ran short') around two events -> not a baseline rate -> unknown. Source-near to row 14025; must not depend on 'ketogenic diet' or 'pharmacy supply'.",
+        "source_situation": "14025 adherence-supply-confound"
+      },
+      {
+        "id": "B5", "axis": "descriptive_semiology_vs_stated_rate", "expected_unknown": true,
+        "gold_label": "unknown",
+        "note": "Dear Dr Fenwick,\n\nRe: Daniel Harper. Epilepsy; lamotrigine dispersible 50 mg mane, 75 mg nocte. Recent level 3.4 mg/L. The events themselves are brief arrests of behaviour with awareness kept, lasting about twenty seconds by the family's account. The letter does not put any number on how regularly they come.",
+        "rationale": "Reworded descriptive-semiology-only note (duration + character, no frequency or count) -> unknown. Source-near to row 6571; must not depend on a specific cue word for absence-of-rate.",
+        "source_situation": "6571 descriptive-semiology-no-rate"
+      },
+      {
+        "id": "B6", "axis": "cluster_axis_retention", "expected_unknown": false,
+        "gold_label": "1 cluster per 4 to 5 week, multiple per cluster",
+        "note": "Dear Dr Okonkwo,\n\nRe: Daniel Walker. Focal epilepsy. He and his partner describe the spells arriving in runs across a few consecutive days, an unpredictable number each run, with these runs coming round again roughly every four to five weeks. Between the runs he can be a week or two clear.",
+        "rationale": "Reworded cluster pattern (different lexis: 'runs across consecutive days') with clusters every 4-5 weeks and per-cluster count not reliably logged -> retain cluster label, do not flatten. Source-near to row 9943; must not depend on the word 'cluster'.",
+        "source_situation": "9943 cluster-axis-retention"
+      },
+      {
+        "id": "B7", "axis": "true_seizure_free_vs_last_event_only", "expected_unknown": true,
+        "gold_label": "unknown",
+        "note": "Dear Dr Castellanos,\n\nRe: Sophie Bennett. Focal epilepsy, valproate continued. Her most recent recorded event was at the end of May; since then she has not been back in clinic and the supported-living key worker's log over the summer is patchy, so it is not certain whether she has been entirely event-free or simply unobserved.",
+        "rationale": "Last-recorded-event date plus explicitly incomplete follow-up -> cannot assert a seizure-free duration -> unknown (NOT seizure-free, NOT a rate). Source-near to rows 11254/11272; must not be read as a clean seizure-free interval.",
+        "source_situation": "11254/11272 last-event-vs-seizure-free"
+      }
+    ],
+    "C_kcl_style_ood": [
+      {
+        "id": "C1", "axis": "transient_exacerbation_vs_habitual", "expected_unknown": true,
+        "gold_label": "unknown",
+        "note": "Clinic note. Dx: ?focal epilepsy, classification TBC, EEG awaited. Rx LTG 75 bd. Hx: c/o 3 szs over last ~6/52, all during a bad patch of poor sleep post nights + long-haul flight. Pt links them to jet lag. No szs when sleep settled. Plan: TCO 4/52, EMU if recurs.",
+        "rationale": "KCL-style abbreviations (szs, 6/52, c/o, TCO, EMU) over a transient sleep-deprivation exacerbation, classification pending -> unknown. Tests transfer to real-letter shorthand."
+      },
+      {
+        "id": "C2", "axis": "provoked_situational_vs_habitual", "expected_unknown": true,
+        "gold_label": "unknown",
+        "note": "EPILEPSY CLINIC // pt seen c partner. Known epilepsy, on LEV 1g bd, compliance ok. Reports 2 episodes last ~3/12 - both after ETOH binge at weekend dos. Nil when not drinking. O/E NAD. Imp: alcohol-provoked events, baseline freq unclear. P: advise re ETOH, diary, r/v 4/12.",
+        "rationale": "Terse problem-list shorthand; 2 events but provoked by alcohol binges (ETOH), no habitual baseline -> unknown. Provoked axis, abbreviation-heavy."
+      },
+      {
+        "id": "C3", "axis": "true_seizure_free_vs_last_event_only", "expected_unknown": false,
+        "gold_label": "seizure free for 6 month",
+        "note": "Dictated, not checked. Re this gentleman c focal epilepsy on CBZ. He tells me - and his wife confirms - that he has been completely szn free now for a good six months, no events whatsoever of any sort in that time. Delighted with progress. Continue current meds, r/v 6/12.",
+        "rationale": "Dictation artefact ('Dictated, not checked'), asserted continuous 6-month seizure-free interval confirmed by witness -> seizure free for 6 month. Genuine non-unknown anchor; tests that OOD prose does not push everything to unknown."
+      },
+      {
+        "id": "C4", "axis": "genuine_rate_positive", "expected_unknown": false,
+        "gold_label": "2 per month",
+        "note": "Neuro f/u. GTCS, generalised epilepsy, on VPA 500 bd. Stable. Currently averaging about 2 szs/month for the last several months, no real change, no obvious triggers, sleep + adherence fine. Nil red flags. Cont same, bloods next visit, r/v 6/12.",
+        "rationale": "Genuine stable habitual rate ~2 seizures/month over several months, no confound -> 2 per month. Abbreviation-heavy (GTCS, szs, VPA, f/u) genuine-rate positive."
+      },
+      {
+        "id": "C5", "axis": "genuine_rate_positive", "expected_unknown": false,
+        "gold_label": "1 per week",
+        "note": "Letter re focal IAS. Meds: lacosamide 100 bd + LEV 1g bd. He's settled into a fairly steady pattern - roughly one focal impaired-awareness seizure a week, give or take, has been like that for months. No clustering, no clear provoking factors. Plan: optimise LCM, ambulatory EEG, r/v.",
+        "rationale": "Genuine steady habitual rate of about one seizure per week over months, no confound -> 1 per week. Second genuine-rate positive so the panel is not all-unknown."
+      },
+      {
+        "id": "C6", "axis": "cluster_axis_retention", "expected_unknown": false,
+        "gold_label": "1 cluster per 3 week, multiple per cluster",
+        "note": "ROS clinic. Hx: stereotyped FOS in clusters - gets a run of several over 2-3 days then nil for a while, runs come ~every 3/52. Number per run varies, not logged. On ZNS. No status. P: amb EEG c diary to quantify, cont ZNS.",
+        "rationale": "Cluster cadence ~every 3 weeks with multiple, uncounted events per run -> retain cluster label 1 cluster per 3 week, multiple per cluster (NOT flattened to a plain rate, NOT unknown). KCL shorthand cluster case."
+      },
+      {
+        "id": "C7", "axis": "adherence_confound_vs_baseline", "expected_unknown": true,
+        "gold_label": "unknown",
+        "note": "Tel r/v. Generalised epilepsy, LTG + LEV. Had a rough patch - 3 events over ~6/52 but admits he'd run out of LTG for about 10 days mid-period before repeat sorted. Since back on it, settled. Baseline hard to call given the gap. P: reinforce adherence, blister pack, r/v.",
+        "rationale": "3 events over 6 weeks confounded by a ~10-day medication gap (ran out of LTG) -> not a baseline rate -> unknown. Adherence-confound axis in terse telephone-review shorthand."
+      },
+      {
+        "id": "C8", "axis": "descriptive_semiology_vs_stated_rate", "expected_unknown": true,
+        "gold_label": "unknown",
+        "note": "c/o 'funny turns'. Dx generalised epilepsy. Describes brief absences c eyelid flutter, ~10 sec, full recovery, witnessed by mum. No mention of how often - pt + family vague on numbers, just says 'now and then'. On VPA. P: diary to establish freq, EEG.",
+        "rationale": "Semiology described in detail but frequency explicitly vague ('now and then', 'no mention of how often') -> no usable rate -> unknown. Descriptive-only KCL shorthand; tests that 'now and then' is not converted to a number."
+      }
+    ]
+  }
+}
