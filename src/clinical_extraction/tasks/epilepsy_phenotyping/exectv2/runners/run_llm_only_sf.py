@@ -3,14 +3,16 @@
 Usage examples::
 
     # Pilot 25 letters with single-pass config, prompt-only mode (smoke test)
-    uv run python -m clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.run_llm_only_sf \\
+    uv run python -m \\
+        clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.run_llm_only_sf \\
         --config single_pass \\
         --model openai/gpt-4.1-mini \\
         --mode prompt-only \\
         --pilot 25
 
     # Full dev split, live
-    uv run python -m clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.run_llm_only_sf \\
+    uv run python -m \\
+        clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.run_llm_only_sf \\
         --config single_pass \\
         --model openai/gpt-4.1-mini \\
         --mode live \\
@@ -28,11 +30,27 @@ from __future__ import annotations
 import argparse
 import sys
 from datetime import date
+from importlib import import_module
 from pathlib import Path
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     load_letters_for_split,
 )
+
+_RUNNER_MODULES = {
+    "single_pass": (
+        "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm."
+        "llm_only_single_pass"
+    ),
+    "per_entity": (
+        "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm."
+        "llm_only_per_entity"
+    ),
+    "clinical_findings": (
+        "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm."
+        "llm_only_clinical_findings"
+    ),
+}
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -42,7 +60,7 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     p.add_argument(
         "--config",
-        choices=["single_pass", "per_entity"],
+        choices=["single_pass", "per_entity", "clinical_findings"],
         default="single_pass",
         help="LLM-only extractor configuration.",
     )
@@ -131,18 +149,10 @@ def main() -> None:
     jsonl_path = args.out_jsonl or _auto_path(args.config, args.split, args.model, n, "jsonl")
     report_path = args.out_report or _auto_path(args.config, args.split, args.model, n, "md")
 
-    if args.config == "single_pass":
-        from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
-            run_split,
-            write_jsonl,
-            write_report,
-        )
-    else:
-        from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_per_entity import (
-            run_split,
-            write_jsonl,
-            write_report,
-        )
+    runner_module = import_module(_RUNNER_MODULES[args.config])
+    run_split = runner_module.run_split
+    write_jsonl = runner_module.write_jsonl
+    write_report = runner_module.write_report
 
     print(
         f"Running {args.config} / mode={args.mode} / model={args.model} "

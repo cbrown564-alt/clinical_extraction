@@ -59,6 +59,7 @@ ARCHITECTURE_FAMILY: Mapping[str, str] = {
     "exectv2_deterministic": "rules",
     "exectv2_llm_only_single_pass": "llm_only",
     "exectv2_llm_only_per_entity": "llm_only",
+    "exectv2_llm_only_clinical_findings": "llm_only",
     "exectv2_hybrid": "hybrid",
 }
 FAMILY_ORDER: tuple[str, ...] = ("rules", "llm_only", "hybrid")
@@ -68,6 +69,7 @@ _CONFIG_LABEL: Mapping[str, str] = {
     "exectv2_deterministic": "deterministic_sf",
     "exectv2_llm_only_single_pass": "single_pass",
     "exectv2_llm_only_per_entity": "per_entity",
+    "exectv2_llm_only_clinical_findings": "clinical_findings",
     "exectv2_hybrid": "candidate_assessment",
 }
 

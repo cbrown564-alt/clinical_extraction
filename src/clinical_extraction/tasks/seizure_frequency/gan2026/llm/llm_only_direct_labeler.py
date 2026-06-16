@@ -36,6 +36,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_metadat
 from clinical_extraction.tasks.seizure_frequency.gan2026.labels import map_pragmatic, map_purist
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
+    repair_prediction_label_format_preserving,
     repair_prediction_label_with_evidence,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.reports.base import (
@@ -43,7 +44,39 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.reports.base import (
     write_markdown_report,
 )
 
-PROMPT_VERSION = "gan2026_llm_only_direct_labeler_v0.5"
+PROMPT_VERSION_V0_5 = "gan2026_llm_only_direct_labeler_v0.5"
+PROMPT_VERSION_V0_6 = "gan2026_llm_only_direct_labeler_v0.6"
+PROMPT_VERSION_V0_7 = "gan2026_llm_only_direct_labeler_v0.7"
+# Active prompt version. Default stays v0.5 so existing drivers are unchanged.
+# Cycle-2 evidence-presentation experiments select v0.6 via set_active_prompt_version.
+# Cycle-3 label-binding experiments select v0.7 (v0.6 scaffold + sharpened STEP 4
+# + a label-binding repair keyed on the model's own emitted answer_kind/rationale).
+PROMPT_VERSION = PROMPT_VERSION_V0_5
+_SUPPORTED_PROMPT_VERSIONS = frozenset(
+    {PROMPT_VERSION_V0_5, PROMPT_VERSION_V0_6, PROMPT_VERSION_V0_7}
+)
+
+
+def set_active_prompt_version(version: str) -> None:
+    """Gate which prompt version build_prompt_input/run_split emit (additive).
+
+    v0.5 is the frozen baseline; v0.6 adds a structured triage scaffold to the
+    evidence the model attends to; v0.7 keeps that scaffold (with a sharpened
+    seizure-free-vs-one-off STEP 4) and additionally binds the emitted
+    final_label to the model's own emitted answer_kind/rationale. Switching the
+    module-level constant keeps the change minimal and self-contained: scoring,
+    gold normalization, and the emitted JSON schema are untouched.
+    """
+
+    global PROMPT_VERSION
+    if version not in _SUPPORTED_PROMPT_VERSIONS:
+        raise ValueError(
+            f"unsupported prompt version {version!r}; "
+            f"expected one of {sorted(_SUPPORTED_PROMPT_VERSIONS)}"
+        )
+    PROMPT_VERSION = version
+
+
 PROMPT_POLICY_TAXONOMY: list[dict[str, str]] = [
     {
         "policy_id": "dl_v0.schema.strict_json_object",
@@ -148,14 +181,8 @@ class DspyLlmOnlyDirectLabelerExtractor(dspy.Module):
         return self.predict(prompt_input_json=prompt_input_json)
 
 
-def build_prompt_input(record: GanFrequencyRecord) -> str:
-    """Build the LLM-only direct-labeler prompt payload, excluding gold labels."""
-
-    payload = {
-        "prompt_version": PROMPT_VERSION,
-        "task": "Gan 2026 seizure-frequency LLM-only direct-labeler extraction",
-        "source_row_index": record.source_row_index,
-        "instructions": [
+def _v0_5_instructions() -> list[str]:
+    return [
             "Read the full clinical note and extract the current seizure-frequency answer.",
             (
                 "Return final_label as one normalized string using count, range, or "
@@ -271,7 +298,238 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "final_label must not be 'unknown' or 'no seizure frequency reference'."
             ),
             "Return exactly one JSON object with no markdown.",
-        ],
+        ]
+
+
+def _v0_6_instructions() -> list[str]:
+    """Cycle-2 evidence-presentation scaffold (additive over v0.5).
+
+    Forces a four-finding triage of the reported events BEFORE the label is
+    emitted, and binds each finding to a labelling consequence. The emitted JSON
+    schema is unchanged; the scaffold lives in the instructions only, so scoring
+    and normalization are untouched.
+    """
+
+    return [
+        "Read the full clinical note and extract the current seizure-frequency answer.",
+        (
+            "Before choosing a label, work through this four-step triage of the "
+            "reported events. The triage decides whether a count establishes a "
+            "habitual rate or whether the safer answer is 'unknown'. When the count "
+            "OR the time window is unclear, 'unknown' is safer than inventing a rate."
+        ),
+        (
+            "STEP 1 confound_check — Are the reported events tied to a removable "
+            "provoking, situational, or adherence factor: missed meals / going a "
+            "long time without eating; sleep deprivation, broken nights, jet lag, "
+            "long-haul travel, or circadian/body-clock disruption; alcohol; or a "
+            "medication-supply gap, running out of medication, or non-adherence? If "
+            "YES, the count does NOT establish a habitual baseline -> final_label is "
+            "'unknown'. A note that says events stop when the trigger is removed "
+            "(e.g. 'no events when eating/sleeping normally') is the provoked "
+            "pattern -> 'unknown'."
+        ),
+        (
+            "STEP 2 window_check — Is the observation window the patient's usual, "
+            "ongoing habitual baseline, or is it: a transient exacerbation, 'rough "
+            "patch', 'bad fortnight', or recent 'period of decline'; a new or "
+            "uncertain seizure classification with work-up pending (EEG/EMU "
+            "awaited, '?epilepsy', 'TBC'); or a single recent event / a total count "
+            "since a date that is NOT stated to recur at that rate? If the window is "
+            "NOT a usable habitual baseline -> final_label is 'unknown'. Only a "
+            "stable, ongoing, unprovoked pattern over a defined period is a usable "
+            "rate."
+        ),
+        (
+            "STEP 3 cluster_check — Do the events arrive in clusters: runs or "
+            "groupings of several events over consecutive days, separated by "
+            "seizure-free gaps, recurring every few days or weeks? If YES, label "
+            "with the CLUSTER CADENCE, e.g. '1 cluster per 3 week, multiple per "
+            "cluster' (use 'multiple per cluster' when the per-cluster count is not "
+            "logged or only approximate). NEVER flatten a cluster to the per-burst "
+            "daily rate (do not call it 'multiple per day'), and NEVER collapse it "
+            "to 'unknown' merely because the per-cluster count is unstated — the "
+            "cluster recurrence cadence IS a usable frequency. A single isolated "
+            "event recurring at an interval, with no grouping, is a plain rate, not "
+            "a cluster."
+        ),
+        (
+            "STEP 4 seizure_free_check — Does the note ASSERT a continuous "
+            "seizure-free interval ('free of all seizures for N months', 'no events "
+            "whatsoever for N months', witness-confirmed)? That is a seizure-free "
+            "duration -> 'seizure free for N month'. But if the note gives only a "
+            "LAST-EVENT date ('last seizure ~N months ago', 'most recent event in "
+            "May') with no asserted interval, or follow-up is incomplete/unobserved "
+            "since, you CANNOT assert a seizure-free duration -> final_label is "
+            "'unknown' (NOT seizure-free, NOT a rate)."
+        ),
+        (
+            "PRECEDENCE: if STEP 1 confound_check or STEP 2 window_check fails, "
+            "'unknown' wins over any apparent count or rate. Otherwise, if STEP 3 "
+            "finds a cluster pattern, use the cluster cadence. Otherwise, if STEP 4 "
+            "finds an asserted seizure-free interval, use the seizure-free duration. "
+            "Otherwise — when all four checks are clean (unprovoked, stable habitual "
+            "window, no clusters, no seizure-free assertion) and the note states a "
+            "count over a window or an explicit rate — emit that rate. Do NOT "
+            "over-withhold: a clean, stable, unprovoked count or rate (e.g. 'about 2 "
+            "seizures a month for several months, no triggers, adherence fine') IS a "
+            "usable rate and must NOT be forced to 'unknown'."
+        ),
+        (
+            "Return final_label as one normalized string using count, range, or "
+            "multiple over a day/week/month/year denominator; seizure-free duration; "
+            "unknown; or no seizure frequency reference."
+        ),
+        (
+            "Allowed frequency forms include 1 per day, "
+            "2 to 3 per month, multiple per week, 1 cluster per week, 2 to 3 per cluster, "
+            "seizure free for 6 month, unknown, no seizure frequency reference."
+        ),
+        (
+            "When a note contains counts across multiple time windows that are all "
+            "part of the same stable habitual pattern, prefer the most recent "
+            "window's rate as the primary label — for example, six events over the "
+            "year and two in the most recent month gives '2 per month'. (This only "
+            "applies after the triage above clears the count as a habitual rate.)"
+        ),
+        (
+            "When multiple seizure types are present, select the type with the highest "
+            "frequency as the label — rank by how often events occur (events per day, "
+            "per week, or per month), not by clinical severity. Daily drop attacks or "
+            "daily absences take precedence over weekly or monthly tonic-clonic seizures. "
+            "Exception: cluster patterns are labelled by the cluster cadence per STEP 3, "
+            "not the per-episode daily burst rate."
+        ),
+        (
+            "Plural daily seizures/events should map to multiple per day unless the note "
+            "clearly says exactly one per day. Drop attacks, status epilepticus episodes, "
+            "myoclonic jerks, absence episodes, and behavioural arrest events all count "
+            "as seizure events for frequency purposes."
+        ),
+        (
+            "Use no seizure frequency reference only when the note contains no usable "
+            "seizure-frequency evidence at all (no seizures or seizure-like events "
+            "discussed). When seizures ARE discussed but no rate can be established "
+            "(per the triage), use unknown, not no seizure frequency reference."
+        ),
+        (
+            "For cluster labels, include both cluster rate and events per cluster when both "
+            "are stated; use 'multiple per cluster' when the per-cluster count is described "
+            "approximately or is not logged. If the note states how often clusters occur, "
+            "that cadence is a usable frequency even when the per-cluster count is unknown."
+        ),
+        (
+            "answer_kind must be written as exactly one of these five "
+            "words, with no other wording: 'frequency' (the note gives a "
+            "usable current seizure-frequency rate or range), "
+            "'seizure_free' (the note asserts a current seizure-free "
+            "duration instead of a rate), 'unknown' (seizures are "
+            "discussed but the current frequency cannot be converted to "
+            "a normalized rate — including provoked, transient, adherence-"
+            "confounded, last-event-only, or descriptive-only notes), "
+            "'no_reference' (the note contains no usable seizure-frequency "
+            "evidence at all), or 'unresolved_multiple' (several current "
+            "seizure-frequency claims conflict and none can be picked). Do "
+            "not write a longer description in this field."
+        ),
+        "Evidence must be an exact substring from the note when possible.",
+        (
+            "confidence describes how certain you are about the answer based on "
+            "what the note contains: 'low' when two or more current "
+            "seizure-frequency facts compete and none clearly dominates, or when "
+            "the frequency is only a vague range with no time window; 'medium' when "
+            "one fact is clearly dominant but some ambiguity remains; 'high' when "
+            "there is exactly one unambiguous current fact, no competing claims, and "
+            "the evidence can be quoted directly from the note."
+        ),
+        (
+            "Write rationale as one short, plain-language sentence stating only the "
+            "deciding triage finding and label — for example: 'The two events were "
+            "provoked by missed meals, so no habitual rate is established and the "
+            "label is unknown.' Do not show step-by-step reasoning or alternatives "
+            "you rejected; state only the final justification."
+        ),
+        (
+            "Consistency check: if your rationale concludes the count is provoked, "
+            "transient, adherence-confounded, last-event-only, or descriptive-only, "
+            "final_label must be 'unknown' (or the seizure-free duration only if a "
+            "continuous interval is asserted). If your rationale names a concrete "
+            "habitual frequency, final_label must not be 'unknown'."
+        ),
+        "Return exactly one JSON object with no markdown.",
+    ]
+
+
+def _v0_7_instructions() -> list[str]:
+    """Cycle-3 label-binding scaffold (additive over v0.6).
+
+    Identical to v0.6 except STEP 4 (seizure-free vs one-off) and the closing
+    consistency check are sharpened so a single past event with no asserted
+    ongoing seizure-free interval is 'unknown', not a seizure-free duration. The
+    deterministic label-binding repair (see _apply_v0_7_label_binding) is what
+    forces final_label to agree with the emitted answer_kind/rationale; this
+    instruction set only re-forms the seizure-free finding the repair cannot key
+    on. The emitted JSON schema is unchanged.
+    """
+
+    instructions = _v0_6_instructions()
+    # Sharpen STEP 4: a one-off past event is NOT a seizure-free interval.
+    for idx, text in enumerate(instructions):
+        if text.startswith("STEP 4 seizure_free_check"):
+            instructions[idx] = (
+                "STEP 4 seizure_free_check — Does the note ASSERT a CONTINUOUS, "
+                "ONGOING interval free of ALL seizure-like events ('free of all "
+                "seizures for N months', 'no events whatsoever for N months', "
+                "witness-confirmed and still ongoing)? Only that is a seizure-free "
+                "duration -> 'seizure free for N month'. A SINGLE recent or past "
+                "event — e.g. 'one short spell a fortnight ago', 'the first event "
+                "of its kind for many months', 'last seizure ~N months ago' — does "
+                "NOT establish a seizure-free interval: it is a last-event-only / "
+                "single-event history, and the absence of events BEFORE that one "
+                "event is not a witnessed ongoing seizure-free period. When the "
+                "only evidence is a single isolated event or a last-event date with "
+                "no asserted ongoing all-clear interval, answer_kind is 'unknown' "
+                "and final_label is 'unknown' (NOT seizure-free, NOT a rate)."
+            )
+        elif text.startswith("Consistency check:"):
+            instructions[idx] = (
+                "Consistency check: final_label MUST agree with answer_kind. If "
+                "answer_kind is 'unknown' (count provoked, transient, "
+                "adherence-confounded, last-event-only, single isolated event, or "
+                "descriptive-only), final_label must be 'unknown'. If answer_kind "
+                "is 'no_reference', final_label must be 'no seizure frequency "
+                "reference'. If your rationale names a recurring CLUSTER pattern, "
+                "final_label must be the cluster cadence form ('1 cluster per N "
+                "week, multiple per cluster'), never a flattened daily burst rate "
+                "or a single-event interval. If your rationale names a concrete "
+                "habitual frequency, final_label must be that rate and not "
+                "'unknown'. Only assert 'seizure free for N month' when a "
+                "continuous ongoing all-clear interval is explicitly asserted, not "
+                "for a single past event."
+            )
+    return instructions
+
+
+def build_prompt_input(record: GanFrequencyRecord) -> str:
+    """Build the LLM-only direct-labeler prompt payload, excluding gold labels.
+
+    The active prompt version (set via set_active_prompt_version) selects the
+    instruction set. v0.5 is the frozen baseline; v0.6 adds the Cycle-2 triage
+    scaffold. The JSON output schema and allowed fields are identical across
+    versions, so scoring and normalization are unaffected.
+    """
+
+    if PROMPT_VERSION == PROMPT_VERSION_V0_7:
+        instructions = _v0_7_instructions()
+    elif PROMPT_VERSION == PROMPT_VERSION_V0_6:
+        instructions = _v0_6_instructions()
+    else:
+        instructions = _v0_5_instructions()
+    payload = {
+        "prompt_version": PROMPT_VERSION,
+        "task": "Gan 2026 seizure-frequency LLM-only direct-labeler extraction",
+        "source_row_index": record.source_row_index,
+        "instructions": instructions,
         "allowed_decision_fields": [
             "final_label",
             "evidence",
@@ -304,10 +562,34 @@ def parse_decision_json(
     except ValidationError as exc:
         return None, [f"schema_validation_error: {exc.errors()[0]['msg']}"]
 
-    repaired_label = repair_prediction_label_with_evidence(
-        decision.final_label,
-        decision.evidence,
-    )
+    binding_locked = False
+    if PROMPT_VERSION == PROMPT_VERSION_V0_7:
+        bound_label, binding_note, binding_locked = _apply_v0_7_label_binding(decision)
+        if bound_label != decision.final_label:
+            errors.append(binding_note)
+            decision = decision.model_copy(update={"final_label": bound_label})
+
+    # When the v0.7 binding has locked the label to the model's own verdict
+    # (a no-rate answer_kind, or a cluster cadence it described), the evidence-
+    # substring repair must NOT resurrect a rate from the note text — that is
+    # exactly the contradiction the binding exists to remove. Only the format
+    # normalizer is still applied so the locked label stays scorer-ready.
+    if binding_locked:
+        repaired_label = repair_prediction_label_format_preserving(decision.final_label)
+        # The format-preserving repair deliberately leaves vague quantities
+        # untouched, so a locked label may still be unscorable. Never let that
+        # break scoring: fall back to the full evidence repair (the same path
+        # v0.5/v0.6 use) only when the locked label cannot be scored.
+        if not _is_scorable_label(repaired_label):
+            repaired_label = repair_prediction_label_with_evidence(
+                decision.final_label,
+                decision.evidence,
+            )
+    else:
+        repaired_label = repair_prediction_label_with_evidence(
+            decision.final_label,
+            decision.evidence,
+        )
     if repaired_label != decision.final_label:
         errors.append(f"final_label_repaired: {decision.final_label!r} -> {repaired_label!r}")
         decision = decision.model_copy(update={"final_label": repaired_label})
@@ -327,6 +609,170 @@ def _filter_decision_payload(payload: Any) -> Any:
         return payload
     allowed = set(LlmOnlyDirectLabelerDecisionRecord.model_fields)
     return {key: value for key, value in payload.items() if key in allowed}
+
+
+# --- v0.7 label-binding repair --------------------------------------------
+# Cycle-3: bind the emitted final_label to the model's OWN emitted structured
+# reasoning (answer_kind / rationale / time_window / evidence). Keyed purely on
+# the model's output; never on gold, row index, or saved-row behaviour. Active
+# only when PROMPT_VERSION == v0.7 (additive; v0.5/v0.6 paths are untouched).
+
+_NO_RATE_ANSWER_KINDS = {
+    "unknown": "unknown",
+    "unresolved_multiple": "unknown",
+    "no_reference": "no seizure frequency reference",
+}
+
+_NUMBER_WORDS = {
+    "one": 1,
+    "two": 2,
+    "three": 3,
+    "four": 4,
+    "five": 5,
+    "six": 6,
+    "seven": 7,
+    "eight": 8,
+    "nine": 9,
+    "ten": 10,
+    "eleven": 11,
+    "twelve": 12,
+}
+
+_CLUSTER_TOKEN = re.compile(
+    r"\b(clusters?|runs?|groupings?|group(?:s|ed)?\s+together|arriv\w+\s+in\s+runs)\b",
+    re.IGNORECASE,
+)
+_CLUSTER_RECURRENCE = re.compile(
+    r"\b(recur\w*|every|come?\s+round|coming\s+round|round\s+again|repeat\w*)\b",
+    re.IGNORECASE,
+)
+_CLUSTER_NEGATION = re.compile(
+    r"\b(no|not|without|never)\b[^.]{0,30}\b(cluster\w*|group\w*|run\b|runs\b)\b",
+    re.IGNORECASE,
+)
+_ALREADY_CLUSTER = re.compile(r"\bcluster\b", re.IGNORECASE)
+_WINDOW_UNIT = re.compile(
+    r"(?P<lo>\d+|" + "|".join(_NUMBER_WORDS) + r")"
+    r"(?:\s*(?:to|-|–|—|or)\s*(?P<hi>\d+|" + "|".join(_NUMBER_WORDS) + r"))?"
+    r"\s*(?P<unit>day|week|month|year)s?",
+    re.IGNORECASE,
+)
+
+
+def _is_scorable_label(label: str) -> bool:
+    try:
+        label_to_frequency_record(label)
+    except ValueError:
+        return False
+    return True
+
+
+def _word_to_int(token: str) -> int | None:
+    token = token.strip().lower()
+    if token.isdigit():
+        return int(token)
+    return _NUMBER_WORDS.get(token)
+
+
+def _parse_recurrence_window(*texts: str | None) -> str | None:
+    """Pull a 'N' or 'N to M <unit>' window from the model's own emitted text.
+
+    Prefers an interval introduced by a recurrence cue ('every', 'recur',
+    'round') so we capture the cluster cadence rather than an incidental count.
+    Returns a parser-ready window like '4 to 5 week' or '3 week', or None.
+    """
+
+    for text in texts:
+        if not text:
+            continue
+        # Prefer a window that follows a recurrence cue within the same clause.
+        cue = _CLUSTER_RECURRENCE.search(text)
+        search_spans: list[str] = []
+        if cue:
+            search_spans.append(text[cue.start():])
+        search_spans.append(text)
+        for span in search_spans:
+            match = _WINDOW_UNIT.search(span)
+            if not match:
+                continue
+            lo = _word_to_int(match.group("lo"))
+            if lo is None:
+                continue
+            unit = match.group("unit").lower()
+            hi_raw = match.group("hi")
+            hi = _word_to_int(hi_raw) if hi_raw else None
+            if hi is not None and hi != lo:
+                return f"{lo} to {hi} {unit}"
+            return f"{lo} {unit}"
+    return None
+
+
+def _is_cluster_reasoning(rationale: str, evidence: str) -> bool:
+    blob = f"{rationale} {evidence}"
+    if not _CLUSTER_TOKEN.search(blob):
+        return False
+    if _CLUSTER_NEGATION.search(blob):
+        return False
+    return bool(_CLUSTER_RECURRENCE.search(blob))
+
+
+def _apply_v0_7_label_binding(
+    decision: LlmOnlyDirectLabelerDecisionRecord,
+) -> tuple[str, str, bool]:
+    """Bind final_label to the model's own answer_kind / rationale.
+
+    Returns (possibly-rewritten label, note, locked). ``locked`` is True when the
+    label has been pinned to the model's own verdict and must not be re-derived
+    from the evidence substring by the downstream repair (the contradiction this
+    binding exists to remove). Note is only meaningful when the label changed.
+    Two rules, in precedence order:
+      1. answer_kind in {unknown, unresolved_multiple, no_reference} -> coerce AND
+         lock (so the evidence repair cannot resurrect a rate from the note).
+      2. answer_kind == frequency with cluster reasoning + a flattened label ->
+         render the cluster cadence form AND lock.
+    The seizure_free->unknown one-off finding is handled by the sharpened v0.7
+    STEP-4 prompt (the model re-forms answer_kind), not here.
+    """
+
+    label = decision.final_label
+    answer_kind = decision.answer_kind
+    rationale = decision.rationale or ""
+    evidence = decision.evidence or ""
+
+    # Rule 1: coerce-to-no-rate when the model's own verdict carries no rate.
+    # Lock unconditionally for these answer_kinds: even when the model already
+    # emitted the right label, the evidence repair would otherwise rewrite it.
+    target = _NO_RATE_ANSWER_KINDS.get(answer_kind)
+    if target is not None:
+        if label.strip().lower() != target:
+            return target, (
+                f"v0_7_binding_coerce_no_rate: answer_kind={answer_kind!r} "
+                f"-> {target!r} (was {label!r})"
+            ), True
+        return label, "", True
+
+    # Rule 2: cluster-cadence render when the model formed a cluster finding.
+    if answer_kind == "frequency":
+        if _ALREADY_CLUSTER.search(label):
+            # The model already emitted a cluster cadence; lock it so the
+            # evidence-substring repair cannot flatten it back to a burst/plain
+            # rate (e.g. 'multiple per day'). No relabel needed.
+            return label, "", True
+        if _is_cluster_reasoning(rationale, evidence):
+            window = _parse_recurrence_window(
+                decision.time_window, rationale, evidence
+            )
+            if window:
+                cluster_label = f"1 cluster per {window}, multiple per cluster"
+                return cluster_label, (
+                    f"v0_7_binding_cluster_render: cluster reasoning -> "
+                    f"{cluster_label!r} (was {label!r})"
+                ), True
+
+    return label, "", False
+
+
+# --------------------------------------------------------------------------
 
 
 def run_split(
