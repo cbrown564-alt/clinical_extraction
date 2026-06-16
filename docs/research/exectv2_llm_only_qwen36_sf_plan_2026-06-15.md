@@ -565,3 +565,136 @@ Next aligned move:
 4. Use saved-output analysis only for parser/format attribution. Any semantic
    improvement must come from a fresh Qwen-owned final output or be labelled
    `hybrid`.
+
+## 13. 2026-06-16 Full Dev140 Completion Gate
+
+The v0.11 dev25 result was close but below target, so two follow-up branches
+were tested:
+
+1. **Full final-findings rewrite (v0.12-v0.13).** Qwen received raw findings and
+   was asked to return the complete final `findings` list. This stayed
+   `llm_only` by attribution, but it failed clinically: Qwen dropped already
+   correct month/year/time fields from raw findings, causing strict dev5 F1 to
+   fall to `0.545` in v0.12 and `0.364` in v0.13. This branch is rejected.
+2. **Action verifier with explicit field corrections (v0.14).** The action
+   overlay was extended so Qwen could include corrected numeric/date/period
+   fields in a `revise` decision. This preserved attribution but did not improve
+   the promotion slice: v0.14 dev25 strict F1 was `0.656`.
+3. **Hard-negative verifier calibration (v0.15).** The prompt added
+   transferable target-selection negatives for vague `continues to get`
+   statements, minor/nonspecific episodes with rates, single diagnostic seizure
+   encounters, and generic count-over-window phrase anchoring. This produced the
+   best prefix result: v0.15 dev25 strict per-item F1 `0.724` and phrase-only
+   F1 `0.759`.
+
+Because dev25 can be misleading, v0.15 was escalated to the full dev140
+completion gate. It failed:
+
+| Surface | Strict `sf_benchmark` per-item F1 | Phrase-only per-item F1 | Notes |
+| --- | ---: | ---: | --- |
+| v0.15 dev25 | 0.724 | 0.759 | Prefix promotion slice cleared. |
+| v0.15 dev140 | 0.304 | 0.488 | Full dev gate failed badly. |
+
+v0.15 dev140 metadata:
+
+- Artifact:
+  `experiments/exectv2_llm_only_clinical_findings_v15_hard_negative_live_dev140_qwen36_35b_20260616.jsonl`
+- Report:
+  `experiments/exectv2_llm_only_clinical_findings_v15_hard_negative_live_dev140_qwen36_35b_20260616.md`
+- Model: `ollama_chat/qwen3.6:35b`, `api_base=http://localhost:11434`,
+  temperature `0`, cache disabled.
+- Call failures: `0`; first-pass parse/schema failures: `0`; verifier
+  parse/schema failures: `4`.
+- Evidence validity rate: `0.9557`.
+- Strict per-item: `P=0.299`, `R=0.310`, `F1=0.304`.
+- Phrase-only per-item: `P=0.479`, `R=0.497`, `F1=0.488`.
+
+The prefix collapse is severe:
+
+| Rows | Strict F1 | Phrase-only F1 |
+| --- | ---: | ---: |
+| 1-25 | 0.724 | 0.759 |
+| 26-50 | 0.326 | 0.581 |
+| 51-75 | 0.241 | 0.517 |
+| 76-100 | 0.079 | 0.290 |
+| 101-125 | 0.200 | 0.367 |
+| 126-140 | 0.326 | 0.419 |
+
+Interpretation:
+
+- The dev25 win is not a reliable `llm_only` solution; it is a prefix-local
+  prompt result.
+- The main limitation is now model-owned extraction/selection breadth, not CUI
+  normalization. Phrase-only dev140 is only `0.488`, so strict CUI/attribute
+  projection is not the primary cap.
+- The successful deterministic dev140 findings are still useful as a clinical
+  taxonomy, but using deterministic candidate selection or evidence rendering
+  would move the workstream to `hybrid`.
+
+Next aligned branch:
+
+1. Stop broadening prompt examples from the prefix. The prompt is already
+   saturated and brittle.
+2. Build a **Qwen-owned checklist/family classifier before extraction** over the
+   full note, with model-emitted family flags such as `has_compact_section`,
+   `has_current_rate`, `has_dated_count`, `has_last_event`, `has_zero_status`,
+   `has_frequency_change`, `has_cluster`, and `has_non_target_episode`. These
+   flags are diagnostic/model-owned, not deterministic selectors.
+3. Use the classifier output inside the same Qwen call or a second Qwen call to
+   force recall across clinically meaningful families, especially outside the
+   first 25 rows.
+4. Evaluate on dev25 only as a smoke gate, then dev140 as the actual completion
+   gate. The current goal remains unmet until strict dev140 per-item F1 exceeds
+   `0.700`.
+
+## 14. 2026-06-16 Dev140 Item Error Analysis Gate
+
+The v0.15 dev140 failure has now been analyzed item by item before any further
+iteration:
+
+- Human-readable ledger:
+  `experiments/exectv2_llm_only_clinical_findings_v15_dev140_item_error_analysis_20260616.md`
+- Machine-readable companion:
+  `experiments/exectv2_llm_only_clinical_findings_v15_dev140_item_error_analysis_20260616.json`
+
+The analysis confirms that the failure is not a narrow CUI projection issue.
+Strict `sf_benchmark` per-item F1 is `0.304` (`58/136/129`), while phrase-only
+per-item F1 is only `0.488` (`93/101/94`). Only `43/140` letters are strict
+correct. The full distribution collapses after the dev25 prefix, especially
+rows `76-100` (`0.079` strict F1) and `101-125` (`0.200` strict F1).
+
+Main dev140 failure families:
+
+- Phrase discovery is weak across the full split: `57` letters have
+  phrase-level omissions and `75` have phrase-level spurious predictions.
+- Same-phrase attribute loss is frequent: `34` letters have attribute
+  mismatches despite surface phrase overlap.
+- The most common attribute conflicts are event-frame attributes:
+  `TimeSince_or_TimeOfEvent` (`24` conflicts), `NumberOfSeizures` (`15`),
+  `NumberOfTimePeriods` (`15`), `TimePeriod` (`15`), and `PointInTime` (`7`).
+- Non-target over-extraction remains visible: `17` letters have predictions
+  when gold has no SeizureFrequency mention.
+- The verifier is not a harmless wrapper: verification parse failures and
+  revise/add actions require their own audit counts before promotion.
+
+Principles for the next branch:
+
+1. Treat dev140 as the real distribution-shift gate. Prefix success is only a
+   smoke test.
+2. Separate phrase discovery from attribute construction in analysis and
+   reporting; strict F1 cannot be debugged from a single aggregate.
+3. Keep the workstream `llm_only`: no deterministic candidate selection,
+   semantic normalization, or deterministic selection. Those belong in the
+   `hybrid` category.
+4. Make Qwen build an explicit clinical event frame before emitting ExECT
+   attributes: statement family, source role, seizure phrase, count/range,
+   denominator, time relation, anchor/date, and target/non-target status.
+5. Gate future attempts with item-level slices and worst-item review, not just
+   dev5/dev25 headline movement.
+
+The v0.16 family-checklist smoke branch tested the broad idea but regressed on
+the dev25 smoke slice (`0.615` strict F1, `0.708` phrase-only F1), so it should
+not be escalated to dev140. The next branch should use the same lesson but a
+different shape: reduce rule-bag prompt load and require Qwen to emit compact
+event-frame candidates first, then map those candidates to ExECT mentions in a
+second model-owned pass.

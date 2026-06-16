@@ -13,6 +13,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_clinical_findings import (
     ClinicalFindingRecord,
+    EventFrameRecord,
     ExECTv2ClinicalFindingsFinalizerSignature,
     ExECTv2ClinicalFindingsSFSignature,
     ExECTv2ClinicalFindingsVerifierSignature,
@@ -89,11 +90,23 @@ def test_verifier_prompt_hygiene_no_internal_vocabulary() -> None:
         for rule in parsed["review_checks"]
     )
     assert any(
+        "continues to get" in rule
+        for rule in parsed["review_checks"]
+    )
+    assert any(
+        "minor seizures" in rule
+        for rule in parsed["review_checks"]
+    )
+    assert any(
         "Last-event dates are target" in str(example)
         for example in parsed["decision_examples"]
     )
     assert any(
         "Vague epilepsy control" in str(example)
+        for example in parsed["decision_examples"]
+    )
+    assert any(
+        "approximately 15 seizures over 4 months" in str(example)
         for example in parsed["decision_examples"]
     )
 
@@ -102,6 +115,26 @@ def test_prompt_keeps_compact_historical_facts_distinct_from_current_control() -
     payload = llm_only_clinical_findings.build_prompt_input(_LETTER)
     parsed = json.loads(payload)
 
+    assert "event_frame_schema" in parsed
+    assert any("Fill event_frames before findings" in rule for rule in parsed["clinical_rules"])
+    assert any(
+        "Every finding should correspond to one target event_frame" in rule
+        for rule in parsed["clinical_rules"]
+    )
+    assert any(
+        "Generalised tonic clonic seizure-last event July 2016" in str(example)
+        for example in parsed["event_frame_examples"]
+    )
+    assert any(
+        "He remains seizure free" in str(example)
+        and "\"include_as_finding\": false" in json.dumps(example)
+        for example in parsed["event_frame_examples"]
+    )
+    assert any(
+        "without change in awareness" in str(example)
+        and "\"seizure_phrase\": \"focal seizures\"" in json.dumps(example)
+        for example in parsed["event_frame_examples"]
+    )
     assert any(
         "does not replace historical compact-section" in rule
         for rule in parsed["clinical_rules"]
@@ -111,7 +144,10 @@ def test_prompt_keeps_compact_historical_facts_distinct_from_current_control() -
     assert any("frequency_change infrequent" in rule for rule in parsed["clinical_rules"])
     assert any("diagnostic episode description" in rule for rule in parsed["clinical_rules"])
     assert any("epilepsy seems under control" in rule for rule in parsed["clinical_rules"])
+    assert any("bare current statement" in rule for rule in parsed["clinical_rules"])
     assert any("text seizures and count 0" in rule for rule in parsed["clinical_rules"])
+    assert any("continues to get seizures" in rule for rule in parsed["clinical_rules"])
+    assert any("minor seizures" in rule for rule in parsed["clinical_rules"])
     assert any(
         "2 generalised tonic clonic seizures 2018" in str(example)
         and "He remains seizure free" in str(example)
@@ -129,12 +165,69 @@ def test_prompt_keeps_compact_historical_facts_distinct_from_current_control() -
         "has not had any further seizures" in str(example)
         for example in parsed["worked_examples"]
     )
+    assert any(
+        "He developed some minor seizures" in str(example)
+        for example in parsed["worked_examples"]
+    )
 
 
 def test_verifier_signature_hygiene_no_internal_vocabulary() -> None:
     text = _collect_signature_text(ExECTv2ClinicalFindingsVerifierSignature)
     leaked = [phrase for phrase in FORBIDDEN_PHRASES if phrase in text]
     assert leaked == []
+
+
+def test_verifier_prompt_includes_model_owned_event_frames() -> None:
+    raw_findings = [
+        ClinicalFindingRecord(
+            text="seizures",
+            evidence="two seizures per year",
+            clinical_kind="frequency_rate",
+            frequency_statement_type="background_rate",
+            count="2",
+            period_unit="year",
+            confidence="high",
+        )
+    ]
+    event_frames = [
+        EventFrameRecord(
+            event_id="e1",
+            evidence="two seizures per year",
+            seizure_phrase="seizures",
+            target_status="target_epileptic_seizure_frequency",
+            statement_family="background_rate",
+            source_role="narrative",
+            count="2",
+            period_count="1",
+            period_unit="year",
+            finding_text="seizures",
+            include_as_finding=True,
+            rationale="Target seizure rate.",
+        ),
+        EventFrameRecord(
+            event_id="e2",
+            evidence="dizzy episodes twice a week",
+            seizure_phrase="dizzy episodes",
+            target_status="non_target_episode",
+            statement_family="non_target",
+            source_role="narrative",
+            count="2",
+            period_count="1",
+            period_unit="week",
+            include_as_finding=False,
+            rationale="Non-target episodes.",
+        ),
+    ]
+
+    payload = build_verification_prompt_input(_LETTER, raw_findings, event_frames)
+    parsed = json.loads(payload)
+
+    assert parsed["event_frames"][0]["event_id"] == "e1"
+    assert parsed["event_frames"][1]["target_status"] == "non_target_episode"
+    assert any(
+        "Use event_frames as the model's first-pass clinical map" in rule
+        for rule in parsed["review_checks"]
+    )
 
 
 def test_finalizer_prompt_hygiene_and_contract() -> None:
@@ -180,6 +273,23 @@ def test_finalizer_signature_hygiene_no_internal_vocabulary() -> None:
 
 def test_parse_clinical_findings_json_accepts_structured_fields() -> None:
     raw = json.dumps({
+        "event_frames": [
+            {
+                "event_id": "e1",
+                "evidence": "focal seizures with impaired awareness 2 to 3 times per month",
+                "seizure_phrase": "focal seizures with impaired awareness",
+                "target_status": "target_epileptic_seizure_frequency",
+                "statement_family": "background_rate",
+                "source_role": "narrative",
+                "count_low": 2,
+                "count_high": 3,
+                "period_count": 1,
+                "period_unit": "month",
+                "finding_text": "focal seizures with impaired awareness",
+                "include_as_finding": True,
+                "rationale": "A current focal seizure rate is present.",
+            }
+        ],
         "findings": [
             {
                 "text": "focal seizures with impaired awareness",
@@ -199,6 +309,9 @@ def test_parse_clinical_findings_json_accepts_structured_fields() -> None:
     record, errors = parse_clinical_findings_json(raw)
 
     assert record is not None
+    assert record.event_frames[0].event_id == "e1"
+    assert record.event_frames[0].count_low == "2"
+    assert record.event_frames[0].period_count == "1"
     assert record.findings[0].count_high == "3"
     assert record.findings[0].period_count == "1"
     assert record.findings[0].frequency_statement_type == "background_rate"
@@ -272,6 +385,37 @@ def test_parse_verification_decisions_accepts_python_literal_quote_drift() -> No
     assert record.decisions[0].action == "keep"
 
 
+def test_parse_verification_decisions_drops_event_frame_shaped_additions() -> None:
+    raw = json.dumps({
+        "decisions": [
+            {
+                "raw_index": 0,
+                "target_status": "target_epileptic_seizure_frequency",
+                "action": "keep",
+                "rationale": "target finding",
+            }
+        ],
+        "findings_to_add": [
+            {
+                "evidence": "She has had seizures since the age of 13.",
+                "seizure_phrase": "seizures",
+                "target_status": "history_context_only",
+                "statement_family": "calendar_count",
+                "include_as_finding": True,
+                "rationale": "Event-frame shaped object, not a finding.",
+            }
+        ],
+    })
+
+    record, errors = parse_verification_decisions_json(raw)
+
+    assert record is not None
+    assert record.findings_to_add == []
+    assert errors == [
+        "dropped_invalid_findings_to_add_record: index=0 missing text/clinical_kind"
+    ]
+
+
 def test_parse_clinical_findings_accepts_python_literal_quote_drift() -> None:
     raw = (
         "{'findings': [{'text': 'seizures', "
@@ -287,6 +431,30 @@ def test_parse_clinical_findings_accepts_python_literal_quote_drift() -> None:
     assert record is not None
     assert errors == ["coerced_python_literal_to_json"]
     assert record.findings[0].text == "seizures"
+
+
+def test_parse_clinical_findings_tolerates_audit_only_event_family_names() -> None:
+    raw = json.dumps({
+        "event_frames": [
+            {
+                "event_id": "e1",
+                "evidence": "both his sons are well and have not had seizures",
+                "seizure_phrase": "seizures",
+                "target_status": "non_target_episode",
+                "statement_family": "family_history",
+                "source_role": "narrative",
+                "include_as_finding": False,
+                "rationale": "Family history is not scored.",
+            }
+        ],
+        "findings": [],
+    })
+
+    record, errors = parse_clinical_findings_json(raw)
+
+    assert record is not None
+    assert errors == []
+    assert record.event_frames[0].statement_family == "family_history"
 
 
 def test_apply_verification_revise_preserves_raw_numeric_fields() -> None:

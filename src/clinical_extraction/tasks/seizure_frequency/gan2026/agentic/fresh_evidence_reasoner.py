@@ -56,7 +56,36 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.reports.base import (
 
 PROMPT_VERSION = "gan2026_fresh_evidence_reasoner_v0_6"
 PROMPT_VERSION_V0_10 = "gan2026_fresh_evidence_reasoner_v0_10_triage"
+# A3 simplest-architecture variant: identical policy/guards to v0.6 but the model
+# reviews ONLY the saved GPT structured-event trace (Qwen + DeepSeek dropped from
+# the prompt). Tests whether the reasoner's lift survives without the peer
+# ensemble, collapsing 3 upstream models to 1.
+# Plan: docs/research/gan2026_simplest_near_ceiling_architecture_plan_2026-06-16.md
+PROMPT_VERSION_V0_11_GPT_ONLY = "gan2026_fresh_evidence_reasoner_v0_11_gpt_only"
+# A4 simplest-architecture variant: GPT + exactly ONE peer trace (2 upstream
+# models). Same policy/guards as v0.6; the included peer is selected via
+# set_active_two_model_peer(). Tests the minimal ensemble that preserves the
+# cross-model corroboration A3 proved the reasoner needs to replace safely.
+PROMPT_VERSION_V0_12_TWO_MODEL = "gan2026_fresh_evidence_reasoner_v0_12_two_model"
 SAFETY_GATE_VERSION = "gan2026_fresh_evidence_safety_gate_v0_9"
+
+# Peer agent included alongside "gpt" for the v0_12 two-model variant.
+_ACTIVE_TWO_MODEL_PEER: str = "deepseek"
+
+
+def set_active_two_model_peer(peer_agent_id: str) -> None:
+    """Select the single peer trace shown in the v0_12 two-model variant."""
+    global _ACTIVE_TWO_MODEL_PEER  # noqa: PLW0603
+    if peer_agent_id not in cross_model_base.AGENT_IDS or peer_agent_id == "gpt":
+        raise ValueError(
+            f"peer_agent_id must be a non-gpt agent in {cross_model_base.AGENT_IDS}"
+        )
+    _ACTIVE_TWO_MODEL_PEER = peer_agent_id
+
+
+def get_active_two_model_peer() -> str:
+    """Return the peer agent id currently selected for the v0_12 variant."""
+    return _ACTIVE_TWO_MODEL_PEER
 PIPELINE_FAMILY = "fresh_evidence_reasoner"
 
 # Active prompt version — call set_active_prompt_version() before run_split to
@@ -412,6 +441,14 @@ def build_prompt_input(
     effective_version = prompt_version if prompt_version is not None else _ACTIVE_PROMPT_VERSION
     if effective_version == PROMPT_VERSION_V0_10:
         return _build_prompt_input_v0_10(record, agent_rows, note_excerpt_chars=note_excerpt_chars)
+    if effective_version == PROMPT_VERSION_V0_11_GPT_ONLY:
+        return _build_prompt_input_v0_11_gpt_only(
+            record, agent_rows, note_excerpt_chars=note_excerpt_chars
+        )
+    if effective_version == PROMPT_VERSION_V0_12_TWO_MODEL:
+        return _build_prompt_input_v0_12_two_model(
+            record, agent_rows, note_excerpt_chars=note_excerpt_chars
+        )
     return _build_prompt_input_v0_6(record, agent_rows, note_excerpt_chars=note_excerpt_chars)
 
 
@@ -438,6 +475,296 @@ def _build_prompt_input_v0_6(
             ),
             (
                 "Use the three saved LLM structured-event traces as scaffolding, not "
+                "as a vote. If a peer trace seems right, cite the raw evidence and "
+                "produce the replacement yourself."
+            ),
+            (
+                "Use keep_original_structured_event_final unless exact raw-note "
+                "evidence proves a better current seizure-frequency interpretation."
+            ),
+            (
+                "Replacement is for represented-evidence or clinical-selection misses: "
+                "current/recent frequency, denominator/window, cluster burden, "
+                "seizure-free conflict, unknown/no-reference boundary, or highest "
+                "active semiology."
+            ),
+            (
+                "Do not use outside final-answer sources, row IDs, split membership, "
+                "gold labels, scoring metadata, deterministic rules, deterministic "
+                "top labels, or benchmark feedback."
+            ),
+            (
+                "For frequency labels, state the numerator, denominator, and window "
+                "in calculation_trace. Do not turn one-off since-last-review counts "
+                "into rates unless the interval length or recurring cadence is explicit."
+            ),
+            (
+                "Before choosing final_label, set ambiguity_classification to the "
+                "boundary class that explains whether count and window are usable. "
+                "Use unknown_count_or_window when seizure evidence exists but either "
+                "the number of events or the relevant time period is unclear."
+            ),
+            *UNKNOWN_FREQUENCY_POLICY_INSTRUCTIONS,
+            (
+                "Do not replace explicit numeric or range frequency evidence such as "
+                "'twice per week' with 'multiple per week'; render the numeric/range "
+                "frequency or keep the original structured-event final."
+            ),
+            (
+                "For unknown, require evidence that seizure-frequency information "
+                "exists but cannot be converted to a current recurring rate."
+            ),
+            (
+                "For no_reference, require positive absence of seizure-frequency "
+                "evidence; do not use it when awkward but usable frequency evidence exists."
+            ),
+            (
+                "For seizure_free, require exact no-events-since or absence-duration "
+                "evidence and no conflicting current/recent frequency evidence."
+            ),
+            (
+                "Do not replace an original seizure-free structured-event final with "
+                "unknown or no_reference merely because the note discusses non-epileptic "
+                "spells, medication status, or qualitative improvement."
+            ),
+            (
+                "Do not output bare 'seizure free'. If the duration is not explicit "
+                "enough to render a Gan seizure-free label with a duration, keep the "
+                "original structured-event final."
+            ),
+            (
+                "Do not replace a frequency original with seizure_free for only "
+                "days, weeks, or about one month after a recent last event; keep the "
+                "frequency original on that short last-event-only boundary."
+            ),
+            (
+                "For clusters, keep cluster cadence separate from events per cluster; "
+                "only multiply or render cluster labels when both axes are supported."
+            ),
+            (
+                "For multiple active semiologies, select the highest current clinically "
+                "active burden, not the first-mentioned or most severe seizure type."
+            ),
+            "Evidence entries must be exact substrings copied from the note.",
+            (
+                "final_label must be a valid Gan label only: unknown, no seizure "
+                "frequency reference, seizure free, multiple per day/week/month/year, "
+                "or '<number> [to <number>] per day/week/month/year'."
+            ),
+            (
+                "action, final_kind, uncertainty, and attribution must each be one "
+                "string, not an array of options."
+            ),
+        ],
+        "required_output_schema": {
+            "action": list(FRESH_EVIDENCE_ACTION_VALUES),
+            "final_label": "Gan-style label string",
+            "final_kind": [
+                "frequency",
+                "seizure_free",
+                "unknown",
+                "no_reference",
+                "unresolved_multiple",
+            ],
+            "selected_event_ids": (
+                "saved event IDs or fresh_evidence_1 when replacement comes from raw text"
+            ),
+            "rejected_event_ids": "saved event IDs or agent finals explicitly rejected",
+            "evidence": "list of exact evidence substrings supporting the final choice",
+            "boundary_profile": "list of targeted profile keys driving the choice",
+            "ambiguity_classification": list(AMBIGUITY_CLASSIFICATION_VALUES),
+            "calculation_trace": "short arithmetic or boundary trace, or null",
+            "clinical_rationale": "brief clinical rationale",
+            "uncertainty": "one string: low | medium | high",
+            "tool_calls": "empty list for this V12 scaffold",
+            "attribution": (
+                "one string: llm_selected_tool_rendered | "
+                "llm_selected_format_repaired | llm_original_structured_event_kept"
+            ),
+        },
+        "saved_structured_event_agents": agent_inputs,
+        "raw_note_excerpt": record.note_text[:note_excerpt_chars],
+        "excerpt_truncated": len(record.note_text) > note_excerpt_chars,
+    }
+    return json.dumps(payload, ensure_ascii=False, sort_keys=True)
+
+
+def _build_prompt_input_v0_11_gpt_only(
+    record: GanFrequencyRecord,
+    agent_rows: Mapping[str, Mapping[str, Any] | None],
+    *,
+    note_excerpt_chars: int = 7000,
+) -> str:
+    """A3 variant: v0.6 policy/guards, but only the saved GPT trace is shown.
+
+    Identical to ``_build_prompt_input_v0_6`` except (1) the peer traces (Qwen,
+    DeepSeek) are dropped from ``saved_structured_event_agents`` and (2) the two
+    instruction lines that referred to "three traces" / "a peer trace" are
+    reworded to the single GPT trace. Every clinical/unknown/boundary policy line
+    is byte-identical to v0.6 so the only variable vs the 3-agent reasoner is the
+    presence of the peer ensemble.
+    """
+
+    agent_inputs = [
+        cross_model_base._agent_prompt_summary("gpt", agent_rows.get("gpt"))
+    ]
+    payload = {
+        "prompt_version": PROMPT_VERSION_V0_11_GPT_ONLY,
+        "task": "Gan 2026 fresh-evidence seizure-frequency reasoning",
+        "variant": "V12_fresh_evidence_reasoner_v0_11_gpt_only",
+        "instructions": [
+            (
+                "Decide whether to keep the GPT structured-event final answer or "
+                "replace it with one freshly reasoned Gan label from exact raw-note evidence."
+            ),
+            (
+                "Use the saved GPT structured-event trace as scaffolding, not as an "
+                "answer to copy. Cite the raw evidence and produce the replacement "
+                "yourself when the trace is wrong or incomplete."
+            ),
+            (
+                "Use keep_original_structured_event_final unless exact raw-note "
+                "evidence proves a better current seizure-frequency interpretation."
+            ),
+            (
+                "Replacement is for represented-evidence or clinical-selection misses: "
+                "current/recent frequency, denominator/window, cluster burden, "
+                "seizure-free conflict, unknown/no-reference boundary, or highest "
+                "active semiology."
+            ),
+            (
+                "Do not use outside final-answer sources, row IDs, split membership, "
+                "gold labels, scoring metadata, deterministic rules, deterministic "
+                "top labels, or benchmark feedback."
+            ),
+            (
+                "For frequency labels, state the numerator, denominator, and window "
+                "in calculation_trace. Do not turn one-off since-last-review counts "
+                "into rates unless the interval length or recurring cadence is explicit."
+            ),
+            (
+                "Before choosing final_label, set ambiguity_classification to the "
+                "boundary class that explains whether count and window are usable. "
+                "Use unknown_count_or_window when seizure evidence exists but either "
+                "the number of events or the relevant time period is unclear."
+            ),
+            *UNKNOWN_FREQUENCY_POLICY_INSTRUCTIONS,
+            (
+                "Do not replace explicit numeric or range frequency evidence such as "
+                "'twice per week' with 'multiple per week'; render the numeric/range "
+                "frequency or keep the original structured-event final."
+            ),
+            (
+                "For unknown, require evidence that seizure-frequency information "
+                "exists but cannot be converted to a current recurring rate."
+            ),
+            (
+                "For no_reference, require positive absence of seizure-frequency "
+                "evidence; do not use it when awkward but usable frequency evidence exists."
+            ),
+            (
+                "For seizure_free, require exact no-events-since or absence-duration "
+                "evidence and no conflicting current/recent frequency evidence."
+            ),
+            (
+                "Do not replace an original seizure-free structured-event final with "
+                "unknown or no_reference merely because the note discusses non-epileptic "
+                "spells, medication status, or qualitative improvement."
+            ),
+            (
+                "Do not output bare 'seizure free'. If the duration is not explicit "
+                "enough to render a Gan seizure-free label with a duration, keep the "
+                "original structured-event final."
+            ),
+            (
+                "Do not replace a frequency original with seizure_free for only "
+                "days, weeks, or about one month after a recent last event; keep the "
+                "frequency original on that short last-event-only boundary."
+            ),
+            (
+                "For clusters, keep cluster cadence separate from events per cluster; "
+                "only multiply or render cluster labels when both axes are supported."
+            ),
+            (
+                "For multiple active semiologies, select the highest current clinically "
+                "active burden, not the first-mentioned or most severe seizure type."
+            ),
+            "Evidence entries must be exact substrings copied from the note.",
+            (
+                "final_label must be a valid Gan label only: unknown, no seizure "
+                "frequency reference, seizure free, multiple per day/week/month/year, "
+                "or '<number> [to <number>] per day/week/month/year'."
+            ),
+            (
+                "action, final_kind, uncertainty, and attribution must each be one "
+                "string, not an array of options."
+            ),
+        ],
+        "required_output_schema": {
+            "action": list(FRESH_EVIDENCE_ACTION_VALUES),
+            "final_label": "Gan-style label string",
+            "final_kind": [
+                "frequency",
+                "seizure_free",
+                "unknown",
+                "no_reference",
+                "unresolved_multiple",
+            ],
+            "selected_event_ids": (
+                "saved event IDs or fresh_evidence_1 when replacement comes from raw text"
+            ),
+            "rejected_event_ids": "saved event IDs or agent finals explicitly rejected",
+            "evidence": "list of exact evidence substrings supporting the final choice",
+            "boundary_profile": "list of targeted profile keys driving the choice",
+            "ambiguity_classification": list(AMBIGUITY_CLASSIFICATION_VALUES),
+            "calculation_trace": "short arithmetic or boundary trace, or null",
+            "clinical_rationale": "brief clinical rationale",
+            "uncertainty": "one string: low | medium | high",
+            "tool_calls": "empty list for this V12 scaffold",
+            "attribution": (
+                "one string: llm_selected_tool_rendered | "
+                "llm_selected_format_repaired | llm_original_structured_event_kept"
+            ),
+        },
+        "saved_structured_event_agents": agent_inputs,
+        "raw_note_excerpt": record.note_text[:note_excerpt_chars],
+        "excerpt_truncated": len(record.note_text) > note_excerpt_chars,
+    }
+    return json.dumps(payload, ensure_ascii=False, sort_keys=True)
+
+
+def _build_prompt_input_v0_12_two_model(
+    record: GanFrequencyRecord,
+    agent_rows: Mapping[str, Mapping[str, Any] | None],
+    *,
+    note_excerpt_chars: int = 7000,
+) -> str:
+    """A4 variant: v0.6 policy/guards, but only GPT + one peer trace are shown.
+
+    Identical to ``_build_prompt_input_v0_6`` except the saved traces are limited
+    to ("gpt", peer) where peer is selected via set_active_two_model_peer(), and
+    the two trace-referencing lines are reworded from "three" to "two" traces.
+    Every clinical/unknown/boundary policy line is byte-identical to v0.6 so the
+    only variable vs the 3-agent reasoner is the dropped third model.
+    """
+
+    peer = _ACTIVE_TWO_MODEL_PEER
+    agent_ids = ("gpt", peer)
+    agent_inputs = [
+        cross_model_base._agent_prompt_summary(agent_id, agent_rows.get(agent_id))
+        for agent_id in agent_ids
+    ]
+    payload = {
+        "prompt_version": PROMPT_VERSION_V0_12_TWO_MODEL,
+        "task": "Gan 2026 fresh-evidence seizure-frequency reasoning",
+        "variant": f"V12_fresh_evidence_reasoner_v0_12_two_model_gpt_{peer}",
+        "instructions": [
+            (
+                "Decide whether to keep the GPT structured-event final answer or "
+                "replace it with one freshly reasoned Gan label from exact raw-note evidence."
+            ),
+            (
+                "Use the two saved LLM structured-event traces as scaffolding, not "
                 "as a vote. If a peer trace seems right, cite the raw evidence and "
                 "produce the replacement yourself."
             ),

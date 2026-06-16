@@ -1263,6 +1263,28 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Claim language: Tests whether a corroboration-free family-gated graph-trust posture (P2.5) can harvest the 7 minted residual rows without re-introducing P3 genuine-rate regressions. Not a holdout-facing candidate. A reject means no forward-observable family gate separates the harvest set from the genuine-rate casualties; test450 stays locked.
 - Artifacts: `experiments/gan2026_kg_family_gated_graph_trust_2026-06-16.json`, `experiments/gan2026_kg_family_gated_graph_trust_2026-06-16.md`, `experiments/gan2026_kg_family_gated_graph_trust_predeclaration_2026-06-16.md`.
 
+### `gan2026_fresh_evidence_v0_12_gpt_deepseek_validation750_live_gpt41_2026-06-16`
+- Date/split: `2026-06-16`; `validation`; `750` rows.
+- Pipeline: `fresh_evidence_reasoner`; mode `live`; replay `live`.
+- Model role: A4 two-model fresh-evidence reasoner (v0_12, GPT+deepseek) live on validation750; third model dropped; v0.4 3-agent baseline for comparison; held-out-family CV.; model `openai/gpt-4.1`.
+- Repair mode/config: `v0_12_two_model_gpt_deepseek`.
+- Primary metrics: a4_purist=631, baseline_purist=682, gap_robust=False, genuine_rate_regressions=67, gpt_only_purist=661, net_vs_baseline=-51, reasoner_net_vs_gpt=-30.
+- Evidence validity: validation750 development split (gan2026_split_v1), NOT a holdout or test450 result. Live openai/gpt-4.1 (synonymous with gpt-4.1-mini), temperature 0; DeepSeek peer trace is a saved artifact. Family CV is within-validation leave-one-band-out.
+- Cache/reuse source: experiments\gan2026_fresh_evidence_v0_12_gpt_deepseek_validation750_live_gpt41_2026-06-16.jsonl.
+- Claim language: A4 two-model rung, run for information. Within-tolerance + gap_robust is necessary, NOT sufficient, for any test450 authorisation.
+- Artifacts: `experiments/gan2026_fresh_evidence_v0_12_gpt_deepseek_validation750_live_gpt41_2026-06-16.json`, `experiments/gan2026_fresh_evidence_v0_12_gpt_deepseek_validation750_live_gpt41_2026-06-16.md`, `experiments/gan2026_fresh_evidence_v0_12_gpt_deepseek_validation750_live_gpt41_2026-06-16.jsonl`.
+
+### `gan2026_fresh_evidence_v0_11_gpt_only_validation750_live_gpt41_2026-06-16`
+- Date/split: `2026-06-16`; `validation`; `750` rows.
+- Pipeline: `fresh_evidence_reasoner`; mode `live`; replay `live`.
+- Model role: A3 GPT-trace-only fresh-evidence reasoner (v0_11) live on validation750; Qwen + DeepSeek dropped from prompt; v0.4 3-agent baseline for comparison; held-out-family CV.; model `openai/gpt-4.1`.
+- Repair mode/config: `v0_11_gpt_only_prompt`.
+- Primary metrics: a3_purist=610, baseline_purist=682, gap_robust=False, genuine_rate_regressions=89, gpt_only_purist=661, net_vs_baseline=-72, reasoner_net_vs_gpt=-51.
+- Evidence validity: validation750 development split (gan2026_split_v1), NOT a holdout or test450 result. Live openai/gpt-4.1 (synonymous with gpt-4.1-mini), temperature 0. Family CV is within-validation leave-one-band-out.
+- Cache/reuse source: experiments\gan2026_fresh_evidence_v0_11_gpt_only_validation750_live_gpt41_2026-06-16.jsonl.
+- Claim language: A3 simplest-architecture rung. Within-tolerance + gap_robust is necessary, NOT sufficient, for test450 authorisation; the robustness battery gate sits between this and any holdout run.
+- Artifacts: `experiments/gan2026_fresh_evidence_v0_11_gpt_only_validation750_live_gpt41_2026-06-16.json`, `experiments/gan2026_fresh_evidence_v0_11_gpt_only_validation750_live_gpt41_2026-06-16.md`, `experiments/gan2026_fresh_evidence_v0_11_gpt_only_validation750_live_gpt41_2026-06-16.jsonl`.
+
 ### `gan2026_fresh_evidence_triage_v0_10_validation750_live_gpt41_2026-06-16`
 - Date/split: `2026-06-16`; `validation`; `750` rows.
 - Pipeline: `fresh_evidence_reasoner`; mode `live`; replay `live`.
