@@ -1,0 +1,990 @@
+{
+  "date": "2026-06-16",
+  "predeclaration": "experiments/gan2026_kg_family_gated_graph_trust_predeclaration_2026-06-16.md",
+  "run_id": "gan2026_kg_family_gated_graph_trust_2026-06-16",
+  "source_graphs": "experiments/gan2026_state_graph_ontology_stage_d_promotion_gate_2026-06-15_graphs.jsonl",
+  "source_slice": "experiments/gan2026_state_graph_ontology_stage_d_promotion_gate_2026-06-15_rows.jsonl (Stage D predeclared 250-row residual-inclusive slice)",
+  "split": "validation",
+  "summary": {
+    "decision": "reject",
+    "decision_rationale": "P2.5 leaks 121 genuine-rate regression(s) (gap_robust=False). The forward family gate fires on genuine-rate rows indistinguishable from the harvest set on every observable graph feature; the family localization is a post-hoc gold property, not a selection-time signal. Per the stop rule, tightening on a forward feature is impossible here, so the honest decision is reject (same structural wall Stage D identified).",
+    "minted_residual_indices": [
+      5534,
+      6321,
+      6368,
+      6571,
+      11254,
+      11272,
+      14025
+    ],
+    "p2_5_family_cv": {
+      "aggregate": {
+        "changed_label_precision": 0.0537,
+        "changed_labels": 149,
+        "correct_to_wrong": 121,
+        "net_purist_gain": -113,
+        "rows": 250,
+        "wrong_to_correct": 8
+      },
+      "fold_families_absent": [],
+      "fold_families_present": [
+        "band_zero",
+        "band_unknown",
+        "band_submonthly",
+        "band_monthly",
+        "band_weekly",
+        "band_daily"
+      ],
+      "fold_kind": "leave_one_boundary_band_out",
+      "folds": [
+        {
+          "held_out": {
+            "changed_label_precision": 0.0,
+            "changed_labels": 34,
+            "correct_to_wrong": 34,
+            "net_purist_gain": -34,
+            "rows": 37,
+            "wrong_to_correct": 0
+          },
+          "held_out_family": "band_zero",
+          "retained": {
+            "changed_label_precision": 0.0696,
+            "changed_labels": 115,
+            "correct_to_wrong": 87,
+            "net_purist_gain": -79,
+            "rows": 213,
+            "wrong_to_correct": 8
+          }
+        },
+        {
+          "held_out": {
+            "changed_label_precision": 0.32,
+            "changed_labels": 25,
+            "correct_to_wrong": 0,
+            "net_purist_gain": 8,
+            "rows": 44,
+            "wrong_to_correct": 8
+          },
+          "held_out_family": "band_unknown",
+          "retained": {
+            "changed_label_precision": 0.0,
+            "changed_labels": 124,
+            "correct_to_wrong": 121,
+            "net_purist_gain": -121,
+            "rows": 206,
+            "wrong_to_correct": 0
+          }
+        },
+        {
+          "held_out": {
+            "changed_label_precision": 0.0,
+            "changed_labels": 9,
+            "correct_to_wrong": 8,
+            "net_purist_gain": -8,
+            "rows": 26,
+            "wrong_to_correct": 0
+          },
+          "held_out_family": "band_submonthly",
+          "retained": {
+            "changed_label_precision": 0.0571,
+            "changed_labels": 140,
+            "correct_to_wrong": 113,
+            "net_purist_gain": -105,
+            "rows": 224,
+            "wrong_to_correct": 8
+          }
+        },
+        {
+          "held_out": {
+            "changed_label_precision": 0.0,
+            "changed_labels": 32,
+            "correct_to_wrong": 30,
+            "net_purist_gain": -30,
+            "rows": 51,
+            "wrong_to_correct": 0
+          },
+          "held_out_family": "band_monthly",
+          "retained": {
+            "changed_label_precision": 0.0684,
+            "changed_labels": 117,
+            "correct_to_wrong": 91,
+            "net_purist_gain": -83,
+            "rows": 199,
+            "wrong_to_correct": 8
+          }
+        },
+        {
+          "held_out": {
+            "changed_label_precision": 0.0,
+            "changed_labels": 39,
+            "correct_to_wrong": 39,
+            "net_purist_gain": -39,
+            "rows": 70,
+            "wrong_to_correct": 0
+          },
+          "held_out_family": "band_weekly",
+          "retained": {
+            "changed_label_precision": 0.0727,
+            "changed_labels": 110,
+            "correct_to_wrong": 82,
+            "net_purist_gain": -74,
+            "rows": 180,
+            "wrong_to_correct": 8
+          }
+        },
+        {
+          "held_out": {
+            "changed_label_precision": 0.0,
+            "changed_labels": 10,
+            "correct_to_wrong": 10,
+            "net_purist_gain": -10,
+            "rows": 22,
+            "wrong_to_correct": 0
+          },
+          "held_out_family": "band_daily",
+          "retained": {
+            "changed_label_precision": 0.0576,
+            "changed_labels": 139,
+            "correct_to_wrong": 111,
+            "net_purist_gain": -103,
+            "rows": 228,
+            "wrong_to_correct": 8
+          }
+        }
+      ],
+      "gap_robust": false,
+      "low_precision_held_out_families": [
+        "band_zero",
+        "band_unknown",
+        "band_submonthly",
+        "band_monthly",
+        "band_weekly",
+        "band_daily"
+      ],
+      "min_changed_label_precision": 0.5,
+      "note": "Promotion gate: a candidate is gap_robust only if every held-out boundary band holds up (net Purist gain >= 0 and, where it changes labels, changed-label precision >= the bar). A positive aggregate with a regressing held-out band is the overfit signature the next-phase brief warns against.",
+      "reasons": [
+        "aggregate net Purist gain -113 <= 0",
+        "held-out bands regress (net Purist gain < 0): band_zero, band_submonthly, band_monthly, band_weekly, band_daily",
+        "held-out bands below changed-label precision 0.5: band_zero, band_unknown, band_submonthly, band_monthly, band_weekly, band_daily"
+      ],
+      "regressing_held_out_families": [
+        "band_zero",
+        "band_submonthly",
+        "band_monthly",
+        "band_weekly",
+        "band_daily"
+      ],
+      "worst_held_out_fold": {
+        "family": "band_weekly",
+        "net_purist_gain": -39
+      }
+    },
+    "p2_5_gate_fired_band_breakdown": {
+      "band_daily": 10,
+      "band_monthly": 32,
+      "band_submonthly": 9,
+      "band_unknown": 25,
+      "band_weekly": 39,
+      "band_zero": 34
+    },
+    "p2_5_gate_fired_rows": 149,
+    "p2_5a_family_cv": {
+      "aggregate": {
+        "changed_label_precision": 0.0,
+        "changed_labels": 3,
+        "correct_to_wrong": 3,
+        "net_purist_gain": -3,
+        "rows": 250,
+        "wrong_to_correct": 0
+      },
+      "fold_families_absent": [],
+      "fold_families_present": [
+        "band_zero",
+        "band_unknown",
+        "band_submonthly",
+        "band_monthly",
+        "band_weekly",
+        "band_daily"
+      ],
+      "fold_kind": "leave_one_boundary_band_out",
+      "folds": [
+        {
+          "held_out": {
+            "changed_label_precision": null,
+            "changed_labels": 0,
+            "correct_to_wrong": 0,
+            "net_purist_gain": 0,
+            "rows": 37,
+            "wrong_to_correct": 0
+          },
+          "held_out_family": "band_zero",
+          "retained": {
+            "changed_label_precision": 0.0,
+            "changed_labels": 3,
+            "correct_to_wrong": 3,
+            "net_purist_gain": -3,
+            "rows": 213,
+            "wrong_to_correct": 0
+          }
+        },
+        {
+          "held_out": {
+            "changed_label_precision": null,
+            "changed_labels": 0,
+            "correct_to_wrong": 0,
+            "net_purist_gain": 0,
+            "rows": 44,
+            "wrong_to_correct": 0
+          },
+          "held_out_family": "band_unknown",
+          "retained": {
+            "changed_label_precision": 0.0,
+            "changed_labels": 3,
+            "correct_to_wrong": 3,
+            "net_purist_gain": -3,
+            "rows": 206,
+            "wrong_to_correct": 0
+          }
+        },
+        {
+          "held_out": {
+            "changed_label_precision": 0.0,
+            "changed_labels": 1,
+            "correct_to_wrong": 1,
+            "net_purist_gain": -1,
+            "rows": 26,
+            "wrong_to_correct": 0
+          },
+          "held_out_family": "band_submonthly",
+          "retained": {
+            "changed_label_precision": 0.0,
+            "changed_labels": 2,
+            "correct_to_wrong": 2,
+            "net_purist_gain": -2,
+            "rows": 224,
+            "wrong_to_correct": 0
+          }
+        },
+        {
+          "held_out": {
+            "changed_label_precision": null,
+            "changed_labels": 0,
+            "correct_to_wrong": 0,
+            "net_purist_gain": 0,
+            "rows": 51,
+            "wrong_to_correct": 0
+          },
+          "held_out_family": "band_monthly",
+          "retained": {
+            "changed_label_precision": 0.0,
+            "changed_labels": 3,
+            "correct_to_wrong": 3,
+            "net_purist_gain": -3,
+            "rows": 199,
+            "wrong_to_correct": 0
+          }
+        },
+        {
+          "held_out": {
+            "changed_label_precision": 0.0,
+            "changed_labels": 2,
+            "correct_to_wrong": 2,
+            "net_purist_gain": -2,
+            "rows": 70,
+            "wrong_to_correct": 0
+          },
+          "held_out_family": "band_weekly",
+          "retained": {
+            "changed_label_precision": 0.0,
+            "changed_labels": 1,
+            "correct_to_wrong": 1,
+            "net_purist_gain": -1,
+            "rows": 180,
+            "wrong_to_correct": 0
+          }
+        },
+        {
+          "held_out": {
+            "changed_label_precision": null,
+            "changed_labels": 0,
+            "correct_to_wrong": 0,
+            "net_purist_gain": 0,
+            "rows": 22,
+            "wrong_to_correct": 0
+          },
+          "held_out_family": "band_daily",
+          "retained": {
+            "changed_label_precision": 0.0,
+            "changed_labels": 3,
+            "correct_to_wrong": 3,
+            "net_purist_gain": -3,
+            "rows": 228,
+            "wrong_to_correct": 0
+          }
+        }
+      ],
+      "gap_robust": false,
+      "low_precision_held_out_families": [
+        "band_submonthly",
+        "band_weekly"
+      ],
+      "min_changed_label_precision": 0.5,
+      "note": "Promotion gate: a candidate is gap_robust only if every held-out boundary band holds up (net Purist gain >= 0 and, where it changes labels, changed-label precision >= the bar). A positive aggregate with a regressing held-out band is the overfit signature the next-phase brief warns against.",
+      "reasons": [
+        "aggregate net Purist gain -3 <= 0",
+        "held-out bands regress (net Purist gain < 0): band_submonthly, band_weekly",
+        "held-out bands below changed-label precision 0.5: band_submonthly, band_weekly"
+      ],
+      "regressing_held_out_families": [
+        "band_submonthly",
+        "band_weekly"
+      ],
+      "worst_held_out_fold": {
+        "family": "band_weekly",
+        "net_purist_gain": -2
+      }
+    },
+    "postures": {
+      "P1_unilateral": {
+        "correct_to_wrong": 147,
+        "correct_to_wrong_indices": [
+          10,
+          40,
+          79,
+          182,
+          212,
+          409,
+          446,
+          531,
+          665,
+          790,
+          959,
+          978,
+          1030,
+          1046,
+          1070,
+          1094,
+          1165,
+          1171,
+          1207,
+          1223,
+          1249,
+          1281,
+          1357,
+          1363,
+          1454,
+          1486,
+          1573,
+          1591,
+          1596,
+          1597,
+          1636,
+          1640,
+          1694,
+          1706,
+          1772,
+          1773,
+          1790,
+          1794,
+          1866,
+          1880,
+          1887,
+          1914,
+          1922,
+          1923,
+          1979,
+          1980,
+          2023,
+          2228,
+          2233,
+          2245,
+          2259,
+          2354,
+          2366,
+          2374,
+          2425,
+          2427,
+          2435,
+          2437,
+          2440,
+          2456,
+          2459,
+          2487,
+          2513,
+          2541,
+          2548,
+          2554,
+          2558,
+          2622,
+          2628,
+          2678,
+          2681,
+          2698,
+          2762,
+          2907,
+          2932,
+          2938,
+          2965,
+          2992,
+          3015,
+          3048,
+          3058,
+          3082,
+          3095,
+          3113,
+          3118,
+          3137,
+          3224,
+          3242,
+          3261,
+          3262,
+          3281,
+          3297,
+          3325,
+          3623,
+          3643,
+          3682,
+          3753,
+          3774,
+          3940,
+          3949,
+          3999,
+          4026,
+          4092,
+          4100,
+          4110,
+          4116,
+          4173,
+          4243,
+          4337,
+          4345,
+          4368,
+          4402,
+          4410,
+          4478,
+          4480,
+          4496,
+          4562,
+          4563,
+          4574,
+          4592,
+          4597,
+          4624,
+          4631,
+          4839,
+          4842,
+          4910,
+          4919,
+          4926,
+          4951,
+          4956,
+          4992,
+          4994,
+          5040,
+          5082,
+          5092,
+          5110,
+          5121,
+          5136,
+          5141,
+          5197,
+          5210,
+          5221,
+          5248,
+          5331,
+          5345,
+          5351,
+          5379
+        ],
+        "final_purist_correct": 99,
+        "genuine_rate_regressions": 147,
+        "harvested_minted_residual": [
+          5534,
+          6321,
+          6368,
+          6571,
+          11254,
+          11272,
+          14025
+        ],
+        "net_purist_gain": -139,
+        "overrides": 188,
+        "per_band": {
+          "band_daily": {
+            "changed_labels": 14,
+            "correct_to_wrong": 14,
+            "rows": 22,
+            "wrong_to_correct": 0
+          },
+          "band_monthly": {
+            "changed_labels": 38,
+            "correct_to_wrong": 35,
+            "rows": 51,
+            "wrong_to_correct": 0
+          },
+          "band_submonthly": {
+            "changed_labels": 14,
+            "correct_to_wrong": 11,
+            "rows": 26,
+            "wrong_to_correct": 0
+          },
+          "band_unknown": {
+            "changed_labels": 34,
+            "correct_to_wrong": 0,
+            "rows": 44,
+            "wrong_to_correct": 8
+          },
+          "band_weekly": {
+            "changed_labels": 51,
+            "correct_to_wrong": 50,
+            "rows": 70,
+            "wrong_to_correct": 0
+          },
+          "band_zero": {
+            "changed_labels": 37,
+            "correct_to_wrong": 37,
+            "rows": 37,
+            "wrong_to_correct": 0
+          }
+        },
+        "transitions": {
+          "C->C": 91,
+          "C->W": 147,
+          "W->C": 8,
+          "W->W": 4
+        },
+        "wrong_to_correct": 8
+      },
+      "P2_5_family_gated": {
+        "correct_to_wrong": 121,
+        "correct_to_wrong_indices": [
+          531,
+          790,
+          959,
+          1030,
+          1070,
+          1094,
+          1165,
+          1171,
+          1207,
+          1223,
+          1249,
+          1281,
+          1357,
+          1454,
+          1486,
+          1573,
+          1591,
+          1596,
+          1597,
+          1636,
+          1640,
+          1694,
+          1706,
+          1772,
+          1790,
+          1794,
+          1866,
+          1887,
+          1914,
+          1922,
+          1923,
+          1979,
+          1980,
+          2023,
+          2228,
+          2233,
+          2245,
+          2259,
+          2354,
+          2366,
+          2425,
+          2427,
+          2435,
+          2437,
+          2440,
+          2456,
+          2459,
+          2487,
+          2541,
+          2548,
+          2554,
+          2558,
+          2622,
+          2628,
+          2678,
+          2681,
+          2698,
+          2907,
+          2932,
+          2938,
+          2965,
+          2992,
+          3015,
+          3048,
+          3058,
+          3082,
+          3095,
+          3113,
+          3118,
+          3137,
+          3242,
+          3261,
+          3262,
+          3297,
+          3325,
+          3623,
+          3774,
+          3940,
+          3949,
+          4026,
+          4092,
+          4100,
+          4110,
+          4116,
+          4173,
+          4243,
+          4337,
+          4345,
+          4368,
+          4402,
+          4410,
+          4478,
+          4480,
+          4496,
+          4562,
+          4574,
+          4592,
+          4597,
+          4624,
+          4631,
+          4839,
+          4842,
+          4919,
+          4951,
+          4956,
+          4994,
+          5040,
+          5082,
+          5092,
+          5110,
+          5121,
+          5136,
+          5141,
+          5197,
+          5210,
+          5221,
+          5248,
+          5331,
+          5345,
+          5351,
+          5379
+        ],
+        "final_purist_correct": 125,
+        "genuine_rate_regressions": 121,
+        "harvested_minted_residual": [
+          5534,
+          6321,
+          6368,
+          6571,
+          11254,
+          11272,
+          14025
+        ],
+        "net_purist_gain": -113,
+        "overrides": 149,
+        "per_band": {
+          "band_daily": {
+            "changed_labels": 10,
+            "correct_to_wrong": 10,
+            "rows": 22,
+            "wrong_to_correct": 0
+          },
+          "band_monthly": {
+            "changed_labels": 32,
+            "correct_to_wrong": 30,
+            "rows": 51,
+            "wrong_to_correct": 0
+          },
+          "band_submonthly": {
+            "changed_labels": 9,
+            "correct_to_wrong": 8,
+            "rows": 26,
+            "wrong_to_correct": 0
+          },
+          "band_unknown": {
+            "changed_labels": 25,
+            "correct_to_wrong": 0,
+            "rows": 44,
+            "wrong_to_correct": 8
+          },
+          "band_weekly": {
+            "changed_labels": 39,
+            "correct_to_wrong": 39,
+            "rows": 70,
+            "wrong_to_correct": 0
+          },
+          "band_zero": {
+            "changed_labels": 34,
+            "correct_to_wrong": 34,
+            "rows": 37,
+            "wrong_to_correct": 0
+          }
+        },
+        "transitions": {
+          "C->C": 117,
+          "C->W": 121,
+          "W->C": 8,
+          "W->W": 4
+        },
+        "wrong_to_correct": 8
+      },
+      "P2_5a_guarded": {
+        "correct_to_wrong": 3,
+        "correct_to_wrong_indices": [
+          959,
+          2698,
+          4345
+        ],
+        "final_purist_correct": 235,
+        "genuine_rate_regressions": 3,
+        "harvested_minted_residual": [],
+        "net_purist_gain": -3,
+        "overrides": 3,
+        "per_band": {
+          "band_daily": {
+            "changed_labels": 0,
+            "correct_to_wrong": 0,
+            "rows": 22,
+            "wrong_to_correct": 0
+          },
+          "band_monthly": {
+            "changed_labels": 0,
+            "correct_to_wrong": 0,
+            "rows": 51,
+            "wrong_to_correct": 0
+          },
+          "band_submonthly": {
+            "changed_labels": 1,
+            "correct_to_wrong": 1,
+            "rows": 26,
+            "wrong_to_correct": 0
+          },
+          "band_unknown": {
+            "changed_labels": 0,
+            "correct_to_wrong": 0,
+            "rows": 44,
+            "wrong_to_correct": 0
+          },
+          "band_weekly": {
+            "changed_labels": 2,
+            "correct_to_wrong": 2,
+            "rows": 70,
+            "wrong_to_correct": 0
+          },
+          "band_zero": {
+            "changed_labels": 0,
+            "correct_to_wrong": 0,
+            "rows": 37,
+            "wrong_to_correct": 0
+          }
+        },
+        "transitions": {
+          "C->C": 235,
+          "C->W": 3,
+          "W->W": 12
+        },
+        "wrong_to_correct": 0
+      },
+      "P2_corroborated": {
+        "correct_to_wrong": 0,
+        "correct_to_wrong_indices": [],
+        "final_purist_correct": 239,
+        "genuine_rate_regressions": 0,
+        "harvested_minted_residual": [],
+        "net_purist_gain": 1,
+        "overrides": 28,
+        "per_band": {
+          "band_daily": {
+            "changed_labels": 0,
+            "correct_to_wrong": 0,
+            "rows": 22,
+            "wrong_to_correct": 0
+          },
+          "band_monthly": {
+            "changed_labels": 1,
+            "correct_to_wrong": 0,
+            "rows": 51,
+            "wrong_to_correct": 0
+          },
+          "band_submonthly": {
+            "changed_labels": 0,
+            "correct_to_wrong": 0,
+            "rows": 26,
+            "wrong_to_correct": 0
+          },
+          "band_unknown": {
+            "changed_labels": 27,
+            "correct_to_wrong": 0,
+            "rows": 44,
+            "wrong_to_correct": 1
+          },
+          "band_weekly": {
+            "changed_labels": 0,
+            "correct_to_wrong": 0,
+            "rows": 70,
+            "wrong_to_correct": 0
+          },
+          "band_zero": {
+            "changed_labels": 0,
+            "correct_to_wrong": 0,
+            "rows": 37,
+            "wrong_to_correct": 0
+          }
+        },
+        "transitions": {
+          "C->C": 238,
+          "W->C": 1,
+          "W->W": 11
+        },
+        "wrong_to_correct": 1
+      },
+      "P3_unknown_only": {
+        "correct_to_wrong": 71,
+        "correct_to_wrong_indices": [
+          531,
+          1030,
+          1070,
+          1094,
+          1171,
+          1207,
+          1281,
+          1357,
+          1454,
+          1573,
+          1597,
+          1640,
+          1706,
+          1772,
+          1794,
+          1866,
+          1887,
+          1914,
+          2023,
+          2233,
+          2354,
+          2427,
+          2435,
+          2440,
+          2558,
+          2622,
+          2681,
+          2907,
+          2938,
+          2965,
+          2992,
+          3015,
+          3113,
+          3118,
+          3137,
+          3242,
+          3261,
+          3262,
+          3297,
+          3325,
+          3682,
+          3949,
+          3999,
+          4026,
+          4100,
+          4116,
+          4243,
+          4368,
+          4402,
+          4410,
+          4496,
+          4562,
+          4563,
+          4574,
+          4592,
+          4624,
+          4839,
+          4842,
+          4951,
+          4994,
+          5040,
+          5082,
+          5092,
+          5110,
+          5136,
+          5197,
+          5210,
+          5221,
+          5248,
+          5345,
+          5379
+        ],
+        "final_purist_correct": 174,
+        "genuine_rate_regressions": 71,
+        "harvested_minted_residual": [
+          5534,
+          6321,
+          6571,
+          11254,
+          11272,
+          14025
+        ],
+        "net_purist_gain": -64,
+        "overrides": 90,
+        "per_band": {
+          "band_daily": {
+            "changed_labels": 5,
+            "correct_to_wrong": 5,
+            "rows": 22,
+            "wrong_to_correct": 0
+          },
+          "band_monthly": {
+            "changed_labels": 16,
+            "correct_to_wrong": 15,
+            "rows": 51,
+            "wrong_to_correct": 0
+          },
+          "band_submonthly": {
+            "changed_labels": 6,
+            "correct_to_wrong": 5,
+            "rows": 26,
+            "wrong_to_correct": 0
+          },
+          "band_unknown": {
+            "changed_labels": 17,
+            "correct_to_wrong": 0,
+            "rows": 44,
+            "wrong_to_correct": 7
+          },
+          "band_weekly": {
+            "changed_labels": 23,
+            "correct_to_wrong": 23,
+            "rows": 70,
+            "wrong_to_correct": 0
+          },
+          "band_zero": {
+            "changed_labels": 23,
+            "correct_to_wrong": 23,
+            "rows": 37,
+            "wrong_to_correct": 0
+          }
+        },
+        "transitions": {
+          "C->C": 167,
+          "C->W": 71,
+          "W->C": 7,
+          "W->W": 5
+        },
+        "wrong_to_correct": 7
+      }
+    },
+    "rows": 250,
+    "v09_selected_purist_correct": 238
+  }
+}

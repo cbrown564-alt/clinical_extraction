@@ -55,8 +55,25 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.reports.base import (
 )
 
 PROMPT_VERSION = "gan2026_fresh_evidence_reasoner_v0_6"
+PROMPT_VERSION_V0_10 = "gan2026_fresh_evidence_reasoner_v0_10_triage"
 SAFETY_GATE_VERSION = "gan2026_fresh_evidence_safety_gate_v0_9"
 PIPELINE_FAMILY = "fresh_evidence_reasoner"
+
+# Active prompt version — call set_active_prompt_version() before run_split to
+# switch to v0.10; the module default stays v0.6 so existing callers are not
+# affected.
+_ACTIVE_PROMPT_VERSION: str = PROMPT_VERSION
+
+
+def set_active_prompt_version(version: str) -> None:
+    """Switch the module-level active prompt version (call before run_split)."""
+    global _ACTIVE_PROMPT_VERSION  # noqa: PLW0603
+    _ACTIVE_PROMPT_VERSION = version
+
+
+def get_active_prompt_version() -> str:
+    """Return the currently active prompt version."""
+    return _ACTIVE_PROMPT_VERSION
 DEFAULT_STRUCTURED_EVENT_JSONL_PATH = llm_event_reasoner.DEFAULT_STRUCTURED_EVENT_JSONL_PATH
 DEFAULT_QWEN_STRUCTURED_EVENT_JSONL_PATH = (
     cross_model_base.DEFAULT_QWEN_STRUCTURED_EVENT_JSONL_PATH
@@ -146,6 +163,46 @@ UNKNOWN_FREQUENCY_POLICY_INSTRUCTIONS = (
 )
 
 
+# v0.10 triage reason values — only these two high-confidence reasons permit
+# demotion to unknown; all other triage outcomes are rendering/precedence
+# fixes that do not gate on confidence.
+TriageReason = Literal[
+    "single_anchor_last_event",
+    "explicitly_provoked_or_transient",
+    "cluster_retention",
+    "seizure_free_check",
+    "usable_rate",
+    "no_triage_issue",
+]
+TRIAGE_REASON_VALUES = (
+    "single_anchor_last_event",
+    "explicitly_provoked_or_transient",
+    "cluster_retention",
+    "seizure_free_check",
+    "usable_rate",
+    "no_triage_issue",
+)
+
+# Only these two reasons may gate a demote-to-unknown replacement (confidence
+# gate from the predeclaration).
+CONFIDENCE_GATED_UNKNOWN_DEMOTION_REASONS: frozenset[str] = frozenset(
+    ("single_anchor_last_event", "explicitly_provoked_or_transient")
+)
+
+
+class TriageResult(BaseModel):
+    """Output of the v0.10 triage scaffold (4 steps evaluated before label)."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    confound_check: str = ""
+    window_check: str = ""
+    cluster_check: str = ""
+    seizure_free_check: str = ""
+    triage_reason: TriageReason | None = None
+    triage_notes: str = ""
+
+
 class FreshEvidenceDecision(BaseModel):
     """Prediction schema for V12 fresh-evidence replacement."""
 
@@ -164,6 +221,7 @@ class FreshEvidenceDecision(BaseModel):
     uncertainty: llm_event_reasoner.Uncertainty
     tool_calls: tuple[llm_event_reasoner.ToolTrace, ...] = Field(default_factory=tuple)
     attribution: llm_event_reasoner.DecisionAttribution
+    triage_result: TriageResult | None = None
 
 
 class ParsedFreshEvidenceDecision(BaseModel):
@@ -233,12 +291,13 @@ def run_split(
         agent_id: llm_event_reasoner._rows_by_source_index(rows)
         for agent_id, rows in loaded_agent_rows.items()
     }
+    active_prompt_version = _ACTIVE_PROMPT_VERSION
     metadata = build_run_metadata(
         mode=mode,
         model=model,
         temperature=temperature,
         max_tokens=max_tokens,
-        prompt_version=PROMPT_VERSION,
+        prompt_version=active_prompt_version,
         dspy_version="none",
         split=split,
         split_manifest=split_manifest,
@@ -249,7 +308,7 @@ def run_split(
         {
             "artifact_kind": "gan2026_fresh_evidence_reasoner_trace",
             "pipeline_family": PIPELINE_FAMILY,
-            "pipeline_version": f"{PROMPT_VERSION}+{SAFETY_GATE_VERSION}",
+            "pipeline_version": f"{active_prompt_version}+{SAFETY_GATE_VERSION}",
             "safety_gate_version": SAFETY_GATE_VERSION,
             "agent_source_paths": {
                 agent_id: str(path) for agent_id, path in agent_sources.items()
@@ -282,6 +341,7 @@ def run_split(
                 temperature=temperature,
                 max_tokens=max_tokens,
                 mode=mode,
+                prompt_version=active_prompt_version,
             )
         )
         if progress_every and len(rows) % progress_every == 0:
@@ -345,8 +405,23 @@ def build_prompt_input(
     agent_rows: Mapping[str, Mapping[str, Any] | None],
     *,
     note_excerpt_chars: int = 7000,
+    prompt_version: str | None = None,
 ) -> str:
     """Build a split-neutral fresh-evidence payload."""
+
+    effective_version = prompt_version if prompt_version is not None else _ACTIVE_PROMPT_VERSION
+    if effective_version == PROMPT_VERSION_V0_10:
+        return _build_prompt_input_v0_10(record, agent_rows, note_excerpt_chars=note_excerpt_chars)
+    return _build_prompt_input_v0_6(record, agent_rows, note_excerpt_chars=note_excerpt_chars)
+
+
+def _build_prompt_input_v0_6(
+    record: GanFrequencyRecord,
+    agent_rows: Mapping[str, Mapping[str, Any] | None],
+    *,
+    note_excerpt_chars: int = 7000,
+) -> str:
+    """Original v0.6 prompt (unchanged)."""
 
     agent_inputs = [
         cross_model_base._agent_prompt_summary(agent_id, agent_rows.get(agent_id))
@@ -470,6 +545,222 @@ def build_prompt_input(
                 "llm_selected_format_repaired | llm_original_structured_event_kept"
             ),
         },
+        "saved_structured_event_agents": agent_inputs,
+        "raw_note_excerpt": record.note_text[:note_excerpt_chars],
+        "excerpt_truncated": len(record.note_text) > note_excerpt_chars,
+    }
+    return json.dumps(payload, ensure_ascii=False, sort_keys=True)
+
+
+# v0.10 triage scaffold instructions inserted BEFORE label rendering.
+_V0_10_TRIAGE_SCAFFOLD_INSTRUCTIONS = [
+    (
+        "TRIAGE SCAFFOLD (mandatory — evaluate ALL four steps from the raw note "
+        "BEFORE choosing final_label or action):"
+    ),
+    (
+        "STEP 1 — confound_check: Are the documented events provoked or situational "
+        "(missed meals, sleep deprivation, travel/jet-lag, alcohol, medication-supply "
+        "gaps/non-adherence) or a transient exacerbation / new-or-uncertain "
+        "classification with work-up still pending? If yes AND the underlying habitual "
+        "rate is absent or genuinely unknowable, set triage_reason = "
+        "'explicitly_provoked_or_transient'. Otherwise continue."
+    ),
+    (
+        "STEP 2 — window_check: Is the observation window a usable habitual baseline "
+        "(a defined follow-up period with a recurring event count), or is the ONLY "
+        "anchor a single dated last-event with NO stated recurring rate? A single "
+        "dated last-event with no stated recurring rate is NOT a denominator — the "
+        "count cannot be converted to a per-period rate. If the only anchor is a "
+        "single dated last-event and there is no separately stated habitual rate, "
+        "set triage_reason = 'single_anchor_last_event'. If a usable habitual "
+        "baseline or count+window IS present, continue — do NOT demote it to unknown."
+    ),
+    (
+        "STEP 3 — cluster_check: Do the events arrive in discrete clusters (a burst "
+        "of multiple seizures on one day or in a short run, then a cluster-free "
+        "interval before the next burst)? If yes, preserve BOTH the cluster cadence "
+        "(e.g. 1 cluster per month) AND the per-cluster burden (e.g. multiple per "
+        "cluster) as a two-axis label. Never flatten cluster patterns to a simple "
+        "per-period rate. Set triage_reason = 'cluster_retention' if clusters are "
+        "present and you are preserving the two-axis form. This step is a rendering "
+        "fix — it does NOT gate unknown demotion."
+    ),
+    (
+        "STEP 4 — seizure_free_check: Is a continuous seizure-free interval "
+        "EXPLICITLY ASSERTED (e.g. 'no seizures for X months'), or is there only a "
+        "last-event date with no asserted ongoing interval? A last-event date without "
+        "an explicit seizure-free duration is NOT a seizure-free label; choose unknown "
+        "instead. If the note explicitly asserts a seizure-free interval, set "
+        "triage_reason = 'seizure_free_check'. This step is a rendering fix — it "
+        "does NOT gate unknown demotion unless the ONLY evidence is a last-event date."
+    ),
+    (
+        "CONFIDENCE GATE (critical): You may demote the structured-event answer to "
+        "'unknown' ONLY when triage_reason is 'single_anchor_last_event' OR "
+        "'explicitly_provoked_or_transient'. Do NOT demote on a bare/low-confidence "
+        "concern, a clearly stated habitual rate, or a usable count+window baseline. "
+        "If the triage yields 'cluster_retention' or 'seizure_free_check', those are "
+        "rendering fixes that do not require a demote-to-unknown. If the triage yields "
+        "'usable_rate' or 'no_triage_issue', keep the original or replace with the "
+        "better rate — do NOT demote to unknown."
+    ),
+    (
+        "After evaluating all four steps, populate triage_result with: "
+        "confound_check (brief finding), window_check (brief finding), "
+        "cluster_check (brief finding), seizure_free_check (brief finding), "
+        "triage_reason (one value from the allowed list), triage_notes (summary). "
+        "Then choose action and final_label consistent with the triage."
+    ),
+]
+
+_V0_10_TRIAGE_OUTPUT_SCHEMA_ADDITION = {
+    "triage_result": {
+        "confound_check": "brief finding from STEP 1",
+        "window_check": "brief finding from STEP 2",
+        "cluster_check": "brief finding from STEP 3",
+        "seizure_free_check": "brief finding from STEP 4",
+        "triage_reason": list(TRIAGE_REASON_VALUES),
+        "triage_notes": "one-sentence summary of the dominant triage finding",
+    }
+}
+
+
+def _build_prompt_input_v0_10(
+    record: GanFrequencyRecord,
+    agent_rows: Mapping[str, Mapping[str, Any] | None],
+    *,
+    note_excerpt_chars: int = 7000,
+) -> str:
+    """v0.10 triage scaffold prompt — inserts 4-step triage BEFORE label choice."""
+
+    agent_inputs = [
+        cross_model_base._agent_prompt_summary(agent_id, agent_rows.get(agent_id))
+        for agent_id in cross_model_base.AGENT_IDS
+    ]
+    # Build v0.10 instructions: triage scaffold first, then existing policy rules.
+    instructions_v0_10 = [
+        (
+            "Decide whether to keep the GPT structured-event final answer or "
+            "replace it with one freshly reasoned Gan label from exact raw-note evidence."
+        ),
+        (
+            "Use the three saved LLM structured-event traces as scaffolding, not "
+            "as a vote. If a peer trace seems right, cite the raw evidence and "
+            "produce the replacement yourself."
+        ),
+        (
+            "Use keep_original_structured_event_final unless exact raw-note "
+            "evidence proves a better current seizure-frequency interpretation."
+        ),
+        (
+            "Replacement is for represented-evidence or clinical-selection misses: "
+            "current/recent frequency, denominator/window, cluster burden, "
+            "seizure-free conflict, unknown/no-reference boundary, or highest "
+            "active semiology."
+        ),
+        (
+            "Do not use outside final-answer sources, row IDs, split membership, "
+            "gold labels, scoring metadata, deterministic rules, deterministic "
+            "top labels, or benchmark feedback."
+        ),
+        *_V0_10_TRIAGE_SCAFFOLD_INSTRUCTIONS,
+        (
+            "For frequency labels, state the numerator, denominator, and window "
+            "in calculation_trace. Do not turn one-off since-last-review counts "
+            "into rates unless the interval length or recurring cadence is explicit."
+        ),
+        (
+            "Before choosing final_label, set ambiguity_classification to the "
+            "boundary class that explains whether count and window are usable. "
+            "Use unknown_count_or_window when seizure evidence exists but either "
+            "the number of events or the relevant time period is unclear."
+        ),
+        *UNKNOWN_FREQUENCY_POLICY_INSTRUCTIONS,
+        (
+            "Do not replace explicit numeric or range frequency evidence such as "
+            "'twice per week' with 'multiple per week'; render the numeric/range "
+            "frequency or keep the original structured-event final."
+        ),
+        (
+            "For unknown, require evidence that seizure-frequency information "
+            "exists but cannot be converted to a current recurring rate."
+        ),
+        (
+            "For no_reference, require positive absence of seizure-frequency "
+            "evidence; do not use it when awkward but usable frequency evidence exists."
+        ),
+        (
+            "For seizure_free, require exact no-events-since or absence-duration "
+            "evidence and no conflicting current/recent frequency evidence."
+        ),
+        (
+            "Do not replace an original seizure-free structured-event final with "
+            "unknown or no_reference merely because the note discusses non-epileptic "
+            "spells, medication status, or qualitative improvement."
+        ),
+        (
+            "Do not output bare 'seizure free'. If the duration is not explicit "
+            "enough to render a Gan seizure-free label with a duration, keep the "
+            "original structured-event final."
+        ),
+        (
+            "Do not replace a frequency original with seizure_free for only "
+            "days, weeks, or about one month after a recent last event; keep the "
+            "frequency original on that short last-event-only boundary."
+        ),
+        (
+            "For clusters, keep cluster cadence separate from events per cluster; "
+            "only multiply or render cluster labels when both axes are supported."
+        ),
+        (
+            "For multiple active semiologies, select the highest current clinically "
+            "active burden, not the first-mentioned or most severe seizure type."
+        ),
+        "Evidence entries must be exact substrings copied from the note.",
+        (
+            "final_label must be a valid Gan label only: unknown, no seizure "
+            "frequency reference, seizure free, multiple per day/week/month/year, "
+            "or '<number> [to <number>] per day/week/month/year'."
+        ),
+        (
+            "action, final_kind, uncertainty, and attribution must each be one "
+            "string, not an array of options."
+        ),
+    ]
+    required_schema = {
+        "action": list(FRESH_EVIDENCE_ACTION_VALUES),
+        "final_label": "Gan-style label string",
+        "final_kind": [
+            "frequency",
+            "seizure_free",
+            "unknown",
+            "no_reference",
+            "unresolved_multiple",
+        ],
+        "selected_event_ids": (
+            "saved event IDs or fresh_evidence_1 when replacement comes from raw text"
+        ),
+        "rejected_event_ids": "saved event IDs or agent finals explicitly rejected",
+        "evidence": "list of exact evidence substrings supporting the final choice",
+        "boundary_profile": "list of targeted profile keys driving the choice",
+        "ambiguity_classification": list(AMBIGUITY_CLASSIFICATION_VALUES),
+        "calculation_trace": "short arithmetic or boundary trace, or null",
+        "clinical_rationale": "brief clinical rationale",
+        "uncertainty": "one string: low | medium | high",
+        "tool_calls": "empty list for this V12 scaffold",
+        "attribution": (
+            "one string: llm_selected_tool_rendered | "
+            "llm_selected_format_repaired | llm_original_structured_event_kept"
+        ),
+        **_V0_10_TRIAGE_OUTPUT_SCHEMA_ADDITION,
+    }
+    payload = {
+        "prompt_version": PROMPT_VERSION_V0_10,
+        "task": "Gan 2026 fresh-evidence seizure-frequency reasoning with triage scaffold",
+        "variant": "V12_fresh_evidence_reasoner_v0_10_triage",
+        "instructions": instructions_v0_10,
+        "required_output_schema": required_schema,
         "saved_structured_event_agents": agent_inputs,
         "raw_note_excerpt": record.note_text[:note_excerpt_chars],
         "excerpt_truncated": len(record.note_text) > note_excerpt_chars,
@@ -779,9 +1070,10 @@ def _build_row(
     temperature: float,
     max_tokens: int,
     mode: Literal["live", "prompt-only"],
+    prompt_version: str = PROMPT_VERSION,
 ) -> dict[str, Any]:
     gpt_row = agent_rows.get("gpt")
-    prompt_input_json = build_prompt_input(record, agent_rows)
+    prompt_input_json = build_prompt_input(record, agent_rows, prompt_version=prompt_version)
     raw_output = ""
     call_error: str | None = None
     model_call_attempted = False
@@ -831,7 +1123,7 @@ def _build_row(
         "split_manifest": split_manifest,
         "artifact_mode": mode,
         "pipeline_family": PIPELINE_FAMILY,
-        "prompt_version": PROMPT_VERSION,
+        "prompt_version": prompt_version,
         "model": model,
         "temperature": temperature,
         "max_tokens": max_tokens,
@@ -1339,6 +1631,16 @@ def _is_selective_last_event_unknown_boundary(raw_fresh: FreshEvidenceDecision) 
 def _is_selective_unknown_frequency_boundary(raw_fresh: FreshEvidenceDecision) -> bool:
     if raw_fresh.final_kind != "unknown":
         return False
+    # v0.10 confidence gate: triage emitted a high-confidence specific reason.
+    if raw_fresh.triage_result is not None:
+        triage_reason = raw_fresh.triage_result.triage_reason
+        if triage_reason in CONFIDENCE_GATED_UNKNOWN_DEMOTION_REASONS:
+            return True
+        # Low-confidence or rendering-only triage reasons must NOT demote.
+        if triage_reason not in (None,):
+            # triage was evaluated but did not emit a confidence-gated reason;
+            # fall through to the ambiguity_classification check.
+            pass
     if raw_fresh.ambiguity_classification in {
         "unknown_count_or_window",
         "last_event_only_unknown",

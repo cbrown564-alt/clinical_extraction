@@ -1,0 +1,920 @@
+{
+  "attribution_table": [
+    {
+      "action": "replace_with_fresh_evidence_final",
+      "baseline_label_v04": "1 per 2 week",
+      "gold_label": "1 per multiple month",
+      "new_ambiguity_classification": "last_event_only_unknown",
+      "new_fresh_label_v10": "unknown",
+      "now_purist_correct": true,
+      "source_row_index": 5534,
+      "triage_reason_emitted": "single_anchor_last_event"
+    },
+    {
+      "action": null,
+      "baseline_label_v04": "2 per 3 month",
+      "gold_label": "unknown",
+      "new_ambiguity_classification": null,
+      "new_fresh_label_v10": null,
+      "now_purist_correct": false,
+      "source_row_index": 6321,
+      "triage_reason_emitted": null
+    },
+    {
+      "action": "keep_original_structured_event_final",
+      "baseline_label_v04": "3 per 6 week",
+      "gold_label": "unknown",
+      "new_ambiguity_classification": "explicit_count_window",
+      "new_fresh_label_v10": "3 per 6 week",
+      "now_purist_correct": false,
+      "source_row_index": 6368,
+      "triage_reason_emitted": "usable_rate"
+    },
+    {
+      "action": "replace_with_fresh_evidence_final",
+      "baseline_label_v04": "1 per 4 month",
+      "gold_label": "unknown",
+      "new_ambiguity_classification": "last_event_only_unknown",
+      "new_fresh_label_v10": "unknown",
+      "now_purist_correct": true,
+      "source_row_index": 6571,
+      "triage_reason_emitted": "single_anchor_last_event"
+    },
+    {
+      "action": null,
+      "baseline_label_v04": "multiple per month",
+      "gold_label": "1 cluster per month, multiple per cluster",
+      "new_ambiguity_classification": null,
+      "new_fresh_label_v10": null,
+      "now_purist_correct": false,
+      "source_row_index": 9937,
+      "triage_reason_emitted": null
+    },
+    {
+      "action": "replace_with_fresh_evidence_final",
+      "baseline_label_v04": "1 per 4 to 5 week",
+      "gold_label": "1 cluster per 4 to 5 week, multiple per cluster",
+      "new_ambiguity_classification": "cluster_axis_incomplete",
+      "new_fresh_label_v10": "1 cluster per 4 to 5 week ( per cluster unknown)",
+      "now_purist_correct": false,
+      "source_row_index": 9943,
+      "triage_reason_emitted": "cluster_retention"
+    },
+    {
+      "action": "keep_original_structured_event_final",
+      "baseline_label_v04": "seizure free for 4 month",
+      "gold_label": "unknown",
+      "new_ambiguity_classification": "explicit_seizure_free_duration",
+      "new_fresh_label_v10": "seizure free for 4 month",
+      "now_purist_correct": false,
+      "source_row_index": 11216,
+      "triage_reason_emitted": "seizure_free_check"
+    },
+    {
+      "action": "replace_with_fresh_evidence_final",
+      "baseline_label_v04": "seizure free for 3 month",
+      "gold_label": "unknown",
+      "new_ambiguity_classification": "last_event_only_unknown",
+      "new_fresh_label_v10": "unknown",
+      "now_purist_correct": true,
+      "source_row_index": 11254,
+      "triage_reason_emitted": "single_anchor_last_event"
+    },
+    {
+      "action": "replace_with_fresh_evidence_final",
+      "baseline_label_v04": "seizure free for 3 month",
+      "gold_label": "unknown",
+      "new_ambiguity_classification": "last_event_only_unknown",
+      "new_fresh_label_v10": "unknown",
+      "now_purist_correct": true,
+      "source_row_index": 11272,
+      "triage_reason_emitted": "single_anchor_last_event"
+    },
+    {
+      "action": "keep_original_structured_event_final",
+      "baseline_label_v04": "1 per 4 to 5 week",
+      "gold_label": "1 per 8 month",
+      "new_ambiguity_classification": "cluster_axis_complete",
+      "new_fresh_label_v10": "1 per 4 to 5 week",
+      "now_purist_correct": false,
+      "source_row_index": 13209,
+      "triage_reason_emitted": "cluster_retention"
+    },
+    {
+      "action": "keep_original_structured_event_final",
+      "baseline_label_v04": "2 per 6 week",
+      "gold_label": "unknown",
+      "new_ambiguity_classification": "explicit_count_window",
+      "new_fresh_label_v10": "2 per 6 week",
+      "now_purist_correct": false,
+      "source_row_index": 14025,
+      "triage_reason_emitted": "no_triage_issue"
+    }
+  ],
+  "baseline": "fresh_evidence_reasoner v0.4 from gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.jsonl",
+  "candidate": "fresh_evidence_reasoner gan2026_fresh_evidence_reasoner_v0_10_triage (Cycle C5 confidence-gated triage scaffold) live, temp 0",
+  "correct_to_wrong_vs_v04": 95,
+  "date": "2026-06-16",
+  "decision": "reject",
+  "evidence_validity": "validation750 development split (gan2026_split_v1), NOT a holdout or test450 result.",
+  "family_cv": {
+    "aggregate": {
+      "changed_label_precision": 0.0875,
+      "changed_labels": 160,
+      "correct_to_wrong": 95,
+      "net_purist_gain": -81,
+      "rows": 750,
+      "wrong_to_correct": 14
+    },
+    "fold_families_absent": [],
+    "fold_families_present": [
+      "band_zero",
+      "band_unknown",
+      "band_submonthly",
+      "band_monthly",
+      "band_weekly",
+      "band_daily"
+    ],
+    "fold_kind": "leave_one_boundary_band_out",
+    "folds": [
+      {
+        "held_out": {
+          "changed_label_precision": 0.0,
+          "changed_labels": 29,
+          "correct_to_wrong": 20,
+          "net_purist_gain": -20,
+          "rows": 112,
+          "wrong_to_correct": 0
+        },
+        "held_out_family": "band_zero",
+        "retained": {
+          "changed_label_precision": 0.1069,
+          "changed_labels": 131,
+          "correct_to_wrong": 75,
+          "net_purist_gain": -61,
+          "rows": 638,
+          "wrong_to_correct": 14
+        }
+      },
+      {
+        "held_out": {
+          "changed_label_precision": 0.2083,
+          "changed_labels": 48,
+          "correct_to_wrong": 22,
+          "net_purist_gain": -12,
+          "rows": 170,
+          "wrong_to_correct": 10
+        },
+        "held_out_family": "band_unknown",
+        "retained": {
+          "changed_label_precision": 0.0357,
+          "changed_labels": 112,
+          "correct_to_wrong": 73,
+          "net_purist_gain": -69,
+          "rows": 580,
+          "wrong_to_correct": 4
+        }
+      },
+      {
+        "held_out": {
+          "changed_label_precision": 0.0333,
+          "changed_labels": 30,
+          "correct_to_wrong": 23,
+          "net_purist_gain": -22,
+          "rows": 87,
+          "wrong_to_correct": 1
+        },
+        "held_out_family": "band_submonthly",
+        "retained": {
+          "changed_label_precision": 0.1,
+          "changed_labels": 130,
+          "correct_to_wrong": 72,
+          "net_purist_gain": -59,
+          "rows": 663,
+          "wrong_to_correct": 13
+        }
+      },
+      {
+        "held_out": {
+          "changed_label_precision": 0.0714,
+          "changed_labels": 28,
+          "correct_to_wrong": 16,
+          "net_purist_gain": -14,
+          "rows": 141,
+          "wrong_to_correct": 2
+        },
+        "held_out_family": "band_monthly",
+        "retained": {
+          "changed_label_precision": 0.0909,
+          "changed_labels": 132,
+          "correct_to_wrong": 79,
+          "net_purist_gain": -67,
+          "rows": 609,
+          "wrong_to_correct": 12
+        }
+      },
+      {
+        "held_out": {
+          "changed_label_precision": 0.0556,
+          "changed_labels": 18,
+          "correct_to_wrong": 10,
+          "net_purist_gain": -9,
+          "rows": 177,
+          "wrong_to_correct": 1
+        },
+        "held_out_family": "band_weekly",
+        "retained": {
+          "changed_label_precision": 0.0915,
+          "changed_labels": 142,
+          "correct_to_wrong": 85,
+          "net_purist_gain": -72,
+          "rows": 573,
+          "wrong_to_correct": 13
+        }
+      },
+      {
+        "held_out": {
+          "changed_label_precision": 0.0,
+          "changed_labels": 7,
+          "correct_to_wrong": 4,
+          "net_purist_gain": -4,
+          "rows": 63,
+          "wrong_to_correct": 0
+        },
+        "held_out_family": "band_daily",
+        "retained": {
+          "changed_label_precision": 0.0915,
+          "changed_labels": 153,
+          "correct_to_wrong": 91,
+          "net_purist_gain": -77,
+          "rows": 687,
+          "wrong_to_correct": 14
+        }
+      }
+    ],
+    "gap_robust": false,
+    "low_precision_held_out_families": [
+      "band_zero",
+      "band_unknown",
+      "band_submonthly",
+      "band_monthly",
+      "band_weekly",
+      "band_daily"
+    ],
+    "min_changed_label_precision": 0.5,
+    "note": "Promotion gate: a candidate is gap_robust only if every held-out boundary band holds up (net Purist gain >= 0 and, where it changes labels, changed-label precision >= the bar). A positive aggregate with a regressing held-out band is the overfit signature the next-phase brief warns against.",
+    "reasons": [
+      "aggregate net Purist gain -81 <= 0",
+      "held-out bands regress (net Purist gain < 0): band_zero, band_unknown, band_submonthly, band_monthly, band_weekly, band_daily",
+      "held-out bands below changed-label precision 0.5: band_zero, band_unknown, band_submonthly, band_monthly, band_weekly, band_daily"
+    ],
+    "regressing_held_out_families": [
+      "band_zero",
+      "band_unknown",
+      "band_submonthly",
+      "band_monthly",
+      "band_weekly",
+      "band_daily"
+    ],
+    "worst_held_out_fold": {
+      "family": "band_submonthly",
+      "net_purist_gain": -22
+    }
+  },
+  "genuine_rate_regressions": [
+    {
+      "baseline_label": "1 per week",
+      "gold_band": "band_weekly",
+      "gold_label": "1 per week",
+      "new_label": null,
+      "source_row_index": 694,
+      "triage_reason": "usable_rate"
+    },
+    {
+      "baseline_label": "3 to 5 per week",
+      "gold_band": "band_weekly",
+      "gold_label": "3 to 5 per week",
+      "new_label": "unknown",
+      "source_row_index": 1094,
+      "triage_reason": "explicitly_provoked_or_transient"
+    },
+    {
+      "baseline_label": "1 per day",
+      "gold_band": "band_daily",
+      "gold_label": "1 per day",
+      "new_label": null,
+      "source_row_index": 1357,
+      "triage_reason": null
+    },
+    {
+      "baseline_label": "8 per 2 month",
+      "gold_band": "band_weekly",
+      "gold_label": "8 per 2 month",
+      "new_label": "7 per 2 month",
+      "source_row_index": 1880,
+      "triage_reason": "usable_rate"
+    },
+    {
+      "baseline_label": "seizure free for multiple year",
+      "gold_band": "band_zero",
+      "gold_label": "seizure free for multiple month",
+      "new_label": "unknown",
+      "source_row_index": 3118,
+      "triage_reason": "single_anchor_last_event"
+    },
+    {
+      "baseline_label": "seizure free for 6 month",
+      "gold_band": "band_zero",
+      "gold_label": "seizure free for multiple month",
+      "new_label": "unknown",
+      "source_row_index": 3137,
+      "triage_reason": "single_anchor_last_event"
+    },
+    {
+      "baseline_label": "7 per week",
+      "gold_band": "band_daily",
+      "gold_label": "7 per week",
+      "new_label": null,
+      "source_row_index": 3623,
+      "triage_reason": null
+    },
+    {
+      "baseline_label": "seizure free for multiple year",
+      "gold_band": "band_zero",
+      "gold_label": "seizure free for multiple month",
+      "new_label": "unknown",
+      "source_row_index": 4842,
+      "triage_reason": "single_anchor_last_event"
+    },
+    {
+      "baseline_label": "seizure free for 8 month",
+      "gold_band": "band_zero",
+      "gold_label": "seizure free for multiple month",
+      "new_label": "unknown",
+      "source_row_index": 4951,
+      "triage_reason": "single_anchor_last_event"
+    },
+    {
+      "baseline_label": "seizure free for multiple year",
+      "gold_band": "band_zero",
+      "gold_label": "seizure free for multiple month",
+      "new_label": "unknown",
+      "source_row_index": 5121,
+      "triage_reason": "single_anchor_last_event"
+    },
+    {
+      "baseline_label": "seizure free for 1.5 month",
+      "gold_band": "band_zero",
+      "gold_label": "seizure free for multiple month",
+      "new_label": "unknown",
+      "source_row_index": 5141,
+      "triage_reason": "single_anchor_last_event"
+    },
+    {
+      "baseline_label": "1 per month",
+      "gold_band": "band_monthly",
+      "gold_label": "1 per month",
+      "new_label": "unknown",
+      "source_row_index": 5528,
+      "triage_reason": "explicitly_provoked_or_transient"
+    },
+    {
+      "baseline_label": "3 per 8 month",
+      "gold_band": "band_submonthly",
+      "gold_label": "1 per 3 months",
+      "new_label": "unknown",
+      "source_row_index": 5995,
+      "triage_reason": "explicitly_provoked_or_transient"
+    },
+    {
+      "baseline_label": "1 per 2 month",
+      "gold_band": "band_submonthly",
+      "gold_label": "1 per 1 to 2 month",
+      "new_label": null,
+      "source_row_index": 6251,
+      "triage_reason": null
+    },
+    {
+      "baseline_label": "2 per 2 week",
+      "gold_band": "band_weekly",
+      "gold_label": "1 per week",
+      "new_label": null,
+      "source_row_index": 6509,
+      "triage_reason": null
+    },
+    {
+      "baseline_label": "1 to 3 per month",
+      "gold_band": "band_monthly",
+      "gold_label": "2 cluster per 6 week, 1 to 2 per cluster",
+      "new_label": "unknown",
+      "source_row_index": 7401,
+      "triage_reason": "cluster_retention"
+    },
+    {
+      "baseline_label": "3 to 6 per month",
+      "gold_band": "band_weekly",
+      "gold_label": "3 to 7 per month",
+      "new_label": "2 per 10 month",
+      "source_row_index": 7615,
+      "triage_reason": "cluster_retention"
+    },
+    {
+      "baseline_label": "seizure free for 2 year",
+      "gold_band": "band_zero",
+      "gold_label": "seizure free for 2 years",
+      "new_label": "unknown",
+      "source_row_index": 7818,
+      "triage_reason": "single_anchor_last_event"
+    },
+    {
+      "baseline_label": "seizure free for multiple year",
+      "gold_band": "band_zero",
+      "gold_label": "seizure free for multiple month",
+      "new_label": "unknown",
+      "source_row_index": 7834,
+      "triage_reason": "single_anchor_last_event"
+    },
+    {
+      "baseline_label": "seizure free for multiple year",
+      "gold_band": "band_zero",
+      "gold_label": "seizure free for multiple month",
+      "new_label": "unknown",
+      "source_row_index": 7911,
+      "triage_reason": "single_anchor_last_event"
+    },
+    {
+      "baseline_label": "seizure free for multiple year",
+      "gold_band": "band_zero",
+      "gold_label": "seizure free for multiple month",
+      "new_label": "1 per month",
+      "source_row_index": 8160,
+      "triage_reason": "no_triage_issue"
+    },
+    {
+      "baseline_label": "seizure free for 6 month",
+      "gold_band": "band_zero",
+      "gold_label": "seizure free for multiple month",
+      "new_label": "unknown",
+      "source_row_index": 8180,
+      "triage_reason": "single_anchor_last_event"
+    },
+    {
+      "baseline_label": "seizure free for multiple year",
+      "gold_band": "band_zero",
+      "gold_label": "seizure free for multiple month",
+      "new_label": "unknown",
+      "source_row_index": 8188,
+      "triage_reason": "single_anchor_last_event"
+    },
+    {
+      "baseline_label": "seizure free for multiple year",
+      "gold_band": "band_zero",
+      "gold_label": "seizure free for multiple month",
+      "new_label": "unknown",
+      "source_row_index": 8203,
+      "triage_reason": "single_anchor_last_event"
+    },
+    {
+      "baseline_label": "seizure free for 6 month",
+      "gold_band": "band_zero",
+      "gold_label": "seizure free for 6 month",
+      "new_label": "unknown",
+      "source_row_index": 8730,
+      "triage_reason": "single_anchor_last_event"
+    },
+    {
+      "baseline_label": "seizure free for 7 month",
+      "gold_band": "band_zero",
+      "gold_label": "seizure free for 7 month",
+      "new_label": "unknown",
+      "source_row_index": 8820,
+      "triage_reason": "single_anchor_last_event"
+    },
+    {
+      "baseline_label": "seizure free for 5 month",
+      "gold_band": "band_zero",
+      "gold_label": "seizure free for multiple month",
+      "new_label": "unknown",
+      "source_row_index": 8924,
+      "triage_reason": "single_anchor_last_event"
+    },
+    {
+      "baseline_label": "seizure free for 8 month",
+      "gold_band": "band_zero",
+      "gold_label": "seizure free for 8 month",
+      "new_label": "unknown",
+      "source_row_index": 9063,
+      "triage_reason": "single_anchor_last_event"
+    },
+    {
+      "baseline_label": "seizure free for multiple year",
+      "gold_band": "band_zero",
+      "gold_label": "seizure free for multiple year",
+      "new_label": "unknown",
+      "source_row_index": 10371,
+      "triage_reason": "single_anchor_last_event"
+    },
+    {
+      "baseline_label": "12 to 15 per month",
+      "gold_band": "band_weekly",
+      "gold_label": "3 cluster per month, 4 to 5 per cluster",
+      "new_label": "unknown",
+      "source_row_index": 10967,
+      "triage_reason": "cluster_retention"
+    },
+    {
+      "baseline_label": "1 per day",
+      "gold_band": "band_daily",
+      "gold_label": "1 per day",
+      "new_label": "multiple per week",
+      "source_row_index": 12537,
+      "triage_reason": "usable_rate"
+    },
+    {
+      "baseline_label": "9 per month",
+      "gold_band": "band_weekly",
+      "gold_label": "9 per month",
+      "new_label": "9 per year",
+      "source_row_index": 12823,
+      "triage_reason": "usable_rate"
+    },
+    {
+      "baseline_label": "4 per month",
+      "gold_band": "band_weekly",
+      "gold_label": "4 per month",
+      "new_label": "unknown",
+      "source_row_index": 13008,
+      "triage_reason": "explicitly_provoked_or_transient"
+    },
+    {
+      "baseline_label": "2 per 7 month",
+      "gold_band": "band_submonthly",
+      "gold_label": "2 per 7 month",
+      "new_label": "unknown",
+      "source_row_index": 13058,
+      "triage_reason": "single_anchor_last_event"
+    },
+    {
+      "baseline_label": "3 per 1 year",
+      "gold_band": "band_submonthly",
+      "gold_label": "3 per year",
+      "new_label": "unknown",
+      "source_row_index": 13122,
+      "triage_reason": "explicitly_provoked_or_transient"
+    },
+    {
+      "baseline_label": "3 per 1 year",
+      "gold_band": "band_submonthly",
+      "gold_label": "3 per year",
+      "new_label": "unknown",
+      "source_row_index": 13149,
+      "triage_reason": "single_anchor_last_event"
+    },
+    {
+      "baseline_label": "2 per 6 month",
+      "gold_band": "band_submonthly",
+      "gold_label": "4 per 6 month",
+      "new_label": "unknown",
+      "source_row_index": 13290,
+      "triage_reason": "single_anchor_last_event"
+    },
+    {
+      "baseline_label": "seizure free for multiple year",
+      "gold_band": "band_zero",
+      "gold_label": "seizure free for multiple month",
+      "new_label": "unknown",
+      "source_row_index": 13858,
+      "triage_reason": "no_triage_issue"
+    },
+    {
+      "baseline_label": "seizure free for multiple year",
+      "gold_band": "band_zero",
+      "gold_label": "seizure free for multiple month",
+      "new_label": "unknown",
+      "source_row_index": 13889,
+      "triage_reason": "no_triage_issue"
+    },
+    {
+      "baseline_label": "2 per 2 month",
+      "gold_band": "band_monthly",
+      "gold_label": "2 per 2 month",
+      "new_label": "unknown",
+      "source_row_index": 14530,
+      "triage_reason": "single_anchor_last_event"
+    },
+    {
+      "baseline_label": "2 per 8 month",
+      "gold_band": "band_submonthly",
+      "gold_label": "2 per 8 month",
+      "new_label": "unknown",
+      "source_row_index": 14540,
+      "triage_reason": "single_anchor_last_event"
+    },
+    {
+      "baseline_label": "3 per 6 month",
+      "gold_band": "band_submonthly",
+      "gold_label": "3 per 6 month",
+      "new_label": "unknown",
+      "source_row_index": 14562,
+      "triage_reason": "single_anchor_last_event"
+    },
+    {
+      "baseline_label": "2 per 3 month",
+      "gold_band": "band_submonthly",
+      "gold_label": "2 per 3 month",
+      "new_label": "unknown",
+      "source_row_index": 14581,
+      "triage_reason": "single_anchor_last_event"
+    },
+    {
+      "baseline_label": "3 per 5 month",
+      "gold_band": "band_submonthly",
+      "gold_label": "3 per 5 month",
+      "new_label": null,
+      "source_row_index": 14592,
+      "triage_reason": null
+    },
+    {
+      "baseline_label": "2 per 4 month",
+      "gold_band": "band_submonthly",
+      "gold_label": "2 per 4 month",
+      "new_label": "unknown",
+      "source_row_index": 14611,
+      "triage_reason": "single_anchor_last_event"
+    },
+    {
+      "baseline_label": "2 per 2 month",
+      "gold_band": "band_monthly",
+      "gold_label": "2 per 2 month",
+      "new_label": "unknown",
+      "source_row_index": 14628,
+      "triage_reason": "single_anchor_last_event"
+    },
+    {
+      "baseline_label": "2 per 6 month",
+      "gold_band": "band_submonthly",
+      "gold_label": "2 per 6 month",
+      "new_label": "unknown",
+      "source_row_index": 14645,
+      "triage_reason": "single_anchor_last_event"
+    },
+    {
+      "baseline_label": "3 per 4 month",
+      "gold_band": "band_submonthly",
+      "gold_label": "3 per 4 month",
+      "new_label": "unknown",
+      "source_row_index": 14662,
+      "triage_reason": "explicitly_provoked_or_transient"
+    },
+    {
+      "baseline_label": "3 per 8 month",
+      "gold_band": "band_submonthly",
+      "gold_label": "3 per 8 month",
+      "new_label": null,
+      "source_row_index": 14672,
+      "triage_reason": null
+    },
+    {
+      "baseline_label": "1 per month",
+      "gold_band": "band_monthly",
+      "gold_label": "1 per month",
+      "new_label": "seizure free for 1 month",
+      "source_row_index": 14810,
+      "triage_reason": "seizure_free_check"
+    },
+    {
+      "baseline_label": "1 per month",
+      "gold_band": "band_monthly",
+      "gold_label": "1 per month",
+      "new_label": "seizure free for multiple year",
+      "source_row_index": 14821,
+      "triage_reason": "seizure_free_check"
+    },
+    {
+      "baseline_label": "1 per 1 month",
+      "gold_band": "band_monthly",
+      "gold_label": "1 per month",
+      "new_label": "seizure free for multiple year",
+      "source_row_index": 14872,
+      "triage_reason": "seizure_free_check"
+    },
+    {
+      "baseline_label": "1 per 3 month",
+      "gold_band": "band_submonthly",
+      "gold_label": "1 per 3 month",
+      "new_label": "unknown",
+      "source_row_index": 14943,
+      "triage_reason": "single_anchor_last_event"
+    },
+    {
+      "baseline_label": "1 per 3 month",
+      "gold_band": "band_submonthly",
+      "gold_label": "1 per 3 month",
+      "new_label": "unknown",
+      "source_row_index": 14965,
+      "triage_reason": "single_anchor_last_event"
+    },
+    {
+      "baseline_label": "1 per 1 month",
+      "gold_band": "band_monthly",
+      "gold_label": "1 per month",
+      "new_label": "unknown",
+      "source_row_index": 14973,
+      "triage_reason": "single_anchor_last_event"
+    },
+    {
+      "baseline_label": "3 per 14 month",
+      "gold_band": "band_submonthly",
+      "gold_label": "3 per 14 month",
+      "new_label": "unknown",
+      "source_row_index": 15267,
+      "triage_reason": "explicitly_provoked_or_transient"
+    },
+    {
+      "baseline_label": "9 per 3 month",
+      "gold_band": "band_monthly",
+      "gold_label": "9 per 3 month",
+      "new_label": "8 per 2 month",
+      "source_row_index": 16021,
+      "triage_reason": "usable_rate"
+    },
+    {
+      "baseline_label": "1 per 2 to 4 day",
+      "gold_band": "band_weekly",
+      "gold_label": "1 per 2 to 4 day",
+      "new_label": "3 per 2 month",
+      "source_row_index": 16394,
+      "triage_reason": "cluster_retention"
+    },
+    {
+      "baseline_label": "1 per 4 day",
+      "gold_band": "band_weekly",
+      "gold_label": "1 per 4 day",
+      "new_label": "unknown",
+      "source_row_index": 16574,
+      "triage_reason": "cluster_retention"
+    },
+    {
+      "baseline_label": "5 per 7 month",
+      "gold_band": "band_submonthly",
+      "gold_label": "5 per 7 month",
+      "new_label": "unknown",
+      "source_row_index": 16645,
+      "triage_reason": "single_anchor_last_event"
+    },
+    {
+      "baseline_label": "6 per 4 month",
+      "gold_band": "band_monthly",
+      "gold_label": "7 per 6 month",
+      "new_label": null,
+      "source_row_index": 16674,
+      "triage_reason": null
+    },
+    {
+      "baseline_label": "3 per 4 month",
+      "gold_band": "band_submonthly",
+      "gold_label": "3 per 6 month",
+      "new_label": "unknown",
+      "source_row_index": 16697,
+      "triage_reason": "single_anchor_last_event"
+    },
+    {
+      "baseline_label": "5 per 6 month",
+      "gold_band": "band_submonthly",
+      "gold_label": "5 per 6 month",
+      "new_label": "unknown",
+      "source_row_index": 16714,
+      "triage_reason": "single_anchor_last_event"
+    },
+    {
+      "baseline_label": "4 per 6 month",
+      "gold_band": "band_submonthly",
+      "gold_label": "4 per 6 month",
+      "new_label": "unknown",
+      "source_row_index": 16728,
+      "triage_reason": "single_anchor_last_event"
+    },
+    {
+      "baseline_label": "6 per 7 month",
+      "gold_band": "band_submonthly",
+      "gold_label": "6 per 7 month",
+      "new_label": "unknown",
+      "source_row_index": 16750,
+      "triage_reason": "single_anchor_last_event"
+    },
+    {
+      "baseline_label": "13 per 6 month",
+      "gold_band": "band_monthly",
+      "gold_label": "13 per 6 month",
+      "new_label": null,
+      "source_row_index": 16757,
+      "triage_reason": null
+    },
+    {
+      "baseline_label": "9 per 5 month",
+      "gold_band": "band_monthly",
+      "gold_label": "9 per 5 month",
+      "new_label": "unknown",
+      "source_row_index": 16758,
+      "triage_reason": "single_anchor_last_event"
+    },
+    {
+      "baseline_label": "9 per 5 month",
+      "gold_band": "band_monthly",
+      "gold_label": "9 per 5 month",
+      "new_label": "unknown",
+      "source_row_index": 16772,
+      "triage_reason": "explicitly_provoked_or_transient"
+    },
+    {
+      "baseline_label": "3 per month",
+      "gold_band": "band_monthly",
+      "gold_label": "19 per 7 month",
+      "new_label": "1 cluster per 2 month, multiple per cluster",
+      "source_row_index": 16774,
+      "triage_reason": "cluster_retention"
+    },
+    {
+      "baseline_label": "3 per 7 month",
+      "gold_band": "band_submonthly",
+      "gold_label": "3 per 7 month",
+      "new_label": "unknown",
+      "source_row_index": 16780,
+      "triage_reason": "single_anchor_last_event"
+    },
+    {
+      "baseline_label": "11 per 5 month",
+      "gold_band": "band_monthly",
+      "gold_label": "11 per 5 month",
+      "new_label": "1 per month",
+      "source_row_index": 16824,
+      "triage_reason": "no_triage_issue"
+    },
+    {
+      "baseline_label": "5 per 2 month",
+      "gold_band": "band_monthly",
+      "gold_label": "9 per 4 month",
+      "new_label": null,
+      "source_row_index": 16839,
+      "triage_reason": null
+    },
+    {
+      "baseline_label": "1 per day",
+      "gold_band": "band_daily",
+      "gold_label": "1 per day",
+      "new_label": "multiple per week",
+      "source_row_index": 17146,
+      "triage_reason": "usable_rate"
+    }
+  ],
+  "max_tokens": 3200,
+  "model": "openai/gpt-4.1",
+  "net_purist_vs_v04": -81,
+  "predeclaration": "experiments\\gan2026_fresh_evidence_triage_v0_10_predeclaration_2026-06-16.md",
+  "rows": 750,
+  "run_id": "gan2026_fresh_evidence_triage_v0_10_validation750_live_gpt41_2026-06-16",
+  "summary_by_family": {
+    "families": {
+      "band_daily": {
+        "changed_labels": 7,
+        "correct_to_wrong": 4,
+        "rows": 63,
+        "wrong_to_correct": 0
+      },
+      "band_monthly": {
+        "changed_labels": 28,
+        "correct_to_wrong": 16,
+        "rows": 141,
+        "wrong_to_correct": 2
+      },
+      "band_submonthly": {
+        "changed_labels": 30,
+        "correct_to_wrong": 23,
+        "rows": 87,
+        "wrong_to_correct": 1
+      },
+      "band_unknown": {
+        "changed_labels": 48,
+        "correct_to_wrong": 22,
+        "rows": 170,
+        "wrong_to_correct": 10
+      },
+      "band_weekly": {
+        "changed_labels": 18,
+        "correct_to_wrong": 10,
+        "rows": 177,
+        "wrong_to_correct": 1
+      },
+      "band_zero": {
+        "changed_labels": 29,
+        "correct_to_wrong": 20,
+        "rows": 112,
+        "wrong_to_correct": 0
+      }
+    }
+  },
+  "temperature": 0.0,
+  "v010_purist": 601,
+  "v04_baseline_purist": 682,
+  "wrong_to_correct_vs_v04": 14
+}

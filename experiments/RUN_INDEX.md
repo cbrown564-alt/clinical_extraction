@@ -128,6 +128,28 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Revise
 
+### `gan2026_cluster_axis_gate_v1_tightened_2026-06-16`
+- Date/split: `2026-06-16`; `validation+test`; `1200` rows.
+- Pipeline: `cluster_axis_gate_no_call_replay`; mode `analysis/no-call`; replay `saved_output_replay`.
+- Model role: No-call post-hoc replay over v0.4 fresh-evidence outputs. No model calls made. Test450 rows read only after gate cleared precision check and gap_robust on validation750.; model `none`.
+- Repair mode/config: `cluster_axis_retention_gate_v1`.
+- Primary metrics: gap_robust=True, genuine_rate_regressions=0, test_baseline_purist=379, test_correct_to_wrong=0, test_delta_vs_379_baseline=0, test_gated_purist=379, test_net_purist=0, test_total_rows=450, test_touched=0, test_wrong_to_correct=0, validation_baseline_purist=682, validation_correct_to_wrong=0, validation_gated_purist=683, validation_net_purist=1, validation_total_rows=750, validation_touched=1, validation_wrong_to_correct=1.
+- Evidence validity: Validation-only replay for gate development (step 1-2). Test450 applied only after validation gate cleared: zero genuine-rate regressions + gap_robust. Test450 result reported verbatim, no tuning on test.
+- Cache/reuse source: C:\Users\cbrow\Code\clinical_extraction\experiments\gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.jsonl.
+- Claim language: C6 cluster-axis RETENTION gate: fires only on plain-rate v0.4 predictions where the note has explicit recurring-cluster language AND the rewrite changes the Purist bucket. Zero unknown-coercion; additive cluster-axis only. Genuine-rate regression count must be 0 to clear precision gate.
+- Artifacts: `experiments/gan2026_cluster_axis_gate_v1_tightened_2026-06-16.json`, `experiments/gan2026_cluster_axis_gate_v1_tightened_2026-06-16.md`.
+
+### `gan2026_cluster_axis_gate_v1_2026-06-16`
+- Date/split: `2026-06-16`; `validation`; `750` rows.
+- Pipeline: `cluster_axis_gate_no_call_replay`; mode `analysis/no-call`; replay `saved_output_replay`.
+- Model role: No-call post-hoc replay over v0.4 fresh-evidence outputs. No model calls made. Test450 rows read only after gate cleared precision check and gap_robust on validation750.; model `none`.
+- Repair mode/config: `cluster_axis_retention_gate_v1`.
+- Primary metrics: gap_robust=False, genuine_rate_regressions=6, validation_baseline_purist=682, validation_correct_to_wrong=6, validation_gated_purist=677, validation_net_purist=-5, validation_total_rows=750, validation_touched=7, validation_wrong_to_correct=1.
+- Evidence validity: Validation-only replay for gate development (step 1-2). Test450 applied only after validation gate cleared: zero genuine-rate regressions + gap_robust. Test450 result reported verbatim, no tuning on test.
+- Cache/reuse source: C:\Users\cbrow\Code\clinical_extraction\experiments\gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.jsonl.
+- Claim language: C6 cluster-axis RETENTION gate: fires only on plain-rate v0.4 predictions where the note has explicit recurring-cluster language AND the rewrite changes the Purist bucket. Zero unknown-coercion; additive cluster-axis only. Genuine-rate regression count must be 0 to clear precision gate.
+- Artifacts: `experiments/gan2026_cluster_axis_gate_v1_2026-06-16.json`, `experiments/gan2026_cluster_axis_gate_v1_2026-06-16.md`.
+
 ### `gan2026_unknown_frequency_ambiguity_panel_2026-06-15`
 - Date/split: `2026-06-15`; `validation`; `6` rows.
 - Pipeline: `fresh_evidence_reasoner_ambiguity_panel`; mode `analysis-only`; replay `analysis_only`.
@@ -1230,6 +1252,29 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Reject
 
+### `gan2026_kg_family_gated_graph_trust_2026-06-16`
+- Date/split: `2026-06-16`; `validation`; `250` rows.
+- Pipeline: `hybrid_clinical_frequency_state_graph`; mode `no-call replay`; replay `saved_output_replay`.
+- Model role: C7 P2.5 family-gated graph-trust posture. Recomputes dual-validation/resolve deterministically from the frozen Stage D graphs and scores a corroboration-free, forward-observable family gate (withholding graph_kind + no admitted quantified node) against the v0.9 selected baseline, alongside P1/P2/P3. No model calls and no holdout rows are read.; model `none`.
+- Repair mode/config: `state_graph_family_gated_graph_trust_p2_5_v1`.
+- Primary metrics: p2_5_correct_to_wrong=121, p2_5_gap_robust=0, p2_5_genuine_rate_regressions=121, p2_5_harvested_minted_residual=7, p2_5_net_purist_gain=-113, p2_5_overrides=149, p2_5_wrong_to_correct=8, rows=250, v09_selected_purist_correct=238.
+- Evidence validity: Validation-only no-call replay over the frozen Stage D predeclared 250-row residual-inclusive slice. Graphs reused from the Stage D graphs artifact; dual-validation/resolve recomputed deterministically (no model calls). v0.9 components/baseline from the Stage D rows artifact; gold used only for post-hoc Purist scoring and an honest discriminability probe. No holdout rows.
+- Cache/reuse source: stage_d_graphs:gan2026_state_graph_ontology_stage_d_promotion_gate_2026-06-15_graphs.jsonl;stage_d_rows:gan2026_state_graph_ontology_stage_d_promotion_gate_2026-06-15_rows.jsonl.
+- Claim language: Tests whether a corroboration-free family-gated graph-trust posture (P2.5) can harvest the 7 minted residual rows without re-introducing P3 genuine-rate regressions. Not a holdout-facing candidate. A reject means no forward-observable family gate separates the harvest set from the genuine-rate casualties; test450 stays locked.
+- Artifacts: `experiments/gan2026_kg_family_gated_graph_trust_2026-06-16.json`, `experiments/gan2026_kg_family_gated_graph_trust_2026-06-16.md`, `experiments/gan2026_kg_family_gated_graph_trust_predeclaration_2026-06-16.md`.
+
+### `gan2026_fresh_evidence_triage_v0_10_validation750_live_gpt41_2026-06-16`
+- Date/split: `2026-06-16`; `validation`; `750` rows.
+- Pipeline: `fresh_evidence_reasoner`; mode `live`; replay `live`.
+- Model role: Fresh-evidence reasoner v0.10 triage scaffold (Cycle C5) live on validation750; v0.4 baseline for comparison; held-out-family CV.; model `openai/gpt-4.1`.
+- Repair mode/config: `v0_10_confidence_gated_triage_scaffold`.
+- Primary metrics: aggregate_net_purist_gain=-81, correct_to_wrong_vs_v04=95, gap_robust=False, genuine_rate_regressions=73, net_purist_vs_v04=-81, no_correct_rows_flipped_correct=4, v010_purist=601, v04_baseline_purist=682, wrong_to_correct_vs_v04=14.
+- Evidence validity: validation750 development split (gan2026_split_v1), NOT a holdout or test450 result. Live openai/gpt-4.1 (synonymous with gpt-4.1-mini per predeclaration), temperature 0. Family CV is within-validation leave-one-boundary-band-out; gap_robust is a promotion-stability estimate, not a test450 number.
+- Cache/reuse source: experiments\gan2026_fresh_evidence_triage_v0_10_validation750_live_gpt41_2026-06-16.jsonl.
+- Supersedes: `gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13`.
+- Claim language: Cycle C5 confidence-gated triage scaffold fresh-evidence reasoner v0.10. gap_robust + non-negative net is necessary, NOT sufficient, for test450 authorisation. Not a holdout result. Stop rule: reject if net < 0 or not gap_robust or genuine-rate regressions > 0.
+- Artifacts: `experiments/gan2026_fresh_evidence_triage_v0_10_validation750_live_gpt41_2026-06-16.json`, `experiments/gan2026_fresh_evidence_triage_v0_10_validation750_live_gpt41_2026-06-16.md`, `experiments/gan2026_fresh_evidence_triage_v0_10_validation750_live_gpt41_2026-06-16.jsonl`.
+
 ### `gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_6_safety_v0_9_2026-06-15`
 - Date/split: `2026-06-15`; `test`; `450` rows.
 - Pipeline: `fresh_evidence_reasoner`; mode `live`; replay `live`.
@@ -1807,3 +1852,15 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: Uses deterministic V1 candidate diagnostics from validation-mined dev set; no locked-test row failures inspected.
 - Claim language: Early validation-only DSPy adjudicator diagnostic. Kept as lineage for later hybrid adjudicator work; not a promoted candidate or benchmark result.
 - Artifacts: `experiments/gan2026_v1_prompt_adjudicator_devset_2026-05-31.jsonl`, `experiments/gan2026_v1_prompt_adjudicator_devset_2026-05-31.md`, `experiments/gan2026_v1_dspy_adjudicator_devset_gpt41mini_v04_2026-05-31.jsonl`, `experiments/gan2026_v1_dspy_adjudicator_devset_gpt41mini_v04_2026-05-31.md`.
+
+## Calibration Measure Val To Test Gap
+
+### `gan2026_llm_only_direct_labeler_CALIBRATION_test450_live_gpt41mini_v0_5_2026-06-16`
+- Date/split: `2026-06-16`; `test`; `450` rows.
+- Pipeline: `llm_only_direct_labeler`; mode `live`; replay `live`.
+- Model role: LLM-only direct-labeler note-to-label extractor (prompt v0.5); deterministic code limited to label repair, evidence validation, and scoring after the model emits the final label.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `llm_only_label_repair`.
+- Primary metrics: call_failures=0, decision_records=450, evidence_valid_rows=422, max_tokens=900, parse_or_validation_failures=0, pragmatic_accuracy=0.7867, pragmatic_correct=354, prompt_version=gan2026_llm_only_direct_labeler_v0.5, purist_accuracy=0.7222, purist_correct=325, temperature=0.0, val_to_test_gap_purist=0.0444, validation750_reference_purist_accuracy=0.7667, validation750_reference_purist_correct=575.
+- Evidence validity: USER-AUTHORISED CALIBRATION measurement of the validation->test gap on gpt-4.1-mini, NOT a robustness-certified result. Candidate failed the Cycle 1 robustness battery and is NOT certified; it was run once only to obtain the first-ever mini test450 number. 422/450 rows carry an evidence_valid substring-presence trace; 0 call failures; 0 parse/schema/label failures; 450/450 decision records; all 450 rows split=test with unique source_row_index. No tuning on test, no re-run, no row-level failure inspection.
+- Claim language: First-ever frozen test450 Purist for llm_only direct labeler v0.5 on gpt-4.1-mini. test450 Purist = 325/450 = 0.7222. validation750 reference (mini, v0.5) = 575/750 = 0.7667. val->test gap = +0.0444 (+4.44 pp); -20 rows vs the val-implied 345/450. Prior holdouts (incl. V12 379/450) used full gpt-4.1, not mini, so this is the first mini val->test anchor. Calibration only; does not promote this candidate or change champion/robustness status.
+- Artifacts: `experiments/gan2026_llm_only_direct_labeler_CALIBRATION_test450_live_gpt41mini_v0_5_2026-06-16.jsonl`, `experiments/gan2026_llm_only_direct_labeler_CALIBRATION_test450_live_gpt41mini_v0_5_2026-06-16.md`, `experiments/gan2026_llm_only_direct_labeler_CALIBRATION_test450_live_gpt41mini_v0_5_2026-06-16_record.md`.

@@ -1,6 +1,7 @@
 {
   "schema": "gan2026_f1_orchestrator_state/v1",
-  "updated": "2026-06-15",
+  "updated": "2026-06-16",
+  "campaign_status": "CLOSED 2026-06-16 — user accepted 379/450 (0.842) as the honest gpt-4.1-mini ceiling for the V12 hybrid and chose to consolidate. 0.90 not pursued further on mini (C7 structural finding). Synthesis: docs/research/gan2026_f1_dynamic_workflow_night_synthesis_2026-06-16.md. Unrefuted future route to >0.90: a stronger/frontier model (changes the mini constraint).",
   "goal": {
     "metric": "micro_f1_purist_eq_accuracy",
     "target_test450": 405,
@@ -16,7 +17,10 @@
     "selector_only_oracle_ceiling_validation": "739/750",
     "no_correct_component_rows_validation": 11,
     "live_v0_7_component_generation_fixed_no_correct_rows": "1/11",
+    "kg_state_graph_stage_d_component_generation_available": "7/11 (KG-grounded resolve_label generator mints a Purist-correct competing component for 7 of the 11 no-correct residual rows on a predeclared residual-inclusive validation250 slice; localized to ontology-guard families unknown_over_quantified_rate 5/5 and last_event/seizure_free_overinfer 5/6; 0/2 cluster-burden, 0/1 semiology/denominator). Source: v4 claim-table (only no-call source covering the residual); v3->v4 confound declared, cross-check on overlap row 5534 Purist-equivalent.",
+    "kg_state_graph_stage_d_component_generation_realized": "0/11 under the only regression-safe selector posture (P2 corroborated: graph overrides only when consensus/fresh agree). Corroboration cannot fire on the no-correct residual by definition (every other component is wrong there), so realized end-to-end uplift is +1 net on an incidental NON-residual row; P2 C->W 0, band_unknown override precision 0.96. P1/P3 unconditional postures regress hard (-139 / -64).",
     "component_wall": true,
+    "component_wall_location": "RELOCATED by KG Stage D: the wall is breakable on the GENERATION side (a clean, dual-validated competing component now exists for 7/11 residual rows, regression-free) but the binding wall is now SELECTION -- there is no corroboration-free way to TRUST the graph's clean 'unknown' on the no-correct residual without re-introducing P3-style genuine-rate regressions. Refines C5's 'stop fixing unknown over-reading': the KG path does NOT coerce (it adds an additive component and is regression-safe under P2); it simply is not harvested.",
     "frontier_hypothesis": "change the evidence the model sees, not the decision contract; validate primarily on OOD battery",
     "model_constraint": "user target is gpt-4.1-mini specifically. Prior fresh_evidence holdout used openai/gpt-4.1 (full) per FROZEN_TEST_PIPELINE_LAUNCH_SPECS; battery baseline + any holdout candidate MUST run on gpt-4.1-mini.",
     "robustness_battery_finding": "Cycle 1: component wall is a GENUINE clinical gap, not surface overfit. KCL-style OOD (Panel C) barely dents accuracy (87.5%) while minimal-pair/synonym traps (Panels A,B) fail. Model quantifies counts but cannot WITHHOLD quantification when a count does not establish a habitual rate.",
@@ -34,7 +38,24 @@
       "purist": "733/750",
       "note": "Saturated; selector oracle ceiling 739/750. Not a holdout signal."
     },
-    "robustness_certified": null
+    "robustness_certified": null,
+    "test450_calibration_mini": {
+      "name": "llm_only_direct_labeler v0.5, gpt-4.1-mini (first-ever mini holdout)",
+      "test_purist": "321/450 and 325/450 (two concordant independent runs)",
+      "test_fraction": "0.713-0.722",
+      "validation_reference": "575/750 (0.7667)",
+      "val_to_test_gap_pp": "4.4-5.3",
+      "temp0_run_to_run_noise_rows": 4,
+      "note": "User-authorised calibration, not a certified promotion. Two independent temp-0 holdout runs (own driver 321, Freeze Warden 325) agree within 4 rows. The llm_only path generalises honestly (small gap) but at a low absolute level, far below 0.90."
+    }
+  },
+  "feasibility_verdict": {
+    "target": "test450 micro-F1/Purist >= 0.90 (405/450) with gpt-4.1-mini",
+    "MODEL_CORRECTION_2026-06-16": "User: gpt-4.1 and gpt-4.1-mini tags are SYNONYMOUS here. The 379/450 (0.842) hybrid holdout IS on mini. Earlier 'unreachable' verdict RETRACTED.",
+    "assessment": "After 6 cycles (C3/C5/C6/C7 + prior v0.10/v0.6) NOT closable via selection/component fixes on gpt-4.1-mini. The +26-row gap lives in the unknown-over-reading residual, and C7 proved STRUCTURALLY that on those rows the withhold-to-unknown vs emit-rate distinction is absent from every inference-time feature (the correct-unknown rows are feature-identical to genuine-rate rows; the discriminating signal exists only in hidden gold). 379/450 (0.842) is the honest ceiling for this architecture family on mini.",
+    "evidence_chain": "C3 -106; C5 -81 (73 rate regressions); prior v0.10 deterministic last-event->unknown rejected; v0.6 validation-mined gates regressed test 351<379; C6 cluster gate gap-robust but +0 test; C7 KG family-gated harvest -113 with structural feature-indistinguishability proof. Every attempt fails in the SAME direction.",
+    "only_unrefuted_path_to_0.90": "A genuinely stronger model than gpt-4.1-mini that can read the provoked/transient/adherence cues from note PROSE (the info is in the text, just not in current forward features and not reliably emitted by mini). NOTE: user says gpt-4.1 and gpt-4.1-mini tags are synonymous here, so this means a different/frontier model, which changes the stated gpt-4.1-mini constraint.",
+    "baseline_to_beat": "V12 fresh-evidence hybrid 379/450 (0.842) on mini."
   },
   "gates": {
     "predeclaration_required": true,
@@ -46,8 +67,23 @@
   },
   "experiment_queue": [
     {
+      "id": "C7-kg-family-gated-graph-trust",
+      "status": "rejected-structural",
+      "summary": "REJECTED with a STRUCTURAL impossibility finding. P2.5 family-gated harvest got all 7 minted residual rows W->C but leaked 121 genuine-rate regressions (net -113, gap_robust=False) because the harvested rows are FEATURE-IDENTICAL to the genuine-rate casualties on every forward-observable signal (graph_kind, node kinds, claim count) -- only the hidden gold band separates them (e.g. row 531 weekly-casualty == row 5534 harvest). The 'ontology-guard families' (5/5, 5/6) are POST-HOC categories keyed on GOLD, not a selection-time signal; the guard never fires on the harvest set. CONCLUSION: the selection wall is STRUCTURAL -- the info distinguishing withhold-to-unknown from emit-rate is absent from all inference-time features. Also: no frozen test450 KG component exists; measuring would need a sizable live v4 extraction over 450 test rows (extractor-confound risk). test450 untouched."
+    },
+    {
+      "id": "C6-cluster-axis-gate",
+      "status": "revise",
+      "summary": "Cluster-axis RETENTION gate: gap_robust=True, validation 683/750 (+1, ZERO genuine-rate regressions) but test 379->379 (+0). The tightened grouping-language regex fired on validation row 9943 but matches NONE of the 14 cluster-gold test rows (their phrasing varies too widely for a precise regex). Clinically clean, zero test lift. Discipline held (refused the leaky broad version that regressed -5). Cluster axis needs model-side cluster-form generation, not a post-hoc regex."
+    },
+    {
+      "id": "C5-fresh-evidence-triage",
+      "status": "rejected",
+      "summary": "REJECTED: triage scaffold in fresh-evidence reasoner regressed validation750 to 601/750 (-81), gap_robust=False, 73 genuine-rate regressions. Third strike on the unknown-coercion mechanism (after C3 -106 and the prior v0.10 deterministic probe). Broad re-derivation and coerce-to-unknown are both too imprecise on mini. CONSOLIDATED LEARNING: stop trying to fix unknown over-reading; it breaks more than it fixes. v0.6 validation-mined gates also regressed test (351<379). v0.4 (379) is near the architecture's honest mini test ceiling. Only narrow, additive, non-unknown-coercing gates remain viable."
+    },
+    {
       "id": "STRATEGIC-FORK",
-      "status": "awaiting_user",
+      "status": "resolved_by_calibration",
       "summary": "Cycle 3 showed battery-perfect != distribution-robust (-106 on validation750). Feasibility reality: bare llm_only direct labeler on gpt-4.1-mini is weak (575/750=0.767 validation), low ceiling even with perfect unknown handling. Strong hybrid/selector family scored 733-739 validation but 379/450=0.842 test ON FULL gpt-4.1, not mini. Fork: (a) gated-coerce v0.8 refinement of weak llm_only [low ceiling]; (b) evaluate the strong hybrid/V12 family ON gpt-4.1-mini [more plausible but likely <=379]; (c) calibration test run; (d) reset 0.90 expectation. Surfaced to user."
     }
   ],
@@ -107,6 +143,28 @@
         "llm_only_direct_labeler.py: prompt version gan2026_llm_only_direct_labeler_v0.7 (additive; v0.5 still default)"
       ],
       "evidence_validity": "Live gpt-4.1-mini, validation750 + authored battery. Development evidence; test450 never read."
+    },
+    {
+      "id": "C4-kg-state-graph-stage-d",
+      "date": "2026-06-15",
+      "owner": "gan2026-kg-stage-b branch (KG-grounded component-generation ladder; parallel to the F1 line)",
+      "candidate": "state_graph resolve_label graph component (anchored, ontology-constrained, dual-validated), P2-gated; no-call replay over v4 claim-table",
+      "verdict": "promote (clears the VALIDATION ladder for the generator only) -> NOT a holdout authorization; binding problem moves from component generation to selection",
+      "protocol": "Stage D promotion gate: same P2-gated graph component, 250-row scale, on a PREDECLARED residual-inclusive slice (11 no-correct rows UNION first 239 non-residual in source order). v4 claim-table is the only no-call source covering the residual (v3 never ran past first 250 rows); v3->v4 confound declared and held constant, cross-check on overlap row 5534 Purist-equivalent (unknown both ways).",
+      "arm1_component_availability": "7/11 residual rows now have a Purist-correct competing component; localized to ontology-guard families (unknown_over_quantified_rate 5/5, last_event/seizure_free_overinfer 5/6; 0/2 cluster-burden, 0/1 semiology/denominator). First direct evidence the anchored+ontology-constrained generator closes component starvation it was built for.",
+      "arm2_selection_contribution": "P2 corroborated (only Stage C survivor): overrides 28, W->C 1, C->W 0, net +1, band_unknown override precision 26/27=0.96, no weekly/unknown regression. Effect bounds: P1 unilateral net -139 (C->W 147), P3 unknown-only net -64 (C->W 71).",
+      "decisive_number": "P2 RECOVERS 0/7 of the minted residual rows at selection time. The +1 net is an incidental non-residual corroborated override. Structural, not bad luck: corroboration requires an independent agreeing component, and the no-correct residual is DEFINED by every other component being wrong -- so the only safe posture cannot harvest the residual.",
+      "key_insight": "Component generation is no longer the wall: a clean dual-validated competing component is now produced for 7/11 residual rows with ZERO regression under corroboration gating. The wall moved to SELECTION -- need a corroboration-free trust rule for the graph's clean 'unknown' on the no-correct residual that avoids P3's genuine-rate regressions. This does NOT contradict C5 (coerce-to-unknown breaks things); the KG path is additive and regression-safe, it is simply not picked. Realized end-to-end uplift on the F1 goal metric is still nil today.",
+      "next_question": "selection trust rule (admit a clean, dual-validated, source-anchored graph 'unknown' on the no-correct residual without re-introducing P3 regressions) -- a selector problem, not a generation problem, and not a holdout run.",
+      "artifacts": [
+        "docs/research/gan2026_kg_grounded_component_generation_design_2026-06-15.md (§8.6)",
+        "experiments/build_gan2026_state_graph_ontology_stage_d_promotion_gate.py",
+        "experiments/gan2026_state_graph_ontology_stage_d_promotion_gate_2026-06-15.json",
+        "experiments/gan2026_state_graph_ontology_stage_d_promotion_gate_2026-06-15.md",
+        "experiments/gan2026_state_graph_ontology_stage_d_promotion_gate_2026-06-15_graphs.jsonl",
+        "experiments/gan2026_state_graph_ontology_stage_d_promotion_gate_2026-06-15_rows.jsonl"
+      ],
+      "evidence_validity": "Validation-only no-call replay over a predeclared residual-inclusive validation250 slice; graph rebuilt deterministically (raw_frequency normalized, no diary/window arithmetic) from saved v4 claim-table; v0.9 components/baseline from saved replay; gold labels used only for post-hoc Purist scoring. No model calls, no holdout rows. test450 remains locked."
     }
   ]
 }
