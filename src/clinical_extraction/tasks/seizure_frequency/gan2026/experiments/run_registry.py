@@ -21,6 +21,7 @@ RunDecision = Literal[
     "inform_phase7",
     "superseded",
     "historical",
+    "calibration_measure_val_to_test_gap",
 ]
 
 ReplayStatus = Literal[
@@ -49,6 +50,7 @@ RUN_DECISIONS: frozenset[RunDecision] = frozenset(
         "inform_phase7",
         "superseded",
         "historical",
+        "calibration_measure_val_to_test_gap",
     )
 )
 REPLAY_STATUSES: frozenset[ReplayStatus] = frozenset(
