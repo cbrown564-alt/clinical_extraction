@@ -59,7 +59,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
-PROMPT_VERSION = "exectv2_llm_only_sf_clinical_findings_v0.14"
+PROMPT_VERSION = "exectv2_llm_only_sf_clinical_findings_v0.19"
 PIPELINE_FAMILY = "exectv2_llm_only_clinical_findings"
 ENTITY_NAME = SEIZURE_FREQUENCY
 
@@ -89,6 +89,14 @@ _SCALAR_FINDING_FIELDS: frozenset[str] = frozenset({
     "frequency_change",
     "confidence",
     "rationale",
+})
+
+_SCALAR_EVENT_FRAME_FIELDS: frozenset[str] = _SCALAR_FINDING_FIELDS | frozenset({
+    "event_id",
+    "seizure_phrase",
+    "target_status",
+    "statement_family",
+    "finding_text",
 })
 
 _TIME_RELATION_ALIASES: Mapping[str, str] = {
@@ -209,11 +217,68 @@ class ClinicalFindingRecord(BaseModel):
     rationale: str = ""
 
 
+class FindingFamilyChecklist(BaseModel):
+    """Model-owned note-level seizure-frequency family checklist."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    has_compact_section: bool = False
+    has_current_rate: bool = False
+    has_dated_count: bool = False
+    has_last_event: bool = False
+    has_zero_status: bool = False
+    has_frequency_change: bool = False
+    has_cluster: bool = False
+    has_non_target_episode: bool = False
+    checklist_rationale: str = ""
+
+
+class EventFrameRecord(BaseModel):
+    """One model-owned clinical event frame used before ExECT projection."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    event_id: str = ""
+    evidence: str
+    seizure_phrase: str
+    target_status: Literal[
+        "target_epileptic_seizure_frequency",
+        "non_target_episode",
+        "history_context_only",
+        "diagnosis_without_frequency",
+        "future_risk_or_driving",
+        "uncertain_not_scored",
+    ] = "target_epileptic_seizure_frequency"
+    statement_family: str = "other_frequency"
+    source_role: Literal["compact_section", "narrative", "both"] = "narrative"
+    count: str | None = None
+    count_low: str | None = None
+    count_high: str | None = None
+    period_count: str | None = None
+    period_low: str | None = None
+    period_high: str | None = None
+    period_unit: str | None = None
+    time_relation: str | None = None
+    point_in_time: str | None = None
+    day: str | None = None
+    month: str | None = None
+    year: str | None = None
+    age_low: str | None = None
+    age_high: str | None = None
+    age_unit: str | None = None
+    frequency_change: str | None = None
+    finding_text: str | None = None
+    include_as_finding: bool = True
+    rationale: str = ""
+
+
 class ClinicalFindingsRecord(BaseModel):
     """Full model output for one letter."""
 
     model_config = ConfigDict(extra="ignore")
 
+    family_checklist: FindingFamilyChecklist = Field(default_factory=FindingFamilyChecklist)
+    event_frames: list[EventFrameRecord] = Field(default_factory=list)
     findings: list[ClinicalFindingRecord] = Field(default_factory=list)
 
 
@@ -276,7 +341,9 @@ class ExECTv2ClinicalFindingsSFSignature(dspy.Signature):
     )
     extraction_json: str = dspy.OutputField(
         desc=(
-            "One strict JSON object: {\"findings\": [{\"text\": ..., "
+            "One strict JSON object: {\"event_frames\": [{\"event_id\": ..., "
+            "\"evidence\": ..., \"seizure_phrase\": ..., \"target_status\": ..., "
+            "\"statement_family\": ...}], \"findings\": [{\"text\": ..., "
             "\"evidence\": ..., \"clinical_kind\": ..., "
             "\"frequency_statement_type\": ..., \"source_role\": ..., "
             "\"count\": ..., \"period_unit\": ..., \"confidence\": ..., "
@@ -362,9 +429,58 @@ def build_prompt_input(letter: ExectLetter) -> str:
         "prompt_version": PROMPT_VERSION,
         "task": (
             "Read the clinical letter and list each seizure type or seizure-free "
-            "state that has frequency information. Return one JSON object with a "
-            "'findings' list."
+            "state that has frequency information. First enumerate model-owned "
+            "event_frames for every possible seizure-frequency or non-target episode "
+            "fact, then convert only target event_frames into the final 'findings' "
+            "list. Return one JSON object."
         ),
+        "event_frame_schema": {
+            "event_id": "Short stable id such as e1, e2, e3.",
+            "evidence": (
+                "Exact source substring containing the seizure-frequency or "
+                "non-target episode fact."
+            ),
+            "seizure_phrase": (
+                "Exact source-near phrase naming the seizure type, seizure-free "
+                "state, or non-target episode. Do not include context words that "
+                "describe preserved awareness, triggers, symptoms, or uncertainty "
+                "unless they are part of the scored seizure-type phrase."
+            ),
+            "target_status": (
+                "target_epileptic_seizure_frequency, non_target_episode, "
+                "history_context_only, diagnosis_without_frequency, "
+                "future_risk_or_driving, or uncertain_not_scored."
+            ),
+            "statement_family": (
+                "header_count_since_anchor, calendar_count, "
+                "calendar_occurrence_no_count, recurrence_interval, last_event_date, "
+                "background_rate, seizure_free_duration, current_control_no_duration, "
+                "current_zero_no_duration, change_only, cluster, non_target, or "
+                "other_frequency."
+            ),
+            "source_role": "compact_section, narrative, or both.",
+            "count": "Single seizure count when stated or implied by one event.",
+            "count_low": "Lower seizure count when a range is stated.",
+            "count_high": "Upper seizure count when a range is stated.",
+            "period_count": "Number of denominator time periods, usually 1.",
+            "period_low": "Lower denominator period count when a range is stated.",
+            "period_high": "Upper denominator period count when a range is stated.",
+            "period_unit": "day, week, month, or year when stated.",
+            "time_relation": "during or since when explicitly stated.",
+            "point_in_time": "Clinical anchor such as last clinic or medication change.",
+            "day/month/year": "Calendar date fields when explicitly stated.",
+            "age_low/age_high/age_unit": "Age anchor when explicitly stated.",
+            "frequency_change": "decreased, frequent, increased, infrequent, or same.",
+            "finding_text": (
+                "Exact text that should be used in findings if include_as_finding is "
+                "true. This may be shorter than seizure_phrase when evidence includes "
+                "context such as 'without change in awareness'."
+            ),
+            "include_as_finding": (
+                "true only for event_frames that should become scored findings."
+            ),
+            "rationale": "One concise clinical reading of this event frame.",
+        },
         "output_schema": {
             "text": (
                 "Exact short phrase from the letter naming the seizure type or "
@@ -445,6 +561,28 @@ def build_prompt_input(letter: ExectLetter) -> str:
             "rationale",
         ],
         "clinical_rules": [
+            (
+                "Fill event_frames before findings. Each event_frame is a model-owned "
+                "clinical reading of one possible seizure-frequency, seizure-free, "
+                "last-event, change, cluster, or non-target episode fact."
+            ),
+            (
+                "Use event_frames to separate coverage from scoring: include target "
+                "epileptic seizure-frequency frames in findings, but keep non-target "
+                "episode/history/driving/diagnosis frames out of findings."
+            ),
+            (
+                "Every finding should correspond to one target event_frame. If a "
+                "target event_frame has include_as_finding true, copy its exact "
+                "finding_text when supplied; otherwise copy its seizure_phrase. Also "
+                "copy evidence, statement family, count, period, and time fields "
+                "unless there is a clear reason not to score it."
+            ),
+            (
+                "event_frames are planning and audit output, not a shortcut. Do not "
+                "invent a finding without exact source evidence, and do not let a "
+                "non-target event_frame become a scored finding."
+            ),
             (
                 "Every finding must include frequency_statement_type and source_role. "
                 "Use null for unknown optional numeric/date fields, but do not omit keys."
@@ -558,6 +696,24 @@ def build_prompt_input(letter: ExectLetter) -> str:
                 "or other nonspecific episodes rather than a scored seizure type."
             ),
             (
+                "Do not extract minor seizures, jerks, or episodes as scored seizure "
+                "frequency even when a rate is stated, unless the same frequency clause "
+                "itself explicitly names epileptic seizures or a standard seizure type "
+                "such as focal seizures, absences, tonic-clonic seizures, myoclonic "
+                "jerks, or convulsive seizures."
+            ),
+            (
+                "Do not treat 'continues to get seizures' as a scored frequency-change "
+                "finding unless the same evidence gives a count, rate, date, last-event "
+                "anchor, or explicit qualitative change word such as increased, "
+                "decreased, frequent, or infrequent."
+            ),
+            (
+                "For a first or single diagnostic seizure encounter, do not score "
+                "no previous seizures, no further episodes, future risk of seizures, "
+                "or driving-clearance seizure windows as seizure-frequency findings."
+            ),
+            (
                 "For last-event summaries, extract the most recent last event only. "
                 "Do not add previous events as separate last-event findings."
             ),
@@ -595,6 +751,13 @@ def build_prompt_input(letter: ExectLetter) -> str:
                 "change, set point_in_time to medication change."
             ),
             (
+                "Do not score a bare current statement such as he remains seizure free "
+                "or she remains seizure free when there is no duration, no date, no "
+                "medication-change/surgery/clinic anchor, and no wording such as no "
+                "further seizures. Put it in event_frames as current_control_no_duration "
+                "with include_as_finding false."
+            ),
+            (
                 "Use current_control_no_duration only for vague diagnosis-level phrases "
                 "such as epilepsy seems under control, especially when no seizure type "
                 "or no further seizures phrase is stated. For a specific seizure type "
@@ -624,8 +787,151 @@ def build_prompt_input(letter: ExectLetter) -> str:
                 "Only fill time_relation, point_in_time, day, month, or year when "
                 "that context is explicitly stated in the letter."
             ),
-            "If the letter has no seizure frequency information, return {\"findings\": []}.",
+            (
+                "If the letter has no seizure frequency information, return "
+                "{\"event_frames\": [], \"findings\": []}."
+            ),
             "Return exactly one JSON object. No markdown code fences.",
+        ],
+        "event_frame_examples": [
+            {
+                "note_fragment": (
+                    "In March she had 2 to 3 of her focal seizures without change "
+                    "in awareness."
+                ),
+                "event_frames": [
+                    {
+                        "event_id": "e1",
+                        "evidence": (
+                            "In March she had 2 to 3 of her focal seizures without "
+                            "change in awareness"
+                        ),
+                        "seizure_phrase": "focal seizures",
+                        "target_status": "target_epileptic_seizure_frequency",
+                        "statement_family": "calendar_count",
+                        "source_role": "narrative",
+                        "count_low": "2",
+                        "count_high": "3",
+                        "time_relation": "during",
+                        "month": "March",
+                        "finding_text": "focal seizures",
+                        "include_as_finding": True,
+                        "rationale": (
+                            "Without change in awareness is context, so the scored "
+                            "seizure phrase is focal seizures."
+                        ),
+                    }
+                ],
+            },
+            {
+                "note_fragment": (
+                    "Seizure type and frequency: Generalised tonic clonic seizure-"
+                    "last event July 2016. Previous event December 2015."
+                ),
+                "event_frames": [
+                    {
+                        "event_id": "e1",
+                        "evidence": "Generalised tonic clonic seizure-last event July 2016",
+                        "seizure_phrase": "Generalised tonic clonic seizure",
+                        "target_status": "target_epileptic_seizure_frequency",
+                        "statement_family": "last_event_date",
+                        "source_role": "compact_section",
+                        "count": "0",
+                        "time_relation": "since",
+                        "month": "July",
+                        "year": "2016",
+                        "finding_text": "Generalised tonic clonic seizure",
+                        "include_as_finding": True,
+                        "rationale": "The most recent last-event date is a scored finding.",
+                    },
+                    {
+                        "event_id": "e2",
+                        "evidence": "Previous event December 2015",
+                        "seizure_phrase": "event",
+                        "target_status": "history_context_only",
+                        "statement_family": "last_event_date",
+                        "source_role": "compact_section",
+                        "count": "0",
+                        "time_relation": "since",
+                        "month": "December",
+                        "year": "2015",
+                        "include_as_finding": False,
+                        "rationale": (
+                            "Older previous event is context once a newer last event "
+                            "is given."
+                        ),
+                    },
+                ],
+            },
+            {
+                "note_fragment": (
+                    "Seizure type and frequency: 2 generalised tonic clonic seizures "
+                    "2014, absence like seizures 2014. He remains seizure free."
+                ),
+                "event_frames": [
+                    {
+                        "event_id": "e1",
+                        "evidence": "2 generalised tonic clonic seizures 2014",
+                        "seizure_phrase": "generalised tonic clonic seizures",
+                        "target_status": "target_epileptic_seizure_frequency",
+                        "statement_family": "calendar_count",
+                        "source_role": "compact_section",
+                        "count": "2",
+                        "time_relation": "during",
+                        "year": "2014",
+                        "finding_text": "generalised tonic clonic seizures",
+                        "include_as_finding": True,
+                        "rationale": "Historical dated compact-section count is scored.",
+                    },
+                    {
+                        "event_id": "e2",
+                        "evidence": "absence like seizures 2014",
+                        "seizure_phrase": "absence like seizures",
+                        "target_status": "target_epileptic_seizure_frequency",
+                        "statement_family": "calendar_occurrence_no_count",
+                        "source_role": "compact_section",
+                        "time_relation": "during",
+                        "year": "2014",
+                        "finding_text": "absence like seizures",
+                        "include_as_finding": True,
+                        "rationale": "Dated occurrence without count is scored as one occurrence.",
+                    },
+                    {
+                        "event_id": "e3",
+                        "evidence": "He remains seizure free",
+                        "seizure_phrase": "seizure free",
+                        "target_status": "uncertain_not_scored",
+                        "statement_family": "current_control_no_duration",
+                        "source_role": "narrative",
+                        "include_as_finding": False,
+                        "rationale": (
+                            "Bare remains seizure free has no duration, date, or "
+                            "clinical anchor, so it is not a scored finding."
+                        ),
+                    },
+                ],
+            },
+            {
+                "note_fragment": (
+                    "She gets dizzy episodes twice a week. These are thought to be "
+                    "nonepileptic events."
+                ),
+                "event_frames": [
+                    {
+                        "event_id": "e1",
+                        "evidence": "dizzy episodes twice a week",
+                        "seizure_phrase": "dizzy episodes",
+                        "target_status": "non_target_episode",
+                        "statement_family": "non_target",
+                        "source_role": "narrative",
+                        "count": "2",
+                        "period_count": "1",
+                        "period_unit": "week",
+                        "include_as_finding": False,
+                        "rationale": "The frequency belongs to non-target dizzy episodes.",
+                    }
+                ],
+            },
         ],
         "worked_examples": [
             {
@@ -1028,6 +1334,60 @@ def build_prompt_input(letter: ExectLetter) -> str:
                     "frequency statement."
                 ),
             },
+            {
+                "note_fragment": (
+                    "Despite medication she continues to get general and complex "
+                    "partial seizures. She continues to get chronic daily headaches."
+                ),
+                "correct": [],
+                "rationale": (
+                    "Continues to get seizures is not a scored frequency without a "
+                    "count, rate, date, or explicit qualitative frequency change."
+                ),
+            },
+            {
+                "note_fragment": (
+                    "He developed some minor seizures. The episodes last no longer "
+                    "than 3 minutes and occur 4 to 5 times a year."
+                ),
+                "correct": [],
+                "rationale": (
+                    "The rate belongs to nonspecific minor episodes rather than a "
+                    "standard scored seizure type."
+                ),
+            },
+            {
+                "note_fragment": (
+                    "Diagnosis: single focal seizure. He has not had any previous "
+                    "seizures and is at risk of further seizures."
+                ),
+                "correct": [],
+                "rationale": (
+                    "A single diagnostic seizure encounter plus no previous seizures "
+                    "or future risk is not scored as recurrent seizure frequency."
+                ),
+            },
+            {
+                "note_fragment": (
+                    "Diagnosis: generalised tonic clonic seizures with myoclonic jerks. "
+                    "She is still having approximately 15 seizures over 4 months."
+                ),
+                "correct": {
+                    "text": "seizures",
+                    "evidence": "approximately 15 seizures over 4 months",
+                    "clinical_kind": "frequency_rate",
+                    "frequency_statement_type": "background_rate",
+                    "source_role": "narrative",
+                    "count": "15",
+                    "period_count": "4",
+                    "period_unit": "month",
+                    "confidence": "high",
+                    "rationale": (
+                        "The frequency evidence says generic seizures, so text "
+                        "remains seizures."
+                    ),
+                },
+            },
         ],
         "letter_id": letter.letter_id,
         "letter_text": letter.note_text,
@@ -1038,6 +1398,7 @@ def build_prompt_input(letter: ExectLetter) -> str:
 def build_verification_prompt_input(
     letter: ExectLetter,
     raw_findings: Sequence[ClinicalFindingRecord],
+    event_frames: Sequence[EventFrameRecord] | None = None,
 ) -> str:
     """Build the second-pass clinical review payload for one letter."""
 
@@ -1049,6 +1410,9 @@ def build_verification_prompt_input(
             "a 'findings_to_add' list."
         ),
         "raw_findings": [finding.model_dump(mode="json") for finding in raw_findings],
+        "event_frames": [
+            frame.model_dump(mode="json") for frame in (event_frames or [])
+        ],
         "decision_schema": {
             "raw_index": "Zero-based index into raw_findings.",
             "target_status": (
@@ -1099,6 +1463,25 @@ def build_verification_prompt_input(
         "review_checks": [
             "Return exactly one decision for every raw finding.",
             (
+                "Use event_frames as the model's first-pass clinical map. If a target "
+                "event_frame has include_as_finding true but raw_findings omit it, add "
+                "a complete finding in findings_to_add when exact supporting evidence "
+                "exists."
+            ),
+            (
+                "If an event_frame has target_status non_target_episode, "
+                "history_context_only, diagnosis_without_frequency, "
+                "future_risk_or_driving, or uncertain_not_scored, verify that no "
+                "matching raw finding is kept unless the frame is actually a target "
+                "epileptic seizure-frequency fact."
+            ),
+            (
+                "Do not blindly trust an event_frame phrase if it copied contextual "
+                "words into the seizure type. For focal seizures without change in "
+                "awareness, revise the raw text to focal seizures even when the "
+                "event_frame used the longer phrase."
+            ),
+            (
                 "Use a brief final rationale only. Do not discuss alternatives or "
                 "write step-by-step deliberation."
             ),
@@ -1146,15 +1529,30 @@ def build_verification_prompt_input(
                 "unless the evidence explicitly says epileptic seizure frequency."
             ),
             (
+                "Remove minor seizures, jerks, or episodes even when a rate is stated "
+                "if the frequency evidence describes nonspecific spells rather than "
+                "a standard scored seizure type."
+            ),
+            (
                 "A diagnostic episode description plus a separate clinician impression "
                 "that episodes may be seizures is not enough for a target finding. "
                 "Remove it unless the frequency evidence itself names epileptic seizures "
                 "or a seizure type."
             ),
             (
+                "Remove vague ongoing-seizure statements such as continues to get "
+                "seizures when the evidence does not give a count, rate, date, "
+                "last-event anchor, or explicit qualitative change word."
+            ),
+            (
                 "Remove vague diagnosis-level control such as epilepsy seems under "
                 "control when there is no seizure type, count, date, duration, or "
                 "no-further-seizures phrase."
+            ),
+            (
+                "Remove bare remains seizure free findings when there is no duration, "
+                "date, medication-change/surgery/clinic anchor, or no-further-seizures "
+                "wording. Historical compact-section seizure counts remain scored."
             ),
             (
                 "Classify febrile seizures, childhood febrile history, family history, "
@@ -1398,6 +1796,86 @@ def build_verification_prompt_input(
                     "action": "remove",
                     "rationale": (
                         "The frequency clause names episodes, not epileptic seizures."
+                    ),
+                },
+            },
+            {
+                "raw_finding": {
+                    "text": "minor seizures",
+                    "evidence": (
+                        "minor seizures. The episodes last no longer than 3 minutes "
+                        "and occur 4 to 5 times a year"
+                    ),
+                    "clinical_kind": "frequency_rate",
+                    "frequency_statement_type": "background_rate",
+                    "count_low": "4",
+                    "count_high": "5",
+                    "period_count": "1",
+                    "period_unit": "year",
+                },
+                "decision": {
+                    "raw_index": 10,
+                    "target_status": "non_target_episode",
+                    "action": "remove",
+                    "rationale": (
+                        "The frequency belongs to nonspecific minor episodes rather "
+                        "than a standard scored seizure type."
+                    ),
+                },
+            },
+            {
+                "raw_finding": {
+                    "text": "general and complex partial seizures",
+                    "evidence": "she continues to get general and complex partial seizures",
+                    "clinical_kind": "frequency_change",
+                    "frequency_statement_type": "change_only",
+                },
+                "decision": {
+                    "raw_index": 11,
+                    "target_status": "uncertain_not_scored",
+                    "action": "remove",
+                    "rationale": (
+                        "Continues to get seizures is not a scored frequency without "
+                        "a count, rate, date, or qualitative change word."
+                    ),
+                },
+            },
+            {
+                "raw_finding": {
+                    "text": "focal seizure",
+                    "evidence": "He has not had any previous seizures.",
+                    "clinical_kind": "seizure_free",
+                    "frequency_statement_type": "current_zero_no_duration",
+                    "count": "0",
+                },
+                "decision": {
+                    "raw_index": 12,
+                    "target_status": "diagnosis_without_frequency",
+                    "action": "remove",
+                    "rationale": (
+                        "No previous seizures in a single diagnostic seizure encounter "
+                        "is not recurrent seizure frequency."
+                    ),
+                },
+            },
+            {
+                "raw_finding": {
+                    "text": "generalised tonic clonic seizures",
+                    "evidence": "approximately 15 seizures over 4 months",
+                    "clinical_kind": "frequency_rate",
+                    "frequency_statement_type": "background_rate",
+                    "count": "15",
+                    "period_count": "4",
+                    "period_unit": "month",
+                },
+                "decision": {
+                    "raw_index": 13,
+                    "target_status": "target_epileptic_seizure_frequency",
+                    "action": "revise",
+                    "text": "seizures",
+                    "rationale": (
+                        "The frequency evidence says generic seizures, so the text "
+                        "should stay generic."
                     ),
                 },
             },
@@ -1692,13 +2170,39 @@ def parse_verification_decisions_json(
     payload, load_errors = _loads_json_or_literal(raw_output)
     if payload is None:
         return None, load_errors
+    payload, coerce_notes = _coerce_verification_payload(payload)
+    errors = [*load_errors, *coerce_notes]
 
     try:
         record = VerificationDecisionList.model_validate(payload)
     except ValidationError as exc:
-        return None, [f"schema_validation_error: {exc.errors()[0]['msg']}"]
+        return None, [*errors, f"schema_validation_error: {exc.errors()[0]['msg']}"]
 
-    return record, load_errors
+    return record, errors
+
+
+def _coerce_verification_payload(payload: Any) -> tuple[Any, list[str]]:
+    notes: list[str] = []
+    if not isinstance(payload, dict):
+        return payload, notes
+
+    additions = payload.get("findings_to_add")
+    if not isinstance(additions, list):
+        return payload, notes
+
+    kept: list[Any] = []
+    for i, addition in enumerate(additions):
+        if not isinstance(addition, dict):
+            kept.append(addition)
+            continue
+        if addition.get("text") and addition.get("clinical_kind"):
+            kept.append(addition)
+            continue
+        notes.append(
+            f"dropped_invalid_findings_to_add_record: index={i} "
+            "missing text/clinical_kind"
+        )
+    return {**payload, "findings_to_add": kept}, notes
 
 
 def apply_verification_decisions(
@@ -1786,38 +2290,68 @@ def _coerce_payload(payload: Any) -> tuple[Any, list[str]]:
     if findings_raw is None and isinstance(payload.get("mentions"), list):
         findings_raw = payload.get("mentions")
         notes.append("coerced_mentions_key_to_findings")
-    if not isinstance(findings_raw, list):
-        return payload, notes
+    coerced_payload = dict(payload)
 
-    coerced_findings: list[Any] = []
-    for i, finding in enumerate(findings_raw):
-        if not isinstance(finding, dict):
-            coerced_findings.append(finding)
+    if isinstance(findings_raw, list):
+        coerced_payload["findings"] = _coerce_record_list(
+            findings_raw,
+            scalar_fields=_SCALAR_FINDING_FIELDS,
+            notes=notes,
+            record_name="finding",
+            coerce_statement_type=True,
+        )
+
+    event_frames_raw = payload.get("event_frames")
+    if isinstance(event_frames_raw, list):
+        coerced_payload["event_frames"] = _coerce_record_list(
+            event_frames_raw,
+            scalar_fields=_SCALAR_EVENT_FRAME_FIELDS,
+            notes=notes,
+            record_name="event_frame",
+            coerce_statement_type=False,
+        )
+
+    return coerced_payload, notes
+
+
+def _coerce_record_list(
+    records: Sequence[Any],
+    *,
+    scalar_fields: frozenset[str],
+    notes: list[str],
+    record_name: str,
+    coerce_statement_type: bool,
+) -> list[Any]:
+    coerced_records: list[Any] = []
+    for i, record in enumerate(records):
+        if not isinstance(record, dict):
+            coerced_records.append(record)
             continue
-        new_finding = dict(finding)
-        clinical_kind = str(new_finding.get("clinical_kind", ""))
+        new_record = dict(record)
+        clinical_kind = str(new_record.get("clinical_kind", ""))
         if (
-            clinical_kind
+            coerce_statement_type
+            and clinical_kind
             and clinical_kind not in _CLINICAL_KIND_VALUES
             and clinical_kind in _STATEMENT_TYPE_TO_KIND
         ):
-            new_finding.setdefault("frequency_statement_type", clinical_kind)
-            new_finding["clinical_kind"] = _STATEMENT_TYPE_TO_KIND[clinical_kind]
+            new_record.setdefault("frequency_statement_type", clinical_kind)
+            new_record["clinical_kind"] = _STATEMENT_TYPE_TO_KIND[clinical_kind]
             notes.append(
-                f"coerced_statement_type_from_clinical_kind: finding[{i}] "
+                f"coerced_statement_type_from_clinical_kind: {record_name}[{i}] "
                 f"{clinical_kind!r}"
             )
-        for key, value in finding.items():
-            if key not in _SCALAR_FINDING_FIELDS or value is None:
+        for key, value in record.items():
+            if key not in scalar_fields or value is None:
                 continue
             if not isinstance(value, str):
-                new_finding[key] = str(value)
+                new_record[key] = str(value)
                 notes.append(
-                    f"coerced_field_value: finding[{i}] {key!r} "
-                    f"{value!r} -> {new_finding[key]!r}"
+                    f"coerced_field_value: {record_name}[{i}] {key!r} "
+                    f"{value!r} -> {new_record[key]!r}"
                 )
-        coerced_findings.append(new_finding)
-    return {**payload, "findings": coerced_findings}, notes
+        coerced_records.append(new_record)
+    return coerced_records
 
 
 def project_finding_to_attributes(
@@ -2131,6 +2665,7 @@ def run_split(
             else (None, ["not_run"])
         )
         findings = extraction.findings if extraction else []
+        event_frames = extraction.event_frames if extraction else []
 
         verification_prompt_input_json = ""
         verification_raw_output = ""
@@ -2145,6 +2680,7 @@ def run_split(
             verification_prompt_input_json = build_verification_prompt_input(
                 letter,
                 findings,
+                event_frames,
             )
             try:
                 verification_prediction = verifier(
@@ -2191,6 +2727,9 @@ def run_split(
                 "verification_parse_errors": verification_parse_errors,
                 "verification_warnings": verification_warnings,
                 "projection_warnings": projection_warnings,
+                "event_frames": [
+                    frame.model_dump(mode="json") for frame in event_frames
+                ],
                 "raw_extraction_findings": [
                     finding.model_dump(mode="json") for finding in findings
                 ],
@@ -2205,6 +2744,7 @@ def run_split(
                 "raw_model_findings": [
                     finding.model_dump(mode="json") for finding in final_findings
                 ],
+                "n_event_frames": len(event_frames),
                 "n_extraction_findings": len(findings),
                 "n_verified_findings": len(verified_findings),
                 "n_mentions_raw": len(final_findings),
@@ -2284,6 +2824,7 @@ def summarize_rows(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
     verification_parse_failures = sum(
         _has_blocking_parse_issue(r.get("verification_parse_errors")) for r in rows
     )
+    n_event_frames = sum(int(r.get("n_event_frames", 0)) for r in rows)
     n_mentions_raw = sum(int(r.get("n_mentions_raw", 0)) for r in rows)
     n_extraction_findings = sum(int(r.get("n_extraction_findings", 0)) for r in rows)
     n_verified_findings = sum(int(r.get("n_verified_findings", 0)) for r in rows)
@@ -2301,6 +2842,7 @@ def summarize_rows(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
         "verification_call_failures": verification_call_failures,
         "parse_failures": parse_failures,
         "verification_parse_failures": verification_parse_failures,
+        "n_event_frames": n_event_frames,
         "n_extraction_findings": n_extraction_findings,
         "n_verified_findings": n_verified_findings,
         "n_mentions_raw": n_mentions_raw,
@@ -2436,6 +2978,7 @@ def write_report(
         f"- Verification call failures: {summary.get('verification_call_failures', 0)}",
         f"- Parse/schema failures: {summary.get('parse_failures', 0)}",
         f"- Verification parse/schema failures: {summary.get('verification_parse_failures', 0)}",
+        f"- Event frames: {summary.get('n_event_frames', 0)}",
         f"- First-pass findings: {summary.get('n_extraction_findings', 0)}",
         f"- Verified findings: {summary.get('n_verified_findings', 0)}",
         f"- Final model findings: {summary.get('n_mentions_raw', 0)}",
