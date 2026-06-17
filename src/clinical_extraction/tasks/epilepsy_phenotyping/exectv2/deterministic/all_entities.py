@@ -10,8 +10,16 @@ from __future__ import annotations
 
 import re
 from collections.abc import Iterable, Sequence
-from dataclasses import dataclass
 
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.benchmark_projection import (
+    DIAGNOSIS_SURFACE_FORMS,
+    PRESCRIPTION_CONCEPT_BY_PHRASE,
+    PRESCRIPTION_SURFACE_FORMS,
+    BenchmarkConcept,
+    attach_benchmark_concept,
+    diagnosis_concept,
+    investigation_concept,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     DIAGNOSIS,
     INVESTIGATIONS,
@@ -38,123 +46,12 @@ ACTIVE_DETERMINISTIC_ENTITIES: tuple[str, ...] = (
 )
 
 _OWNER_PREFIX = "deterministic"
-
-
-@dataclass(frozen=True)
-class _LexiconEntry:
-    canonical: str
-    cui: str
-    cui_phrase: str
-
-
-_MEDICATION_ENTRIES: tuple[tuple[_LexiconEntry, tuple[str, ...]], ...] = (
-    (
-        _LexiconEntry("lamotrigine", "C0064636", "lamotrigine"),
-        ("lamotrigine",),
-    ),
-    (
-        _LexiconEntry("lamictal", "C0678180", "lamictal"),
-        ("lamictal",),
-    ),
-    (
-        _LexiconEntry("levetiracetam", "C0377265", "levetiracetam"),
-        ("levetiracetam",),
-    ),
-    (
-        _LexiconEntry("keppra", "C0876060", "keppra"),
-        ("keppra",),
-    ),
-    (
-        _LexiconEntry("sodium-valproate", "C0037567", "sodium-valproate"),
-        (
-            "sodium valproate",
-            "sodium-valproate",
-            "sodiumvalproate",
-            "valproate",
-            "episenta",
-        ),
-    ),
-    (
-        _LexiconEntry("epilim", "C0591451", "epilim"),
-        ("epilim", "eplim"),
-    ),
-    (
-        _LexiconEntry("epilim-chrono", "C0591452", "epilim-chrono"),
-        ("epilim chrono", "epilim-chrono"),
-    ),
-    (
-        _LexiconEntry("carbamazepine", "C0006949", "carbamazepine"),
-        ("carbamazepine",),
-    ),
-    (
-        _LexiconEntry("tegretol", "C0700087", "tegretol"),
-        ("tegretol", "tegretaol"),
-    ),
-    (
-        _LexiconEntry("zonisamide", "C0078844", "zonisamide"),
-        ("zonisamide", "zobisamide", "zonismaide"),
-    ),
-    (
-        _LexiconEntry("clobazam", "C0055891", "clobazam"),
-        ("clobazam",),
-    ),
-    (
-        _LexiconEntry("brivaracetam", "C1699861", "brivaracetam"),
-        ("brivaracetam", "brivitiracetam", "brivetiracetam"),
-    ),
-    (
-        _LexiconEntry("topiramate", "C0076829", "topiramate"),
-        ("topiramate",),
-    ),
-    (
-        _LexiconEntry("perampanel", "C2698764", "perampanel"),
-        ("perampanel",),
-    ),
-    (
-        _LexiconEntry("phenytoin", "C0031507", "phenytoin"),
-        ("phenytoin",),
-    ),
-    (
-        _LexiconEntry("phenobarbital", "C0031412", "phenobarbitone"),
-        ("phenobarbital", "phenobarbitone"),
-    ),
-    (
-        _LexiconEntry("eslicarbazepine", "C2725260", "eslicarbazepine"),
-        ("eslicarbazepine", "eslicarbazepine acetate", "eslicarbazepineacetate"),
-    ),
-    (
-        _LexiconEntry("oxcarbazepine", "C0069751", "oxcarbazepine"),
-        ("oxcarbazepine",),
-    ),
-    (
-        _LexiconEntry("lacosamide", "C0893761", "lacosamide"),
-        ("lacosamide",),
-    ),
-    (
-        _LexiconEntry("midazolam", "C0026056", "midazolam"),
-        ("midazolam",),
-    ),
-    (
-        _LexiconEntry("pregabalin", "C0657912", "pregabalin"),
-        ("pregabalin",),
-    ),
-    (
-        _LexiconEntry("gabapentin", "C0060926", "gabapentin"),
-        ("gabapentin",),
-    ),
-    (
-        _LexiconEntry("carbamazepine", "C0006949", "carbamazepine"),
-        ("carbamazapine", "carbmazapine"),
-    ),
-)
-_MEDICATION_LEXICON: dict[str, _LexiconEntry] = {
-    normalize_phrase(variant): entry
-    for entry, variants in _MEDICATION_ENTRIES
-    for variant in variants
-}
+_MEDICATION_LEXICON = PRESCRIPTION_CONCEPT_BY_PHRASE
 _MEDICATION_PATTERN = re.compile(
     r"\b("
-    + "|".join(re.escape(name) for name in sorted(_MEDICATION_LEXICON, key=len, reverse=True))
+    + "|".join(
+        re.escape(name) for name in sorted(PRESCRIPTION_SURFACE_FORMS, key=len, reverse=True)
+    )
     + r")\b",
     re.IGNORECASE,
 )
@@ -214,23 +111,9 @@ _LEFT_DOSE_BEFORE_MEDICATION = re.compile(
     re.IGNORECASE,
 )
 
-_DIAGNOSIS_LEXICON: dict[str, tuple[str, str, str]] = {
-    "epilepsy": ("Epilepsy", "C0014544", "epilepsy"),
-    "focal epilepsy": ("Epilepsy", "C0014547", "focal epilepsy"),
-    "focal-onset epilepsy": ("Epilepsy", "C0014547", "focal-onset epilepsy"),
-    "temporal lobe epilepsy": ("Epilepsy", "C0014556", "temporal lobe epilepsy"),
-    "juvenile myoclonic epilepsy": ("Epilepsy", "C0270853", "juvenile myoclonic epilepsy"),
-    "jme": ("Epilepsy", "C0270853", "juvenile myoclonic epilepsy"),
-    "symptomatic epilepsy": ("Epilepsy", "C0014544", "symptomatic epilepsy"),
-    "symptomatic structural focal epilepsy": (
-        "Epilepsy",
-        "C0014547",
-        "symptomatic structural focal epilepsy",
-    ),
-}
 _DIAGNOSIS_PATTERN = re.compile(
     r"\b("
-    + "|".join(re.escape(name) for name in sorted(_DIAGNOSIS_LEXICON, key=len, reverse=True))
+    + "|".join(re.escape(name) for name in sorted(DIAGNOSIS_SURFACE_FORMS, key=len, reverse=True))
     + r")\b",
     re.IGNORECASE,
 )
@@ -245,18 +128,6 @@ _EEG_TYPE_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
     (re.compile(r"\bsleep\s*deprived\b", re.IGNORECASE), "SleepDeprived"),
     (re.compile(r"\bvideo\s*telemetry\b", re.IGNORECASE), "VideoTelemetry"),
 )
-_INVESTIGATION_CUIS: dict[tuple[str, str | None], tuple[str, str]] = {
-    ("EEG", "Abnormal"): ("C0151611", "eeg abnormal"),
-    ("EEG", "Normal"): ("C0744602", "eeg normal"),
-    ("MRI", "Normal"): ("C0436481", "mri normal"),
-    ("MRI", "Abnormal"): ("C1319851", "mri abnormal"),
-    ("CT", "Normal"): ("C0560017", "ct normal"),
-    ("CT", "Abnormal"): ("C0436539", "ct abnormal"),
-    ("EEG", None): ("C0013819", "EEG"),
-    ("MRI", None): ("C0436539", "MRI"),
-    ("CT", None): ("C0040405", "CT"),
-}
-
 
 def extract_deterministic_all9(letter: ExectLetter) -> PredictedLetter:
     """Extract the active deterministic baseline entities from one letter."""
@@ -324,15 +195,11 @@ def _extract_prescriptions(text: str) -> tuple[PredictedMention, ...]:
 
 def _prescription_attribute_sets(
     surface: str,
-    entry: _LexiconEntry,
+    entry: BenchmarkConcept,
     evidence: str,
 ) -> tuple[tuple[dict[str, str], str], ...]:
     dose_matches = tuple(_DOSE_PATTERN.finditer(evidence))
-    base_attrs = {
-        "DrugName": entry.canonical,
-        "CUI": entry.cui,
-        "CUIPhrase": entry.cui_phrase,
-    }
+    base_attrs = attach_benchmark_concept({}, entry, canonical_key="DrugName")
     rescue_range = re.search(r"\b\d+\s*-\s*\d+\s*(?:mg|mgs|mgms)\b", evidence, re.IGNORECASE)
     if rescue_range and _frequency_from_text(evidence) == "As_Required":
         return (({**base_attrs, "Frequency": "As_Required"}, surface),)
@@ -518,11 +385,7 @@ def _legacy_extract_prescriptions(text: str) -> tuple[PredictedMention, ...]:
         surface = match.group(1)
         entry = _MEDICATION_LEXICON[normalize_phrase(surface)]
         evidence = _right_context_until_separator(text, match.start())
-        attrs = {
-            "DrugName": entry.canonical,
-            "CUI": entry.cui,
-            "CUIPhrase": entry.cui_phrase,
-        }
+        attrs = attach_benchmark_concept({}, entry, canonical_key="DrugName")
         dose = _DOSE_PATTERN.search(evidence)
         if dose:
             attrs["DrugDose"] = dose.group(1)
@@ -567,8 +430,9 @@ def _extract_investigations(text: str) -> tuple[PredictedMention, ...]:
             eeg_type = _eeg_type(evidence)
             if eeg_type:
                 attrs["EEG_Type"] = eeg_type
-        cui, cui_phrase = _INVESTIGATION_CUIS[(modality, result)]
-        attrs.update({"CUI": cui, "CUIPhrase": cui_phrase})
+        concept = investigation_concept(modality, result)
+        if concept:
+            attrs = attach_benchmark_concept(attrs, concept)
         mentions.append(
             PredictedMention(
                 entity=INVESTIGATIONS.name,
@@ -598,14 +462,15 @@ def _extract_diagnoses(text: str) -> tuple[PredictedMention, ...]:
         if any(_overlaps(match.span(), span) for span in occupied):
             continue
         phrase = match.group(1)
-        category, cui, cui_phrase = _DIAGNOSIS_LEXICON[normalize_phrase(phrase)]
+        concept = diagnosis_concept(phrase)
+        if concept is None:
+            continue
         attrs = {
-            "DiagCategory": category,
+            "DiagCategory": concept.canonical,
             "Certainty": "5",
             "Negation": "Affirmed",
-            "CUI": cui,
-            "CUIPhrase": cui_phrase,
         }
+        attrs = attach_benchmark_concept(attrs, concept)
         mentions.append(
             PredictedMention(
                 entity=DIAGNOSIS.name,

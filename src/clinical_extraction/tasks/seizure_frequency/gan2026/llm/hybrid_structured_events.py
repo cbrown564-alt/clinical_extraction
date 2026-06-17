@@ -14,7 +14,12 @@ from collections import Counter
 from collections.abc import Mapping, Sequence
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any, Literal
+from typing import TYPE_CHECKING, Any, Literal
+
+if TYPE_CHECKING:
+    from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.confidence_reviewer import (
+        ConfidenceReviewer,
+    )
 
 import dspy
 from pydantic import BaseModel, ConfigDict, ValidationError
@@ -699,6 +704,8 @@ def run_split(
     checkpoint_jsonl_path: Path | None = None,
     checkpoint_report_path: Path | None = None,
     repair_config: StructuredRepairConfig | None = None,
+    confidence_reviewer: "ConfidenceReviewer | None" = None,
+    reuse_confidence_reviews: Mapping[int, dict[str, Any]] | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     repair_config = repair_config or StructuredRepairConfig()
     reuse_raw_outputs = reuse_raw_outputs or {}
@@ -718,6 +725,7 @@ def run_split(
     metadata["repair_mode"] = repair_config.resolved_repair_mode
     metadata["repair_mode_metadata"] = repair_mode_metadata(repair_config.resolved_repair_mode)
     metadata["repair_config"] = asdict(repair_config)
+    metadata["confidence_reviewer_shadow"] = confidence_reviewer is not None
     program = DspyStructuredExtractor()
     if mode == "live":
         dspy.configure(
@@ -758,30 +766,46 @@ def run_split(
             else False
         )
         comparison = _compare_to_gold(record, extraction) if extraction else None
-        rows.append(
-            {
-                "source_row_index": record.source_row_index,
-                "split": split,
-                "split_manifest": split_manifest,
-                "prompt_version": PROMPT_VERSION,
-                "prompt_input_json": prompt_input_json,
-                "raw_output": raw_output,
-                "reused_raw_output": reused_raw_output,
-                "call_error": call_error,
-                "parse_errors": parse_errors,
-                "structured_record": extraction.model_dump() if extraction else None,
-                "normalized_events": [event.model_dump() for event in normalized_events],
-                "evidence_valid": evidence_valid,
-                "reference": {
-                    "gold_label": record.gold_label,
-                    "gold_normalized_label": record.gold_normalized_label,
-                    "gold_label_kind": str(record.gold_label_kind),
-                    "gold_monthly_frequency": record.gold_monthly_frequency,
-                    "row_ok": record.row_ok,
-                },
-                "comparison": comparison,
-            }
-        )
+        row: dict[str, Any] = {
+            "source_row_index": record.source_row_index,
+            "split": split,
+            "split_manifest": split_manifest,
+            "prompt_version": PROMPT_VERSION,
+            "prompt_input_json": prompt_input_json,
+            "raw_output": raw_output,
+            "reused_raw_output": reused_raw_output,
+            "call_error": call_error,
+            "parse_errors": parse_errors,
+            "structured_record": extraction.model_dump() if extraction else None,
+            "normalized_events": [event.model_dump() for event in normalized_events],
+            "evidence_valid": evidence_valid,
+            "reference": {
+                "gold_label": record.gold_label,
+                "gold_normalized_label": record.gold_normalized_label,
+                "gold_label_kind": str(record.gold_label_kind),
+                "gold_monthly_frequency": record.gold_monthly_frequency,
+                "row_ok": record.row_ok,
+            },
+            "comparison": comparison,
+        }
+        # SHADOW STAGE (decision: variant-D confidence reviewer, 2026-06-17). Opt-in and
+        # gates nothing: when a reviewer is supplied, stamp a decoupled, failure-mode-
+        # primed calibrated_confidence ALONGSIDE the intrinsic selection.confidence /
+        # uncertainty fields. The label is never touched. When confidence_reviewer is
+        # None the row dict is byte-identical to before (frozen-subject reproducibility).
+        if confidence_reviewer is not None and extraction is not None:
+            reused_review = (reuse_confidence_reviews or {}).get(record.source_row_index)
+            if reused_review is not None:
+                row["confidence_review"] = {**reused_review, "reused": True}
+            elif mode == "live":
+                selection = extraction.selection
+                review = confidence_reviewer.review(
+                    note_text=record.note_text,
+                    final_label=selection.final_label,
+                    final_kind=str(selection.final_kind),
+                )
+                row["confidence_review"] = {**review.to_dict(), "reused": False}
+        rows.append(row)
         if progress_every and len(rows) % progress_every == 0:
             _emit_progress_checkpoint(
                 rows,

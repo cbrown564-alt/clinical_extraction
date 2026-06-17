@@ -59,6 +59,11 @@ evidence.
   strong at `0.9257`/`0.9343`/`0.9307`, ordinary complete tuple F1 is `0.9096`,
   and benchmark phrase/CUI F1 remains much lower at `0.3020`/`0.5223`, with
   `0` schema errors and `1.0000` evidence validity.
+- Shared active-entity benchmark projection is now code-backed in
+  `src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/benchmark_projection.py`.
+  Prescription, Investigations, and Diagnosis deterministic rules now reuse that
+  projection surface; the regenerated deterministic all-9 scorecard had no
+  metric drift.
 
 ## Gan Research Questions To Close Out
 
@@ -120,8 +125,9 @@ evidence.
 
 ### Next
 
-- Build or extend shared CUI/benchmark-format projection for the active ExECTv2
-  entities, with semantic-vs-benchmark ablation kept explicit.
+- Extend shared CUI/benchmark-format projection beyond the active deterministic
+  entities and wire the architecture-agnostic `project_cuis` post-step into
+  LLM-only and hybrid pilots; keep semantic-vs-benchmark ablations explicit.
 - Implement the Prescription benchmark-projection table/ablation: phrase scope,
   clinical medication identity, CUI projection, and guideline defaults should
   stay separately measurable rather than being folded into the clinical
@@ -157,6 +163,11 @@ evidence.
 
 ### Done Recently
 
+- 2026-06-17: Added shared active-entity ExECTv2 benchmark projection
+  (`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/benchmark_projection.py`)
+  with tests, refactored deterministic all-9 Prescription/Investigations/
+  Diagnosis CUI attachment to reuse it, regenerated the deterministic all-9
+  scorecard with no metric drift, and verified `1559` tests pass.
 - 2026-06-17: Implemented the first deterministic all-9 ExECTv2 baseline
   (`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/all_entities.py`)
   and scorecard generator
