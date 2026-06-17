@@ -1,0 +1,67 @@
+{
+  "artifact_kind": "gan2026_reliability_p2_1_semantic_entropy",
+  "date": "2026-06-17",
+  "mode": "preflight25",
+  "dimensions": [
+    "Consistency",
+    "Calibration",
+    "Abstention"
+  ],
+  "model": "openai/gpt-4.1-mini",
+  "temperatures": [
+    0.3,
+    0.5,
+    0.7,
+    1.0
+  ],
+  "k_samples": 4,
+  "n_rows": 25,
+  "decision_stable_under_temperature": true,
+  "raw_prose_varies": true,
+  "raw_prose_note": "verified: raw_output differs across temperatures (lengths/text vary); the rendered Purist label and selected kind do not. Genuine sampling, stable decisions.",
+  "mean_label_entropy_purist": 0.0,
+  "mean_kind_entropy": 0.0,
+  "rows_with_nonzero_label_entropy": 0,
+  "residual": {
+    "n": 4,
+    "mean_label_entropy": 0.0,
+    "mean_kind_entropy": 0.0
+  },
+  "non_residual": {
+    "n": 21,
+    "mean_label_entropy": 0.0,
+    "mean_kind_entropy": 0.0
+  },
+  "per_band_entropy": {
+    "band_daily": {
+      "n": 1,
+      "mean_label_entropy": 0.0,
+      "mean_kind_entropy": 0.0
+    },
+    "band_monthly": {
+      "n": 6,
+      "mean_label_entropy": 0.0,
+      "mean_kind_entropy": 0.0
+    },
+    "band_submonthly": {
+      "n": 5,
+      "mean_label_entropy": 0.0,
+      "mean_kind_entropy": 0.0
+    },
+    "band_unknown": {
+      "n": 3,
+      "mean_label_entropy": 0.0,
+      "mean_kind_entropy": 0.0
+    },
+    "band_weekly": {
+      "n": 10,
+      "mean_label_entropy": 0.0,
+      "mean_kind_entropy": 0.0
+    }
+  },
+  "hypothesis_verdict": "H0_confident_over_reading",
+  "provenance": {
+    "model_calls": "4x25 live gpt-4.1-mini samples (varying temperature)",
+    "subject": "structured_event_extractor (production SE pass), multi-sampled"
+  }
+}

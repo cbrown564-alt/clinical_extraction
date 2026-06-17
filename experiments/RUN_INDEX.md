@@ -4,6 +4,16 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Reliability Scorecard
 
+### `gan2026_reliability_p2_1_semantic_entropy_2026-06-17`
+- Date/split: `2026-06-17`; `validation` (25-row preflight + 150-row residual-enriched tier); LIVE.
+- Pipeline: `reliability_p2_1_semantic_entropy`; mode `live`; replay `live` (resumable per-temperature).
+- Model role: structured-event extractor multi-sampled at VARYING temperatures (0.3/0.5/0.7/1.0) to measure two-level semantic entropy (Purist label + selected kind); model `openai/gpt-4.1-mini`, max_tokens=1200, dspy_cache=False.
+- Repair mode/config: `structured_events default repair; varying-temperature sampling`.
+- Primary metrics: temps=[0.3,0.5,0.7,1.0], k=4, n_rows=150, residual_rows=23, mean_label_entropy=0.012, mean_kind_entropy=0.003, rows_nonzero_label_entropy=4, residual_label_entropy=0.018, nonresidual_label_entropy=0.011, band_unknown_label_entropy=0.000, verdict=H0_confident_over_reading, decision_stable_under_temperature=True, raw_prose_varies=True.
+- Evidence validity: Live gpt-4.1-mini, validation split only (no test exposure). 25-row degeneracy preflight gate run first; 150-row residual-enriched tier confirms the result on 23 residual rows. Verified non-artifact: raw_output differs across temperatures while the rendered label/kind does not (genuine decision-stability, not caching). Full validation750 x4 (~3,000 calls) deliberately not spent once the gate fired.
+- Claim language: THE research swing, falsification test of The Wall. H0 confirmed: varying-temperature semantic entropy is ~0 everywhere, the residual (incl. band_unknown=0.000) is no more uncertain than the rest -> the unknown-vs-rate over-reading is CONFIDENT, not uncertain. Converts the closeout's negative result into a mechanism; no abstention/calibration signal derivable from the model's own samples. Restores Consistency to 4/5.
+- Artifacts: `experiments/gan2026_reliability_p2_1_semantic_entropy_preflight150_2026-06-17.{json,md}`, `experiments/gan2026_reliability_p2_1_semantic_entropy_preflight25_2026-06-17.{json,md}`, `experiments/gan2026_reliability_p2_1_samples_preflight{25,150}_temp{0.3,0.5,0.7,1.0}_2026-06-17.jsonl`.
+
 ### `gan2026_reliability_scorecard_phase1_2026-06-17`
 - Date/split: `2026-06-17`; `test450` (frozen holdout); aggregate-only, no-call replay.
 - Pipeline: `reliability_scorecard_phase1`; mode `no-call replay`; replay `deterministic_no_call`.

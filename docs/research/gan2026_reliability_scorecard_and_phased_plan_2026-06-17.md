@@ -260,7 +260,7 @@ reading the canonical `v0_reference` subject layer; outputs are paired `.json` +
 | 4 | Calibration | 2/5→3/5 | Self-confidence degenerate (98.5% one bucket); external ECE 0.080, Brier 0.102, failure AUROC 0.781 |
 | 5 | Abstention | 4/5→5/5 | Full curve, AUC 0.040 (oracle 0.007); selective risk 3.0%@50% cov, 7.8%@80% |
 | 6 | Robustness | 4/5 | Index 0.547 / 0.694 / 1.000 (v0.5 / v0.6 / v0.7); overfit gap the diagnostic leg |
-| 7 | Consistency | 3/5→**2/5** | Temp-0 reproducibility only (unanimous acc 0.689); varying-temp self-consistency deferred to P2.1 |
+| 7 | Consistency | 3/5→2/5→**4/5** | P0.8 temp-0 reproducibility (unanimous acc 0.689) + **P2.1 varying-temperature semantic entropy** (mean label entropy 0.012; residual 0.018; band_unknown 0.000) |
 | 8 | Safety & compliance | 4/5 | 0 C→W selective floor; gate v0_9; canaries + hash pin + readout guard |
 | 9 | Fairness | 3/5 | Per-band error spread 7.8%, CV 0.032; worst subgroup `seizure_free_duration` |
 | 10 | Operational | 3/5→4/5 | 0 model render failures / 5,483 recoverable repairs / 1,950 rows; ~$1.16/1000 notes (est); latency+retry still blocked |
@@ -282,7 +282,40 @@ reading the canonical `v0_reference` subject layer; outputs are paired `.json` +
   weak-but-real error signal (AUROC 0.60), not the "non-signal" first drafted.
   (b) Per user direction, **self-consistency must use varying temperatures**; the
   temp-0 hard50 only measures reproducibility, so Consistency is honestly scored
-  **2/5** and P2.1 now fires.
+  **2/5** and P2.1 fires (now run; restores Consistency to 4/5).
+
+## Part IV — Phase 1 & Phase 2 Execution Results (2026-06-17)
+
+**Phase 1 (freeze-warden-gated, no new model calls).** Both holdout ports are
+aggregate-only (0 forbidden markers) with hash-frozen transforms predeclared
+before touching test450.
+- **P1.1 risk–coverage (two-agent leg only — weaker port, decision 0018):** test450
+  base error 19.1%; abstaining the agent-disagreement set lifts the covered majority,
+  cutting selective risk to **12.2%** at 65.8% coverage; two-agent failure AUROC
+  **0.648** (< validation 0.781, by construction).
+- **P1.2 per-family parity (frozen validation classifier):** overall 0.812, band error
+  spread **19.9%** (sharper than validation's 7.8%); worst band `band_submonthly` 69.5%
+  (flagged). Confirms the validation picture — disparity in rate bands + over-reading
+  families, not `band_unknown`.
+
+**Phase 2 — P2.1 semantic entropy (THE RESEARCH SWING; varying temperatures
+0.3/0.5/0.7/1.0 on gpt-4.1-mini).** The 25-row degeneracy preflight, then a 150-row
+residual-enriched tier (23 residual rows), were run resumably. **Result: H0 — the
+over-reading is confident, not uncertain.**
+- Raw model prose genuinely varies across temperatures (different text/length per
+  sample — sampling is real, not cached), but the **rendered Purist label and selected
+  kind do not move**: mean label entropy **0.012**, only 4/150 rows show any label
+  variation, and the residual is *no more uncertain than the rest* (residual label
+  entropy 0.018 vs non-residual 0.011; **`band_unknown` = 0.000**, perfectly stable).
+- This is a publishable null that **converts the closeout's negative result into a
+  mechanism**: self-confidence is degenerate (P0.3), self-consistency is chance-level
+  (P0.8), and sampling entropy is flat at the residual (P2.1) — three independent
+  self-signals all fail to flag the unknown-vs-rate over-reading because the model
+  *confidently commits* to the same category regardless of temperature. The wall is
+  real, and the only signal that crosses it is **external** corroboration (P0.2/P0.3).
+- The full validation750 × 4-temperature run (~3,000 calls, ~5 h sequential) was
+  **not** spent: the degeneracy gate exists precisely to avoid a confirmation-only
+  spend once decisions are shown temperature-stable on a residual-enriched sample.
 
 ## Recommended sequencing
 

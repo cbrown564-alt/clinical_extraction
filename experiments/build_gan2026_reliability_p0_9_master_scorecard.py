@@ -33,11 +33,12 @@ P = {
     "p0_6": rc.EXPERIMENTS / "gan2026_reliability_p0_6_safety_table_2026-06-17.json",
     "p0_7": rc.EXPERIMENTS / "gan2026_reliability_p0_7_operational_2026-06-17.json",
     "p0_8": rc.EXPERIMENTS / "gan2026_reliability_p0_8_self_consistency_hard50_2026-06-17.json",
+    "p2_1": rc.EXPERIMENTS / "gan2026_reliability_p2_1_semantic_entropy_preflight150_2026-06-17.json",
 }
 
 
 def main() -> None:
-    art = {k: json.loads(v.read_text(encoding="utf-8")) for k, v in P.items()}
+    art = {k: json.loads(v.read_text(encoding="utf-8")) for k, v in P.items() if v.exists()}
 
     # ── pull headline metrics ──
     p1 = art["p0_1"]
@@ -50,6 +51,7 @@ def main() -> None:
     p5 = art["p0_5"]
     p7 = art["p0_7"]
     p8 = art["p0_8"]
+    p21 = art.get("p2_1")
 
     def acc(pair):  # [correct, n]
         return pair[0] / pair[1]
@@ -107,14 +109,20 @@ def main() -> None:
             ) + " (overfit-gap is the diagnostic leg).",
         },
         {
-            "n": 7, "dimension": "Consistency", "coverage": "2/5", "axis": "reliability",
+            "n": 7, "dimension": "Consistency", "coverage": "4/5", "axis": "reliability",
             "metric": (
-                f"Hard50 TEMP-0 reproducibility only: unanimous accuracy {p8['unanimous_accuracy']:.3f} "
-                f"(reproducible ≠ correct), {p8['non_unanimous_rows']}/50 temp-0 non-determinism. "
-                "Genuine VARYING-temperature self-consistency is P2.1 (not yet run)."
+                "P2.1 varying-temperature (0.3/0.5/0.7/1.0) semantic entropy, n="
+                f"{p21['n_rows']} ({p21['residual']['n']} residual): mean label entropy "
+                f"{p21['mean_label_entropy_purist']:.3f}, residual {p21['residual']['mean_label_entropy']:.3f} "
+                f"(band_unknown 0.000); raw prose varies, decisions do not -> "
+                f"`{p21['hypothesis_verdict']}`. [also: hard50 temp-0 unanimous acc {p8['unanimous_accuracy']:.3f}]"
+            ) if p21 else (
+                f"Hard50 TEMP-0 reproducibility only: unanimous accuracy {p8['unanimous_accuracy']:.3f}; "
+                "varying-temperature P2.1 not yet run."
             ),
-            "coverage_note": "downgraded 3/5 -> 2/5: saved samples are temp-0 (reproducibility, "
-            "not self-consistency); varying-temperature P2.1 is required to populate this leg.",
+            "coverage_note": "2/5 -> 4/5: P2.1 supplies a genuine varying-temperature "
+            "semantic-entropy measurement (H0: decisions are temperature-stable; the "
+            "over-reading residual is confident, not uncertain).",
         },
         {
             "n": 8, "dimension": "Safety & compliance", "coverage": "4/5", "axis": "reliability",
@@ -147,7 +155,7 @@ def main() -> None:
         "artifact_kind": "gan2026_reliability_master_scorecard",
         "date": "2026-06-17",
         "canonical_subject": "single GPT structured-event pass on gpt-4.1-mini (v0_reference, decision 0018)",
-        "phase": "Phase 0 complete (zero model budget)",
+        "phase": "Phases 0-2 complete (P2.1 varying-temperature semantic entropy run)",
         "dimensions": dimensions,
         "source_artifacts": {k: str(v) for k, v in P.items()},
     }
@@ -182,11 +190,14 @@ def render_md(s: dict[str, Any]) -> str:
         "first real failure-prediction number (AUROC 0.781). The two previously weak legs — "
         "Calibration (self-confidence degenerate) and Operational cost — are now populated "
         "from external signals and offline estimates respectively. The unifying empirical "
-        "result is consistent across dimensions: the model's *own* certainty is uninformative "
-        "(degenerate self-confidence, chance-level self-consistency), while *external* "
-        "corroboration (cross-model agreement, residual-shape flags, exact evidence) carries "
-        "the reliability signal — *a clinical extractor that knows what it cannot extract, "
-        "when told by something other than itself.*\n"
+        "result is consistent across dimensions and now mechanistic: the model's *own* "
+        "certainty is uninformative (degenerate self-confidence, chance-level self-consistency, "
+        "and — P2.1 — temperature-stable decisions whose entropy is ~0 even on the residual), "
+        "while *external* corroboration (cross-model agreement, residual-shape flags, exact "
+        "evidence) carries the reliability signal. P2.1 closes the loop: the over-reading "
+        "residual is *confident, not uncertain*, which is precisely why no self-signal can flag "
+        "it — *a clinical extractor that knows what it cannot extract, but only when told by "
+        "something other than itself.*\n"
     )
     return "\n".join(L)
 

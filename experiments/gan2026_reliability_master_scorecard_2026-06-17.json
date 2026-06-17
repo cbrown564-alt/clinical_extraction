@@ -2,7 +2,7 @@
   "artifact_kind": "gan2026_reliability_master_scorecard",
   "date": "2026-06-17",
   "canonical_subject": "single GPT structured-event pass on gpt-4.1-mini (v0_reference, decision 0018)",
-  "phase": "Phase 0 complete (zero model budget)",
+  "phase": "Phases 0-2 complete (P2.1 varying-temperature semantic entropy run)",
   "dimensions": [
     {
       "n": 1,
@@ -51,10 +51,10 @@
     {
       "n": 7,
       "dimension": "Consistency",
-      "coverage": "2/5",
+      "coverage": "4/5",
       "axis": "reliability",
-      "metric": "Hard50 TEMP-0 reproducibility only: unanimous accuracy 0.689 (reproducible \u2260 correct), 5/50 temp-0 non-determinism. Genuine VARYING-temperature self-consistency is P2.1 (not yet run).",
-      "coverage_note": "downgraded 3/5 -> 2/5: saved samples are temp-0 (reproducibility, not self-consistency); varying-temperature P2.1 is required to populate this leg."
+      "metric": "P2.1 varying-temperature (0.3/0.5/0.7/1.0) semantic entropy, n=150 (23 residual): mean label entropy 0.012, residual 0.018 (band_unknown 0.000); raw prose varies, decisions do not -> `H0_confident_over_reading`. [also: hard50 temp-0 unanimous acc 0.689]",
+      "coverage_note": "2/5 -> 4/5: P2.1 supplies a genuine varying-temperature semantic-entropy measurement (H0: decisions are temperature-stable; the over-reading residual is confident, not uncertain)."
     },
     {
       "n": 8,
@@ -87,6 +87,7 @@
     "p0_5": "experiments\\gan2026_reliability_p0_5_error_parity_validation750_2026-06-17.json",
     "p0_6": "experiments\\gan2026_reliability_p0_6_safety_table_2026-06-17.json",
     "p0_7": "experiments\\gan2026_reliability_p0_7_operational_2026-06-17.json",
-    "p0_8": "experiments\\gan2026_reliability_p0_8_self_consistency_hard50_2026-06-17.json"
+    "p0_8": "experiments\\gan2026_reliability_p0_8_self_consistency_hard50_2026-06-17.json",
+    "p2_1": "experiments\\gan2026_reliability_p2_1_semantic_entropy_preflight150_2026-06-17.json"
   }
 }
