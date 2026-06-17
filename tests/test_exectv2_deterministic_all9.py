@@ -8,6 +8,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities im
     EPILEPSY_CAUSE,
     INVESTIGATIONS,
     ONSET,
+    PATIENT_HISTORY,
     PRESCRIPTION,
     WHEN_DIAGNOSED,
 )
@@ -49,6 +50,8 @@ def _letter() -> ExectLetter:
         "She was diagnosed with epilepsy at the age of 4. "
         "Birth history: she was born normally. "
         "The epilepsy is secondary to Tuberous sclerosis. "
+        "Past medical history includes depression and migraine. "
+        "There is no history of febrile convulsions. "
         "Current medication: Lamotrigine 150mg bd and levetiracetam 500 mg od. "
         "Seizure type and frequency: focal seizures 2 per month."
     )
@@ -66,6 +69,7 @@ def test_extract_deterministic_all9_emits_active_structured_entities_and_sf() ->
         INVESTIGATIONS.name,
         ONSET.name,
         PRESCRIPTION.name,
+        PATIENT_HISTORY.name,
         WHEN_DIAGNOSED.name,
         BIRTH_HISTORY.name,
         SEIZURE_FREQUENCY,
@@ -125,6 +129,18 @@ def test_structured_mentions_carry_rule_taxonomy_and_benchmark_cui() -> None:
     assert cause.attributes["Negation"] == "Affirmed"
     assert cause.attributes["CUI"] == "C0041341"
     assert "epilepsy_cause" in cause.component_owner
+
+    patient_history = by_entity[PATIENT_HISTORY.name]
+    depression = next(m for m in patient_history if m.text == "depression")
+    assert depression.attributes["Certainty"] == "5"
+    assert depression.attributes["Negation"] == "Affirmed"
+    assert depression.attributes["CUI"] == "C0011570"
+    assert "patient_history" in depression.component_owner
+
+    febrile = next(m for m in patient_history if m.text == "febrile-convulsions")
+    assert febrile.attributes["Certainty"] == "1"
+    assert febrile.attributes["Negation"] == "Negated"
+    assert febrile.attributes["CUI"] == "C0009952"
 
     lamotrigine = next(m for m in by_entity[PRESCRIPTION.name] if m.text == "Lamotrigine 150mg bd")
     assert lamotrigine.attributes["DrugName"] == "lamotrigine"
@@ -210,6 +226,30 @@ def test_deterministic_all9_scores_tiny_active_entity_gold() -> None:
                 Negation="Affirmed",
                 CUI="C0041341",
                 CUIPhrase="Tuberous-sclerosis",
+            ),
+            _ann(
+                PATIENT_HISTORY.name,
+                "depression",
+                Certainty="5",
+                Negation="Affirmed",
+                CUI="C0011570",
+                CUIPhrase="depression",
+            ),
+            _ann(
+                PATIENT_HISTORY.name,
+                "migraine",
+                Certainty="5",
+                Negation="Affirmed",
+                CUI="C0149931",
+                CUIPhrase="migraine",
+            ),
+            _ann(
+                PATIENT_HISTORY.name,
+                "febrile-convulsions",
+                Certainty="1",
+                Negation="Negated",
+                CUI="C0009952",
+                CUIPhrase="febrile-convulsions",
             ),
             _ann(
                 PRESCRIPTION.name,
@@ -353,6 +393,49 @@ def test_birth_history_and_epilepsy_cause_engines_use_explicit_lexicons() -> Non
     assert causes[1].attributes["CUI"] == "C0876926"
 
 
+def test_patient_history_engine_extracts_compact_concepts_negation_and_temporal_features() -> None:
+    letter = ExectLetter(
+        "DALL9-PH",
+        (
+            "Past medical history of severe head injury due to an RTA in 2010, "
+            "migraine, and depression. "
+            "There is no history of febrile convulsions. "
+            "She had febrile seizures at the age of 3 and 5."
+        ),
+    )
+
+    prediction = extract_deterministic_all9(letter)
+    mentions = [m for m in prediction.mentions if m.entity == PATIENT_HISTORY.name]
+
+    head_injury = next(m for m in mentions if m.text == "head-injury")
+    assert head_injury.attributes == {
+        "YearDate": "2010",
+        "Certainty": "5",
+        "Negation": "Affirmed",
+        "CUI": "C0497301",
+        "CUIPhrase": "head-injury",
+    }
+    assert head_injury.evidence == "severe head injury due to an RTA in 2010"
+
+    migraine = next(m for m in mentions if m.text == "migraine")
+    assert migraine.attributes["CUI"] == "C0149931"
+
+    negated = next(m for m in mentions if m.text == "febrile-convulsions")
+    assert negated.attributes["Certainty"] == "1"
+    assert negated.attributes["Negation"] == "Negated"
+
+    affirmed = next(m for m in mentions if m.text == "febrile-seizures")
+    assert affirmed.attributes == {
+        "AgeLower": "3",
+        "AgeUpper": "5",
+        "AgeUnit": "Year",
+        "Certainty": "5",
+        "Negation": "Affirmed",
+        "CUI": "C0009952",
+        "CUIPhrase": "febrile-seizures",
+    }
+
+
 def test_investigations_extracts_standard_eeg_and_unknown_results() -> None:
     letter = ExectLetter(
         "DALL9-INV",
@@ -401,6 +484,30 @@ def test_deterministic_all9_scorecard_reports_prescription_projection_ladder() -
                 CUI="C0377265",
                 CUIPhrase="levetiracetam",
             ),
+            _ann(
+                PATIENT_HISTORY.name,
+                "depression",
+                Certainty="5",
+                Negation="Affirmed",
+                CUI="C0011570",
+                CUIPhrase="depression",
+            ),
+            _ann(
+                PATIENT_HISTORY.name,
+                "migraine",
+                Certainty="5",
+                Negation="Affirmed",
+                CUI="C0149931",
+                CUIPhrase="migraine",
+            ),
+            _ann(
+                PATIENT_HISTORY.name,
+                "febrile-convulsions",
+                Certainty="1",
+                Negation="Negated",
+                CUI="C0009952",
+                CUIPhrase="febrile-convulsions",
+            ),
         ),
     )
 
@@ -420,6 +527,16 @@ def test_deterministic_all9_scorecard_reports_prescription_projection_ladder() -
         "guideline_defaulted_frequency",
     }
     assert projection["clinical_medication_identity"]["f1"] == 1.0
+
+    patient_history = scorecard["patient_history_error_ledger"]
+    assert patient_history["gold_mentions"] == 3
+    assert patient_history["predicted_mentions"] == 3
+    assert patient_history["predicted_with_cui"] == 3
+    assert set(patient_history["gap_families"]) == {
+        "phrase_scope_or_missing",
+        "attribute_bundle",
+        "cui_projection",
+    }
 
 
 def test_run_all9_on_letters_preserves_order() -> None:

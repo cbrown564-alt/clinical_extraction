@@ -7,15 +7,40 @@
     "WhenDiagnosed",
     "BirthHistory",
     "EpilepsyCause",
+    "PatientHistory",
     "SeizureFrequency"
   ],
   "call_failures": 0,
-  "cui_attachment_rate": 0.9892,
+  "cui_attachment_rate": 0.9909,
   "generated_on": "2026-06-17",
-  "mentions_total": 835,
-  "mentions_with_cui": 826,
+  "mentions_total": 992,
+  "mentions_with_cui": 983,
   "model": "(model-independent)",
   "parse_failures": 0,
+  "patient_history_error_ledger": {
+    "gap_families": {
+      "attribute_bundle": {
+        "additional_fn_vs_phrase": 25,
+        "additional_fp_vs_phrase": 25,
+        "note": "Temporal, negation, and certainty mismatches after phrase match."
+      },
+      "cui_projection": {
+        "additional_fn_vs_semantic": 1,
+        "additional_fp_vs_semantic": 1,
+        "note": "Benchmark-format gap from CUI/CUIPhrase projection."
+      },
+      "phrase_scope_or_missing": {
+        "fn": 375,
+        "fp": 66,
+        "note": "Phrase-only misses and over-emissions before attributes or CUI."
+      }
+    },
+    "gold_mentions": 466,
+    "predicted_mentions": 157,
+    "predicted_negated": 36,
+    "predicted_with_cui": 157,
+    "predicted_with_temporal_attributes": 9
+  },
   "pipeline_family": "exectv2_deterministic_all9",
   "prescription_benchmark_projection_scores": {
     "benchmark_with_cui": {
@@ -274,20 +299,20 @@
         },
         "PatientHistory": {
           "per_item": {
-            "f1": 0.0,
-            "fn": 466,
-            "fp": 0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "tp": 0
+            "f1": 0.2087,
+            "fn": 401,
+            "fp": 92,
+            "precision": 0.414,
+            "recall": 0.1395,
+            "tp": 65
           },
           "per_letter": {
-            "f1": 0.0,
-            "fn": 128,
-            "fp": 0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "tp": 0
+            "f1": 0.5475,
+            "fn": 79,
+            "fp": 2,
+            "precision": 0.9608,
+            "recall": 0.3828,
+            "tp": 49
           }
         },
         "Prescription": {
@@ -346,20 +371,20 @@
         }
       },
       "per_item": {
-        "f1": 0.3309,
-        "fn": 1097,
-        "fp": 452,
-        "precision": 0.4587,
-        "recall": 0.2588,
-        "tp": 383
+        "f1": 0.3625,
+        "fn": 1032,
+        "fp": 544,
+        "precision": 0.4516,
+        "recall": 0.3027,
+        "tp": 448
       },
       "per_letter": {
-        "f1": 0.6072,
-        "fn": 328,
-        "fp": 42,
-        "precision": 0.872,
-        "recall": 0.4658,
-        "tp": 286
+        "f1": 0.6747,
+        "fn": 279,
+        "fp": 44,
+        "precision": 0.8839,
+        "recall": 0.5456,
+        "tp": 335
       }
     },
     "phrase_only": {
@@ -456,20 +481,20 @@
         },
         "PatientHistory": {
           "per_item": {
-            "f1": 0.0,
-            "fn": 466,
-            "fp": 0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "tp": 0
+            "f1": 0.2921,
+            "fn": 375,
+            "fp": 66,
+            "precision": 0.5796,
+            "recall": 0.1953,
+            "tp": 91
           },
           "per_letter": {
-            "f1": 0.0,
-            "fn": 128,
-            "fp": 0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "tp": 0
+            "f1": 0.6387,
+            "fn": 67,
+            "fp": 2,
+            "precision": 0.9683,
+            "recall": 0.4766,
+            "tp": 61
           }
         },
         "Prescription": {
@@ -528,20 +553,20 @@
         }
       },
       "per_item": {
-        "f1": 0.4095,
-        "fn": 1006,
-        "fp": 361,
-        "precision": 0.5677,
-        "recall": 0.3203,
-        "tp": 474
+        "f1": 0.4571,
+        "fn": 915,
+        "fp": 427,
+        "precision": 0.5696,
+        "recall": 0.3818,
+        "tp": 565
       },
       "per_letter": {
-        "f1": 0.6774,
-        "fn": 278,
-        "fp": 42,
-        "precision": 0.8889,
-        "recall": 0.5472,
-        "tp": 336
+        "f1": 0.7526,
+        "fn": 217,
+        "fp": 44,
+        "precision": 0.9002,
+        "recall": 0.6466,
+        "tp": 397
       }
     },
     "semantic": {
@@ -638,20 +663,20 @@
         },
         "PatientHistory": {
           "per_item": {
-            "f1": 0.0,
-            "fn": 466,
-            "fp": 0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "tp": 0
+            "f1": 0.2119,
+            "fn": 400,
+            "fp": 91,
+            "precision": 0.4204,
+            "recall": 0.1416,
+            "tp": 66
           },
           "per_letter": {
-            "f1": 0.0,
-            "fn": 128,
-            "fp": 0,
-            "precision": 0.0,
-            "recall": 0.0,
-            "tp": 0
+            "f1": 0.5475,
+            "fn": 79,
+            "fp": 2,
+            "precision": 0.9608,
+            "recall": 0.3828,
+            "tp": 49
           }
         },
         "Prescription": {
@@ -710,20 +735,20 @@
         }
       },
       "per_item": {
-        "f1": 0.3438,
-        "fn": 1082,
-        "fp": 437,
-        "precision": 0.4766,
-        "recall": 0.2689,
-        "tp": 398
+        "f1": 0.3754,
+        "fn": 1016,
+        "fp": 528,
+        "precision": 0.4677,
+        "recall": 0.3135,
+        "tp": 464
       },
       "per_letter": {
-        "f1": 0.6146,
-        "fn": 323,
-        "fp": 42,
-        "precision": 0.8739,
-        "recall": 0.4739,
-        "tp": 291
+        "f1": 0.6814,
+        "fn": 274,
+        "fp": 44,
+        "precision": 0.8854,
+        "recall": 0.5537,
+        "tp": 340
       }
     }
   },

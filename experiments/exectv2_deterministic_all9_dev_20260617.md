@@ -4,7 +4,7 @@
 - JSON: `experiments\exectv2_deterministic_all9_dev_20260617.json`
 - Split: `dev`
 - Pipeline family: `exectv2_deterministic_all9`
-- Active deterministic entities: Prescription, Investigations, Diagnosis, Onset, WhenDiagnosed, BirthHistory, EpilepsyCause, SeizureFrequency
+- Active deterministic entities: Prescription, Investigations, Diagnosis, Onset, WhenDiagnosed, BirthHistory, EpilepsyCause, PatientHistory, SeizureFrequency
 - Scored entities: BirthHistory, Diagnosis, EpilepsyCause, Investigations, Onset, PatientHistory, Prescription, SeizureFrequency, WhenDiagnosed
 
 ## Reliability
@@ -15,17 +15,17 @@
 - Schema repairs: 0
 - Evidence-not-substring warnings: 0
 - Evidence validity rate: 1.0000
-- Mentions emitted: 835
-- CUI attachment: 826/835 (0.9892)
+- Mentions emitted: 992
+- CUI attachment: 983/992 (0.9909)
 - Routed/abstained mentions: 0
 
 ## Overall Scores
 
 | Layer | Per-item F1 | Per-letter F1 | TP | FP | FN |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| phrase_only | 0.4095 | 0.6774 | 474 | 361 | 1006 |
-| semantic | 0.3438 | 0.6146 | 398 | 437 | 1082 |
-| benchmark | 0.3309 | 0.6072 | 383 | 452 | 1097 |
+| phrase_only | 0.4571 | 0.7526 | 565 | 427 | 915 |
+| semantic | 0.3754 | 0.6814 | 464 | 528 | 1016 |
+| benchmark | 0.3625 | 0.6747 | 448 | 544 | 1032 |
 
 ## Per-Entity Benchmark F1
 
@@ -36,7 +36,7 @@
 | EpilepsyCause | 0.5333 | 0.5806 | 12 | 12 | 9 |
 | Investigations | 0.3220 | 0.5755 | 52 | 135 | 84 |
 | Onset | 0.2857 | 0.4167 | 5 | 13 | 12 |
-| PatientHistory | 0.0000 | 0.0000 | 0 | 0 | 466 |
+| PatientHistory | 0.2087 | 0.5475 | 65 | 92 | 401 |
 | Prescription | 0.3020 | 0.5223 | 61 | 137 | 145 |
 | SeizureFrequency | 0.6921 | 0.9247 | 136 | 70 | 51 |
 | WhenDiagnosed | 0.8182 | 0.9000 | 9 | 2 | 2 |
@@ -74,6 +74,20 @@
 | source_stated_frequency | 0.9307 | 0.9495 | 0.9126 | 188 | 10 | 18 |
 | guideline_defaulted_frequency | 0.0000 | 0.0000 | 0.0000 | 0 | 0 | 0 |
 
+## PatientHistory Error Ledger
+
+- Gold mentions: 466
+- Predicted mentions: 157
+- Predicted with CUI: 157
+- Predicted with temporal attributes: 9
+- Predicted negated: 36
+
+| Gap family | FN / additional FN | FP / additional FP | Note |
+| --- | ---: | ---: | --- |
+| phrase_scope_or_missing | 375 | 66 | Phrase-only misses and over-emissions before attributes or CUI. |
+| attribute_bundle | 25 | 25 | Temporal, negation, and certainty mismatches after phrase match. |
+| cui_projection | 1 | 1 | Benchmark-format gap from CUI/CUIPhrase projection. |
+
 ## Reading
 
-This is the first rules_only all-entity substrate: it scores all nine entities, but only Prescription, Investigations, Diagnosis, Onset, WhenDiagnosed, BirthHistory, EpilepsyCause, and SeizureFrequency have active deterministic extractors. Missing PatientHistory coverage is visible as false negatives rather than hidden.
+This is the first rules_only all-entity substrate: it scores all nine entities. Prescription, Investigations, Diagnosis, Onset, WhenDiagnosed, BirthHistory, EpilepsyCause, and SeizureFrequency now sit beside a conservative PatientHistory substrate with explicit phrase, attribute, and CUI gap families.

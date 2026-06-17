@@ -4,6 +4,24 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Reliability Scorecard
 
+### `gan2026_reliability_d_gating_value_validation750_2026-06-17`
+- Date/split: `2026-06-17`; `validation`; `748` rows scored; NO model calls (pure replay over the shadow run).
+- Pipeline: `reliability_d_gating_value`; deterministic selective-prediction simulation; combiner none.
+- Model role: none. Simulates using the variant-D `calibrated_confidence` as an abstention gate on the PRIMARY single gpt-4.1-mini SE architecture; scored vs `v0_reference.comparison.purist_correct`.
+- Primary metrics: base accuracy 0.884 (error 0.116), D AUROC 0.684. Gate selective accuracy / abstention precision: cov 95% → 0.890 / 0.243; cov 90% → 0.905 / 0.307 (peak, 2.6× the 0.116 random bar); cov 80% → 0.921 / 0.267; cov 50% → 0.952 / 0.184. Errors shed at 90% cov ≈ 26% of total. External composite gate shown as context-only ceiling (needs 3 models, unavailable single-model).
+- Evidence validity: Validation-only; test450 untouched. The random-abstention bar (= base error rate, selective accuracy unchanged in expectation) is the comparison; D clears it (abstention precision 2–2.6× random across operating points).
+- Claim language: On the single-model architecture, variant-D confidence is a REAL but MODEST gate — genuinely beats random abstention (precision 2–2.6×), monotone selective-accuracy curve, but small absolute accuracy lift (88.4%→90.5% costs 10% coverage) because confident over-reading errors are invisible to any self-signal. Practical value depends on tolerance for discarded coverage + one extra mini call/row. test450 usefulness UNKNOWN pending a freeze-warden-gated, aggregate-only holdout port. Does not change champion/robustness status.
+- Artifacts: `experiments/gan2026_reliability_d_gating_value_validation750_2026-06-17.json`, `experiments/gan2026_reliability_d_gating_value_validation750_2026-06-17.md`.
+
+### `gan2026_reliability_blend_external_plus_d_validation750_2026-06-17`
+- Date/split: `2026-06-17`; `validation`; `748` rows scored (87 errors); NO model calls (pure replay).
+- Pipeline: `reliability_blend_external_plus_d`; combiners rank-average (headline, unsupervised) + 5-fold CV weighted; replay deterministic.
+- Model role: none. Blends the P0.2 external composite risk (`3*(3-agreement)+source_flags+ambiguity`, from consensus votes + rq9 packet) with the variant-D self-signal (`1 - calibrated_confidence`, from the validation750 shadow run). Target = `v0_reference.comparison.purist_correct` (canonical, decision 0018); SE-pass vs v0_reference correctness mismatch = 0/748 (confirms shadow scored the canonical subject).
+- Primary metrics: failure-prediction AUROC — external alone **0.783** (≈ P0.2's 0.781), variant D alone 0.684, rank-average blend **0.797** (Δ +0.014), CV-weighted held-out 0.786, whole-data best-w 0.795; Spearman(external-risk, D-risk) = 0.234; selective risk-coverage AUC ext 0.0392 vs blend ~similar; verdict H0_redundant (Δ < predeclared +0.02).
+- Evidence validity: Validation-only; test450 untouched. No fitting in the headline (rank-average is unsupervised); the CV-weighted blend uses honest per-fold weight selection (no whole-data overfit).
+- Claim language: Combining the cheap variant-D self-signal with external corroboration does NOT materially beat corroboration alone — the unsupervised rank-average edges external by only +0.014 (within CI on 87 errors), and the honest CV-weighted blend collapses to external alone (0.786 vs 0.783). NOT due to redundancy (Spearman only 0.234 → partly independent errors); D is simply the weaker/noisier ranker, so fusion mostly adds noise. External corroboration remains the single best forward-observable signal; D's value stays as a cheaper standalone proxy where 3-model agreement is unavailable. Does not change champion/robustness status.
+- Artifacts: `experiments/gan2026_reliability_blend_external_plus_d_validation750_2026-06-17.json`, `experiments/gan2026_reliability_blend_external_plus_d_validation750_2026-06-17.md`.
+
 ### `gan2026_confidence_reviewer_shadow_validation750_2026-06-17`
 - Date/split: `2026-06-17`; `validation`; `750` rows (748 scored, 87 failures); LIVE (reviewer only).
 - Pipeline: `confidence_reviewer_shadow`; host `hybrid_structured_events.run_split` (SE selection pass); mode `live`; replay reuses saved SE raw outputs (0 SE calls) + resumable reviewer checkpoints every 25 rows.

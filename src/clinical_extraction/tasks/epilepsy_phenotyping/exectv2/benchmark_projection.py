@@ -17,6 +17,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities im
     EPILEPSY_CAUSE,
     INVESTIGATIONS,
     ONSET,
+    PATIENT_HISTORY,
     PRESCRIPTION,
     WHEN_DIAGNOSED,
 )
@@ -242,6 +243,110 @@ _EPILEPSY_CAUSE_CONCEPT_BY_PHRASE: dict[str, BenchmarkConcept] = {
     for concept, variants in _EPILEPSY_CAUSE_ENTRIES
     for variant in variants
 }
+_PATIENT_HISTORY_ENTRIES: tuple[tuple[BenchmarkConcept, tuple[str, ...]], ...] = (
+    (BenchmarkConcept("seizures", "C0036572", "seizures"), ("seizures", "seizure")),
+    (
+        BenchmarkConcept("febrile-seizures", "C0009952", "febrile-seizures"),
+        ("febrile seizures", "febrile-seizures", "febrile seizure"),
+    ),
+    (
+        BenchmarkConcept("febrile-convulsions", "C0009952", "febrile-convulsions"),
+        ("febrile convulsions", "febrile-convulsions", "febrile convulsion"),
+    ),
+    (BenchmarkConcept("anxiety", "C0003467", "anxiety"), ("anxiety",)),
+    (BenchmarkConcept("depression", "C0011570", "depression"), ("depression",)),
+    (BenchmarkConcept("migraine", "C0149931", "migraine"), ("migraine", "migraines")),
+    (
+        BenchmarkConcept("myoclonic-jerks", "C0027066", "myoclonic-jerks"),
+        ("myoclonic jerks", "myoclonic-jerks"),
+    ),
+    (BenchmarkConcept("absences", "C0563606", "absences"), ("absences",)),
+    (
+        BenchmarkConcept("dissociative-seizures", "C0349245", "dissociative-seizures"),
+        ("dissociative seizures", "dissociative-seizures"),
+    ),
+    (
+        BenchmarkConcept(
+            "non-epileptic-psychogenic-seizures",
+            "C1142430",
+            "non-epileptic-psychogenic-seizures",
+        ),
+        ("non epileptic psychogenic seizures", "non-epileptic psychogenic seizures"),
+    ),
+    (
+        BenchmarkConcept("non-epileptic-attacks", "C3495874", "non-epileptic-attacks"),
+        ("non epileptic attacks", "non-epileptic attacks"),
+    ),
+    (
+        BenchmarkConcept(
+            "transient-loss-of-consciousness",
+            "C4087400",
+            "transient-loss-of-consciousness",
+        ),
+        ("transient loss of consciousness", "transient-loss-of-consciousness"),
+    ),
+    (
+        BenchmarkConcept("loss-of-consciousness", "C0041657", "loss-of-consciousness"),
+        ("loss of consciousness", "loss-of-consciousness"),
+    ),
+    (BenchmarkConcept("diabetes", "C0011849", "diabetes"), ("diabetes",)),
+    (BenchmarkConcept("gliosis", "C0017639", "gliosis"), ("gliosis",)),
+    (
+        BenchmarkConcept("cortical-dysplasia", "C0431380", "cortical-dysplasia"),
+        ("cortical dysplasia", "cortical-dysplasia"),
+    ),
+    (
+        BenchmarkConcept("head-injury", "C0497301", "head-injury"),
+        ("head injury", "minor head injury", "severe head injury"),
+    ),
+    (
+        BenchmarkConcept("traumatic-brain-injury", "C0876926", "traumatic-brain-injury"),
+        ("traumatic brain injury",),
+    ),
+    (BenchmarkConcept("meningitis", "C0025289", "meningitis"), ("meningitis", "viral meningitis")),
+    (
+        BenchmarkConcept("viral-encephalitis", "C0243010", "viral-encephalitis"),
+        ("viral encephalitis",),
+    ),
+    (BenchmarkConcept("encephalitis", "C0014038", "encephalitis"), ("encephalitis",)),
+    (BenchmarkConcept("brain-surgery", "C0195775", "brain-surgery"), ("brain surgery",)),
+    (
+        BenchmarkConcept("cerebral-abscess", "C1510428", "cerebral-abscess"),
+        ("cerebral abscess", "cerebral abcess"),
+    ),
+    (BenchmarkConcept("hypertension", "C0020538", "hypertension"), ("hypertension",)),
+    (
+        BenchmarkConcept("learning-disabilities", "C0751265", "learning-disabilities"),
+        ("learning disabilities", "learning disability"),
+    ),
+    (
+        BenchmarkConcept("learning-difficulties", "C0424939", "learning-difficulties"),
+        ("learning difficulties", "learning difficulty"),
+    ),
+    (BenchmarkConcept("stroke", "C0038454", "stroke"), ("stroke", "cva")),
+    (BenchmarkConcept("syncope", "C0039070", "syncope"), ("syncope",)),
+    (BenchmarkConcept("photosensitivity", "C3552821", "photosensitivity"), ("photosensitivity",)),
+    (
+        BenchmarkConcept("tuberous-sclerosis", "C0041341", "tuberous-sclerosis"),
+        ("tuberous sclerosis",),
+    ),
+    (BenchmarkConcept("measles", "C0025007", "measles"), ("measles",)),
+    (
+        BenchmarkConcept("neurocysticercosis", "C0338437", "neurocysticercosis"),
+        ("neurocysticercosis",),
+    ),
+    (BenchmarkConcept("meningioma", "C0349604", "meningioma"), ("meningioma",)),
+    (
+        BenchmarkConcept("cluster-of-seizures", "C3203523", "cluster-of-seizures"),
+        ("cluster of seizures", "cluster-of-seizures"),
+    ),
+    (BenchmarkConcept("myoclonus", "C0027066", "myoclonus"), ("myoclonus",)),
+)
+_PATIENT_HISTORY_CONCEPT_BY_PHRASE: dict[str, BenchmarkConcept] = {
+    normalize_phrase(variant): concept
+    for concept, variants in _PATIENT_HISTORY_ENTRIES
+    for variant in variants
+}
 
 
 def prescription_concept(phrase: str) -> BenchmarkConcept | None:
@@ -284,6 +389,12 @@ def epilepsy_cause_concept(phrase: str) -> BenchmarkConcept | None:
     """Return the benchmark epilepsy-cause concept for ``phrase`` if known."""
 
     return _EPILEPSY_CAUSE_CONCEPT_BY_PHRASE.get(normalize_phrase(phrase))
+
+
+def patient_history_concept(phrase: str) -> BenchmarkConcept | None:
+    """Return the benchmark patient-history concept for ``phrase`` if known."""
+
+    return _PATIENT_HISTORY_CONCEPT_BY_PHRASE.get(normalize_phrase(phrase))
 
 
 def attach_benchmark_concept(
@@ -363,6 +474,8 @@ def _concept_for_mention(mention: PredictedMention) -> BenchmarkConcept | None:
         return birth_history_concept(mention.text)
     if mention.entity == EPILEPSY_CAUSE.name:
         return epilepsy_cause_concept(mention.text)
+    if mention.entity == PATIENT_HISTORY.name:
+        return patient_history_concept(mention.text)
     return None
 
 

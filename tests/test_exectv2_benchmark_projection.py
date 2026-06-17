@@ -10,6 +10,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.benchmark_projection
     epilepsy_cause_concept,
     investigation_concept,
     onset_concept,
+    patient_history_concept,
     prescription_concept,
     project_cuis,
     when_diagnosed_concept,
@@ -20,6 +21,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities im
     EPILEPSY_CAUSE,
     INVESTIGATIONS,
     ONSET,
+    PATIENT_HISTORY,
     PRESCRIPTION,
     WHEN_DIAGNOSED,
 )
@@ -73,6 +75,11 @@ def test_new_structured_entity_projections_are_finite_benchmark_lookups() -> Non
         "cerebral-abscess",
         "C1510428",
         "cerebral-abscess",
+    )
+    assert patient_history_concept("febrile convulsions") == BenchmarkConcept(
+        "febrile-convulsions",
+        "C0009952",
+        "febrile-convulsions",
     )
 
 
@@ -145,6 +152,13 @@ def test_project_cuis_is_precision_first_and_leaves_unknown_mentions_without_gue
                 evidence="Tuberous sclerosis",
                 component_owner="fixture",
             ),
+            PredictedMention(
+                entity=PATIENT_HISTORY.name,
+                text="depression",
+                attributes={"Certainty": "5", "Negation": "Affirmed"},
+                evidence="depression",
+                component_owner="fixture",
+            ),
         ),
     )
 
@@ -157,3 +171,4 @@ def test_project_cuis_is_precision_first_and_leaves_unknown_mentions_without_gue
     assert projected.mentions[4].attributes["CUI"] == "C0014544"
     assert projected.mentions[5].attributes["CUI"] == "C3665337"
     assert projected.mentions[6].attributes["CUI"] == "C0041341"
+    assert projected.mentions[7].attributes["CUI"] == "C0011570"

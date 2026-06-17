@@ -277,12 +277,19 @@ def render_md(r: dict[str, Any]) -> str:
                  "*independent* errors, so fusion helps. A cheap single extra mini call adds "
                  "signal on top of 3-model agreement.\n")
     else:
-        L.append("**H0 — D is largely redundant with the external score.** The blend does not "
-                 "materially beat corroboration alone. Given the Spearman correlation, the "
-                 "self-signal and the external composite are flagging substantially the *same* "
-                 "risky rows, so fusion adds little. External corroboration remains the single "
-                 "best forward-observable signal; D's value is as a cheaper standalone proxy "
-                 "where 3-model agreement is unavailable, not as an additive booster.\n")
+        rho = r["spearman_extrisk_vs_drisk"]
+        L.append("**H0 — D does not materially boost the external score.** The unsupervised "
+                 f"rank-average edges external alone by only {r['auroc_delta_rankblend_minus_external']:+.3f} "
+                 "(within CI on this error count), and crucially the **honest CV-weighted blend "
+                 f"({a['cv_weighted_blend_heldout']:.3f}) collapses back to external alone "
+                 f"({a['external_alone']:.3f})** — when the weight is chosen without peeking, "
+                 "fusion buys nothing. Note this is NOT because the signals are redundant: "
+                 f"Spearman is only {rho:.2f}, so D and the external composite make partly "
+                 "*independent* errors. The problem is that D is simply the weaker, noisier "
+                 "ranker (0.684 vs 0.783), so averaging it in mostly adds noise. External "
+                 "corroboration stays the single best forward-observable signal; D's value is "
+                 "as a cheaper standalone proxy where 3-model agreement is unavailable, not as "
+                 "an additive booster.\n")
     return "\n".join(L)
 
 
