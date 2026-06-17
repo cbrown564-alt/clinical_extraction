@@ -44,6 +44,19 @@ evidence.
   It pauses Qwen as an overnight transfer track and prioritizes
   `gpt-4.1-mini` loops across deterministic all-9, per-entity LLM-only, and
   hybrid candidate-assessment architectures.
+- The GPT-first run matrix now has a code-backed status report:
+  `experiments/exectv2_gpt_first_architecture_loop_status_20260617.md`.
+  Current freeze blockers are rules-only all-9 below target, LLM-only all-9
+  only covered by the negative single-pass baseline rather than per-entity
+  structured frames, and hybrid evidence still SF-only.
+- The first deterministic all-9 dev scorecard is registered:
+  `experiments/exectv2_deterministic_all9_dev_20260617.md`. It scores all nine
+  entities with active rules for Prescription, Investigations, Diagnosis, and
+  SeizureFrequency. Prescription now has component-level clinical scoring in
+  the scorecard: name F1 `0.9257`, dose F1 `0.9343`, frequency F1 `0.9307`,
+  and complete name+dose+frequency tuple F1 `0.9293`; benchmark phrase/CUI F1
+  remains much lower at `0.3020/0.5223`, with `0` schema errors and `1.0000`
+  evidence validity.
 
 ## Gan Research Questions To Close Out
 
@@ -95,9 +108,11 @@ evidence.
 
 ### Now
 
-- Start the GPT-first ExECTv2 implementation loop from
-  `docs/research/exectv2_gpt_first_full_architecture_strategy_2026-06-17.md`.
-  First target: full run matrix design and the next small GPT dev experiment.
+- Use `experiments/exectv2_deterministic_all9_dev_20260617.md` to improve the
+  deterministic substrate: Prescription clinical components have cleared the
+  `>=0.90` target, so next reduce the Prescription benchmark phrase/CUI gap,
+  improve Investigations exactness, preserve the strong SF cell, and add the
+  next structured entity engines with rule-family/CUI ablations.
 
 ### Next
 
@@ -134,6 +149,32 @@ evidence.
 
 ### Done Recently
 
+- 2026-06-17: Implemented the first deterministic all-9 ExECTv2 baseline
+  (`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/all_entities.py`)
+  and scorecard generator
+  (`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/reports/deterministic_all9_scorecard.py`);
+  generated and registered
+  `experiments/exectv2_deterministic_all9_dev_20260617.md`, then added
+  clinically normalized Prescription component scoring and regimen rules
+  (expanded anti-seizure medication lexicon, brand/synonym/typo handling,
+  split-dose schedules, PRN rescue handling, and planned-dose suppression).
+  Prescription component scores now clear target: name `0.9257`, dose `0.9343`,
+  frequency `0.9307`, complete tuple `0.9293`. Rules-only is now measured, not
+  missing; overall all-9 remains below freeze target because other entities are
+  absent or early-stage.
+- 2026-06-17: Documented the Prescription component-vs-benchmark scoring split
+  (`docs/research/exectv2_prescription_component_vs_benchmark_scoring_2026-06-17.md`):
+  medication component F1 measures clinically normalized regimen recovery, while
+  benchmark phrase/CUI F1 measures ExECT mention projection. The note makes the
+  phrase-scope assumption explicit, including that section prefixes such as
+  `Current antiepileptic medication:` should not be treated as part of the
+  clinical medication phrase.
+- 2026-06-17: Added the code-backed GPT-first ExECTv2 architecture-loop status
+  report generator and tests
+  (`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/reports/architecture_loop_status.py`,
+  `tests/test_exectv2_architecture_loop_status.py`); generated
+  `experiments/exectv2_gpt_first_architecture_loop_status_20260617.md`, which
+  records the current freeze blockers and next actions.
 - 2026-06-17: Wrote the GPT-first ExECTv2 full-architecture strategy
   (`docs/research/exectv2_gpt_first_full_architecture_strategy_2026-06-17.md`),
   translating the Gan closeout and reliability scorecard into deterministic,
@@ -162,6 +203,9 @@ evidence.
 
 - `docs/research/gan2026_research_closeout_synthesis_2026-06-17.md` (closeout synthesis)
 - `docs/research/exectv2_gpt_first_full_architecture_strategy_2026-06-17.md`
+- `docs/research/exectv2_prescription_component_vs_benchmark_scoring_2026-06-17.md`
+- `experiments/exectv2_gpt_first_architecture_loop_status_20260617.md`
+- `experiments/exectv2_deterministic_all9_dev_20260617.md`
 - `docs/research/gan2026_f1_dynamic_workflow_night_synthesis_2026-06-16.md`
 - `docs/research/gan2026_simplest_near_ceiling_architecture_results_2026-06-16.md`
 - `docs/research/gan2026_hybrid_structured_events_agentic_consensus_fresh_evidence_analysis_2026-06-14.md`

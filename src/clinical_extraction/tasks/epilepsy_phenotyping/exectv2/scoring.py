@@ -18,6 +18,26 @@ DEFAULT_IGNORE_ATTRIBUTES: frozenset[str] = frozenset({"CUIPhrase"})
 _QUOTES = str.maketrans("", "", "\"'“”‘’‚‛")
 _WHITESPACE = re.compile(r"\s+")
 _LOWERCASE_ATTRIBUTE_VALUES: frozenset[str] = frozenset({"DrugName", "DoseUnit"})
+_PRESCRIPTION_ENTITY = "Prescription"
+_MEDICATION_NAME_ALIASES: dict[str, str] = {
+    "brivetiracetam": "brivaracetam",
+    "brivitiracetam": "brivaracetam",
+    "carbamazapine": "carbamazepine",
+    "carbmazapine": "carbamazepine",
+    "epilim": "sodium-valproate",
+    "epilim-chrono": "sodium-valproate",
+    "eplim": "sodium-valproate",
+    "episenta": "sodium-valproate",
+    "eslicarbazepineacetate": "eslicarbazepine",
+    "keppra": "levetiracetam",
+    "lamictal": "lamotrigine",
+    "phenobarbitone": "phenobarbital",
+    "sodiumvalproate": "sodium-valproate",
+    "tegretaol": "carbamazepine",
+    "tegretol": "carbamazepine",
+    "zobisamide": "zonisamide",
+    "zonismaide": "zonisamide",
+}
 
 
 def normalize_phrase(text: str) -> str:
@@ -165,6 +185,15 @@ class SourceNearDiagnostic(BaseModel):
     per_entity: dict[str, SourceNearEntityDiagnostic]
 
 
+class PrescriptionComponentScores(BaseModel):
+    model_config = {"frozen": True}
+
+    name: PRF1
+    dose: PRF1
+    frequency: PRF1
+    complete: PRF1
+
+
 def match_key(annotation: ExectAnnotation, config: MatchConfig = PHRASE_AND_FEATURES) -> Hashable:
     phrase = normalize_phrase(annotation.text)
     if not config.include_attributes:
@@ -177,6 +206,59 @@ def match_key(annotation: ExectAnnotation, config: MatchConfig = PHRASE_AND_FEAT
         )
     )
     return (annotation.entity, phrase, attributes)
+
+
+def canonicalize_medication_name(value: str) -> str:
+    """Normalize medication spelling/brand variants for clinical component scoring."""
+
+    normalized = normalize_phrase(value).replace(" ", "-")
+    return _MEDICATION_NAME_ALIASES.get(normalized, normalized)
+
+
+def _prescription_component_key(annotation: ExectAnnotation, component: str) -> Hashable | None:
+    attrs = annotation.attributes
+    if component == "name":
+        value = attrs.get("DrugName")
+        return canonicalize_medication_name(value) if value else None
+    if component == "dose":
+        dose = attrs.get("DrugDose")
+        unit = attrs.get("DoseUnit")
+        if not dose or not unit:
+            return None
+        return (
+            canonicalize_attribute_value("DrugDose", dose),
+            canonicalize_attribute_value("DoseUnit", unit),
+        )
+    if component == "frequency":
+        frequency = attrs.get("Frequency")
+        return canonicalize_attribute_value("Frequency", frequency).lower() if frequency else None
+    if component == "complete":
+        name = _prescription_component_key(annotation, "name")
+        dose = _prescription_component_key(annotation, "dose")
+        frequency = _prescription_component_key(annotation, "frequency")
+        if name is None or dose is None or frequency is None:
+            return None
+        return (name, *dose, frequency)
+    raise ValueError(f"Unknown prescription component {component!r}")
+
+
+def score_prescription_components(
+    gold_letters: Sequence[ExectLetter],
+    pred_letters: Sequence[ExectLetter],
+) -> PrescriptionComponentScores:
+    """Score medication name, dose, frequency, and complete regimen tuples.
+
+    This diagnostic deliberately ignores mention phrase scope and benchmark CUI
+    projection. It asks whether the system recovered clinically equivalent
+    prescription components, with brand names and common spelling variants mapped
+    to the same medication where appropriate.
+    """
+
+    components = {
+        component: _score_prescription_component(gold_letters, pred_letters, component)
+        for component in ("name", "dose", "frequency", "complete")
+    }
+    return PrescriptionComponentScores(**components)
 
 
 def _attribute_key(annotation: ExectAnnotation, config: MatchConfig) -> Hashable:
@@ -193,8 +275,47 @@ def _keys(annotations: Iterable[ExectAnnotation], config: MatchConfig) -> list[H
     return [match_key(a, config) for a in annotations]
 
 
+def _prescription_component_keys(
+    annotations: Iterable[ExectAnnotation],
+    component: str,
+) -> list[Hashable]:
+    keys: list[Hashable] = []
+    for annotation in annotations:
+        key = _prescription_component_key(annotation, component)
+        if key is not None:
+            keys.append(key)
+    return keys
+
+
 def _letters_by_id(letters: Sequence[ExectLetter]) -> dict[str, ExectLetter]:
     return {letter.letter_id: letter for letter in letters}
+
+
+def _score_prescription_component(
+    gold_letters: Sequence[ExectLetter],
+    pred_letters: Sequence[ExectLetter],
+    component: str,
+) -> PRF1:
+    gold_by_id = _letters_by_id(gold_letters)
+    pred_by_id = _letters_by_id(pred_letters)
+    all_ids = sorted(gold_by_id.keys() | pred_by_id.keys())
+    return sum_prf1(
+        multiset_prf1(
+            _prescription_component_keys(
+                gold_by_id[letter_id].entities(_PRESCRIPTION_ENTITY)
+                if letter_id in gold_by_id
+                else (),
+                component,
+            ),
+            _prescription_component_keys(
+                pred_by_id[letter_id].entities(_PRESCRIPTION_ENTITY)
+                if letter_id in pred_by_id
+                else (),
+                component,
+            ),
+        )
+        for letter_id in all_ids
+    )
 
 
 def score_entity(
