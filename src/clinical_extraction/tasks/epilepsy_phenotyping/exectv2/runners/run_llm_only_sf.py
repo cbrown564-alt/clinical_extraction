@@ -191,7 +191,7 @@ def main() -> None:
         flush=True,
     )
 
-    for config_name in ("phrase_only", "sf_semantic", "sf_benchmark"):
+    for config_name in scores:
         s = scores.get(config_name, {})
         pi = s.get("per_item", {})
         pl = s.get("per_letter", {})
