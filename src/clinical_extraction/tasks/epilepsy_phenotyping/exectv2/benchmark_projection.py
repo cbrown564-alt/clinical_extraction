@@ -14,6 +14,7 @@ from dataclasses import dataclass
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     DIAGNOSIS,
     INVESTIGATIONS,
+    ONSET,
     PRESCRIPTION,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
@@ -129,13 +130,20 @@ DIAGNOSIS_SURFACE_FORMS: tuple[str, ...] = tuple(
 _INVESTIGATION_CONCEPT_BY_RESULT: dict[tuple[str, str | None], BenchmarkConcept] = {
     ("EEG", "Abnormal"): BenchmarkConcept("EEG", "C0151611", "eeg abnormal"),
     ("EEG", "Normal"): BenchmarkConcept("EEG", "C0744602", "eeg normal"),
+    ("EEG", "Unknown"): BenchmarkConcept("EEG", "C0013819", "EEG"),
     ("MRI", "Normal"): BenchmarkConcept("MRI", "C0436481", "mri normal"),
     ("MRI", "Abnormal"): BenchmarkConcept("MRI", "C1319851", "mri abnormal"),
     ("CT", "Normal"): BenchmarkConcept("CT", "C0560017", "ct normal"),
     ("CT", "Abnormal"): BenchmarkConcept("CT", "C0436539", "ct abnormal"),
+    ("CT", "Unknown"): BenchmarkConcept("CT", "C3515741", "ct-unknown"),
     ("EEG", None): BenchmarkConcept("EEG", "C0013819", "EEG"),
     ("MRI", None): BenchmarkConcept("MRI", "C0436539", "MRI"),
     ("CT", None): BenchmarkConcept("CT", "C0040405", "CT"),
+}
+_ONSET_CONCEPT_BY_PHRASE: dict[str, BenchmarkConcept] = {
+    normalize_phrase("epilepsy"): BenchmarkConcept("epilepsy", "C0014544", "epilepsy"),
+    normalize_phrase("seizures"): BenchmarkConcept("seizures", "C0036572", "seizures"),
+    normalize_phrase("seizure"): BenchmarkConcept("seizure", "C0036572", "seizures"),
 }
 
 
@@ -155,6 +163,12 @@ def investigation_concept(modality: str, result: str | None) -> BenchmarkConcept
     """Return the benchmark investigation concept for a modality/result pair."""
 
     return _INVESTIGATION_CONCEPT_BY_RESULT.get((modality.upper(), result))
+
+
+def onset_concept(phrase: str) -> BenchmarkConcept | None:
+    """Return the benchmark onset concept for a source-near onset phrase."""
+
+    return _ONSET_CONCEPT_BY_PHRASE.get(normalize_phrase(phrase))
 
 
 def attach_benchmark_concept(
@@ -226,6 +240,8 @@ def _concept_for_mention(mention: PredictedMention) -> BenchmarkConcept | None:
         modality = _investigation_modality_from_attributes(mention.attributes) or mention.text
         result = _investigation_result_from_attributes(mention.attributes, modality)
         return investigation_concept(modality, result)
+    if mention.entity == ONSET.name:
+        return onset_concept(mention.text)
     return None
 
 
@@ -250,4 +266,4 @@ def _investigation_result_from_attributes(
 ) -> str | None:
     canonical = modality.upper()
     result = attributes.get(f"{canonical}_Results")
-    return result if result in {"Normal", "Abnormal"} else None
+    return result if result in {"Normal", "Abnormal", "Unknown"} else None

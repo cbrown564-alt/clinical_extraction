@@ -7,12 +7,14 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.benchmark_projection
     attach_benchmark_concept,
     diagnosis_concept,
     investigation_concept,
+    onset_concept,
     prescription_concept,
     project_cuis,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     DIAGNOSIS,
     INVESTIGATIONS,
+    ONSET,
     PRESCRIPTION,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
@@ -48,6 +50,10 @@ def test_diagnosis_projection_maps_observed_phrases_to_category_and_cui() -> Non
         "C0270853",
         "juvenile myoclonic epilepsy",
     )
+
+
+def test_onset_projection_maps_source_near_epilepsy_phrase() -> None:
+    assert onset_concept("epilepsy") == BenchmarkConcept("epilepsy", "C0014544", "epilepsy")
 
 
 def test_attach_benchmark_concept_does_not_overwrite_existing_clinical_attributes() -> None:
@@ -91,6 +97,13 @@ def test_project_cuis_is_precision_first_and_leaves_unknown_mentions_without_gue
                 evidence="not-in-lexicon",
                 component_owner="fixture",
             ),
+            PredictedMention(
+                entity=ONSET.name,
+                text="epilepsy",
+                attributes={"Age": "4", "AgeUnit": "Year"},
+                evidence="epilepsy started at the age of 4",
+                component_owner="fixture",
+            ),
         ),
     )
 
@@ -99,3 +112,4 @@ def test_project_cuis_is_precision_first_and_leaves_unknown_mentions_without_gue
     assert projected.mentions[0].attributes["CUI"] == "C0377265"
     assert projected.mentions[1].attributes["CUI"] == "C0151611"
     assert "CUI" not in projected.mentions[2].attributes
+    assert projected.mentions[3].attributes["CUI"] == "C0014544"
