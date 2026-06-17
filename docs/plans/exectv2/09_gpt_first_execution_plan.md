@@ -5,7 +5,8 @@ Parent: [[00_overarching_implementation_plan]] · execution arm of
 Status: active. Dev-split only. No new full-200 audit until Phase E gate is met.
 Date opened: 2026-06-17 · Phase A complete (2026-06-17); Phase B complete
 (2026-06-17); Phase C complete (2026-06-17); Phase D complete (2026-06-17);
-Phase E next.
+Phase E gate read recorded (2026-06-17) — gate NOT met, full-200 audit not
+authorized.
 
 ## North star and claim ladder
 
@@ -273,12 +274,35 @@ therefore makes the projection auditable rather than inflating it by fitting the
 lexicon to dev gold; the with-CUI headline stays gated by lexicon coverage and is
 always reported beside the CUI-dropped semantic layer.
 
-### Phase E — Reliability scorecard and predeclared full-200 audit
+### Phase E — Reliability scorecard and predeclared full-200 audit (gate read 2026-06-17)
 
 Only after dev evidence clears the gate. Produce the compact reliability
 scorecard (below), a predeclared aggregate readout, bootstrap CIs, and the
 dev→audit gap. Lock the architecture and register the audit immutably. Then port
 the frozen design to Qwen as a model-transfer experiment.
+
+**Implementation.** `reports/reliability_scorecard.py` builds the compact
+scorecard (the measurement-plan axes) from any combined hybrid JSONL, with a
+per-letter (cluster) bootstrap CI on the benchmark + semantic headlines and an
+explicit `promotion_gate` verdict; `runners/run_reliability_scorecard.py` emits
+it. The full-200 audit protocol is frozen in advance in
+`docs/research/exectv2_phase_e_full200_audit_predeclaration_2026-06-17.md`. No
+model calls; the locked test split is never touched.
+
+**Gate read (dev140, gpt-4.1-mini).** Scorecards:
+`experiments/exectv2_hybrid_all_entities_dev140_gpt41mini_20260617{,_ruleaug}_scorecard.{md,json}`.
+
+| Candidate set | Benchmark per-item F1 (CI) | Benchmark per-letter F1 | Gate (≥0.87 / ≥0.90) |
+| --- | ---: | ---: | --- |
+| GPT-only | 0.181 [0.165, 0.198] | 0.420 | **not met** |
+| GPT + rule augmentation | 0.312 [0.294, 0.333] | 0.658 | **not met** |
+
+**Verdict: the promotion gate is NOT met, so the full-200 holdout audit is NOT
+authorized and was NOT run.** The honest claim stays the transfer claim. The
+named binding constraints for the next cycle are over-emission/precision (a
+deferred GPT candidate-selection pass, ablation-gated) and benchmark-projection
+coverage (in-sample CUI lookup, never a real gate pass). Qwen model-transfer is a
+separate experiment, gated behind a locked GPT audit.
 
 ## Measurement plan (every serious GPT run)
 
