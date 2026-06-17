@@ -315,8 +315,10 @@ def _render_markdown(scorecard: dict[str, Any], *, json_path: Path) -> str:
             (
                 "This is the first rules_only all-entity substrate: it scores all "
                 "nine entities, but only Prescription, Investigations, Diagnosis, "
-                "Onset, and SeizureFrequency have active deterministic extractors. Missing "
-                "entities are visible as false negatives rather than hidden."
+                "Onset, WhenDiagnosed, BirthHistory, EpilepsyCause, and "
+                "SeizureFrequency have active deterministic extractors. Missing "
+                "PatientHistory coverage is visible as false negatives rather "
+                "than hidden."
             ),
             "",
         ]
@@ -347,7 +349,8 @@ def _append_registry_row(
         "decision": "inform_architecture_loop",
         "model_role": (
             "ExECTv2 deterministic all-9 baseline; active rules for Prescription, "
-            "Investigations, Diagnosis, Onset, and SeizureFrequency."
+            "Investigations, Diagnosis, Onset, WhenDiagnosed, BirthHistory, "
+            "EpilepsyCause, and SeizureFrequency."
         ),
         "evidence_validity": "exact source substring validation summarized in scorecard.",
         "repair_mode": None,

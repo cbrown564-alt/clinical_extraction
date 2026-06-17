@@ -17,15 +17,21 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.benchmark_projection
     PRESCRIPTION_SURFACE_FORMS,
     BenchmarkConcept,
     attach_benchmark_concept,
+    birth_history_concept,
     diagnosis_concept,
+    epilepsy_cause_concept,
     investigation_concept,
     onset_concept,
+    when_diagnosed_concept,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
+    BIRTH_HISTORY,
     DIAGNOSIS,
+    EPILEPSY_CAUSE,
     INVESTIGATIONS,
     ONSET,
     PRESCRIPTION,
+    WHEN_DIAGNOSED,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
     PredictedLetter,
@@ -45,6 +51,9 @@ ACTIVE_DETERMINISTIC_ENTITIES: tuple[str, ...] = (
     INVESTIGATIONS.name,
     DIAGNOSIS.name,
     ONSET.name,
+    WHEN_DIAGNOSED.name,
+    BIRTH_HISTORY.name,
+    EPILEPSY_CAUSE.name,
     SEIZURE_FREQUENCY,
 )
 
@@ -166,6 +175,211 @@ _ONSET_DURATION_PATTERN = re.compile(
     r"(?P<unit>years?|months?)\s+ago\b",
     re.IGNORECASE,
 )
+_WHEN_DIAGNOSED_TEXT = "epileps"
+_WHEN_DIAGNOSED_AGE_PATTERNS: tuple[re.Pattern[str], ...] = (
+    re.compile(
+        r"\bdiagnosed\s+with\s+epilepsy\s+"
+        r"(?:at\s+)?(?:the\s+)?(?:age\s+of\s+|age\s+)?"
+        r"(?P<age>\d{1,2}|one|two|three|four|five|six|seven|eight|nine|ten|"
+        r"eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|"
+        r"nineteen|twenty|twenty[-\s]one|twenty[-\s]two)\b",
+        re.IGNORECASE,
+    ),
+    re.compile(
+        r"\bepilepsy\s+was\s+(?:first\s+)?diagnosed\s+"
+        r"(?:at\s+)?(?:the\s+)?(?:age\s+of\s+|age\s+)?"
+        r"(?P<age>\d{1,2}|one|two|three|four|five|six|seven|eight|nine|ten|"
+        r"eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|"
+        r"nineteen|twenty|twenty[-\s]one|twenty[-\s]two)\b",
+        re.IGNORECASE,
+    ),
+    re.compile(
+        r"\bdiagnosis\s+of\s+epilepsy\b.{0,80}?\bwas\s+diagnosed\s+"
+        r"(?:at\s+)?(?:the\s+)?(?:age\s+of\s+|age\s+)?"
+        r"(?P<age>\d{1,2}|one|two|three|four|five|six|seven|eight|nine|ten|"
+        r"eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|"
+        r"nineteen|twenty|twenty[-\s]one|twenty[-\s]two)\b",
+        re.IGNORECASE,
+    ),
+)
+_WHEN_DIAGNOSED_DURATION_PATTERNS: tuple[re.Pattern[str], ...] = (
+    re.compile(
+        r"\bdiagnosed\s+with\s+epilepsy\s+(?:around|approximately|about)?\s*"
+        r"(?P<count>\d{1,2}|one|two|three|four|five|six|seven|eight|nine|ten|"
+        r"eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|"
+        r"nineteen|twenty|twenty[-\s]one|twenty[-\s]two)\s+"
+        r"(?P<unit>years?|months?)\s+ago\b",
+        re.IGNORECASE,
+    ),
+    re.compile(
+        r"\bdiagnosis\s+of\s+epilepsy\s+was\s+made\s+"
+        r"(?:around|approximately|about)?\s*"
+        r"(?P<count>\d{1,2}|one|two|three|four|five|six|seven|eight|nine|ten|"
+        r"eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|"
+        r"nineteen|twenty|twenty[-\s]one|twenty[-\s]two)\s+"
+        r"(?P<unit>years?|months?)\s+ago\b",
+        re.IGNORECASE,
+    ),
+)
+_MONTHS: dict[str, str] = {
+    "january": "1",
+    "jan": "1",
+    "february": "2",
+    "feb": "2",
+    "march": "3",
+    "mar": "3",
+    "april": "4",
+    "apr": "4",
+    "may": "5",
+    "june": "6",
+    "jun": "6",
+    "july": "7",
+    "jul": "7",
+    "august": "8",
+    "aug": "8",
+    "september": "9",
+    "sep": "9",
+    "sept": "9",
+    "october": "10",
+    "oct": "10",
+    "november": "11",
+    "nov": "11",
+    "december": "12",
+    "dec": "12",
+}
+_MONTH_PATTERN = "|".join(sorted(_MONTHS, key=len, reverse=True))
+_WHEN_DIAGNOSED_DATE_PATTERNS: tuple[re.Pattern[str], ...] = (
+    re.compile(
+        rf"\b(?:diagnosed\s+with\s+epilepsy|epilepsy\s+was\s+diagnosed|"
+        rf"diagnosis\s+of\s+(?:his\s+|her\s+)?epilepsy)\s+"
+        rf"(?:in\s+|was\s+made\s+in\s+|at\s+the\s+time\s+of\s+)?"
+        rf"(?:(?P<month>{_MONTH_PATTERN})\s+)?(?P<year>20\d{{2}}|19\d{{2}})\b",
+        re.IGNORECASE,
+    ),
+)
+_BIRTH_HISTORY_RULES: tuple[
+    tuple[re.Pattern[str], str, str, dict[str, str]],
+    ...
+] = (
+    (re.compile(r"\bborn\s+normally\b", re.IGNORECASE), "born-normally", "born normally", {}),
+    (
+        re.compile(r"\bbirth\s+was\s+normal\b", re.IGNORECASE),
+        "birth-was-normal",
+        "birth was normal",
+        {},
+    ),
+    (re.compile(r"\bnormal\s+birth\b", re.IGNORECASE), "normal-birth", "normal birth", {}),
+    (re.compile(r"\bnormal\s+delivery\b", re.IGNORECASE), "normal-delivery", "normal delivery", {}),
+    (
+        re.compile(r"\bno\s+problems\s+when\s+\w+\s+was\s+born\b", re.IGNORECASE),
+        "no-problems-when-he-was-born",
+        "born normally",
+        {},
+    ),
+    (re.compile(r"\bfull[-\s]term\b", re.IGNORECASE), "full-term", "full term", {}),
+    (
+        re.compile(r"\bborn\s+prematurely\s+at\s+32\s+weeks\b", re.IGNORECASE),
+        "born-prematurely-at-32-weeks",
+        "born prematurely at 32 weeks",
+        {"PrematureBirth": "32to<37_ModerateToLatePreterm"},
+    ),
+    (
+        re.compile(r"\bborn\s+slightly\s+premature(?:ly)?\b", re.IGNORECASE),
+        "born-slightly-premature",
+        "born slightly premature",
+        {"PrematureBirth": "34to<37_LatePretermBirth"},
+    ),
+    (
+        re.compile(r"\bborn\s+prematurely\b", re.IGNORECASE),
+        "born-prematurely",
+        "born prematurely",
+        {"PrematureBirth": "34to<37_LatePretermBirth"},
+    ),
+    (
+        re.compile(r"\bperinatal\s+insult\b", re.IGNORECASE),
+        "perinatal-insult",
+        "perinatal insult",
+        {},
+    ),
+    (
+        re.compile(r"\bperinatal\s+trauma\b", re.IGNORECASE),
+        "perinatal-trauma",
+        "perinatal trauma",
+        {},
+    ),
+    (
+        re.compile(r"\bperinatal\s+injury\b", re.IGNORECASE),
+        "perinatal-injury",
+        "perinatal injury",
+        {},
+    ),
+    (
+        re.compile(r"\bperinatal\s+hypoxia\b", re.IGNORECASE),
+        "perinatal-hypoxia",
+        "perinatal hypoxia",
+        {},
+    ),
+    (
+        re.compile(r"\bhypoxia\s+during\s+a\s+difficult\s+birth\b", re.IGNORECASE),
+        "hypoxia-during-a-difficult-birth.",
+        "hypoxia during a difficult birth",
+        {},
+    ),
+    (
+        re.compile(r"\bspecial\s+care\s+baby\s+unit\b", re.IGNORECASE),
+        "Special-care-baby-Unit",
+        "special care baby unit",
+        {},
+    ),
+)
+_EPILEPSY_CAUSE_RULES: tuple[
+    tuple[re.Pattern[str], str, str],
+    ...
+] = (
+    (re.compile(r"\bperinatal\s+insult\b", re.IGNORECASE), "perinatal-insult", "perinatal insult"),
+    (re.compile(r"\bstroke\b", re.IGNORECASE), "stroke", "stroke"),
+    (
+        re.compile(r"\btraumatic\s+brain\s+injury\b", re.IGNORECASE),
+        "traumatic-brain-injury",
+        "traumatic brain injury",
+    ),
+    (re.compile(r"\bbrain\s+surgery\b", re.IGNORECASE), "brain-surgery", "brain surgery"),
+    (re.compile(r"\bcerebral\s+abcess\b", re.IGNORECASE), "cerebral-abcess", "cerebral abcess"),
+    (re.compile(r"\bmeningitis\b", re.IGNORECASE), "meningitis", "meningitis"),
+    (re.compile(r"\bmeningioma\b", re.IGNORECASE), "meningioma-", "meningioma"),
+    (re.compile(r"\bmeasles\b", re.IGNORECASE), "easle", "measles"),
+    (
+        re.compile(r"\btuberous\s+sclerosis\b", re.IGNORECASE),
+        "Tuberous-sclerosis",
+        "tuberous sclerosis",
+    ),
+    (
+        re.compile(r"\bperinatal\s+trauma\b", re.IGNORECASE),
+        "perinatal-trauma",
+        "perinatal trauma",
+    ),
+    (
+        re.compile(r"\bhypoxia\s+during\s+a\s+difficult\s+birth\b", re.IGNORECASE),
+        "hypoxia-during-a-difficult-birth.",
+        "hypoxia during a difficult birth",
+    ),
+    (
+        re.compile(r"\bherpes\s+encephalitis\b", re.IGNORECASE),
+        "herpes-encephalitis",
+        "herpes encephalitis",
+    ),
+    (re.compile(r"\bencephalitis\b", re.IGNORECASE), "encephalitis", "encephalitis"),
+    (
+        re.compile(r"\bneurocysticercosis\b", re.IGNORECASE),
+        "neurocysticercosis",
+        "neurocysticercosis",
+    ),
+    (
+        re.compile(r"\bischaemic\s+damage\b", re.IGNORECASE),
+        "ischaemic-damage",
+        "ischaemic damage",
+    ),
+)
 _NUMBER_WORDS: dict[str, str] = {
     "one": "1",
     "two": "2",
@@ -201,6 +415,9 @@ def extract_deterministic_all9(letter: ExectLetter) -> PredictedLetter:
         *_extract_diagnoses(letter.note_text),
         *_extract_investigations(letter.note_text),
         *_extract_onsets(letter.note_text),
+        *_extract_when_diagnosed(letter.note_text),
+        *_extract_birth_history(letter.note_text),
+        *_extract_epilepsy_causes(letter.note_text),
         *_extract_prescriptions(letter.note_text),
         *sf_prediction.mentions,
     )
@@ -552,6 +769,110 @@ def _extract_onsets(text: str) -> tuple[PredictedMention, ...]:
     return tuple(mentions)
 
 
+def _extract_when_diagnosed(text: str) -> tuple[PredictedMention, ...]:
+    mentions: list[PredictedMention] = []
+    occupied: list[tuple[int, int]] = []
+    for patterns, attr_builder, rule_id in (
+        (_WHEN_DIAGNOSED_AGE_PATTERNS, _when_diagnosed_age_attrs, "when_diagnosed_age"),
+        (
+            _WHEN_DIAGNOSED_DURATION_PATTERNS,
+            _when_diagnosed_duration_attrs,
+            "when_diagnosed_duration",
+        ),
+        (_WHEN_DIAGNOSED_DATE_PATTERNS, _when_diagnosed_date_attrs, "when_diagnosed_date"),
+    ):
+        for pattern in patterns:
+            for match in pattern.finditer(text):
+                if any(_overlaps(match.span(), span) for span in occupied):
+                    continue
+                attrs = attr_builder(match)
+                attrs.update({"Certainty": "5", "Negation": "Affirmed"})
+                attrs = attach_benchmark_concept(attrs, when_diagnosed_concept())
+                mentions.append(
+                    PredictedMention(
+                        entity=WHEN_DIAGNOSED.name,
+                        text=_WHEN_DIAGNOSED_TEXT,
+                        attributes=attrs,
+                        evidence=match.group(0),
+                        component_owner=_owner(
+                            rule_id,
+                            RuleGroup.TEMPORAL_ANCHOR,
+                            Portability.CLINICAL_EPILEPSY,
+                            Portability.BENCHMARK_FORMAT,
+                        ),
+                    )
+                )
+                occupied.append(match.span())
+    mentions.sort(key=lambda mention: text.lower().find(mention.evidence.lower()))
+    return tuple(mentions)
+
+
+def _extract_birth_history(text: str) -> tuple[PredictedMention, ...]:
+    mentions: list[PredictedMention] = []
+    occupied: list[tuple[int, int]] = []
+    for pattern, mention_text, concept_phrase, extra_attrs in _BIRTH_HISTORY_RULES:
+        for match in pattern.finditer(text):
+            if any(_overlaps(match.span(), span) for span in occupied):
+                continue
+            concept = birth_history_concept(concept_phrase)
+            if concept is None:
+                continue
+            attrs = {"Certainty": "5", "Negation": "Affirmed", **extra_attrs}
+            attrs = attach_benchmark_concept(attrs, concept)
+            mentions.append(
+                PredictedMention(
+                    entity=BIRTH_HISTORY.name,
+                    text=mention_text,
+                    attributes=attrs,
+                    evidence=match.group(0),
+                    component_owner=_owner(
+                        "birth_history",
+                        RuleGroup.ANCHOR_PHRASE,
+                        Portability.CLINICAL_EPILEPSY,
+                        Portability.BENCHMARK_FORMAT,
+                    ),
+                )
+            )
+            occupied.append(match.span())
+    mentions.sort(key=lambda mention: text.lower().find(mention.evidence.lower()))
+    return tuple(mentions)
+
+
+def _extract_epilepsy_causes(text: str) -> tuple[PredictedMention, ...]:
+    mentions: list[PredictedMention] = []
+    occupied: list[tuple[int, int]] = []
+    for pattern, mention_text, concept_phrase in _EPILEPSY_CAUSE_RULES:
+        for match in pattern.finditer(text):
+            if any(_overlaps(match.span(), span) for span in occupied):
+                continue
+            if not _is_cause_context(text, match):
+                continue
+            concept = epilepsy_cause_concept(concept_phrase)
+            if concept is None:
+                continue
+            attrs = attach_benchmark_concept(
+                {"Certainty": "5", "Negation": "Affirmed"},
+                concept,
+            )
+            mentions.append(
+                PredictedMention(
+                    entity=EPILEPSY_CAUSE.name,
+                    text=mention_text,
+                    attributes=attrs,
+                    evidence=match.group(0),
+                    component_owner=_owner(
+                        "epilepsy_cause",
+                        RuleGroup.ANCHOR_PHRASE,
+                        Portability.CLINICAL_EPILEPSY,
+                        Portability.BENCHMARK_FORMAT,
+                    ),
+                )
+            )
+            occupied.append(match.span())
+    mentions.sort(key=lambda mention: text.lower().find(mention.evidence.lower()))
+    return tuple(mentions)
+
+
 def _extract_diagnoses(text: str) -> tuple[PredictedMention, ...]:
     mentions: list[PredictedMention] = []
     occupied: list[tuple[int, int]] = []
@@ -564,6 +885,8 @@ def _extract_diagnoses(text: str) -> tuple[PredictedMention, ...]:
         if any(_overlaps(match.span(), span) for span in occupied):
             continue
         if _is_diagnosis_phrase_inside_onset_statement(text, match):
+            continue
+        if _is_diagnosis_phrase_inside_cause_statement(text, match):
             continue
         phrase = match.group(1)
         concept = diagnosis_concept(phrase)
@@ -636,6 +959,25 @@ def _onset_duration_attrs(match: re.Match[str]) -> dict[str, str]:
     }
 
 
+def _when_diagnosed_age_attrs(match: re.Match[str]) -> dict[str, str]:
+    return {"Age": _number_value(match.group("age")), "AgeUnit": "Year"}
+
+
+def _when_diagnosed_duration_attrs(match: re.Match[str]) -> dict[str, str]:
+    return {
+        "NumberOfTimePeriods": _number_value(match.group("count")),
+        "TimePeriod": "Month" if match.group("unit").lower().startswith("month") else "Year",
+    }
+
+
+def _when_diagnosed_date_attrs(match: re.Match[str]) -> dict[str, str]:
+    attrs = {"YearDate": match.group("year")}
+    month = match.groupdict().get("month")
+    if month:
+        attrs["MonthDate"] = _MONTHS[month.lower()]
+    return attrs
+
+
 def _number_value(value: str) -> str:
     normalized = value.lower().replace("-", " ").strip()
     return _NUMBER_WORDS.get(normalized, value)
@@ -654,6 +996,29 @@ def _is_diagnosis_phrase_inside_onset_statement(text: str, match: re.Match[str])
         re.match(
             r"\s+(?:first\s+)?(?:started|began|commenced|presented|since|from)\b",
             right,
+            re.IGNORECASE,
+        )
+    )
+
+
+def _is_diagnosis_phrase_inside_cause_statement(text: str, match: re.Match[str]) -> bool:
+    right = text[match.end() : match.end() + 64]
+    return bool(
+        re.match(
+            r"\s+(?:is\s+)?(?:secondary\s+to|caused\s+by|due\s+to)\b",
+            right,
+            re.IGNORECASE,
+        )
+    )
+
+
+def _is_cause_context(text: str, match: re.Match[str]) -> bool:
+    window = _sentence_window(text, match.start(), match.end())
+    return bool(
+        re.search(
+            r"\b(?:epilepsy|seizures?|secondary\s+to|caused\s+by|due\s+to|"
+            r"cause\s+of|reason\s+for|previous|probable)\b",
+            window,
             re.IGNORECASE,
         )
     )
@@ -746,6 +1111,25 @@ def _rule_family_summary() -> dict[str, dict[str, str]]:
         "onset_epilepsy_duration": {
             "entity": ONSET.name,
             "group": RuleGroup.TEMPORAL_ANCHOR.value,
+            "portability": Portability.CLINICAL_EPILEPSY.value,
+            "cui_projection": Portability.BENCHMARK_FORMAT.value,
+        },
+        "when_diagnosed": {
+            "entity": WHEN_DIAGNOSED.name,
+            "group": RuleGroup.TEMPORAL_ANCHOR.value,
+            "portability": Portability.CLINICAL_EPILEPSY.value,
+            "cui_projection": Portability.BENCHMARK_FORMAT.value,
+            "phrase_scope_projection": Portability.BENCHMARK_FORMAT.value,
+        },
+        "birth_history": {
+            "entity": BIRTH_HISTORY.name,
+            "group": RuleGroup.ANCHOR_PHRASE.value,
+            "portability": Portability.CLINICAL_EPILEPSY.value,
+            "cui_projection": Portability.BENCHMARK_FORMAT.value,
+        },
+        "epilepsy_cause": {
+            "entity": EPILEPSY_CAUSE.name,
+            "group": RuleGroup.ANCHOR_PHRASE.value,
             "portability": Portability.CLINICAL_EPILEPSY.value,
             "cui_projection": Portability.BENCHMARK_FORMAT.value,
         },

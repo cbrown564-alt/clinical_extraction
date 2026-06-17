@@ -12,10 +12,13 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
+    BIRTH_HISTORY,
     DIAGNOSIS,
+    EPILEPSY_CAUSE,
     INVESTIGATIONS,
     ONSET,
     PRESCRIPTION,
+    WHEN_DIAGNOSED,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
     PredictedLetter,
@@ -145,6 +148,100 @@ _ONSET_CONCEPT_BY_PHRASE: dict[str, BenchmarkConcept] = {
     normalize_phrase("seizures"): BenchmarkConcept("seizures", "C0036572", "seizures"),
     normalize_phrase("seizure"): BenchmarkConcept("seizure", "C0036572", "seizures"),
 }
+_WHEN_DIAGNOSED_CONCEPT = BenchmarkConcept("epilepsy", "C0014544", "epilepsy")
+_BIRTH_HISTORY_ENTRIES: tuple[tuple[BenchmarkConcept, tuple[str, ...]], ...] = (
+    (
+        BenchmarkConcept("born-normally", "C3665337", "born-normally"),
+        ("born normally", "birth normal", "normal birth"),
+    ),
+    (BenchmarkConcept("birth-was-normal", "C3665337", "birth-was-normal"), ("birth was normal",)),
+    (BenchmarkConcept("normal", "C3665337", "normal"), ("normal delivery",)),
+    (BenchmarkConcept("term", "C0233324", "term"), ("full term", "full-term")),
+    (
+        BenchmarkConcept("born-prematurely", "C0151526", "born-prematurely"),
+        ("born prematurely",),
+    ),
+    (
+        BenchmarkConcept("late-preterm-birth", "C3829315", "late-preterm-birth"),
+        ("born slightly premature", "born slightly prematurely"),
+    ),
+    (
+        BenchmarkConcept(
+            "moderate-to-late-preterm-birth",
+            "C4054482",
+            "moderate-to-late-preterm-birth",
+        ),
+        ("born prematurely at 32 weeks", "32 weeks"),
+    ),
+    (
+        BenchmarkConcept("perinatal-insult", "C0005604", "perinatal-insult"),
+        ("perinatal insult",),
+    ),
+    (
+        BenchmarkConcept("perinatal-injury", "C0456798", "perinatal-injury"),
+        ("perinatal trauma", "perinatal injury"),
+    ),
+    (
+        BenchmarkConcept("perinatal-hypoxia", "C0559478", "perinatal-hypoxia"),
+        ("perinatal hypoxia",),
+    ),
+    (
+        BenchmarkConcept("hypoxia-during-birth", "C0559478", "hypoxia-during-birth"),
+        ("hypoxia during a difficult birth", "hypoxia during birth"),
+    ),
+    (
+        BenchmarkConcept("special-care-baby-unit", "C0583275", "special-care-baby-unit"),
+        ("special care baby unit",),
+    ),
+)
+_BIRTH_HISTORY_CONCEPT_BY_PHRASE: dict[str, BenchmarkConcept] = {
+    normalize_phrase(variant): concept
+    for concept, variants in _BIRTH_HISTORY_ENTRIES
+    for variant in variants
+}
+_EPILEPSY_CAUSE_ENTRIES: tuple[tuple[BenchmarkConcept, tuple[str, ...]], ...] = (
+    (
+        BenchmarkConcept("perinatal-insult", "C0005604", "perinatal-insult"),
+        ("perinatal insult",),
+    ),
+    (BenchmarkConcept("strokes", "C0038454", "strokes"), ("stroke",)),
+    (
+        BenchmarkConcept("traumatic-brain-injury", "C0876926", "traumatic-brain-injury"),
+        ("traumatic brain injury",),
+    ),
+    (BenchmarkConcept("brain-surgery", "C0195775", "brain-surgery"), ("brain surgery",)),
+    (BenchmarkConcept("cerebral-abscess", "C1510428", "cerebral-abscess"), ("cerebral abcess",)),
+    (BenchmarkConcept("meningitis", "C0025289", "meningitis"), ("meningitis",)),
+    (BenchmarkConcept("cranial-meningioma", "C0349604", "cranial-meningioma"), ("meningioma",)),
+    (BenchmarkConcept("Measles", "C0025007", "Measles"), ("measles",)),
+    (
+        BenchmarkConcept("Tuberous-sclerosis", "C0041341", "Tuberous-sclerosis"),
+        ("tuberous sclerosis",),
+    ),
+    (
+        BenchmarkConcept("perinatal-trauma", "C0456798", "perinatal-trauma"),
+        ("perinatal trauma",),
+    ),
+    (
+        BenchmarkConcept("hypoxia-during-birth", "C0559478", "hypoxia-during-birth"),
+        ("hypoxia during a difficult birth", "hypoxia during birth"),
+    ),
+    (
+        BenchmarkConcept("herpes-encephalitis", "C0276226", "herpes-encephalitis"),
+        ("herpes encephalitis",),
+    ),
+    (BenchmarkConcept("encephalitis", "C0014038", "encephalitis"), ("encephalitis",)),
+    (
+        BenchmarkConcept("neurocysticercosis", "C0338437", "neurocysticercosis"),
+        ("neurocysticercosis",),
+    ),
+    (BenchmarkConcept("brain", "C1456496", "brain"), ("ischaemic damage", "ischemic damage")),
+)
+_EPILEPSY_CAUSE_CONCEPT_BY_PHRASE: dict[str, BenchmarkConcept] = {
+    normalize_phrase(variant): concept
+    for concept, variants in _EPILEPSY_CAUSE_ENTRIES
+    for variant in variants
+}
 
 
 def prescription_concept(phrase: str) -> BenchmarkConcept | None:
@@ -169,6 +266,24 @@ def onset_concept(phrase: str) -> BenchmarkConcept | None:
     """Return the benchmark onset concept for a source-near onset phrase."""
 
     return _ONSET_CONCEPT_BY_PHRASE.get(normalize_phrase(phrase))
+
+
+def when_diagnosed_concept() -> BenchmarkConcept:
+    """Return the benchmark epilepsy concept used for diagnosis-timing mentions."""
+
+    return _WHEN_DIAGNOSED_CONCEPT
+
+
+def birth_history_concept(phrase: str) -> BenchmarkConcept | None:
+    """Return the benchmark birth-history concept for ``phrase`` if known."""
+
+    return _BIRTH_HISTORY_CONCEPT_BY_PHRASE.get(normalize_phrase(phrase))
+
+
+def epilepsy_cause_concept(phrase: str) -> BenchmarkConcept | None:
+    """Return the benchmark epilepsy-cause concept for ``phrase`` if known."""
+
+    return _EPILEPSY_CAUSE_CONCEPT_BY_PHRASE.get(normalize_phrase(phrase))
 
 
 def attach_benchmark_concept(
@@ -242,6 +357,12 @@ def _concept_for_mention(mention: PredictedMention) -> BenchmarkConcept | None:
         return investigation_concept(modality, result)
     if mention.entity == ONSET.name:
         return onset_concept(mention.text)
+    if mention.entity == WHEN_DIAGNOSED.name:
+        return when_diagnosed_concept()
+    if mention.entity == BIRTH_HISTORY.name:
+        return birth_history_concept(mention.text)
+    if mention.entity == EPILEPSY_CAUSE.name:
+        return epilepsy_cause_concept(mention.text)
     return None
 
 
