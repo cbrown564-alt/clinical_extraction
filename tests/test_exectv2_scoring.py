@@ -19,6 +19,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     normalize_phrase,
     score_entity,
     score_overall,
+    score_prescription_benchmark_projection,
     score_prescription_components,
     source_near_diagnostic,
 )
@@ -106,6 +107,50 @@ def test_score_prescription_components_uses_clinical_regimen_keys() -> None:
     assert score.complete.f1 == 1.0
     assert score.ordinary_complete.f1 == 1.0
     assert score.clinical_headline.f1 == 1.0
+
+
+def test_prescription_benchmark_projection_separates_clinical_identity_from_cui() -> None:
+    gold = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    "Prescription",
+                    "Keppra-500mg-bd",
+                    DrugName="Keppra",
+                    DrugDose="500",
+                    DoseUnit="mg",
+                    Frequency="2",
+                    CUI="C0876060",
+                ),
+            ),
+        )
+    ]
+    pred = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    "Prescription",
+                    "levetiracetam 500 mg twice daily",
+                    DrugName="levetiracetam",
+                    DrugDose="500",
+                    DoseUnit="mg",
+                    Frequency="2",
+                    CUI="C0377265",
+                ),
+            ),
+        )
+    ]
+
+    score = score_prescription_benchmark_projection(gold, pred)
+
+    assert score.clinical_medication_identity.f1 == 1.0
+    assert score.drugname_cui_projection.f1 == 0.0
+    assert score.phrase_scope.f1 == 0.0
+    assert score.benchmark_with_cui.f1 == 0.0
 
 
 def test_prescription_clinical_headline_counts_rescue_regimen_without_dose() -> None:

@@ -31,6 +31,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     PHRASE_ONLY,
     benchmark_config_for,
     score_overall,
+    score_prescription_benchmark_projection,
     score_prescription_components,
     semantic_config_for,
 )
@@ -51,6 +52,15 @@ PRESCRIPTION_DIAGNOSTIC_ORDER: tuple[str, ...] = (
     "rescue_regimen",
     "future_medication",
     "weight_based_dosing",
+)
+PRESCRIPTION_BENCHMARK_PROJECTION_ORDER: tuple[str, ...] = (
+    "phrase_scope",
+    "semantic_without_cui",
+    "benchmark_with_cui",
+    "clinical_medication_identity",
+    "drugname_cui_projection",
+    "source_stated_frequency",
+    "guideline_defaulted_frequency",
 )
 
 
@@ -85,6 +95,7 @@ def build_scorecard(
         ),
     }
     prescription_components = score_prescription_components(gold_letters, pred_letters)
+    prescription_projection = score_prescription_benchmark_projection(gold_letters, pred_letters)
     validation = _validation_summary(gold_letters, predictions)
     mentions_total = sum(len(prediction.mentions) for prediction in predictions)
     mentions_with_cui = sum(
@@ -112,6 +123,9 @@ def build_scorecard(
         "scores": {name: _overall_to_dict(score) for name, score in scores.items()},
         "prescription_component_scores": _prescription_components_to_dict(
             prescription_components
+        ),
+        "prescription_benchmark_projection_scores": _prescription_projection_to_dict(
+            prescription_projection
         ),
     }
 
@@ -207,6 +221,13 @@ def _prescription_components_to_dict(score: Any) -> dict[str, Any]:
     return {name: _prf1_to_dict(getattr(score, name)) for name in names}
 
 
+def _prescription_projection_to_dict(score: Any) -> dict[str, Any]:
+    return {
+        name: _prf1_to_dict(getattr(score, name))
+        for name in PRESCRIPTION_BENCHMARK_PROJECTION_ORDER
+    }
+
+
 def _render_markdown(scorecard: dict[str, Any], *, json_path: Path) -> str:
     validation = scorecard["validation"]
     lines = [
@@ -273,6 +294,16 @@ def _render_markdown(scorecard: dict[str, Any], *, json_path: Path) -> str:
         entry = scorecard["prescription_component_scores"][component]
         lines.append(
             f"| {component} | {entry['f1']:.4f} | {entry['precision']:.4f} "
+            f"| {entry['recall']:.4f} | {entry['tp']} | {entry['fp']} | {entry['fn']} |"
+        )
+
+    lines.extend(["", "## Prescription Benchmark Projection", ""])
+    lines.append("| Projection layer | Item F1 | Precision | Recall | TP | FP | FN |")
+    lines.append("| --- | ---: | ---: | ---: | ---: | ---: | ---: |")
+    for layer in PRESCRIPTION_BENCHMARK_PROJECTION_ORDER:
+        entry = scorecard["prescription_benchmark_projection_scores"][layer]
+        lines.append(
+            f"| {layer} | {entry['f1']:.4f} | {entry['precision']:.4f} "
             f"| {entry['recall']:.4f} | {entry['tp']} | {entry['fp']} | {entry['fn']} |"
         )
 
@@ -367,6 +398,9 @@ def _primary_metrics(scorecard: dict[str, Any]) -> dict[str, Any]:
         metrics[f"{layer}_per_item_f1"] = scorecard["scores"][layer]["per_item"]["f1"]
         metrics[f"{layer}_per_letter_f1"] = scorecard["scores"][layer]["per_letter"]["f1"]
     metrics["prescription_component_f1"] = scorecard["prescription_component_scores"]
+    metrics["prescription_benchmark_projection_f1"] = scorecard[
+        "prescription_benchmark_projection_scores"
+    ]
     return metrics
 
 

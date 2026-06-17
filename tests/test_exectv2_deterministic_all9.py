@@ -24,6 +24,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.all_en
     extract_deterministic_all9,
     run_all9_on_letters,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports import (
+    deterministic_all9_scorecard,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     score_overall,
     score_prescription_components,
@@ -159,6 +162,53 @@ def test_deterministic_all9_scores_tiny_active_entity_gold() -> None:
 
     assert score.per_item.f1 == 1.0
     assert score.per_letter.f1 == 1.0
+
+
+def test_deterministic_all9_scorecard_reports_prescription_projection_ladder() -> None:
+    letter = _letter()
+    gold = ExectLetter(
+        letter.letter_id,
+        letter.note_text,
+        (
+            _ann(
+                PRESCRIPTION.name,
+                "Lamotrigine 150mg bd",
+                DrugName="lamotrigine",
+                DrugDose="150",
+                DoseUnit="mg",
+                Frequency="2",
+                CUI="C0064636",
+                CUIPhrase="lamotrigine",
+            ),
+            _ann(
+                PRESCRIPTION.name,
+                "levetiracetam 500 mg od",
+                DrugName="levetiracetam",
+                DrugDose="500",
+                DoseUnit="mg",
+                Frequency="1",
+                CUI="C0377265",
+                CUIPhrase="levetiracetam",
+            ),
+        ),
+    )
+
+    scorecard = deterministic_all9_scorecard.build_scorecard(
+        [gold],
+        [extract_deterministic_all9(letter)],
+    )
+
+    projection = scorecard["prescription_benchmark_projection_scores"]
+    assert set(projection) == {
+        "phrase_scope",
+        "semantic_without_cui",
+        "benchmark_with_cui",
+        "clinical_medication_identity",
+        "drugname_cui_projection",
+        "source_stated_frequency",
+        "guideline_defaulted_frequency",
+    }
+    assert projection["clinical_medication_identity"]["f1"] == 1.0
 
 
 def test_run_all9_on_letters_preserves_order() -> None:
