@@ -13,8 +13,21 @@ on a 160-row residual-enriched validation pilot, this decoupled + failure-primed
 elicitation produced a failure-prediction AUROC of **0.755** (near the external
 cross-model-agreement signal, 0.781), versus **0.503** (chance) for the in-pass
 *joint* self-confidence fields it sits beside (``StructuredSelectionRecord.confidence``,
-``FreshEvidenceDecision.uncertainty``). Folding the priming back into the joint pass
-was NOT validated and is expected to re-degenerate — hence a decoupled stage.
+``FreshEvidenceDecision.uncertainty``).
+
+**Correction (2026-06-17 paired test — see**
+``docs/research/gan2026_confidence_one_vs_two_call_predeclaration_2026-06-17.md``**).**
+The earlier belief that decoupling is the active ingredient — and that folding the
+priming back into the joint extraction pass would "re-degenerate" — was tested and
+**falsified**. On a paired validation750 run (same answers/error labels), a single
+call emitting a *primed* integer probability scores failure-AUROC **0.609** vs the
+decoupled reviewer's **0.641** (paired difference +0.032, 95% CI [-0.032, +0.098] —
+includes 0), with *better* ECE/Brier. The discrimination is a **wording effect**, not
+a decoupling effect: the degenerate ``selection.confidence`` (0.497) is degenerate
+because it is unprimed/categorical, not because it is in-pass. This decoupled stage is
+therefore retained for compatibility but is **no longer the recommended carrier** —
+the same signal can ride along in the extraction call for free. Both remain modest
+(< external corroboration 0.781) and gate nothing.
 
 **SHADOW STAGE.** This estimator never changes the label. It only stamps a continuous
 ``calibrated_confidence`` (+ ``risk = 1 - calibrated_confidence``) alongside the
@@ -57,7 +70,8 @@ VARIANT_D_INSTRUCTIONS: tuple[str, ...] = (
     "wrongly called 'unknown'.",
     "Decide how exposed THIS specific answer is to that error, then report the probability "
     "that the stated answer is correct.",
-    'Return exactly one JSON object: {"probability": <int 0-100>, "reason": "<one short sentence>"}.',
+    "Return exactly one JSON object: "
+    '{"probability": <int 0-100>, "reason": "<one short sentence>"}.',
 )
 
 
