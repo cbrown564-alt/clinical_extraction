@@ -4,7 +4,8 @@ Parent: [[00_overarching_implementation_plan]] · execution arm of
 `docs/research/exectv2_gpt_first_full_architecture_strategy_2026-06-17.md`
 Status: active. Dev-split only. No new full-200 audit until Phase E gate is met.
 Date opened: 2026-06-17 · Phase A complete (2026-06-17); Phase B complete
-(2026-06-17); Phase C complete (2026-06-17); Phase D next.
+(2026-06-17); Phase C complete (2026-06-17); Phase D complete (2026-06-17);
+Phase E next.
 
 ## North star and claim ladder
 
@@ -227,7 +228,7 @@ stays honest at 0.34/0.31 semantic/benchmark — the gate is **not** met, so no
 full-200 audit (Phase E). The first hybrid target remains over-emission, and the
 named next stage is a GPT candidate-selection pass (ablation-gated).
 
-### Phase D — Benchmark-format projection completion
+### Phase D — Benchmark-format projection completion (DONE 2026-06-17)
 
 Extend the shared phrase→CUI lexicon/projection (`benchmark_projection.py`,
 `deterministic/lexicon.py`) across all nine entities so the with-CUI headline is
@@ -235,6 +236,42 @@ real, not 0-by-construction. Keep it a separate post-step with its own ablation:
 report semantic (CUI-dropped) and benchmark (with-CUI) together; never credit CUI
 projection as LLM clinical reasoning. This phase is where representation-bound
 entities actually move.
+
+**Implementation.** The shared lexicon already spans all nine entities (commit
+e0639cd); the benchmark match key includes `CUI` while the semantic key drops it,
+so the benchmark-vs-semantic delta is exactly the deterministic projection's
+credit. Phase D formalizes that as a first-class, reusable ablation:
+`reports/cui_projection_diagnostic.py` measures the projection's **coverage**
+(fraction of predictions the lexicon attaches a CUI to), **correctness** (CUI
+agreement on source-near overlaps), and **gold CUI density** (the share of the
+benchmark key it must reproduce); `runners/run_cui_projection_diagnostic.py`
+emits it from any combined all-entity JSONL. The hybrid report already prints the
+per-entity semantic↔benchmark delta beside it.
+
+**Result (dev140, GPT-only hybrid prediction).** Artifacts:
+`experiments/exectv2_hybrid_all_entities_dev140_gpt41mini_20260617_cui_projection.{md,json}`
+(and the `_ruleaug_` pair).
+
+| | Overall | EpilepsyCause | PatientHistory | Onset | Diagnosis | SeizureFrequency | Investigations | Prescription | WhenDiagnosed |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Gold CUI density | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 |
+| Pred CUI coverage | 0.60 | 0.24 | 0.25 | 0.44 | 0.46 | 0.74 | 0.92 | 0.97 | 1.00 |
+| CUI agreement (where both) | 0.90 | 1.00 | 0.92 | 1.00 | 0.80 | 0.85 | 0.82 | 0.99 | 1.00 |
+
+Reads: (1) **Every gold mention carries a CUI (density 1.00)**, so the benchmark
+key requires a correct CUI on every match — the with-CUI headline cannot exceed
+the projection's coverage×correctness. (2) The gap is **coverage-bound, not
+correctness-bound**: where the lexicon fires it agrees with gold at 0.80–1.00
+(overall 0.90), but it only covers 60% of predictions, and benchmark sits *below*
+semantic precisely on the low-coverage open-vocab entities (EpilepsyCause 0.24,
+PatientHistory 0.25, Onset 0.44, Diagnosis 0.46) — a finite lexicon cannot
+enumerate every clinical phrase. (3) **The honest verdict the plan demands:**
+closing the coverage gap means gold-aligning the lexicon, which is *in-sample CUI
+lookup* — a documented projection artifact (see [[project_exectv2_scoring_artifacts]]),
+reported as separate projection credit, never as LLM clinical reasoning. Phase D
+therefore makes the projection auditable rather than inflating it by fitting the
+lexicon to dev gold; the with-CUI headline stays gated by lexicon coverage and is
+always reported beside the CUI-dropped semantic layer.
 
 ### Phase E — Reliability scorecard and predeclared full-200 audit
 
