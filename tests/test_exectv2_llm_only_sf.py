@@ -26,7 +26,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_only_single_pass,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_per_entity import (
-    ExECTv2PerEntitySFSignature,
+    ExECTv2PerEntitySignature,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
     ExECTv2SinglePassSFSignature,
@@ -401,7 +401,7 @@ def _collect_signature_text(sig_class) -> str:
     ("name", "sig_class"),
     [
         ("ExECTv2SinglePassSFSignature", ExECTv2SinglePassSFSignature),
-        ("ExECTv2PerEntitySFSignature", ExECTv2PerEntitySFSignature),
+        ("ExECTv2PerEntitySignature", ExECTv2PerEntitySignature),
     ],
 )
 def test_dspy_signature_components_do_not_expose_internal_vocabulary(
@@ -417,7 +417,7 @@ def test_dspy_signature_components_do_not_expose_internal_vocabulary(
     ("name", "sig_class"),
     [
         ("ExECTv2SinglePassSFSignature", ExECTv2SinglePassSFSignature),
-        ("ExECTv2PerEntitySFSignature", ExECTv2PerEntitySFSignature),
+        ("ExECTv2PerEntitySignature", ExECTv2PerEntitySignature),
     ],
 )
 def test_dspy_signature_does_not_use_extraction_vocabulary(
