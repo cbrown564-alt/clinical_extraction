@@ -46,8 +46,9 @@ benchmark-beating architecture evidence.
 - Prescription now has a code-backed benchmark projection ladder in the
   deterministic all-9 scorecard: phrase scope `0.3069`, semantic-without-CUI
   `0.3020`, benchmark-with-CUI `0.3020`, clinical medication identity `0.9257`,
-  `DrugName`+CUI projection `0.7921`, source-stated frequency `0.6523`, and
-  guideline-defaulted frequency `0.1760`.
+  `DrugName`+CUI projection `0.9158`, source-stated frequency `0.9307`, and
+  no remaining guideline-defaulted frequency items on dev under the source-context
+  diagnostic policy.
 - Shared active-entity benchmark projection is code-backed in
   `src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/benchmark_projection.py`.
   Prescription, Investigations, and Diagnosis deterministic rules reuse that
@@ -70,9 +71,6 @@ benchmark-beating architecture evidence.
 
 ### Now
 
-- Use the new Prescription benchmark projection ladder to attack diagnostic gaps
-  without moving the clinical headline: improve `DrugName`+CUI projection,
-  guideline-defaulted frequency recall, and phrase-scope policy visibility.
 - Improve Investigations exactness and add the next structured deterministic
   entity engines with rule-family/CUI ablations.
 
@@ -113,6 +111,11 @@ benchmark-beating architecture evidence.
 
 ### Done Recently
 
+- 2026-06-17: Cleaned up Prescription projection diagnostics without moving the
+  clinical headline: `DrugName`+CUI projection improved to `0.9158`,
+  source-stated frequency improved to `0.9307`, guideline-defaulted frequency collapsed
+  to zero dev items under source-context classification, and the deterministic
+  all-9 JSON/Markdown artifacts plus registry row were regenerated.
 - 2026-06-17: Added the Prescription benchmark projection ladder to
   `score_prescription_benchmark_projection()`, rendered it in the deterministic
   all-9 scorecard, regenerated the JSON/Markdown artifacts and registry row, and

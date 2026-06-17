@@ -31,20 +31,20 @@
       "tp": 187
     },
     "drugname_cui_projection": {
-      "f1": 0.7921,
-      "fn": 46,
-      "fp": 38,
-      "precision": 0.8081,
-      "recall": 0.7767,
-      "tp": 160
+      "f1": 0.9158,
+      "fn": 21,
+      "fp": 13,
+      "precision": 0.9343,
+      "recall": 0.8981,
+      "tp": 185
     },
     "guideline_defaulted_frequency": {
-      "f1": 0.176,
-      "fn": 101,
-      "fp": 2,
-      "precision": 0.8462,
-      "recall": 0.0982,
-      "tp": 11
+      "f1": 0.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "tp": 0
     },
     "phrase_scope": {
       "f1": 0.3069,
@@ -63,12 +63,12 @@
       "tp": 61
     },
     "source_stated_frequency": {
-      "f1": 0.6523,
-      "fn": 3,
-      "fp": 94,
-      "precision": 0.4919,
-      "recall": 0.9681,
-      "tp": 91
+      "f1": 0.9307,
+      "fn": 18,
+      "fp": 10,
+      "precision": 0.9495,
+      "recall": 0.9126,
+      "tp": 188
     }
   },
   "prescription_component_scores": {
@@ -113,12 +113,12 @@
       "tp": 3
     },
     "guideline_defaulted_frequency": {
-      "f1": 0.176,
-      "fn": 101,
-      "fp": 2,
-      "precision": 0.8462,
-      "recall": 0.0982,
-      "tp": 11
+      "f1": 0.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "tp": 0
     },
     "name": {
       "f1": 0.9257,
@@ -145,12 +145,12 @@
       "tp": 5
     },
     "source_stated_frequency": {
-      "f1": 0.6523,
-      "fn": 3,
-      "fp": 94,
-      "precision": 0.4919,
-      "recall": 0.9681,
-      "tp": 91
+      "f1": 0.9307,
+      "fn": 18,
+      "fp": 10,
+      "precision": 0.9495,
+      "recall": 0.9126,
+      "tp": 188
     },
     "weight_based_dosing": {
       "f1": 0.0,

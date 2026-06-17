@@ -54,8 +54,8 @@
 | name | 0.9257 | 0.9444 | 0.9078 | 187 | 11 | 19 |
 | dose | 0.9343 | 0.9536 | 0.9158 | 185 | 9 | 17 |
 | frequency | 0.9307 | 0.9495 | 0.9126 | 188 | 10 | 18 |
-| source_stated_frequency | 0.6523 | 0.4919 | 0.9681 | 91 | 94 | 3 |
-| guideline_defaulted_frequency | 0.1760 | 0.8462 | 0.0982 | 11 | 2 | 101 |
+| source_stated_frequency | 0.9307 | 0.9495 | 0.9126 | 188 | 10 | 18 |
+| guideline_defaulted_frequency | 0.0000 | 0.0000 | 0.0000 | 0 | 0 | 0 |
 | complete | 0.9293 | 0.9485 | 0.9109 | 184 | 10 | 18 |
 | ordinary_complete | 0.9096 | 0.9326 | 0.8877 | 166 | 12 | 21 |
 | rescue_regimen | 0.8333 | 0.8333 | 0.8333 | 5 | 1 | 1 |
@@ -70,9 +70,9 @@
 | semantic_without_cui | 0.3020 | 0.3081 | 0.2961 | 61 | 137 | 145 |
 | benchmark_with_cui | 0.3020 | 0.3081 | 0.2961 | 61 | 137 | 145 |
 | clinical_medication_identity | 0.9257 | 0.9444 | 0.9078 | 187 | 11 | 19 |
-| drugname_cui_projection | 0.7921 | 0.8081 | 0.7767 | 160 | 38 | 46 |
-| source_stated_frequency | 0.6523 | 0.4919 | 0.9681 | 91 | 94 | 3 |
-| guideline_defaulted_frequency | 0.1760 | 0.8462 | 0.0982 | 11 | 2 | 101 |
+| drugname_cui_projection | 0.9158 | 0.9343 | 0.8981 | 185 | 13 | 21 |
+| source_stated_frequency | 0.9307 | 0.9495 | 0.9126 | 188 | 10 | 18 |
+| guideline_defaulted_frequency | 0.0000 | 0.0000 | 0.0000 | 0 | 0 | 0 |
 
 ## Reading
 
