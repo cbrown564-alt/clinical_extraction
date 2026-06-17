@@ -2,6 +2,18 @@
 
 Generated from `experiments/registry.jsonl`. The JSONL file remains the canonical machine-readable registry.
 
+## Reliability Scorecard
+
+### `gan2026_reliability_scorecard_phase0_2026-06-17`
+- Date/split: `2026-06-17`; `validation750` + `test450` (aggregate, frozen); no-call re-analysis.
+- Pipeline: `reliability_scorecard_phase0`; mode `no-call replay`; replay `deterministic_no_call`.
+- Model role: none; deterministic re-analysis of frozen artifacts on the canonical `v0_reference` single-SE-mini subject layer (decision 0018). Shared code: `artifact_analysis/reliability_common.py`.
+- Repair mode/config: `reliability_scorecard_v1`.
+- Primary metrics: subject_purist_val=0.881, subject_purist_test=0.809, faithfulness_val=0.921, faithfulness_test=0.929, faithful_but_wrong_val=80, faithful_but_wrong_test=80, risk_coverage_auc=0.0404, external_score_failure_auroc=0.781, external_confidence_ece=0.080, external_confidence_brier=0.102, robustness_index_v0_5=0.547, robustness_index_v0_6=0.694, robustness_index_v0_7=1.000, band_error_spread=0.078, band_acc_cv=0.032, model_render_failures=0, recoverable_repairs=5483, est_cost_per_1000_notes_usd=1.16, hard50_temp0_unanimous_acc=0.689.
+- Evidence validity: Zero model calls. Every metric re-derived from frozen JSONL/JSON; subject numbers read from `v0_reference`, comparator numbers tagged. test450 touched only via aggregate-safe joins on the saved reasoner artifact. parse_errors are recoverable repairs (not failures); self-consistency leg is temp-0 reproducibility only (varying-temperature P2.1 pending).
+- Claim language: Phase 0 (zero-budget) reliability scorecard re-expressing the strand's logged evidence into ten reliability dimensions. Mean coverage ≈3.5/5; Calibration 2→3, Abstention 4→5, Operational 3→4, Consistency 3→2 (temp-0 caveat). Not a new benchmark claim; a re-expression of existing results onto the canonical subject layer.
+- Artifacts: `experiments/gan2026_reliability_master_scorecard_2026-06-17.{json,md}`, `experiments/gan2026_reliability_p0_1_faithfulness_correctness_2026-06-17.{json,md}`, `experiments/gan2026_reliability_p0_2_risk_coverage_validation750_2026-06-17.{json,md}`, `experiments/gan2026_reliability_p0_3_external_calibration_validation750_2026-06-17.{json,md}`, `experiments/gan2026_reliability_p0_4_robustness_index_2026-06-17.{json,md}`, `experiments/gan2026_reliability_p0_5_error_parity_validation750_2026-06-17.{json,md}`, `experiments/gan2026_reliability_p0_6_safety_table_2026-06-17.{json,md}`, `experiments/gan2026_reliability_p0_7_operational_2026-06-17.{json,md}`, `experiments/gan2026_reliability_p0_8_self_consistency_hard50_2026-06-17.{json,md}`.
+
 ## Promote
 
 ### `gan2026_state_graph_ontology_stage_d_promotion_gate_2026-06-15`

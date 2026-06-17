@@ -1,0 +1,43 @@
+{
+  "artifact_kind": "gan2026_reliability_p0_8_self_consistency",
+  "date": "2026-06-17",
+  "dimensions": [
+    "Consistency"
+  ],
+  "split": "validation_hard50",
+  "n_rows": 50,
+  "k_samples": 4,
+  "sampling_temperature": 0.0,
+  "probe_kind": "temp0_reproducibility_determinism (NOT varying-temperature self-consistency)",
+  "non_unanimous_rows": 5,
+  "agreement_accuracy_curve": {
+    "4/4": {
+      "n": 45,
+      "correct": 31,
+      "accuracy": 0.6888888888888889
+    },
+    "3/4": {
+      "n": 3,
+      "correct": 3,
+      "accuracy": 1.0
+    },
+    "2/4": {
+      "n": 2,
+      "correct": 0,
+      "accuracy": 0.0
+    }
+  },
+  "unanimous_accuracy": 0.6888888888888889,
+  "self_agreement_auroc_for_correctness_temp0": 0.5238970588235294,
+  "mean_normalized_entropy": 0.04433834373377398,
+  "caveat": "All samples temp-0 -> measures reproducibility, not self-consistency. Genuine self-consistency / semantic entropy requires VARYING temperatures and is P2.1 (fresh mini budget). n=50 hard slice.",
+  "provenance": {
+    "canonical_subject": "single_se_mini_self_consistency_hard50",
+    "decision": "0018-reliability-scorecard-canonical-subject-is-v0reference-single-se-mini",
+    "model_calls": 0,
+    "replay": "deterministic_no_call",
+    "sources": [
+      "experiments\\gan2026_agentic_hard50_tool_self_consistency_2026-06-12.jsonl"
+    ]
+  }
+}

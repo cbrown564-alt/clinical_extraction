@@ -1,0 +1,92 @@
+{
+  "artifact_kind": "gan2026_reliability_master_scorecard",
+  "date": "2026-06-17",
+  "canonical_subject": "single GPT structured-event pass on gpt-4.1-mini (v0_reference, decision 0018)",
+  "phase": "Phase 0 complete (zero model budget)",
+  "dimensions": [
+    {
+      "n": 1,
+      "dimension": "Task correctness",
+      "coverage": "4/5",
+      "axis": "reliability+accuracy",
+      "metric": "Subject Purist 0.881 val / 0.809 test (v0_reference); risk-coverage AUC 0.0404."
+    },
+    {
+      "n": 2,
+      "dimension": "Factuality (over-inference)",
+      "coverage": "3/5",
+      "axis": "reliability",
+      "metric": "Unknown-gold over-read rate 0.094 val / 0.127 test."
+    },
+    {
+      "n": 3,
+      "dimension": "Faithfulness",
+      "coverage": "5/5",
+      "axis": "reliability",
+      "metric": "Faithfulness rate 0.921 val / 0.929 test (subject); faithful-but-wrong 80 val / 80 test [comparator V12-full-gpt4.1: 703/750, 423/450 exact]."
+    },
+    {
+      "n": 4,
+      "dimension": "Calibration",
+      "coverage": "3/5",
+      "axis": "reliability",
+      "metric": "Self-confidence degenerate (98.5% one bucket); external-confidence ECE 0.080, Brier 0.102, failure AUROC 0.781.",
+      "coverage_note": "upgraded 2/5 -> 3/5: real ECE/Brier/AUROC now exist on external signals."
+    },
+    {
+      "n": 5,
+      "dimension": "Abstention",
+      "coverage": "5/5",
+      "axis": "reliability",
+      "metric": "Full risk-coverage curve: AUC 0.0404 (oracle 0.0073); selective risk 3.0% @ 50% coverage, 7.8% @ 80%.",
+      "coverage_note": "upgraded 4/5 -> 5/5: three operating points -> full curve."
+    },
+    {
+      "n": 6,
+      "dimension": "Robustness",
+      "coverage": "4/5",
+      "axis": "reliability",
+      "metric": "Continuous index: direct_labeler_v0_5 0.547, evidence_v0_6 0.694, evidence_v0_7 1.000 (overfit-gap is the diagnostic leg)."
+    },
+    {
+      "n": 7,
+      "dimension": "Consistency",
+      "coverage": "2/5",
+      "axis": "reliability",
+      "metric": "Hard50 TEMP-0 reproducibility only: unanimous accuracy 0.689 (reproducible \u2260 correct), 5/50 temp-0 non-determinism. Genuine VARYING-temperature self-consistency is P2.1 (not yet run).",
+      "coverage_note": "downgraded 3/5 -> 2/5: saved samples are temp-0 (reproducibility, not self-consistency); varying-temperature P2.1 is required to populate this leg."
+    },
+    {
+      "n": 8,
+      "dimension": "Safety & compliance",
+      "coverage": "4/5",
+      "axis": "reliability",
+      "metric": "0 C\u2192W selective floor (RQ6); abstain-to-unknown gate v0_9; canaries + hash pinning + aggregate-only readout guard; PHI/demographic evals N/A on synthetic."
+    },
+    {
+      "n": 9,
+      "dimension": "Fairness (clinical family)",
+      "coverage": "3/5",
+      "axis": "reliability",
+      "metric": "Per-band error spread 7.8%, CV 0.032; worst subgroup seizure_free_duration."
+    },
+    {
+      "n": 10,
+      "dimension": "Operational reliability",
+      "coverage": "4/5",
+      "axis": "reliability",
+      "metric": "0 model render failures / 5483 recoverable repairs across 1950 rows; offline est ~$1.16/1000 notes; latency+retry still blocked (P2.2).",
+      "coverage_note": "upgraded 3/5 -> 4/5: cost/token leg reconstructed offline."
+    }
+  ],
+  "source_artifacts": {
+    "p0_1": "experiments\\gan2026_reliability_p0_1_faithfulness_correctness_2026-06-17.json",
+    "p0_2": "experiments\\gan2026_reliability_p0_2_risk_coverage_validation750_2026-06-17.json",
+    "p0_3": "experiments\\gan2026_reliability_p0_3_external_calibration_validation750_2026-06-17.json",
+    "p0_4": "experiments\\gan2026_reliability_p0_4_robustness_index_2026-06-17.json",
+    "p0_5": "experiments\\gan2026_reliability_p0_5_error_parity_validation750_2026-06-17.json",
+    "p0_6": "experiments\\gan2026_reliability_p0_6_safety_table_2026-06-17.json",
+    "p0_7": "experiments\\gan2026_reliability_p0_7_operational_2026-06-17.json",
+    "p0_8": "experiments\\gan2026_reliability_p0_8_self_consistency_hard50_2026-06-17.json"
+  }
+}

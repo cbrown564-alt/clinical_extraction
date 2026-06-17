@@ -31,9 +31,9 @@ The dominant bucket holds **98.5%** of rows — self-report is near-constant and
 - Evidence-valid vs correctness:
   - evidence_valid=False: 50/59 = 84.7%
   - evidence_valid=True: 611/691 = 88.4%
-
-- Parse-repair count is a non-signal here: the production path logs 0 parse failures / 0 evidence loss across 2,295 rows (RQ5/RQ8), so it has no variance to calibrate against.
-
+- **Parse-repair count AUROC for failure: 0.6003** (528/750 rows took a deterministic repair — repairs are common, not constant, so the signal is real):
+  - no_repair: 207/222 = 93.2%
+  - any_repair: 454/528 = 86.0%
 ---
 
 **Reading.** External signals rank the subject's correctness (agreement-share AUROC 0.750; risk-score failure AUROC 0.781); self-reported confidence does not (near-constant). The honest calibration story is that reliability must be read off external corroboration, not the model's own certainty — the same lesson the architecture arc reached (Insight #3).

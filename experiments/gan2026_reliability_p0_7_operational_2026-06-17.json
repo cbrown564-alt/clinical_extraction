@@ -23,7 +23,8 @@
         "repair_event_rows": 528,
         "repair_events_total": 619,
         "call_errors": 0,
-        "unrecoverable_render_failures": 2,
+        "model_render_failures": 0,
+        "unscorable_gold_rows": 2,
         "source_row_index_unique": true
       },
       {
@@ -32,7 +33,8 @@
         "repair_event_rows": 750,
         "repair_events_total": 3035,
         "call_errors": 0,
-        "unrecoverable_render_failures": 2,
+        "model_render_failures": 0,
+        "unscorable_gold_rows": 2,
         "source_row_index_unique": true
       },
       {
@@ -41,17 +43,19 @@
         "repair_event_rows": 450,
         "repair_events_total": 1829,
         "call_errors": 0,
-        "unrecoverable_render_failures": 2,
+        "model_render_failures": 0,
+        "unscorable_gold_rows": 2,
         "source_row_index_unique": true
       }
     ],
     "total_rows": 1950,
     "total_recoverable_repair_events": 5483,
     "total_call_errors": 0,
-    "total_unrecoverable_render_failures": 6,
+    "total_model_render_failures": 0,
+    "total_unscorable_gold_rows": 6,
     "all_source_indices_unique": true,
     "resumability": "core/run_resume.py (read_completed/pending_items/merge_rows)",
-    "note": "parse_errors entries are recoverable deterministic repairs, not failures; the failure count is unrecoverable_render_failures."
+    "note": "parse_errors entries are recoverable deterministic repairs, not failures. model_render_failures counts rows with scorable gold but no predicted category (= 0); the gold=None rows are unscorable-gold exclusions."
   },
   "offline_cost_token_estimate": {
     "basis": "tiktoken o200k_base over saved prompt_input_json (input proxy) + raw_output",

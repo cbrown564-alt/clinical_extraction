@@ -50,12 +50,9 @@ INTEGRITY_ARTIFACTS = {
 }
 
 
-def _rendered_ok(row: dict[str, Any]) -> bool:
-    """A row rendered successfully if it has a scored comparison (subject layer for
-    reasoner rows, top-level comparison for the SE-mini source)."""
-    comp = (rc.subject_layer(row).get("comparison") if "v0_reference" in row
-            else row.get("comparison"))
-    return bool(comp) and comp.get("predicted_purist_category") is not None
+def _comparison(row: dict[str, Any]) -> dict[str, Any]:
+    return (rc.subject_layer(row).get("comparison") if "v0_reference" in row
+            else row.get("comparison")) or {}
 
 
 def integrity_row(name: str, path: Path) -> dict[str, Any]:
@@ -65,7 +62,19 @@ def integrity_row(name: str, path: Path) -> dict[str, Any]:
     repair_rows = sum(1 for r in rows if r.get("parse_errors"))
     repair_events = sum(len(r.get("parse_errors") or []) for r in rows)
     call_err = sum(1 for r in rows if r.get("call_error"))
-    unrecoverable = sum(1 for r in rows if r.get("call_error") or not _rendered_ok(r))
+    # A real model render failure: gold IS scorable but the model produced no
+    # predicted category. Rows where gold itself is None are unscorable-gold
+    # exclusions, not failures.
+    model_fail = 0
+    unscorable_gold = 0
+    for r in rows:
+        comp = _comparison(r)
+        pred = comp.get("predicted_purist_category")
+        gold = comp.get("gold_purist_category")
+        if gold is None:
+            unscorable_gold += 1
+        elif pred is None or r.get("call_error"):
+            model_fail += 1
     idxs = [r.get("source_row_index") for r in rows]
     unique_idx = len(set(idxs)) == len(idxs) and all(i is not None for i in idxs)
     return {
@@ -74,7 +83,8 @@ def integrity_row(name: str, path: Path) -> dict[str, Any]:
         "repair_event_rows": repair_rows,
         "repair_events_total": repair_events,
         "call_errors": call_err,
-        "unrecoverable_render_failures": unrecoverable,
+        "model_render_failures": model_fail,
+        "unscorable_gold_rows": unscorable_gold,
         "source_row_index_unique": unique_idx,
     }
 
@@ -87,7 +97,8 @@ def main() -> None:
     total_rows = sum(r["rows"] for r in integrity)
     total_repair_events = sum(r["repair_events_total"] for r in integrity)
     total_call_err = sum(r["call_errors"] for r in integrity)
-    total_unrecoverable = sum(r["unrecoverable_render_failures"] for r in integrity)
+    total_model_fail = sum(r["model_render_failures"] for r in integrity)
+    total_unscorable = sum(r["unscorable_gold_rows"] for r in integrity)
 
     # ── Part 2: offline token/cost estimate over the subject SE-mini path ──
     se_rows = rc.load_jsonl(rc.SE_MINI_VALIDATION750)
@@ -144,11 +155,13 @@ def main() -> None:
             "total_rows": total_rows,
             "total_recoverable_repair_events": total_repair_events,
             "total_call_errors": total_call_err,
-            "total_unrecoverable_render_failures": total_unrecoverable,
+            "total_model_render_failures": total_model_fail,
+            "total_unscorable_gold_rows": total_unscorable,
             "all_source_indices_unique": all(r["source_row_index_unique"] for r in integrity),
             "resumability": "core/run_resume.py (read_completed/pending_items/merge_rows)",
             "note": "parse_errors entries are recoverable deterministic repairs, not "
-            "failures; the failure count is unrecoverable_render_failures.",
+            "failures. model_render_failures counts rows with scorable gold but no "
+            "predicted category (= 0); the gold=None rows are unscorable-gold exclusions.",
         },
         "offline_cost_token_estimate": token_estimate,
         "rq8_guard_over_reconstructed_matrix": {
@@ -165,8 +178,9 @@ def main() -> None:
     OUT_MD.write_text(render_md(result), encoding="utf-8")
     print(f"wrote {OUT_JSON}")
     print(f"wrote {OUT_MD}")
-    print(f"  integrity: {total_rows} rows, {total_unrecoverable} unrecoverable failures, "
-          f"{total_call_err} call errors, {total_repair_events} recoverable repairs")
+    print(f"  integrity: {total_rows} rows, {total_model_fail} model render failures, "
+          f"{total_call_err} call errors, {total_unscorable} unscorable-gold, "
+          f"{total_repair_events} recoverable repairs")
     print(f"  est tokens: in~{mean_in:.0f} out~{mean_out:.0f}; cost/1000 notes ~${cost_per_1000:.2f}")
     print(f"  RQ8 reconstructed: {result['rq8_guard_over_reconstructed_matrix']['reconstructed_fields']}")
     print(f"  RQ8 still blocked: {result['rq8_guard_over_reconstructed_matrix']['still_blocked_fields']}")
@@ -178,16 +192,18 @@ def render_md(result: dict[str, Any]) -> str:
     L.append(f"Date: {result['date']}  ·  Model calls: 0 (tiktoken only, no API)\n")
     ig = result["integrity"]
     L.append("## Operational integrity (recomputed)\n")
-    L.append("| Artifact | Rows | Repair-event rows | Call errors | Unrecoverable | Idx unique |")
-    L.append("|---|---:|---:|---:|---:|:--:|")
+    L.append("| Artifact | Rows | Repair-event rows | Call errors | Model render fails | Unscorable gold | Idx unique |")
+    L.append("|---|---:|---:|---:|---:|---:|:--:|")
     for r in ig["per_artifact"]:
         L.append(f"| {r['artifact']} | {r['rows']} | {r['repair_event_rows']} | "
-                 f"{r['call_errors']} | {r['unrecoverable_render_failures']} | "
+                 f"{r['call_errors']} | {r['model_render_failures']} | "
+                 f"{r['unscorable_gold_rows']} | "
                  f"{'✓' if r['source_row_index_unique'] else '✗'} |")
     L.append(f"\n- **Totals: {ig['total_rows']} rows, "
-             f"{ig['total_unrecoverable_render_failures']} unrecoverable render failures, "
-             f"{ig['total_call_errors']} call errors**, all source indices unique: "
-             f"{ig['all_source_indices_unique']}.")
+             f"{ig['total_model_render_failures']} model render failures, "
+             f"{ig['total_call_errors']} call errors**, "
+             f"{ig['total_unscorable_gold_rows']} unscorable-gold exclusions, "
+             f"all source indices unique: {ig['all_source_indices_unique']}.")
     L.append(f"- Recoverable deterministic repair events: {ig['total_recoverable_repair_events']} "
              "(label normalization + decision-field-shape repair; load-bearing per RQ5 ablation, "
              "not failures).")
@@ -214,9 +230,10 @@ def render_md(result: dict[str, Any]) -> str:
              "telemetry-instrumented re-pass (P2.2).\n")
     L.append("---\n")
     L.append(
-        "**Reading.** Operational *integrity* is 5/5 (zero unrecoverable render failures, "
+        "**Reading.** Operational *integrity* is 5/5 (zero model render failures, "
         "zero call errors, unique provenance across every subject row, resumable runners; "
-        "deterministic repair fires often but always recovers). The cost "
+        "deterministic repair fires often but always recovers, and the only un-rendered "
+        "rows are unscorable-gold exclusions). The cost "
         "leg is no longer fully dark: token volume and a dollar band are recoverable "
         "offline, leaving only wall-clock latency and retry count for a measured re-pass.\n"
     )

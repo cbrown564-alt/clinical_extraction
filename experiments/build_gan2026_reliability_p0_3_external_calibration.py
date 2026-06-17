@@ -60,12 +60,19 @@ def main() -> None:
     rows = rc.load_jsonl(rc.REASONER_VALIDATION750)
     agree = rc.agreement_count_by_source_index(rc.load_jsonl(rc.CONSENSUS_VALIDATION750))
     feats = rc.rq9_boundary_features_by_source_index(rc.load_jsonl(rc.RQ9_ROUTER))
+    # parse-repair count on the subject SE-mini path, joined by source_row_index.
+    repair_by_idx = {
+        r["source_row_index"]: len(r.get("parse_errors") or [])
+        for r in rc.load_jsonl(rc.SE_MINI_VALIDATION750)
+    }
 
     # External probability via cross-model agreement share.
     pairs: list[tuple[float, bool]] = []
     ev_correct = collections.defaultdict(list)  # evidence_valid -> correctness
     risk_scores: list[float] = []
     risk_is_error: list[bool] = []
+    repair_counts: list[int] = []
+    repair_correct = collections.defaultdict(list)  # any-repair -> correctness
     for r in rows:
         idx = r["source_row_index"]
         a = agree.get(idx, 2)
@@ -77,6 +84,9 @@ def main() -> None:
         comp = external_risk_score(a, feats.get(idx, {}))
         risk_scores.append(comp["score"])
         risk_is_error.append(not correct)
+        rep = repair_by_idx.get(idx, 0)
+        repair_counts.append(rep)
+        repair_correct[rep > 0].append(correct)
 
     ece, bins = rc.expected_calibration_error(pairs, n_bins=10)
     brier = rc.brier_score(pairs)
@@ -88,6 +98,14 @@ def main() -> None:
     ev_table = {
         str(k): {"n": len(v), "correct": sum(v), "accuracy": sum(v) / len(v) if v else None}
         for k, v in sorted(ev_correct.items())
+    }
+    # parse-repair count as an error signal (repairs are common: not a constant).
+    repair_auroc = rc.auroc([float(x) for x in repair_counts], risk_is_error)
+    repair_table = {
+        ("any_repair" if k else "no_repair"): {
+            "n": len(v), "correct": sum(v), "accuracy": sum(v) / len(v) if v else None
+        }
+        for k, v in sorted(repair_correct.items())
     }
 
     result: dict[str, Any] = {
@@ -110,6 +128,9 @@ def main() -> None:
         "failure_prediction": {
             "risk_score_auroc_for_failure": auroc_fail,
             "evidence_valid_split": ev_table,
+            "parse_repair_auroc_for_failure": repair_auroc,
+            "parse_repair_split": repair_table,
+            "rows_with_any_repair": sum(1 for x in repair_counts if x > 0),
         },
     }
     OUT_JSON.write_text(json.dumps(result, indent=2), encoding="utf-8")
@@ -153,9 +174,11 @@ def render_md(result: dict[str, Any]) -> str:
     L.append("- Evidence-valid vs correctness:")
     for k, d in fp["evidence_valid_split"].items():
         L.append(f"  - evidence_valid={k}: {d['correct']}/{d['n']} = {d['accuracy']:.1%}")
-    L.append("\n- Parse-repair count is a non-signal here: the production path logs "
-             "0 parse failures / 0 evidence loss across 2,295 rows (RQ5/RQ8), so it has "
-             "no variance to calibrate against.\n")
+    L.append(f"- **Parse-repair count AUROC for failure: {fp['parse_repair_auroc_for_failure']:.4f}** "
+             f"({fp['rows_with_any_repair']}/750 rows took a deterministic repair — repairs "
+             "are common, not constant, so the signal is real):")
+    for k, d in fp["parse_repair_split"].items():
+        L.append(f"  - {k}: {d['correct']}/{d['n']} = {d['accuracy']:.1%}")
     L.append("---\n")
     L.append("**Reading.** External signals rank the subject's correctness "
              f"(agreement-share AUROC {ec['auroc_for_correctness']:.3f}; risk-score "

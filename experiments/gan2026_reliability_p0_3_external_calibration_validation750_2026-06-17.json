@@ -81,6 +81,20 @@
         "correct": 611,
         "accuracy": 0.8842257597684515
       }
-    }
+    },
+    "parse_repair_auroc_for_failure": 0.6003416682248551,
+    "parse_repair_split": {
+      "no_repair": {
+        "n": 222,
+        "correct": 207,
+        "accuracy": 0.9324324324324325
+      },
+      "any_repair": {
+        "n": 528,
+        "correct": 454,
+        "accuracy": 0.8598484848484849
+      }
+    },
+    "rows_with_any_repair": 528
   }
 }

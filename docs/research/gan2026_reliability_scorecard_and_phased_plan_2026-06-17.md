@@ -163,10 +163,14 @@ Each task is a deterministic driver over already-saved JSONL/JSON. No LLM calls.
   (Retry count remains genuinely un-reconstructable.)
 
 - **P0.8 — Hard50 self-consistency re-tabulation** *(Consistency, partial).*
-  From the existing `tool_self_consistency` hard50 JSONL (k=4 + temperature reference),
-  compute per-row agreement entropy / majority fraction and the agreement↔accuracy curve.
-  Confirms (at n=50) that same-model agreement does not separate correct from wrong — feeding
-  the external-signal logic of P0.3. Flagged as n=50 pending P2.1.
+  From the existing `tool_self_consistency` hard50 JSONL, compute per-row agreement entropy /
+  majority fraction and the agreement↔accuracy curve. **Temperature caveat (2026-06-17):** the
+  saved hard50 samples are all temperature 0.0, so this artifact measures *reproducibility /
+  determinism*, **not** genuine self-consistency — it cannot draw a "self-consistency is
+  uninformative" conclusion. What survives: even fully-reproducible (temp-0 unanimous) hard rows
+  are wrong ~31%, and 5/50 rows disagree despite identical temperature. Genuine self-consistency
+  **requires varying temperatures** and is deferred to P2.1; this leg is therefore scored **2/5**,
+  not 3/5, until P2.1 runs.
 
 - **P0.9 — Assemble the master reliability scorecard.**
   Merge P0.1–P0.8 into the single ten-dimension scorecard with proper metrics. This is the
@@ -203,9 +207,11 @@ No model budget.
 Full gpt-4.1 budget is exhausted; all Phase 2 work is on mini and is cheap. One item is the
 genuine research swing.
 
-- **P2.1 — Semantic entropy over multi-sampled structured events** *(Consistency, Calibration, Abstention). THE RESEARCH SWING. Conditional — fire only if Phase 0 leaves calibration/abstention thin.*
-  Sample the structured-event extractor k=4–5× at temperature over validation750 (≈3,000–3,750
-  short mini calls; a few dollars; one resumable overnight run via `run_resume.py`). Compute
+- **P2.1 — Semantic entropy over multi-sampled structured events** *(Consistency, Calibration, Abstention). THE RESEARCH SWING. NOW FIRING — Phase 0 left Consistency at 2/5 and the user directed that self-consistency use varying temperatures.*
+  Sample the structured-event extractor k=4–5× over validation750 at **varying temperatures**
+  (e.g. 0.3 / 0.5 / 0.7 / 1.0 — **not** a single fixed temperature, and never temp-0, which only
+  re-measures the P0.8 reproducibility result) (≈3,000–3,750 short mini calls; a few dollars; one
+  resumable overnight run via `run_resume.py`). Compute
   semantic entropy per row at **two levels on the same samples**: *primary* over the rendered
   Purist category (what abstention acts on), and *secondary* over the selected event kind
   (`frequency`/`seizure_free`/`unknown`, a more sensitive probe of upstream wavering that
@@ -236,6 +242,47 @@ genuine research swing.
   calibration story thin.
 
 ---
+
+## Part III — Phase 0 Execution Results (2026-06-17)
+
+Phase 0 ran in full at zero model budget. Each task is a deterministic driver
+(`experiments/build_gan2026_reliability_p0_*.py`) over the frozen artifacts,
+reading the canonical `v0_reference` subject layer; outputs are paired `.json` +
+`.md` in `experiments/`. Shared loaders/metrics live in
+`artifact_analysis/reliability_common.py`. The consolidated result is
+`experiments/gan2026_reliability_master_scorecard_2026-06-17.md`.
+
+| # | Dimension | Cov. (was→now) | Computed metric |
+|---|-----------|:--:|-----------------|
+| 1 | Task correctness | 4/5 | Subject Purist 0.881 val / 0.809 test; risk–coverage AUC 0.040 |
+| 2 | Factuality | 3/5 | Unknown-gold over-read 9.4% val / 12.7% test |
+| 3 | Faithfulness | 5/5 | Subject faithfulness 92.1% val / 92.9% test; faithful-but-wrong 80/80 `[comparator: 703/750, 423/450]` |
+| 4 | Calibration | 2/5→3/5 | Self-confidence degenerate (98.5% one bucket); external ECE 0.080, Brier 0.102, failure AUROC 0.781 |
+| 5 | Abstention | 4/5→5/5 | Full curve, AUC 0.040 (oracle 0.007); selective risk 3.0%@50% cov, 7.8%@80% |
+| 6 | Robustness | 4/5 | Index 0.547 / 0.694 / 1.000 (v0.5 / v0.6 / v0.7); overfit gap the diagnostic leg |
+| 7 | Consistency | 3/5→**2/5** | Temp-0 reproducibility only (unanimous acc 0.689); varying-temp self-consistency deferred to P2.1 |
+| 8 | Safety & compliance | 4/5 | 0 C→W selective floor; gate v0_9; canaries + hash pin + readout guard |
+| 9 | Fairness | 3/5 | Per-band error spread 7.8%, CV 0.032; worst subgroup `seizure_free_duration` |
+| 10 | Operational | 3/5→4/5 | 0 model render failures / 5,483 recoverable repairs / 1,950 rows; ~$1.16/1000 notes (est); latency+retry still blocked |
+
+**Findings worth flagging.**
+- The **P0.2 risk–coverage curve** is the headline: the predeclared External Risk
+  Score (cross-model agreement + residual-shape flags + ambiguity count) ranks
+  errors with **AUROC 0.781** and yields a smooth, monotone selective-risk curve.
+  The wall reading is nuanced: external features *do* shed recoverable error, while
+  the irreducible core is the confident-agreement over-reading (1 error even among
+  the 121 safest risk-0 rows).
+- **Subject faithfulness (92.1% / 92.9%)** is genuinely lower than the full-gpt-4.1
+  V12 `final` comparator (703/750, 423/450) — decision 0018's re-derivation matters.
+  Evidence-validity barely predicts correctness (84.7% vs 88.4%), reinforcing the
+  faithful-but-wrong thesis.
+- **Two corrections were applied during execution.** (a) `parse_errors` logs
+  *recoverable* deterministic repairs, not failures — true model render failures are
+  0; the 6 un-rendered rows are unscorable-gold exclusions. Parse-repair count is a
+  weak-but-real error signal (AUROC 0.60), not the "non-signal" first drafted.
+  (b) Per user direction, **self-consistency must use varying temperatures**; the
+  temp-0 hard50 only measures reproducibility, so Consistency is honestly scored
+  **2/5** and P2.1 now fires.
 
 ## Recommended sequencing
 
