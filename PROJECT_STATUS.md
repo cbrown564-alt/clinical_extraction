@@ -43,10 +43,10 @@ family-aware promotion gates. Use `gpt-4.1-mini` for rapid loops; keep Qwen
 
 - Run GPT per-entity LLM-only pilots for the entities most likely to move the
   overall benchmark fastest: Prescription, Investigations, Diagnosis, then
-  SeizureFrequency as the hard transfer check.
-- Add an ExECTv2 projection-gap ledger before promoting any architecture:
-  phrase scope, CUI, attribute bundle, split/merge, current-regimen errors,
-  source/defaulted frequency, future medication, weight dosing, and rescue mismatch.
+  SeizureFrequency as the hard transfer check. The projection-gap ledger now
+  ranks where the leverage is: Diagnosis, PatientHistory, and Investigations are
+  recall-bound (candidate generation), while Prescription/BirthHistory/
+  WhenDiagnosed/EpilepsyCause are representation-bound (projection only).
 
 ### Next
 
@@ -67,6 +67,16 @@ family-aware promotion gates. Use `gpt-4.1-mini` for rapid loops; keep Qwen
 
 ### Done Recently
 
+- 2026-06-17: Built the reusable all-entity projection-gap ledger
+  (`reports/projection_gap_ledger.py`). Classifies every gold FN / predicted FP
+  into a layered `gap_family` (phrase coverage, attribute bundle, CUI
+  projection, over-emission) and an orthogonal `miss_kind` (candidate-source vs
+  projection by Finding 2's CUI-recovery proxy), with a per-entity regime
+  rollup and a Prescription component-family table (source/defaulted frequency,
+  rescue, future medication, weight dosing, phrase scope, DrugName CUI). Dev
+  artifact reproduces the layered error analysis exactly: 1021 gold misses,
+  340/1021 = 0.333 projection share, and the published per-entity regimes. 5
+  new tests; full ExECTv2 suite (279) and Ruff on touched files pass.
 - 2026-06-17: Extended shared benchmark-format CUI projection to
   SeizureFrequency and wired `project_cuis` into LLM-only SF, LLM-only all-entity,
   clinical-findings, and hybrid post-steps. Preserved explicit
@@ -94,6 +104,7 @@ family-aware promotion gates. Use `gpt-4.1-mini` for rapid loops; keep Qwen
 ## Core Artifacts
 
 - `experiments/exectv2_deterministic_all9_dev_20260617.md`
+- `experiments/exectv2_projection_gap_ledger_dev.md`
 - `docs/research/exectv2_gpt_first_full_architecture_strategy_2026-06-17.md`
 - `docs/research/gan2026_research_closeout_synthesis_2026-06-17.md`
 - `experiments/RUN_INDEX.md`
