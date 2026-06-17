@@ -19,9 +19,9 @@ import dspy
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     ENTITY_REGISTRY,
+    SEIZURE_FREQUENCY,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
-    SEIZURE_FREQUENCY,
     ExectLetter,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
@@ -37,7 +37,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
 PROMPT_VERSION = "exectv2_llm_only_per_entity_v0.2"
-ENTITY_NAME = SEIZURE_FREQUENCY
+ENTITY_NAME = SEIZURE_FREQUENCY.name
 
 
 # ── DSPy program ──────────────────────────────────────────────────────────────

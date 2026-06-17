@@ -9,8 +9,8 @@ from __future__ import annotations
 
 import re
 
+from ..contract.entities import SEIZURE_FREQUENCY
 from ..contract.prediction import PredictedMention
-from ..data import SEIZURE_FREQUENCY
 from .frequency_section import _last_event_date_attrs, _rate_attrs
 from .lexicon import assign_cui
 from .normalizer import MONTH_NAME_PATTERN, normalize_count, normalize_month, normalize_unit
@@ -211,7 +211,7 @@ def _anchors(sentence: str) -> list[tuple[str, tuple[int, int]]]:
 
 def _mention(anchor_text: str, attrs: dict[str, str], evidence: str) -> PredictedMention:
     return PredictedMention(
-        entity=SEIZURE_FREQUENCY,
+        entity=SEIZURE_FREQUENCY.name,
         text=anchor_text,
         attributes=_with_cui(anchor_text, attrs),
         evidence=evidence.strip(),
@@ -221,7 +221,7 @@ def _mention(anchor_text: str, attrs: dict[str, str], evidence: str) -> Predicte
 
 def _seizure_free_surface_mention(attrs: dict[str, str], evidence: str) -> PredictedMention:
     return PredictedMention(
-        entity=SEIZURE_FREQUENCY,
+        entity=SEIZURE_FREQUENCY.name,
         text="seizure",
         attributes={**attrs, "CUI": "C1299590", "CUIPhrase": "seizure"},
         evidence=evidence.strip(),
@@ -231,7 +231,7 @@ def _seizure_free_surface_mention(attrs: dict[str, str], evidence: str) -> Predi
 
 def _forced_cui_mention(anchor_text: str, attrs: dict[str, str], cui: str, evidence: str) -> PredictedMention:
     return PredictedMention(
-        entity=SEIZURE_FREQUENCY,
+        entity=SEIZURE_FREQUENCY.name,
         text=anchor_text,
         attributes={**attrs, "CUI": cui, "CUIPhrase": anchor_text},
         evidence=evidence.strip(),

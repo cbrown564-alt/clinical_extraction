@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import json
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     SEIZURE_FREQUENCY,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectLetter,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
@@ -981,7 +983,7 @@ def test_to_predicted_letters_exposes_format_and_cui_projection_layers() -> None
     cui_attrs = dict(layers["cui_projected"].mentions[0].attributes)
     assert "CUI" not in fmt_attrs
     assert cui_attrs["CUI"] == "C0270834"
-    assert layers["cui_projected"].mentions[0].entity == SEIZURE_FREQUENCY
+    assert layers["cui_projected"].mentions[0].entity == SEIZURE_FREQUENCY.name
     assert any("dropped_evidence_not_substring" in w for w in warnings)
 
 

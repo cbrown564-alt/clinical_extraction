@@ -56,11 +56,13 @@ from importlib import import_module
 from pathlib import Path
 from typing import Any
 
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
+    SEIZURE_FREQUENCY,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
     to_exect_letter,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
-    SEIZURE_FREQUENCY,
     ExectAnnotation,
     ExectLetter,
     load_letters,
@@ -156,12 +158,12 @@ def _letter_records(
     records: list[_LetterRecord] = []
     for letter_id in sorted(gold_by_id.keys() | pred_by_id.keys()):
         gold_m = (
-            gold_by_id[letter_id].entities(SEIZURE_FREQUENCY)
+            gold_by_id[letter_id].entities(SEIZURE_FREQUENCY.name)
             if letter_id in gold_by_id
             else ()
         )
         pred_m = (
-            pred_by_id[letter_id].entities(SEIZURE_FREQUENCY)
+            pred_by_id[letter_id].entities(SEIZURE_FREQUENCY.name)
             if letter_id in pred_by_id
             else ()
         )
@@ -227,7 +229,7 @@ def _score_all(
     pred_letters: Sequence[ExectLetter],
 ) -> dict[str, EntityScore]:
     return {
-        name: score_entity(gold_letters, pred_letters, SEIZURE_FREQUENCY, cfg)
+        name: score_entity(gold_letters, pred_letters, SEIZURE_FREQUENCY.name, cfg)
         for name, cfg in _CONFIGS
     }
 
@@ -244,7 +246,7 @@ def _reconstruct_from_rows(rows: Sequence[dict], key: str) -> list[ExectLetter]:
     for row in rows:
         anns = tuple(
             ExectAnnotation(
-                entity=SEIZURE_FREQUENCY,
+                entity=SEIZURE_FREQUENCY.name,
                 text=m["text"],
                 attributes=m.get("attributes", {}),
             )
@@ -664,11 +666,11 @@ def main() -> None:
                     "letter_id": g.letter_id,
                     "gold_mentions": [
                         {"text": a.text, "attributes": dict(a.attributes)}
-                        for a in g.entities(SEIZURE_FREQUENCY)
+                        for a in g.entities(SEIZURE_FREQUENCY.name)
                     ],
                     "predicted_mentions": [
                         {"text": a.text, "attributes": dict(a.attributes)}
-                        for a in pl.entities(SEIZURE_FREQUENCY)
+                        for a in pl.entities(SEIZURE_FREQUENCY.name)
                     ],
                 }) + "\n")
     else:

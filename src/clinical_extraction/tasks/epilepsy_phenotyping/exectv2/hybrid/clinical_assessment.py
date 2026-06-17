@@ -34,6 +34,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.benchmark_projection
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     ENTITY_REGISTRY,
+    SEIZURE_FREQUENCY,
     EntitySpec,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
@@ -41,7 +42,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
     PredictedMention,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
-    SEIZURE_FREQUENCY,
     ExectAnnotation,
     ExectLetter,
 )
@@ -68,7 +68,7 @@ from .candidate_set import (
 from .verify_route import RoutedMention, routed_taxonomy, verify_and_route
 
 PROMPT_VERSION = "exectv2_hybrid_candidate_assessment_v0.2"
-ENTITY_NAME = SEIZURE_FREQUENCY
+ENTITY_NAME = SEIZURE_FREQUENCY.name
 COMPONENT_OWNER = "hybrid_candidate_assessment"
 
 # Closed vocabularies the assessment LLM may draw from (satellite 04 §3 / 07).

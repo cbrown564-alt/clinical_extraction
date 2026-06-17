@@ -30,6 +30,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.benchmark_projection
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     ENTITY_REGISTRY,
+    SEIZURE_FREQUENCY,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
     PredictedLetter,
@@ -37,7 +38,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
     to_exect_letter,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
-    SEIZURE_FREQUENCY,
     ExectAnnotation,
     ExectLetter,
 )
@@ -61,7 +61,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build
 
 PROMPT_VERSION = "exectv2_llm_only_sf_clinical_findings_v0.19"
 PIPELINE_FAMILY = "exectv2_llm_only_clinical_findings"
-ENTITY_NAME = SEIZURE_FREQUENCY
+ENTITY_NAME = SEIZURE_FREQUENCY.name
 
 _OUTPUT_LAYERS: tuple[str, ...] = ("format_projected", "cui_projected")
 

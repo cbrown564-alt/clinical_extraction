@@ -16,9 +16,9 @@ import pytest
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     ENTITY_REGISTRY,
+    SEIZURE_FREQUENCY,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
-    SEIZURE_FREQUENCY,
     ExectLetter,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
@@ -48,7 +48,7 @@ _NOTE = (
 
 _LETTER = ExectLetter(letter_id="TEST001", note_text=_NOTE)
 
-_SF_SPEC = ENTITY_REGISTRY[SEIZURE_FREQUENCY]
+_SF_SPEC = ENTITY_REGISTRY[SEIZURE_FREQUENCY.name]
 
 # ── Prompt hygiene ────────────────────────────────────────────────────────────
 
@@ -275,7 +275,7 @@ def test_to_predicted_letter_produces_correct_shape() -> None:
     assert letter.letter_id == "TEST001"
     assert len(letter.mentions) == 1
     m = letter.mentions[0]
-    assert m.entity == SEIZURE_FREQUENCY
+    assert m.entity == SEIZURE_FREQUENCY.name
     assert m.text == "2 seizures per month"
     assert m.attributes["NumberOfSeizures"] == "2"
     assert m.confidence == "high"

@@ -24,9 +24,11 @@ from __future__ import annotations
 import sys
 from collections import defaultdict
 
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
+    SEIZURE_FREQUENCY,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import to_exect_letter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
-    SEIZURE_FREQUENCY,
     load_letters_for_split,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.pipeline import (
@@ -71,8 +73,8 @@ def _row_errors(
     errors: list[str] = []
 
     for letter_id in sorted(gold_by_id.keys() | pred_by_id.keys()):
-        gold_anns = gold_by_id[letter_id].entities(SEIZURE_FREQUENCY) if letter_id in gold_by_id else ()
-        pred_anns = pred_by_id[letter_id].entities(SEIZURE_FREQUENCY) if letter_id in pred_by_id else ()
+        gold_anns = gold_by_id[letter_id].entities(SEIZURE_FREQUENCY.name) if letter_id in gold_by_id else ()
+        pred_anns = pred_by_id[letter_id].entities(SEIZURE_FREQUENCY.name) if letter_id in pred_by_id else ()
 
         gold_keys = _keys(gold_anns, config)
         pred_keys = list(_keys(pred_anns, config))
@@ -110,20 +112,20 @@ def main() -> None:
     ]
 
     total_pred = sum(len(p.mentions) for p in predicted_pred_letters)
-    total_gold = sum(len(g.entities(SEIZURE_FREQUENCY)) for g in gold_letters)
+    total_gold = sum(len(g.entities(SEIZURE_FREQUENCY.name)) for g in gold_letters)
     print(f"  Gold SF mentions:      {total_gold}")
     print(f"  Predicted SF mentions: {total_pred}")
 
     print("\n── phrase_only ─────────────────────────────────────────────────────")
-    s_phrase = score_entity(gold_letters, pred_exect, SEIZURE_FREQUENCY, PHRASE_ONLY)
+    s_phrase = score_entity(gold_letters, pred_exect, SEIZURE_FREQUENCY.name, PHRASE_ONLY)
     print(_prf(s_phrase))
 
     print("\n── sf_semantic (guideline-aligned; ignores CUI/CUIPhrase/Certainty/Negation) ──")
-    s_semantic = score_entity(gold_letters, pred_exect, SEIZURE_FREQUENCY, SF_SEMANTIC)
+    s_semantic = score_entity(gold_letters, pred_exect, SEIZURE_FREQUENCY.name, SF_SEMANTIC)
     print(_prf(s_semantic))
 
     print("\n── sf_benchmark (keeps CUI; needs phrase→CUI lexicon) ──────────────")
-    s_bench = score_entity(gold_letters, pred_exect, SEIZURE_FREQUENCY, SF_BENCHMARK)
+    s_bench = score_entity(gold_letters, pred_exect, SEIZURE_FREQUENCY.name, SF_BENCHMARK)
     print(_prf(s_bench))
 
     print("\n── error sample (phrase_only, first 30 FP/FN) ──────────────────────")

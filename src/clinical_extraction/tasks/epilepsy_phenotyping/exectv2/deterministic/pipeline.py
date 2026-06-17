@@ -27,12 +27,14 @@ from __future__ import annotations
 import re
 from collections.abc import Sequence
 
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
+    SEIZURE_FREQUENCY,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
     PredictedLetter,
     PredictedMention,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
-    SEIZURE_FREQUENCY,
     ExectLetter,
 )
 
@@ -132,7 +134,7 @@ def _with_cui(anchor: AnchorCandidate, attributes: dict[str, str]) -> dict[str, 
 
 def _mention_from_pair(anchor: AnchorCandidate, attributes: dict[str, str]) -> PredictedMention:
     return PredictedMention(
-        entity=SEIZURE_FREQUENCY,
+        entity=SEIZURE_FREQUENCY.name,
         text=anchor.text,
         attributes=_with_cui(anchor, attributes),
         evidence=anchor.evidence,

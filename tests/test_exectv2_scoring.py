@@ -1,11 +1,11 @@
 from dataclasses import replace
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
+    DIAGNOSIS,
     ENTITY_REGISTRY,
+    SEIZURE_FREQUENCY,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
-    DIAGNOSIS,
-    SEIZURE_FREQUENCY,
     ExectAnnotation,
     ExectLetter,
     load_letters,
@@ -38,14 +38,14 @@ def test_normalize_phrase_strips_hyphens_quotes_and_case() -> None:
 
 
 def test_match_key_ignores_cuiphrase_by_default() -> None:
-    a = _ann(SEIZURE_FREQUENCY, "two-seizures", NumberOfSeizures="2", CUIPhrase="seizures")
-    b = _ann(SEIZURE_FREQUENCY, "two-seizures", NumberOfSeizures="2", CUIPhrase="different")
+    a = _ann(SEIZURE_FREQUENCY.name, "two-seizures", NumberOfSeizures="2", CUIPhrase="seizures")
+    b = _ann(SEIZURE_FREQUENCY.name, "two-seizures", NumberOfSeizures="2", CUIPhrase="different")
     assert match_key(a) == match_key(b)
 
 
 def test_phrase_only_ignores_attributes() -> None:
-    a = _ann(SEIZURE_FREQUENCY, "two-seizures", NumberOfSeizures="2")
-    b = _ann(SEIZURE_FREQUENCY, "two-seizures", NumberOfSeizures="9")
+    a = _ann(SEIZURE_FREQUENCY.name, "two-seizures", NumberOfSeizures="2")
+    b = _ann(SEIZURE_FREQUENCY.name, "two-seizures", NumberOfSeizures="9")
     assert match_key(a, PHRASE_ONLY) == match_key(b, PHRASE_ONLY)
     assert match_key(a, PHRASE_AND_FEATURES) != match_key(b, PHRASE_AND_FEATURES)
 
@@ -395,7 +395,7 @@ def test_future_and_weight_based_prescriptions_are_diagnostics_not_headline() ->
 
 def test_gold_scored_against_itself_is_perfect() -> None:
     letters = load_letters()
-    score = score_entity(letters, letters, SEIZURE_FREQUENCY)
+    score = score_entity(letters, letters, SEIZURE_FREQUENCY.name)
     assert score.per_item.f1 == 1.0
     assert score.per_letter.f1 == 1.0
     assert score.per_item.tp == 263
@@ -420,28 +420,28 @@ def test_score_overall_micro_averages_item_and_entity_presence_cells() -> None:
             "L1",
             "note",
             (
-                _ann(SEIZURE_FREQUENCY, "two-seizures", NumberOfSeizures="2"),
-                _ann(SEIZURE_FREQUENCY, "absence-seizures", NumberOfSeizures="1"),
-                _ann(DIAGNOSIS, "epilepsy", DiagCategory="Epilepsy"),
+                _ann(SEIZURE_FREQUENCY.name, "two-seizures", NumberOfSeizures="2"),
+                _ann(SEIZURE_FREQUENCY.name, "absence-seizures", NumberOfSeizures="1"),
+                _ann(DIAGNOSIS.name, "epilepsy", DiagCategory="Epilepsy"),
             ),
         ),
-        ExectLetter("L2", "note", (_ann(DIAGNOSIS, "single-seizure"),)),
+        ExectLetter("L2", "note", (_ann(DIAGNOSIS.name, "single-seizure"),)),
     ]
     pred = [
         ExectLetter(
             "L1",
             "note",
             (
-                _ann(SEIZURE_FREQUENCY, "two-seizures", NumberOfSeizures="2"),
-                _ann(DIAGNOSIS, "wrong-diagnosis", DiagCategory="Epilepsy"),
+                _ann(SEIZURE_FREQUENCY.name, "two-seizures", NumberOfSeizures="2"),
+                _ann(DIAGNOSIS.name, "wrong-diagnosis", DiagCategory="Epilepsy"),
             ),
         ),
         ExectLetter(
             "L2",
             "note",
             (
-                _ann(DIAGNOSIS, "single-seizure"),
-                _ann(SEIZURE_FREQUENCY, "spurious-seizures", NumberOfSeizures="2"),
+                _ann(DIAGNOSIS.name, "single-seizure"),
+                _ann(SEIZURE_FREQUENCY.name, "spurious-seizures", NumberOfSeizures="2"),
             ),
         ),
     ]
@@ -449,7 +449,7 @@ def test_score_overall_micro_averages_item_and_entity_presence_cells() -> None:
     score = score_overall(
         gold,
         pred,
-        (SEIZURE_FREQUENCY, DIAGNOSIS),
+        (SEIZURE_FREQUENCY.name, DIAGNOSIS.name),
         lambda _e: PHRASE_AND_FEATURES,
     )
 
@@ -464,7 +464,7 @@ def test_empty_predictions_score_zero_recall() -> None:
     empty = [
         ExectLetter(letter_id=letter.letter_id, note_text=letter.note_text) for letter in letters
     ]
-    score = score_entity(letters, empty, SEIZURE_FREQUENCY)
+    score = score_entity(letters, empty, SEIZURE_FREQUENCY.name)
     assert score.per_item.recall == 0.0
     assert score.per_item.tp == 0
     assert score.per_item.fn == 263
@@ -477,8 +477,8 @@ def test_per_item_and_per_letter_diverge_on_partial_letter() -> None:
             "L1",
             "note",
             (
-                _ann(SEIZURE_FREQUENCY, "two-seizures", NumberOfSeizures="2"),
-                _ann(SEIZURE_FREQUENCY, "absence-seizures", NumberOfSeizures="1"),
+                _ann(SEIZURE_FREQUENCY.name, "two-seizures", NumberOfSeizures="2"),
+                _ann(SEIZURE_FREQUENCY.name, "absence-seizures", NumberOfSeizures="1"),
             ),
         )
     ]
@@ -488,10 +488,10 @@ def test_per_item_and_per_letter_diverge_on_partial_letter() -> None:
         ExectLetter(
             "L1",
             "note",
-            (_ann(SEIZURE_FREQUENCY, "two-seizures", NumberOfSeizures="2"),),
+            (_ann(SEIZURE_FREQUENCY.name, "two-seizures", NumberOfSeizures="2"),),
         )
     ]
-    score = score_entity(gold, pred, SEIZURE_FREQUENCY)
+    score = score_entity(gold, pred, SEIZURE_FREQUENCY.name)
     assert (score.per_item.tp, score.per_item.fn) == (1, 1)
     assert score.per_item.recall == 0.5
     assert score.per_letter.f1 == 1.0
@@ -500,18 +500,22 @@ def test_per_item_and_per_letter_diverge_on_partial_letter() -> None:
 def test_spurious_mention_in_empty_gold_letter_is_per_letter_false_positive() -> None:
     gold = [ExectLetter("L1", "note", ())]
     pred = [
-        ExectLetter("L1", "note", (_ann(SEIZURE_FREQUENCY, "two-seizures", NumberOfSeizures="2"),))
+        ExectLetter(
+            "L1",
+            "note",
+            (_ann(SEIZURE_FREQUENCY.name, "two-seizures", NumberOfSeizures="2"),),
+        )
     ]
-    score = score_entity(gold, pred, SEIZURE_FREQUENCY)
+    score = score_entity(gold, pred, SEIZURE_FREQUENCY.name)
     assert (score.per_letter.tp, score.per_letter.fp, score.per_letter.fn) == (0, 1, 0)
     assert score.per_item.fp == 1
 
 
 def test_wrong_attribute_breaks_full_feature_match_but_not_phrase_match() -> None:
     letters = load_letters()
-    target = next(letter for letter in letters if letter.entities(SEIZURE_FREQUENCY))
+    target = next(letter for letter in letters if letter.entities(SEIZURE_FREQUENCY.name))
     mentions = list(target.annotations)
-    sf_index = next(i for i, a in enumerate(mentions) if a.entity == SEIZURE_FREQUENCY)
+    sf_index = next(i for i, a in enumerate(mentions) if a.entity == SEIZURE_FREQUENCY.name)
     mentions[sf_index] = replace(
         mentions[sf_index],
         attributes={**mentions[sf_index].attributes, "NumberOfSeizures": "999"},
@@ -523,8 +527,8 @@ def test_wrong_attribute_breaks_full_feature_match_but_not_phrase_match() -> Non
         for letter in letters
     ]
 
-    strict = score_entity(letters, perturbed, SEIZURE_FREQUENCY, PHRASE_AND_FEATURES)
-    lenient = score_entity(letters, perturbed, SEIZURE_FREQUENCY, PHRASE_ONLY)
+    strict = score_entity(letters, perturbed, SEIZURE_FREQUENCY.name,PHRASE_AND_FEATURES)
+    lenient = score_entity(letters, perturbed, SEIZURE_FREQUENCY.name,PHRASE_ONLY)
     assert strict.per_item.fp == 1
     assert strict.per_item.fn == 1
     assert lenient.per_item.f1 == 1.0
@@ -537,7 +541,7 @@ def test_source_near_diagnostic_counts_same_entity_substring_overlap() -> None:
             "note",
             (
                 _ann("Prescription", "lamotrigine", DrugName="lamotrigine", DoseUnit="mg"),
-                _ann(SEIZURE_FREQUENCY, "focal seizures", NumberOfSeizures="2"),
+                _ann(SEIZURE_FREQUENCY.name, "focal seizures", NumberOfSeizures="2"),
             ),
         )
     ]
@@ -552,7 +556,7 @@ def test_source_near_diagnostic_counts_same_entity_substring_overlap() -> None:
                     DrugName="Lamotrigine",
                     DoseUnit="MG",
                 ),
-                _ann(SEIZURE_FREQUENCY, "2 focal seizures per month", NumberOfSeizures="3"),
+                _ann(SEIZURE_FREQUENCY.name, "2 focal seizures per month", NumberOfSeizures="3"),
             ),
         )
     ]
@@ -560,12 +564,12 @@ def test_source_near_diagnostic_counts_same_entity_substring_overlap() -> None:
     diagnostic = source_near_diagnostic(
         gold,
         pred,
-        ("Prescription", SEIZURE_FREQUENCY),
+        ("Prescription", SEIZURE_FREQUENCY.name),
         benchmark_config_for,
     )
 
     assert diagnostic.per_entity["Prescription"].overlap.tp == 1
     assert diagnostic.per_entity["Prescription"].attribute_agreement_tp == 1
-    assert diagnostic.per_entity[SEIZURE_FREQUENCY].overlap.tp == 1
-    assert diagnostic.per_entity[SEIZURE_FREQUENCY].attribute_agreement_tp == 0
+    assert diagnostic.per_entity[SEIZURE_FREQUENCY.name].overlap.tp == 1
+    assert diagnostic.per_entity[SEIZURE_FREQUENCY.name].attribute_agreement_tp == 0
     assert diagnostic.overall.attribute_agreement_rate == 0.5

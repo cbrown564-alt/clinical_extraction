@@ -32,6 +32,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.benchmark_projection
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     ENTITY_REGISTRY,
+    SEIZURE_FREQUENCY,
     EntitySpec,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
@@ -40,7 +41,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
     to_exect_letter,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
-    SEIZURE_FREQUENCY,
     ExectAnnotation,
     ExectLetter,
 )
@@ -58,7 +58,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
 PROMPT_VERSION = "exectv2_llm_only_single_pass_v0.2"
-ENTITY_NAME = SEIZURE_FREQUENCY
+ENTITY_NAME = SEIZURE_FREQUENCY.name
 
 
 # ── Output schema ────────────────────────────────────────────────────────────

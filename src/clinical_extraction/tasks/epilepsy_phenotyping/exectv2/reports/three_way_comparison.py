@@ -33,11 +33,13 @@ from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
 
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
+    SEIZURE_FREQUENCY,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
     to_exect_letter,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
-    SEIZURE_FREQUENCY,
     load_letters_for_split,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.pipeline import (
@@ -113,7 +115,7 @@ def compute_rules_row(split: str = "dev") -> ComparisonRow:
 
     def f1(config: object) -> tuple[float, float]:
         score = score_entity(
-            gold_letters, pred_letters, SEIZURE_FREQUENCY, config  # type: ignore[arg-type]
+            gold_letters, pred_letters, SEIZURE_FREQUENCY.name, config  # type: ignore[arg-type]
         )
         return round(score.per_item.f1, 3), round(score.per_letter.f1, 3)
 

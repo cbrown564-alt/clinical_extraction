@@ -11,8 +11,8 @@ from __future__ import annotations
 
 import re
 
+from ..contract.entities import SEIZURE_FREQUENCY
 from ..contract.prediction import PredictedMention
-from ..data import SEIZURE_FREQUENCY
 from .lexicon import assign_cui
 from .normalizer import MONTH_NAME_PATTERN, normalize_count, normalize_month, normalize_unit
 from .rule_metadata import DEFAULT_ABLATION, ExtractionContext
@@ -94,7 +94,7 @@ def _first_anchor(line: str) -> tuple[str, tuple[int, int]] | None:
 
 def _mention(anchor_text: str, attrs: dict[str, str], evidence: str) -> PredictedMention:
     return PredictedMention(
-        entity=SEIZURE_FREQUENCY,
+        entity=SEIZURE_FREQUENCY.name,
         text=anchor_text,
         attributes=_with_cui(anchor_text, attrs),
         evidence=evidence,

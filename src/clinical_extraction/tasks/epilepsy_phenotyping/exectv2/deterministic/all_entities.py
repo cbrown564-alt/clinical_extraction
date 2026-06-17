@@ -33,6 +33,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities im
     ONSET,
     PATIENT_HISTORY,
     PRESCRIPTION,
+    SEIZURE_FREQUENCY,
     WHEN_DIAGNOSED,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
@@ -40,7 +41,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
     PredictedMention,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
-    SEIZURE_FREQUENCY,
     ExectLetter,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import normalize_phrase
@@ -58,7 +58,7 @@ ACTIVE_DETERMINISTIC_ENTITIES: tuple[str, ...] = (
     BIRTH_HISTORY.name,
     EPILEPSY_CAUSE.name,
     PATIENT_HISTORY.name,
-    SEIZURE_FREQUENCY,
+    SEIZURE_FREQUENCY.name,
 )
 
 _OWNER_PREFIX = "deterministic"
@@ -1386,7 +1386,7 @@ def _rule_family_summary() -> dict[str, dict[str, str]]:
             "temporal_attributes": Portability.CLINICAL_EPILEPSY.value,
         },
         "seizure_frequency": {
-            "entity": SEIZURE_FREQUENCY,
+            "entity": SEIZURE_FREQUENCY.name,
             "group": "see deterministic.pipeline diagnostics",
             "portability": Portability.SEIZURE_FREQUENCY.value,
             "cui_projection": Portability.BENCHMARK_FORMAT.value,
