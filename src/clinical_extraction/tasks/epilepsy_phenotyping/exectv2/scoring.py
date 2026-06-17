@@ -7,13 +7,19 @@ from dataclasses import dataclass, field
 from pydantic import BaseModel
 
 from clinical_extraction.core.scoring import PRF1, multiset_prf1, prf1_from_counts, sum_prf1
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.evaluation import (
+    DEFAULT_BENCHMARK_IGNORE_ATTRIBUTES,
+    SEIZURE_FREQUENCY_BENCHMARK_IGNORE_ATTRIBUTES,
+    benchmark_ignore_attributes_for,
+    semantic_ignore_attributes_for,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectAnnotation, ExectLetter
 
 # CUIPhrase mirrors the annotated phrase, so including it in the match key is
 # redundant with the phrase itself. CUI is a normalization artifact the benchmark
 # paper disregarded in inter-annotator agreement; callers who want a CUI-strict
 # match can drop it from this set.
-DEFAULT_IGNORE_ATTRIBUTES: frozenset[str] = frozenset({"CUIPhrase"})
+DEFAULT_IGNORE_ATTRIBUTES: frozenset[str] = DEFAULT_BENCHMARK_IGNORE_ATTRIBUTES
 
 _QUOTES = str.maketrans("", "", "\"'“”‘’‚‛")
 _WHITESPACE = re.compile(r"\s+")
@@ -100,57 +106,22 @@ class MatchConfig:
 PHRASE_ONLY = MatchConfig(include_attributes=False)
 PHRASE_AND_FEATURES = MatchConfig(include_attributes=True)
 
-# Guideline v9 (L17/L19): Certainty and Negation are NOT SeizureFrequency
-# features ("We are not allocating Certainty to Seizure Frequency…"; "Negation
-# should be assigned to all concepts except Seizure Frequency…"). CUIPhrase
-# mirrors the phrase. So the benchmark-comparable SF match ignores these three
-# and keeps CUI + semantic attributes. Gold SF mentions that carry
-# Certainty/Negation are annotation noise (see the SF guideline-alignment audit).
-SF_GUIDELINE_IGNORED: frozenset[str] = frozenset({"CUIPhrase", "Certainty", "Negation"})
+SF_GUIDELINE_IGNORED: frozenset[str] = SEIZURE_FREQUENCY_BENCHMARK_IGNORE_ATTRIBUTES
 SF_BENCHMARK = MatchConfig(include_attributes=True, ignore_attributes=SF_GUIDELINE_IGNORED)
-# CUI is now emitted by the deterministic family via deterministic/lexicon.py;
-# dropping it (SF_SEMANTIC) scores the semantic attributes alone. The two configs
-# coincide today because the lexicon assigns the correct CUI to every
-# semantically-matching mention.
 SF_SEMANTIC = MatchConfig(
     include_attributes=True,
-    ignore_attributes=SF_GUIDELINE_IGNORED | frozenset({"CUI"}),
+    ignore_attributes=semantic_ignore_attributes_for("SeizureFrequency"),
 )
-
-
-# ── Per-entity match policy (Phase 6 all-9 generalization) ────────────────────
-#
-# The SF configs above pin one entity's policy. Phase 6 scores all nine entities,
-# and each entity's ignored-attribute set is read from its guideline scope, NOT
-# inherited from SF (protocol §2). Two facts drive the per-entity policy:
-#
-#   - CUIPhrase is always ignored (mirrors the phrase; redundant with the key).
-#   - Certainty and Negation are in scope for every entity EXCEPT SeizureFrequency
-#     (guideline v9 L17/L19: Certainty is not allocated to SF, and Negation is
-#     assigned to "all concepts except Seizure Frequency"). Investigations and
-#     Prescription never carry them at all (not in their legal-attribute set), so
-#     keeping them in the ignore set is a no-op there; listing SF explicitly is
-#     what matters.
-#
-# CUI is kept in the benchmark headline (the published "with all features"
-# reading) and dropped in the semantic variant — the same two-tier shape the SF
-# audit used, now per entity. The LLM-only family emits no CUI (discoveries D3),
-# so its with-CUI headline collapses to 0 on every entity by construction; that
-# divergence is surfaced, not hidden (protocol §2), and the semantic config is
-# its real attribute-level quality.
-_SF_ENTITY_NAME = "SeizureFrequency"
 
 
 def benchmark_ignore_for(entity: str) -> frozenset[str]:
     """Attributes ignored under the benchmark (with-CUI) match for ``entity``."""
-    if entity == _SF_ENTITY_NAME:
-        return SF_GUIDELINE_IGNORED
-    return DEFAULT_IGNORE_ATTRIBUTES
+    return benchmark_ignore_attributes_for(entity)
 
 
 def semantic_ignore_for(entity: str) -> frozenset[str]:
     """Attributes ignored under the CUI-dropped semantic match for ``entity``."""
-    return benchmark_ignore_for(entity) | frozenset({"CUI"})
+    return semantic_ignore_attributes_for(entity)
 
 
 def benchmark_config_for(entity: str) -> MatchConfig:
