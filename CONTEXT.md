@@ -409,3 +409,106 @@ medication, no injury, no admission, better control, or conditional future
 breakthrough-event planning, rather than explicit no-seizure or no-event
 evidence. It must not render a seizure-free duration.
 _Avoid_: seizure-free state, duration projection, rescue-medication absence as seizure freedom
+
+### ExECTv2 Scoring
+
+**Prescription Regimen**: The clinical medication fact for an active
+anti-seizure prescription, consisting of medication identity, dose, dose unit,
+and frequency when stated or guideline-defaulted. Its evidence phrase may be a
+source-near medication span, but the regimen is the clinical object being
+recovered.
+_Avoid_: medication mention, raw prescription phrase, drug name only
+
+**Future Medication Diagnostic**: A diagnostic layer for planned, titration,
+target-dose, or future anti-seizure medication statements that contain regimen
+facts but are not current prescriptions. It preserves clinically relevant future
+medication evidence without counting it as current Prescription regimen
+recovery.
+_Avoid_: current prescription, false positive prescription, discarded plan evidence
+
+**Weight-Based Dosing Diagnostic**: A diagnostic layer for Prescription evidence
+that states dose by body-weight basis, such as `mg/kg/day`, rather than as an
+absolute administered `mg` or `g` dose. It is clinically meaningful dosing
+evidence, but it is not the same component object as an absolute current regimen
+dose.
+_Avoid_: absolute DrugDose, current regimen tuple dose, discarded dosing evidence
+
+**Clinical Medication Identity**: The clinically equivalent medication concept
+used for Prescription component scoring, where brand names, generic names, and
+common spelling variants may resolve to the same anti-seizure medication.
+_Avoid_: literal DrugName string, CUI identity, brand-only identity
+
+**Clinical Component Score**: A diagnostic score for a decomposable clinical
+fact component, such as Prescription medication identity, dose, frequency, or
+complete regimen tuple, evaluated apart from exact ExECT mention phrase and CUI
+projection.
+_Avoid_: benchmark score, headline F1, exact mention match
+
+**Prescription Clinical Headline**: The primary clinical Prescription score,
+combining accepted current-regimen component shapes such as ordinary
+[[Complete Regimen Tuple]]s and [[Rescue Medication Regimen]]s. Supporting
+component scores remain diagnostics rather than parallel headline claims.
+_Avoid_: every component as headline, benchmark Prescription F1, name-only success
+
+**Decomposable Clinical Object**: An ExECTv2 entity target whose clinical fact
+naturally breaks into meaningful bound components, such as a medication regimen
+or an investigation with performed/result/type fields. Component scoring should
+be used for these objects, not forced onto entities where only phrase,
+assertion, time, or projection diagnostics are clinically meaningful.
+_Avoid_: symmetry-driven component score, fake component layer, component score for every entity
+
+**Complete Regimen Tuple**: A bound Prescription component key containing
+clinical medication identity, dose, dose unit, and frequency from the same
+regimen mention. It is the component score that supports "regimen recovered"
+language; isolated name, dose, or frequency scores diagnose partial recovery
+only.
+_Avoid_: unbound component match, letter-level ingredient match, any-component recovery
+
+**Split-Dose Regimen**: A Prescription regimen where one medication has multiple
+source-stated dose slots, such as different morning and evening doses. In the
+clinical component layer each slot is a separate [[Complete Regimen Tuple]],
+while benchmark projection may still merge or split the surface mention.
+_Avoid_: combined dose blob, single averaged dose, benchmark split/merge convention
+
+**Rescue Medication Regimen**: A Prescription component shape for rescue or PRN
+anti-seizure medication where medication identity plus `As_Required` frequency
+can be a valid regimen even when no dose is stated. Dose may be recorded when
+present, but absence of dose should not turn the rescue fact into an ordinary
+complete-tuple failure.
+_Avoid_: ordinary complete regimen tuple, missing-dose failure, non-prescription PRN mention
+
+**Guideline-Defaulted Frequency**: A Prescription frequency value supplied by
+the ExECT annotation guideline when the source does not state a schedule, such
+as once daily by default or `As_Required` for rescue medication conventions. It
+is benchmark projection, not source-stated schedule extraction.
+_Avoid_: recovered frequency, stated schedule, clinical schedule evidence
+
+**ExECT Mention Projection**: The benchmark-facing representation that turns a
+clinical fact into an ExECT mention key: entity, normalized phrase text, and the
+non-ignored attribute bundle, including CUI for the benchmark surface. It is a
+projection policy, not the same thing as clinical fact recovery.
+_Avoid_: clinical extraction, raw gold text, scorer normalization
+
+**Phrase-Scope Mismatch**: A projection gap where the predicted and gold ExECT
+mentions refer to the same clinical fact but choose different phrase boundaries,
+such as a medication regimen span versus a section-prefixed span.
+_Avoid_: clinical miss, evidence miss, fuzzy match
+
+**Prescription Phrase Projection**: The ExECT mention projection policy for
+Prescription that uses the clinically bounded medication regimen span as mention
+text and excludes section headings, list labels, and surrounding sentence
+context.
+_Avoid_: full section phrase, heading-inclusive prescription text, raw-gold imitation
+
+**CUI Projection**: The benchmark-format step that attaches the CUI expected by
+the ExECT mention surface. It should be reported separately from clinical
+component recovery because ontology convention can change benchmark F1 without
+changing the recovered clinical fact.
+_Avoid_: medication extraction, semantic correctness, clinical understanding
+
+**Prescription Benchmark Projection**: The ExECT mention projection layer that
+turns a recovered Prescription regimen into the benchmark-facing `DrugName` and
+CUI convention. It is separate from [[Clinical Medication Identity]] because
+brand/generic equivalence can be clinically correct while still differing from
+the benchmark ontology surface.
+_Avoid_: clinical medication identity, component recovery, raw ontology lookup

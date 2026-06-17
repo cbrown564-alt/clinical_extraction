@@ -52,11 +52,13 @@ evidence.
 - The first deterministic all-9 dev scorecard is registered:
   `experiments/exectv2_deterministic_all9_dev_20260617.md`. It scores all nine
   entities with active rules for Prescription, Investigations, Diagnosis, and
-  SeizureFrequency. Prescription now has component-level clinical scoring in
-  the scorecard: name F1 `0.9257`, dose F1 `0.9343`, frequency F1 `0.9307`,
-  and complete name+dose+frequency tuple F1 `0.9293`; benchmark phrase/CUI F1
-  remains much lower at `0.3020/0.5223`, with `0` schema errors and `1.0000`
-  evidence validity.
+  SeizureFrequency. Prescription now has an ADR-backed scorecard split: one
+  clinical headline for regimen recovery plus diagnostics for benchmark
+  projection, defaults, future plans, weight-based dosing, and rescue handling.
+  The clinical headline is F1 `0.9072`; name/dose/frequency diagnostics remain
+  strong at `0.9257`/`0.9343`/`0.9307`, ordinary complete tuple F1 is `0.9096`,
+  and benchmark phrase/CUI F1 remains much lower at `0.3020`/`0.5223`, with
+  `0` schema errors and `1.0000` evidence validity.
 
 ## Gan Research Questions To Close Out
 
@@ -109,15 +111,21 @@ evidence.
 ### Now
 
 - Use `experiments/exectv2_deterministic_all9_dev_20260617.md` to improve the
-  deterministic substrate: Prescription clinical components have cleared the
-  `>=0.90` target, so next reduce the Prescription benchmark phrase/CUI gap,
-  improve Investigations exactness, preserve the strong SF cell, and add the
-  next structured entity engines with rule-family/CUI ablations.
+  deterministic substrate: Prescription now has a clinical headline above
+  `0.90`, so next attack the diagnostic gaps separately: benchmark phrase/CUI
+  projection, guideline-defaulted frequency recall, future-medication
+  classification, and weight-based dosing. In parallel, improve Investigations
+  exactness, preserve the strong SF cell, and add the next structured entity
+  engines with rule-family/CUI ablations.
 
 ### Next
 
 - Build or extend shared CUI/benchmark-format projection for the active ExECTv2
   entities, with semantic-vs-benchmark ablation kept explicit.
+- Implement the Prescription benchmark-projection table/ablation: phrase scope,
+  clinical medication identity, CUI projection, and guideline defaults should
+  stay separately measurable rather than being folded into the clinical
+  headline.
 - Run GPT per-entity LLM-only pilots for the entities most likely to move the
   overall benchmark fastest: Prescription, Investigations, Diagnosis, then
   SeizureFrequency as the hard transfer check.
@@ -157,18 +165,23 @@ evidence.
   `experiments/exectv2_deterministic_all9_dev_20260617.md`, then added
   clinically normalized Prescription component scoring and regimen rules
   (expanded anti-seizure medication lexicon, brand/synonym/typo handling,
-  split-dose schedules, PRN rescue handling, and planned-dose suppression).
-  Prescription component scores now clear target: name `0.9257`, dose `0.9343`,
-  frequency `0.9307`, complete tuple `0.9293`. Rules-only is now measured, not
-  missing; overall all-9 remains below freeze target because other entities are
-  absent or early-stage.
+  split-dose schedules, PRN rescue handling, planned-dose suppression, and
+  future/weight/default diagnostics). Prescription now reports a single
+  clinical headline at `0.9072` and separate diagnostics: name `0.9257`, dose
+  `0.9343`, frequency `0.9307`, ordinary complete tuple `0.9096`, rescue
+  regimen `0.8333`, future medication `0.2609`, and weight-based dosing
+  `0.0000`. Rules-only is now measured, not missing; overall all-9 remains
+  below freeze target because other entities are absent or early-stage.
 - 2026-06-17: Documented the Prescription component-vs-benchmark scoring split
   (`docs/research/exectv2_prescription_component_vs_benchmark_scoring_2026-06-17.md`):
   medication component F1 measures clinically normalized regimen recovery, while
-  benchmark phrase/CUI F1 measures ExECT mention projection. The note makes the
-  phrase-scope assumption explicit, including that section prefixes such as
-  `Current antiepileptic medication:` should not be treated as part of the
-  clinical medication phrase.
+  benchmark phrase/CUI F1 measures ExECT mention projection. ADRs 0019-0026 now
+  lock the accepted Prescription policy: clinically bounded phrase projection,
+  separate clinical medication identity and CUI projection layers,
+  guideline-defaulted frequency as benchmark projection, split-dose prescriptions
+  as separate clinical tuples, weight-based and future-medication diagnostics,
+  dose-optional rescue regimens, one clinical headline, and component scoring
+  only for decomposable clinical objects.
 - 2026-06-17: Added the code-backed GPT-first ExECTv2 architecture-loop status
   report generator and tests
   (`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/reports/architecture_loop_status.py`,

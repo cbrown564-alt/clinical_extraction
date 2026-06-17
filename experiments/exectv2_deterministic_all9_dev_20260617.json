@@ -14,6 +14,14 @@
   "parse_failures": 0,
   "pipeline_family": "exectv2_deterministic_all9",
   "prescription_component_scores": {
+    "clinical_headline": {
+      "f1": 0.9072,
+      "fn": 22,
+      "fp": 13,
+      "precision": 0.9293,
+      "recall": 0.886,
+      "tp": 171
+    },
     "complete": {
       "f1": 0.9293,
       "fn": 18,
@@ -38,6 +46,22 @@
       "recall": 0.9126,
       "tp": 188
     },
+    "future_medication": {
+      "f1": 0.2609,
+      "fn": 6,
+      "fp": 11,
+      "precision": 0.2143,
+      "recall": 0.3333,
+      "tp": 3
+    },
+    "guideline_defaulted_frequency": {
+      "f1": 0.176,
+      "fn": 101,
+      "fp": 2,
+      "precision": 0.8462,
+      "recall": 0.0982,
+      "tp": 11
+    },
     "name": {
       "f1": 0.9257,
       "fn": 19,
@@ -45,6 +69,38 @@
       "precision": 0.9444,
       "recall": 0.9078,
       "tp": 187
+    },
+    "ordinary_complete": {
+      "f1": 0.9096,
+      "fn": 21,
+      "fp": 12,
+      "precision": 0.9326,
+      "recall": 0.8877,
+      "tp": 166
+    },
+    "rescue_regimen": {
+      "f1": 0.8333,
+      "fn": 1,
+      "fp": 1,
+      "precision": 0.8333,
+      "recall": 0.8333,
+      "tp": 5
+    },
+    "source_stated_frequency": {
+      "f1": 0.6523,
+      "fn": 3,
+      "fp": 94,
+      "precision": 0.4919,
+      "recall": 0.9681,
+      "tp": 91
+    },
+    "weight_based_dosing": {
+      "f1": 0.0,
+      "fn": 5,
+      "fp": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "tp": 0
     }
   },
   "routing_count": 0,

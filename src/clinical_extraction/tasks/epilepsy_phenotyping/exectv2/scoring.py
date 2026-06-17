@@ -19,6 +19,7 @@ _QUOTES = str.maketrans("", "", "\"'“”‘’‚‛")
 _WHITESPACE = re.compile(r"\s+")
 _LOWERCASE_ATTRIBUTE_VALUES: frozenset[str] = frozenset({"DrugName", "DoseUnit"})
 _PRESCRIPTION_ENTITY = "Prescription"
+_AS_REQUIRED = "as_required"
 _MEDICATION_NAME_ALIASES: dict[str, str] = {
     "brivetiracetam": "brivaracetam",
     "brivitiracetam": "brivaracetam",
@@ -38,6 +39,25 @@ _MEDICATION_NAME_ALIASES: dict[str, str] = {
     "zobisamide": "zonisamide",
     "zonismaide": "zonisamide",
 }
+_PRESCRIPTION_SOURCE_FREQUENCY = re.compile(
+    r"\b(?:prn|p\.r\.n\.|as\s+required|when\s+required|as\s+needed|rescue|"
+    r"bd|b\.d\.|twice\s+(?:a\s+)?day|twice\s+daily|od|o\.d\.|"
+    r"once\s+(?:a\s+)?day|once\s+daily|daily|mane|nocte|nightly|"
+    r"morning|afternoon|evening|am|pm|at\s+night|tds|t\.d\.s\.|tid|"
+    r"three\s+times\s+(?:a\s+)?day|qds|q\.d\.s\.|qid|"
+    r"four\s+times\s+(?:a\s+)?day)\b",
+    re.IGNORECASE,
+)
+_PRESCRIPTION_FUTURE_PLAN = re.compile(
+    r"\b(?:commence|start(?:ing)?|increase|increasing|titrate|titration|"
+    r"reduce|reducing|target\s+dose|future|option|consider|suggest|"
+    r"planned|plan|every\s+(?:two\s+)?weeks|every\s+fortnight|until)\b",
+    re.IGNORECASE,
+)
+_PRESCRIPTION_WEIGHT_BASED_DOSE = re.compile(
+    r"\b\d+(?:\.\d+)?\s*(?:mg|mgs|mgms|g|grams?)\s*/?\s*kg(?:\s*/?\s*day)?\b",
+    re.IGNORECASE,
+)
 
 
 def normalize_phrase(text: str) -> str:
@@ -188,10 +208,17 @@ class SourceNearDiagnostic(BaseModel):
 class PrescriptionComponentScores(BaseModel):
     model_config = {"frozen": True}
 
+    clinical_headline: PRF1
     name: PRF1
     dose: PRF1
     frequency: PRF1
+    source_stated_frequency: PRF1
+    guideline_defaulted_frequency: PRF1
     complete: PRF1
+    ordinary_complete: PRF1
+    rescue_regimen: PRF1
+    future_medication: PRF1
+    weight_based_dosing: PRF1
 
 
 def match_key(annotation: ExectAnnotation, config: MatchConfig = PHRASE_AND_FEATURES) -> Hashable:
@@ -232,6 +259,12 @@ def _prescription_component_key(annotation: ExectAnnotation, component: str) -> 
     if component == "frequency":
         frequency = attrs.get("Frequency")
         return canonicalize_attribute_value("Frequency", frequency).lower() if frequency else None
+    if component == "source_stated_frequency":
+        frequency = _prescription_component_key(annotation, "frequency")
+        return frequency if frequency and _has_source_stated_frequency(annotation) else None
+    if component == "guideline_defaulted_frequency":
+        frequency = _prescription_component_key(annotation, "frequency")
+        return frequency if frequency and not _has_source_stated_frequency(annotation) else None
     if component == "complete":
         name = _prescription_component_key(annotation, "name")
         dose = _prescription_component_key(annotation, "dose")
@@ -239,6 +272,46 @@ def _prescription_component_key(annotation: ExectAnnotation, component: str) -> 
         if name is None or dose is None or frequency is None:
             return None
         return (name, *dose, frequency)
+    if component == "ordinary_complete":
+        complete = _prescription_component_key(annotation, "complete")
+        frequency = _prescription_component_key(annotation, "frequency")
+        if (
+            complete is None
+            or frequency == _AS_REQUIRED
+            or _is_future_medication(annotation)
+            or _is_weight_based_dosing(annotation)
+        ):
+            return None
+        return complete
+    if component == "rescue_regimen":
+        name = _prescription_component_key(annotation, "name")
+        frequency = _prescription_component_key(annotation, "frequency")
+        if (
+            name is None
+            or frequency != _AS_REQUIRED
+            or _is_future_medication(annotation)
+            or _is_weight_based_dosing(annotation)
+        ):
+            return None
+        return (name, _AS_REQUIRED)
+    if component == "clinical_headline":
+        rescue = _prescription_component_key(annotation, "rescue_regimen")
+        if rescue is not None:
+            return ("rescue", *rescue)
+        ordinary = _prescription_component_key(annotation, "ordinary_complete")
+        if ordinary is not None:
+            return ("ordinary", *ordinary)
+        return None
+    if component == "future_medication":
+        if not _is_future_medication(annotation):
+            return None
+        name = _prescription_component_key(annotation, "name")
+        return (name or normalize_phrase(annotation.text), normalize_phrase(annotation.text))
+    if component == "weight_based_dosing":
+        if not _is_weight_based_dosing(annotation):
+            return None
+        name = _prescription_component_key(annotation, "name")
+        return (name or normalize_phrase(annotation.text), normalize_phrase(annotation.text))
     raise ValueError(f"Unknown prescription component {component!r}")
 
 
@@ -246,19 +319,43 @@ def score_prescription_components(
     gold_letters: Sequence[ExectLetter],
     pred_letters: Sequence[ExectLetter],
 ) -> PrescriptionComponentScores:
-    """Score medication name, dose, frequency, and complete regimen tuples.
+    """Score Prescription clinical headline and diagnostic component layers.
 
-    This diagnostic deliberately ignores mention phrase scope and benchmark CUI
-    projection. It asks whether the system recovered clinically equivalent
-    prescription components, with brand names and common spelling variants mapped
-    to the same medication where appropriate.
+    These diagnostics deliberately ignore mention phrase scope and benchmark CUI
+    projection. The clinical headline combines ordinary complete regimen tuples
+    with dose-optional rescue regimens; supporting component scores remain
+    diagnostic so partial or projection-specific gains are not overstated.
     """
 
     components = {
         component: _score_prescription_component(gold_letters, pred_letters, component)
-        for component in ("name", "dose", "frequency", "complete")
+        for component in (
+            "clinical_headline",
+            "name",
+            "dose",
+            "frequency",
+            "source_stated_frequency",
+            "guideline_defaulted_frequency",
+            "complete",
+            "ordinary_complete",
+            "rescue_regimen",
+            "future_medication",
+            "weight_based_dosing",
+        )
     }
     return PrescriptionComponentScores(**components)
+
+
+def _has_source_stated_frequency(annotation: ExectAnnotation) -> bool:
+    return bool(_PRESCRIPTION_SOURCE_FREQUENCY.search(annotation.text))
+
+
+def _is_future_medication(annotation: ExectAnnotation) -> bool:
+    return bool(_PRESCRIPTION_FUTURE_PLAN.search(annotation.text))
+
+
+def _is_weight_based_dosing(annotation: ExectAnnotation) -> bool:
+    return bool(_PRESCRIPTION_WEIGHT_BASED_DOSE.search(annotation.text))
 
 
 def _attribute_key(annotation: ExectAnnotation, config: MatchConfig) -> Hashable:

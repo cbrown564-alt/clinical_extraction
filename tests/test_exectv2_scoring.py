@@ -104,6 +104,113 @@ def test_score_prescription_components_uses_clinical_regimen_keys() -> None:
     assert score.dose.f1 == 1.0
     assert score.frequency.f1 == 1.0
     assert score.complete.f1 == 1.0
+    assert score.ordinary_complete.f1 == 1.0
+    assert score.clinical_headline.f1 == 1.0
+
+
+def test_prescription_clinical_headline_counts_rescue_regimen_without_dose() -> None:
+    gold = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    "Prescription",
+                    "buccal midazolam",
+                    DrugName="Midazolam",
+                    Frequency="As_Required",
+                ),
+            ),
+        )
+    ]
+    pred = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    "Prescription",
+                    "rescue midazolam as required",
+                    DrugName="midazolam",
+                    Frequency="As_Required",
+                ),
+            ),
+        )
+    ]
+
+    score = score_prescription_components(gold, pred)
+
+    assert score.rescue_regimen.f1 == 1.0
+    assert score.clinical_headline.f1 == 1.0
+    assert score.complete.gold_count == 0
+    assert score.ordinary_complete.gold_count == 0
+
+
+def test_prescription_frequency_diagnostics_separate_stated_from_defaulted() -> None:
+    letters = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    "Prescription",
+                    "Lamotrigine 100mg bd",
+                    DrugName="Lamotrigine",
+                    DrugDose="100",
+                    DoseUnit="mg",
+                    Frequency="2",
+                ),
+                _ann(
+                    "Prescription",
+                    "Levetiracetam 500mg",
+                    DrugName="Levetiracetam",
+                    DrugDose="500",
+                    DoseUnit="mg",
+                    Frequency="1",
+                ),
+            ),
+        )
+    ]
+
+    score = score_prescription_components(letters, letters)
+
+    assert score.source_stated_frequency.tp == 1
+    assert score.guideline_defaulted_frequency.tp == 1
+    assert score.frequency.tp == 2
+
+
+def test_future_and_weight_based_prescriptions_are_diagnostics_not_headline() -> None:
+    letters = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    "Prescription",
+                    "increase Lamotrigine to 150mg bd",
+                    DrugName="Lamotrigine",
+                    DrugDose="150",
+                    DoseUnit="mg",
+                    Frequency="2",
+                ),
+                _ann(
+                    "Prescription",
+                    "levetiracetam 10 mg/kg/day",
+                    DrugName="Levetiracetam",
+                    DrugDose="10",
+                    DoseUnit="mg",
+                    Frequency="1",
+                ),
+            ),
+        )
+    ]
+
+    score = score_prescription_components(letters, letters)
+
+    assert score.future_medication.tp == 1
+    assert score.weight_based_dosing.tp == 1
+    assert score.clinical_headline.gold_count == 0
+    assert score.ordinary_complete.gold_count == 0
 
 
 def test_gold_scored_against_itself_is_perfect() -> None:

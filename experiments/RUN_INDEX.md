@@ -4,6 +4,16 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Reliability Scorecard
 
+### `gan2026_reliability_confidence_elicitation_pilot160_2026-06-17`
+- Date/split: `2026-06-17`; `validation` (160-row residual-enriched pilot, 80 residual); LIVE.
+- Pipeline: `reliability_confidence_elicitation`; mode `live`; replay `live` (resumable per-variant samples).
+- Model role: DECOUPLED second-pass confidence elicitation over the canonical `v0_reference` production answers (decision 0018); production path NOT modified. Two predeclared variants — C (second-reader agreement) and D (failure-mode-primed correctness). Single-shot calibration probe; model `openai/gpt-4.1-mini`, temperature=0.0, max_tokens=300, cache=False. ~320 calls.
+- Repair mode/config: `none (probability elicitation only; robust JSON parse with int fallback, 0 parse failures)`.
+- Primary metrics: n=160, failures=12; baseline joint self-confidence top-bucket=99.9%/AUROC=0.503 (chance); variant C top-bucket=40.6%, ECE=0.070, Brier=0.081, failure_AUROC=0.611; variant D top-bucket=78.1%, ECE=0.069, Brier=0.073, failure_AUROC=0.755; external-signal comparator AUROC=0.781; verdict (strict conjunctive gate) H0 both, but axes decompose: D recovers DISCRIMINATION (near-external AUROC) via failure-mode priming, C recovers spread-without-signal.
+- Evidence validity: Validation-only; test450 untouched. Subject answers read per-row from `v0_reference` layer (single-SE-mini, decision 0018). Elicitation is a separate candidate self-signal, not a production change. Predeclared before run in `docs/research/gan2026_confidence_elicitation_predeclaration_2026-06-17.md`. AUROC CIs wide (12 failures); validation750 needed to confirm D's 0.755.
+- Claim language: Calibration probe. Joint self-confidence is dead (AUROC 0.503). Verbalized self-confidence is NOT strictly irrecoverable — naming the dominant unknown↔rate failure mode (variant D) recovers a discriminative self-signal (failure AUROC 0.755, near the external-corroboration 0.781) from one extra mini call, though it stays high-valued and still hides ~half the failures at ≥0.9. Second-reader framing (C) spreads confidence but the spread is noise (AUROC 0.611). Does not promote any candidate or change champion/robustness status.
+- Artifacts: `experiments/gan2026_reliability_confidence_elicitation_pilot160_2026-06-17.json`, `experiments/gan2026_reliability_confidence_elicitation_pilot160_2026-06-17.md`, `experiments/gan2026_reliability_confidence_elicitation_samples_pilot160_C_2026-06-17.jsonl`, `experiments/gan2026_reliability_confidence_elicitation_samples_pilot160_D_2026-06-17.jsonl`.
+
 ### `gan2026_reliability_p2_1_semantic_entropy_2026-06-17`
 - Date/split: `2026-06-17`; `validation` (25-row preflight + 150-row residual-enriched tier); LIVE.
 - Pipeline: `reliability_p2_1_semantic_entropy`; mode `live`; replay `live` (resumable per-temperature).

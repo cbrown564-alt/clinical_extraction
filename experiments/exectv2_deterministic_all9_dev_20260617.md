@@ -41,14 +41,26 @@
 | SeizureFrequency | 0.6921 | 0.9247 | 136 | 70 | 51 |
 | WhenDiagnosed | 0.0000 | 0.0000 | 0 | 0 | 11 |
 
-## Prescription Component F1
+## Prescription Clinical Headline
 
-| Component | Item F1 | Precision | Recall | TP | FP | FN |
+| Score | Item F1 | Precision | Recall | TP | FP | FN |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| clinical_headline | 0.9072 | 0.9293 | 0.8860 | 171 | 13 | 22 |
+
+## Prescription Diagnostics
+
+| Diagnostic | Item F1 | Precision | Recall | TP | FP | FN |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | name | 0.9257 | 0.9444 | 0.9078 | 187 | 11 | 19 |
 | dose | 0.9343 | 0.9536 | 0.9158 | 185 | 9 | 17 |
 | frequency | 0.9307 | 0.9495 | 0.9126 | 188 | 10 | 18 |
+| source_stated_frequency | 0.6523 | 0.4919 | 0.9681 | 91 | 94 | 3 |
+| guideline_defaulted_frequency | 0.1760 | 0.8462 | 0.0982 | 11 | 2 | 101 |
 | complete | 0.9293 | 0.9485 | 0.9109 | 184 | 10 | 18 |
+| ordinary_complete | 0.9096 | 0.9326 | 0.8877 | 166 | 12 | 21 |
+| rescue_regimen | 0.8333 | 0.8333 | 0.8333 | 5 | 1 | 1 |
+| future_medication | 0.2609 | 0.2143 | 0.3333 | 3 | 11 | 6 |
+| weight_based_dosing | 0.0000 | 0.0000 | 0.0000 | 0 | 0 | 5 |
 
 ## Reading
 

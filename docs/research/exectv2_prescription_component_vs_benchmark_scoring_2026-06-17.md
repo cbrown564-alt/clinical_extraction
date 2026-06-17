@@ -2,12 +2,12 @@
 
 Date: 2026-06-17
 
-Status: research note and scoring vocabulary. This document records the
-deterministic Prescription work completed on the ExECTv2 dev split, the
-assumptions made while adding medication component scoring, and the remaining
-gap between clinically meaningful extraction and benchmark phrase/CUI matching.
-It focuses first on Prescription, then generalizes the terminology to the
-broader all-entity scorecard.
+Status: research note, scoring vocabulary, and accepted Prescription phrase
+projection policy. This document records the deterministic Prescription work
+completed on the ExECTv2 dev split, the assumptions made while adding medication
+component scoring, and the remaining gap between clinically meaningful
+extraction and benchmark phrase/CUI matching. It focuses first on Prescription,
+then generalizes the terminology to the broader all-entity scorecard.
 
 ## Bottom Line
 
@@ -25,11 +25,12 @@ entity + normalized phrase text + all non-ignored attributes, including CUI?
 ```
 
 Those are not the same task. The deterministic rules now recover medication
-regimens well on the dev split: name F1 `0.9257`, dose F1 `0.9343`, frequency
-F1 `0.9307`, and complete name+dose+frequency tuple F1 `0.9293`. The
-Prescription benchmark item F1 remains `0.3020` because the benchmark key still
-depends on phrase-scope and ontology projection choices that are not equivalent
-to clinical regimen recovery.
+regimens well on the dev split: Prescription clinical headline F1 `0.9072`,
+name F1 `0.9257`, dose F1 `0.9343`, frequency F1 `0.9307`, and complete
+name+dose+frequency tuple F1 `0.9293`. The Prescription benchmark item F1
+remains `0.3020` because the benchmark key still depends on phrase-scope and
+ontology projection choices that are not equivalent to clinical regimen
+recovery.
 
 This is not a reason to chase exact raw phrase text. For Prescription, a phrase
 such as:
@@ -44,9 +45,11 @@ should be represented clinically as:
 Lamotrigine 125 milligrams twice a day
 ```
 
-The section/list prefix is context, not part of the medication regimen. If the
-gold phrase includes or omits that prefix inconsistently, exact phrase matching
-is measuring annotation/projection convention, not medication understanding.
+The accepted Prescription phrase projection policy is to exclude section/list
+prefixes from the mention text. The prefix is context, not part of the
+medication regimen. If the gold phrase includes or omits that prefix
+inconsistently, exact phrase matching is measuring annotation/projection
+convention, not medication understanding.
 
 ## What Has Been Done So Far
 
@@ -74,6 +77,15 @@ For Prescription, the machinery added so far is:
 - Split-dose handling such as morning/evening regimens and multiple dose slots.
 - Suppression of planned/titration doses and weight-based `mg/kg/day` mentions
   where those should not become current regimen tuples.
+- A now-explicit decision that planned, titration, target-dose, and future
+  medication statements should feed a future-medication diagnostic rather than
+  silently disappear or inflate current Prescription regimen recovery.
+- A now-explicit decision that weight-based dosing evidence such as `mg/kg/day`
+  should feed a weight-based dosing diagnostic rather than the absolute-dose
+  current regimen tuple score.
+- A now-explicit decision that rescue/PRN medications can be valid Prescription
+  facts as medication identity plus `As_Required`, with dose optional when stated,
+  rather than ordinary complete-tuple failures when no dose is present.
 - A Prescription component scorer that evaluates medication name, dose,
   frequency, and complete regimen tuple separately from phrase text and CUI.
 
@@ -85,10 +97,19 @@ The current all-entity dev scorecard reports:
 | Overall semantic | 0.3119 | 0.5625 |
 | Overall benchmark | 0.2985 | 0.5528 |
 | Prescription benchmark | 0.3020 | 0.5223 |
+| Prescription clinical headline component | 0.9072 | n/a |
 | Prescription name component | 0.9257 | n/a |
 | Prescription dose component | 0.9343 | n/a |
 | Prescription frequency component | 0.9307 | n/a |
 | Prescription complete tuple component | 0.9293 | n/a |
+
+The accepted next scorecard shape is one Prescription clinical headline plus
+diagnostics. The clinical headline should combine accepted current-regimen
+component shapes: ordinary complete regimen tuples and rescue medication
+regimens. Name, dose, frequency, split/merge, future-medication, weight-based
+dosing, phrase projection, and `DrugName`/CUI projection should remain
+diagnostics unless a future document explicitly promotes one of them for a
+specific research question.
 
 ## Assumptions Made
 
@@ -106,14 +127,26 @@ left implicit.
    Brand names, generic names, and common spelling variants should match when
    they refer to the same drug. `Keppra 500 mg BD` and
    `levetiracetam 500 mg twice daily` are the same clinical regimen, even if the
-   exact `DrugName`, phrase text, and CUI strings differ.
+   exact `DrugName`, phrase text, and CUI strings differ. The accepted policy is
+   to keep this clinical medication identity layer separate from the benchmark
+   projection layer that emits the ExECT-expected `DrugName` and CUI convention.
 
 3. Dose and frequency should be scored as components before requiring the full
    tuple.
 
    A single aggregate Prescription F1 hides whether the system missed the drug,
    the dose, the unit, the schedule, or only the benchmark projection. Separate
-   name/dose/frequency scoring makes the error analysis actionable.
+   name/dose/frequency scoring makes the error analysis actionable. Regimen
+   recovery language should be reserved for the complete tuple score, where
+   medication identity, dose, dose unit, and frequency are bound within the same
+   regimen mention rather than matched as loose ingredients somewhere in the
+   letter.
+
+   A source-stated frequency and a guideline-defaulted frequency are different
+   evidence states. The ExECT guideline default ("use once a day" when frequency
+   is absent, with `As_Required` for clobazam/rescue conventions) belongs in
+   benchmark projection and should be tagged or ablated separately from
+   source-stated schedule extraction.
 
 4. Phrase scope should be source-near but clinically bounded.
 
@@ -133,6 +166,37 @@ left implicit.
    These results are ExECTv2 dev results. A full benchmark-comparable audit
    requires a frozen policy, frozen code, and the planned held-out evaluation
    protocol.
+
+7. Planned medication statements need their own diagnostic layer.
+
+   Planned starts, titration schedules, target doses, and future medication
+   options should not count as current Prescription regimens. They should be
+   preserved in a future-medication diagnostic so clinically meaningful plan
+   evidence is visible without inflating current-regimen component scores.
+
+8. Weight-based dosing needs its own diagnostic layer.
+
+   Weight-based dose statements such as `mg/kg/day` are clinically meaningful
+   dosing evidence, but they are not the same component object as an absolute
+   `DrugDose + DoseUnit` current regimen tuple. They should be reported through a
+   weight-based dosing diagnostic rather than dropped or forced into absolute
+   dose scoring.
+
+9. Rescue medication regimens need their own component shape.
+
+   Rescue/PRN anti-seizure medication can be a valid Prescription fact as
+   medication identity plus `As_Required`, with dose optional when stated. These
+   facts should not be treated as ordinary complete-tuple failures merely because
+   `DrugDose + DoseUnit` is absent.
+
+10. Prescription needs one clinical headline and several diagnostics.
+
+   The clinical headline should combine accepted current-regimen component
+   shapes: ordinary complete regimen tuples and rescue medication regimens.
+   Isolated name, absolute-dose, source-stated frequency, guideline-defaulted
+   frequency, split/merge, future-medication, weight-based dosing, phrase
+   projection, and `DrugName`/CUI benchmark projection should be reported as
+   diagnostics unless a specific report states otherwise.
 
 ## The Current Gap
 
@@ -187,6 +251,10 @@ should be used consistently in scorecards, reports, and project status.
 | Prescription dose component F1 | Medication component | `DrugDose + DoseUnit` per letter | Did we recover dose magnitudes and units? | Does not bind dose to a specific drug unless complete tuple also matches. |
 | Prescription frequency component F1 | Medication component | Normalized `Frequency` per letter | Did we recover schedule frequency? | Does not bind schedule to a specific drug unless complete tuple also matches. |
 | Prescription complete tuple F1 | Medication regimen | Canonicalized `DrugName + DrugDose + DoseUnit + Frequency` | Did we recover the full regimen fact? | Ignores exact phrase scope and CUI by design. |
+| Prescription clinical headline F1 | Current medication regimen | Accepted current-regimen component shapes: ordinary complete tuples plus rescue medication regimens | Did we recover current Prescription regimens under the clinical component policy? | Excludes projection-only diagnostics such as phrase scope, CUI, future plans, and weight-based dose evidence. |
+| Rescue medication regimen F1 | Rescue/PRN medication regimen | Canonicalized `DrugName + As_Required`, with dose optional when stated | Did we recover valid rescue medication Prescription facts? | Not comparable to ordinary complete tuples because dose is optional by guideline. |
+| Future medication diagnostic | Medication plan evidence | Planned/titration/target-dose/future medication facts | Did we identify clinically meaningful medication plan evidence without counting it as current regimen recovery? | Diagnostic only; not current Prescription recovery. |
+| Weight-based dosing diagnostic | Weight-based medication dose evidence | Medication identity plus weight-based dose expression such as `mg/kg/day` | Did we identify weight-based dosing evidence separately from absolute administered dose? | Diagnostic only; not an absolute-dose regimen tuple. |
 | Source-near overlap | Diagnostic mention overlap | Same entity with substring/source-near phrase overlap | Whether a miss is near the gold phrase rather than unrelated. | Not benchmark-comparable and can be too lenient. |
 | Attribute agreement on overlap | Diagnostic attributes | Non-ignored attributes on overlapped mention pairs | Whether near-matched phrases carry correct features. | Depends on the overlap pairing heuristic. |
 | Evidence validity rate | Reliability gate | Predicted evidence is a source substring | Whether predictions are grounded in the letter text. | Not a correctness metric by itself. |
@@ -258,7 +326,9 @@ sodium-valproate 600 mg Frequency=1
 ```
 
 The component scorer can count both medication-dose-frequency tuples if both
-slots are recovered. The benchmark scorer may still fail if the gold represents
+slots are recovered. The accepted component policy is to represent this as two
+bound regimen tuples because each dose slot has its own actionable dose and
+once-daily timing. The benchmark scorer may still fail if the gold represents
 the whole schedule as one phrase, chooses the brand CUI for `Epilim`, or uses a
 different split/merge convention. This is exactly why split/merge behavior needs
 to be reported separately from clinical component recovery.
@@ -291,36 +361,82 @@ The scorecard should therefore keep a layered readout for every entity family:
 5. Reliability gates: evidence validity, schema validity, parse/call failures,
    repairs, drops, routing, and CUI attachment rate.
 
+This pattern should not be applied mechanically. Component scoring is
+appropriate only where the entity has a real decomposable clinical object: for
+example, Prescription regimens, Investigation performed/result/type facts, and
+SeizureFrequency attribute families. Entities whose errors are mainly phrase,
+assertion, temporal, or ontology projection problems should get diagnostics for
+those layers rather than fake component scores created for table symmetry.
+
 ## Recommended Next Steps
 
-1. Define a Prescription phrase projection policy.
+1. Implement and ablate the accepted Prescription phrase projection policy.
 
-   The likely policy is: emit the clinically bounded medication regimen phrase,
-   excluding list headings and section labels. Document this as a deliberate
-   benchmark-format choice and compare it with raw-gold exact phrase behavior.
+   The accepted policy is: emit the clinically bounded medication regimen phrase,
+   excluding list headings and section labels. Compare this with raw-gold exact
+   phrase behavior so the cost or gain of the deliberate benchmark-format choice
+   is visible.
 
-2. Build a Prescription CUI projection table as a benchmark-format component.
+2. Build a Prescription benchmark projection table as a benchmark-format
+   component.
 
-   Keep this separate from medication extraction. Report benchmark F1 with and
-   without CUI projection so CUI gains are not mistaken for clinical gains.
+   Keep clinical medication identity separate from `DrugName`/CUI projection.
+   Report benchmark F1 with and without this projection so ontology and
+   convention gains are not mistaken for clinical medication extraction gains.
 
-3. Add a Prescription error ledger with counts by gap family.
+3. Add guideline-defaulted frequency as an explicit projection sublayer.
+
+   Report source-stated frequency recovery separately from guideline-defaulted
+   frequency projection so complete-tuple gains from missing-frequency defaults
+   are not mistaken for recovered schedule evidence.
+
+4. Add a future-medication diagnostic for planned/titration/target-dose evidence.
+
+   This diagnostic should count medication plan evidence separately from current
+   Prescription regimen recovery, so excluded future statements remain visible
+   instead of becoming either hidden false positives or unreported drops.
+
+5. Add rescue medication regimen scoring.
+
+   Report rescue/PRN medication identity plus `As_Required` separately from the
+   ordinary complete tuple, with dose recorded when present but not required for
+   rescue-regimen credit.
+
+6. Build the combined Prescription clinical headline.
+
+   Combine ordinary complete regimen tuples and rescue medication regimens into
+   the primary clinical Prescription score. Keep name, dose, source-stated
+   frequency, guideline-defaulted frequency, split/merge, future-medication,
+   weight-based dosing, phrase projection, and `DrugName`/CUI projection as
+   diagnostics below that headline.
+
+7. Add a weight-based dosing diagnostic.
+
+   Report `mg/kg/day` and similar weight-based evidence separately from absolute
+   current-regimen dose recovery so clinically meaningful dosing evidence does
+   not pollute absolute-dose tuple F1 or vanish from the analysis.
+
+8. Add a Prescription error ledger with counts by gap family.
 
    Minimum families: phrase-scope mismatch, brand/generic mismatch, CUI mismatch,
    attribute mismatch, split/merge mismatch, false current regimen, missed
-   current regimen, and PRN/rescue convention mismatch.
+   current regimen, source-stated versus guideline-defaulted frequency mismatch,
+   future-medication evidence, weight-based dosing evidence, rescue-regimen
+   component mismatch, and PRN/rescue convention mismatch.
 
-4. Generalize component scoring where clinically meaningful.
+9. Generalize component scoring where clinically meaningful.
 
    Investigations should have performed/result/type component scores. Diagnosis
    should have phrase/category/assertion/CUI layers. SeizureFrequency should keep
    its phrase-only, semantic, and benchmark surfaces, plus attribute-family
-   diagnostics for count/range/time-period/time-since/frequency-change.
+   diagnostics for count/range/time-period/time-since/frequency-change. Do not
+   force Prescription-style component scores onto entities that lack a real
+   decomposable clinical object; use phrase, assertion, temporal, or projection
+   diagnostics instead.
 
-5. Keep the headline benchmark score honest.
+10. Keep the headline benchmark score honest.
 
    The benchmark score should remain the final benchmark-conformance number, but
    it should never be the only number used to explain progress. Otherwise, a
    clinically correct system can look broken, and a benchmark-projected system
    can look clinically stronger than it is.
-
