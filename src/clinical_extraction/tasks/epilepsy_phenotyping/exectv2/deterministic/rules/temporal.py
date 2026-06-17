@@ -150,7 +150,7 @@ def _pit_value(trigger: str) -> str | None:
     if "last year" in t:
         return "Last_Year"
     if "this year" in t:
-        return "This_Year"
+        return None
     if "birthday" in t:
         return "Birthday"
     if "christmas" in t:

@@ -14,10 +14,12 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     PHRASE_AND_FEATURES,
     PHRASE_ONLY,
     benchmark_config_for,
+    canonicalize_medication_name,
     match_key,
     normalize_phrase,
     score_entity,
     score_overall,
+    score_prescription_components,
     source_near_diagnostic,
 )
 
@@ -52,6 +54,56 @@ def test_match_key_canonicalizes_format_only_attribute_values() -> None:
     b = _ann("Prescription", "levetiracetam", DrugName="levetiracetam", DoseUnit="mg")
 
     assert match_key(a, PHRASE_AND_FEATURES) == match_key(b, PHRASE_AND_FEATURES)
+
+
+def test_canonicalize_medication_name_accepts_brand_synonym_and_typo_variants() -> None:
+    assert canonicalize_medication_name("Keppra") == "levetiracetam"
+    assert canonicalize_medication_name("Lamictal") == "lamotrigine"
+    assert canonicalize_medication_name("Eplim") == "sodium-valproate"
+    assert canonicalize_medication_name("Tegretaol") == "carbamazepine"
+    assert canonicalize_medication_name("Zonismaide") == "zonisamide"
+
+
+def test_score_prescription_components_uses_clinical_regimen_keys() -> None:
+    gold = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    "Prescription",
+                    "Keppra-500mg-bd",
+                    DrugName="Keppra",
+                    DrugDose="500",
+                    DoseUnit="mg",
+                    Frequency="2",
+                ),
+            ),
+        )
+    ]
+    pred = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    "Prescription",
+                    "levetiracetam 500 mg twice daily",
+                    DrugName="levetiracetam",
+                    DrugDose="500",
+                    DoseUnit="MG",
+                    Frequency="2",
+                ),
+            ),
+        )
+    ]
+
+    score = score_prescription_components(gold, pred)
+
+    assert score.name.f1 == 1.0
+    assert score.dose.f1 == 1.0
+    assert score.frequency.f1 == 1.0
+    assert score.complete.f1 == 1.0
 
 
 def test_gold_scored_against_itself_is_perfect() -> None:

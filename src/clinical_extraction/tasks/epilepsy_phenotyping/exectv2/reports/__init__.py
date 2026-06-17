@@ -1,6 +1,6 @@
 """Report builders for ExECTv2 experiment artifacts."""
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.three_way_comparison import (
+from .three_way_comparison import (
     ARCHITECTURE_FAMILY,
     FAMILY_ORDER,
     SF_BENCHMARK_PER_ITEM_F1,
