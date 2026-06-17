@@ -29,6 +29,9 @@ from clinical_extraction.core.run_resume import (
     pending_items,
     read_completed,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.benchmark_projection import (
+    project_cuis,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     ENTITY_REGISTRY,
     EntitySpec,
@@ -55,7 +58,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
 from ..contract.prediction import to_exect_letter
-from ..deterministic.lexicon import assign_cui
 from ..deterministic.normalizer import normalize_count, normalize_month, normalize_unit
 from ..llm.llm_only_single_pass import _extract_json_object, repair_attributes
 from .candidate_set import (
@@ -245,11 +247,19 @@ def build_prompt_input(letter: ExectLetter, candidates: Sequence[SFCandidate]) -
             "LowerNumberOfSeizures": "lower end of a count range, e.g. '2' for '2 to 4 per month'",
             "UpperNumberOfSeizures": "upper end of a count range, e.g. '4' for '2 to 4 per month'",
             "NumberOfTimePeriods": "period length as string, usually '1'",
-            "LowerNumberOfTimePeriods": "lower end of a period range, e.g. '2' for 'every 2 to 3 weeks'",
+            "LowerNumberOfTimePeriods": (
+                "lower end of a period range, e.g. '2' for 'every 2 to 3 weeks'"
+            ),
             "UpperNumberOfTimePeriods": "upper end of a period range",
             "TimePeriod": "exactly 'Day', 'Week', 'Month', or 'Year'",
-            "FrequencyChange": "exactly one of 'Decreased', 'Frequent', 'Increased', 'Infrequent', 'Same'",
-            "PointInTime": "exactly one of 'Birthday', 'DrugChange', 'LastClinic', 'Last_Month', 'Last_Week', 'Last_Year', 'Surgery'",
+            "FrequencyChange": (
+                "exactly one of 'Decreased', 'Frequent', 'Increased', "
+                "'Infrequent', 'Same'"
+            ),
+            "PointInTime": (
+                "exactly one of 'Birthday', 'DrugChange', 'LastClinic', "
+                "'Last_Month', 'Last_Week', 'Last_Year', 'Surgery'"
+            ),
             "TimeSince_or_TimeOfEvent": "exactly 'During' or 'Since'",
             "DayDate": "day of month as string",
             "MonthDate": "month as string",
@@ -415,13 +425,6 @@ def _filter_flags(flags: Sequence[str]) -> tuple[tuple[str, ...], list[str]]:
     return kept, dropped
 
 
-def _with_cui(text: str, attrs: dict[str, str]) -> dict[str, str]:
-    cui = assign_cui(text)
-    if cui is None:
-        return attrs
-    return {**attrs, "CUI": cui, "CUIPhrase": text}
-
-
 def render_mentions(
     letter: ExectLetter,
     candidates: Sequence[SFCandidate],
@@ -458,7 +461,7 @@ def render_mentions(
             PredictedMention(
                 entity=ENTITY_NAME,
                 text=text,
-                attributes=_with_cui(text, repaired),
+                attributes=repaired,
                 evidence=evidence,
                 confidence=a.confidence,
                 uncertainty_flags=flags,
@@ -480,7 +483,7 @@ def render_mentions(
             PredictedMention(
                 entity=ENTITY_NAME,
                 text=m.text,
-                attributes=_with_cui(m.text, repaired),
+                attributes=repaired,
                 evidence=m.evidence,
                 confidence=m.confidence,
                 uncertainty_flags=flags,
@@ -502,17 +505,19 @@ def assess_letter(
     """Full render + verify/route for one letter's assessment."""
     rendered, warnings = render_mentions(letter, candidates, record, spec=spec)
     kept, routed = verify_and_route(rendered, note_text=letter.note_text)
-    predicted = PredictedLetter(
-        letter_id=letter.letter_id,
-        mentions=tuple(kept),
-        diagnostics={
-            "prompt_version": PROMPT_VERSION,
-            "n_candidates": len(candidates),
-            "aggregation_policy": record.aggregation_policy,
-            "n_routed": len(routed),
-            "routed_taxonomy": routed_taxonomy(routed),
-            "warnings": warnings,
-        },
+    predicted = project_cuis(
+        PredictedLetter(
+            letter_id=letter.letter_id,
+            mentions=tuple(kept),
+            diagnostics={
+                "prompt_version": PROMPT_VERSION,
+                "n_candidates": len(candidates),
+                "aggregation_policy": record.aggregation_policy,
+                "n_routed": len(routed),
+                "routed_taxonomy": routed_taxonomy(routed),
+                "warnings": warnings,
+            },
+        )
     )
     return predicted, routed, warnings
 

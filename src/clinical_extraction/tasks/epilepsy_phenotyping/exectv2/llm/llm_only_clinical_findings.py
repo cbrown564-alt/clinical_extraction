@@ -25,6 +25,9 @@ from clinical_extraction.core.run_resume import (
     pending_items,
     read_completed,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.benchmark_projection import (
+    project_cuis,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     ENTITY_REGISTRY,
 )
@@ -37,9 +40,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     SEIZURE_FREQUENCY,
     ExectAnnotation,
     ExectLetter,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.lexicon import (
-    assign_cui,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalizer import (
     normalize_count,
@@ -2493,15 +2493,27 @@ def project_finding_to_attributes(
     if _filled(finding.age_unit):
         attrs["AgeUnit"] = normalize_unit(finding.age_unit or "")
 
-    if include_cui:
-        cui = assign_cui(finding.text)
-        if cui:
-            attrs["CUI"] = cui
-            attrs["CUIPhrase"] = finding.text
-        else:
-            warnings.append(f"cui_not_mapped: {finding.text!r}")
+    repaired, warnings = _repair_projected_attributes(attrs, warnings)
+    if not include_cui:
+        return repaired, warnings
 
-    return _repair_projected_attributes(attrs, warnings)
+    projected = project_cuis(
+        PredictedLetter(
+            letter_id="projection-preview",
+            mentions=(
+                PredictedMention(
+                    entity=ENTITY_NAME,
+                    text=finding.text,
+                    attributes=repaired,
+                    evidence=finding.evidence,
+                ),
+            ),
+        )
+    )
+    projected_attrs = dict(projected.mentions[0].attributes)
+    if "CUI" not in projected_attrs:
+        warnings.append(f"cui_not_mapped: {finding.text!r}")
+    return projected_attrs, warnings
 
 
 def _add_count(attrs: dict[str, str], key: str, value: str | None) -> None:
@@ -2575,33 +2587,40 @@ def to_predicted_letters(
             warnings.append(f"dropped_evidence_not_substring: text={finding.text!r}")
             continue
 
-        for layer, include_cui in (
-            ("format_projected", False),
-            ("cui_projected", True),
-        ):
-            attrs, attr_warnings = project_finding_to_attributes(
-                finding, include_cui=include_cui
+        attrs, attr_warnings = project_finding_to_attributes(finding, include_cui=False)
+        warnings.extend(f"format_projected: {w}" for w in attr_warnings)
+        layer_mentions["format_projected"].append(
+            PredictedMention(
+                entity=ENTITY_NAME,
+                text=finding.text,
+                attributes=attrs,
+                evidence=finding.evidence,
+                confidence=finding.confidence,
+                rationale=finding.rationale,
+                component_owner="llm_only_clinical_findings",
             )
-            warnings.extend(f"{layer}: {w}" for w in attr_warnings)
-            layer_mentions[layer].append(
-                PredictedMention(
-                    entity=ENTITY_NAME,
-                    text=finding.text,
-                    attributes=attrs,
-                    evidence=finding.evidence,
-                    confidence=finding.confidence,
-                    rationale=finding.rationale,
-                    component_owner="llm_only_clinical_findings",
-                )
-            )
-
-    layers = {
-        layer: PredictedLetter(
-            letter_id=letter_id,
-            mentions=tuple(mentions),
-            diagnostics={"prompt_version": PROMPT_VERSION, "layer": layer},
         )
-        for layer, mentions in layer_mentions.items()
+
+    format_projected = PredictedLetter(
+        letter_id=letter_id,
+        mentions=tuple(layer_mentions["format_projected"]),
+        diagnostics={"prompt_version": PROMPT_VERSION, "layer": "format_projected"},
+    )
+    cui_projected = project_cuis(format_projected)
+    layers = {
+        "format_projected": format_projected,
+        "cui_projected": cui_projected.model_copy(
+            update={
+                "diagnostics": {
+                    **dict(format_projected.diagnostics),
+                    "layer": "cui_projected",
+                    "source_layer": "format_projected",
+                    "cui_projected_mentions": cui_projected.diagnostics[
+                        "cui_projected_mentions"
+                    ],
+                }
+            }
+        ),
     }
     return layers, warnings
 

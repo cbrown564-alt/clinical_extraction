@@ -17,6 +17,9 @@ import dspy
 from pydantic import BaseModel, ConfigDict
 
 from clinical_extraction.core.run_resume import merge_rows, pending_items, read_completed
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.benchmark_projection import (
+    project_cuis,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     ALL_ENTITIES,
     ENTITY_REGISTRY,
@@ -360,14 +363,16 @@ def to_predicted_letter(
         )
 
     return (
-        PredictedLetter(
-            letter_id=letter_id,
-            mentions=tuple(predicted_mentions),
-            diagnostics={
-                "prompt_version": PROMPT_VERSION,
-                "n_evidence_invalid": len(evidence_invalid),
-                "attribute_warnings": all_warnings,
-            },
+        project_cuis(
+            PredictedLetter(
+                letter_id=letter_id,
+                mentions=tuple(predicted_mentions),
+                diagnostics={
+                    "prompt_version": PROMPT_VERSION,
+                    "n_evidence_invalid": len(evidence_invalid),
+                    "attribute_warnings": all_warnings,
+                },
+            )
         ),
         all_warnings,
     )

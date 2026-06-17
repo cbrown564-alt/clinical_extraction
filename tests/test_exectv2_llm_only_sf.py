@@ -30,7 +30,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_per_ent
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
     ExECTv2SinglePassSFSignature,
-    ExtractionRecord,
     MentionRecord,
     check_evidence,
     parse_extraction_json,
@@ -326,6 +325,31 @@ def test_to_predicted_letter_strips_illegal_attributes() -> None:
     assert any("dropped_illegal_attribute" in w for w in warnings)
 
 
+def test_to_predicted_letter_projects_known_cuis_after_schema_gate() -> None:
+    note = "She reports 2 focal seizures with impaired awareness per month."
+    mentions = [
+        MentionRecord(
+            text="focal seizures with impaired awareness",
+            attributes={"NumberOfSeizures": "2", "NumberOfTimePeriods": "1"},
+            evidence="2 focal seizures with impaired awareness per month",
+            confidence="high",
+            rationale="Stated directly.",
+        )
+    ]
+
+    letter, warnings = to_predicted_letter(
+        "TEST001", mentions, spec=_SF_SPEC, note_text=note
+    )
+
+    assert warnings == []
+    assert letter.mentions[0].attributes["CUI"] == "C0270834"
+    assert (
+        letter.mentions[0].attributes["CUIPhrase"]
+        == "focal seizures with impaired awareness"
+    )
+    assert letter.diagnostics["cui_projected_mentions"] == 1
+
+
 # ── Prompt content sanity ─────────────────────────────────────────────────────
 
 
@@ -364,7 +388,6 @@ def test_prompt_versions_are_distinct() -> None:
 
 def _collect_signature_text(sig_class) -> str:
     """Collect the docstring and all field desc strings from a DSPy Signature."""
-    import dspy
 
     parts = [sig_class.__doc__ or ""]
     for field_name in sig_class.model_fields:

@@ -19,11 +19,15 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities im
     ONSET,
     PATIENT_HISTORY,
     PRESCRIPTION,
+    SEIZURE_FREQUENCY,
     WHEN_DIAGNOSED,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
     PredictedLetter,
     PredictedMention,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.lexicon import (
+    assign_cui,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import normalize_phrase
 
@@ -397,6 +401,15 @@ def patient_history_concept(phrase: str) -> BenchmarkConcept | None:
     return _PATIENT_HISTORY_CONCEPT_BY_PHRASE.get(normalize_phrase(phrase))
 
 
+def seizure_frequency_concept(phrase: str) -> BenchmarkConcept | None:
+    """Return the benchmark seizure-frequency concept for ``phrase`` if known."""
+
+    cui = assign_cui(phrase)
+    if cui is None:
+        return None
+    return BenchmarkConcept(phrase, cui, phrase)
+
+
 def attach_benchmark_concept(
     attributes: Mapping[str, str],
     concept: BenchmarkConcept,
@@ -476,6 +489,8 @@ def _concept_for_mention(mention: PredictedMention) -> BenchmarkConcept | None:
         return epilepsy_cause_concept(mention.text)
     if mention.entity == PATIENT_HISTORY.name:
         return patient_history_concept(mention.text)
+    if mention.entity == SEIZURE_FREQUENCY.name:
+        return seizure_frequency_concept(mention.text)
     return None
 
 
