@@ -11,93 +11,48 @@ Gan is no longer an open `>=0.900` Purist chase. The accepted ceiling for the
 current V12 fresh-evidence hybrid family is `379/450` Purist (`0.842`) on
 locked `test450`. The recommended simple Gan labeler is the single GPT
 structured-event pass: `364/450` Purist (`0.809`) on locked `test450`, verified
-on `gpt-4.1-mini`, with no reasoner, peer ensemble, or guard layer. The full
-3-model + reasoner + guard stack buys only `+15` test rows for much higher
-operational and attribution complexity.
+on `gpt-4.1-mini`, with no reasoner, peer ensemble, or guard layer.
 
-The Gan closeout and reliability scorecard are now strategy inputs for ExECTv2:
-source-near structured state, exact evidence, component attribution,
-benchmark-format ablations, family-aware promotion gates, and conservative
-claim language. Active ExECTv2 experimentation should use `gpt-4.1-mini` for
-rapid loops. Qwen 3.6:35B is paused as the main loop and moved to a separate
-overnight transfer track after GPT reaches benchmark-beating architecture
-evidence.
+ExECTv2 is now the forward workstream. Active experiments should use
+`gpt-4.1-mini` for rapid loops. Qwen 3.6:35B is paused as the main loop and
+moved to a separate overnight transfer track after GPT reaches
+benchmark-beating architecture evidence.
 
 ## Recent Context
 
 - Split discipline remains intact: `gan2026_split_v1` has 300 train,
   750 validation, and 450 locked holdout rows. Gan `test450` remains
   aggregate-only for development; no row-level holdout tuning is authorized.
-- V12 v0.4 is the best completed frozen Gan holdout:
-  `379/450` Purist, `394/450` Pragmatic, with `0` call failures and `0`
-  parse/schema/label failures. V12 v0.6 + safety-v0.9 was rejected at
-  `351/450` Purist.
-- The 2026-06-16 dynamic workflow closed the `0.90` chase. Selector saturation,
-  deterministic rewrite regressions, and KG/family-gate failures all localized
-  the hard residual to unknown-vs-rate and cluster-burden clinical reasoning.
-- The simplest near-ceiling analysis shifted the default recommendation:
-  single GPT structured-event pass (`661/750` validation, `364/450` test) over
-  the full V12 stack (`682/750` validation, `379/450` test) unless the extra
-  `+15` holdout rows justify the added complexity.
-- ExECTv2 is the forward workstream. The new GPT-first strategy lives at
+- The Gan closeout localized the hard residual to unknown-vs-rate and
+  cluster-burden clinical reasoning. Its durable methodology is source-near
+  structured state, exact evidence, component attribution, validation hard
+  slices, benchmark-format ablations, family-aware promotion gates, and
+  conservative claim language.
+- The GPT-first ExECTv2 strategy lives at
   `docs/research/exectv2_gpt_first_full_architecture_strategy_2026-06-17.md`.
-  It pauses Qwen as an overnight transfer track and prioritizes
-  `gpt-4.1-mini` loops across deterministic all-9, per-entity LLM-only, and
-  hybrid candidate-assessment architectures.
-- The GPT-first run matrix now has a code-backed status report:
-  `experiments/exectv2_gpt_first_architecture_loop_status_20260617.md`.
   Current freeze blockers are rules-only all-9 below target, LLM-only all-9
   only covered by the negative single-pass baseline rather than per-entity
-  structured frames, and hybrid evidence still SF-only.
-- The first deterministic all-9 dev scorecard is registered:
+  frames, and hybrid evidence still SF-only.
+- The first deterministic all-9 dev scorecard is registered at
   `experiments/exectv2_deterministic_all9_dev_20260617.md`. It scores all nine
   entities with active rules for Prescription, Investigations, Diagnosis, and
-  SeizureFrequency. Prescription now has an ADR-backed scorecard split: one
-  clinical headline for regimen recovery plus diagnostics for benchmark
-  projection, defaults, future plans, weight-based dosing, and rescue handling.
-  The clinical headline is F1 `0.9072`; name/dose/frequency diagnostics remain
-  strong at `0.9257`/`0.9343`/`0.9307`, ordinary complete tuple F1 is `0.9096`,
-  and benchmark phrase/CUI F1 remains much lower at `0.3020`/`0.5223`, with
-  `0` schema errors and `1.0000` evidence validity.
-- Shared active-entity benchmark projection is now code-backed in
+  SeizureFrequency. Overall all-9 remains below freeze target because several
+  entities are absent or early-stage.
+- Prescription has an ADR-backed scorecard split: one clinical headline for
+  regimen recovery plus diagnostics for benchmark projection, defaults, future
+  plans, weight-based dosing, and rescue handling. The clinical headline is F1
+  `0.9072`; name/dose/frequency diagnostics are `0.9257`/`0.9343`/`0.9307`;
+  ordinary complete tuple F1 is `0.9096`.
+- Prescription now has a code-backed benchmark projection ladder in the
+  deterministic all-9 scorecard: phrase scope `0.3069`, semantic-without-CUI
+  `0.3020`, benchmark-with-CUI `0.3020`, clinical medication identity `0.9257`,
+  `DrugName`+CUI projection `0.7921`, source-stated frequency `0.6523`, and
+  guideline-defaulted frequency `0.1760`.
+- Shared active-entity benchmark projection is code-backed in
   `src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/benchmark_projection.py`.
-  Prescription, Investigations, and Diagnosis deterministic rules now reuse that
+  Prescription, Investigations, and Diagnosis deterministic rules reuse that
   projection surface; the regenerated deterministic all-9 scorecard had no
-  metric drift.
-
-## Gan Research Questions To Close Out
-
-- Can deterministic rules alone solve Gan seizure-frequency extraction?
-  They are a strong transparent floor and controlled variable, but validation
-  overstated holdout generalisation.
-- Can a single LLM own the clinical interpretation?
-  Direct final-label prediction was too weak (`~0.71-0.72` mini `test450`);
-  structured-event extraction was much stronger (`0.809` test) because it
-  forced evidence-grounded intermediate state.
-- Do hybrid or agentic components close the gap?
-  They help modestly. V12 reaches `0.842`, but the gain over the single
-  structured-event pass is small relative to its complexity.
-- Where is the hard residual?
-  Unknown-vs-rate and cluster-burden reasoning: the system over-infers habitual
-  rates or seizure-free durations from last-event-only, provoked/transient,
-  adherence-confounded, or underspecified evidence.
-- What methodology survived?
-  Component attribution, exact evidence checks, validation hard slices,
-  synthetic/adversarial panels, held-out-family CV, and frozen aggregate-only
-  test audits were more informative than broad metric chasing.
-- What is the paper-facing lesson?
-  The durable contribution is auditable modular extraction and disciplined
-  evaluation, not a near-perfect Gan score claim.
-
-## Guardrails
-
-- Do not inspect Gan `test450` row-level failures, rationales, evidence, selected
-  events, or transitions for development.
-- New Gan holdout-facing runs require explicit frozen-protocol authorization.
-- Keep architecture claims attribution-clean across `rules_only`, `llm_only`,
-  and `hybrid`.
-- Treat Gan-specific rules and benchmark-format repairs as controlled variables,
-  not hidden implementation detail.
+  metric drift apart from the new diagnostic table.
 
 ## Active Priorities
 
@@ -115,125 +70,95 @@ evidence.
 
 ### Now
 
-- Use `experiments/exectv2_deterministic_all9_dev_20260617.md` to improve the
-  deterministic substrate: Prescription now has a clinical headline above
-  `0.90`, so next attack the diagnostic gaps separately: benchmark phrase/CUI
-  projection, guideline-defaulted frequency recall, future-medication
-  classification, and weight-based dosing. In parallel, improve Investigations
-  exactness, preserve the strong SF cell, and add the next structured entity
-  engines with rule-family/CUI ablations.
+- Use the new Prescription benchmark projection ladder to attack diagnostic gaps
+  without moving the clinical headline: improve `DrugName`+CUI projection,
+  guideline-defaulted frequency recall, and phrase-scope policy visibility.
+- Improve Investigations exactness and add the next structured deterministic
+  entity engines with rule-family/CUI ablations.
 
 ### Next
 
 - Extend shared CUI/benchmark-format projection beyond the active deterministic
   entities and wire the architecture-agnostic `project_cuis` post-step into
   LLM-only and hybrid pilots; keep semantic-vs-benchmark ablations explicit.
-- Implement the Prescription benchmark-projection table/ablation: phrase scope,
-  clinical medication identity, CUI projection, and guideline defaults should
-  stay separately measurable rather than being folded into the clinical
-  headline.
 - Run GPT per-entity LLM-only pilots for the entities most likely to move the
   overall benchmark fastest: Prescription, Investigations, Diagnosis, then
   SeizureFrequency as the hard transfer check.
 - Extend the hybrid live candidate-assessment pattern from SF to all nine
   entities, using deterministic and GPT mention-frame outputs as candidate
   sources rather than hidden final truth.
+- Add an ExECTv2 error ledger with projection gap families before promoting any
+  architecture: phrase scope, CUI, attribute bundle, split/merge, false current
+  regimen, missed current regimen, source-stated/defaulted frequency, future
+  medication, weight-based dosing, and rescue convention mismatch.
 
 ### Blocked
 
 - Gan holdout-facing reruns, row-level test analysis, or post-test tuning remain
   blocked without explicit authorization and a frozen protocol.
-- Gan historical branches V1, V3, V4, V7, V8, V9, V10, V11, E3, and E4 remain
-  blocked from escalation except as comparison artifacts.
 - New ExECTv2 full-200 benchmark-facing audits are blocked until a GPT-first
   architecture has benchmark-beating dev evidence and a predeclared aggregate
   readout.
+- Gan historical branches V1, V3, V4, V7, V8, V9, V10, V11, E3, and E4 remain
+  blocked from escalation except as comparison artifacts.
 
 ### Backlog
 
 - Resume ExECTv2 Qwen event-frame dev25/dev140 as an overnight transfer track
   after GPT-first architecture choices are clearer.
 - Run the one-peer Qwen reasoner rung as the stronger A4 variant if Gan frontier
-  curiosity resumes. DeepSeek solo underperformed the bare single GPT pass, but
-  Qwen performed better than DeepSeek as a standalone structured-event source,
-  so GPT+Qwen is the remaining one-peer upper bound.
-- Optional: turn the simplest near-ceiling analysis into a compact
+  curiosity resumes.
+- Optional: turn the simplest Gan near-ceiling analysis into a compact
   architecture-cost table for paper use.
-- Optional: summarize V12 report profile dumps if future reports need them.
 
 ### Done Recently
 
+- 2026-06-17: Added the Prescription benchmark projection ladder to
+  `score_prescription_benchmark_projection()`, rendered it in the deterministic
+  all-9 scorecard, regenerated the JSON/Markdown artifacts and registry row, and
+  verified focused ExECTv2 tests plus Ruff pass.
 - 2026-06-17: Added shared active-entity ExECTv2 benchmark projection
-  (`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/benchmark_projection.py`)
-  with tests, refactored deterministic all-9 Prescription/Investigations/
-  Diagnosis CUI attachment to reuse it, regenerated the deterministic all-9
-  scorecard with no metric drift, and verified `1559` tests pass.
-- 2026-06-17: Implemented the first deterministic all-9 ExECTv2 baseline
-  (`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/all_entities.py`)
-  and scorecard generator
-  (`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/reports/deterministic_all9_scorecard.py`);
-  generated and registered
-  `experiments/exectv2_deterministic_all9_dev_20260617.md`, then added
-  clinically normalized Prescription component scoring and regimen rules
-  (expanded anti-seizure medication lexicon, brand/synonym/typo handling,
-  split-dose schedules, PRN rescue handling, planned-dose suppression, and
-  future/weight/default diagnostics). Prescription now reports a single
-  clinical headline at `0.9072` and separate diagnostics: name `0.9257`, dose
-  `0.9343`, frequency `0.9307`, ordinary complete tuple `0.9096`, rescue
-  regimen `0.8333`, future medication `0.2609`, and weight-based dosing
-  `0.0000`. Rules-only is now measured, not missing; overall all-9 remains
-  below freeze target because other entities are absent or early-stage.
+  (`benchmark_projection.py`) with tests, refactored deterministic all-9
+  Prescription/Investigations/Diagnosis CUI attachment to reuse it, regenerated
+  the deterministic all-9 scorecard with no metric drift, and verified `1559`
+  tests pass.
+- 2026-06-17: Implemented the first deterministic all-9 ExECTv2 baseline and
+  scorecard generator; Prescription now reports a clinical headline at `0.9072`
+  and separate diagnostics for name, dose, frequency, rescue, future medication,
+  weight-based dosing, phrase/CUI, and default-frequency surfaces.
 - 2026-06-17: Documented the Prescription component-vs-benchmark scoring split
-  (`docs/research/exectv2_prescription_component_vs_benchmark_scoring_2026-06-17.md`):
-  medication component F1 measures clinically normalized regimen recovery, while
-  benchmark phrase/CUI F1 measures ExECT mention projection. ADRs 0019-0026 now
-  lock the accepted Prescription policy: clinically bounded phrase projection,
-  separate clinical medication identity and CUI projection layers,
-  guideline-defaulted frequency as benchmark projection, split-dose prescriptions
-  as separate clinical tuples, weight-based and future-medication diagnostics,
-  dose-optional rescue regimens, one clinical headline, and component scoring
-  only for decomposable clinical objects.
+  and ADR-backed policy in
+  `docs/research/exectv2_prescription_component_vs_benchmark_scoring_2026-06-17.md`.
 - 2026-06-17: Added the code-backed GPT-first ExECTv2 architecture-loop status
-  report generator and tests
-  (`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/reports/architecture_loop_status.py`,
-  `tests/test_exectv2_architecture_loop_status.py`); generated
-  `experiments/exectv2_gpt_first_architecture_loop_status_20260617.md`, which
-  records the current freeze blockers and next actions.
-- 2026-06-17: Wrote the GPT-first ExECTv2 full-architecture strategy
-  (`docs/research/exectv2_gpt_first_full_architecture_strategy_2026-06-17.md`),
-  translating the Gan closeout and reliability scorecard into deterministic,
-  LLM-only, and hybrid ExECTv2 practice; Qwen moved to an overnight transfer
-  track.
-- 2026-06-17: Wrote the Gan research closeout synthesis
-  (`docs/research/gan2026_research_closeout_synthesis_2026-06-17.md`): full
-  experiment accounting (architecture arc, RQ1–RQ10, hard residual, surviving
-  methodology + negatives), the six central research questions with answers, and
-  distilled insights. Closes the Gan strand pending ExECTv2 focus.
-- 2026-06-14: Ran the authorized V12 v0.4 frozen aggregate-only `test450` audit:
-  `379/450` Purist, `394/450` Pragmatic, no call or parse failures, and no
-  row-level holdout analysis.
-- 2026-06-15: Rejected V12 v0.6 + safety-v0.9 on frozen `test450` at
-  `351/450` Purist; built selector/component-repair evidence showing remaining
-  selector headroom was mostly exhausted.
-- 2026-06-16: Accepted `379/450` as the honest ceiling for the current V12/mini
-  family and recorded unknown-vs-rate as the central unresolved clinical
-  reasoning limit.
-- 2026-06-16: Selected the single GPT structured-event pass (`364/450` on
-  `test450`) as the recommended simple Gan architecture.
-- 2026-06-16: Advanced ExECTv2 Qwen `llm_only` event-frame work through v0.19
-  dev10 (`0.8780` strict SF F1), pending dev25 and dev140.
+  report and generated
+  `experiments/exectv2_gpt_first_architecture_loop_status_20260617.md`.
+- 2026-06-17: Wrote the GPT-first ExECTv2 full-architecture strategy and moved
+  Qwen to an overnight transfer track.
+- 2026-06-14 to 2026-06-17: Closed the Gan strand: V12 v0.4 frozen `test450`
+  reached `379/450` Purist, V12 v0.6 safety was rejected at `351/450`, the
+  accepted ceiling became `379/450`, the simple single-GPT structured-event pass
+  became the recommended Gan architecture, and the closeout synthesis captured
+  the paper-facing lessons.
+
+## Guardrails
+
+- Do not inspect Gan `test450` row-level failures, rationales, evidence,
+  selected events, or transitions for development.
+- New Gan holdout-facing runs require explicit frozen-protocol authorization.
+- Keep architecture claims attribution-clean across `rules_only`, `llm_only`,
+  and `hybrid`.
+- Treat Gan-specific rules and benchmark-format repairs as controlled variables,
+  not hidden implementation detail.
 
 ## Core Artifacts
 
-- `docs/research/gan2026_research_closeout_synthesis_2026-06-17.md` (closeout synthesis)
+- `docs/research/gan2026_research_closeout_synthesis_2026-06-17.md`
 - `docs/research/exectv2_gpt_first_full_architecture_strategy_2026-06-17.md`
 - `docs/research/exectv2_prescription_component_vs_benchmark_scoring_2026-06-17.md`
 - `experiments/exectv2_gpt_first_architecture_loop_status_20260617.md`
 - `experiments/exectv2_deterministic_all9_dev_20260617.md`
 - `docs/research/gan2026_f1_dynamic_workflow_night_synthesis_2026-06-16.md`
 - `docs/research/gan2026_simplest_near_ceiling_architecture_results_2026-06-16.md`
-- `docs/research/gan2026_hybrid_structured_events_agentic_consensus_fresh_evidence_analysis_2026-06-14.md`
 - `docs/research/exectv2_llm_only_qwen36_event_frame_synthesis_2026-06-16.md`
 - `experiments/gan2026_single_model_anchor_v0reference_test450_aggregate_readout_2026-06-16.md`
-- `experiments/gan2026_simplest_arch_decomposition_v1_validation750_2026-06-16.md`
 - `experiments/RUN_INDEX.md`

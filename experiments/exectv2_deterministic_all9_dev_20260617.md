@@ -62,6 +62,18 @@
 | future_medication | 0.2609 | 0.2143 | 0.3333 | 3 | 11 | 6 |
 | weight_based_dosing | 0.0000 | 0.0000 | 0.0000 | 0 | 0 | 5 |
 
+## Prescription Benchmark Projection
+
+| Projection layer | Item F1 | Precision | Recall | TP | FP | FN |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| phrase_scope | 0.3069 | 0.3131 | 0.3010 | 62 | 136 | 144 |
+| semantic_without_cui | 0.3020 | 0.3081 | 0.2961 | 61 | 137 | 145 |
+| benchmark_with_cui | 0.3020 | 0.3081 | 0.2961 | 61 | 137 | 145 |
+| clinical_medication_identity | 0.9257 | 0.9444 | 0.9078 | 187 | 11 | 19 |
+| drugname_cui_projection | 0.7921 | 0.8081 | 0.7767 | 160 | 38 | 46 |
+| source_stated_frequency | 0.6523 | 0.4919 | 0.9681 | 91 | 94 | 3 |
+| guideline_defaulted_frequency | 0.1760 | 0.8462 | 0.0982 | 11 | 2 | 101 |
+
 ## Reading
 
 This is the first rules_only all-entity substrate: it scores all nine entities, but only Prescription, Investigations, Diagnosis, and SeizureFrequency have active deterministic extractors. Missing entities are visible as false negatives rather than hidden.

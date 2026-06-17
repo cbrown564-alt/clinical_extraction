@@ -221,6 +221,18 @@ class PrescriptionComponentScores(BaseModel):
     weight_based_dosing: PRF1
 
 
+class PrescriptionBenchmarkProjectionScores(BaseModel):
+    model_config = {"frozen": True}
+
+    phrase_scope: PRF1
+    semantic_without_cui: PRF1
+    benchmark_with_cui: PRF1
+    clinical_medication_identity: PRF1
+    drugname_cui_projection: PRF1
+    source_stated_frequency: PRF1
+    guideline_defaulted_frequency: PRF1
+
+
 def match_key(annotation: ExectAnnotation, config: MatchConfig = PHRASE_AND_FEATURES) -> Hashable:
     phrase = normalize_phrase(annotation.text)
     if not config.include_attributes:
@@ -346,6 +358,59 @@ def score_prescription_components(
     return PrescriptionComponentScores(**components)
 
 
+def score_prescription_benchmark_projection(
+    gold_letters: Sequence[ExectLetter],
+    pred_letters: Sequence[ExectLetter],
+) -> PrescriptionBenchmarkProjectionScores:
+    """Score Prescription benchmark-format sublayers without changing the headline.
+
+    The projection table separates clinical medication identity from exact
+    phrase scope, benchmark-facing DrugName/CUI conventions, and defaulted
+    frequency projection. It is diagnostic: gains here should not be reported as
+    pure clinical extraction gains.
+    """
+
+    return PrescriptionBenchmarkProjectionScores(
+        phrase_scope=score_entity(
+            gold_letters,
+            pred_letters,
+            _PRESCRIPTION_ENTITY,
+            PHRASE_ONLY,
+        ).per_item,
+        semantic_without_cui=score_entity(
+            gold_letters,
+            pred_letters,
+            _PRESCRIPTION_ENTITY,
+            semantic_config_for(_PRESCRIPTION_ENTITY),
+        ).per_item,
+        benchmark_with_cui=score_entity(
+            gold_letters,
+            pred_letters,
+            _PRESCRIPTION_ENTITY,
+            benchmark_config_for(_PRESCRIPTION_ENTITY),
+        ).per_item,
+        clinical_medication_identity=_score_prescription_component(
+            gold_letters,
+            pred_letters,
+            "name",
+        ),
+        drugname_cui_projection=_score_prescription_drugname_cui_projection(
+            gold_letters,
+            pred_letters,
+        ),
+        source_stated_frequency=_score_prescription_component(
+            gold_letters,
+            pred_letters,
+            "source_stated_frequency",
+        ),
+        guideline_defaulted_frequency=_score_prescription_component(
+            gold_letters,
+            pred_letters,
+            "guideline_defaulted_frequency",
+        ),
+    )
+
+
 def _has_source_stated_frequency(annotation: ExectAnnotation) -> bool:
     return bool(_PRESCRIPTION_SOURCE_FREQUENCY.search(annotation.text))
 
@@ -384,6 +449,25 @@ def _prescription_component_keys(
     return keys
 
 
+def _prescription_drugname_cui_keys(
+    annotations: Iterable[ExectAnnotation],
+) -> list[Hashable]:
+    keys: list[Hashable] = []
+    for annotation in annotations:
+        attrs = annotation.attributes
+        drug_name = attrs.get("DrugName")
+        cui = attrs.get("CUI")
+        if not drug_name or not cui:
+            continue
+        keys.append(
+            (
+                canonicalize_attribute_value("DrugName", drug_name),
+                canonicalize_attribute_value("CUI", cui),
+            )
+        )
+    return keys
+
+
 def _letters_by_id(letters: Sequence[ExectLetter]) -> dict[str, ExectLetter]:
     return {letter.letter_id: letter for letter in letters}
 
@@ -409,6 +493,30 @@ def _score_prescription_component(
                 if letter_id in pred_by_id
                 else (),
                 component,
+            ),
+        )
+        for letter_id in all_ids
+    )
+
+
+def _score_prescription_drugname_cui_projection(
+    gold_letters: Sequence[ExectLetter],
+    pred_letters: Sequence[ExectLetter],
+) -> PRF1:
+    gold_by_id = _letters_by_id(gold_letters)
+    pred_by_id = _letters_by_id(pred_letters)
+    all_ids = sorted(gold_by_id.keys() | pred_by_id.keys())
+    return sum_prf1(
+        multiset_prf1(
+            _prescription_drugname_cui_keys(
+                gold_by_id[letter_id].entities(_PRESCRIPTION_ENTITY)
+                if letter_id in gold_by_id
+                else ()
+            ),
+            _prescription_drugname_cui_keys(
+                pred_by_id[letter_id].entities(_PRESCRIPTION_ENTITY)
+                if letter_id in pred_by_id
+                else ()
             ),
         )
         for letter_id in all_ids
