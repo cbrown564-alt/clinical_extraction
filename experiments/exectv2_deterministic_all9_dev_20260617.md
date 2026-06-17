@@ -4,7 +4,7 @@
 - JSON: `experiments\exectv2_deterministic_all9_dev_20260617.json`
 - Split: `dev`
 - Pipeline family: `exectv2_deterministic_all9`
-- Active deterministic entities: Prescription, Investigations, Diagnosis, Onset, SeizureFrequency
+- Active deterministic entities: Prescription, Investigations, Diagnosis, Onset, WhenDiagnosed, BirthHistory, EpilepsyCause, SeizureFrequency
 - Scored entities: BirthHistory, Diagnosis, EpilepsyCause, Investigations, Onset, PatientHistory, Prescription, SeizureFrequency, WhenDiagnosed
 
 ## Reliability
@@ -15,31 +15,31 @@
 - Schema repairs: 0
 - Evidence-not-substring warnings: 0
 - Evidence validity rate: 1.0000
-- Mentions emitted: 776
-- CUI attachment: 767/776 (0.9884)
+- Mentions emitted: 835
+- CUI attachment: 826/835 (0.9892)
 - Routed/abstained mentions: 0
 
 ## Overall Scores
 
 | Layer | Per-item F1 | Per-letter F1 | TP | FP | FN |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| phrase_only | 0.3812 | 0.6258 | 430 | 346 | 1050 |
-| semantic | 0.3227 | 0.5714 | 364 | 412 | 1116 |
-| benchmark | 0.3094 | 0.5619 | 349 | 427 | 1131 |
+| phrase_only | 0.4095 | 0.6774 | 474 | 361 | 1006 |
+| semantic | 0.3438 | 0.6146 | 398 | 437 | 1082 |
+| benchmark | 0.3309 | 0.6072 | 383 | 452 | 1097 |
 
 ## Per-Entity Benchmark F1
 
 | Entity | Item F1 | Letter F1 | TP | FP | FN |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| BirthHistory | 0.0000 | 0.0000 | 0 | 0 | 31 |
-| Diagnosis | 0.3322 | 0.7558 | 95 | 72 | 310 |
-| EpilepsyCause | 0.0000 | 0.0000 | 0 | 0 | 21 |
+| BirthHistory | 0.5574 | 0.7317 | 17 | 13 | 14 |
+| Diagnosis | 0.3216 | 0.7500 | 91 | 70 | 314 |
+| EpilepsyCause | 0.5333 | 0.5806 | 12 | 12 | 9 |
 | Investigations | 0.3220 | 0.5755 | 52 | 135 | 84 |
 | Onset | 0.2857 | 0.4167 | 5 | 13 | 12 |
 | PatientHistory | 0.0000 | 0.0000 | 0 | 0 | 466 |
 | Prescription | 0.3020 | 0.5223 | 61 | 137 | 145 |
 | SeizureFrequency | 0.6921 | 0.9247 | 136 | 70 | 51 |
-| WhenDiagnosed | 0.0000 | 0.0000 | 0 | 0 | 11 |
+| WhenDiagnosed | 0.8182 | 0.9000 | 9 | 2 | 2 |
 
 ## Prescription Clinical Headline
 
@@ -76,4 +76,4 @@
 
 ## Reading
 
-This is the first rules_only all-entity substrate: it scores all nine entities, but only Prescription, Investigations, Diagnosis, Onset, and SeizureFrequency have active deterministic extractors. Missing entities are visible as false negatives rather than hidden.
+This is the first rules_only all-entity substrate: it scores all nine entities, but only Prescription, Investigations, Diagnosis, Onset, WhenDiagnosed, BirthHistory, EpilepsyCause, and SeizureFrequency have active deterministic extractors. Missing PatientHistory coverage is visible as false negatives rather than hidden.

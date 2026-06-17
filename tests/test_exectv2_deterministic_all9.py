@@ -3,10 +3,13 @@
 from __future__ import annotations
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
+    BIRTH_HISTORY,
     DIAGNOSIS,
+    EPILEPSY_CAUSE,
     INVESTIGATIONS,
     ONSET,
     PRESCRIPTION,
+    WHEN_DIAGNOSED,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
     to_exect_letter,
@@ -43,6 +46,9 @@ def _letter() -> ExectLetter:
     text = (
         "Diagnosis: focal epilepsy. EEG was abnormal. MRI brain was normal. "
         "Her epilepsy started at the age of 4. "
+        "She was diagnosed with epilepsy at the age of 4. "
+        "Birth history: she was born normally. "
+        "The epilepsy is secondary to Tuberous sclerosis. "
         "Current medication: Lamotrigine 150mg bd and levetiracetam 500 mg od. "
         "Seizure type and frequency: focal seizures 2 per month."
     )
@@ -56,9 +62,12 @@ def test_extract_deterministic_all9_emits_active_structured_entities_and_sf() ->
     entities = {mention.entity for mention in prediction.mentions}
     assert {
         DIAGNOSIS.name,
+        EPILEPSY_CAUSE.name,
         INVESTIGATIONS.name,
         ONSET.name,
         PRESCRIPTION.name,
+        WHEN_DIAGNOSED.name,
+        BIRTH_HISTORY.name,
         SEIZURE_FREQUENCY,
     } <= entities
     assert prediction.diagnostics["architecture_track"] == "rules_only"
@@ -96,6 +105,27 @@ def test_structured_mentions_carry_rule_taxonomy_and_benchmark_cui() -> None:
     assert onset.attributes["CUI"] == "C0014544"
     assert "onset_epilepsy_age" in onset.component_owner
 
+    when_diagnosed = by_entity[WHEN_DIAGNOSED.name][0]
+    assert when_diagnosed.text == "epileps"
+    assert when_diagnosed.attributes["Age"] == "4"
+    assert when_diagnosed.attributes["AgeUnit"] == "Year"
+    assert when_diagnosed.attributes["CUI"] == "C0014544"
+    assert "benchmark_format" in when_diagnosed.component_owner
+
+    birth_history = by_entity[BIRTH_HISTORY.name][0]
+    assert birth_history.text == "born-normally"
+    assert birth_history.attributes["Certainty"] == "5"
+    assert birth_history.attributes["Negation"] == "Affirmed"
+    assert birth_history.attributes["CUI"] == "C3665337"
+    assert "birth_history" in birth_history.component_owner
+
+    cause = by_entity[EPILEPSY_CAUSE.name][0]
+    assert cause.text == "Tuberous-sclerosis"
+    assert cause.attributes["Certainty"] == "5"
+    assert cause.attributes["Negation"] == "Affirmed"
+    assert cause.attributes["CUI"] == "C0041341"
+    assert "epilepsy_cause" in cause.component_owner
+
     lamotrigine = next(m for m in by_entity[PRESCRIPTION.name] if m.text == "Lamotrigine 150mg bd")
     assert lamotrigine.attributes["DrugName"] == "lamotrigine"
     assert lamotrigine.attributes["DrugDose"] == "150"
@@ -119,6 +149,15 @@ def test_deterministic_all9_scores_tiny_active_entity_gold() -> None:
                 Negation="Affirmed",
                 CUI="C0014547",
                 CUIPhrase="focal epilepsy",
+            ),
+            _ann(
+                DIAGNOSIS.name,
+                "epilepsy",
+                DiagCategory="Epilepsy",
+                Certainty="5",
+                Negation="Affirmed",
+                CUI="C0014544",
+                CUIPhrase="epilepsy",
             ),
             _ann(
                 INVESTIGATIONS.name,
@@ -145,6 +184,32 @@ def test_deterministic_all9_scores_tiny_active_entity_gold() -> None:
                 Negation="Affirmed",
                 CUI="C0014544",
                 CUIPhrase="epilepsy",
+            ),
+            _ann(
+                WHEN_DIAGNOSED.name,
+                "epileps",
+                Age="4",
+                AgeUnit="Year",
+                Certainty="5",
+                Negation="Affirmed",
+                CUI="C0014544",
+                CUIPhrase="epilepsy",
+            ),
+            _ann(
+                BIRTH_HISTORY.name,
+                "born-normally",
+                Certainty="5",
+                Negation="Affirmed",
+                CUI="C3665337",
+                CUIPhrase="born-normally",
+            ),
+            _ann(
+                EPILEPSY_CAUSE.name,
+                "Tuberous-sclerosis",
+                Certainty="5",
+                Negation="Affirmed",
+                CUI="C0041341",
+                CUIPhrase="Tuberous-sclerosis",
             ),
             _ann(
                 PRESCRIPTION.name,
@@ -220,6 +285,72 @@ def test_onset_engine_extracts_age_and_relative_duration_forms() -> None:
         "CUI": "C0014544",
         "CUIPhrase": "epilepsy",
     }
+
+
+def test_when_diagnosed_engine_extracts_age_duration_and_date_forms() -> None:
+    letter = ExectLetter(
+        "DALL9-WDX",
+        (
+            "She was diagnosed with epilepsy at the age of eighteen. "
+            "The diagnosis of epilepsy was made approximately 6 years ago. "
+            "His epilepsy was diagnosed in May 2017."
+        ),
+    )
+
+    prediction = extract_deterministic_all9(letter)
+    mentions = [m for m in prediction.mentions if m.entity == WHEN_DIAGNOSED.name]
+
+    assert [mention.text for mention in mentions] == ["epileps", "epileps", "epileps"]
+    assert mentions[0].attributes == {
+        "Age": "18",
+        "AgeUnit": "Year",
+        "Certainty": "5",
+        "Negation": "Affirmed",
+        "CUI": "C0014544",
+        "CUIPhrase": "epilepsy",
+    }
+    assert mentions[1].attributes == {
+        "NumberOfTimePeriods": "6",
+        "TimePeriod": "Year",
+        "Certainty": "5",
+        "Negation": "Affirmed",
+        "CUI": "C0014544",
+        "CUIPhrase": "epilepsy",
+    }
+    assert mentions[2].attributes == {
+        "MonthDate": "5",
+        "YearDate": "2017",
+        "Certainty": "5",
+        "Negation": "Affirmed",
+        "CUI": "C0014544",
+        "CUIPhrase": "epilepsy",
+    }
+
+
+def test_birth_history_and_epilepsy_cause_engines_use_explicit_lexicons() -> None:
+    letter = ExectLetter(
+        "DALL9-BH-CAUSE",
+        (
+            "Birth history: he was born slightly premature at 35 weeks. "
+            "His epilepsy is secondary to previous cerebral abcess. "
+            "The cause of his epilepsy was a significant traumatic brain injury in 2006."
+        ),
+    )
+
+    prediction = extract_deterministic_all9(letter)
+    birth_history = [m for m in prediction.mentions if m.entity == BIRTH_HISTORY.name]
+    causes = [m for m in prediction.mentions if m.entity == EPILEPSY_CAUSE.name]
+
+    assert birth_history[0].text == "born-slightly-premature"
+    assert birth_history[0].attributes["PrematureBirth"] == "34to<37_LatePretermBirth"
+    assert birth_history[0].attributes["CUI"] == "C3829315"
+
+    assert [mention.text for mention in causes] == [
+        "cerebral-abcess",
+        "traumatic-brain-injury",
+    ]
+    assert causes[0].attributes["CUI"] == "C1510428"
+    assert causes[1].attributes["CUI"] == "C0876926"
 
 
 def test_investigations_extracts_standard_eeg_and_unknown_results() -> None:

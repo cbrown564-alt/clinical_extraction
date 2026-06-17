@@ -4,6 +4,16 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Reliability Scorecard
 
+### `gan2026_confidence_reviewer_shadow_validation750_2026-06-17`
+- Date/split: `2026-06-17`; `validation`; `750` rows (748 scored, 87 failures); LIVE (reviewer only).
+- Pipeline: `confidence_reviewer_shadow`; host `hybrid_structured_events.run_split` (SE selection pass); mode `live`; replay reuses saved SE raw outputs (0 SE calls) + resumable reviewer checkpoints every 25 rows.
+- Model role: DECOUPLED variant-D confidence reviewer (`agentic/confidence_reviewer.py`, `variant_D_decoupled_v1`) wired as an opt-in SHADOW stage; stamps `calibrated_confidence` per row ALONGSIDE the intrinsic `selection.confidence`/`uncertainty` fields; GATES NOTHING, label/score path untouched. model `openai/gpt-4.1-mini`, temp=0.0, max_tokens=300, cache=False. 750 live reviewer calls.
+- Repair mode/config: `none (probability elicitation; robust JSON parse with int fallback)`.
+- Primary metrics: variant D top-bucket=76.5%, mean p=0.863, ECE=0.052, Brier=0.118, failure_AUROC=**0.684**; intrinsic in-pass `selection.confidence` top-bucket=99.5%, failure_AUROC=0.497 (chance) on same rows; external comparator AUROC=0.781; residual (n=269) mean p 0.843/acc 88.8% vs non-resid mean p 0.874/acc 88.1%.
+- Evidence validity: Validation-only; test450 untouched. SE answers reused from `..._hybrid_structured_events_gpt41mini_2026-06-07.jsonl` (full 750-row coverage); reviewer scored against the SE pass's own `comparison.purist_correct`. Production-shape scale-confirmation of the pilot.
+- Claim language: At validation750 scale and in production shape, the decoupled failure-mode-primed reviewer recovers GENUINE discrimination (AUROC 0.684 vs intrinsic-field chance 0.497) and survives integration — but it is WEAKER than the residual-enriched 160-row pilot implied (0.755, only 12 failures) and below external corroboration (0.781). Residual rows are not meaningfully less accurate on this distribution, so D's confidence barely drops there. Remains a SHADOW signal complementing (not replacing) external corroboration; not promoted to gating. Does not change champion/robustness status.
+- Artifacts: `experiments/gan2026_confidence_reviewer_shadow_validation750_2026-06-17.json`, `experiments/gan2026_confidence_reviewer_shadow_validation750_2026-06-17.md`, `experiments/gan2026_confidence_reviewer_shadow_validation750_2026-06-17.jsonl`.
+
 ### `gan2026_reliability_confidence_elicitation_pilot160_2026-06-17`
 - Date/split: `2026-06-17`; `validation` (160-row residual-enriched pilot, 80 residual); LIVE.
 - Pipeline: `reliability_confidence_elicitation`; mode `live`; replay `live` (resumable per-variant samples).

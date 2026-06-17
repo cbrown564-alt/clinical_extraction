@@ -30,9 +30,10 @@ benchmark-beating architecture evidence.
   conservative claim language.
 - The GPT-first ExECTv2 strategy lives at
   `docs/research/exectv2_gpt_first_full_architecture_strategy_2026-06-17.md`.
-  Current freeze blockers are rules-only all-9 below target, LLM-only all-9
-  only covered by the negative single-pass baseline rather than per-entity
-  frames, and hybrid evidence still SF-only.
+  Current freeze blockers are rules-only all-9 still below target, PatientHistory
+  still absent deterministically, LLM-only all-9 only covered by the negative
+  single-pass baseline rather than per-entity frames, and hybrid evidence still
+  SF-only.
 - The deterministic all-9 dev scorecard is registered at
   `experiments/exectv2_deterministic_all9_dev_20260617.md`. It scores all nine
   entities with active rules for Prescription, Investigations, Diagnosis, Onset,
@@ -51,11 +52,11 @@ benchmark-beating architecture evidence.
   diagnostic policy.
 - Shared active-entity benchmark projection is code-backed in
   `src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/benchmark_projection.py`.
-  Prescription, Investigations, Diagnosis, and Onset deterministic rules reuse
-  that projection surface. The latest regenerated deterministic all-9 scorecard
-  improved benchmark overall to `0.3094` item / `0.5619` letter; Investigations
-  benchmark item F1 is now `0.3220`, and the first Onset engine reaches `0.2857`
-  item / `0.4167` letter on dev.
+  Prescription, Investigations, Diagnosis, Onset, WhenDiagnosed, BirthHistory,
+  and EpilepsyCause deterministic rules now reuse that projection surface. The
+  regenerated deterministic all-9 scorecard improved benchmark overall to
+  `0.3309` item / `0.6072` letter on dev; new per-entity benchmark item F1s are
+  WhenDiagnosed `0.8182`, BirthHistory `0.5574`, and EpilepsyCause `0.5333`.
 
 ## Active Priorities
 
@@ -73,8 +74,9 @@ benchmark-beating architecture evidence.
 
 ### Now
 
-- Add the next structured deterministic engines after Onset: WhenDiagnosed,
-  BirthHistory, and EpilepsyCause, keeping rule-family/CUI ablations explicit.
+- Add the remaining deterministic PatientHistory substrate and error ledger,
+  keeping phrase scope, temporal attributes, negation, and CUI projection
+  ablations explicit.
 
 ### Next
 
@@ -113,37 +115,18 @@ benchmark-beating architecture evidence.
 
 ### Done Recently
 
-- 2026-06-17: Improved Investigations exactness with abnormal EEG and explicit
-  unknown-result projection, added the first deterministic Onset age/duration
-  engine with shared CUI projection and rule-family diagnostics, regenerated the
-  deterministic all-9 scorecard/registry row, and verified `1568` tests plus
-  Ruff on touched files.
-- 2026-06-17: Cleaned up Prescription projection diagnostics without moving the
-  clinical headline: `DrugName`+CUI projection improved to `0.9158`,
-  source-stated frequency improved to `0.9307`, guideline-defaulted frequency collapsed
-  to zero dev items under source-context classification, and the deterministic
-  all-9 JSON/Markdown artifacts plus registry row were regenerated.
-- 2026-06-17: Added the Prescription benchmark projection ladder to
-  `score_prescription_benchmark_projection()`, rendered it in the deterministic
-  all-9 scorecard, regenerated the JSON/Markdown artifacts and registry row, and
-  verified focused ExECTv2 tests plus Ruff pass.
-- 2026-06-17: Added shared active-entity ExECTv2 benchmark projection
-  (`benchmark_projection.py`) with tests, refactored deterministic all-9
-  Prescription/Investigations/Diagnosis CUI attachment to reuse it, regenerated
-  the deterministic all-9 scorecard with no metric drift, and verified `1559`
-  tests pass.
-- 2026-06-17: Implemented the first deterministic all-9 ExECTv2 baseline and
-  scorecard generator; Prescription now reports a clinical headline at `0.9072`
-  and separate diagnostics for name, dose, frequency, rescue, future medication,
-  weight-based dosing, phrase/CUI, and default-frequency surfaces.
-- 2026-06-17: Documented the Prescription component-vs-benchmark scoring split
-  and ADR-backed policy in
-  `docs/research/exectv2_prescription_component_vs_benchmark_scoring_2026-06-17.md`.
+- 2026-06-17: Added deterministic WhenDiagnosed, BirthHistory, and EpilepsyCause
+  engines with shared benchmark CUI projection, regenerated the deterministic
+  all-9 scorecard/registry row, and verified `1571` tests pass plus Ruff on
+  touched files. Full-project Ruff remains blocked by pre-existing lint in old
+  experiment/test surfaces.
+- 2026-06-17: Built the deterministic all-9 ExECTv2 baseline through
+  Prescription, Investigations, Diagnosis, and Onset; added the Prescription
+  ADR-backed clinical headline and benchmark projection ladder; regenerated the
+  JSON/Markdown artifacts and registry row across those steps.
 - 2026-06-17: Added the code-backed GPT-first ExECTv2 architecture-loop status
-  report and generated
-  `experiments/exectv2_gpt_first_architecture_loop_status_20260617.md`.
-- 2026-06-17: Wrote the GPT-first ExECTv2 full-architecture strategy and moved
-  Qwen to an overnight transfer track.
+  report, wrote the full-architecture strategy, and moved Qwen to an overnight
+  transfer track.
 - 2026-06-14 to 2026-06-17: Closed the Gan strand: V12 v0.4 frozen `test450`
   reached `379/450` Purist, V12 v0.6 safety was rejected at `351/450`, the
   accepted ceiling became `379/450`, the simple single-GPT structured-event pass
