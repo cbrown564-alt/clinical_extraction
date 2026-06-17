@@ -39,6 +39,19 @@ DEFAULT_REGISTRY_PATH = Path("experiments/registry.jsonl")
 PIPELINE_FAMILY = "exectv2_deterministic_all9"
 MODEL = "(model-independent)"
 ALL_ENTITY_NAMES: tuple[str, ...] = tuple(spec.name for spec in ALL_ENTITIES)
+PRESCRIPTION_CLINICAL_HEADLINE = "clinical_headline"
+PRESCRIPTION_DIAGNOSTIC_ORDER: tuple[str, ...] = (
+    "name",
+    "dose",
+    "frequency",
+    "source_stated_frequency",
+    "guideline_defaulted_frequency",
+    "complete",
+    "ordinary_complete",
+    "rescue_regimen",
+    "future_medication",
+    "weight_based_dosing",
+)
 
 
 def build_scorecard(
@@ -190,12 +203,8 @@ def _prf1_to_dict(score: Any) -> dict[str, Any]:
 
 
 def _prescription_components_to_dict(score: Any) -> dict[str, Any]:
-    return {
-        "name": _prf1_to_dict(score.name),
-        "dose": _prf1_to_dict(score.dose),
-        "frequency": _prf1_to_dict(score.frequency),
-        "complete": _prf1_to_dict(score.complete),
-    }
+    names = (PRESCRIPTION_CLINICAL_HEADLINE, *PRESCRIPTION_DIAGNOSTIC_ORDER)
+    return {name: _prf1_to_dict(getattr(score, name)) for name in names}
 
 
 def _render_markdown(scorecard: dict[str, Any], *, json_path: Path) -> str:
@@ -248,10 +257,19 @@ def _render_markdown(scorecard: dict[str, Any], *, json_path: Path) -> str:
             f"| {per_item['tp']} | {per_item['fp']} | {per_item['fn']} |"
         )
 
-    lines.extend(["", "## Prescription Component F1", ""])
-    lines.append("| Component | Item F1 | Precision | Recall | TP | FP | FN |")
+    lines.extend(["", "## Prescription Clinical Headline", ""])
+    lines.append("| Score | Item F1 | Precision | Recall | TP | FP | FN |")
     lines.append("| --- | ---: | ---: | ---: | ---: | ---: | ---: |")
-    for component in ("name", "dose", "frequency", "complete"):
+    entry = scorecard["prescription_component_scores"][PRESCRIPTION_CLINICAL_HEADLINE]
+    lines.append(
+        f"| clinical_headline | {entry['f1']:.4f} | {entry['precision']:.4f} "
+        f"| {entry['recall']:.4f} | {entry['tp']} | {entry['fp']} | {entry['fn']} |"
+    )
+
+    lines.extend(["", "## Prescription Diagnostics", ""])
+    lines.append("| Diagnostic | Item F1 | Precision | Recall | TP | FP | FN |")
+    lines.append("| --- | ---: | ---: | ---: | ---: | ---: | ---: |")
+    for component in PRESCRIPTION_DIAGNOSTIC_ORDER:
         entry = scorecard["prescription_component_scores"][component]
         lines.append(
             f"| {component} | {entry['f1']:.4f} | {entry['precision']:.4f} "
