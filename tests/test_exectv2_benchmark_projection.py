@@ -23,6 +23,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities im
     ONSET,
     PATIENT_HISTORY,
     PRESCRIPTION,
+    SEIZURE_FREQUENCY,
     WHEN_DIAGNOSED,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
@@ -159,6 +160,13 @@ def test_project_cuis_is_precision_first_and_leaves_unknown_mentions_without_gue
                 evidence="depression",
                 component_owner="fixture",
             ),
+            PredictedMention(
+                entity=SEIZURE_FREQUENCY.name,
+                text="focal seizures with impaired awareness",
+                attributes={"NumberOfSeizures": "2"},
+                evidence="focal seizures with impaired awareness 2 times per month",
+                component_owner="fixture",
+            ),
         ),
     )
 
@@ -172,3 +180,9 @@ def test_project_cuis_is_precision_first_and_leaves_unknown_mentions_without_gue
     assert projected.mentions[5].attributes["CUI"] == "C3665337"
     assert projected.mentions[6].attributes["CUI"] == "C0041341"
     assert projected.mentions[7].attributes["CUI"] == "C0011570"
+    assert projected.mentions[8].attributes["CUI"] == "C0270834"
+    assert (
+        projected.mentions[8].attributes["CUIPhrase"]
+        == "focal seizures with impaired awareness"
+    )
+    assert projected.diagnostics["cui_projected_mentions"] == 8

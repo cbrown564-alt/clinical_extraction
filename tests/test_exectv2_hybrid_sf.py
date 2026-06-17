@@ -14,8 +14,6 @@ from __future__ import annotations
 
 import json
 
-import pytest
-
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     ENTITY_REGISTRY,
 )
@@ -25,9 +23,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     SEIZURE_FREQUENCY,
     ExectLetter,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.lexicon import (
-    assign_cui,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.hybrid import (
     candidate_set,
@@ -219,7 +214,7 @@ def test_normalize_attributes_canonicalizes() -> None:
 # ── render_mentions ───────────────────────────────────────────────────────────
 
 
-def test_render_drops_unkept_and_attaches_cui() -> None:
+def test_render_drops_unkept_before_final_cui_projection() -> None:
     candidates = build_candidate_set(_LETTER)
     c0 = candidates[0]
     record = AssessmentRecord(
@@ -237,8 +232,7 @@ def test_render_drops_unkept_and_attaches_cui() -> None:
     assert len(mentions) == 1
     m = mentions[0]
     assert m.text == c0.anchor_text
-    if assign_cui(c0.anchor_text) is not None:
-        assert m.attributes["CUI"] == assign_cui(c0.anchor_text)
+    assert "CUI" not in m.attributes
 
 
 def test_render_strips_illegal_attribute_and_flag() -> None:
@@ -294,7 +288,11 @@ def test_route_bare_nonzero_count() -> None:
 
 
 def test_keep_frequency_bearing_and_zero_count() -> None:
-    freq = _mention("seizures", {"NumberOfSeizures": "2", "TimePeriod": "Month"}, "2 seizures per month")
+    freq = _mention(
+        "seizures",
+        {"NumberOfSeizures": "2", "TimePeriod": "Month"},
+        "2 seizures per month",
+    )
     zero = _mention("seizure free", {"NumberOfSeizures": "0"}, "seizure free")
     note = "2 seizures per month; now seizure free"
     kept, routed = verify_and_route([freq, zero], note_text=note)
@@ -379,3 +377,5 @@ def test_assess_letter_end_to_end() -> None:
     assert predicted.diagnostics["aggregation_policy"] == "one_mention_per_seizure_type"
     for m in predicted.mentions:
         assert m.evidence in _NOTE
+    assert any("CUI" in m.attributes for m in predicted.mentions)
+    assert predicted.diagnostics["cui_projected_mentions"] >= 1

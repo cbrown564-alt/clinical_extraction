@@ -95,8 +95,18 @@ def test_to_predicted_letter_repairs_attributes_per_mentions_entity() -> None:
     assert len(letter.mentions) == 2
     diagnosis = next(m for m in letter.mentions if m.entity == DIAGNOSIS)
     sf = next(m for m in letter.mentions if m.entity == SEIZURE_FREQUENCY)
-    assert diagnosis.attributes == {"DiagCategory": "Epilepsy", "Certainty": "5"}
-    assert sf.attributes == {"NumberOfSeizures": "2"}
+    assert diagnosis.attributes == {
+        "DiagCategory": "Epilepsy",
+        "Certainty": "5",
+        "CUI": "C0014547",
+        "CUIPhrase": "focal epilepsy",
+    }
+    assert sf.attributes == {
+        "NumberOfSeizures": "2",
+        "CUI": "C0751495",
+        "CUIPhrase": "focal seizures",
+    }
+    assert letter.diagnostics["cui_projected_mentions"] == 2
     assert any("Diagnosis: dropped_illegal_attribute" in warning for warning in warnings)
     assert not any(
         "DiagCategory" in warning and "SeizureFrequency" in warning
@@ -118,7 +128,12 @@ def test_to_predicted_letter_canonicalizes_format_only_attributes() -> None:
 
     letter, warnings = to_predicted_letter("TEST001", mentions, note_text="Takes lamotrigine.")
 
-    assert letter.mentions[0].attributes == {"DrugName": "lamotrigine", "DoseUnit": "mg"}
+    assert letter.mentions[0].attributes == {
+        "DrugName": "lamotrigine",
+        "DoseUnit": "mg",
+        "CUI": "C0064636",
+        "CUIPhrase": "lamotrigine",
+    }
     assert any("normalized_attribute_value" in warning for warning in warnings)
 
 
