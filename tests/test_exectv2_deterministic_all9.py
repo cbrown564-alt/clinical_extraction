@@ -10,6 +10,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities im
     ONSET,
     PATIENT_HISTORY,
     PRESCRIPTION,
+    SEIZURE_FREQUENCY,
     WHEN_DIAGNOSED,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
@@ -19,7 +20,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.validate im
     validate_letter,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
-    SEIZURE_FREQUENCY,
     ExectAnnotation,
     ExectLetter,
     load_letters_for_split,
@@ -72,7 +72,7 @@ def test_extract_deterministic_all9_emits_active_structured_entities_and_sf() ->
         PATIENT_HISTORY.name,
         WHEN_DIAGNOSED.name,
         BIRTH_HISTORY.name,
-        SEIZURE_FREQUENCY,
+        SEIZURE_FREQUENCY.name,
     } <= entities
     assert prediction.diagnostics["architecture_track"] == "rules_only"
     assert set(prediction.diagnostics["active_entities"]) == set(ACTIVE_DETERMINISTIC_ENTITIES)
@@ -272,7 +272,7 @@ def test_deterministic_all9_scores_tiny_active_entity_gold() -> None:
                 CUIPhrase="levetiracetam",
             ),
             _ann(
-                SEIZURE_FREQUENCY,
+                SEIZURE_FREQUENCY.name,
                 "focal seizures",
                 NumberOfSeizures="2",
                 NumberOfTimePeriods="1",

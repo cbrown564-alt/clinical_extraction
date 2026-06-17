@@ -1,5 +1,7 @@
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     SEIZURE_FREQUENCY,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     load_letters,
 )
 
@@ -13,8 +15,8 @@ def test_load_letters_smoke() -> None:
 
 def test_seizure_frequency_corpus_shape() -> None:
     letters = load_letters()
-    sf_mentions = [m for letter in letters for m in letter.entities(SEIZURE_FREQUENCY)]
-    letters_with_sf = [letter for letter in letters if letter.entities(SEIZURE_FREQUENCY)]
+    sf_mentions = [m for letter in letters for m in letter.entities(SEIZURE_FREQUENCY.name)]
+    letters_with_sf = [letter for letter in letters if letter.entities(SEIZURE_FREQUENCY.name)]
 
     assert len(sf_mentions) == 263
     assert len(letters_with_sf) == 142
@@ -22,7 +24,7 @@ def test_seizure_frequency_corpus_shape() -> None:
 
 def test_ea0006_seizure_frequency_annotations() -> None:
     letters = {letter.letter_id: letter for letter in load_letters()}
-    sf = letters["EA0006"].entities(SEIZURE_FREQUENCY)
+    sf = letters["EA0006"].entities(SEIZURE_FREQUENCY.name)
 
     assert len(sf) == 3
     first = sf[0]
@@ -41,7 +43,7 @@ def test_seizure_free_assertions_present_as_zero_count() -> None:
     zero_count = [
         m
         for letter in letters
-        for m in letter.entities(SEIZURE_FREQUENCY)
+        for m in letter.entities(SEIZURE_FREQUENCY.name)
         if m.attributes.get("NumberOfSeizures") == "0"
     ]
     assert len(zero_count) == 92

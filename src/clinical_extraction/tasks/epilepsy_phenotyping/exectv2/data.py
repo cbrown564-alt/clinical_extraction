@@ -16,8 +16,8 @@ DEFAULT_TEXT_DIR = DEFAULT_DATA_DIR / "Gold1-200_corrected_spelling"
 DEFAULT_SPLITS_DIR = DEFAULT_DATA_DIR / "splits"
 DEFAULT_SPLIT_MANIFEST = DEFAULT_SPLITS_DIR / "exectv2_split_v1.json"
 
-SEIZURE_FREQUENCY = "SeizureFrequency"
-DIAGNOSIS = "Diagnosis"
+# Entity names are sourced from the registry (``contract.entities``); callers
+# that need a name string reference ``<EntitySpec>.name`` directly.
 
 # The per-entity phrase target is declared in ``contract.evaluation``. The notes
 # below document the source provenance behind that policy.

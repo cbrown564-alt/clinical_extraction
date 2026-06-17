@@ -16,12 +16,12 @@ import json
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     ENTITY_REGISTRY,
+    SEIZURE_FREQUENCY,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
     PredictedMention,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
-    SEIZURE_FREQUENCY,
     ExectLetter,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.hybrid import (
@@ -54,7 +54,7 @@ _NOTE = (
     "following the last dose adjustment."
 )
 _LETTER = ExectLetter(letter_id="TEST001", note_text=_NOTE)
-_SF_SPEC = ENTITY_REGISTRY[SEIZURE_FREQUENCY]
+_SF_SPEC = ENTITY_REGISTRY[SEIZURE_FREQUENCY.name]
 
 # A bare seizure type (no frequency) plus one with a rate, to prove high recall.
 _BARE_NOTE = "He has focal seizures. His tonic-clonic seizures occur 3 times a week."
@@ -276,7 +276,7 @@ def test_render_additional_mention_must_be_substring() -> None:
 
 def _mention(text: str, attrs: dict[str, str], evidence: str) -> PredictedMention:
     return PredictedMention(
-        entity=SEIZURE_FREQUENCY, text=text, attributes=attrs, evidence=evidence
+        entity=SEIZURE_FREQUENCY.name, text=text, attributes=attrs, evidence=evidence
     )
 
 

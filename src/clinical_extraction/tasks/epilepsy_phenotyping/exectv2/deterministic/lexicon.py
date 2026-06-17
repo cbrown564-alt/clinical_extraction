@@ -33,8 +33,9 @@ to the benchmark's annotation conventions, not a general clinical rule.
 Regenerate the gold inventory behind this map with::
 
     uv run python -c "from collections import Counter, defaultdict; \
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import \
-load_letters, SEIZURE_FREQUENCY; \
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import load_letters; \
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import \
+SEIZURE_FREQUENCY; \
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import \
 normalize_phrase; ..."
 """

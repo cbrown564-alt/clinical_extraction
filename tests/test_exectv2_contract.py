@@ -23,13 +23,13 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.validate im
     validate_letter,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
-    SEIZURE_FREQUENCY as SF_ENTITY,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectAnnotation,
     load_letters,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import score_entity
+
+# Entity-name string used by the prediction-adapter fixtures below.
+SF_ENTITY = SEIZURE_FREQUENCY.name
 
 # ---------------------------------------------------------------------------
 # Registry

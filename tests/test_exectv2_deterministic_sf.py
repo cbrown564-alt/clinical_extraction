@@ -8,8 +8,10 @@ Tests are at four levels:
 """
 from __future__ import annotations
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     SEIZURE_FREQUENCY,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectLetter,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.association import (
@@ -782,7 +784,7 @@ def test_pipeline_produces_predicted_letter() -> None:
     )
     result = extract_seizure_frequency(letter)
     assert result.letter_id == "T001"
-    sf_mentions = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY]
+    sf_mentions = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY.name]
     assert sf_mentions
     assert sf_mentions[0].text.lower() == "focal seizures with loss of awareness"
     assert sf_mentions[0].attributes["NumberOfSeizures"] == "3"
@@ -791,7 +793,7 @@ def test_pipeline_produces_predicted_letter() -> None:
 def test_pipeline_sf_mention_attributes() -> None:
     letter = _make_letter("T002", "She has been seizure free for 6 months.")
     result = extract_seizure_frequency(letter)
-    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY]
+    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY.name]
     assert sf
     assert any(m.attributes.get("NumberOfSeizures") == "0" for m in sf)
 
@@ -818,7 +820,7 @@ def test_pipeline_multiple_mentions_in_one_letter() -> None:
     )
     letter = _make_letter("T005", text)
     result = extract_seizure_frequency(letter)
-    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY]
+    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY.name]
     assert len(sf) >= 2
 
 
@@ -831,7 +833,7 @@ def test_pipeline_frequency_section_date_list_emits_multiple_mentions() -> None:
     )
     letter = _make_letter("T006A", text)
     result = extract_seizure_frequency(letter)
-    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY]
+    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY.name]
 
     assert any(
         m.text.lower() == "focal seizures with altered awareness"
@@ -857,7 +859,7 @@ def test_pipeline_frequency_section_statement_rows() -> None:
     )
     letter = _make_letter("T006C", text)
     result = extract_seizure_frequency(letter)
-    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY]
+    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY.name]
 
     assert any(
         m.text.lower() == "generalised tonic clonic seizures"
@@ -883,7 +885,7 @@ def test_pipeline_statement_dated_range_rate() -> None:
     text = "Although she did have a cluster of seizures in August, 2017 where she had 6-9 seizures every week."
     letter = _make_letter("T006H", text)
     result = extract_seizure_frequency(letter)
-    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY]
+    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY.name]
 
     assert any(
         m.text.lower() == "seizures"
@@ -901,7 +903,7 @@ def test_pipeline_statement_seizure_free_projection_keeps_c129_same() -> None:
     text = "Richard tells me that he remains seizure free which is good news."
     letter = _make_letter("T006I", text)
     result = extract_seizure_frequency(letter)
-    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY]
+    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY.name]
 
     assert any(
         m.text.lower() == "seizure"
@@ -922,7 +924,7 @@ def test_pipeline_statement_normalizes_feburary_date() -> None:
     text = "However, since Feburary 6th he has not had any more seizures."
     letter = _make_letter("T006J", text)
     result = extract_seizure_frequency(letter)
-    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY]
+    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY.name]
 
     assert any(
         m.text.lower() == "seizures"
@@ -941,7 +943,7 @@ def test_pipeline_splits_rate_and_last_event_date_for_same_anchor() -> None:
     )
     letter = _make_letter("T006B", text)
     result = extract_seizure_frequency(letter)
-    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY]
+    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY.name]
 
     assert any(
         m.text.lower() == "secondary generalised seizures"
@@ -965,7 +967,7 @@ def test_pipeline_pronoun_rate_uses_previous_anchor() -> None:
     text = "He has partial motor seizures involving left arm twitching. He gets these every month."
     letter = _make_letter("T006D", text)
     result = extract_seizure_frequency(letter)
-    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY]
+    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY.name]
 
     assert any(
         m.text.lower() == "partial motor seizures"
@@ -983,7 +985,7 @@ def test_pipeline_pronoun_zero_duration_uses_previous_anchor() -> None:
     )
     letter = _make_letter("T006E", text)
     result = extract_seizure_frequency(letter)
-    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY]
+    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY.name]
 
     assert any(
         m.text.lower() == "focal motor seizures"
@@ -998,7 +1000,7 @@ def test_pipeline_projection_alias_for_singular_range_phrase() -> None:
     text = "Seizure type and frequency: Complex partial seizures 1-2 per month"
     letter = _make_letter("T006F", text)
     result = extract_seizure_frequency(letter)
-    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY]
+    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY.name]
 
     assert any(
         m.text.lower() == "complex partial seizure"
@@ -1013,7 +1015,7 @@ def test_pipeline_projection_alias_for_change_only() -> None:
     text = "His seizure frequency has reduced from about once a year to one seizure every two years."
     letter = _make_letter("T006G", text)
     result = extract_seizure_frequency(letter)
-    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY]
+    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY.name]
 
     assert any(
         m.text.lower() == "seizure"
@@ -1033,7 +1035,7 @@ def test_pipeline_bare_nonzero_count_is_dropped() -> None:
     # "had 2 seizures" with no time frame is not a frequency statement (L255).
     letter = _make_letter("T007", "In his past history he had 2 seizures as a child.")
     result = extract_seizure_frequency(letter)
-    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY]
+    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY.name]
     assert all(
         not (set(m.attributes) == {"NumberOfSeizures"} and m.attributes["NumberOfSeizures"] != "0")
         for m in sf
@@ -1043,7 +1045,7 @@ def test_pipeline_bare_nonzero_count_is_dropped() -> None:
 def test_pipeline_count_with_date_is_kept() -> None:
     letter = _make_letter("T008", "He had 5 seizures in May.")
     result = extract_seizure_frequency(letter)
-    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY]
+    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY.name]
     assert sf
     m = sf[0]
     assert m.attributes["NumberOfSeizures"] == "5"
@@ -1055,7 +1057,7 @@ def test_pipeline_implied_count_on_bare_seizures_with_period() -> None:
     # Plural "seizures" with a period but no explicit count ⇒ NumberOfSeizures=2.
     letter = _make_letter("T009", "She has seizures since her last clinic appointment.")
     result = extract_seizure_frequency(letter)
-    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY]
+    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY.name]
     assert sf
     assert any(
         m.attributes.get("NumberOfSeizures") == "2"
@@ -1128,7 +1130,7 @@ def test_pipeline_emits_cui_for_known_seizure_type() -> None:
         "Seizure type and frequency: generalised tonic clonic seizures twice weekly.",
     )
     result = extract_seizure_frequency(letter)
-    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY]
+    sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY.name]
     assert sf
     assert any(m.attributes.get("CUI") == "C0494475" for m in sf)
 
@@ -1246,7 +1248,7 @@ def test_dev_split_baseline_pinned() -> None:
         "sf_benchmark": SF_BENCHMARK,
     }
     for name, cfg in configs.items():
-        f1 = score_entity(gold, pred_exect, SEIZURE_FREQUENCY, cfg).per_item.f1
+        f1 = score_entity(gold, pred_exect, SEIZURE_FREQUENCY.name, cfg).per_item.f1
         pinned = _PINNED_DEV_PER_ITEM_F1[name]
         assert pinned - _F1_BAND <= f1 <= pinned + _F1_BAND, (
             f"dev {name} per-item F1={f1:.3f} drifted from pinned {pinned:.3f} "
