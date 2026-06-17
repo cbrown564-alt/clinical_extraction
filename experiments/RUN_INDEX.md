@@ -4,6 +4,16 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Reliability Scorecard
 
+### `gan2026_reliability_scorecard_phase1_2026-06-17`
+- Date/split: `2026-06-17`; `test450` (frozen holdout); aggregate-only, no-call replay.
+- Pipeline: `reliability_scorecard_phase1`; mode `no-call replay`; replay `deterministic_no_call`.
+- Model role: none; aggregate-only port of P0.2 (risk-coverage) and P0.5 (family parity) to the locked split, scored on the canonical `v0_reference` subject. Two-agent agreement leg only (weaker replay, decision 0018).
+- Repair mode/config: `reliability_scorecard_v1`.
+- Primary metrics: test_base_error_rate=0.191, agree_only_coverage=0.658, agree_only_selective_risk=0.122, disagree_set_error=0.325, two_agent_failure_auroc=0.648, parity_overall_acc=0.812, band_error_spread=0.199, band_acc_cv=0.082, worst_band=band_submonthly@0.695.
+- Evidence validity: Zero model calls; aggregate-only readout (0 forbidden markers: source_row_index/transition_vs_v0/score_layers absent). Both transforms predeclared and hash-frozen before touching test450 (two_agent_external_risk sha256, classify_boundary_families validation classifier sha256). Per-row correctness read internally for aggregation only; no row-level holdout inspection.
+- Claim language: Phase 1 freeze-warden-gated holdout port. The two-agent agreement leg still separates holdout error (abstaining the disagreement set cuts error 0.191→0.122; AUROC 0.648 < validation 0.781 by construction). Per-family parity confirms the validation picture: disparity in rate bands + over-reading families, not band_unknown. Not a new benchmark claim.
+- Artifacts: `experiments/gan2026_reliability_p1_1_test450_risk_coverage_2026-06-17.{json,md}`, `experiments/gan2026_reliability_p1_2_test450_error_parity_2026-06-17.{json,md}`.
+
 ### `gan2026_reliability_scorecard_phase0_2026-06-17`
 - Date/split: `2026-06-17`; `validation750` + `test450` (aggregate, frozen); no-call re-analysis.
 - Pipeline: `reliability_scorecard_phase0`; mode `no-call replay`; replay `deterministic_no_call`.
