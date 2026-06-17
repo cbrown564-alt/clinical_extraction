@@ -3,7 +3,8 @@
 Parent: [[00_overarching_implementation_plan]] · execution arm of
 `docs/research/exectv2_gpt_first_full_architecture_strategy_2026-06-17.md`
 Status: active. Dev-split only. No new full-200 audit until Phase E gate is met.
-Date opened: 2026-06-17 · Phase A complete (2026-06-17); Phase B next.
+Date opened: 2026-06-17 · Phase A complete (2026-06-17); Phase B complete
+(2026-06-17); Phase C complete (2026-06-17); Phase D next.
 
 ## North star and claim ladder
 
@@ -123,16 +124,45 @@ altitude-sensitive; Phase C must separate a real Diagnosis recall gap from this
 altitude artifact (compare against `raw_text` overlap) before fixing the prompt. No
 entity is routed off GPT candidate generation.
 
-### Phase B — Per-entity LLM-only completion (NOW)
+### Phase B — Per-entity LLM-only completion (DONE 2026-06-17)
 
-Extend the focused frame to the remaining five entities (Onset, WhenDiagnosed,
+Extended the focused frame to the remaining five entities (Onset, WhenDiagnosed,
 BirthHistory, EpilepsyCause, PatientHistory) so "one focused call per entity" is
-general. Optionally add the Qwen 3.6:35B condition as an overnight transfer read
-(prompt-structure response is model-dependent — gpt-4.1-mini gained from the
-focused frame on SF where Qwen regressed). This phase produces the full per-entity
-candidate-quality map.
+general; bumped to `v0.4` and re-ran all nine for a single-version map.
+Predeclared/recorded in
+`docs/research/exectv2_per_entity_phase_b_predeclaration_2026-06-17.md`. The Qwen
+3.6:35B transfer read is available via `--model` but was not run this phase.
 
-### Phase C — GPT hybrid candidate assessment (the benchmark-beating route)
+**Result (dev140, gpt-4.1-mini, temp 0.0, prompt `v0.4`).** Gate clean — zero
+call/parse failures across all nine; evidence validity 0.884–1.000 (PatientHistory
+lowest). Artifacts:
+`experiments/exectv2_llm_only_per_entity_dev140_gpt41mini_20260617_*`. The
+corrected Phase-A framing holds across all nine: the LLM is a high-recall
+candidate source for every entity (eight of nine clear the +0.05 source-near
+margin over the all-9 pass; Diagnosis +0.005 and Investigations +0.022 were
+already at ceiling/altitude-capped, not failures).
+
+| Entity | Regime | Probe SN recall | Δ vs all-9 | Semantic item F1 | Over-emit (probe/base) |
+| --- | --- | ---: | ---: | ---: | ---: |
+| WhenDiagnosed | representation-bound | 1.000 | +0.545 | 0.073 | 33/3 |
+| Onset | mixed | 0.824 | +0.235 | 0.148 | 77/25 |
+| EpilepsyCause | representation-bound | 0.809 | +0.524 | 0.175 | 42/6 |
+| BirthHistory | representation-bound | 0.806 | +0.194 | 0.281 | 1/0 |
+| PatientHistory | recall-bound | 0.363 | +0.195 | 0.163 | 212/105 |
+
+Reads: **WhenDiagnosed** is the cleanest representation-bound signature (recall
+1.000, semantic 0.073 — pure projection/altitude + over-emission, zero recall
+work). **BirthHistory** is the low-risk projection-only entity (near-zero
+over-emission). **PatientHistory** is the over-emission/boundary problem child
+(212 FP, the broadest concept space) — the #1 hybrid over-emission target, ahead
+of **Onset** (77). All five new entities carry CUIPhrase, so high SN recall with
+low semantic F1 is the surface-vs-concept altitude gap (Phase C reads `raw_text`
+overlap before any candidate prompt change). Over-emission ranking for Phase C:
+PatientHistory (212) ≫ Onset (77) > Investigations (58) > SeizureFrequency (51) >
+Prescription (46) > EpilepsyCause (42) > WhenDiagnosed (33) > Diagnosis (30) ≫
+BirthHistory (1).
+
+### Phase C — GPT hybrid candidate assessment (the benchmark-beating route) (DONE 2026-06-17)
 
 Extend the SF live-candidate-set pattern (`hybrid/candidate_set.py`,
 `hybrid/clinical_assessment.py`) to all nine entities:
@@ -160,6 +190,42 @@ output. Phase A's regime map sizes the deterministic projection that follows the
 LLM candidates per entity — heavy on representation-bound entities, light on
 recall-bound ones — it does not route any entity away from GPT candidate
 generation.
+
+**Implementation.** `hybrid/all_entity_assessment.py` assembles the nine focused
+per-entity GPT passes (the candidate-generation+reasoning+selection already run
+in Phase A/B — one focused call per (entity, letter) *is* the one strong
+assessment pass) into a single combined all-nine `PredictedLetter`. The focused
+per-entity frame is the candidate source; `hybrid/all_entity_gate.py` generalizes
+the SF verify/route to every entity (evidence-substring faithfulness for all,
+frequency-bearing plausibility for SF, within-letter duplicate collapse) and
+routes — never edits — what it cannot keep. Deterministic CUI projection
+(`benchmark_projection.project_cuis`) runs after selection. The runner
+(`runners/run_hybrid_all_entities.py`) is **replay-first** (reads the Phase B
+per-entity JSONLs → zero extra LLM calls); `--mode live` regenerates candidates
+resumably per entity; `--augment-rules` unions the deterministic all-9 rule
+candidates (the optional, never-primary augmentation).
+
+**Result (dev140, gpt-4.1-mini candidates v0.4, replay).** Honest combined
+headline, far below the gate. Artifacts:
+`experiments/exectv2_hybrid_all_entities_dev140_gpt41mini_20260617{,_ruleaug}.{jsonl,md}`.
+
+| Candidate set | Semantic item F1 | Semantic item P / R | Benchmark item F1 | Phrase letter F1 | Routed |
+| --- | ---: | --- | ---: | ---: | ---: |
+| GPT only (9 focused passes) | 0.220 | 0.232 / 0.208 | 0.181 | 0.626 | 11 |
+| GPT + deterministic rule augmentation | 0.344 | 0.294 / 0.414 | 0.312 | 0.748 | 264 |
+
+Reads: (1) **Over-emission (precision ~0.23), not recall, is the binding
+constraint** — the gate only routes 11 GPT candidates because the per-entity
+outputs are already evidence-valid and the well-formed-but-spurious/altitude
+candidates are the LLM's to prune (the second selection stage the plan defers
+until an ablation earns it). (2) **Deterministic augmentation is a real lever**:
+unioning the all-9 rule candidates lifts semantic F1 0.220→0.344 and benchmark
+0.181→0.312 (recall 0.208→0.414) while the gate collapses 258 duplicates —
+because the rules land the benchmark-key altitude/CUI the raw GPT phrase misses,
+confirming the representation-bound regime thesis. (3) The combined headline
+stays honest at 0.34/0.31 semantic/benchmark — the gate is **not** met, so no
+full-200 audit (Phase E). The first hybrid target remains over-emission, and the
+named next stage is a GPT candidate-selection pass (ablation-gated).
 
 ### Phase D — Benchmark-format projection completion
 
