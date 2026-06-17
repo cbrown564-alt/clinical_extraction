@@ -73,3 +73,62 @@ priming move the answer?
 
 This gates nothing on test450 and changes no production label; it is a validation
 diagnostic about whether the extra call earns its cost.
+
+---
+
+## Results (2026-06-17, validation750)
+
+Run: `experiments/build_gan2026_confidence_one_vs_two_call_paired.py --full`.
+n=737 paired (13 unscorable-gold rows dropped), **101 failures**. 0 parse failures
+on either arm. Joint-arm Purist accuracy **0.863** (vs SE baseline 0.881 — embedding
+the priming does *not* meaningfully move the answer at scale; the pilot's 0.956 was a
+160-row / 7-failure fluke).
+
+| Arm | calls | top-bucket | distinct | ECE | Brier | failure AUROC |
+|---|---:|---:|---:|---:|---:|---:|
+| **Joint (1 call, wording embedded)** | 1 | 91.0% | 5 | **0.050** | **0.119** | **0.609** |
+| **Decoupled reviewer (2 calls)** | 2 | 79.8% | 12 | 0.080 | 0.139 | **0.641** |
+
+**Paired AUROC difference (decoupled − joint) = +0.032, 95% CI [−0.032, +0.098]**
+(1,000 row-bootstrap reps). The CI **includes 0**.
+
+Comparators: decoupled-on-frozen-SE 0.684; intrinsic in-pass `selection.confidence`
+**0.497** (chance); external corroboration 0.781.
+
+### Verdict — H_wording (the production prior was wrong)
+
+The discrimination is a **prompt-wording effect, not a decoupling effect.** Folding
+the verbatim failure-mode priming into the single extraction call recovers
+essentially the same failure-prediction discrimination (**0.609 vs 0.641**, paired
+difference CI straddles 0) at **one call instead of two** — and with *better*
+calibration error (ECE 0.050 vs 0.080, Brier 0.119 vs 0.139). The separate,
+rationale-blind second call is **not** the active ingredient; the priming wording is.
+
+This **falsifies** the belief recorded in `confidence_reviewer.py` ("folding the
+priming back into the joint pass … is expected to re-degenerate — hence a decoupled
+stage"). It does not re-degenerate. The earlier evidence for "decoupling matters" was
+the comparison against the *intrinsic* low/med/high `selection.confidence` field
+(0.497) — but that field is degenerate because it is unprimed/categorical, not because
+it is in-pass. A primed integer-probability question works whether posed in-call or
+out-of-call.
+
+### Caveats
+
+- Both signals are **modest** (~0.61–0.64) and well below external corroboration
+  (0.781); neither replaces it. This changes *how cheaply* the self-signal is
+  obtained (one call, free-riding on extraction), not the conclusion that external
+  corroboration is the stronger forward-observable signal.
+- The decoupled arm scored 0.641 here vs 0.684 on the frozen-SE answers — expected,
+  since it ran over the joint pass's (slightly different) answer set; the paired
+  comparison is internally valid because both arms share those answers.
+- Residual rows are no less accurate than the rest (88.7% vs 85.0%) and neither
+  signal drops its confidence there — consistent with The Wall: the over-reading is
+  confident, so no self-signal (in-call or decoupled) flags it well.
+
+### Implication
+
+If a cheap self-confidence triage knob is wanted, **emit the primed
+`answer_probability_correct` inside the extraction call** — it matches the decoupled
+reviewer's discrimination at zero extra calls and better calibration. The decoupled
+`ConfidenceReviewer` stage can be retired in favour of the in-pass field (still a
+shadow signal; still secondary to external corroboration). Not promoted to gating.
