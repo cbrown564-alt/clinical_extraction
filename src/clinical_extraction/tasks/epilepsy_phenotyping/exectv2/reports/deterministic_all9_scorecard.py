@@ -11,6 +11,7 @@ from typing import Any
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     ALL_ENTITIES,
+    PATIENT_HISTORY,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
     PredictedLetter,
@@ -127,6 +128,11 @@ def build_scorecard(
         "prescription_benchmark_projection_scores": _prescription_projection_to_dict(
             prescription_projection
         ),
+        "patient_history_error_ledger": _patient_history_error_ledger(
+            gold_letters,
+            pred_letters,
+            scores,
+        ),
     }
 
 
@@ -228,6 +234,70 @@ def _prescription_projection_to_dict(score: Any) -> dict[str, Any]:
     }
 
 
+def _patient_history_error_ledger(
+    gold_letters: Sequence[ExectLetter],
+    pred_letters: Sequence[ExectLetter],
+    scores: dict[str, Any],
+) -> dict[str, Any]:
+    phrase = scores["phrase_only"].per_entity[PATIENT_HISTORY.name].per_item
+    semantic = scores["semantic"].per_entity[PATIENT_HISTORY.name].per_item
+    benchmark = scores["benchmark"].per_entity[PATIENT_HISTORY.name].per_item
+    gold_mentions = [
+        annotation
+        for letter in gold_letters
+        for annotation in letter.entities(PATIENT_HISTORY.name)
+    ]
+    pred_mentions = [
+        annotation
+        for letter in pred_letters
+        for annotation in letter.entities(PATIENT_HISTORY.name)
+    ]
+    temporal_attrs = {
+        "Age",
+        "AgeLower",
+        "AgeUpper",
+        "AgeUnit",
+        "DayDate",
+        "MonthDate",
+        "YearDate",
+        "NumberOfTimePeriods",
+        "TimePeriod",
+        "PointInTime",
+    }
+    return {
+        "gold_mentions": len(gold_mentions),
+        "predicted_mentions": len(pred_mentions),
+        "predicted_with_cui": sum(1 for mention in pred_mentions if "CUI" in mention.attributes),
+        "predicted_with_temporal_attributes": sum(
+            1
+            for mention in pred_mentions
+            if temporal_attrs.intersection(mention.attributes)
+        ),
+        "predicted_negated": sum(
+            1
+            for mention in pred_mentions
+            if mention.attributes.get("Negation") == "Negated"
+        ),
+        "gap_families": {
+            "phrase_scope_or_missing": {
+                "fn": phrase.fn,
+                "fp": phrase.fp,
+                "note": "Phrase-only misses and over-emissions before attributes or CUI.",
+            },
+            "attribute_bundle": {
+                "additional_fn_vs_phrase": max(0, semantic.fn - phrase.fn),
+                "additional_fp_vs_phrase": max(0, semantic.fp - phrase.fp),
+                "note": "Temporal, negation, and certainty mismatches after phrase match.",
+            },
+            "cui_projection": {
+                "additional_fn_vs_semantic": max(0, benchmark.fn - semantic.fn),
+                "additional_fp_vs_semantic": max(0, benchmark.fp - semantic.fp),
+                "note": "Benchmark-format gap from CUI/CUIPhrase projection.",
+            },
+        },
+    }
+
+
 def _render_markdown(scorecard: dict[str, Any], *, json_path: Path) -> str:
     validation = scorecard["validation"]
     lines = [
@@ -307,6 +377,40 @@ def _render_markdown(scorecard: dict[str, Any], *, json_path: Path) -> str:
             f"| {entry['recall']:.4f} | {entry['tp']} | {entry['fp']} | {entry['fn']} |"
         )
 
+    patient_history = scorecard["patient_history_error_ledger"]
+    lines.extend(["", "## PatientHistory Error Ledger", ""])
+    lines.extend(
+        [
+            f"- Gold mentions: {patient_history['gold_mentions']}",
+            f"- Predicted mentions: {patient_history['predicted_mentions']}",
+            f"- Predicted with CUI: {patient_history['predicted_with_cui']}",
+            (
+                "- Predicted with temporal attributes: "
+                f"{patient_history['predicted_with_temporal_attributes']}"
+            ),
+            f"- Predicted negated: {patient_history['predicted_negated']}",
+            "",
+            "| Gap family | FN / additional FN | FP / additional FP | Note |",
+            "| --- | ---: | ---: | --- |",
+        ]
+    )
+    gap_families = patient_history["gap_families"]
+    phrase_gap = gap_families["phrase_scope_or_missing"]
+    lines.append(
+        f"| phrase_scope_or_missing | {phrase_gap['fn']} | {phrase_gap['fp']} "
+        f"| {phrase_gap['note']} |"
+    )
+    attribute_gap = gap_families["attribute_bundle"]
+    lines.append(
+        f"| attribute_bundle | {attribute_gap['additional_fn_vs_phrase']} "
+        f"| {attribute_gap['additional_fp_vs_phrase']} | {attribute_gap['note']} |"
+    )
+    cui_gap = gap_families["cui_projection"]
+    lines.append(
+        f"| cui_projection | {cui_gap['additional_fn_vs_semantic']} "
+        f"| {cui_gap['additional_fp_vs_semantic']} | {cui_gap['note']} |"
+    )
+
     lines.extend(
         [
             "",
@@ -314,11 +418,10 @@ def _render_markdown(scorecard: dict[str, Any], *, json_path: Path) -> str:
             "",
             (
                 "This is the first rules_only all-entity substrate: it scores all "
-                "nine entities, but only Prescription, Investigations, Diagnosis, "
+                "nine entities. Prescription, Investigations, Diagnosis, "
                 "Onset, WhenDiagnosed, BirthHistory, EpilepsyCause, and "
-                "SeizureFrequency have active deterministic extractors. Missing "
-                "PatientHistory coverage is visible as false negatives rather "
-                "than hidden."
+                "SeizureFrequency now sit beside a conservative PatientHistory "
+                "substrate with explicit phrase, attribute, and CUI gap families."
             ),
             "",
         ]
@@ -350,7 +453,7 @@ def _append_registry_row(
         "model_role": (
             "ExECTv2 deterministic all-9 baseline; active rules for Prescription, "
             "Investigations, Diagnosis, Onset, WhenDiagnosed, BirthHistory, "
-            "EpilepsyCause, and SeizureFrequency."
+            "EpilepsyCause, PatientHistory, and SeizureFrequency."
         ),
         "evidence_validity": "exact source substring validation summarized in scorecard.",
         "repair_mode": None,
@@ -404,6 +507,7 @@ def _primary_metrics(scorecard: dict[str, Any]) -> dict[str, Any]:
     metrics["prescription_benchmark_projection_f1"] = scorecard[
         "prescription_benchmark_projection_scores"
     ]
+    metrics["patient_history_error_ledger"] = scorecard["patient_history_error_ledger"]
     return metrics
 
 
