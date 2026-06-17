@@ -4,13 +4,14 @@ Date: 2026-06-17  ·  Model calls: 0 (tiktoken only, no API)
 
 ## Operational integrity (recomputed)
 
-| Artifact | Rows | Parse fails | Call errors | Idx unique |
-|---|---:|---:|---:|:--:|
-| se_mini_validation750 | 750 | 528 | 0 | ✓ |
-| reasoner_validation750 | 750 | 750 | 0 | ✓ |
-| reasoner_test450 | 450 | 450 | 0 | ✓ |
+| Artifact | Rows | Repair-event rows | Call errors | Unrecoverable | Idx unique |
+|---|---:|---:|---:|---:|:--:|
+| se_mini_validation750 | 750 | 528 | 0 | 2 | ✓ |
+| reasoner_validation750 | 750 | 750 | 0 | 2 | ✓ |
+| reasoner_test450 | 450 | 450 | 0 | 2 | ✓ |
 
-- **Totals: 1950 rows, 1728 parse failures, 0 call errors**, all source indices unique: True.
+- **Totals: 1950 rows, 6 unrecoverable render failures, 0 call errors**, all source indices unique: True.
+- Recoverable deterministic repair events: 5483 (label normalization + decision-field-shape repair; load-bearing per RQ5 ablation, not failures).
 - Resumability: `core/run_resume.py (read_completed/pending_items/merge_rows)`.
 
 ## Offline cost/token estimate (ESTIMATED, no API)
@@ -30,4 +31,4 @@ Basis: tiktoken o200k_base over saved prompt_input_json (input proxy) + raw_outp
 
 ---
 
-**Reading.** Operational *integrity* is 5/5 (zero parse failures, zero call errors, unique provenance across every subject row, resumable runners). The cost leg is no longer fully dark: token volume and a dollar band are recoverable offline, leaving only wall-clock latency and retry count for a measured re-pass.
+**Reading.** Operational *integrity* is 5/5 (zero unrecoverable render failures, zero call errors, unique provenance across every subject row, resumable runners; deterministic repair fires often but always recovers). The cost leg is no longer fully dark: token volume and a dollar band are recoverable offline, leaving only wall-clock latency and retry count for a measured re-pass.
