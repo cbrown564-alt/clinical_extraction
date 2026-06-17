@@ -2,17 +2,17 @@
 
 Date: 2026-06-17  ·  Split: validation750  ·  Model calls: 0
 
-## Self-confidence is degenerate (and the subject has none)
+## Self-confidence is degenerate
 
-Nearest logged self-confidence is `decision_record.uncertainty` ([comparator: V12-full-gpt4.1] reasoner self-report); the subject single-SE-mini layer emits none.
+Subject self-confidence is `structured_record.selection.confidence (subject SE pass)` (subject single-SE-mini); the v0_reference scoring layer drops confidence, but the SE source emits it.
 
-| Uncertainty bucket | n | Purist acc |
+| Confidence bucket | n | Purist acc |
 |---|---:|---:|
-| low | 739 | 88.2% |
-| medium | 10 | 90.0% |
-| missing | 1 | 0.0% |
+| high | 744 | 88.3% |
+| medium | 4 | 100.0% |
+| missing | 2 | 0.0% |
 
-The dominant bucket holds **98.5%** of rows — self-report is near-constant and cannot rank correctness.
+The dominant bucket holds **99.2%** of rows — the subject's own confidence is near-constant and cannot rank correctness. (The V12 reasoner self-report is equally degenerate; see JSON `comparator_reasoner_uncertainty`.)
 
 ## External confidence (cross-model agreement share) — calibration
 

@@ -11,7 +11,7 @@ Every metric below is computed on the canonical subject layer unless tagged `[co
 | 1 | **Task correctness** | 4/5 | Subject Purist 0.881 val / 0.809 test (v0_reference); risk-coverage AUC 0.0404. |
 | 2 | **Factuality (over-inference)** | 3/5 | Unknown-gold over-read rate 0.094 val / 0.127 test. |
 | 3 | **Faithfulness** | 5/5 | Faithfulness rate 0.921 val / 0.929 test (subject); faithful-but-wrong 80 val / 80 test [comparator V12-full-gpt4.1: 703/750, 423/450 exact]. |
-| 4 | **Calibration** | 3/5 | Self-confidence degenerate (98.5% one bucket); external-confidence ECE 0.080, Brier 0.102, failure AUROC 0.781. |
+| 4 | **Calibration** | 3/5 | Self-confidence degenerate (99.2% one bucket); external-confidence ECE 0.080, Brier 0.102, failure AUROC 0.781. |
 | 5 | **Abstention** | 5/5 | Full risk-coverage curve: AUC 0.0404 (oracle 0.0073); selective risk 3.0% @ 50% coverage, 7.8% @ 80%. |
 | 6 | **Robustness** | 4/5 | Continuous index: direct_labeler_v0_5 0.547, evidence_v0_6 0.694, evidence_v0_7 1.000 (overfit-gap is the diagnostic leg). |
 | 7 | **Consistency** | 2/5 | Hard50 TEMP-0 reproducibility only: unanimous accuracy 0.689 (reproducible ≠ correct), 5/50 temp-0 non-determinism. Genuine VARYING-temperature self-consistency is P2.1 (not yet run). |

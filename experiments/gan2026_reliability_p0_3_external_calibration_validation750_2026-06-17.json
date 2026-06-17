@@ -17,10 +17,28 @@
     ]
   },
   "self_confidence_degeneracy": {
-    "field": "decision_record.uncertainty",
-    "layer": "[comparator: V12-full-gpt4.1] reasoner self-report",
-    "note": "subject single-SE-mini layer emits NO self-confidence field",
+    "field": "structured_record.selection.confidence (subject SE pass)",
+    "layer": "subject single-SE-mini",
+    "note": "the v0_reference scoring layer drops confidence, but the SE source emits it",
     "by_bucket": {
+      "high": {
+        "n": 744,
+        "correct": 657,
+        "accuracy": 0.8830645161290323
+      },
+      "medium": {
+        "n": 4,
+        "correct": 4,
+        "accuracy": 1.0
+      },
+      "missing": {
+        "n": 2,
+        "correct": 0,
+        "accuracy": 0.0
+      }
+    },
+    "dominant_bucket_share": 0.992,
+    "comparator_reasoner_uncertainty": {
       "low": {
         "n": 739,
         "correct": 652,
@@ -36,8 +54,7 @@
         "correct": 0,
         "accuracy": 0.0
       }
-    },
-    "dominant_bucket_share": 0.9853333333333333
+    }
   },
   "external_confidence": {
     "definition": "cross_model_agreement_count / 3  (predeclared, not fitted)",

@@ -30,7 +30,7 @@
       "dimension": "Calibration",
       "coverage": "3/5",
       "axis": "reliability",
-      "metric": "Self-confidence degenerate (98.5% one bucket); external-confidence ECE 0.080, Brier 0.102, failure AUROC 0.781.",
+      "metric": "Self-confidence degenerate (99.2% one bucket); external-confidence ECE 0.080, Brier 0.102, failure AUROC 0.781.",
       "coverage_note": "upgraded 2/5 -> 3/5: real ECE/Brier/AUROC now exist on external signals."
     },
     {

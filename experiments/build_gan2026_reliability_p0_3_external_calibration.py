@@ -35,24 +35,37 @@ OUT_JSON = rc.EXPERIMENTS / "gan2026_reliability_p0_3_external_calibration_valid
 OUT_MD = rc.EXPERIMENTS / "gan2026_reliability_p0_3_external_calibration_validation750_2026-06-17.md"
 
 
-def self_confidence_degeneracy(rows: list[dict[str, Any]]) -> dict[str, Any]:
-    """Comparator-layer self-confidence: the V12 reasoner uncertainty bucket and
-    whether it separates correct from wrong. (The subject SE layer has none.)"""
-    by_bucket: dict[str, list[bool]] = collections.defaultdict(list)
-    for r in rows:
-        bucket = (r.get("decision_record") or {}).get("uncertainty") or "missing"
-        by_bucket[bucket].append(rc.subject_purist_correct(r))
-    table = {
-        b: {"n": len(v), "correct": sum(v), "accuracy": sum(v) / len(v)}
-        for b, v in sorted(by_bucket.items(), key=lambda kv: -len(kv[1]))
+def self_confidence_degeneracy(reasoner_rows: list[dict[str, Any]]) -> dict[str, Any]:
+    """Subject SELF-confidence: the SE selection.confidence on the production path
+    (joined from the SE-mini source by source_row_index), and whether it separates
+    correct from wrong. The V12 reasoner uncertainty is reported as a comparator."""
+    # Subject: SE selection.confidence + subject purist_correct, both from SE-mini.
+    se_rows = rc.load_jsonl(rc.SE_MINI_VALIDATION750)
+    subj: dict[str, list[bool]] = collections.defaultdict(list)
+    for r in se_rows:
+        conf = ((r.get("structured_record") or {}).get("selection") or {}).get("confidence") or "missing"
+        subj[conf].append(bool((r.get("comparison") or {}).get("purist_correct")))
+    subj_table = {
+        b: {"n": len(v), "correct": sum(v), "accuracy": sum(v) / len(v) if v else None}
+        for b, v in sorted(subj.items(), key=lambda kv: -len(kv[1]))
     }
-    dominant = max(table.values(), key=lambda d: d["n"])
+    subj_dominant = max(subj_table.values(), key=lambda d: d["n"])
+    # Comparator: reasoner uncertainty bucket.
+    comp: dict[str, list[bool]] = collections.defaultdict(list)
+    for r in reasoner_rows:
+        bucket = (r.get("decision_record") or {}).get("uncertainty") or "missing"
+        comp[bucket].append(rc.subject_purist_correct(r))
+    comp_table = {
+        b: {"n": len(v), "correct": sum(v), "accuracy": sum(v) / len(v)}
+        for b, v in sorted(comp.items(), key=lambda kv: -len(kv[1]))
+    }
     return {
-        "field": "decision_record.uncertainty",
-        "layer": "[comparator: V12-full-gpt4.1] reasoner self-report",
-        "note": "subject single-SE-mini layer emits NO self-confidence field",
-        "by_bucket": table,
-        "dominant_bucket_share": dominant["n"] / sum(d["n"] for d in table.values()),
+        "field": "structured_record.selection.confidence (subject SE pass)",
+        "layer": "subject single-SE-mini",
+        "note": "the v0_reference scoring layer drops confidence, but the SE source emits it",
+        "by_bucket": subj_table,
+        "dominant_bucket_share": subj_dominant["n"] / sum(d["n"] for d in subj_table.values()),
+        "comparator_reasoner_uncertainty": comp_table,
     }
 
 
@@ -149,15 +162,18 @@ def render_md(result: dict[str, Any]) -> str:
     L.append("# P0.3 — External-Signal Calibration (ECE / Brier / Failure-Prediction AUROC)\n")
     L.append(f"Date: {result['date']}  ·  Split: {result['split']}  ·  Model calls: 0\n")
     sc = result["self_confidence_degeneracy"]
-    L.append("## Self-confidence is degenerate (and the subject has none)\n")
-    L.append(f"Nearest logged self-confidence is `{sc['field']}` "
-             f"({sc['layer']}); the subject single-SE-mini layer emits none.\n")
-    L.append("| Uncertainty bucket | n | Purist acc |")
+    L.append("## Self-confidence is degenerate\n")
+    L.append(f"Subject self-confidence is `{sc['field']}` ({sc['layer']}); "
+             f"{sc['note']}.\n")
+    L.append("| Confidence bucket | n | Purist acc |")
     L.append("|---|---:|---:|")
     for b, d in sc["by_bucket"].items():
-        L.append(f"| {b} | {d['n']} | {d['accuracy']:.1%} |")
+        acc = d["accuracy"]
+        L.append(f"| {b} | {d['n']} | {acc:.1%} |" if acc is not None else f"| {b} | {d['n']} | — |")
     L.append(f"\nThe dominant bucket holds **{sc['dominant_bucket_share']:.1%}** of rows — "
-             "self-report is near-constant and cannot rank correctness.\n")
+             "the subject's own confidence is near-constant and cannot rank correctness. "
+             "(The V12 reasoner self-report is equally degenerate; see JSON "
+             "`comparator_reasoner_uncertainty`.)\n")
     ec = result["external_confidence"]
     L.append("## External confidence (cross-model agreement share) — calibration\n")
     L.append(f"- Definition: `{ec['definition']}`")
