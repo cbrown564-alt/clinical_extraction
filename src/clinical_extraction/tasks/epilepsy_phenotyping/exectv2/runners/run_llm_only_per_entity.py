@@ -1,7 +1,7 @@
 """CLI runner for the ExECTv2 focused per-entity candidate-source probe.
 
-Loops the Phase A target entities (Prescription, Investigations, Diagnosis,
-SeizureFrequency), runs one focused call per (entity, letter), and writes a
+Loops the target entities (all nine after Phase B; the four regime probes in
+Phase A), runs one focused call per (entity, letter), and writes a
 per-entity JSONL + report for each, then a combined per-entity table that puts
 the focused per-entity scores next to (a) the all-9 single-pass dev baseline and
 (b) the published per-entity cells. The LLM is the candidate source for every

@@ -68,18 +68,25 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
-PROMPT_VERSION = "exectv2_llm_only_per_entity_v0.3"
+PROMPT_VERSION = "exectv2_llm_only_per_entity_v0.4"
 DEFAULT_ENTITY_NAME = SEIZURE_FREQUENCY.name
 COMPONENT_OWNER = "llm_only_per_entity"
 
-# Phase A target entities: one per regime band of the projection-gap ledger
-# (recall-bound Diagnosis/Investigations, representation-bound Prescription
-# control, mixed SeizureFrequency).
+# Phase B target entities: all nine. Phase A specialized the four regime probes
+# (Prescription, Investigations, Diagnosis, SeizureFrequency); Phase B fleshes out
+# the remaining five (Onset, WhenDiagnosed, BirthHistory, EpilepsyCause,
+# PatientHistory) so "one focused call per entity" is general and the full
+# per-entity candidate-quality map can be read in one combined run.
 TARGET_ENTITIES: tuple[str, ...] = (
-    "Prescription",
-    "Investigations",
+    "BirthHistory",
     "Diagnosis",
+    "EpilepsyCause",
+    "Investigations",
+    "Onset",
+    "PatientHistory",
+    "Prescription",
     "SeizureFrequency",
+    "WhenDiagnosed",
 )
 
 PUBLISHED_PER_ENTITY_ITEM_F1: dict[str, float] = {
@@ -466,44 +473,344 @@ _DIAGNOSIS_FRAME = EntityFrame(
     ),
 )
 
-# Compact text-target guidance reused for the not-yet-specialized entities so the
-# frame stays general (Phase B fleshes these into full worked-example frames).
-_GENERIC_TEXT_GUIDANCE: dict[str, str] = {
-    "BirthHistory": (
-        "The compact birth-history phrase (e.g. 'premature', 'born at term'); "
-        "put the gestation band in attributes."
+_ONSET_FRAME = EntityFrame(
+    task=(
+        "Read the clinical letter. For each condition or seizure type whose age "
+        "or time of ONSET (when it first began) is stated, produce one record in "
+        "the 'mentions' list."
     ),
-    "EpilepsyCause": (
-        "The compact cause, aetiology, syndrome, or risk-factor phrase for the "
-        "epilepsy."
+    text_definition=(
+        "The phrase naming the condition or seizure type whose onset is being "
+        "dated (e.g. 'epilepsy', 'absence seizures', 'generalised tonic-clonic "
+        "seizures'). Put the age/date/period in attributes, NOT in this field. "
+        "Must be an exact substring of the letter."
     ),
-    "Onset": (
-        "The phrase naming the condition or seizures whose onset is being dated; "
-        "put the age/date/period in attributes."
+    clinical_rules=(
+        "One record per condition whose onset age or time is stated.",
+        (
+            "Onset at a stated age: Age = the number, AgeUnit = 'Year' or 'Month' "
+            "(e.g. 'since the age of four' → Age='4', AgeUnit='Year')."
+        ),
+        (
+            "Onset as a duration-ago: NumberOfTimePeriods + TimePeriod "
+            "(e.g. 'epilepsy for the past 10 years' → NumberOfTimePeriods='10', "
+            "TimePeriod='Year')."
+        ),
+        "Use PointInTime='From_Birth' when the condition is present from birth.",
+        (
+            "Certainty is '1'-'5' (5 = definite); Negation is 'Affirmed' or "
+            "'Negated'."
+        ),
+        "ONSET is when the condition BEGAN — not when it was diagnosed.",
+        "text is the condition phrase only, never the age/time clause.",
+        "Both text and evidence must be exact substrings of the letter.",
+        "If no onset information is present, return {\"mentions\": []}.",
+        "Return exactly one JSON object. No markdown code fences.",
     ),
-    "PatientHistory": (
-        "The compact clinical concept phrase (a past event, attack type, or "
-        "procedure), not the full historical sentence."
+    worked_examples=(
+        {
+            "note_fragment": "He developed epilepsy at the age of four.",
+            "correct": {
+                "text": "epilepsy",
+                "attributes": {
+                    "Age": "4",
+                    "AgeUnit": "Year",
+                    "Certainty": "5",
+                    "Negation": "Affirmed",
+                },
+                "evidence": "developed epilepsy at the age of four",
+                "confidence": "high",
+                "rationale": "Epilepsy onset at age 4.",
+            },
+        },
+        {
+            "note_fragment": "She has had absence seizures for the past 10 years.",
+            "correct": {
+                "text": "absence seizures",
+                "attributes": {
+                    "NumberOfTimePeriods": "10",
+                    "TimePeriod": "Year",
+                    "Certainty": "5",
+                    "Negation": "Affirmed",
+                },
+                "evidence": "absence seizures for the past 10 years",
+                "confidence": "high",
+                "rationale": "Absence seizures began 10 years ago.",
+            },
+        },
     ),
-    "WhenDiagnosed": (
-        "The phrase naming the condition whose diagnosis date/age is being "
-        "stated; put the age/date/period in attributes."
+)
+
+_WHEN_DIAGNOSED_FRAME = EntityFrame(
+    task=(
+        "Read the clinical letter. For each condition whose age or date of "
+        "DIAGNOSIS is stated, produce one record in the 'mentions' list."
     ),
-}
+    text_definition=(
+        "The phrase naming the condition that was diagnosed (usually 'epilepsy'). "
+        "Put the diagnosis age/date/period in attributes, NOT in this field. "
+        "Must be an exact substring of the letter."
+    ),
+    clinical_rules=(
+        "One record per condition with a stated diagnosis time.",
+        (
+            "Diagnosis at a stated age: Age + AgeUnit ('Year'/'Month') "
+            "(e.g. 'diagnosed at 18' → Age='18', AgeUnit='Year')."
+        ),
+        (
+            "Diagnosis on a calendar date: YearDate (and MonthDate as a number) "
+            "(e.g. 'diagnosed in 2015' → YearDate='2015')."
+        ),
+        (
+            "Diagnosis a duration ago: NumberOfTimePeriods + TimePeriod "
+            "(e.g. 'diagnosed 6 years ago' → NumberOfTimePeriods='6', "
+            "TimePeriod='Year')."
+        ),
+        "Certainty is '1'-'5'; Negation is 'Affirmed' or 'Negated'.",
+        (
+            "This entity is WHEN the condition was DIAGNOSED — distinct from Onset "
+            "(when it first began)."
+        ),
+        "text is the condition phrase only, never the date clause.",
+        "Both text and evidence must be exact substrings of the letter.",
+        "If no diagnosis date/age is stated, return {\"mentions\": []}.",
+        "Return exactly one JSON object. No markdown code fences.",
+    ),
+    worked_examples=(
+        {
+            "note_fragment": "She was diagnosed with epilepsy in 2015.",
+            "correct": {
+                "text": "epilepsy",
+                "attributes": {
+                    "YearDate": "2015",
+                    "Certainty": "5",
+                    "Negation": "Affirmed",
+                },
+                "evidence": "diagnosed with epilepsy in 2015",
+                "confidence": "high",
+                "rationale": "Epilepsy diagnosed in 2015.",
+            },
+        },
+        {
+            "note_fragment": "He was diagnosed with epilepsy at the age of 6.",
+            "correct": {
+                "text": "epilepsy",
+                "attributes": {
+                    "Age": "6",
+                    "AgeUnit": "Year",
+                    "Certainty": "5",
+                    "Negation": "Affirmed",
+                },
+                "evidence": "diagnosed with epilepsy at the age of 6",
+                "confidence": "high",
+                "rationale": "Epilepsy diagnosed at age 6.",
+            },
+        },
+    ),
+)
+
+_BIRTH_HISTORY_FRAME = EntityFrame(
+    task=(
+        "Read the clinical letter. For each birth-history finding (how the patient "
+        "was born and perinatal events around birth), produce one record in the "
+        "'mentions' list."
+    ),
+    text_definition=(
+        "The compact birth-history phrase as it appears in the letter "
+        "(e.g. 'born normally', 'born prematurely', 'full term', 'perinatal "
+        "insult'). Put the gestation band in attributes. "
+        "Must be an exact substring of the letter."
+    ),
+    clinical_rules=(
+        "One record per birth-history finding.",
+        (
+            "PrematureBirth carries the gestation band when stated: "
+            "'37+_TermBirth' (term), '34to<37_LatePreterm' / "
+            "'34to<37_LatePretermBirth' (late preterm), "
+            "'32to<37_ModerateToLatePreterm'."
+        ),
+        (
+            "Certainty is '1'-'5'; Negation is 'Affirmed' or 'Negated'. A stated "
+            "normal birth is Negation='Affirmed'."
+        ),
+        "text is the compact birth phrase, not the surrounding sentence.",
+        "Both text and evidence must be exact substrings of the letter.",
+        "If no birth-history finding is present, return {\"mentions\": []}.",
+        "Return exactly one JSON object. No markdown code fences.",
+    ),
+    worked_examples=(
+        {
+            "note_fragment": "He was born normally with no perinatal problems.",
+            "correct": {
+                "text": "born normally",
+                "attributes": {"Certainty": "5", "Negation": "Affirmed"},
+                "evidence": "born normally with no perinatal problems",
+                "confidence": "high",
+                "rationale": "Normal birth.",
+            },
+        },
+        {
+            "note_fragment": "She was born prematurely at 34 weeks.",
+            "correct": {
+                "text": "born prematurely",
+                "attributes": {
+                    "PrematureBirth": "34to<37_LatePreterm",
+                    "Certainty": "5",
+                    "Negation": "Affirmed",
+                },
+                "evidence": "born prematurely at 34 weeks",
+                "confidence": "high",
+                "rationale": "Late-preterm birth at 34 weeks.",
+            },
+        },
+    ),
+)
+
+_EPILEPSY_CAUSE_FRAME = EntityFrame(
+    task=(
+        "Read the clinical letter. For each cause, aetiology, syndrome, or risk "
+        "factor offered for the patient's epilepsy, produce one record in the "
+        "'mentions' list."
+    ),
+    text_definition=(
+        "The compact cause/aetiology phrase as it appears in the letter "
+        "(e.g. 'stroke', 'traumatic brain injury', 'meningitis', 'tuberous "
+        "sclerosis'), not the surrounding explanatory clause. "
+        "Must be an exact substring of the letter."
+    ),
+    clinical_rules=(
+        "One record per distinct cause or risk factor for the epilepsy.",
+        (
+            "Certainty is '1'-'5' — use a lower value when the causal link is "
+            "tentative ('possible', 'likely', 'thought to be due to')."
+        ),
+        (
+            "Negation is 'Affirmed' or 'Negated'; use 'Negated' when a candidate "
+            "cause is explicitly considered and excluded."
+        ),
+        "text is the compact cause phrase, not the whole clause.",
+        "Both text and evidence must be exact substrings of the letter.",
+        "If no cause is offered, return {\"mentions\": []}.",
+        "Return exactly one JSON object. No markdown code fences.",
+    ),
+    worked_examples=(
+        {
+            "note_fragment": (
+                "His epilepsy is due to a previous traumatic brain injury."
+            ),
+            "correct": {
+                "text": "traumatic brain injury",
+                "attributes": {"Certainty": "5", "Negation": "Affirmed"},
+                "evidence": "epilepsy is due to a previous traumatic brain injury",
+                "confidence": "high",
+                "rationale": "TBI is the stated cause.",
+            },
+        },
+        {
+            "note_fragment": (
+                "The likely cause is a previous stroke; meningitis was considered "
+                "but excluded."
+            ),
+            "correct": [
+                {
+                    "text": "stroke",
+                    "attributes": {"Certainty": "4", "Negation": "Affirmed"},
+                    "evidence": "likely cause is a previous stroke",
+                    "confidence": "medium",
+                    "rationale": "Stroke is the likely (not definite) cause.",
+                },
+                {
+                    "text": "meningitis",
+                    "attributes": {"Certainty": "5", "Negation": "Negated"},
+                    "evidence": "meningitis was considered but excluded",
+                    "confidence": "high",
+                    "rationale": "Meningitis explicitly excluded as a cause.",
+                },
+            ],
+        },
+    ),
+)
+
+_PATIENT_HISTORY_FRAME = EntityFrame(
+    task=(
+        "Read the clinical letter. For each past medical event, condition, attack "
+        "type, or procedure in the patient's history, produce one record in the "
+        "'mentions' list."
+    ),
+    text_definition=(
+        "The compact clinical concept phrase as it appears in the letter — a past "
+        "condition, event, attack type, or procedure (e.g. 'febrile seizures', "
+        "'diabetes', 'hypothyroidism'), not the full historical sentence. "
+        "Must be an exact substring of the letter."
+    ),
+    clinical_rules=(
+        "One record per distinct historical concept.",
+        (
+            "Dates: YearDate (and MonthDate / DayDate as numbers) when a calendar "
+            "date is given. Age + AgeUnit when an age is given. "
+            "NumberOfTimePeriods + TimePeriod for a duration."
+        ),
+        "PointInTime is 'Last_Year' or 'Surgery' when applicable.",
+        "Certainty is '1'-'5'; Negation is 'Affirmed' or 'Negated'.",
+        "text is the compact concept phrase, not the full historical sentence.",
+        "Both text and evidence must be exact substrings of the letter.",
+        "If no relevant history is present, return {\"mentions\": []}.",
+        "Return exactly one JSON object. No markdown code fences.",
+    ),
+    worked_examples=(
+        {
+            "note_fragment": (
+                "He has a history of febrile seizures as a child and type 2 diabetes."
+            ),
+            "correct": [
+                {
+                    "text": "febrile seizures",
+                    "attributes": {"Certainty": "5", "Negation": "Affirmed"},
+                    "evidence": "history of febrile seizures as a child",
+                    "confidence": "high",
+                    "rationale": "Past febrile seizures.",
+                },
+                {
+                    "text": "diabetes",
+                    "attributes": {"Certainty": "5", "Negation": "Affirmed"},
+                    "evidence": "type 2 diabetes",
+                    "confidence": "high",
+                    "rationale": "Comorbid diabetes.",
+                },
+            ],
+        },
+        {
+            "note_fragment": "She had absence-like seizures in 2014.",
+            "correct": {
+                "text": "absence-like seizures",
+                "attributes": {
+                    "YearDate": "2014",
+                    "Certainty": "5",
+                    "Negation": "Affirmed",
+                },
+                "evidence": "absence-like seizures in 2014",
+                "confidence": "high",
+                "rationale": "Absence-like seizures recorded in 2014.",
+            },
+        },
+    ),
+)
 
 
 def _generic_frame(entity_name: str) -> EntityFrame:
+    """Fallback frame for any entity without a specialized frame.
+
+    After Phase B all nine ExECTv2 entities have specialized frames; this remains
+    only as a defensive fallback for an unexpected entity name.
+    """
     return EntityFrame(
         task=(
             f"Read the clinical letter. For each {entity_name} finding stated, "
             "produce one record in the 'mentions' list."
         ),
         text_definition=(
-            _GENERIC_TEXT_GUIDANCE.get(
-                entity_name,
-                "The compact phrase naming the finding as it appears in the letter.",
-            )
-            + " Must be an exact substring of the letter."
+            "The compact phrase naming the finding as it appears in the letter. "
+            "Must be an exact substring of the letter."
         ),
         clinical_rules=(
             "One record per distinct finding.",
@@ -520,6 +827,11 @@ ENTITY_FRAMES: dict[str, EntityFrame] = {
     "Prescription": _PRESCRIPTION_FRAME,
     "Investigations": _INVESTIGATIONS_FRAME,
     "Diagnosis": _DIAGNOSIS_FRAME,
+    "Onset": _ONSET_FRAME,
+    "WhenDiagnosed": _WHEN_DIAGNOSED_FRAME,
+    "BirthHistory": _BIRTH_HISTORY_FRAME,
+    "EpilepsyCause": _EPILEPSY_CAUSE_FRAME,
+    "PatientHistory": _PATIENT_HISTORY_FRAME,
 }
 
 
