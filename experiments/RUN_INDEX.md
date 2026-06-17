@@ -4,6 +4,15 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Reliability Scorecard
 
+### `gan2026_reliability_d_gating_test450_2026-06-17`
+- Date/split: `2026-06-17`; `test` (FROZEN holdout); `450` rows; LIVE (450 reviewer calls; SE answers reused from v0_reference). FREEZE-WARDEN CERTIFIED + preflight passed + run once.
+- Pipeline: `reliability_d_gating_test450`; aggregate-only readout; resumable reviewer checkpoint every 25 calls. Frozen transforms hashed pre-run (reviewer module sha `c3ea06ca…`, gating readout sha `45c96e36…`).
+- Model role: decoupled variant-D confidence reviewer (`variant_D_decoupled_v1`) over the canonical single-SE-mini `v0_reference` test450 answers (decision 0018); GATES NOTHING in production — simulates an abstention gate. model `openai/gpt-4.1-mini`, temp 0.
+- Primary metrics: base accuracy 364/450 = **0.8089** (Wilson CI 0.770–0.843), base error 0.1911; D failure-AUROC **0.649** (CI 0.581–0.717, > chance). Gating (selective acc · abstention precision vs 0.191 random bar): 95% cov → 0.820 · 0.409; 90% cov → 0.825 · 0.333 (1.74× random, +14.2pp); 80% cov → 0.856 · 0.378; 70% cov → 0.867 · 0.326; 50% cov → 0.880 · 0.262. Selective-accuracy lift positive + monotone.
+- Evidence validity: Frozen aggregate-only holdout readout; no row-level test inspection; no test tuning; single run. Test-split-integrity preflight passed (450/450 unique, coverage == manifest, v0_reference on all 450); V12 source-symmetry preflight structurally inapplicable to a single-model run (substituted direct integrity check, per house precedent). Subject source-symmetry inherited from the certified v0.4 artifact.
+- Claim language: MEETS the predeclared success criterion — variant-D confidence is a usable abstention/triage gate on the primary single gpt-4.1-mini architecture on the locked holdout (AUROC CI above chance; 90%-cov abstention precision 1.74× random; monotone selective-accuracy lift). But the benefit is MODEST and ATTENUATES from validation (AUROC 0.684→0.649; 90%-cov selective acc 0.905→0.825; abstention precision 2.6×→1.74× random). Absolute lift small (80.9%→82.5% at 90% cov costs 10% coverage) because confident over-reading errors are invisible to any self-signal. Does NOT change champion/label/robustness status; it is a triage knob costing one extra mini call/row.
+- Artifacts: `experiments/gan2026_reliability_d_gating_test450_2026-06-17.json`, `experiments/gan2026_reliability_d_gating_test450_2026-06-17.md`, internal checkpoint `experiments/gan2026_reliability_d_gating_test450_samples_2026-06-17.jsonl`; predeclaration `docs/research/gan2026_d_gating_test450_predeclaration_2026-06-17.md`.
+
 ### `gan2026_reliability_d_gating_value_validation750_2026-06-17`
 - Date/split: `2026-06-17`; `validation`; `748` rows scored; NO model calls (pure replay over the shadow run).
 - Pipeline: `reliability_d_gating_value`; deterministic selective-prediction simulation; combiner none.

@@ -28,8 +28,19 @@ returning `calibrated_confidence`. Risk = `1 − calibrated_confidence`. ~450 li
 reviewer calls; resumable; checkpointed.
 
 This is a **live holdout model run**, so it is freeze-warden gated: certification +
-`frozen_test_preflight` contamination canaries before the calls, and an aggregate-only
-readout after.
+the **single-model reused-subject integrity preflight** before the calls, and an
+aggregate-only readout after.
+
+**Preflight instrument (first-class).** The V12 `frozen_test_preflight` is hard-wired
+to the V12 three-source full-`gpt-4.1` audit and is structurally inapplicable to a
+single-model reused-subject run. The governing instrument here is
+`cli/frozen_test_preflight_single_model.py` (`run_single_model_preflight`), which
+certifies: split manifest version + row count; `load_records_for_split("test")` ==
+the manifest's locked row-id set (unique, complete); the reused subject artifact
+covers exactly that set with `v0_reference` on every row (and an optional SHA-256
+pin); and the candidate's aggregate outputs are absent (no cross-run tuning). The
+driver runs it as a fail-closed in-process gate before any reviewer call; tests in
+`tests/test_gan2026_frozen_test_preflight_single_model.py`.
 
 ## Frozen transforms (hashed before touching test450)
 

@@ -34,6 +34,10 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.confidence_revi
 from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis import (
     reliability_common as rc,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.cli.frozen_test_preflight_single_model import (
+    SingleModelPreflightConfig,
+    run_single_model_preflight,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import load_records_for_split
 
 DATE = "2026-06-17"
@@ -103,6 +107,20 @@ def main() -> None:
     args = ap.parse_args()
     if not args.run:
         ap.error("refusing to touch test450 without --run (freeze-warden gated).")
+
+    # First-class single-model integrity preflight (fail-closed gate). The final
+    # aggregate outputs must be absent (a completed prior run); the resumable per-row
+    # samples checkpoint is allowed to exist so resume works.
+    preflight = run_single_model_preflight(SingleModelPreflightConfig(
+        split="test",
+        subject_artifact_path=rc.REASONER_TEST450,
+        outputs_must_be_absent=(OUT_JSON, OUT_MD),
+    ))
+    if not preflight.ok:
+        for f in preflight.failures:
+            print(f"PREFLIGHT FAIL: {f}")
+        ap.error("single-model preflight failed; refusing to touch test450.")
+    print(f"single-model preflight OK ({len(preflight.checks)} checks passed)")
 
     # Canonical test450 SE answers (v0_reference) + notes joined by source_row_index.
     rsn = {r["source_row_index"]: r for r in rc.load_jsonl(rc.REASONER_TEST450)}
