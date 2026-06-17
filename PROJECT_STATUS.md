@@ -33,11 +33,11 @@ benchmark-beating architecture evidence.
   Current freeze blockers are rules-only all-9 below target, LLM-only all-9
   only covered by the negative single-pass baseline rather than per-entity
   frames, and hybrid evidence still SF-only.
-- The first deterministic all-9 dev scorecard is registered at
+- The deterministic all-9 dev scorecard is registered at
   `experiments/exectv2_deterministic_all9_dev_20260617.md`. It scores all nine
-  entities with active rules for Prescription, Investigations, Diagnosis, and
-  SeizureFrequency. Overall all-9 remains below freeze target because several
-  entities are absent or early-stage.
+  entities with active rules for Prescription, Investigations, Diagnosis, Onset,
+  and SeizureFrequency. Overall all-9 remains below freeze target because
+  BirthHistory, EpilepsyCause, PatientHistory, and WhenDiagnosed are absent.
 - Prescription has an ADR-backed scorecard split: one clinical headline for
   regimen recovery plus diagnostics for benchmark projection, defaults, future
   plans, weight-based dosing, and rescue handling. The clinical headline is F1
@@ -51,9 +51,11 @@ benchmark-beating architecture evidence.
   diagnostic policy.
 - Shared active-entity benchmark projection is code-backed in
   `src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/benchmark_projection.py`.
-  Prescription, Investigations, and Diagnosis deterministic rules reuse that
-  projection surface; the regenerated deterministic all-9 scorecard had no
-  metric drift apart from the new diagnostic table.
+  Prescription, Investigations, Diagnosis, and Onset deterministic rules reuse
+  that projection surface. The latest regenerated deterministic all-9 scorecard
+  improved benchmark overall to `0.3094` item / `0.5619` letter; Investigations
+  benchmark item F1 is now `0.3220`, and the first Onset engine reaches `0.2857`
+  item / `0.4167` letter on dev.
 
 ## Active Priorities
 
@@ -71,8 +73,8 @@ benchmark-beating architecture evidence.
 
 ### Now
 
-- Improve Investigations exactness and add the next structured deterministic
-  entity engines with rule-family/CUI ablations.
+- Add the next structured deterministic engines after Onset: WhenDiagnosed,
+  BirthHistory, and EpilepsyCause, keeping rule-family/CUI ablations explicit.
 
 ### Next
 
@@ -111,6 +113,11 @@ benchmark-beating architecture evidence.
 
 ### Done Recently
 
+- 2026-06-17: Improved Investigations exactness with abnormal EEG and explicit
+  unknown-result projection, added the first deterministic Onset age/duration
+  engine with shared CUI projection and rule-family diagnostics, regenerated the
+  deterministic all-9 scorecard/registry row, and verified `1568` tests plus
+  Ruff on touched files.
 - 2026-06-17: Cleaned up Prescription projection diagnostics without moving the
   clinical headline: `DrugName`+CUI projection improved to `0.9158`,
   source-stated frequency improved to `0.9307`, guideline-defaulted frequency collapsed
