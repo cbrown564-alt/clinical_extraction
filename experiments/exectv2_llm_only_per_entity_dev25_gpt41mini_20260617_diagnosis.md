@@ -1,7 +1,7 @@
 # ExECTv2 LLM-Only Per-Entity — Diagnosis
 
 - JSONL: `experiments\exectv2_llm_only_per_entity_dev25_gpt41mini_20260617_diagnosis.jsonl`
-- Prompt version: `exectv2_llm_only_per_entity_v0.3`
+- Prompt version: `exectv2_llm_only_per_entity_v0.4`
 - Entity: `Diagnosis`
 - Split: `dev`
 - Model: `openai/gpt-4.1-mini`
