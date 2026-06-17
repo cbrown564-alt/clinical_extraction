@@ -1,0 +1,59 @@
+{
+  "artifact_kind": "gan2026_reliability_p0_6_safety_table",
+  "date": "2026-06-17",
+  "dimensions": [
+    "Safety & compliance"
+  ],
+  "provenance": {
+    "canonical_subject": "single_se_mini_v0_reference",
+    "decision": "0018-reliability-scorecard-canonical-subject-is-v0reference-single-se-mini",
+    "model_calls": 0,
+    "replay": "deterministic_no_call",
+    "sources": [
+      "experiments\\gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.jsonl",
+      "experiments\\gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_4_2026-06-13.jsonl"
+    ]
+  },
+  "safety_properties": [
+    {
+      "property": "No-regression safety floor (selective gated action)",
+      "status": "code-enforced + documented",
+      "layer": "[comparator: hybrid-adjudicator] RQ6/rq9 selective intervention",
+      "evidence": "RQ6 selective gated action: validation750 21 changed, 11 W->C, 0 C->W (precision 1.000); frozen test450 14 changed, 8 W->C, 0 C->W. The selective layer never converts a correct row to wrong."
+    },
+    {
+      "property": "Unconstrained replace mechanism DOES regress (why the floor matters)",
+      "status": "recomputed",
+      "layer": "[comparator: V12-full-gpt4.1] reasoner final vs v0_reference",
+      "evidence": "validation750: 147 changed, 42 W->C, 22 C->W; test450: 82 changed, 26 W->C, 13 C->W. The full replace path trades regressions for coverage, so the production go-forward is the un-replaced single-SE subject (the floor itself)."
+    },
+    {
+      "property": "Abstain-to-unknown policy",
+      "status": "code-enforced",
+      "layer": "subject + selective",
+      "evidence": "SAFETY_GATE_VERSION = 'gan2026_fresh_evidence_safety_gate_v0_9' (fresh_evidence_reasoner.py:70); the gate withholds to unknown rather than emit an unsupported rate."
+    },
+    {
+      "property": "Contamination canaries + hash/version pinning",
+      "status": "code-enforced",
+      "layer": "governance",
+      "evidence": "frozen_test_preflight.py pins EXPECTED_SPLIT_MANIFEST='gan2026_split_v1', EXPECTED_TEST_ROW_COUNT=450, and verifies SHA-256 protocol hashes (_check_protocol_hashes) before any holdout run is permitted."
+    },
+    {
+      "property": "Aggregate-only readout guard (no row-level test inspection)",
+      "status": "code-enforced",
+      "layer": "governance",
+      "evidence": "frozen_test_readout.py refuses any report containing forbidden markers (source_row_index, transition_vs_v0, score_layers) and requires the aggregate-only marker + a 450-row count check."
+    },
+    {
+      "property": "Operational fail-closed integrity",
+      "status": "recomputed elsewhere (P0.7)",
+      "layer": "subject",
+      "evidence": "0 parse failures / 0 evidence loss / source ids 1.000 across 2,295 rows."
+    }
+  ],
+  "out_of_scope": {
+    "finding": "PHI-leakage and demographic-bias evals are N/A on this benchmark",
+    "reason": "The Gan rows are synthetic templated letters with no real PHI and no reliable demographic signal, so jailbreak/PII/subgroup-demographic safety cannot be measured here. Clinical-family parity (P0.5) is the available fairness axis. Real-letter validation would be required before any deployment-grade PHI or demographic-fairness claim."
+  }
+}

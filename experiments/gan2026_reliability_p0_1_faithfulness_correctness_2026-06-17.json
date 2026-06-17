@@ -1,0 +1,103 @@
+{
+  "artifact_kind": "gan2026_reliability_p0_1_faithfulness_correctness",
+  "date": "2026-06-17",
+  "dimensions": [
+    "Faithfulness",
+    "Factuality",
+    "Task correctness"
+  ],
+  "provenance": {
+    "canonical_subject": "single_se_mini_v0_reference",
+    "decision": "0018-reliability-scorecard-canonical-subject-is-v0reference-single-se-mini",
+    "model_calls": 0,
+    "replay": "deterministic_no_call",
+    "sources": [
+      "experiments\\gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.jsonl",
+      "experiments\\gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_4_2026-06-13.jsonl"
+    ]
+  },
+  "splits": [
+    {
+      "split": "validation750",
+      "rows": 750,
+      "faithfulness_rate": {
+        "subject_v0_reference": [
+          691,
+          750
+        ],
+        "comparator_V12_full_gpt4_1_final": [
+          703,
+          750
+        ]
+      },
+      "purist_accuracy_subject": [
+        661,
+        750
+      ],
+      "two_by_two": {
+        "faithful_correct": 611,
+        "faithful_wrong": 80,
+        "unfaithful_correct": 50,
+        "unfaithful_wrong": 9
+      },
+      "faithful_but_wrong_cell": {
+        "count": 80,
+        "share_of_faithful": 0.11577424023154848,
+        "share_of_all": 0.10666666666666667,
+        "interpretation": "evidence cited exactly yet clinical label wrong \u2014 grounding != selection"
+      },
+      "faithful_and_correct_cell": {
+        "count": 611,
+        "share_of_all": 0.8146666666666667
+      },
+      "over_inference_unknown_gold": {
+        "unknown_gold_rows": 170,
+        "over_read_any": 16,
+        "over_read_rate": 0.09411764705882353,
+        "to_quantified_rate": 12,
+        "to_seizure_free": 4
+      }
+    },
+    {
+      "split": "test450",
+      "rows": 450,
+      "faithfulness_rate": {
+        "subject_v0_reference": [
+          418,
+          450
+        ],
+        "comparator_V12_full_gpt4_1_final": [
+          423,
+          450
+        ]
+      },
+      "purist_accuracy_subject": [
+        364,
+        450
+      ],
+      "two_by_two": {
+        "faithful_correct": 338,
+        "faithful_wrong": 80,
+        "unfaithful_correct": 26,
+        "unfaithful_wrong": 6
+      },
+      "faithful_but_wrong_cell": {
+        "count": 80,
+        "share_of_faithful": 0.19138755980861244,
+        "share_of_all": 0.17777777777777778,
+        "interpretation": "evidence cited exactly yet clinical label wrong \u2014 grounding != selection"
+      },
+      "faithful_and_correct_cell": {
+        "count": 338,
+        "share_of_all": 0.7511111111111111
+      },
+      "over_inference_unknown_gold": {
+        "unknown_gold_rows": 102,
+        "over_read_any": 13,
+        "over_read_rate": 0.12745098039215685,
+        "to_quantified_rate": 12,
+        "to_seizure_free": 1
+      }
+    }
+  ]
+}

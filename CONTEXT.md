@@ -5,6 +5,68 @@ evaluation surfaces.
 
 ## Language
 
+### Reliability
+
+**Forward-Observable Feature**: Any signal computable at inference time —
+single-sample (self-confidence, evidence-exactness, parse-repair count) or
+multi-sample (cross-model agreement, self-consistency, semantic entropy) —
+without access to the hidden gold label. The strand's central negative result is
+that on the binding residual rows the signal separating withhold-to-unknown from
+emit-rate is absent from *every* forward-observable feature; only the hidden gold
+separates them. This is "[[The Wall]]".
+_Avoid_: inference-time signal (unqualified), available feature
+
+**The Wall**: The 0.842 honest accuracy ceiling for this architecture family on
+mini, where the binding residual is fixed by a [[Forward-Observable Feature]]
+absence rather than a selection or engineering gap. It is the *prior* for the
+reliability work: P0.2 (risk–coverage) and P2.1 (semantic entropy) are
+falsification tests of the wall, not foregone reframings, and their null
+(signal is flat/absent at the residual) is itself the headline finding.
+_Avoid_: 0.842 ceiling (as a tuning target), accuracy wall to be broken
+
+**Irreducible Residual**: The portion of holdout error fixed by the wall — rows
+with no Purist-correct component and no forward-observable signal to route them
+(the 11 no-correct validation rows, 8/11 `band_unknown`). Distinct from
+**recoverable error**, which external signals *can* shed on a risk–coverage
+curve. Reporting the split between the two is the reframed P0.2 headline.
+_Avoid_: hard residual (unqualified), unsolvable rows
+
+**External Risk Score**: The single predeclared composite ordering signal for the
+risk–coverage curve, built only from informative [[Forward-Observable Feature]]s:
+[[Cross-Model Agreement Count]] (strongest leg), ambiguity-reason count, and the
+`source_has_*` residual-shape flags (last_event, since_anchor, trigger,
+drop_attack, unable_to_quantify). `selected_evidence_exact` is deliberately
+excluded — it is 750/750 True on the routed layer and as degenerate as
+self-confidence. Fully available only on validation750; on test450 the agreement
+leg degrades to a two-agent consensus, so the holdout replay is weaker, not
+identical.
+_Avoid_: one of three interchangeable signals, evidence-exactness ordering
+
+**Cross-Model Agreement Count**: Per-row count (3/2/1) of how many structured-event
+agents (gpt-4.1-mini + qwen + deepseek) emit the same exact final label, derived
+from `consensus_decision.votes` in the validation750 unanimous-exact consensus
+artifact and joined to other per-row logs by `source_row_index`. The strongest
+leg of the [[External Risk Score]] and the same signal that drove V12's only
+positive lift. Lives in the consensus artifact, not the rq9 router file.
+_Avoid_: model confidence, self-consistency (that is same-model, see [[The Wall]])
+
+**Semantic Entropy (P2.1)**: A multi-sample [[Forward-Observable Feature]] from
+sampling the structured-event extractor k=4–5× at temperature, scored at two
+levels on the same samples: a *primary* entropy over the rendered Purist category
+(the decision abstention acts on) and a *secondary* entropy over the selected
+event kind (`frequency`/`seizure_free`/`unknown`, a more sensitive probe of
+upstream wavering). It is the only unrefuted route at the residual because the
+honest-ceiling analysis examined single-sample features only. Both H1 (entropy
+high at the residual → wall cracks) and H0 (entropy flat → the over-reading is
+*confident*, the wall is real and now has a mechanism) are predeclared and
+publishable. Gated behind a 25-row degeneracy pre-flight: if exact-evidence gating
+makes temperature sampling produce identical samples, entropy is degenerate
+everywhere and the experiment is answered before the full run.
+_Avoid_: same-model self-consistency (that is [[The Wall]]-confirmed at n=50),
+confidence sampling, label-only entropy
+
+
+
 **Validation250**: The first 250 rows of the `validation` split from
 `gan2026_split_v1`, used as a stronger development signal after the validation
 ladder gate is met. It is not a separate stratified panel.

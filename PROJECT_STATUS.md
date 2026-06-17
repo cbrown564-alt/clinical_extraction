@@ -4,8 +4,8 @@ Last updated: 2026-06-17
 
 ## Active Objective
 
-Finish the Gan 2026 seizure-frequency strand as a documented research
-closeout, then shift active implementation focus to ExECTv2.
+Shift active implementation focus to ExECTv2 and use the Gan 2026 closeout as
+the strategy template for full deterministic, LLM-only, and hybrid runs.
 
 Gan is no longer an open `>=0.900` Purist chase. The accepted ceiling for the
 current V12 fresh-evidence hybrid family is `379/450` Purist (`0.842`) on
@@ -15,10 +15,13 @@ on `gpt-4.1-mini`, with no reasoner, peer ensemble, or guard layer. The full
 3-model + reasoner + guard stack buys only `+15` test rows for much higher
 operational and attribution complexity.
 
-The next Gan task is a closeout synthesis: what central research questions were
-asked, what answers emerged, and what this teaches about modularity,
-generalisation, transparency, deterministic-rule attribution, and clinical
-reasoning limits. After that, development should concentrate on ExECTv2.
+The Gan closeout and reliability scorecard are now strategy inputs for ExECTv2:
+source-near structured state, exact evidence, component attribution,
+benchmark-format ablations, family-aware promotion gates, and conservative
+claim language. Active ExECTv2 experimentation should use `gpt-4.1-mini` for
+rapid loops. Qwen 3.6:35B is paused as the main loop and moved to a separate
+overnight transfer track after GPT reaches benchmark-beating architecture
+evidence.
 
 ## Recent Context
 
@@ -36,10 +39,11 @@ reasoning limits. After that, development should concentrate on ExECTv2.
   single GPT structured-event pass (`661/750` validation, `364/450` test) over
   the full V12 stack (`682/750` validation, `379/450` test) unless the extra
   `+15` holdout rows justify the added complexity.
-- ExECTv2 is the forward workstream. The Qwen 3.6:35B `llm_only` event-frame
-  branch is promising but unproven: v0.19 reached strict SF F1 `0.8780` on
-  dev10, but dev25 was interrupted after 2 rows. The next gate is completed
-  dev25, then dev140 only if dev25 remains above `0.7` with interpretable errors.
+- ExECTv2 is the forward workstream. The new GPT-first strategy lives at
+  `docs/research/exectv2_gpt_first_full_architecture_strategy_2026-06-17.md`.
+  It pauses Qwen as an overnight transfer track and prioritizes
+  `gpt-4.1-mini` loops across deterministic all-9, per-entity LLM-only, and
+  hybrid candidate-assessment architectures.
 
 ## Gan Research Questions To Close Out
 
@@ -77,31 +81,34 @@ reasoning limits. After that, development should concentrate on ExECTv2.
 
 ## Active Priorities
 
-1. Write the Gan closeout synthesis around the research questions above, with
-   links to durable artifacts and careful claim language.
-2. Freeze the Gan go-forward recommendation: single GPT structured-event pass as
-   the simple labeler; V12 v0.4 as the high-complexity ceiling comparator; no
-   more `0.90` optimization on the current model family.
-3. Shift implementation focus to ExECTv2: complete Qwen event-frame dev25 with
-   checkpoints and an item-level failure ledger, then run dev140 only if dev25
-   clears the gate.
+1. Execute the GPT-first ExECTv2 strategy: deterministic all-9 baseline,
+   per-entity LLM-only structured mention frames, and hybrid candidate
+   assessment over live candidate sets.
+2. Target benchmark-beating dev evidence before any new full-200 audit:
+   overall `0.87` per-item / `0.90` per-letter, plus per-entity tables,
+   evidence/schema reliability, semantic-vs-CUI gaps, and ablations.
+3. Keep Qwen 3.6:35B as a separate overnight transfer track. Resume dev25/dev140
+   only after the GPT architecture shape has produced strong, attributable
+   ExECTv2 evidence.
 
 ## Work Board
 
 ### Now
 
-- Gan research-question closeout synthesis is drafted and lives at
-  `docs/research/gan2026_research_closeout_synthesis_2026-06-17.md`; this status
-  file remains the short pointer. Forward focus is ExECTv2 (see Next).
+- Start the GPT-first ExECTv2 implementation loop from
+  `docs/research/exectv2_gpt_first_full_architecture_strategy_2026-06-17.md`.
+  First target: full run matrix design and the next small GPT dev experiment.
 
 ### Next
 
-- Finish ExECTv2 Qwen event-frame dev25, including per-row checkpoints and a
-  failure ledger for duplicate facts, focal-to-bilateral variants,
-  frequency-change phrase surface, and verifier parse failures.
-- If dev25 clears the promotion gate, run ExECTv2 dev140 and report strict
-  `sf_benchmark` per-item F1, phrase F1, evidence validity, parse failures, and
-  verifier parse quality.
+- Build or extend shared CUI/benchmark-format projection for the active ExECTv2
+  entities, with semantic-vs-benchmark ablation kept explicit.
+- Run GPT per-entity LLM-only pilots for the entities most likely to move the
+  overall benchmark fastest: Prescription, Investigations, Diagnosis, then
+  SeizureFrequency as the hard transfer check.
+- Extend the hybrid live candidate-assessment pattern from SF to all nine
+  entities, using deterministic and GPT mention-frame outputs as candidate
+  sources rather than hidden final truth.
 
 ### Blocked
 
@@ -109,9 +116,14 @@ reasoning limits. After that, development should concentrate on ExECTv2.
   blocked without explicit authorization and a frozen protocol.
 - Gan historical branches V1, V3, V4, V7, V8, V9, V10, V11, E3, and E4 remain
   blocked from escalation except as comparison artifacts.
+- New ExECTv2 full-200 benchmark-facing audits are blocked until a GPT-first
+  architecture has benchmark-beating dev evidence and a predeclared aggregate
+  readout.
 
 ### Backlog
 
+- Resume ExECTv2 Qwen event-frame dev25/dev140 as an overnight transfer track
+  after GPT-first architecture choices are clearer.
 - Run the one-peer Qwen reasoner rung as the stronger A4 variant if Gan frontier
   curiosity resumes. DeepSeek solo underperformed the bare single GPT pass, but
   Qwen performed better than DeepSeek as a standalone structured-event source,
@@ -122,6 +134,11 @@ reasoning limits. After that, development should concentrate on ExECTv2.
 
 ### Done Recently
 
+- 2026-06-17: Wrote the GPT-first ExECTv2 full-architecture strategy
+  (`docs/research/exectv2_gpt_first_full_architecture_strategy_2026-06-17.md`),
+  translating the Gan closeout and reliability scorecard into deterministic,
+  LLM-only, and hybrid ExECTv2 practice; Qwen moved to an overnight transfer
+  track.
 - 2026-06-17: Wrote the Gan research closeout synthesis
   (`docs/research/gan2026_research_closeout_synthesis_2026-06-17.md`): full
   experiment accounting (architecture arc, RQ1–RQ10, hard residual, surviving
@@ -144,6 +161,7 @@ reasoning limits. After that, development should concentrate on ExECTv2.
 ## Core Artifacts
 
 - `docs/research/gan2026_research_closeout_synthesis_2026-06-17.md` (closeout synthesis)
+- `docs/research/exectv2_gpt_first_full_architecture_strategy_2026-06-17.md`
 - `docs/research/gan2026_f1_dynamic_workflow_night_synthesis_2026-06-16.md`
 - `docs/research/gan2026_simplest_near_ceiling_architecture_results_2026-06-16.md`
 - `docs/research/gan2026_hybrid_structured_events_agentic_consensus_fresh_evidence_analysis_2026-06-14.md`

@@ -1,0 +1,140 @@
+{
+  "artifact_kind": "gan2026_reliability_p0_4_robustness_index",
+  "date": "2026-06-17",
+  "dimensions": [
+    "Robustness"
+  ],
+  "robustness_index_formula": "mean(overall_pass, minimal_pair_consistency, 1 - max(0, quantify_minus_unknown_gap))",
+  "invariance_flip_rate_note": "Panel B/C cases are standalone (pair=null); a literal original<->perturbed paraphrase flip-rate is not computable from the saved artifact. Panel-A flip_to_overfit_rate is the available invariance signal; true paraphrase flip-rate on real rows is P2.3 (budgeted).",
+  "provenance": {
+    "canonical_subject": "adversarial_battery_candidates_gpt41mini",
+    "decision": "0018-reliability-scorecard-canonical-subject-is-v0reference-single-se-mini",
+    "model_calls": 0,
+    "replay": "deterministic_no_call",
+    "sources": [
+      "experiments\\gan2026_robustness_battery_v1_gpt41mini_2026-06-15.json",
+      "experiments\\gan2026_robustness_battery_v1_evidence_v0_6_gpt41mini_2026-06-15.json",
+      "experiments\\gan2026_robustness_battery_v1_evidence_v0_7_gpt41mini_2026-06-15.json",
+      "experiments\\gan2026_robustness_battery_v1_cases.json"
+    ]
+  },
+  "candidates": [
+    {
+      "candidate": "direct_labeler_v0_5",
+      "candidate_label": "llm_only_direct_labeler (prompt v0.5, post-unknown-policy state) live on openai/gpt-4.1-mini, temperature 0",
+      "panels": {
+        "A_minimal_pairs": {
+          "pass": 8,
+          "cases": 12,
+          "rate": 0.6666666666666666
+        },
+        "B_source_near": {
+          "pass": 5,
+          "cases": 7,
+          "rate": 0.7142857142857143
+        },
+        "C_kcl_ood": {
+          "pass": 7,
+          "cases": 8,
+          "rate": 0.875
+        },
+        "overall": {
+          "pass": 20,
+          "cases": 27,
+          "rate": 0.7407407407407407
+        }
+      },
+      "minimal_pair_consistency": {
+        "both_correct_pairs": 2,
+        "pairs": 6,
+        "rate": 0.3333333333333333,
+        "overfit_only_pairs": 3,
+        "flip_to_overfit_rate": 0.5
+      },
+      "overfit_gap": {
+        "unknown_side_accuracy": 0.4,
+        "quantify_side_accuracy": 0.8333333333333334,
+        "gap_quantify_minus_unknown": 0.43333333333333335
+      },
+      "robustness_index": 0.5469135802469135
+    },
+    {
+      "candidate": "evidence_v0_6",
+      "candidate_label": "llm_only_direct_labeler (prompt v0.6 Cycle-2 triage-scaffold evidence presentation) live on openai/gpt-4.1-mini, temperature 0",
+      "panels": {
+        "A_minimal_pairs": {
+          "pass": 9,
+          "cases": 12,
+          "rate": 0.75
+        },
+        "B_source_near": {
+          "pass": 5,
+          "cases": 7,
+          "rate": 0.7142857142857143
+        },
+        "C_kcl_ood": {
+          "pass": 8,
+          "cases": 8,
+          "rate": 1.0
+        },
+        "overall": {
+          "pass": 22,
+          "cases": 27,
+          "rate": 0.8148148148148148
+        }
+      },
+      "minimal_pair_consistency": {
+        "both_correct_pairs": 3,
+        "pairs": 6,
+        "rate": 0.5,
+        "overfit_only_pairs": 2,
+        "flip_to_overfit_rate": 0.3333333333333333
+      },
+      "overfit_gap": {
+        "unknown_side_accuracy": 0.6,
+        "quantify_side_accuracy": 0.8333333333333334,
+        "gap_quantify_minus_unknown": 0.2333333333333334
+      },
+      "robustness_index": 0.6938271604938272
+    },
+    {
+      "candidate": "evidence_v0_7",
+      "candidate_label": "llm_only_direct_labeler (prompt v0.7 Cycle-3 label-binding: v0.6 scaffold + sharpened STEP-4 + answer_kind/rationale->final_label binding) live on openai/gpt-4.1-mini, temperature 0",
+      "panels": {
+        "A_minimal_pairs": {
+          "pass": 12,
+          "cases": 12,
+          "rate": 1.0
+        },
+        "B_source_near": {
+          "pass": 7,
+          "cases": 7,
+          "rate": 1.0
+        },
+        "C_kcl_ood": {
+          "pass": 8,
+          "cases": 8,
+          "rate": 1.0
+        },
+        "overall": {
+          "pass": 27,
+          "cases": 27,
+          "rate": 1.0
+        }
+      },
+      "minimal_pair_consistency": {
+        "both_correct_pairs": 6,
+        "pairs": 6,
+        "rate": 1.0,
+        "overfit_only_pairs": 0,
+        "flip_to_overfit_rate": 0.0
+      },
+      "overfit_gap": {
+        "unknown_side_accuracy": 1.0,
+        "quantify_side_accuracy": 1.0,
+        "gap_quantify_minus_unknown": 0.0
+      },
+      "robustness_index": 1.0
+    }
+  ]
+}

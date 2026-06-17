@@ -1,0 +1,248 @@
+{
+  "artifact_kind": "gan2026_reliability_p0_2_risk_coverage",
+  "date": "2026-06-17",
+  "dimensions": [
+    "Abstention",
+    "Calibration",
+    "Task correctness"
+  ],
+  "split": "validation750",
+  "predeclared_external_risk_score": {
+    "formula": "3*(3-agreement) + source_flag_count + ambiguity_reason_count",
+    "agreement_source": "consensus_decision.votes (gpt-4.1-mini+qwen+deepseek)",
+    "flags": [
+      "source_has_last_event_language",
+      "source_has_since_anchor",
+      "source_has_trigger_language",
+      "source_has_drop_attack_language",
+      "source_has_unable_to_quantify"
+    ],
+    "scored_against": "v0_reference.comparison.purist_correct"
+  },
+  "provenance": {
+    "canonical_subject": "single_se_mini_v0_reference",
+    "decision": "0018-reliability-scorecard-canonical-subject-is-v0reference-single-se-mini",
+    "model_calls": 0,
+    "replay": "deterministic_no_call",
+    "sources": [
+      "experiments\\gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.jsonl",
+      "experiments\\gan2026_agentic_structured_event_consensus_unanimous_exact_validation750_2026-06-13.jsonl",
+      "experiments\\gan2026_rq9_selective_action_router_v3_2026-06-04.jsonl"
+    ]
+  },
+  "curve": {
+    "n": 750,
+    "total_errors": 89,
+    "base_error_rate": 0.11866666666666667,
+    "operating_points": [
+      {
+        "risk_threshold": 0,
+        "covered": 121,
+        "coverage": 0.16133333333333333,
+        "selective_errors": 1,
+        "selective_risk": 0.008264462809917356,
+        "selective_risk_ci95": [
+          0.0014603357965232268,
+          0.04533175914618817
+        ]
+      },
+      {
+        "risk_threshold": 1,
+        "covered": 271,
+        "coverage": 0.36133333333333334,
+        "selective_errors": 6,
+        "selective_risk": 0.02214022140221402,
+        "selective_risk_ci95": [
+          0.01018549915232673,
+          0.0474535191040071
+        ]
+      },
+      {
+        "risk_threshold": 2,
+        "covered": 405,
+        "coverage": 0.54,
+        "selective_errors": 12,
+        "selective_risk": 0.02962962962962963,
+        "selective_risk_ci95": [
+          0.017028973644924516,
+          0.05106977168823141
+        ]
+      },
+      {
+        "risk_threshold": 3,
+        "covered": 478,
+        "coverage": 0.6373333333333333,
+        "selective_errors": 22,
+        "selective_risk": 0.04602510460251046,
+        "selective_risk_ci95": [
+          0.0305878282530114,
+          0.06870123271640262
+        ]
+      },
+      {
+        "risk_threshold": 4,
+        "covered": 547,
+        "coverage": 0.7293333333333333,
+        "selective_errors": 36,
+        "selective_risk": 0.06581352833638025,
+        "selective_risk_ci95": [
+          0.047914345684661075,
+          0.08976879226279966
+        ]
+      },
+      {
+        "risk_threshold": 5,
+        "covered": 631,
+        "coverage": 0.8413333333333334,
+        "selective_errors": 49,
+        "selective_risk": 0.07765451664025357,
+        "selective_risk_ci95": [
+          0.059235261555019444,
+          0.10118522758746903
+        ]
+      },
+      {
+        "risk_threshold": 6,
+        "covered": 679,
+        "coverage": 0.9053333333333333,
+        "selective_errors": 67,
+        "selective_risk": 0.09867452135493372,
+        "selective_risk_ci95": [
+          0.0784500475813529,
+          0.12341463084480035
+        ]
+      },
+      {
+        "risk_threshold": 7,
+        "covered": 715,
+        "coverage": 0.9533333333333334,
+        "selective_errors": 77,
+        "selective_risk": 0.1076923076923077,
+        "selective_risk_ci95": [
+          0.08703055975015127,
+          0.13254716084921303
+        ]
+      },
+      {
+        "risk_threshold": 8,
+        "covered": 740,
+        "coverage": 0.9866666666666667,
+        "selective_errors": 85,
+        "selective_risk": 0.11486486486486487,
+        "selective_risk_ci95": [
+          0.0938530430629339,
+          0.13985477860232387
+        ]
+      },
+      {
+        "risk_threshold": 9,
+        "covered": 745,
+        "coverage": 0.9933333333333333,
+        "selective_errors": 86,
+        "selective_risk": 0.11543624161073826,
+        "selective_risk_ci95": [
+          0.09443679110462556,
+          0.14038136002373058
+        ]
+      },
+      {
+        "risk_threshold": 10,
+        "covered": 748,
+        "coverage": 0.9973333333333333,
+        "selective_errors": 88,
+        "selective_risk": 0.11764705882352941,
+        "selective_risk_ci95": [
+          0.09648744348112179,
+          0.14271400533469258
+        ]
+      },
+      {
+        "risk_threshold": 11,
+        "covered": 749,
+        "coverage": 0.9986666666666667,
+        "selective_errors": 88,
+        "selective_risk": 0.11748998664886515,
+        "selective_risk_ci95": [
+          0.09635724981200616,
+          0.1425264675596162
+        ]
+      },
+      {
+        "risk_threshold": 12,
+        "covered": 750,
+        "coverage": 1.0,
+        "selective_errors": 89,
+        "selective_risk": 0.11866666666666667,
+        "selective_risk_ci95": [
+          0.09744221310074017,
+          0.143777693043999
+        ]
+      }
+    ],
+    "auc_selective_risk_vs_coverage": 0.04037854522381427,
+    "risk_at_fixed_coverage": {
+      "1.00": {
+        "coverage": 1.0,
+        "selective_risk": 0.11866666666666667,
+        "selective_risk_ci95": [
+          0.09744221310074017,
+          0.143777693043999
+        ]
+      },
+      "0.95": {
+        "coverage": 0.9533333333333334,
+        "selective_risk": 0.1076923076923077,
+        "selective_risk_ci95": [
+          0.08703055975015127,
+          0.13254716084921303
+        ]
+      },
+      "0.90": {
+        "coverage": 0.9053333333333333,
+        "selective_risk": 0.09867452135493372,
+        "selective_risk_ci95": [
+          0.0784500475813529,
+          0.12341463084480035
+        ]
+      },
+      "0.80": {
+        "coverage": 0.8413333333333334,
+        "selective_risk": 0.07765451664025357,
+        "selective_risk_ci95": [
+          0.059235261555019444,
+          0.10118522758746903
+        ]
+      },
+      "0.70": {
+        "coverage": 0.7293333333333333,
+        "selective_risk": 0.06581352833638025,
+        "selective_risk_ci95": [
+          0.047914345684661075,
+          0.08976879226279966
+        ]
+      },
+      "0.50": {
+        "coverage": 0.54,
+        "selective_risk": 0.02962962962962963,
+        "selective_risk_ci95": [
+          0.017028973644924516,
+          0.05106977168823141
+        ]
+      }
+    },
+    "plateau_lowest_coverage": {
+      "coverage": 0.16133333333333333,
+      "selective_risk": 0.008264462809917356,
+      "selective_risk_ci95": [
+        0.0014603357965232268,
+        0.04533175914618817
+      ],
+      "note": "selective risk among the safest rows the score can isolate; if > 0 with a tight CI, errors leak into the low-risk region -> irreducible residual (The Wall)."
+    }
+  },
+  "context": {
+    "oracle_auc_selective_risk_vs_coverage": 0.007337160639637246,
+    "external_score_auroc_for_error": 0.7805674072311275,
+    "random_baseline_auc_approx": 0.11866666666666667
+  }
+}
