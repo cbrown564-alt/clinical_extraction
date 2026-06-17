@@ -40,12 +40,12 @@ _MEDICATION_NAME_ALIASES: dict[str, str] = {
     "zonismaide": "zonisamide",
 }
 _PRESCRIPTION_SOURCE_FREQUENCY = re.compile(
-    r"\b(?:prn|p\.r\.n\.|as\s+required|when\s+required|as\s+needed|rescue|"
+    r"(?<!\w)(?:prn|p\.r\.n\.|as\s+required|when\s+required|as\s+needed|rescue|"
     r"bd|b\.d\.|twice\s+(?:a\s+)?day|twice\s+daily|od|o\.d\.|"
     r"once\s+(?:a\s+)?day|once\s+daily|daily|mane|nocte|nightly|"
     r"morning|afternoon|evening|am|pm|at\s+night|tds|t\.d\.s\.|tid|"
     r"three\s+times\s+(?:a\s+)?day|qds|q\.d\.s\.|qid|"
-    r"four\s+times\s+(?:a\s+)?day)\b",
+    r"four\s+times\s+(?:a\s+)?day)(?!\w)",
     re.IGNORECASE,
 )
 _PRESCRIPTION_FUTURE_PLAN = re.compile(
@@ -254,7 +254,11 @@ def canonicalize_medication_name(value: str) -> str:
     return _MEDICATION_NAME_ALIASES.get(normalized, normalized)
 
 
-def _prescription_component_key(annotation: ExectAnnotation, component: str) -> Hashable | None:
+def _prescription_component_key(
+    annotation: ExectAnnotation,
+    component: str,
+    note_text: str = "",
+) -> Hashable | None:
     attrs = annotation.attributes
     if component == "name":
         value = attrs.get("DrugName")
@@ -272,21 +276,25 @@ def _prescription_component_key(annotation: ExectAnnotation, component: str) -> 
         frequency = attrs.get("Frequency")
         return canonicalize_attribute_value("Frequency", frequency).lower() if frequency else None
     if component == "source_stated_frequency":
-        frequency = _prescription_component_key(annotation, "frequency")
-        return frequency if frequency and _has_source_stated_frequency(annotation) else None
+        frequency = _prescription_component_key(annotation, "frequency", note_text)
+        if frequency and _has_source_stated_frequency(annotation, note_text):
+            return frequency
+        return None
     if component == "guideline_defaulted_frequency":
-        frequency = _prescription_component_key(annotation, "frequency")
-        return frequency if frequency and not _has_source_stated_frequency(annotation) else None
+        frequency = _prescription_component_key(annotation, "frequency", note_text)
+        if frequency and not _has_source_stated_frequency(annotation, note_text):
+            return frequency
+        return None
     if component == "complete":
-        name = _prescription_component_key(annotation, "name")
-        dose = _prescription_component_key(annotation, "dose")
-        frequency = _prescription_component_key(annotation, "frequency")
+        name = _prescription_component_key(annotation, "name", note_text)
+        dose = _prescription_component_key(annotation, "dose", note_text)
+        frequency = _prescription_component_key(annotation, "frequency", note_text)
         if name is None or dose is None or frequency is None:
             return None
         return (name, *dose, frequency)
     if component == "ordinary_complete":
-        complete = _prescription_component_key(annotation, "complete")
-        frequency = _prescription_component_key(annotation, "frequency")
+        complete = _prescription_component_key(annotation, "complete", note_text)
+        frequency = _prescription_component_key(annotation, "frequency", note_text)
         if (
             complete is None
             or frequency == _AS_REQUIRED
@@ -296,8 +304,8 @@ def _prescription_component_key(annotation: ExectAnnotation, component: str) -> 
             return None
         return complete
     if component == "rescue_regimen":
-        name = _prescription_component_key(annotation, "name")
-        frequency = _prescription_component_key(annotation, "frequency")
+        name = _prescription_component_key(annotation, "name", note_text)
+        frequency = _prescription_component_key(annotation, "frequency", note_text)
         if (
             name is None
             or frequency != _AS_REQUIRED
@@ -307,22 +315,22 @@ def _prescription_component_key(annotation: ExectAnnotation, component: str) -> 
             return None
         return (name, _AS_REQUIRED)
     if component == "clinical_headline":
-        rescue = _prescription_component_key(annotation, "rescue_regimen")
+        rescue = _prescription_component_key(annotation, "rescue_regimen", note_text)
         if rescue is not None:
             return ("rescue", *rescue)
-        ordinary = _prescription_component_key(annotation, "ordinary_complete")
+        ordinary = _prescription_component_key(annotation, "ordinary_complete", note_text)
         if ordinary is not None:
             return ("ordinary", *ordinary)
         return None
     if component == "future_medication":
         if not _is_future_medication(annotation):
             return None
-        name = _prescription_component_key(annotation, "name")
+        name = _prescription_component_key(annotation, "name", note_text)
         return (name or normalize_phrase(annotation.text), normalize_phrase(annotation.text))
     if component == "weight_based_dosing":
         if not _is_weight_based_dosing(annotation):
             return None
-        name = _prescription_component_key(annotation, "name")
+        name = _prescription_component_key(annotation, "name", note_text)
         return (name or normalize_phrase(annotation.text), normalize_phrase(annotation.text))
     raise ValueError(f"Unknown prescription component {component!r}")
 
@@ -411,8 +419,58 @@ def score_prescription_benchmark_projection(
     )
 
 
-def _has_source_stated_frequency(annotation: ExectAnnotation) -> bool:
-    return bool(_PRESCRIPTION_SOURCE_FREQUENCY.search(annotation.text))
+def _has_source_stated_frequency(annotation: ExectAnnotation, note_text: str = "") -> bool:
+    return any(
+        _PRESCRIPTION_SOURCE_FREQUENCY.search(candidate)
+        for candidate in _prescription_frequency_source_candidates(annotation, note_text)
+    )
+
+
+def _prescription_frequency_source_candidates(
+    annotation: ExectAnnotation,
+    note_text: str,
+) -> tuple[str, ...]:
+    candidates = [annotation.text, annotation.text.replace("-", " ")]
+    if annotation.raw_text and annotation.raw_text != annotation.text:
+        candidates.extend([annotation.raw_text, annotation.raw_text.replace("-", " ")])
+    if note_text:
+        candidates.extend(_note_windows_for_annotation_phrase(annotation, note_text))
+    return tuple(candidate for candidate in candidates if candidate)
+
+
+def _note_windows_for_annotation_phrase(
+    annotation: ExectAnnotation,
+    note_text: str,
+) -> tuple[str, ...]:
+    normalized_note = normalize_phrase(note_text)
+    windows: list[str] = []
+    for phrase in _annotation_frequency_search_phrases(annotation):
+        start = 0
+        while True:
+            index = normalized_note.find(phrase, start)
+            if index == -1:
+                break
+            windows.append(normalized_note[max(0, index - 48) : index + len(phrase) + 128])
+            start = index + max(1, len(phrase))
+    return tuple(windows)
+
+
+def _annotation_frequency_search_phrases(annotation: ExectAnnotation) -> tuple[str, ...]:
+    raw_terms = [
+        annotation.text,
+        annotation.raw_text or "",
+        annotation.attributes.get("DrugName", ""),
+        annotation.attributes.get("CUIPhrase", ""),
+        canonicalize_medication_name(annotation.attributes.get("DrugName", "")),
+    ]
+    phrases: list[str] = []
+    seen: set[str] = set()
+    for term in raw_terms:
+        phrase = normalize_phrase(term)
+        if phrase and phrase not in seen:
+            seen.add(phrase)
+            phrases.append(phrase)
+    return tuple(phrases)
 
 
 def _is_future_medication(annotation: ExectAnnotation) -> bool:
@@ -440,10 +498,11 @@ def _keys(annotations: Iterable[ExectAnnotation], config: MatchConfig) -> list[H
 def _prescription_component_keys(
     annotations: Iterable[ExectAnnotation],
     component: str,
+    note_text: str = "",
 ) -> list[Hashable]:
     keys: list[Hashable] = []
     for annotation in annotations:
-        key = _prescription_component_key(annotation, component)
+        key = _prescription_component_key(annotation, component, note_text)
         if key is not None:
             keys.append(key)
     return keys
@@ -461,7 +520,7 @@ def _prescription_drugname_cui_keys(
             continue
         keys.append(
             (
-                canonicalize_attribute_value("DrugName", drug_name),
+                canonicalize_medication_name(drug_name),
                 canonicalize_attribute_value("CUI", cui),
             )
         )
@@ -487,12 +546,14 @@ def _score_prescription_component(
                 if letter_id in gold_by_id
                 else (),
                 component,
+                gold_by_id[letter_id].note_text if letter_id in gold_by_id else "",
             ),
             _prescription_component_keys(
                 pred_by_id[letter_id].entities(_PRESCRIPTION_ENTITY)
                 if letter_id in pred_by_id
                 else (),
                 component,
+                pred_by_id[letter_id].note_text if letter_id in pred_by_id else "",
             ),
         )
         for letter_id in all_ids

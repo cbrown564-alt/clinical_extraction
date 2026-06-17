@@ -153,6 +153,47 @@ def test_prescription_benchmark_projection_separates_clinical_identity_from_cui(
     assert score.benchmark_with_cui.f1 == 0.0
 
 
+def test_prescription_drugname_cui_projection_accepts_format_variants_with_same_cui() -> None:
+    gold = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    "Prescription",
+                    "Sodium-Valproate-500mg-bd",
+                    DrugName="sodiumvalproate",
+                    DrugDose="500",
+                    DoseUnit="mg",
+                    Frequency="2",
+                    CUI="C0037567",
+                ),
+            ),
+        )
+    ]
+    pred = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    "Prescription",
+                    "sodium valproate 500 mg twice daily",
+                    DrugName="sodium-valproate",
+                    DrugDose="500",
+                    DoseUnit="mg",
+                    Frequency="2",
+                    CUI="C0037567",
+                ),
+            ),
+        )
+    ]
+
+    score = score_prescription_benchmark_projection(gold, pred)
+
+    assert score.drugname_cui_projection.f1 == 1.0
+
+
 def test_prescription_clinical_headline_counts_rescue_regimen_without_dose() -> None:
     gold = [
         ExectLetter(
@@ -222,6 +263,100 @@ def test_prescription_frequency_diagnostics_separate_stated_from_defaulted() -> 
     assert score.source_stated_frequency.tp == 1
     assert score.guideline_defaulted_frequency.tp == 1
     assert score.frequency.tp == 2
+
+
+def test_prescription_frequency_source_uses_note_context_for_hidden_frequency() -> None:
+    note = (
+        "He previously tried topiramate and phenytoin and he is currently taking "
+        "levetiracetam 1250mg twice a day."
+    )
+    gold = [
+        ExectLetter(
+            "L1",
+            note,
+            (
+                _ann(
+                    "Prescription",
+                    "levetiracetam-",
+                    DrugName="levetiracetam",
+                    DrugDose="1250",
+                    DoseUnit="mg",
+                    Frequency="2",
+                ),
+            ),
+        )
+    ]
+    pred = [
+        ExectLetter(
+            "L1",
+            note,
+            (
+                _ann(
+                    "Prescription",
+                    "levetiracetam 1250mg twice a day",
+                    DrugName="levetiracetam",
+                    DrugDose="1250",
+                    DoseUnit="mg",
+                    Frequency="2",
+                ),
+            ),
+        )
+    ]
+
+    score = score_prescription_components(gold, pred)
+
+    assert score.source_stated_frequency.f1 == 1.0
+    assert score.guideline_defaulted_frequency.gold_count == 0
+    assert score.guideline_defaulted_frequency.pred_count == 0
+
+
+def test_prescription_frequency_source_uses_drug_attributes_when_gold_phrase_has_typo() -> None:
+    note = "Medication: Lamotrigine 50mg bd."
+    letters = [
+        ExectLetter(
+            "L1",
+            note,
+            (
+                _ann(
+                    "Prescription",
+                    "Lamotrigne",
+                    DrugName="Lamotrigine",
+                    DrugDose="50",
+                    DoseUnit="mg",
+                    Frequency="2",
+                ),
+            ),
+        )
+    ]
+
+    score = score_prescription_components(letters, letters)
+
+    assert score.source_stated_frequency.tp == 1
+    assert score.guideline_defaulted_frequency.gold_count == 0
+
+
+def test_prescription_frequency_source_accepts_dotted_bd_abbreviation() -> None:
+    letters = [
+        ExectLetter(
+            "L1",
+            "Medication: Lamotrigine 100mg b.d.",
+            (
+                _ann(
+                    "Prescription",
+                    "Lamotrigine-",
+                    DrugName="Lamotrigine",
+                    DrugDose="100",
+                    DoseUnit="mg",
+                    Frequency="2",
+                ),
+            ),
+        )
+    ]
+
+    score = score_prescription_components(letters, letters)
+
+    assert score.source_stated_frequency.tp == 1
+    assert score.guideline_defaulted_frequency.gold_count == 0
 
 
 def test_future_and_weight_based_prescriptions_are_diagnostics_not_headline() -> None:
