@@ -1,11 +1,18 @@
 """Tests for the ExECTv2 extraction contract (prediction schema, adapter, validation)."""
 from __future__ import annotations
 
-import pytest
-
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
+    DIAGNOSIS,
     ENTITY_REGISTRY,
+    PATIENT_HISTORY,
     SEIZURE_FREQUENCY,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.evaluation import (
+    ENTITY_EVALUATION_POLICIES,
+    benchmark_ignore_attributes_for,
+    preserves_distinct_occurrences,
+    semantic_ignore_attributes_for,
+    uses_cuiphrase_as_gold_text,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
     PredictedLetter,
@@ -17,11 +24,12 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.validate im
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     SEIZURE_FREQUENCY as SF_ENTITY,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectAnnotation,
     load_letters,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import score_entity
-
 
 # ---------------------------------------------------------------------------
 # Registry
@@ -42,8 +50,34 @@ def test_all_nine_entity_names_present():
 
 def test_seizure_frequency_spec_has_closed_vocab():
     assert "TimeSince_or_TimeOfEvent" in SEIZURE_FREQUENCY.closed_vocab
-    assert SEIZURE_FREQUENCY.closed_vocab["TimeSince_or_TimeOfEvent"] == frozenset({"During", "Since"})
+    assert SEIZURE_FREQUENCY.closed_vocab["TimeSince_or_TimeOfEvent"] == frozenset(
+        {"During", "Since"}
+    )
     assert "FrequencyChange" in SEIZURE_FREQUENCY.closed_vocab
+
+
+def test_evaluation_policy_covers_entity_registry():
+    assert set(ENTITY_EVALUATION_POLICIES) == set(ENTITY_REGISTRY)
+
+
+def test_gold_phrase_target_policy_is_entity_specific():
+    assert uses_cuiphrase_as_gold_text(SEIZURE_FREQUENCY.name)
+    assert uses_cuiphrase_as_gold_text(DIAGNOSIS.name)
+    assert not uses_cuiphrase_as_gold_text(PATIENT_HISTORY.name)
+
+
+def test_scoring_ignore_policy_keeps_sf_guideline_exception_centralized():
+    assert benchmark_ignore_attributes_for(SEIZURE_FREQUENCY.name) == frozenset({
+        "CUIPhrase",
+        "Certainty",
+        "Negation",
+    })
+    assert semantic_ignore_attributes_for(DIAGNOSIS.name) == frozenset({"CUIPhrase", "CUI"})
+
+
+def test_occurrence_policy_is_patient_history_only():
+    assert preserves_distinct_occurrences(PATIENT_HISTORY.name)
+    assert not preserves_distinct_occurrences(DIAGNOSIS.name)
 
 
 # ---------------------------------------------------------------------------
@@ -95,7 +129,8 @@ def test_registry_closed_vocab_covers_gold_values():
             assert attr in spec.legal_attributes, f"{name}.{attr} is closed-vocab but not legal"
             observed = schema[name].get(attr, set())
             assert observed <= vocab, (
-                f"{name}.{attr}: gold values {sorted(observed - vocab)} not in vocab {sorted(vocab)}"
+                f"{name}.{attr}: gold values {sorted(observed - vocab)} not in "
+                f"vocab {sorted(vocab)}"
             )
 
 
@@ -125,8 +160,11 @@ def _gold_to_predicted_letter(letter) -> PredictedLetter:
 
 def test_gold_as_predicted_letter_scores_perfect():
     letters = load_letters()
-    predicted = [_gold_to_predicted_letter(l) for l in letters]
-    adapted = [to_exect_letter(p, l.note_text) for p, l in zip(predicted, letters)]
+    predicted = [_gold_to_predicted_letter(letter) for letter in letters]
+    adapted = [
+        to_exect_letter(predicted_letter, letter.note_text)
+        for predicted_letter, letter in zip(predicted, letters, strict=True)
+    ]
 
     score = score_entity(letters, adapted, SF_ENTITY)
     assert score.per_item.f1 == 1.0

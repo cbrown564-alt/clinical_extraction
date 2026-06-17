@@ -239,11 +239,26 @@ accepted miss, don't add rules to reproduce noise.
 prompt-engineer toward them. Useful as a "ceiling" line in results.
 Status: **firm.**
 
-### D16 — The authoritative clean phrase is `CUIPhrase` (MarkupOutput col6); gold `text` is the raw col5 span `[all]`
+### D16 — The authoritative clean phrase is `CUIPhrase`; gold `text` is the raw covered span `[SF]`
+**Column-order scope note (2026-06-17).** The invariant below is right and holds
+for every entity — `CUIPhrase` is the clean canonical concept, gold `text` is the
+raw offset-covered span — but the **col5/col6 positions are SeizureFrequency-
+specific and must not be generalized**. Verified against the raw CSVs: for SF,
+col5 = raw span → `text`, col6 = clean term → `CUIPhrase` (the wording below). For
+the other seven markup files (BirthHistory, Diagnosis, EpilepsyCause, Investigations,
+Onset, PatientHistory, WhenDiagnosed) the order is **flipped**: col5 = clean term →
+`CUIPhrase`, col6 = raw span → `text` (e.g. `MakupBirthHist`
+`…,C0583275,special-care-baby-unit,Special-care-baby-Unit,…` → `CUIPhrase`=col5,
+`text`=col6). Prescription is a third layout: col5=`CUIPhrase`, col6=`DrugName`,
+col10 (the full regimen markup span) → `text`. The JSON field mapping the code
+reads (`text`=raw span, `CUIPhrase`=clean) is correct throughout; only the physical
+column index varies by file (see the all-9 layered error analysis, Finding 1).
+
 **Discovery.** The benchmark's per-entity `MarkupOutput_200_SyntheticEpilepsyLetters/*.csv`
 carry **two** phrase columns: col5 = the raw covered span (drifted/corrupt), col6 =
 the clean canonical term. The `Json/` builder put col5 → `text` and col6 →
-`CUIPhrase`. So the clean phrase D12 called "un-winnable" was in the gold all along,
+`CUIPhrase` (for SeizureFrequency — column order varies per file, see scope note
+above). So the clean phrase D12 called "un-winnable" was in the gold all along,
 in a field scoring *ignores*. The published GATE system (F1 0.66 SF) cannot have
 been scored on col5; it used col6/offset-overlap.
 **Evidence.** `MarkupSeizureFrequency.csv` rows vs `Json/`: e.g. EA0008
@@ -290,7 +305,7 @@ surface span, col6 canonical, or a finding-aware key). Do **not** blanket-map.
 match each entity's chosen phrase basis, not one rule for all nine.
 Status: **firm (full corpus, 2026-06-10).** **RESOLVED (2026-06-12, Phase 6
 LLM-only slice):** the per-entity phrase basis is decided as **repair
-`text:=CUIPhrase` for {SeizureFrequency, Diagnosis} only** (col6 there is a clean
+`text:=CUIPhrase` for {SeizureFrequency, Diagnosis} only** (CUIPhrase there is a clean
 surface-phrase cleanup), and **keep the raw col5 span for the other seven**
 (Investigations / Prescription / WhenDiagnosed / EpilepsyCause / Onset /
 BirthHistory / PatientHistory). Rationale: for the structured entities col6 is a
@@ -300,9 +315,10 @@ matching against it would score the LLM's surface phrase as wrong even when
 correct. Cost: phrase recall on Investigations (90% col5≠col6), WhenDiagnosed
 (82%), Prescription (71%) is understated against drifted col5 — a documented
 ceiling, reported per-entity in the audit (a `text≠CUIPhrase` divergence note),
-not silently absorbed. This is the loader's existing behavior
-(`data.py:_CUIPHRASE_REPAIR_ENTITIES`); the decision formalizes it as the policy
-rather than a placeholder. A future finding-aware match key for Investigations
+not silently absorbed. This is now encoded as
+`contract/evaluation.py:EntityEvaluationPolicy.phrase_target`, with the loader
+consuming that policy rather than carrying its own entity set. A future
+finding-aware match key for Investigations
 (score against the encoded finding, not the surface phrase) could lift those
 cells but is out of scope for the LLM-only slice.
 
@@ -322,11 +338,12 @@ for the six entities that take them; omitting them is a guaranteed exact-set mis
 in-scope entities and **must not** ask for them on SF (it will hallucinate
 plausible values and tank the exact-set match). Per-entity feature scope, not one
 schema for nine.
-**Implementation.** Encoded in `scoring.py:benchmark_ignore_for(entity)` /
-`semantic_ignore_for(entity)` (2026-06-12): SF ignores `{CUIPhrase, Certainty,
+**Implementation.** Encoded in `contract/evaluation.py` and consumed by
+`scoring.py:benchmark_ignore_for(entity)` / `semantic_ignore_for(entity)`
+(2026-06-12; centralized 2026-06-17): SF ignores `{CUIPhrase, Certainty,
 Negation}`; every other entity ignores only `{CUIPhrase}` under the benchmark
-config (plus `{CUI}` under the semantic config). The `*_config_for(entity)`
-builders are the single source of truth the all-9 scorer and runners read.
+config (plus `{CUI}` under the semantic config). The evaluation policy is the
+single source of truth the loader, scorer, and all-9 de-duplication read.
 Status: **firm (guideline + profile, 2026-06-12).**
 
 ### D19 — Overall F1 is micro-averaged across entity cells; the LLM-only family cannot clear the with-CUI bar by construction `[all]`

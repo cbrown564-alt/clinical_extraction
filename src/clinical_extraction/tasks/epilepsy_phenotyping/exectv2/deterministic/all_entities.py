@@ -9,7 +9,7 @@ transparent floor and candidate source, not a benchmark-complete solution.
 from __future__ import annotations
 
 import re
-from collections.abc import Iterable, Sequence
+from collections.abc import Sequence
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.benchmark_projection import (
     DIAGNOSIS_SURFACE_FORMS,
@@ -45,6 +45,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import normalize_phrase
 
+from .mention_identity import dedupe_mentions, match_span
 from .pipeline import extract_seizure_frequency
 from .rule_metadata import Portability, RuleGroup
 
@@ -544,7 +545,7 @@ def extract_deterministic_all9(letter: ExectLetter) -> PredictedLetter:
         *_extract_prescriptions(letter.note_text),
         *sf_prediction.mentions,
     )
-    mentions = _dedupe_mentions(mentions)
+    mentions = dedupe_mentions(mentions)
     counts = {
         entity: sum(1 for mention in mentions if mention.entity == entity)
         for entity in ACTIVE_DETERMINISTIC_ENTITIES
@@ -587,6 +588,7 @@ def _extract_prescriptions(text: str) -> tuple[PredictedMention, ...]:
                     text=phrase_text,
                     attributes=attrs,
                     evidence=evidence,
+                    evidence_span=match_span(match),
                     component_owner=_owner(
                         "prescription_regimen",
                         RuleGroup.ANCHOR_PHRASE,
@@ -844,6 +846,7 @@ def _extract_investigations(text: str) -> tuple[PredictedMention, ...]:
                 text=modality,
                 attributes=attrs,
                 evidence=evidence,
+                evidence_span=match_span(match),
                 component_owner=_owner(
                     "investigation_result",
                     RuleGroup.ANCHOR_PHRASE,
@@ -879,6 +882,7 @@ def _extract_onsets(text: str) -> tuple[PredictedMention, ...]:
                     text=phrase,
                     attributes=attrs,
                     evidence=match.group(0),
+                    evidence_span=match_span(match),
                     component_owner=_owner(
                         rule_id,
                         RuleGroup.TEMPORAL_ANCHOR,
@@ -917,6 +921,7 @@ def _extract_when_diagnosed(text: str) -> tuple[PredictedMention, ...]:
                         text=_WHEN_DIAGNOSED_TEXT,
                         attributes=attrs,
                         evidence=match.group(0),
+                        evidence_span=match_span(match),
                         component_owner=_owner(
                             rule_id,
                             RuleGroup.TEMPORAL_ANCHOR,
@@ -948,6 +953,7 @@ def _extract_birth_history(text: str) -> tuple[PredictedMention, ...]:
                     text=mention_text,
                     attributes=attrs,
                     evidence=match.group(0),
+                    evidence_span=match_span(match),
                     component_owner=_owner(
                         "birth_history",
                         RuleGroup.ANCHOR_PHRASE,
@@ -983,6 +989,7 @@ def _extract_epilepsy_causes(text: str) -> tuple[PredictedMention, ...]:
                     text=mention_text,
                     attributes=attrs,
                     evidence=match.group(0),
+                    evidence_span=match_span(match),
                     component_owner=_owner(
                         "epilepsy_cause",
                         RuleGroup.ANCHOR_PHRASE,
@@ -1017,6 +1024,7 @@ def _extract_patient_history(text: str) -> tuple[PredictedMention, ...]:
                     text=mention_text,
                     attributes=attrs,
                     evidence=evidence,
+                    evidence_span=match_span(match),
                     component_owner=_owner(
                         "patient_history",
                         RuleGroup.ANCHOR_PHRASE,
@@ -1061,6 +1069,7 @@ def _extract_diagnoses(text: str) -> tuple[PredictedMention, ...]:
                 text=phrase,
                 attributes=attrs,
                 evidence=phrase,
+                evidence_span=match_span(match),
                 component_owner=_owner(
                     "deterministic_diagnosis_phrase",
                     RuleGroup.ANCHOR_PHRASE,
@@ -1300,22 +1309,6 @@ def _sentence_window(text: str, start: int, end: int) -> str:
     right_candidates = [idx for idx in (text.find(".", end), text.find("\n", end)) if idx != -1]
     right = min(right_candidates) if right_candidates else len(text)
     return text[left + 1 : right].strip(" ,;")
-
-
-def _dedupe_mentions(mentions: Iterable[PredictedMention]) -> tuple[PredictedMention, ...]:
-    seen: set[tuple[str, str, tuple[tuple[str, str], ...]]] = set()
-    deduped: list[PredictedMention] = []
-    for mention in mentions:
-        key = (
-            mention.entity,
-            normalize_phrase(mention.text),
-            tuple(sorted(dict(mention.attributes).items())),
-        )
-        if key in seen:
-            continue
-        seen.add(key)
-        deduped.append(mention)
-    return tuple(deduped)
 
 
 def _overlaps(left: tuple[int, int], right: tuple[int, int]) -> bool:

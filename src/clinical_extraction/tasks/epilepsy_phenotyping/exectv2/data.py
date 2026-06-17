@@ -6,6 +6,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from clinical_extraction.core.evidence import clean_semantically_neutral_text_artifacts
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.evaluation import (
+    uses_cuiphrase_as_gold_text,
+)
 
 DEFAULT_DATA_DIR = Path("data/ExECTv2 (2025)")
 DEFAULT_JSON_DIR = DEFAULT_DATA_DIR / "Json"
@@ -16,33 +19,44 @@ DEFAULT_SPLIT_MANIFEST = DEFAULT_SPLITS_DIR / "exectv2_split_v1.json"
 SEIZURE_FREQUENCY = "SeizureFrequency"
 DIAGNOSIS = "Diagnosis"
 
-# Entities whose gold ``text`` is repaired to its ``CUIPhrase`` at load time.
-# The gold JSON was derived from the benchmark MarkupOutput CSVs, which carry two
-# phrase columns: col5 (the raw covered span) → ``text`` and col6 (the clean
-# canonical term) → ``CUIPhrase``. col5 is offset-drift–corrupted (truncations,
-# over-captures, spelling); col6 is the authoritative clean phrase the published
-# system was scored against. For these entities col6 is unambiguously the clean
-# seizure-/diagnosis-term phrase, so matching on it is both correct and
-# benchmark-faithful (see docs/research/exectv2_data_discoveries_log.md D16).
+# The per-entity phrase target is declared in ``contract.evaluation``. The notes
+# below document the source provenance behind that policy.
+# The gold JSON was derived from the benchmark MarkupOutput CSVs. Invariant across
+# all entities: ``CUIPhrase`` is the clean canonical concept and gold ``text`` is
+# the raw offset-covered span (drift-corrupted: truncations, over-captures,
+# spelling). The clean CUIPhrase is the authoritative phrase the published system
+# was scored against; for these two entities it is unambiguously the clean
+# seizure-/diagnosis-term, so matching on it is both correct and benchmark-faithful
+# (discoveries log D16).
 #
-# Deliberately NOT every entity: for Investigations col6 encodes the finding
-# (``EEG``→``abnormal-eeg``), and for Prescription/WhenDiagnosed it is an ontology
-# concept stripped of dose/date — there col6 is a semantic change, not a repair,
-# and is held for a per-entity decision (D17).
-_CUIPHRASE_REPAIR_ENTITIES = frozenset({SEIZURE_FREQUENCY, DIAGNOSIS})
+# Which physical CSV column holds each field varies by file — do not generalize a
+# column index. Verified against the raw CSVs (``file,start,end,CUI,…``):
+#   - SeizureFrequency: col5 = raw span → ``text``, col6 = clean → ``CUIPhrase``.
+#   - The other seven (BirthHistory, Diagnosis, EpilepsyCause, Investigations, Onset,
+#     PatientHistory, WhenDiagnosed): order flipped — col5 = clean → ``CUIPhrase``,
+#     col6 = raw span → ``text``.
+#   - Prescription: col5 = ``CUIPhrase``, col6 = ``DrugName``, col10 (full regimen
+#     markup span, e.g. ``carbamazepine-``) → ``text``.
+# The code reads JSON fields, not columns, so the per-file order does not affect it.
+#
+# Repair is deliberately NOT every entity: for Investigations CUIPhrase encodes the
+# finding (``EEG``→``abnormal-eeg``), and for Prescription/WhenDiagnosed it is an
+# ontology concept stripped of dose/date — there CUIPhrase is a semantic change, not
+# a repair, and is held for a per-entity decision (D17). Prescription's ``text`` span
+# altitude is also inconsistent in the gold itself (~70% of offsets cover the full
+# regimen, ~30% just the drug name), so it has no single clean phrase target and is
+# scored on its clinical components (see the all-9 layered error analysis, Finding 1).
 
 
 @dataclass(frozen=True)
 class ExectAnnotation:
     """One gold entity mention in an ExECTv2 letter.
 
-    ``text`` is the phrase used for label matching. For entities in
-    ``_CUIPHRASE_REPAIR_ENTITIES`` (SeizureFrequency, Diagnosis) it is the clean
-    canonical term (``CUIPhrase`` / MarkupOutput col6); for all other entities it
-    is the raw annotated span as stored in the gold JSON. ``raw_text`` always
-    preserves the original stored span (col5) for provenance — for repaired
-    mentions it is the corrupt phrase, for the rest it equals ``text``. Spaces are
-    rendered as hyphens in both.
+    ``text`` is the phrase used for label matching. For entities whose
+    ``EntityEvaluationPolicy.phrase_target`` is ``cuiphrase`` it is the clean
+    canonical term; for all other entities it is the raw annotated span as stored
+    in the gold JSON. ``raw_text`` always preserves the original stored span for
+    provenance. Spaces are rendered as hyphens in both.
 
     ``start_index``/``end_index`` are the gold character offsets, retained for
     provenance but DELIBERATELY NOT USED for matching: spelling was corrected in
@@ -80,7 +94,7 @@ def load_annotations(path: Path) -> tuple[ExectAnnotation, ...]:
         cui_phrase = attributes.get("CUIPhrase")
         text = (
             cui_phrase
-            if entity in _CUIPHRASE_REPAIR_ENTITIES and cui_phrase
+            if uses_cuiphrase_as_gold_text(entity) and cui_phrase
             else raw_text
         )
         annotations.append(

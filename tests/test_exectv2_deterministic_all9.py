@@ -565,6 +565,44 @@ def test_dev_split_all9_predictions_are_schema_clean() -> None:
     assert errors == []
 
 
+def test_patient_history_keeps_distinct_occurrences_diagnosis_collapses_prose() -> None:
+    # Two history mentions of "diabetes" at distinct offsets with identical
+    # attributes are kept as separate predictions (per-occurrence emission), so the
+    # offset-based benchmark's duplicate gold copies are recoverable. A diagnosis
+    # surface form repeated in prose still collapses to one (the rules cannot tell a
+    # repeat assertion from a prose token, so per-occurrence is PatientHistory-only).
+    text = (
+        "Past medical history includes diabetes and depression. "
+        "She has epilepsy. Her epilepsy is well controlled. The epilepsy diagnosis stands. "
+        "On a background of diabetes, she remains stable."
+    )
+    letter = ExectLetter(letter_id="DUP1", note_text=text)
+
+    prediction = extract_deterministic_all9(letter)
+    diabetes = [
+        m for m in prediction.mentions if m.entity == PATIENT_HISTORY.name and m.text == "diabetes"
+    ]
+    epilepsy = [
+        m
+        for m in prediction.mentions
+        if m.entity == DIAGNOSIS.name and m.text.lower() == "epilepsy"
+    ]
+
+    assert len(diabetes) == 2
+    spans = [m.evidence_span for m in diabetes]
+    assert all(span is not None for span in spans)
+    starts = {span.start_char for span in spans if span is not None}
+    assert len(starts) == 2
+    assert all(
+        span is not None
+        and span.start_char is not None
+        and span.end_char is not None
+        and text[span.start_char : span.end_char] == span.text
+        for span in spans
+    )
+    assert len(epilepsy) == 1
+
+
 def test_dev_split_prescription_component_scores_clear_goal_threshold() -> None:
     letters = load_letters_for_split("dev")
     predictions = run_all9_on_letters(letters)

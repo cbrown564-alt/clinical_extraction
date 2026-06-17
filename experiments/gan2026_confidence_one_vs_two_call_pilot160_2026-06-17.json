@@ -1,0 +1,119 @@
+{
+  "artifact_kind": "gan2026_confidence_one_vs_two_call_paired",
+  "date": "2026-06-17",
+  "mode": "pilot160",
+  "dimension": "Calibration",
+  "model": "openai/gpt-4.1-mini",
+  "question": "Does variant-D's discrimination come from the decoupled call or the prompt wording?",
+  "joint_prompt_version": "gan2026_joint_se_plus_variantD_confidence_v1",
+  "confidence_reviewer_version": "variant_D_decoupled_v1",
+  "n_rows": 160,
+  "n_scored_paired": 160,
+  "n_joint_prob_parse_fail": 0,
+  "n_decoupled_parse_fail": 0,
+  "n_no_comparison": 0,
+  "n_failures": 7,
+  "joint_arm_purist_accuracy": 0.95625,
+  "se_baseline_purist_accuracy_comparator": 0.881,
+  "external_signal_comparator_auroc": 0.781,
+  "decoupled_on_frozen_SE_comparator_auroc": 0.684,
+  "intrinsic_in_pass_comparator_auroc": 0.497,
+  "joint_arm_one_call": {
+    "n": 160,
+    "failure_prediction_auroc": 0.4178338001867414,
+    "ece": 0.03749999999999988,
+    "brier": 0.04503125,
+    "mean_p": 0.91875,
+    "std_p": 0.030490777294126147,
+    "distinct_values": 3,
+    "top_bucket_share": 0.93125,
+    "reliability_table": [
+      {
+        "bin": "[0.8,0.9)",
+        "n": 11,
+        "mean_score": 0.85,
+        "empirical_accuracy": 1.0,
+        "gap": 0.15000000000000002
+      },
+      {
+        "bin": "[0.9,1.0)",
+        "n": 149,
+        "mean_score": 0.9238255033557048,
+        "empirical_accuracy": 0.9530201342281879,
+        "gap": 0.029194630872483085
+      }
+    ],
+    "residual": {
+      "n": 33,
+      "mean_p": 0.9,
+      "accuracy": 0.9090909090909091
+    },
+    "nonresidual": {
+      "n": 127,
+      "mean_p": 0.9236220472440945,
+      "accuracy": 0.968503937007874
+    }
+  },
+  "decoupled_arm_two_call": {
+    "n": 160,
+    "failure_prediction_auroc": 0.7180205415499533,
+    "ece": 0.06406249999999995,
+    "brier": 0.053578125,
+    "mean_p": 0.8978125,
+    "std_p": 0.13697021517012373,
+    "distinct_values": 5,
+    "top_bucket_share": 0.8625,
+    "reliability_table": [
+      {
+        "bin": "[0.1,0.2)",
+        "n": 2,
+        "mean_score": 0.1,
+        "empirical_accuracy": 0.5,
+        "gap": 0.4
+      },
+      {
+        "bin": "[0.2,0.3)",
+        "n": 3,
+        "mean_score": 0.20000000000000004,
+        "empirical_accuracy": 1.0,
+        "gap": 0.7999999999999999
+      },
+      {
+        "bin": "[0.8,0.9)",
+        "n": 17,
+        "mean_score": 0.85,
+        "empirical_accuracy": 0.8235294117647058,
+        "gap": -0.026470588235294135
+      },
+      {
+        "bin": "[0.9,1.0)",
+        "n": 138,
+        "mean_score": 0.9304347826086957,
+        "empirical_accuracy": 0.9782608695652174,
+        "gap": 0.047826086956521685
+      }
+    ],
+    "residual": {
+      "n": 33,
+      "mean_p": 0.8378787878787879,
+      "accuracy": 0.9090909090909091
+    },
+    "nonresidual": {
+      "n": 127,
+      "mean_p": 0.9133858267716536,
+      "accuracy": 0.968503937007874
+    }
+  },
+  "paired_auroc_difference": {
+    "point_diff_decoupled_minus_joint": 0.30018674136321194,
+    "ci95_lo": -0.01282051282051283,
+    "ci95_hi": 0.6337579617834395,
+    "reps_used": 999
+  },
+  "provenance": {
+    "se_calls": "live joint pass (1/row)",
+    "reviewer_calls": "live (1/row over joint answers)",
+    "answers_shared_across_arms": true,
+    "predeclaration": "docs/research/gan2026_confidence_one_vs_two_call_predeclaration_2026-06-17.md"
+  }
+}
