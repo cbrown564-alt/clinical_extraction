@@ -1858,6 +1858,16 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Inform Architecture Loop
 
+### `exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_llm_only_per_entity`; mode `live`; replay `native_run_split`.
+- Model role: Existing focused per-entity Diagnosis prompt, run as the first specialist-prompt comparison against v0.5 single structured key-entity prompt.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only`.
+- Primary metrics: prompt_version=exectv2_llm_only_per_entity_v0.4, diagnosis_semantic_item_f1=0.259, diagnosis_source_near_recall=0.429, diagnosis_source_near_f1=0.565, diagnosis_clinical_headline_f1=0.282, parse_failures=0, evidence_validity_rate=1.0000.
+- Evidence validity: 0 call failures, 0 parse failures; 29/29 evidence-valid rendered mentions.
+- Claim language: Negative specialist-prompt comparison. The existing per-entity Diagnosis prompt is cleaner than the old all-9 baseline on source-near recall, but it is not competitive with the v0.5 single structured prompt on objective-aligned Diagnosis clinical recovery (`0.282` vs `0.569`). Do not promote; next specialist attempt should start from v0.5 guidance or use a verifier/repair prompt.
+- Artifacts: `experiments/exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618_diagnosis.jsonl`, `experiments/exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618_diagnosis.md`, `experiments/exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618_combined.json`, `experiments/exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618_combined.md`, `docs/research/exectv2_diagnosis_specialist_prompt_comparison_2026-06-18.md`.
+
 ### `exectv2_llm_only_key_entities_structured_v05_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
 - Pipeline: `exectv2_llm_only_key_entities_structured`; mode `live`; replay `native_run_split`.

@@ -64,6 +64,10 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   This supports moving to a specialist Diagnosis prompt comparison on the same
   dev25 surface before dev140. See
   `docs/research/exectv2_key_entities_structured_v05_pilot_report_2026-06-18.md`.
+- The existing per-entity Diagnosis specialist prompt is not competitive with
+  v0.5: clinical headline F1 `0.282` vs v0.5 single structured `0.569`, despite
+  a clean gate and source-near recall lift versus the old all-9 baseline. See
+  `docs/research/exectv2_diagnosis_specialist_prompt_comparison_2026-06-18.md`.
 
 ## Active Priorities
 
@@ -79,10 +83,9 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
 
 ### Now
 
-- Compare a specialist Diagnosis prompt against v0.5 single-prompt structured
-  Diagnosis on the same dev25 surface; keep medication/Investigation/SF from
-  v0.5 as the single-prompt reference unless the comparison shows a cleaner
-  architecture.
+- Design the next Diagnosis-focused architecture from v0.5, not from the old
+  per-entity prompt: either a new specialist Diagnosis prompt using v0.5 guidance
+  or a lightweight verifier/repair prompt for Diagnosis concept spans/certainty.
 
 ### Next
 
@@ -115,7 +118,8 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   (`0.421`). v0.4 recovered SF to `0.644` while preserving medication and
   Investigations above target; v0.5 then lifted Diagnosis to `0.569` while
   preserving the other family wins. Runs are registered in
-  `experiments/RUN_INDEX.md`; latest report:
+  `experiments/RUN_INDEX.md`. The first specialist Diagnosis comparison rejected
+  the old per-entity frame (`0.282` clinical F1 vs v0.5 `0.569`). Latest report:
   `docs/research/exectv2_key_entities_structured_v05_pilot_report_2026-06-18.md`.
 - 2026-06-17: Built the reusable all-entity projection-gap ledger
   (`reports/projection_gap_ledger.py`). Classifies every gold FN / predicted FP
