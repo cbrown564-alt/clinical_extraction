@@ -38,12 +38,26 @@ def test_prompt_hygiene_and_four_family_schema() -> None:
         INVESTIGATIONS.name,
     }
     assert "clinical_events" in payload["output_schema"]
-    assert payload["prompt_version"].endswith("_v0.5")
+    assert payload["prompt_version"].endswith("_v0.8")
+    assert payload["architecture"]["name"] == "single hybrid key-family event ledger"
+    assert payload["candidate_evidence_ledger"]
+    assert payload["decision_procedure"]
+    assert payload["event_lane_guide"]
+    assert {
+        "medication",
+        "diagnosis",
+        "seizure_frequency",
+        "investigation",
+    } <= set(payload["event_lane_guide"])
     assert "medication" in payload["family_guidance"]
     assert "seizure_frequency" in payload["family_guidance"]
     assert "DiagCategory" in payload["attribute_vocabulary"][DIAGNOSIS.name]
     assert "EEG_Type" in payload["attribute_vocabulary"][INVESTIGATIONS.name]
     clinical_rules = " ".join(payload["clinical_rules"])
+    assert "First classify each candidate_evidence_ledger item" in clinical_rules
+    assert "Candidate ledger rows are not predictions" in clinical_rules
+    assert "Medication decision lane" in clinical_rules
+    assert "Investigation decision lane" in clinical_rules
     assert "LowerNumberOfSeizures" in clinical_rules
     assert "LowerNumberOfTimePeriods='3'" in clinical_rules
     assert "FrequencyChange only" in clinical_rules
@@ -53,15 +67,19 @@ def test_prompt_hygiene_and_four_family_schema() -> None:
     assert "render only the core clinical concept" in clinical_rules
     assert "use the exact abbreviation as mention" in clinical_rules
     assert "Do not render vague symptoms" in clinical_rules
+    assert "negated resemblance statements" in clinical_rules
+    assert "childhood febrile seizures" in clinical_rules
     assert "A problem-list or Diagnosis header is not enough" in clinical_rules
     assert "myoclonic jerks" in clinical_rules
     assert "Never write 'tonic chronic'" in clinical_rules
     assert "generic seizure phrase" in clinical_rules
+    assert "Never emit a SeizureFrequency mention with empty attributes" in clinical_rules
     assert "'several'='3'" in clinical_rules
     assert "last seizure" in clinical_rules
     assert "with altered awareness" in clinical_rules
     assert "generic events, blackouts" in clinical_rules
     assert "future planned, requested, repeat, or follow-up investigations" in clinical_rules
+    assert "EEG did show temporal slowing" in clinical_rules
     assert "Do not default a plain EEG to Standard" in clinical_rules
     med_example = next(
         example
@@ -127,6 +145,57 @@ def test_prompt_hygiene_and_four_family_schema() -> None:
         if example["note_fragment"] == "Unwitnessed blackouts and anxiety, no epileptic seizures."
     )
     assert no_event_example["correct_event"] == []
+
+
+def test_candidate_evidence_ledger_types_family_lanes() -> None:
+    note = (
+        "Current medication lamotrigine 200 mg twice daily. "
+        "I will request a repeat MRI scan next year. "
+        "MRI 2016 showed left hippocampal sclerosis. "
+        "EEG did show temporal slowing. "
+        "Diagnosis: focal epilepsy. "
+        "Family history includes epilepsy. "
+        "He has not had any events which resemble absences, myoclonus or focal seizures. "
+        "She has not had any further seizures since last clinic."
+    )
+    letter = ExectLetter(letter_id="TEST002", note_text=note)
+
+    ledger = structured.candidate_evidence_ledger_for_letter(letter)
+
+    assert any(
+        item["family"] == "medication" and item["lane_hint"] == "current_regimen"
+        for item in ledger
+    )
+    assert any(
+        item["family"] == "investigation" and item["lane_hint"] == "planned_investigation"
+        for item in ledger
+    )
+    assert any(
+        item["family"] == "investigation" and item["lane_hint"] == "performed_investigation"
+        and item["anchor_hint"] == "EEG"
+        for item in ledger
+    )
+    assert any(
+        item["family"] == "diagnosis" and item["lane_hint"] == "diagnosis_assertion"
+        for item in ledger
+    )
+    assert any(
+        item["family"] == "diagnosis" and item["lane_hint"] == "diagnosis_context_only"
+        for item in ledger
+    )
+    assert any(
+        item["family"] == "diagnosis" and item["lane_hint"] == "symptom_or_nonepileptic"
+        for item in ledger
+    )
+    assert any(
+        item["family"] == "seizure_frequency" and item["lane_hint"] == "reject"
+        for item in ledger
+    )
+    assert any(
+        item["family"] == "seizure_frequency"
+        and item["lane_hint"] == "seizure_free_anchor"
+        for item in ledger
+    )
 
 
 def test_parse_structured_events_coerces_nested_values() -> None:
@@ -253,6 +322,30 @@ def test_to_predicted_letter_gates_evidence_and_projects_cuis() -> None:
             rationale="Frequency stated.",
         ),
         structured.MentionForEvidence(
+            entity=SEIZURE_FREQUENCY.name,
+            text="focal seizures",
+            attributes={"Negation": "Affirmed"},
+            evidence="focal epilepsy with 2 focal seizures per month",
+            confidence="high",
+            rationale="No frequency-state attributes.",
+        ),
+        structured.MentionForEvidence(
+            entity=INVESTIGATIONS.name,
+            text="MRI",
+            attributes={"MRI_Performed": "Yes"},
+            evidence="MRI brain was normal",
+            confidence="high",
+            rationale="Duplicate modality-only rendering.",
+        ),
+        structured.MentionForEvidence(
+            entity=INVESTIGATIONS.name,
+            text="MRI brain",
+            attributes={"MRI_Performed": "Yes", "MRI_Results": "Normal"},
+            evidence="MRI brain was normal",
+            confidence="high",
+            rationale="Result-bearing rendering.",
+        ),
+        structured.MentionForEvidence(
             entity="PatientHistory",
             text="focal seizures",
             attributes={},
@@ -271,6 +364,7 @@ def test_to_predicted_letter_gates_evidence_and_projects_cuis() -> None:
     assert [mention.entity for mention in letter.mentions] == [
         DIAGNOSIS.name,
         SEIZURE_FREQUENCY.name,
+        INVESTIGATIONS.name,
     ]
     diagnosis = letter.mentions[0]
     sf = letter.mentions[1]
@@ -279,6 +373,7 @@ def test_to_predicted_letter_gates_evidence_and_projects_cuis() -> None:
     assert "FrequencyChange" not in diagnosis.attributes
     assert sf.attributes["CUI"] == "C0751495"
     assert "DiagCategory" not in sf.attributes
+    assert letter.mentions[2].text == "MRI brain"
     assert any("dropped_out_of_scope_entity" in warning for warning in warnings)
     assert any("dropped_evidence_not_substring" in warning for warning in warnings)
     assert any("Diagnosis: dropped_illegal_attribute" in warning for warning in warnings)
@@ -286,6 +381,8 @@ def test_to_predicted_letter_gates_evidence_and_projects_cuis() -> None:
         "Diagnosis: dropped_model_supplied_projection_attribute" in warning
         for warning in warnings
     )
+    assert any("dropped_no_frequency_state_rendering" in warning for warning in warnings)
+    assert any("dropped_duplicate_modality_only_rendering" in warning for warning in warnings)
 
 
 def test_summarize_rows_scores_only_key_entities() -> None:
