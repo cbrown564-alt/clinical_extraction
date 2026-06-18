@@ -151,8 +151,12 @@ Diagnosis experiments tested these architecture ideas:
 
 Current Diagnosis result: the best dev140 score is still only `0.658`. The
 residual pattern is stable: generic epilepsy and tonic-clonic over-emission,
-plus focal epilepsy and secondary-generalised misses. This is a concept
-hierarchy/assertion problem, not only an evidence coverage problem.
+plus focal epilepsy and secondary-generalised misses. The residual convention
+decomposition shows that even a generous convention oracle reaches only `0.791`,
+below the `0.8` gate. Diagnosis should therefore be treated as a transparent
+ceiling/annotation-scope result unless a new architecture changes the
+prediction-bearing evidence source, not as a near-miss to be solved by another
+reject-prompt loop.
 
 ### 5. SeizureFrequency verifier and state adjudicator
 
@@ -187,10 +191,13 @@ qualitative change, prior-event reference, unlabelled event, and context-only
 diagnosis. v0.5 then improved seizure-free F1 from `0.738` to `0.781`, but
 unknown-state F1 regressed to `0.476`.
 
-Current SF result: state decomposition is the right direction, but the remaining
-task is balanced across active-rate, seizure-free, and unknown state residuals.
-The next loop should recover unknown/change states without undoing v0.5
-seizure-free gains.
+Current SF result: state decomposition is the right direction, and the residual
+convention decomposition sharpened the next loop: an oracle state plus
+generic-vs-named ownership projection reaches `0.805`. The predeclared v0.6
+deterministic replay recovered part of that headroom (`0.721` -> `0.763`) but
+did not clear `0.8`; ownership-only projection made no measurable movement. The
+oracle should therefore be treated as an upper bound, not as an achieved or
+safely reachable score.
 
 ### 6. Medication and Investigations verifiers
 
@@ -388,7 +395,9 @@ The current best dev140 architecture is an assembled hybrid:
 | SeizureFrequency | single structured v0.5 + candidate spans | SF state adjudicator v0.5 | evidence gate + finite SF CUI projection |
 
 This architecture clears two of four key families on dev140. It should be
-treated as revise-only because the explicit objective is all four families above
+treated as revise-only for the overall benchmark objective, but the current
+research interpretation is now split: SF has a plausible convention-projection
+path over `0.8`, while Diagnosis is likely a benchmark-convention ceiling below
 `0.8`.
 
 ## Open Problems
@@ -404,16 +413,21 @@ Main residuals:
 - focal epilepsy and secondary-generalised recall misses;
 - assertion/certainty and concept hierarchy mismatch.
 
-The likely next architecture is a constrained accept/reject gate over
-normalized concept-family candidates. It should make one binary decision per
-concept/evidence pair and include a named seizure-type recovery lane. The first
-acceptance gate was too conservative on dev25 (`0.625`), so the next version
-should not simply reject frequency-looking evidence; it needs explicit recovery
-for named seizure-type diagnoses when the text asserts them diagnostically.
+The residual convention decomposition supersedes the earlier gate-v0.2 plan.
+Pure convention alignment accounts for a meaningful minority of the residual,
+but even a generous oracle that resolves assertion, hierarchy altitude, and
+adjacent-family specificity reaches only `0.791`. The next Diagnosis deliverable
+is therefore characterization: evidence validity, convention-bound residual
+share, semantic/concept-layer reporting, and clear claim language that the
+benchmark `0.8` target is not reachable by another legitimate convention gate
+on the current candidate set.
+
+This is now captured as a paper-facing ceiling note:
+`docs/research/exectv2_diagnosis_ceiling_note_2026-06-18.md`.
 
 ### SeizureFrequency
 
-Current best: `0.721`.
+Current best: `0.763` after deterministic v0.6 state projection.
 
 v0.5 nearly solved the seizure-free slice (`0.781`) but regressed unknown-state
 recovery (`0.476`). The remaining residuals are balanced:
@@ -422,10 +436,15 @@ recovery (`0.476`). The remaining residuals are balanced:
 - seizure-free: 15 misses / 13 over-emissions;
 - unknown: 18 misses / 15 over-emissions.
 
-The next SF loop should add a constrained unknown/change-state lane that
-recovers explicit seizure phrases like returned, worse, increased, improved,
-frequent, infrequent, and controlled, while rejecting epilepsy stability,
-treatment response, and non-seizure episodes when seizure wording is absent.
+The v0.6 projection should be treated as a partial improvement, not a target
+crossing. It improves recall while keeping precision acceptable, but the unknown
+slice remains weak and ownership projection contributes no measurable gain. Any
+further SF work should be a targeted residual/error-slice study, not another
+broad aggregate prompt or projection pass.
+
+The targeted v0.6 hard-slice diagnostic shows that the remaining blocker is
+unknown-state precision: 22 unknown over-emissions versus 8 unknown misses.
+Another broad unknown/change recovery rule is therefore not supported.
 
 ### Combined readout
 
@@ -442,31 +461,22 @@ readout should report:
 
 ## Recommended Next Research Plan
 
-1. Freeze the current report as the interim architecture synthesis.
-2. Continue dev140-only development for Diagnosis and SF; do not run a full-200
-   audit until dev140 clears the predeclared benchmark-beating gates.
-3. Build Diagnosis gate v0.2:
-   - one binary decision per normalized concept/evidence pair;
-   - explicit concept families: generic epilepsy, focal epilepsy,
-     symptomatic/structural focal epilepsy, tonic-clonic, secondary
-     generalised, absence/myoclonic/focal seizure types;
-   - reject labels for section context, frequency-only state, historical
-     background, inferred cause, and non-epileptic event;
-   - recovery lane for diagnostically asserted named seizure types.
-4. Build SF state adjudicator v0.6:
-   - preserve v0.5 seizure-free-anchor guide;
-   - add a constrained unknown/change-state lane;
-   - keep generic-vs-named active-rate ownership explicit;
-   - test whether unknown-state recovery can improve without reintroducing
-     generic over-emission.
-5. Reassemble the best four-family dev140 candidate:
+1. Freeze the current report as the interim architecture synthesis, with the
+   residual convention decomposition as the plan-changing companion analysis.
+2. Stop ordinary Diagnosis target-chasing on the current candidate set. Treat
+   Diagnosis as a ceiling/characterization result unless a new architecture
+   changes the prediction-bearing evidence source.
+3. Treat SF v0.6 as the current best SF candidate (`0.763`) but not a target
+   clearing result. Its state-only and combined ablations match; ownership-only
+   contributes no measurable gain.
+4. Reassemble the best four-family dev140 candidate:
    - Prescription verifier v0.1;
    - Investigations verifier v0.1;
-   - Diagnosis successor to reconciler/gate;
-   - SF successor to state adjudicator v0.5.
-6. Only after all four clear `0.8` on dev140, write a frozen protocol for any
-   full-200 readout. That protocol should predeclare the architecture, artifacts,
-   exact metrics, and no row-level post-hoc tuning.
+   - Diagnosis reconciler v0.1 as ceiling/semantic-layer evidence;
+   - SF v0.6 state projection.
+5. Only after the revised architecture has benchmark-beating dev evidence, write
+   a frozen protocol for any full-200 readout. That protocol should predeclare
+   the architecture, artifacts, exact metrics, and no row-level post-hoc tuning.
 
 ## Claim Language To Use Now
 
@@ -488,9 +498,31 @@ Supported:
 > verifier prompts, while Diagnosis and SeizureFrequency require stronger
 > concept/state decomposition.
 
+Supported:
+
+> Residual convention decomposition splits the two below-target families:
+> SeizureFrequency has a reachable state/ownership convention-projection path
+> over `0.8`, while Diagnosis remains below `0.8` even under a generous
+> convention oracle.
+
+Supported:
+
+> Deterministic SF state projection over adjudicator candidates improves dev140
+> clinical-recovery F1 from `0.721` to `0.763`, but does not clear the `0.8`
+> target; the convention oracle is an upper bound rather than achieved evidence.
+
 Not yet supported:
 
 > The ExECTv2 architecture beats the key-family benchmark.
+
+Not supported:
+
+> Diagnosis can reach benchmark-F1 `0.8` on dev140 through another verifier or
+> accept/reject gate over the current candidate set.
+
+Not supported:
+
+> SeizureFrequency clears `0.8` after deterministic convention projection.
 
 Not yet supported:
 
@@ -516,3 +548,7 @@ Not yet supported:
   `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_reconciler_v02_dev140_report_2026-06-18.md`
 - SeizureFrequency state adjudicator:
   `docs/experiments/exectv2/seizure_frequency/exectv2_sf_state_adjudicator_v05_dev140_report_2026-06-18.md`
+- Diagnosis ceiling note:
+  `docs/research/exectv2_diagnosis_ceiling_note_2026-06-18.md`
+- SF v0.6 state projection and hard-slice readout:
+  `docs/research/exectv2_sf_state_projection_v06_readout_2026-06-18.md`

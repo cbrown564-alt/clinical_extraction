@@ -87,23 +87,27 @@ def build_combined_predictions_from_rows(
     *,
     diagnosis_rows: Sequence[Mapping[str, Any]] | None = None,
     sf_rows: Sequence[Mapping[str, Any]] | None = None,
+    investigations_rows: Sequence[Mapping[str, Any]] | None = None,
 ) -> list[PredictedLetter]:
     """Combine best current family outputs into one prediction object per letter."""
 
     structured_by_id = _rows_by_id(structured_rows)
     diagnosis_by_id = _rows_by_id(diagnosis_rows or ())
     sf_by_id = _rows_by_id(sf_rows or ())
+    investigations_by_id = _rows_by_id(investigations_rows or ())
     predictions: list[PredictedLetter] = []
 
     for letter in gold_letters:
         structured = structured_by_id.get(letter.letter_id, {})
         diagnosis = diagnosis_by_id.get(letter.letter_id, structured)
         sf = sf_by_id.get(letter.letter_id, structured)
+        investigations = investigations_by_id.get(letter.letter_id, structured)
         mentions = [
             *_mentions_from_row(
                 structured,
-                allowed_entities={PRESCRIPTION.name, INVESTIGATIONS.name},
+                allowed_entities={PRESCRIPTION.name},
             ),
+            *_mentions_from_row(investigations, allowed_entities={INVESTIGATIONS.name}),
             *_mentions_from_row(diagnosis, allowed_entities={DIAGNOSIS.name}),
             *_mentions_from_row(sf, allowed_entities={SEIZURE_FREQUENCY.name}),
         ]
@@ -115,6 +119,9 @@ def build_combined_predictions_from_rows(
                     "structured_source": str(structured.get("pipeline_family", "")),
                     "diagnosis_source": str(diagnosis.get("pipeline_family", "")),
                     "sf_source": str(sf.get("pipeline_family", "")),
+                    "investigations_source": str(
+                        investigations.get("pipeline_family", "")
+                    ),
                 },
             )
         )
@@ -156,6 +163,7 @@ def write_error_ledger_artifacts(
     out_md: Path,
     diagnosis_jsonl: Path | None = None,
     sf_jsonl: Path | None = None,
+    investigations_jsonl: Path | None = None,
     split: str = "dev",
     generated_on: str | None = None,
 ) -> tuple[Path, Path]:
@@ -169,6 +177,9 @@ def write_error_ledger_artifacts(
         structured_rows,
         diagnosis_rows=read_jsonl(diagnosis_jsonl) if diagnosis_jsonl else None,
         sf_rows=read_jsonl(sf_jsonl) if sf_jsonl else None,
+        investigations_rows=(
+            read_jsonl(investigations_jsonl) if investigations_jsonl else None
+        ),
     )
     ledger = build_error_ledger(gold_letters, predictions)
     ledger.update(
@@ -178,6 +189,9 @@ def write_error_ledger_artifacts(
             "structured_jsonl": str(structured_jsonl),
             "diagnosis_jsonl": str(diagnosis_jsonl) if diagnosis_jsonl else None,
             "sf_jsonl": str(sf_jsonl) if sf_jsonl else None,
+            "investigations_jsonl": (
+                str(investigations_jsonl) if investigations_jsonl else None
+            ),
         }
     )
 
@@ -474,6 +488,7 @@ def _render_markdown(ledger: Mapping[str, Any], *, json_path: Path) -> str:
         f"- Structured JSONL: `{ledger['structured_jsonl']}`",
         f"- Diagnosis JSONL: `{ledger.get('diagnosis_jsonl')}`",
         f"- SeizureFrequency JSONL: `{ledger.get('sf_jsonl')}`",
+        f"- Investigations JSONL: `{ledger.get('investigations_jsonl')}`",
         "",
         "## Headline Scores",
         "",
@@ -524,6 +539,7 @@ def main() -> None:
     parser.add_argument("--structured-jsonl", type=Path, required=True)
     parser.add_argument("--diagnosis-jsonl", type=Path, default=None)
     parser.add_argument("--sf-jsonl", type=Path, default=None)
+    parser.add_argument("--investigations-jsonl", type=Path, default=None)
     parser.add_argument(
         "--out-json",
         type=Path,
@@ -539,6 +555,7 @@ def main() -> None:
         structured_jsonl=args.structured_jsonl,
         diagnosis_jsonl=args.diagnosis_jsonl,
         sf_jsonl=args.sf_jsonl,
+        investigations_jsonl=args.investigations_jsonl,
         out_json=args.out_json,
         out_md=args.out_md,
         split=args.split,

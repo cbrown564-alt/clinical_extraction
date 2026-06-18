@@ -152,16 +152,30 @@ def test_build_combined_predictions_prefers_family_overrides() -> None:
             ],
         }
     ]
+    investigations_rows = [
+        {
+            "letter_id": "L3",
+            "predicted_mentions": [
+                {
+                    "entity": INVESTIGATIONS.name,
+                    "text": "verified investigation",
+                    "attributes": {},
+                }
+            ],
+        }
+    ]
 
     combined = build_combined_predictions_from_rows(
         gold,
         structured_rows,
         diagnosis_rows=diagnosis_rows,
         sf_rows=sf_rows,
+        investigations_rows=investigations_rows,
     )
 
     assert [mention.text for mention in combined[0].mentions] == [
         "lamotrigine",
+        "verified investigation",
         "verified diagnosis",
         "verified sf",
     ]
