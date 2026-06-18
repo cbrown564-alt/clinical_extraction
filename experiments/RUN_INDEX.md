@@ -1858,6 +1858,26 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Inform Architecture Loop
 
+### `exectv2_hybrid_diagnosis_decomposer_v01_dev140_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_hybrid_diagnosis_decomposer`; mode `live`; replay `native_run_split`.
+- Model role: Diagnosis heading/narrative decomposer v0.1 over the v0.5 single structured key-entity draft. Deterministic code proposes heading and narrative candidate spans; the model owns final Diagnosis mentions. Post-processing only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection; deterministic diagnosis spans are checklist scaffolding, not predictions`.
+- Primary metrics: diagnosis_f1=0.642, diagnosis_precision=0.631, diagnosis_recall=0.653, diagnosis_spans=812, evidence_validity_rate=1.0, parse_failures=0.
+- Evidence validity: 0 call failures, 0 parse failures; 462/462 evidence-valid rendered mentions. Dev25 pilot cleared target (`0.814` F1) but did not transfer to dev140.
+- Claim language: Reject as current Diagnosis candidate. The decomposition increased source-near recall but over-emitted too many Diagnosis mentions and underperformed verifier v0.6 (`0.642` vs `0.651`). Keep v0.6 as current Diagnosis baseline; future decomposition needs an explicit reconciler/verifier.
+- Artifacts: `experiments/exectv2_hybrid_diagnosis_decomposer_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_diagnosis_decomposer_v01_dev140_gpt41mini_20260618.md`, `docs/research/exectv2_diagnosis_decomposer_v01_dev140_report_2026-06-18.md`.
+
+### `exectv2_hybrid_diagnosis_decomposer_v01_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_hybrid_diagnosis_decomposer`; mode `live`; replay `native_run_split`.
+- Model role: Small live architecture probe for the Diagnosis heading/narrative decomposer before full dev140 escalation.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `same as dev140 v0.1`.
+- Primary metrics: diagnosis_f1=0.814, diagnosis_precision=0.767, diagnosis_recall=0.868, diagnosis_spans=120, evidence_validity_rate=1.0, parse_failures=0.
+- Evidence validity: 0 call failures, 0 parse failures; 69/69 evidence-valid rendered mentions.
+- Claim language: Pilot-only escalation signal. Strong dev25 result justified the dev140 run but does not transfer by itself.
+- Artifacts: `experiments/exectv2_hybrid_diagnosis_decomposer_v01_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_diagnosis_decomposer_v01_dev25_gpt41mini_20260618.md`.
+
 ### `exectv2_hybrid_sf_state_adjudicator_v01_dev140_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `140` rows.
 - Pipeline: `exectv2_hybrid_sf_state_adjudicator`; mode `live`; replay `native_run_split`.

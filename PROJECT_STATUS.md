@@ -156,12 +156,18 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   generic seizure-state precision/recall: active-rate over-emission and unknown
   state misses. See
   `docs/research/exectv2_sf_state_adjudicator_v01_dev140_report_2026-06-18.md`.
+- Diagnosis heading/narrative decomposer v0.1 is rejected as the current
+  Diagnosis candidate. It clears dev25 (`0.814`) but transfers to only `0.642`
+  on dev140, below verifier v0.6 (`0.651`), despite clean gates and evidence
+  validity `1.0000`. The decomposition increases source-near recall but
+  over-emits too many seizure-type diagnoses. See
+  `docs/research/exectv2_diagnosis_decomposer_v01_dev140_report_2026-06-18.md`.
 
 ## Active Priorities
 
 1. Redesign the remaining below-target Diagnosis and SeizureFrequency families
-   from the updated dev140 residual ledgers: Diagnosis needs heading
-   decomposition plus narrative seizure-type collection; SF needs a stricter
+   from the updated dev140 residual ledgers: Diagnosis needs a stricter
+   decomposition reconciler after v0.1 over-emitted; SF needs a stricter
    generic-state candidate adjudicator after v0.1 improved but missed target.
 2. Require benchmark-beating dev evidence before any new full-200 audit:
    overall `0.87` per-item / `0.90` per-letter, plus per-entity tables,
@@ -171,8 +177,8 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
 
 ### Now
 
-- Build a Diagnosis decomposition prototype: diagnosis-heading decomposer plus
-  narrative seizure-type collector, reconciled into one Diagnosis output.
+- Build a Diagnosis decomposition reconciler/verifier over heading and narrative
+  candidates; do not use the v0.1 decomposer output directly.
 - Iterate SeizureFrequency candidate span/state adjudication with stricter
   generic seizure keep/reject and unknown-vs-active handling.
 
