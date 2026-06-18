@@ -109,6 +109,26 @@ def test_target_single_call_adapter_normalizes_dose_units() -> None:
     assert any("normalized_dose_unit" in warning for warning in warnings)
 
 
+def test_target_single_call_adapter_projects_diagnosis_text_to_core_fact() -> None:
+    note = "Diagnosis: probable focal epilepsy (perinatal insult)."
+    mentions = [
+        MentionRecord(
+            entity="Diagnosis",
+            text="probable focal epilepsy (perinatal insult)",
+            attributes={"Certainty": "4", "Negation": "Affirmed"},
+            evidence="probable focal epilepsy (perinatal insult)",
+        )
+    ]
+
+    predicted, warnings = to_predicted_letter("EA1", mentions, note_text=note)
+
+    mention = predicted.mentions[0]
+    assert mention.text == "focal epilepsy"
+    assert mention.evidence == "probable focal epilepsy (perinatal insult)"
+    assert mention.attributes["CUI"] == "C0014547"
+    assert any("normalized_diagnosis_text" in warning for warning in warnings)
+
+
 def test_target_single_call_adapter_converts_day_period_to_week_when_exact() -> None:
     note = "She has focal seizures once every 14 days."
     mentions = [
@@ -130,3 +150,27 @@ def test_target_single_call_adapter_converts_day_period_to_week_when_exact() -> 
     assert attrs["NumberOfTimePeriods"] == "2"
     assert attrs["TimePeriod"] == "Week"
     assert any("converted_day_period_to_week" in warning for warning in warnings)
+
+
+def test_target_single_call_adapter_normalizes_since_last_clinic_period() -> None:
+    note = "Since her last clinic appointment she has had four secondary seizures."
+    mentions = [
+        MentionRecord(
+            entity="SeizureFrequency",
+            text="secondary seizures",
+            attributes={
+                "NumberOfSeizures": "4",
+                "TimePeriod": "Since last clinic",
+            },
+            evidence="Since her last clinic appointment she has had four secondary seizures",
+        )
+    ]
+
+    predicted, warnings = to_predicted_letter("EA1", mentions, note_text=note)
+
+    attrs = predicted.mentions[0].attributes
+    assert attrs["NumberOfSeizures"] == "4"
+    assert attrs["TimeSince_or_TimeOfEvent"] == "Since"
+    assert attrs["PointInTime"] == "LastClinic"
+    assert "TimePeriod" not in attrs
+    assert any("normalized_since_last_clinic" in warning for warning in warnings)

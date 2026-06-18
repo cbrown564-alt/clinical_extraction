@@ -265,6 +265,125 @@ def test_concept_identity_splits_compound_same_kind_concepts() -> None:
     assert score.concept_assertion.tp == 2
 
 
+def test_diagnosis_concept_identity_scores_projected_core_fact() -> None:
+    gold = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    DIAGNOSIS.name,
+                    "focal epilepsy",
+                    DiagCategory="Epilepsy",
+                    Certainty="5",
+                    Negation="Affirmed",
+                ),
+            ),
+        )
+    ]
+    pred = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    DIAGNOSIS.name,
+                    "probable focal epilepsy (perinatal insult)",
+                    Certainty="4",
+                    Negation="Affirmed",
+                ),
+            ),
+        )
+    ]
+
+    score = score_concept_identity(gold, pred, DIAGNOSIS.name)
+
+    assert score.concept_only.f1 == 1.0
+
+
+def test_diagnosis_concept_identity_projects_benchmark_equivalent_diagnoses() -> None:
+    gold = [
+        ExectLetter(
+            "L1",
+            "note",
+            (_ann(DIAGNOSIS.name, "focal epilepsy", Certainty="5", Negation="Affirmed"),),
+        )
+    ]
+    pred = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    DIAGNOSIS.name,
+                    "symptomatic structural focal epilepsy",
+                    Certainty="5",
+                    Negation="Affirmed",
+                ),
+            ),
+        )
+    ]
+
+    score = score_concept_identity(gold, pred, DIAGNOSIS.name)
+
+    assert score.concept_only.f1 == 1.0
+
+
+def test_diagnosis_concept_identity_preserves_protected_seizure_type_compound() -> None:
+    letters = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    DIAGNOSIS.name,
+                    "focal seizures with altered awareness",
+                    DiagCategory="MultipleSeizures",
+                    Certainty="5",
+                    Negation="Affirmed",
+                ),
+            ),
+        )
+    ]
+
+    score = score_concept_identity(letters, letters, DIAGNOSIS.name)
+
+    assert score.concept_only.gold_count == 1
+    assert score.concept_only.tp == 1
+
+
+def test_diagnosis_concept_identity_counts_unique_projected_facts_per_letter() -> None:
+    gold = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(DIAGNOSIS.name, "tonic clonic seizures", Certainty="5", Negation="Affirmed"),
+                _ann(DIAGNOSIS.name, "tonic clonic seizures", Certainty="5", Negation="Affirmed"),
+            ),
+        )
+    ]
+    pred = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    DIAGNOSIS.name,
+                    "generalised tonic clonic seizure",
+                    Certainty="5",
+                    Negation="Affirmed",
+                ),
+            ),
+        )
+    ]
+
+    score = score_concept_identity(gold, pred, DIAGNOSIS.name)
+
+    assert score.concept_only.gold_count == 1
+    assert score.concept_only.f1 == 1.0
+
+
 def test_birth_history_concept_identity_ignores_cui_projection() -> None:
     gold = [
         ExectLetter(
