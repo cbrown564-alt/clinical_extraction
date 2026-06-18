@@ -122,6 +122,14 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   success as local development evidence and restart from dev140 residual slices.
   See
   `docs/research/exectv2_key_entities_dev140_transfer_readout_2026-06-18.md`.
+- The dev140 clinical-recovery error ledger is now built:
+  `experiments/exectv2_key_entities_clinical_error_ledger_dev140_20260618.md`.
+  It confirms the next loop should use the single structured draft as substrate
+  but add family-specific verification: medication over-emits lamotrigine
+  titration/future doses, Investigations over-emits modality-only tests and
+  misses normal/abnormal result attributes, Diagnosis needs hierarchy/assertion
+  normalization, and SF needs generic-vs-specific state classification. See
+  `docs/research/exectv2_key_entities_dev140_clinical_error_ledger_readout_2026-06-18.md`.
 
 ## Active Priorities
 
@@ -136,8 +144,8 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
 
 ### Now
 
-- Analyze dev140 residuals for medication and Investigations near misses, then
-  Diagnosis and SeizureFrequency verifier transfer failures.
+- Build the first dev140-led near-target verifier for Prescription and/or
+  Investigations using the clinical-recovery ledger residuals.
 
 ### Next
 

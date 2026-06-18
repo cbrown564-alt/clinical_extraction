@@ -1858,6 +1858,16 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Inform Architecture Loop
 
+### `exectv2_key_entities_clinical_error_ledger_dev140_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_key_entities_clinical_error_ledger`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Clinical-recovery error ledger over the dev140 transfer artifacts: single structured v0.5 for Prescription/Investigations, Diagnosis verifier v0.5, and SeizureFrequency verifier v0.3.; model `none`.
+- Repair mode/config: `no model calls; clinical-recovery key analysis only`.
+- Primary metrics: prescription_f1=0.777, diagnosis_f1=0.616, seizure_frequency_f1=0.602, investigations_f1=0.786, records=569.
+- Evidence validity: Reads existing dev140 JSONLs only; no new model outputs. Ledger keys are the same clinical-recovery keys used by the headline scorers.
+- Claim language: Diagnostic residual taxonomy for the failed dev140 transfer readout. Use this as the control surface for the next targeted verifier iteration; do not treat it as a promoted candidate.
+- Artifacts: `experiments/exectv2_key_entities_clinical_error_ledger_dev140_20260618.json`, `experiments/exectv2_key_entities_clinical_error_ledger_dev140_20260618.md`, `docs/research/exectv2_key_entities_dev140_clinical_error_ledger_readout_2026-06-18.md`.
+
 ### `exectv2_key_entities_dev140_transfer_readout_20260618`
 - Date/split: `2026-06-18`; `dev`; `140` rows.
 - Pipeline: `exectv2_key_entities_transfer_readout`; mode `live`; replay `analysis_only`.
