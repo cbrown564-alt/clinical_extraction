@@ -2267,6 +2267,14 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Inform Architecture Loop
 
+### `exectv2_hybrid_benchmark_overall_dev_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_hybrid_benchmark_overall`; mode `analysis_only`; replay `analysis_only`.
+- Model role: Merged hybrid key-family + deterministic all-9, benchmark surface.; model `gpt-4.1-mini (key families) + deterministic`.
+- Primary metrics: benchmark_per_item_f1=0.3877, benchmark_per_letter_f1=0.6972, paper_overall_per_item_f1=0.87, paper_overall_per_letter_f1=0.9, phrase_only_per_item_f1=0.4549, semantic_per_item_f1=0.4008.
+- Claim language: Like-for-like benchmark-surface overall for the synthesis hybrid key-family architecture. Dev140, analysis-only, no full-200 audit.
+- Artifacts: `experiments\exectv2_hybrid_benchmark_overall_bestof_dev_20260618.json`, `experiments\exectv2_hybrid_benchmark_overall_bestof_dev_20260618.md`.
+
 ### `exectv2_deterministic_all9_dev_20260617`
 - Date/split: `2026-06-17`; `dev`; `140` rows.
 - Pipeline: `exectv2_deterministic_all9`; mode `deterministic`; replay `analysis_only`.

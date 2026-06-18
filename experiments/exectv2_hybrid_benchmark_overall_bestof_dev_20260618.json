@@ -1,0 +1,315 @@
+{
+  "benchmark_overall_delta_vs_paper": {
+    "per_item": -0.4823,
+    "per_letter": -0.2028
+  },
+  "deterministic_fallback_families": [
+    "BirthHistory",
+    "Diagnosis",
+    "EpilepsyCause",
+    "Onset",
+    "PatientHistory",
+    "Prescription",
+    "SeizureFrequency",
+    "WhenDiagnosed"
+  ],
+  "generated_on": "2026-06-18",
+  "key_families": [
+    "Investigations"
+  ],
+  "mention_counts": {
+    "BirthHistory": 30,
+    "Diagnosis": 161,
+    "EpilepsyCause": 24,
+    "Investigations": 137,
+    "Onset": 18,
+    "PatientHistory": 175,
+    "Prescription": 198,
+    "SeizureFrequency": 206,
+    "WhenDiagnosed": 11
+  },
+  "model": "gpt-4.1-mini (key families) + deterministic",
+  "paper_overall_per_item_f1": 0.87,
+  "paper_overall_per_letter_f1": 0.9,
+  "per_entity_benchmark": {
+    "BirthHistory": {
+      "delta_vs_paper_item": -0.4126,
+      "paper_per_item_f1": 0.97,
+      "per_item": {
+        "f1": 0.5574,
+        "fn": 14,
+        "fp": 13,
+        "precision": 0.5667,
+        "recall": 0.5484,
+        "tp": 17
+      },
+      "per_letter": {
+        "f1": 0.7317,
+        "fn": 11,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 0.5769,
+        "tp": 15
+      },
+      "source": "deterministic_all9"
+    },
+    "Diagnosis": {
+      "delta_vs_paper_item": -0.5284,
+      "paper_per_item_f1": 0.85,
+      "per_item": {
+        "f1": 0.3216,
+        "fn": 314,
+        "fp": 70,
+        "precision": 0.5652,
+        "recall": 0.2247,
+        "tp": 91
+      },
+      "per_letter": {
+        "f1": 0.75,
+        "fn": 49,
+        "fp": 5,
+        "precision": 0.9419,
+        "recall": 0.6231,
+        "tp": 81
+      },
+      "source": "deterministic_all9"
+    },
+    "EpilepsyCause": {
+      "delta_vs_paper_item": -0.3667,
+      "paper_per_item_f1": 0.9,
+      "per_item": {
+        "f1": 0.5333,
+        "fn": 9,
+        "fp": 12,
+        "precision": 0.5,
+        "recall": 0.5714,
+        "tp": 12
+      },
+      "per_letter": {
+        "f1": 0.5806,
+        "fn": 7,
+        "fp": 6,
+        "precision": 0.6,
+        "recall": 0.5625,
+        "tp": 9
+      },
+      "source": "deterministic_all9"
+    },
+    "Investigations": {
+      "delta_vs_paper_item": -0.4665,
+      "paper_per_item_f1": 0.95,
+      "per_item": {
+        "f1": 0.4835,
+        "fn": 70,
+        "fp": 71,
+        "precision": 0.4818,
+        "recall": 0.4853,
+        "tp": 66
+      },
+      "per_letter": {
+        "f1": 0.7385,
+        "fn": 30,
+        "fp": 4,
+        "precision": 0.9231,
+        "recall": 0.6154,
+        "tp": 48
+      },
+      "source": "hybrid_verifier"
+    },
+    "Onset": {
+      "delta_vs_paper_item": -0.6743,
+      "paper_per_item_f1": 0.96,
+      "per_item": {
+        "f1": 0.2857,
+        "fn": 12,
+        "fp": 13,
+        "precision": 0.2778,
+        "recall": 0.2941,
+        "tp": 5
+      },
+      "per_letter": {
+        "f1": 0.4167,
+        "fn": 8,
+        "fp": 6,
+        "precision": 0.4545,
+        "recall": 0.3846,
+        "tp": 5
+      },
+      "source": "deterministic_all9"
+    },
+    "PatientHistory": {
+      "delta_vs_paper_item": -0.5429,
+      "paper_per_item_f1": 0.78,
+      "per_item": {
+        "f1": 0.2371,
+        "fn": 390,
+        "fp": 99,
+        "precision": 0.4343,
+        "recall": 0.1631,
+        "tp": 76
+      },
+      "per_letter": {
+        "f1": 0.5475,
+        "fn": 79,
+        "fp": 2,
+        "precision": 0.9608,
+        "recall": 0.3828,
+        "tp": 49
+      },
+      "source": "deterministic_all9"
+    },
+    "Prescription": {
+      "delta_vs_paper_item": -0.568,
+      "paper_per_item_f1": 0.87,
+      "per_item": {
+        "f1": 0.302,
+        "fn": 145,
+        "fp": 137,
+        "precision": 0.3081,
+        "recall": 0.2961,
+        "tp": 61
+      },
+      "per_letter": {
+        "f1": 0.5223,
+        "fn": 72,
+        "fp": 3,
+        "precision": 0.9318,
+        "recall": 0.3628,
+        "tp": 41
+      },
+      "source": "deterministic_all9"
+    },
+    "SeizureFrequency": {
+      "delta_vs_paper_item": 0.0321,
+      "paper_per_item_f1": 0.66,
+      "per_item": {
+        "f1": 0.6921,
+        "fn": 51,
+        "fp": 70,
+        "precision": 0.6602,
+        "recall": 0.7273,
+        "tp": 136
+      },
+      "per_letter": {
+        "f1": 0.9247,
+        "fn": 13,
+        "fp": 1,
+        "precision": 0.9885,
+        "recall": 0.8687,
+        "tp": 86
+      },
+      "source": "deterministic_all9"
+    },
+    "WhenDiagnosed": {
+      "delta_vs_paper_item": -0.0918,
+      "paper_per_item_f1": 0.91,
+      "per_item": {
+        "f1": 0.8182,
+        "fn": 2,
+        "fp": 2,
+        "precision": 0.8182,
+        "recall": 0.8182,
+        "tp": 9
+      },
+      "per_letter": {
+        "f1": 0.9,
+        "fn": 2,
+        "fp": 0,
+        "precision": 1.0,
+        "recall": 0.8182,
+        "tp": 9
+      },
+      "source": "deterministic_all9"
+    }
+  },
+  "pipeline_family": "exectv2_hybrid_benchmark_overall",
+  "provenance": {
+    "BirthHistory": {
+      "source": "deterministic_all9"
+    },
+    "Diagnosis": {
+      "source": "deterministic_all9"
+    },
+    "EpilepsyCause": {
+      "source": "deterministic_all9"
+    },
+    "Investigations": {
+      "artifact": "experiments\\exectv2_llm_investigations_verifier_v01_dev140_gpt41mini_20260618.jsonl",
+      "entity_filter": "Investigations",
+      "source": "hybrid_verifier"
+    },
+    "Onset": {
+      "source": "deterministic_all9"
+    },
+    "PatientHistory": {
+      "source": "deterministic_all9"
+    },
+    "Prescription": {
+      "source": "deterministic_all9"
+    },
+    "SeizureFrequency": {
+      "source": "deterministic_all9"
+    },
+    "WhenDiagnosed": {
+      "source": "deterministic_all9"
+    }
+  },
+  "row_count": 140,
+  "scores": {
+    "benchmark": {
+      "per_item": {
+        "f1": 0.3877,
+        "fn": 1007,
+        "fp": 487,
+        "precision": 0.4927,
+        "recall": 0.3196,
+        "tp": 473
+      },
+      "per_letter": {
+        "f1": 0.6972,
+        "fn": 271,
+        "fp": 27,
+        "precision": 0.927,
+        "recall": 0.5586,
+        "tp": 343
+      }
+    },
+    "phrase_only": {
+      "per_item": {
+        "f1": 0.4549,
+        "fn": 925,
+        "fp": 405,
+        "precision": 0.5781,
+        "recall": 0.375,
+        "tp": 555
+      },
+      "per_letter": {
+        "f1": 0.7541,
+        "fn": 226,
+        "fp": 27,
+        "precision": 0.9349,
+        "recall": 0.6319,
+        "tp": 388
+      }
+    },
+    "semantic": {
+      "per_item": {
+        "f1": 0.4008,
+        "fn": 991,
+        "fp": 471,
+        "precision": 0.5094,
+        "recall": 0.3304,
+        "tp": 489
+      },
+      "per_letter": {
+        "f1": 0.7037,
+        "fn": 266,
+        "fp": 27,
+        "precision": 0.928,
+        "recall": 0.5668,
+        "tp": 348
+      }
+    }
+  },
+  "split": "dev"
+}

@@ -4,14 +4,14 @@ Last updated: 2026-06-18
 
 ## Active Objective
 
-ExECTv2 is the forward workstream. The current key-family result should be
-framed as an architecture characterization, not a benchmark-complete claim. A
-single candidate-ID action prompt now reproduces the current per-family dev140
-readout by auditing candidate IDs and deterministically copying selected
-candidates. Prescription/medication and Investigations clear the dev140
-clinical-recovery target; SeizureFrequency remains a partial-gain family below
-`0.8`; Diagnosis remains a transparent ceiling/annotation-scope result on the
-current candidate set.
+ExECTv2 is the forward workstream, now refocused on the LLM-first essential
+clinical-detail question in
+`docs/plans/exectv2/11_llm_first_essential_clinical_evaluation_plan.md`. The
+current key-family result should be framed as an architecture characterization,
+not a benchmark-complete claim. A single candidate-ID action prompt reproduces
+the current per-family dev140 readout by auditing candidate IDs and
+deterministically copying selected candidates, which makes it a hybrid
+comparator rather than the primary LLM-first architecture.
 
 Use the Gan 2026 closeout discipline as the template: source-near state, exact
 evidence, component attribution, benchmark-format ablations, and family-aware
@@ -41,14 +41,18 @@ This does not authorize a new full-200 audit.
 - SF v0.7 predeclared unknown suppression improves dev140 `0.763` -> `0.782`
   after v0.6 state projection, with unknown FP `22` -> `12`, unknown FN
   unchanged at `8`, and active-rate/seizure-free recall unchanged.
+- The next evaluation pass should separate LLM-owned clinical extraction from
+  deterministic certainty, CUI, and benchmark-format projection.
 
 ## Active Priorities
 
-1. Report the current ExECTv2 result conservatively: two clear families, one
-   partial-gain SF family, and one Diagnosis ceiling/annotation-scope family.
-2. Treat SF v0.7 as a partial-gain candidate, not a target-clearing result;
-   further SF metric work needs a new predeclared hard-slice rationale.
-3. Require benchmark-beating dev evidence before any new full-200 audit:
+1. Establish the essential clinical component scorer for Prescription,
+   SeizureFrequency, Diagnosis, EpilepsyCause, and Investigations.
+2. Audit certainty and CUI as deterministic projection layers rather than LLM
+   extraction targets.
+3. Replay existing single structured, deterministic, and hybrid artifacts under
+   the ownership-aware layer ladder before authorizing new model calls.
+4. Require benchmark-beating dev evidence before any new full-200 audit:
    overall `0.87` per-item / `0.90` per-letter, plus per-entity tables,
    evidence/schema reliability, semantic-vs-CUI gaps, and ablations.
 
@@ -56,14 +60,13 @@ This does not authorize a new full-200 audit.
 
 ### Now
 
-- Convert the final synthesis tables into paper-ready results/ablation language
-  when manuscript drafting starts.
+- Execute the LLM-first essential clinical evaluation plan: scorer spec,
+  certainty/CUI projection audits, and replay of existing artifacts.
 
 ### Next
 
-- Consider a genuinely new Diagnosis evidence-selection architecture only if it
-  changes the prediction-bearing evidence source; do not run another local gate
-  over the same candidate set.
+- Decide whether a new single-call LLM-first run is necessary after replaying
+  the existing single structured prompt under the refocused evaluation surface.
 
 ### Blocked
 
