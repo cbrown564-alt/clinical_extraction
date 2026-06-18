@@ -136,6 +136,56 @@ def test_to_predicted_letter_keeps_sf_render_gate() -> None:
     assert any("dropped_no_frequency_state_rendering" in warning for warning in warnings)
 
 
+def test_to_predicted_letter_normalizes_sf_text_to_selected_anchor() -> None:
+    note_text = (
+        "focal seizures with altered awareness, last event 3 years ago. "
+        "focal to bilateral seizures 2 events in total. "
+        "very frequent myoclonic jerks. "
+        "absences and jerks happen several times a day."
+    )
+    mentions = [
+        structured.MentionForEvidence(
+            entity=SEIZURE_FREQUENCY.name,
+            text="focal seizures with altered awareness, last event 3 years ago",
+            evidence="focal seizures with altered awareness, last event 3 years ago",
+            attributes={"NumberOfSeizures": "0", "TimeSince_or_TimeOfEvent": "Since"},
+        ),
+        structured.MentionForEvidence(
+            entity=SEIZURE_FREQUENCY.name,
+            text="focal to bilateral seizures 2 events in total",
+            evidence="focal to bilateral seizures 2 events in total",
+            attributes={"NumberOfSeizures": "2"},
+        ),
+        structured.MentionForEvidence(
+            entity=SEIZURE_FREQUENCY.name,
+            text="very frequent myoclonic jerks",
+            evidence="very frequent myoclonic jerks",
+            attributes={"FrequencyChange": "Frequent"},
+        ),
+        structured.MentionForEvidence(
+            entity=SEIZURE_FREQUENCY.name,
+            text="absences and jerks happen several times a day",
+            evidence="absences and jerks happen several times a day",
+            attributes={"NumberOfSeizures": "3", "TimePeriod": "Day"},
+        ),
+    ]
+
+    prediction, warnings = ledger.to_predicted_letter(
+        "TEST001",
+        mentions,
+        note_text=note_text,
+        target_family=SEIZURE_FREQUENCY.name,
+    )
+
+    assert [m.text for m in prediction.mentions] == [
+        "focal seizures with altered awareness",
+        "focal to bilateral seizures",
+        "myoclonic jerks",
+        "absences",
+    ]
+    assert all("dropped_no_frequency_state_rendering" not in warning for warning in warnings)
+
+
 def test_summarize_rows_scores_target_family_headline() -> None:
     rows = [
         {

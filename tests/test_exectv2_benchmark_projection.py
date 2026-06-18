@@ -109,6 +109,30 @@ def test_new_structured_entity_projections_are_finite_benchmark_lookups() -> Non
     )
 
 
+def test_reviewed_patient_history_cui_candidates_are_finite_projection_only() -> None:
+    assert patient_history_concept("jerks") == BenchmarkConcept(
+        "jerks",
+        "C0231530",
+        "jerks",
+    )
+    assert patient_history_concept("altered awareness") == BenchmarkConcept(
+        "altered-awareness-and-consciousness",
+        "C0234428",
+        "altered-awareness-and-consciousness",
+    )
+    assert patient_history_concept("déjà vu") == BenchmarkConcept(
+        "déjà-vu",
+        "C0011194",
+        "déjà-vu",
+    )
+    assert patient_history_concept("hemiparesis") == BenchmarkConcept(
+        "hemiparesis",
+        "C0018989",
+        "hemiparesis",
+    )
+    assert patient_history_concept("context-dependent symptom") is None
+
+
 def test_attach_benchmark_concept_does_not_overwrite_existing_clinical_attributes() -> None:
     attrs = attach_benchmark_concept(
         {"DrugDose": "500", "DoseUnit": "mg"},

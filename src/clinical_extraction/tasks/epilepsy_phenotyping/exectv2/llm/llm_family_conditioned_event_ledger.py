@@ -769,6 +769,10 @@ def _normalize_family_mentions(
 
 def _sf_anchor_text(text: str) -> str:
     patterns = [
+        r"\bfocal\s+seizures?\s+with\s+altered\s+awareness\b",
+        r"\bfocal\s+impaired\s+awareness\s+seizures?\b",
+        r"\bfocal\s+to\s+bilateral\s+convulsive\s+seizures?\b",
+        r"\bfocal\s+to\s+bilateral\s+seizures?\b",
         r"\bsecondary\s+generalised\s+seizures?\b",
         r"\bsecondary\s+generalized\s+seizures?\b",
         r"\bgeneralised\s+tonic[- ](?:clonic|chronic)\s+seizures?\b",
@@ -776,10 +780,15 @@ def _sf_anchor_text(text: str) -> str:
         r"\btonic[- ](?:clonic|chronic)\s+seizures?\b",
         r"\babsence[- ]like\s+seizures?\b",
         r"\babsence\s+seizures?\b",
+        r"\babsences?\b",
         r"\bcomplex\s+partial\s+seizures?\b",
+        r"\bpartial\s+motor\s+seizures?\b",
+        r"\bfocal\s+motor\s+seizures?\b",
         r"\bdyscognitive\s+seizures?\b",
         r"\bmyoclonic\s+seizures?\b",
+        r"\bmyoclonic\s+jerks?\b",
         r"\bfocal\s+seizures?\b",
+        r"\bseizure\s+clusters?\b",
         r"\bseizure[- ]free\b",
         r"\bseizures?\b",
     ]

@@ -443,6 +443,17 @@ _PATIENT_HISTORY_ENTRIES: tuple[tuple[BenchmarkConcept, tuple[str, ...]], ...] =
         ("cluster of seizures", "cluster-of-seizures"),
     ),
     (BenchmarkConcept("myoclonus", "C0027066", "myoclonus"), ("myoclonus",)),
+    (BenchmarkConcept("jerks", "C0231530", "jerks"), ("jerks",)),
+    (
+        BenchmarkConcept(
+            "altered-awareness-and-consciousness",
+            "C0234428",
+            "altered-awareness-and-consciousness",
+        ),
+        ("altered awareness",),
+    ),
+    (BenchmarkConcept("déjà-vu", "C0011194", "déjà-vu"), ("déjà vu",)),
+    (BenchmarkConcept("hemiparesis", "C0018989", "hemiparesis"), ("hemiparesis",)),
 )
 _PATIENT_HISTORY_CONCEPT_BY_PHRASE: dict[str, BenchmarkConcept] = {
     normalize_phrase(variant): concept

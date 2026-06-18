@@ -64,6 +64,66 @@ PIPELINE_FAMILY = "exectv2_llm_only_clinical_findings"
 ENTITY_NAME = SEIZURE_FREQUENCY.name
 
 _OUTPUT_LAYERS: tuple[str, ...] = ("format_projected", "cui_projected")
+PLAN11_EVENT_STATE_ROUTE_VERSION = "exectv2_plan11_sf_event_state_route_v0.1"
+PLAN11_EVENT_STATE_LAYER_LADDER: tuple[dict[str, str], ...] = (
+    {
+        "layer": "raw_event_frames",
+        "owner": "llm",
+        "allowed_behavior": "Event/state inventory, target status, operands, and evidence.",
+        "claim_role": "Audit substrate for model-owned coverage and target selection.",
+    },
+    {
+        "layer": "raw_findings",
+        "owner": "llm",
+        "allowed_behavior": "Final model-owned target findings.",
+        "claim_role": "Primary clinical headline before deterministic adapters.",
+    },
+    {
+        "layer": "schema_valid_findings",
+        "owner": "deterministic_schema",
+        "allowed_behavior": "Parse JSON, coerce scalar schema transport, drop invalid records.",
+        "claim_role": "Transport health only.",
+    },
+    {
+        "layer": "evidence_validated",
+        "owner": "deterministic_validator",
+        "allowed_behavior": "Exact source-substring evidence gate.",
+        "claim_role": "Grounding gate.",
+    },
+    {
+        "layer": "format_projected",
+        "owner": "deterministic_adapter",
+        "allowed_behavior": "Map emitted fields to ExECTv2 attributes without adding facts.",
+        "claim_role": "Primary LLM-first scorer layer.",
+    },
+    {
+        "layer": "cui_projected",
+        "owner": "deterministic_benchmark_format",
+        "allowed_behavior": "Attach CUI/CUIPhrase from the model-emitted phrase.",
+        "claim_role": "Companion benchmark-format score only.",
+    },
+    {
+        "layer": "certainty_projected",
+        "owner": "deterministic_guideline_adapter",
+        "allowed_behavior": "No-op sidecar for SeizureFrequency.",
+        "claim_role": "Outside the model-owned SF headline.",
+    },
+    {
+        "layer": "post_llm_state_policy",
+        "owner": "deterministic_state_policy",
+        "allowed_behavior": "Only named, predeclared post-LLM state policy actions.",
+        "claim_role": "Declared sidecar; not hidden adapter behavior.",
+    },
+    {
+        "layer": "benchmark_rendered",
+        "owner": "deterministic_adapter",
+        "allowed_behavior": "Render accepted mention dictionaries for the legacy scorer.",
+        "claim_role": "Benchmark reproduction / continuity layer.",
+    },
+)
+_DISALLOWED_MODEL_PROJECTION_FIELDS: frozenset[str] = frozenset(
+    {"CUI", "CUIPhrase", "Certainty", "Negation"}
+)
 
 _SCALAR_FINDING_FIELDS: frozenset[str] = frozenset({
     "text",
@@ -2152,7 +2212,11 @@ def parse_clinical_findings_json(
         return None, load_errors
 
     payload, coerce_notes = _coerce_payload(payload)
-    errors: list[str] = [*load_errors, *coerce_notes]
+    errors: list[str] = [
+        *load_errors,
+        *_dropped_projection_field_notes(payload),
+        *coerce_notes,
+    ]
 
     try:
         record = ClinicalFindingsRecord.model_validate(payload)
@@ -2160,6 +2224,27 @@ def parse_clinical_findings_json(
         return None, [f"schema_validation_error: {exc.errors()[0]['msg']}"]
 
     return record, errors
+
+
+def _dropped_projection_field_notes(payload: Any) -> list[str]:
+    """Report model-supplied benchmark/guideline fields ignored by the schema."""
+
+    if not isinstance(payload, dict):
+        return []
+    notes: list[str] = []
+    for collection_name in ("event_frames", "findings"):
+        records = payload.get(collection_name)
+        if not isinstance(records, list):
+            continue
+        for index, record in enumerate(records):
+            if not isinstance(record, dict):
+                continue
+            for key in sorted(_DISALLOWED_MODEL_PROJECTION_FIELDS & record.keys()):
+                notes.append(
+                    "dropped_model_supplied_projection_field: "
+                    f"{collection_name}[{index}] {key!r}"
+                )
+    return notes
 
 
 def parse_verification_decisions_json(
@@ -2625,6 +2710,92 @@ def to_predicted_letters(
     return layers, warnings
 
 
+def build_plan11_event_state_route(
+    letter_id: str,
+    record: ClinicalFindingsRecord,
+    *,
+    note_text: str,
+) -> tuple[dict[str, PredictedLetter], dict[str, Any], list[str]]:
+    """Run the documented Plan 11 SF event/state ladder over model output.
+
+    The helper intentionally consumes only model-owned ``findings`` for scored
+    mentions. ``event_frames`` are audit substrate and never become scored
+    findings here, which keeps deterministic code from acting as a hidden
+    clinical selector.
+    """
+
+    layers, warnings = to_predicted_letters(letter_id, record.findings, note_text=note_text)
+    policy_counts = _post_llm_state_policy_counts(warnings)
+    diagnostics = {
+        "route_version": PLAN11_EVENT_STATE_ROUTE_VERSION,
+        "route_contract": (
+            "LLM owns raw_event_frames and raw_findings; deterministic code is "
+            "limited to schema transport, evidence validation, format projection, "
+            "CUI sidecar projection, no-op SF certainty sidecar, and explicitly "
+            "named post-LLM state policy."
+        ),
+        "aggregate_ownership": (
+            "llm_first"
+            if not policy_counts
+            else "llm_first_with_declared_post_llm_state_policy"
+        ),
+        "deterministic_clinical_selection": False,
+        "deterministic_selection_actions": [],
+        "post_llm_state_policy_counts": policy_counts,
+        "layers": _plan11_layer_rows(record, layers, warnings, policy_counts),
+    }
+    return layers, diagnostics, warnings
+
+
+def _post_llm_state_policy_counts(warnings: Sequence[str]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for warning in warnings:
+        if warning.startswith("model_excluded_current_control_no_duration"):
+            key = "current_control_no_duration_excluded"
+            counts[key] = counts.get(key, 0) + 1
+    return counts
+
+
+def _plan11_layer_rows(
+    record: ClinicalFindingsRecord,
+    layers: Mapping[str, PredictedLetter],
+    warnings: Sequence[str],
+    policy_counts: Mapping[str, int],
+) -> list[dict[str, Any]]:
+    evidence_invalid = sum(
+        1
+        for warning in warnings
+        if warning.startswith(("dropped_empty_evidence", "dropped_evidence_not_substring"))
+    )
+    counts = {
+        "raw_event_frames": len(record.event_frames),
+        "raw_findings": len(record.findings),
+        "schema_valid_findings": len(record.findings),
+        "evidence_validated": len(layers["format_projected"].mentions),
+        "format_projected": len(layers["format_projected"].mentions),
+        "cui_projected": len(layers["cui_projected"].mentions),
+        "certainty_projected": 0,
+        "post_llm_state_policy": sum(policy_counts.values()),
+        "benchmark_rendered": len(layers["cui_projected"].mentions),
+    }
+    diagnostics = {
+        "evidence_validated": {
+            "evidence_invalid": evidence_invalid,
+            "input_findings": len(record.findings),
+        },
+        "post_llm_state_policy": {"actions": dict(policy_counts)},
+        "certainty_projected": {"sf_policy": "no_op"},
+    }
+    return [
+        {
+            **layer,
+            "count": counts[layer["layer"]],
+            "diagnostics": diagnostics.get(layer["layer"], {}),
+        }
+        for layer in PLAN11_EVENT_STATE_LAYER_LADDER
+    ]
+
+
 def run_split(
     letters: Sequence[ExectLetter],
     *,
@@ -2723,8 +2894,17 @@ def run_split(
         elif mode == "prompt-only":
             verification_parse_errors = ["not_run"]
 
-        layers, projection_warnings = to_predicted_letters(
-            letter.letter_id, final_findings, note_text=letter.note_text
+        final_record = ClinicalFindingsRecord(
+            family_checklist=(
+                extraction.family_checklist
+                if extraction is not None
+                else FindingFamilyChecklist()
+            ),
+            event_frames=event_frames,
+            findings=final_findings,
+        )
+        layers, route_diagnostics, projection_warnings = build_plan11_event_state_route(
+            letter.letter_id, final_record, note_text=letter.note_text
         )
 
         gold_sf = letter.entities(ENTITY_NAME)
@@ -2746,6 +2926,7 @@ def run_split(
                 "verification_parse_errors": verification_parse_errors,
                 "verification_warnings": verification_warnings,
                 "projection_warnings": projection_warnings,
+                "plan11_event_state_route": route_diagnostics,
                 "event_frames": [
                     frame.model_dump(mode="json") for frame in event_frames
                 ],
@@ -2854,6 +3035,7 @@ def summarize_rows(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
         for layer in _OUTPUT_LAYERS
     }
     primary = layer_summaries["cui_projected"]
+    route_summary = _plan11_route_summary(rows)
 
     return {
         "examples": n,
@@ -2878,6 +3060,43 @@ def summarize_rows(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
         ),
         "scores": primary["scores"],
         "attribution_layers": layer_summaries,
+        "plan11_event_state_route": route_summary,
+    }
+
+
+def _plan11_route_summary(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
+    layer_counts = {layer["layer"]: 0 for layer in PLAN11_EVENT_STATE_LAYER_LADDER}
+    policy_counts: dict[str, int] = {}
+    deterministic_selection_rows = 0
+    ownerships: set[str] = set()
+    for row in rows:
+        route = row.get("plan11_event_state_route") or {}
+        ownership = route.get("aggregate_ownership")
+        if ownership:
+            ownerships.add(str(ownership))
+        if route.get("deterministic_clinical_selection"):
+            deterministic_selection_rows += 1
+        for layer in route.get("layers") or []:
+            name = str(layer.get("layer", ""))
+            if name in layer_counts:
+                layer_counts[name] += int(layer.get("count", 0))
+        for key, count in (route.get("post_llm_state_policy_counts") or {}).items():
+            policy_counts[str(key)] = policy_counts.get(str(key), 0) + int(count)
+
+    if deterministic_selection_rows:
+        aggregate = "hybrid_or_diagnostic_required"
+    elif policy_counts:
+        aggregate = "llm_first_with_declared_post_llm_state_policy"
+    else:
+        aggregate = "llm_first"
+    return {
+        "route_version": PLAN11_EVENT_STATE_ROUTE_VERSION,
+        "aggregate_ownership": aggregate,
+        "row_ownerships": sorted(ownerships),
+        "deterministic_clinical_selection_rows": deterministic_selection_rows,
+        "post_llm_state_policy_counts": policy_counts,
+        "layer_counts": layer_counts,
+        "layer_ladder": list(PLAN11_EVENT_STATE_LAYER_LADDER),
     }
 
 
@@ -3009,9 +3228,41 @@ def write_report(
             f"{summary.get('evidence_validity_rate', 0.0):.4f}"
         ),
         "",
-        "## Attribution Layers",
+        "## Plan 11 Event/State Route",
         "",
     ]
+    route = summary.get("plan11_event_state_route", {})
+    lines.extend(
+        [
+            f"- Route version: `{route.get('route_version', PLAN11_EVENT_STATE_ROUTE_VERSION)}`",
+            f"- Aggregate ownership: `{route.get('aggregate_ownership', 'llm_first')}`",
+            (
+                "- Deterministic clinical-selection rows: "
+                f"{route.get('deterministic_clinical_selection_rows', 0)}"
+            ),
+            (
+                "- Post-LLM state policy actions: "
+                f"{route.get('post_llm_state_policy_counts', {})}"
+            ),
+            "",
+            "| Layer | Owner | Count | Claim role |",
+            "| --- | --- | ---: | --- |",
+        ]
+    )
+    layer_counts = route.get("layer_counts", {})
+    for layer in route.get("layer_ladder", PLAN11_EVENT_STATE_LAYER_LADDER):
+        name = layer["layer"]
+        lines.append(
+            f"| `{name}` | `{layer['owner']}` | {layer_counts.get(name, 0)} "
+            f"| {layer['claim_role']} |"
+        )
+    lines.extend(
+        [
+            "",
+        "## Attribution Layers",
+        "",
+        ]
+    )
     layers = summary.get("attribution_layers", {})
     for layer in _OUTPUT_LAYERS:
         layer_summary = layers.get(layer, {})
