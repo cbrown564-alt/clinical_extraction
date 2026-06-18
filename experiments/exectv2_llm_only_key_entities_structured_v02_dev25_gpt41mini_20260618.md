@@ -36,6 +36,15 @@
 - per-letter: P=0.824 R=0.592 F1=0.689 (TP=42 FP=9 FN=29)
 
 
+## Key Clinical-Recovery Headlines
+
+| Entity | Target headline F1 | F1 | P | R | TP | FP | FN |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Prescription | 0.80 | 0.846 | 0.825 | 0.868 | 33 | 7 | 5 |
+| Diagnosis | 0.80 | 0.414 | 0.397 | 0.434 | 23 | 35 | 30 |
+| SeizureFrequency | 0.80 | 0.456 | 0.500 | 0.419 | 13 | 13 | 18 |
+| Investigations | 0.80 | 0.783 | 0.692 | 0.900 | 18 | 8 | 2 |
+
 ## Diagnostic Scoring Ladder
 
 | Layer | Item F1 | TP | FP | FN | Attribute agreement |

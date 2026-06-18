@@ -38,16 +38,19 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
 - v0.2 confirms error-analysis-led prompt optimization works but is not enough:
   `experiments/exectv2_llm_only_key_entities_structured_v02_dev25_gpt41mini_20260618.md`
   improved semantic item F1 `0.206`→`0.272` and benchmark `0.158`→`0.220`
-  with `0` call/parse failures and evidence validity `0.9760`. Diagnosis,
-  SeizureFrequency, and Investigations improved; Prescription regressed
-  (`0.264`→`0.172`) from text-altitude overcorrection. See
+  with `0` call/parse failures and evidence validity `0.9760`. The
+  objective-aligned clinical-recovery headline now shows the real target state:
+  Prescription/medication is above target (`0.846`), Investigations is near
+  target (`0.783`), while Diagnosis (`0.414`) and SeizureFrequency (`0.456`)
+  are the bottlenecks. See
   `docs/research/exectv2_key_entities_structured_v02_pilot_report_2026-06-18.md`.
 
 ## Active Priorities
 
 1. Iterate the single-prompt four-family structured-event architecture from the
-   dev25 error slices: improve attribute agreement and phrase altitude without
-   sacrificing source-near recall.
+   dev25 clinical-recovery error slices: protect medication above `0.8`, lift
+   Investigations precision, and focus most prompt/error-analysis work on
+   Diagnosis and SeizureFrequency.
 2. Require benchmark-beating dev evidence before any new full-200 audit:
    overall `0.87` per-item / `0.90` per-letter, plus per-entity tables,
    evidence/schema reliability, semantic-vs-CUI gaps, and ablations.
@@ -56,10 +59,9 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
 
 ### Now
 
-- Build v0.3 on the same dev25 surface: keep the v0.2 SF/investigation gains,
-  undo the Prescription text-altitude regression, and add a small hard-case panel
-  for SF ranges, dated counts, vague counts, and last-event statements before any
-  dev140 promotion.
+- Build v0.3 on the same dev25 surface using clinical-recovery headline F1 as
+  the promotion readout: Diagnosis/SF targeted error analysis first,
+  Investigation FP cleanup second, and medication regression protection only.
 
 ### Next
 
@@ -85,7 +87,9 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   structured clinical-event extractor for Prescription/medication, Diagnosis,
   SeizureFrequency, and Investigations, plus runner/tests and a live dev25 GPT
   pilot. v0.2 then lifted semantic item F1 to `0.272` and benchmark to `0.220`
-  with a clean gate, while exposing a Prescription regression. Both runs are
+  with a clean gate. The refreshed objective-aligned headline table shows
+  medication already above target (`0.846`), Investigations near target
+  (`0.783`), and Diagnosis/SF below target (`0.414`/`0.456`). Both runs are
   registered in `experiments/RUN_INDEX.md`; v0.2 report:
   `docs/research/exectv2_key_entities_structured_v02_pilot_report_2026-06-18.md`.
 - 2026-06-17: Built the reusable all-entity projection-gap ledger
