@@ -34,12 +34,23 @@ def test_build_prompt_input_includes_draft_and_v05_diagnosis_rules() -> None:
     )
 
     assert payload["prompt_version"] == verifier.PROMPT_VERSION
+    assert payload["prompt_version"].endswith("_v0.2")
     assert payload["draft_diagnosis_mentions"][0]["text"] == "possible JME"
     rules = " ".join(payload["clinical_rules"])
+    assert "Diagnosis text may be a normalized core clinical concept" in rules
     assert "Render only the core clinical concept span" in rules
     assert "Do not emit CUI or CUIPhrase" in rules
+    assert "'epilepsy - probable focal' -> 'focal epilepsy'" in rules
+    assert "'generalised tonic clonic seizures' -> 'tonic clonic seizures'" in rules
     assert "Never write 'tonic chronic'" in rules
+    assert "Never use attribute labels" in rules
     assert "myoclonic jerks" in rules
+    focal_example = next(
+        example
+        for example in payload["worked_examples"]
+        if example["note_fragment"] == "Diagnosis: epilepsy - probable focal."
+    )
+    assert focal_example["correct"][0]["text"] == "focal epilepsy"
     jme_example = next(
         example
         for example in payload["worked_examples"]

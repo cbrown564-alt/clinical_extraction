@@ -1858,6 +1858,17 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Inform Architecture Loop
 
+### `exectv2_llm_diagnosis_verifier_v02_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_llm_diagnosis_verifier`; mode `live`; replay `native_run_split`.
+- Model role: Diagnosis-focused verifier v0.2 over the v0.5 single structured key-entity draft. The model owns normalized Diagnosis concept text and may keep, delete, edit, or add Diagnosis mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
+- Primary metrics: prompt_version=exectv2_llm_diagnosis_verifier_v0.2, diagnosis_clinical_headline_f1=0.619, diagnosis_clinical_headline_precision=0.682, diagnosis_clinical_headline_recall=0.566, diagnosis_semantic_item_f1=0.424, diagnosis_source_near_f1=0.727, parse_failures=0, evidence_validity_rate=1.0000.
+- Evidence validity: 0 call failures, 0 parse failures; 43/43 evidence-valid rendered mentions.
+- Supersedes: `exectv2_llm_diagnosis_verifier_v01_dev25_gpt41mini_20260618`.
+- Claim language: Best Diagnosis-specific multi-prompt candidate so far, but revise-only. v0.2 improves over verifier v0.1 (`0.619` vs `0.592`) and v0.5 single structured (`0.569`) while keeping evidence validity `1.0000`, but remains recall-limited and below the `0.8` target.
+- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v02_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v02_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_diagnosis_verifier_v02_pilot_report_2026-06-18.md`.
+
 ### `exectv2_llm_diagnosis_verifier_v01_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
 - Pipeline: `exectv2_llm_diagnosis_verifier`; mode `live`; replay `native_run_split`.

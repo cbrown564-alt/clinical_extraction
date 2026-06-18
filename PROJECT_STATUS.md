@@ -73,6 +73,11 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   evidence validity `1.0000`. It improves precision but loses recall, so v0.2
   should target recall without reintroducing symptom/non-epileptic FPs. See
   `docs/research/exectv2_diagnosis_verifier_v01_pilot_report_2026-06-18.md`.
+- Diagnosis verifier v0.2 is now the best Diagnosis-specific candidate:
+  clinical headline F1 `0.619` with precision `0.682`, recall `0.566`, and
+  evidence validity `1.0000`. It improves over v0.1 by allowing model-owned
+  normalized concept text while keeping exact evidence. See
+  `docs/research/exectv2_diagnosis_verifier_v02_pilot_report_2026-06-18.md`.
 
 ## Active Priorities
 
@@ -88,9 +93,9 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
 
 ### Now
 
-- Iterate Diagnosis verifier v0.2 from v0.1 dev25 misses: lift recall for true
-  tonic-clonic, focal seizure, uncertain syndrome, and JME concepts while
-  keeping evidence validity and precision gains.
+- Iterate Diagnosis verifier v0.3 from v0.2 dev25 misses: lift recall for true
+  tonic-clonic, focal seizure, uncertain syndrome, and generic epilepsy concepts
+  while keeping evidence validity and precision gains.
 
 ### Next
 
@@ -125,9 +130,9 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   preserving the other family wins. Runs are registered in
   `experiments/RUN_INDEX.md`. The first specialist Diagnosis comparison rejected
   the old per-entity frame (`0.282` clinical F1 vs v0.5 `0.569`); the v0.1
-  Diagnosis verifier improves to `0.592` but is still far from target. Latest
-  report:
-  `docs/research/exectv2_diagnosis_verifier_v01_pilot_report_2026-06-18.md`.
+  Diagnosis verifier improved to `0.592`, and v0.2 improves to `0.619`, but
+  Diagnosis remains below target. Latest report:
+  `docs/research/exectv2_diagnosis_verifier_v02_pilot_report_2026-06-18.md`.
 - 2026-06-17: Built the reusable all-entity projection-gap ledger
   (`reports/projection_gap_ledger.py`). Classifies every gold FN / predicted FP
   into a layered `gap_family` (phrase coverage, attribute bundle, CUI
