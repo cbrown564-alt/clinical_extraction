@@ -34,6 +34,14 @@ ADR `0030-four-exact-indicators-drive-exectv2-plan11.md` freezes the current
 target surface and says error analysis should exclude non-target ExECT families
 unless a later ADR expands the scope.
 
+The ADR 0030 target-only report is now generated at
+`docs/experiments/exectv2/key_entities/exectv2_adr0030_target_indicator_report_20260619.md`.
+Best current dev140 F1 by target: Diagnosis `0.7302` (deterministic all9),
+SeizureFrequency `0.7277` (deterministic all9), Prescription `0.9072`
+(deterministic all9, already above target), and Investigations `0.7475`
+(single-pass LLM). The current focused routed assembly remains below target on
+all four (`0.7127` / `0.6321` / `0.7472` / `0.7475`).
+
 ## Recent Context
 
 - Coordinated Plan 11 follow-ups are merged into this checkout: SF route
@@ -56,9 +64,9 @@ unless a later ADR expands the scope.
 
 1. Treat routed and focused-replay results as qualified dev architecture
    evidence, not benchmark-complete claims.
-2. Build a four-indicator error-analysis/readout that reports only Diagnosis,
-   SeizureFrequency, Prescription, and Investigations, with raw LLM output
-   separated from deterministic normalization/projection.
+2. Optimize the one-call hybrid route by target priority: preserve deterministic
+   Prescription, raise Investigations precision, then lift SF and Diagnosis
+   recall without adding non-target families.
 3. Use the SF v0.8 hard-slice panel to make a predeclared gate decision before
    any prediction-bearing SF code.
 
@@ -66,8 +74,9 @@ unless a later ADR expands the scope.
 
 ### Now
 
-- Measure the current four-indicator hybrid surface with the ADR 0030 target
-  contract and identify which target indicator blocks `>0.900` first.
+- Build the first single-call four-indicator hybrid candidate/readout using the
+  ADR 0030 target surface and compare raw LLM-selected candidates with
+  deterministic normalization/projection.
 - Review `experiments/exectv2_sf_v08_hard_slice_panel_dev140_20260618.md` and
   write the SF v0.8 gate decision: either no prediction-bearing change, or one
   predeclared bucket/action class that clears attribution, non-gold-feature, and
@@ -98,6 +107,9 @@ unless a later ADR expands the scope.
 
 ### Done Recently
 
+- 2026-06-19: Added the ADR 0030 target-only report and runner. Current dev140
+  best-by-indicator is D `0.7302`, SF `0.7277`, P `0.9072`, I `0.7475`; only
+  Prescription currently clears `>0.900`.
 - 2026-06-19: Added ADR 0030 to lock the four exact ExECTv2 target indicators
   and the `>0.900` core-F1 hybrid-pipeline objective; narrowed error analysis to
   Diagnosis, SeizureFrequency, Prescription, and Investigations.
