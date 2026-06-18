@@ -15,7 +15,7 @@ Architectures and ownership (plan §Evaluation Contract):
 
 ## 5. Baseline and hybrid comparator — essential clinical-recovery headline
 
-Clinical-fact recovery over the five essential families only (Prescription, SeizureFrequency, Diagnosis, EpilepsyCause, Investigations). The primary headline is CUI-free; certainty remains a diagnostic projection candidate rather than a completed guideline-rule projection.
+Clinical-fact recovery over the five essential families only (Prescription, SeizureFrequency, Diagnosis, EpilepsyCause, Investigations). The primary headline is CUI-free; certainty remains a deterministic projection layer and is reported separately from the LLM-owned clinical headline.
 
 | Architecture | Ownership | Recovery F1 | Precision | Recall |
 | --- | --- | ---: | ---: | ---: |
@@ -71,7 +71,9 @@ SeizureFrequency already ignores Certainty/Negation in its benchmark key (guidel
 
 Certainty-only benchmark loss is **0.003 F1** (4 TP) — measured on CUI-projected predictions so the residual is owned by `Certainty`/`Negation`, not missing CUI.
 
-Limitation: This audit quantifies modal/default ceilings and certainty-dropped benchmark loss. It does not yet implement annotation-guideline certainty rules over evidence-correct rows, so it supports demoting certainty as a likely projection layer but not a completed guideline-rule projection claim. This is diagnostic, not a completed guideline-rule projection.
+Guideline-rule projection now uses ExECT v9 List 2 certainty triggers, default affirmed negation, and the PatientHistory febrile-negation exception. It is scored after the clinical concept is selected.
+
+Limitation: This audit implements explicit guideline-trigger rules and scores them over gold rows, using source-local context when offsets/text are available. It estimates projection reliability after the clinical concept is already selected; it does not license deterministic concept generation.
 
 Gold distribution and default-projection ceiling (fraction correct if a rule assigned the dominant value):
 
@@ -86,6 +88,20 @@ Gold distribution and default-projection ceiling (fraction correct if a rule ass
 | Prescription | 0.00 | 0 | 0.00 | 0.00 | 0 | 0.00 |
 | SeizureFrequency | 0.01 | 1 | 1.00 | 0.01 | 1 | 1.00 |
 | WhenDiagnosed | 1.00 | 1 | 1.00 | 1.00 | 1 | 1.00 |
+
+Guideline projection accuracy over gold rows:
+
+| Entity | Certainty coverage | Certainty accuracy | Negation coverage | Negation accuracy |
+| --- | ---: | ---: | ---: | ---: |
+| BirthHistory | 1.00 | 1.00 | 1.00 | 1.00 |
+| Diagnosis | 1.00 | 0.81 | 1.00 | 1.00 |
+| EpilepsyCause | 1.00 | 0.95 | 1.00 | 1.00 |
+| Investigations | 0.00 | 0.00 | 0.00 | 0.00 |
+| Onset | 1.00 | 0.94 | 1.00 | 1.00 |
+| PatientHistory | 1.00 | 0.82 | 1.00 | 0.99 |
+| Prescription | 0.00 | 0.00 | 0.00 | 0.00 |
+| SeizureFrequency | 0.00 | 0.00 | 0.00 | 0.00 |
+| WhenDiagnosed | 1.00 | 0.91 | 1.00 | 1.00 |
 
 ## 3. CUI projection audit
 

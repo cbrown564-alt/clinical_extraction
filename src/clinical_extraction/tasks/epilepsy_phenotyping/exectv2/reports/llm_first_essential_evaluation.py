@@ -24,6 +24,7 @@ resolved scored phrase, so the replay reproduces the scored gold exactly.
 from __future__ import annotations
 
 import json
+import re
 from collections import Counter, defaultdict
 from collections.abc import Sequence
 from pathlib import Path
@@ -69,6 +70,91 @@ _NEGATION = "Negation"
 _CUI = "CUI"
 _CUI_PHRASE = "CUIPhrase"
 _CERTAINTY_ATTRS = frozenset({_CERTAINTY, _NEGATION})
+_GUIDELINE_CERTAINTY_ENTITIES = frozenset(
+    {
+        "BirthHistory",
+        DIAGNOSIS.name,
+        EPILEPSY_CAUSE.name,
+        "Onset",
+        "PatientHistory",
+        "WhenDiagnosed",
+    }
+)
+_GUIDELINE_NEGATION_ENTITIES = _GUIDELINE_CERTAINTY_ENTITIES
+_GUIDELINE_CERTAINTY_TRIGGERS: tuple[tuple[str, str], ...] = tuple(
+    sorted(
+        {
+            "ruled out": "1",
+            "doubt": "2",
+            "improbable": "2",
+            "not convincingly": "2",
+            "remote": "2",
+            "unclear": "2",
+            "unsure": "2",
+            "??": "2",
+            "doubtful": "2",
+            "not convinced": "2",
+            "not likely": "2",
+            "remote possibility": "2",
+            "unlikely": "2",
+            "unusual": "2",
+            "considered": "3",
+            "describes himself": "3",
+            "?": "3",
+            "could be": "3",
+            "further clarification": "3",
+            "investigate her along the lines": "3",
+            "markers": "3",
+            "might": "3",
+            "possible": "3",
+            "possibility": "3",
+            "potentially": "3",
+            "potential": "3",
+            "to be sure": "3",
+            "to see if": "3",
+            "to see whether": "3",
+            "to be confirmed": "3",
+            "to know whether": "3",
+            "this or that": "3",
+            "uncertain": "3",
+            "further investigation": "3",
+            "not conclusive": "4",
+            "suspicious": "4",
+            "suspect": "4",
+            "suggestive": "4",
+            "sound like": "4",
+            "supports": "4",
+            "suspected": "4",
+            "suspicion": "4",
+            "i think": "4",
+            "is in keeping with": "4",
+            "point more towards": "4",
+            "probable": "4",
+            "probably": "4",
+            "compatible with": "4",
+            "impression is": "4",
+            "likely": "4",
+            "point towards": "4",
+            "supportive of": "4",
+            "treated as": "4",
+            "consistent with": "5",
+            "is conclusive": "5",
+            "are dealing with": "5",
+            "certain": "5",
+            "definite": "5",
+            "in keeping with": "5",
+        }.items(),
+        key=lambda item: len(item[0]),
+        reverse=True,
+    )
+)
+_FEBRILE_HISTORY = re.compile(r"\bfebrile\s+(?:seizures?|convulsions?)\b", re.IGNORECASE)
+_NEGATED_FEBRILE_HISTORY = re.compile(
+    r"\b(?:no|not|never|denies?|denied|without)\b.{0,60}\bfebrile\s+"
+    r"(?:seizures?|convulsions?)\b|\bfebrile\s+(?:seizures?|convulsions?)\b"
+    r".{0,60}\b(?:absent|denied|negated)\b",
+    re.IGNORECASE | re.DOTALL,
+)
 ESSENTIAL_CLINICAL_ENTITIES: tuple[str, ...] = (
     PRESCRIPTION.name,
     SEIZURE_FREQUENCY.name,
@@ -273,6 +359,117 @@ def _certainty_recovery_on_overlap(
     return out
 
 
+def _local_context(letter: ExectLetter, ann: ExectAnnotation, window: int = 120) -> str:
+    note = letter.note_text or ""
+    if note and ann.start_index is not None:
+        start = max(0, ann.start_index - window)
+        end = min(len(note), (ann.end_index or ann.start_index) + window)
+        return note[start:end]
+
+    normalized_note = normalize_phrase(note)
+    for phrase in (ann.raw_text or "", ann.text):
+        normalized_phrase = normalize_phrase(phrase)
+        if not normalized_note or not normalized_phrase:
+            continue
+        idx = normalized_note.find(normalized_phrase)
+        if idx >= 0:
+            start = max(0, idx - window)
+            end = min(len(normalized_note), idx + len(normalized_phrase) + window)
+            return normalized_note[start:end]
+    return " ".join(p for p in (ann.raw_text or "", ann.text) if p)
+
+
+def _contains_guideline_trigger(context: str, trigger: str) -> bool:
+    if trigger in {"?", "??"}:
+        return trigger in context
+    return re.search(rf"(?<!\w){re.escape(trigger)}(?!\w)", context) is not None
+
+
+def project_guideline_certainty_negation(
+    entity: str,
+    text: str,
+    context: str,
+) -> dict[str, str]:
+    """Project Certainty/Negation from explicit ExECT v9 guideline rules."""
+
+    projected: dict[str, str] = {}
+    normalized_context = normalize_phrase(context)
+    normalized_text = normalize_phrase(text)
+    if entity in _GUIDELINE_NEGATION_ENTITIES:
+        negated_febrile = (
+            entity == "PatientHistory"
+            and _FEBRILE_HISTORY.search(normalized_text) is not None
+            and _NEGATED_FEBRILE_HISTORY.search(context) is not None
+        )
+        projected[_NEGATION] = "Negated" if negated_febrile else "Affirmed"
+        if negated_febrile:
+            projected[_CERTAINTY] = "1"
+
+    if entity in _GUIDELINE_CERTAINTY_ENTITIES and _CERTAINTY not in projected:
+        projected[_CERTAINTY] = "5"
+        for trigger, level in _GUIDELINE_CERTAINTY_TRIGGERS:
+            if _contains_guideline_trigger(normalized_context, trigger):
+                projected[_CERTAINTY] = level
+                break
+    return projected
+
+
+def _guideline_projection_score(
+    gold_letters: Sequence[ExectLetter],
+    entity: str,
+) -> dict[str, Any]:
+    stats = {
+        attr: {"gold_has_value": 0, "projected": 0, "agree": 0, "mismatches": Counter()}
+        for attr in (_CERTAINTY, _NEGATION)
+    }
+    rule_hits: Counter[str] = Counter()
+    for letter in gold_letters:
+        for ann in letter.entities(entity):
+            projection = project_guideline_certainty_negation(
+                ann.entity,
+                ann.text,
+                _local_context(letter, ann),
+            )
+            if projection.get(_NEGATION) == "Negated":
+                rule_hits["negated_febrile_history"] += 1
+            elif _NEGATION in projection:
+                rule_hits["default_affirmed_negation"] += 1
+            if projection.get(_CERTAINTY) == "5":
+                rule_hits["default_certainty_5"] += 1
+            elif _CERTAINTY in projection:
+                rule_hits[f"certainty_level_{projection[_CERTAINTY]}_trigger"] += 1
+
+            for attr in (_CERTAINTY, _NEGATION):
+                gold_value = ann.attributes.get(attr)
+                if gold_value in (None, ""):
+                    continue
+                stats[attr]["gold_has_value"] += 1
+                projected_value = projection.get(attr)
+                if projected_value:
+                    stats[attr]["projected"] += 1
+                if projected_value == gold_value:
+                    stats[attr]["agree"] += 1
+                else:
+                    stats[attr]["mismatches"][(gold_value, projected_value or "")] += 1
+
+    out: dict[str, Any] = {}
+    for attr, s in stats.items():
+        gold_n = s["gold_has_value"]
+        projected_n = s["projected"]
+        out[attr] = {
+            "gold_has_value": gold_n,
+            "projected": projected_n,
+            "agree": s["agree"],
+            "coverage": round(projected_n / gold_n, 4) if gold_n else 0.0,
+            "accuracy": round(s["agree"] / gold_n, 4) if gold_n else 0.0,
+            "mismatches": {
+                f"gold={gold}|projected={projected}": count
+                for (gold, projected), count in s["mismatches"].most_common(8)
+            },
+        }
+    return {"rule_hits": dict(rule_hits), **out}
+
+
 def certainty_projection_audit(
     gold_letters: Sequence[ExectLetter],
     pred_letters: Sequence[ExectLetter],
@@ -299,6 +496,7 @@ def certainty_projection_audit(
         per_entity[entity] = {
             "certainty": _attr_distribution(gold_letters, entity, _CERTAINTY),
             "negation": _attr_distribution(gold_letters, entity, _NEGATION),
+            "guideline_projection": _guideline_projection_score(gold_letters, entity),
             "recovery_on_overlap": _certainty_recovery_on_overlap(
                 gold_letters, _as_exect(pred_letters), entity
             ),
@@ -309,14 +507,31 @@ def certainty_projection_audit(
     overall_benchmark = benchmark.per_item
     overall_dropped = certainty_dropped.per_item
     return {
-        "status": "diagnostic_not_guideline_rule_projection",
+        "status": "guideline_rule_projection_audited",
         "ignored_attributes": sorted(_CERTAINTY_ATTRS),
+        "guideline_rules": {
+            "certainty": (
+                "Assign certainty to Diagnosis, BirthHistory, EpilepsyCause, "
+                "Onset, WhenDiagnosed, and PatientHistory. Use ExECT v9 List 2 "
+                "trigger phrases; default uncued assertions to Certainty=5."
+            ),
+            "negation": (
+                "Assign Negation to the same concept families. Default to "
+                "Affirmed; project PatientHistory febrile seizure/convulsion "
+                "statements with local no/not/denied context as Negated and "
+                "Certainty=1."
+            ),
+            "excluded": (
+                "SeizureFrequency, Prescription, and Investigations do not own "
+                "Certainty/Negation under the guideline convention."
+            ),
+        },
         "limitations": (
-            "This audit quantifies modal/default ceilings and certainty-dropped "
-            "benchmark loss. It does not yet implement annotation-guideline "
-            "certainty rules over evidence-correct rows, so it supports demoting "
-            "certainty as a likely projection layer but not a completed "
-            "guideline-rule projection claim."
+            "This audit implements explicit guideline-trigger rules and scores "
+            "them over gold rows, using source-local context when offsets/text "
+            "are available. It estimates projection reliability after the "
+            "clinical concept is already selected; it does not license "
+            "deterministic concept generation."
         ),
         "note": (
             "SeizureFrequency already ignores Certainty/Negation in its benchmark "

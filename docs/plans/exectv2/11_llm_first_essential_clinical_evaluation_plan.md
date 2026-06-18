@@ -212,8 +212,9 @@ a compact structured schema:
 }
 ```
 
-The schema should not ask for CUI. Certainty should be omitted or separated as a
-diagnostic field until the certainty audit is complete.
+The schema should not ask for CUI. Certainty should stay outside the
+model-owned headline and be reported through the deterministic guideline-rule
+projection audit.
 
 ## Experiment Ladder
 
@@ -347,16 +348,16 @@ with `tests/test_exectv2_llm_first_essential_evaluation.py`.
 
 ### Findings against the two direct hypotheses
 
-**Certainty remains a projection-layer candidate, not a completed guideline-rule
-projection.** Certainty-only benchmark loss is **+0.003 F1 (4 TP)** measured on
-CUI-projected predictions, so the observed residual is certainty/negation rather
-than missing CUI. `Negation` is near-constant (`Affirmed`) on every entity that
-carries it (default-projection ceiling 0.95–1.00); `Certainty` is dominated by
-its modal value (Diagnosis 0.82, EpilepsyCause 0.86, BirthHistory 0.90,
-PatientHistory 0.92). This supports demoting certainty from the primary
-LLM-owned headline, but the stronger plan requirement remains open: translate
-the annotation guidelines into explicit per-entity certainty projection rules and
-score those rules on gold or evidence-correct rows.
+**Certainty is now audited as a deterministic guideline-rule projection layer.**
+Certainty-only benchmark loss is **+0.003 F1 (4 TP)** measured on CUI-projected
+predictions, so the observed residual is certainty/negation rather than missing
+CUI. The completed audit applies ExECT v9 List 2 certainty triggers, default
+affirmed negation, and the PatientHistory febrile-negation exception over gold
+rows. Projection coverage is complete for guideline-owned fields; certainty
+accuracy is Diagnosis `0.81`, EpilepsyCause `0.95`, Onset `0.94`,
+PatientHistory `0.82`, WhenDiagnosed `0.91`, and BirthHistory `1.00`.
+Negation accuracy is `0.99`–`1.00`. This supports keeping certainty outside the
+primary LLM-owned headline while preserving it as a benchmark-format adapter.
 
 **CUI is benchmark-format projection, with finite-lexicon limits exposed.** The
 single LLM pass emits no CUI, so its raw benchmark F1 is 0.000; deterministic
@@ -410,5 +411,5 @@ The error-led redesign the plan calls for is: keep the single LLM pass for the
 families it already recovers (Prescription, Investigations, Diagnosis concept),
 and route SeizureFrequency to the structured event/state schema the specialist
 SF candidates already use. Certainty and CUI stay outside the primary LLM-owned
-headline, but certainty still needs an explicit guideline-rule projection audit
-before stronger adapter-layer claim language is supported.
+headline and are now reported as deterministic projection layers with their own
+audit limitations.

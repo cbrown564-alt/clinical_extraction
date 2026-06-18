@@ -16,6 +16,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.llm_first_es
     architecture_report,
     certainty_projection_audit,
     cui_concept_buckets,
+    project_guideline_certainty_negation,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.run_llm_first_essential_evaluation import (  # noqa: E501
     render_markdown,
@@ -52,6 +53,29 @@ def test_certainty_distribution_and_default_ceiling() -> None:
     assert diag["certainty"]["default_projection_ceiling"] == round(2 / 3, 4)
     # Negation is constant -> a default rule is always right.
     assert diag["negation"]["default_projection_ceiling"] == 1.0
+
+
+def test_guideline_certainty_projection_rules_cover_triggers_and_febrile_negation() -> None:
+    assert project_guideline_certainty_negation(
+        "Diagnosis",
+        "complex partial seizures",
+        "She is having possible complex partial seizures.",
+    ) == {"Certainty": "3", "Negation": "Affirmed"}
+    assert project_guideline_certainty_negation(
+        "EpilepsyCause",
+        "perinatal insult",
+        "The MRI changes are probably representative of a perinatal insult.",
+    ) == {"Certainty": "4", "Negation": "Affirmed"}
+    assert project_guideline_certainty_negation(
+        "PatientHistory",
+        "febrile seizures",
+        "There is no history of febrile seizures, head injury or meningitis.",
+    ) == {"Certainty": "1", "Negation": "Negated"}
+    assert project_guideline_certainty_negation(
+        "Investigations",
+        "EEG",
+        "The EEG was normal.",
+    ) == {}
 
 
 def test_cui_buckets_split_consistent_inconsistent_and_result_conditioned() -> None:
@@ -220,5 +244,5 @@ def test_render_markdown_surfaces_diagnostic_limitations() -> None:
     }
     md = render_markdown(report)
     assert "Evidence validation and error taxonomy" in md
-    assert "diagnostic, not a completed guideline-rule projection" in md
+    assert "Guideline projection accuracy over gold rows" in md
     assert "missing_mapping" in md
