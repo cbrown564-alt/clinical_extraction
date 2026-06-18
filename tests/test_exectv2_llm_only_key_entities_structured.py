@@ -38,7 +38,7 @@ def test_prompt_hygiene_and_four_family_schema() -> None:
         INVESTIGATIONS.name,
     }
     assert "clinical_events" in payload["output_schema"]
-    assert payload["prompt_version"].endswith("_v0.4")
+    assert payload["prompt_version"].endswith("_v0.5")
     assert "medication" in payload["family_guidance"]
     assert "seizure_frequency" in payload["family_guidance"]
     assert "DiagCategory" in payload["attribute_vocabulary"][DIAGNOSIS.name]
@@ -50,8 +50,12 @@ def test_prompt_hygiene_and_four_family_schema() -> None:
     assert "PointInTime='LastClinic'" in clinical_rules
     assert "Every Diagnosis mention must include Certainty and Negation" in clinical_rules
     assert "Certainty='4' for probable or likely diagnoses" in clinical_rules
+    assert "render only the core clinical concept" in clinical_rules
+    assert "use the exact abbreviation as mention" in clinical_rules
     assert "Do not render vague symptoms" in clinical_rules
     assert "A problem-list or Diagnosis header is not enough" in clinical_rules
+    assert "myoclonic jerks" in clinical_rules
+    assert "Never write 'tonic chronic'" in clinical_rules
     assert "generic seizure phrase" in clinical_rules
     assert "'several'='3'" in clinical_rules
     assert "last seizure" in clinical_rules
@@ -81,6 +85,19 @@ def test_prompt_hygiene_and_four_family_schema() -> None:
         if example["note_fragment"] == "Diagnosis: probable temporal lobe epilepsy."
     )
     assert probable_example["correct_event"]["mentions"][0]["attributes"]["Certainty"] == "4"
+    jme_example = next(
+        example
+        for example in payload["worked_examples"]
+        if example["note_fragment"] == "Diagnosis: possible JME."
+    )
+    assert jme_example["correct_event"]["mentions"][0]["text"] == "JME"
+    assert jme_example["correct_event"]["mentions"][0]["attributes"]["Certainty"] == "3"
+    focal_seizure_example = next(
+        example
+        for example in payload["worked_examples"]
+        if example["note_fragment"] == "He had a single focal seizure."
+    )
+    assert focal_seizure_example["correct_event"]["mentions"][0]["text"] == "focal seizure"
     planned_mri_example = next(
         example
         for example in payload["worked_examples"]

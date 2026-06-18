@@ -59,7 +59,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
-PROMPT_VERSION = "exectv2_llm_only_key_entities_structured_v0.4"
+PROMPT_VERSION = "exectv2_llm_only_key_entities_structured_v0.5"
 PIPELINE_FAMILY = "exectv2_llm_only_key_entities_structured"
 COMPONENT_OWNER = "llm_only_key_entities_structured"
 
@@ -233,10 +233,32 @@ def build_prompt_input(letter: ExectLetter) -> str:
                 "present."
             ),
             (
+                "For Diagnosis mention text, render only the core clinical concept "
+                "span. Do not include section labels, dashes, hedging words "
+                "('probable', 'possible', 'query'), qualifiers like 'single' or "
+                "'alone', or surrounding explanation in the mention text; put "
+                "uncertainty in Certainty instead."
+            ),
+            (
+                "For abbreviated syndromes, use the exact abbreviation as mention "
+                "text when that is the source span, for example text 'JME' or 'jme' "
+                "with Certainty from probable/possible context."
+            ),
+            (
                 "Do not render vague symptoms, blackout/loss-of-consciousness "
                 "descriptions, anxiety, or non-epileptic events as Diagnosis unless "
                 "the same phrase is explicitly asserted as an epileptic seizure, "
                 "epilepsy diagnosis, or named seizure type."
+            ),
+            (
+                "Do not render isolated symptoms or aura features as Diagnosis, "
+                "including myoclonic jerks, jerks, flashing lights, odd sensations, "
+                "altered awareness by itself, or dizziness, unless the phrase is part "
+                "of a named seizure type such as 'focal seizures with altered awareness'."
+            ),
+            (
+                "For tonic-clonic seizure wording, preserve 'tonic clonic' or "
+                "'tonic-clonic'. Never write 'tonic chronic'."
             ),
             (
                 "A problem-list or Diagnosis header is not enough by itself: still "
@@ -381,7 +403,8 @@ def _family_guidance() -> dict[str, str]:
             "DiagCategory, Certainty, and Negation. Preserve uncertainty words and "
             "avoid vague symptoms or non-epileptic differentials unless they are "
             "explicitly asserted as epileptic diagnoses, even when they appear in a "
-            "Diagnosis/problem-list section."
+            "Diagnosis/problem-list section. Mention text should be the clean core "
+            "concept span; hedging belongs in Certainty."
         ),
         "seizure_frequency": (
             "How often a seizure type occurs, including seizure-free duration, "
@@ -757,6 +780,76 @@ def _worked_examples() -> list[dict[str, Any]]:
                 ],
                 "confidence": "high",
                 "rationale": "Probable maps to Certainty 4 while preserving the specific syndrome.",
+            },
+        },
+        {
+            "note_fragment": "Diagnosis: possible JME.",
+            "correct_event": {
+                "family": "diagnosis",
+                "anchor_text": "JME",
+                "evidence": "possible JME",
+                "event_state": {"diagnosis": "JME", "certainty": "possible"},
+                "mentions": [
+                    {
+                        "entity": "Diagnosis",
+                        "text": "JME",
+                        "attributes": {
+                            "DiagCategory": "Epilepsy",
+                            "Certainty": "3",
+                            "Negation": "Affirmed",
+                        },
+                    }
+                ],
+                "confidence": "high",
+                "rationale": (
+                    "Possible is captured in Certainty; the mention text is the core span."
+                ),
+            },
+        },
+        {
+            "note_fragment": "He had a single focal seizure.",
+            "correct_event": {
+                "family": "diagnosis",
+                "anchor_text": "focal seizure",
+                "evidence": "single focal seizure",
+                "event_state": {"diagnosis": "focal seizure"},
+                "mentions": [
+                    {
+                        "entity": "Diagnosis",
+                        "text": "focal seizure",
+                        "attributes": {
+                            "DiagCategory": "SingleSeizure",
+                            "Certainty": "5",
+                            "Negation": "Affirmed",
+                        },
+                    }
+                ],
+                "confidence": "high",
+                "rationale": "The quantifier single is not part of the core concept span.",
+            },
+        },
+        {
+            "note_fragment": (
+                "She has myoclonic jerks and flashing lights but no epilepsy diagnosis."
+            ),
+            "correct_event": {
+                "family": "diagnosis",
+                "anchor_text": "epilepsy diagnosis",
+                "evidence": "no epilepsy diagnosis",
+                "event_state": {"diagnosis": "epilepsy", "negation": "negated"},
+                "mentions": [
+                    {
+                        "entity": "Diagnosis",
+                        "text": "epilepsy",
+                        "attributes": {
+                            "DiagCategory": "Epilepsy",
+                            "Certainty": "5",
+                            "Negation": "Negated",
+                        },
+                    }
+                ],
+                "confidence": "high",
+                "rationale": "Jerks and flashing lights are symptoms here, not Diagnosis concepts.",
             },
         },
         {
