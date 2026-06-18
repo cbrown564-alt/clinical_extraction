@@ -153,6 +153,20 @@ def test_reviewed_diagnosis_missing_mapping_variants_are_projection_only() -> No
     assert diagnosis_concept("symptomatic") is None
 
 
+def test_residual_ambiguous_diagnosis_forms_remain_diagnostic_only() -> None:
+    for phrase in (
+        "generalised",
+        "secondary",
+        "focal",
+        "drug",
+        "symptomatic",
+        "occipital",
+        "temporal",
+        "epileptic",
+    ):
+        assert diagnosis_concept(phrase) is None
+
+
 def test_onset_projection_maps_source_near_epilepsy_phrase() -> None:
     assert onset_concept("epilepsy") == BenchmarkConcept("epilepsy", "C0014544", "epilepsy")
 
@@ -187,31 +201,42 @@ def test_new_structured_entity_projections_are_finite_benchmark_lookups() -> Non
 
 
 def test_reviewed_epilepsy_cause_missing_mapping_variants_are_projection_only() -> None:
-    assert epilepsy_cause_concept("erinatal insult") == BenchmarkConcept(
+    assert epilepsy_cause_concept("perinatal insult") == BenchmarkConcept(
         "perinatal-insult",
         "C0005604",
         "perinatal-insult",
     )
-    assert epilepsy_cause_concept("traumatic brain injury 2005") == BenchmarkConcept(
+    assert epilepsy_cause_concept("traumatic brain injury") == BenchmarkConcept(
         "traumatic-brain-injury",
         "C0876926",
         "traumatic-brain-injury",
     )
-    assert epilepsy_cause_concept("easle") == BenchmarkConcept(
+    assert epilepsy_cause_concept("measles") == BenchmarkConcept(
         "Measles",
         "C0025007",
         "Measles",
     )
-    assert epilepsy_cause_concept("hypoxia during a difficult birth.") == BenchmarkConcept(
+    assert epilepsy_cause_concept("hypoxia during birth") == BenchmarkConcept(
         "hypoxia-during-birth",
         "C0559478",
         "hypoxia-during-birth",
     )
-    assert epilepsy_cause_concept("neurocysticercosis.") == BenchmarkConcept(
+    assert epilepsy_cause_concept("neurocysticercosis") == BenchmarkConcept(
         "neurocysticercosis",
         "C0338437",
         "neurocysticercosis",
     )
+
+
+def test_epilepsy_cause_residual_variants_need_boundary_control_evidence() -> None:
+    for phrase in (
+        "erinatal insult",
+        "traumatic brain injury 2005",
+        "easle",
+        "hypoxia during a difficult birth.",
+        "neurocysticercosis.",
+    ):
+        assert epilepsy_cause_concept(phrase) is None
 
 
 def test_reviewed_patient_history_cui_candidates_are_finite_projection_only() -> None:

@@ -5,7 +5,9 @@ from __future__ import annotations
 from pathlib import Path
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.family_routed_preflight import (
+    PI_ROUTE_POLICY,
     REQUIRED_ROUTE_MODULE,
+    _pi_preservation_policy_present,
     build_family_routed_preflight,
     predeclaration_authorizes_dev_ladder,
     render_preflight_markdown,
@@ -47,6 +49,24 @@ def test_predeclaration_authorization_requires_status_line_not_general_audit_tex
     assert predeclaration_authorizes_dev_ladder(authorized) is True
 
 
+def test_pi_preservation_policy_requires_fresh_no_call_ablation_gate() -> None:
+    vague_text = (
+        "Preserve Prescription and Investigations on the shared broad pass. "
+        f"The adapter records `{PI_ROUTE_POLICY}`."
+    )
+    assert _pi_preservation_policy_present(vague_text) is False
+
+    gated_text = "\n".join(
+        [
+            "Preserve Prescription and Investigations on the shared broad pass.",
+            f"The adapter records `{PI_ROUTE_POLICY}`.",
+            "Specialist artifacts require a fresh predeclaration.",
+            "The replacement must be no-call and regression-free.",
+        ]
+    )
+    assert _pi_preservation_policy_present(gated_text) is True
+
+
 def test_preflight_markdown_keeps_blocked_surfaces_visible() -> None:
     report = build_family_routed_preflight(Path("."))
     markdown = render_preflight_markdown(report)
@@ -54,5 +74,6 @@ def test_preflight_markdown_keeps_blocked_surfaces_visible() -> None:
     assert "GO" in markdown
     assert "Gan test450" in markdown
     assert "full-200/test" in markdown
+    assert f"`{PI_ROUTE_POLICY}`" in markdown
     assert "pilot25" in markdown
     assert "dev140" in markdown

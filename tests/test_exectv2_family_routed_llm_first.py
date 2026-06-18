@@ -267,6 +267,49 @@ def test_gate_decision_requires_qualified_routed_candidate_to_beat_single_pass()
     assert "llm_first_with_hybrid_sf_route" in " ".join(decision["notes"])
 
 
+def test_focused_diagnosis_gate_preserves_dev_only_claim_language() -> None:
+    candidates = [
+        _focused_candidate(
+            "llm_only_all_entities",
+            overall_f1=0.4313,
+            diagnosis_f1=0.3161,
+            prescription_f1=0.7472,
+            investigations_f1=0.7475,
+            sf_f1=0.6321,
+        ),
+        _focused_candidate(
+            "family_routed_llm_first",
+            overall_f1=0.5592,
+            diagnosis_f1=0.2898,
+            prescription_f1=0.7472,
+            investigations_f1=0.7475,
+            sf_f1=0.6321,
+        ),
+        _focused_candidate(
+            "family_routed_with_focused_diagnosis_route",
+            overall_f1=0.7081,
+            diagnosis_f1=0.7127,
+            prescription_f1=0.7472,
+            investigations_f1=0.7475,
+            sf_f1=0.6321,
+            diagnosis_evidence=1.0,
+        ),
+    ]
+    route_summary = {
+        "diagnosis_route": {"call_or_parse_failures": 0},
+        "sf_route": {"call_or_parse_failures": 0},
+    }
+
+    decision = _gate_decision(candidates, route_summary)
+    notes = " ".join(decision["notes"])
+
+    assert decision["decision"] == "dev-architecture-route-useful-qualified"
+    assert "0.2898 -> 0.7127" in notes
+    assert "no-call dev replay only" in notes
+    assert "does not solve Diagnosis" in notes
+    assert "not authorize full-200/test evaluation" in notes
+
+
 def _mention(entity: str, text: str) -> PredictedMention:
     return PredictedMention(entity=entity, text=text, attributes={}, evidence=text)
 
@@ -291,4 +334,32 @@ def _candidate(
             },
         },
         "routed_primary_evidence": {"overall": {"exact_evidence_rate": evidence}},
+    }
+
+
+def _focused_candidate(
+    name: str,
+    *,
+    overall_f1: float,
+    diagnosis_f1: float,
+    prescription_f1: float,
+    investigations_f1: float,
+    sf_f1: float,
+    diagnosis_evidence: float = 1.0,
+) -> dict:
+    return {
+        "name": name,
+        "routed_primary_recovery": {
+            "overall": {"f1": overall_f1},
+            "headline_scores": {
+                "Diagnosis": {"f1": diagnosis_f1},
+                "Prescription": {"f1": prescription_f1},
+                "Investigations": {"f1": investigations_f1},
+                "SeizureFrequency": {"f1": sf_f1},
+            },
+        },
+        "routed_primary_evidence": {
+            "Diagnosis": {"exact_evidence_rate": diagnosis_evidence},
+            "overall": {"exact_evidence_rate": 1.0},
+        },
     }
