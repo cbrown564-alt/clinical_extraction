@@ -1,8 +1,10 @@
 from dataclasses import replace
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
+    BIRTH_HISTORY,
     DIAGNOSIS,
     ENTITY_REGISTRY,
+    INVESTIGATIONS,
     SEIZURE_FREQUENCY,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
@@ -17,7 +19,10 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     canonicalize_medication_name,
     match_key,
     normalize_phrase,
+    score_concept_identity,
     score_entity,
+    score_frequency_state,
+    score_investigations_components,
     score_overall,
     score_prescription_benchmark_projection,
     score_prescription_components,
@@ -151,6 +156,232 @@ def test_prescription_benchmark_projection_separates_clinical_identity_from_cui(
     assert score.drugname_cui_projection.f1 == 0.0
     assert score.phrase_scope.f1 == 0.0
     assert score.benchmark_with_cui.f1 == 0.0
+
+
+def test_concept_identity_recall_is_entity_agnostic_precision_home_tagged() -> None:
+    gold = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    DIAGNOSIS.name,
+                    "focal seizures",
+                    DiagCategory="MultipleSeizures",
+                    Certainty="5",
+                    Negation="Affirmed",
+                ),
+            ),
+        )
+    ]
+    pred = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    "PatientHistory",
+                    "focal seizures",
+                    Certainty="5",
+                    Negation="Affirmed",
+                ),
+            ),
+        )
+    ]
+
+    score = score_concept_identity(gold, pred, DIAGNOSIS.name)
+
+    assert score.concept_assertion.recall == 1.0
+    assert score.concept_assertion.precision == 0.0
+    assert score.concept_assertion.pred_count == 0
+    assert score.concept_assertion.gold_count == 1
+
+
+def test_concept_identity_collapses_diagnosis_specificity_to_most_specific() -> None:
+    gold = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    DIAGNOSIS.name,
+                    "epilepsy",
+                    DiagCategory="Epilepsy",
+                    Certainty="5",
+                    Negation="Affirmed",
+                ),
+                _ann(
+                    DIAGNOSIS.name,
+                    "focal epilepsy",
+                    DiagCategory="Epilepsy",
+                    Certainty="5",
+                    Negation="Affirmed",
+                ),
+            ),
+        )
+    ]
+    pred = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    DIAGNOSIS.name,
+                    "focal epilepsy",
+                    Certainty="5",
+                    Negation="Affirmed",
+                ),
+            ),
+        )
+    ]
+
+    score = score_concept_identity(gold, pred, DIAGNOSIS.name)
+
+    assert score.concept_assertion.gold_count == 1
+    assert score.concept_assertion.recall == 1.0
+    assert score.concept_assertion.precision == 1.0
+
+
+def test_concept_identity_splits_compound_same_kind_concepts() -> None:
+    letters = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    DIAGNOSIS.name,
+                    "focal seizures and absence seizures",
+                    DiagCategory="MultipleSeizures",
+                    Certainty="5",
+                    Negation="Affirmed",
+                ),
+            ),
+        )
+    ]
+
+    score = score_concept_identity(letters, letters, DIAGNOSIS.name)
+
+    assert score.concept_assertion.gold_count == 2
+    assert score.concept_assertion.tp == 2
+
+
+def test_birth_history_concept_identity_ignores_cui_projection() -> None:
+    gold = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    BIRTH_HISTORY.name,
+                    "born-normally",
+                    Certainty="5",
+                    Negation="Affirmed",
+                    CUI="C3665337",
+                    CUIPhrase="born-normally",
+                ),
+            ),
+        )
+    ]
+    pred = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    BIRTH_HISTORY.name,
+                    "birth normal",
+                    Certainty="5",
+                    Negation="Affirmed",
+                ),
+            ),
+        )
+    ]
+
+    score = score_concept_identity(gold, pred, BIRTH_HISTORY.name)
+
+    assert score.concept_assertion.f1 == 1.0
+
+
+def test_investigations_component_score_uses_modality_result_tuple_not_cui() -> None:
+    gold = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    INVESTIGATIONS.name,
+                    "abnormal-eeg",
+                    EEG_Performed="Yes",
+                    EEG_Results="Abnormal",
+                    EEG_Type="Standard",
+                    CUI="C0151611",
+                ),
+            ),
+        )
+    ]
+    pred = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    INVESTIGATIONS.name,
+                    "EEG",
+                    EEG_Performed="Yes",
+                    EEG_Results="Abnormal",
+                    EEG_Type="Standard",
+                    CUI="wrong",
+                ),
+            ),
+        )
+    ]
+
+    score = score_investigations_components(gold, pred)
+
+    assert score.clinical_headline.f1 == 1.0
+    assert score.eeg.f1 == 1.0
+
+
+def test_frequency_state_scores_active_seizure_free_and_unknown_states() -> None:
+    gold = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(SEIZURE_FREQUENCY.name, "focal seizures", NumberOfSeizures="2", CUI="C1"),
+                _ann(SEIZURE_FREQUENCY.name, "absence seizures", CUI="C2"),
+                _ann(
+                    SEIZURE_FREQUENCY.name,
+                    "tonic clonic seizures",
+                    NumberOfSeizures="0",
+                    CUI="C3",
+                ),
+            ),
+        )
+    ]
+    pred = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(SEIZURE_FREQUENCY.name, "focal seizures", NumberOfSeizures="99", CUI="C1"),
+                _ann(SEIZURE_FREQUENCY.name, "absence seizures", CUI="C2"),
+                _ann(
+                    SEIZURE_FREQUENCY.name,
+                    "tonic clonic seizures",
+                    NumberOfSeizures="0",
+                    CUI="C3",
+                ),
+            ),
+        )
+    ]
+
+    score = score_frequency_state(gold, pred)
+
+    assert score.clinical_headline.f1 == 1.0
+    assert score.active_rate.tp == 1
+    assert score.unknown.tp == 1
+    assert score.seizure_free.tp == 1
 
 
 def test_prescription_drugname_cui_projection_accepts_format_variants_with_same_cui() -> None:

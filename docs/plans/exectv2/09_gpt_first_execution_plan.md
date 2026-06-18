@@ -304,6 +304,39 @@ deferred GPT candidate-selection pass, ablation-gated) and benchmark-projection
 coverage (in-sample CUI lookup, never a real gate pass). Qwen model-transfer is a
 separate experiment, gated behind a locked GPT audit.
 
+### Phase F — Selection + deterministic altitude projection (2026-06-18)
+
+Item-level error analysis on the Phase C bare-union hybrid
+(`docs/research/exectv2_gpt_first_error_analysis_2026-06-18.md`): the 0.220
+semantic F1 is **assembly-bound, not recall-bound** — the nine passes surface 84%
+of gold concepts but land them at gold's exact altitude only 38% of the time and
+scatter named seizure types across the wrong entity (Diagnosis loses 184/405 golds
+to entity confusion).
+
+Two builds:
+
+1. **GPT Stage-2 arbitration** (`hybrid/arbitration.py`, the deferred
+   candidate-selection pass): one call per letter over the union pool. It *fixes
+   the entity confusion* (named seizure types retype to Diagnosis and replicate
+   into SeizureFrequency) but a single combined call cannot reproduce the recall of
+   nine focused passes — v0.1 0.195, v0.2 0.190, both **below** the 0.220 union.
+   **Rejected** as a headline: regeneration is recall-limited.
+2. **Deterministic benchmark-altitude projection** (`deterministic/benchmark_altitude.py`,
+   `runners/run_benchmark_altitude_projection.py`): recall-preserving
+   compound-splitting + seizure-type entity normalization + affirmed-default
+   attributes on the fixed LLM layer. **Diagnosis 0.243→0.318, overall semantic
+   0.220→0.242**, reported as separate projection credit. Lexicon phrase-snapping
+   rejected (0.240→0.235, in-sample, coverage-bound).
+
+**Reachability verdict (oracle).** Perfect phrase-altitude projection caps at F1
+**0.42**; per-entity ceilings: Investigations 0.74, Prescription 0.70, Diagnosis
+0.43, PatientHistory 0.28 (recall-bound, fn≈347), SeizureFrequency 0.18
+(quantification wall). **0.7 on the populous entities is not reachable on this
+metric via projection** — PatientHistory is recall-bound, SeizureFrequency is
+bounded by exact quantification, Prescription gold phrase has no single
+deterministic altitude. The gate stays NOT met; the honest claim stays the
+transfer claim.
+
 ## Measurement plan (every serious GPT run)
 
 | Axis | Required fields |

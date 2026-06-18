@@ -8,8 +8,11 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities im
     SEIZURE_FREQUENCY,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.evaluation import (
+    ENTITY_CLINICAL_RECOVERY_CLASSES,
     ENTITY_EVALUATION_POLICIES,
     benchmark_ignore_attributes_for,
+    clinical_recovery_class_for,
+    headline_entities,
     preserves_distinct_occurrences,
     semantic_ignore_attributes_for,
     uses_cuiphrase_as_gold_text,
@@ -58,6 +61,14 @@ def test_seizure_frequency_spec_has_closed_vocab():
 
 def test_evaluation_policy_covers_entity_registry():
     assert set(ENTITY_EVALUATION_POLICIES) == set(ENTITY_REGISTRY)
+
+
+def test_clinical_recovery_class_registry_covers_entity_registry():
+    assert set(ENTITY_CLINICAL_RECOVERY_CLASSES) == set(ENTITY_REGISTRY)
+    assert clinical_recovery_class_for(PATIENT_HISTORY.name) == "coverage_diagnostic"
+    assert PATIENT_HISTORY.name not in headline_entities()
+    assert DIAGNOSIS.name in headline_entities()
+    assert SEIZURE_FREQUENCY.name in headline_entities()
 
 
 def test_gold_phrase_target_policy_is_entity_specific():

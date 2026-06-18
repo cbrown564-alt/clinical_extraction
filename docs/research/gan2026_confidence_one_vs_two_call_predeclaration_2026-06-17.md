@@ -125,10 +125,21 @@ out-of-call.
   signal drops its confidence there — consistent with The Wall: the over-reading is
   confident, so no self-signal (in-call or decoupled) flags it well.
 
-### Implication
+### Implication (validation-only — SUPERSEDED by the test450 holdout)
 
-If a cheap self-confidence triage knob is wanted, **emit the primed
+> **The provisional read below did NOT survive the holdout.** On frozen test450
+> (`docs/research/gan2026_confidence_one_vs_two_call_test450_predeclaration_2026-06-17.md`,
+> run 2026-06-17) the decoupled reviewer ranks errors *significantly* better than the
+> one-call joint signal (0.669 vs 0.601, paired difference +0.068, 95% CI
+> [+0.014, +0.132] — **excludes 0**), and the in-pass folding additionally *degrades*
+> extraction accuracy (0.767 vs SE 0.809). The direction (decoupled ≥ joint) was the
+> same on both splits; validation merely lacked the gap/power to call it. **Corrected
+> conclusion: keep the two-call decoupled `ConfidenceReviewer` stage** — the extra call
+> earns its cost on the holdout. The validation-only text below is retained for the
+> record.
+
+~~If a cheap self-confidence triage knob is wanted, **emit the primed
 `answer_probability_correct` inside the extraction call** — it matches the decoupled
 reviewer's discrimination at zero extra calls and better calibration. The decoupled
 `ConfidenceReviewer` stage can be retired in favour of the in-pass field (still a
-shadow signal; still secondary to external corroboration). Not promoted to gating.
+shadow signal; still secondary to external corroboration). Not promoted to gating.~~

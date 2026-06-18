@@ -4,6 +4,15 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Reliability Scorecard
 
+### `gan2026_confidence_one_vs_two_call_test450_2026-06-17`
+- Date/split: `2026-06-17`; `test` (FROZEN holdout); `450` rows (446 paired, 104 failures); LIVE run once (450 joint SE+confidence calls + 450 decoupled reviewer calls). Single-model preflight passed (10 checks); transforms hash-frozen pre-run (joint `bf053a21…`, reviewer `c9198087…`, readout `c6d66ca9…`). Resumable per `source_row_index`.
+- Pipeline: `confidence_one_vs_two_call_test450`; driver `experiments/build_gan2026_confidence_one_vs_two_call_test450.py`; aggregate-only readout (no per-row markers); joint-arm transform imported BYTE-IDENTICAL from the validation driver. Asymmetry: joint arm generates a FRESH prediction set on test450 (the 1-call self-confidence can't reuse frozen answers); both signals scored on that same joint answer set (paired).
+- Model role: holdout confirmation of the validation paired test — does variant-D's discrimination come from the decoupled call or the prompt wording? model `openai/gpt-4.1-mini`, temp 0.
+- Primary metrics: joint(1-call) failure-AUROC **0.601** (ECE 0.146, Brier 0.197, top-bucket 92.4%); decoupled(2-call) **0.669** (ECE 0.146, Brier 0.190, top-bucket 80.9%); **paired AUROC difference (decoupled − joint) = +0.068, 95% CI [+0.014, +0.132]** (1000 reps; CI EXCLUDES 0). Joint-arm Purist accuracy **0.767** (< SE test baseline 0.809 — priming degrades the extractor on the holdout). Comparators (validation750): joint 0.609, decoupled 0.641, diff CI [−0.032, +0.098].
+- Evidence validity: Frozen aggregate-only holdout readout; no row-level test inspection; single run; preflight-gated. 0 parse failures either arm; 4 unscorable-gold rows dropped. Internally valid paired comparison (shared joint answer set).
+- Claim language: **The validation H_wording conclusion does NOT replicate on the holdout.** On test450 the decoupled two-call reviewer ranks errors significantly better than the one-call joint signal (paired diff +0.068, CI excludes 0), and folding the priming into the extraction pass costs ~4pp Purist accuracy. Direction (decoupled ≥ joint) was consistent across both splits; validation lacked the gap/power to call it. CORRECTED conclusion: KEEP the two-call decoupled `ConfidenceReviewer` stage — the extra call earns its cost on the holdout; the validation-only "removable" read was a false economy. Retracts the earlier validation-based recommendation. Both signals remain modest (< external 0.781) and gate nothing.
+- Artifacts: `experiments/gan2026_confidence_one_vs_two_call_test450_2026-06-17.json`, `experiments/gan2026_confidence_one_vs_two_call_test450_2026-06-17.md`; checkpoints `experiments/gan2026_confidence_one_vs_two_joint_test450_2026-06-17.jsonl`, `experiments/gan2026_confidence_one_vs_two_decoupled_test450_2026-06-17.jsonl`; predeclaration+results `docs/research/gan2026_confidence_one_vs_two_call_test450_predeclaration_2026-06-17.md`.
+
 ### `gan2026_confidence_one_vs_two_call_validation750_2026-06-17`
 - Date/split: `2026-06-17`; `validation`; `750` rows (737 paired, 101 failures); LIVE (≈750 joint SE+confidence calls + ≈750 decoupled reviewer calls). Resumable: joint pass checkpoints per `source_row_index` (`core/run_resume.py`); decoupled pass reuses prior reviewer verdicts.
 - Pipeline: `confidence_one_vs_two_call_paired`; driver `experiments/build_gan2026_confidence_one_vs_two_call_paired.py`; PAIRED design — both confidence signals scored on the SAME answers/error labels (the joint arm's answers, fed to `run_split` as reused raw → 0 extra SE calls for the decoupled arm).
@@ -1884,6 +1893,22 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: frozen audit; gates recorded in the audit report.
 - Claim language: Phase 7 frozen SF audit over all 200 letters (authorized 2026-06-11). Headline sf_benchmark per-item F1 0.246 (CI 0.192-0.301), per-letter F1 0.470 (CI 0.387-0.546) vs published 0.66/0.68. Immutable; locked at git ab0d8d5cb7aa.
 - Artifacts: `experiments/exectv2_audit_hybrid_full200_gpt41mini_20260611.md`, `experiments/exectv2_audit_hybrid_full200_gpt41mini_20260611.jsonl`.
+
+### `exectv2_arbitration_v02_dev140_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_hybrid` (Stage-2 GPT arbitration/selection); mode `live`.
+- Model role: one arbitration call per letter over the union per-entity candidate pool; model `openai/gpt-4.1-mini`, temp 0.0.
+- Primary metrics: git_head=291a6c6d19d7, prompt_version=exectv2_arbitration_v0.2, semantic_per_item_f1=0.190 (P0.278 R0.144), benchmark_per_item_f1=0.137, diagnosis_semantic_f1=0.270, parse_failures=0.
+- Claim language: REJECTED as headline. Entity retyping works (named seizure types -> Diagnosis + SF replication) but a single combined call cannot reproduce the recall of nine focused passes -> 0.190 < 0.220 bare union. Regeneration is recall-limited.
+- Artifacts: `experiments/exectv2_arbitration_v02_dev140_gpt41mini_20260618.md`, `.jsonl` (v01 0.195 also retained).
+
+### `exectv2_altitude_proj_dev140_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `deterministic.benchmark_altitude` projection over the bare-union LLM layer; mode `replay` (zero LLM calls).
+- Model role: deterministic compound-split + seizure-type entity-norm + affirmed-default attributes; no model.
+- Primary metrics: git_head=291a6c6d19d7, prompt_version=benchmark_altitude_v0.1, semantic_per_item_f1=0.242 (from 0.220 bare union), diagnosis_semantic_f1=0.318 (from 0.243), patienthistory_semantic_f1=0.180, benchmark_per_item_f1=0.181.
+- Claim language: recall-preserving deterministic projection, separate projection credit (never LLM reasoning). Diagnosis +0.075, overall +0.022. Oracle phrase-snap caps F1=0.42; 0.7 on populous entities NOT reachable via projection (PH recall-bound, SF quantification-bound). See docs/research/exectv2_gpt_first_error_analysis_2026-06-18.md.
+- Artifacts: `experiments/exectv2_altitude_proj_dev140_20260618.md`, `.jsonl`.
 
 ### `gan2026_llm_heavy_clinical_frequency_reasoner_v1_validation50_live_2026-06-02`
 - Date/split: `2026-06-02`; `validation`; `50` rows.

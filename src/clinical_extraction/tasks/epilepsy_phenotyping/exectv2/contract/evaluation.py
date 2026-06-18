@@ -23,6 +23,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities im
 )
 
 PhraseTarget = Literal["raw_text", "cuiphrase"]
+ClinicalRecoveryClass = Literal["decomposable", "atomic_concept", "coverage_diagnostic"]
 
 DEFAULT_BENCHMARK_IGNORE_ATTRIBUTES: frozenset[str] = frozenset({"CUIPhrase"})
 SEIZURE_FREQUENCY_BENCHMARK_IGNORE_ATTRIBUTES: frozenset[str] = frozenset({
@@ -74,6 +75,18 @@ ENTITY_EVALUATION_POLICIES.update(
     }
 )
 
+ENTITY_CLINICAL_RECOVERY_CLASSES: dict[str, ClinicalRecoveryClass] = {
+    PRESCRIPTION.name: "decomposable",
+    INVESTIGATIONS.name: "decomposable",
+    SEIZURE_FREQUENCY.name: "decomposable",
+    DIAGNOSIS.name: "atomic_concept",
+    ONSET.name: "atomic_concept",
+    WHEN_DIAGNOSED.name: "atomic_concept",
+    EPILEPSY_CAUSE.name: "atomic_concept",
+    BIRTH_HISTORY.name: "atomic_concept",
+    PATIENT_HISTORY.name: "coverage_diagnostic",
+}
+
 _EXPECTED_ENTITY_NAMES = frozenset(
     {
         BIRTH_HISTORY.name,
@@ -89,6 +102,8 @@ _EXPECTED_ENTITY_NAMES = frozenset(
 )
 if frozenset(ENTITY_EVALUATION_POLICIES) != _EXPECTED_ENTITY_NAMES:  # pragma: no cover
     raise RuntimeError("ExECTv2 evaluation policy does not cover all entities")
+if frozenset(ENTITY_CLINICAL_RECOVERY_CLASSES) != _EXPECTED_ENTITY_NAMES:  # pragma: no cover
+    raise RuntimeError("ExECTv2 clinical recovery class registry does not cover all entities")
 
 
 def evaluation_policy_for(entity: str) -> EntityEvaluationPolicy:
@@ -114,3 +129,18 @@ def semantic_ignore_attributes_for(entity: str) -> frozenset[str]:
 
 def preserves_distinct_occurrences(entity: str) -> bool:
     return evaluation_policy_for(entity).preserve_distinct_occurrences
+
+
+def clinical_recovery_class_for(entity: str) -> ClinicalRecoveryClass:
+    try:
+        return ENTITY_CLINICAL_RECOVERY_CLASSES[entity]
+    except KeyError as exc:  # pragma: no cover - protected by registry tests
+        raise KeyError(f"unknown ExECTv2 clinical recovery class: {entity}") from exc
+
+
+def headline_entities() -> tuple[str, ...]:
+    return tuple(
+        entity
+        for entity in ENTITY_EVALUATION_POLICIES
+        if ENTITY_CLINICAL_RECOVERY_CLASSES[entity] != "coverage_diagnostic"
+    )
