@@ -44,7 +44,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
-PROMPT_VERSION = "exectv2_llm_sf_verifier_v0.1"
+PROMPT_VERSION = "exectv2_llm_sf_verifier_v0.3"
 PIPELINE_FAMILY = "exectv2_llm_sf_verifier"
 COMPONENT_OWNER = "llm_sf_verifier"
 
@@ -178,14 +178,44 @@ def _clinical_rules() -> list[str]:
             "NumberOfSeizures is 0, and unknown when only FrequencyChange is present."
         ),
         (
+            "Apply a named-seizure-frequency gate. Emit SF only when the evidence "
+            "itself gives a named seizure type, generic seizure(s), or seizure-free "
+            "state together with a rate, count, last-event/seizure-free target, or "
+            "frequency-change word. Do not infer SF from diagnosis text alone."
+        ),
+        (
             "Do not turn an active historical count into seizure-free just because "
             "the patient currently remains seizure free. Keep the historical active "
             "count and omit current seizure-free unless the source separately gives "
             "a seizure-free duration or point-in-time target annotated by the scheme."
         ),
         (
+            "Do not emit a current generic 'seizure free' mention from bare phrases "
+            "such as 'remains seizure free' unless the source gives an annotated "
+            "duration, date, age range, or point-in-time target."
+        ),
+        (
+            "Never use 'unknown' as NumberOfSeizures, LowerNumberOfSeizures, or "
+            "UpperNumberOfSeizures. If there is no count, use a valid "
+            "FrequencyChange category or omit the mention."
+        ),
+        (
+            "In a 'last event X. Previous event Y' header, render the last-event "
+            "seizure-free state only. Do not add the previous event as an active-rate "
+            "mention."
+        ),
+        (
+            "Do not emit a separate generic seizure active-rate for 'last had a "
+            "seizure before this around a year ago'; that is a previous-event "
+            "reference, not a rate."
+        ),
+        (
             "For 'several' use NumberOfSeizures='3'; for 'a few' use "
             "NumberOfSeizures='2'."
+        ),
+        (
+            "For 'a few seizures per year', render generic seizures as "
+            "NumberOfSeizures='2', NumberOfTimePeriods='1', TimePeriod='Year'."
         ),
         (
             "For every 3 to 4 weeks, render one seizure per 3-4 Week period: "
@@ -206,6 +236,23 @@ def _clinical_rules() -> list[str]:
             "unless a named seizure type and frequency state are explicitly stated."
         ),
         (
+            "Do not convert unlabelled 'episodes', 'events', 'blackouts', or 'loss "
+            "of consciousness' counts into SeizureFrequency, even if nearby prose "
+            "later says they may be seizures."
+        ),
+        (
+            "Do not infer a named seizure type from an unlabelled episodes/events "
+            "rate. If the rate sentence says only 'episodes' or 'events', omit it."
+        ),
+        (
+            "Do not emit SF for 'continues to get' a named seizure type when there "
+            "is no rate, count, seizure-free target, or frequency-change category."
+        ),
+        (
+            "Do not emit SF for occasional jerks unless the source explicitly names "
+            "myoclonic jerks or another scored seizure type."
+        ),
+        (
             "When the letter says focal seizures are completely under control after "
             "a drug change, render focal seizures with NumberOfSeizures='0' and "
             "PointInTime='DrugChange'."
@@ -219,6 +266,22 @@ def _clinical_rules() -> list[str]:
             "When a last-event phrase names focal to bilateral convulsive seizures, "
             "also render the component convulsive seizure seizure-free state if the "
             "letter explicitly supports it."
+        ),
+        (
+            "When a sentence says a patient can get infrequent focal to bilateral "
+            "convulsive seizures, render that named seizure type with "
+            "FrequencyChange='Infrequent'."
+        ),
+        (
+            "When a sentence says the last seizures were in the teenage years, "
+            "render generic seizures as seizure-free since AgeLower='13', "
+            "AgeUpper='19', AgeUnit='Year'; do not render the historical count as "
+            "a current active-rate fact."
+        ),
+        (
+            "If the evidence phrase is generic 'last seizures were in the teenage "
+            "years', use text 'seizures' even when the following clause names a "
+            "specific seizure type."
         ),
         "Return exactly one JSON object. No markdown code fences.",
     ]
@@ -281,6 +344,246 @@ def _worked_examples() -> list[dict[str, Any]]:
         },
         {
             "note_fragment": (
+                "Seizure type and frequency: 2 generalised tonic clonic seizures "
+                "2014, absence like seizures 2014. As you know he had 2 "
+                "generalised tonic clonic seizures in 2014."
+            ),
+            "draft": [{"text": "seizure free"}],
+            "correct": [
+                {
+                    "text": "generalised tonic clonic seizures",
+                    "attributes": {
+                        "NumberOfSeizures": "2",
+                        "TimeSince_or_TimeOfEvent": "During",
+                        "YearDate": "2014",
+                    },
+                    "evidence": "2 generalised tonic clonic seizures 2014",
+                    "confidence": "high",
+                    "rationale": "The header states the historical GTC count.",
+                },
+                {
+                    "text": "absence like seizures",
+                    "attributes": {
+                        "NumberOfSeizures": "1",
+                        "TimeSince_or_TimeOfEvent": "During",
+                        "YearDate": "2014",
+                    },
+                    "evidence": "absence like seizures 2014",
+                    "confidence": "medium",
+                    "rationale": "A named historical seizure type without count is one event.",
+                },
+                {
+                    "text": "generalised tonic clonic seizures",
+                    "attributes": {
+                        "NumberOfSeizures": "2",
+                        "TimeSince_or_TimeOfEvent": "During",
+                        "YearDate": "2014",
+                    },
+                    "evidence": "2 generalised tonic clonic seizures in 2014",
+                    "confidence": "high",
+                    "rationale": "The narrative repeats the same supported GTC count.",
+                },
+            ],
+        },
+        {
+            "note_fragment": (
+                "Seizure type and frequency: Generalised tonic clonic seizure-last "
+                "event July 2016. Previous event December 2015."
+            ),
+            "draft": [{"text": "Previous event"}],
+            "correct": [
+                {
+                    "text": "Generalised tonic clonic seizure",
+                    "attributes": {
+                        "NumberOfSeizures": "0",
+                        "TimeSince_or_TimeOfEvent": "Since",
+                        "MonthDate": "7",
+                        "YearDate": "2016",
+                    },
+                    "evidence": "Generalised tonic clonic seizure-last event July 2016",
+                    "confidence": "high",
+                    "rationale": "The previous event is not a separate active-rate fact.",
+                }
+            ],
+        },
+        {
+            "note_fragment": (
+                "Unfortunately he forgot to take carbamazepine last week and had a "
+                "generalised tonic clonic seizure. He last had a seizure before "
+                "this around a year ago."
+            ),
+            "draft": [{"text": "seizure before this"}],
+            "correct": [
+                {
+                    "text": "generalised tonic clonic seizure",
+                    "attributes": {
+                        "NumberOfSeizures": "1",
+                        "PointInTime": "Last_Week",
+                        "TimeSince_or_TimeOfEvent": "During",
+                    },
+                    "evidence": "had a generalised tonic clonic seizure",
+                    "confidence": "high",
+                    "rationale": "The prior generic event is not a separate rate.",
+                }
+            ],
+        },
+        {
+            "note_fragment": (
+                "It seems as if he is definitely having a few seizures per year."
+            ),
+            "draft": [{"text": "seizures", "attributes": {"FrequencyChange": "Frequent"}}],
+            "correct": [
+                {
+                    "text": "seizures",
+                    "attributes": {
+                        "NumberOfSeizures": "2",
+                        "NumberOfTimePeriods": "1",
+                        "TimePeriod": "Year",
+                    },
+                    "evidence": "a few seizures per year",
+                    "confidence": "high",
+                    "rationale": "A few per year maps to two seizures per one year.",
+                }
+            ],
+        },
+        {
+            "note_fragment": (
+                "She did have a cluster of seizures in August, 2017 where she had "
+                "6-9 seizures every week for 3 weeks."
+            ),
+            "draft": [{"text": "cluster of seizures"}],
+            "correct": [
+                {
+                    "text": "cluster of seizures",
+                    "attributes": {
+                        "NumberOfSeizures": "1",
+                        "MonthDate": "8",
+                        "YearDate": "2017",
+                        "TimeSince_or_TimeOfEvent": "During",
+                    },
+                    "evidence": "cluster of seizures in August, 2017",
+                    "confidence": "high",
+                    "rationale": "The cluster itself is one event.",
+                },
+                {
+                    "text": "seizures",
+                    "attributes": {
+                        "LowerNumberOfSeizures": "6",
+                        "UpperNumberOfSeizures": "9",
+                        "NumberOfTimePeriods": "1",
+                        "TimePeriod": "Week",
+                        "MonthDate": "8",
+                        "YearDate": "2017",
+                        "TimeSince_or_TimeOfEvent": "During",
+                    },
+                    "evidence": "6-9 seizures every week for 3 weeks",
+                    "confidence": "high",
+                    "rationale": "The same sentence also gives a generic seizure rate.",
+                },
+            ],
+        },
+        {
+            "note_fragment": (
+                "His last seizures were in his teenage years where he probably had "
+                "around 3 or 4 focal to bilateral convulsive seizures."
+            ),
+            "draft": [{"text": "focal to bilateral convulsive seizures"}],
+            "correct": [
+                {
+                    "text": "seizures",
+                    "attributes": {
+                        "NumberOfSeizures": "0",
+                        "TimeSince_or_TimeOfEvent": "Since",
+                        "AgeLower": "13",
+                        "AgeUpper": "19",
+                        "AgeUnit": "Year",
+                    },
+                    "evidence": "His last seizures were in his teenage years",
+                    "confidence": "high",
+                    "rationale": "Last seizures in teenage years is a seizure-free state.",
+                }
+            ],
+        },
+        {
+            "note_fragment": (
+                "Focal to bilateral convulsive seizures, last event around Christmas "
+                "2017. His last one being around Christmas time in 2017."
+            ),
+            "draft": [{"text": "Focal to bilateral convulsive seizures"}],
+            "correct": [
+                {
+                    "text": "Focal to bilateral convulsive seizures",
+                    "attributes": {
+                        "NumberOfSeizures": "0",
+                        "MonthDate": "12",
+                        "YearDate": "2017",
+                        "TimeSince_or_TimeOfEvent": "Since",
+                    },
+                    "evidence": (
+                        "Focal to bilateral convulsive seizures, last event around "
+                        "Christmas 2017"
+                    ),
+                    "confidence": "high",
+                    "rationale": "The header supplies one supported last-event state.",
+                },
+                {
+                    "text": "focal to bilateral convulsive seizures",
+                    "attributes": {
+                        "NumberOfSeizures": "0",
+                        "MonthDate": "12",
+                        "YearDate": "2017",
+                        "TimeSince_or_TimeOfEvent": "Since",
+                    },
+                    "evidence": "last one being around Christmas time in 2017",
+                    "confidence": "medium",
+                    "rationale": "The narrative supplies another supported last-event state.",
+                },
+            ],
+        },
+        {
+            "note_fragment": (
+                "Focal to bilateral convulsive seizures, last event around Christmas "
+                "2017. He can get infrequent focal to bilateral convulsive seizures."
+            ),
+            "draft": [{"text": "Focal to bilateral convulsive seizures"}],
+            "correct": [
+                {
+                    "text": "Focal to bilateral convulsive seizures",
+                    "attributes": {
+                        "NumberOfSeizures": "0",
+                        "MonthDate": "12",
+                        "YearDate": "2017",
+                        "TimeSince_or_TimeOfEvent": "Since",
+                    },
+                    "evidence": (
+                        "Focal to bilateral convulsive seizures, last event around "
+                        "Christmas 2017"
+                    ),
+                    "confidence": "high",
+                    "rationale": "The header states the last focal-to-bilateral event.",
+                },
+                {
+                    "text": "convulsive seizure",
+                    "attributes": {
+                        "NumberOfSeizures": "0",
+                        "YearDate": "2017",
+                        "TimeSince_or_TimeOfEvent": "Since",
+                    },
+                    "evidence": "last convulsive seizure in 2017",
+                    "confidence": "medium",
+                    "rationale": "The component convulsive seizure is explicitly supported.",
+                },
+                {
+                    "text": "focal to bilateral convulsive seizures",
+                    "attributes": {"FrequencyChange": "Infrequent"},
+                    "evidence": "infrequent focal to bilateral convulsive seizures",
+                    "confidence": "medium",
+                    "rationale": "Infrequent is a frequency-change state.",
+                },
+            ],
+        },
+        {
+            "note_fragment": (
                 "I think that the focal seizures are completely under control on "
                 "lamotrigine 200 mg twice a day."
             ),
@@ -308,6 +611,84 @@ def _worked_examples() -> list[dict[str, Any]]:
             ),
             "draft": [{"text": "single focal seizure"}],
             "correct": [],
+        },
+        {
+            "note_fragment": (
+                "She has been getting episodes around twice a week of an unusual "
+                "thought. I think these are temporal lobe onset focal seizures."
+            ),
+            "draft": [{"text": "episodes", "attributes": {"NumberOfSeizures": "2"}}],
+            "correct": [],
+        },
+        {
+            "note_fragment": (
+                "In the last 2 years he developed some minor seizures. The episodes "
+                "last no longer than 3 minutes and occur 4 to 5 times a year."
+            ),
+            "draft": [{"text": "generalised tonic clonic seizures"}],
+            "correct": [],
+        },
+        {
+            "note_fragment": (
+                "He has had around 7 episodes of loss of consciousness since the "
+                "beginning of the year."
+            ),
+            "draft": [{"text": "episodes of loss of consciousness"}],
+            "correct": [],
+        },
+        {
+            "note_fragment": (
+                "He has suffered around 10 events in total. He has not had any for "
+                "the last 2 weeks."
+            ),
+            "draft": [{"text": "unwitnessed episodes of loss of consciousness"}],
+            "correct": [],
+        },
+        {
+            "note_fragment": (
+                "Despite this she continues to get general and complex partial "
+                "seizures."
+            ),
+            "draft": [{"text": "complex partial seizures"}],
+            "correct": [],
+        },
+        {
+            "note_fragment": "She still gets occasional jerks with flashing lights.",
+            "draft": [{"text": "jerks with flashing lights"}],
+            "correct": [],
+        },
+        {
+            "note_fragment": (
+                "There has been significant improvement since increasing the dose "
+                "of lamotrigine. I think that the focal seizures are completely "
+                "under control on the dose of lamotrigine."
+            ),
+            "draft": [{"text": "focal seizures"}],
+            "correct": [
+                {
+                    "text": "seizures",
+                    "attributes": {
+                        "FrequencyChange": "Infrequent",
+                        "PointInTime": "DrugChange",
+                    },
+                    "evidence": (
+                        "significant improvement since increasing the dose of "
+                        "lamotrigine"
+                    ),
+                    "confidence": "medium",
+                    "rationale": "The drug-change improvement supports generic seizures.",
+                },
+                {
+                    "text": "focal seizures",
+                    "attributes": {
+                        "NumberOfSeizures": "0",
+                        "PointInTime": "DrugChange",
+                    },
+                    "evidence": "focal seizures are completely under control",
+                    "confidence": "high",
+                    "rationale": "Focal seizures are controlled after the drug change.",
+                },
+            ],
         },
         {
             "note_fragment": (
