@@ -62,6 +62,7 @@ KEY_ENTITIES: tuple[str, ...] = (
     INVESTIGATIONS.name,
 )
 DEFAULT_REGISTRY_PATH = Path("experiments/registry.jsonl")
+SF_STATES: tuple[str, ...] = ("active-rate", "seizure-free", "unknown")
 
 
 @dataclass(frozen=True)
@@ -142,12 +143,16 @@ def build_error_ledger(
     summary: dict[str, Any] = {}
     for entity in entities:
         entity_records = _entity_error_records(gold_letters, pred_letters, entity)
-        records.extend(entity_records)
-        summary[entity] = {
+        entry = {
             "headline": _score_to_dict(_headline_score(gold_letters, pred_letters, entity)),
+            "residual_error_counts": _residual_error_counts(entity_records),
             "top_gold_misses": _top_records(entity_records, "gold"),
             "top_predicted_over_emissions": _top_records(entity_records, "predicted"),
         }
+        if entity == SEIZURE_FREQUENCY.name:
+            entry["residual_state_counts"] = _sf_residual_state_counts(entity_records)
+        records.extend(entity_records)
+        summary[entity] = entry
     return {
         "row_count": len(gold_letters),
         "entities": list(entities),
@@ -451,6 +456,42 @@ def _top_records(
     return sorted(rows, key=lambda row: (-int(row["count"]), str(row["key"])))[:limit]
 
 
+def _residual_error_counts(
+    records: Sequence[ClinicalRecoveryErrorRecord],
+) -> dict[str, int]:
+    return {
+        "candidate_miss": sum(record.count for record in records if record.side == "gold"),
+        "wrong_detail_selection": sum(
+            record.count for record in records if record.side == "predicted"
+        ),
+    }
+
+
+def _sf_residual_state_counts(
+    records: Sequence[ClinicalRecoveryErrorRecord],
+) -> dict[str, dict[str, int]]:
+    counts = {
+        "gold": {state: 0 for state in SF_STATES},
+        "predicted": {state: 0 for state in SF_STATES},
+    }
+    for record in records:
+        state = _sf_state_from_key(record.key)
+        if state is not None:
+            counts[record.side][state] += record.count
+    return counts
+
+
+def _sf_state_from_key(key: str) -> str | None:
+    try:
+        value = json.loads(key)
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(value, list) or len(value) != 2:
+        return None
+    state = value[1]
+    return state if state in SF_STATES else None
+
+
 def _score_to_dict(score: Any) -> dict[str, Any]:
     if isinstance(score, ClinicalRecoveryPRF1):
         return {
@@ -504,7 +545,11 @@ def _render_markdown(ledger: Mapping[str, Any], *, json_path: Path) -> str:
 
     for entity in ledger["entities"]:
         entry = ledger["summary"]["per_entity"][entity]
-        lines.extend(["", f"## {entity}", "", "### Top Gold Misses", ""])
+        lines.extend(["", f"## {entity}", ""])
+        if entity == SEIZURE_FREQUENCY.name and "residual_state_counts" in entry:
+            lines.extend(_sf_residual_state_table(entry["residual_state_counts"]))
+            lines.append("")
+        lines.extend(["### Top Gold Misses", ""])
         lines.extend(_top_table(entry["top_gold_misses"]))
         lines.extend(["", "### Top Predicted Over-Emissions", ""])
         lines.extend(_top_table(entry["top_predicted_over_emissions"]))
@@ -527,6 +572,23 @@ def _top_table(rows: Sequence[Mapping[str, Any]]) -> list[str]:
         if len(row["letters"]) > 8:
             letters += ", ..."
         lines.append(f"| {row['count']} | `{key}` | {example} | {letters} |")
+    return lines
+
+
+def _sf_residual_state_table(counts: Mapping[str, Mapping[str, int]]) -> list[str]:
+    lines = [
+        "### Residual By State",
+        "",
+        "| Side | active-rate | seizure-free | unknown |",
+        "| --- | ---: | ---: | ---: |",
+    ]
+    for side in ("gold", "predicted"):
+        state_counts = counts.get(side, {})
+        lines.append(
+            f"| {side} | {state_counts.get('active-rate', 0)} | "
+            f"{state_counts.get('seizure-free', 0)} | "
+            f"{state_counts.get('unknown', 0)} |"
+        )
     return lines
 
 

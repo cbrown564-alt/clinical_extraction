@@ -130,6 +130,7 @@ _DIAGNOSIS_ENTRIES: tuple[tuple[BenchmarkConcept, tuple[str, ...]], ...] = (
         (
             "generalised tonic clonic seizures",
             "generalised tonic clonic seizure",
+            "generalized tonic clonic seizures",
             "tonic clonic seizures",
         ),
     ),
@@ -155,7 +156,7 @@ _DIAGNOSIS_ENTRIES: tuple[tuple[BenchmarkConcept, tuple[str, ...]], ...] = (
     ),
     (
         BenchmarkConcept("Epilepsy", "C0149958", "complex-partial-seizures"),
-        ("complex partial seizures",),
+        ("complex partial seizures", "complex partial seizure"),
     ),
     (
         BenchmarkConcept("Epilepsy", "C0270838", "secondary-generalised-seizures"),
@@ -167,11 +168,11 @@ _DIAGNOSIS_ENTRIES: tuple[tuple[BenchmarkConcept, tuple[str, ...]], ...] = (
     ),
     (
         BenchmarkConcept("Epilepsy", "C0016399", "focal-motor-seizures"),
-        ("focal motor seizures",),
+        ("focal motor seizures", "focal motor seizure"),
     ),
     (
         BenchmarkConcept("Epilepsy", "C4317109", "epileptic-seizures"),
-        ("epileptic seizures",),
+        ("epileptic seizures", "epileptic seizure"),
     ),
     (
         BenchmarkConcept("Epilepsy", "C0270850", "primary-generalised-epilepsy"),
@@ -187,7 +188,10 @@ _DIAGNOSIS_ENTRIES: tuple[tuple[BenchmarkConcept, tuple[str, ...]], ...] = (
             "C0393697",
             "epilepsy-with-generalised-tonic-clonic-seizures-alone",
         ),
-        ("epilepsy with generalised tonic clonic seizures alone",),
+        (
+            "epilepsy with generalised tonic clonic seizures alone",
+            "epilepsy with generalised tonic clonic seizure alone",
+        ),
     ),
     (
         BenchmarkConcept("Epilepsy", "C0393691", "occipital-lobe-epilepsy"),
@@ -207,7 +211,7 @@ _DIAGNOSIS_ENTRIES: tuple[tuple[BenchmarkConcept, tuple[str, ...]], ...] = (
     ),
     (
         BenchmarkConcept("Epilepsy", "C0014556", "temporal-lobe-seizure"),
-        ("temporal lobe seizure",),
+        ("temporal lobe seizure", "temporal lobe seizures"),
     ),
     (
         BenchmarkConcept("Epilepsy", "C4316903", "absence-seizures"),
@@ -355,7 +359,12 @@ _PATIENT_HISTORY_ENTRIES: tuple[tuple[BenchmarkConcept, tuple[str, ...]], ...] =
     (BenchmarkConcept("absences", "C0563606", "absences"), ("absences",)),
     (
         BenchmarkConcept("dissociative-seizures", "C0349245", "dissociative-seizures"),
-        ("dissociative seizures", "dissociative-seizures"),
+        (
+            "dissociative seizures",
+            "dissociative-seizures",
+            "dissociative seizure",
+            "dissociative (non epileptic) seizures",
+        ),
     ),
     (
         BenchmarkConcept(
@@ -399,7 +408,13 @@ _PATIENT_HISTORY_ENTRIES: tuple[tuple[BenchmarkConcept, tuple[str, ...]], ...] =
     ),
     (
         BenchmarkConcept("head-injury", "C0497301", "head-injury"),
-        ("head injury", "minor head injury", "severe head injury"),
+        (
+            "head injury",
+            "minor head injury",
+            "severe head injury",
+            "head injuries",
+            "significant head injury",
+        ),
     ),
     (
         BenchmarkConcept("traumatic-brain-injury", "C0876926", "traumatic-brain-injury"),
@@ -416,7 +431,10 @@ _PATIENT_HISTORY_ENTRIES: tuple[tuple[BenchmarkConcept, tuple[str, ...]], ...] =
         BenchmarkConcept("cerebral-abscess", "C1510428", "cerebral-abscess"),
         ("cerebral abscess", "cerebral abcess"),
     ),
-    (BenchmarkConcept("hypertension", "C0020538", "hypertension"), ("hypertension",)),
+    (
+        BenchmarkConcept("hypertension", "C0020538", "hypertension"),
+        ("hypertension", "hypertensions"),
+    ),
     (
         BenchmarkConcept("learning-disabilities", "C0751265", "learning-disabilities"),
         ("learning disabilities", "learning disability"),
@@ -440,7 +458,13 @@ _PATIENT_HISTORY_ENTRIES: tuple[tuple[BenchmarkConcept, tuple[str, ...]], ...] =
     (BenchmarkConcept("meningioma", "C0349604", "meningioma"), ("meningioma",)),
     (
         BenchmarkConcept("cluster-of-seizures", "C3203523", "cluster-of-seizures"),
-        ("cluster of seizures", "cluster-of-seizures"),
+        (
+            "cluster of seizures",
+            "cluster-of-seizures",
+            "cluster of seizure",
+            "cluster of three seizures",
+            "clusters of seizures",
+        ),
     ),
     (BenchmarkConcept("myoclonus", "C0027066", "myoclonus"), ("myoclonus",)),
     (BenchmarkConcept("jerks", "C0231530", "jerks"), ("jerks",)),

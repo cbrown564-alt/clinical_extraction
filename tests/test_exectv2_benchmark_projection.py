@@ -76,6 +76,42 @@ def test_diagnosis_projection_maps_observed_phrases_to_category_and_cui() -> Non
     )
 
 
+def test_reviewed_diagnosis_projection_variants_are_benchmark_format_only() -> None:
+    assert diagnosis_concept("complex partial seizure") == BenchmarkConcept(
+        "Epilepsy",
+        "C0149958",
+        "complex-partial-seizures",
+    )
+    assert diagnosis_concept("focal motor seizure") == BenchmarkConcept(
+        "Epilepsy",
+        "C0016399",
+        "focal-motor-seizures",
+    )
+    assert diagnosis_concept("generalized tonic clonic seizures") == BenchmarkConcept(
+        "Epilepsy",
+        "C0494475",
+        "generalised-tonic-clonic-seizures",
+    )
+    assert diagnosis_concept("epileptic seizure") == BenchmarkConcept(
+        "Epilepsy",
+        "C4317109",
+        "epileptic-seizures",
+    )
+    assert diagnosis_concept("epilepsy with generalised tonic clonic seizure alone") == (
+        BenchmarkConcept(
+            "Epilepsy",
+            "C0393697",
+            "epilepsy-with-generalised-tonic-clonic-seizures-alone",
+        )
+    )
+    assert diagnosis_concept("temporal lobe seizures") == BenchmarkConcept(
+        "Epilepsy",
+        "C0014556",
+        "temporal-lobe-seizure",
+    )
+    assert diagnosis_concept("focal") is None
+
+
 def test_onset_projection_maps_source_near_epilepsy_phrase() -> None:
     assert onset_concept("epilepsy") == BenchmarkConcept("epilepsy", "C0014544", "epilepsy")
 
@@ -131,6 +167,47 @@ def test_reviewed_patient_history_cui_candidates_are_finite_projection_only() ->
         "hemiparesis",
     )
     assert patient_history_concept("context-dependent symptom") is None
+
+
+def test_reviewed_patient_history_projection_variants_are_benchmark_format_only() -> None:
+    assert patient_history_concept("dissociative seizure") == BenchmarkConcept(
+        "dissociative-seizures",
+        "C0349245",
+        "dissociative-seizures",
+    )
+    assert patient_history_concept("dissociative (non epileptic) seizures") == (
+        BenchmarkConcept(
+            "dissociative-seizures",
+            "C0349245",
+            "dissociative-seizures",
+        )
+    )
+    assert patient_history_concept("cluster of three seizures") == BenchmarkConcept(
+        "cluster-of-seizures",
+        "C3203523",
+        "cluster-of-seizures",
+    )
+    assert patient_history_concept("clusters of seizures") == BenchmarkConcept(
+        "cluster-of-seizures",
+        "C3203523",
+        "cluster-of-seizures",
+    )
+    assert patient_history_concept("head injuries") == BenchmarkConcept(
+        "head-injury",
+        "C0497301",
+        "head-injury",
+    )
+    assert patient_history_concept("significant head injury") == BenchmarkConcept(
+        "head-injury",
+        "C0497301",
+        "head-injury",
+    )
+    assert patient_history_concept("hypertensions") == BenchmarkConcept(
+        "hypertension",
+        "C0020538",
+        "hypertension",
+    )
+    assert patient_history_concept("brain abscess") is None
 
 
 def test_attach_benchmark_concept_does_not_overwrite_existing_clinical_attributes() -> None:

@@ -89,6 +89,50 @@ def test_error_ledger_reports_class_a_headline_keys() -> None:
     assert {record["side"] for record in inv_records} == {"gold", "predicted"}
 
 
+def test_error_ledger_summarizes_sf_residuals_by_side_and_state() -> None:
+    gold = ExectLetter(
+        "L1",
+        "Two seizures per month. No tonic clonic seizures since surgery.",
+        (
+            _ann(
+                SEIZURE_FREQUENCY.name,
+                "seizures",
+                CUI="C0036572",
+                NumberOfSeizures="2",
+            ),
+            _ann(
+                SEIZURE_FREQUENCY.name,
+                "tonic clonic seizures",
+                CUI="C0494475",
+                NumberOfSeizures="0",
+            ),
+        ),
+    )
+    prediction = PredictedLetter(
+        letter_id="L1",
+        mentions=(
+            _pred(
+                SEIZURE_FREQUENCY.name,
+                "seizures",
+                CUI="C0036572",
+                FrequencyChange="Increased",
+            ),
+        ),
+    )
+
+    result = ledger.build_error_ledger([gold], [prediction], entities=(SEIZURE_FREQUENCY.name,))
+
+    entry = result["summary"]["per_entity"][SEIZURE_FREQUENCY.name]
+    assert entry["residual_error_counts"] == {
+        "candidate_miss": 2,
+        "wrong_detail_selection": 1,
+    }
+    assert entry["residual_state_counts"] == {
+        "gold": {"active-rate": 1, "seizure-free": 1, "unknown": 0},
+        "predicted": {"active-rate": 0, "seizure-free": 0, "unknown": 1},
+    }
+
+
 def test_error_ledger_uses_entity_agnostic_diagnosis_recall_pool() -> None:
     gold = ExectLetter(
         "L2",

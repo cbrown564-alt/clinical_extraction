@@ -8,6 +8,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_family_routed_llm_first import (  # noqa: E501
+    FOCUSED_DIAGNOSIS_AGGREGATE_OWNERSHIP,
     PIPELINE_FAMILY,
     ROUTED_PRIMARY_ENTITIES,
     _gate_decision,
@@ -50,12 +51,91 @@ def test_combine_family_routed_predictions_uses_shared_pid_and_routed_sf() -> No
     assert routed[0].diagnostics["pipeline_family"] == PIPELINE_FAMILY
 
 
+def test_combine_family_routed_predictions_cannot_promote_pi_specialist_mentions() -> None:
+    gold = [ExectLetter(letter_id="EA0001", note_text="")]
+    shared = PredictedLetter(
+        letter_id="EA0001",
+        mentions=(
+            _mention("Prescription", "shared lamotrigine"),
+            _mention("Investigations", "shared MRI"),
+        ),
+    )
+    specialist_or_route = PredictedLetter(
+        letter_id="EA0001",
+        mentions=(
+            _mention("Prescription", "specialist lamotrigine"),
+            _mention("Investigations", "specialist MRI"),
+            _mention("SeizureFrequency", "routed focal seizures"),
+        ),
+    )
+
+    routed = combine_family_routed_predictions(
+        gold,
+        {"EA0001": shared},
+        {"EA0001": specialist_or_route},
+    )
+
+    mentions = routed[0].mentions
+    assert [(m.entity, m.text, m.component_owner) for m in mentions] == [
+        ("Prescription", "shared lamotrigine", "llm_first"),
+        ("Investigations", "shared MRI", "llm_first"),
+        ("SeizureFrequency", "routed focal seizures", "hybrid_sf_route"),
+    ]
+    assert routed[0].diagnostics["prescription_investigations_route_policy"] == (
+        "shared_broad_pass_only"
+    )
+
+
 def test_routed_primary_recovery_scores_only_predeclared_four_families() -> None:
     assert ROUTED_PRIMARY_ENTITIES == (
         "Prescription",
         "Investigations",
         "Diagnosis",
         "SeizureFrequency",
+    )
+
+
+def test_optional_focused_diagnosis_route_replaces_shared_diagnosis_only() -> None:
+    gold = [ExectLetter(letter_id="EA0001", note_text="")]
+    shared = PredictedLetter(
+        letter_id="EA0001",
+        mentions=(
+            _mention("Prescription", "lamotrigine"),
+            _mention("Investigations", "MRI"),
+            _mention("Diagnosis", "shared epilepsy"),
+        ),
+    )
+    diagnosis_route = PredictedLetter(
+        letter_id="EA0001",
+        mentions=(_mention("Diagnosis", "focused focal epilepsy"),),
+    )
+    sf_route = PredictedLetter(
+        letter_id="EA0001",
+        mentions=(_mention("SeizureFrequency", "monthly seizures"),),
+    )
+
+    routed = combine_family_routed_predictions(
+        gold,
+        {"EA0001": shared},
+        {"EA0001": sf_route},
+        {"EA0001": diagnosis_route},
+    )
+
+    assert [m.text for m in routed[0].mentions] == [
+        "lamotrigine",
+        "MRI",
+        "focused focal epilepsy",
+        "monthly seizures",
+    ]
+    assert "shared epilepsy" not in [m.text for m in routed[0].mentions]
+    assert routed[0].mentions[2].component_owner == "hybrid_diagnosis_reconciler"
+    assert routed[0].diagnostics["shared_pass_entities"] == [
+        "Investigations",
+        "Prescription",
+    ]
+    assert routed[0].diagnostics["diagnosis_route_entities"] == ["Diagnosis"]
+    assert routed[0].diagnostics["aggregate_ownership"] == (
+        FOCUSED_DIAGNOSIS_AGGREGATE_OWNERSHIP
     )
 
 
