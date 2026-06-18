@@ -1858,6 +1858,26 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Inform Architecture Loop
 
+### `exectv2_hybrid_sf_state_adjudicator_v01_dev140_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_hybrid_sf_state_adjudicator`; mode `live`; replay `native_run_split`.
+- Model role: SeizureFrequency candidate-span state adjudicator v0.1 over the v0.5 single structured key-entity draft. Deterministic code proposes exact candidate evidence spans and hints; the model owns keep/reject, state choice, text normalization, and final mentions. Post-processing only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection; deterministic candidate spans are attention scaffolding, not predictions`.
+- Primary metrics: seizure_frequency_f1=0.674, seizure_frequency_precision=0.653, seizure_frequency_recall=0.695, active_rate_f1=0.726, seizure_free_f1=0.734, unknown_f1=0.351, candidate_spans=412, evidence_validity_rate=1.0, parse_failures=0.
+- Evidence validity: 0 call failures, 0 parse failures; 199/199 evidence-valid rendered mentions. Dev25 pilot was high (`0.921` F1) but did not transfer to dev140.
+- Claim language: Revise-only architecture evidence. Candidate-span/state adjudication improves over SF verifier v0.4 (`0.623` -> `0.674`) and keeps gates clean, but remains below the `0.8` target. Residuals show generic seizure active-rate over-emission and generic unknown/seizure-free misses; next loop should tighten generic candidate keep/reject rather than discard the architecture.
+- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v01_dev140_gpt41mini_20260618.md`, `experiments/exectv2_sf_state_adjudicator_v01_residual_ledger_dev140_20260618.json`, `experiments/exectv2_sf_state_adjudicator_v01_residual_ledger_dev140_20260618.md`, `docs/research/exectv2_sf_state_adjudicator_v01_dev140_report_2026-06-18.md`.
+
+### `exectv2_hybrid_sf_state_adjudicator_v01_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_hybrid_sf_state_adjudicator`; mode `live`; replay `native_run_split`.
+- Model role: Small live architecture probe for the candidate-span state adjudicator before full dev140 escalation.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `same as dev140 v0.1`.
+- Primary metrics: seizure_frequency_f1=0.921, seizure_frequency_precision=0.906, seizure_frequency_recall=0.935, candidate_spans=79, evidence_validity_rate=1.0, parse_failures=0.
+- Evidence validity: 0 call failures, 0 parse failures; 32/32 evidence-valid rendered mentions.
+- Claim language: Pilot-only escalation signal. Strong dev25 result justified the dev140 run but does not transfer by itself.
+- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v01_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v01_dev25_gpt41mini_20260618.md`.
+
 ### `exectv2_diag_sf_verifier_v06_v04_dev140_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `140` rows.
 - Pipeline: `exectv2_llm_diagnosis_verifier` + `exectv2_llm_sf_verifier`; mode `live`; replay `native_run_split`.

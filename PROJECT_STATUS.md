@@ -148,13 +148,21 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   ledger still shows broad residual families, so the next loop should use
   stronger decomposition rather than more broad verifier-prompt accretion. See
   `docs/research/exectv2_diag_sf_verifier_v06_v04_dev140_report_2026-06-18.md`.
+- SeizureFrequency candidate-span/state adjudicator v0.1 improves the dev140 SF
+  headline from verifier v0.4 `0.623` to `0.674` with `0` call failures, `0`
+  parse failures, and evidence validity `1.0000`, but still misses the `0.8`
+  target. Dev25 looked excellent (`0.921`) and did not transfer, so this is
+  revise-only evidence for the architecture. The residual ledger now points to
+  generic seizure-state precision/recall: active-rate over-emission and unknown
+  state misses. See
+  `docs/research/exectv2_sf_state_adjudicator_v01_dev140_report_2026-06-18.md`.
 
 ## Active Priorities
 
 1. Redesign the remaining below-target Diagnosis and SeizureFrequency families
-   from the updated dev140 residual ledger: Diagnosis needs heading
-   decomposition plus narrative seizure-type collection; SF needs candidate
-   span/state adjudication.
+   from the updated dev140 residual ledgers: Diagnosis needs heading
+   decomposition plus narrative seizure-type collection; SF needs a stricter
+   generic-state candidate adjudicator after v0.1 improved but missed target.
 2. Require benchmark-beating dev evidence before any new full-200 audit:
    overall `0.87` per-item / `0.90` per-letter, plus per-entity tables,
    evidence/schema reliability, semantic-vs-CUI gaps, and ablations.
@@ -165,8 +173,8 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
 
 - Build a Diagnosis decomposition prototype: diagnosis-heading decomposer plus
   narrative seizure-type collector, reconciled into one Diagnosis output.
-- Build a SeizureFrequency candidate span/state adjudicator that classifies
-  candidate spans as `active-rate`, `seizure-free`, `unknown`, or `reject`.
+- Iterate SeizureFrequency candidate span/state adjudication with stricter
+  generic seizure keep/reject and unknown-vs-active handling.
 
 ### Next
 
