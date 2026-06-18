@@ -22,6 +22,16 @@ families on dev140, improves a third, and exposes a ceiling in the fourth:
 The result is scientifically useful, but it is not a solved four-family
 benchmark architecture.
 
+Follow-up on the single-design question: the comparator-equivalent single
+prompt design is now a candidate-backed, family-conditioned candidate-ID action
+prompt. It receives the current strongest candidate bundle for one target
+family, emits keep/reject actions over candidate IDs, and deterministic code
+copies selected candidate mentions verbatim. On dev140 it reproduces the current
+per-family readout (`Rx 0.817`, `Dx 0.658`, `SF 0.782`, `Inv 0.872`) without the
+copy drift seen when the model re-emitted full mention objects. This is hybrid
+and candidate-backed, not a direct raw-letter extractor, and it does not lift
+Diagnosis or SeizureFrequency above `0.8`.
+
 ## Paper Table 1: Current Dev140 Family Results
 
 | Family | Current candidate | F1 | Precision | Recall | Interpretation |
@@ -47,6 +57,15 @@ Recommended caption:
 | Investigations | Single structured key-family draft | Investigations verifier v0.1 | Evidence gate + modality/result projection | Use |
 | SeizureFrequency | Structured draft + candidate spans | State adjudicator v0.5 + deterministic state projection v0.6 + unknown suppression v0.7 | Evidence gate + SF state/CUI projection + named unknown suppression | Partial gain |
 | Diagnosis | Verifier/decomposer candidates | Diagnosis reconciler v0.1 | Evidence gate + benchmark projection | Characterize |
+
+Candidate-ID action prompt follow-up:
+
+| Family | Candidate source | Shared prompt role | Deterministic copy-through | Read |
+| --- | --- | --- | --- | --- |
+| Prescription / medication | Prescription verifier v0.1 | keep/reject candidate IDs | Copy verifier mentions verbatim | Comparator-equivalent |
+| Investigations | Investigations verifier v0.1 | keep/reject candidate IDs | Copy verifier mentions verbatim | Comparator-equivalent |
+| SeizureFrequency | SF unknown suppression v0.7 | keep/reject candidate IDs | Copy projected/suppressed SF mentions verbatim | Comparator-equivalent, still below target |
+| Diagnosis | Diagnosis reconciler v0.1 | keep/reject candidate IDs | Copy reconciler mentions verbatim | Comparator-equivalent ceiling |
 
 Recommended caption:
 

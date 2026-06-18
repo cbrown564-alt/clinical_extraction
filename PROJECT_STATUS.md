@@ -5,11 +5,13 @@ Last updated: 2026-06-18
 ## Active Objective
 
 ExECTv2 is the forward workstream. The current key-family result should be
-framed as an architecture characterization, not a benchmark-complete claim:
-Prescription/medication and Investigations clear the dev140 clinical-recovery
-target; SeizureFrequency improves with deterministic state projection plus
-predeclared unknown suppression but remains below `0.8`; Diagnosis is a
-transparent ceiling/annotation-scope result on the current candidate set.
+framed as an architecture characterization, not a benchmark-complete claim. A
+single candidate-ID action prompt now reproduces the current per-family dev140
+readout by auditing candidate IDs and deterministically copying selected
+candidates. Prescription/medication and Investigations clear the dev140
+clinical-recovery target; SeizureFrequency remains a partial-gain family below
+`0.8`; Diagnosis remains a transparent ceiling/annotation-scope result on the
+current candidate set.
 
 Use the Gan 2026 closeout discipline as the template: source-near state, exact
 evidence, component attribution, benchmark-format ablations, and family-aware
@@ -72,6 +74,35 @@ This does not authorize a new full-200 audit.
 
 ### Done Recently
 
+- 2026-06-18: Completed the candidate-ID action version of the single
+  family-conditioned prompt. v0.4 emits keep/reject actions over candidate IDs
+  and deterministic code copies selected candidate mentions verbatim. Live
+  dev140 matches current per-family prompts (`Rx 0.817`, `Dx 0.658`,
+  `SF 0.782`, `Inv 0.872`) with zero call/parse failures, removing the
+  full-object copy-drift failure. This is the current comparator-equivalent
+  single prompt design; it does not raise Diagnosis or SF above `0.8`.
+  See `docs/research/exectv2_single_prompt_design_iteration_2026-06-18.md`.
+- 2026-06-18: Implemented the candidate-backed single family-conditioned
+  adjudicator. The candidate bundle/passthrough ceiling reproduces the current
+  dev140 comparators (`Rx 0.817`, `Dx 0.658`, `SF 0.782`, `Inv 0.872`), and
+  v0.3 clears all four families on dev25 (`Rx 0.961`, `Dx 0.838`, `SF 0.875`,
+  `Inv 0.878`). Full dev140 live transfer still fails for full-object
+  re-emission (`Rx 0.817`, `Dx 0.657`, `SF 0.697`, `Inv 0.876`), mostly from
+  copy drift. Next single-design iteration should emit candidate-ID actions
+  only and deterministically copy selected candidate mentions. See
+  `docs/research/exectv2_single_prompt_design_iteration_2026-06-18.md`.
+- 2026-06-18: Implemented and tested the family-conditioned event-ledger
+  template through v0.1-v0.3. v0.3 looked promising on dev5 but failed the
+  dev25 gate except Prescription (`Rx 0.824`, `Dx 0.405`, `SF 0.429`,
+  `Inv 0.769`), so the direct-from-letter family-conditioned design is
+  rejected. Carry forward a single candidate-backed family-conditioned
+  adjudicator template instead. See
+  `docs/research/exectv2_single_prompt_design_iteration_2026-06-18.md`.
+- 2026-06-18: Iterated a Gan-inspired single all-family event-ledger prompt
+  through v0.6-v0.8 on dev25 plus a stronger-model pilot. The single-call
+  variant is rejected; carry forward one family-conditioned event-ledger prompt
+  template instead. See
+  `docs/research/exectv2_single_prompt_design_iteration_2026-06-18.md`.
 - 2026-06-18: Completed the predeclared SF unknown-suppression hard-slice study.
   v0.7 drops 10 named-rule unknown over-emissions and improves SF dev140
   `0.763` -> `0.782` without active-rate or seizure-free recall regression. See

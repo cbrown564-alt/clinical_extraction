@@ -11,6 +11,7 @@ scores the flattened rendered mentions.
 from __future__ import annotations
 
 import json
+import re
 import sys
 from collections.abc import Sequence
 from pathlib import Path
@@ -59,9 +60,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
-PROMPT_VERSION = "exectv2_llm_only_key_entities_structured_v0.5"
-PIPELINE_FAMILY = "exectv2_llm_only_key_entities_structured"
-COMPONENT_OWNER = "llm_only_key_entities_structured"
+PROMPT_VERSION = "exectv2_hybrid_key_family_event_ledger_v0.8"
+PIPELINE_FAMILY = "exectv2_hybrid_key_family_event_ledger"
+COMPONENT_OWNER = "hybrid_key_family_event_ledger"
 
 KEY_ENTITY_NAMES: tuple[str, ...] = (
     PRESCRIPTION.name,
@@ -79,6 +80,40 @@ PUBLISHED_PER_ENTITY_ITEM_F1: dict[str, float] = {
 }
 
 EventFamily = Literal["medication", "diagnosis", "seizure_frequency", "investigation"]
+
+_MEDICATION_RE = re.compile(
+    r"\b("
+    r"lamotrigine|lamictal|levetiracetam|keppra|brivaracetam|sodium valproate|"
+    r"valproate|eplim|carbamazepine|tegretol|topiramate|clobazam|clonazepam|"
+    r"midazolam|lacosamide|vimpat|zonisamide|phenobarbital|phenytoin|"
+    r"oxcarbazepine|gabapentin|pregabalin|perampanel|eslicarbazepine"
+    r")\b",
+    re.IGNORECASE,
+)
+_INVESTIGATION_RE = re.compile(
+    r"\b(MRI|CT|EEG|VEEG|video\s+EEG|video[- ]telemetry|telemetry)\b",
+    re.IGNORECASE,
+)
+_DIAGNOSIS_RE = re.compile(
+    r"\b("
+    r"epilepsy|seizure disorder|focal epilepsy|temporal lobe epilepsy|"
+    r"generalised epilepsy|generalized epilepsy|JME|juvenile myoclonic epilepsy|"
+    r"tonic[- ]clonic seizures?|tonic[- ]chronic seizures?|"
+    r"generalised tonic[- ]clonic seizures?|generalized tonic[- ]clonic seizures?|"
+    r"focal seizures?|focal to bilateral(?: convulsive)? seizures?|"
+    r"absence(?:-like)? seizures?|complex partial seizures?|dyscognitive seizures?|"
+    r"myoclonic seizures?"
+    r")\b",
+    re.IGNORECASE,
+)
+_SEIZURE_STATE_RE = re.compile(
+    r"\b("
+    r"seizures?|seizure[- ]free|last event|last seizure|no further|no more|"
+    r"not had|per|every|daily|weekly|monthly|yearly|few|several|cluster|"
+    r"returned|frequent|infrequent|controlled|under control|increased|decreased"
+    r")\b",
+    re.IGNORECASE,
+)
 
 
 class RenderedMentionRecord(BaseModel):
@@ -158,11 +193,25 @@ def build_prompt_input(letter: ExectLetter) -> str:
     payload = {
         "prompt_version": PROMPT_VERSION,
         "task": (
-            "Read the clinical letter once. Build a compact list of clinical events "
-            "for medication, diagnosis, seizure frequency, and investigations. Each "
-            "event may render one or more entity mentions when the same clinical fact "
-            "validly belongs to more than one requested family."
+            "Read the clinical letter once. Use the candidate_evidence_ledger as "
+            "attention scaffolding, then build a compact list of source-near "
+            "clinical events for medication, diagnosis, seizure frequency, and "
+            "investigations. Each event may render one or more entity mentions when "
+            "the same clinical fact validly belongs to more than one requested family."
         ),
+        "architecture": {
+            "name": "single hybrid key-family event ledger",
+            "inspiration": (
+                "Gan structured-events discipline: source-near candidate evidence, "
+                "typed state lanes, exact evidence, then final mention renderings."
+            ),
+            "component_ownership": (
+                "The deterministic ledger proposes possible evidence spans only. "
+                "The model owns keep/reject/split/merge decisions and final rendered "
+                "mentions. Deterministic code later validates evidence, strips illegal "
+                "attributes, attaches finite ontology codes, and evaluates outputs."
+            ),
+        },
         "output_schema": {
             "clinical_events": [
                 {
@@ -195,10 +244,28 @@ def build_prompt_input(letter: ExectLetter) -> str:
                 }
             ]
         },
+        "decision_procedure": _decision_procedure(),
+        "candidate_evidence_ledger": candidate_evidence_ledger_for_letter(letter),
+        "event_lane_guide": _event_lane_guide(),
         "family_guidance": _family_guidance(),
         "attribute_vocabulary": _attribute_vocabulary(),
         "worked_examples": _worked_examples(),
         "clinical_rules": [
+            (
+                "First classify each candidate_evidence_ledger item into an event "
+                "lane: current_regimen, rescue_regimen, future_or_historical_medication, "
+                "diagnosis_assertion, diagnosis_context_only, active_rate, "
+                "seizure_free_anchor, qualitative_change, performed_investigation, "
+                "planned_investigation, or reject."
+            ),
+            (
+                "Candidate ledger rows are not predictions. Keep, reject, split, "
+                "merge, or add events based only on the full letter and exact evidence."
+            ),
+            (
+                "Return only final clinical_events. Do not return candidate IDs unless "
+                "you copy them into event_state as trace strings."
+            ),
             "Use one event per medication, diagnostic concept, seizure-rate statement, or test.",
             "Both anchor_text and evidence must be exact substrings of the letter.",
             "Every rendered mention text must be an exact substring of the letter.",
@@ -251,6 +318,12 @@ def build_prompt_input(letter: ExectLetter) -> str:
                 "epilepsy diagnosis, or named seizure type."
             ),
             (
+                "Do not render negated resemblance statements as Diagnosis or "
+                "SeizureFrequency. Phrases such as 'no events which resemble "
+                "absences, myoclonus or focal seizures' are explicit absence of "
+                "those events, not affirmed diagnoses or seizure-frequency states."
+            ),
+            (
                 "Do not render isolated symptoms or aura features as Diagnosis, "
                 "including myoclonic jerks, jerks, flashing lights, odd sensations, "
                 "altered awareness by itself, or dizziness, unless the phrase is part "
@@ -278,6 +351,13 @@ def build_prompt_input(letter: ExectLetter) -> str:
                 "event_state and attributes carry counts, periods, dates, and changes."
             ),
             (
+                "Never emit a SeizureFrequency mention with empty attributes, only "
+                "Negation, or only CUI/CUIPhrase. A valid SeizureFrequency mention "
+                "must include a frequency-state attribute such as NumberOfSeizures, "
+                "LowerNumberOfSeizures, FrequencyChange, TimeSince_or_TimeOfEvent, "
+                "PointInTime, DayDate, MonthDate, YearDate, AgeLower, or AgeUpper."
+            ),
+            (
                 "For SeizureFrequency anchors, use the generic seizure phrase when "
                 "the count refers to seizures generally; use a named seizure type only "
                 "when the count explicitly belongs to that type."
@@ -292,6 +372,12 @@ def build_prompt_input(letter: ExectLetter) -> str:
                 "Do not render SeizureFrequency for generic events, blackouts, "
                 "collapse, anxiety attacks, or dissociative/non-epileptic events "
                 "unless the same phrase is explicitly asserted as epileptic seizures."
+            ),
+            (
+                "Do not render childhood febrile seizures, family-history seizures, "
+                "risk discussion, or old previous-event context as current "
+                "SeizureFrequency unless the sentence explicitly gives the patient's "
+                "current frequency state."
             ),
             (
                 "For seizure-frequency ranges, never write values like '2 to 3', "
@@ -349,6 +435,12 @@ def build_prompt_input(letter: ExectLetter) -> str:
                 "dose and frequency belong in attributes."
             ),
             (
+                "Medication decision lane: current ordinary regimens and rescue "
+                "as-required regimens render Prescription mentions; previous trials, "
+                "stopped drugs, future starts, titration targets, options, and "
+                "if-further-seizures plans are usually rejected."
+            ),
+            (
                 "For medication list entries that contain a compact regimen, render "
                 "text as the exact medication item span including dose and frequency "
                 "when those words are part of the same short line, for example "
@@ -357,6 +449,11 @@ def build_prompt_input(letter: ExectLetter) -> str:
             (
                 "For investigations, use one event per modality such as EEG, MRI, or "
                 "CT; put performed, result, and EEG type in attributes."
+            ),
+            (
+                "Investigation decision lane: completed historical tests and tests "
+                "with results render Investigations mentions; planned/requested/repeat "
+                "tests without a completed result are rejected."
             ),
             (
                 "Do not render future planned, requested, repeat, or follow-up "
@@ -368,6 +465,11 @@ def build_prompt_input(letter: ExectLetter) -> str:
                 "no completion/result statement, and do not add a duplicate modality-only "
                 "mention when a result-bearing mention for the same modality is already "
                 "rendered."
+            ),
+            (
+                "Phrases such as 'EEG did show temporal slowing', 'EEG has shown "
+                "spike and wave', or 'MRI does show signal change' are completed "
+                "abnormal investigation results."
             ),
             (
                 "For investigation text, use the shortest exact modality phrase: "
@@ -386,6 +488,244 @@ def build_prompt_input(letter: ExectLetter) -> str:
         "letter_text": letter.note_text,
     }
     return json.dumps(payload, ensure_ascii=False, sort_keys=True)
+
+
+def candidate_evidence_ledger_for_letter(
+    letter: ExectLetter,
+    *,
+    max_items: int = 48,
+) -> list[dict[str, Any]]:
+    """Build source-near candidate spans used only as prompt attention scaffolding."""
+
+    candidates: list[dict[str, Any]] = []
+    seen: set[tuple[str, str]] = set()
+
+    def add(
+        *,
+        family: str,
+        evidence: str,
+        source: str,
+        lane_hint: str,
+        anchor_hint: str,
+    ) -> None:
+        clean = " ".join(evidence.strip().split())
+        if not clean or clean not in letter.note_text:
+            return
+        key = (family, clean.lower())
+        if key in seen:
+            return
+        seen.add(key)
+        candidates.append(
+            {
+                "candidate_id": f"K{len(candidates)}",
+                "family": family,
+                "evidence": clean,
+                "anchor_hint": anchor_hint,
+                "lane_hint": lane_hint,
+                "source": source,
+            }
+        )
+
+    for sentence, _, _ in _sentence_spans(letter.note_text):
+        lower = sentence.lower()
+        if _MEDICATION_RE.search(sentence):
+            add(
+                family="medication",
+                evidence=sentence,
+                source="sentence-medication-trigger",
+                lane_hint=_medication_lane_hint(lower),
+                anchor_hint=_first_match_text(_MEDICATION_RE, sentence),
+            )
+        if _INVESTIGATION_RE.search(sentence):
+            add(
+                family="investigation",
+                evidence=sentence,
+                source="sentence-investigation-trigger",
+                lane_hint=_investigation_lane_hint(lower),
+                anchor_hint=_first_match_text(_INVESTIGATION_RE, sentence),
+            )
+        if _DIAGNOSIS_RE.search(sentence):
+            add(
+                family="diagnosis",
+                evidence=sentence,
+                source="sentence-diagnosis-trigger",
+                lane_hint=_diagnosis_lane_hint(lower),
+                anchor_hint=_first_match_text(_DIAGNOSIS_RE, sentence),
+            )
+        if _SEIZURE_STATE_RE.search(sentence) and re.search(r"\bseizure", lower):
+            add(
+                family="seizure_frequency",
+                evidence=sentence,
+                source="sentence-seizure-state-trigger",
+                lane_hint=_seizure_frequency_lane_hint(lower),
+                anchor_hint=_seizure_anchor_hint(sentence),
+            )
+
+    return candidates[:max_items]
+
+
+def _decision_procedure() -> list[str]:
+    return [
+        (
+            "Scan the letter globally for the four key families; do not stop at "
+            "section headers."
+        ),
+        (
+            "Use candidate_evidence_ledger rows as likely evidence anchors, but "
+            "do not emit a row unless the full sentence supports a requested family."
+        ),
+        (
+            "For each candidate, choose a lane, then keep/reject/split/merge. "
+            "Write the lane decision into event_state when it helps transparency."
+        ),
+        (
+            "Render final mentions only after the source-near event state "
+            "is clear. Counts, dates, result status, dose, and certainty belong in "
+            "attributes, not in improvised text."
+        ),
+        (
+            "Before returning JSON, remove duplicates and remove events whose "
+            "evidence or mention text is not an exact source substring."
+        ),
+    ]
+
+
+def _event_lane_guide() -> dict[str, list[str]]:
+    return {
+        "medication": [
+            "current_regimen: current/taking/on medication with dose or frequency",
+            "rescue_regimen: as required, if necessary, or for clusters",
+            "future_or_historical_medication: start/introduce/increase/previous/stopped/trial",
+            "reject: non-anti-seizure medication or unsupported plan",
+        ],
+        "diagnosis": [
+            "diagnosis_assertion: patient-level epilepsy syndrome or named seizure type",
+            "diagnosis_context_only: discussion, family history, risk, SUDEP, or education",
+            "symptom_or_nonepileptic: blackout, collapse, anxiety, dissociative event, aura only",
+            "reject: no explicit epileptic diagnosis or named epileptic seizure type",
+        ],
+        "seizure_frequency": [
+            "active_rate: count/rate/current cadence for generic or named seizures",
+            "seizure_free_anchor: no further seizures, seizure-free, last seizure/event date",
+            "qualitative_change: frequent/infrequent/increased/decreased/returned/controlled",
+            "reject: diagnosis-only, family history, unlabelled events, historical best period",
+        ],
+        "investigation": [
+            "performed_investigation: completed MRI/CT/EEG/telemetry, especially with result",
+            "not_performed: never had/no MRI/no EEG/no CT",
+            "planned_investigation: arrange/request/repeat/future/follow-up",
+            "reject: bare modality without performed/result/not-performed status",
+        ],
+    }
+
+
+def _sentence_spans(text: str) -> list[tuple[str, int, int]]:
+    spans: list[tuple[str, int, int]] = []
+    for match in re.finditer(r"[^.!?\n\r]+(?:[.!?]+|$)", text):
+        start, end = match.span()
+        raw = match.group(0)
+        leading = len(raw) - len(raw.lstrip())
+        trailing = len(raw.rstrip())
+        clean = raw.strip()
+        if clean:
+            spans.append((clean, start + leading, start + trailing))
+    return spans
+
+
+def _first_match_text(pattern: re.Pattern[str], text: str) -> str:
+    match = pattern.search(text)
+    return match.group(0) if match else ""
+
+
+def _medication_lane_hint(lower: str) -> str:
+    if re.search(r"\b(previous|previously|stopped|withdrawn|trial|allergic)\b", lower):
+        return "future_or_historical_medication"
+    if re.search(r"\b(start|commence|introduce|increase|target|plan|consider|if further)\b", lower):
+        return "future_or_historical_medication"
+    if re.search(r"\b(as required|prn|if necessary|rescue|clusters?)\b", lower):
+        return "rescue_regimen"
+    return "current_regimen"
+
+
+def _investigation_lane_hint(lower: str) -> str:
+    if re.search(r"\b(arrange|request|repeat|plan|organise|follow[- ]up|will have)\b", lower):
+        return "planned_investigation"
+    if re.search(r"\b(no|never had|not had|not performed)\b", lower):
+        return "not_performed"
+    if re.search(
+        r"\b(normal|abnormal|show|showed|shown|shows|demonstrated|revealed|captured|done|had)\b",
+        lower,
+    ):
+        return "performed_investigation"
+    return "reject"
+
+
+def _diagnosis_lane_hint(lower: str) -> str:
+    if re.search(
+        r"\b(family history|discussion|risk|sudep|education|brother|mother|father)\b",
+        lower,
+    ):
+        return "diagnosis_context_only"
+    if re.search(
+        r"\b("
+        r"not had any events|no events|no history|without seizures|"
+        r"blackout|collapse|anxiety|dissociative|non[- ]epileptic|aura"
+        r")\b",
+        lower,
+    ):
+        return "symptom_or_nonepileptic"
+    return "diagnosis_assertion"
+
+
+def _seizure_frequency_lane_hint(lower: str) -> str:
+    if re.search(
+        r"\b(febrile seizures|family history|risk of seizures|previous event)\b",
+        lower,
+    ):
+        return "reject"
+    if re.search(
+        r"\b(not had any events|no events which resemble|no history of seizures)\b",
+        lower,
+    ):
+        return "reject"
+    if re.search(
+        r"\b(seizure[- ]free|no further|no more|not had|last seizure|last event)\b",
+        lower,
+    ):
+        return "seizure_free_anchor"
+    if re.search(
+        r"\b(returned|frequent|infrequent|controlled|under control|increased|decreased)\b",
+        lower,
+    ):
+        return "qualitative_change"
+    if re.search(
+        r"\b(\d+|one|two|three|four|five|six|seven|eight|nine|ten|few|several|per|every|cluster)\b",
+        lower,
+    ):
+        return "active_rate"
+    return "reject"
+
+
+def _seizure_anchor_hint(text: str) -> str:
+    ordered = [
+        r"focal\s+to\s+bilateral\s+convulsive\s+seizures?",
+        r"generalised\s+tonic[- ](?:clonic|chronic)\s+seizures?",
+        r"generalized\s+tonic[- ](?:clonic|chronic)\s+seizures?",
+        r"tonic[- ](?:clonic|chronic)\s+seizures?",
+        r"complex\s+partial\s+seizures?",
+        r"dyscognitive\s+seizures?",
+        r"absence[- ]like\s+seizures?",
+        r"absence\s+seizures?",
+        r"focal\s+seizures?",
+        r"cluster\s+of\s+seizures",
+        r"seizure[- ]free",
+        r"seizures?",
+    ]
+    for pattern in ordered:
+        match = re.search(pattern, text, re.IGNORECASE)
+        if match:
+            return match.group(0)
+    return "seizures"
 
 
 def _family_guidance() -> dict[str, str]:
@@ -1110,6 +1450,8 @@ def to_predicted_letter(
             )
         )
 
+    predicted_mentions = _apply_render_safety_gates(predicted_mentions, all_warnings)
+
     return (
         project_cuis(
             PredictedLetter(
@@ -1125,6 +1467,94 @@ def to_predicted_letter(
         ),
         all_warnings,
     )
+
+
+_SF_STATE_ATTRS = {
+    "NumberOfSeizures",
+    "LowerNumberOfSeizures",
+    "UpperNumberOfSeizures",
+    "NumberOfTimePeriods",
+    "LowerNumberOfTimePeriods",
+    "UpperNumberOfTimePeriods",
+    "TimePeriod",
+    "TimeSince_or_TimeOfEvent",
+    "FrequencyChange",
+    "PointInTime",
+    "DayDate",
+    "MonthDate",
+    "YearDate",
+    "AgeLower",
+    "AgeUpper",
+    "AgeUnit",
+}
+
+
+def _apply_render_safety_gates(
+    mentions: list[PredictedMention],
+    warnings: list[str],
+) -> list[PredictedMention]:
+    gated: list[PredictedMention] = []
+    for mention in mentions:
+        if mention.entity == SEIZURE_FREQUENCY.name and not _has_sf_state(mention):
+            warnings.append(
+                "SeizureFrequency: dropped_no_frequency_state_rendering: "
+                f"{mention.text!r}"
+            )
+            continue
+        gated.append(mention)
+    return _drop_duplicate_modality_only_investigations(gated, warnings)
+
+
+def _has_sf_state(mention: PredictedMention) -> bool:
+    return any(
+        key in _SF_STATE_ATTRS and str(value).strip()
+        for key, value in mention.attributes.items()
+    )
+
+
+def _drop_duplicate_modality_only_investigations(
+    mentions: list[PredictedMention],
+    warnings: list[str],
+) -> list[PredictedMention]:
+    result_bearing_modalities = {
+        modality
+        for mention in mentions
+        if mention.entity == INVESTIGATIONS.name
+        for modality in _investigation_modalities(mention)
+        if _has_investigation_result(mention, modality)
+    }
+    if not result_bearing_modalities:
+        return mentions
+
+    kept: list[PredictedMention] = []
+    for mention in mentions:
+        modalities = _investigation_modalities(mention)
+        if (
+            mention.entity == INVESTIGATIONS.name
+            and modalities
+            and not any(_has_investigation_result(mention, modality) for modality in modalities)
+            and any(modality in result_bearing_modalities for modality in modalities)
+        ):
+            warnings.append(
+                "Investigations: dropped_duplicate_modality_only_rendering: "
+                f"{mention.text!r}"
+            )
+            continue
+        kept.append(mention)
+    return kept
+
+
+def _investigation_modalities(mention: PredictedMention) -> set[str]:
+    modalities: set[str] = set()
+    for key in mention.attributes:
+        for modality in ("MRI", "CT", "EEG"):
+            if key.startswith(f"{modality}_"):
+                modalities.add(modality)
+    return modalities
+
+
+def _has_investigation_result(mention: PredictedMention, modality: str) -> bool:
+    return bool(str(mention.attributes.get(f"{modality}_Results", "")).strip())
 
 
 def _strip_model_supplied_projection_attrs(
