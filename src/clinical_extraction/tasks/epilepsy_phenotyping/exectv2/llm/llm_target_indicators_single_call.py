@@ -24,6 +24,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
     PredictedMention,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalization import (
+    canonicalize_diagnosis_concept,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_all_entities import (
     MentionRecord,
     _mention_to_row,
@@ -45,7 +48,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.target_indic
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
-PROMPT_VERSION = "exectv2_target_indicators_single_call_v0.2"
+PROMPT_VERSION = "exectv2_target_indicators_single_call_v0.4"
 PIPELINE_FAMILY = "exectv2_target_indicators_single_call"
 COMPONENT_OWNER = "llm_single_call_target_indicators"
 
@@ -98,7 +101,11 @@ def build_prompt_input(letter: ExectLetter) -> str:
         ),
         "output_schema": {
             "entity": f"One of: {', '.join(TARGET_INDICATORS)}.",
-            "text": "Short exact source substring naming the clinical fact.",
+            "text": (
+                "Short phrase naming the clinical fact. For Diagnosis, use the "
+                "normalized core clinical concept when the source includes certainty "
+                "words such as probable/possible."
+            ),
             "attributes": "String-to-string object; use only legal attributes below.",
             "evidence": (
                 "Exact source substring supporting the mention and attributes. Evidence "
@@ -168,9 +175,19 @@ def build_prompt_input(letter: ExectLetter) -> str:
         "worked_examples": _worked_examples(),
         "global_rules": [
             "Return only the four target indicators; omit all other ExECT families.",
-            "Both text and evidence must be exact source substrings.",
+            "Evidence must be an exact source substring for every mention.",
+            "For non-Diagnosis mentions, text should also be an exact source substring.",
             "Do not invent CUI or CUIPhrase values.",
             "Do not include empty-attribute SeizureFrequency mentions.",
+            (
+                "Be exhaustive for the target indicators. Clinic letters often contain "
+                "more than one Diagnosis and more than one SeizureFrequency fact."
+            ),
+            (
+                "Scan in this order before answering: diagnosis header/impression, "
+                "current medication lines, seizure frequency/history paragraphs, "
+                "investigation result paragraphs."
+            ),
             (
                 "Do not collapse target facts. If one sentence contains a diagnosis "
                 "and a seizure-frequency state, emit both target mentions."
@@ -231,10 +248,12 @@ def to_predicted_letter(
             spec=spec,
         )
         warnings.extend(f"{mention.entity}: {warning}" for warning in attr_warnings)
+        text, text_warnings = _normalize_target_text(mention.entity, mention.text)
+        warnings.extend(f"{mention.entity}: {warning}" for warning in text_warnings)
         predicted_mentions.append(
             PredictedMention(
                 entity=mention.entity,
-                text=mention.text,
+                text=text,
                 attributes=attrs,
                 evidence=mention.evidence,
                 confidence=mention.confidence,
@@ -276,6 +295,12 @@ def _normalize_target_attributes(
             normalized["DoseUnit"] = "g"
             warnings.append("normalized_dose_unit: grams -> g")
     if entity == "SeizureFrequency":
+        period_raw = normalized.get("TimePeriod", "").strip().lower()
+        if "last clinic" in period_raw:
+            normalized.pop("TimePeriod", None)
+            normalized.setdefault("TimeSince_or_TimeOfEvent", "Since")
+            normalized.setdefault("PointInTime", "LastClinic")
+            warnings.append("normalized_since_last_clinic_period")
         _split_range_attribute(
             normalized,
             source_key="NumberOfSeizures",
@@ -308,6 +333,15 @@ def _normalize_target_attributes(
         if normalized.get("TimePeriod") == "Day":
             _convert_day_period_to_week(normalized, warnings)
     return normalized, warnings
+
+
+def _normalize_target_text(entity: str, text: str) -> tuple[str, list[str]]:
+    if entity != "Diagnosis":
+        return text, []
+    normalized = canonicalize_diagnosis_concept(text)
+    if normalized and normalized != text:
+        return normalized, [f"normalized_diagnosis_text: {text!r} -> {normalized!r}"]
+    return text, []
 
 
 def _convert_day_period_to_week(attrs: dict[str, str], warnings: list[str]) -> None:
@@ -490,9 +524,11 @@ def summarize_rows(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
                 "name": PIPELINE_FAMILY,
                 "ownership": arch["ownership"],
                 "routed_primary_recovery": {
-                    "overall": arch["clinical_recovery"]["overall"],
+                    "overall": arch["clinical_recovery"]["cui_projected_overall"],
                     "headline_scores": {
-                        indicator: arch["clinical_recovery"]["headline_scores"][indicator]
+                        indicator: arch["clinical_recovery"][
+                            "cui_projected_headline_scores"
+                        ][indicator]
                         for indicator in TARGET_INDICATORS
                     },
                 },
@@ -552,15 +588,22 @@ def _letters_from_rows(
 ) -> tuple[list[ExectLetter], list[PredictedLetter]]:
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (  # noqa: PLC0415
         ExectAnnotation,
+        load_letters_for_split,
     )
 
+    split = str(rows[0].get("split", "dev")) if rows else "dev"
+    note_by_id = {
+        letter.letter_id: letter.note_text
+        for letter in load_letters_for_split(split)
+    }
     gold_letters = []
     pred_letters = []
     for row in rows:
+        letter_id = str(row["letter_id"])
         gold_letters.append(
             ExectLetter(
-                letter_id=str(row["letter_id"]),
-                note_text="",
+                letter_id=letter_id,
+                note_text=note_by_id.get(letter_id, ""),
                 annotations=tuple(
                     ExectAnnotation(
                         entity=str(m["entity"]),

@@ -27,6 +27,11 @@ _SEIZURE_TYPE = re.compile(
 )
 _NON_EPILEPSY_SEIZURE = re.compile(r"\b(febrile|dissociative|non.?epileptic|psychogenic)\b")
 _COMPOUND_SPLIT = re.compile(r"\s+with\s+|\s+and\s+|\s*,\s*")
+_PARENTHETICAL = re.compile(r"\([^)]*\)")
+_DIAGNOSIS_QUALIFIER_PREFIX = re.compile(
+    r"^(?:diagnosis(?:\s+of)?|known|established|confirmed|probable|possibly|"
+    r"possible|likely|suspected|query|questionable|\?+)\s+"
+)
 
 # SeizureFrequency is kept unsplit for the benchmark-altitude projection because
 # the gold anchor can intentionally be a compound phrase carrying one rate.
@@ -54,6 +59,42 @@ _CONCEPT_ALIASES: dict[str, str] = {
     "generalised tonic clonic seizures": "tonic clonic seizures",
     "generalized tonic clonic seizures": "tonic clonic seizures",
 }
+_DIAGNOSIS_CONCEPT_ALIASES: dict[str, str] = {
+    "focal onset epilepsy": "focal epilepsy",
+    "focal onset seizures": "focal seizures",
+    "generalized epilepsy": "generalised epilepsy",
+    "generalized seizures": "generalised seizures",
+    "generalised tonic clonic seizure": "tonic clonic seizures",
+    "generalised tonic clonic seizures": "tonic clonic seizures",
+    "generalized tonic clonic seizure": "tonic clonic seizures",
+    "generalized tonic clonic seizures": "tonic clonic seizures",
+    "tonic clonic seizure": "tonic clonic seizures",
+    "symptomatic structural focal epilepsy": "focal epilepsy",
+    "localisation related epilepsy": "focal epilepsy",
+    "localization related epilepsy": "focal epilepsy",
+    "epilepsy with generalised tonic clonic seizure alone": (
+        "epilepsy with generalised tonic clonic seizures alone"
+    ),
+    "epilepsy with generalized tonic clonic seizure alone": (
+        "epilepsy with generalised tonic clonic seizures alone"
+    ),
+    "epilepsy with generalized tonic clonic seizures alone": (
+        "epilepsy with generalised tonic clonic seizures alone"
+    ),
+    "bilateral convulsive seizure": "focal to bilateral convulsive seizures",
+    "bilateral convulsive seizures": "focal to bilateral convulsive seizures",
+    "jme": "juvenile myoclonic epilepsy",
+}
+_PROTECTED_DIAGNOSIS_COMPOUNDS: frozenset[str] = frozenset(
+    {
+        "focal seizures with altered awareness",
+        "focal seizures with impaired awareness",
+        "focal impaired awareness seizures",
+        "epilepsy with generalised tonic clonic seizures alone",
+        "epilepsy with generalised tonic clonic seizure alone",
+        "epilepsy with generalised tonic clonic seizures on awakening",
+    }
+)
 
 DIAGNOSIS_PARENT: dict[str, str] = {
     "focal epilepsy": "epilepsy",
@@ -94,18 +135,44 @@ def canonicalize_concept(text: str) -> str:
     return _CONCEPT_ALIASES.get(normalized, normalized)
 
 
-def split_compound_phrase(text: str) -> list[str]:
+def canonicalize_diagnosis_concept(text: str) -> str:
+    """Project a diagnosis phrase to the core clinical fact used for scoring."""
+
+    normalized = normalize_phrase(_PARENTHETICAL.sub(" ", str(text)))
+    previous = None
+    while normalized and normalized != previous:
+        previous = normalized
+        normalized = _DIAGNOSIS_QUALIFIER_PREFIX.sub("", normalized).strip()
+    normalized = canonicalize_concept(normalized)
+    return _DIAGNOSIS_CONCEPT_ALIASES.get(normalized, normalized)
+
+
+def split_compound_phrase(text: str, *, entity: str | None = None) -> list[str]:
     """Split a coordinated same-kind phrase into atomic concept phrases."""
 
     normalized = normalize_phrase(text)
+    if entity == DIAGNOSIS.name and normalized in _PROTECTED_DIAGNOSIS_COMPOUNDS:
+        return [canonicalize_diagnosis_concept(normalized)]
     if " with " not in normalized and " and " not in normalized and "," not in normalized:
-        return [canonicalize_concept(normalized)]
+        return [
+            canonicalize_diagnosis_concept(normalized)
+            if entity == DIAGNOSIS.name
+            else canonicalize_concept(normalized)
+        ]
     parts = [
-        canonicalize_concept(p.strip())
+        canonicalize_diagnosis_concept(p.strip())
+        if entity == DIAGNOSIS.name
+        else canonicalize_concept(p.strip())
         for p in _COMPOUND_SPLIT.split(normalized)
         if p.strip()
     ]
-    return parts or [canonicalize_concept(normalized)]
+    if parts:
+        return parts
+    return [
+        canonicalize_diagnosis_concept(normalized)
+        if entity == DIAGNOSIS.name
+        else canonicalize_concept(normalized)
+    ]
 
 
 def is_epilepsy_seizure_type(phrase: str) -> bool:
@@ -169,7 +236,7 @@ def annotation_clinical_concepts(
     """Emit atomic concept units implied by one annotation or prediction."""
 
     parts = (
-        split_compound_phrase(text)
+        split_compound_phrase(text, entity=entity)
         if entity in COMPOUND_ENTITIES
         else [canonicalize_concept(text)]
     )
@@ -190,7 +257,7 @@ def collapse_diagnoses_to_most_specific(
 
     by_assertion = Counter((concept.concept, concept.assertion) for concept in concepts)
     present = {concept for concept, _assertion in by_assertion}
-    collapsed = Counter(by_assertion)
+    collapsed = Counter({key: 1 for key in by_assertion})
     for concept, assertion in by_assertion:
         if _has_specific_descendant(concept, present):
             collapsed[(concept, assertion)] = 0

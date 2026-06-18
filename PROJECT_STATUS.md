@@ -11,6 +11,10 @@ headline using a hybrid pipeline: one LLM call per letter for candidate
 generation/selection, then deterministic normalization and projection with
 explicit attribution. Rapid iteration uses `gpt-4.1-mini`; the destination
 model is local `ollama_chat/qwen3.6:35b` via Ollama with thinking disabled.
+ADR 0031 clarifies that the Diagnosis target headline is scored after
+deterministic clinical-fact normalization/projection, not as raw surface-form
+capture; repeated Diagnosis mentions of the same projected fact count once per
+letter.
 
 ## Current Dev140 Readout
 
@@ -46,8 +50,13 @@ all four (`0.7127` / `0.6321` / `0.7472` / `0.7475`).
 First compliant single-call target-only runner exists. On dev10,
 `exectv2_target_indicators_single_call_v0.2` with `gpt-4.1-mini` reached
 overall `0.6043`, with D `0.2857`, SF `0.5000`, P `0.9189`, I `0.8333`.
-This proves the one-call architecture and format-normalization loop, but the
-candidate-selection prompt is still far below the target on Diagnosis and SF.
+The v0.4 no-call reprojection of the saved v0.3 raw outputs applies the ADR
+0031 Diagnosis scoring definition and uses the projected clinical-recovery
+layer for the target readout: overall `0.6667`, with D `0.4242`, SF `0.5405`,
+P `0.9143`, I `0.8333`. This proves the one-call architecture and
+normalization/projection loop, but the corrected error view shows Diagnosis
+and SF remain candidate-recall/selection problems, not just representation
+problems.
 
 ## Recent Context
 
@@ -83,8 +92,9 @@ candidate-selection prompt is still far below the target on Diagnosis and SF.
 
 ### Now
 
-- Run a v0.3 dev10 single-call iteration that explicitly enumerates Diagnosis
-  and SF target facts; compare against v0.2 before escalating beyond 10/25 rows.
+- Run a v0.4 live dev10/dev25 single-call iteration under the ADR 0031
+  projected Diagnosis-core definition; compare against the no-call v0.4
+  reprojection before escalating beyond 25 rows.
 - Review `experiments/exectv2_sf_v08_hard_slice_panel_dev140_20260618.md` and
   write the SF v0.8 gate decision: either no prediction-bearing change, or one
   predeclared bucket/action class that clears attribution, non-gold-feature, and
@@ -119,6 +129,12 @@ candidate-selection prompt is still far below the target on Diagnosis and SF.
   overall `0.6043`, D `0.2857`, SF `0.5000`, P `0.9189`, I `0.8333`.
   Deterministic format normalization improved range attributes, dose units, and
   day-to-week period projection.
+- 2026-06-19: Added ADR 0031 and v0.4 target-core projection for Diagnosis.
+  Diagnosis scoring now projects to one clinical fact per letter after stripping
+  certainty prefixes/parenthetical cause context, protecting seizure-type
+  compounds, and normalizing benchmark-equivalent phrases. No-call reprojection
+  of the saved v0.3 dev10 raw outputs: overall `0.6667`, D `0.4242`, SF
+  `0.5405`, P `0.9143`, I `0.8333`.
 - 2026-06-19: Added the ADR 0030 target-only report and runner. Current dev140
   best-by-indicator is D `0.7302`, SF `0.7277`, P `0.9072`, I `0.7475`; only
   Prescription currently clears `>0.900`.
