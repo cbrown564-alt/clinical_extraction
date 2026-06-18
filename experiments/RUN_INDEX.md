@@ -1858,6 +1858,16 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Inform Architecture Loop
 
+### `exectv2_llm_investigations_verifier_v01_dev140_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_llm_investigations_verifier`; mode `live`; replay `native_run_split`.
+- Model role: Investigations-focused verifier v0.1 over the v0.5 single structured key-entity draft. The model owns revised Investigations mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
+- Primary metrics: investigations_f1=0.872, investigations_precision=0.869, investigations_recall=0.875, evidence_validity_rate=0.9928, parse_failures=0.
+- Evidence validity: 0 call failures, 0 parse failures; 137/138 evidence-valid rendered mentions.
+- Claim language: First Investigations-specific candidate to clear the dev140 clinical-recovery target (`0.872` > `0.8`). Confirms Investigations should be split from medication verification.
+- Artifacts: `experiments/exectv2_llm_investigations_verifier_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_investigations_verifier_v01_dev140_gpt41mini_20260618.md`, `docs/research/exectv2_investigations_verifier_v01_dev140_report_2026-06-18.md`.
+
 ### `exectv2_llm_med_inv_verifier_v01_dev140_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `140` rows.
 - Pipeline: `exectv2_llm_med_inv_verifier`; mode `live`; replay `native_run_split`.

@@ -136,6 +136,12 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   Investigations regresses badly (`0.496`) and should stay on the single
   structured v0.5 baseline (`0.786`) until a dedicated verifier exists. See
   `docs/research/exectv2_med_inv_verifier_v01_dev140_report_2026-06-18.md`.
+- Dedicated Investigations verifier v0.1 clears the dev140 target: F1 `0.872`,
+  precision `0.869`, recall `0.875`, evidence validity `0.9928`, with `0`
+  call/parse failures. Current dev140 candidates now clear two families:
+  Prescription (`0.817`) and Investigations (`0.872`). Diagnosis (`0.616`) and
+  SeizureFrequency (`0.602`) remain below target. See
+  `docs/research/exectv2_investigations_verifier_v01_dev140_report_2026-06-18.md`.
 
 ## Active Priorities
 
@@ -150,8 +156,9 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
 
 ### Now
 
-- Build a dedicated Investigations verifier from the dev140 ledger. Keep
-  Prescription verifier v0.1 as the current medication candidate.
+- Redesign Diagnosis and SeizureFrequency from dev140 residual ledgers; keep
+  Prescription verifier v0.1 and Investigations verifier v0.1 as current
+  family candidates.
 
 ### Next
 
