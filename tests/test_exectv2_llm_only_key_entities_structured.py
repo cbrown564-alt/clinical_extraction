@@ -238,8 +238,13 @@ def test_summarize_rows_scores_only_key_entities() -> None:
                 },
                 {
                     "entity": PRESCRIPTION.name,
-                    "text": "lamotrigine",
-                    "attributes": {"DrugName": "lamotrigine"},
+                    "text": "lamotrigine 200 mg twice daily",
+                    "attributes": {
+                        "DrugName": "lamotrigine",
+                        "DrugDose": "200",
+                        "DoseUnit": "mg",
+                        "Frequency": "twice daily",
+                    },
                 },
                 {
                     "entity": INVESTIGATIONS.name,
@@ -265,8 +270,13 @@ def test_summarize_rows_scores_only_key_entities() -> None:
                 },
                 {
                     "entity": PRESCRIPTION.name,
-                    "text": "lamotrigine",
-                    "attributes": {"DrugName": "lamotrigine"},
+                    "text": "lamotrigine 200 mg twice daily",
+                    "attributes": {
+                        "DrugName": "lamotrigine",
+                        "DrugDose": "200",
+                        "DoseUnit": "mg",
+                        "Frequency": "twice daily",
+                    },
                 },
                 {
                     "entity": INVESTIGATIONS.name,
@@ -281,6 +291,12 @@ def test_summarize_rows_scores_only_key_entities() -> None:
 
     assert summary["scores"]["semantic"]["per_item"]["f1"] == 1.0
     assert set(summary["scores"]["semantic"]["per_entity"]) == set(structured.KEY_ENTITY_NAMES)
+    assert summary["clinical_recovery"]["target_headline_f1"] == 0.8
+    assert set(summary["clinical_recovery"]["per_entity"]) == set(structured.KEY_ENTITY_NAMES)
+    assert summary["clinical_recovery"]["per_entity"][PRESCRIPTION.name]["f1"] == 1.0
+    assert summary["clinical_recovery"]["per_entity"][DIAGNOSIS.name]["f1"] == 1.0
+    assert summary["clinical_recovery"]["per_entity"][SEIZURE_FREQUENCY.name]["f1"] == 1.0
+    assert summary["clinical_recovery"]["per_entity"][INVESTIGATIONS.name]["f1"] == 1.0
     assert summary["n_events_raw"] == 2
     assert summary["diagnostic_ladder"]["source_near"]["overall"]["overlap"]["f1"] == 1.0
 
@@ -318,4 +334,5 @@ def test_write_report_includes_goal_and_diagnostic_ladder(tmp_path) -> None:
     text = report_path.read_text(encoding="utf-8")
     assert "CHECKPOINT ONLY: processed 1 / 140 letters" in text
     assert "Goal item F1" in text
+    assert "## Key Clinical-Recovery Headlines" in text
     assert "## Diagnostic Scoring Ladder" in text

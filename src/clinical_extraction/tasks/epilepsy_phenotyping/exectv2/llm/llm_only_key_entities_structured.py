@@ -49,7 +49,11 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     PHRASE_ONLY,
     benchmark_config_for,
+    score_concept_identity,
+    score_frequency_state,
+    score_investigations_components,
     score_overall,
+    score_prescription_components,
     semantic_config_for,
     source_near_diagnostic,
 )
@@ -869,6 +873,7 @@ def summarize_rows(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
         KEY_ENTITY_NAMES,
         semantic_config_for,
     )
+    clinical_recovery = _key_clinical_recovery_to_dict(gold_letters, pred_letters)
 
     return {
         "examples": n,
@@ -888,6 +893,7 @@ def summarize_rows(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
             "semantic": _overall_to_dict(semantic),
             "benchmark": _overall_to_dict(benchmark),
         },
+        "clinical_recovery": clinical_recovery,
         "diagnostic_ladder": {"source_near": _source_near_to_dict(source_near)},
         "target": {
             "key_entity_item_f1": KEY_ENTITY_ITEM_F1_TARGET,
@@ -938,6 +944,7 @@ def write_report(
     )
     for config_name in ("semantic", "benchmark", "phrase_only"):
         lines.extend(_score_lines(config_name, summary.get("scores", {}).get(config_name, {})))
+    lines.extend(_clinical_recovery_lines(summary.get("clinical_recovery", {})))
     lines.extend(_diagnostic_ladder_lines(summary.get("diagnostic_ladder", {})))
     lines.extend(["", "## Per-Entity Semantic F1", ""])
     lines.append("| Entity | Goal item F1 | Published item F1 | Item F1 | Letter F1 |")
@@ -986,6 +993,35 @@ def _source_near_to_dict(diagnostic: Any) -> dict[str, Any]:
             }
             for entity, entity_score in diagnostic.per_entity.items()
         },
+    }
+
+
+def _key_clinical_recovery_to_dict(
+    gold_letters: Sequence[ExectLetter],
+    pred_letters: Sequence[ExectLetter],
+) -> dict[str, Any]:
+    scores = {
+        PRESCRIPTION.name: score_prescription_components(
+            gold_letters,
+            pred_letters,
+        ).clinical_headline,
+        DIAGNOSIS.name: score_concept_identity(
+            gold_letters,
+            pred_letters,
+            DIAGNOSIS.name,
+        ).concept_assertion,
+        SEIZURE_FREQUENCY.name: score_frequency_state(
+            gold_letters,
+            pred_letters,
+        ).clinical_headline,
+        INVESTIGATIONS.name: score_investigations_components(
+            gold_letters,
+            pred_letters,
+        ).clinical_headline,
+    }
+    return {
+        "target_headline_f1": KEY_ENTITY_ITEM_F1_TARGET,
+        "per_entity": {entity: _prf1_to_dict(score) for entity, score in scores.items()},
     }
 
 
@@ -1059,6 +1095,28 @@ def _score_lines(config_name: str, scores: dict[str, Any]) -> list[str]:
         f"(TP={pl.get('tp', 0)} FP={pl.get('fp', 0)} FN={pl.get('fn', 0)})",
         "",
     ]
+
+
+def _clinical_recovery_lines(scores: dict[str, Any]) -> list[str]:
+    per_entity = scores.get("per_entity", {})
+    target = float(scores.get("target_headline_f1", KEY_ENTITY_ITEM_F1_TARGET))
+    lines = [
+        "",
+        "## Key Clinical-Recovery Headlines",
+        "",
+        "| Entity | Target headline F1 | F1 | P | R | TP | FP | FN |",
+        "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+    ]
+    for entity in KEY_ENTITY_NAMES:
+        entry = per_entity.get(entity, {})
+        lines.append(
+            f"| {entity} | {target:.2f} | "
+            f"{entry.get('f1', 0):.3f} | "
+            f"{entry.get('precision', 0):.3f} | "
+            f"{entry.get('recall', 0):.3f} | "
+            f"{entry.get('tp', 0)} | {entry.get('fp', 0)} | {entry.get('fn', 0)} |"
+        )
+    return lines
 
 
 def _diagnostic_ladder_lines(diagnostic_ladder: dict[str, Any]) -> list[str]:
