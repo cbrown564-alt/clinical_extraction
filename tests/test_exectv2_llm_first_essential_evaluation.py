@@ -11,15 +11,23 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectLetter,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.llm_first_essential_evaluation import (  # noqa: E501
+    ESSENTIAL_CLINICAL_ENTITIES,
     align_predictions_to_gold,
     architecture_report,
     certainty_projection_audit,
     cui_concept_buckets,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.run_llm_first_essential_evaluation import (  # noqa: E501
+    render_markdown,
+)
 
 
-def _gold(letter_id: str, mentions: list[ExectAnnotation]) -> ExectLetter:
-    return ExectLetter(letter_id=letter_id, note_text="", annotations=tuple(mentions))
+def _gold(
+    letter_id: str,
+    mentions: list[ExectAnnotation],
+    note_text: str = "",
+) -> ExectLetter:
+    return ExectLetter(letter_id=letter_id, note_text=note_text, annotations=tuple(mentions))
 
 
 def _pred(letter_id: str, mentions: list[PredictedMention]) -> PredictedLetter:
@@ -52,11 +60,19 @@ def test_cui_buckets_split_consistent_inconsistent_and_result_conditioned() -> N
             # one_to_one: single CUI for the concept
             ExectAnnotation("Diagnosis", "epilepsy", {"CUIPhrase": "epilepsy", "CUI": "C0014544"}),
             # result_conditioned: Investigations concept with >1 CUI
-            ExectAnnotation("Investigations", "eeg", {"CUIPhrase": "EEG", "CUI": "C0151611"}),
+            ExectAnnotation(
+                "Investigations",
+                "eeg",
+                {"CUIPhrase": "EEG", "CUI": "C0151611", "EEG_Results": "Abnormal"},
+            ),
         ]),
         _gold("EA2", [
             ExectAnnotation("Diagnosis", "epilepsy", {"CUIPhrase": "epilepsy", "CUI": "C0014544"}),
-            ExectAnnotation("Investigations", "eeg", {"CUIPhrase": "EEG", "CUI": "C0744602"}),
+            ExectAnnotation(
+                "Investigations",
+                "eeg",
+                {"CUIPhrase": "EEG", "CUI": "C0744602", "EEG_Results": "Normal"},
+            ),
             # gold_inconsistent: same non-investigation concept, two CUIs
             ExectAnnotation("EpilepsyCause", "stroke", {"CUIPhrase": "stroke", "CUI": "C0038454"}),
         ]),
@@ -96,3 +112,113 @@ def test_architecture_report_carries_ownership_and_layers() -> None:
     assert "overall" in report["clinical_recovery"]
     assert "concept_buckets" in report["cui_audit"]
     assert "per_entity" in report["certainty_audit"]
+
+
+def test_architecture_report_primary_headline_is_essential_only() -> None:
+    gold = [
+        _gold("EA1", [
+            ExectAnnotation("Diagnosis", "epilepsy", {"Certainty": "5", "Negation": "Affirmed"}),
+            ExectAnnotation("Onset", "childhood", {"Certainty": "5", "Negation": "Affirmed"}),
+        ])
+    ]
+    pred = [
+        _pred("EA1", [
+            PredictedMention(
+                entity="Diagnosis",
+                text="epilepsy",
+                attributes={"Certainty": "5", "Negation": "Affirmed"},
+                evidence="epilepsy",
+            )
+        ])
+    ]
+    report = architecture_report(
+        name="t", ownership="llm_first", gold_letters=gold, pred_letters=pred
+    )
+    assert tuple(report["clinical_recovery"]["primary_entities"]) == ESSENTIAL_CLINICAL_ENTITIES
+    assert set(report["clinical_recovery"]["headline_scores"]) == set(ESSENTIAL_CLINICAL_ENTITIES)
+    assert report["clinical_recovery"]["overall"]["f1"] == 1.0
+    assert "Onset" in report["clinical_recovery"]["diagnostic_nonessential_scores"]
+
+
+def test_architecture_report_separates_cui_free_and_projected_sf_recovery() -> None:
+    gold = [
+        _gold("EA1", [
+            ExectAnnotation(
+                "SeizureFrequency",
+                "seizures",
+                {"CUI": "C0036572", "NumberOfSeizures": "2"},
+            )
+        ])
+    ]
+    pred = [
+        _pred("EA1", [
+            PredictedMention(
+                entity="SeizureFrequency",
+                text="seizures",
+                attributes={"NumberOfSeizures": "2"},
+                evidence="seizures twice a month",
+            )
+        ])
+    ]
+    report = architecture_report(
+        name="t", ownership="llm_first", gold_letters=gold, pred_letters=pred
+    )
+    assert report["clinical_recovery"]["overall"]["f1"] == 1.0
+    assert report["clinical_recovery"]["cui_projected_overall"]["f1"] == 1.0
+    assert "CUI-free" in report["clinical_recovery_note"]
+
+
+def test_architecture_report_includes_evidence_and_error_summary() -> None:
+    gold = [
+        _gold("EA1", [
+            ExectAnnotation("Diagnosis", "epilepsy", {"Certainty": "5", "Negation": "Affirmed"}),
+            ExectAnnotation("EpilepsyCause", "stroke", {"Certainty": "5", "Negation": "Affirmed"}),
+        ], note_text="The patient has epilepsy after a stroke.")
+    ]
+    pred = [
+        _pred("EA1", [
+            PredictedMention(
+                entity="Diagnosis",
+                text="epilepsy",
+                attributes={"Certainty": "5", "Negation": "Affirmed"},
+                evidence="epilepsy",
+            ),
+            PredictedMention(
+                entity="Diagnosis",
+                text="migraine",
+                attributes={"Certainty": "5", "Negation": "Affirmed"},
+                evidence="not in note text",
+            ),
+        ])
+    ]
+    report = architecture_report(
+        name="t", ownership="llm_first", gold_letters=gold, pred_letters=pred
+    )
+    evidence = report["evidence_validation"]
+    assert evidence["overall"]["predicted_mentions"] == 2
+    assert evidence["overall"]["exact_evidence_rate"] == 0.5
+    errors = report["error_taxonomy"]["overall"]
+    assert errors["candidate_miss"] == 1
+    assert errors["wrong_detail_selection"] == 1
+    assert errors["evidence_failure"] == 1
+
+
+def test_render_markdown_surfaces_diagnostic_limitations() -> None:
+    arch = architecture_report(
+        name="t",
+        ownership="llm_first",
+        gold_letters=[_gold("EA1", [ExectAnnotation("Diagnosis", "epilepsy", {})])],
+        pred_letters=[_pred("EA1", [])],
+    )
+    report = {
+        "plan": "plan.md",
+        "split": "dev",
+        "row_count": 1,
+        "generated_on": "2026-06-18",
+        "sources": {"llm_first": "artifact.jsonl"},
+        "architectures": [arch],
+    }
+    md = render_markdown(report)
+    assert "Evidence validation and error taxonomy" in md
+    assert "diagnostic, not a completed guideline-rule projection" in md
+    assert "missing_mapping" in md
