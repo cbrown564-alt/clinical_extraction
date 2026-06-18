@@ -1858,6 +1858,16 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Inform Architecture Loop
 
+### `exectv2_llm_only_key_entities_structured_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_llm_only_key_entities_structured`; mode `live`; replay `native_run_split`.
+- Model role: LLM-only single-prompt structured clinical event extractor over medication, Diagnosis, SeizureFrequency, and Investigations; deterministic code limited to schema/evidence gates, neutral attribute repair, CUI projection, and scoring.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only`.
+- Primary metrics: prompt_version=exectv2_llm_only_key_entities_structured_v0.1, semantic_per_item_f1=0.206, benchmark_per_item_f1=0.158, phrase_only_per_item_f1=0.385, source_near_f1=0.722, prescription_semantic_f1=0.264, diagnosis_semantic_f1=0.204, seizurefrequency_semantic_f1=0.070, investigations_semantic_f1=0.267, parse_failures=0, evidence_validity_rate=0.9539.
+- Evidence validity: 0 call failures, 0 parse failures; 145/152 evidence-valid rendered mentions.
+- Claim language: Development pilot for the user-requested single structured schema + single prompt extreme over the four key families. Viable schema and evidence gate, not promoted: source-near F1 0.722 but semantic item F1 only 0.206; next iteration should target attribute agreement and phrase altitude, especially SeizureFrequency quantification.
+- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_only_key_entities_structured_dev25_gpt41mini_20260618.md`.
+
 ### `exectv2_deterministic_all9_dev_20260617`
 - Date/split: `2026-06-17`; `dev`; `140` rows.
 - Pipeline: `exectv2_deterministic_all9`; mode `deterministic`; replay `analysis_only`.

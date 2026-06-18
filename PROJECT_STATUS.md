@@ -1,14 +1,16 @@
 # Project Status
 
-Last updated: 2026-06-17
+Last updated: 2026-06-18
 
 ## Active Objective
 
 ExECTv2 is now the forward workstream. Use the Gan 2026 closeout as the strategy
 template for full deterministic, LLM-only, and hybrid runs: source-near state,
 exact evidence, component attribution, benchmark-format ablations, and
-family-aware promotion gates. Use `gpt-4.1-mini` for rapid loops; keep Qwen
-3.6:35B as a later overnight transfer track.
+family-aware promotion gates. Current target is key-entity F1 >0.8 for
+Prescription/medication, Diagnosis, SeizureFrequency, and Investigations. Pursue
+the single structured schema + single prompt path first; use `gpt-4.1-mini` for
+rapid loops and keep Qwen 3.6:35B as a later transfer track.
 
 ## Recent Context
 
@@ -28,11 +30,17 @@ family-aware promotion gates. Use `gpt-4.1-mini` for rapid loops; keep Qwen
 - Shared `project_cuis` is now wired into ExECTv2 LLM-only and hybrid
   post-steps, including SeizureFrequency. The source-near/semantic layers remain
   inspectable while benchmark-format CUI projection is counted separately.
+- Single-prompt four-family structured events v0.1 is built and piloted on dev25:
+  `experiments/exectv2_llm_only_key_entities_structured_dev25_gpt41mini_20260618.md`.
+  Gate is clean (`0` call/parse failures, evidence validity `0.9539`) but not
+  near target: semantic item F1 `0.206`, benchmark `0.158`, source-near `0.722`.
+  This is a viable architecture baseline, not a promoted candidate.
 
 ## Active Priorities
 
-1. Execute GPT-first ExECTv2: deterministic all-9, per-entity LLM-only
-   mention frames, and hybrid live candidate assessment.
+1. Iterate the single-prompt four-family structured-event architecture from the
+   dev25 error slices: improve attribute agreement and phrase altitude without
+   sacrificing source-near recall.
 2. Require benchmark-beating dev evidence before any new full-200 audit:
    overall `0.87` per-item / `0.90` per-letter, plus per-entity tables,
    evidence/schema reliability, semantic-vs-CUI gaps, and ablations.
@@ -41,18 +49,16 @@ family-aware promotion gates. Use `gpt-4.1-mini` for rapid loops; keep Qwen
 
 ### Now
 
-- Run GPT per-entity LLM-only pilots for the entities most likely to move the
-  overall benchmark fastest: Prescription, Investigations, Diagnosis, then
-  SeizureFrequency as the hard transfer check. The projection-gap ledger now
-  ranks where the leverage is: Diagnosis, PatientHistory, and Investigations are
-  recall-bound (candidate generation), while Prescription/BirthHistory/
-  WhenDiagnosed/EpilepsyCause are representation-bound (projection only).
+- Analyze the v0.1 four-family structured-event dev25 misses by entity and layer
+  (source-near vs semantic vs benchmark). Prioritize SeizureFrequency
+  quantification, Diagnosis atomic phrase/Certainty, medication phrase altitude,
+  and investigation modality/result rendering before any dev140 promotion.
 
 ### Next
 
-- Extend the hybrid live candidate-assessment pattern from SF to all nine
-  entities, using deterministic and GPT mention-frame outputs as candidate
-  sources rather than hidden final truth.
+- Build v0.2 prompt/schema changes from that error analysis, then rerun dev25.
+- Compare the best single-prompt structured-event variant against the existing
+  per-entity prompt family before returning to specialist/verifier variants.
 
 ### Blocked
 
@@ -67,6 +73,12 @@ family-aware promotion gates. Use `gpt-4.1-mini` for rapid loops; keep Qwen
 
 ### Done Recently
 
+- 2026-06-18: Added `llm_only_key_entities_structured`, a single-prompt
+  structured clinical-event extractor for Prescription/medication, Diagnosis,
+  SeizureFrequency, and Investigations, plus runner/tests and a live dev25 GPT
+  pilot. Results: source-near F1 `0.722`, semantic item F1 `0.206`,
+  benchmark item F1 `0.158`, `0` call/parse failures, evidence validity
+  `0.9539`; registered in `experiments/RUN_INDEX.md`.
 - 2026-06-17: Built the reusable all-entity projection-gap ledger
   (`reports/projection_gap_ledger.py`). Classifies every gold FN / predicted FP
   into a layered `gap_family` (phrase coverage, attribute bundle, CUI
