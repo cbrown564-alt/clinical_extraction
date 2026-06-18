@@ -38,7 +38,7 @@ def test_prompt_hygiene_and_four_family_schema() -> None:
         INVESTIGATIONS.name,
     }
     assert "clinical_events" in payload["output_schema"]
-    assert payload["prompt_version"].endswith("_v0.3")
+    assert payload["prompt_version"].endswith("_v0.4")
     assert "medication" in payload["family_guidance"]
     assert "seizure_frequency" in payload["family_guidance"]
     assert "DiagCategory" in payload["attribute_vocabulary"][DIAGNOSIS.name]
@@ -51,7 +51,12 @@ def test_prompt_hygiene_and_four_family_schema() -> None:
     assert "Every Diagnosis mention must include Certainty and Negation" in clinical_rules
     assert "Certainty='4' for probable or likely diagnoses" in clinical_rules
     assert "Do not render vague symptoms" in clinical_rules
+    assert "A problem-list or Diagnosis header is not enough" in clinical_rules
     assert "generic seizure phrase" in clinical_rules
+    assert "'several'='3'" in clinical_rules
+    assert "last seizure" in clinical_rules
+    assert "with altered awareness" in clinical_rules
+    assert "generic events, blackouts" in clinical_rules
     assert "future planned, requested, repeat, or follow-up investigations" in clinical_rules
     assert "Do not default a plain EEG to Standard" in clinical_rules
     med_example = next(
@@ -82,6 +87,29 @@ def test_prompt_hygiene_and_four_family_schema() -> None:
         if example["note_fragment"] == "I will request a repeat MRI scan next year."
     )
     assert planned_mri_example["correct_event"]["mentions"] == []
+    several_example = next(
+        example
+        for example in payload["worked_examples"]
+        if example["note_fragment"] == "He has had several seizures since the last clinic visit."
+    )
+    assert several_example["correct_event"]["mentions"][0]["attributes"][
+        "NumberOfSeizures"
+    ] == "3"
+    last_event_example = next(
+        example
+        for example in payload["worked_examples"]
+        if example["note_fragment"]
+        == "Focal to bilateral convulsive seizures, last event around Christmas 2017."
+    )
+    assert last_event_example["correct_event"]["mentions"][0]["attributes"][
+        "NumberOfSeizures"
+    ] == "0"
+    no_event_example = next(
+        example
+        for example in payload["worked_examples"]
+        if example["note_fragment"] == "Unwitnessed blackouts and anxiety, no epileptic seizures."
+    )
+    assert no_event_example["correct_event"] == []
 
 
 def test_parse_structured_events_coerces_nested_values() -> None:
