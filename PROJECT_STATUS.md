@@ -108,13 +108,20 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   `1.0000`. It confirms the verifier path can add recall, but v0.2 must recover
   precision and still clear `0.8` before any dev140 run. See
   `docs/research/exectv2_sf_verifier_v01_pilot_report_2026-06-18.md`.
+- SeizureFrequency verifier v0.3 is the first SF-specific candidate to clear the
+  dev25 target: clinical headline F1 `0.831` with precision `0.794`, recall
+  `0.871`, and evidence validity `1.0000`. Together with medication (`0.897`),
+  Diagnosis verifier v0.5 (`0.837`), and Investigations (`0.837`), all four key
+  families now clear `0.8` on dev25. This is still development-surface evidence
+  only; next step is a predeclared dev140 readout. See
+  `docs/research/exectv2_sf_verifier_v03_pilot_report_2026-06-18.md`.
 
 ## Active Priorities
 
-1. Iterate the single-prompt four-family structured-event architecture from the
-   dev25 clinical-recovery error slices: protect medication above `0.8`, lift
-   Investigations precision, and focus most prompt/error-analysis work on
-   Diagnosis and SeizureFrequency.
+1. Prepare a predeclared dev140 key-family readout: v0.5 single structured for
+   medication and Investigations, Diagnosis verifier v0.5, and SeizureFrequency
+   verifier v0.3. Keep claim language development-only until the broader dev
+   surface confirms the dev25 result.
 2. Require benchmark-beating dev evidence before any new full-200 audit:
    overall `0.87` per-item / `0.90` per-letter, plus per-entity tables,
    evidence/schema reliability, semantic-vs-CUI gaps, and ablations.
@@ -123,15 +130,13 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
 
 ### Now
 
-- Shift active development to SeizureFrequency: analyze the v0.5 single
-  structured and verifier v0.1 dev25 residuals, then run a precision-recovering
-  verifier v0.2 that can lift SF beyond `0.667` toward `0.8` without regressing
-  medication, Diagnosis, or Investigations.
+- Design the dev140 combined-key-family readout and decide how to merge the
+  best per-family outputs without hiding component ownership or evidence gates.
 
 ### Next
 
-- Confirm Diagnosis verifier v0.5 on dev140 once the combined key-family
-  architecture has an SF candidate worth broadening.
+- Confirm Diagnosis verifier v0.5 and SeizureFrequency verifier v0.3 on dev140
+  inside the combined key-family architecture.
 - Compare the best single-prompt structured-event variant against the existing
   per-entity prompt family before returning to specialist/verifier variants.
 
@@ -163,10 +168,11 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   the old per-entity frame (`0.282` clinical F1 vs v0.5 `0.569`); the v0.1
   Diagnosis verifier improved to `0.592`, v0.2 improved to `0.619`, v0.3
   improved to `0.701`, v0.4 improved to `0.768`, and v0.5 cleared the dev25
-  Diagnosis target at `0.837`. The first SeizureFrequency verifier then moved
-  SF from `0.633` to `0.667` with a clean gate, but remains revise-only. Latest
+  Diagnosis target at `0.837`. The SeizureFrequency verifier then moved SF from
+  `0.633` to `0.667` (v0.1), `0.788` (v0.2), and finally `0.831` (v0.3) with
+  clean gates, clearing all four key families on dev25. Latest
   report:
-  `docs/research/exectv2_sf_verifier_v01_pilot_report_2026-06-18.md`.
+  `docs/research/exectv2_sf_verifier_v03_pilot_report_2026-06-18.md`.
 - 2026-06-17: Built the reusable all-entity projection-gap ledger
   (`reports/projection_gap_ledger.py`). Classifies every gold FN / predicted FP
   into a layered `gap_family` (phrase coverage, attribute bundle, CUI

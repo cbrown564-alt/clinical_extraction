@@ -1858,6 +1858,28 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Inform Architecture Loop
 
+### `exectv2_llm_sf_verifier_v03_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_llm_sf_verifier`; mode `live`; replay `native_run_split`.
+- Model role: SeizureFrequency-focused verifier v0.3 over the v0.5 single structured key-entity draft. The model owns normalized SeizureFrequency event text and may keep, delete, edit, or add SF mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
+- Primary metrics: prompt_version=exectv2_llm_sf_verifier_v0.3, seizure_frequency_clinical_headline_f1=0.831, seizure_frequency_clinical_headline_precision=0.794, seizure_frequency_clinical_headline_recall=0.871, seizure_frequency_source_near_f1=0.831, parse_failures=0, evidence_validity_rate=1.0000.
+- Evidence validity: 0 call failures, 0 parse failures; 34/34 evidence-valid rendered mentions.
+- Supersedes: `exectv2_llm_sf_verifier_v02_dev25_gpt41mini_20260618`.
+- Claim language: First SeizureFrequency-specific candidate to clear the dev25 clinical-recovery target (`0.831` > `0.8`) while keeping evidence validity `1.0000`. Development-surface success only; requires dev140 confirmation before any generalization claim.
+- Artifacts: `experiments/exectv2_llm_sf_verifier_v03_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_sf_verifier_v03_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_sf_verifier_v03_pilot_report_2026-06-18.md`.
+
+### `exectv2_llm_sf_verifier_v02_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_llm_sf_verifier`; mode `live`; replay `native_run_split`.
+- Model role: SeizureFrequency-focused verifier v0.2 over the v0.5 single structured key-entity draft. The model owns normalized SeizureFrequency event text and may keep, delete, edit, or add SF mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
+- Primary metrics: prompt_version=exectv2_llm_sf_verifier_v0.2, seizure_frequency_clinical_headline_f1=0.788, seizure_frequency_clinical_headline_precision=0.743, seizure_frequency_clinical_headline_recall=0.839, seizure_frequency_source_near_f1=0.818, parse_failures=0, evidence_validity_rate=1.0000.
+- Evidence validity: 0 call failures, 0 parse failures; 35/35 evidence-valid rendered mentions.
+- Supersedes: `exectv2_llm_sf_verifier_v01_dev25_gpt41mini_20260618`.
+- Claim language: Strong near-miss SeizureFrequency verifier iteration. v0.2 improves over v0.1 (`0.788` vs `0.667`) and v0.5 single structured (`0.633`) while keeping evidence validity `1.0000`, but remains just below the `0.8` target. One narrow residual pass is justified before dev140.
+- Artifacts: `experiments/exectv2_llm_sf_verifier_v02_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_sf_verifier_v02_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_sf_verifier_v02_pilot_report_2026-06-18.md`.
+
 ### `exectv2_llm_sf_verifier_v01_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
 - Pipeline: `exectv2_llm_sf_verifier`; mode `live`; replay `native_run_split`.

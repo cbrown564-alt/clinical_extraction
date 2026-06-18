@@ -19,7 +19,7 @@ _NOTE = (
 _LETTER = ExectLetter(letter_id="TEST001", note_text=_NOTE)
 
 
-def test_build_prompt_input_includes_draft_and_v01_sf_rules() -> None:
+def test_build_prompt_input_includes_draft_and_v03_sf_rules() -> None:
     payload = json.loads(
         verifier.build_prompt_input(
             _LETTER,
@@ -34,19 +34,27 @@ def test_build_prompt_input_includes_draft_and_v01_sf_rules() -> None:
     )
 
     assert payload["prompt_version"] == verifier.PROMPT_VERSION
-    assert payload["prompt_version"].endswith("_v0.1")
+    assert payload["prompt_version"].endswith("_v0.3")
     assert payload["draft_seizure_frequency_mentions"][0]["text"] == (
         "generalised tonic chronic seizures"
     )
     rules = " ".join(payload["clinical_rules"])
     assert "source 'tonic chronic seizures'" in rules
+    assert "Apply a named-seizure-frequency gate" in rules
     assert "For 'several' use NumberOfSeizures='3'" in rules
     assert "for 'a few' use NumberOfSeizures='2'" in rules
+    assert "a few seizures per year" in rules
     assert "Do not deduplicate separately supported SF mentions" in rules
     assert "single focal seizure" in rules
     assert "generic episodes, dizzy spells, or aura descriptions" in rules
+    assert "unlabelled 'episodes', 'events', 'blackouts'" in rules
+    assert "last event X. Previous event Y" in rules
+    assert "Never use 'unknown' as NumberOfSeizures" in rules
+    assert "last had a seizure before this around a year ago" in rules
+    assert "occasional jerks" in rules
     assert "completely under control" in rules
     assert "FrequencyChange='Infrequent'" in rules
+    assert "teenage years" in rules
     typo_example = next(
         example
         for example in payload["worked_examples"]
@@ -59,6 +67,32 @@ def test_build_prompt_input_includes_draft_and_v01_sf_rules() -> None:
         if "single focal seizure" in example["note_fragment"]
     )
     assert single_event_example["correct"] == []
+    episodes_example = next(
+        example
+        for example in payload["worked_examples"]
+        if "episodes around twice a week" in example["note_fragment"]
+    )
+    assert episodes_example["correct"] == []
+    teenage_example = next(
+        example
+        for example in payload["worked_examples"]
+        if "teenage years" in example["note_fragment"]
+    )
+    assert teenage_example["correct"][0]["text"] == "seizures"
+    assert teenage_example["correct"][0]["attributes"]["NumberOfSeizures"] == "0"
+    previous_event_example = next(
+        example
+        for example in payload["worked_examples"]
+        if "last had a seizure before this around a year ago" in example["note_fragment"]
+    )
+    assert len(previous_event_example["correct"]) == 1
+    improvement_example = next(
+        example
+        for example in payload["worked_examples"]
+        if "significant improvement since increasing" in example["note_fragment"]
+    )
+    assert improvement_example["correct"][0]["text"] == "seizures"
+    assert improvement_example["correct"][0]["attributes"]["FrequencyChange"] == "Infrequent"
 
 
 def test_draft_mentions_by_letter_filters_sf_mentions() -> None:
