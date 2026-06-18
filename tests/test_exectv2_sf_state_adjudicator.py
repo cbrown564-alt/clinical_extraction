@@ -86,11 +86,12 @@ def test_build_prompt_input_includes_candidate_span_guide_and_rules() -> None:
     )
 
     assert payload["prompt_version"] == adjudicator.PROMPT_VERSION
-    assert payload["prompt_version"].endswith("_v0.4")
+    assert payload["prompt_version"].endswith("_v0.5")
     assert payload["candidate_evidence_spans"]
     assert payload["typed_candidate_guide"]
     assert payload["candidate_evidence_spans"][0]["candidate_type"]
     assert payload["generic_seizure_policy"]
+    assert payload["seizure_free_anchor_guide"]
     assert payload["unknown_change_recovery_lane"]
     assert {"active-rate", "seizure-free", "unknown", "reject"} <= set(
         payload["state_decision_guide"]
@@ -105,8 +106,16 @@ def test_build_prompt_input_includes_candidate_span_guide_and_rules() -> None:
     assert "Unknown/change-state recovery is a separate lane" in rules
     assert "candidate_type" in rules
     assert "prior_event_reference" in rules
+    assert "seizure_free_anchor_guide" in rules
+    assert "last seizure was on 15 April" in rules
     assert "split them" in rules
     assert "Do not emit CUI or CUIPhrase" in rules
+    seizure_free_rendering = " ".join(payload["seizure_free_anchor_guide"]["rendering"])
+    assert "NumberOfSeizures='0'" in seizure_free_rendering
+    assert "text='seizures'" in seizure_free_rendering
+    seizure_free_rejects = " ".join(payload["seizure_free_anchor_guide"]["reject"])
+    assert "last seizure before this" in seizure_free_rejects
+    assert "no further episodes/collapses" in seizure_free_rejects
     examples = payload["worked_examples"]
     assert any("improved her seizures" in e["note_fragment"] for e in examples)
     assert any("seizures have been worse" in e["note_fragment"] for e in examples)
@@ -116,6 +125,8 @@ def test_build_prompt_input_includes_candidate_span_guide_and_rules() -> None:
         for e in examples
     )
     assert any("history of staring episodes" in e["note_fragment"] for e in examples)
+    assert any("last seizure was on the 15th April" in e["note_fragment"] for e in examples)
+    assert any("no further seizures" in e["note_fragment"] for e in examples)
     reject_free = " ".join(payload["generic_seizure_policy"]["reject_generic_seizure_free"])
     assert "Driving advice" in reject_free
     recovery = " ".join(

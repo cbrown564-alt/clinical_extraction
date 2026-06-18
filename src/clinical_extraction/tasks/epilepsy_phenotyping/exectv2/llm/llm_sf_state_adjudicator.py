@@ -49,7 +49,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
-PROMPT_VERSION = "exectv2_hybrid_sf_state_adjudicator_v0.4"
+PROMPT_VERSION = "exectv2_hybrid_sf_state_adjudicator_v0.5"
 PIPELINE_FAMILY = "exectv2_hybrid_sf_state_adjudicator"
 COMPONENT_OWNER = "hybrid_sf_state_adjudicator"
 
@@ -80,6 +80,7 @@ _DIRECT_SPAN_RES = [
     for pattern in [
         r"(?:the\s+)?seizures?\s+have\s+returned",
         r"not\s+had\s+any\s+further\s+seizures?[^.!\n\r]*",
+        r"not\s+had\s+any\s+more\s+seizures?[^.!\n\r]*",
         r"no\s+further\s+seizures?[^.!\n\r]*",
         r"seizure[- ]free\s+for\s+[^.!\n\r]*",
         r"(?:a\s+)?total\s+of\s+\d+\s+in\s+\d{4}",
@@ -260,6 +261,7 @@ def build_prompt_input(
         "typed_candidate_guide": _typed_candidate_guide(),
         "state_decision_guide": _state_decision_guide(),
         "generic_seizure_policy": _generic_seizure_policy(),
+        "seizure_free_anchor_guide": _seizure_free_anchor_guide(),
         "unknown_change_recovery_lane": _unknown_change_recovery_lane(),
         "attribute_vocabulary": verifier_base._attribute_vocabulary(),
         "clinical_rules": _clinical_rules(),
@@ -296,6 +298,19 @@ def _clinical_rules() -> list[str]:
             "candidate_type='prior_event_reference' is usually not an active-rate "
             "mention. It may support seizure-free only when the annotation scheme "
             "has a clear last-event anchor and no newer seizure contradicts it."
+        ),
+        (
+            "For seizure_free candidates, apply seizure_free_anchor_guide before "
+            "rendering. Current no-further-seizure, last-event duration/date, "
+            "medication-change, surgery, and last-clinic anchors usually keep "
+            "NumberOfSeizures='0'. Historical-before-newer-event and "
+            "best-period-only anchors usually reject."
+        ),
+        (
+            "A source phrase like 'last seizure was on 15 April' or 'last event "
+            "10 years ago' is a seizure-free anchor, not a one-seizure active "
+            "rate. Render NumberOfSeizures='0' and the date/duration attributes "
+            "that the evidence supports."
         ),
         (
             "Do not emit a generic seizures active-rate when the evidence names a "
@@ -361,6 +376,8 @@ def _generic_seizure_policy() -> dict[str, list[str]]:
         "keep_generic_seizure_free": [
             "No further seizures since a visit, medication change, surgery, date, or age range.",
             "Last seizures were at a date or age range and no recent seizure contradicts it.",
+            "The evidence says seizures stopped after reaching a current medication dose.",
+            "The evidence says no more seizures since the last clinic/review.",
         ],
         "reject_generic_seizure_free": [
             "Driving advice or legal requirement to be seizure free.",
@@ -379,6 +396,47 @@ def _generic_seizure_policy() -> dict[str, list[str]]:
                 "naming seizure(s)."
             ),
             "Jerks or stares improved without a scored seizure type.",
+        ],
+    }
+
+
+def _seizure_free_anchor_guide() -> dict[str, list[str]]:
+    return {
+        "keep_current_no_further": [
+            (
+                "has had no further/no more seizures since clinic, review, "
+                "medication change, surgery, or another current anchor"
+            ),
+            "seizures have stopped since reaching the current dose",
+            "remains seizure free after surgery or since last review",
+        ],
+        "keep_last_event_anchor": [
+            (
+                "last seizure/event was on a date or N years/months ago, when "
+                "there is no newer seizure in the letter"
+            ),
+            (
+                "named seizure type plus last event date/duration, e.g. focal "
+                "to bilateral seizures, last event 10 years ago"
+            ),
+        ],
+        "rendering": [
+            "Use NumberOfSeizures='0' for all kept seizure-free anchors.",
+            (
+                "Use text='seizures' for generic no-further-seizure evidence; "
+                "use the named seizure type for named last-event anchors."
+            ),
+            (
+                "For 'last seizure was on 15 April', do not set "
+                "NumberOfSeizures='1'; extract DayDate/MonthDate when supported."
+            ),
+        ],
+        "reject": [
+            "before the recent seizure she had been seizure free",
+            "last seizure before this was in 2006",
+            "up to five weeks seizure free while current seizures continue",
+            "driving or legal advice requiring seizure freedom",
+            "no further episodes/collapses when the evidence does not call them seizures",
         ],
     }
 
@@ -568,6 +626,54 @@ def _worked_examples() -> list[dict[str, Any]]:
                     "rationale": (
                         "The evidence names the seizure type, so no extra generic "
                         "seizures mention is emitted."
+                    ),
+                }
+            ],
+        },
+        {
+            "note_fragment": (
+                "Once commenced on sodium valproate 400mg twice daily, she has "
+                "had no further seizures."
+            ),
+            "draft": [{"text": "no further seizures"}],
+            "correct": [
+                {
+                    "text": "seizures",
+                    "attributes": {
+                        "NumberOfSeizures": "0",
+                        "PointInTime": "DrugChange",
+                        "TimeSince_or_TimeOfEvent": "Since",
+                    },
+                    "evidence": (
+                        "Once commenced on sodium valproate 400mg twice daily, "
+                        "she has had no further seizures."
+                    ),
+                    "confidence": "high",
+                    "rationale": (
+                        "Current no-further-seizure evidence is generic "
+                        "seizure freedom after a medication change."
+                    ),
+                }
+            ],
+        },
+        {
+            "note_fragment": (
+                "Rachel said that her last seizure was on the 15th April in her home."
+            ),
+            "draft": [{"text": "last seizure", "attributes": {"NumberOfSeizures": "1"}}],
+            "correct": [
+                {
+                    "text": "seizure",
+                    "attributes": {
+                        "NumberOfSeizures": "0",
+                        "DayDate": "15",
+                        "MonthDate": "4",
+                    },
+                    "evidence": "last seizure was on the 15th April",
+                    "confidence": "high",
+                    "rationale": (
+                        "A last-seizure date is a seizure-free anchor, not a "
+                        "one-seizure active-rate count."
                     ),
                 }
             ],
