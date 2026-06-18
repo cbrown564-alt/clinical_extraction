@@ -1,0 +1,622 @@
+{
+  "aggregate_ownership": "llm_first_with_hybrid_sf_route",
+  "candidates": {
+    "deterministic_all9": {
+      "cui_projected_headline_scores": {
+        "Diagnosis": {
+          "f1": 0.7302,
+          "fn": 120,
+          "fp": 64,
+          "gold_count": 369,
+          "precision": 0.7955,
+          "precision_tp": 249,
+          "pred_count": 313,
+          "recall": 0.6748,
+          "recall_tp": 249,
+          "tp": 249
+        },
+        "Investigations": {
+          "f1": 0.5263,
+          "fn": 51,
+          "fp": 102,
+          "gold_count": 136,
+          "precision": 0.4545,
+          "pred_count": 187,
+          "recall": 0.625,
+          "tp": 85
+        },
+        "Prescription": {
+          "f1": 0.9072,
+          "fn": 22,
+          "fp": 13,
+          "gold_count": 193,
+          "precision": 0.9293,
+          "pred_count": 184,
+          "recall": 0.886,
+          "tp": 171
+        },
+        "SeizureFrequency": {
+          "f1": 0.7634,
+          "fn": 37,
+          "fp": 56,
+          "gold_count": 187,
+          "precision": 0.7282,
+          "pred_count": 206,
+          "recall": 0.8021,
+          "tp": 150
+        }
+      },
+      "cui_projected_overall": {
+        "f1": 0.738,
+        "fn": 230,
+        "fp": 235,
+        "gold_count": 885,
+        "precision": 0.736,
+        "precision_tp": 655,
+        "pred_count": 890,
+        "recall": 0.7401,
+        "recall_tp": 655,
+        "tp": 655
+      },
+      "headline_scores": {
+        "Diagnosis": {
+          "f1": 0.7302,
+          "fn": 120,
+          "fp": 64,
+          "gold_count": 369,
+          "precision": 0.7955,
+          "precision_tp": 249,
+          "pred_count": 313,
+          "recall": 0.6748,
+          "recall_tp": 249,
+          "tp": 249
+        },
+        "Investigations": {
+          "f1": 0.5263,
+          "fn": 51,
+          "fp": 102,
+          "gold_count": 136,
+          "precision": 0.4545,
+          "pred_count": 187,
+          "recall": 0.625,
+          "tp": 85
+        },
+        "Prescription": {
+          "f1": 0.9072,
+          "fn": 22,
+          "fp": 13,
+          "gold_count": 193,
+          "precision": 0.9293,
+          "pred_count": 184,
+          "recall": 0.886,
+          "tp": 171
+        },
+        "SeizureFrequency": {
+          "f1": 0.7277,
+          "fn": 44,
+          "fp": 63,
+          "gold_count": 187,
+          "precision": 0.6942,
+          "pred_count": 206,
+          "recall": 0.7647,
+          "tp": 143
+        }
+      },
+      "overall": {
+        "f1": 0.7301,
+        "fn": 237,
+        "fp": 242,
+        "gold_count": 885,
+        "precision": 0.7281,
+        "precision_tp": 648,
+        "pred_count": 890,
+        "recall": 0.7322,
+        "recall_tp": 648,
+        "tp": 648
+      },
+      "primary_entities": [
+        "Prescription",
+        "Investigations",
+        "Diagnosis",
+        "SeizureFrequency"
+      ]
+    },
+    "family_routed_llm_first": {
+      "cui_projected_headline_scores": {
+        "Diagnosis": {
+          "f1": 0.2898,
+          "fn": 287,
+          "fp": 115,
+          "gold_count": 369,
+          "precision": 0.4162,
+          "precision_tp": 82,
+          "pred_count": 197,
+          "recall": 0.2222,
+          "recall_tp": 82,
+          "tp": 82
+        },
+        "Investigations": {
+          "f1": 0.7475,
+          "fn": 22,
+          "fp": 55,
+          "gold_count": 136,
+          "precision": 0.6746,
+          "pred_count": 169,
+          "recall": 0.8382,
+          "tp": 114
+        },
+        "Prescription": {
+          "f1": 0.7472,
+          "fn": 60,
+          "fp": 30,
+          "gold_count": 193,
+          "precision": 0.816,
+          "pred_count": 163,
+          "recall": 0.6891,
+          "tp": 133
+        },
+        "SeizureFrequency": {
+          "f1": 0.7824,
+          "fn": 36,
+          "fp": 48,
+          "gold_count": 187,
+          "precision": 0.7588,
+          "pred_count": 199,
+          "recall": 0.8075,
+          "tp": 151
+        }
+      },
+      "cui_projected_overall": {
+        "f1": 0.5952,
+        "fn": 405,
+        "fp": 248,
+        "gold_count": 885,
+        "precision": 0.6593,
+        "precision_tp": 480,
+        "pred_count": 728,
+        "recall": 0.5424,
+        "recall_tp": 480,
+        "tp": 480
+      },
+      "headline_scores": {
+        "Diagnosis": {
+          "f1": 0.2898,
+          "fn": 287,
+          "fp": 115,
+          "gold_count": 369,
+          "precision": 0.4162,
+          "precision_tp": 82,
+          "pred_count": 197,
+          "recall": 0.2222,
+          "recall_tp": 82,
+          "tp": 82
+        },
+        "Investigations": {
+          "f1": 0.7475,
+          "fn": 22,
+          "fp": 55,
+          "gold_count": 136,
+          "precision": 0.6746,
+          "pred_count": 169,
+          "recall": 0.8382,
+          "tp": 114
+        },
+        "Prescription": {
+          "f1": 0.7472,
+          "fn": 60,
+          "fp": 30,
+          "gold_count": 193,
+          "precision": 0.816,
+          "pred_count": 163,
+          "recall": 0.6891,
+          "tp": 133
+        },
+        "SeizureFrequency": {
+          "f1": 0.6321,
+          "fn": 65,
+          "fp": 77,
+          "gold_count": 187,
+          "precision": 0.6131,
+          "pred_count": 199,
+          "recall": 0.6524,
+          "tp": 122
+        }
+      },
+      "overall": {
+        "f1": 0.5592,
+        "fn": 434,
+        "fp": 277,
+        "gold_count": 885,
+        "precision": 0.6195,
+        "precision_tp": 451,
+        "pred_count": 728,
+        "recall": 0.5096,
+        "recall_tp": 451,
+        "tp": 451
+      },
+      "primary_entities": [
+        "Prescription",
+        "Investigations",
+        "Diagnosis",
+        "SeizureFrequency"
+      ]
+    },
+    "family_routed_with_diagnosis_enumeration_pass": {
+      "cui_projected_headline_scores": {
+        "Diagnosis": {
+          "f1": 0.653,
+          "fn": 130,
+          "fp": 124,
+          "gold_count": 369,
+          "precision": 0.6584,
+          "precision_tp": 239,
+          "pred_count": 363,
+          "recall": 0.6477,
+          "recall_tp": 239,
+          "tp": 239
+        },
+        "Investigations": {
+          "f1": 0.7475,
+          "fn": 22,
+          "fp": 55,
+          "gold_count": 136,
+          "precision": 0.6746,
+          "pred_count": 169,
+          "recall": 0.8382,
+          "tp": 114
+        },
+        "Prescription": {
+          "f1": 0.7472,
+          "fn": 60,
+          "fp": 30,
+          "gold_count": 193,
+          "precision": 0.816,
+          "pred_count": 163,
+          "recall": 0.6891,
+          "tp": 133
+        },
+        "SeizureFrequency": {
+          "f1": 0.7824,
+          "fn": 36,
+          "fp": 48,
+          "gold_count": 187,
+          "precision": 0.7588,
+          "pred_count": 199,
+          "recall": 0.8075,
+          "tp": 151
+        }
+      },
+      "cui_projected_overall": {
+        "f1": 0.7161,
+        "fn": 248,
+        "fp": 257,
+        "gold_count": 885,
+        "precision": 0.7125,
+        "precision_tp": 637,
+        "pred_count": 894,
+        "recall": 0.7198,
+        "recall_tp": 637,
+        "tp": 637
+      },
+      "headline_scores": {
+        "Diagnosis": {
+          "f1": 0.653,
+          "fn": 130,
+          "fp": 124,
+          "gold_count": 369,
+          "precision": 0.6584,
+          "precision_tp": 239,
+          "pred_count": 363,
+          "recall": 0.6477,
+          "recall_tp": 239,
+          "tp": 239
+        },
+        "Investigations": {
+          "f1": 0.7475,
+          "fn": 22,
+          "fp": 55,
+          "gold_count": 136,
+          "precision": 0.6746,
+          "pred_count": 169,
+          "recall": 0.8382,
+          "tp": 114
+        },
+        "Prescription": {
+          "f1": 0.7472,
+          "fn": 60,
+          "fp": 30,
+          "gold_count": 193,
+          "precision": 0.816,
+          "pred_count": 163,
+          "recall": 0.6891,
+          "tp": 133
+        },
+        "SeizureFrequency": {
+          "f1": 0.6321,
+          "fn": 65,
+          "fp": 77,
+          "gold_count": 187,
+          "precision": 0.6131,
+          "pred_count": 199,
+          "recall": 0.6524,
+          "tp": 122
+        }
+      },
+      "overall": {
+        "f1": 0.6835,
+        "fn": 277,
+        "fp": 286,
+        "gold_count": 885,
+        "precision": 0.6801,
+        "precision_tp": 608,
+        "pred_count": 894,
+        "recall": 0.687,
+        "recall_tp": 608,
+        "tp": 608
+      },
+      "primary_entities": [
+        "Prescription",
+        "Investigations",
+        "Diagnosis",
+        "SeizureFrequency"
+      ]
+    },
+    "hybrid_all_entities": {
+      "cui_projected_headline_scores": {
+        "Diagnosis": {
+          "f1": 0.4605,
+          "fn": 225,
+          "fp": 71,
+          "gold_count": 369,
+          "precision": 0.5617,
+          "precision_tp": 91,
+          "pred_count": 162,
+          "recall": 0.3902,
+          "recall_tp": 144,
+          "tp": 144
+        },
+        "Investigations": {
+          "f1": 0.7412,
+          "fn": 20,
+          "fp": 61,
+          "gold_count": 136,
+          "precision": 0.6554,
+          "pred_count": 177,
+          "recall": 0.8529,
+          "tp": 116
+        },
+        "Prescription": {
+          "f1": 0.8241,
+          "fn": 22,
+          "fp": 51,
+          "gold_count": 193,
+          "precision": 0.7703,
+          "pred_count": 222,
+          "recall": 0.886,
+          "tp": 171
+        },
+        "SeizureFrequency": {
+          "f1": 0.3704,
+          "fn": 122,
+          "fp": 99,
+          "gold_count": 187,
+          "precision": 0.3963,
+          "pred_count": 164,
+          "recall": 0.3476,
+          "tp": 65
+        }
+      },
+      "cui_projected_overall": {
+        "f1": 0.5847,
+        "fn": 389,
+        "fp": 282,
+        "gold_count": 885,
+        "precision": 0.611,
+        "precision_tp": 443,
+        "pred_count": 725,
+        "recall": 0.5605,
+        "recall_tp": 496,
+        "tp": 496
+      },
+      "headline_scores": {
+        "Diagnosis": {
+          "f1": 0.4605,
+          "fn": 225,
+          "fp": 71,
+          "gold_count": 369,
+          "precision": 0.5617,
+          "precision_tp": 91,
+          "pred_count": 162,
+          "recall": 0.3902,
+          "recall_tp": 144,
+          "tp": 144
+        },
+        "Investigations": {
+          "f1": 0.7412,
+          "fn": 20,
+          "fp": 61,
+          "gold_count": 136,
+          "precision": 0.6554,
+          "pred_count": 177,
+          "recall": 0.8529,
+          "tp": 116
+        },
+        "Prescription": {
+          "f1": 0.8241,
+          "fn": 22,
+          "fp": 51,
+          "gold_count": 193,
+          "precision": 0.7703,
+          "pred_count": 222,
+          "recall": 0.886,
+          "tp": 171
+        },
+        "SeizureFrequency": {
+          "f1": 0.2963,
+          "fn": 135,
+          "fp": 112,
+          "gold_count": 187,
+          "precision": 0.3171,
+          "pred_count": 164,
+          "recall": 0.2781,
+          "tp": 52
+        }
+      },
+      "overall": {
+        "f1": 0.5684,
+        "fn": 402,
+        "fp": 295,
+        "gold_count": 885,
+        "precision": 0.5931,
+        "precision_tp": 430,
+        "pred_count": 725,
+        "recall": 0.5458,
+        "recall_tp": 483,
+        "tp": 483
+      },
+      "primary_entities": [
+        "Prescription",
+        "Investigations",
+        "Diagnosis",
+        "SeizureFrequency"
+      ]
+    },
+    "llm_only_all_entities": {
+      "cui_projected_headline_scores": {
+        "Diagnosis": {
+          "f1": 0.3161,
+          "fn": 275,
+          "fp": 115,
+          "gold_count": 369,
+          "precision": 0.4162,
+          "precision_tp": 82,
+          "pred_count": 197,
+          "recall": 0.2547,
+          "recall_tp": 94,
+          "tp": 94
+        },
+        "Investigations": {
+          "f1": 0.7475,
+          "fn": 22,
+          "fp": 55,
+          "gold_count": 136,
+          "precision": 0.6746,
+          "pred_count": 169,
+          "recall": 0.8382,
+          "tp": 114
+        },
+        "Prescription": {
+          "f1": 0.7472,
+          "fn": 60,
+          "fp": 30,
+          "gold_count": 193,
+          "precision": 0.816,
+          "pred_count": 163,
+          "recall": 0.6891,
+          "tp": 133
+        },
+        "SeizureFrequency": {
+          "f1": 0.0118,
+          "fn": 185,
+          "fp": 150,
+          "gold_count": 187,
+          "precision": 0.0132,
+          "pred_count": 152,
+          "recall": 0.0107,
+          "tp": 2
+        }
+      },
+      "cui_projected_overall": {
+        "f1": 0.4313,
+        "fn": 542,
+        "fp": 350,
+        "gold_count": 885,
+        "precision": 0.486,
+        "precision_tp": 331,
+        "pred_count": 681,
+        "recall": 0.3876,
+        "recall_tp": 343,
+        "tp": 343
+      },
+      "headline_scores": {
+        "Diagnosis": {
+          "f1": 0.3161,
+          "fn": 275,
+          "fp": 115,
+          "gold_count": 369,
+          "precision": 0.4162,
+          "precision_tp": 82,
+          "pred_count": 197,
+          "recall": 0.2547,
+          "recall_tp": 94,
+          "tp": 94
+        },
+        "Investigations": {
+          "f1": 0.7475,
+          "fn": 22,
+          "fp": 55,
+          "gold_count": 136,
+          "precision": 0.6746,
+          "pred_count": 169,
+          "recall": 0.8382,
+          "tp": 114
+        },
+        "Prescription": {
+          "f1": 0.7472,
+          "fn": 60,
+          "fp": 30,
+          "gold_count": 193,
+          "precision": 0.816,
+          "pred_count": 163,
+          "recall": 0.6891,
+          "tp": 133
+        },
+        "SeizureFrequency": {
+          "f1": 0.0118,
+          "fn": 185,
+          "fp": 150,
+          "gold_count": 187,
+          "precision": 0.0132,
+          "pred_count": 152,
+          "recall": 0.0107,
+          "tp": 2
+        }
+      },
+      "overall": {
+        "f1": 0.4313,
+        "fn": 542,
+        "fp": 350,
+        "gold_count": 885,
+        "precision": 0.486,
+        "precision_tp": 331,
+        "pred_count": 681,
+        "recall": 0.3876,
+        "recall_tp": 343,
+        "tp": 343
+      },
+      "primary_entities": [
+        "Prescription",
+        "Investigations",
+        "Diagnosis",
+        "SeizureFrequency"
+      ]
+    }
+  },
+  "diagnosis_candidate_miss_fn": {
+    "baseline_shared_diagnosis": {
+      "seizure_type": 175,
+      "syndrome": 111
+    },
+    "enumeration_diagnosis": {
+      "seizure_type": 129,
+      "syndrome": 89
+    }
+  },
+  "enum_artifact": "experiments/exectv2_llm_diagnosis_enumeration_v01_dev140_gpt41mini_20260618.jsonl",
+  "generated_on": "2026-06-19",
+  "no_model_calls": true,
+  "pipeline_family": "exectv2_diagnosis_enumeration_readout",
+  "row_count": 140,
+  "split": "dev",
+  "stage": "dev140"
+}

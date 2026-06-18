@@ -65,6 +65,10 @@ full-200/test authorization.
 
 ### Next
 
+- Decide whether to fold the promoted Diagnosis enumeration lane into the
+  canonical family-routed runner (replacing the shared-pass Diagnosis lane),
+  with an ownership-clean preflight note; or keep it as a guarded dev candidate
+  alongside the focused reconciler route pending a precision/recall comparison.
 - If SF v0.8 gate passes, predeclare the single dev-only implementation slice
   and acceptance readout before editing SF prediction code.
 - If CUI projection resumes, run the EpilepsyCause boundary-control
@@ -81,6 +85,13 @@ full-200/test authorization.
 
 ### Done Recently
 
+- 2026-06-19: Ran the predeclared Diagnosis enumeration recall pass (live
+  `gpt-4.1-mini`, dev ladder). Clean `llm_first` Diagnosis lane lifts routed
+  Diagnosis `0.2898 -> 0.6530` and four-family `0.5592 -> 0.6835`, P `0.4162 ->
+  0.6584` / R `0.2222 -> 0.6477`, P/I/SF unchanged, evidence validity `0.9953`.
+  All predeclared dev140 gates passed; route PROMOTED as dev architecture
+  evidence. Still below `deterministic_all9` `0.7301`; Diagnosis not solved.
+  Result: `exectv2_diagnosis_enumeration_recall_pass_result_2026-06-18.md`.
 - 2026-06-18: Integrated five parallel guardrail threads: SF v0.8 hard-slice
   panel and tests, focused Diagnosis claim-language test, P/I shared-pass
   preflight gate, CUI diagnostic-only deny-list plus EpilepsyCause

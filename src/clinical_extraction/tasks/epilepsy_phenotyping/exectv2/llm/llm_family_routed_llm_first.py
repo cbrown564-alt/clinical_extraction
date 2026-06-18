@@ -124,15 +124,24 @@ def combine_family_routed_predictions(
     shared_pass_by_id: Mapping[str, PredictedLetter],
     sf_route_by_id: Mapping[str, PredictedLetter],
     diagnosis_route_by_id: Mapping[str, PredictedLetter] | None = None,
+    *,
+    diagnosis_route_owner: str = "hybrid_diagnosis_reconciler",
+    diagnosis_aggregate_ownership: str = FOCUSED_DIAGNOSIS_AGGREGATE_OWNERSHIP,
 ) -> list[PredictedLetter]:
-    """Combine shared-pass P/I/D mentions with routed SF mentions."""
+    """Combine shared-pass P/I/D mentions with routed SF mentions.
+
+    ``diagnosis_route_owner`` / ``diagnosis_aggregate_ownership`` let a clean
+    ``llm_first`` Diagnosis route (e.g. the enumeration recall pass) keep clean
+    ownership instead of the default hybrid-reconciler attribution. The aggregate
+    label stays ``llm_first_with_hybrid_sf_route`` only when the caller passes it.
+    """
 
     routed: list[PredictedLetter] = []
     shared_entities = SHARED_PASS_ENTITIES
     aggregate_ownership = "llm_first_with_hybrid_sf_route"
     if diagnosis_route_by_id is not None:
         shared_entities = frozenset({PRESCRIPTION.name, INVESTIGATIONS.name})
-        aggregate_ownership = FOCUSED_DIAGNOSIS_AGGREGATE_OWNERSHIP
+        aggregate_ownership = diagnosis_aggregate_ownership
 
     for gold in gold_letters:
         shared = shared_pass_by_id.get(
@@ -158,7 +167,7 @@ def combine_family_routed_predictions(
                 if m.entity in shared_entities
             )
             + tuple(
-                _with_owner(m, "hybrid_diagnosis_reconciler")
+                _with_owner(m, diagnosis_route_owner)
                 for m in diagnosis_route.mentions
                 if m.entity in DIAGNOSIS_ROUTE_ENTITIES
             )
