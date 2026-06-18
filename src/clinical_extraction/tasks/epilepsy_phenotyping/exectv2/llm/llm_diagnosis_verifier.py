@@ -50,7 +50,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
-PROMPT_VERSION = "exectv2_llm_diagnosis_verifier_v0.1"
+PROMPT_VERSION = "exectv2_llm_diagnosis_verifier_v0.2"
 PIPELINE_FAMILY = "exectv2_llm_diagnosis_verifier"
 COMPONENT_OWNER = "llm_diagnosis_verifier"
 
@@ -118,7 +118,7 @@ def build_prompt_input(letter: ExectLetter, draft_mentions: Sequence[Mapping[str
         "output_schema": {
             "mentions": [
                 {
-                    "text": "Exact substring naming the clean core Diagnosis concept.",
+                    "text": "Clean core Diagnosis concept phrase owned by the verifier.",
                     "attributes": {
                         "DiagCategory": "Epilepsy | MultipleSeizures | SingleSeizure",
                         "Certainty": "1 | 2 | 3 | 4 | 5",
@@ -156,7 +156,12 @@ def _attribute_vocabulary() -> dict[str, Any]:
 def _clinical_rules() -> list[str]:
     return [
         "Return only Diagnosis mentions. Do not emit Prescription, SF, or Investigations.",
-        "Every final text and evidence value must be an exact substring of the letter.",
+        "Every final evidence value must be an exact substring of the letter.",
+        (
+            "Diagnosis text may be a normalized core clinical concept phrase even "
+            "when the source expresses it with hedging, punctuation, abbreviation, "
+            "or discontinuous wording. The evidence must still be exact."
+        ),
         "Do not emit CUI or CUIPhrase; projection is a separate deterministic layer.",
         (
             "Render only the core clinical concept span in text. Strip section labels, "
@@ -178,12 +183,28 @@ def _clinical_rules() -> list[str]:
             "write 'possible JME' as text."
         ),
         (
+            "For discontinuous syndrome wording, render the normalized concept: "
+            "'epilepsy - probable focal' -> 'focal epilepsy'; 'probable temporal' "
+            "in an epilepsy diagnosis context -> 'temporal lobe epilepsy'."
+        ),
+        (
             "Keep named seizure types when they are asserted as seizure diagnoses: "
             "focal seizures, focal seizures with altered awareness, focal to bilateral "
             "convulsive seizures, tonic clonic seizures, complex partial seizures, "
             "absence seizures, and bilateral convulsive seizure."
         ),
+        (
+            "Do not drop true named seizure types just because they occur in a "
+            "seizure-type/frequency line; if the line names the seizure type, include "
+            "the Diagnosis mention as well as any SF handled elsewhere."
+        ),
+        (
+            "Use normalized seizure-type text for scoring-facing Diagnosis mentions: "
+            "'generalised tonic clonic seizures' -> 'tonic clonic seizures'; "
+            "'single focal seizure' -> 'focal seizure'."
+        ),
         "Never write 'tonic chronic'; preserve tonic clonic or tonic-clonic.",
+        "Never use attribute labels such as 'MultipleSeizures' as mention text.",
         (
             "Do not emit isolated symptoms or aura features as Diagnosis, including "
             "myoclonic jerks, jerks, flashing lights, odd sensations, altered "
@@ -217,7 +238,7 @@ def _worked_examples() -> list[dict[str, Any]]:
                     "rationale": "Focal epilepsy is explicitly stated.",
                 },
                 {
-                    "text": "temporal",
+                    "text": "temporal lobe epilepsy",
                     "attributes": {
                         "DiagCategory": "Epilepsy",
                         "Certainty": "4",
@@ -227,6 +248,40 @@ def _worked_examples() -> list[dict[str, Any]]:
                     "confidence": "medium",
                     "rationale": "Probable temporal diagnosis is stated with uncertainty.",
                 },
+            ],
+        },
+        {
+            "note_fragment": "Diagnosis: epilepsy - probable focal.",
+            "draft": [{"text": "epilepsy - probable focal"}],
+            "correct": [
+                {
+                    "text": "focal epilepsy",
+                    "attributes": {
+                        "DiagCategory": "Epilepsy",
+                        "Certainty": "4",
+                        "Negation": "Affirmed",
+                    },
+                    "evidence": "epilepsy - probable focal",
+                    "confidence": "medium",
+                    "rationale": "Discontinuous probable focal epilepsy is normalized.",
+                }
+            ],
+        },
+        {
+            "note_fragment": "Seizure type: generalised tonic clonic seizures.",
+            "draft": [],
+            "correct": [
+                {
+                    "text": "tonic clonic seizures",
+                    "attributes": {
+                        "DiagCategory": "MultipleSeizures",
+                        "Certainty": "5",
+                        "Negation": "Affirmed",
+                    },
+                    "evidence": "generalised tonic clonic seizures",
+                    "confidence": "high",
+                    "rationale": "The named seizure type is asserted and normalized.",
+                }
             ],
         },
         {
