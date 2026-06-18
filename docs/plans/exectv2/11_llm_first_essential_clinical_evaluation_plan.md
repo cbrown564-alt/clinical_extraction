@@ -1,7 +1,10 @@
 # ExECTv2 LLM-First Essential Clinical Evaluation Plan
 
 Date: 2026-06-18
-Status: proposed refocus plan; no new experiment results yet
+Status: EXECUTED (analysis-only, no model calls) — see [Execution Results](#execution-results).
+Readout: `docs/experiments/exectv2/key_entities/exectv2_llm_first_essential_evaluation_2026-06-18.md`;
+machine JSON `experiments/exectv2_llm_first_essential_evaluation_dev140_20260618.json`;
+code `reports/llm_first_essential_evaluation.py` + `runners/run_llm_first_essential_evaluation.py`.
 
 ## Purpose
 
@@ -322,3 +325,73 @@ Not supported:
 4. Replay existing single structured, deterministic, and hybrid artifacts under
    the new ownership-aware layer ladder.
 5. Decide whether a new single-call LLM-first run is necessary after replay.
+
+## Execution Results
+
+Executed 2026-06-18, analysis-only, no model calls. All five immediate next
+steps are done by replaying existing artifacts over one canonical `dev` (140
+letter) gold:
+
+- `rules_only` = generated deterministic all-9 (`run_all9_on_letters`).
+- `llm_first` = single all-entities LLM pass
+  (`experiments/exectv2_audit_llm_only_all_entities_full200_gpt41mini_20260612.jsonl`,
+  filtered to dev).
+- `hybrid` = candidate-set + verify
+  (`experiments/exectv2_hybrid_all_entities_dev140_gpt41mini_20260617.jsonl`).
+
+New code (no edits to established scorers):
+`reports/llm_first_essential_evaluation.py` (artifact loader, ownership ladder,
+certainty audit, CUI 4-bucket audit, per-architecture assembly) and
+`runners/run_llm_first_essential_evaluation.py` (driver + six-section readout),
+with `tests/test_exectv2_llm_first_essential_evaluation.py`.
+
+### Findings against the two direct hypotheses
+
+**Certainty is a deterministic projection layer, confirmed.** Certainty-only
+benchmark loss is **+0.003 F1 (4 TP)** measured on CUI-projected predictions, so
+the residual is genuinely certainty/negation rather than missing CUI. `Negation`
+is near-constant (`Affirmed`) on every entity that carries it (default-projection
+ceiling 0.95–1.00); `Certainty` is dominated by its modal value (Diagnosis 0.82,
+EpilepsyCause 0.86, BirthHistory 0.90, PatientHistory 0.92). Certainty is removed
+from the LLM burden and reported as an adapter layer.
+
+**CUI is benchmark-format projection, confirmed.** The single LLM pass emits no
+CUI, so its raw benchmark F1 is 0.000; deterministic projection recovers it to
+0.101 versus the 0.115 CUI-free semantic surface (residual 0.014). In-sample
+projection over gold (CUI stripped then re-attached) reaches coverage 0.75 and
+**correctness 0.944**, with 365 `missing_mapping` mentions concentrated in the
+long-tail concepts the finite lexicon does not cover. No LLM-first claim depends
+on model-supplied CUI.
+
+### Clinical-recovery headline (CUI/certainty/format demoted)
+
+| Architecture | Ownership | Recovery F1 |
+| --- | --- | ---: |
+| deterministic_all9 | `rules_only` | 0.600 |
+| hybrid_all_entities | `hybrid` | 0.508 |
+| llm_only_all_entities (single pass) | `llm_first` | 0.393 |
+
+The single all-entities pass matches or beats rules on Prescription concept
+recovery, Investigations, and Diagnosis concept identity, but **collapses on
+SeizureFrequency (0.012)** and the low-frequency atomic entities (Onset,
+WhenDiagnosed, EpilepsyCause ~0). The SF collapse is genuine, not a scoring
+artifact: even after deterministic CUI projection the single pass does not emit
+the structured count attributes that define SF state.
+
+> Scorer note: the SeizureFrequency state key uses CUI as the seizure-type
+> identity when present, and all gold SF mentions carry one. The clinical-recovery
+> headline is therefore computed on CUI-projected predictions (CUI attached
+> deterministically before scoring, per the ownership ladder). An alternative is
+> to make `_frequency_type_key` phrase-based so SF recovery is CUI-independent;
+> that touches an established scorer and its accepted numbers, so it is left as a
+> flagged decision rather than changed here.
+
+### Step 5 decision
+
+A *new* single-call run is **not** the next step. The single all-entities pass is
+already shown to be the wrong shape for SeizureFrequency and the low-frequency
+atomic entities, so a fresh general single call would repeat the known failure.
+The error-led redesign the plan calls for is: keep the single LLM pass for the
+families it already recovers (Prescription, Investigations, Diagnosis concept),
+and route SeizureFrequency to the structured event/state schema the specialist
+SF candidates already use. Certainty and CUI stay as deterministic adapters.

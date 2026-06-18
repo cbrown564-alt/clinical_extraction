@@ -225,6 +225,16 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Revise
 
+### `exectv2_llm_first_essential_evaluation_dev140_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_llm_first_essential_evaluation`; mode `deterministic`; replay `analysis_only`.
+- Model role: Ownership-aware replay of existing rules_only/llm_first/hybrid artifacts under the plan-11 layer ladder; clinical-recovery headline + certainty projection audit + CUI 4-bucket audit. No model calls.; model `(model-independent)`.
+- Repair mode/config: `model CUI/CUIPhrase stripped, deterministic CUI projected before benchmark/SF scoring`.
+- Primary metrics: clinical_recovery_f1_rules_only=0.600, clinical_recovery_f1_llm_first=0.393, clinical_recovery_f1_hybrid=0.508, certainty_only_f1_loss=0.003, cui_only_f1_recovered_by_projection=0.101, cui_projection_in_sample_correctness=0.944, llm_first_sf_recovery_f1=0.012.
+- Evidence validity: Deterministic scorers over existing prediction artifacts (`exectv2_audit_llm_only_all_entities_full200`, `exectv2_hybrid_all_entities_dev140`) and the generated all-9 baseline; no model calls; gold read from the artifacts and the dev split.
+- Claim language: Analysis-only execution of `docs/plans/exectv2/11_llm_first_essential_clinical_evaluation_plan.md`. Certainty contributes negligible benchmark loss (+0.003 F1) and Negation is near-constant -> certainty is a deterministic projection layer, not an LLM target. Deterministic CUI projection recovers the benchmark-vs-semantic gap in-sample (correctness 0.944), confirming CUI is benchmark-format projection. The single all-entities LLM pass is not a sufficient llm_first candidate: it matches/beats rules on Prescription/Investigations/Diagnosis concept recovery but collapses on SeizureFrequency (0.012) and the low-frequency atomic entities; specialist hybrid recovers SF only partially (0.370). Development-surface diagnostic; not a benchmark result.
+- Artifacts: `experiments/exectv2_llm_first_essential_evaluation_dev140_20260618.json`, `docs/experiments/exectv2/key_entities/exectv2_llm_first_essential_evaluation_2026-06-18.md`.
+
 ### `exectv2_llm_sf_verifier_v03_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
 - Pipeline: `exectv2_llm_sf_verifier`; mode `live`; replay `native_run_split`.

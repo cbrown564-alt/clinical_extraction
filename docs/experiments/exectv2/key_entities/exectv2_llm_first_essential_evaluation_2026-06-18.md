@@ -1,0 +1,110 @@
+# ExECTv2 LLM-First Essential Clinical Evaluation
+
+- Generated: `2026-06-18`
+- Split: `dev` (140 letters)
+- Plan: `docs/plans/exectv2/11_llm_first_essential_clinical_evaluation_plan.md`
+- Mode: **analysis-only, no model calls** (existing artifacts replayed).
+
+Architectures and ownership (plan §Evaluation Contract):
+
+| Architecture | Ownership | Source |
+| --- | --- | --- |
+| deterministic_all9 | `rules_only` | generated (run_all9_on_letters) |
+| llm_only_all_entities (single pass) | `llm_first` | experiments/exectv2_audit_llm_only_all_entities_full200_gpt41mini_20260612.jsonl |
+| hybrid_all_entities (candidate-set + verify) | `hybrid` | experiments/exectv2_hybrid_all_entities_dev140_gpt41mini_20260617.jsonl |
+
+## 5. Baseline and hybrid comparator — clinical-recovery headline
+
+Clinical-fact recovery (CUI, certainty, and benchmark phrase demoted to deterministic projection layers below). This is the primary surface the plan's research question is judged on.
+
+| Architecture | Ownership | Recovery F1 | Precision | Recall |
+| --- | --- | ---: | ---: | ---: |
+| deterministic_all9 | `rules_only` | 0.600 | 0.666 | 0.546 |
+| llm_only_all_entities (single pass) | `llm_first` | 0.393 | 0.440 | 0.355 |
+| hybrid_all_entities (candidate-set + verify) | `hybrid` | 0.508 | 0.488 | 0.531 |
+
+### Per-entity clinical-recovery headline F1
+
+| Entity | deterministic_all9 | llm_only_all_entities | hybrid_all_entities |
+| --- | ---: | ---: | ---: |
+| Prescription | 0.907 | 0.747 | 0.824 |
+| Investigations | 0.526 | 0.748 | 0.741 |
+| SeizureFrequency | 0.763 | 0.012 | 0.370 |
+| BirthHistory | 0.820 | 0.120 | 0.526 |
+| Diagnosis | 0.268 | 0.307 | 0.397 |
+| EpilepsyCause | 0.578 | 0.000 | 0.200 |
+| Onset | 0.400 | 0.000 | 0.148 |
+| WhenDiagnosed | 0.818 | 0.000 | 0.073 |
+
+## 4. LLM-first single-call report
+
+Single all-entities pass (`llm_only_all_entities (single pass)`), ownership `llm_first`. Overall clinical recovery F1 **0.393** (P 0.440 / R 0.355).
+
+Per-entity reading (which families clear, which collapse):
+
+| Entity | Recovery F1 | Precision | Recall |
+| --- | ---: | ---: | ---: |
+| Prescription | 0.747 | 0.816 | 0.689 |
+| Investigations | 0.748 | 0.675 | 0.838 |
+| SeizureFrequency | 0.012 | 0.013 | 0.011 |
+| BirthHistory | 0.120 | 0.158 | 0.097 |
+| Diagnosis | 0.307 | 0.406 | 0.247 |
+| EpilepsyCause | 0.000 | 0.000 | 0.000 |
+| Onset | 0.000 | 0.000 | 0.000 |
+| WhenDiagnosed | 0.000 | 0.000 | 0.000 |
+
+## 2. Certainty projection audit
+
+SeizureFrequency already ignores Certainty/Negation in its benchmark key (guideline convention), so it contributes no certainty-only loss.
+
+Certainty-only benchmark loss is **0.003 F1** (4 TP) — measured on CUI-projected predictions so the residual is owned by `Certainty`/`Negation`, not missing CUI.
+
+Gold distribution and default-projection ceiling (fraction correct if a rule assigned the dominant value):
+
+| Entity | Certainty present | distinct | default ceiling | Negation present | distinct | default ceiling |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| BirthHistory | 0.97 | 2 | 0.90 | 1.00 | 1 | 1.00 |
+| Diagnosis | 1.00 | 3 | 0.83 | 0.99 | 1 | 1.00 |
+| EpilepsyCause | 1.00 | 2 | 0.86 | 0.95 | 1 | 1.00 |
+| Investigations | 0.00 | 0 | 0.00 | 0.00 | 0 | 0.00 |
+| Onset | 0.94 | 1 | 1.00 | 0.94 | 1 | 1.00 |
+| PatientHistory | 1.00 | 4 | 0.92 | 1.00 | 2 | 0.97 |
+| Prescription | 0.00 | 0 | 0.00 | 0.00 | 0 | 0.00 |
+| SeizureFrequency | 0.01 | 1 | 1.00 | 0.01 | 1 | 1.00 |
+| WhenDiagnosed | 1.00 | 1 | 1.00 | 1.00 | 1 | 1.00 |
+
+## 3. CUI projection audit
+
+CUI is benchmark-format projection: the benchmark key keeps CUI, the semantic key drops it. The benchmark-minus-semantic delta is owned by deterministic CUI projection, never by LLM clinical reasoning.
+
+- Raw LLM benchmark F1 (no CUI emitted): **0.000**
+- After deterministic CUI projection: **0.101** (projection recovers +0.101 F1)
+- CUI-free semantic surface: **0.115** (residual CUI loss after projection: 0.014)
+
+Concept bucket ledger (over gold concepts carrying a CUI):
+
+| Bucket | Concepts | Mentions |
+| --- | ---: | ---: |
+| one_to_one | 283 | 1325 |
+| result_conditioned | 2 | 10 |
+| gold_inconsistent | 8 | 144 |
+
+Deterministic projection over gold (CUI stripped first, then re-attached — an in-sample lexicon lookup):
+
+- coverage **0.753** (1114/1479)
+- correctness **0.944** (1052/1114)
+- missing_mapping mentions: **365**
+
+## 6. Benchmark projection gap ledger
+
+Per architecture, the artifact projection layers from the clinical-recovery scorecard (per-item F1): phrase-only -> semantic (CUI dropped) -> benchmark (CUI kept). The phrase->semantic step is attribute/format loss; the semantic->benchmark step is CUI projection loss.
+
+| Architecture | phrase_only | semantic | benchmark |
+| --- | ---: | ---: | ---: |
+| deterministic_all9 | 0.463 | 0.382 | 0.362 |
+| llm_only_all_entities (single pass) | 0.143 | 0.123 | 0.101 |
+| hybrid_all_entities (candidate-set + verify) | 0.329 | 0.220 | 0.181 |
+
+## 1. Essential clinical scorer specification
+
+The essential clinical scorer is the clinical-recovery headline in `reports/clinical_recovery_scorecard.py` / `scoring.py` (`score_prescription_components`, `score_investigations_components`, `score_frequency_state`, `score_concept_identity`). Primary score ignores CUI; SeizureFrequency already excludes Certainty/Negation by guideline convention. CUI and certainty are reported as the demoted projection layers above (§3, §2). Class assignments live in `contract/evaluation.py::ENTITY_CLINICAL_RECOVERY_CLASSES`.

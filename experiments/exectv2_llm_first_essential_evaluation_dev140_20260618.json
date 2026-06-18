@@ -1,0 +1,4310 @@
+{
+  "architectures": [
+    {
+      "certainty_audit": {
+        "ignored_attributes": [
+          "Certainty",
+          "Negation"
+        ],
+        "note": "SeizureFrequency already ignores Certainty/Negation in its benchmark key (guideline convention), so it contributes no certainty-only loss.",
+        "overall": {
+          "benchmark_f1": 0.3622,
+          "benchmark_tp": 451,
+          "certainty_dropped_f1": 0.388,
+          "certainty_only_f1_gain_if_dropped": 0.0257,
+          "certainty_only_tp_gain_if_dropped": 32
+        },
+        "per_entity": {
+          "BirthHistory": {
+            "benchmark_f1": 0.4918,
+            "certainty": {
+              "default_projection_ceiling": 0.9,
+              "distinct_values": 2,
+              "distribution": {
+                "4": 3,
+                "5": 27
+              },
+              "gold_mentions": 31,
+              "present": 30,
+              "present_rate": 0.9677
+            },
+            "certainty_dropped_f1": 0.5574,
+            "certainty_only_tp_gain_if_dropped": 2,
+            "negation": {
+              "default_projection_ceiling": 1.0,
+              "distinct_values": 1,
+              "distribution": {
+                "Affirmed": 31
+              },
+              "gold_mentions": 31,
+              "present": 31,
+              "present_rate": 1.0
+            },
+            "recovery_on_overlap": {
+              "Certainty": {
+                "overlap_pairs_gold_has_value": 29,
+                "predicted_value_agrees": 27,
+                "recovery_rate": 0.931
+              },
+              "Negation": {
+                "overlap_pairs_gold_has_value": 30,
+                "predicted_value_agrees": 30,
+                "recovery_rate": 1.0
+              }
+            }
+          },
+          "Diagnosis": {
+            "benchmark_f1": 0.3216,
+            "certainty": {
+              "default_projection_ceiling": 0.8296,
+              "distinct_values": 3,
+              "distribution": {
+                "3": 16,
+                "4": 53,
+                "5": 336
+              },
+              "gold_mentions": 405,
+              "present": 405,
+              "present_rate": 1.0
+            },
+            "certainty_dropped_f1": 0.3746,
+            "certainty_only_tp_gain_if_dropped": 15,
+            "negation": {
+              "default_projection_ceiling": 1.0,
+              "distinct_values": 1,
+              "distribution": {
+                "Affirmed": 402
+              },
+              "gold_mentions": 405,
+              "present": 402,
+              "present_rate": 0.9926
+            },
+            "recovery_on_overlap": {
+              "Certainty": {
+                "overlap_pairs_gold_has_value": 138,
+                "predicted_value_agrees": 112,
+                "recovery_rate": 0.8116
+              },
+              "Negation": {
+                "overlap_pairs_gold_has_value": 136,
+                "predicted_value_agrees": 136,
+                "recovery_rate": 1.0
+              }
+            }
+          },
+          "EpilepsyCause": {
+            "benchmark_f1": 0.4444,
+            "certainty": {
+              "default_projection_ceiling": 0.8571,
+              "distinct_values": 2,
+              "distribution": {
+                "4": 3,
+                "5": 18
+              },
+              "gold_mentions": 21,
+              "present": 21,
+              "present_rate": 1.0
+            },
+            "certainty_dropped_f1": 0.5333,
+            "certainty_only_tp_gain_if_dropped": 2,
+            "negation": {
+              "default_projection_ceiling": 1.0,
+              "distinct_values": 1,
+              "distribution": {
+                "Affirmed": 20
+              },
+              "gold_mentions": 21,
+              "present": 20,
+              "present_rate": 0.9524
+            },
+            "recovery_on_overlap": {
+              "Certainty": {
+                "overlap_pairs_gold_has_value": 16,
+                "predicted_value_agrees": 14,
+                "recovery_rate": 0.875
+              },
+              "Negation": {
+                "overlap_pairs_gold_has_value": 15,
+                "predicted_value_agrees": 15,
+                "recovery_rate": 1.0
+              }
+            }
+          },
+          "Investigations": {
+            "benchmark_f1": 0.322,
+            "certainty": {
+              "default_projection_ceiling": 0.0,
+              "distinct_values": 0,
+              "distribution": {},
+              "gold_mentions": 136,
+              "present": 0,
+              "present_rate": 0.0
+            },
+            "certainty_dropped_f1": 0.322,
+            "certainty_only_tp_gain_if_dropped": 0,
+            "negation": {
+              "default_projection_ceiling": 0.0,
+              "distinct_values": 0,
+              "distribution": {},
+              "gold_mentions": 136,
+              "present": 0,
+              "present_rate": 0.0
+            },
+            "recovery_on_overlap": {
+              "Certainty": {
+                "overlap_pairs_gold_has_value": 0,
+                "predicted_value_agrees": 0,
+                "recovery_rate": 0.0
+              },
+              "Negation": {
+                "overlap_pairs_gold_has_value": 0,
+                "predicted_value_agrees": 0,
+                "recovery_rate": 0.0
+              }
+            }
+          },
+          "Onset": {
+            "benchmark_f1": 0.2857,
+            "certainty": {
+              "default_projection_ceiling": 1.0,
+              "distinct_values": 1,
+              "distribution": {
+                "5": 16
+              },
+              "gold_mentions": 17,
+              "present": 16,
+              "present_rate": 0.9412
+            },
+            "certainty_dropped_f1": 0.2857,
+            "certainty_only_tp_gain_if_dropped": 0,
+            "negation": {
+              "default_projection_ceiling": 1.0,
+              "distinct_values": 1,
+              "distribution": {
+                "Affirmed": 16
+              },
+              "gold_mentions": 17,
+              "present": 16,
+              "present_rate": 0.9412
+            },
+            "recovery_on_overlap": {
+              "Certainty": {
+                "overlap_pairs_gold_has_value": 11,
+                "predicted_value_agrees": 11,
+                "recovery_rate": 1.0
+              },
+              "Negation": {
+                "overlap_pairs_gold_has_value": 11,
+                "predicted_value_agrees": 11,
+                "recovery_rate": 1.0
+              }
+            }
+          },
+          "PatientHistory": {
+            "benchmark_f1": 0.2371,
+            "certainty": {
+              "default_projection_ceiling": 0.9206,
+              "distinct_values": 4,
+              "distribution": {
+                "1": 16,
+                "3": 7,
+                "4": 14,
+                "5": 429
+              },
+              "gold_mentions": 466,
+              "present": 466,
+              "present_rate": 1.0
+            },
+            "certainty_dropped_f1": 0.2777,
+            "certainty_only_tp_gain_if_dropped": 13,
+            "negation": {
+              "default_projection_ceiling": 0.9657,
+              "distinct_values": 2,
+              "distribution": {
+                "Affirmed": 450,
+                "Negated": 16
+              },
+              "gold_mentions": 466,
+              "present": 466,
+              "present_rate": 1.0
+            },
+            "recovery_on_overlap": {
+              "Certainty": {
+                "overlap_pairs_gold_has_value": 127,
+                "predicted_value_agrees": 108,
+                "recovery_rate": 0.8504
+              },
+              "Negation": {
+                "overlap_pairs_gold_has_value": 127,
+                "predicted_value_agrees": 117,
+                "recovery_rate": 0.9213
+              }
+            }
+          },
+          "Prescription": {
+            "benchmark_f1": 0.302,
+            "certainty": {
+              "default_projection_ceiling": 0.0,
+              "distinct_values": 0,
+              "distribution": {},
+              "gold_mentions": 206,
+              "present": 0,
+              "present_rate": 0.0
+            },
+            "certainty_dropped_f1": 0.302,
+            "certainty_only_tp_gain_if_dropped": 0,
+            "negation": {
+              "default_projection_ceiling": 0.0,
+              "distinct_values": 0,
+              "distribution": {},
+              "gold_mentions": 206,
+              "present": 0,
+              "present_rate": 0.0
+            },
+            "recovery_on_overlap": {
+              "Certainty": {
+                "overlap_pairs_gold_has_value": 0,
+                "predicted_value_agrees": 0,
+                "recovery_rate": 0.0
+              },
+              "Negation": {
+                "overlap_pairs_gold_has_value": 0,
+                "predicted_value_agrees": 0,
+                "recovery_rate": 0.0
+              }
+            }
+          },
+          "SeizureFrequency": {
+            "benchmark_f1": 0.6718,
+            "certainty": {
+              "default_projection_ceiling": 1.0,
+              "distinct_values": 1,
+              "distribution": {
+                "5": 1
+              },
+              "gold_mentions": 187,
+              "present": 1,
+              "present_rate": 0.0053
+            },
+            "certainty_dropped_f1": 0.6718,
+            "certainty_only_tp_gain_if_dropped": 0,
+            "negation": {
+              "default_projection_ceiling": 1.0,
+              "distinct_values": 1,
+              "distribution": {
+                "Affirmed": 1
+              },
+              "gold_mentions": 187,
+              "present": 1,
+              "present_rate": 0.0053
+            },
+            "recovery_on_overlap": {
+              "Certainty": {
+                "overlap_pairs_gold_has_value": 1,
+                "predicted_value_agrees": 0,
+                "recovery_rate": 0.0
+              },
+              "Negation": {
+                "overlap_pairs_gold_has_value": 1,
+                "predicted_value_agrees": 0,
+                "recovery_rate": 0.0
+              }
+            }
+          },
+          "WhenDiagnosed": {
+            "benchmark_f1": 0.8182,
+            "certainty": {
+              "default_projection_ceiling": 1.0,
+              "distinct_values": 1,
+              "distribution": {
+                "5": 11
+              },
+              "gold_mentions": 11,
+              "present": 11,
+              "present_rate": 1.0
+            },
+            "certainty_dropped_f1": 0.8182,
+            "certainty_only_tp_gain_if_dropped": 0,
+            "negation": {
+              "default_projection_ceiling": 1.0,
+              "distinct_values": 1,
+              "distribution": {
+                "Affirmed": 11
+              },
+              "gold_mentions": 11,
+              "present": 11,
+              "present_rate": 1.0
+            },
+            "recovery_on_overlap": {
+              "Certainty": {
+                "overlap_pairs_gold_has_value": 11,
+                "predicted_value_agrees": 11,
+                "recovery_rate": 1.0
+              },
+              "Negation": {
+                "overlap_pairs_gold_has_value": 11,
+                "predicted_value_agrees": 11,
+                "recovery_rate": 1.0
+              }
+            }
+          }
+        }
+      },
+      "clinical_recovery": {
+        "artifact_projection_scores": {
+          "benchmark": {
+            "per_entity": {
+              "BirthHistory": {
+                "per_item": {
+                  "f1": 0.4918,
+                  "fn": 16,
+                  "fp": 15,
+                  "gold_count": 31,
+                  "precision": 0.5,
+                  "pred_count": 30,
+                  "recall": 0.4839,
+                  "tp": 15
+                },
+                "per_letter": {
+                  "f1": 0.7,
+                  "fn": 12,
+                  "fp": 0,
+                  "gold_count": 26,
+                  "precision": 1.0,
+                  "pred_count": 14,
+                  "recall": 0.5385,
+                  "tp": 14
+                }
+              },
+              "Diagnosis": {
+                "per_item": {
+                  "f1": 0.3216,
+                  "fn": 314,
+                  "fp": 70,
+                  "gold_count": 405,
+                  "precision": 0.5652,
+                  "pred_count": 161,
+                  "recall": 0.2247,
+                  "tp": 91
+                },
+                "per_letter": {
+                  "f1": 0.75,
+                  "fn": 49,
+                  "fp": 5,
+                  "gold_count": 130,
+                  "precision": 0.9419,
+                  "pred_count": 86,
+                  "recall": 0.6231,
+                  "tp": 81
+                }
+              },
+              "EpilepsyCause": {
+                "per_item": {
+                  "f1": 0.4444,
+                  "fn": 11,
+                  "fp": 14,
+                  "gold_count": 21,
+                  "precision": 0.4167,
+                  "pred_count": 24,
+                  "recall": 0.4762,
+                  "tp": 10
+                },
+                "per_letter": {
+                  "f1": 0.5333,
+                  "fn": 8,
+                  "fp": 6,
+                  "gold_count": 16,
+                  "precision": 0.5714,
+                  "pred_count": 14,
+                  "recall": 0.5,
+                  "tp": 8
+                }
+              },
+              "Investigations": {
+                "per_item": {
+                  "f1": 0.322,
+                  "fn": 84,
+                  "fp": 135,
+                  "gold_count": 136,
+                  "precision": 0.2781,
+                  "pred_count": 187,
+                  "recall": 0.3824,
+                  "tp": 52
+                },
+                "per_letter": {
+                  "f1": 0.5755,
+                  "fn": 38,
+                  "fp": 21,
+                  "gold_count": 78,
+                  "precision": 0.6557,
+                  "pred_count": 61,
+                  "recall": 0.5128,
+                  "tp": 40
+                }
+              },
+              "Onset": {
+                "per_item": {
+                  "f1": 0.2857,
+                  "fn": 12,
+                  "fp": 13,
+                  "gold_count": 17,
+                  "precision": 0.2778,
+                  "pred_count": 18,
+                  "recall": 0.2941,
+                  "tp": 5
+                },
+                "per_letter": {
+                  "f1": 0.4167,
+                  "fn": 8,
+                  "fp": 6,
+                  "gold_count": 13,
+                  "precision": 0.4545,
+                  "pred_count": 11,
+                  "recall": 0.3846,
+                  "tp": 5
+                }
+              },
+              "PatientHistory": {
+                "per_item": {
+                  "f1": 0.2371,
+                  "fn": 390,
+                  "fp": 99,
+                  "gold_count": 466,
+                  "precision": 0.4343,
+                  "pred_count": 175,
+                  "recall": 0.1631,
+                  "tp": 76
+                },
+                "per_letter": {
+                  "f1": 0.5475,
+                  "fn": 79,
+                  "fp": 2,
+                  "gold_count": 128,
+                  "precision": 0.9608,
+                  "pred_count": 51,
+                  "recall": 0.3828,
+                  "tp": 49
+                }
+              },
+              "Prescription": {
+                "per_item": {
+                  "f1": 0.302,
+                  "fn": 145,
+                  "fp": 137,
+                  "gold_count": 206,
+                  "precision": 0.3081,
+                  "pred_count": 198,
+                  "recall": 0.2961,
+                  "tp": 61
+                },
+                "per_letter": {
+                  "f1": 0.5223,
+                  "fn": 72,
+                  "fp": 3,
+                  "gold_count": 113,
+                  "precision": 0.9318,
+                  "pred_count": 44,
+                  "recall": 0.3628,
+                  "tp": 41
+                }
+              },
+              "SeizureFrequency": {
+                "per_item": {
+                  "f1": 0.6718,
+                  "fn": 55,
+                  "fp": 74,
+                  "gold_count": 187,
+                  "precision": 0.6408,
+                  "pred_count": 206,
+                  "recall": 0.7059,
+                  "tp": 132
+                },
+                "per_letter": {
+                  "f1": 0.9189,
+                  "fn": 14,
+                  "fp": 1,
+                  "gold_count": 99,
+                  "precision": 0.9884,
+                  "pred_count": 86,
+                  "recall": 0.8586,
+                  "tp": 85
+                }
+              },
+              "WhenDiagnosed": {
+                "per_item": {
+                  "f1": 0.8182,
+                  "fn": 2,
+                  "fp": 2,
+                  "gold_count": 11,
+                  "precision": 0.8182,
+                  "pred_count": 11,
+                  "recall": 0.8182,
+                  "tp": 9
+                },
+                "per_letter": {
+                  "f1": 0.9,
+                  "fn": 2,
+                  "fp": 0,
+                  "gold_count": 11,
+                  "precision": 1.0,
+                  "pred_count": 9,
+                  "recall": 0.8182,
+                  "tp": 9
+                }
+              }
+            },
+            "per_item": {
+              "f1": 0.3622,
+              "fn": 1029,
+              "fp": 559,
+              "gold_count": 1480,
+              "precision": 0.4465,
+              "pred_count": 1010,
+              "recall": 0.3047,
+              "tp": 451
+            },
+            "per_letter": {
+              "f1": 0.6707,
+              "fn": 282,
+              "fp": 44,
+              "gold_count": 614,
+              "precision": 0.883,
+              "pred_count": 376,
+              "recall": 0.5407,
+              "tp": 332
+            }
+          },
+          "phrase_only": {
+            "per_entity": {
+              "BirthHistory": {
+                "per_item": {
+                  "f1": 0.8852,
+                  "fn": 4,
+                  "fp": 3,
+                  "gold_count": 31,
+                  "precision": 0.9,
+                  "pred_count": 30,
+                  "recall": 0.871,
+                  "tp": 27
+                },
+                "per_letter": {
+                  "f1": 0.9388,
+                  "fn": 3,
+                  "fp": 0,
+                  "gold_count": 26,
+                  "precision": 1.0,
+                  "pred_count": 23,
+                  "recall": 0.8846,
+                  "tp": 23
+                }
+              },
+              "Diagnosis": {
+                "per_item": {
+                  "f1": 0.3958,
+                  "fn": 293,
+                  "fp": 49,
+                  "gold_count": 405,
+                  "precision": 0.6957,
+                  "pred_count": 161,
+                  "recall": 0.2765,
+                  "tp": 112
+                },
+                "per_letter": {
+                  "f1": 0.821,
+                  "fn": 36,
+                  "fp": 5,
+                  "gold_count": 130,
+                  "precision": 0.9495,
+                  "pred_count": 99,
+                  "recall": 0.7231,
+                  "tp": 94
+                }
+              },
+              "EpilepsyCause": {
+                "per_item": {
+                  "f1": 0.6222,
+                  "fn": 7,
+                  "fp": 10,
+                  "gold_count": 21,
+                  "precision": 0.5833,
+                  "pred_count": 24,
+                  "recall": 0.6667,
+                  "tp": 14
+                },
+                "per_letter": {
+                  "f1": 0.6667,
+                  "fn": 5,
+                  "fp": 6,
+                  "gold_count": 16,
+                  "precision": 0.6471,
+                  "pred_count": 17,
+                  "recall": 0.6875,
+                  "tp": 11
+                }
+              },
+              "Investigations": {
+                "per_item": {
+                  "f1": 0.6006,
+                  "fn": 39,
+                  "fp": 90,
+                  "gold_count": 136,
+                  "precision": 0.5187,
+                  "pred_count": 187,
+                  "recall": 0.7132,
+                  "tp": 97
+                },
+                "per_letter": {
+                  "f1": 0.7625,
+                  "fn": 17,
+                  "fp": 21,
+                  "gold_count": 78,
+                  "precision": 0.7439,
+                  "pred_count": 82,
+                  "recall": 0.7821,
+                  "tp": 61
+                }
+              },
+              "Onset": {
+                "per_item": {
+                  "f1": 0.4,
+                  "fn": 10,
+                  "fp": 11,
+                  "gold_count": 17,
+                  "precision": 0.3889,
+                  "pred_count": 18,
+                  "recall": 0.4118,
+                  "tp": 7
+                },
+                "per_letter": {
+                  "f1": 0.5385,
+                  "fn": 6,
+                  "fp": 6,
+                  "gold_count": 13,
+                  "precision": 0.5385,
+                  "pred_count": 13,
+                  "recall": 0.5385,
+                  "tp": 7
+                }
+              },
+              "PatientHistory": {
+                "per_item": {
+                  "f1": 0.3183,
+                  "fn": 364,
+                  "fp": 73,
+                  "gold_count": 466,
+                  "precision": 0.5829,
+                  "pred_count": 175,
+                  "recall": 0.2189,
+                  "tp": 102
+                },
+                "per_letter": {
+                  "f1": 0.6387,
+                  "fn": 67,
+                  "fp": 2,
+                  "gold_count": 128,
+                  "precision": 0.9683,
+                  "pred_count": 63,
+                  "recall": 0.4766,
+                  "tp": 61
+                }
+              },
+              "Prescription": {
+                "per_item": {
+                  "f1": 0.3069,
+                  "fn": 144,
+                  "fp": 136,
+                  "gold_count": 206,
+                  "precision": 0.3131,
+                  "pred_count": 198,
+                  "recall": 0.301,
+                  "tp": 62
+                },
+                "per_letter": {
+                  "f1": 0.5316,
+                  "fn": 71,
+                  "fp": 3,
+                  "gold_count": 113,
+                  "precision": 0.9333,
+                  "pred_count": 45,
+                  "recall": 0.3717,
+                  "tp": 42
+                }
+              },
+              "SeizureFrequency": {
+                "per_item": {
+                  "f1": 0.743,
+                  "fn": 41,
+                  "fp": 60,
+                  "gold_count": 187,
+                  "precision": 0.7087,
+                  "pred_count": 206,
+                  "recall": 0.7807,
+                  "tp": 146
+                },
+                "per_letter": {
+                  "f1": 0.9418,
+                  "fn": 10,
+                  "fp": 1,
+                  "gold_count": 99,
+                  "precision": 0.9889,
+                  "pred_count": 90,
+                  "recall": 0.899,
+                  "tp": 89
+                }
+              },
+              "WhenDiagnosed": {
+                "per_item": {
+                  "f1": 0.8182,
+                  "fn": 2,
+                  "fp": 2,
+                  "gold_count": 11,
+                  "precision": 0.8182,
+                  "pred_count": 11,
+                  "recall": 0.8182,
+                  "tp": 9
+                },
+                "per_letter": {
+                  "f1": 0.9,
+                  "fn": 2,
+                  "fp": 0,
+                  "gold_count": 11,
+                  "precision": 1.0,
+                  "pred_count": 9,
+                  "recall": 0.8182,
+                  "tp": 9
+                }
+              }
+            },
+            "per_item": {
+              "f1": 0.4627,
+              "fn": 904,
+              "fp": 434,
+              "gold_count": 1480,
+              "precision": 0.5703,
+              "pred_count": 1010,
+              "recall": 0.3892,
+              "tp": 576
+            },
+            "per_letter": {
+              "f1": 0.7526,
+              "fn": 217,
+              "fp": 44,
+              "gold_count": 614,
+              "precision": 0.9002,
+              "pred_count": 441,
+              "recall": 0.6466,
+              "tp": 397
+            }
+          },
+          "semantic": {
+            "per_entity": {
+              "BirthHistory": {
+                "per_item": {
+                  "f1": 0.623,
+                  "fn": 12,
+                  "fp": 11,
+                  "gold_count": 31,
+                  "precision": 0.6333,
+                  "pred_count": 30,
+                  "recall": 0.6129,
+                  "tp": 19
+                },
+                "per_letter": {
+                  "f1": 0.7619,
+                  "fn": 10,
+                  "fp": 0,
+                  "gold_count": 26,
+                  "precision": 1.0,
+                  "pred_count": 16,
+                  "recall": 0.6154,
+                  "tp": 16
+                }
+              },
+              "Diagnosis": {
+                "per_item": {
+                  "f1": 0.3428,
+                  "fn": 308,
+                  "fp": 64,
+                  "gold_count": 405,
+                  "precision": 0.6025,
+                  "pred_count": 161,
+                  "recall": 0.2395,
+                  "tp": 97
+                },
+                "per_letter": {
+                  "f1": 0.7615,
+                  "fn": 47,
+                  "fp": 5,
+                  "gold_count": 130,
+                  "precision": 0.9432,
+                  "pred_count": 88,
+                  "recall": 0.6385,
+                  "tp": 83
+                }
+              },
+              "EpilepsyCause": {
+                "per_item": {
+                  "f1": 0.5333,
+                  "fn": 9,
+                  "fp": 12,
+                  "gold_count": 21,
+                  "precision": 0.5,
+                  "pred_count": 24,
+                  "recall": 0.5714,
+                  "tp": 12
+                },
+                "per_letter": {
+                  "f1": 0.5806,
+                  "fn": 7,
+                  "fp": 6,
+                  "gold_count": 16,
+                  "precision": 0.6,
+                  "pred_count": 15,
+                  "recall": 0.5625,
+                  "tp": 9
+                }
+              },
+              "Investigations": {
+                "per_item": {
+                  "f1": 0.3653,
+                  "fn": 77,
+                  "fp": 128,
+                  "gold_count": 136,
+                  "precision": 0.3155,
+                  "pred_count": 187,
+                  "recall": 0.4338,
+                  "tp": 59
+                },
+                "per_letter": {
+                  "f1": 0.5957,
+                  "fn": 36,
+                  "fp": 21,
+                  "gold_count": 78,
+                  "precision": 0.6667,
+                  "pred_count": 63,
+                  "recall": 0.5385,
+                  "tp": 42
+                }
+              },
+              "Onset": {
+                "per_item": {
+                  "f1": 0.2857,
+                  "fn": 12,
+                  "fp": 13,
+                  "gold_count": 17,
+                  "precision": 0.2778,
+                  "pred_count": 18,
+                  "recall": 0.2941,
+                  "tp": 5
+                },
+                "per_letter": {
+                  "f1": 0.4167,
+                  "fn": 8,
+                  "fp": 6,
+                  "gold_count": 13,
+                  "precision": 0.4545,
+                  "pred_count": 11,
+                  "recall": 0.3846,
+                  "tp": 5
+                }
+              },
+              "PatientHistory": {
+                "per_item": {
+                  "f1": 0.2402,
+                  "fn": 389,
+                  "fp": 98,
+                  "gold_count": 466,
+                  "precision": 0.44,
+                  "pred_count": 175,
+                  "recall": 0.1652,
+                  "tp": 77
+                },
+                "per_letter": {
+                  "f1": 0.5475,
+                  "fn": 79,
+                  "fp": 2,
+                  "gold_count": 128,
+                  "precision": 0.9608,
+                  "pred_count": 51,
+                  "recall": 0.3828,
+                  "tp": 49
+                }
+              },
+              "Prescription": {
+                "per_item": {
+                  "f1": 0.302,
+                  "fn": 145,
+                  "fp": 137,
+                  "gold_count": 206,
+                  "precision": 0.3081,
+                  "pred_count": 198,
+                  "recall": 0.2961,
+                  "tp": 61
+                },
+                "per_letter": {
+                  "f1": 0.5223,
+                  "fn": 72,
+                  "fp": 3,
+                  "gold_count": 113,
+                  "precision": 0.9318,
+                  "pred_count": 44,
+                  "recall": 0.3628,
+                  "tp": 41
+                }
+              },
+              "SeizureFrequency": {
+                "per_item": {
+                  "f1": 0.6921,
+                  "fn": 51,
+                  "fp": 70,
+                  "gold_count": 187,
+                  "precision": 0.6602,
+                  "pred_count": 206,
+                  "recall": 0.7273,
+                  "tp": 136
+                },
+                "per_letter": {
+                  "f1": 0.9247,
+                  "fn": 13,
+                  "fp": 1,
+                  "gold_count": 99,
+                  "precision": 0.9885,
+                  "pred_count": 87,
+                  "recall": 0.8687,
+                  "tp": 86
+                }
+              },
+              "WhenDiagnosed": {
+                "per_item": {
+                  "f1": 0.8182,
+                  "fn": 2,
+                  "fp": 2,
+                  "gold_count": 11,
+                  "precision": 0.8182,
+                  "pred_count": 11,
+                  "recall": 0.8182,
+                  "tp": 9
+                },
+                "per_letter": {
+                  "f1": 0.9,
+                  "fn": 2,
+                  "fp": 0,
+                  "gold_count": 11,
+                  "precision": 1.0,
+                  "pred_count": 9,
+                  "recall": 0.8182,
+                  "tp": 9
+                }
+              }
+            },
+            "per_item": {
+              "f1": 0.3815,
+              "fn": 1005,
+              "fp": 535,
+              "gold_count": 1480,
+              "precision": 0.4703,
+              "pred_count": 1010,
+              "recall": 0.3209,
+              "tp": 475
+            },
+            "per_letter": {
+              "f1": 0.6814,
+              "fn": 274,
+              "fp": 44,
+              "gold_count": 614,
+              "precision": 0.8854,
+              "pred_count": 384,
+              "recall": 0.5537,
+              "tp": 340
+            }
+          }
+        },
+        "headline_scores": {
+          "BirthHistory": {
+            "f1": 0.8197,
+            "fn": 6,
+            "fp": 5,
+            "gold_count": 31,
+            "precision": 0.8333,
+            "precision_tp": 25,
+            "pred_count": 30,
+            "recall": 0.8065,
+            "recall_tp": 25,
+            "tp": 25
+          },
+          "Diagnosis": {
+            "f1": 0.268,
+            "fn": 302,
+            "fp": 64,
+            "gold_count": 369,
+            "precision": 0.5115,
+            "precision_tp": 67,
+            "pred_count": 131,
+            "recall": 0.1816,
+            "recall_tp": 67,
+            "tp": 67
+          },
+          "EpilepsyCause": {
+            "f1": 0.5778,
+            "fn": 8,
+            "fp": 11,
+            "gold_count": 21,
+            "precision": 0.5417,
+            "precision_tp": 13,
+            "pred_count": 24,
+            "recall": 0.619,
+            "recall_tp": 13,
+            "tp": 13
+          },
+          "Investigations": {
+            "f1": 0.5263,
+            "fn": 51,
+            "fp": 102,
+            "gold_count": 136,
+            "precision": 0.4545,
+            "pred_count": 187,
+            "recall": 0.625,
+            "tp": 85
+          },
+          "Onset": {
+            "f1": 0.4,
+            "fn": 10,
+            "fp": 11,
+            "gold_count": 17,
+            "precision": 0.3889,
+            "precision_tp": 7,
+            "pred_count": 18,
+            "recall": 0.4118,
+            "recall_tp": 7,
+            "tp": 7
+          },
+          "Prescription": {
+            "f1": 0.9072,
+            "fn": 22,
+            "fp": 13,
+            "gold_count": 193,
+            "precision": 0.9293,
+            "pred_count": 184,
+            "recall": 0.886,
+            "tp": 171
+          },
+          "SeizureFrequency": {
+            "f1": 0.7634,
+            "fn": 37,
+            "fp": 56,
+            "gold_count": 187,
+            "precision": 0.7282,
+            "pred_count": 206,
+            "recall": 0.8021,
+            "tp": 150
+          },
+          "WhenDiagnosed": {
+            "f1": 0.8182,
+            "fn": 2,
+            "fp": 2,
+            "gold_count": 11,
+            "precision": 0.8182,
+            "precision_tp": 9,
+            "pred_count": 11,
+            "recall": 0.8182,
+            "recall_tp": 9,
+            "tp": 9
+          }
+        },
+        "overall": {
+          "f1": 0.6002,
+          "fn": 438,
+          "fp": 264,
+          "gold_count": 965,
+          "precision": 0.6662,
+          "precision_tp": 527,
+          "pred_count": 791,
+          "recall": 0.5461,
+          "recall_tp": 527,
+          "tp": 527
+        }
+      },
+      "clinical_recovery_note": "Clinical-recovery headline computed on CUI-projected predictions (deterministic CUI attached before scoring, per the ownership ladder); the SeizureFrequency state key uses CUI as seizure-type identity.",
+      "cui_audit": {
+        "concept_buckets": {
+          "bucket_concepts": {
+            "gold_inconsistent": 8,
+            "one_to_one": 283,
+            "result_conditioned": 2
+          },
+          "bucket_mentions": {
+            "gold_inconsistent": 144,
+            "one_to_one": 1325,
+            "result_conditioned": 10
+          },
+          "concept_count": 293,
+          "examples": {
+            "gold_inconsistent": [
+              {
+                "concept": "epilepsy",
+                "cuis": {
+                  "C0014544": 93,
+                  "null": 1
+                },
+                "entity": "Diagnosis"
+              },
+              {
+                "concept": "diabetes",
+                "cuis": {
+                  "C0011847": 3,
+                  "C0011849": 6
+                },
+                "entity": "PatientHistory"
+              },
+              {
+                "concept": "seizure",
+                "cuis": {
+                  "C0036572": 25,
+                  "C1299590": 4
+                },
+                "entity": "SeizureFrequency"
+              },
+              {
+                "concept": "non epileptic",
+                "cuis": {
+                  "C1142430": 1,
+                  "C3495874": 1
+                },
+                "entity": "PatientHistory"
+              },
+              {
+                "concept": "born prematurely",
+                "cuis": {
+                  "C0151526": 1,
+                  "C3829315": 1,
+                  "C4054482": 1
+                },
+                "entity": "BirthHistory"
+              },
+              {
+                "concept": "perinatal injury",
+                "cuis": {
+                  "C0005604": 1,
+                  "C0456798": 1
+                },
+                "entity": "BirthHistory"
+              },
+              {
+                "concept": "focal",
+                "cuis": {
+                  "C0014547": 1,
+                  "C0270834": 1,
+                  "C0751495": 1
+                },
+                "entity": "Diagnosis"
+              },
+              {
+                "concept": "focal",
+                "cuis": {
+                  "C0016399": 1,
+                  "C0877017": 1
+                },
+                "entity": "SeizureFrequency"
+              }
+            ],
+            "one_to_one": [],
+            "result_conditioned": [
+              {
+                "concept": "eeg",
+                "cuis": {
+                  "C0013819": 1,
+                  "C0151611": 3,
+                  "C0560017": 3
+                },
+                "entity": "Investigations"
+              },
+              {
+                "concept": "mri",
+                "cuis": {
+                  "C0436481": 2,
+                  "C1319851": 1
+                },
+                "entity": "Investigations"
+              }
+            ]
+          },
+          "per_entity_concepts": {
+            "BirthHistory": {
+              "gold_inconsistent": 2,
+              "one_to_one": 11
+            },
+            "Diagnosis": {
+              "gold_inconsistent": 2,
+              "one_to_one": 71
+            },
+            "EpilepsyCause": {
+              "one_to_one": 17
+            },
+            "Investigations": {
+              "one_to_one": 14,
+              "result_conditioned": 2
+            },
+            "Onset": {
+              "one_to_one": 4
+            },
+            "PatientHistory": {
+              "gold_inconsistent": 2,
+              "one_to_one": 108
+            },
+            "Prescription": {
+              "one_to_one": 23
+            },
+            "SeizureFrequency": {
+              "gold_inconsistent": 2,
+              "one_to_one": 34
+            },
+            "WhenDiagnosed": {
+              "one_to_one": 1
+            }
+          }
+        },
+        "deterministic_projection": {
+          "BirthHistory": {
+            "correctness": 0.9259,
+            "coverage": 0.871,
+            "gold_with_cui": 31,
+            "missing_mapping": 4,
+            "projected": 27,
+            "projected_correct": 25
+          },
+          "Diagnosis": {
+            "correctness": 0.8933,
+            "coverage": 0.4406,
+            "gold_with_cui": 404,
+            "missing_mapping": 226,
+            "projected": 178,
+            "projected_correct": 159
+          },
+          "EpilepsyCause": {
+            "correctness": 1.0,
+            "coverage": 0.7619,
+            "gold_with_cui": 21,
+            "missing_mapping": 5,
+            "projected": 16,
+            "projected_correct": 16
+          },
+          "Investigations": {
+            "correctness": 0.8309,
+            "coverage": 1.0,
+            "gold_with_cui": 136,
+            "missing_mapping": 0,
+            "projected": 136,
+            "projected_correct": 113
+          },
+          "Onset": {
+            "correctness": 1.0,
+            "coverage": 0.4706,
+            "gold_with_cui": 17,
+            "missing_mapping": 9,
+            "projected": 8,
+            "projected_correct": 8
+          },
+          "PatientHistory": {
+            "correctness": 0.9884,
+            "coverage": 0.7403,
+            "gold_with_cui": 466,
+            "missing_mapping": 121,
+            "projected": 345,
+            "projected_correct": 341
+          },
+          "Prescription": {
+            "correctness": 0.9563,
+            "coverage": 1.0,
+            "gold_with_cui": 206,
+            "missing_mapping": 0,
+            "projected": 206,
+            "projected_correct": 197
+          },
+          "SeizureFrequency": {
+            "correctness": 0.9733,
+            "coverage": 1.0,
+            "gold_with_cui": 187,
+            "missing_mapping": 0,
+            "projected": 187,
+            "projected_correct": 182
+          },
+          "WhenDiagnosed": {
+            "correctness": 1.0,
+            "coverage": 1.0,
+            "gold_with_cui": 11,
+            "missing_mapping": 0,
+            "projected": 11,
+            "projected_correct": 11
+          },
+          "__overall__": {
+            "correctness": 0.9443,
+            "coverage": 0.7532,
+            "gold_with_cui": 1479,
+            "missing_mapping": 365,
+            "projected": 1114,
+            "projected_correct": 1052
+          }
+        },
+        "note": "CUI is benchmark-format projection: the benchmark key keeps CUI, the semantic key drops it. The benchmark-minus-semantic delta is owned by deterministic CUI projection, never by LLM clinical reasoning.",
+        "overall": {
+          "benchmark_f1_after_cui_projection": 0.3622,
+          "benchmark_f1_raw_llm": 0.3687,
+          "cui_projection_recovers_f1": -0.0064,
+          "residual_cui_loss_vs_semantic": 0.0193,
+          "semantic_f1": 0.3815
+        },
+        "per_entity": {
+          "BirthHistory": {
+            "benchmark_f1": 0.5574,
+            "cui_only_f1_gain_if_dropped": 0.0656,
+            "gold_cui_density": 1.0,
+            "prediction_cui_agreement": 0.9333,
+            "prediction_cui_coverage": 1.0,
+            "semantic_f1": 0.623
+          },
+          "Diagnosis": {
+            "benchmark_f1": 0.3216,
+            "cui_only_f1_gain_if_dropped": 0.0212,
+            "gold_cui_density": 0.9975,
+            "prediction_cui_agreement": 0.6159,
+            "prediction_cui_coverage": 1.0,
+            "semantic_f1": 0.3428
+          },
+          "EpilepsyCause": {
+            "benchmark_f1": 0.5333,
+            "cui_only_f1_gain_if_dropped": 0.0,
+            "gold_cui_density": 1.0,
+            "prediction_cui_agreement": 1.0,
+            "prediction_cui_coverage": 1.0,
+            "semantic_f1": 0.5333
+          },
+          "Investigations": {
+            "benchmark_f1": 0.322,
+            "cui_only_f1_gain_if_dropped": 0.0433,
+            "gold_cui_density": 1.0,
+            "prediction_cui_agreement": 0.5115,
+            "prediction_cui_coverage": 0.9947,
+            "semantic_f1": 0.3653
+          },
+          "Onset": {
+            "benchmark_f1": 0.2857,
+            "cui_only_f1_gain_if_dropped": 0.0,
+            "gold_cui_density": 1.0,
+            "prediction_cui_agreement": 0.9091,
+            "prediction_cui_coverage": 1.0,
+            "semantic_f1": 0.2857
+          },
+          "PatientHistory": {
+            "benchmark_f1": 0.2371,
+            "cui_only_f1_gain_if_dropped": 0.0031,
+            "gold_cui_density": 1.0,
+            "prediction_cui_agreement": 0.8819,
+            "prediction_cui_coverage": 1.0,
+            "semantic_f1": 0.2402
+          },
+          "Prescription": {
+            "benchmark_f1": 0.302,
+            "cui_only_f1_gain_if_dropped": 0.0,
+            "gold_cui_density": 1.0,
+            "prediction_cui_agreement": 0.9885,
+            "prediction_cui_coverage": 1.0,
+            "semantic_f1": 0.302
+          },
+          "SeizureFrequency": {
+            "benchmark_f1": 0.6921,
+            "cui_only_f1_gain_if_dropped": 0.0,
+            "gold_cui_density": 1.0,
+            "prediction_cui_agreement": 0.8258,
+            "prediction_cui_coverage": 0.9757,
+            "semantic_f1": 0.6921
+          },
+          "WhenDiagnosed": {
+            "benchmark_f1": 0.8182,
+            "cui_only_f1_gain_if_dropped": 0.0,
+            "gold_cui_density": 1.0,
+            "prediction_cui_agreement": 1.0,
+            "prediction_cui_coverage": 1.0,
+            "semantic_f1": 0.8182
+          }
+        }
+      },
+      "name": "deterministic_all9",
+      "ownership": "rules_only",
+      "row_count": 140
+    },
+    {
+      "certainty_audit": {
+        "ignored_attributes": [
+          "Certainty",
+          "Negation"
+        ],
+        "note": "SeizureFrequency already ignores Certainty/Negation in its benchmark key (guideline convention), so it contributes no certainty-only loss.",
+        "overall": {
+          "benchmark_f1": 0.1013,
+          "benchmark_tp": 125,
+          "certainty_dropped_f1": 0.1045,
+          "certainty_only_f1_gain_if_dropped": 0.0032,
+          "certainty_only_tp_gain_if_dropped": 4
+        },
+        "per_entity": {
+          "BirthHistory": {
+            "benchmark_f1": 0.0,
+            "certainty": {
+              "default_projection_ceiling": 0.9,
+              "distinct_values": 2,
+              "distribution": {
+                "4": 3,
+                "5": 27
+              },
+              "gold_mentions": 31,
+              "present": 30,
+              "present_rate": 0.9677
+            },
+            "certainty_dropped_f1": 0.04,
+            "certainty_only_tp_gain_if_dropped": 1,
+            "negation": {
+              "default_projection_ceiling": 1.0,
+              "distinct_values": 1,
+              "distribution": {
+                "Affirmed": 31
+              },
+              "gold_mentions": 31,
+              "present": 31,
+              "present_rate": 1.0
+            },
+            "recovery_on_overlap": {
+              "Certainty": {
+                "overlap_pairs_gold_has_value": 18,
+                "predicted_value_agrees": 4,
+                "recovery_rate": 0.2222
+              },
+              "Negation": {
+                "overlap_pairs_gold_has_value": 19,
+                "predicted_value_agrees": 19,
+                "recovery_rate": 1.0
+              }
+            }
+          },
+          "Diagnosis": {
+            "benchmark_f1": 0.1265,
+            "certainty": {
+              "default_projection_ceiling": 0.8296,
+              "distinct_values": 3,
+              "distribution": {
+                "3": 16,
+                "4": 53,
+                "5": 336
+              },
+              "gold_mentions": 405,
+              "present": 405,
+              "present_rate": 1.0
+            },
+            "certainty_dropped_f1": 0.1371,
+            "certainty_only_tp_gain_if_dropped": 3,
+            "negation": {
+              "default_projection_ceiling": 1.0,
+              "distinct_values": 1,
+              "distribution": {
+                "Affirmed": 402
+              },
+              "gold_mentions": 405,
+              "present": 402,
+              "present_rate": 0.9926
+            },
+            "recovery_on_overlap": {
+              "Certainty": {
+                "overlap_pairs_gold_has_value": 122,
+                "predicted_value_agrees": 106,
+                "recovery_rate": 0.8689
+              },
+              "Negation": {
+                "overlap_pairs_gold_has_value": 121,
+                "predicted_value_agrees": 121,
+                "recovery_rate": 1.0
+              }
+            }
+          },
+          "EpilepsyCause": {
+            "benchmark_f1": 0.0,
+            "certainty": {
+              "default_projection_ceiling": 0.8571,
+              "distinct_values": 2,
+              "distribution": {
+                "4": 3,
+                "5": 18
+              },
+              "gold_mentions": 21,
+              "present": 21,
+              "present_rate": 1.0
+            },
+            "certainty_dropped_f1": 0.0,
+            "certainty_only_tp_gain_if_dropped": 0,
+            "negation": {
+              "default_projection_ceiling": 1.0,
+              "distinct_values": 1,
+              "distribution": {
+                "Affirmed": 20
+              },
+              "gold_mentions": 21,
+              "present": 20,
+              "present_rate": 0.9524
+            },
+            "recovery_on_overlap": {
+              "Certainty": {
+                "overlap_pairs_gold_has_value": 6,
+                "predicted_value_agrees": 5,
+                "recovery_rate": 0.8333
+              },
+              "Negation": {
+                "overlap_pairs_gold_has_value": 5,
+                "predicted_value_agrees": 5,
+                "recovery_rate": 1.0
+              }
+            }
+          },
+          "Investigations": {
+            "benchmark_f1": 0.2742,
+            "certainty": {
+              "default_projection_ceiling": 0.0,
+              "distinct_values": 0,
+              "distribution": {},
+              "gold_mentions": 136,
+              "present": 0,
+              "present_rate": 0.0
+            },
+            "certainty_dropped_f1": 0.2742,
+            "certainty_only_tp_gain_if_dropped": 0,
+            "negation": {
+              "default_projection_ceiling": 0.0,
+              "distinct_values": 0,
+              "distribution": {},
+              "gold_mentions": 136,
+              "present": 0,
+              "present_rate": 0.0
+            },
+            "recovery_on_overlap": {
+              "Certainty": {
+                "overlap_pairs_gold_has_value": 0,
+                "predicted_value_agrees": 0,
+                "recovery_rate": 0.0
+              },
+              "Negation": {
+                "overlap_pairs_gold_has_value": 0,
+                "predicted_value_agrees": 0,
+                "recovery_rate": 0.0
+              }
+            }
+          },
+          "Onset": {
+            "benchmark_f1": 0.0,
+            "certainty": {
+              "default_projection_ceiling": 1.0,
+              "distinct_values": 1,
+              "distribution": {
+                "5": 16
+              },
+              "gold_mentions": 17,
+              "present": 16,
+              "present_rate": 0.9412
+            },
+            "certainty_dropped_f1": 0.0,
+            "certainty_only_tp_gain_if_dropped": 0,
+            "negation": {
+              "default_projection_ceiling": 1.0,
+              "distinct_values": 1,
+              "distribution": {
+                "Affirmed": 16
+              },
+              "gold_mentions": 17,
+              "present": 16,
+              "present_rate": 0.9412
+            },
+            "recovery_on_overlap": {
+              "Certainty": {
+                "overlap_pairs_gold_has_value": 10,
+                "predicted_value_agrees": 8,
+                "recovery_rate": 0.8
+              },
+              "Negation": {
+                "overlap_pairs_gold_has_value": 10,
+                "predicted_value_agrees": 10,
+                "recovery_rate": 1.0
+              }
+            }
+          },
+          "PatientHistory": {
+            "benchmark_f1": 0.0062,
+            "certainty": {
+              "default_projection_ceiling": 0.9206,
+              "distinct_values": 4,
+              "distribution": {
+                "1": 16,
+                "3": 7,
+                "4": 14,
+                "5": 429
+              },
+              "gold_mentions": 466,
+              "present": 466,
+              "present_rate": 1.0
+            },
+            "certainty_dropped_f1": 0.0062,
+            "certainty_only_tp_gain_if_dropped": 0,
+            "negation": {
+              "default_projection_ceiling": 0.9657,
+              "distinct_values": 2,
+              "distribution": {
+                "Affirmed": 450,
+                "Negated": 16
+              },
+              "gold_mentions": 466,
+              "present": 466,
+              "present_rate": 1.0
+            },
+            "recovery_on_overlap": {
+              "Certainty": {
+                "overlap_pairs_gold_has_value": 78,
+                "predicted_value_agrees": 33,
+                "recovery_rate": 0.4231
+              },
+              "Negation": {
+                "overlap_pairs_gold_has_value": 78,
+                "predicted_value_agrees": 65,
+                "recovery_rate": 0.8333
+              }
+            }
+          },
+          "Prescription": {
+            "benchmark_f1": 0.2009,
+            "certainty": {
+              "default_projection_ceiling": 0.0,
+              "distinct_values": 0,
+              "distribution": {},
+              "gold_mentions": 206,
+              "present": 0,
+              "present_rate": 0.0
+            },
+            "certainty_dropped_f1": 0.2009,
+            "certainty_only_tp_gain_if_dropped": 0,
+            "negation": {
+              "default_projection_ceiling": 0.0,
+              "distinct_values": 0,
+              "distribution": {},
+              "gold_mentions": 206,
+              "present": 0,
+              "present_rate": 0.0
+            },
+            "recovery_on_overlap": {
+              "Certainty": {
+                "overlap_pairs_gold_has_value": 0,
+                "predicted_value_agrees": 0,
+                "recovery_rate": 0.0
+              },
+              "Negation": {
+                "overlap_pairs_gold_has_value": 0,
+                "predicted_value_agrees": 0,
+                "recovery_rate": 0.0
+              }
+            }
+          },
+          "SeizureFrequency": {
+            "benchmark_f1": 0.0,
+            "certainty": {
+              "default_projection_ceiling": 1.0,
+              "distinct_values": 1,
+              "distribution": {
+                "5": 1
+              },
+              "gold_mentions": 187,
+              "present": 1,
+              "present_rate": 0.0053
+            },
+            "certainty_dropped_f1": 0.0,
+            "certainty_only_tp_gain_if_dropped": 0,
+            "negation": {
+              "default_projection_ceiling": 1.0,
+              "distinct_values": 1,
+              "distribution": {
+                "Affirmed": 1
+              },
+              "gold_mentions": 187,
+              "present": 1,
+              "present_rate": 0.0053
+            },
+            "recovery_on_overlap": {
+              "Certainty": {
+                "overlap_pairs_gold_has_value": 0,
+                "predicted_value_agrees": 0,
+                "recovery_rate": 0.0
+              },
+              "Negation": {
+                "overlap_pairs_gold_has_value": 0,
+                "predicted_value_agrees": 0,
+                "recovery_rate": 0.0
+              }
+            }
+          },
+          "WhenDiagnosed": {
+            "benchmark_f1": 0.0,
+            "certainty": {
+              "default_projection_ceiling": 1.0,
+              "distinct_values": 1,
+              "distribution": {
+                "5": 11
+              },
+              "gold_mentions": 11,
+              "present": 11,
+              "present_rate": 1.0
+            },
+            "certainty_dropped_f1": 0.0,
+            "certainty_only_tp_gain_if_dropped": 0,
+            "negation": {
+              "default_projection_ceiling": 1.0,
+              "distinct_values": 1,
+              "distribution": {
+                "Affirmed": 11
+              },
+              "gold_mentions": 11,
+              "present": 11,
+              "present_rate": 1.0
+            },
+            "recovery_on_overlap": {
+              "Certainty": {
+                "overlap_pairs_gold_has_value": 5,
+                "predicted_value_agrees": 5,
+                "recovery_rate": 1.0
+              },
+              "Negation": {
+                "overlap_pairs_gold_has_value": 5,
+                "predicted_value_agrees": 5,
+                "recovery_rate": 1.0
+              }
+            }
+          }
+        }
+      },
+      "clinical_recovery": {
+        "artifact_projection_scores": {
+          "benchmark": {
+            "per_entity": {
+              "BirthHistory": {
+                "per_item": {
+                  "f1": 0.0,
+                  "fn": 31,
+                  "fp": 19,
+                  "gold_count": 31,
+                  "precision": 0.0,
+                  "pred_count": 19,
+                  "recall": 0.0,
+                  "tp": 0
+                },
+                "per_letter": {
+                  "f1": 0.0,
+                  "fn": 26,
+                  "fp": 0,
+                  "gold_count": 26,
+                  "precision": 0.0,
+                  "pred_count": 0,
+                  "recall": 0.0,
+                  "tp": 0
+                }
+              },
+              "Diagnosis": {
+                "per_item": {
+                  "f1": 0.1265,
+                  "fn": 369,
+                  "fp": 128,
+                  "gold_count": 405,
+                  "precision": 0.2195,
+                  "pred_count": 164,
+                  "recall": 0.0889,
+                  "tp": 36
+                },
+                "per_letter": {
+                  "f1": 0.4211,
+                  "fn": 94,
+                  "fp": 5,
+                  "gold_count": 130,
+                  "precision": 0.878,
+                  "pred_count": 41,
+                  "recall": 0.2769,
+                  "tp": 36
+                }
+              },
+              "EpilepsyCause": {
+                "per_item": {
+                  "f1": 0.0,
+                  "fn": 21,
+                  "fp": 12,
+                  "gold_count": 21,
+                  "precision": 0.0,
+                  "pred_count": 12,
+                  "recall": 0.0,
+                  "tp": 0
+                },
+                "per_letter": {
+                  "f1": 0.0,
+                  "fn": 16,
+                  "fp": 4,
+                  "gold_count": 16,
+                  "precision": 0.0,
+                  "pred_count": 4,
+                  "recall": 0.0,
+                  "tp": 0
+                }
+              },
+              "Investigations": {
+                "per_item": {
+                  "f1": 0.2742,
+                  "fn": 95,
+                  "fp": 122,
+                  "gold_count": 136,
+                  "precision": 0.2515,
+                  "pred_count": 163,
+                  "recall": 0.3015,
+                  "tp": 41
+                },
+                "per_letter": {
+                  "f1": 0.5152,
+                  "fn": 44,
+                  "fp": 20,
+                  "gold_count": 78,
+                  "precision": 0.6296,
+                  "pred_count": 54,
+                  "recall": 0.4359,
+                  "tp": 34
+                }
+              },
+              "Onset": {
+                "per_item": {
+                  "f1": 0.0,
+                  "fn": 17,
+                  "fp": 35,
+                  "gold_count": 17,
+                  "precision": 0.0,
+                  "pred_count": 35,
+                  "recall": 0.0,
+                  "tp": 0
+                },
+                "per_letter": {
+                  "f1": 0.0,
+                  "fn": 13,
+                  "fp": 21,
+                  "gold_count": 13,
+                  "precision": 0.0,
+                  "pred_count": 21,
+                  "recall": 0.0,
+                  "tp": 0
+                }
+              },
+              "PatientHistory": {
+                "per_item": {
+                  "f1": 0.0062,
+                  "fn": 464,
+                  "fp": 181,
+                  "gold_count": 466,
+                  "precision": 0.0109,
+                  "pred_count": 183,
+                  "recall": 0.0043,
+                  "tp": 2
+                },
+                "per_letter": {
+                  "f1": 0.0299,
+                  "fn": 126,
+                  "fp": 4,
+                  "gold_count": 128,
+                  "precision": 0.3333,
+                  "pred_count": 6,
+                  "recall": 0.0156,
+                  "tp": 2
+                }
+              },
+              "Prescription": {
+                "per_item": {
+                  "f1": 0.2009,
+                  "fn": 160,
+                  "fp": 206,
+                  "gold_count": 206,
+                  "precision": 0.1825,
+                  "pred_count": 252,
+                  "recall": 0.2233,
+                  "tp": 46
+                },
+                "per_letter": {
+                  "f1": 0.4192,
+                  "fn": 78,
+                  "fp": 19,
+                  "gold_count": 113,
+                  "precision": 0.6481,
+                  "pred_count": 54,
+                  "recall": 0.3097,
+                  "tp": 35
+                }
+              },
+              "SeizureFrequency": {
+                "per_item": {
+                  "f1": 0.0,
+                  "fn": 187,
+                  "fp": 152,
+                  "gold_count": 187,
+                  "precision": 0.0,
+                  "pred_count": 152,
+                  "recall": 0.0,
+                  "tp": 0
+                },
+                "per_letter": {
+                  "f1": 0.0,
+                  "fn": 99,
+                  "fp": 14,
+                  "gold_count": 99,
+                  "precision": 0.0,
+                  "pred_count": 14,
+                  "recall": 0.0,
+                  "tp": 0
+                }
+              },
+              "WhenDiagnosed": {
+                "per_item": {
+                  "f1": 0.0,
+                  "fn": 11,
+                  "fp": 8,
+                  "gold_count": 11,
+                  "precision": 0.0,
+                  "pred_count": 8,
+                  "recall": 0.0,
+                  "tp": 0
+                },
+                "per_letter": {
+                  "f1": 0.0,
+                  "fn": 11,
+                  "fp": 1,
+                  "gold_count": 11,
+                  "precision": 0.0,
+                  "pred_count": 1,
+                  "recall": 0.0,
+                  "tp": 0
+                }
+              }
+            },
+            "per_item": {
+              "f1": 0.1013,
+              "fn": 1355,
+              "fp": 863,
+              "gold_count": 1480,
+              "precision": 0.1265,
+              "pred_count": 988,
+              "recall": 0.0845,
+              "tp": 125
+            },
+            "per_letter": {
+              "f1": 0.2645,
+              "fn": 507,
+              "fp": 88,
+              "gold_count": 614,
+              "precision": 0.5487,
+              "pred_count": 195,
+              "recall": 0.1743,
+              "tp": 107
+            }
+          },
+          "phrase_only": {
+            "per_entity": {
+              "BirthHistory": {
+                "per_item": {
+                  "f1": 0.12,
+                  "fn": 28,
+                  "fp": 16,
+                  "gold_count": 31,
+                  "precision": 0.1579,
+                  "pred_count": 19,
+                  "recall": 0.0968,
+                  "tp": 3
+                },
+                "per_letter": {
+                  "f1": 0.2069,
+                  "fn": 23,
+                  "fp": 0,
+                  "gold_count": 26,
+                  "precision": 1.0,
+                  "pred_count": 3,
+                  "recall": 0.1154,
+                  "tp": 3
+                }
+              },
+              "Diagnosis": {
+                "per_item": {
+                  "f1": 0.2214,
+                  "fn": 342,
+                  "fp": 101,
+                  "gold_count": 405,
+                  "precision": 0.3841,
+                  "pred_count": 164,
+                  "recall": 0.1556,
+                  "tp": 63
+                },
+                "per_letter": {
+                  "f1": 0.6224,
+                  "fn": 69,
+                  "fp": 5,
+                  "gold_count": 130,
+                  "precision": 0.9242,
+                  "pred_count": 66,
+                  "recall": 0.4692,
+                  "tp": 61
+                }
+              },
+              "EpilepsyCause": {
+                "per_item": {
+                  "f1": 0.0,
+                  "fn": 21,
+                  "fp": 12,
+                  "gold_count": 21,
+                  "precision": 0.0,
+                  "pred_count": 12,
+                  "recall": 0.0,
+                  "tp": 0
+                },
+                "per_letter": {
+                  "f1": 0.0,
+                  "fn": 16,
+                  "fp": 4,
+                  "gold_count": 16,
+                  "precision": 0.0,
+                  "pred_count": 4,
+                  "recall": 0.0,
+                  "tp": 0
+                }
+              },
+              "Investigations": {
+                "per_item": {
+                  "f1": 0.3612,
+                  "fn": 82,
+                  "fp": 109,
+                  "gold_count": 136,
+                  "precision": 0.3313,
+                  "pred_count": 163,
+                  "recall": 0.3971,
+                  "tp": 54
+                },
+                "per_letter": {
+                  "f1": 0.5797,
+                  "fn": 38,
+                  "fp": 20,
+                  "gold_count": 78,
+                  "precision": 0.6667,
+                  "pred_count": 60,
+                  "recall": 0.5128,
+                  "tp": 40
+                }
+              },
+              "Onset": {
+                "per_item": {
+                  "f1": 0.0,
+                  "fn": 17,
+                  "fp": 35,
+                  "gold_count": 17,
+                  "precision": 0.0,
+                  "pred_count": 35,
+                  "recall": 0.0,
+                  "tp": 0
+                },
+                "per_letter": {
+                  "f1": 0.0,
+                  "fn": 13,
+                  "fp": 21,
+                  "gold_count": 13,
+                  "precision": 0.0,
+                  "pred_count": 21,
+                  "recall": 0.0,
+                  "tp": 0
+                }
+              },
+              "PatientHistory": {
+                "per_item": {
+                  "f1": 0.0092,
+                  "fn": 463,
+                  "fp": 180,
+                  "gold_count": 466,
+                  "precision": 0.0164,
+                  "pred_count": 183,
+                  "recall": 0.0064,
+                  "tp": 3
+                },
+                "per_letter": {
+                  "f1": 0.0444,
+                  "fn": 125,
+                  "fp": 4,
+                  "gold_count": 128,
+                  "precision": 0.4286,
+                  "pred_count": 7,
+                  "recall": 0.0234,
+                  "tp": 3
+                }
+              },
+              "Prescription": {
+                "per_item": {
+                  "f1": 0.2271,
+                  "fn": 154,
+                  "fp": 200,
+                  "gold_count": 206,
+                  "precision": 0.2063,
+                  "pred_count": 252,
+                  "recall": 0.2524,
+                  "tp": 52
+                },
+                "per_letter": {
+                  "f1": 0.4561,
+                  "fn": 74,
+                  "fp": 19,
+                  "gold_count": 113,
+                  "precision": 0.6724,
+                  "pred_count": 58,
+                  "recall": 0.3451,
+                  "tp": 39
+                }
+              },
+              "SeizureFrequency": {
+                "per_item": {
+                  "f1": 0.0118,
+                  "fn": 185,
+                  "fp": 150,
+                  "gold_count": 187,
+                  "precision": 0.0132,
+                  "pred_count": 152,
+                  "recall": 0.0107,
+                  "tp": 2
+                },
+                "per_letter": {
+                  "f1": 0.0175,
+                  "fn": 98,
+                  "fp": 14,
+                  "gold_count": 99,
+                  "precision": 0.0667,
+                  "pred_count": 15,
+                  "recall": 0.0101,
+                  "tp": 1
+                }
+              },
+              "WhenDiagnosed": {
+                "per_item": {
+                  "f1": 0.0,
+                  "fn": 11,
+                  "fp": 8,
+                  "gold_count": 11,
+                  "precision": 0.0,
+                  "pred_count": 8,
+                  "recall": 0.0,
+                  "tp": 0
+                },
+                "per_letter": {
+                  "f1": 0.0,
+                  "fn": 11,
+                  "fp": 1,
+                  "gold_count": 11,
+                  "precision": 0.0,
+                  "pred_count": 1,
+                  "recall": 0.0,
+                  "tp": 0
+                }
+              }
+            },
+            "per_item": {
+              "f1": 0.1434,
+              "fn": 1303,
+              "fp": 811,
+              "gold_count": 1480,
+              "precision": 0.1791,
+              "pred_count": 988,
+              "recall": 0.1196,
+              "tp": 177
+            },
+            "per_letter": {
+              "f1": 0.3463,
+              "fn": 467,
+              "fp": 88,
+              "gold_count": 614,
+              "precision": 0.6255,
+              "pred_count": 235,
+              "recall": 0.2394,
+              "tp": 147
+            }
+          },
+          "semantic": {
+            "per_entity": {
+              "BirthHistory": {
+                "per_item": {
+                  "f1": 0.0,
+                  "fn": 31,
+                  "fp": 19,
+                  "gold_count": 31,
+                  "precision": 0.0,
+                  "pred_count": 19,
+                  "recall": 0.0,
+                  "tp": 0
+                },
+                "per_letter": {
+                  "f1": 0.0,
+                  "fn": 26,
+                  "fp": 0,
+                  "gold_count": 26,
+                  "precision": 0.0,
+                  "pred_count": 0,
+                  "recall": 0.0,
+                  "tp": 0
+                }
+              },
+              "Diagnosis": {
+                "per_item": {
+                  "f1": 0.1933,
+                  "fn": 350,
+                  "fp": 109,
+                  "gold_count": 405,
+                  "precision": 0.3354,
+                  "pred_count": 164,
+                  "recall": 0.1358,
+                  "tp": 55
+                },
+                "per_letter": {
+                  "f1": 0.5714,
+                  "fn": 76,
+                  "fp": 5,
+                  "gold_count": 130,
+                  "precision": 0.9153,
+                  "pred_count": 59,
+                  "recall": 0.4154,
+                  "tp": 54
+                }
+              },
+              "EpilepsyCause": {
+                "per_item": {
+                  "f1": 0.0,
+                  "fn": 21,
+                  "fp": 12,
+                  "gold_count": 21,
+                  "precision": 0.0,
+                  "pred_count": 12,
+                  "recall": 0.0,
+                  "tp": 0
+                },
+                "per_letter": {
+                  "f1": 0.0,
+                  "fn": 16,
+                  "fp": 4,
+                  "gold_count": 16,
+                  "precision": 0.0,
+                  "pred_count": 4,
+                  "recall": 0.0,
+                  "tp": 0
+                }
+              },
+              "Investigations": {
+                "per_item": {
+                  "f1": 0.3278,
+                  "fn": 87,
+                  "fp": 114,
+                  "gold_count": 136,
+                  "precision": 0.3006,
+                  "pred_count": 163,
+                  "recall": 0.3603,
+                  "tp": 49
+                },
+                "per_letter": {
+                  "f1": 0.5481,
+                  "fn": 41,
+                  "fp": 20,
+                  "gold_count": 78,
+                  "precision": 0.6491,
+                  "pred_count": 57,
+                  "recall": 0.4744,
+                  "tp": 37
+                }
+              },
+              "Onset": {
+                "per_item": {
+                  "f1": 0.0,
+                  "fn": 17,
+                  "fp": 35,
+                  "gold_count": 17,
+                  "precision": 0.0,
+                  "pred_count": 35,
+                  "recall": 0.0,
+                  "tp": 0
+                },
+                "per_letter": {
+                  "f1": 0.0,
+                  "fn": 13,
+                  "fp": 21,
+                  "gold_count": 13,
+                  "precision": 0.0,
+                  "pred_count": 21,
+                  "recall": 0.0,
+                  "tp": 0
+                }
+              },
+              "PatientHistory": {
+                "per_item": {
+                  "f1": 0.0062,
+                  "fn": 464,
+                  "fp": 181,
+                  "gold_count": 466,
+                  "precision": 0.0109,
+                  "pred_count": 183,
+                  "recall": 0.0043,
+                  "tp": 2
+                },
+                "per_letter": {
+                  "f1": 0.0299,
+                  "fn": 126,
+                  "fp": 4,
+                  "gold_count": 128,
+                  "precision": 0.3333,
+                  "pred_count": 6,
+                  "recall": 0.0156,
+                  "tp": 2
+                }
+              },
+              "Prescription": {
+                "per_item": {
+                  "f1": 0.2009,
+                  "fn": 160,
+                  "fp": 206,
+                  "gold_count": 206,
+                  "precision": 0.1825,
+                  "pred_count": 252,
+                  "recall": 0.2233,
+                  "tp": 46
+                },
+                "per_letter": {
+                  "f1": 0.4192,
+                  "fn": 78,
+                  "fp": 19,
+                  "gold_count": 113,
+                  "precision": 0.6481,
+                  "pred_count": 54,
+                  "recall": 0.3097,
+                  "tp": 35
+                }
+              },
+              "SeizureFrequency": {
+                "per_item": {
+                  "f1": 0.0,
+                  "fn": 187,
+                  "fp": 152,
+                  "gold_count": 187,
+                  "precision": 0.0,
+                  "pred_count": 152,
+                  "recall": 0.0,
+                  "tp": 0
+                },
+                "per_letter": {
+                  "f1": 0.0,
+                  "fn": 99,
+                  "fp": 14,
+                  "gold_count": 99,
+                  "precision": 0.0,
+                  "pred_count": 14,
+                  "recall": 0.0,
+                  "tp": 0
+                }
+              },
+              "WhenDiagnosed": {
+                "per_item": {
+                  "f1": 0.0,
+                  "fn": 11,
+                  "fp": 8,
+                  "gold_count": 11,
+                  "precision": 0.0,
+                  "pred_count": 8,
+                  "recall": 0.0,
+                  "tp": 0
+                },
+                "per_letter": {
+                  "f1": 0.0,
+                  "fn": 11,
+                  "fp": 1,
+                  "gold_count": 11,
+                  "precision": 0.0,
+                  "pred_count": 1,
+                  "recall": 0.0,
+                  "tp": 0
+                }
+              }
+            },
+            "per_item": {
+              "f1": 0.1232,
+              "fn": 1328,
+              "fp": 836,
+              "gold_count": 1480,
+              "precision": 0.1538,
+              "pred_count": 988,
+              "recall": 0.1027,
+              "tp": 152
+            },
+            "per_letter": {
+              "f1": 0.3084,
+              "fn": 486,
+              "fp": 88,
+              "gold_count": 614,
+              "precision": 0.5926,
+              "pred_count": 216,
+              "recall": 0.2085,
+              "tp": 128
+            }
+          }
+        },
+        "headline_scores": {
+          "BirthHistory": {
+            "f1": 0.12,
+            "fn": 28,
+            "fp": 16,
+            "gold_count": 31,
+            "precision": 0.1579,
+            "precision_tp": 3,
+            "pred_count": 19,
+            "recall": 0.0968,
+            "recall_tp": 3,
+            "tp": 3
+          },
+          "Diagnosis": {
+            "f1": 0.3069,
+            "fn": 278,
+            "fp": 117,
+            "gold_count": 369,
+            "precision": 0.4061,
+            "precision_tp": 80,
+            "pred_count": 197,
+            "recall": 0.2466,
+            "recall_tp": 91,
+            "tp": 91
+          },
+          "EpilepsyCause": {
+            "f1": 0.0,
+            "fn": 21,
+            "fp": 12,
+            "gold_count": 21,
+            "precision": 0.0,
+            "precision_tp": 0,
+            "pred_count": 12,
+            "recall": 0.0,
+            "recall_tp": 0,
+            "tp": 0
+          },
+          "Investigations": {
+            "f1": 0.7475,
+            "fn": 22,
+            "fp": 55,
+            "gold_count": 136,
+            "precision": 0.6746,
+            "pred_count": 169,
+            "recall": 0.8382,
+            "tp": 114
+          },
+          "Onset": {
+            "f1": 0.0,
+            "fn": 17,
+            "fp": 35,
+            "gold_count": 17,
+            "precision": 0.0,
+            "precision_tp": 0,
+            "pred_count": 35,
+            "recall": 0.0,
+            "recall_tp": 0,
+            "tp": 0
+          },
+          "Prescription": {
+            "f1": 0.7472,
+            "fn": 60,
+            "fp": 30,
+            "gold_count": 193,
+            "precision": 0.816,
+            "pred_count": 163,
+            "recall": 0.6891,
+            "tp": 133
+          },
+          "SeizureFrequency": {
+            "f1": 0.0118,
+            "fn": 185,
+            "fp": 150,
+            "gold_count": 187,
+            "precision": 0.0132,
+            "pred_count": 152,
+            "recall": 0.0107,
+            "tp": 2
+          },
+          "WhenDiagnosed": {
+            "f1": 0.0,
+            "fn": 11,
+            "fp": 8,
+            "gold_count": 11,
+            "precision": 0.0,
+            "precision_tp": 0,
+            "pred_count": 8,
+            "recall": 0.0,
+            "recall_tp": 0,
+            "tp": 0
+          }
+        },
+        "overall": {
+          "f1": 0.3931,
+          "fn": 622,
+          "fp": 423,
+          "gold_count": 965,
+          "precision": 0.4397,
+          "precision_tp": 332,
+          "pred_count": 755,
+          "recall": 0.3554,
+          "recall_tp": 343,
+          "tp": 343
+        }
+      },
+      "clinical_recovery_note": "Clinical-recovery headline computed on CUI-projected predictions (deterministic CUI attached before scoring, per the ownership ladder); the SeizureFrequency state key uses CUI as seizure-type identity.",
+      "cui_audit": {
+        "concept_buckets": {
+          "bucket_concepts": {
+            "gold_inconsistent": 8,
+            "one_to_one": 283,
+            "result_conditioned": 2
+          },
+          "bucket_mentions": {
+            "gold_inconsistent": 144,
+            "one_to_one": 1325,
+            "result_conditioned": 10
+          },
+          "concept_count": 293,
+          "examples": {
+            "gold_inconsistent": [
+              {
+                "concept": "epilepsy",
+                "cuis": {
+                  "C0014544": 93,
+                  "null": 1
+                },
+                "entity": "Diagnosis"
+              },
+              {
+                "concept": "diabetes",
+                "cuis": {
+                  "C0011847": 3,
+                  "C0011849": 6
+                },
+                "entity": "PatientHistory"
+              },
+              {
+                "concept": "seizure",
+                "cuis": {
+                  "C0036572": 25,
+                  "C1299590": 4
+                },
+                "entity": "SeizureFrequency"
+              },
+              {
+                "concept": "non epileptic",
+                "cuis": {
+                  "C1142430": 1,
+                  "C3495874": 1
+                },
+                "entity": "PatientHistory"
+              },
+              {
+                "concept": "born prematurely",
+                "cuis": {
+                  "C0151526": 1,
+                  "C3829315": 1,
+                  "C4054482": 1
+                },
+                "entity": "BirthHistory"
+              },
+              {
+                "concept": "perinatal injury",
+                "cuis": {
+                  "C0005604": 1,
+                  "C0456798": 1
+                },
+                "entity": "BirthHistory"
+              },
+              {
+                "concept": "focal",
+                "cuis": {
+                  "C0014547": 1,
+                  "C0270834": 1,
+                  "C0751495": 1
+                },
+                "entity": "Diagnosis"
+              },
+              {
+                "concept": "focal",
+                "cuis": {
+                  "C0016399": 1,
+                  "C0877017": 1
+                },
+                "entity": "SeizureFrequency"
+              }
+            ],
+            "one_to_one": [],
+            "result_conditioned": [
+              {
+                "concept": "eeg",
+                "cuis": {
+                  "C0013819": 1,
+                  "C0151611": 3,
+                  "C0560017": 3
+                },
+                "entity": "Investigations"
+              },
+              {
+                "concept": "mri",
+                "cuis": {
+                  "C0436481": 2,
+                  "C1319851": 1
+                },
+                "entity": "Investigations"
+              }
+            ]
+          },
+          "per_entity_concepts": {
+            "BirthHistory": {
+              "gold_inconsistent": 2,
+              "one_to_one": 11
+            },
+            "Diagnosis": {
+              "gold_inconsistent": 2,
+              "one_to_one": 71
+            },
+            "EpilepsyCause": {
+              "one_to_one": 17
+            },
+            "Investigations": {
+              "one_to_one": 14,
+              "result_conditioned": 2
+            },
+            "Onset": {
+              "one_to_one": 4
+            },
+            "PatientHistory": {
+              "gold_inconsistent": 2,
+              "one_to_one": 108
+            },
+            "Prescription": {
+              "one_to_one": 23
+            },
+            "SeizureFrequency": {
+              "gold_inconsistent": 2,
+              "one_to_one": 34
+            },
+            "WhenDiagnosed": {
+              "one_to_one": 1
+            }
+          }
+        },
+        "deterministic_projection": {
+          "BirthHistory": {
+            "correctness": 0.9259,
+            "coverage": 0.871,
+            "gold_with_cui": 31,
+            "missing_mapping": 4,
+            "projected": 27,
+            "projected_correct": 25
+          },
+          "Diagnosis": {
+            "correctness": 0.8933,
+            "coverage": 0.4406,
+            "gold_with_cui": 404,
+            "missing_mapping": 226,
+            "projected": 178,
+            "projected_correct": 159
+          },
+          "EpilepsyCause": {
+            "correctness": 1.0,
+            "coverage": 0.7619,
+            "gold_with_cui": 21,
+            "missing_mapping": 5,
+            "projected": 16,
+            "projected_correct": 16
+          },
+          "Investigations": {
+            "correctness": 0.8309,
+            "coverage": 1.0,
+            "gold_with_cui": 136,
+            "missing_mapping": 0,
+            "projected": 136,
+            "projected_correct": 113
+          },
+          "Onset": {
+            "correctness": 1.0,
+            "coverage": 0.4706,
+            "gold_with_cui": 17,
+            "missing_mapping": 9,
+            "projected": 8,
+            "projected_correct": 8
+          },
+          "PatientHistory": {
+            "correctness": 0.9884,
+            "coverage": 0.7403,
+            "gold_with_cui": 466,
+            "missing_mapping": 121,
+            "projected": 345,
+            "projected_correct": 341
+          },
+          "Prescription": {
+            "correctness": 0.9563,
+            "coverage": 1.0,
+            "gold_with_cui": 206,
+            "missing_mapping": 0,
+            "projected": 206,
+            "projected_correct": 197
+          },
+          "SeizureFrequency": {
+            "correctness": 0.9733,
+            "coverage": 1.0,
+            "gold_with_cui": 187,
+            "missing_mapping": 0,
+            "projected": 187,
+            "projected_correct": 182
+          },
+          "WhenDiagnosed": {
+            "correctness": 1.0,
+            "coverage": 1.0,
+            "gold_with_cui": 11,
+            "missing_mapping": 0,
+            "projected": 11,
+            "projected_correct": 11
+          },
+          "__overall__": {
+            "correctness": 0.9443,
+            "coverage": 0.7532,
+            "gold_with_cui": 1479,
+            "missing_mapping": 365,
+            "projected": 1114,
+            "projected_correct": 1052
+          }
+        },
+        "note": "CUI is benchmark-format projection: the benchmark key keeps CUI, the semantic key drops it. The benchmark-minus-semantic delta is owned by deterministic CUI projection, never by LLM clinical reasoning.",
+        "overall": {
+          "benchmark_f1_after_cui_projection": 0.1013,
+          "benchmark_f1_raw_llm": 0.0,
+          "cui_projection_recovers_f1": 0.1013,
+          "residual_cui_loss_vs_semantic": 0.0138,
+          "semantic_f1": 0.1151
+        },
+        "per_entity": {
+          "BirthHistory": {
+            "benchmark_f1": 0.0,
+            "cui_only_f1_gain_if_dropped": 0.0,
+            "gold_cui_density": 1.0,
+            "prediction_cui_agreement": 0.0,
+            "prediction_cui_coverage": 0.0,
+            "semantic_f1": 0.0
+          },
+          "Diagnosis": {
+            "benchmark_f1": 0.0,
+            "cui_only_f1_gain_if_dropped": 0.1757,
+            "gold_cui_density": 0.9975,
+            "prediction_cui_agreement": 0.0,
+            "prediction_cui_coverage": 0.0,
+            "semantic_f1": 0.1757
+          },
+          "EpilepsyCause": {
+            "benchmark_f1": 0.0,
+            "cui_only_f1_gain_if_dropped": 0.0,
+            "gold_cui_density": 1.0,
+            "prediction_cui_agreement": 0.0,
+            "prediction_cui_coverage": 0.0,
+            "semantic_f1": 0.0
+          },
+          "Investigations": {
+            "benchmark_f1": 0.0,
+            "cui_only_f1_gain_if_dropped": 0.3278,
+            "gold_cui_density": 1.0,
+            "prediction_cui_agreement": 0.0,
+            "prediction_cui_coverage": 0.0,
+            "semantic_f1": 0.3278
+          },
+          "Onset": {
+            "benchmark_f1": 0.0,
+            "cui_only_f1_gain_if_dropped": 0.0,
+            "gold_cui_density": 1.0,
+            "prediction_cui_agreement": 0.0,
+            "prediction_cui_coverage": 0.0,
+            "semantic_f1": 0.0
+          },
+          "PatientHistory": {
+            "benchmark_f1": 0.0,
+            "cui_only_f1_gain_if_dropped": 0.0062,
+            "gold_cui_density": 1.0,
+            "prediction_cui_agreement": 0.0,
+            "prediction_cui_coverage": 0.0,
+            "semantic_f1": 0.0062
+          },
+          "Prescription": {
+            "benchmark_f1": 0.0,
+            "cui_only_f1_gain_if_dropped": 0.179,
+            "gold_cui_density": 1.0,
+            "prediction_cui_agreement": 0.0,
+            "prediction_cui_coverage": 0.0,
+            "semantic_f1": 0.179
+          },
+          "SeizureFrequency": {
+            "benchmark_f1": 0.0,
+            "cui_only_f1_gain_if_dropped": 0.0,
+            "gold_cui_density": 1.0,
+            "prediction_cui_agreement": 0.0,
+            "prediction_cui_coverage": 0.0,
+            "semantic_f1": 0.0
+          },
+          "WhenDiagnosed": {
+            "benchmark_f1": 0.0,
+            "cui_only_f1_gain_if_dropped": 0.0,
+            "gold_cui_density": 1.0,
+            "prediction_cui_agreement": 0.0,
+            "prediction_cui_coverage": 0.0,
+            "semantic_f1": 0.0
+          }
+        }
+      },
+      "name": "llm_only_all_entities (single pass)",
+      "ownership": "llm_first",
+      "row_count": 140
+    },
+    {
+      "certainty_audit": {
+        "ignored_attributes": [
+          "Certainty",
+          "Negation"
+        ],
+        "note": "SeizureFrequency already ignores Certainty/Negation in its benchmark key (guideline convention), so it contributes no certainty-only loss.",
+        "overall": {
+          "benchmark_f1": 0.181,
+          "benchmark_tp": 254,
+          "certainty_dropped_f1": 0.2017,
+          "certainty_only_f1_gain_if_dropped": 0.0207,
+          "certainty_only_tp_gain_if_dropped": 29
+        },
+        "per_entity": {
+          "BirthHistory": {
+            "benchmark_f1": 0.2456,
+            "certainty": {
+              "default_projection_ceiling": 0.9,
+              "distinct_values": 2,
+              "distribution": {
+                "4": 3,
+                "5": 27
+              },
+              "gold_mentions": 31,
+              "present": 30,
+              "present_rate": 0.9677
+            },
+            "certainty_dropped_f1": 0.2807,
+            "certainty_only_tp_gain_if_dropped": 1,
+            "negation": {
+              "default_projection_ceiling": 1.0,
+              "distinct_values": 1,
+              "distribution": {
+                "Affirmed": 31
+              },
+              "gold_mentions": 31,
+              "present": 31,
+              "present_rate": 1.0
+            },
+            "recovery_on_overlap": {
+              "Certainty": {
+                "overlap_pairs_gold_has_value": 24,
+                "predicted_value_agrees": 23,
+                "recovery_rate": 0.9583
+              },
+              "Negation": {
+                "overlap_pairs_gold_has_value": 25,
+                "predicted_value_agrees": 25,
+                "recovery_rate": 1.0
+              }
+            }
+          },
+          "Diagnosis": {
+            "benchmark_f1": 0.1717,
+            "certainty": {
+              "default_projection_ceiling": 0.8296,
+              "distinct_values": 3,
+              "distribution": {
+                "3": 16,
+                "4": 53,
+                "5": 336
+              },
+              "gold_mentions": 405,
+              "present": 405,
+              "present_rate": 1.0
+            },
+            "certainty_dropped_f1": 0.2147,
+            "certainty_only_tp_gain_if_dropped": 12,
+            "negation": {
+              "default_projection_ceiling": 1.0,
+              "distinct_values": 1,
+              "distribution": {
+                "Affirmed": 402
+              },
+              "gold_mentions": 405,
+              "present": 402,
+              "present_rate": 0.9926
+            },
+            "recovery_on_overlap": {
+              "Certainty": {
+                "overlap_pairs_gold_has_value": 124,
+                "predicted_value_agrees": 102,
+                "recovery_rate": 0.8226
+              },
+              "Negation": {
+                "overlap_pairs_gold_has_value": 122,
+                "predicted_value_agrees": 122,
+                "recovery_rate": 1.0
+              }
+            }
+          },
+          "EpilepsyCause": {
+            "benchmark_f1": 0.175,
+            "certainty": {
+              "default_projection_ceiling": 0.8571,
+              "distinct_values": 2,
+              "distribution": {
+                "4": 3,
+                "5": 18
+              },
+              "gold_mentions": 21,
+              "present": 21,
+              "present_rate": 1.0
+            },
+            "certainty_dropped_f1": 0.2,
+            "certainty_only_tp_gain_if_dropped": 1,
+            "negation": {
+              "default_projection_ceiling": 1.0,
+              "distinct_values": 1,
+              "distribution": {
+                "Affirmed": 20
+              },
+              "gold_mentions": 21,
+              "present": 20,
+              "present_rate": 0.9524
+            },
+            "recovery_on_overlap": {
+              "Certainty": {
+                "overlap_pairs_gold_has_value": 17,
+                "predicted_value_agrees": 15,
+                "recovery_rate": 0.8824
+              },
+              "Negation": {
+                "overlap_pairs_gold_has_value": 16,
+                "predicted_value_agrees": 16,
+                "recovery_rate": 1.0
+              }
+            }
+          },
+          "Investigations": {
+            "benchmark_f1": 0.4904,
+            "certainty": {
+              "default_projection_ceiling": 0.0,
+              "distinct_values": 0,
+              "distribution": {},
+              "gold_mentions": 136,
+              "present": 0,
+              "present_rate": 0.0
+            },
+            "certainty_dropped_f1": 0.4904,
+            "certainty_only_tp_gain_if_dropped": 0,
+            "negation": {
+              "default_projection_ceiling": 0.0,
+              "distinct_values": 0,
+              "distribution": {},
+              "gold_mentions": 136,
+              "present": 0,
+              "present_rate": 0.0
+            },
+            "recovery_on_overlap": {
+              "Certainty": {
+                "overlap_pairs_gold_has_value": 0,
+                "predicted_value_agrees": 0,
+                "recovery_rate": 0.0
+              },
+              "Negation": {
+                "overlap_pairs_gold_has_value": 0,
+                "predicted_value_agrees": 0,
+                "recovery_rate": 0.0
+              }
+            }
+          },
+          "Onset": {
+            "benchmark_f1": 0.1296,
+            "certainty": {
+              "default_projection_ceiling": 1.0,
+              "distinct_values": 1,
+              "distribution": {
+                "5": 16
+              },
+              "gold_mentions": 17,
+              "present": 16,
+              "present_rate": 0.9412
+            },
+            "certainty_dropped_f1": 0.1296,
+            "certainty_only_tp_gain_if_dropped": 0,
+            "negation": {
+              "default_projection_ceiling": 1.0,
+              "distinct_values": 1,
+              "distribution": {
+                "Affirmed": 16
+              },
+              "gold_mentions": 17,
+              "present": 16,
+              "present_rate": 0.9412
+            },
+            "recovery_on_overlap": {
+              "Certainty": {
+                "overlap_pairs_gold_has_value": 14,
+                "predicted_value_agrees": 14,
+                "recovery_rate": 1.0
+              },
+              "Negation": {
+                "overlap_pairs_gold_has_value": 14,
+                "predicted_value_agrees": 14,
+                "recovery_rate": 1.0
+              }
+            }
+          },
+          "PatientHistory": {
+            "benchmark_f1": 0.1064,
+            "certainty": {
+              "default_projection_ceiling": 0.9206,
+              "distinct_values": 4,
+              "distribution": {
+                "1": 16,
+                "3": 7,
+                "4": 14,
+                "5": 429
+              },
+              "gold_mentions": 466,
+              "present": 466,
+              "present_rate": 1.0
+            },
+            "certainty_dropped_f1": 0.1418,
+            "certainty_only_tp_gain_if_dropped": 15,
+            "negation": {
+              "default_projection_ceiling": 0.9657,
+              "distinct_values": 2,
+              "distribution": {
+                "Affirmed": 450,
+                "Negated": 16
+              },
+              "gold_mentions": 466,
+              "present": 466,
+              "present_rate": 1.0
+            },
+            "recovery_on_overlap": {
+              "Certainty": {
+                "overlap_pairs_gold_has_value": 168,
+                "predicted_value_agrees": 152,
+                "recovery_rate": 0.9048
+              },
+              "Negation": {
+                "overlap_pairs_gold_has_value": 168,
+                "predicted_value_agrees": 167,
+                "recovery_rate": 0.994
+              }
+            }
+          },
+          "Prescription": {
+            "benchmark_f1": 0.1743,
+            "certainty": {
+              "default_projection_ceiling": 0.0,
+              "distinct_values": 0,
+              "distribution": {},
+              "gold_mentions": 206,
+              "present": 0,
+              "present_rate": 0.0
+            },
+            "certainty_dropped_f1": 0.1743,
+            "certainty_only_tp_gain_if_dropped": 0,
+            "negation": {
+              "default_projection_ceiling": 0.0,
+              "distinct_values": 0,
+              "distribution": {},
+              "gold_mentions": 206,
+              "present": 0,
+              "present_rate": 0.0
+            },
+            "recovery_on_overlap": {
+              "Certainty": {
+                "overlap_pairs_gold_has_value": 0,
+                "predicted_value_agrees": 0,
+                "recovery_rate": 0.0
+              },
+              "Negation": {
+                "overlap_pairs_gold_has_value": 0,
+                "predicted_value_agrees": 0,
+                "recovery_rate": 0.0
+              }
+            }
+          },
+          "SeizureFrequency": {
+            "benchmark_f1": 0.1311,
+            "certainty": {
+              "default_projection_ceiling": 1.0,
+              "distinct_values": 1,
+              "distribution": {
+                "5": 1
+              },
+              "gold_mentions": 187,
+              "present": 1,
+              "present_rate": 0.0053
+            },
+            "certainty_dropped_f1": 0.1311,
+            "certainty_only_tp_gain_if_dropped": 0,
+            "negation": {
+              "default_projection_ceiling": 1.0,
+              "distinct_values": 1,
+              "distribution": {
+                "Affirmed": 1
+              },
+              "gold_mentions": 187,
+              "present": 1,
+              "present_rate": 0.0053
+            },
+            "recovery_on_overlap": {
+              "Certainty": {
+                "overlap_pairs_gold_has_value": 1,
+                "predicted_value_agrees": 0,
+                "recovery_rate": 0.0
+              },
+              "Negation": {
+                "overlap_pairs_gold_has_value": 1,
+                "predicted_value_agrees": 0,
+                "recovery_rate": 0.0
+              }
+            }
+          },
+          "WhenDiagnosed": {
+            "benchmark_f1": 0.0727,
+            "certainty": {
+              "default_projection_ceiling": 1.0,
+              "distinct_values": 1,
+              "distribution": {
+                "5": 11
+              },
+              "gold_mentions": 11,
+              "present": 11,
+              "present_rate": 1.0
+            },
+            "certainty_dropped_f1": 0.0727,
+            "certainty_only_tp_gain_if_dropped": 0,
+            "negation": {
+              "default_projection_ceiling": 1.0,
+              "distinct_values": 1,
+              "distribution": {
+                "Affirmed": 11
+              },
+              "gold_mentions": 11,
+              "present": 11,
+              "present_rate": 1.0
+            },
+            "recovery_on_overlap": {
+              "Certainty": {
+                "overlap_pairs_gold_has_value": 11,
+                "predicted_value_agrees": 11,
+                "recovery_rate": 1.0
+              },
+              "Negation": {
+                "overlap_pairs_gold_has_value": 11,
+                "predicted_value_agrees": 11,
+                "recovery_rate": 1.0
+              }
+            }
+          }
+        }
+      },
+      "clinical_recovery": {
+        "artifact_projection_scores": {
+          "benchmark": {
+            "per_entity": {
+              "BirthHistory": {
+                "per_item": {
+                  "f1": 0.2456,
+                  "fn": 24,
+                  "fp": 19,
+                  "gold_count": 31,
+                  "precision": 0.2692,
+                  "pred_count": 26,
+                  "recall": 0.2258,
+                  "tp": 7
+                },
+                "per_letter": {
+                  "f1": 0.4242,
+                  "fn": 19,
+                  "fp": 0,
+                  "gold_count": 26,
+                  "precision": 1.0,
+                  "pred_count": 7,
+                  "recall": 0.2692,
+                  "tp": 7
+                }
+              },
+              "Diagnosis": {
+                "per_item": {
+                  "f1": 0.1717,
+                  "fn": 357,
+                  "fp": 106,
+                  "gold_count": 405,
+                  "precision": 0.3117,
+                  "pred_count": 154,
+                  "recall": 0.1185,
+                  "tp": 48
+                },
+                "per_letter": {
+                  "f1": 0.5161,
+                  "fn": 82,
+                  "fp": 8,
+                  "gold_count": 130,
+                  "precision": 0.8571,
+                  "pred_count": 56,
+                  "recall": 0.3692,
+                  "tp": 48
+                }
+              },
+              "EpilepsyCause": {
+                "per_item": {
+                  "f1": 0.175,
+                  "fn": 14,
+                  "fp": 52,
+                  "gold_count": 21,
+                  "precision": 0.1186,
+                  "pred_count": 59,
+                  "recall": 0.3333,
+                  "tp": 7
+                },
+                "per_letter": {
+                  "f1": 0.2373,
+                  "fn": 9,
+                  "fp": 36,
+                  "gold_count": 16,
+                  "precision": 0.1628,
+                  "pred_count": 43,
+                  "recall": 0.4375,
+                  "tp": 7
+                }
+              },
+              "Investigations": {
+                "per_item": {
+                  "f1": 0.4904,
+                  "fn": 59,
+                  "fp": 101,
+                  "gold_count": 136,
+                  "precision": 0.4326,
+                  "pred_count": 178,
+                  "recall": 0.5662,
+                  "tp": 77
+                },
+                "per_letter": {
+                  "f1": 0.7226,
+                  "fn": 22,
+                  "fp": 21,
+                  "gold_count": 78,
+                  "precision": 0.7273,
+                  "pred_count": 77,
+                  "recall": 0.7179,
+                  "tp": 56
+                }
+              },
+              "Onset": {
+                "per_item": {
+                  "f1": 0.1296,
+                  "fn": 10,
+                  "fp": 84,
+                  "gold_count": 17,
+                  "precision": 0.0769,
+                  "pred_count": 91,
+                  "recall": 0.4118,
+                  "tp": 7
+                },
+                "per_letter": {
+                  "f1": 0.1944,
+                  "fn": 6,
+                  "fp": 52,
+                  "gold_count": 13,
+                  "precision": 0.1186,
+                  "pred_count": 59,
+                  "recall": 0.5385,
+                  "tp": 7
+                }
+              },
+              "PatientHistory": {
+                "per_item": {
+                  "f1": 0.1064,
+                  "fn": 421,
+                  "fp": 335,
+                  "gold_count": 466,
+                  "precision": 0.1184,
+                  "pred_count": 380,
+                  "recall": 0.0966,
+                  "tp": 45
+                },
+                "per_letter": {
+                  "f1": 0.4181,
+                  "fn": 91,
+                  "fp": 12,
+                  "gold_count": 128,
+                  "precision": 0.7551,
+                  "pred_count": 49,
+                  "recall": 0.2891,
+                  "tp": 37
+                }
+              },
+              "Prescription": {
+                "per_item": {
+                  "f1": 0.1743,
+                  "fn": 168,
+                  "fp": 192,
+                  "gold_count": 206,
+                  "precision": 0.1652,
+                  "pred_count": 230,
+                  "recall": 0.1845,
+                  "tp": 38
+                },
+                "per_letter": {
+                  "f1": 0.3846,
+                  "fn": 83,
+                  "fp": 13,
+                  "gold_count": 113,
+                  "precision": 0.6977,
+                  "pred_count": 43,
+                  "recall": 0.2655,
+                  "tp": 30
+                }
+              },
+              "SeizureFrequency": {
+                "per_item": {
+                  "f1": 0.1311,
+                  "fn": 164,
+                  "fp": 141,
+                  "gold_count": 187,
+                  "precision": 0.1402,
+                  "pred_count": 164,
+                  "recall": 0.123,
+                  "tp": 23
+                },
+                "per_letter": {
+                  "f1": 0.3022,
+                  "fn": 78,
+                  "fp": 19,
+                  "gold_count": 99,
+                  "precision": 0.525,
+                  "pred_count": 40,
+                  "recall": 0.2121,
+                  "tp": 21
+                }
+              },
+              "WhenDiagnosed": {
+                "per_item": {
+                  "f1": 0.0727,
+                  "fn": 9,
+                  "fp": 42,
+                  "gold_count": 11,
+                  "precision": 0.0455,
+                  "pred_count": 44,
+                  "recall": 0.1818,
+                  "tp": 2
+                },
+                "per_letter": {
+                  "f1": 0.087,
+                  "fn": 9,
+                  "fp": 33,
+                  "gold_count": 11,
+                  "precision": 0.0571,
+                  "pred_count": 35,
+                  "recall": 0.1818,
+                  "tp": 2
+                }
+              }
+            },
+            "per_item": {
+              "f1": 0.181,
+              "fn": 1226,
+              "fp": 1072,
+              "gold_count": 1480,
+              "precision": 0.1916,
+              "pred_count": 1326,
+              "recall": 0.1716,
+              "tp": 254
+            },
+            "per_letter": {
+              "f1": 0.4203,
+              "fn": 399,
+              "fp": 194,
+              "gold_count": 614,
+              "precision": 0.5257,
+              "pred_count": 409,
+              "recall": 0.3502,
+              "tp": 215
+            }
+          },
+          "phrase_only": {
+            "per_entity": {
+              "BirthHistory": {
+                "per_item": {
+                  "f1": 0.5614,
+                  "fn": 15,
+                  "fp": 10,
+                  "gold_count": 31,
+                  "precision": 0.6154,
+                  "pred_count": 26,
+                  "recall": 0.5161,
+                  "tp": 16
+                },
+                "per_letter": {
+                  "f1": 0.7619,
+                  "fn": 10,
+                  "fp": 0,
+                  "gold_count": 26,
+                  "precision": 1.0,
+                  "pred_count": 16,
+                  "recall": 0.6154,
+                  "tp": 16
+                }
+              },
+              "Diagnosis": {
+                "per_item": {
+                  "f1": 0.3148,
+                  "fn": 317,
+                  "fp": 66,
+                  "gold_count": 405,
+                  "precision": 0.5714,
+                  "pred_count": 154,
+                  "recall": 0.2173,
+                  "tp": 88
+                },
+                "per_letter": {
+                  "f1": 0.7623,
+                  "fn": 45,
+                  "fp": 8,
+                  "gold_count": 130,
+                  "precision": 0.914,
+                  "pred_count": 93,
+                  "recall": 0.6538,
+                  "tp": 85
+                }
+              },
+              "EpilepsyCause": {
+                "per_item": {
+                  "f1": 0.2,
+                  "fn": 13,
+                  "fp": 51,
+                  "gold_count": 21,
+                  "precision": 0.1356,
+                  "pred_count": 59,
+                  "recall": 0.381,
+                  "tp": 8
+                },
+                "per_letter": {
+                  "f1": 0.2667,
+                  "fn": 8,
+                  "fp": 36,
+                  "gold_count": 16,
+                  "precision": 0.1818,
+                  "pred_count": 44,
+                  "recall": 0.5,
+                  "tp": 8
+                }
+              },
+              "Investigations": {
+                "per_item": {
+                  "f1": 0.5796,
+                  "fn": 45,
+                  "fp": 87,
+                  "gold_count": 136,
+                  "precision": 0.5112,
+                  "pred_count": 178,
+                  "recall": 0.6691,
+                  "tp": 91
+                },
+                "per_letter": {
+                  "f1": 0.7702,
+                  "fn": 16,
+                  "fp": 21,
+                  "gold_count": 78,
+                  "precision": 0.747,
+                  "pred_count": 83,
+                  "recall": 0.7949,
+                  "tp": 62
+                }
+              },
+              "Onset": {
+                "per_item": {
+                  "f1": 0.1481,
+                  "fn": 9,
+                  "fp": 83,
+                  "gold_count": 17,
+                  "precision": 0.0879,
+                  "pred_count": 91,
+                  "recall": 0.4706,
+                  "tp": 8
+                },
+                "per_letter": {
+                  "f1": 0.2192,
+                  "fn": 5,
+                  "fp": 52,
+                  "gold_count": 13,
+                  "precision": 0.1333,
+                  "pred_count": 60,
+                  "recall": 0.6154,
+                  "tp": 8
+                }
+              },
+              "PatientHistory": {
+                "per_item": {
+                  "f1": 0.2435,
+                  "fn": 363,
+                  "fp": 277,
+                  "gold_count": 466,
+                  "precision": 0.2711,
+                  "pred_count": 380,
+                  "recall": 0.221,
+                  "tp": 103
+                },
+                "per_letter": {
+                  "f1": 0.6854,
+                  "fn": 55,
+                  "fp": 12,
+                  "gold_count": 128,
+                  "precision": 0.8588,
+                  "pred_count": 85,
+                  "recall": 0.5703,
+                  "tp": 73
+                }
+              },
+              "Prescription": {
+                "per_item": {
+                  "f1": 0.2982,
+                  "fn": 141,
+                  "fp": 165,
+                  "gold_count": 206,
+                  "precision": 0.2826,
+                  "pred_count": 230,
+                  "recall": 0.3155,
+                  "tp": 65
+                },
+                "per_letter": {
+                  "f1": 0.5682,
+                  "fn": 63,
+                  "fp": 13,
+                  "gold_count": 113,
+                  "precision": 0.7937,
+                  "pred_count": 63,
+                  "recall": 0.4425,
+                  "tp": 50
+                }
+              },
+              "SeizureFrequency": {
+                "per_item": {
+                  "f1": 0.4558,
+                  "fn": 107,
+                  "fp": 84,
+                  "gold_count": 187,
+                  "precision": 0.4878,
+                  "pred_count": 164,
+                  "recall": 0.4278,
+                  "tp": 80
+                },
+                "per_letter": {
+                  "f1": 0.7033,
+                  "fn": 35,
+                  "fp": 19,
+                  "gold_count": 99,
+                  "precision": 0.7711,
+                  "pred_count": 83,
+                  "recall": 0.6465,
+                  "tp": 64
+                }
+              },
+              "WhenDiagnosed": {
+                "per_item": {
+                  "f1": 0.0727,
+                  "fn": 9,
+                  "fp": 42,
+                  "gold_count": 11,
+                  "precision": 0.0455,
+                  "pred_count": 44,
+                  "recall": 0.1818,
+                  "tp": 2
+                },
+                "per_letter": {
+                  "f1": 0.087,
+                  "fn": 9,
+                  "fp": 33,
+                  "gold_count": 11,
+                  "precision": 0.0571,
+                  "pred_count": 35,
+                  "recall": 0.1818,
+                  "tp": 2
+                }
+              }
+            },
+            "per_item": {
+              "f1": 0.3286,
+              "fn": 1019,
+              "fp": 865,
+              "gold_count": 1480,
+              "precision": 0.3477,
+              "pred_count": 1326,
+              "recall": 0.3115,
+              "tp": 461
+            },
+            "per_letter": {
+              "f1": 0.6259,
+              "fn": 246,
+              "fp": 194,
+              "gold_count": 614,
+              "precision": 0.6548,
+              "pred_count": 562,
+              "recall": 0.5993,
+              "tp": 368
+            }
+          },
+          "semantic": {
+            "per_entity": {
+              "BirthHistory": {
+                "per_item": {
+                  "f1": 0.2807,
+                  "fn": 23,
+                  "fp": 18,
+                  "gold_count": 31,
+                  "precision": 0.3077,
+                  "pred_count": 26,
+                  "recall": 0.2581,
+                  "tp": 8
+                },
+                "per_letter": {
+                  "f1": 0.4706,
+                  "fn": 18,
+                  "fp": 0,
+                  "gold_count": 26,
+                  "precision": 1.0,
+                  "pred_count": 8,
+                  "recall": 0.3077,
+                  "tp": 8
+                }
+              },
+              "Diagnosis": {
+                "per_item": {
+                  "f1": 0.2433,
+                  "fn": 337,
+                  "fp": 86,
+                  "gold_count": 405,
+                  "precision": 0.4416,
+                  "pred_count": 154,
+                  "recall": 0.1679,
+                  "tp": 68
+                },
+                "per_letter": {
+                  "f1": 0.6471,
+                  "fn": 64,
+                  "fp": 8,
+                  "gold_count": 130,
+                  "precision": 0.8919,
+                  "pred_count": 74,
+                  "recall": 0.5077,
+                  "tp": 66
+                }
+              },
+              "EpilepsyCause": {
+                "per_item": {
+                  "f1": 0.175,
+                  "fn": 14,
+                  "fp": 52,
+                  "gold_count": 21,
+                  "precision": 0.1186,
+                  "pred_count": 59,
+                  "recall": 0.3333,
+                  "tp": 7
+                },
+                "per_letter": {
+                  "f1": 0.2373,
+                  "fn": 9,
+                  "fp": 36,
+                  "gold_count": 16,
+                  "precision": 0.1628,
+                  "pred_count": 43,
+                  "recall": 0.4375,
+                  "tp": 7
+                }
+              },
+              "Investigations": {
+                "per_item": {
+                  "f1": 0.5478,
+                  "fn": 50,
+                  "fp": 92,
+                  "gold_count": 136,
+                  "precision": 0.4831,
+                  "pred_count": 178,
+                  "recall": 0.6324,
+                  "tp": 86
+                },
+                "per_letter": {
+                  "f1": 0.7547,
+                  "fn": 18,
+                  "fp": 21,
+                  "gold_count": 78,
+                  "precision": 0.7407,
+                  "pred_count": 81,
+                  "recall": 0.7692,
+                  "tp": 60
+                }
+              },
+              "Onset": {
+                "per_item": {
+                  "f1": 0.1481,
+                  "fn": 9,
+                  "fp": 83,
+                  "gold_count": 17,
+                  "precision": 0.0879,
+                  "pred_count": 91,
+                  "recall": 0.4706,
+                  "tp": 8
+                },
+                "per_letter": {
+                  "f1": 0.2192,
+                  "fn": 5,
+                  "fp": 52,
+                  "gold_count": 13,
+                  "precision": 0.1333,
+                  "pred_count": 60,
+                  "recall": 0.6154,
+                  "tp": 8
+                }
+              },
+              "PatientHistory": {
+                "per_item": {
+                  "f1": 0.1608,
+                  "fn": 398,
+                  "fp": 312,
+                  "gold_count": 466,
+                  "precision": 0.1789,
+                  "pred_count": 380,
+                  "recall": 0.1459,
+                  "tp": 68
+                },
+                "per_letter": {
+                  "f1": 0.5263,
+                  "fn": 78,
+                  "fp": 12,
+                  "gold_count": 128,
+                  "precision": 0.8065,
+                  "pred_count": 62,
+                  "recall": 0.3906,
+                  "tp": 50
+                }
+              },
+              "Prescription": {
+                "per_item": {
+                  "f1": 0.1743,
+                  "fn": 168,
+                  "fp": 192,
+                  "gold_count": 206,
+                  "precision": 0.1652,
+                  "pred_count": 230,
+                  "recall": 0.1845,
+                  "tp": 38
+                },
+                "per_letter": {
+                  "f1": 0.3846,
+                  "fn": 83,
+                  "fp": 13,
+                  "gold_count": 113,
+                  "precision": 0.6977,
+                  "pred_count": 43,
+                  "recall": 0.2655,
+                  "tp": 30
+                }
+              },
+              "SeizureFrequency": {
+                "per_item": {
+                  "f1": 0.1311,
+                  "fn": 164,
+                  "fp": 141,
+                  "gold_count": 187,
+                  "precision": 0.1402,
+                  "pred_count": 164,
+                  "recall": 0.123,
+                  "tp": 23
+                },
+                "per_letter": {
+                  "f1": 0.3022,
+                  "fn": 78,
+                  "fp": 19,
+                  "gold_count": 99,
+                  "precision": 0.525,
+                  "pred_count": 40,
+                  "recall": 0.2121,
+                  "tp": 21
+                }
+              },
+              "WhenDiagnosed": {
+                "per_item": {
+                  "f1": 0.0727,
+                  "fn": 9,
+                  "fp": 42,
+                  "gold_count": 11,
+                  "precision": 0.0455,
+                  "pred_count": 44,
+                  "recall": 0.1818,
+                  "tp": 2
+                },
+                "per_letter": {
+                  "f1": 0.087,
+                  "fn": 9,
+                  "fp": 33,
+                  "gold_count": 11,
+                  "precision": 0.0571,
+                  "pred_count": 35,
+                  "recall": 0.1818,
+                  "tp": 2
+                }
+              }
+            },
+            "per_item": {
+              "f1": 0.2195,
+              "fn": 1172,
+              "fp": 1018,
+              "gold_count": 1480,
+              "precision": 0.2323,
+              "pred_count": 1326,
+              "recall": 0.2081,
+              "tp": 308
+            },
+            "per_letter": {
+              "f1": 0.4755,
+              "fn": 362,
+              "fp": 194,
+              "gold_count": 614,
+              "precision": 0.565,
+              "pred_count": 446,
+              "recall": 0.4104,
+              "tp": 252
+            }
+          }
+        },
+        "headline_scores": {
+          "BirthHistory": {
+            "f1": 0.5263,
+            "fn": 16,
+            "fp": 11,
+            "gold_count": 31,
+            "precision": 0.5769,
+            "precision_tp": 15,
+            "pred_count": 26,
+            "recall": 0.4839,
+            "recall_tp": 15,
+            "tp": 15
+          },
+          "Diagnosis": {
+            "f1": 0.3971,
+            "fn": 242,
+            "fp": 86,
+            "gold_count": 369,
+            "precision": 0.4691,
+            "precision_tp": 76,
+            "pred_count": 162,
+            "recall": 0.3442,
+            "recall_tp": 127,
+            "tp": 127
+          },
+          "EpilepsyCause": {
+            "f1": 0.2,
+            "fn": 13,
+            "fp": 51,
+            "gold_count": 21,
+            "precision": 0.1356,
+            "precision_tp": 8,
+            "pred_count": 59,
+            "recall": 0.381,
+            "recall_tp": 8,
+            "tp": 8
+          },
+          "Investigations": {
+            "f1": 0.7412,
+            "fn": 20,
+            "fp": 61,
+            "gold_count": 136,
+            "precision": 0.6554,
+            "pred_count": 177,
+            "recall": 0.8529,
+            "tp": 116
+          },
+          "Onset": {
+            "f1": 0.1481,
+            "fn": 9,
+            "fp": 83,
+            "gold_count": 17,
+            "precision": 0.0879,
+            "precision_tp": 8,
+            "pred_count": 91,
+            "recall": 0.4706,
+            "recall_tp": 8,
+            "tp": 8
+          },
+          "Prescription": {
+            "f1": 0.8241,
+            "fn": 22,
+            "fp": 51,
+            "gold_count": 193,
+            "precision": 0.7703,
+            "pred_count": 222,
+            "recall": 0.886,
+            "tp": 171
+          },
+          "SeizureFrequency": {
+            "f1": 0.3704,
+            "fn": 122,
+            "fp": 99,
+            "gold_count": 187,
+            "precision": 0.3963,
+            "pred_count": 164,
+            "recall": 0.3476,
+            "tp": 65
+          },
+          "WhenDiagnosed": {
+            "f1": 0.0727,
+            "fn": 9,
+            "fp": 42,
+            "gold_count": 11,
+            "precision": 0.0455,
+            "precision_tp": 2,
+            "pred_count": 44,
+            "recall": 0.1818,
+            "recall_tp": 2,
+            "tp": 2
+          }
+        },
+        "overall": {
+          "f1": 0.5083,
+          "fn": 453,
+          "fp": 484,
+          "gold_count": 965,
+          "precision": 0.4878,
+          "precision_tp": 461,
+          "pred_count": 945,
+          "recall": 0.5306,
+          "recall_tp": 512,
+          "tp": 512
+        }
+      },
+      "clinical_recovery_note": "Clinical-recovery headline computed on CUI-projected predictions (deterministic CUI attached before scoring, per the ownership ladder); the SeizureFrequency state key uses CUI as seizure-type identity.",
+      "cui_audit": {
+        "concept_buckets": {
+          "bucket_concepts": {
+            "gold_inconsistent": 8,
+            "one_to_one": 283,
+            "result_conditioned": 2
+          },
+          "bucket_mentions": {
+            "gold_inconsistent": 144,
+            "one_to_one": 1325,
+            "result_conditioned": 10
+          },
+          "concept_count": 293,
+          "examples": {
+            "gold_inconsistent": [
+              {
+                "concept": "epilepsy",
+                "cuis": {
+                  "C0014544": 93,
+                  "null": 1
+                },
+                "entity": "Diagnosis"
+              },
+              {
+                "concept": "diabetes",
+                "cuis": {
+                  "C0011847": 3,
+                  "C0011849": 6
+                },
+                "entity": "PatientHistory"
+              },
+              {
+                "concept": "seizure",
+                "cuis": {
+                  "C0036572": 25,
+                  "C1299590": 4
+                },
+                "entity": "SeizureFrequency"
+              },
+              {
+                "concept": "non epileptic",
+                "cuis": {
+                  "C1142430": 1,
+                  "C3495874": 1
+                },
+                "entity": "PatientHistory"
+              },
+              {
+                "concept": "born prematurely",
+                "cuis": {
+                  "C0151526": 1,
+                  "C3829315": 1,
+                  "C4054482": 1
+                },
+                "entity": "BirthHistory"
+              },
+              {
+                "concept": "perinatal injury",
+                "cuis": {
+                  "C0005604": 1,
+                  "C0456798": 1
+                },
+                "entity": "BirthHistory"
+              },
+              {
+                "concept": "focal",
+                "cuis": {
+                  "C0014547": 1,
+                  "C0270834": 1,
+                  "C0751495": 1
+                },
+                "entity": "Diagnosis"
+              },
+              {
+                "concept": "focal",
+                "cuis": {
+                  "C0016399": 1,
+                  "C0877017": 1
+                },
+                "entity": "SeizureFrequency"
+              }
+            ],
+            "one_to_one": [],
+            "result_conditioned": [
+              {
+                "concept": "eeg",
+                "cuis": {
+                  "C0013819": 1,
+                  "C0151611": 3,
+                  "C0560017": 3
+                },
+                "entity": "Investigations"
+              },
+              {
+                "concept": "mri",
+                "cuis": {
+                  "C0436481": 2,
+                  "C1319851": 1
+                },
+                "entity": "Investigations"
+              }
+            ]
+          },
+          "per_entity_concepts": {
+            "BirthHistory": {
+              "gold_inconsistent": 2,
+              "one_to_one": 11
+            },
+            "Diagnosis": {
+              "gold_inconsistent": 2,
+              "one_to_one": 71
+            },
+            "EpilepsyCause": {
+              "one_to_one": 17
+            },
+            "Investigations": {
+              "one_to_one": 14,
+              "result_conditioned": 2
+            },
+            "Onset": {
+              "one_to_one": 4
+            },
+            "PatientHistory": {
+              "gold_inconsistent": 2,
+              "one_to_one": 108
+            },
+            "Prescription": {
+              "one_to_one": 23
+            },
+            "SeizureFrequency": {
+              "gold_inconsistent": 2,
+              "one_to_one": 34
+            },
+            "WhenDiagnosed": {
+              "one_to_one": 1
+            }
+          }
+        },
+        "deterministic_projection": {
+          "BirthHistory": {
+            "correctness": 0.9259,
+            "coverage": 0.871,
+            "gold_with_cui": 31,
+            "missing_mapping": 4,
+            "projected": 27,
+            "projected_correct": 25
+          },
+          "Diagnosis": {
+            "correctness": 0.8933,
+            "coverage": 0.4406,
+            "gold_with_cui": 404,
+            "missing_mapping": 226,
+            "projected": 178,
+            "projected_correct": 159
+          },
+          "EpilepsyCause": {
+            "correctness": 1.0,
+            "coverage": 0.7619,
+            "gold_with_cui": 21,
+            "missing_mapping": 5,
+            "projected": 16,
+            "projected_correct": 16
+          },
+          "Investigations": {
+            "correctness": 0.8309,
+            "coverage": 1.0,
+            "gold_with_cui": 136,
+            "missing_mapping": 0,
+            "projected": 136,
+            "projected_correct": 113
+          },
+          "Onset": {
+            "correctness": 1.0,
+            "coverage": 0.4706,
+            "gold_with_cui": 17,
+            "missing_mapping": 9,
+            "projected": 8,
+            "projected_correct": 8
+          },
+          "PatientHistory": {
+            "correctness": 0.9884,
+            "coverage": 0.7403,
+            "gold_with_cui": 466,
+            "missing_mapping": 121,
+            "projected": 345,
+            "projected_correct": 341
+          },
+          "Prescription": {
+            "correctness": 0.9563,
+            "coverage": 1.0,
+            "gold_with_cui": 206,
+            "missing_mapping": 0,
+            "projected": 206,
+            "projected_correct": 197
+          },
+          "SeizureFrequency": {
+            "correctness": 0.9733,
+            "coverage": 1.0,
+            "gold_with_cui": 187,
+            "missing_mapping": 0,
+            "projected": 187,
+            "projected_correct": 182
+          },
+          "WhenDiagnosed": {
+            "correctness": 1.0,
+            "coverage": 1.0,
+            "gold_with_cui": 11,
+            "missing_mapping": 0,
+            "projected": 11,
+            "projected_correct": 11
+          },
+          "__overall__": {
+            "correctness": 0.9443,
+            "coverage": 0.7532,
+            "gold_with_cui": 1479,
+            "missing_mapping": 365,
+            "projected": 1114,
+            "projected_correct": 1052
+          }
+        },
+        "note": "CUI is benchmark-format projection: the benchmark key keeps CUI, the semantic key drops it. The benchmark-minus-semantic delta is owned by deterministic CUI projection, never by LLM clinical reasoning.",
+        "overall": {
+          "benchmark_f1_after_cui_projection": 0.181,
+          "benchmark_f1_raw_llm": 0.181,
+          "cui_projection_recovers_f1": 0.0,
+          "residual_cui_loss_vs_semantic": 0.0385,
+          "semantic_f1": 0.2195
+        },
+        "per_entity": {
+          "BirthHistory": {
+            "benchmark_f1": 0.2456,
+            "cui_only_f1_gain_if_dropped": 0.0351,
+            "gold_cui_density": 1.0,
+            "prediction_cui_agreement": 0.8235,
+            "prediction_cui_coverage": 0.6538,
+            "semantic_f1": 0.2807
+          },
+          "Diagnosis": {
+            "benchmark_f1": 0.1717,
+            "cui_only_f1_gain_if_dropped": 0.0716,
+            "gold_cui_density": 0.9975,
+            "prediction_cui_agreement": 0.8,
+            "prediction_cui_coverage": 0.461,
+            "semantic_f1": 0.2433
+          },
+          "EpilepsyCause": {
+            "benchmark_f1": 0.175,
+            "cui_only_f1_gain_if_dropped": 0.0,
+            "gold_cui_density": 1.0,
+            "prediction_cui_agreement": 1.0,
+            "prediction_cui_coverage": 0.2373,
+            "semantic_f1": 0.175
+          },
+          "Investigations": {
+            "benchmark_f1": 0.4904,
+            "cui_only_f1_gain_if_dropped": 0.0573,
+            "gold_cui_density": 1.0,
+            "prediction_cui_agreement": 0.8167,
+            "prediction_cui_coverage": 0.9157,
+            "semantic_f1": 0.5478
+          },
+          "Onset": {
+            "benchmark_f1": 0.1296,
+            "cui_only_f1_gain_if_dropped": 0.0185,
+            "gold_cui_density": 1.0,
+            "prediction_cui_agreement": 1.0,
+            "prediction_cui_coverage": 0.4396,
+            "semantic_f1": 0.1481
+          },
+          "PatientHistory": {
+            "benchmark_f1": 0.1064,
+            "cui_only_f1_gain_if_dropped": 0.0544,
+            "gold_cui_density": 1.0,
+            "prediction_cui_agreement": 0.9157,
+            "prediction_cui_coverage": 0.2526,
+            "semantic_f1": 0.1608
+          },
+          "Prescription": {
+            "benchmark_f1": 0.1743,
+            "cui_only_f1_gain_if_dropped": 0.0,
+            "gold_cui_density": 1.0,
+            "prediction_cui_agreement": 0.9946,
+            "prediction_cui_coverage": 0.9739,
+            "semantic_f1": 0.1743
+          },
+          "SeizureFrequency": {
+            "benchmark_f1": 0.1311,
+            "cui_only_f1_gain_if_dropped": 0.0,
+            "gold_cui_density": 1.0,
+            "prediction_cui_agreement": 0.8505,
+            "prediction_cui_coverage": 0.7378,
+            "semantic_f1": 0.1311
+          },
+          "WhenDiagnosed": {
+            "benchmark_f1": 0.0727,
+            "cui_only_f1_gain_if_dropped": 0.0,
+            "gold_cui_density": 1.0,
+            "prediction_cui_agreement": 1.0,
+            "prediction_cui_coverage": 1.0,
+            "semantic_f1": 0.0727
+          }
+        }
+      },
+      "name": "hybrid_all_entities (candidate-set + verify)",
+      "ownership": "hybrid",
+      "row_count": 140
+    }
+  ],
+  "generated_on": "2026-06-18",
+  "no_model_calls": true,
+  "plan": "docs/plans/exectv2/11_llm_first_essential_clinical_evaluation_plan.md",
+  "row_count": 140,
+  "sources": {
+    "hybrid": "experiments/exectv2_hybrid_all_entities_dev140_gpt41mini_20260617.jsonl",
+    "llm_first": "experiments/exectv2_audit_llm_only_all_entities_full200_gpt41mini_20260612.jsonl",
+    "rules_only": "generated (run_all9_on_letters)"
+  },
+  "split": "dev"
+}
