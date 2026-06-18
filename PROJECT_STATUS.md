@@ -95,6 +95,13 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   generic reviewed-with-epilepsy recovery). It remains revise-only but is close
   enough to justify one residual-error v0.5 loop before dev140. See
   `docs/research/exectv2_diagnosis_verifier_v04_pilot_report_2026-06-18.md`.
+- Diagnosis verifier v0.5 is the first Diagnosis-specific candidate to clear the
+  dev25 target: clinical headline F1 `0.837` with precision `0.911`, recall
+  `0.774`, and evidence validity `1.0000`. This is a development-surface
+  success only and needs dev140 confirmation before any generalization claim.
+  The remaining below-target key family on dev25 is now SeizureFrequency
+  (`0.633` best single structured headline). See
+  `docs/research/exectv2_diagnosis_verifier_v05_pilot_report_2026-06-18.md`.
 
 ## Active Priorities
 
@@ -110,15 +117,15 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
 
 ### Now
 
-- Analyze Diagnosis verifier v0.4 residual dev25 misses and build v0.5 only if
-  the remaining errors are recurring, clinically defensible, and likely to
-  preserve precision above `0.8` with exact-evidence validity at `1.0000`.
+- Shift active development to SeizureFrequency: analyze the v0.5 single
+  structured dev25 residuals and design a specialist/verifier loop that can lift
+  SF from `0.633` toward `0.8` without regressing medication, Diagnosis, or
+  Investigations.
 
 ### Next
 
-- If v0.5 clears Diagnosis `0.8` or shows a precision-preserving lift that is
-  likely to generalize, run dev140 and compare against the per-entity prompt
-  family.
+- Confirm Diagnosis verifier v0.5 on dev140 once the combined key-family
+  architecture has an SF candidate worth broadening.
 - Compare the best single-prompt structured-event variant against the existing
   per-entity prompt family before returning to specialist/verifier variants.
 
@@ -149,9 +156,9 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   `experiments/RUN_INDEX.md`. The first specialist Diagnosis comparison rejected
   the old per-entity frame (`0.282` clinical F1 vs v0.5 `0.569`); the v0.1
   Diagnosis verifier improved to `0.592`, v0.2 improved to `0.619`, v0.3
-  improved to `0.701`, and v0.4 improves to `0.768`, but Diagnosis remains
-  below target. Latest report:
-  `docs/research/exectv2_diagnosis_verifier_v04_pilot_report_2026-06-18.md`.
+  improved to `0.701`, v0.4 improved to `0.768`, and v0.5 cleared the dev25
+  Diagnosis target at `0.837`. Latest report:
+  `docs/research/exectv2_diagnosis_verifier_v05_pilot_report_2026-06-18.md`.
 - 2026-06-17: Built the reusable all-entity projection-gap ledger
   (`reports/projection_gap_ledger.py`). Classifies every gold FN / predicted FP
   into a layered `gap_family` (phrase coverage, attribute bundle, CUI

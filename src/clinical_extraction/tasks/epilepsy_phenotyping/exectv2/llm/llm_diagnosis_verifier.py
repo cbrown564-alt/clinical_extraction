@@ -50,7 +50,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
-PROMPT_VERSION = "exectv2_llm_diagnosis_verifier_v0.4"
+PROMPT_VERSION = "exectv2_llm_diagnosis_verifier_v0.5"
 PIPELINE_FAMILY = "exectv2_llm_diagnosis_verifier"
 COMPONENT_OWNER = "llm_diagnosis_verifier"
 
@@ -192,6 +192,11 @@ def _clinical_rules() -> list[str]:
             "same assertion should replace it."
         ),
         (
+            "Do not infer epilepsy from a generic clinic-review sentence, medication "
+            "use, EEG confirmation, or epileptic events. Emit generic 'epilepsy' "
+            "only when the evidence itself explicitly contains epilepsy."
+        ),
+        (
             "When a seizure-type/frequency line says 'seizures every ... possibly "
             "focal onset', emit 'focal onset epilepsy' with Certainty='3'."
         ),
@@ -247,6 +252,18 @@ def _clinical_rules() -> list[str]:
             "type mentions for each separately supported tonic-clonic assertion."
         ),
         (
+            "If the source separately states genetic generalised epilepsy before an "
+            "epilepsy-with tonic-clonic-alone syndrome, emit a separate 'genetic "
+            "generalised epilepsy' mention. Do not merge it into the later syndrome."
+        ),
+        (
+            "When the diagnosis line says secondary generalised tonic clonic "
+            "seizures, emit both 'secondary generalised tonic clonic seizures' and "
+            "the component 'tonic clonic seizures'. If a history line later repeats "
+            "generalised tonic clonic seizures, emit a second 'tonic clonic "
+            "seizures' mention with that separate evidence."
+        ),
+        (
             "For source phrases such as 'I think these are in keeping with temporal "
             "lobe onset focal seizures', emit seizure-type diagnoses such as "
             "'temporal lobe seizure' and 'focal seizures' with Certainty='4'; do "
@@ -258,14 +275,34 @@ def _clinical_rules() -> list[str]:
             "the named 'complex partial seizures' and do not emit 'general seizures'."
         ),
         (
+            "Never emit generic 'seizures' as a Diagnosis mention. Generic seizure "
+            "counts or rates belong to SeizureFrequency, not Diagnosis, unless a "
+            "named seizure type is present in the same source span."
+        ),
+        (
+            "Do not support a named seizure-type Diagnosis from generic episode or "
+            "spell evidence. The evidence for focal, temporal, tonic-clonic, or "
+            "other named seizure types must include the named type words."
+        ),
+        (
             "If an epilepsy diagnosis contains a parenthetical probable cause, such "
             "as 'symptomatic structural focal epilepsy (probable perinatal insult)', "
             "the epilepsy diagnosis remains Certainty='5'; the probable wording "
             "modifies the cause, not the diagnosis."
         ),
         (
+            "A core diagnosis before parentheses remains established even when the "
+            "parenthetical cause starts with probable. For example, 'Symptomatic "
+            "structural focal epilepsy (probable perinatal insult)' is Certainty='5'."
+        ),
+        (
             "If the source says 'intractable epilepsy', keep 'intractable epilepsy' "
             "as the text; do not reduce it to generic epilepsy."
+        ),
+        (
+            "If the source says focal seizures are completely under control, this is "
+            "still an affirmed Diagnosis mention for 'focal seizures'; use "
+            "Certainty='4' when introduced by 'I think'."
         ),
         (
             "If the source says a combination of epileptic and nonepileptic events, "
@@ -288,6 +325,11 @@ def _clinical_rules() -> list[str]:
             "Do not emit dissociative, non-epileptic, or psychogenic events as an "
             "epileptic Diagnosis unless the evidence explicitly states they are "
             "epileptic seizures."
+        ),
+        (
+            "For this benchmark-facing Diagnosis target, omit dissociative seizures "
+            "even when they appear in a Diagnosis list; they are not an epileptic "
+            "Diagnosis mention."
         ),
         (
             "Do not emit febrile seizures as a current epilepsy Diagnosis when they "
@@ -421,6 +463,51 @@ def _worked_examples() -> list[dict[str, Any]]:
         },
         {
             "note_fragment": (
+                "Diagnosis: genetic generalised epilepsy-epilepsy with generalised "
+                "tonic chronic seizures alone. Seizure type and frequency: "
+                "Generalised tonic clonic seizure-last event July 2016."
+            ),
+            "draft": [{"text": "epilepsy with generalised tonic clonic seizures alone"}],
+            "correct": [
+                {
+                    "text": "genetic generalised epilepsy",
+                    "attributes": {
+                        "DiagCategory": "Epilepsy",
+                        "Certainty": "5",
+                        "Negation": "Affirmed",
+                    },
+                    "evidence": "genetic generalised epilepsy",
+                    "confidence": "high",
+                    "rationale": "The genetic generalised epilepsy syndrome is explicit.",
+                },
+                {
+                    "text": "epilepsy with generalised tonic clonic seizures alone",
+                    "attributes": {
+                        "DiagCategory": "Epilepsy",
+                        "Certainty": "5",
+                        "Negation": "Affirmed",
+                    },
+                    "evidence": (
+                        "epilepsy with generalised tonic chronic seizures alone"
+                    ),
+                    "confidence": "high",
+                    "rationale": "The tonic chronic typo is normalized to tonic clonic.",
+                },
+                {
+                    "text": "generalised tonic clonic seizure",
+                    "attributes": {
+                        "DiagCategory": "SingleSeizure",
+                        "Certainty": "5",
+                        "Negation": "Affirmed",
+                    },
+                    "evidence": "Generalised tonic clonic seizure-last event July 2016",
+                    "confidence": "high",
+                    "rationale": "The seizure-type line names one tonic-clonic event.",
+                },
+            ],
+        },
+        {
+            "note_fragment": (
                 "Diagnosis: Epilepsy - unclassified, possibly generalised. "
                 "Seizure type and frequency: 2 generalised tonic clonic seizures."
             ),
@@ -515,6 +602,37 @@ def _worked_examples() -> list[dict[str, Any]]:
         },
         {
             "note_fragment": (
+                "I reviewed this lady with intractable epilepsy in clinic today. "
+                "She continues to get general and complex partial seizures."
+            ),
+            "draft": [{"text": "epilepsy"}],
+            "correct": [
+                {
+                    "text": "intractable epilepsy",
+                    "attributes": {
+                        "DiagCategory": "Epilepsy",
+                        "Certainty": "5",
+                        "Negation": "Affirmed",
+                    },
+                    "evidence": "intractable epilepsy",
+                    "confidence": "high",
+                    "rationale": "The specific intractable epilepsy diagnosis is stated.",
+                },
+                {
+                    "text": "complex partial seizures",
+                    "attributes": {
+                        "DiagCategory": "MultipleSeizures",
+                        "Certainty": "5",
+                        "Negation": "Affirmed",
+                    },
+                    "evidence": "complex partial seizures",
+                    "confidence": "high",
+                    "rationale": "Complex partial seizures are the named seizure type.",
+                },
+            ],
+        },
+        {
+            "note_fragment": (
                 "She will then lose consciousness before going in to a bilateral "
                 "convulsive seizure. He had a generalised tonic clonic seizure."
             ),
@@ -541,6 +659,63 @@ def _worked_examples() -> list[dict[str, Any]]:
                     "evidence": "a generalised tonic clonic seizure",
                     "confidence": "high",
                     "rationale": "The source describes one tonic-clonic event.",
+                },
+            ],
+        },
+        {
+            "note_fragment": (
+                "Diagnosis: Complex partial seizures with secondary generalised "
+                "tonic clonic seizures. He suffered with generalised tonic clonic "
+                "seizures, which were well controlled."
+            ),
+            "draft": [{"text": "secondary generalised tonic clonic seizures"}],
+            "correct": [
+                {
+                    "text": "complex partial seizures",
+                    "attributes": {
+                        "DiagCategory": "MultipleSeizures",
+                        "Certainty": "5",
+                        "Negation": "Affirmed",
+                    },
+                    "evidence": (
+                        "Complex partial seizures with secondary generalised "
+                        "tonic clonic seizures"
+                    ),
+                    "confidence": "high",
+                    "rationale": "The diagnosis line asserts complex partial seizures.",
+                },
+                {
+                    "text": "secondary generalised tonic clonic seizures",
+                    "attributes": {
+                        "DiagCategory": "MultipleSeizures",
+                        "Certainty": "5",
+                        "Negation": "Affirmed",
+                    },
+                    "evidence": "secondary generalised tonic clonic seizures",
+                    "confidence": "high",
+                    "rationale": "The diagnosis line asserts the secondary seizure type.",
+                },
+                {
+                    "text": "tonic clonic seizures",
+                    "attributes": {
+                        "DiagCategory": "MultipleSeizures",
+                        "Certainty": "5",
+                        "Negation": "Affirmed",
+                    },
+                    "evidence": "secondary generalised tonic clonic seizures",
+                    "confidence": "high",
+                    "rationale": "The tonic-clonic component is also a scored concept.",
+                },
+                {
+                    "text": "tonic clonic seizures",
+                    "attributes": {
+                        "DiagCategory": "MultipleSeizures",
+                        "Certainty": "5",
+                        "Negation": "Affirmed",
+                    },
+                    "evidence": "generalised tonic clonic seizures, which were well controlled",
+                    "confidence": "high",
+                    "rationale": "The later history line is a separate assertion.",
                 },
             ],
         },
@@ -586,6 +761,40 @@ def _worked_examples() -> list[dict[str, Any]]:
                     "evidence": "complex partial seizures",
                     "confidence": "high",
                     "rationale": "Complex partial seizures are a named seizure type.",
+                },
+            ],
+        },
+        {
+            "note_fragment": (
+                "Diagnosis: 1. Mild head injury 2. Dissociative seizures "
+                "3. Focal epilepsy. I think that the focal seizures are completely "
+                "under control."
+            ),
+            "draft": [{"text": "dissociative seizures"}, {"text": "focal epilepsy"}],
+            "correct": [
+                {
+                    "text": "focal epilepsy",
+                    "attributes": {
+                        "DiagCategory": "Epilepsy",
+                        "Certainty": "5",
+                        "Negation": "Affirmed",
+                    },
+                    "evidence": "Focal epilepsy",
+                    "confidence": "high",
+                    "rationale": "Focal epilepsy is explicitly diagnosed.",
+                },
+                {
+                    "text": "focal seizures",
+                    "attributes": {
+                        "DiagCategory": "MultipleSeizures",
+                        "Certainty": "4",
+                        "Negation": "Affirmed",
+                    },
+                    "evidence": (
+                        "I think that the focal seizures are completely under control"
+                    ),
+                    "confidence": "medium",
+                    "rationale": "Under control still affirms the named seizure type.",
                 },
             ],
         },

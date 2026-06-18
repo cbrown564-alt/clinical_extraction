@@ -1858,6 +1858,17 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Inform Architecture Loop
 
+### `exectv2_llm_diagnosis_verifier_v05_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_llm_diagnosis_verifier`; mode `live`; replay `native_run_split`.
+- Model role: Diagnosis-focused verifier v0.5 over the v0.5 single structured key-entity draft. The model owns normalized Diagnosis concept text and may keep, delete, edit, or add Diagnosis mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
+- Primary metrics: prompt_version=exectv2_llm_diagnosis_verifier_v0.5, diagnosis_clinical_headline_f1=0.837, diagnosis_clinical_headline_precision=0.911, diagnosis_clinical_headline_recall=0.774, diagnosis_semantic_item_f1=0.620, diagnosis_source_near_f1=0.840, parse_failures=0, evidence_validity_rate=1.0000.
+- Evidence validity: 0 call failures, 0 parse failures; 44/44 evidence-valid rendered mentions.
+- Supersedes: `exectv2_llm_diagnosis_verifier_v04_dev25_gpt41mini_20260618`.
+- Claim language: First Diagnosis-specific candidate to clear the dev25 clinical-recovery target (`0.837` > `0.8`) while keeping evidence validity `1.0000`. Development-surface success only; requires dev140 confirmation before any generalization claim. Shift key-entity work to SeizureFrequency next.
+- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v05_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v05_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_diagnosis_verifier_v05_pilot_report_2026-06-18.md`.
+
 ### `exectv2_llm_diagnosis_verifier_v04_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
 - Pipeline: `exectv2_llm_diagnosis_verifier`; mode `live`; replay `native_run_split`.
