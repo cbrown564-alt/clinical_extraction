@@ -68,6 +68,11 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   v0.5: clinical headline F1 `0.282` vs v0.5 single structured `0.569`, despite
   a clean gate and source-near recall lift versus the old all-9 baseline. See
   `docs/research/exectv2_diagnosis_specialist_prompt_comparison_2026-06-18.md`.
+- Diagnosis verifier v0.1 is the first multi-prompt variant to beat v0.5 on the
+  objective-aligned Diagnosis headline: `0.592` vs `0.569`, with a clean gate and
+  evidence validity `1.0000`. It improves precision but loses recall, so v0.2
+  should target recall without reintroducing symptom/non-epileptic FPs. See
+  `docs/research/exectv2_diagnosis_verifier_v01_pilot_report_2026-06-18.md`.
 
 ## Active Priorities
 
@@ -83,9 +88,9 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
 
 ### Now
 
-- Design the next Diagnosis-focused architecture from v0.5, not from the old
-  per-entity prompt: either a new specialist Diagnosis prompt using v0.5 guidance
-  or a lightweight verifier/repair prompt for Diagnosis concept spans/certainty.
+- Iterate Diagnosis verifier v0.2 from v0.1 dev25 misses: lift recall for true
+  tonic-clonic, focal seizure, uncertain syndrome, and JME concepts while
+  keeping evidence validity and precision gains.
 
 ### Next
 
@@ -119,8 +124,10 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   Investigations above target; v0.5 then lifted Diagnosis to `0.569` while
   preserving the other family wins. Runs are registered in
   `experiments/RUN_INDEX.md`. The first specialist Diagnosis comparison rejected
-  the old per-entity frame (`0.282` clinical F1 vs v0.5 `0.569`). Latest report:
-  `docs/research/exectv2_key_entities_structured_v05_pilot_report_2026-06-18.md`.
+  the old per-entity frame (`0.282` clinical F1 vs v0.5 `0.569`); the v0.1
+  Diagnosis verifier improves to `0.592` but is still far from target. Latest
+  report:
+  `docs/research/exectv2_diagnosis_verifier_v01_pilot_report_2026-06-18.md`.
 - 2026-06-17: Built the reusable all-entity projection-gap ledger
   (`reports/projection_gap_ledger.py`). Classifies every gold FN / predicted FP
   into a layered `gap_family` (phrase coverage, attribute bundle, CUI
