@@ -49,7 +49,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
-PROMPT_VERSION = "exectv2_hybrid_sf_state_adjudicator_v0.1"
+PROMPT_VERSION = "exectv2_hybrid_sf_state_adjudicator_v0.2"
 PIPELINE_FAMILY = "exectv2_hybrid_sf_state_adjudicator"
 COMPONENT_OWNER = "hybrid_sf_state_adjudicator"
 
@@ -252,9 +252,10 @@ def build_prompt_input(
         "draft_seizure_frequency_mentions": list(draft_mentions),
         "candidate_evidence_spans": [candidate.as_payload() for candidate in candidates],
         "state_decision_guide": _state_decision_guide(),
+        "generic_seizure_policy": _generic_seizure_policy(),
         "attribute_vocabulary": verifier_base._attribute_vocabulary(),
         "clinical_rules": _clinical_rules(),
-        "worked_examples": verifier_base._worked_examples(),
+        "worked_examples": _worked_examples(),
         "letter_id": letter.letter_id,
         "letter_text": letter.note_text,
     }
@@ -278,7 +279,72 @@ def _clinical_rules() -> list[str]:
             "the letter clearly contains a count, seizure-free target, last-event "
             "anchor, or frequency-change statement."
         ),
+        (
+            "Do not emit a generic seizures active-rate when the evidence names a "
+            "specific seizure type such as generalised tonic clonic, focal motor, "
+            "absence, dyscognitive, or focal-to-bilateral convulsive seizures. Use "
+            "the named seizure type only unless the source separately gives a "
+            "generic seizure frequency."
+        ),
+        (
+            "Do not convert unlabelled attacks, episodes, events, stares, turns, "
+            "jerks, or loss-of-consciousness counts into generic SeizureFrequency "
+            "unless the same evidence explicitly calls them seizures."
+        ),
+        (
+            "Do not emit seizure-free states for historical best periods, previous "
+            "events before a recent seizure, driving-advice requirements, or bare "
+            "longest-period-without-seizures statements."
+        ),
+        (
+            "Do not emit generic unknown/change states from epilepsy stability, "
+            "control, or treatment-response wording unless the evidence explicitly "
+            "states seizure frequency changed."
+        ),
     ] + verifier_base._clinical_rules()
+
+
+def _generic_seizure_policy() -> dict[str, list[str]]:
+    return {
+        "keep_generic_active_rate": [
+            "The evidence itself says seizure or seizures and gives a current count/rate.",
+            "The evidence gives a generic seizure count since a point in time.",
+            "The evidence says a few/several seizures per day/week/month/year.",
+        ],
+        "reject_generic_active_rate": [
+            "The evidence says only episodes, attacks, events, turns, stares, jerks, or blackouts.",
+            (
+                "The evidence names a specific seizure type; emit that named "
+                "type, not an extra generic duplicate."
+            ),
+            (
+                "The evidence is historical onset, febrile childhood history, "
+                "previous event, or one-off single seizure context."
+            ),
+        ],
+        "keep_generic_seizure_free": [
+            "No further seizures since a visit, medication change, surgery, date, or age range.",
+            "Last seizures were at a date or age range and no recent seizure contradicts it.",
+        ],
+        "reject_generic_seizure_free": [
+            "Driving advice or legal requirement to be seizure free.",
+            "Historical best/longest seizure-free period when the patient now has seizures.",
+            "Previous event before a recent seizure.",
+        ],
+        "keep_generic_unknown": [
+            (
+                "The evidence explicitly says seizures returned, increased, "
+                "decreased, improved, frequent, or infrequent."
+            ),
+        ],
+        "reject_generic_unknown": [
+            (
+                "Epilepsy is stable or treatment/control improved without "
+                "explicitly naming seizure frequency."
+            ),
+            "Jerks or stares improved without a scored seizure type.",
+        ],
+    }
 
 
 def _state_decision_guide() -> dict[str, list[str]]:
@@ -308,6 +374,58 @@ def _state_decision_guide() -> dict[str, list[str]]:
             ),
         ],
     }
+
+
+def _worked_examples() -> list[dict[str, Any]]:
+    return [
+        {
+            "note_fragment": (
+                "He gets around 1 generalised tonic clonic seizure in his sleep per month."
+            ),
+            "draft": [{"text": "seizures"}],
+            "candidate_span": (
+                "He gets around 1 generalised tonic clonic seizure in his sleep per month"
+            ),
+            "correct": [
+                {
+                    "text": "generalised tonic clonic seizure",
+                    "attributes": {
+                        "NumberOfSeizures": "1",
+                        "NumberOfTimePeriods": "1",
+                        "TimePeriod": "Month",
+                    },
+                    "evidence": (
+                        "around 1 generalised tonic clonic seizure in his sleep per month"
+                    ),
+                    "confidence": "high",
+                    "rationale": (
+                        "The evidence names the seizure type, so no extra generic "
+                        "seizures mention is emitted."
+                    ),
+                }
+            ],
+        },
+        {
+            "note_fragment": (
+                "There is also a history of staring episodes which last up to 2 minutes. "
+                "They occur 3 to 5 times a week."
+            ),
+            "draft": [{"text": "seizures"}],
+            "correct": [],
+        },
+        {
+            "note_fragment": (
+                "Before the recent seizure she had been seizure free for 3 years."
+            ),
+            "draft": [{"text": "seizure free"}],
+            "correct": [],
+        },
+        {
+            "note_fragment": "His epilepsy has been stable over the last few years.",
+            "draft": [{"text": "seizures", "attributes": {"FrequencyChange": "Same"}}],
+            "correct": [],
+        },
+    ] + verifier_base._worked_examples()
 
 
 def _sentence_spans(text: str) -> list[tuple[str, int, int]]:

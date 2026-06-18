@@ -1,0 +1,466 @@
+{
+  "generated": "2026-06-18",
+  "jsonl": "experiments\\exectv2_hybrid_sf_state_adjudicator_v02_dev140_gpt41mini_20260618.jsonl",
+  "split": "dev",
+  "letters": 140,
+  "prompt_version": "exectv2_hybrid_sf_state_adjudicator_v0.2",
+  "pipeline_family": "exectv2_hybrid_sf_state_adjudicator",
+  "headline": {
+    "tp": 123,
+    "fp": 56,
+    "fn": 64,
+    "precision": 0.6871508379888268,
+    "recall": 0.6577540106951871,
+    "f1": 0.6721311475409836
+  },
+  "active_rate": {
+    "tp": 70,
+    "fp": 34,
+    "fn": 19,
+    "precision": 0.6730769230769231,
+    "recall": 0.7865168539325843,
+    "f1": 0.7253886010362695
+  },
+  "seizure_free": {
+    "tp": 47,
+    "fp": 10,
+    "fn": 18,
+    "precision": 0.8245614035087719,
+    "recall": 0.7230769230769231,
+    "f1": 0.7704918032786885
+  },
+  "unknown": {
+    "tp": 6,
+    "fp": 12,
+    "fn": 27,
+    "precision": 0.3333333333333333,
+    "recall": 0.18181818181818182,
+    "f1": 0.23529411764705885
+  },
+  "by_state_residual": {
+    "active-rate": {
+      "misses": 19,
+      "overs": 34
+    },
+    "seizure-free": {
+      "misses": 18,
+      "overs": 10
+    },
+    "unknown": {
+      "misses": 27,
+      "overs": 12
+    }
+  },
+  "top_gold_misses": [
+    {
+      "count": 13,
+      "key": "[[\"cui\", \"C0036572\"], \"unknown\"]",
+      "state": "unknown",
+      "example": "seizures",
+      "letters": [
+        "EA0050",
+        "EA0059",
+        "EA0106",
+        "EA0108",
+        "EA0111",
+        "EA0119",
+        "EA0121",
+        "EA0123"
+      ]
+    },
+    {
+      "count": 10,
+      "key": "[[\"cui\", \"C0036572\"], \"seizure-free\"]",
+      "state": "seizure-free",
+      "example": "seizures",
+      "letters": [
+        "EA0063",
+        "EA0137",
+        "EA0143",
+        "EA0162",
+        "EA0168",
+        "EA0173",
+        "EA0180",
+        "EA0182"
+      ]
+    },
+    {
+      "count": 7,
+      "key": "[[\"cui\", \"C0036572\"], \"active-rate\"]",
+      "state": "active-rate",
+      "example": "seizure",
+      "letters": [
+        "EA0108",
+        "EA0113",
+        "EA0117",
+        "EA0119",
+        "EA0154",
+        "EA0169",
+        "EA0181"
+      ]
+    },
+    {
+      "count": 4,
+      "key": "[[\"cui\", \"C0563606\"], \"unknown\"]",
+      "state": "unknown",
+      "example": "absence",
+      "letters": [
+        "EA0049",
+        "EA0050",
+        "EA0082",
+        "EA0096"
+      ]
+    },
+    {
+      "count": 4,
+      "key": "[[\"cui\", \"C0494475\"], \"unknown\"]",
+      "state": "unknown",
+      "example": "generalised-tonic-clonic-seizures",
+      "letters": [
+        "EA0049",
+        "EA0087",
+        "EA0123",
+        "EA0161"
+      ]
+    },
+    {
+      "count": 4,
+      "key": "[[\"cui\", \"C1299590\"], \"seizure-free\"]",
+      "state": "seizure-free",
+      "example": "seizure-free",
+      "letters": [
+        "EA0127",
+        "EA0176",
+        "EA0180",
+        "EA0190"
+      ]
+    },
+    {
+      "count": 3,
+      "key": "[[\"cui\", \"C0494475\"], \"active-rate\"]",
+      "state": "active-rate",
+      "example": "generalised-tonic-clonic-seizures",
+      "letters": [
+        "EA0006",
+        "EA0096",
+        "EA0139"
+      ]
+    },
+    {
+      "count": 3,
+      "key": "[[\"cui\", \"C0877017\"], \"seizure-free\"]",
+      "state": "seizure-free",
+      "example": "focal-to-bilateral-convulsive-seizure",
+      "letters": [
+        "EA0011",
+        "EA0061",
+        "EA0121"
+      ]
+    },
+    {
+      "count": 3,
+      "key": "[[\"cui\", \"C0877017\"], \"active-rate\"]",
+      "state": "active-rate",
+      "example": "focal-to-bilateral-convulsive-seizures",
+      "letters": [
+        "EA0054",
+        "EA0186"
+      ]
+    },
+    {
+      "count": 2,
+      "key": "[[\"cui\", \"C0027066\"], \"active-rate\"]",
+      "state": "active-rate",
+      "example": "myoclonic-jerks",
+      "letters": [
+        "EA0049",
+        "EA0050"
+      ]
+    },
+    {
+      "count": 2,
+      "key": "[[\"cui\", \"C0027066\"], \"unknown\"]",
+      "state": "unknown",
+      "example": "myoclonic-jerks",
+      "letters": [
+        "EA0049",
+        "EA0128"
+      ]
+    },
+    {
+      "count": 2,
+      "key": "[[\"cui\", \"C0270834\"], \"unknown\"]",
+      "state": "unknown",
+      "example": "dyscognitive-seizures",
+      "letters": [
+        "EA0169",
+        "EA0181"
+      ]
+    },
+    {
+      "count": 1,
+      "key": "[[\"cui\", \"C0270834\"], \"active-rate\"]",
+      "state": "active-rate",
+      "example": "focal-seizures-with-altered-awareness",
+      "letters": [
+        "EA0054"
+      ]
+    },
+    {
+      "count": 1,
+      "key": "[[\"cui\", \"C0270838\"], \"active-rate\"]",
+      "state": "active-rate",
+      "example": "secondary-generalised-seizures",
+      "letters": [
+        "EA0056"
+      ]
+    },
+    {
+      "count": 1,
+      "key": "[[\"cui\", \"C0751495\"], \"unknown\"]",
+      "state": "unknown",
+      "example": "focal-seizures",
+      "letters": [
+        "EA0068"
+      ]
+    },
+    {
+      "count": 1,
+      "key": "[[\"cui\", \"C3203523\"], \"active-rate\"]",
+      "state": "active-rate",
+      "example": "seizure-cluster",
+      "letters": [
+        "EA0110"
+      ]
+    },
+    {
+      "count": 1,
+      "key": "[[\"cui\", \"C0563606\"], \"active-rate\"]",
+      "state": "active-rate",
+      "example": "absence",
+      "letters": [
+        "EA0124"
+      ]
+    },
+    {
+      "count": 1,
+      "key": "[[\"cui\", \"C4316903\"], \"unknown\"]",
+      "state": "unknown",
+      "example": "typical-absences",
+      "letters": [
+        "EA0184"
+      ]
+    },
+    {
+      "count": 1,
+      "key": "[[\"cui\", \"C0016399\"], \"seizure-free\"]",
+      "state": "seizure-free",
+      "example": "focal",
+      "letters": [
+        "EA0186"
+      ]
+    }
+  ],
+  "top_predicted_over_emissions": [
+    {
+      "count": 13,
+      "key": "[[\"cui\", \"C0036572\"], \"active-rate\"]",
+      "state": "active-rate",
+      "example": "seizures",
+      "letters": [
+        "EA0052",
+        "EA0062",
+        "EA0085",
+        "EA0104",
+        "EA0129",
+        "EA0141",
+        "EA0142",
+        "EA0148"
+      ]
+    },
+    {
+      "count": 4,
+      "key": "[[\"cui\", \"C0494475\"], \"active-rate\"]",
+      "state": "active-rate",
+      "example": "generalised tonic clonic seizures",
+      "letters": [
+        "EA0021",
+        "EA0146",
+        "EA0162",
+        "EA0200"
+      ]
+    },
+    {
+      "count": 4,
+      "key": "[[\"cui\", \"C1299590\"], \"seizure-free\"]",
+      "state": "seizure-free",
+      "example": "seizure free",
+      "letters": [
+        "EA0038",
+        "EA0087",
+        "EA0143"
+      ]
+    },
+    {
+      "count": 4,
+      "key": "[[\"cui\", \"C0036572\"], \"unknown\"]",
+      "state": "unknown",
+      "example": "seizures",
+      "letters": [
+        "EA0040",
+        "EA0117",
+        "EA0135",
+        "EA0199"
+      ]
+    },
+    {
+      "count": 3,
+      "key": "[[\"cui\", \"C0494475\"], \"unknown\"]",
+      "state": "unknown",
+      "example": "generalised tonic clonic seizures",
+      "letters": [
+        "EA0096",
+        "EA0131",
+        "EA0139"
+      ]
+    },
+    {
+      "count": 3,
+      "key": "[[\"cui\", \"C0036572\"], \"seizure-free\"]",
+      "state": "seizure-free",
+      "example": "seizures",
+      "letters": [
+        "EA0116",
+        "EA0171",
+        "EA0190"
+      ]
+    },
+    {
+      "count": 2,
+      "key": "[[\"phrase\", \"focal dyscognitive seizures\"], \"active-rate\"]",
+      "state": "active-rate",
+      "example": "focal dyscognitive seizures",
+      "letters": [
+        "EA0169",
+        "EA0181"
+      ]
+    },
+    {
+      "count": 1,
+      "key": "[[\"phrase\", \"seizure clusters\"], \"unknown\"]",
+      "state": "unknown",
+      "example": "seizure clusters",
+      "letters": [
+        "EA0050"
+      ]
+    },
+    {
+      "count": 1,
+      "key": "[[\"cui\", \"C0016399\"], \"active-rate\"]",
+      "state": "active-rate",
+      "example": "focal motor seizures",
+      "letters": [
+        "EA0057"
+      ]
+    },
+    {
+      "count": 1,
+      "key": "[[\"phrase\", \"dissociative seizures\"], \"active-rate\"]",
+      "state": "active-rate",
+      "example": "dissociative seizures",
+      "letters": [
+        "EA0057"
+      ]
+    },
+    {
+      "count": 1,
+      "key": "[[\"cui\", \"C0751495\"], \"seizure-free\"]",
+      "state": "seizure-free",
+      "example": "focal seizures",
+      "letters": [
+        "EA0059"
+      ]
+    },
+    {
+      "count": 1,
+      "key": "[[\"phrase\", \"focal to bilateral seizures\"], \"active-rate\"]",
+      "state": "active-rate",
+      "example": "focal to bilateral seizures",
+      "letters": [
+        "EA0061"
+      ]
+    },
+    {
+      "count": 1,
+      "key": "[[\"cui\", \"C0027066\"], \"unknown\"]",
+      "state": "unknown",
+      "example": "myoclonic jerks",
+      "letters": [
+        "EA0087"
+      ]
+    },
+    {
+      "count": 1,
+      "key": "[[\"cui\", \"C0149958\"], \"active-rate\"]",
+      "state": "active-rate",
+      "example": "complex partial seizures",
+      "letters": [
+        "EA0092"
+      ]
+    },
+    {
+      "count": 1,
+      "key": "[[\"cui\", \"C0751495\"], \"active-rate\"]",
+      "state": "active-rate",
+      "example": "focal seizures",
+      "letters": [
+        "EA0109"
+      ]
+    },
+    {
+      "count": 1,
+      "key": "[[\"phrase\", \"cluster of 3\"], \"active-rate\"]",
+      "state": "active-rate",
+      "example": "cluster of 3",
+      "letters": [
+        "EA0110"
+      ]
+    },
+    {
+      "count": 1,
+      "key": "[[\"phrase\", \"focal impaired awareness seizures\"], \"active-rate\"]",
+      "state": "active-rate",
+      "example": "focal impaired awareness seizures",
+      "letters": [
+        "EA0114"
+      ]
+    },
+    {
+      "count": 1,
+      "key": "[[\"cui\", \"C0270834\"], \"unknown\"]",
+      "state": "unknown",
+      "example": "focal seizures with altered awareness",
+      "letters": [
+        "EA0121"
+      ]
+    },
+    {
+      "count": 1,
+      "key": "[[\"cui\", \"C0877017\"], \"active-rate\"]",
+      "state": "active-rate",
+      "example": "focal to bilateral convulsive seizures",
+      "letters": [
+        "EA0121"
+      ]
+    },
+    {
+      "count": 1,
+      "key": "[[\"phrase\", \"absence events\"], \"active-rate\"]",
+      "state": "active-rate",
+      "example": "absence events",
+      "letters": [
+        "EA0124"
+      ]
+    }
+  ]
+}

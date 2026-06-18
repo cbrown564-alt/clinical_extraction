@@ -156,6 +156,12 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   generic seizure-state precision/recall: active-rate over-emission and unknown
   state misses. See
   `docs/research/exectv2_sf_state_adjudicator_v01_dev140_report_2026-06-18.md`.
+- SeizureFrequency state adjudicator v0.2 tightened generic seizure rules and
+  improved dev25 to `0.951`, but dev140 stayed flat/slightly worse at `0.672`
+  (`P 0.687`, `R 0.658`). It reduced over-emission but collapsed unknown-state
+  recall (`unknown F1 0.235`), so v0.1 remains the current numeric SF candidate.
+  See
+  `docs/research/exectv2_sf_state_adjudicator_v02_dev140_report_2026-06-18.md`.
 - Diagnosis heading/narrative decomposer v0.1 is rejected as the current
   Diagnosis candidate. It clears dev25 (`0.814`) but transfers to only `0.642`
   on dev140, below verifier v0.6 (`0.651`), despite clean gates and evidence
@@ -174,8 +180,8 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
 1. Redesign the remaining below-target Diagnosis and SeizureFrequency families
    from the updated dev140 residual ledgers: Diagnosis needs constrained
    concept-group verification after v0.1 reconciler improved only to `0.658`;
-   SF needs a stricter generic-state candidate adjudicator after v0.1 improved
-   but missed target.
+   SF needs a two-lane adjudicator that preserves v0.2 precision but restores
+   unknown/change-state recall.
 2. Require benchmark-beating dev evidence before any new full-200 audit:
    overall `0.87` per-item / `0.90` per-letter, plus per-entity tables,
    evidence/schema reliability, semantic-vs-CUI gaps, and ablations.
@@ -188,7 +194,8 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   epilepsy and tonic-clonic over-emission while preserving focal epilepsy and
   secondary-generalised recall.
 - Iterate SeizureFrequency candidate span/state adjudication with stricter
-  generic seizure keep/reject and unknown-vs-active handling.
+  active-rate/seizure-free gates plus a separate unknown/change-state recovery
+  lane.
 
 ### Next
 

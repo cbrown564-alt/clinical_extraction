@@ -1858,6 +1858,26 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Inform Architecture Loop
 
+### `exectv2_hybrid_sf_state_adjudicator_v02_dev140_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_hybrid_sf_state_adjudicator`; mode `live`; replay `native_run_split`.
+- Model role: SeizureFrequency candidate-span state adjudicator v0.2 over the v0.5 single structured key-entity draft. v0.2 adds stricter generic active-rate/seizure-free/unknown keep-reject policy; the model still owns final mention selection and state choice.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection; deterministic candidate spans are attention scaffolding, not predictions`.
+- Primary metrics: seizure_frequency_f1=0.672, seizure_frequency_precision=0.687, seizure_frequency_recall=0.658, active_rate_f1=0.725, seizure_free_f1=0.770, unknown_f1=0.235, candidate_spans=412, evidence_validity_rate=1.0, parse_failures=0.
+- Evidence validity: 0 call failures, 0 parse failures; 179/179 evidence-valid rendered mentions. Dev25 pilot was strong (`0.951` F1) but did not transfer to dev140.
+- Claim language: Revise-only. v0.2 improves precision versus v0.1 but loses enough recall that F1 is slightly worse (`0.672` vs `0.674`). Unknown-state recall collapses; next loop should add a separate unknown/change-state recovery lane rather than tighten generic rejection further.
+- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v02_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v02_dev140_gpt41mini_20260618.md`, `experiments/exectv2_sf_state_adjudicator_v02_residual_ledger_dev140_20260618.json`, `experiments/exectv2_sf_state_adjudicator_v02_residual_ledger_dev140_20260618.md`, `docs/research/exectv2_sf_state_adjudicator_v02_dev140_report_2026-06-18.md`.
+
+### `exectv2_hybrid_sf_state_adjudicator_v02_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_hybrid_sf_state_adjudicator`; mode `live`; replay `native_run_split`.
+- Model role: Small live probe for the stricter v0.2 generic seizure policy before full dev140 escalation.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `same as dev140 v0.2`.
+- Primary metrics: seizure_frequency_f1=0.951, seizure_frequency_precision=0.967, seizure_frequency_recall=0.935, candidate_spans=79, evidence_validity_rate=1.0, parse_failures=0.
+- Evidence validity: 0 call failures, 0 parse failures; 30/30 evidence-valid rendered mentions.
+- Claim language: Pilot-only escalation signal. Strong dev25 precision improvement justified dev140, but the effect did not transfer.
+- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v02_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v02_dev25_gpt41mini_20260618.md`.
+
 ### `exectv2_hybrid_diagnosis_reconciler_v01_dev140_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `140` rows.
 - Pipeline: `exectv2_hybrid_diagnosis_reconciler`; mode `live`; replay `native_run_split`.
