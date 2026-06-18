@@ -38,14 +38,21 @@ def test_prompt_hygiene_and_four_family_schema() -> None:
         INVESTIGATIONS.name,
     }
     assert "clinical_events" in payload["output_schema"]
+    assert payload["prompt_version"].endswith("_v0.3")
     assert "medication" in payload["family_guidance"]
     assert "seizure_frequency" in payload["family_guidance"]
     assert "DiagCategory" in payload["attribute_vocabulary"][DIAGNOSIS.name]
     assert "EEG_Type" in payload["attribute_vocabulary"][INVESTIGATIONS.name]
     clinical_rules = " ".join(payload["clinical_rules"])
     assert "LowerNumberOfSeizures" in clinical_rules
+    assert "LowerNumberOfTimePeriods='3'" in clinical_rules
+    assert "FrequencyChange only" in clinical_rules
     assert "PointInTime='LastClinic'" in clinical_rules
     assert "Every Diagnosis mention must include Certainty and Negation" in clinical_rules
+    assert "Certainty='4' for probable or likely diagnoses" in clinical_rules
+    assert "Do not render vague symptoms" in clinical_rules
+    assert "generic seizure phrase" in clinical_rules
+    assert "future planned, requested, repeat, or follow-up investigations" in clinical_rules
     assert "Do not default a plain EEG to Standard" in clinical_rules
     med_example = next(
         example
@@ -55,6 +62,26 @@ def test_prompt_hygiene_and_four_family_schema() -> None:
     assert med_example["correct_event"]["mentions"][0]["text"] == (
         "lamotrigine 200 mg twice daily"
     )
+    interval_example = next(
+        example
+        for example in payload["worked_examples"]
+        if example["note_fragment"] == "She has seizures every 3 to 4 weeks."
+    )
+    assert interval_example["correct_event"]["mentions"][0]["attributes"][
+        "LowerNumberOfTimePeriods"
+    ] == "3"
+    probable_example = next(
+        example
+        for example in payload["worked_examples"]
+        if example["note_fragment"] == "Diagnosis: probable temporal lobe epilepsy."
+    )
+    assert probable_example["correct_event"]["mentions"][0]["attributes"]["Certainty"] == "4"
+    planned_mri_example = next(
+        example
+        for example in payload["worked_examples"]
+        if example["note_fragment"] == "I will request a repeat MRI scan next year."
+    )
+    assert planned_mri_example["correct_event"]["mentions"] == []
 
 
 def test_parse_structured_events_coerces_nested_values() -> None:
