@@ -1858,6 +1858,17 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Inform Architecture Loop
 
+### `exectv2_llm_only_key_entities_structured_v04_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_llm_only_key_entities_structured`; mode `live`; replay `native_run_split`.
+- Model role: LLM-only single-prompt structured clinical event extractor over medication, Diagnosis, SeizureFrequency, and Investigations; deterministic code limited to schema/evidence gates, neutral attribute repair, CUI projection, and scoring.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
+- Primary metrics: prompt_version=exectv2_llm_only_key_entities_structured_v0.4, semantic_per_item_f1=0.295, benchmark_per_item_f1=0.256, phrase_only_per_item_f1=0.446, source_near_f1=0.728, prescription_semantic_f1=0.192, diagnosis_semantic_f1=0.202, seizurefrequency_semantic_f1=0.441, investigations_semantic_f1=0.558, prescription_clinical_headline_f1=0.900, diagnosis_clinical_headline_f1=0.460, seizurefrequency_clinical_headline_f1=0.644, investigations_clinical_headline_f1=0.837, parse_failures=0, evidence_validity_rate=0.9695.
+- Evidence validity: 0 call failures, 0 parse failures; 159/164 evidence-valid rendered mentions.
+- Supersedes: `exectv2_llm_only_key_entities_structured_v03_dev25_gpt41mini_20260618`.
+- Claim language: Best single-prompt structured dev25 candidate so far, but revise-only. v0.4 recovers SeizureFrequency headline F1 (`0.421->0.644`) while preserving medication (`0.900`) and Investigations (`0.837`) above target. Diagnosis remains the bottleneck (`0.460`), so next v0.5 should focus on Diagnosis hard cases before dev140 or specialist-prompt comparison.
+- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_v04_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_only_key_entities_structured_v04_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_key_entities_structured_v04_pilot_report_2026-06-18.md`.
+
 ### `exectv2_llm_only_key_entities_structured_v03_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
 - Pipeline: `exectv2_llm_only_key_entities_structured`; mode `live`; replay `native_run_split`.

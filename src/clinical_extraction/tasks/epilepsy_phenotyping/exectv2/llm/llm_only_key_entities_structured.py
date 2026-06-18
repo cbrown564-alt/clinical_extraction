@@ -59,7 +59,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
-PROMPT_VERSION = "exectv2_llm_only_key_entities_structured_v0.3"
+PROMPT_VERSION = "exectv2_llm_only_key_entities_structured_v0.4"
 PIPELINE_FAMILY = "exectv2_llm_only_key_entities_structured"
 COMPONENT_OWNER = "llm_only_key_entities_structured"
 
@@ -239,6 +239,12 @@ def build_prompt_input(letter: ExectLetter) -> str:
                 "epilepsy diagnosis, or named seizure type."
             ),
             (
+                "A problem-list or Diagnosis header is not enough by itself: still "
+                "exclude anxiety, dissociative/non-epileptic events, blackouts, "
+                "collapse, and loss of consciousness from the requested Diagnosis "
+                "family unless the phrase is explicitly asserted as epileptic."
+            ),
+            (
                 "For diagnosis, use DiagCategory='Epilepsy' for epilepsy syndromes or "
                 "diagnoses, 'SingleSeizure' for one named seizure type, and "
                 "'MultipleSeizures' only when the mention represents multiple seizure "
@@ -255,9 +261,25 @@ def build_prompt_input(letter: ExectLetter) -> str:
                 "when the count explicitly belongs to that type."
             ),
             (
+                "For named seizure types, preserve clinically meaningful modifiers "
+                "that are part of the exact phrase, including 'with altered awareness', "
+                "'focal to bilateral', lobe qualifiers, convulsive, tonic clonic, "
+                "absence-like, and myoclonic."
+            ),
+            (
+                "Do not render SeizureFrequency for generic events, blackouts, "
+                "collapse, anxiety attacks, or dissociative/non-epileptic events "
+                "unless the same phrase is explicitly asserted as epileptic seizures."
+            ),
+            (
                 "For seizure-frequency ranges, never write values like '2 to 3', "
                 "'2-4', or '3 or 4' in NumberOfSeizures. Use LowerNumberOfSeizures "
                 "and UpperNumberOfSeizures instead."
+            ),
+            (
+                "For approximate count words without exact numbers, use conservative "
+                "integer counts only when the letter clearly describes seizures: "
+                "'couple'='2', 'few'='2', and 'several'='3'."
             ),
             (
                 "For interval rates such as 'one every 3 to 4 weeks', set "
@@ -289,6 +311,11 @@ def build_prompt_input(letter: ExectLetter) -> str:
                 "with TimeSince_or_TimeOfEvent='Since' and the stated MonthDate, "
                 "YearDate, or PointInTime. Do not convert last-event dates into an "
                 "annual recurring rate."
+            ),
+            (
+                "Phrases like 'last seizure', 'last event', or 'has had none since' "
+                "mean seizure-free since that anchor for the named seizure type; do "
+                "not render them as one seizure during that date."
             ),
             (
                 "For seizure-free statements, anchor text to the underlying seizure "
@@ -353,13 +380,15 @@ def _family_guidance() -> dict[str, str]:
             "or named seizure types. Render atomic Diagnosis mentions with "
             "DiagCategory, Certainty, and Negation. Preserve uncertainty words and "
             "avoid vague symptoms or non-epileptic differentials unless they are "
-            "explicitly asserted as epileptic diagnoses."
+            "explicitly asserted as epileptic diagnoses, even when they appear in a "
+            "Diagnosis/problem-list section."
         ),
         "seizure_frequency": (
             "How often a seizure type occurs, including seizure-free duration, "
             "ranges, interval cadence, cluster counts, dated counts, and frequency "
             "change. Preserve the stated seizure anchor and temporal frame instead "
-            "of converting it into a guessed rate."
+            "of converting it into a guessed rate; exclude non-epileptic events and "
+            "blackouts unless the letter states they are epileptic seizures."
         ),
         "investigation": (
             "EEG, MRI, CT, telemetry, and related investigation statements. Render "
@@ -499,6 +528,28 @@ def _worked_examples() -> list[dict[str, Any]]:
             },
         },
         {
+            "note_fragment": "He has had several seizures since the last clinic visit.",
+            "correct_event": {
+                "family": "seizure_frequency",
+                "anchor_text": "seizures",
+                "evidence": "several seizures since the last clinic visit",
+                "event_state": {"count": "several", "frame": "since last clinic"},
+                "mentions": [
+                    {
+                        "entity": "SeizureFrequency",
+                        "text": "seizures",
+                        "attributes": {
+                            "NumberOfSeizures": "3",
+                            "TimeSince_or_TimeOfEvent": "Since",
+                            "PointInTime": "LastClinic",
+                        },
+                    }
+                ],
+                "confidence": "medium",
+                "rationale": "Several is an approximate seizure count since last clinic.",
+            },
+        },
+        {
             "note_fragment": "She has seizures every 3 to 4 weeks.",
             "correct_event": {
                 "family": "seizure_frequency",
@@ -566,6 +617,63 @@ def _worked_examples() -> list[dict[str, Any]]:
                 ],
                 "confidence": "high",
                 "rationale": "The statement gives frequency change without an exact count.",
+            },
+        },
+        {
+            "note_fragment": (
+                "Focal to bilateral convulsive seizures, last event around Christmas 2017."
+            ),
+            "correct_event": {
+                "family": "seizure_frequency",
+                "anchor_text": "Focal to bilateral convulsive seizures",
+                "evidence": (
+                    "Focal to bilateral convulsive seizures, last event around "
+                    "Christmas 2017"
+                ),
+                "event_state": {
+                    "seizure_type": "Focal to bilateral convulsive seizures",
+                    "state": "none since Christmas 2017",
+                },
+                "mentions": [
+                    {
+                        "entity": "SeizureFrequency",
+                        "text": "Focal to bilateral convulsive seizures",
+                        "attributes": {
+                            "NumberOfSeizures": "0",
+                            "MonthDate": "12",
+                            "YearDate": "2017",
+                            "TimeSince_or_TimeOfEvent": "Since",
+                        },
+                    }
+                ],
+                "confidence": "high",
+                "rationale": "The last-event date implies no later events of that type.",
+            },
+        },
+        {
+            "note_fragment": (
+                "The focal seizures are completely under control on lamotrigine."
+            ),
+            "correct_event": {
+                "family": "seizure_frequency",
+                "anchor_text": "focal seizures",
+                "evidence": "focal seizures are completely under control",
+                "event_state": {"state": "controlled", "anchor": "DrugChange"},
+                "mentions": [
+                    {
+                        "entity": "SeizureFrequency",
+                        "text": "focal seizures",
+                        "attributes": {
+                            "NumberOfSeizures": "0",
+                            "FrequencyChange": "Infrequent",
+                            "PointInTime": "DrugChange",
+                        },
+                    }
+                ],
+                "confidence": "medium",
+                "rationale": (
+                    "Controlled focal seizures indicate no current events after treatment."
+                ),
             },
         },
         {
@@ -750,6 +858,10 @@ def _worked_examples() -> list[dict[str, Any]]:
                 "confidence": "high",
                 "rationale": "A planned repeat MRI is not a completed investigation mention.",
             },
+        },
+        {
+            "note_fragment": "Unwitnessed blackouts and anxiety, no epileptic seizures.",
+            "correct_event": [],
         },
     ]
 
