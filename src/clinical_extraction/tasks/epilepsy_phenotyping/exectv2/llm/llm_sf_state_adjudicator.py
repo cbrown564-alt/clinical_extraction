@@ -49,7 +49,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
-PROMPT_VERSION = "exectv2_hybrid_sf_state_adjudicator_v0.2"
+PROMPT_VERSION = "exectv2_hybrid_sf_state_adjudicator_v0.3"
 PIPELINE_FAMILY = "exectv2_hybrid_sf_state_adjudicator"
 COMPONENT_OWNER = "hybrid_sf_state_adjudicator"
 
@@ -253,6 +253,7 @@ def build_prompt_input(
         "candidate_evidence_spans": [candidate.as_payload() for candidate in candidates],
         "state_decision_guide": _state_decision_guide(),
         "generic_seizure_policy": _generic_seizure_policy(),
+        "unknown_change_recovery_lane": _unknown_change_recovery_lane(),
         "attribute_vocabulary": verifier_base._attribute_vocabulary(),
         "clinical_rules": _clinical_rules(),
         "worked_examples": _worked_examples(),
@@ -301,6 +302,24 @@ def _clinical_rules() -> list[str]:
             "control, or treatment-response wording unless the evidence explicitly "
             "states seizure frequency changed."
         ),
+        (
+            "Unknown/change-state recovery is a separate lane from active-rate. "
+            "If one span says seizures improved/worsened/returned/remain well "
+            "controlled/are frequent, emit a generic seizures FrequencyChange "
+            "mention even when another nearby span also gives a numeric rate."
+        ),
+        (
+            "When a span has both a change phrase and a numeric rate, split them "
+            "if possible: use the change phrase as evidence for FrequencyChange "
+            "and the numeric phrase as evidence for active-rate only when both "
+            "are independently asserted."
+        ),
+        (
+            "For named seizure-type change wording, emit the named type when the "
+            "change attaches to that type, and also emit generic seizures when "
+            "the source sentence says generic seizures changed before naming "
+            "the type."
+        ),
     ] + verifier_base._clinical_rules()
 
 
@@ -339,10 +358,40 @@ def _generic_seizure_policy() -> dict[str, list[str]]:
         ],
         "reject_generic_unknown": [
             (
-                "Epilepsy is stable or treatment/control improved without "
-                "explicitly naming seizure frequency."
+                "Epilepsy is stable, controlled, or improved without explicitly "
+                "naming seizure(s)."
             ),
             "Jerks or stares improved without a scored seizure type.",
+        ],
+    }
+
+
+def _unknown_change_recovery_lane() -> dict[str, list[str]]:
+    return {
+        "generic_seizures_frequency_change": [
+            "seizures have returned -> FrequencyChange='Increased'",
+            "increasing seizures or seizures have been worse -> FrequencyChange='Increased'",
+            "fairly frequent/frequent seizures -> FrequencyChange='Frequent'",
+            "seizures improved or have significantly improved -> FrequencyChange='Infrequent'",
+            "seizures remain well controlled -> FrequencyChange='Same'",
+        ],
+        "split_from_numeric_rate": [
+            (
+                "If 'improved her seizures' and '2 seizures in five months' both "
+                "appear, emit the improvement/change state and only emit the "
+                "numeric rate if the source independently frames it as a rate."
+            ),
+            (
+                "If 'seizures have been worse' is followed by 'generalised tonic "
+                "clonic seizures', emit generic seizures Increased from the first "
+                "clause; optionally emit the named type only if its own change or "
+                "rate is explicit."
+            ),
+        ],
+        "reject": [
+            "epilepsy is stable without saying seizures are stable",
+            "control improved to odd stares only, unless the text calls those stares seizures",
+            "jerks improved unless the evidence says myoclonic jerks",
         ],
     }
 
@@ -378,6 +427,57 @@ def _state_decision_guide() -> dict[str, list[str]]:
 
 def _worked_examples() -> list[dict[str, Any]]:
     return [
+        {
+            "note_fragment": (
+                "Increasing her tegretol has improved her seizures. Hannah thinks "
+                "that she has had 2 seizures in the last five months which is good for her."
+            ),
+            "draft": [{"text": "seizures", "attributes": {"NumberOfSeizures": "2"}}],
+            "correct": [
+                {
+                    "text": "seizures",
+                    "attributes": {
+                        "FrequencyChange": "Infrequent",
+                        "PointInTime": "DrugChange",
+                    },
+                    "evidence": "improved her seizures",
+                    "confidence": "medium",
+                    "rationale": "Drug-change improvement is a generic seizure change state.",
+                }
+            ],
+        },
+        {
+            "note_fragment": (
+                "Unfortunately seizures have been worse in the last year. She is "
+                "having quite a number of generalised tonic clonic seizures."
+            ),
+            "draft": [{"text": "generalised tonic clonic seizures"}],
+            "correct": [
+                {
+                    "text": "seizures",
+                    "attributes": {
+                        "FrequencyChange": "Increased",
+                        "PointInTime": "Last_Year",
+                    },
+                    "evidence": "seizures have been worse in the last year",
+                    "confidence": "medium",
+                    "rationale": "The generic seizure change is explicit before the named type.",
+                }
+            ],
+        },
+        {
+            "note_fragment": "Richard's seizures remain well controlled.",
+            "draft": [],
+            "correct": [
+                {
+                    "text": "seizures",
+                    "attributes": {"FrequencyChange": "Same"},
+                    "evidence": "seizures remain well controlled",
+                    "confidence": "medium",
+                    "rationale": "Well-controlled seizures imply stable seizure frequency.",
+                }
+            ],
+        },
         {
             "note_fragment": (
                 "He gets around 1 generalised tonic clonic seizure in his sleep per month."
