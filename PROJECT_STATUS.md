@@ -162,6 +162,14 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   recall (`unknown F1 0.235`), so v0.1 remains the current numeric SF candidate.
   See
   `docs/research/exectv2_sf_state_adjudicator_v02_dev140_report_2026-06-18.md`.
+- SeizureFrequency state adjudicator v0.3 added a separate unknown/change-state
+  recovery lane and is now the best SF dev140 candidate, but only marginally:
+  F1 `0.681`, precision `0.667`, recall `0.695`, with `0` call/parse failures
+  and evidence validity `1.0000`. Unknown-state F1 improved from `0.235` to
+  `0.424`, but active-rate, seizure-free, and unknown residuals are now balanced
+  enough that the next SF loop needs stronger typed candidate decomposition, not
+  more broad prompt accretion. See
+  `docs/research/exectv2_sf_state_adjudicator_v03_dev140_report_2026-06-18.md`.
 - Diagnosis heading/narrative decomposer v0.1 is rejected as the current
   Diagnosis candidate. It clears dev25 (`0.814`) but transfers to only `0.642`
   on dev140, below verifier v0.6 (`0.651`), despite clean gates and evidence
@@ -180,8 +188,8 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
 1. Redesign the remaining below-target Diagnosis and SeizureFrequency families
    from the updated dev140 residual ledgers: Diagnosis needs constrained
    concept-group verification after v0.1 reconciler improved only to `0.658`;
-   SF needs a two-lane adjudicator that preserves v0.2 precision but restores
-   unknown/change-state recall.
+   SF needs typed candidate decomposition after v0.3 improved unknown-state
+   recall but only moved the headline to `0.681`.
 2. Require benchmark-beating dev evidence before any new full-200 audit:
    overall `0.87` per-item / `0.90` per-letter, plus per-entity tables,
    evidence/schema reliability, semantic-vs-CUI gaps, and ablations.
@@ -193,9 +201,8 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
 - Build a constrained Diagnosis concept-group verifier targeting generic
   epilepsy and tonic-clonic over-emission while preserving focal epilepsy and
   secondary-generalised recall.
-- Iterate SeizureFrequency candidate span/state adjudication with stricter
-  active-rate/seizure-free gates plus a separate unknown/change-state recovery
-  lane.
+- Redesign SeizureFrequency candidate span/state adjudication as typed
+  candidate decomposition plus constrained state classification.
 
 ### Next
 

@@ -225,6 +225,317 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Revise
 
+### `exectv2_llm_sf_verifier_v03_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_llm_sf_verifier`; mode `live`; replay `native_run_split`.
+- Model role: SeizureFrequency-focused verifier v0.3 over the v0.5 single structured key-entity draft. The model owns normalized SeizureFrequency event text and may keep, delete, edit, or add SF mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
+- Primary metrics: evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_llm_sf_verifier_v0.3, seizure_frequency_clinical_headline_f1=0.831, seizure_frequency_clinical_headline_precision=0.794, seizure_frequency_clinical_headline_recall=0.871, seizure_frequency_source_near_f1=0.831.
+- Evidence validity: 0 call failures, 0 parse failures; 34/34 evidence-valid rendered mentions.
+- Supersedes: `exectv2_llm_sf_verifier_v02_dev25_gpt41mini_20260618`.
+- Claim language: First SeizureFrequency-specific candidate to clear the dev25 clinical-recovery target (0.831 > 0.8) while keeping evidence validity 1.0000. Development-surface success only; requires dev140 confirmation before any generalization claim.
+- Artifacts: `experiments/exectv2_llm_sf_verifier_v03_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_sf_verifier_v03_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_sf_verifier_v03_pilot_report_2026-06-18.md`.
+
+### `exectv2_llm_sf_verifier_v02_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_llm_sf_verifier`; mode `live`; replay `native_run_split`.
+- Model role: SeizureFrequency-focused verifier v0.2 over the v0.5 single structured key-entity draft. The model owns normalized SeizureFrequency event text and may keep, delete, edit, or add SF mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
+- Primary metrics: evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_llm_sf_verifier_v0.2, seizure_frequency_clinical_headline_f1=0.788, seizure_frequency_clinical_headline_precision=0.743, seizure_frequency_clinical_headline_recall=0.839, seizure_frequency_source_near_f1=0.818.
+- Evidence validity: 0 call failures, 0 parse failures; 35/35 evidence-valid rendered mentions.
+- Supersedes: `exectv2_llm_sf_verifier_v01_dev25_gpt41mini_20260618`.
+- Claim language: Strong near-miss SeizureFrequency verifier iteration. v0.2 improves over v0.1 (0.788 vs 0.667) and v0.5 single structured (0.633) while keeping evidence validity 1.0000, but remains just below the 0.8 target. One narrow residual pass is justified before dev140.
+- Artifacts: `experiments/exectv2_llm_sf_verifier_v02_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_sf_verifier_v02_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_sf_verifier_v02_pilot_report_2026-06-18.md`.
+
+### `exectv2_llm_sf_verifier_v01_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_llm_sf_verifier`; mode `live`; replay `native_run_split`.
+- Model role: SeizureFrequency-focused verifier v0.1 over the v0.5 single structured key-entity draft. The model owns normalized SeizureFrequency event text and may keep, delete, edit, or add SF mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
+- Primary metrics: evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_llm_sf_verifier_v0.1, seizure_frequency_clinical_headline_f1=0.667, seizure_frequency_clinical_headline_precision=0.629, seizure_frequency_clinical_headline_recall=0.71, seizure_frequency_source_near_f1=0.727.
+- Evidence validity: 0 call failures, 0 parse failures; 35/35 evidence-valid rendered mentions.
+- Claim language: First SeizureFrequency verifier diagnostic over the v0.5 single structured draft. It improves recall and headline F1 over v0.5 single structured (0.667 vs 0.633) while keeping evidence validity 1.0000, but remains below the 0.8 target and loses precision. Revise from residual errors before dev140.
+- Artifacts: `experiments/exectv2_llm_sf_verifier_v01_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_sf_verifier_v01_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_sf_verifier_v01_pilot_report_2026-06-18.md`.
+
+### `exectv2_llm_only_key_entities_structured_v05_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_llm_only_key_entities_structured`; mode `live`; replay `native_run_split`.
+- Model role: LLM-only single-prompt structured clinical event extractor over medication, diagnosis, seizure frequency, and investigations; deterministic code limited to schema/evidence gates, neutral attribute repair, CUI projection, and scoring.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
+- Primary metrics: benchmark_per_item_f1=0.274, diagnosis_clinical_headline_f1=0.569, diagnosis_semantic_f1=0.407, evidence_validity_rate=0.9684, investigations_clinical_headline_f1=0.837, investigations_semantic_f1=0.512, parse_failures=0, phrase_only_per_item_f1=0.508, prescription_clinical_headline_f1=0.897, prescription_semantic_f1=0.204, prompt_version=exectv2_llm_only_key_entities_structured_v0.5, seizurefrequency_clinical_headline_f1=0.633, seizurefrequency_semantic_f1=0.433, semantic_per_item_f1=0.368, source_near_f1=0.729.
+- Evidence validity: 0 call failures, 0 parse failures; 153/158 evidence-valid rendered mentions (0.9684).
+- Supersedes: `exectv2_llm_only_key_entities_structured_v04_dev25_gpt41mini_20260618`.
+- Claim language: Best single-prompt structured dev25 candidate so far, but revise-only. v0.5 lifts Diagnosis headline F1 (0.460->0.569) while preserving medication (0.897) and Investigations (0.837) above target and SF near v0.4 (0.633). Next: specialist Diagnosis prompt comparison on dev25 before dev140.
+- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_v05_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_only_key_entities_structured_v05_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_key_entities_structured_v05_pilot_report_2026-06-18.md`.
+
+### `exectv2_llm_only_key_entities_structured_v04_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_llm_only_key_entities_structured`; mode `live`; replay `native_run_split`.
+- Model role: LLM-only single-prompt structured clinical event extractor over medication, diagnosis, seizure frequency, and investigations; deterministic code limited to schema/evidence gates, neutral attribute repair, CUI projection, and scoring.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
+- Primary metrics: benchmark_per_item_f1=0.256, diagnosis_clinical_headline_f1=0.46, diagnosis_semantic_f1=0.202, evidence_validity_rate=0.9695, investigations_clinical_headline_f1=0.837, investigations_semantic_f1=0.558, parse_failures=0, phrase_only_per_item_f1=0.446, prescription_clinical_headline_f1=0.9, prescription_semantic_f1=0.192, prompt_version=exectv2_llm_only_key_entities_structured_v0.4, seizurefrequency_clinical_headline_f1=0.644, seizurefrequency_semantic_f1=0.441, semantic_per_item_f1=0.295, source_near_f1=0.728.
+- Evidence validity: 0 call failures, 0 parse failures; 159/164 evidence-valid rendered mentions (0.9695).
+- Supersedes: `exectv2_llm_only_key_entities_structured_v03_dev25_gpt41mini_20260618`.
+- Superseded by: `exectv2_llm_only_key_entities_structured_v05_dev25_gpt41mini_20260618`.
+- Claim language: Best single-prompt structured dev25 candidate so far, but revise-only. v0.4 recovers SeizureFrequency headline F1 (0.421->0.644) while preserving medication (0.900) and Investigations (0.837) above target. Diagnosis remains the bottleneck (0.460), so next v0.5 should focus on Diagnosis hard cases before dev140 or specialist-prompt comparison.
+- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_v04_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_only_key_entities_structured_v04_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_key_entities_structured_v04_pilot_report_2026-06-18.md`.
+
+### `exectv2_llm_only_key_entities_structured_v03_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_llm_only_key_entities_structured`; mode `live`; replay `native_run_split`.
+- Model role: LLM-only single-prompt structured clinical event extractor over medication, diagnosis, seizure frequency, and investigations; deterministic code limited to schema/evidence gates, neutral attribute repair, CUI projection, and scoring.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
+- Primary metrics: benchmark_per_item_f1=0.235, diagnosis_clinical_headline_f1=0.455, diagnosis_semantic_f1=0.257, evidence_validity_rate=0.9441, investigations_clinical_headline_f1=0.878, investigations_semantic_f1=0.585, parse_failures=0, phrase_only_per_item_f1=0.436, prescription_clinical_headline_f1=0.883, prescription_semantic_f1=0.198, prompt_version=exectv2_llm_only_key_entities_structured_v0.3, seizurefrequency_clinical_headline_f1=0.421, seizurefrequency_semantic_f1=0.246, semantic_per_item_f1=0.282, source_near_f1=0.718.
+- Evidence validity: 0 call failures, 0 parse failures; 152/161 evidence-valid rendered mentions (0.9441).
+- Supersedes: `exectv2_llm_only_key_entities_structured_v02_dev25_gpt41mini_20260618`.
+- Superseded by: `exectv2_llm_only_key_entities_structured_v04_dev25_gpt41mini_20260618`.
+- Claim language: Revise-only development pilot for v0.3 single structured schema + single prompt. Medication and Investigations clear the clinical-recovery headline target (0.883/0.878), Diagnosis improves modestly (0.455), but SeizureFrequency regresses (0.421) and evidence validity falls (0.9441). Not promoted; next v0.4 should preserve medication/investigation wins and isolate SF headline-state misses.
+- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_v03_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_only_key_entities_structured_v03_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_key_entities_structured_v03_pilot_report_2026-06-18.md`.
+
+### `exectv2_llm_only_key_entities_structured_v02_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_llm_only_key_entities_structured`; mode `live`; replay `native_run_split`.
+- Model role: LLM-only single-prompt structured clinical event extractor over medication, diagnosis, seizure frequency, and investigations; deterministic code limited to schema/evidence gates, neutral attribute repair, CUI projection, and scoring.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
+- Primary metrics: benchmark_per_item_f1=0.22, diagnosis_clinical_headline_f1=0.414, diagnosis_semantic_f1=0.283, evidence_validity_rate=0.976, investigations_clinical_headline_f1=0.783, investigations_semantic_f1=0.522, parse_failures=0, phrase_only_per_item_f1=0.408, prescription_clinical_headline_f1=0.846, prescription_semantic_f1=0.172, prompt_version=exectv2_llm_only_key_entities_structured_v0.2, seizurefrequency_clinical_headline_f1=0.456, seizurefrequency_semantic_f1=0.21, semantic_per_item_f1=0.272, source_near_f1=0.68.
+- Evidence validity: 0 call failures, 0 parse failures; 163/167 evidence-valid rendered mentions (0.9760).
+- Supersedes: `exectv2_llm_only_key_entities_structured_dev25_gpt41mini_20260618`.
+- Superseded by: `exectv2_llm_only_key_entities_structured_v03_dev25_gpt41mini_20260618`.
+- Claim language: Development pilot for error-analysis-led v0.2 of the single structured schema + single prompt key-family architecture. Improved semantic item F1 0.206->0.272 and benchmark 0.158->0.220 with clean gate; refreshed clinical-recovery headlines show medication above target (0.846), Investigations near target (0.783), and Diagnosis/SF still below target (0.414/0.456). Not promoted. Next: v0.3 Diagnosis/SF hard-case panel, Investigation FP cleanup, and medication regression protection before dev140.
+- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_v02_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_only_key_entities_structured_v02_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_key_entities_structured_v02_pilot_report_2026-06-18.md`.
+
+### `exectv2_llm_only_key_entities_structured_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_llm_only_key_entities_structured`; mode `live`; replay `native_run_split`.
+- Model role: LLM-only single-prompt structured clinical event extractor over medication, diagnosis, seizure frequency, and investigations; deterministic code limited to schema/evidence gates, neutral attribute repair, CUI projection, and scoring.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only`.
+- Primary metrics: benchmark_per_item_f1=0.158, diagnosis_semantic_f1=0.204, evidence_validity_rate=0.9539, investigations_semantic_f1=0.267, parse_failures=0, phrase_only_per_item_f1=0.385, prescription_semantic_f1=0.264, prompt_version=exectv2_llm_only_key_entities_structured_v0.1, seizurefrequency_semantic_f1=0.07, semantic_per_item_f1=0.206, source_near_f1=0.722.
+- Evidence validity: 0 call failures, 0 parse failures; 145/152 evidence-valid rendered mentions (0.9539).
+- Claim language: Development pilot for the user-requested single structured schema + single prompt extreme over the four key families (Prescription/medication, Diagnosis, SeizureFrequency, Investigations). Viable schema and evidence gate, not promoted: source-near F1 0.722 but semantic item F1 only 0.206; next iteration should target attribute agreement and phrase altitude, especially SeizureFrequency quantification.
+- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_only_key_entities_structured_dev25_gpt41mini_20260618.md`.
+
+### `exectv2_llm_med_inv_verifier_v01_dev140_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_llm_med_inv_verifier`; mode `live`; replay `native_run_split`.
+- Model role: Prescription/Investigations verifier v0.1 over the v0.5 single structured key-entity draft. The model owns revised Prescription and Investigations mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
+- Primary metrics: evidence_validity_rate=0.9792, investigations_f1=0.496, parse_failures=0, prescription_f1=0.817, prescription_precision=0.773, prescription_recall=0.865, prompt_version=exectv2_llm_med_inv_verifier_v0.1.
+- Evidence validity: 0 call failures, 0 parse failures; 376/384 evidence-valid rendered mentions.
+- Claim language: Split decision. Use v0.1 as the current Prescription candidate because it clears dev140 target (0.817 > 0.8), but reject it for Investigations because it regresses from the single structured baseline (0.496 vs 0.786). Build a dedicated Investigations verifier next.
+- Artifacts: `experiments/exectv2_llm_med_inv_verifier_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_med_inv_verifier_v01_dev140_gpt41mini_20260618.md`, `docs/research/exectv2_med_inv_verifier_v01_dev140_report_2026-06-18.md`.
+
+### `exectv2_llm_investigations_verifier_v01_dev140_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_llm_investigations_verifier`; mode `live`; replay `native_run_split`.
+- Model role: Investigations-focused verifier v0.1 over the v0.5 single structured key-entity draft. The model owns revised Investigations mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
+- Primary metrics: evidence_validity_rate=0.9928, investigations_f1=0.872, investigations_precision=0.869, investigations_recall=0.875, parse_failures=0, prompt_version=exectv2_llm_investigations_verifier_v0.1.
+- Evidence validity: 0 call failures, 0 parse failures; 137/138 evidence-valid rendered mentions.
+- Claim language: First Investigations-specific candidate to clear the dev140 clinical-recovery target (0.872 > 0.8). Confirms Investigations should be split from medication verification.
+- Artifacts: `experiments/exectv2_llm_investigations_verifier_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_investigations_verifier_v01_dev140_gpt41mini_20260618.md`, `docs/research/exectv2_investigations_verifier_v01_dev140_report_2026-06-18.md`.
+
+### `exectv2_llm_diagnosis_verifier_v05_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_llm_diagnosis_verifier`; mode `live`; replay `native_run_split`.
+- Model role: Diagnosis-focused verifier v0.5 over the v0.5 single structured key-entity draft. The model owns normalized Diagnosis concept text and may keep, delete, edit, or add Diagnosis mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
+- Primary metrics: diagnosis_clinical_headline_f1=0.837, diagnosis_clinical_headline_precision=0.911, diagnosis_clinical_headline_recall=0.774, diagnosis_semantic_item_f1=0.62, diagnosis_source_near_f1=0.84, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_llm_diagnosis_verifier_v0.5.
+- Evidence validity: 0 call failures, 0 parse failures; 44/44 evidence-valid rendered mentions.
+- Supersedes: `exectv2_llm_diagnosis_verifier_v04_dev25_gpt41mini_20260618`.
+- Claim language: First Diagnosis-specific candidate to clear the dev25 clinical-recovery target (0.837 > 0.8) while keeping evidence validity 1.0000. Development-surface success only; requires dev140 confirmation before any generalization claim. Shift key-entity work to SeizureFrequency next.
+- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v05_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v05_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_diagnosis_verifier_v05_pilot_report_2026-06-18.md`.
+
+### `exectv2_llm_diagnosis_verifier_v04_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_llm_diagnosis_verifier`; mode `live`; replay `native_run_split`.
+- Model role: Diagnosis-focused verifier v0.4 over the v0.5 single structured key-entity draft. The model owns normalized Diagnosis concept text and may keep, delete, edit, or add Diagnosis mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
+- Primary metrics: diagnosis_clinical_headline_f1=0.768, diagnosis_clinical_headline_precision=0.826, diagnosis_clinical_headline_recall=0.717, diagnosis_semantic_item_f1=0.554, diagnosis_source_near_f1=0.792, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_llm_diagnosis_verifier_v0.4.
+- Evidence validity: 0 call failures, 0 parse failures; 45/45 evidence-valid rendered mentions.
+- Supersedes: `exectv2_llm_diagnosis_verifier_v03_dev25_gpt41mini_20260618`.
+- Claim language: Best Diagnosis-specific candidate so far, but revise-only. v0.4 improves over verifier v0.3 (0.768 vs 0.701) and v0.5 single structured (0.569) while keeping evidence validity 1.0000, but remains just below the 0.8 target. One more residual-error iteration is justified before dev140 if precision stays protected.
+- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v04_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v04_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_diagnosis_verifier_v04_pilot_report_2026-06-18.md`.
+
+### `exectv2_llm_diagnosis_verifier_v03_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_llm_diagnosis_verifier`; mode `live`; replay `native_run_split`.
+- Model role: Diagnosis-focused verifier v0.3 over the v0.5 single structured key-entity draft. The model owns normalized Diagnosis concept text and may keep, delete, edit, or add Diagnosis mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
+- Primary metrics: diagnosis_clinical_headline_f1=0.701, diagnosis_clinical_headline_precision=0.773, diagnosis_clinical_headline_recall=0.641, diagnosis_semantic_item_f1=0.49, diagnosis_source_near_f1=0.755, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_llm_diagnosis_verifier_v0.3.
+- Evidence validity: 0 call failures, 0 parse failures; 42/42 evidence-valid rendered mentions.
+- Supersedes: `exectv2_llm_diagnosis_verifier_v02_dev25_gpt41mini_20260618`.
+- Claim language: Best Diagnosis-specific candidate so far, but revise-only. v0.3 improves over verifier v0.2 (0.701 vs 0.619) and v0.5 single structured (0.569) while keeping evidence validity 1.0000, but remains below the 0.8 target. Run v0.4 from residual error analysis before dev140.
+- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v03_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v03_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_diagnosis_verifier_v03_pilot_report_2026-06-18.md`.
+
+### `exectv2_llm_diagnosis_verifier_v02_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_llm_diagnosis_verifier`; mode `live`; replay `native_run_split`.
+- Model role: Diagnosis-focused verifier v0.2 over the v0.5 single structured key-entity draft. The model owns normalized Diagnosis concept text and may keep, delete, edit, or add Diagnosis mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
+- Primary metrics: diagnosis_clinical_headline_f1=0.619, diagnosis_clinical_headline_precision=0.682, diagnosis_clinical_headline_recall=0.566, diagnosis_semantic_item_f1=0.424, diagnosis_source_near_f1=0.727, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_llm_diagnosis_verifier_v0.2.
+- Evidence validity: 0 call failures, 0 parse failures; 43/43 evidence-valid rendered mentions (1.0000).
+- Supersedes: `exectv2_llm_diagnosis_verifier_v01_dev25_gpt41mini_20260618`.
+- Claim language: Best Diagnosis-specific multi-prompt candidate so far, but revise-only. v0.2 improves over verifier v0.1 (0.619 vs 0.592) and v0.5 single structured (0.569) while keeping evidence validity 1.0000, but remains recall-limited and below the 0.8 target.
+- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v02_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v02_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_diagnosis_verifier_v02_pilot_report_2026-06-18.md`.
+
+### `exectv2_llm_diagnosis_verifier_v01_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_llm_diagnosis_verifier`; mode `live`; replay `native_run_split`.
+- Model role: Diagnosis-focused verifier over the v0.5 single structured key-entity draft. The model may keep, delete, edit, or add Diagnosis mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
+- Primary metrics: diagnosis_clinical_headline_f1=0.592, diagnosis_clinical_headline_precision=0.644, diagnosis_clinical_headline_recall=0.547, diagnosis_semantic_item_f1=0.449, diagnosis_source_near_f1=0.694, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_llm_diagnosis_verifier_v0.1.
+- Evidence validity: 0 call failures, 0 parse failures; 42/42 evidence-valid rendered mentions (1.0000).
+- Supersedes: `exectv2_llm_only_key_entities_structured_v05_dev25_gpt41mini_20260618`.
+- Superseded by: `exectv2_llm_diagnosis_verifier_v02_dev25_gpt41mini_20260618`.
+- Claim language: First multi-prompt variant to improve over the best single structured Diagnosis candidate (0.592 vs v0.5 0.569), but still far below the 0.8 target and recall-limited. Revise with targeted Diagnosis recall before dev140.
+- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v01_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v01_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_diagnosis_verifier_v01_pilot_report_2026-06-18.md`.
+
+### `exectv2_key_entities_dev140_transfer_readout_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_key_entities_transfer_readout`; mode `live`; replay `analysis_only`.
+- Model role: Transfer readout combining the single structured v0.5 dev140 draft with Diagnosis verifier v0.5 and SeizureFrequency verifier v0.3 dev140 runs.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema/evidence repair + benchmark CUI projection only; per-family outputs reported separately`.
+- Primary metrics: diagnosis_verifier_f1=0.616, investigations_f1=0.786, prescription_f1=0.777, seizure_frequency_verifier_f1=0.602, structured_call_failures=0, structured_parse_failures=0.
+- Evidence validity: Structured draft evidence validity 0.9563; Diagnosis verifier 0.9832; SeizureFrequency verifier 0.9796. All three dev140 runs had 0 call failures and 0 parse failures.
+- Supersedes: `exectv2_llm_sf_verifier_v03_dev25_gpt41mini_20260618`, `exectv2_llm_diagnosis_verifier_v05_dev25_gpt41mini_20260618`.
+- Claim language: Negative transfer readout. The dev25 target-clearing configuration does not transfer to dev140: all four key families remain below 0.8. Medication and Investigations are near misses; Diagnosis and SeizureFrequency require dev140 residual-led development. Do not promote or claim generalization from dev25.
+- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_v05_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_only_key_entities_structured_v05_dev140_gpt41mini_20260618.md`, `experiments/exectv2_llm_diagnosis_verifier_v05_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v05_dev140_gpt41mini_20260618.md`, `experiments/exectv2_llm_sf_verifier_v03_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_sf_verifier_v03_dev140_gpt41mini_20260618.md`, `docs/research/exectv2_key_entities_dev140_transfer_readout_2026-06-18.md`.
+
+### `exectv2_key_entities_clinical_error_ledger_diagv06_sfv04_dev140_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_key_entities_clinical_error_ledger`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Clinical-recovery error ledger over the residual-led dev140 Diagnosis v0.6 and SeizureFrequency v0.4 artifacts. Prescription/Investigations are unchanged from the single structured substrate in this ledger and should not supersede their current family-specific candidates.; model `none`.
+- Repair mode/config: `no model calls; clinical-recovery key analysis only`.
+- Primary metrics: diagnosis_f1=0.651, records=547, seizure_frequency_f1=0.623.
+- Evidence validity: No new model calls. Ledger keys are the same clinical-recovery keys used by the headline scorers.
+- Cache/reuse source: Read-only analysis over exectv2_llm_only_key_entities_structured_v05_dev140_gpt41mini_20260618, exectv2_llm_diagnosis_verifier_v06_dev140_gpt41mini_20260618, and exectv2_llm_sf_verifier_v04_dev140_gpt41mini_20260618.
+- Supersedes: `exectv2_key_entities_clinical_error_ledger_dev140_20260618`.
+- Claim language: Diagnostic residual taxonomy for the next Diagnosis/SF architecture loop. Current promoted family candidates remain Prescription verifier v0.1 and Investigations verifier v0.1; this ledger is for remaining below-target families.
+- Artifacts: `experiments/exectv2_key_entities_clinical_error_ledger_diagv06_sfv04_dev140_20260618.json`, `experiments/exectv2_key_entities_clinical_error_ledger_diagv06_sfv04_dev140_20260618.md`, `docs/research/exectv2_diag_sf_verifier_v06_v04_dev140_report_2026-06-18.md`.
+
+### `exectv2_key_entities_clinical_error_ledger_dev140_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_key_entities_clinical_error_ledger`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Clinical-recovery error ledger over the dev140 transfer artifacts: single structured v0.5 for Prescription/Investigations, Diagnosis verifier v0.5, and SeizureFrequency verifier v0.3.; model `none`.
+- Repair mode/config: `no model calls; clinical-recovery key analysis only`.
+- Primary metrics: diagnosis_f1=0.616, investigations_f1=0.786, prescription_f1=0.777, records=569, seizure_frequency_f1=0.602.
+- Evidence validity: No new model calls. Ledger keys are the same clinical-recovery keys used by the headline scorers.
+- Cache/reuse source: Read-only analysis over exectv2_llm_only_key_entities_structured_v05_dev140_gpt41mini_20260618, exectv2_llm_diagnosis_verifier_v05_dev140_gpt41mini_20260618, and exectv2_llm_sf_verifier_v03_dev140_gpt41mini_20260618.
+- Supersedes: `exectv2_key_entities_dev140_transfer_readout_20260618`.
+- Claim language: Diagnostic residual taxonomy for the failed dev140 transfer readout. Use this as the control surface for the next targeted verifier iteration; do not treat it as a promoted candidate.
+- Artifacts: `experiments/exectv2_key_entities_clinical_error_ledger_dev140_20260618.json`, `experiments/exectv2_key_entities_clinical_error_ledger_dev140_20260618.md`, `docs/research/exectv2_key_entities_dev140_clinical_error_ledger_readout_2026-06-18.md`.
+
+### `exectv2_hybrid_sf_state_adjudicator_v03_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_hybrid_sf_state_adjudicator`; mode `live`; replay `native_run_split`.
+- Model role: SeizureFrequency candidate-span state adjudicator v0.3 pilot over the v0.5 single structured key-entity draft. v0.3 adds a separate unknown/change-state recovery lane on top of the v0.2 generic keep/reject policy; the model owns final mention selection and state choice.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection; deterministic candidate spans are attention scaffolding, not predictions`.
+- Primary metrics: candidate_spans=79, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_hybrid_sf_state_adjudicator_v0.3, seizure_frequency_f1=0.921, seizure_frequency_precision=0.906, seizure_frequency_recall=0.935.
+- Evidence validity: 0 call failures, 0 parse failures; 32/32 evidence-valid rendered mentions.
+- Supersedes: `exectv2_hybrid_sf_state_adjudicator_v02_dev25_gpt41mini_20260618`.
+- Claim language: Pilot-only continuation of the unknown/change-state recovery loop. v0.3 remained strong on dev25 but lower than v0.2; full dev140 was still required for transfer evidence.
+- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v03_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v03_dev25_gpt41mini_20260618.md`.
+
+### `exectv2_hybrid_sf_state_adjudicator_v03_dev140_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_hybrid_sf_state_adjudicator`; mode `live`; replay `native_run_split`.
+- Model role: SeizureFrequency candidate-span state adjudicator v0.3 over the v0.5 single structured key-entity draft. v0.3 adds a separate unknown/change-state recovery lane after v0.2 improved precision but collapsed unknown-state recall.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection; deterministic candidate spans are attention scaffolding, not predictions`.
+- Primary metrics: active_rate_f1=0.722, candidate_spans=412, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_hybrid_sf_state_adjudicator_v0.3, seizure_free_f1=0.754, seizure_frequency_f1=0.681, seizure_frequency_precision=0.667, seizure_frequency_recall=0.695, unknown_f1=0.424.
+- Evidence validity: 0 call failures, 0 parse failures; 195/195 evidence-valid rendered mentions. Residual ledger is analysis-only over the same JSONL.
+- Supersedes: `exectv2_hybrid_sf_state_adjudicator_v02_dev140_gpt41mini_20260618`.
+- Claim language: Revise-only. Best SF dev140 score so far (0.681) and unknown-state F1 improves from 0.235 to 0.424, but the gain is small and still below the 0.8 target. Next loop should use typed candidate decomposition plus constrained state classification rather than more broad prompt accretion.
+- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v03_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v03_dev140_gpt41mini_20260618.md`, `experiments/exectv2_sf_state_adjudicator_v03_residual_ledger_dev140_20260618.json`, `experiments/exectv2_sf_state_adjudicator_v03_residual_ledger_dev140_20260618.md`, `docs/research/exectv2_sf_state_adjudicator_v03_dev140_report_2026-06-18.md`.
+
+### `exectv2_hybrid_sf_state_adjudicator_v02_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_hybrid_sf_state_adjudicator`; mode `live`; replay `native_run_split`.
+- Model role: SeizureFrequency candidate-span state adjudicator v0.2 pilot over the v0.5 single structured key-entity draft. v0.2 adds stricter generic active-rate/seizure-free/unknown keep-reject policy; the model still owns final mention selection and state choice.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection; deterministic candidate spans are attention scaffolding, not predictions`.
+- Primary metrics: candidate_spans=79, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_hybrid_sf_state_adjudicator_v0.2, seizure_frequency_f1=0.951, seizure_frequency_precision=0.967, seizure_frequency_recall=0.935.
+- Evidence validity: 0 call failures, 0 parse failures; 30/30 evidence-valid rendered mentions.
+- Supersedes: `exectv2_hybrid_sf_state_adjudicator_v01_dev25_gpt41mini_20260618`.
+- Claim language: Pilot-only escalation signal. Strong dev25 precision improvement (0.951 F1, precision 0.967) justified dev140, but the effect did not transfer.
+- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v02_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v02_dev25_gpt41mini_20260618.md`.
+
+### `exectv2_hybrid_sf_state_adjudicator_v02_dev140_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_hybrid_sf_state_adjudicator`; mode `live`; replay `native_run_split`.
+- Model role: SeizureFrequency candidate-span state adjudicator v0.2 over the v0.5 single structured key-entity draft. v0.2 adds stricter generic active-rate/seizure-free/unknown keep-reject policy; the model still owns final mention selection and state choice.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection; deterministic candidate spans are attention scaffolding, not predictions`.
+- Primary metrics: active_rate_f1=0.725, candidate_spans=412, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_hybrid_sf_state_adjudicator_v0.2, seizure_free_f1=0.77, seizure_frequency_f1=0.672, seizure_frequency_precision=0.687, seizure_frequency_recall=0.658, unknown_f1=0.235.
+- Evidence validity: 0 call failures, 0 parse failures; 179/179 evidence-valid rendered mentions. Residual ledger is analysis-only over the same JSONL.
+- Claim language: Revise-only. v0.2 improves precision versus v0.1 but loses enough recall that F1 is slightly worse (0.672 vs 0.674). Unknown-state recall collapses; next loop should add a separate unknown/change-state recovery lane rather than tighten generic rejection further.
+- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v02_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v02_dev140_gpt41mini_20260618.md`, `experiments/exectv2_sf_state_adjudicator_v02_residual_ledger_dev140_20260618.json`, `experiments/exectv2_sf_state_adjudicator_v02_residual_ledger_dev140_20260618.md`, `docs/research/exectv2_sf_state_adjudicator_v02_dev140_report_2026-06-18.md`.
+
+### `exectv2_hybrid_sf_state_adjudicator_v01_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_hybrid_sf_state_adjudicator`; mode `live`; replay `native_run_split`.
+- Model role: SeizureFrequency candidate-span state adjudicator v0.1 pilot over the v0.5 single structured key-entity draft. Deterministic code proposes exact candidate evidence spans and hints; the model owns keep/reject, state choice, text normalization, and final mentions.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection; deterministic candidate spans are attention scaffolding, not predictions`.
+- Primary metrics: candidate_spans=79, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_hybrid_sf_state_adjudicator_v0.1, seizure_frequency_f1=0.921, seizure_frequency_precision=0.906, seizure_frequency_recall=0.935.
+- Evidence validity: 0 call failures, 0 parse failures; 32/32 evidence-valid rendered mentions.
+- Supersedes: `exectv2_llm_sf_verifier_v04_dev140_gpt41mini_20260618`.
+- Claim language: Pilot-only escalation signal. Candidate-span/state adjudication cleared dev25 strongly (0.921 F1) with clean gates, justifying the dev140 architecture probe. This is not a transfer or promotion claim.
+- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v01_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v01_dev25_gpt41mini_20260618.md`.
+
+### `exectv2_hybrid_sf_state_adjudicator_v01_dev140_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_hybrid_sf_state_adjudicator`; mode `live`; replay `native_run_split`.
+- Model role: SeizureFrequency candidate-span state adjudicator v0.1 over the v0.5 single structured key-entity draft. Deterministic code proposes exact candidate evidence spans and hints; the model owns keep/reject, state choice, text normalization, and final mentions. Post-processing only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection; deterministic candidate spans are attention scaffolding, not predictions`.
+- Primary metrics: active_rate_f1=0.726, candidate_spans=412, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_hybrid_sf_state_adjudicator_v0.1, seizure_free_f1=0.734, seizure_frequency_f1=0.674, seizure_frequency_precision=0.653, seizure_frequency_recall=0.695, unknown_f1=0.351.
+- Evidence validity: 0 call failures, 0 parse failures; 199/199 evidence-valid rendered mentions. Residual ledger is analysis-only over the same JSONL.
+- Supersedes: `exectv2_llm_sf_verifier_v04_dev140_gpt41mini_20260618`.
+- Claim language: Revise-only architecture evidence. Candidate-span/state adjudication improves over SF verifier v0.4 (0.623 -> 0.674) and keeps gates clean, but remains below the 0.8 target. Residuals show generic seizure active-rate over-emission and generic unknown/seizure-free misses; next loop should tighten generic candidate keep/reject rather than discard the architecture.
+- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v01_dev140_gpt41mini_20260618.md`, `experiments/exectv2_sf_state_adjudicator_v01_residual_ledger_dev140_20260618.json`, `experiments/exectv2_sf_state_adjudicator_v01_residual_ledger_dev140_20260618.md`, `docs/research/exectv2_sf_state_adjudicator_v01_dev140_report_2026-06-18.md`.
+
+### `exectv2_hybrid_diagnosis_reconciler_v01_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_hybrid_diagnosis_reconciler`; mode `live`; replay `native_run_split`.
+- Model role: Diagnosis reconciler v0.1 pilot over Diagnosis verifier v0.6 and Diagnosis decomposer v0.1 candidates. The model owns final keep/reject, concept specificity, certainty, and evidence selection.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection; verifier/decomposer inputs are candidate scaffolding`.
+- Primary metrics: diagnosis_f1=0.833, diagnosis_precision=0.818, diagnosis_recall=0.849, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_hybrid_diagnosis_reconciler_v0.1.
+- Evidence validity: 0 call failures, 0 parse failures; 64/64 evidence-valid rendered mentions.
+- Cache/reuse source: Uses saved Diagnosis verifier v0.6 and Diagnosis decomposer v0.1 dev140 artifacts as candidate inputs, restricted to the first 25 dev letters for this pilot.
+- Supersedes: `exectv2_hybrid_diagnosis_decomposer_v01_dev25_gpt41mini_20260618`.
+- Claim language: Pilot-only escalation signal. Strong dev25 balance (0.833 F1) justified the dev140 run but does not transfer by itself.
+- Artifacts: `experiments/exectv2_hybrid_diagnosis_reconciler_v01_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_diagnosis_reconciler_v01_dev25_gpt41mini_20260618.md`.
+
+### `exectv2_hybrid_diagnosis_reconciler_v01_dev140_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_hybrid_diagnosis_reconciler`; mode `live`; replay `native_run_split`.
+- Model role: Diagnosis reconciler v0.1 over Diagnosis verifier v0.6 and Diagnosis decomposer v0.1 candidates. The model owns final keep/reject, concept specificity, certainty, and evidence selection; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection; verifier/decomposer inputs are candidate scaffolding`.
+- Primary metrics: diagnosis_f1=0.658, diagnosis_precision=0.658, diagnosis_recall=0.658, evidence_validity_rate=0.9954, parse_failures=0, prompt_version=exectv2_hybrid_diagnosis_reconciler_v0.1, source_near_overlap_f1=0.787.
+- Evidence validity: 0 call failures, 0 parse failures; 436/438 evidence-valid rendered mentions. Residual ledger is analysis-only over the same JSONL.
+- Cache/reuse source: Uses saved Diagnosis verifier v0.6 and Diagnosis decomposer v0.1 dev140 artifacts as candidate inputs.
+- Supersedes: `exectv2_llm_diagnosis_verifier_v06_dev140_gpt41mini_20260618`.
+- Claim language: Revise-only. Best Diagnosis dev140 score so far, but only a small gain over verifier v0.6 (0.658 vs 0.651) and still far below the 0.8 target. Residuals show generic epilepsy and tonic-clonic over-emission plus focal epilepsy/secondary-generalised misses.
+- Artifacts: `experiments/exectv2_hybrid_diagnosis_reconciler_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_diagnosis_reconciler_v01_dev140_gpt41mini_20260618.md`, `experiments/exectv2_diagnosis_reconciler_v01_residual_ledger_dev140_20260618.json`, `experiments/exectv2_diagnosis_reconciler_v01_residual_ledger_dev140_20260618.md`, `docs/research/exectv2_diagnosis_reconciler_v01_dev140_report_2026-06-18.md`.
+
+### `exectv2_hybrid_diagnosis_decomposer_v01_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_hybrid_diagnosis_decomposer`; mode `live`; replay `native_run_split`.
+- Model role: Diagnosis heading/narrative decomposer v0.1 pilot over the v0.5 single structured key-entity draft. Deterministic code proposes heading and narrative candidate spans; the model owns final Diagnosis mentions.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection; deterministic diagnosis spans are checklist scaffolding, not predictions`.
+- Primary metrics: diagnosis_f1=0.814, diagnosis_precision=0.767, diagnosis_recall=0.868, diagnosis_spans=120, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_hybrid_diagnosis_decomposer_v0.1.
+- Evidence validity: 0 call failures, 0 parse failures; 69/69 evidence-valid rendered mentions.
+- Supersedes: `exectv2_llm_diagnosis_verifier_v06_dev140_gpt41mini_20260618`.
+- Claim language: Pilot-only escalation signal. Diagnosis heading/narrative decomposition cleared dev25 (0.814 F1) with clean gates, justifying the dev140 architecture probe. This is not a transfer or promotion claim.
+- Artifacts: `experiments/exectv2_hybrid_diagnosis_decomposer_v01_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_diagnosis_decomposer_v01_dev25_gpt41mini_20260618.md`.
+
+### `exectv2_diag_sf_verifier_v06_v04_dev140_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_diag_sf_verifier_residual_iteration`; mode `live`; replay `native_run_split`.
+- Model role: Residual-led Diagnosis verifier v0.6 and SeizureFrequency verifier v0.4 over the v0.5 single structured key-entity draft. The model owns revised family mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
+- Primary metrics: diagnosis_evidence_validity_rate=0.9906, diagnosis_f1=0.651, diagnosis_precision=0.706, diagnosis_recall=0.604, parse_failures=0, sf_evidence_validity_rate=0.9905, sf_f1=0.623, sf_precision=0.591, sf_recall=0.658.
+- Evidence validity: Diagnosis 0 call failures, 0 parse failures, 317/320 evidence-valid rendered mentions. SeizureFrequency 0 call failures, 0 parse failures, 208/210 evidence-valid rendered mentions.
+- Supersedes: `exectv2_key_entities_dev140_transfer_readout_20260618`.
+- Claim language: Revise-only dev140 improvement. Diagnosis improves 0.616 -> 0.651 and SeizureFrequency improves 0.602 -> 0.623, but both remain below the 0.8 target. Next iteration should use stronger task decomposition, not more broad prompt accretion.
+- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v06_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v06_dev140_gpt41mini_20260618.md`, `experiments/exectv2_llm_sf_verifier_v04_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_sf_verifier_v04_dev140_gpt41mini_20260618.md`, `docs/research/exectv2_diag_sf_verifier_v06_v04_dev140_report_2026-06-18.md`.
+
 ### `gan2026_cluster_axis_gate_v1_tightened_2026-06-16`
 - Date/split: `2026-06-16`; `validation+test`; `1200` rows.
 - Pipeline: `cluster_axis_gate_no_call_replay`; mode `analysis/no-call`; replay `saved_output_replay`.
@@ -1349,6 +1660,26 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Reject
 
+### `exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_llm_only_per_entity`; mode `live`; replay `native_run_split`.
+- Model role: Existing focused per-entity Diagnosis prompt, run as the first specialist-prompt comparison against v0.5 single structured key-entity prompt.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only`.
+- Primary metrics: diagnosis_clinical_headline_f1=0.282, diagnosis_semantic_item_f1=0.259, diagnosis_source_near_f1=0.565, diagnosis_source_near_recall=0.429, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_llm_only_per_entity_v0.4.
+- Evidence validity: 0 call failures, 0 parse failures; 29/29 evidence-valid rendered mentions (1.0000).
+- Claim language: Negative specialist-prompt comparison. The existing per-entity Diagnosis prompt is cleaner than the old all-9 baseline on source-near recall, but it is not competitive with the v0.5 single structured prompt on objective-aligned Diagnosis clinical recovery (0.282 vs 0.569). Do not promote; next specialist attempt should start from v0.5 guidance or use a verifier/repair prompt.
+- Artifacts: `experiments/exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618_diagnosis.jsonl`, `experiments/exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618_diagnosis.md`, `experiments/exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618_combined.json`, `experiments/exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618_combined.md`, `docs/research/exectv2_diagnosis_specialist_prompt_comparison_2026-06-18.md`.
+
+### `exectv2_hybrid_diagnosis_decomposer_v01_dev140_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_hybrid_diagnosis_decomposer`; mode `live`; replay `native_run_split`.
+- Model role: Diagnosis heading/narrative decomposer v0.1 over the v0.5 single structured key-entity draft. Deterministic code proposes heading and narrative candidate spans; the model owns final Diagnosis mentions. Post-processing only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection; deterministic diagnosis spans are checklist scaffolding, not predictions`.
+- Primary metrics: diagnosis_f1=0.642, diagnosis_precision=0.631, diagnosis_recall=0.653, diagnosis_spans=812, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_hybrid_diagnosis_decomposer_v0.1.
+- Evidence validity: 0 call failures, 0 parse failures; 462/462 evidence-valid rendered mentions.
+- Claim language: Reject as current Diagnosis candidate. The decomposition increased source-near recall but over-emitted too many Diagnosis mentions and underperformed verifier v0.6 (0.642 vs 0.651). Keep v0.6 as current Diagnosis baseline; future decomposition needs an explicit reconciler/verifier.
+- Artifacts: `experiments/exectv2_hybrid_diagnosis_decomposer_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_diagnosis_decomposer_v01_dev140_gpt41mini_20260618.md`, `docs/research/exectv2_diagnosis_decomposer_v01_dev140_report_2026-06-18.md`.
+
 ### `gan2026_kg_family_gated_graph_trust_2026-06-16`
 - Date/split: `2026-06-16`; `validation`; `250` rows.
 - Pipeline: `hybrid_clinical_frequency_state_graph`; mode `no-call replay`; replay `saved_output_replay`.
@@ -1857,295 +2188,6 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Artifacts: `docs/research/gan2026_cross_model_comparison_2026-06-09.md`.
 
 ## Inform Architecture Loop
-
-### `exectv2_hybrid_sf_state_adjudicator_v02_dev140_gpt41mini_20260618`
-- Date/split: `2026-06-18`; `dev`; `140` rows.
-- Pipeline: `exectv2_hybrid_sf_state_adjudicator`; mode `live`; replay `native_run_split`.
-- Model role: SeizureFrequency candidate-span state adjudicator v0.2 over the v0.5 single structured key-entity draft. v0.2 adds stricter generic active-rate/seizure-free/unknown keep-reject policy; the model still owns final mention selection and state choice.; model `openai/gpt-4.1-mini`.
-- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection; deterministic candidate spans are attention scaffolding, not predictions`.
-- Primary metrics: seizure_frequency_f1=0.672, seizure_frequency_precision=0.687, seizure_frequency_recall=0.658, active_rate_f1=0.725, seizure_free_f1=0.770, unknown_f1=0.235, candidate_spans=412, evidence_validity_rate=1.0, parse_failures=0.
-- Evidence validity: 0 call failures, 0 parse failures; 179/179 evidence-valid rendered mentions. Dev25 pilot was strong (`0.951` F1) but did not transfer to dev140.
-- Claim language: Revise-only. v0.2 improves precision versus v0.1 but loses enough recall that F1 is slightly worse (`0.672` vs `0.674`). Unknown-state recall collapses; next loop should add a separate unknown/change-state recovery lane rather than tighten generic rejection further.
-- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v02_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v02_dev140_gpt41mini_20260618.md`, `experiments/exectv2_sf_state_adjudicator_v02_residual_ledger_dev140_20260618.json`, `experiments/exectv2_sf_state_adjudicator_v02_residual_ledger_dev140_20260618.md`, `docs/research/exectv2_sf_state_adjudicator_v02_dev140_report_2026-06-18.md`.
-
-### `exectv2_hybrid_sf_state_adjudicator_v02_dev25_gpt41mini_20260618`
-- Date/split: `2026-06-18`; `dev`; `25` rows.
-- Pipeline: `exectv2_hybrid_sf_state_adjudicator`; mode `live`; replay `native_run_split`.
-- Model role: Small live probe for the stricter v0.2 generic seizure policy before full dev140 escalation.; model `openai/gpt-4.1-mini`.
-- Repair mode/config: `same as dev140 v0.2`.
-- Primary metrics: seizure_frequency_f1=0.951, seizure_frequency_precision=0.967, seizure_frequency_recall=0.935, candidate_spans=79, evidence_validity_rate=1.0, parse_failures=0.
-- Evidence validity: 0 call failures, 0 parse failures; 30/30 evidence-valid rendered mentions.
-- Claim language: Pilot-only escalation signal. Strong dev25 precision improvement justified dev140, but the effect did not transfer.
-- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v02_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v02_dev25_gpt41mini_20260618.md`.
-
-### `exectv2_hybrid_diagnosis_reconciler_v01_dev140_gpt41mini_20260618`
-- Date/split: `2026-06-18`; `dev`; `140` rows.
-- Pipeline: `exectv2_hybrid_diagnosis_reconciler`; mode `live`; replay `native_run_split`.
-- Model role: Diagnosis reconciler v0.1 over Diagnosis verifier v0.6 and Diagnosis decomposer v0.1 candidates. The model owns final keep/reject, concept specificity, certainty, and evidence selection; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
-- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection; verifier/decomposer inputs are candidate scaffolding`.
-- Primary metrics: diagnosis_f1=0.658, diagnosis_precision=0.658, diagnosis_recall=0.658, source_near_overlap_f1=0.787, evidence_validity_rate=0.9954, parse_failures=0.
-- Evidence validity: 0 call failures, 0 parse failures; 436/438 evidence-valid rendered mentions. Residual ledger is analysis-only over the same JSONL.
-- Claim language: Revise-only. Best Diagnosis dev140 score so far, but only a small gain over verifier v0.6 (`0.658` vs `0.651`) and still far below the `0.8` target. Residuals show generic epilepsy and tonic-clonic over-emission plus focal epilepsy/secondary-generalised misses.
-- Artifacts: `experiments/exectv2_hybrid_diagnosis_reconciler_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_diagnosis_reconciler_v01_dev140_gpt41mini_20260618.md`, `experiments/exectv2_diagnosis_reconciler_v01_residual_ledger_dev140_20260618.json`, `experiments/exectv2_diagnosis_reconciler_v01_residual_ledger_dev140_20260618.md`, `docs/research/exectv2_diagnosis_reconciler_v01_dev140_report_2026-06-18.md`.
-
-### `exectv2_hybrid_diagnosis_reconciler_v01_dev25_gpt41mini_20260618`
-- Date/split: `2026-06-18`; `dev`; `25` rows.
-- Pipeline: `exectv2_hybrid_diagnosis_reconciler`; mode `live`; replay `native_run_split`.
-- Model role: Small live architecture probe for the Diagnosis verifier/decomposer reconciler before full dev140 escalation.; model `openai/gpt-4.1-mini`.
-- Repair mode/config: `same as dev140 v0.1`.
-- Primary metrics: diagnosis_f1=0.833, diagnosis_precision=0.818, diagnosis_recall=0.849, evidence_validity_rate=1.0, parse_failures=0.
-- Evidence validity: 0 call failures, 0 parse failures; 64/64 evidence-valid rendered mentions.
-- Claim language: Pilot-only escalation signal. Strong dev25 balance justified the dev140 run but does not transfer by itself.
-- Artifacts: `experiments/exectv2_hybrid_diagnosis_reconciler_v01_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_diagnosis_reconciler_v01_dev25_gpt41mini_20260618.md`.
-
-### `exectv2_hybrid_diagnosis_decomposer_v01_dev140_gpt41mini_20260618`
-- Date/split: `2026-06-18`; `dev`; `140` rows.
-- Pipeline: `exectv2_hybrid_diagnosis_decomposer`; mode `live`; replay `native_run_split`.
-- Model role: Diagnosis heading/narrative decomposer v0.1 over the v0.5 single structured key-entity draft. Deterministic code proposes heading and narrative candidate spans; the model owns final Diagnosis mentions. Post-processing only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
-- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection; deterministic diagnosis spans are checklist scaffolding, not predictions`.
-- Primary metrics: diagnosis_f1=0.642, diagnosis_precision=0.631, diagnosis_recall=0.653, diagnosis_spans=812, evidence_validity_rate=1.0, parse_failures=0.
-- Evidence validity: 0 call failures, 0 parse failures; 462/462 evidence-valid rendered mentions. Dev25 pilot cleared target (`0.814` F1) but did not transfer to dev140.
-- Claim language: Reject as current Diagnosis candidate. The decomposition increased source-near recall but over-emitted too many Diagnosis mentions and underperformed verifier v0.6 (`0.642` vs `0.651`). Keep v0.6 as current Diagnosis baseline; future decomposition needs an explicit reconciler/verifier.
-- Artifacts: `experiments/exectv2_hybrid_diagnosis_decomposer_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_diagnosis_decomposer_v01_dev140_gpt41mini_20260618.md`, `docs/research/exectv2_diagnosis_decomposer_v01_dev140_report_2026-06-18.md`.
-
-### `exectv2_hybrid_diagnosis_decomposer_v01_dev25_gpt41mini_20260618`
-- Date/split: `2026-06-18`; `dev`; `25` rows.
-- Pipeline: `exectv2_hybrid_diagnosis_decomposer`; mode `live`; replay `native_run_split`.
-- Model role: Small live architecture probe for the Diagnosis heading/narrative decomposer before full dev140 escalation.; model `openai/gpt-4.1-mini`.
-- Repair mode/config: `same as dev140 v0.1`.
-- Primary metrics: diagnosis_f1=0.814, diagnosis_precision=0.767, diagnosis_recall=0.868, diagnosis_spans=120, evidence_validity_rate=1.0, parse_failures=0.
-- Evidence validity: 0 call failures, 0 parse failures; 69/69 evidence-valid rendered mentions.
-- Claim language: Pilot-only escalation signal. Strong dev25 result justified the dev140 run but does not transfer by itself.
-- Artifacts: `experiments/exectv2_hybrid_diagnosis_decomposer_v01_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_diagnosis_decomposer_v01_dev25_gpt41mini_20260618.md`.
-
-### `exectv2_hybrid_sf_state_adjudicator_v01_dev140_gpt41mini_20260618`
-- Date/split: `2026-06-18`; `dev`; `140` rows.
-- Pipeline: `exectv2_hybrid_sf_state_adjudicator`; mode `live`; replay `native_run_split`.
-- Model role: SeizureFrequency candidate-span state adjudicator v0.1 over the v0.5 single structured key-entity draft. Deterministic code proposes exact candidate evidence spans and hints; the model owns keep/reject, state choice, text normalization, and final mentions. Post-processing only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
-- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection; deterministic candidate spans are attention scaffolding, not predictions`.
-- Primary metrics: seizure_frequency_f1=0.674, seizure_frequency_precision=0.653, seizure_frequency_recall=0.695, active_rate_f1=0.726, seizure_free_f1=0.734, unknown_f1=0.351, candidate_spans=412, evidence_validity_rate=1.0, parse_failures=0.
-- Evidence validity: 0 call failures, 0 parse failures; 199/199 evidence-valid rendered mentions. Dev25 pilot was high (`0.921` F1) but did not transfer to dev140.
-- Claim language: Revise-only architecture evidence. Candidate-span/state adjudication improves over SF verifier v0.4 (`0.623` -> `0.674`) and keeps gates clean, but remains below the `0.8` target. Residuals show generic seizure active-rate over-emission and generic unknown/seizure-free misses; next loop should tighten generic candidate keep/reject rather than discard the architecture.
-- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v01_dev140_gpt41mini_20260618.md`, `experiments/exectv2_sf_state_adjudicator_v01_residual_ledger_dev140_20260618.json`, `experiments/exectv2_sf_state_adjudicator_v01_residual_ledger_dev140_20260618.md`, `docs/research/exectv2_sf_state_adjudicator_v01_dev140_report_2026-06-18.md`.
-
-### `exectv2_hybrid_sf_state_adjudicator_v01_dev25_gpt41mini_20260618`
-- Date/split: `2026-06-18`; `dev`; `25` rows.
-- Pipeline: `exectv2_hybrid_sf_state_adjudicator`; mode `live`; replay `native_run_split`.
-- Model role: Small live architecture probe for the candidate-span state adjudicator before full dev140 escalation.; model `openai/gpt-4.1-mini`.
-- Repair mode/config: `same as dev140 v0.1`.
-- Primary metrics: seizure_frequency_f1=0.921, seizure_frequency_precision=0.906, seizure_frequency_recall=0.935, candidate_spans=79, evidence_validity_rate=1.0, parse_failures=0.
-- Evidence validity: 0 call failures, 0 parse failures; 32/32 evidence-valid rendered mentions.
-- Claim language: Pilot-only escalation signal. Strong dev25 result justified the dev140 run but does not transfer by itself.
-- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v01_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v01_dev25_gpt41mini_20260618.md`.
-
-### `exectv2_diag_sf_verifier_v06_v04_dev140_gpt41mini_20260618`
-- Date/split: `2026-06-18`; `dev`; `140` rows.
-- Pipeline: `exectv2_llm_diagnosis_verifier` + `exectv2_llm_sf_verifier`; mode `live`; replay `native_run_split`.
-- Model role: Residual-led Diagnosis verifier v0.6 and SeizureFrequency verifier v0.4 over the v0.5 single structured key-entity draft. The model owns revised family mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
-- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
-- Primary metrics: diagnosis_f1=0.651, diagnosis_precision=0.706, diagnosis_recall=0.604, diagnosis_evidence_validity_rate=0.9906, sf_f1=0.623, sf_precision=0.591, sf_recall=0.658, sf_evidence_validity_rate=0.9905, parse_failures=0.
-- Evidence validity: Diagnosis 0 call failures, 0 parse failures, 317/320 evidence-valid rendered mentions. SeizureFrequency 0 call failures, 0 parse failures, 208/210 evidence-valid rendered mentions.
-- Claim language: Revise-only dev140 improvement. Diagnosis improves `0.616` -> `0.651` and SeizureFrequency improves `0.602` -> `0.623`, but both remain below the `0.8` target. Next iteration should use stronger task decomposition, not more broad prompt accretion.
-- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v06_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v06_dev140_gpt41mini_20260618.md`, `experiments/exectv2_llm_sf_verifier_v04_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_sf_verifier_v04_dev140_gpt41mini_20260618.md`, `docs/research/exectv2_diag_sf_verifier_v06_v04_dev140_report_2026-06-18.md`.
-
-### `exectv2_key_entities_clinical_error_ledger_diagv06_sfv04_dev140_20260618`
-- Date/split: `2026-06-18`; `dev`; `140` rows.
-- Pipeline: `exectv2_key_entities_clinical_error_ledger`; mode `analysis-only`; replay `analysis_only`.
-- Model role: Clinical-recovery error ledger over the residual-led dev140 Diagnosis v0.6 and SeizureFrequency v0.4 artifacts. Prescription/Investigations are unchanged from the single structured substrate in this ledger and should not supersede their current family-specific candidates.; model `none`.
-- Repair mode/config: `no model calls; clinical-recovery key analysis only`.
-- Primary metrics: diagnosis_f1=0.651, seizure_frequency_f1=0.623, records=547.
-- Evidence validity: No new model calls. Ledger keys are the same clinical-recovery keys used by the headline scorers.
-- Claim language: Diagnostic residual taxonomy for the next Diagnosis/SF architecture loop. Current promoted family candidates remain Prescription verifier v0.1 and Investigations verifier v0.1; this ledger is for remaining below-target families.
-- Artifacts: `experiments/exectv2_key_entities_clinical_error_ledger_diagv06_sfv04_dev140_20260618.json`, `experiments/exectv2_key_entities_clinical_error_ledger_diagv06_sfv04_dev140_20260618.md`, `docs/research/exectv2_diag_sf_verifier_v06_v04_dev140_report_2026-06-18.md`.
-
-### `exectv2_llm_investigations_verifier_v01_dev140_gpt41mini_20260618`
-- Date/split: `2026-06-18`; `dev`; `140` rows.
-- Pipeline: `exectv2_llm_investigations_verifier`; mode `live`; replay `native_run_split`.
-- Model role: Investigations-focused verifier v0.1 over the v0.5 single structured key-entity draft. The model owns revised Investigations mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
-- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
-- Primary metrics: investigations_f1=0.872, investigations_precision=0.869, investigations_recall=0.875, evidence_validity_rate=0.9928, parse_failures=0.
-- Evidence validity: 0 call failures, 0 parse failures; 137/138 evidence-valid rendered mentions.
-- Claim language: First Investigations-specific candidate to clear the dev140 clinical-recovery target (`0.872` > `0.8`). Confirms Investigations should be split from medication verification.
-- Artifacts: `experiments/exectv2_llm_investigations_verifier_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_investigations_verifier_v01_dev140_gpt41mini_20260618.md`, `docs/research/exectv2_investigations_verifier_v01_dev140_report_2026-06-18.md`.
-
-### `exectv2_llm_med_inv_verifier_v01_dev140_gpt41mini_20260618`
-- Date/split: `2026-06-18`; `dev`; `140` rows.
-- Pipeline: `exectv2_llm_med_inv_verifier`; mode `live`; replay `native_run_split`.
-- Model role: Prescription/Investigations verifier v0.1 over the v0.5 single structured key-entity draft. The model owns revised Prescription and Investigations mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
-- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
-- Primary metrics: prescription_f1=0.817, prescription_precision=0.773, prescription_recall=0.865, investigations_f1=0.496, evidence_validity_rate=0.9792, parse_failures=0.
-- Evidence validity: 0 call failures, 0 parse failures; 376/384 evidence-valid rendered mentions.
-- Claim language: Split decision. Use v0.1 as the current Prescription candidate because it clears dev140 target (`0.817` > `0.8`), but reject it for Investigations because it regresses from the single structured baseline (`0.496` vs `0.786`). Build a dedicated Investigations verifier next.
-- Artifacts: `experiments/exectv2_llm_med_inv_verifier_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_med_inv_verifier_v01_dev140_gpt41mini_20260618.md`, `docs/research/exectv2_med_inv_verifier_v01_dev140_report_2026-06-18.md`.
-
-### `exectv2_key_entities_clinical_error_ledger_dev140_20260618`
-- Date/split: `2026-06-18`; `dev`; `140` rows.
-- Pipeline: `exectv2_key_entities_clinical_error_ledger`; mode `analysis-only`; replay `analysis_only`.
-- Model role: Clinical-recovery error ledger over the dev140 transfer artifacts: single structured v0.5 for Prescription/Investigations, Diagnosis verifier v0.5, and SeizureFrequency verifier v0.3.; model `none`.
-- Repair mode/config: `no model calls; clinical-recovery key analysis only`.
-- Primary metrics: prescription_f1=0.777, diagnosis_f1=0.616, seizure_frequency_f1=0.602, investigations_f1=0.786, records=569.
-- Evidence validity: Reads existing dev140 JSONLs only; no new model outputs. Ledger keys are the same clinical-recovery keys used by the headline scorers.
-- Claim language: Diagnostic residual taxonomy for the failed dev140 transfer readout. Use this as the control surface for the next targeted verifier iteration; do not treat it as a promoted candidate.
-- Artifacts: `experiments/exectv2_key_entities_clinical_error_ledger_dev140_20260618.json`, `experiments/exectv2_key_entities_clinical_error_ledger_dev140_20260618.md`, `docs/research/exectv2_key_entities_dev140_clinical_error_ledger_readout_2026-06-18.md`.
-
-### `exectv2_key_entities_dev140_transfer_readout_20260618`
-- Date/split: `2026-06-18`; `dev`; `140` rows.
-- Pipeline: `exectv2_key_entities_transfer_readout`; mode `live`; replay `analysis_only`.
-- Model role: Transfer readout combining the single structured v0.5 dev140 draft with Diagnosis verifier v0.5 and SeizureFrequency verifier v0.3 dev140 runs.; model `openai/gpt-4.1-mini`.
-- Repair mode/config: `neutral schema/evidence repair + benchmark CUI projection only; per-family outputs reported separately`.
-- Primary metrics: prescription_f1=0.777, diagnosis_verifier_f1=0.616, seizure_frequency_verifier_f1=0.602, investigations_f1=0.786, structured_call_failures=0, diagnosis_call_failures=0, sf_call_failures=0.
-- Evidence validity: Structured draft evidence validity `0.9563`; Diagnosis verifier `0.9832`; SeizureFrequency verifier `0.9796`. All three dev140 runs had 0 call failures and 0 parse failures.
-- Claim language: Negative transfer readout. The dev25 target-clearing configuration does not transfer to dev140: all four key families remain below `0.8`. Medication and Investigations are near misses; Diagnosis and SeizureFrequency require dev140 residual-led development. Do not promote or claim generalization from dev25.
-- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_v05_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_only_key_entities_structured_v05_dev140_gpt41mini_20260618.md`, `experiments/exectv2_llm_diagnosis_verifier_v05_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v05_dev140_gpt41mini_20260618.md`, `experiments/exectv2_llm_sf_verifier_v03_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_sf_verifier_v03_dev140_gpt41mini_20260618.md`, `docs/research/exectv2_key_entities_dev140_transfer_readout_2026-06-18.md`.
-
-### `exectv2_llm_sf_verifier_v03_dev25_gpt41mini_20260618`
-- Date/split: `2026-06-18`; `dev`; `25` rows.
-- Pipeline: `exectv2_llm_sf_verifier`; mode `live`; replay `native_run_split`.
-- Model role: SeizureFrequency-focused verifier v0.3 over the v0.5 single structured key-entity draft. The model owns normalized SeizureFrequency event text and may keep, delete, edit, or add SF mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
-- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
-- Primary metrics: prompt_version=exectv2_llm_sf_verifier_v0.3, seizure_frequency_clinical_headline_f1=0.831, seizure_frequency_clinical_headline_precision=0.794, seizure_frequency_clinical_headline_recall=0.871, seizure_frequency_source_near_f1=0.831, parse_failures=0, evidence_validity_rate=1.0000.
-- Evidence validity: 0 call failures, 0 parse failures; 34/34 evidence-valid rendered mentions.
-- Supersedes: `exectv2_llm_sf_verifier_v02_dev25_gpt41mini_20260618`.
-- Claim language: First SeizureFrequency-specific candidate to clear the dev25 clinical-recovery target (`0.831` > `0.8`) while keeping evidence validity `1.0000`. Development-surface success only; requires dev140 confirmation before any generalization claim.
-- Artifacts: `experiments/exectv2_llm_sf_verifier_v03_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_sf_verifier_v03_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_sf_verifier_v03_pilot_report_2026-06-18.md`.
-
-### `exectv2_llm_sf_verifier_v02_dev25_gpt41mini_20260618`
-- Date/split: `2026-06-18`; `dev`; `25` rows.
-- Pipeline: `exectv2_llm_sf_verifier`; mode `live`; replay `native_run_split`.
-- Model role: SeizureFrequency-focused verifier v0.2 over the v0.5 single structured key-entity draft. The model owns normalized SeizureFrequency event text and may keep, delete, edit, or add SF mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
-- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
-- Primary metrics: prompt_version=exectv2_llm_sf_verifier_v0.2, seizure_frequency_clinical_headline_f1=0.788, seizure_frequency_clinical_headline_precision=0.743, seizure_frequency_clinical_headline_recall=0.839, seizure_frequency_source_near_f1=0.818, parse_failures=0, evidence_validity_rate=1.0000.
-- Evidence validity: 0 call failures, 0 parse failures; 35/35 evidence-valid rendered mentions.
-- Supersedes: `exectv2_llm_sf_verifier_v01_dev25_gpt41mini_20260618`.
-- Claim language: Strong near-miss SeizureFrequency verifier iteration. v0.2 improves over v0.1 (`0.788` vs `0.667`) and v0.5 single structured (`0.633`) while keeping evidence validity `1.0000`, but remains just below the `0.8` target. One narrow residual pass is justified before dev140.
-- Artifacts: `experiments/exectv2_llm_sf_verifier_v02_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_sf_verifier_v02_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_sf_verifier_v02_pilot_report_2026-06-18.md`.
-
-### `exectv2_llm_sf_verifier_v01_dev25_gpt41mini_20260618`
-- Date/split: `2026-06-18`; `dev`; `25` rows.
-- Pipeline: `exectv2_llm_sf_verifier`; mode `live`; replay `native_run_split`.
-- Model role: SeizureFrequency-focused verifier v0.1 over the v0.5 single structured key-entity draft. The model owns normalized SeizureFrequency event text and may keep, delete, edit, or add SF mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
-- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
-- Primary metrics: prompt_version=exectv2_llm_sf_verifier_v0.1, seizure_frequency_clinical_headline_f1=0.667, seizure_frequency_clinical_headline_precision=0.629, seizure_frequency_clinical_headline_recall=0.710, seizure_frequency_source_near_f1=0.727, parse_failures=0, evidence_validity_rate=1.0000.
-- Evidence validity: 0 call failures, 0 parse failures; 35/35 evidence-valid rendered mentions.
-- Claim language: First SeizureFrequency verifier diagnostic over the v0.5 single structured draft. It improves recall and headline F1 over v0.5 single structured (`0.667` vs `0.633`) while keeping evidence validity `1.0000`, but remains below the `0.8` target and loses precision. Revise from residual errors before dev140.
-- Artifacts: `experiments/exectv2_llm_sf_verifier_v01_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_sf_verifier_v01_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_sf_verifier_v01_pilot_report_2026-06-18.md`.
-
-### `exectv2_llm_diagnosis_verifier_v05_dev25_gpt41mini_20260618`
-- Date/split: `2026-06-18`; `dev`; `25` rows.
-- Pipeline: `exectv2_llm_diagnosis_verifier`; mode `live`; replay `native_run_split`.
-- Model role: Diagnosis-focused verifier v0.5 over the v0.5 single structured key-entity draft. The model owns normalized Diagnosis concept text and may keep, delete, edit, or add Diagnosis mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
-- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
-- Primary metrics: prompt_version=exectv2_llm_diagnosis_verifier_v0.5, diagnosis_clinical_headline_f1=0.837, diagnosis_clinical_headline_precision=0.911, diagnosis_clinical_headline_recall=0.774, diagnosis_semantic_item_f1=0.620, diagnosis_source_near_f1=0.840, parse_failures=0, evidence_validity_rate=1.0000.
-- Evidence validity: 0 call failures, 0 parse failures; 44/44 evidence-valid rendered mentions.
-- Supersedes: `exectv2_llm_diagnosis_verifier_v04_dev25_gpt41mini_20260618`.
-- Claim language: First Diagnosis-specific candidate to clear the dev25 clinical-recovery target (`0.837` > `0.8`) while keeping evidence validity `1.0000`. Development-surface success only; requires dev140 confirmation before any generalization claim. Shift key-entity work to SeizureFrequency next.
-- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v05_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v05_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_diagnosis_verifier_v05_pilot_report_2026-06-18.md`.
-
-### `exectv2_llm_diagnosis_verifier_v04_dev25_gpt41mini_20260618`
-- Date/split: `2026-06-18`; `dev`; `25` rows.
-- Pipeline: `exectv2_llm_diagnosis_verifier`; mode `live`; replay `native_run_split`.
-- Model role: Diagnosis-focused verifier v0.4 over the v0.5 single structured key-entity draft. The model owns normalized Diagnosis concept text and may keep, delete, edit, or add Diagnosis mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
-- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
-- Primary metrics: prompt_version=exectv2_llm_diagnosis_verifier_v0.4, diagnosis_clinical_headline_f1=0.768, diagnosis_clinical_headline_precision=0.826, diagnosis_clinical_headline_recall=0.717, diagnosis_semantic_item_f1=0.554, diagnosis_source_near_f1=0.792, parse_failures=0, evidence_validity_rate=1.0000.
-- Evidence validity: 0 call failures, 0 parse failures; 45/45 evidence-valid rendered mentions.
-- Supersedes: `exectv2_llm_diagnosis_verifier_v03_dev25_gpt41mini_20260618`.
-- Claim language: Best Diagnosis-specific candidate so far, but revise-only. v0.4 improves over verifier v0.3 (`0.768` vs `0.701`) and v0.5 single structured (`0.569`) while keeping evidence validity `1.0000`, but remains just below the `0.8` target. One more residual-error iteration is justified before dev140 if precision stays protected.
-- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v04_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v04_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_diagnosis_verifier_v04_pilot_report_2026-06-18.md`.
-
-### `exectv2_llm_diagnosis_verifier_v03_dev25_gpt41mini_20260618`
-- Date/split: `2026-06-18`; `dev`; `25` rows.
-- Pipeline: `exectv2_llm_diagnosis_verifier`; mode `live`; replay `native_run_split`.
-- Model role: Diagnosis-focused verifier v0.3 over the v0.5 single structured key-entity draft. The model owns normalized Diagnosis concept text and may keep, delete, edit, or add Diagnosis mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
-- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
-- Primary metrics: prompt_version=exectv2_llm_diagnosis_verifier_v0.3, diagnosis_clinical_headline_f1=0.701, diagnosis_clinical_headline_precision=0.773, diagnosis_clinical_headline_recall=0.641, diagnosis_semantic_item_f1=0.490, diagnosis_source_near_f1=0.755, parse_failures=0, evidence_validity_rate=1.0000.
-- Evidence validity: 0 call failures, 0 parse failures; 42/42 evidence-valid rendered mentions.
-- Supersedes: `exectv2_llm_diagnosis_verifier_v02_dev25_gpt41mini_20260618`.
-- Claim language: Best Diagnosis-specific candidate so far, but revise-only. v0.3 improves over verifier v0.2 (`0.701` vs `0.619`) and v0.5 single structured (`0.569`) while keeping evidence validity `1.0000`, but remains below the `0.8` target. Run v0.4 from residual error analysis before dev140.
-- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v03_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v03_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_diagnosis_verifier_v03_pilot_report_2026-06-18.md`.
-
-### `exectv2_llm_diagnosis_verifier_v02_dev25_gpt41mini_20260618`
-- Date/split: `2026-06-18`; `dev`; `25` rows.
-- Pipeline: `exectv2_llm_diagnosis_verifier`; mode `live`; replay `native_run_split`.
-- Model role: Diagnosis-focused verifier v0.2 over the v0.5 single structured key-entity draft. The model owns normalized Diagnosis concept text and may keep, delete, edit, or add Diagnosis mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
-- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
-- Primary metrics: prompt_version=exectv2_llm_diagnosis_verifier_v0.2, diagnosis_clinical_headline_f1=0.619, diagnosis_clinical_headline_precision=0.682, diagnosis_clinical_headline_recall=0.566, diagnosis_semantic_item_f1=0.424, diagnosis_source_near_f1=0.727, parse_failures=0, evidence_validity_rate=1.0000.
-- Evidence validity: 0 call failures, 0 parse failures; 43/43 evidence-valid rendered mentions.
-- Supersedes: `exectv2_llm_diagnosis_verifier_v01_dev25_gpt41mini_20260618`.
-- Claim language: Best Diagnosis-specific multi-prompt candidate so far, but revise-only. v0.2 improves over verifier v0.1 (`0.619` vs `0.592`) and v0.5 single structured (`0.569`) while keeping evidence validity `1.0000`, but remains recall-limited and below the `0.8` target.
-- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v02_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v02_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_diagnosis_verifier_v02_pilot_report_2026-06-18.md`.
-
-### `exectv2_llm_diagnosis_verifier_v01_dev25_gpt41mini_20260618`
-- Date/split: `2026-06-18`; `dev`; `25` rows.
-- Pipeline: `exectv2_llm_diagnosis_verifier`; mode `live`; replay `native_run_split`.
-- Model role: Diagnosis-focused verifier over the v0.5 single structured key-entity draft. The model may keep, delete, edit, or add Diagnosis mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
-- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
-- Primary metrics: prompt_version=exectv2_llm_diagnosis_verifier_v0.1, diagnosis_clinical_headline_f1=0.592, diagnosis_clinical_headline_precision=0.644, diagnosis_clinical_headline_recall=0.547, diagnosis_semantic_item_f1=0.449, diagnosis_source_near_f1=0.694, parse_failures=0, evidence_validity_rate=1.0000.
-- Evidence validity: 0 call failures, 0 parse failures; 42/42 evidence-valid rendered mentions.
-- Claim language: First multi-prompt variant to improve over the best single structured Diagnosis candidate (`0.592` vs v0.5 `0.569`), but still far below the `0.8` target and recall-limited. Revise with targeted Diagnosis recall before dev140.
-- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v01_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v01_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_diagnosis_verifier_v01_pilot_report_2026-06-18.md`.
-
-### `exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618`
-- Date/split: `2026-06-18`; `dev`; `25` rows.
-- Pipeline: `exectv2_llm_only_per_entity`; mode `live`; replay `native_run_split`.
-- Model role: Existing focused per-entity Diagnosis prompt, run as the first specialist-prompt comparison against v0.5 single structured key-entity prompt.; model `openai/gpt-4.1-mini`.
-- Repair mode/config: `neutral schema repair + benchmark CUI projection only`.
-- Primary metrics: prompt_version=exectv2_llm_only_per_entity_v0.4, diagnosis_semantic_item_f1=0.259, diagnosis_source_near_recall=0.429, diagnosis_source_near_f1=0.565, diagnosis_clinical_headline_f1=0.282, parse_failures=0, evidence_validity_rate=1.0000.
-- Evidence validity: 0 call failures, 0 parse failures; 29/29 evidence-valid rendered mentions.
-- Claim language: Negative specialist-prompt comparison. The existing per-entity Diagnosis prompt is cleaner than the old all-9 baseline on source-near recall, but it is not competitive with the v0.5 single structured prompt on objective-aligned Diagnosis clinical recovery (`0.282` vs `0.569`). Do not promote; next specialist attempt should start from v0.5 guidance or use a verifier/repair prompt.
-- Artifacts: `experiments/exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618_diagnosis.jsonl`, `experiments/exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618_diagnosis.md`, `experiments/exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618_combined.json`, `experiments/exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618_combined.md`, `docs/research/exectv2_diagnosis_specialist_prompt_comparison_2026-06-18.md`.
-
-### `exectv2_llm_only_key_entities_structured_v05_dev25_gpt41mini_20260618`
-- Date/split: `2026-06-18`; `dev`; `25` rows.
-- Pipeline: `exectv2_llm_only_key_entities_structured`; mode `live`; replay `native_run_split`.
-- Model role: LLM-only single-prompt structured clinical event extractor over medication, Diagnosis, SeizureFrequency, and Investigations; deterministic code limited to schema/evidence gates, neutral attribute repair, CUI projection, and scoring.; model `openai/gpt-4.1-mini`.
-- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
-- Primary metrics: prompt_version=exectv2_llm_only_key_entities_structured_v0.5, semantic_per_item_f1=0.368, benchmark_per_item_f1=0.274, phrase_only_per_item_f1=0.508, source_near_f1=0.729, prescription_semantic_f1=0.204, diagnosis_semantic_f1=0.407, seizurefrequency_semantic_f1=0.433, investigations_semantic_f1=0.512, prescription_clinical_headline_f1=0.897, diagnosis_clinical_headline_f1=0.569, seizurefrequency_clinical_headline_f1=0.633, investigations_clinical_headline_f1=0.837, parse_failures=0, evidence_validity_rate=0.9684.
-- Evidence validity: 0 call failures, 0 parse failures; 153/158 evidence-valid rendered mentions.
-- Supersedes: `exectv2_llm_only_key_entities_structured_v04_dev25_gpt41mini_20260618`.
-- Claim language: Best single-prompt structured dev25 candidate so far, but revise-only. v0.5 lifts Diagnosis headline F1 (`0.460->0.569`) while preserving medication (`0.897`) and Investigations (`0.837`) above target and SF near v0.4 (`0.633`). Next: specialist Diagnosis prompt comparison on dev25 before dev140.
-- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_v05_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_only_key_entities_structured_v05_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_key_entities_structured_v05_pilot_report_2026-06-18.md`.
-
-### `exectv2_llm_only_key_entities_structured_v04_dev25_gpt41mini_20260618`
-- Date/split: `2026-06-18`; `dev`; `25` rows.
-- Pipeline: `exectv2_llm_only_key_entities_structured`; mode `live`; replay `native_run_split`.
-- Model role: LLM-only single-prompt structured clinical event extractor over medication, Diagnosis, SeizureFrequency, and Investigations; deterministic code limited to schema/evidence gates, neutral attribute repair, CUI projection, and scoring.; model `openai/gpt-4.1-mini`.
-- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
-- Primary metrics: prompt_version=exectv2_llm_only_key_entities_structured_v0.4, semantic_per_item_f1=0.295, benchmark_per_item_f1=0.256, phrase_only_per_item_f1=0.446, source_near_f1=0.728, prescription_semantic_f1=0.192, diagnosis_semantic_f1=0.202, seizurefrequency_semantic_f1=0.441, investigations_semantic_f1=0.558, prescription_clinical_headline_f1=0.900, diagnosis_clinical_headline_f1=0.460, seizurefrequency_clinical_headline_f1=0.644, investigations_clinical_headline_f1=0.837, parse_failures=0, evidence_validity_rate=0.9695.
-- Evidence validity: 0 call failures, 0 parse failures; 159/164 evidence-valid rendered mentions.
-- Supersedes: `exectv2_llm_only_key_entities_structured_v03_dev25_gpt41mini_20260618`.
-- Claim language: Best single-prompt structured dev25 candidate so far, but revise-only. v0.4 recovers SeizureFrequency headline F1 (`0.421->0.644`) while preserving medication (`0.900`) and Investigations (`0.837`) above target. Diagnosis remains the bottleneck (`0.460`), so next v0.5 should focus on Diagnosis hard cases before dev140 or specialist-prompt comparison.
-- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_v04_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_only_key_entities_structured_v04_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_key_entities_structured_v04_pilot_report_2026-06-18.md`.
-
-### `exectv2_llm_only_key_entities_structured_v03_dev25_gpt41mini_20260618`
-- Date/split: `2026-06-18`; `dev`; `25` rows.
-- Pipeline: `exectv2_llm_only_key_entities_structured`; mode `live`; replay `native_run_split`.
-- Model role: LLM-only single-prompt structured clinical event extractor over medication, Diagnosis, SeizureFrequency, and Investigations; deterministic code limited to schema/evidence gates, neutral attribute repair, CUI projection, and scoring.; model `openai/gpt-4.1-mini`.
-- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
-- Primary metrics: prompt_version=exectv2_llm_only_key_entities_structured_v0.3, semantic_per_item_f1=0.282, benchmark_per_item_f1=0.235, phrase_only_per_item_f1=0.436, source_near_f1=0.718, prescription_semantic_f1=0.198, diagnosis_semantic_f1=0.257, seizurefrequency_semantic_f1=0.246, investigations_semantic_f1=0.585, prescription_clinical_headline_f1=0.883, diagnosis_clinical_headline_f1=0.455, seizurefrequency_clinical_headline_f1=0.421, investigations_clinical_headline_f1=0.878, parse_failures=0, evidence_validity_rate=0.9441.
-- Evidence validity: 0 call failures, 0 parse failures; 152/161 evidence-valid rendered mentions.
-- Supersedes: `exectv2_llm_only_key_entities_structured_v02_dev25_gpt41mini_20260618`.
-- Claim language: Revise-only development pilot for v0.3 single structured schema + single prompt. Medication and Investigations clear the clinical-recovery headline target (`0.883`/`0.878`), Diagnosis improves modestly (`0.455`), but SeizureFrequency regresses (`0.421`) and evidence validity falls (`0.9441`). Not promoted; next v0.4 should preserve medication/investigation wins and isolate SF headline-state misses.
-- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_v03_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_only_key_entities_structured_v03_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_key_entities_structured_v03_pilot_report_2026-06-18.md`.
-
-### `exectv2_llm_only_key_entities_structured_v02_dev25_gpt41mini_20260618`
-- Date/split: `2026-06-18`; `dev`; `25` rows.
-- Pipeline: `exectv2_llm_only_key_entities_structured`; mode `live`; replay `native_run_split`.
-- Model role: LLM-only single-prompt structured clinical event extractor over medication, Diagnosis, SeizureFrequency, and Investigations; deterministic code limited to schema/evidence gates, neutral attribute repair, CUI projection, and scoring.; model `openai/gpt-4.1-mini`.
-- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
-- Primary metrics: prompt_version=exectv2_llm_only_key_entities_structured_v0.2, semantic_per_item_f1=0.272, benchmark_per_item_f1=0.220, phrase_only_per_item_f1=0.408, source_near_f1=0.680, prescription_semantic_f1=0.172, diagnosis_semantic_f1=0.283, seizurefrequency_semantic_f1=0.210, investigations_semantic_f1=0.522, prescription_clinical_headline_f1=0.846, diagnosis_clinical_headline_f1=0.414, seizurefrequency_clinical_headline_f1=0.456, investigations_clinical_headline_f1=0.783, parse_failures=0, evidence_validity_rate=0.9760.
-- Evidence validity: 0 call failures, 0 parse failures; 163/167 evidence-valid rendered mentions.
-- Claim language: Development pilot for error-analysis-led v0.2 of the single structured schema + single prompt key-family architecture. Improved semantic item F1 `0.206->0.272` and benchmark `0.158->0.220` with clean gate; refreshed clinical-recovery headlines show medication above target (`0.846`), Investigations near target (`0.783`), and Diagnosis/SF still below target (`0.414`/`0.456`). Not promoted. Next: v0.3 Diagnosis/SF hard-case panel, Investigation FP cleanup, and medication regression protection before dev140.
-- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_v02_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_only_key_entities_structured_v02_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_key_entities_structured_v02_pilot_report_2026-06-18.md`.
-
-### `exectv2_llm_only_key_entities_structured_dev25_gpt41mini_20260618`
-- Date/split: `2026-06-18`; `dev`; `25` rows.
-- Pipeline: `exectv2_llm_only_key_entities_structured`; mode `live`; replay `native_run_split`.
-- Model role: LLM-only single-prompt structured clinical event extractor over medication, Diagnosis, SeizureFrequency, and Investigations; deterministic code limited to schema/evidence gates, neutral attribute repair, CUI projection, and scoring.; model `openai/gpt-4.1-mini`.
-- Repair mode/config: `neutral schema repair + benchmark CUI projection only`.
-- Primary metrics: prompt_version=exectv2_llm_only_key_entities_structured_v0.1, semantic_per_item_f1=0.206, benchmark_per_item_f1=0.158, phrase_only_per_item_f1=0.385, source_near_f1=0.722, prescription_semantic_f1=0.264, diagnosis_semantic_f1=0.204, seizurefrequency_semantic_f1=0.070, investigations_semantic_f1=0.267, parse_failures=0, evidence_validity_rate=0.9539.
-- Evidence validity: 0 call failures, 0 parse failures; 145/152 evidence-valid rendered mentions.
-- Claim language: Development pilot for the user-requested single structured schema + single prompt extreme over the four key families. Viable schema and evidence gate, not promoted: source-near F1 0.722 but semantic item F1 only 0.206; next iteration should target attribute agreement and phrase altitude, especially SeizureFrequency quantification.
-- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_only_key_entities_structured_dev25_gpt41mini_20260618.md`.
 
 ### `exectv2_deterministic_all9_dev_20260617`
 - Date/split: `2026-06-17`; `dev`; `140` rows.
