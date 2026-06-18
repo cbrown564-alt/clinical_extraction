@@ -102,6 +102,12 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   The remaining below-target key family on dev25 is now SeizureFrequency
   (`0.633` best single structured headline). See
   `docs/research/exectv2_diagnosis_verifier_v05_pilot_report_2026-06-18.md`.
+- SeizureFrequency verifier v0.1 is a clean diagnostic improvement over the
+  v0.5 single structured draft, but not a promoted candidate: clinical headline
+  F1 `0.667` vs `0.633`, precision `0.629`, recall `0.710`, evidence validity
+  `1.0000`. It confirms the verifier path can add recall, but v0.2 must recover
+  precision and still clear `0.8` before any dev140 run. See
+  `docs/research/exectv2_sf_verifier_v01_pilot_report_2026-06-18.md`.
 
 ## Active Priorities
 
@@ -118,9 +124,9 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
 ### Now
 
 - Shift active development to SeizureFrequency: analyze the v0.5 single
-  structured dev25 residuals and design a specialist/verifier loop that can lift
-  SF from `0.633` toward `0.8` without regressing medication, Diagnosis, or
-  Investigations.
+  structured and verifier v0.1 dev25 residuals, then run a precision-recovering
+  verifier v0.2 that can lift SF beyond `0.667` toward `0.8` without regressing
+  medication, Diagnosis, or Investigations.
 
 ### Next
 
@@ -157,8 +163,10 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   the old per-entity frame (`0.282` clinical F1 vs v0.5 `0.569`); the v0.1
   Diagnosis verifier improved to `0.592`, v0.2 improved to `0.619`, v0.3
   improved to `0.701`, v0.4 improved to `0.768`, and v0.5 cleared the dev25
-  Diagnosis target at `0.837`. Latest report:
-  `docs/research/exectv2_diagnosis_verifier_v05_pilot_report_2026-06-18.md`.
+  Diagnosis target at `0.837`. The first SeizureFrequency verifier then moved
+  SF from `0.633` to `0.667` with a clean gate, but remains revise-only. Latest
+  report:
+  `docs/research/exectv2_sf_verifier_v01_pilot_report_2026-06-18.md`.
 - 2026-06-17: Built the reusable all-entity projection-gap ledger
   (`reports/projection_gap_ledger.py`). Classifies every gold FN / predicted FP
   into a layered `gap_family` (phrase coverage, attribute bundle, CUI
