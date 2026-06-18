@@ -104,6 +104,13 @@
 
 ## SeizureFrequency
 
+### Residual By State
+
+| Side | active-rate | seizure-free | unknown |
+| --- | ---: | ---: | ---: |
+| gold | 17 | 11 | 8 |
+| predicted | 19 | 17 | 12 |
+
 ### Top Gold Misses
 
 | Count | Key | Example | Letters |

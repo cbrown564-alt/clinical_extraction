@@ -45,10 +45,13 @@ Blocked work:
 - full-200 row-level error analysis before a frozen audit;
 - post-test schema/prompt/projection tuning.
 
-To unblock, the next cycle needs both:
+To unblock, the next cycle needs all of:
 
 - benchmark-beating GPT-first dev evidence on a predeclared headline, with
   ownership-clean attribution and exact evidence/schema readouts;
+- explicit user authorization for the specific full-200/test audit;
+- a predeclared aggregate readout that names the headline, companion tables,
+  slice summaries, stop rule, and claim language before execution;
 - a separate frozen full-200 protocol that pins architecture, prompt/schema
   versions, projection adapters, scorer policy, model/version, artifact paths,
   allowed aggregate-only tables, failure handling, and no row-level tuning.
@@ -85,6 +88,15 @@ extractor. A future study would need:
 
 No new boundary-control protocol is needed now unless that bottleneck evidence
 is first assembled from allowed dev artifacts.
+
+## Next Permitted Action
+
+The next permitted action is dev-only ExECTv2 analysis: review the dev140 SF
+route residuals and CUI/projection gaps named in `PROJECT_STATUS.md`, preserving
+the current ownership label `llm_first_with_hybrid_sf_route`. This may use
+predeclared dev artifacts and dev row/error ledgers only. It does not authorize
+Gan `test450`, ExECTv2 full-200/test, holdout row-level review, repeated
+holdout calls, or post-hoc tuning.
 
 ## Current Verification Reproduction
 

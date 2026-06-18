@@ -64,10 +64,10 @@ ROUTED_PRIMARY_ENTITIES: tuple[str, ...] = (
     DIAGNOSIS.name,
     SEIZURE_FREQUENCY.name,
 )
-SHARED_PASS_ENTITIES = frozenset(
-    {PRESCRIPTION.name, INVESTIGATIONS.name, DIAGNOSIS.name}
-)
+SHARED_PASS_ENTITIES = frozenset({PRESCRIPTION.name, INVESTIGATIONS.name, DIAGNOSIS.name})
 SF_ROUTE_ENTITIES = frozenset({SEIZURE_FREQUENCY.name})
+DIAGNOSIS_ROUTE_ENTITIES = frozenset({DIAGNOSIS.name})
+FOCUSED_DIAGNOSIS_AGGREGATE_OWNERSHIP = "llm_first_with_hybrid_diagnosis_and_sf_routes"
 
 DEFAULT_SHARED_PASS_ARTIFACT = Path(
     "experiments/exectv2_llm_only_all_entities_dev140_gpt41mini_20260612.jsonl"
@@ -77,6 +77,9 @@ DEFAULT_SF_ROUTE_ARTIFACT = Path(
 )
 DEFAULT_HYBRID_COMPARATOR_ARTIFACT = Path(
     "experiments/exectv2_hybrid_all_entities_dev140_gpt41mini_20260617.jsonl"
+)
+DEFAULT_DIAGNOSIS_ROUTE_ARTIFACT = Path(
+    "experiments/exectv2_hybrid_diagnosis_reconciler_v01_dev140_gpt41mini_20260618.jsonl"
 )
 DEFAULT_OUT_JSON = Path(
     "experiments/exectv2_family_routed_llm_first_dev140_gpt41mini_20260618.json"
@@ -100,10 +103,17 @@ def combine_family_routed_predictions(
     gold_letters: Sequence[ExectLetter],
     shared_pass_by_id: Mapping[str, PredictedLetter],
     sf_route_by_id: Mapping[str, PredictedLetter],
+    diagnosis_route_by_id: Mapping[str, PredictedLetter] | None = None,
 ) -> list[PredictedLetter]:
     """Combine shared-pass P/I/D mentions with routed SF mentions."""
 
     routed: list[PredictedLetter] = []
+    shared_entities = SHARED_PASS_ENTITIES
+    aggregate_ownership = "llm_first_with_hybrid_sf_route"
+    if diagnosis_route_by_id is not None:
+        shared_entities = frozenset({PRESCRIPTION.name, INVESTIGATIONS.name})
+        aggregate_ownership = FOCUSED_DIAGNOSIS_AGGREGATE_OWNERSHIP
+
     for gold in gold_letters:
         shared = shared_pass_by_id.get(
             gold.letter_id,
@@ -113,14 +123,30 @@ def combine_family_routed_predictions(
             gold.letter_id,
             PredictedLetter(letter_id=gold.letter_id, mentions=()),
         )
-        mentions = tuple(
-            _with_owner(m, OWNERSHIP_LLM_FIRST)
-            for m in shared.mentions
-            if m.entity in SHARED_PASS_ENTITIES
-        ) + tuple(
-            _with_owner(m, "hybrid_sf_route")
-            for m in sf_route.mentions
-            if m.entity in SF_ROUTE_ENTITIES
+        diagnosis_route = (
+            diagnosis_route_by_id.get(
+                gold.letter_id,
+                PredictedLetter(letter_id=gold.letter_id, mentions=()),
+            )
+            if diagnosis_route_by_id is not None
+            else PredictedLetter(letter_id=gold.letter_id, mentions=())
+        )
+        mentions = (
+            tuple(
+                _with_owner(m, OWNERSHIP_LLM_FIRST)
+                for m in shared.mentions
+                if m.entity in shared_entities
+            )
+            + tuple(
+                _with_owner(m, "hybrid_diagnosis_reconciler")
+                for m in diagnosis_route.mentions
+                if m.entity in DIAGNOSIS_ROUTE_ENTITIES
+            )
+            + tuple(
+                _with_owner(m, "hybrid_sf_route")
+                for m in sf_route.mentions
+                if m.entity in SF_ROUTE_ENTITIES
+            )
         )
         routed.append(
             PredictedLetter(
@@ -128,9 +154,17 @@ def combine_family_routed_predictions(
                 mentions=mentions,
                 diagnostics={
                     "pipeline_family": PIPELINE_FAMILY,
-                    "shared_pass_entities": sorted(SHARED_PASS_ENTITIES),
+                    "shared_pass_entities": sorted(shared_entities),
+                    "diagnosis_route_entities": (
+                        sorted(DIAGNOSIS_ROUTE_ENTITIES)
+                        if diagnosis_route_by_id is not None
+                        else []
+                    ),
                     "sf_route_entities": sorted(SF_ROUTE_ENTITIES),
-                    "aggregate_ownership": "llm_first_with_hybrid_sf_route",
+                    "prescription_investigations_route_policy": (
+                        "shared_broad_pass_only"
+                    ),
+                    "aggregate_ownership": aggregate_ownership,
                 },
             )
         )
@@ -327,6 +361,14 @@ def render_family_routed_markdown(
             "The result is a qualified architecture win, not a clean LLM-first benchmark "
             "claim, because the SF source uses deterministic candidate/projection and "
             "unknown-suppression policy."
+        ),
+        "",
+        (
+            "Prescription and Investigations are deliberately preserved from the shared "
+            "broad all-entities pass in this routed candidate. Specialist P/I verifier "
+            "artifacts remain separate candidates until a fresh predeclaration and "
+            "ablation show that replacing the shared pass improves the intended routed "
+            "surface without family regression or ownership ambiguity."
         ),
         "",
         "## Table 1: Architecture Ownership",

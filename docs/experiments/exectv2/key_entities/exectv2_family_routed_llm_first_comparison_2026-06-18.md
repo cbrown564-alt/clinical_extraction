@@ -14,6 +14,8 @@
 
 The family-routed candidate improves the four-family CUI-free clinical-recovery headline from `0.4313` to `0.5592` by replacing the collapsed single-pass SeizureFrequency surface with the event/state route. The result is a qualified architecture win, not a clean LLM-first benchmark claim, because the SF source uses deterministic candidate/projection and unknown-suppression policy.
 
+Prescription and Investigations are deliberately preserved from the shared broad all-entities pass in this routed candidate. Specialist P/I verifier artifacts remain separate candidates until a fresh predeclaration and ablation show that replacing the shared pass improves the intended routed surface without family regression or ownership ambiguity.
+
 ## Table 1: Architecture Ownership
 
 | Candidate | Owner | Prediction-bearing component | Deterministic adapters | Claim allowed |

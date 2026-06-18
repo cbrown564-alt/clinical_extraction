@@ -9,6 +9,12 @@ The all-entity LLM-only audit is contract-clean but not competitive: semantic
 overall F1 0.084 per-item / 0.232 per-letter; benchmark with-CUI 0.000/0.000.
 Overall audits for hybrid and deterministic all-9 remain future gated work.
 
+Current 2026-06-18 blocker note: the historical authorizations recorded here do
+not authorize new full-200/test audits. New ExECTv2 full-200 work is blocked
+until `docs/runbooks/gated_blockers_2026-06-18.md` is satisfied, including
+benchmark-beating GPT-first dev evidence, explicit user authorization, a
+predeclared aggregate readout, and a separate frozen protocol.
+
 ## Purpose
 
 Define exactly how we score, what counts as "beating the benchmark", how splits
