@@ -1858,6 +1858,16 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Inform Architecture Loop
 
+### `exectv2_key_entities_dev140_transfer_readout_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_key_entities_transfer_readout`; mode `live`; replay `analysis_only`.
+- Model role: Transfer readout combining the single structured v0.5 dev140 draft with Diagnosis verifier v0.5 and SeizureFrequency verifier v0.3 dev140 runs.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema/evidence repair + benchmark CUI projection only; per-family outputs reported separately`.
+- Primary metrics: prescription_f1=0.777, diagnosis_verifier_f1=0.616, seizure_frequency_verifier_f1=0.602, investigations_f1=0.786, structured_call_failures=0, diagnosis_call_failures=0, sf_call_failures=0.
+- Evidence validity: Structured draft evidence validity `0.9563`; Diagnosis verifier `0.9832`; SeizureFrequency verifier `0.9796`. All three dev140 runs had 0 call failures and 0 parse failures.
+- Claim language: Negative transfer readout. The dev25 target-clearing configuration does not transfer to dev140: all four key families remain below `0.8`. Medication and Investigations are near misses; Diagnosis and SeizureFrequency require dev140 residual-led development. Do not promote or claim generalization from dev25.
+- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_v05_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_only_key_entities_structured_v05_dev140_gpt41mini_20260618.md`, `experiments/exectv2_llm_diagnosis_verifier_v05_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v05_dev140_gpt41mini_20260618.md`, `experiments/exectv2_llm_sf_verifier_v03_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_sf_verifier_v03_dev140_gpt41mini_20260618.md`, `docs/research/exectv2_key_entities_dev140_transfer_readout_2026-06-18.md`.
+
 ### `exectv2_llm_sf_verifier_v03_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
 - Pipeline: `exectv2_llm_sf_verifier`; mode `live`; replay `native_run_split`.

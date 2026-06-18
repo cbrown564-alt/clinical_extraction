@@ -115,13 +115,19 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   families now clear `0.8` on dev25. This is still development-surface evidence
   only; next step is a predeclared dev140 readout. See
   `docs/research/exectv2_sf_verifier_v03_pilot_report_2026-06-18.md`.
+- The dev140 transfer readout did not confirm the dev25 result. Single
+  structured v0.5 dev140 is clean but below target for medication (`0.777`) and
+  Investigations (`0.786`); Diagnosis verifier v0.5 transfers to only `0.616`;
+  SeizureFrequency verifier v0.3 transfers to only `0.602`. Treat the dev25
+  success as local development evidence and restart from dev140 residual slices.
+  See
+  `docs/research/exectv2_key_entities_dev140_transfer_readout_2026-06-18.md`.
 
 ## Active Priorities
 
-1. Prepare a predeclared dev140 key-family readout: v0.5 single structured for
-   medication and Investigations, Diagnosis verifier v0.5, and SeizureFrequency
-   verifier v0.3. Keep claim language development-only until the broader dev
-   surface confirms the dev25 result.
+1. Build dev140 clinical-recovery error ledgers for Prescription,
+   Investigations, Diagnosis, and SeizureFrequency; use them to separate source
+   coverage, concept normalization, attribute/state rendering, and over-emission.
 2. Require benchmark-beating dev evidence before any new full-200 audit:
    overall `0.87` per-item / `0.90` per-letter, plus per-entity tables,
    evidence/schema reliability, semantic-vs-CUI gaps, and ablations.
@@ -130,13 +136,13 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
 
 ### Now
 
-- Design the dev140 combined-key-family readout and decide how to merge the
-  best per-family outputs without hiding component ownership or evidence gates.
+- Analyze dev140 residuals for medication and Investigations near misses, then
+  Diagnosis and SeizureFrequency verifier transfer failures.
 
 ### Next
 
-- Confirm Diagnosis verifier v0.5 and SeizureFrequency verifier v0.3 on dev140
-  inside the combined key-family architecture.
+- Draft a dev140-led v0.6/v0.4 architecture plan after residual ledgers identify
+  which families need prompt-only fixes versus new verifier decomposition.
 - Compare the best single-prompt structured-event variant against the existing
   per-entity prompt family before returning to specialist/verifier variants.
 
