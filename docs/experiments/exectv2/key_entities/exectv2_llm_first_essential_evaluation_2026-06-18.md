@@ -129,13 +129,13 @@ Concept bucket ledger (over gold concepts carrying a CUI):
 | one_to_one | 283 | 1325 |
 | result_conditioned | 2 | 10 |
 | gold_inconsistent | 8 | 144 |
-| missing_mapping | 153 | 175 |
+| missing_mapping | 149 | 162 |
 
 Deterministic projection over gold (CUI stripped first, then re-attached — an in-sample lexicon lookup):
 
-- coverage **0.882** (1304/1479)
-- correctness **0.953** (1242/1304)
-- missing_mapping mentions: **175**
+- coverage **0.890** (1317/1479)
+- correctness **0.953** (1255/1317)
+- missing_mapping mentions: **162**
 
 ## 6. Benchmark projection gap ledger
 

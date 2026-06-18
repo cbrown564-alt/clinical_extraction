@@ -23,6 +23,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_clinica
     VerificationDecisionRecord,
     apply_verification_decisions,
     build_finalization_prompt_input,
+    build_plan11_event_state_route,
     build_verification_prompt_input,
     parse_clinical_findings_json,
     parse_verification_decisions_json,
@@ -319,6 +320,41 @@ def test_parse_clinical_findings_json_accepts_structured_fields() -> None:
     assert record.findings[0].frequency_statement_type == "background_rate"
     assert record.findings[0].source_role == "narrative"
     assert any("coerced_field_value" in e for e in errors)
+
+
+def test_parse_reports_and_ignores_model_supplied_projection_fields() -> None:
+    raw = json.dumps({
+        "event_frames": [
+            {
+                "event_id": "e1",
+                "evidence": "2 focal seizures per month",
+                "seizure_phrase": "focal seizures",
+                "CUI": "C999",
+                "Certainty": "5",
+            }
+        ],
+        "findings": [
+            {
+                "text": "focal seizures",
+                "evidence": "2 focal seizures per month",
+                "clinical_kind": "frequency_rate",
+                "frequency_statement_type": "background_rate",
+                "count": "2",
+                "period_count": "1",
+                "period_unit": "month",
+                "CUI": "C999",
+                "CUIPhrase": "wrong",
+                "Negation": "Affirmed",
+            }
+        ],
+    })
+
+    record, errors = parse_clinical_findings_json(raw)
+
+    assert record is not None
+    assert not hasattr(record.findings[0], "CUI")
+    assert any("event_frames[0] 'CUI'" in e for e in errors)
+    assert any("findings[0] 'CUIPhrase'" in e for e in errors)
 
 
 def test_parse_moves_statement_type_from_clinical_kind_when_misplaced() -> None:
@@ -1030,3 +1066,97 @@ def test_current_zero_no_duration_is_scored_when_model_marks_target() -> None:
 
     assert warnings == []
     assert dict(layers["cui_projected"].mentions[0].attributes)["NumberOfSeizures"] == "0"
+
+
+def test_plan11_route_does_not_convert_non_target_event_frames_to_findings() -> None:
+    record = llm_only_clinical_findings.ClinicalFindingsRecord(
+        event_frames=[
+            EventFrameRecord(
+                event_id="e1",
+                evidence="staring episodes happen several times per week",
+                seizure_phrase="staring episodes",
+                target_status="non_target_episode",
+                statement_family="non_target",
+                include_as_finding=False,
+            )
+        ],
+        findings=[],
+    )
+
+    layers, diagnostics, warnings = build_plan11_event_state_route(
+        "CF001",
+        record,
+        note_text="Her staring episodes happen several times per week.",
+    )
+
+    assert warnings == []
+    assert layers["format_projected"].mentions == ()
+    assert layers["cui_projected"].mentions == ()
+    assert diagnostics["deterministic_clinical_selection"] is False
+    assert diagnostics["aggregate_ownership"] == "llm_first"
+    by_layer = {layer["layer"]: layer for layer in diagnostics["layers"]}
+    assert by_layer["raw_event_frames"]["count"] == 1
+    assert by_layer["raw_findings"]["count"] == 0
+    assert by_layer["format_projected"]["owner"] == "deterministic_adapter"
+
+
+def test_plan11_route_does_not_infer_missing_operands_from_evidence_text() -> None:
+    record = llm_only_clinical_findings.ClinicalFindingsRecord(
+        findings=[
+            ClinicalFindingRecord(
+                text="seizures",
+                evidence="2 seizures per month",
+                clinical_kind="frequency_rate",
+                frequency_statement_type="background_rate",
+                confidence="high",
+            )
+        ]
+    )
+
+    layers, diagnostics, warnings = build_plan11_event_state_route(
+        "CF001",
+        record,
+        note_text="She reports 2 seizures per month.",
+    )
+
+    assert warnings == []
+    attrs = dict(layers["format_projected"].mentions[0].attributes)
+    assert "NumberOfSeizures" not in attrs
+    assert "NumberOfTimePeriods" not in attrs
+    assert "TimePeriod" not in attrs
+    assert diagnostics["deterministic_clinical_selection"] is False
+
+
+def test_plan11_route_keeps_cui_projection_out_of_primary_format_layer() -> None:
+    record = llm_only_clinical_findings.ClinicalFindingsRecord(
+        findings=[
+            ClinicalFindingRecord(
+                text="focal seizures with impaired awareness",
+                evidence="focal seizures with impaired awareness 2 per month",
+                clinical_kind="frequency_rate",
+                frequency_statement_type="background_rate",
+                count="2",
+                period_count="1",
+                period_unit="month",
+                confidence="high",
+            )
+        ]
+    )
+
+    layers, diagnostics, warnings = build_plan11_event_state_route(
+        "CF001",
+        record,
+        note_text="She has focal seizures with impaired awareness 2 per month.",
+    )
+
+    assert warnings == []
+    format_attrs = dict(layers["format_projected"].mentions[0].attributes)
+    cui_attrs = dict(layers["cui_projected"].mentions[0].attributes)
+    assert "CUI" not in format_attrs
+    assert "CUIPhrase" not in format_attrs
+    assert "Certainty" not in format_attrs
+    assert "Negation" not in format_attrs
+    assert cui_attrs["CUI"] == "C0270834"
+    by_layer = {layer["layer"]: layer for layer in diagnostics["layers"]}
+    assert by_layer["cui_projected"]["claim_role"] == "Companion benchmark-format score only."
+    assert by_layer["certainty_projected"]["diagnostics"] == {"sf_policy": "no_op"}

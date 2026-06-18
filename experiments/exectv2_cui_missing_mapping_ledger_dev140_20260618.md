@@ -9,28 +9,27 @@
 ## Summary
 
 - Baseline missing mappings: **184 concepts / 365 mentions**.
-- Implemented finite additions: **31 concepts / 190 mentions**.
-- Review-needed remainder: **153 concepts / 175 mentions**.
+- Implemented finite additions: **35 concepts / 203 mentions**.
+- Review-needed remainder: **149 concepts / 162 mentions**.
 
 ## Action Counts
 
 | Action | Concepts | Mentions |
 | --- | ---: | ---: |
 | `review_needed_long_tail` | 146 | 153 |
-| `implemented_lexicon_addition` | 31 | 190 |
-| `review_needed_candidate` | 4 | 13 |
+| `implemented_lexicon_addition` | 35 | 203 |
 | `review_needed_fragment_or_context_dependent` | 2 | 6 |
 | `review_needed_gold_inconsistent` | 1 | 3 |
 
-## Entity Counts
+## Remaining Review-Needed Entity Counts
 
 | Entity | Concepts | Mentions |
 | --- | ---: | ---: |
 | BirthHistory | 4 | 4 |
-| Diagnosis | 65 | 226 |
+| Diagnosis | 39 | 45 |
 | EpilepsyCause | 5 | 5 |
 | Onset | 9 | 9 |
-| PatientHistory | 101 | 121 |
+| PatientHistory | 92 | 99 |
 
 ## Implemented Lexicon Additions
 
@@ -69,6 +68,10 @@ All rows below are `benchmark_format_projection_only`: they attach a dev-observe
 | PatientHistory | episode of loss of consciousness | 1 | `C0041657` |
 | PatientHistory | insulin dependent diabetes | 1 | `C0011854` |
 | PatientHistory | loss of consciousnes | 1 | `C0041657` |
+| PatientHistory | jerks | 4 | `C0231530` |
+| PatientHistory | altered awareness | 3 | `C0234428` |
+| PatientHistory | déjà vu | 3 | `C0011194` |
+| PatientHistory | hemiparesis | 3 | `C0018989` |
 
 ## Full Ledger
 

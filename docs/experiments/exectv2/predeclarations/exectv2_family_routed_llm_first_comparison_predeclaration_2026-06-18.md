@@ -1,7 +1,7 @@
 # ExECTv2 - Family-Routed LLM-First Essential Comparison - Predeclaration
 
 Date: 2026-06-18
-Status: PREDECLARED, not executed
+Status: AUTHORIZED for pilot25 -> dev140 dev ladder; full-200/test audit blocked
 Split: dev ladder only (`pilot25` -> `dev140`); full-200/test audit blocked
 Model: gpt-4.1-mini unless explicitly version-pinned before execution
 Plan: `docs/plans/exectv2/11_llm_first_essential_clinical_evaluation_plan.md`
@@ -293,4 +293,3 @@ Not supported from this predeclaration:
 Not supported unless a later frozen audit is authorized and run:
 
 > The routed architecture generalizes to the full-200/test surface.
-

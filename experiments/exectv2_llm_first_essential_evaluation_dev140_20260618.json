@@ -1620,12 +1620,12 @@
             "projected_correct": 8
           },
           "PatientHistory": {
-            "correctness": 0.9887,
-            "coverage": 0.7597,
+            "correctness": 0.9891,
+            "coverage": 0.7876,
             "gold_with_cui": 466,
-            "missing_mapping": 112,
-            "projected": 354,
-            "projected_correct": 350
+            "missing_mapping": 99,
+            "projected": 367,
+            "projected_correct": 363
           },
           "Prescription": {
             "correctness": 0.9563,
@@ -1652,7 +1652,7 @@
             "projected_correct": 11
           },
           "__missing_mapping__": {
-            "concept_count": 153,
+            "concept_count": 149,
             "examples": {
               "BirthHistory": [
                 {
@@ -1863,15 +1863,15 @@
                 }
               ]
             },
-            "mention_count": 175
+            "mention_count": 162
           },
           "__overall__": {
-            "correctness": 0.9525,
-            "coverage": 0.8817,
+            "correctness": 0.9529,
+            "coverage": 0.8905,
             "gold_with_cui": 1479,
-            "missing_mapping": 175,
-            "projected": 1304,
-            "projected_correct": 1242
+            "missing_mapping": 162,
+            "projected": 1317,
+            "projected_correct": 1255
           }
         },
         "note": "CUI is benchmark-format projection: the benchmark key keeps CUI, the semantic key drops it. The benchmark-minus-semantic delta is owned by deterministic CUI projection, never by LLM clinical reasoning.",
@@ -3672,12 +3672,12 @@
             "projected_correct": 8
           },
           "PatientHistory": {
-            "correctness": 0.9887,
-            "coverage": 0.7597,
+            "correctness": 0.9891,
+            "coverage": 0.7876,
             "gold_with_cui": 466,
-            "missing_mapping": 112,
-            "projected": 354,
-            "projected_correct": 350
+            "missing_mapping": 99,
+            "projected": 367,
+            "projected_correct": 363
           },
           "Prescription": {
             "correctness": 0.9563,
@@ -3704,7 +3704,7 @@
             "projected_correct": 11
           },
           "__missing_mapping__": {
-            "concept_count": 153,
+            "concept_count": 149,
             "examples": {
               "BirthHistory": [
                 {
@@ -3915,15 +3915,15 @@
                 }
               ]
             },
-            "mention_count": 175
+            "mention_count": 162
           },
           "__overall__": {
-            "correctness": 0.9525,
-            "coverage": 0.8817,
+            "correctness": 0.9529,
+            "coverage": 0.8905,
             "gold_with_cui": 1479,
-            "missing_mapping": 175,
-            "projected": 1304,
-            "projected_correct": 1242
+            "missing_mapping": 162,
+            "projected": 1317,
+            "projected_correct": 1255
           }
         },
         "note": "CUI is benchmark-format projection: the benchmark key keeps CUI, the semantic key drops it. The benchmark-minus-semantic delta is owned by deterministic CUI projection, never by LLM clinical reasoning.",
@@ -18307,12 +18307,12 @@
             "projected_correct": 8
           },
           "PatientHistory": {
-            "correctness": 0.9887,
-            "coverage": 0.7597,
+            "correctness": 0.9891,
+            "coverage": 0.7876,
             "gold_with_cui": 466,
-            "missing_mapping": 112,
-            "projected": 354,
-            "projected_correct": 350
+            "missing_mapping": 99,
+            "projected": 367,
+            "projected_correct": 363
           },
           "Prescription": {
             "correctness": 0.9563,
@@ -18339,7 +18339,7 @@
             "projected_correct": 11
           },
           "__missing_mapping__": {
-            "concept_count": 153,
+            "concept_count": 149,
             "examples": {
               "BirthHistory": [
                 {
@@ -18550,15 +18550,15 @@
                 }
               ]
             },
-            "mention_count": 175
+            "mention_count": 162
           },
           "__overall__": {
-            "correctness": 0.9525,
-            "coverage": 0.8817,
+            "correctness": 0.9529,
+            "coverage": 0.8905,
             "gold_with_cui": 1479,
-            "missing_mapping": 175,
-            "projected": 1304,
-            "projected_correct": 1242
+            "missing_mapping": 162,
+            "projected": 1317,
+            "projected_correct": 1255
           }
         },
         "note": "CUI is benchmark-format projection: the benchmark key keeps CUI, the semantic key drops it. The benchmark-minus-semantic delta is owned by deterministic CUI projection, never by LLM clinical reasoning.",

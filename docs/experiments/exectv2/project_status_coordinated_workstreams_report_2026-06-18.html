@@ -1,0 +1,997 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PROJECT_STATUS Coordinated Workstreams Report</title>
+  <style>
+    :root {
+      --ink: #17201b;
+      --muted: #5e6b64;
+      --paper: #f6f7f2;
+      --surface: #ffffff;
+      --line: #d7ddd5;
+      --green: #1f7a4c;
+      --green-bg: #e6f3eb;
+      --blue: #235ea8;
+      --blue-bg: #e7eef9;
+      --amber: #a86100;
+      --amber-bg: #fff0d8;
+      --red: #a2413b;
+      --red-bg: #f8e5e2;
+      --slate: #303a35;
+      --shadow: 0 22px 60px rgba(23, 32, 27, 0.09);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background:
+        linear-gradient(90deg, rgba(23, 32, 27, 0.045) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(23, 32, 27, 0.04) 1px, transparent 1px),
+        var(--paper);
+      background-size: 44px 44px;
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.52;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .progress {
+      position: fixed;
+      inset: 0 auto auto 0;
+      width: 100%;
+      height: 4px;
+      transform-origin: left center;
+      scale: 0 1;
+      background: linear-gradient(90deg, var(--green), var(--blue), var(--amber));
+      z-index: 20;
+      animation: progress linear;
+      animation-timeline: scroll();
+    }
+
+    @keyframes progress {
+      to {
+        scale: 1 1;
+      }
+    }
+
+    header {
+      min-height: 82svh;
+      display: grid;
+      align-items: end;
+      border-bottom: 1px solid var(--line);
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(246, 247, 242, 0.82)),
+        linear-gradient(90deg, rgba(31, 122, 76, 0.14), rgba(35, 94, 168, 0.12) 54%, rgba(168, 97, 0, 0.12));
+    }
+
+    .wrap {
+      width: min(1160px, calc(100% - 44px));
+      margin: 0 auto;
+    }
+
+    .hero {
+      padding: 56px 0 44px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 780;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 42px;
+      height: 3px;
+      background: var(--green);
+      display: inline-block;
+    }
+
+    h1 {
+      max-width: 980px;
+      margin: 18px 0 20px;
+      font-size: clamp(2.65rem, 7vw, 6.7rem);
+      line-height: 0.94;
+      letter-spacing: 0;
+    }
+
+    .hero-copy {
+      max-width: 740px;
+      color: #38443e;
+      font-size: clamp(1.08rem, 2vw, 1.38rem);
+      margin: 0;
+    }
+
+    .hero-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0;
+      margin-top: 44px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.78);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-stat {
+      padding: 22px;
+      border-right: 1px solid var(--line);
+      min-height: 118px;
+    }
+
+    .hero-stat:last-child {
+      border-right: 0;
+    }
+
+    .hero-stat strong {
+      display: block;
+      font-size: clamp(2.1rem, 4vw, 4rem);
+      line-height: 0.95;
+    }
+
+    .hero-stat span {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    nav {
+      position: sticky;
+      top: 4px;
+      z-index: 10;
+      background: rgba(246, 247, 242, 0.92);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+    }
+
+    nav .wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 12px 0;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: var(--slate);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.8);
+      padding: 7px 11px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      transition: border-color 140ms ease, transform 140ms ease;
+    }
+
+    nav a:hover {
+      border-color: var(--green);
+      transform: translateY(-1px);
+    }
+
+    main {
+      padding: 52px 0 72px;
+    }
+
+    section {
+      margin: 0 0 64px;
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(0, 0.78fr) minmax(280px, 0.42fr);
+      gap: 36px;
+      align-items: end;
+      margin-bottom: 22px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 18px;
+    }
+
+    h2 {
+      font-size: clamp(1.75rem, 3vw, 3rem);
+      line-height: 1.02;
+      margin: 0;
+      letter-spacing: 0;
+    }
+
+    .section-head p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .readout-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .readout {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      padding: 22px;
+      min-height: 176px;
+      box-shadow: 0 14px 38px rgba(23, 32, 27, 0.05);
+    }
+
+    .readout h3,
+    .work h3,
+    .insight h3 {
+      margin: 0 0 8px;
+      font-size: 1.04rem;
+      letter-spacing: 0;
+    }
+
+    .readout p,
+    .work p,
+    .insight p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 14px;
+    }
+
+    .status::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .status.done {
+      color: var(--green);
+    }
+
+    .status.gated {
+      color: var(--amber);
+    }
+
+    .status.blocked {
+      color: var(--red);
+    }
+
+    .workstream-list {
+      border-top: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.58);
+    }
+
+    .work {
+      display: grid;
+      grid-template-columns: 190px minmax(0, 1fr) 250px;
+      gap: 22px;
+      padding: 24px 0;
+      border-bottom: 1px solid var(--line);
+      align-items: start;
+    }
+
+    .work-id {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .thread {
+      color: var(--muted);
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 0.74rem;
+      overflow-wrap: anywhere;
+    }
+
+    .facts {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+      color: var(--slate);
+      font-size: 0.94rem;
+    }
+
+    .fact {
+      position: relative;
+      padding-left: 22px;
+    }
+
+    .fact::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.7em;
+      width: 10px;
+      height: 2px;
+      background: var(--green);
+    }
+
+    .artifact-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 8px;
+      font-size: 0.83rem;
+      color: var(--muted);
+    }
+
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 0.91em;
+      background: rgba(23, 32, 27, 0.06);
+      padding: 0.1em 0.34em;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .metric-block {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      padding: 24px;
+    }
+
+    .metric-block h3 {
+      margin: 0 0 16px;
+      font-size: 1.08rem;
+    }
+
+    .metric-row {
+      display: grid;
+      grid-template-columns: 160px minmax(0, 1fr) 92px;
+      gap: 12px;
+      align-items: center;
+      min-height: 36px;
+      font-size: 0.92rem;
+    }
+
+    .bar {
+      height: 10px;
+      background: #e7eae4;
+      overflow: hidden;
+    }
+
+    .bar i {
+      display: block;
+      width: var(--w);
+      height: 100%;
+      background: var(--green);
+    }
+
+    .bar.blue i {
+      background: var(--blue);
+    }
+
+    .bar.amber i {
+      background: var(--amber);
+    }
+
+    .ladder {
+      display: grid;
+      grid-template-columns: repeat(9, minmax(96px, 1fr));
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+
+    .rung {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      padding: 14px 12px;
+      min-height: 122px;
+    }
+
+    .rung strong {
+      display: block;
+      font-size: 0.84rem;
+      line-height: 1.15;
+      overflow-wrap: anywhere;
+    }
+
+    .rung span {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 0.76rem;
+    }
+
+    .rung.llm {
+      border-top: 4px solid var(--blue);
+    }
+
+    .rung.det {
+      border-top: 4px solid var(--green);
+    }
+
+    .rung.policy {
+      border-top: 4px solid var(--amber);
+    }
+
+    .insight-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .insight {
+      border-left: 5px solid var(--blue);
+      background: var(--surface);
+      padding: 22px 24px;
+      box-shadow: 0 14px 38px rgba(23, 32, 27, 0.05);
+    }
+
+    .insight.green {
+      border-color: var(--green);
+    }
+
+    .insight.amber {
+      border-color: var(--amber);
+    }
+
+    .insight.red {
+      border-color: var(--red);
+    }
+
+    .next-steps {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .step-band {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      padding: 22px;
+    }
+
+    .step-band h3 {
+      margin: 0 0 12px;
+      font-size: 1.12rem;
+    }
+
+    .step-band ol,
+    .step-band ul {
+      margin: 0;
+      padding-left: 22px;
+      color: var(--slate);
+    }
+
+    .step-band li + li {
+      margin-top: 8px;
+    }
+
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 0 42px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 900px) {
+      .hero-strip,
+      .readout-grid,
+      .metric-grid,
+      .insight-grid,
+      .next-steps,
+      .section-head {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-stat {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .hero-stat:last-child {
+        border-bottom: 0;
+      }
+
+      .work {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media print {
+      .progress,
+      nav {
+        display: none;
+      }
+
+      header {
+        min-height: auto;
+      }
+
+      body {
+        background: #fff;
+      }
+
+      .readout,
+      .metric-block,
+      .insight,
+      .step-band,
+      .rung {
+        box-shadow: none;
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"></div>
+  <header>
+    <div class="wrap hero">
+      <div class="eyebrow">Clinical Extraction | Coordination Report | 2026-06-18</div>
+      <h1>PROJECT_STATUS workstreams moved the plan from loose tasks to controlled lanes.</h1>
+      <p class="hero-copy">
+        Five parallel Codex threads completed implementation, analysis, projection review,
+        gated-comparison preparation, and blocker documentation. The useful result is not just
+        more code: the next ExECTv2 decisions now have clearer ownership labels, safer gates,
+        and sharper dev-only slices.
+      </p>
+      <div class="hero-strip" aria-label="Topline completion metrics">
+        <div class="hero-stat">
+          <strong>5</strong>
+          <span>background workstreams completed</span>
+        </div>
+        <div class="hero-stat">
+          <strong>0</strong>
+          <span>holdout or full-200 evaluations run</span>
+        </div>
+        <div class="hero-stat">
+          <strong>89.0%</strong>
+          <span>CUI projection coverage after reviewed additions</span>
+        </div>
+        <div class="hero-stat">
+          <strong>557</strong>
+          <span>dev-only row/error records used for prioritization</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav aria-label="Report sections">
+    <div class="wrap">
+      <a href="#readout">Readout</a>
+      <a href="#workstreams">Workstreams</a>
+      <a href="#metrics">Metrics</a>
+      <a href="#ladder">SF Ladder</a>
+      <a href="#insights">Insights</a>
+      <a href="#next">Next</a>
+    </div>
+  </nav>
+
+  <main class="wrap">
+    <section id="readout">
+      <div class="section-head">
+        <h2>Executive Readout</h2>
+        <p>
+          The coordinated batch resolved two active tasks directly, converted one dependent
+          task into a mechanical preflight, tightened blocker documentation, and improved the
+          benchmark-format CUI projection surface.
+        </p>
+      </div>
+      <div class="readout-grid">
+        <article class="readout">
+          <div class="status done">Completed</div>
+          <h3>SF route ownership is explicit.</h3>
+          <p>
+            The Plan 11 SF event/state route now reports its layer ladder and blocks hidden
+            deterministic clinical selection, evidence-mined operands, and model-supplied
+            CUI/certainty leakage into the primary clinical headline.
+          </p>
+        </article>
+        <article class="readout">
+          <div class="status done">Completed</div>
+          <h3>First SF ledger slice is concrete.</h3>
+          <p>
+            The highest-leverage dev-only SF slice is count/date text anchor drift:
+            already-selected phrases can be normalized to seizure anchors without choosing
+            new state, count, or temporal facts.
+          </p>
+        </article>
+        <article class="readout">
+          <div class="status done">Completed</div>
+          <h3>CUI projection moved, but stayed in its lane.</h3>
+          <p>
+            Four recurrent PatientHistory mappings were added as projection-only benchmark
+            format repairs. Remaining gaps are long-tail, context-dependent, or inconsistent.
+          </p>
+        </article>
+        <article class="readout">
+          <div class="status gated">Gated</div>
+          <h3>The family-routed comparison did not run.</h3>
+          <p>
+            A non-executing preflight now confirms the dev ladder remains blocked until the
+            routed adapter/runner contract exists and <code>pilot25 -&gt; dev140</code>
+            authorization is explicit.
+          </p>
+        </article>
+        <article class="readout">
+          <div class="status blocked">Blocked</div>
+          <h3>Guardrails are documented as artifacts.</h3>
+          <p>
+            A blocker runbook captures what would be required to unblock Gan holdout-facing
+            work, ExECTv2 full-200 audits, or an EpilepsyCause boundary-control study.
+          </p>
+        </article>
+        <article class="readout">
+          <div class="status done">Verified</div>
+          <h3>Focused checks were preferred to theatrical breadth.</h3>
+          <p>
+            Threads ran targeted pytest and Ruff checks. One guardrail thread ran the full
+            repo command and documented the known <code>1700 passed, 4 failed</code> state.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section id="workstreams">
+      <div class="section-head">
+        <h2>What Each Workstream Completed</h2>
+        <p>
+          Each thread worked in a separate Codex worktree. The entries below summarize actual
+          completed work and verification from the thread final responses.
+        </p>
+      </div>
+
+      <div class="workstream-list">
+        <article class="work">
+          <div class="work-id">
+            <div class="status done">Done</div>
+            <strong>SF route ladder</strong>
+            <span class="thread">019edc67-f0a2-75a3-906b-e9273492e10f</span>
+          </div>
+          <div>
+            <h3>Wired the Plan 11 SF event/state route into an explicit ownership ladder.</h3>
+            <p>
+              The thread added route metadata and diagnostics to
+              <code>llm_only_clinical_findings.py</code>, including warnings for ignored
+              model-supplied projection fields. It also added guard tests for event-frame
+              audit behavior, missing operand handling, and CUI/certainty sidecar separation.
+            </p>
+            <div class="facts">
+              <div class="fact">Reported layers include raw event frames, raw findings, schema validation, evidence validation, format projection, CUI projection, certainty sidecar, post-LLM policy, and benchmark rendering.</div>
+              <div class="fact">Verification: 42 clinical-finding tests, 22 adjacent SF/Plan 11 tests, Ruff, and diff check passed.</div>
+            </div>
+          </div>
+          <ul class="artifact-list">
+            <li><code>.codex/worktrees/c35e/.../llm_only_clinical_findings.py</code></li>
+            <li><code>.codex/worktrees/c35e/.../test_exectv2_llm_only_clinical_findings.py</code></li>
+            <li><code>.codex/worktrees/c35e/.../PROJECT_STATUS.md</code></li>
+          </ul>
+        </article>
+
+        <article class="work">
+          <div class="work-id">
+            <div class="status done">Done</div>
+            <strong>SF ledger slice</strong>
+            <span class="thread">019edc67-f09b-7533-b65d-83447dad328f</span>
+          </div>
+          <div>
+            <h3>Ranked SF dev-only failure slices and implemented the first narrow adapter repair.</h3>
+            <p>
+              The thread identified count/date-in-phrase anchor drift as the first target.
+              It expanded SF anchor normalization for altered-awareness, focal-to-bilateral,
+              myoclonic-jerk, absence, and seizure-cluster anchors without introducing
+              deterministic state/count selection.
+            </p>
+            <div class="facts">
+              <div class="fact"><code>52</code> rows / <code>111</code> candidate-miss counts and <code>52</code> rows / <code>89</code> wrong-selection counts were substring-recoverable from selected text/evidence.</div>
+              <div class="fact">Verification: 6 focused event-ledger tests passed and Ruff passed on touched Python files.</div>
+            </div>
+          </div>
+          <ul class="artifact-list">
+            <li><code>.codex/worktrees/a695/.../llm_family_conditioned_event_ledger.py</code></li>
+            <li><code>.codex/worktrees/a695/.../test_exectv2_family_conditioned_event_ledger.py</code></li>
+            <li><code>.codex/worktrees/a695/.../PROJECT_STATUS.md</code></li>
+          </ul>
+        </article>
+
+        <article class="work">
+          <div class="work-id">
+            <div class="status done">Done</div>
+            <strong>CUI review</strong>
+            <span class="thread">019edc67-f093-75b3-acc0-0199e6afbd57</span>
+          </div>
+          <div>
+            <h3>Added four conservative PatientHistory CUI mappings and refreshed projection counts.</h3>
+            <p>
+              The thread promoted only recurrent one-to-one dev mappings:
+              <code>jerks</code>, <code>altered awareness</code>, <code>d&eacute;j&agrave; vu</code>,
+              and <code>hemiparesis</code>. These attach CUI/CUIPhrase after mention selection;
+              they do not change clinical reasoning.
+            </p>
+            <div class="facts">
+              <div class="fact">Coverage moved to <code>1317/1479</code> or <code>0.890</code>; correctness stayed <code>1255/1317</code> or <code>0.953</code>.</div>
+              <div class="fact">Remaining missing mappings are <code>149</code> concepts / <code>162</code> mentions.</div>
+              <div class="fact">Verification: 23 focused projection/evaluation/diagnostic tests passed and Ruff passed.</div>
+            </div>
+          </div>
+          <ul class="artifact-list">
+            <li><code>.codex/worktrees/1925/.../benchmark_projection.py</code></li>
+            <li><code>.codex/worktrees/1925/.../exectv2_cui_missing_mapping_ledger_dev140_20260618.md</code></li>
+            <li><code>.codex/worktrees/1925/.../plan11_coordinated_workstreams_report_2026-06-18.html</code></li>
+          </ul>
+        </article>
+
+        <article class="work">
+          <div class="work-id">
+            <div class="status gated">Gated</div>
+            <strong>Family-routed comparison</strong>
+            <span class="thread">019edc67-f098-7a11-818d-96609d87302a</span>
+          </div>
+          <div>
+            <h3>Prepared the preflight harness and kept the comparison blocked.</h3>
+            <p>
+              The thread added a non-executing preflight module, tests, and checklist doc. It
+              confirms the SF schema base exists, but the Plan 11 routed adapter/runner module
+              and explicit dev-ladder authorization are still missing.
+            </p>
+            <div class="facts">
+              <div class="fact">Current preflight blockers: <code>plan11_routed_adapter_contract_implemented</code> and <code>explicit_dev_ladder_authorization_present</code>.</div>
+              <div class="fact">Verification: 3 preflight tests, 27 adjacent ExECTv2 tests, and Ruff passed.</div>
+            </div>
+          </div>
+          <ul class="artifact-list">
+            <li><code>.codex/worktrees/bc24/.../family_routed_preflight.py</code></li>
+            <li><code>.codex/worktrees/bc24/.../test_exectv2_family_routed_preflight.py</code></li>
+            <li><code>.codex/worktrees/bc24/.../exectv2_family_routed_llm_first_comparison_preflight_2026-06-18.md</code></li>
+          </ul>
+        </article>
+
+        <article class="work">
+          <div class="work-id">
+            <div class="status blocked">Blocked</div>
+            <strong>Guardrail audit</strong>
+            <span class="thread">019edc67-f09f-7ce3-a616-d12f5163c9b9</span>
+          </div>
+          <div>
+            <h3>Made the blocked work actionable without authorizing it.</h3>
+            <p>
+              The thread added a gated-blockers runbook for Gan holdout-facing work,
+              ExECTv2 full-200 audits, EpilepsyCause, and full-suite reproduction. It did not
+              draft a new EpilepsyCause protocol because the ADR already supports keeping it
+              diagnostic unless dev-only bottleneck evidence appears.
+            </p>
+            <div class="facts">
+              <div class="fact">Full repo verification command captured: <code>uv run --extra dev python -m pytest -q</code>.</div>
+              <div class="fact">Observed state: <code>1700 passed, 4 failed</code>, with failures documented by test ID and failure class.</div>
+            </div>
+          </div>
+          <ul class="artifact-list">
+            <li><code>.codex/worktrees/29b6/.../docs/runbooks/gated_blockers_2026-06-18.md</code></li>
+            <li><code>.codex/worktrees/29b6/.../PROJECT_STATUS.md</code></li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section id="metrics">
+      <div class="section-head">
+        <h2>Metric And Gate Deltas</h2>
+        <p>
+          The quantitative changes were modest but meaningful: they cleanly improved projection
+          coverage and sharpened which SF work should happen next.
+        </p>
+      </div>
+      <div class="metric-grid">
+        <article class="metric-block">
+          <h3>CUI projection surface</h3>
+          <div class="metric-row">
+            <span>Before coverage</span>
+            <div class="bar"><i style="--w: 88.2%"></i></div>
+            <strong>0.882</strong>
+          </div>
+          <div class="metric-row">
+            <span>After coverage</span>
+            <div class="bar"><i style="--w: 89.0%"></i></div>
+            <strong>0.890</strong>
+          </div>
+          <div class="metric-row">
+            <span>Correctness</span>
+            <div class="bar blue"><i style="--w: 95.3%"></i></div>
+            <strong>0.953</strong>
+          </div>
+          <div class="metric-row">
+            <span>Missing mentions</span>
+            <div class="bar amber"><i style="--w: 44.4%"></i></div>
+            <strong>162</strong>
+          </div>
+        </article>
+        <article class="metric-block">
+          <h3>SF row-ledger signal</h3>
+          <div class="metric-row">
+            <span>Candidate misses</span>
+            <div class="bar amber"><i style="--w: 51.2%"></i></div>
+            <strong>285</strong>
+          </div>
+          <div class="metric-row">
+            <span>Wrong selection</span>
+            <div class="bar amber"><i style="--w: 44.5%"></i></div>
+            <strong>248</strong>
+          </div>
+          <div class="metric-row">
+            <span>Projection gaps</span>
+            <div class="bar blue"><i style="--w: 4.3%"></i></div>
+            <strong>24</strong>
+          </div>
+          <div class="metric-row">
+            <span>Evidence failures</span>
+            <div class="bar"><i style="--w: 0%"></i></div>
+            <strong>0</strong>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="ladder">
+      <div class="section-head">
+        <h2>SF Ownership Ladder</h2>
+        <p>
+          This was the most important architectural clarification. The route can now expose
+          useful deterministic adapters without letting them silently become clinical selectors.
+        </p>
+      </div>
+      <div class="ladder" aria-label="SF event/state route layers">
+        <div class="rung llm">
+          <strong>raw_event_frames</strong>
+          <span>LLM-owned audit substrate for state and target status.</span>
+        </div>
+        <div class="rung llm">
+          <strong>raw_findings</strong>
+          <span>LLM-owned final target findings before adapters.</span>
+        </div>
+        <div class="rung det">
+          <strong>schema_valid_findings</strong>
+          <span>Parse, coerce, and drop invalid transport records.</span>
+        </div>
+        <div class="rung det">
+          <strong>evidence_validated</strong>
+          <span>Exact source-substring evidence gate.</span>
+        </div>
+        <div class="rung det">
+          <strong>format_projected</strong>
+          <span>Map emitted fields to ExECTv2 attributes without adding facts.</span>
+        </div>
+        <div class="rung det">
+          <strong>cui_projected</strong>
+          <span>Benchmark-format sidecar from model-emitted phrase.</span>
+        </div>
+        <div class="rung det">
+          <strong>certainty_projected</strong>
+          <span>No-op SF sidecar, outside the clinical headline.</span>
+        </div>
+        <div class="rung policy">
+          <strong>post_llm_state_policy</strong>
+          <span>Named, predeclared policy only, surfaced separately.</span>
+        </div>
+        <div class="rung det">
+          <strong>benchmark_rendered</strong>
+          <span>Legacy scorer continuity, not new clinical reasoning.</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="insights">
+      <div class="section-head">
+        <h2>Key Insights From The Process</h2>
+        <p>
+          The process worked because parallelism was applied to independent surfaces and gates,
+          while the riskiest work was deliberately converted into checklists instead of runs.
+        </p>
+      </div>
+      <div class="insight-grid">
+        <article class="insight green">
+          <h3>Ownership metadata is now a core deliverable.</h3>
+          <p>
+            ExECTv2 cannot be judged only by score deltas. The same output can mean different
+            things depending on whether a fact was selected by the model, normalized by a
+            deterministic adapter, or rendered for benchmark compatibility.
+          </p>
+        </article>
+        <article class="insight">
+          <h3>The SF bottleneck is clinical detail selection, not citation.</h3>
+          <p>
+            The ledger still shows zero evidence failures. That points attention away from
+            evidence mechanics and toward coverage, state selection, and phrase-to-anchor
+            conventions.
+          </p>
+        </article>
+        <article class="insight amber">
+          <h3>The best next SF change is narrow and testable.</h3>
+          <p>
+            Anchor normalization can recover selected phrases without letting deterministic
+            code choose new seizure states, counts, or temporal anchors. That is exactly the
+            kind of adapter work the project can safely absorb.
+          </p>
+        </article>
+        <article class="insight green">
+          <h3>CUI gains are useful only when they remain boring.</h3>
+          <p>
+            The four added mappings improved coverage because they were recurrent, one-to-one,
+            and projection-only. The remaining gaps should not be rushed into the lexicon just
+            to make a metric prettier.
+          </p>
+        </article>
+        <article class="insight red">
+          <h3>Blocked work became more actionable by staying blocked.</h3>
+          <p>
+            The family-routed comparison, Gan holdout-facing work, and full-200 audits are now
+            blocked for concrete missing artifacts rather than vague caution. That is a better
+            state than an unauthorized run.
+          </p>
+        </article>
+        <article class="insight">
+          <h3>Parallel threads should converge through artifacts, not memory.</h3>
+          <p>
+            The strongest outputs were tests, preflight modules, ledgers, and runbooks. They
+            give the coordinator something mergeable and reviewable, even when different
+            worktrees touched overlapping status language.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section id="next">
+      <div class="section-head">
+        <h2>Merge And Next-Step Guidance</h2>
+        <p>
+          The workstreams are complete, but they are not automatically integrated into the main
+          checkout. The next useful step is a deliberate merge/reconciliation pass.
+        </p>
+      </div>
+      <div class="next-steps">
+        <div class="step-band">
+          <h3>Recommended merge order</h3>
+          <ol>
+            <li>Merge the SF route ladder work first, because it defines the ownership contract.</li>
+            <li>Merge the SF anchor-normalization slice after checking it against the route ladder labels.</li>
+            <li>Merge the CUI projection additions and refreshed ledgers as benchmark-format changes.</li>
+            <li>Merge the family-routed preflight and blocker runbook as coordination infrastructure.</li>
+            <li>Reconcile <code>PROJECT_STATUS.md</code> once at the end, because all five worktrees edited it.</li>
+          </ol>
+        </div>
+        <div class="step-band">
+          <h3>Do not do yet</h3>
+          <ul>
+            <li>Do not run the family-routed dev ladder until the routed adapter/runner exists and authorization is explicit.</li>
+            <li>Do not run Gan holdout-facing work without a frozen protocol and explicit user authorization.</li>
+            <li>Do not run new ExECTv2 full-200 audits until dev evidence beats comparators and a frozen aggregate-only protocol exists.</li>
+            <li>Do not promote EpilepsyCause unless dev-only boundary-control evidence shows it is a material bottleneck.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      Source: five Codex background threads spawned from <code>PROJECT_STATUS.md</code> on 2026-06-18.
+      This report is a synthesis artifact in the main checkout; implementation artifacts remain in their
+      separate worktrees until explicitly merged.
+    </div>
+  </footer>
+</body>
+</html>
