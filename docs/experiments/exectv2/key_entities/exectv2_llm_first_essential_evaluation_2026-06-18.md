@@ -19,7 +19,7 @@ Clinical-fact recovery over the five essential families only (Prescription, Seiz
 
 | Architecture | Ownership | Recovery F1 | Precision | Recall |
 | --- | --- | ---: | ---: | ---: |
-| deterministic_all9 | `rules_only` | 0.604 | 0.676 | 0.546 |
+| deterministic_all9 | `rules_only` | 0.716 | 0.721 | 0.711 |
 | llm_only_all_entities (single pass) | `llm_first` | 0.422 | 0.478 | 0.379 |
 | hybrid_all_entities (candidate-set + verify) | `hybrid` | 0.550 | 0.559 | 0.542 |
 
@@ -27,7 +27,7 @@ CUI-projected companion score (reported because the legacy SeizureFrequency stat
 
 | Architecture | CUI-projected essential F1 | Precision | Recall |
 | --- | ---: | ---: | ---: |
-| deterministic_all9 | 0.613 | 0.686 | 0.554 |
+| deterministic_all9 | 0.724 | 0.729 | 0.719 |
 | llm_only_all_entities (single pass) | 0.422 | 0.478 | 0.379 |
 | hybrid_all_entities (candidate-set + verify) | 0.566 | 0.575 | 0.556 |
 
@@ -37,7 +37,7 @@ CUI-projected companion score (reported because the legacy SeizureFrequency stat
 | --- | ---: | ---: | ---: |
 | Prescription | 0.907 | 0.747 | 0.824 |
 | SeizureFrequency | 0.728 | 0.012 | 0.296 |
-| Diagnosis | 0.328 | 0.316 | 0.461 |
+| Diagnosis | 0.699 | 0.316 | 0.461 |
 | EpilepsyCause | 0.622 | 0.000 | 0.200 |
 | Investigations | 0.526 | 0.748 | 0.741 |
 
@@ -58,12 +58,23 @@ Per-entity reading (which families clear, which collapse):
 ### Evidence validation and error taxonomy
 
 Evidence policy: exact source-substring evidence is required when a prediction emits evidence text. Error categories are coarse diagnostics and can overlap.
+Invalid evidence counts emitted mentions without exact source-substring evidence, including missing evidence.
 
 - evidence present: **1.000** (743/743)
 - exact evidence: **1.000** (743/743)
 - candidate_miss: **563**
 - wrong_detail_selection: **362**
 - evidence_failure: **0**
+
+Evidence-validity by essential family for the single-pass LLM artifact:
+
+| Entity | Predictions | Evidence present | Present rate | Exact evidence | Exact rate | Invalid evidence | Invalid rate |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Prescription | 252 | 252 | 1.000 | 252 | 1.000 | 0 | 0.000 |
+| SeizureFrequency | 152 | 152 | 1.000 | 152 | 1.000 | 0 | 0.000 |
+| Diagnosis | 164 | 164 | 1.000 | 164 | 1.000 | 0 | 0.000 |
+| EpilepsyCause | 12 | 12 | 1.000 | 12 | 1.000 | 0 | 0.000 |
+| Investigations | 163 | 163 | 1.000 | 163 | 1.000 | 0 | 0.000 |
 
 ## 2. Certainty projection audit
 
@@ -108,8 +119,8 @@ Guideline projection accuracy over gold rows:
 CUI is benchmark-format projection: the benchmark key keeps CUI, the semantic key drops it. The benchmark-minus-semantic delta is owned by deterministic CUI projection, never by LLM clinical reasoning.
 
 - Raw LLM benchmark F1 (no CUI emitted): **0.000**
-- After deterministic CUI projection: **0.101** (projection recovers +0.101 F1)
-- CUI-free semantic surface: **0.115** (residual CUI loss after projection: 0.014)
+- After deterministic CUI projection: **0.110** (projection recovers +0.110 F1)
+- CUI-free semantic surface: **0.115** (residual CUI loss after projection: 0.005)
 
 Concept bucket ledger (over gold concepts carrying a CUI):
 
@@ -118,13 +129,13 @@ Concept bucket ledger (over gold concepts carrying a CUI):
 | one_to_one | 283 | 1325 |
 | result_conditioned | 2 | 10 |
 | gold_inconsistent | 8 | 144 |
-| missing_mapping | 184 | 365 |
+| missing_mapping | 153 | 175 |
 
 Deterministic projection over gold (CUI stripped first, then re-attached — an in-sample lexicon lookup):
 
-- coverage **0.753** (1114/1479)
-- correctness **0.944** (1052/1114)
-- missing_mapping mentions: **365**
+- coverage **0.882** (1304/1479)
+- correctness **0.953** (1242/1304)
+- missing_mapping mentions: **175**
 
 ## 6. Benchmark projection gap ledger
 
@@ -132,9 +143,9 @@ Per architecture, the artifact projection layers from the clinical-recovery scor
 
 | Architecture | phrase_only | semantic | benchmark |
 | --- | ---: | ---: | ---: |
-| deterministic_all9 | 0.463 | 0.382 | 0.362 |
-| llm_only_all_entities (single pass) | 0.143 | 0.123 | 0.101 |
-| hybrid_all_entities (candidate-set + verify) | 0.329 | 0.220 | 0.181 |
+| deterministic_all9 | 0.540 | 0.372 | 0.354 |
+| llm_only_all_entities (single pass) | 0.143 | 0.122 | 0.110 |
+| hybrid_all_entities (candidate-set + verify) | 0.329 | 0.219 | 0.190 |
 
 ## 1. Essential clinical scorer specification
 

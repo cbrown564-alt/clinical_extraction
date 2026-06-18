@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
     PredictedLetter,
     PredictedMention,
@@ -17,8 +19,11 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.llm_first_es
     certainty_projection_audit,
     cui_concept_buckets,
     project_guideline_certainty_negation,
+    row_level_error_ledger,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.run_llm_first_essential_evaluation import (  # noqa: E501
+    llm_first_error_ledger_rows,
+    render_error_ledger_markdown,
     render_markdown,
 )
 
@@ -221,10 +226,89 @@ def test_architecture_report_includes_evidence_and_error_summary() -> None:
     evidence = report["evidence_validation"]
     assert evidence["overall"]["predicted_mentions"] == 2
     assert evidence["overall"]["exact_evidence_rate"] == 0.5
+    assert evidence["overall"]["invalid_evidence"] == 1
+    assert evidence["overall"]["invalid_evidence_rate"] == 0.5
+    assert evidence["Diagnosis"]["invalid_evidence"] == 1
+    assert evidence["EpilepsyCause"]["invalid_evidence"] == 0
     errors = report["error_taxonomy"]["overall"]
     assert errors["candidate_miss"] == 1
     assert errors["wrong_detail_selection"] == 1
     assert errors["evidence_failure"] == 1
+
+
+def test_row_level_error_ledger_splits_essential_family_failures() -> None:
+    gold = [
+        _gold(
+            "EA1",
+            [
+                ExectAnnotation(
+                    "Diagnosis",
+                    "epilepsy",
+                    {"Certainty": "5", "Negation": "Affirmed", "CUI": "C0014544"},
+                ),
+                ExectAnnotation(
+                    "EpilepsyCause",
+                    "stroke",
+                    {"Certainty": "5", "Negation": "Affirmed"},
+                ),
+            ],
+            note_text="The patient has epilepsy after a stroke.",
+        )
+    ]
+    pred = [
+        _pred(
+            "EA1",
+            [
+                PredictedMention(
+                    entity="Diagnosis",
+                    text="epilepsy",
+                    attributes={"Certainty": "5", "Negation": "Affirmed"},
+                    evidence="epilepsy",
+                ),
+                PredictedMention(
+                    entity="Diagnosis",
+                    text="migraine",
+                    attributes={"Certainty": "5", "Negation": "Affirmed"},
+                    evidence="not in note text",
+                ),
+            ],
+        )
+    ]
+    rows = row_level_error_ledger(
+        architecture="t",
+        ownership="llm_first",
+        gold_letters=gold,
+        pred_letters=pred,
+    )
+    by_type_family = {
+        (row["error_type"], row["family"]): row
+        for row in rows
+    }
+    assert by_type_family[("candidate_miss", "EpilepsyCause")]["count"] == 1
+    assert by_type_family[("wrong_detail_selection", "Diagnosis")]["count"] == 1
+    assert by_type_family[("projection_gap", "Diagnosis")]["count"] == 1
+    assert by_type_family[("evidence_failure", "Diagnosis")]["count"] == 1
+
+
+def test_error_ledger_renderer_and_split_guard() -> None:
+    arch = architecture_report(
+        name="t",
+        ownership="llm_first",
+        gold_letters=[_gold("EA1", [ExectAnnotation("Diagnosis", "epilepsy", {})])],
+        pred_letters=[_pred("EA1", [])],
+        include_row_error_ledger=True,
+    )
+    report = {
+        "split": "dev",
+        "architectures": [arch],
+    }
+    rows = llm_first_error_ledger_rows(report)
+    assert rows[0]["split"] == "dev"
+    md = render_error_ledger_markdown(rows)
+    assert "candidate_miss" in md
+    assert "Diagnosis" in md
+    with pytest.raises(ValueError, match="dev-only"):
+        llm_first_error_ledger_rows({"split": "test", "architectures": [arch]})
 
 
 def test_render_markdown_surfaces_diagnostic_limitations() -> None:
@@ -244,5 +328,7 @@ def test_render_markdown_surfaces_diagnostic_limitations() -> None:
     }
     md = render_markdown(report)
     assert "Evidence validation and error taxonomy" in md
+    assert "Evidence-validity by essential family" in md
+    assert "| Entity | Predictions | Evidence present | Present rate | Exact evidence |" in md
     assert "Guideline projection accuracy over gold rows" in md
     assert "missing_mapping" in md

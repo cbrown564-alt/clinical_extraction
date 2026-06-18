@@ -1,0 +1,1073 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Plan 11 Coordinated Workstreams Report</title>
+  <style>
+    :root {
+      --ink: #18211c;
+      --muted: #62706a;
+      --paper: #f7f8f4;
+      --panel: #ffffff;
+      --line: #d9dfd8;
+      --green: #177245;
+      --green-soft: #dff3e8;
+      --blue: #2457a6;
+      --blue-soft: #e5edf9;
+      --amber: #b56b00;
+      --amber-soft: #fff1d9;
+      --red: #a83e3e;
+      --red-soft: #f9e3e3;
+      --violet: #5d4aa5;
+      --violet-soft: #ece8fb;
+      --shadow: 0 24px 70px rgba(24, 33, 28, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .progress {
+      position: fixed;
+      inset: 0 auto auto 0;
+      height: 4px;
+      width: 100%;
+      transform-origin: left center;
+      scale: 0 1;
+      background: linear-gradient(90deg, var(--green), var(--blue), var(--amber));
+      z-index: 20;
+      animation: scroll-progress linear;
+      animation-timeline: scroll();
+    }
+
+    @keyframes scroll-progress {
+      to {
+        scale: 1 1;
+      }
+    }
+
+    header {
+      min-height: 92svh;
+      display: grid;
+      align-items: end;
+      padding: 48px clamp(22px, 5vw, 72px);
+      border-bottom: 1px solid var(--line);
+      background:
+        radial-gradient(circle at 86% 18%, rgba(36, 87, 166, 0.18), transparent 28%),
+        linear-gradient(140deg, #ffffff 0%, #f7f8f4 58%, #e9f2ec 100%);
+    }
+
+    .hero {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 28px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 42px;
+      height: 2px;
+      background: var(--green);
+    }
+
+    h1 {
+      max-width: 950px;
+      margin: 0;
+      font-size: clamp(46px, 8vw, 112px);
+      line-height: 0.94;
+      letter-spacing: 0;
+      font-weight: 820;
+    }
+
+    .hero-copy {
+      max-width: 760px;
+      margin: 28px 0 42px;
+      color: #36423d;
+      font-size: clamp(18px, 2.2vw, 26px);
+      line-height: 1.32;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(120px, 1fr));
+      gap: 1px;
+      margin-top: 44px;
+      border: 1px solid var(--line);
+      background: var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .metric {
+      min-height: 138px;
+      padding: 22px;
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(8px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: clamp(32px, 4vw, 56px);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    nav {
+      position: sticky;
+      top: 4px;
+      z-index: 10;
+      background: rgba(247, 248, 244, 0.86);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    nav .inner {
+      width: min(1180px, calc(100% - 44px));
+      margin: 0 auto;
+      display: flex;
+      gap: 22px;
+      overflow-x: auto;
+      padding: 13px 0;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 720;
+      white-space: nowrap;
+    }
+
+    nav a {
+      text-decoration: none;
+    }
+
+    main {
+      width: min(1180px, calc(100% - 44px));
+      margin: 0 auto;
+      padding: 54px 0 88px;
+    }
+
+    section {
+      padding: 58px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    section:last-child {
+      border-bottom: 0;
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(280px, 1.1fr);
+      gap: 54px;
+      align-items: end;
+      margin-bottom: 34px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: clamp(30px, 4.4vw, 58px);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .section-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .status-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border: 1px solid var(--line);
+      background: var(--panel);
+    }
+
+    .status-item {
+      padding: 22px;
+      border-right: 1px solid var(--line);
+    }
+
+    .status-item:last-child {
+      border-right: 0;
+    }
+
+    .status-label {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 740;
+      text-transform: uppercase;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--green);
+      flex: 0 0 auto;
+    }
+
+    .dot.blue {
+      background: var(--blue);
+    }
+
+    .dot.amber {
+      background: var(--amber);
+    }
+
+    .dot.red {
+      background: var(--red);
+    }
+
+    .status-item p {
+      margin: 14px 0 0;
+      font-size: 20px;
+      font-weight: 780;
+      line-height: 1.2;
+    }
+
+    .workstreams {
+      display: grid;
+      gap: 12px;
+    }
+
+    .stream {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      display: grid;
+      grid-template-columns: 190px minmax(0, 1fr) 240px;
+      gap: 24px;
+      padding: 24px;
+      transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+    }
+
+    .stream:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+      border-color: #b9c4bc;
+    }
+
+    .stream .tag {
+      width: max-content;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 780;
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    .stream .tag.blue {
+      background: var(--blue-soft);
+      color: var(--blue);
+    }
+
+    .stream .tag.amber {
+      background: var(--amber-soft);
+      color: var(--amber);
+    }
+
+    .stream .tag.violet {
+      background: var(--violet-soft);
+      color: var(--violet);
+    }
+
+    .stream h3 {
+      margin: 8px 0 10px;
+      font-size: 25px;
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    .stream p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .cue-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 8px;
+      color: #34413b;
+      font-size: 14px;
+    }
+
+    .cue-list li {
+      position: relative;
+      padding-left: 18px;
+    }
+
+    .cue-list li::before {
+      content: "";
+      position: absolute;
+      top: 0.62em;
+      left: 0;
+      width: 8px;
+      height: 2px;
+      background: var(--green);
+    }
+
+    .insight-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      border: 1px solid var(--line);
+      background: var(--line);
+    }
+
+    .insight {
+      background: var(--panel);
+      padding: 28px;
+      min-height: 270px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .insight b {
+      font-size: 52px;
+      line-height: 1;
+      color: var(--green);
+    }
+
+    .insight h3 {
+      margin: 0 0 12px;
+      font-size: 23px;
+      line-height: 1.08;
+    }
+
+    .insight p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      padding: 28px;
+    }
+
+    .panel h3 {
+      margin: 0 0 16px;
+      font-size: 25px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 170px 1fr 68px;
+      gap: 12px;
+      align-items: center;
+      margin: 13px 0;
+      color: #334039;
+      font-size: 14px;
+      font-weight: 680;
+    }
+
+    .bar {
+      height: 11px;
+      background: #e8ede8;
+      overflow: hidden;
+    }
+
+    .bar > i {
+      display: block;
+      height: 100%;
+      background: var(--blue);
+      width: var(--w);
+    }
+
+    .bar.green > i {
+      background: var(--green);
+    }
+
+    .bar.amber > i {
+      background: var(--amber);
+    }
+
+    .timeline {
+      display: grid;
+      gap: 0;
+      border: 1px solid var(--line);
+      background: var(--panel);
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 190px 1fr;
+      gap: 24px;
+      padding: 24px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .step:last-child {
+      border-bottom: 0;
+    }
+
+    .step time {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 780;
+      text-transform: uppercase;
+    }
+
+    .step h3 {
+      margin: 0 0 8px;
+      font-size: 22px;
+    }
+
+    .step p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    details {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      margin: 12px 0;
+      padding: 0;
+    }
+
+    summary {
+      cursor: pointer;
+      padding: 18px 22px;
+      font-weight: 800;
+      list-style: none;
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    details[open] summary {
+      border-bottom: 1px solid var(--line);
+    }
+
+    .detail-body {
+      padding: 20px 22px 24px;
+      color: var(--muted);
+    }
+
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 0.92em;
+      background: #eef2ee;
+      padding: 2px 5px;
+      border-radius: 4px;
+    }
+
+    .path-list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .merge-map {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1px;
+      border: 1px solid var(--line);
+      background: var(--line);
+    }
+
+    .merge-step {
+      background: var(--panel);
+      padding: 22px;
+      min-height: 170px;
+    }
+
+    .merge-step strong {
+      display: block;
+      color: var(--blue);
+      margin-bottom: 12px;
+      font-size: 32px;
+      line-height: 1;
+    }
+
+    .merge-step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    footer {
+      padding: 42px 0 70px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 900px) {
+      header {
+        min-height: auto;
+        padding-top: 70px;
+      }
+
+      .hero-grid,
+      .status-strip,
+      .section-head,
+      .stream,
+      .insight-grid,
+      .comparison,
+      .merge-map {
+        grid-template-columns: 1fr;
+      }
+
+      .stream {
+        gap: 16px;
+      }
+
+      .step {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .status-item {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .status-item:last-child {
+        border-bottom: 0;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      .progress {
+        animation: none;
+        scale: 1 1;
+      }
+
+      .stream {
+        transition: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"></div>
+
+  <header>
+    <div class="hero">
+      <div class="eyebrow">Clinical Extraction / ExECTv2 / Plan 11</div>
+      <h1>Coordinated Workstreams Report</h1>
+      <p class="hero-copy">
+        Six parallel Codex threads converted the Plan 11 follow-up board into concrete design docs,
+        ledgers, projection updates, regenerated readouts, and decision records while preserving
+        split discipline and attribution boundaries.
+      </p>
+
+      <div class="hero-grid" aria-label="Coordination summary metrics">
+        <div class="metric">
+          <strong>6</strong>
+          <span>worker threads completed</span>
+        </div>
+        <div class="metric">
+          <strong>0</strong>
+          <span>new model calls</span>
+        </div>
+        <div class="metric">
+          <strong>0</strong>
+          <span>holdout row inspections</span>
+        </div>
+        <div class="metric">
+          <strong>557</strong>
+          <span>row/error ledger records</span>
+        </div>
+        <div class="metric">
+          <strong>0.882</strong>
+          <span>post-change CUI coverage</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav aria-label="Report sections">
+    <div class="inner">
+      <a href="#summary">Summary</a>
+      <a href="#workstreams">Workstreams</a>
+      <a href="#signals">Signals</a>
+      <a href="#insights">Insights</a>
+      <a href="#merge">Merge Map</a>
+      <a href="#artifacts">Artifacts</a>
+    </div>
+  </nav>
+
+  <main>
+    <section id="summary">
+      <div class="section-head">
+        <h2>What Changed</h2>
+        <p>
+          The coordination split the work by dependency shape: documentation/protocol decisions ran
+          independently, while the two reproducible ledgers and evidence report changes ran in
+          separate code worktrees.
+        </p>
+      </div>
+
+      <div class="status-strip">
+        <div class="status-item">
+          <div class="status-label"><span class="dot"></span>Clean Boundary</div>
+          <p>Main checkout stayed clean; outputs remain isolated in worker worktrees.</p>
+        </div>
+        <div class="status-item">
+          <div class="status-label"><span class="dot blue"></span>Evidence First</div>
+          <p>All generated code artifacts replay existing dev data only.</p>
+        </div>
+        <div class="status-item">
+          <div class="status-label"><span class="dot amber"></span>Projection Split</div>
+          <p>CUI, certainty, and benchmark rendering remain deterministic sidecars.</p>
+        </div>
+        <div class="status-item">
+          <div class="status-label"><span class="dot red"></span>Blocked Scope</div>
+          <p>Full-200 and holdout-facing work remain blocked by protocol.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="workstreams">
+      <div class="section-head">
+        <h2>Workstream Outcomes</h2>
+        <p>
+          Each thread had a narrow deliverable and explicit guardrails: no
+          <code>PROJECT_STATUS.md</code> edits, no new model calls, and no restricted row-level
+          inspection.
+        </p>
+      </div>
+
+      <div class="workstreams">
+        <article class="stream">
+          <div>
+            <span class="tag blue">Schema</span>
+            <h3>SeizureFrequency event/state design</h3>
+            <p>Thread <code>019edc4d-2b07-7d91-8012-ecd97a4e1427</code></p>
+          </div>
+          <div>
+            <p>
+              Added a design contract for a specialist SF route: model-owned event frames and
+              findings, deterministic validation/projection/scoring, CUI excluded from model output,
+              and unknown policy treated as a post-LLM sidecar.
+            </p>
+          </div>
+          <ul class="cue-list">
+            <li>38 targeted tests passed.</li>
+            <li>Ruff passed on the SF schema boundary files.</li>
+            <li>Aligned to routed-comparison assumptions.</li>
+          </ul>
+        </article>
+
+        <article class="stream">
+          <div>
+            <span class="tag violet">Ledger</span>
+            <h3>Essential-family row error ledger</h3>
+            <p>Thread <code>019edc4d-2b1f-79e2-a236-ece536daade3</code></p>
+          </div>
+          <div>
+            <p>
+              Added a reproducible dev-only row ledger for the five essential families, rendered as
+              CSV and Markdown from the existing Plan 11 runner.
+            </p>
+          </div>
+          <ul class="cue-list">
+            <li>557 nonzero row/error records.</li>
+            <li>285 candidate misses, 248 wrong-detail selections, 24 projection gaps.</li>
+            <li>0 evidence failures in this dev replay.</li>
+          </ul>
+        </article>
+
+        <article class="stream">
+          <div>
+            <span class="tag amber">Projection</span>
+            <h3>CUI missing-mapping ledger</h3>
+            <p>Thread <code>019edc4d-2ba8-7410-a156-c38f7c9abd1f</code></p>
+          </div>
+          <div>
+            <p>
+              Built a baseline missing-mapping ledger, added conservative finite benchmark-format
+              lookup entries, refreshed Plan 11 readouts, and left the long tail marked for review.
+            </p>
+          </div>
+          <ul class="cue-list">
+            <li>Missing mappings reduced from 365 to 175 mentions.</li>
+            <li>31 concepts / 190 mentions implemented as projection-only additions.</li>
+            <li>Projection coverage rose to 1304/1479.</li>
+          </ul>
+        </article>
+
+        <article class="stream">
+          <div>
+            <span class="tag">Evidence</span>
+            <h3>Family-level evidence validity</h3>
+            <p>Thread <code>019edc4d-2b07-7d91-8012-ecebf46837a0</code></p>
+          </div>
+          <div>
+            <p>
+              Extended the Plan 11 report to expose evidence present, exact, invalid counts, and
+              rates by essential family for the single-pass LLM artifact.
+            </p>
+          </div>
+          <ul class="cue-list">
+            <li>All five families show 1.000 present/exact evidence.</li>
+            <li>Invalid evidence is 0.000 across the essential families.</li>
+            <li>9 focused tests passed.</li>
+          </ul>
+        </article>
+
+        <article class="stream">
+          <div>
+            <span class="tag amber">Decision</span>
+            <h3>EpilepsyCause route decision</h3>
+            <p>Thread <code>019edc4d-2b1e-77c3-85ef-cadf6c4acb3f</code></p>
+          </div>
+          <div>
+            <p>
+              Added ADR 0029: keep EpilepsyCause as a low-frequency atomic diagnostic family for
+              now rather than starting a targeted extractor.
+            </p>
+          </div>
+          <ul class="cue-list">
+            <li>Low corpus frequency and atomic schema limit payoff.</li>
+            <li>Focused probe showed recall signal but over-emission risk.</li>
+            <li>SF event/state work remains the higher-return path.</li>
+          </ul>
+        </article>
+
+        <article class="stream">
+          <div>
+            <span class="tag blue">Protocol</span>
+            <h3>Family-routed predeclaration</h3>
+            <p>Thread <code>019edc4d-2b1c-7780-b8d0-e9ce2c27dc57</code></p>
+          </div>
+          <div>
+            <p>
+              Added a predeclaration for the next routed comparison: shared broad pass for
+              Prescription, Investigations, and Diagnosis; specialist event/state route for SF.
+            </p>
+          </div>
+          <ul class="cue-list">
+            <li>Architecture ownership and split discipline predeclared.</li>
+            <li>Full-200/test audit remains blocked.</li>
+            <li>Schema field names left flexible for integration.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section id="signals">
+      <div class="section-head">
+        <h2>Quantitative Signals</h2>
+        <p>
+          The strongest signal from the coordination is not simply that more artifacts exist. The
+          work converted broad uncertainty into separable, testable surfaces.
+        </p>
+      </div>
+
+      <div class="comparison">
+        <div class="panel">
+          <h3>CUI Projection After Conservative Additions</h3>
+          <div class="bar-row">
+            <span>Baseline coverage</span>
+            <div class="bar amber"><i style="--w: 75.3%"></i></div>
+            <span>0.753</span>
+          </div>
+          <div class="bar-row">
+            <span>Post-change coverage</span>
+            <div class="bar green"><i style="--w: 88.2%"></i></div>
+            <span>0.882</span>
+          </div>
+          <div class="bar-row">
+            <span>Correctness</span>
+            <div class="bar green"><i style="--w: 95.3%"></i></div>
+            <span>0.953</span>
+          </div>
+          <p>
+            The additions are deliberately projection-only: they improve benchmark-format coverage
+            without relabeling clinical ownership.
+          </p>
+        </div>
+
+        <div class="panel">
+          <h3>Row-Level Ledger Composition</h3>
+          <div class="bar-row">
+            <span>Candidate miss</span>
+            <div class="bar blue"><i style="--w: 51.2%"></i></div>
+            <span>285</span>
+          </div>
+          <div class="bar-row">
+            <span>Wrong detail</span>
+            <div class="bar amber"><i style="--w: 44.5%"></i></div>
+            <span>248</span>
+          </div>
+          <div class="bar-row">
+            <span>Projection gap</span>
+            <div class="bar"><i style="--w: 4.3%"></i></div>
+            <span>24</span>
+          </div>
+          <div class="bar-row">
+            <span>Evidence failure</span>
+            <div class="bar"><i style="--w: 0%"></i></div>
+            <span>0</span>
+          </div>
+          <p>
+            The row ledger makes the next prompt/schema work concrete: the major load is candidate
+            coverage and clinical-detail selection, not citation failure.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="insights">
+      <div class="section-head">
+        <h2>Distilled Insights</h2>
+        <p>
+          The process sharpened the research frame as much as the artifacts. The key move was
+          separating architecture questions from projection and documentation questions.
+        </p>
+      </div>
+
+      <div class="insight-grid">
+        <article class="insight">
+          <b>01</b>
+          <div>
+            <h3>SeizureFrequency is a decision-unit problem.</h3>
+            <p>
+              The broad prompt did not fail because it lacked evidence strings. It failed because it
+              did not build the event/state representation needed for SF scoring.
+            </p>
+          </div>
+        </article>
+        <article class="insight">
+          <b>02</b>
+          <div>
+            <h3>Projection needs its own scoreboard.</h3>
+            <p>
+              CUI and certainty improvements are valuable, but they must remain labeled as
+              deterministic benchmark-format work rather than LLM clinical reasoning.
+            </p>
+          </div>
+        </article>
+        <article class="insight">
+          <b>03</b>
+          <div>
+            <h3>Row ledgers beat narrative diagnosis.</h3>
+            <p>
+              The new row-level artifact turns "candidate miss" and "wrong detail selection" into
+              filterable development slices instead of a coarse post-hoc explanation.
+            </p>
+          </div>
+        </article>
+        <article class="insight">
+          <b>04</b>
+          <div>
+            <h3>Not every weak family deserves a new extractor.</h3>
+            <p>
+              EpilepsyCause has a real recall signal, but low frequency and over-emission risk make
+              it a diagnostic family until the higher-return SF route is tested.
+            </p>
+          </div>
+        </article>
+        <article class="insight">
+          <b>05</b>
+          <div>
+            <h3>Parallel work helped because ownership was explicit.</h3>
+            <p>
+              Documentation decisions, projection lexicon work, and report-code changes could move
+              independently because each thread had clear boundaries and shared guardrails.
+            </p>
+          </div>
+        </article>
+        <article class="insight">
+          <b>06</b>
+          <div>
+            <h3>Integration should regenerate once.</h3>
+            <p>
+              Multiple workers touched the Plan 11 readout JSON/Markdown. Merge code first, then
+              run the evaluation runner once so generated artifacts agree.
+            </p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="process">
+      <div class="section-head">
+        <h2>Process Trace</h2>
+        <p>
+          The coordination was intentionally conservative: create isolated worktrees, let work run in
+          parallel, then identify merge risk only after all outputs were visible.
+        </p>
+      </div>
+
+      <div class="timeline">
+        <div class="step">
+          <time>1. Split</time>
+          <div>
+            <h3>Six independent threads launched from the current working tree.</h3>
+            <p>Each thread received required context, deliverables, and shared guardrails.</p>
+          </div>
+        </div>
+        <div class="step">
+          <time>2. Scope</time>
+          <div>
+            <h3>Documentation-heavy items completed first.</h3>
+            <p>EpilepsyCause, routed comparison, and SF schema gave the slower code threads stable language.</p>
+          </div>
+        </div>
+        <div class="step">
+          <time>3. Compute</time>
+          <div>
+            <h3>Report-code threads generated reproducible ledgers.</h3>
+            <p>The row ledger and CUI ledger replayed existing dev artifacts and added tests around the new surfaces.</p>
+          </div>
+        </div>
+        <div class="step">
+          <time>4. Guard</time>
+          <div>
+            <h3>No status edits, model calls, or holdout inspections occurred.</h3>
+            <p>The work stayed development-only and attribution-clean.</p>
+          </div>
+        </div>
+        <div class="step">
+          <time>5. Integrate</time>
+          <div>
+            <h3>Main checkout remains clean pending review.</h3>
+            <p>All outputs are ready in worker worktrees; merge conflicts are concentrated in Plan 11 report code and generated artifacts.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="merge">
+      <div class="section-head">
+        <h2>Recommended Merge Map</h2>
+        <p>
+          Merge low-risk documentation first, then code changes with regenerated artifacts last.
+          The main checkout was clean when this report was created.
+        </p>
+      </div>
+
+      <div class="merge-map">
+        <div class="merge-step">
+          <strong>1</strong>
+          <p>Merge docs-only outputs: SF schema, EpilepsyCause ADR, and routed predeclaration.</p>
+        </div>
+        <div class="merge-step">
+          <strong>2</strong>
+          <p>Merge CUI projection code, tests, and missing-mapping ledger artifacts.</p>
+        </div>
+        <div class="merge-step">
+          <strong>3</strong>
+          <p>Merge evidence-validity code changes into the Plan 11 report module and runner.</p>
+        </div>
+        <div class="merge-step">
+          <strong>4</strong>
+          <p>Merge row-level ledger code and reconcile overlapping report/runner/test edits.</p>
+        </div>
+        <div class="merge-step">
+          <strong>5</strong>
+          <p>Regenerate Plan 11 JSON/Markdown once from the merged state and rerun focused tests.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="artifacts">
+      <div class="section-head">
+        <h2>Artifact Index</h2>
+        <p>
+          These paths point at the worker worktrees where the outputs were produced. They are not
+          yet merged into the main checkout.
+        </p>
+      </div>
+
+      <details open>
+        <summary>Documentation and protocol artifacts</summary>
+        <div class="detail-body">
+          <ul class="path-list">
+            <li><code>C:\Users\cbrow\.codex\worktrees\0265\clinical_extraction\docs\experiments\exectv2\seizure_frequency\exectv2_sf_llm_first_event_state_schema_design_2026-06-18.md</code></li>
+            <li><code>C:\Users\cbrow\.codex\worktrees\7187\clinical_extraction\docs\decisions\0029-epilepsy-cause-remains-a-low-frequency-diagnostic-family.md</code></li>
+            <li><code>C:\Users\cbrow\.codex\worktrees\e3fb\clinical_extraction\docs\experiments\exectv2\predeclarations\exectv2_family_routed_llm_first_comparison_predeclaration_2026-06-18.md</code></li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Ledger and report artifacts</summary>
+        <div class="detail-body">
+          <ul class="path-list">
+            <li><code>C:\Users\cbrow\.codex\worktrees\f23e\clinical_extraction\experiments\exectv2_llm_first_essential_family_error_ledger_dev140_20260618.csv</code></li>
+            <li><code>C:\Users\cbrow\.codex\worktrees\f23e\clinical_extraction\docs\experiments\exectv2\key_entities\exectv2_llm_first_essential_family_error_ledger_2026-06-18.md</code></li>
+            <li><code>C:\Users\cbrow\.codex\worktrees\d611\clinical_extraction\experiments\exectv2_cui_missing_mapping_ledger_dev140_20260618.csv</code></li>
+            <li><code>C:\Users\cbrow\.codex\worktrees\d611\clinical_extraction\experiments\exectv2_cui_missing_mapping_ledger_dev140_20260618.md</code></li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Verification highlights</summary>
+        <div class="detail-body">
+          <ul class="path-list">
+            <li>SF schema: <code>38 passed</code>; Ruff passed on SF schema boundary files.</li>
+            <li>Evidence table: <code>9 passed</code>; Plan 11 JSON/Markdown regenerated.</li>
+            <li>CUI ledger: projection tests and Plan 11 tests passed; Ruff passed on touched projection files.</li>
+            <li>Row ledger: <code>11 passed</code>; compile sanity passed; Ruff unavailable in that worktree.</li>
+          </ul>
+        </div>
+      </details>
+    </section>
+
+    <footer>
+      Generated on 2026-06-18 from the coordinated Plan 11 workstream results. The report itself
+      lives in the main checkout; the workstream outputs remain in isolated worker worktrees until
+      reviewed and merged.
+    </footer>
+  </main>
+</body>
+</html>

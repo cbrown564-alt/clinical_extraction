@@ -14,6 +14,7 @@ Run as a module (no arguments needed):
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 from datetime import date
 from pathlib import Path
@@ -70,6 +71,7 @@ def build_evaluation(
             ownership=OWNERSHIP_LLM_FIRST,
             gold_letters=gold,
             pred_letters=llm_pred,
+            include_row_error_ledger=True,
         ),
         architecture_report(
             name="hybrid_all_entities (candidate-set + verify)",
@@ -202,6 +204,8 @@ def render_markdown(report: dict[str, Any]) -> str:
             "Evidence policy: exact source-substring evidence is required when a "
             "prediction emits evidence text. Error categories are coarse diagnostics "
             "and can overlap.",
+            "Invalid evidence counts emitted mentions without exact source-substring "
+            "evidence, including missing evidence.",
             "",
             f"- evidence present: **{evidence['evidence_present_rate']:.3f}** "
             f"({evidence['evidence_present']}/{evidence['predicted_mentions']})",
@@ -210,7 +214,21 @@ def render_markdown(report: dict[str, Any]) -> str:
             f"- candidate_miss: **{errors['candidate_miss']}**",
             f"- wrong_detail_selection: **{errors['wrong_detail_selection']}**",
             f"- evidence_failure: **{errors['evidence_failure']}**",
+            "",
+            "Evidence-validity by essential family for the single-pass LLM artifact:",
+            "",
+            "| Entity | Predictions | Evidence present | Present rate | Exact evidence "
+            "| Exact rate | Invalid evidence | Invalid rate |",
+            "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
         ]
+        for entity in headline_entities:
+            ev = llm["evidence_validation"][entity]
+            lines.append(
+                f"| {entity} | {ev['predicted_mentions']} | {ev['evidence_present']} "
+                f"| {ev['evidence_present_rate']:.3f} | {ev['exact_evidence']} "
+                f"| {ev['exact_evidence_rate']:.3f} | {ev['invalid_evidence']} "
+                f"| {ev['invalid_evidence_rate']:.3f} |"
+            )
 
     # Section 2: certainty projection audit (use llm_first numbers; gold dist is shared).
     cert = (llm or archs[0])["certainty_audit"]
@@ -347,6 +365,109 @@ def render_markdown(report: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+_LEDGER_COLUMNS: tuple[str, ...] = (
+    "split",
+    "architecture",
+    "ownership",
+    "letter_id",
+    "family",
+    "error_type",
+    "count",
+    "gold_count",
+    "pred_count",
+    "primary_tp",
+    "candidate_miss",
+    "wrong_detail_selection",
+    "projection_gap",
+    "evidence_failure",
+    "semantic_tp",
+    "projected_benchmark_tp",
+    "raw_benchmark_tp",
+    "evidence_predicted",
+    "exact_evidence",
+    "gold_examples",
+    "pred_examples",
+    "evidence_examples",
+)
+
+
+def llm_first_error_ledger_rows(report: dict[str, Any]) -> list[dict[str, Any]]:
+    """Return dev-only LLM-first row-level error ledger rows."""
+
+    if report["split"] != "dev":
+        raise ValueError("Plan 11 row-level error ledgers are dev-only by split protocol")
+    llm = next(a for a in report["architectures"] if a["ownership"] == OWNERSHIP_LLM_FIRST)
+    return [
+        {"split": report["split"], **row}
+        for row in llm.get("row_error_ledger", [])
+    ]
+
+
+def write_error_ledger_csv(rows: list[dict[str, Any]], out_csv: Path) -> Path:
+    out_csv.parent.mkdir(parents=True, exist_ok=True)
+    with out_csv.open("w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=_LEDGER_COLUMNS, extrasaction="ignore")
+        writer.writeheader()
+        writer.writerows(rows)
+    return out_csv
+
+
+def render_error_ledger_markdown(rows: list[dict[str, Any]]) -> str:
+    totals: dict[tuple[str, str], int] = {}
+    for row in rows:
+        key = (str(row["family"]), str(row["error_type"]))
+        totals[key] = totals.get(key, 0) + int(row["count"])
+
+    lines = [
+        "# ExECTv2 LLM-First Essential Family Error Ledger",
+        "",
+        "Canonical row-level artifact: CSV generated from existing dev artifacts; "
+        "no model calls. Rows are split by `letter_id`, `family`, and `error_type`.",
+        "",
+        "Error types: `candidate_miss`, `wrong_detail_selection`, "
+        "`projection_gap`, `evidence_failure`.",
+        "",
+        "## Summary",
+        "",
+        "| Family | candidate_miss | wrong_detail_selection | projection_gap | evidence_failure |",
+        "| --- | ---: | ---: | ---: | ---: |",
+    ]
+    families = sorted({str(row["family"]) for row in rows})
+    for family in families:
+        lines.append(
+            f"| {family} | "
+            f"{totals.get((family, 'candidate_miss'), 0)} | "
+            f"{totals.get((family, 'wrong_detail_selection'), 0)} | "
+            f"{totals.get((family, 'projection_gap'), 0)} | "
+            f"{totals.get((family, 'evidence_failure'), 0)} |"
+        )
+
+    lines += [
+        "",
+        "## Rows",
+        "",
+        "| Letter | Family | Error type | Count | Gold | Pred | Primary TP "
+        "| Semantic TP | Projected benchmark TP | Evidence exact/pred |",
+        "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+    ]
+    for row in rows:
+        lines.append(
+            f"| {row['letter_id']} | {row['family']} | {row['error_type']} "
+            f"| {row['count']} | {row['gold_count']} | {row['pred_count']} "
+            f"| {row['primary_tp']} | {row['semantic_tp']} "
+            f"| {row['projected_benchmark_tp']} "
+            f"| {row['exact_evidence']}/{row['evidence_predicted']} |"
+        )
+    lines.append("")
+    return "\n".join(lines)
+
+
+def write_error_ledger_markdown(rows: list[dict[str, Any]], out_md: Path) -> Path:
+    out_md.parent.mkdir(parents=True, exist_ok=True)
+    out_md.write_text(render_error_ledger_markdown(rows), encoding="utf-8")
+    return out_md
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--split", default="dev")
@@ -363,6 +484,22 @@ def main() -> None:
             "exectv2_llm_first_essential_evaluation_2026-06-18.md"
         ),
     )
+    parser.add_argument(
+        "--out-error-ledger-csv",
+        type=Path,
+        default=Path(
+            "experiments/"
+            "exectv2_llm_first_essential_family_error_ledger_dev140_20260618.csv"
+        ),
+    )
+    parser.add_argument(
+        "--out-error-ledger-md",
+        type=Path,
+        default=Path(
+            "docs/experiments/exectv2/key_entities/"
+            "exectv2_llm_first_essential_family_error_ledger_2026-06-18.md"
+        ),
+    )
     args = parser.parse_args()
 
     report = build_evaluation(split=args.split)
@@ -370,8 +507,13 @@ def main() -> None:
     args.out_md.parent.mkdir(parents=True, exist_ok=True)
     args.out_json.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     args.out_md.write_text(render_markdown(report), encoding="utf-8")
+    ledger_rows = llm_first_error_ledger_rows(report)
+    write_error_ledger_csv(ledger_rows, args.out_error_ledger_csv)
+    write_error_ledger_markdown(ledger_rows, args.out_error_ledger_md)
     print(f"Wrote {args.out_json}")
     print(f"Wrote {args.out_md}")
+    print(f"Wrote {args.out_error_ledger_csv}")
+    print(f"Wrote {args.out_error_ledger_md}")
 
 
 if __name__ == "__main__":
