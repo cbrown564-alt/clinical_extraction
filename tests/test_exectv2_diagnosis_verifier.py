@@ -34,7 +34,7 @@ def test_build_prompt_input_includes_draft_and_v05_diagnosis_rules() -> None:
     )
 
     assert payload["prompt_version"] == verifier.PROMPT_VERSION
-    assert payload["prompt_version"].endswith("_v0.3")
+    assert payload["prompt_version"].endswith("_v0.4")
     assert payload["draft_diagnosis_mentions"][0]["text"] == "possible JME"
     rules = " ".join(payload["clinical_rules"])
     assert "Diagnosis text may be a normalized core clinical concept" in rules
@@ -47,6 +47,10 @@ def test_build_prompt_input_includes_draft_and_v05_diagnosis_rules() -> None:
     assert "temporal lobe seizure" in rules
     assert "general seizures" in rules
     assert "Myoclonic jerks are not a Diagnosis mention" in rules
+    assert "reviewed this patient with epilepsy" in rules
+    assert "focal onset epilepsy" in rules
+    assert "intractable epilepsy" in rules
+    assert "febrile seizures" in rules
     assert "Never write 'tonic chronic'" in rules
     assert "Never use attribute labels" in rules
     assert "myoclonic jerks" in rules
@@ -77,6 +81,18 @@ def test_build_prompt_input_includes_draft_and_v05_diagnosis_rules() -> None:
         if "possibly generalised" in example["note_fragment"]
     )
     assert uncertain_example["correct"][0]["text"] == "generalised epilepsy"
+    singular_example = next(
+        example
+        for example in payload["worked_examples"]
+        if "a bilateral convulsive seizure" in example["note_fragment"]
+    )
+    assert singular_example["correct"][0]["text"] == "bilateral convulsive seizure"
+    focal_onset_example = next(
+        example
+        for example in payload["worked_examples"]
+        if "possibly focal onset" in example["note_fragment"]
+    )
+    assert focal_onset_example["correct"][1]["text"] == "focal onset epilepsy"
 
 
 def test_draft_mentions_by_letter_filters_diagnosis_mentions() -> None:

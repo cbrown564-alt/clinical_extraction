@@ -86,6 +86,15 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   non-named symptom suppression. It is still revise-only because Diagnosis
   remains below `0.8`. See
   `docs/research/exectv2_diagnosis_verifier_v03_pilot_report_2026-06-18.md`.
+- Diagnosis verifier v0.4 is now the best Diagnosis-specific candidate:
+  clinical headline F1 `0.768` with precision `0.826`, recall `0.717`, and
+  evidence validity `1.0000`. It targeted only v0.3 residual families
+  (singular one-off seizure text, duplicated independently supported seizure
+  assertions, uncertain focal-onset lines, probable-cause wording, intractable
+  epilepsy, epileptic-event normalization, febrile-history suppression, and
+  generic reviewed-with-epilepsy recovery). It remains revise-only but is close
+  enough to justify one residual-error v0.5 loop before dev140. See
+  `docs/research/exectv2_diagnosis_verifier_v04_pilot_report_2026-06-18.md`.
 
 ## Active Priorities
 
@@ -101,14 +110,15 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
 
 ### Now
 
-- Analyze Diagnosis verifier v0.3 residual dev25 misses and build v0.4 only from
-  recurring error families. Protect precision above `0.75` and exact-evidence
-  validity at `1.0000` while trying to move Diagnosis toward `0.8`.
+- Analyze Diagnosis verifier v0.4 residual dev25 misses and build v0.5 only if
+  the remaining errors are recurring, clinically defensible, and likely to
+  preserve precision above `0.8` with exact-evidence validity at `1.0000`.
 
 ### Next
 
-- If v0.4 moves Diagnosis materially closer to `0.8` without entity-level
-  collapse, run dev140 and compare against the per-entity prompt family.
+- If v0.5 clears Diagnosis `0.8` or shows a precision-preserving lift that is
+  likely to generalize, run dev140 and compare against the per-entity prompt
+  family.
 - Compare the best single-prompt structured-event variant against the existing
   per-entity prompt family before returning to specialist/verifier variants.
 
@@ -138,9 +148,10 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   preserving the other family wins. Runs are registered in
   `experiments/RUN_INDEX.md`. The first specialist Diagnosis comparison rejected
   the old per-entity frame (`0.282` clinical F1 vs v0.5 `0.569`); the v0.1
-  Diagnosis verifier improved to `0.592`, v0.2 improved to `0.619`, and v0.3
-  improves to `0.701`, but Diagnosis remains below target. Latest report:
-  `docs/research/exectv2_diagnosis_verifier_v03_pilot_report_2026-06-18.md`.
+  Diagnosis verifier improved to `0.592`, v0.2 improved to `0.619`, v0.3
+  improved to `0.701`, and v0.4 improves to `0.768`, but Diagnosis remains
+  below target. Latest report:
+  `docs/research/exectv2_diagnosis_verifier_v04_pilot_report_2026-06-18.md`.
 - 2026-06-17: Built the reusable all-entity projection-gap ledger
   (`reports/projection_gap_ledger.py`). Classifies every gold FN / predicted FP
   into a layered `gap_family` (phrase coverage, attribute bundle, CUI
