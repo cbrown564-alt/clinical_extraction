@@ -1,7 +1,7 @@
-﻿"""Phase 1 six-architecture comparison report (parameterized by model, validation750).
+"""Phase 1 six-architecture comparison report (parameterized by model, validation750).
 
 Assembles the shared comparison table and hybrid-only routing appendix designed in
-docs/research/gan2026_three_way_comparison_phase1_report_design_2026-06-07.md by
+ by
 reading six already-completed validation750 run artifacts. This module makes no model
 calls and performs no re-run.
 

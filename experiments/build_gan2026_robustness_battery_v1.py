@@ -1,7 +1,7 @@
 """Gan 2026 Robustness Battery v1 — predeclared OOD / overfit gate driver.
 
 This is fitness tier 2 (OOD / robustness survival) for the F1 dynamic workflow
-(`docs/research/gan2026_f1_dynamic_workflow_protocol_2026-06-15.md`). It scores a
+(``). It scores a
 candidate live on `gpt-4.1-mini` against three predeclared panels of
 *authored-fresh* cases (NOT Gan rows, NOT test450):
 

@@ -5,7 +5,7 @@ contribution of each architectural layer, using ONLY saved artifact data — no 
 model calls, no test exposure. Reuses the per-layer Purist scores and recorded
 guard-fallback reasons already materialised in the V12 validation artifact.
 
-Plan: docs/research/gan2026_simplest_near_ceiling_architecture_plan_2026-06-16.md
+Plan: docs/research/gan2026/architecture/gan2026_simplest_near_ceiling_architecture_plan_2026-06-16.md
 
 Usage:
     uv run python experiments/build_gan2026_simplest_arch_decomposition_v1.py
@@ -87,7 +87,7 @@ def main() -> None:
         "no test exposure. Source artifact:",
         f"`{ARTIFACT}` ({n} rows).",
         "",
-        "Plan: `docs/research/gan2026_simplest_near_ceiling_architecture_plan_2026-06-16.md`.",
+        "Plan: `docs/research/gan2026/architecture/gan2026_simplest_near_ceiling_architecture_plan_2026-06-16.md`.",
         "",
         "## Ladder-middle Purist (each layer a superset of the one above)",
         "",

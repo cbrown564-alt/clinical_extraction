@@ -1,6 +1,6 @@
 """Stage C - 50-row component-contribution test for the graph query.
 
-Design note: ``docs/research/gan2026_kg_grounded_component_generation_design_2026-06-15.md``
+Design note: ````
 §5 (Stage C) and §8.4.2; ADR ``0017`` (the C2 parallel posture); resolve_label
 spec ``docs/design/gan2026_resolve_label_spec.md`` §5 (the ablation contract:
 report W->C / C->W and per-band changed-label precision).

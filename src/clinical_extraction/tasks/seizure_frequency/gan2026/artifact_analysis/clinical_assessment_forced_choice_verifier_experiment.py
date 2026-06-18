@@ -36,7 +36,7 @@ DEFAULT_JSON_PATH = Path(
     "experiments/gan2026_validation750_forced_choice_verifier_live_clean29_context_repair_v6_2026-06-06.json"
 )
 DEFAULT_REPORT_PATH = Path(
-    "docs/research/gan2026_validation750_forced_choice_verifier_live_clean29_context_repair_v6_2026-06-06.md"
+    ""
 )
 
 def write_summary_json(metadata: Mapping[str, Any], path: Path) -> None:

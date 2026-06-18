@@ -17,7 +17,7 @@ Validation-development monitoring predeclaration over v3 prediction-bearing clus
 ## Artifacts
 
 - Source router JSONL: `experiments/gan2026_rq9_selective_action_router_v3_2026-06-04.jsonl`
-- Predeclaration: `docs/research/gan2026_rq9_cluster_convention_monitoring_predeclaration_2026-06-04.md`
+- Predeclaration: ``
 - Row monitoring JSONL: `experiments/gan2026_rq9_cluster_convention_monitoring_2026-06-04.jsonl`
 - Summary JSON: `experiments/gan2026_rq9_cluster_convention_monitoring_2026-06-04.json`
 

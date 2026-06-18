@@ -421,9 +421,12 @@ _Avoid_: medication mention, raw prescription phrase, drug name only
 
 **Future Medication Diagnostic**: A diagnostic layer for planned, titration,
 target-dose, or future anti-seizure medication statements that contain regimen
-facts but are not current prescriptions. It preserves clinically relevant future
-medication evidence without counting it as current Prescription regimen
-recovery.
+facts but are not current prescriptions. It is a *one-way, non-penalizing* route:
+a model-flagged future medication is recorded here instead of as a
+[[Prescription Clinical Headline]] false positive, but it never earns headline
+credit. Because the gold has no temporality column, the Prescription headline is
+scored against the as-annotated (temporality-blind) gold and this route exists so
+correct temporality reasoning is not punished by it.
 _Avoid_: current prescription, false positive prescription, discarded plan evidence
 
 **Weight-Based Dosing Diagnostic**: A diagnostic layer for Prescription evidence
@@ -512,3 +515,46 @@ CUI convention. It is separate from [[Clinical Medication Identity]] because
 brand/generic equivalence can be clinically correct while still differing from
 the benchmark ontology surface.
 _Avoid_: clinical medication identity, component recovery, raw ontology lookup
+
+**Clinical Recovery Headline**: The primary ExECTv2 score for an entity,
+measuring recovery of the clinical fact, with [[ExECT Mention Projection]] and
+[[CUI Projection]] demoted to a separately-credited artifact layer beneath it.
+Decomposable entities take a [[Clinical Component Score]] headline; atomic-concept
+entities take a [[Concept-Identity Headline]]. This is the deliberate move away
+from all-entity exact-phrase F1 as the scoreboard, made because that metric is
+largely a target-construction artifact (oracle ceiling ~0.42).
+_Avoid_: all-entity exact-phrase F1 as headline, benchmark item F1 as the scoreboard
+
+**Concept-Identity Headline**: The [[Clinical Recovery Headline]] for
+atomic-concept entities (Diagnosis, Onset, WhenDiagnosed, EpilepsyCause,
+BirthHistory). Credit = clinical concept recovered + assertion attributes
+(Negation, surviving Certainty), scored *source-entity-agnostically* — any pass
+that surfaced the concept counts — with phrase boundary demoted to projection.
+DiagCategory is supplied by [[Deterministic Normalization Role]] (named seizure
+type → category), not demanded from the model's own entity tag.
+_Avoid_: per-entity exact-mention match, entity-tagged recall, model-must-tag-the-entity credit
+
+**Concept Recovery Unit**: The unit a [[Concept-Identity Headline]] scores.
+Split coordinated same-kind concepts into atomic facts — a compound "X with Y"
+is two required facts — but collapse a specificity hierarchy to the most-specific
+concept — `epilepsy` vs `focal epilepsy` is one fact; generic-only is a clean
+miss, not partial credit. The rule: split = different facts, collapse = same fact
+at different granularity; split fires only on coordinated *same-kind* clinical
+concepts, never on a qualified single concept.
+_Avoid_: phrase-level unit, generic+specific both required, partial-credit on specificity
+
+**Frequency State Recovery**: The state-level [[Clinical Recovery Headline]] for
+SeizureFrequency: per-current-seizure-type recovery over {active-rate,
+seizure-free, unknown}, matched on seizure-type/CUI (EA0011's two types are two
+facts), with `unknown` a first-class TP-able state rather than a scoring void.
+Exact counts, ranges, and time periods are separate [[Clinical Component Score]]
+diagnostics where the quantification wall lives openly — never the headline.
+_Avoid_: per-letter single state, exact-count headline, unknown as scoring void
+
+**Coverage-Diagnostic Entity**: An ExECTv2 entity reported only as
+[[CandidateSet Union Coverage]], not as a [[Clinical Recovery Headline]], because
+it is a heterogeneous catch-all whose "recovery" would measure generation breadth
+rather than recovery of a defined clinical object. PatientHistory is the case in
+point: recall-bound (most golds absent from the candidate pool) and open-ended
+(any past clinical concept with a time anchor).
+_Avoid_: PatientHistory headline F1, scored grab-bag entity

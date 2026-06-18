@@ -1,0 +1,724 @@
+{
+  "all_event_count": 94,
+  "claim_language": {
+    "not_supported": "Another broad unknown/change recovery rule is likely to clear the 0.8 gate without collateral precision loss.",
+    "supported": "After v0.6, the remaining SF blocker is not broad state recall. Unknown-state recall is high enough to expose a precision problem: 22 unknown over-emissions versus 8 unknown misses."
+  },
+  "generated": "2026-06-18",
+  "letters": 140,
+  "source_jsonl": "experiments\\exectv2_hybrid_sf_state_projection_v06_combined_dev140_20260618.jsonl",
+  "split": "dev",
+  "state_residual_counts": {
+    "active-rate": {
+      "fn": 17,
+      "fp": 19
+    },
+    "seizure-free": {
+      "fn": 11,
+      "fp": 17
+    },
+    "unknown": {
+      "fn": 8,
+      "fp": 22
+    }
+  },
+  "unknown_events": [
+    {
+      "attributes": {
+        "CUI": "C0036572",
+        "CUIPhrase": "seizures",
+        "FrequencyChange": "Decreased",
+        "PointInTime": "DrugChange"
+      },
+      "bucket": "unknown_fp.drug_response_scope",
+      "evidence": "Since the last consultation you have started him on lamotrigine, and this has helped his seizures.",
+      "letter_id": "EA0040",
+      "opposite_summary": "",
+      "side": "predicted",
+      "state": "unknown",
+      "text": "seizures",
+      "type_key": "[\"cui\", \"C0036572\"]"
+    },
+    {
+      "attributes": {
+        "CUI": "C0563606",
+        "CUIPhrase": "absence",
+        "FrequencyChange": "Infrequent"
+      },
+      "bucket": "unknown_fn.change_candidate_available_not_selected",
+      "evidence": "",
+      "letter_id": "EA0049",
+      "opposite_summary": "[\"cui\", \"C0494475\"]/active-rate:generalised tonic clonic seizures; [\"cui\", \"C0494475\"]/active-rate:generalised tonic clonic seizures; [\"cui\", \"C0494475\"]/unknown:generalised tonic clonic seizures",
+      "side": "gold",
+      "state": "unknown",
+      "text": "absence",
+      "type_key": "[\"cui\", \"C0563606\"]"
+    },
+    {
+      "attributes": {
+        "CUI": "C0027066",
+        "CUIPhrase": "myoclonic-jerks",
+        "FrequencyChange": "Frequent"
+      },
+      "bucket": "unknown_fn.change_candidate_available_not_selected",
+      "evidence": "",
+      "letter_id": "EA0049",
+      "opposite_summary": "[\"cui\", \"C0494475\"]/active-rate:generalised tonic clonic seizures; [\"cui\", \"C0494475\"]/active-rate:generalised tonic clonic seizures; [\"cui\", \"C0494475\"]/unknown:generalised tonic clonic seizures",
+      "side": "gold",
+      "state": "unknown",
+      "text": "myoclonic-jerks",
+      "type_key": "[\"cui\", \"C0027066\"]"
+    },
+    {
+      "attributes": {
+        "CUI": "C0563606",
+        "CUIPhrase": "absences",
+        "FrequencyChange": "Infrequent"
+      },
+      "bucket": "unknown_fn.generic_named_ownership_gap",
+      "evidence": "",
+      "letter_id": "EA0050",
+      "opposite_summary": "[\"cui\", \"C0494475\"]/active-rate:generalised tonic clonic seizures; [\"cui\", \"C0036572\"]/unknown:seizures",
+      "side": "gold",
+      "state": "unknown",
+      "text": "absences",
+      "type_key": "[\"cui\", \"C0563606\"]"
+    },
+    {
+      "attributes": {
+        "CUI": "C0036572",
+        "CUIPhrase": "seizures",
+        "FrequencyChange": "Frequent",
+        "PointInTime": "DrugChange"
+      },
+      "bucket": "unknown_fp.state_swap_against_gold_seizure-free",
+      "evidence": "I explained the lamotrigine was generally thought to be safe in pregnancy and so given her background of frequent seizures it would be important to continue the medication should she become pregnant.",
+      "letter_id": "EA0063",
+      "opposite_summary": "[\"cui\", \"C0036572\"]/seizure-free:seizures; [\"cui\", \"C0036572\"]/seizure-free:seizures",
+      "side": "predicted",
+      "state": "unknown",
+      "text": "seizures",
+      "type_key": "[\"cui\", \"C0036572\"]"
+    },
+    {
+      "attributes": {
+        "CUI": "C0036572",
+        "CUIPhrase": "seizures",
+        "FrequencyChange": "Same"
+      },
+      "bucket": "unknown_fp.grounded_scope_overemit",
+      "evidence": "Her seizures are reasonably controlled by her low mood as well as some agitation is causing her some distress.",
+      "letter_id": "EA0078",
+      "opposite_summary": "",
+      "side": "predicted",
+      "state": "unknown",
+      "text": "seizures",
+      "type_key": "[\"cui\", \"C0036572\"]"
+    },
+    {
+      "attributes": {
+        "CUI": "C0036572",
+        "CUIPhrase": "seizures",
+        "FrequencyChange": "Same"
+      },
+      "bucket": "unknown_fp.unsupported_or_conditional_change",
+      "evidence": "His epilepsy has been stable over the last few years",
+      "letter_id": "EA0079",
+      "opposite_summary": "[\"cui\", \"C0494475\"]/active-rate:generalised",
+      "side": "predicted",
+      "state": "unknown",
+      "text": "seizures",
+      "type_key": "[\"cui\", \"C0036572\"]"
+    },
+    {
+      "attributes": {
+        "CUI": "C0494475",
+        "CUIPhrase": "generalised",
+        "FrequencyChange": "Increased"
+      },
+      "bucket": "unknown_fn.state_swap_with_predicted_active-rate",
+      "evidence": "",
+      "letter_id": "EA0087",
+      "opposite_summary": "[\"cui\", \"C0494475\"]/active-rate:generalised tonic clonic seizures",
+      "side": "gold",
+      "state": "unknown",
+      "text": "generalised",
+      "type_key": "[\"cui\", \"C0494475\"]"
+    },
+    {
+      "attributes": {
+        "CUI": "C0027066",
+        "CUIPhrase": "myoclonic jerks",
+        "FrequencyChange": "Decreased"
+      },
+      "bucket": "unknown_fp.state_swap_against_gold_active-rate",
+      "evidence": "She felt that things were much better as her myoclonic jerks have almost stopped.",
+      "letter_id": "EA0087",
+      "opposite_summary": "[\"cui\", \"C0027066\"]/active-rate:myoclonic-jerks",
+      "side": "predicted",
+      "state": "unknown",
+      "text": "myoclonic jerks",
+      "type_key": "[\"cui\", \"C0027066\"]"
+    },
+    {
+      "attributes": {
+        "CUI": "C0494475",
+        "CUIPhrase": "generalised tonic clonic seizures",
+        "FrequencyChange": "Frequent"
+      },
+      "bucket": "unknown_fp.state_swap_against_gold_active-rate",
+      "evidence": "On Sunday and Monday, he was having generalised tonic clonic seizures in the night and frequent drops and absences throughout the day",
+      "letter_id": "EA0096",
+      "opposite_summary": "[\"cui\", \"C0494475\"]/active-rate:generalised-tonic-clonic-seizures",
+      "side": "predicted",
+      "state": "unknown",
+      "text": "generalised tonic clonic seizures",
+      "type_key": "[\"cui\", \"C0494475\"]"
+    },
+    {
+      "attributes": {
+        "CUI": "C0036572",
+        "CUIPhrase": "seizures",
+        "FrequencyChange": "Decreased"
+      },
+      "bucket": "unknown_fp.generic_named_ownership_gap",
+      "evidence": "His control had deteriorated prior to increasing the valproate but had then improved to the odd stare only",
+      "letter_id": "EA0096",
+      "opposite_summary": "[\"cui\", \"C0494475\"]/active-rate:generalised-tonic-clonic-seizures; [\"cui\", \"C0563606\"]/unknown:absences",
+      "side": "predicted",
+      "state": "unknown",
+      "text": "seizures",
+      "type_key": "[\"cui\", \"C0036572\"]"
+    },
+    {
+      "attributes": {
+        "CUI": "C0036572",
+        "CUIPhrase": "seizures",
+        "FrequencyChange": "Decreased",
+        "PointInTime": "DrugChange"
+      },
+      "bucket": "unknown_fp.state_swap_against_gold_active-rate",
+      "evidence": "Once her seizures are controlled Sodium Valproate should be reduced to nil gradually.",
+      "letter_id": "EA0110",
+      "opposite_summary": "[\"cui\", \"C0036572\"]/active-rate:seizures",
+      "side": "predicted",
+      "state": "unknown",
+      "text": "seizures",
+      "type_key": "[\"cui\", \"C0036572\"]"
+    },
+    {
+      "attributes": {
+        "CUI": "C0036572",
+        "CUIPhrase": "seizures",
+        "FrequencyChange": "Increased"
+      },
+      "bucket": "unknown_fn.state_swap_with_predicted_active-rate",
+      "evidence": "",
+      "letter_id": "EA0111",
+      "opposite_summary": "[\"cui\", \"C0036572\"]/active-rate:seizures",
+      "side": "gold",
+      "state": "unknown",
+      "text": "seizures",
+      "type_key": "[\"cui\", \"C0036572\"]"
+    },
+    {
+      "attributes": {
+        "CUI": "C0036572",
+        "CUIPhrase": "seizures",
+        "FrequencyChange": "Frequent",
+        "NumberOfTimePeriods": "1",
+        "TimePeriod": "Week"
+      },
+      "bucket": "unknown_fp.state_swap_against_gold_active-rate",
+      "evidence": "she is still struggling with seizures, which are occurring on a weekly basis",
+      "letter_id": "EA0117",
+      "opposite_summary": "[\"cui\", \"C0036572\"]/active-rate:seizures",
+      "side": "predicted",
+      "state": "unknown",
+      "text": "seizures",
+      "type_key": "[\"cui\", \"C0036572\"]"
+    },
+    {
+      "attributes": {
+        "CUI": "C0270834",
+        "CUIPhrase": "focal seizures with altered awareness",
+        "FrequencyChange": "Frequent"
+      },
+      "bucket": "unknown_fp.generic_named_ownership_gap",
+      "evidence": "These can occur in clusters very frequently so that he doesn\u2019t really recover consciousness.",
+      "letter_id": "EA0121",
+      "opposite_summary": "[\"cui\", \"C0036572\"]/unknown:seizures; [\"cui\", \"C0877017\"]/seizure-free:focal-to-bilateral-convulsive-seizure",
+      "side": "predicted",
+      "state": "unknown",
+      "text": "focal seizures with altered awareness",
+      "type_key": "[\"cui\", \"C0270834\"]"
+    },
+    {
+      "attributes": {
+        "CUI": "C0027066",
+        "CUIPhrase": "myoclonic-jerks",
+        "FrequencyChange": "Same"
+      },
+      "bucket": "unknown_fn.no_matching_candidate_or_type",
+      "evidence": "",
+      "letter_id": "EA0128",
+      "opposite_summary": "[\"cui\", \"C0494475\"]/seizure-free:generalised tonic clonic seizures",
+      "side": "gold",
+      "state": "unknown",
+      "text": "myoclonic-jerks",
+      "type_key": "[\"cui\", \"C0027066\"]"
+    },
+    {
+      "attributes": {
+        "CUI": "C0494475",
+        "CUIPhrase": "generalised tonic clonic seizures",
+        "FrequencyChange": "Increased",
+        "TimeSince_or_TimeOfEvent": "During",
+        "YearDate": "last year"
+      },
+      "bucket": "unknown_fp.generic_named_ownership_gap",
+      "evidence": "She is having quite a number of generalised tonic clonic seizures which her partner described to me today.",
+      "letter_id": "EA0131",
+      "opposite_summary": "[\"cui\", \"C0036572\"]/unknown:seizures",
+      "side": "predicted",
+      "state": "unknown",
+      "text": "generalised tonic clonic seizures",
+      "type_key": "[\"cui\", \"C0494475\"]"
+    },
+    {
+      "attributes": {
+        "FrequencyChange": "Frequent"
+      },
+      "bucket": "unknown_fp.generic_named_ownership_gap",
+      "evidence": "Howevere this has to be balanced against the risks of frequent convulsive seizures which do carry the risk of serious injury and death.",
+      "letter_id": "EA0131",
+      "opposite_summary": "[\"cui\", \"C0036572\"]/unknown:seizures",
+      "side": "predicted",
+      "state": "unknown",
+      "text": "convulsive seizures",
+      "type_key": "[\"phrase\", \"convulsive seizures\"]"
+    },
+    {
+      "attributes": {
+        "CUI": "C0036572",
+        "CUIPhrase": "seizures",
+        "FrequencyChange": "Increased"
+      },
+      "bucket": "unknown_fp.generic_named_ownership_gap",
+      "evidence": "After a fairly long period of around 6 months without having seizures unfortunately Mr Francis had a cluster of seizures over the weekend.",
+      "letter_id": "EA0135",
+      "opposite_summary": "[\"cui\", \"C3203523\"]/active-rate:cluster-of-seizures",
+      "side": "predicted",
+      "state": "unknown",
+      "text": "seizures",
+      "type_key": "[\"cui\", \"C0036572\"]"
+    },
+    {
+      "attributes": {
+        "CUI": "C0036572",
+        "CUIPhrase": "seizures",
+        "FrequencyChange": "Infrequent",
+        "PointInTime": "DrugChange"
+      },
+      "bucket": "unknown_fp.state_swap_against_gold_seizure-free",
+      "evidence": "She thinks that this may have helped her seizures and interestingly her mood has improved since taking the lamotrigine.",
+      "letter_id": "EA0137",
+      "opposite_summary": "[\"cui\", \"C0036572\"]/seizure-free:seizure",
+      "side": "predicted",
+      "state": "unknown",
+      "text": "seizures",
+      "type_key": "[\"cui\", \"C0036572\"]"
+    },
+    {
+      "attributes": {
+        "CUI": "C0036572",
+        "CUIPhrase": "seizures",
+        "FrequencyChange": "Same"
+      },
+      "bucket": "unknown_fp.state_swap_against_gold_active-rate",
+      "evidence": "This is unusual as before this her seizures have been relatively well controlled.",
+      "letter_id": "EA0151",
+      "opposite_summary": "[\"cui\", \"C0036572\"]/active-rate:seizures",
+      "side": "predicted",
+      "state": "unknown",
+      "text": "seizures",
+      "type_key": "[\"cui\", \"C0036572\"]"
+    },
+    {
+      "attributes": {
+        "CUI": "C0270834",
+        "CUIPhrase": "focal seizures with altered awareness",
+        "FrequencyChange": "Frequent"
+      },
+      "bucket": "unknown_fp.state_swap_against_gold_active-rate",
+      "evidence": "Jennifer also gets focal seizures with altered awareness probably several times per week.",
+      "letter_id": "EA0158",
+      "opposite_summary": "[\"cui\", \"C0270834\"]/active-rate:focal-seizures-with-altered-awareness",
+      "side": "predicted",
+      "state": "unknown",
+      "text": "focal seizures with altered awareness",
+      "type_key": "[\"cui\", \"C0270834\"]"
+    },
+    {
+      "attributes": {
+        "CUI": "C0016399",
+        "CUIPhrase": "focal motor seizures"
+      },
+      "bucket": "unknown_fp.grounded_scope_overemit",
+      "evidence": "She also gets focal motor seizures where her right arm will twitch continually, sometimes for up to 5 hours.",
+      "letter_id": "EA0158",
+      "opposite_summary": "[\"cui\", \"C0270834\"]/active-rate:focal-seizures-with-altered-awareness; [\"cui\", \"C0234533\"]/active-rate:generalised-seizure",
+      "side": "predicted",
+      "state": "unknown",
+      "text": "focal motor seizures",
+      "type_key": "[\"cui\", \"C0016399\"]"
+    },
+    {
+      "attributes": {
+        "CUI": "C0036572",
+        "CUIPhrase": "seizures",
+        "FrequencyChange": "Infrequent"
+      },
+      "bucket": "unknown_fp.grounded_scope_overemit",
+      "evidence": "Although her jerks have\nimproved significantly they are still occurring around once a month.",
+      "letter_id": "EA0166",
+      "opposite_summary": "",
+      "side": "predicted",
+      "state": "unknown",
+      "text": "seizures",
+      "type_key": "[\"cui\", \"C0036572\"]"
+    },
+    {
+      "attributes": {
+        "CUI": "C4316903",
+        "CUIPhrase": "typical-absences",
+        "FrequencyChange": "Same",
+        "PointInTime": "LastClinic",
+        "TimeSince_or_TimeOfEvent": "Since"
+      },
+      "bucket": "unknown_fn.no_matching_candidate_or_type",
+      "evidence": "",
+      "letter_id": "EA0184",
+      "opposite_summary": "[\"cui\", \"C0494475\"]/active-rate:generalised tonic clonic seizures; [\"cui\", \"C0563606\"]/unknown:absences",
+      "side": "gold",
+      "state": "unknown",
+      "text": "typical-absences",
+      "type_key": "[\"cui\", \"C4316903\"]"
+    },
+    {
+      "attributes": {
+        "CUI": "C0563606",
+        "CUIPhrase": "absences",
+        "FrequencyChange": "Increased",
+        "PointInTime": "LastClinic",
+        "TimeSince_or_TimeOfEvent": "Since"
+      },
+      "bucket": "unknown_fp.grounded_scope_overemit",
+      "evidence": "His brother said that he has had three generalised tonic clonic seizures and more of his typical absences since the last clinic appointment.",
+      "letter_id": "EA0184",
+      "opposite_summary": "[\"cui\", \"C0494475\"]/active-rate:generalised-tonic-clonic-seizure; [\"cui\", \"C4316903\"]/unknown:typical-absences",
+      "side": "predicted",
+      "state": "unknown",
+      "text": "absences",
+      "type_key": "[\"cui\", \"C0563606\"]"
+    },
+    {
+      "attributes": {
+        "CUI": "C0016399",
+        "CUIPhrase": "focal motor seizures",
+        "FrequencyChange": "Frequent",
+        "Negation": "Affirmed"
+      },
+      "bucket": "unknown_fp.state_swap_against_gold_seizure-free",
+      "evidence": "These were happening frequently before he started the medication.",
+      "letter_id": "EA0186",
+      "opposite_summary": "[\"cui\", \"C0016399\"]/seizure-free:focal",
+      "side": "predicted",
+      "state": "unknown",
+      "text": "focal motor seizures",
+      "type_key": "[\"cui\", \"C0016399\"]"
+    },
+    {
+      "attributes": {
+        "CUI": "C0036572",
+        "CUIPhrase": "seizures",
+        "FrequencyChange": "Increased"
+      },
+      "bucket": "unknown_fp.state_swap_against_gold_active-rate",
+      "evidence": "Things have got a bit worse recently and he is having one or two seizures per month.",
+      "letter_id": "EA0197",
+      "opposite_summary": "[\"cui\", \"C0036572\"]/active-rate:seizures; [\"cui\", \"C0036572\"]/active-rate:seizures",
+      "side": "predicted",
+      "state": "unknown",
+      "text": "seizures",
+      "type_key": "[\"cui\", \"C0036572\"]"
+    },
+    {
+      "attributes": {
+        "CUI": "C0036572",
+        "CUIPhrase": "seizures",
+        "FrequencyChange": "Increased"
+      },
+      "bucket": "unknown_fn.state_swap_with_predicted_active-rate",
+      "evidence": "",
+      "letter_id": "EA0198",
+      "opposite_summary": "[\"cui\", \"C0036572\"]/active-rate:seizure; [\"cui\", \"C0036572\"]/active-rate:seizures",
+      "side": "gold",
+      "state": "unknown",
+      "text": "seizures",
+      "type_key": "[\"cui\", \"C0036572\"]"
+    },
+    {
+      "attributes": {
+        "CUI": "C0036572",
+        "CUIPhrase": "seizures",
+        "FrequencyChange": "Decreased"
+      },
+      "bucket": "unknown_fp.unsupported_or_conditional_change",
+      "evidence": "He is getting around 2 seizures per month at the moment which is good for him as previously he has had several seizures per week",
+      "letter_id": "EA0199",
+      "opposite_summary": "[\"cui\", \"C0036572\"]/active-rate:seizures",
+      "side": "predicted",
+      "state": "unknown",
+      "text": "seizures",
+      "type_key": "[\"cui\", \"C0036572\"]"
+    }
+  ],
+  "unknown_summary": {
+    "by_bucket": {
+      "unknown_fn.change_candidate_available_not_selected": 2,
+      "unknown_fn.generic_named_ownership_gap": 1,
+      "unknown_fn.no_matching_candidate_or_type": 2,
+      "unknown_fn.state_swap_with_predicted_active-rate": 3,
+      "unknown_fp.drug_response_scope": 1,
+      "unknown_fp.generic_named_ownership_gap": 5,
+      "unknown_fp.grounded_scope_overemit": 4,
+      "unknown_fp.state_swap_against_gold_active-rate": 7,
+      "unknown_fp.state_swap_against_gold_seizure-free": 3,
+      "unknown_fp.unsupported_or_conditional_change": 2
+    },
+    "by_side": {
+      "gold": 8,
+      "predicted": 22
+    },
+    "examples": {
+      "unknown_fn.change_candidate_available_not_selected": [
+        {
+          "evidence": "",
+          "letter_id": "EA0049",
+          "opposite": "[\"cui\", \"C0494475\"]/active-rate:generalised tonic clonic seizures; [\"cui\", \"C0494475\"]/active-rate:generalised tonic clonic seizures; [\"cui\", \"C0494475\"]/unknown:generalised tonic clonic seizures",
+          "side": "gold",
+          "text": "absence"
+        },
+        {
+          "evidence": "",
+          "letter_id": "EA0049",
+          "opposite": "[\"cui\", \"C0494475\"]/active-rate:generalised tonic clonic seizures; [\"cui\", \"C0494475\"]/active-rate:generalised tonic clonic seizures; [\"cui\", \"C0494475\"]/unknown:generalised tonic clonic seizures",
+          "side": "gold",
+          "text": "myoclonic-jerks"
+        }
+      ],
+      "unknown_fn.generic_named_ownership_gap": [
+        {
+          "evidence": "",
+          "letter_id": "EA0050",
+          "opposite": "[\"cui\", \"C0494475\"]/active-rate:generalised tonic clonic seizures; [\"cui\", \"C0036572\"]/unknown:seizures",
+          "side": "gold",
+          "text": "absences"
+        }
+      ],
+      "unknown_fn.no_matching_candidate_or_type": [
+        {
+          "evidence": "",
+          "letter_id": "EA0128",
+          "opposite": "[\"cui\", \"C0494475\"]/seizure-free:generalised tonic clonic seizures",
+          "side": "gold",
+          "text": "myoclonic-jerks"
+        },
+        {
+          "evidence": "",
+          "letter_id": "EA0184",
+          "opposite": "[\"cui\", \"C0494475\"]/active-rate:generalised tonic clonic seizures; [\"cui\", \"C0563606\"]/unknown:absences",
+          "side": "gold",
+          "text": "typical-absences"
+        }
+      ],
+      "unknown_fn.state_swap_with_predicted_active-rate": [
+        {
+          "evidence": "",
+          "letter_id": "EA0087",
+          "opposite": "[\"cui\", \"C0494475\"]/active-rate:generalised tonic clonic seizures",
+          "side": "gold",
+          "text": "generalised"
+        },
+        {
+          "evidence": "",
+          "letter_id": "EA0111",
+          "opposite": "[\"cui\", \"C0036572\"]/active-rate:seizures",
+          "side": "gold",
+          "text": "seizures"
+        },
+        {
+          "evidence": "",
+          "letter_id": "EA0198",
+          "opposite": "[\"cui\", \"C0036572\"]/active-rate:seizure; [\"cui\", \"C0036572\"]/active-rate:seizures",
+          "side": "gold",
+          "text": "seizures"
+        }
+      ],
+      "unknown_fp.drug_response_scope": [
+        {
+          "evidence": "Since the last consultation you have started him on lamotrigine, and this has helped his seizures.",
+          "letter_id": "EA0040",
+          "opposite": "",
+          "side": "predicted",
+          "text": "seizures"
+        }
+      ],
+      "unknown_fp.generic_named_ownership_gap": [
+        {
+          "evidence": "His control had deteriorated prior to increasing the valproate but had then improved to the odd stare only",
+          "letter_id": "EA0096",
+          "opposite": "[\"cui\", \"C0494475\"]/active-rate:generalised-tonic-clonic-seizures; [\"cui\", \"C0563606\"]/unknown:absences",
+          "side": "predicted",
+          "text": "seizures"
+        },
+        {
+          "evidence": "These can occur in clusters very frequently so that he doesn\u2019t really recover consciousness.",
+          "letter_id": "EA0121",
+          "opposite": "[\"cui\", \"C0036572\"]/unknown:seizures; [\"cui\", \"C0877017\"]/seizure-free:focal-to-bilateral-convulsive-seizure",
+          "side": "predicted",
+          "text": "focal seizures with altered awareness"
+        },
+        {
+          "evidence": "She is having quite a number of generalised tonic clonic seizures which her partner described to me today.",
+          "letter_id": "EA0131",
+          "opposite": "[\"cui\", \"C0036572\"]/unknown:seizures",
+          "side": "predicted",
+          "text": "generalised tonic clonic seizures"
+        },
+        {
+          "evidence": "Howevere this has to be balanced against the risks of frequent convulsive seizures which do carry the risk of serious injury and death.",
+          "letter_id": "EA0131",
+          "opposite": "[\"cui\", \"C0036572\"]/unknown:seizures",
+          "side": "predicted",
+          "text": "convulsive seizures"
+        },
+        {
+          "evidence": "After a fairly long period of around 6 months without having seizures unfortunately Mr Francis had a cluster of seizures over the weekend.",
+          "letter_id": "EA0135",
+          "opposite": "[\"cui\", \"C3203523\"]/active-rate:cluster-of-seizures",
+          "side": "predicted",
+          "text": "seizures"
+        }
+      ],
+      "unknown_fp.grounded_scope_overemit": [
+        {
+          "evidence": "Her seizures are reasonably controlled by her low mood as well as some agitation is causing her some distress.",
+          "letter_id": "EA0078",
+          "opposite": "",
+          "side": "predicted",
+          "text": "seizures"
+        },
+        {
+          "evidence": "She also gets focal motor seizures where her right arm will twitch continually, sometimes for up to 5 hours.",
+          "letter_id": "EA0158",
+          "opposite": "[\"cui\", \"C0270834\"]/active-rate:focal-seizures-with-altered-awareness; [\"cui\", \"C0234533\"]/active-rate:generalised-seizure",
+          "side": "predicted",
+          "text": "focal motor seizures"
+        },
+        {
+          "evidence": "Although her jerks have\nimproved significantly they are still occurring around once a month.",
+          "letter_id": "EA0166",
+          "opposite": "",
+          "side": "predicted",
+          "text": "seizures"
+        },
+        {
+          "evidence": "His brother said that he has had three generalised tonic clonic seizures and more of his typical absences since the last clinic appointment.",
+          "letter_id": "EA0184",
+          "opposite": "[\"cui\", \"C0494475\"]/active-rate:generalised-tonic-clonic-seizure; [\"cui\", \"C4316903\"]/unknown:typical-absences",
+          "side": "predicted",
+          "text": "absences"
+        }
+      ],
+      "unknown_fp.state_swap_against_gold_active-rate": [
+        {
+          "evidence": "She felt that things were much better as her myoclonic jerks have almost stopped.",
+          "letter_id": "EA0087",
+          "opposite": "[\"cui\", \"C0027066\"]/active-rate:myoclonic-jerks",
+          "side": "predicted",
+          "text": "myoclonic jerks"
+        },
+        {
+          "evidence": "On Sunday and Monday, he was having generalised tonic clonic seizures in the night and frequent drops and absences throughout the day",
+          "letter_id": "EA0096",
+          "opposite": "[\"cui\", \"C0494475\"]/active-rate:generalised-tonic-clonic-seizures",
+          "side": "predicted",
+          "text": "generalised tonic clonic seizures"
+        },
+        {
+          "evidence": "Once her seizures are controlled Sodium Valproate should be reduced to nil gradually.",
+          "letter_id": "EA0110",
+          "opposite": "[\"cui\", \"C0036572\"]/active-rate:seizures",
+          "side": "predicted",
+          "text": "seizures"
+        },
+        {
+          "evidence": "she is still struggling with seizures, which are occurring on a weekly basis",
+          "letter_id": "EA0117",
+          "opposite": "[\"cui\", \"C0036572\"]/active-rate:seizures",
+          "side": "predicted",
+          "text": "seizures"
+        },
+        {
+          "evidence": "This is unusual as before this her seizures have been relatively well controlled.",
+          "letter_id": "EA0151",
+          "opposite": "[\"cui\", \"C0036572\"]/active-rate:seizures",
+          "side": "predicted",
+          "text": "seizures"
+        }
+      ],
+      "unknown_fp.state_swap_against_gold_seizure-free": [
+        {
+          "evidence": "I explained the lamotrigine was generally thought to be safe in pregnancy and so given her background of frequent seizures it would be important to continue the medication should she become pregnant.",
+          "letter_id": "EA0063",
+          "opposite": "[\"cui\", \"C0036572\"]/seizure-free:seizures; [\"cui\", \"C0036572\"]/seizure-free:seizures",
+          "side": "predicted",
+          "text": "seizures"
+        },
+        {
+          "evidence": "She thinks that this may have helped her seizures and interestingly her mood has improved since taking the lamotrigine.",
+          "letter_id": "EA0137",
+          "opposite": "[\"cui\", \"C0036572\"]/seizure-free:seizure",
+          "side": "predicted",
+          "text": "seizures"
+        },
+        {
+          "evidence": "These were happening frequently before he started the medication.",
+          "letter_id": "EA0186",
+          "opposite": "[\"cui\", \"C0016399\"]/seizure-free:focal",
+          "side": "predicted",
+          "text": "focal motor seizures"
+        }
+      ],
+      "unknown_fp.unsupported_or_conditional_change": [
+        {
+          "evidence": "His epilepsy has been stable over the last few years",
+          "letter_id": "EA0079",
+          "opposite": "[\"cui\", \"C0494475\"]/active-rate:generalised",
+          "side": "predicted",
+          "text": "seizures"
+        },
+        {
+          "evidence": "He is getting around 2 seizures per month at the moment which is good for him as previously he has had several seizures per week",
+          "letter_id": "EA0199",
+          "opposite": "[\"cui\", \"C0036572\"]/active-rate:seizures",
+          "side": "predicted",
+          "text": "seizures"
+        }
+      ]
+    },
+    "total": 30
+  }
+}

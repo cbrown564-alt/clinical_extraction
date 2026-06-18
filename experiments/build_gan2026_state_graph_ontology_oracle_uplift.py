@@ -1,6 +1,6 @@
 """Stage A oracle-uplift gate for the KG-grounded component generator.
 
-Design note: ``docs/research/gan2026_kg_grounded_component_generation_design_2026-06-15.md``.
+Design note: ````.
 
 Stage A is the no-model-spend gate of the validation-only ladder. It builds the
 deterministic state graph for every validation row, dual-validates it under the

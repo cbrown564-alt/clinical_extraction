@@ -12,6 +12,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registr
 )
 
 DECISION_RENDER_ORDER: tuple[RunDecision, ...] = (
+    "reliability_scorecard",
     "promote",
     "promote_hybrid_structured_events_direction",
     "promote_to_phase3_report",
@@ -22,6 +23,8 @@ DECISION_RENDER_ORDER: tuple[RunDecision, ...] = (
     "inform_phase4",
     "phase3_complete_gpt41mini",
     "inform_phase3",
+    "inform_architecture_loop",
+    "clinical_recovery_reporting",
     "superseded",
     "historical",
 )

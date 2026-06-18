@@ -5,7 +5,7 @@ Date: 2026-06-12
 Status: Phase 5 implementation contract for the agentic comparison phase.
 
 Controlling plan:
-`docs/research/gan2026_agentic_pipeline_phase_plan_2026-06-12.md`.
+``.
 
 ## Scope
 

@@ -2,7 +2,7 @@
 
 Date: 2026-06-17 · Model: openai/gpt-4.1-mini (elicitation temp 0.0) · n=160 · subject: v0_reference single-SE-mini production answers (decision 0018)
 
-Decoupled second-pass elicitation over the production answers; the production path is NOT modified. Predeclared in `docs/research/gan2026_confidence_elicitation_predeclaration_2026-06-17.md`.
+Decoupled second-pass elicitation over the production answers; the production path is NOT modified. Predeclared in ``.
 
 **[comparator] degenerate joint self-confidence** (direct labeler): top-bucket share 99.9% (n=750), failure AUROC 0.503. External-signal comparator AUROC (P0.3) = 0.781.
 

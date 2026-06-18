@@ -1101,6 +1101,11 @@ def test_lexicon_normalizes_surface_variation() -> None:
     # Hyphens, case, and "loss of"/"altered" awareness wording all resolve.
     assert assign_cui("Generalised-Tonic-Clonic-Seizures") == "C0494475"
     assert assign_cui("focal seizures with loss of awareness") == "C0270834"
+    assert assign_cui("focal impaired awareness seizures") == "C0270834"
+    assert assign_cui("focal dyscognitive seizures") == "C0270834"
+    assert assign_cui("focal to bilateral seizures") == "C0877017"
+    assert assign_cui("no further seizures") == "C0036572"
+    assert assign_cui("absence events") == "C0563606"
 
 
 def test_lexicon_collisions_resolve_to_dominant_cui() -> None:

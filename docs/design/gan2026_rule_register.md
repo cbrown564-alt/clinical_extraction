@@ -8,16 +8,16 @@ its code/doc home, and the open contradictions between layers. Companion to the
 unknown-boundary rules.
 
 Related:
-- `docs/research/gan2026_kg_grounded_component_generation_design_2026-06-15.md`
+- ``
   (the KG component-generation design this register feeds)
 - `docs/design/gan2026_resolve_label_spec.md` (the unifying graph query)
 - `docs/design/gan2026_normalization_semantics.md` (scoring collapse)
-- `docs/research/gan2026_unknown_frequency_policy_audit_2026-06-15.md`
+- ``
   (Yujian's clarified unknown policy)
-- `docs/research/gan2026_gold_normalization_policy_question_2026-06-01.md` and
+- `` and
   `gan2026_clean_policy_attribution_note_2026-06-01.md` (clean policy boundary)
-- `docs/research/gan2026_acd_projection_policy_predeclaration_2026-06-04.md`
-- `docs/research/gan2026_ambiguity_ownership_protocol_2026-06-04.md`,
+- ``
+- ``,
   `gan2026_human_gold_audit_abstention_policy_report_2026-06-04.md`
 
 ## Purpose

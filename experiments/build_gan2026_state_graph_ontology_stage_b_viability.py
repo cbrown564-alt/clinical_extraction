@@ -1,6 +1,6 @@
 """Stage B atomic-claim viability gate for the KG-grounded component generator.
 
-Design note: ``docs/research/gan2026_kg_grounded_component_generation_design_2026-06-15.md``.
+Design note: ````.
 
 Stage B is the gold-free, no-model-spend viability gate of the validation-only
 ladder. It builds the state graph from *existing* LLM atomic claims on 25

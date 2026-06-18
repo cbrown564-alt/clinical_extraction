@@ -57,7 +57,7 @@ on it.
   first adopted validation-only policy slice is cluster-name stripping for
   cadence-only cluster labels, vague weekday cadence to `multiple per week`, and
   Gan-specific bare `bimonthly` to `1 per 2 month`; the rationale and boundary
-  cases live in `docs/research/gan2026_gold_normalization_policy_question_2026-06-01.md`.
+  cases live in ``.
 
 ## Known Open Questions
 

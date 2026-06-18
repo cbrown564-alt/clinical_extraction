@@ -28,7 +28,7 @@
   },
   "new_llm_calls_made": 0,
   "policy_name": "gan2026_structured_projection_port_promoted_v0",
-  "protocol_artifact": "docs/research/gan2026_structured_projection_port_frozen_test_protocol_2026-06-05.md",
+  "protocol_artifact": "",
   "report_artifact": "experiments/gan2026_structured_projection_port_test450_aggregate_audit_2026-06-05.md",
   "selected_family_counts": {
     "cluster_frequency": 2,

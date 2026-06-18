@@ -65,7 +65,7 @@
     "Locked-test summaries intentionally omit row-level records.",
     "Candidate gaps are computed only when comparable validation and locked-test final Purist proxies are available."
   ],
-  "protocol": "docs/research/gan2026_validation_test_gap_protocol_2026-06-05.md",
+  "protocol": "docs/experiments/gan2026/validation_test_gap/gan2026_validation_test_gap_protocol_2026-06-05.md",
   "split_manifest": "gan2026_split_v1",
   "surface_count": 16,
   "surface_summaries": [

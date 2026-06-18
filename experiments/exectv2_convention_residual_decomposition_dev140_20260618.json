@@ -1,0 +1,125 @@
+{
+  "generated": "2026-06-18",
+  "split": "dev",
+  "letters": 140,
+  "diagnosis": {
+    "family": "Diagnosis",
+    "candidate": "diagnosis reconciler v0.1",
+    "headline_f1": 0.6585,
+    "counts": {
+      "tp": 243,
+      "fn": 126,
+      "fp": 126
+    },
+    "fn_total": 126,
+    "fp_total": 126,
+    "fn_buckets": {
+      "genuine": 77,
+      "assertion": 20,
+      "family": 20,
+      "granularity": 9
+    },
+    "fp_buckets": {
+      "assertion": 20,
+      "genuine": 77,
+      "family": 20,
+      "granularity": 9
+    },
+    "examples": {
+      "assertion": [
+        "EA0005: epilepsy",
+        "EA0018: focal seizures",
+        "EA0043: epilepsy",
+        "EA0061: focal epilepsy",
+        "EA0062: epilepsy",
+        "EA0109: focal seizures",
+        "EA0111: tonic clonic seizures",
+        "EA0114: focal epilepsy",
+        "EA0116: tonic clonic seizures",
+        "EA0132: focal to bilateral convulsive seizure",
+        "EA0149: temporal lobe epilepsy",
+        "EA0153: focal seizures"
+      ],
+      "granularity": [
+        "EA0044: gold[epilepsy] vs pred[generalised epilepsy]",
+        "EA0056: gold[epilepsy] vs pred[symptomatic structural focal epilepsy]",
+        "EA0079: gold[epilepsy] vs pred[symptomatic structural focal epilepsy]",
+        "EA0108: gold[epilepsy] vs pred[symptomatic structural focal epilepsy]",
+        "EA0121: gold[focal epilepsy] vs pred[epilepsy]",
+        "EA0142: gold[focal epilepsy] vs pred[epilepsy]",
+        "EA0143: gold[epilepsy] vs pred[temporal lobe epilepsy]",
+        "EA0154: gold[focal onset epilepsy] vs pred[focal epilepsy]",
+        "EA0171: gold[focal onset epilepsy] vs pred[focal epilepsy]"
+      ],
+      "family": [
+        "EA0040: gold[secondary generalised seizures] vs pred[secondarily generalised seizures]",
+        "EA0043: gold[generalised tonic clonic seizures alone] vs pred[tonic clonic seizures alone]",
+        "EA0044: gold[generalised tonic clonic seizures alone] vs pred[tonic clonic seizures alone]",
+        "EA0061: gold[focal to bilateral convulsive seizures] vs pred[focal to bilateral seizures]",
+        "EA0072: gold[symptomatic focal epilepsy] vs pred[symptomatic structural focal epilepsy]",
+        "EA0087: gold[generalised tonic clonic seizure] vs pred[tonic clonic seizures]",
+        "EA0108: gold[focal motor seizures] vs pred[tonic clonic seizures]",
+        "EA0116: gold[generalised tonic clonic seizures on awakening] vs pred[tonic clonic seizures]",
+        "EA0121: gold[drug resistant epilepsy] vs pred[drug resistant focal epilepsy]",
+        "EA0125: gold[generalised tonic seizures] vs pred[tonic clonic seizures]",
+        "EA0126: gold[focal seizures] vs pred[focal frontal lobe seizures]",
+        "EA0137: gold[secondary generalised seizures] vs pred[secondary generalised tonic clonic seizures]"
+      ]
+    },
+    "oracle_ceilings": {
+      "base": 0.6585,
+      "+assertion": 0.7127,
+      "+granularity": 0.7371,
+      "+family": 0.7913
+    }
+  },
+  "seizure_frequency": {
+    "family": "SeizureFrequency",
+    "candidate": "SF state adjudicator v0.5",
+    "headline_f1": 0.7211,
+    "counts": {
+      "tp": 137,
+      "fn": 50,
+      "fp": 56
+    },
+    "fn_total": 50,
+    "fp_total": 56,
+    "fn_buckets": {
+      "ownership": 6,
+      "genuine": 34,
+      "state": 10
+    },
+    "fp_buckets": {
+      "ownership": 6,
+      "genuine": 40,
+      "state": 10
+    },
+    "examples": {
+      "state": [
+        "EA0096: ('cui', 'C0494475')",
+        "EA0117: ('cui', 'C0036572')",
+        "EA0121: ('cui', 'C0877017')",
+        "EA0123: ('cui', 'C0036572')",
+        "EA0158: ('cui', 'C0270834')",
+        "EA0169: ('cui', 'C0270834')",
+        "EA0181: ('cui', 'C0270834')",
+        "EA0182: ('cui', 'C0036572')",
+        "EA0186: ('cui', 'C0016399')",
+        "EA0198: ('cui', 'C0036572')"
+      ],
+      "ownership": [
+        "EA0006: gold[('cui', 'C0494475')] vs pred[('cui', 'C1299590')]",
+        "EA0038: gold[('cui', 'C0494475')] vs pred[('cui', 'C1299590')]",
+        "EA0087: gold[('cui', 'C0494475')] vs pred[('cui', 'C1299590')]",
+        "EA0121: gold[('cui', 'C0036572')] vs pred[('cui', 'C0270834')]",
+        "EA0143: gold[('cui', 'C0036572')] vs pred[('cui', 'C0270838')]",
+        "EA0162: gold[('cui', 'C0036572')] vs pred[('cui', 'C0494475')]"
+      ]
+    },
+    "oracle_ceilings": {
+      "base": 0.7211,
+      "+state": 0.7737,
+      "+ownership": 0.8053
+    }
+  }
+}

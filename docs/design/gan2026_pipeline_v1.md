@@ -1,11 +1,11 @@
-﻿# Gan 2026 Seizure-Frequency Pipeline V1
+# Gan 2026 Seizure-Frequency Pipeline V1
 
 ## Current Status
 
 This document records the earlier V1 LLM-first pipeline hypothesis. The current
 Gan 2026 assembly direction is superseded by
 `docs/decisions/0009-gan2026-staged-hybrid-assembly.md` and
-`docs/research/gan2026_architecture_assembly_readiness_decision_2026-06-04.md`.
+``.
 Those later artifacts preserve the useful schema/evidence ideas here, but the
 next assembled candidate is a staged hybrid with deterministic/state-graph
 substrate, selective LLM boundary candidates, candidate-conditioned evidence,
@@ -55,7 +55,7 @@ Rationale:
 - A first implementation is expected to miss or mis-handle some cases; the schema
   should make those failures visible for row-level error analysis.
 
-See `docs/research/gan2026_schema_exploration_10_examples.md` for the
+See `` for the
 example-driven analysis behind this direction.
 
 ## Candidate Event Schema

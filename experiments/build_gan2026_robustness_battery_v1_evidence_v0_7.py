@@ -1,7 +1,7 @@
 """Gan 2026 Robustness Battery v1 — v0.7 label-binding candidate (Cycle 3).
 
 Cycle-3 fitness tier 2 (OOD / robustness survival) for the F1 dynamic workflow
-(`docs/research/gan2026_f1_dynamic_workflow_protocol_2026-06-15.md`). Identical
+(``). Identical
 panels, scoring, and bars to the Cycle-2 v0.6 driver; the ONLY differences are:
 
 - the candidate is prompt v0.7 (the v0.6 triage scaffold + sharpened STEP-4

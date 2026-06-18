@@ -1,6 +1,6 @@
 """Stage B (rebuilt) atomic-claim viability gate that exercises the C2 guard.
 
-Design note: ``docs/research/gan2026_kg_grounded_component_generation_design_2026-06-15.md``.
+Design note: ````.
 
 The first Stage B pass replayed the 2026-06-02 atomic-claim graphs, where every
 node had been minted as ``unknown`` because the conversion dropped each claim's

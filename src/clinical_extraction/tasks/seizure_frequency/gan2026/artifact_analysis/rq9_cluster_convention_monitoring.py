@@ -27,7 +27,7 @@ DEFAULT_REPORT_PATH = Path(
     "experiments/gan2026_rq9_cluster_convention_monitoring_2026-06-04.md"
 )
 DEFAULT_PREDECLARATION_PATH = Path(
-    "docs/research/gan2026_rq9_cluster_convention_monitoring_predeclaration_2026-06-04.md"
+    ""
 )
 ANALYSIS_VERSION = "gan2026_rq9_cluster_convention_monitoring_v0"
 

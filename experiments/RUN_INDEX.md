@@ -4,91 +4,100 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Reliability Scorecard
 
-### `gan2026_confidence_one_vs_two_call_validation750_2026-06-17`
-- Date/split: `2026-06-17`; `validation`; `750` rows (737 paired, 101 failures); LIVE (≈750 joint SE+confidence calls + ≈750 decoupled reviewer calls). Resumable: joint pass checkpoints per `source_row_index` (`core/run_resume.py`); decoupled pass reuses prior reviewer verdicts.
-- Pipeline: `confidence_one_vs_two_call_paired`; driver `experiments/build_gan2026_confidence_one_vs_two_call_paired.py`; PAIRED design — both confidence signals scored on the SAME answers/error labels (the joint arm's answers, fed to `run_split` as reused raw → 0 extra SE calls for the decoupled arm).
-- Model role: tests whether variant-D's discrimination comes from the DECOUPLED second call or simply the changed PROMPT WORDING (failure-mode priming). Joint arm = 1 call emitting `selection.answer_probability_correct` with the verbatim priming embedded; decoupled arm = existing `ConfidenceReviewer` over the joint answers. model `openai/gpt-4.1-mini`, temp 0.
-- Primary metrics: joint(1-call) failure-AUROC **0.609** (ECE 0.050, Brier 0.119, top-bucket 91.0%); decoupled(2-call) failure-AUROC **0.641** (ECE 0.080, Brier 0.139, top-bucket 79.8%); **paired AUROC difference (decoupled − joint) = +0.032, 95% CI [−0.032, +0.098]** (1000 bootstrap reps; CI includes 0). Joint-arm Purist acc 0.863 (≈ SE baseline 0.881 — priming doesn't move the answer at scale). Comparators: decoupled-on-frozen-SE 0.684, intrinsic in-pass 0.497, external corroboration 0.781.
-- Evidence validity: Validation-only; test450 untouched. 0 parse failures either arm; 13 unscorable-gold rows dropped. Internally valid paired comparison (both signals share the joint answer set).
-- Claim language: **H_wording — the variant-D gain is a PROMPT-WORDING effect, not a decoupling effect.** Folding the verbatim failure-mode priming into the single extraction call recovers essentially the same failure-prediction discrimination (0.609 vs 0.641, difference CI straddles 0) at ONE call instead of two, with BETTER calibration (ECE/Brier). Falsifies the prior belief (recorded in `confidence_reviewer.py`) that joint-pass folding "re-degenerates" — it does not. The degenerate intrinsic `selection.confidence` (0.497) is degenerate because it is unprimed/categorical, not because it is in-pass. Both signals remain modest (<external 0.781) and gate nothing; the practical implication is the decoupled second call can be retired in favour of the free in-pass primed field.
-- Artifacts: `experiments/gan2026_confidence_one_vs_two_call_validation750_2026-06-17.json`, `experiments/gan2026_confidence_one_vs_two_call_validation750_2026-06-17.md`; checkpoints `experiments/gan2026_confidence_one_vs_two_joint_validation750_2026-06-17.jsonl`, `experiments/gan2026_confidence_one_vs_two_decoupled_validation750_2026-06-17.jsonl`; predeclaration+results `docs/research/gan2026_confidence_one_vs_two_call_predeclaration_2026-06-17.md`.
+### `gan2026_reliability_scorecard_phase1_2026-06-17`
+- Date/split: `2026-06-17`; `test450`; `450` rows.
+- Pipeline: `reliability_scorecard_phase1`; mode `no-call replay`; replay `analysis_only`.
+- Model role: none; aggregate-only port of P0.2 (risk-coverage) and P0.5 (family parity) to the locked split, scored on the canonical `v0_reference` subject. Two-agent agreement leg only (weaker replay, decision 0018); model `none`.
+- Repair mode/config: `reliability_scorecard_v1`.
+- Primary metrics: summary=test_base_error_rate=0.191, agree_only_coverage=0.658, agree_only_selective_risk=0.122, disagree_set_error=0.325, two_agent_failure_auroc=0.648, parity_overall_acc=0.812, band_error_spread=0.199, band_acc_cv=0.082, worst_band=band_submonthly@0.695.
+- Evidence validity: Zero model calls; aggregate-only readout (0 forbidden markers: source_row_index/transition_vs_v0/score_layers absent). Both transforms predeclared and hash-frozen before touching test450 (two_agent_external_risk sha256, classify_boundary_families validation classifier sha256). Per-row correctness read internally for aggregation only; no row-level holdout inspection.
+- Claim language: Phase 1 freeze-warden-gated holdout port. The two-agent agreement leg still separates holdout error (abstaining the disagreement set cuts error 0.191→0.122; AUROC 0.648 < validation 0.781 by construction). Per-family parity confirms the validation picture: disparity in rate bands + over-reading families, not band_unknown. Not a new benchmark claim.
+- Artifacts: `experiments/gan2026_reliability_p1_1_test450_risk_coverage_2026-06-17.json`, `experiments/gan2026_reliability_p1_1_test450_risk_coverage_2026-06-17.md`, `experiments/gan2026_reliability_p1_2_test450_error_parity_2026-06-17.json`, `experiments/gan2026_reliability_p1_2_test450_error_parity_2026-06-17.md`.
 
-### `gan2026_reliability_d_gating_test450_2026-06-17`
-- Date/split: `2026-06-17`; `test` (FROZEN holdout); `450` rows; LIVE (450 reviewer calls; SE answers reused from v0_reference). FREEZE-WARDEN CERTIFIED + preflight passed + run once.
-- Pipeline: `reliability_d_gating_test450`; aggregate-only readout; resumable reviewer checkpoint every 25 calls. Frozen transforms hashed pre-run (reviewer module sha `c3ea06ca…`, gating readout sha `45c96e36…`).
-- Model role: decoupled variant-D confidence reviewer (`variant_D_decoupled_v1`) over the canonical single-SE-mini `v0_reference` test450 answers (decision 0018); GATES NOTHING in production — simulates an abstention gate. model `openai/gpt-4.1-mini`, temp 0.
-- Primary metrics: base accuracy 364/450 = **0.8089** (Wilson CI 0.770–0.843), base error 0.1911; D failure-AUROC **0.649** (CI 0.581–0.717, > chance). Gating (selective acc · abstention precision vs 0.191 random bar): 95% cov → 0.820 · 0.409; 90% cov → 0.825 · 0.333 (1.74× random, +14.2pp); 80% cov → 0.856 · 0.378; 70% cov → 0.867 · 0.326; 50% cov → 0.880 · 0.262. Selective-accuracy lift positive + monotone.
-- Evidence validity: Frozen aggregate-only holdout readout; no row-level test inspection; no test tuning; single run. Test-split-integrity preflight passed (450/450 unique, coverage == manifest, v0_reference on all 450); V12 source-symmetry preflight structurally inapplicable to a single-model run (substituted direct integrity check, per house precedent). Subject source-symmetry inherited from the certified v0.4 artifact.
-- Claim language: MEETS the predeclared success criterion — variant-D confidence is a usable abstention/triage gate on the primary single gpt-4.1-mini architecture on the locked holdout (AUROC CI above chance; 90%-cov abstention precision 1.74× random; monotone selective-accuracy lift). But the benefit is MODEST and ATTENUATES from validation (AUROC 0.684→0.649; 90%-cov selective acc 0.905→0.825; abstention precision 2.6×→1.74× random). Absolute lift small (80.9%→82.5% at 90% cov costs 10% coverage) because confident over-reading errors are invisible to any self-signal. Does NOT change champion/label/robustness status; it is a triage knob costing one extra mini call/row.
-- Artifacts: `experiments/gan2026_reliability_d_gating_test450_2026-06-17.json`, `experiments/gan2026_reliability_d_gating_test450_2026-06-17.md`, internal checkpoint `experiments/gan2026_reliability_d_gating_test450_samples_2026-06-17.jsonl`; predeclaration `docs/research/gan2026_d_gating_test450_predeclaration_2026-06-17.md`.
+### `gan2026_reliability_scorecard_phase0_2026-06-17`
+- Date/split: `2026-06-17`; `validation750+test450`; `1200` rows.
+- Pipeline: `reliability_scorecard_phase0`; mode `no-call replay`; replay `analysis_only`.
+- Model role: none; deterministic re-analysis of frozen artifacts on the canonical `v0_reference` single-SE-mini subject layer (decision 0018). Shared code: `artifact_analysis/reliability_common.py`; model `none`.
+- Repair mode/config: `reliability_scorecard_v1`.
+- Primary metrics: summary=subject_purist_val=0.881, subject_purist_test=0.809, faithfulness_val=0.921, faithfulness_test=0.929, faithful_but_wrong_val=80, faithful_but_wrong_test=80, risk_coverage_auc=0.0404, external_score_failure_auroc=0.781, external_confidence_ece=0.080, external_confidence_brier=0.102, robustness_index_v0_5=0.547, robustness_index_v0_6=0.694, robustness_index_v0_7=1.000, band_error_spread=0.078, band_acc_cv=0.032, model_render_failures=0, recoverable_repairs=5483, est_cost_per_1000_notes_usd=1.16, hard50_temp0_unanimous_acc=0.689.
+- Evidence validity: Zero model calls. Every metric re-derived from frozen JSONL/JSON; subject numbers read from `v0_reference`, comparator numbers tagged. test450 touched only via aggregate-safe joins on the saved reasoner artifact. parse_errors are recoverable repairs (not failures); self-consistency leg is temp-0 reproducibility only (varying-temperature P2.1 pending).
+- Claim language: Phase 0 (zero-budget) reliability scorecard re-expressing the strand's logged evidence into ten reliability dimensions. Mean coverage ≈3.5/5; Calibration 2→3, Abstention 4→5, Operational 3→4, Consistency 3→2 (temp-0 caveat). Not a new benchmark claim; a re-expression of existing results onto the canonical subject layer.
+- Artifacts: `experiments/gan2026_reliability_master_scorecard_2026-06-17.json`, `experiments/gan2026_reliability_master_scorecard_2026-06-17.md`, `experiments/gan2026_reliability_p0_1_faithfulness_correctness_2026-06-17.json`, `experiments/gan2026_reliability_p0_1_faithfulness_correctness_2026-06-17.md`, `experiments/gan2026_reliability_p0_2_risk_coverage_validation750_2026-06-17.json`, `experiments/gan2026_reliability_p0_2_risk_coverage_validation750_2026-06-17.md`, `experiments/gan2026_reliability_p0_3_external_calibration_validation750_2026-06-17.json`, `experiments/gan2026_reliability_p0_3_external_calibration_validation750_2026-06-17.md`, `experiments/gan2026_reliability_p0_4_robustness_index_2026-06-17.json`, `experiments/gan2026_reliability_p0_4_robustness_index_2026-06-17.md`, `experiments/gan2026_reliability_p0_5_error_parity_validation750_2026-06-17.json`, `experiments/gan2026_reliability_p0_5_error_parity_validation750_2026-06-17.md`, `experiments/gan2026_reliability_p0_6_safety_table_2026-06-17.json`, `experiments/gan2026_reliability_p0_6_safety_table_2026-06-17.md`, `experiments/gan2026_reliability_p0_7_operational_2026-06-17.json`, `experiments/gan2026_reliability_p0_7_operational_2026-06-17.md`, `experiments/gan2026_reliability_p0_8_self_consistency_hard50_2026-06-17.json`, `experiments/gan2026_reliability_p0_8_self_consistency_hard50_2026-06-17.md`.
+
+### `gan2026_reliability_p2_1_semantic_entropy_2026-06-17`
+- Date/split: `2026-06-17`; `validation`; `150` rows.
+- Pipeline: `reliability_p2_1_semantic_entropy`; mode `live`; replay `live`.
+- Model role: structured-event extractor multi-sampled at VARYING temperatures (0.3/0.5/0.7/1.0) to measure two-level semantic entropy (Purist label + selected kind); model `openai/gpt-4.1-mini`.
+- Repair mode/config: `structured_events default repair; varying-temperature sampling`.
+- Primary metrics: summary=temps=[0.3,0.5,0.7,1.0], k=4, n_rows=150, residual_rows=23, mean_label_entropy=0.012, mean_kind_entropy=0.003, rows_nonzero_label_entropy=4, residual_label_entropy=0.018, nonresidual_label_entropy=0.011, band_unknown_label_entropy=0.000, verdict=H0_confident_over_reading, decision_stable_under_temperature=True, raw_prose_varies=True.
+- Evidence validity: Live gpt-4.1-mini, validation split only (no test exposure). 25-row degeneracy preflight gate run first; 150-row residual-enriched tier confirms the result on 23 residual rows. Verified non-artifact: raw_output differs across temperatures while the rendered label/kind does not (genuine decision-stability, not caching). Full validation750 x4 (~3,000 calls) deliberately not spent once the gate fired.
+- Claim language: THE research swing, falsification test of The Wall. H0 confirmed: varying-temperature semantic entropy is ~0 everywhere, the residual (incl. band_unknown=0.000) is no more uncertain than the rest -> the unknown-vs-rate over-reading is CONFIDENT, not uncertain. Converts the closeout's negative result into a mechanism; no abstention/calibration signal derivable from the model's own samples. Restores Consistency to 4/5.
+- Artifacts: `experiments/gan2026_reliability_p2_1_semantic_entropy_preflight150_2026-06-17.json`, `experiments/gan2026_reliability_p2_1_semantic_entropy_preflight150_2026-06-17.md`, `experiments/gan2026_reliability_p2_1_semantic_entropy_preflight25_2026-06-17.json`, `experiments/gan2026_reliability_p2_1_semantic_entropy_preflight25_2026-06-17.md`, `experiments/gan2026_reliability_p2_1_samples_preflight{25,150}_temp{0.3,0.5,0.7,1.0}_2026-06-17.jsonl`.
 
 ### `gan2026_reliability_d_gating_value_validation750_2026-06-17`
-- Date/split: `2026-06-17`; `validation`; `748` rows scored; NO model calls (pure replay over the shadow run).
-- Pipeline: `reliability_d_gating_value`; deterministic selective-prediction simulation; combiner none.
-- Model role: none. Simulates using the variant-D `calibrated_confidence` as an abstention gate on the PRIMARY single gpt-4.1-mini SE architecture; scored vs `v0_reference.comparison.purist_correct`.
-- Primary metrics: base accuracy 0.884 (error 0.116), D AUROC 0.684. Gate selective accuracy / abstention precision: cov 95% → 0.890 / 0.243; cov 90% → 0.905 / 0.307 (peak, 2.6× the 0.116 random bar); cov 80% → 0.921 / 0.267; cov 50% → 0.952 / 0.184. Errors shed at 90% cov ≈ 26% of total. External composite gate shown as context-only ceiling (needs 3 models, unavailable single-model).
+- Date/split: `2026-06-17`; `validation`; `748` rows.
+- Pipeline: `reliability_d_gating_value`; mode `replay`; replay `saved_output_replay`.
+- Model role: none. Simulates using the variant-D `calibrated_confidence` as an abstention gate on the PRIMARY single gpt-4.1-mini SE architecture; scored vs `v0_reference.comparison.purist_correct`; model `none`.
+- Primary metrics: summary=base accuracy 0.884 (error 0.116), D AUROC 0.684. Gate selective accuracy / abstention precision: cov 95% → 0.890 / 0.243; cov 90% → 0.905 / 0.307 (peak, 2.6× the 0.116 random bar); cov 80% → 0.921 / 0.267; cov 50% → 0.952 / 0.184. Errors shed at 90% cov ≈ 26% of total. External composite gate shown as context-only ceiling (needs 3 models, unavailable single-model).
 - Evidence validity: Validation-only; test450 untouched. The random-abstention bar (= base error rate, selective accuracy unchanged in expectation) is the comparison; D clears it (abstention precision 2–2.6× random across operating points).
 - Claim language: On the single-model architecture, variant-D confidence is a REAL but MODEST gate — genuinely beats random abstention (precision 2–2.6×), monotone selective-accuracy curve, but small absolute accuracy lift (88.4%→90.5% costs 10% coverage) because confident over-reading errors are invisible to any self-signal. Practical value depends on tolerance for discarded coverage + one extra mini call/row. test450 usefulness UNKNOWN pending a freeze-warden-gated, aggregate-only holdout port. Does not change champion/robustness status.
 - Artifacts: `experiments/gan2026_reliability_d_gating_value_validation750_2026-06-17.json`, `experiments/gan2026_reliability_d_gating_value_validation750_2026-06-17.md`.
 
+### `gan2026_reliability_d_gating_test450_2026-06-17`
+- Date/split: `2026-06-17`; `test`; `450` rows.
+- Pipeline: `reliability_d_gating_test450`; mode `live`; replay `live`.
+- Model role: decoupled variant-D confidence reviewer (`variant_D_decoupled_v1`) over the canonical single-SE-mini `v0_reference` test450 answers (decision 0018); GATES NOTHING in production — simulates an abstention gate; model `openai/gpt-4.1-mini`.
+- Primary metrics: summary=base accuracy 364/450 = **0.8089** (Wilson CI 0.770–0.843), base error 0.1911; D failure-AUROC **0.649** (CI 0.581–0.717, > chance). Gating (selective acc · abstention precision vs 0.191 random bar): 95% cov → 0.820 · 0.409; 90% cov → 0.825 · 0.333 (1.74× random, +14.2pp); 80% cov → 0.856 · 0.378; 70% cov → 0.867 · 0.326; 50% cov → 0.880 · 0.262. Selective-accuracy lift positive + monotone.
+- Evidence validity: Frozen aggregate-only holdout readout; no row-level test inspection; no test tuning; single run. Test-split-integrity preflight passed (450/450 unique, coverage == manifest, v0_reference on all 450); V12 source-symmetry preflight structurally inapplicable to a single-model run (substituted direct integrity check, per house precedent). Subject source-symmetry inherited from the certified v0.4 artifact.
+- Claim language: MEETS the predeclared success criterion — variant-D confidence is a usable abstention/triage gate on the primary single gpt-4.1-mini architecture on the locked holdout (AUROC CI above chance; 90%-cov abstention precision 1.74× random; monotone selective-accuracy lift). But the benefit is MODEST and ATTENUATES from validation (AUROC 0.684→0.649; 90%-cov selective acc 0.905→0.825; abstention precision 2.6×→1.74× random). Absolute lift small (80.9%→82.5% at 90% cov costs 10% coverage) because confident over-reading errors are invisible to any self-signal. Does NOT change champion/label/robustness status; it is a triage knob costing one extra mini call/row.
+- Artifacts: `experiments/gan2026_reliability_d_gating_test450_2026-06-17.json`, `experiments/gan2026_reliability_d_gating_test450_2026-06-17.md`, `experiments/gan2026_reliability_d_gating_test450_samples_2026-06-17.jsonl`, ``.
+
+### `gan2026_reliability_confidence_elicitation_pilot160_2026-06-17`
+- Date/split: `2026-06-17`; `validation`; `160` rows.
+- Pipeline: `reliability_confidence_elicitation`; mode `live`; replay `live`.
+- Model role: DECOUPLED second-pass confidence elicitation over the canonical `v0_reference` production answers (decision 0018); production path NOT modified. Two predeclared variants — C (second-reader agreement) and D (failure-mode-primed correctness). Single-shot calibration probe; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `none (probability elicitation only; robust JSON parse with int fallback, 0 parse failures)`.
+- Primary metrics: summary=n=160, failures=12; baseline joint self-confidence top-bucket=99.9%/AUROC=0.503 (chance); variant C top-bucket=40.6%, ECE=0.070, Brier=0.081, failure_AUROC=0.611; variant D top-bucket=78.1%, ECE=0.069, Brier=0.073, failure_AUROC=0.755; external-signal comparator AUROC=0.781; verdict (strict conjunctive gate) H0 both, but axes decompose: D recovers DISCRIMINATION (near-external AUROC) via failure-mode priming, C recovers spread-without-signal.
+- Evidence validity: Validation-only; test450 untouched. Subject answers read per-row from `v0_reference` layer (single-SE-mini, decision 0018). Elicitation is a separate candidate self-signal, not a production change. Predeclared before run in ``. AUROC CIs wide (12 failures); validation750 needed to confirm D's 0.755.
+- Claim language: Calibration probe. Joint self-confidence is dead (AUROC 0.503). Verbalized self-confidence is NOT strictly irrecoverable — naming the dominant unknown↔rate failure mode (variant D) recovers a discriminative self-signal (failure AUROC 0.755, near the external-corroboration 0.781) from one extra mini call, though it stays high-valued and still hides ~half the failures at ≥0.9. Second-reader framing (C) spreads confidence but the spread is noise (AUROC 0.611). Does not promote any candidate or change champion/robustness status.
+- Artifacts: `experiments/gan2026_reliability_confidence_elicitation_pilot160_2026-06-17.json`, `experiments/gan2026_reliability_confidence_elicitation_pilot160_2026-06-17.md`, `experiments/gan2026_reliability_confidence_elicitation_samples_pilot160_C_2026-06-17.jsonl`, `experiments/gan2026_reliability_confidence_elicitation_samples_pilot160_D_2026-06-17.jsonl`.
+
 ### `gan2026_reliability_blend_external_plus_d_validation750_2026-06-17`
-- Date/split: `2026-06-17`; `validation`; `748` rows scored (87 errors); NO model calls (pure replay).
-- Pipeline: `reliability_blend_external_plus_d`; combiners rank-average (headline, unsupervised) + 5-fold CV weighted; replay deterministic.
-- Model role: none. Blends the P0.2 external composite risk (`3*(3-agreement)+source_flags+ambiguity`, from consensus votes + rq9 packet) with the variant-D self-signal (`1 - calibrated_confidence`, from the validation750 shadow run). Target = `v0_reference.comparison.purist_correct` (canonical, decision 0018); SE-pass vs v0_reference correctness mismatch = 0/748 (confirms shadow scored the canonical subject).
-- Primary metrics: failure-prediction AUROC — external alone **0.783** (≈ P0.2's 0.781), variant D alone 0.684, rank-average blend **0.797** (Δ +0.014), CV-weighted held-out 0.786, whole-data best-w 0.795; Spearman(external-risk, D-risk) = 0.234; selective risk-coverage AUC ext 0.0392 vs blend ~similar; verdict H0_redundant (Δ < predeclared +0.02).
+- Date/split: `2026-06-17`; `validation`; `748` rows.
+- Pipeline: `reliability_blend_external_plus_d`; mode `replay`; replay `saved_output_replay`.
+- Model role: none. Blends the P0.2 external composite risk (`3*(3-agreement)+source_flags+ambiguity`, from consensus votes + rq9 packet) with the variant-D self-signal (`1 - calibrated_confidence`, from the validation750 shadow run). Target = `v0_reference.comparison.purist_correct` (canonical, decision 0018); SE-pass vs v0_reference correctness mismatch = 0/748 (confirms shadow scored the canonical subject); model `none`.
+- Primary metrics: summary=failure-prediction AUROC — external alone **0.783** (≈ P0.2's 0.781), variant D alone 0.684, rank-average blend **0.797** (Δ +0.014), CV-weighted held-out 0.786, whole-data best-w 0.795; Spearman(external-risk, D-risk) = 0.234; selective risk-coverage AUC ext 0.0392 vs blend ~similar; verdict H0_redundant (Δ < predeclared +0.02).
 - Evidence validity: Validation-only; test450 untouched. No fitting in the headline (rank-average is unsupervised); the CV-weighted blend uses honest per-fold weight selection (no whole-data overfit).
 - Claim language: Combining the cheap variant-D self-signal with external corroboration does NOT materially beat corroboration alone — the unsupervised rank-average edges external by only +0.014 (within CI on 87 errors), and the honest CV-weighted blend collapses to external alone (0.786 vs 0.783). NOT due to redundancy (Spearman only 0.234 → partly independent errors); D is simply the weaker/noisier ranker, so fusion mostly adds noise. External corroboration remains the single best forward-observable signal; D's value stays as a cheaper standalone proxy where 3-model agreement is unavailable. Does not change champion/robustness status.
 - Artifacts: `experiments/gan2026_reliability_blend_external_plus_d_validation750_2026-06-17.json`, `experiments/gan2026_reliability_blend_external_plus_d_validation750_2026-06-17.md`.
 
 ### `gan2026_confidence_reviewer_shadow_validation750_2026-06-17`
-- Date/split: `2026-06-17`; `validation`; `750` rows (748 scored, 87 failures); LIVE (reviewer only).
-- Pipeline: `confidence_reviewer_shadow`; host `hybrid_structured_events.run_split` (SE selection pass); mode `live`; replay reuses saved SE raw outputs (0 SE calls) + resumable reviewer checkpoints every 25 rows.
-- Model role: DECOUPLED variant-D confidence reviewer (`agentic/confidence_reviewer.py`, `variant_D_decoupled_v1`) wired as an opt-in SHADOW stage; stamps `calibrated_confidence` per row ALONGSIDE the intrinsic `selection.confidence`/`uncertainty` fields; GATES NOTHING, label/score path untouched. model `openai/gpt-4.1-mini`, temp=0.0, max_tokens=300, cache=False. 750 live reviewer calls.
+- Date/split: `2026-06-17`; `validation`; `750` rows.
+- Pipeline: `confidence_reviewer_shadow`; mode `live`; replay `live`.
+- Model role: DECOUPLED variant-D confidence reviewer (`agentic/confidence_reviewer.py`, `variant_D_decoupled_v1`) wired as an opt-in SHADOW stage; stamps `calibrated_confidence` per row ALONGSIDE the intrinsic `selection.confidence`/`uncertainty` fields; GATES NOTHING, label/score path untouched; model `openai/gpt-4.1-mini`.
 - Repair mode/config: `none (probability elicitation; robust JSON parse with int fallback)`.
-- Primary metrics: variant D top-bucket=76.5%, mean p=0.863, ECE=0.052, Brier=0.118, failure_AUROC=**0.684**; intrinsic in-pass `selection.confidence` top-bucket=99.5%, failure_AUROC=0.497 (chance) on same rows; external comparator AUROC=0.781; residual (n=269) mean p 0.843/acc 88.8% vs non-resid mean p 0.874/acc 88.1%.
+- Primary metrics: summary=variant D top-bucket=76.5%, mean p=0.863, ECE=0.052, Brier=0.118, failure_AUROC=**0.684**; intrinsic in-pass `selection.confidence` top-bucket=99.5%, failure_AUROC=0.497 (chance) on same rows; external comparator AUROC=0.781; residual (n=269) mean p 0.843/acc 88.8% vs non-resid mean p 0.874/acc 88.1%.
 - Evidence validity: Validation-only; test450 untouched. SE answers reused from `..._hybrid_structured_events_gpt41mini_2026-06-07.jsonl` (full 750-row coverage); reviewer scored against the SE pass's own `comparison.purist_correct`. Production-shape scale-confirmation of the pilot.
 - Claim language: At validation750 scale and in production shape, the decoupled failure-mode-primed reviewer recovers GENUINE discrimination (AUROC 0.684 vs intrinsic-field chance 0.497) and survives integration — but it is WEAKER than the residual-enriched 160-row pilot implied (0.755, only 12 failures) and below external corroboration (0.781). Residual rows are not meaningfully less accurate on this distribution, so D's confidence barely drops there. Remains a SHADOW signal complementing (not replacing) external corroboration; not promoted to gating. Does not change champion/robustness status.
 - Artifacts: `experiments/gan2026_confidence_reviewer_shadow_validation750_2026-06-17.json`, `experiments/gan2026_confidence_reviewer_shadow_validation750_2026-06-17.md`, `experiments/gan2026_confidence_reviewer_shadow_validation750_2026-06-17.jsonl`.
 
-### `gan2026_reliability_confidence_elicitation_pilot160_2026-06-17`
-- Date/split: `2026-06-17`; `validation` (160-row residual-enriched pilot, 80 residual); LIVE.
-- Pipeline: `reliability_confidence_elicitation`; mode `live`; replay `live` (resumable per-variant samples).
-- Model role: DECOUPLED second-pass confidence elicitation over the canonical `v0_reference` production answers (decision 0018); production path NOT modified. Two predeclared variants — C (second-reader agreement) and D (failure-mode-primed correctness). Single-shot calibration probe; model `openai/gpt-4.1-mini`, temperature=0.0, max_tokens=300, cache=False. ~320 calls.
-- Repair mode/config: `none (probability elicitation only; robust JSON parse with int fallback, 0 parse failures)`.
-- Primary metrics: n=160, failures=12; baseline joint self-confidence top-bucket=99.9%/AUROC=0.503 (chance); variant C top-bucket=40.6%, ECE=0.070, Brier=0.081, failure_AUROC=0.611; variant D top-bucket=78.1%, ECE=0.069, Brier=0.073, failure_AUROC=0.755; external-signal comparator AUROC=0.781; verdict (strict conjunctive gate) H0 both, but axes decompose: D recovers DISCRIMINATION (near-external AUROC) via failure-mode priming, C recovers spread-without-signal.
-- Evidence validity: Validation-only; test450 untouched. Subject answers read per-row from `v0_reference` layer (single-SE-mini, decision 0018). Elicitation is a separate candidate self-signal, not a production change. Predeclared before run in `docs/research/gan2026_confidence_elicitation_predeclaration_2026-06-17.md`. AUROC CIs wide (12 failures); validation750 needed to confirm D's 0.755.
-- Claim language: Calibration probe. Joint self-confidence is dead (AUROC 0.503). Verbalized self-confidence is NOT strictly irrecoverable — naming the dominant unknown↔rate failure mode (variant D) recovers a discriminative self-signal (failure AUROC 0.755, near the external-corroboration 0.781) from one extra mini call, though it stays high-valued and still hides ~half the failures at ≥0.9. Second-reader framing (C) spreads confidence but the spread is noise (AUROC 0.611). Does not promote any candidate or change champion/robustness status.
-- Artifacts: `experiments/gan2026_reliability_confidence_elicitation_pilot160_2026-06-17.json`, `experiments/gan2026_reliability_confidence_elicitation_pilot160_2026-06-17.md`, `experiments/gan2026_reliability_confidence_elicitation_samples_pilot160_C_2026-06-17.jsonl`, `experiments/gan2026_reliability_confidence_elicitation_samples_pilot160_D_2026-06-17.jsonl`.
+### `gan2026_confidence_one_vs_two_call_validation750_2026-06-17`
+- Date/split: `2026-06-17`; `validation`; `750` rows.
+- Pipeline: `confidence_one_vs_two_call_paired`; mode `live`; replay `live`.
+- Model role: tests whether variant-D's discrimination comes from the DECOUPLED second call or simply the changed PROMPT WORDING (failure-mode priming). Joint arm = 1 call emitting `selection.answer_probability_correct` with the verbatim priming embedded; decoupled arm = existing `ConfidenceReviewer` over the joint answers; model `openai/gpt-4.1-mini`.
+- Primary metrics: summary=joint(1-call) failure-AUROC **0.609** (ECE 0.050, Brier 0.119, top-bucket 91.0%); decoupled(2-call) failure-AUROC **0.641** (ECE 0.080, Brier 0.139, top-bucket 79.8%); **paired AUROC difference (decoupled − joint) = +0.032, 95% CI [−0.032, +0.098]** (1000 bootstrap reps; CI includes 0). Joint-arm Purist acc 0.863 (≈ SE baseline 0.881 — priming doesn't move the answer at scale). Comparators: decoupled-on-frozen-SE 0.684, intrinsic in-pass 0.497, external corroboration 0.781.
+- Evidence validity: Validation-only; test450 untouched. 0 parse failures either arm; 13 unscorable-gold rows dropped. Internally valid paired comparison (both signals share the joint answer set).
+- Claim language: **H_wording — the variant-D gain is a PROMPT-WORDING effect, not a decoupling effect.** Folding the verbatim failure-mode priming into the single extraction call recovers essentially the same failure-prediction discrimination (0.609 vs 0.641, difference CI straddles 0) at ONE call instead of two, with BETTER calibration (ECE/Brier). Falsifies the prior belief (recorded in `confidence_reviewer.py`) that joint-pass folding "re-degenerates" — it does not. The degenerate intrinsic `selection.confidence` (0.497) is degenerate because it is unprimed/categorical, not because it is in-pass. Both signals remain modest (<external 0.781) and gate nothing; the practical implication is the decoupled second call can be retired in favour of the free in-pass primed field.
+- Artifacts: `experiments/gan2026_confidence_one_vs_two_call_validation750_2026-06-17.json`, `experiments/gan2026_confidence_one_vs_two_call_validation750_2026-06-17.md`, `experiments/gan2026_confidence_one_vs_two_joint_validation750_2026-06-17.jsonl`, `experiments/gan2026_confidence_one_vs_two_decoupled_validation750_2026-06-17.jsonl`, ``.
 
-### `gan2026_reliability_p2_1_semantic_entropy_2026-06-17`
-- Date/split: `2026-06-17`; `validation` (25-row preflight + 150-row residual-enriched tier); LIVE.
-- Pipeline: `reliability_p2_1_semantic_entropy`; mode `live`; replay `live` (resumable per-temperature).
-- Model role: structured-event extractor multi-sampled at VARYING temperatures (0.3/0.5/0.7/1.0) to measure two-level semantic entropy (Purist label + selected kind); model `openai/gpt-4.1-mini`, max_tokens=1200, dspy_cache=False.
-- Repair mode/config: `structured_events default repair; varying-temperature sampling`.
-- Primary metrics: temps=[0.3,0.5,0.7,1.0], k=4, n_rows=150, residual_rows=23, mean_label_entropy=0.012, mean_kind_entropy=0.003, rows_nonzero_label_entropy=4, residual_label_entropy=0.018, nonresidual_label_entropy=0.011, band_unknown_label_entropy=0.000, verdict=H0_confident_over_reading, decision_stable_under_temperature=True, raw_prose_varies=True.
-- Evidence validity: Live gpt-4.1-mini, validation split only (no test exposure). 25-row degeneracy preflight gate run first; 150-row residual-enriched tier confirms the result on 23 residual rows. Verified non-artifact: raw_output differs across temperatures while the rendered label/kind does not (genuine decision-stability, not caching). Full validation750 x4 (~3,000 calls) deliberately not spent once the gate fired.
-- Claim language: THE research swing, falsification test of The Wall. H0 confirmed: varying-temperature semantic entropy is ~0 everywhere, the residual (incl. band_unknown=0.000) is no more uncertain than the rest -> the unknown-vs-rate over-reading is CONFIDENT, not uncertain. Converts the closeout's negative result into a mechanism; no abstention/calibration signal derivable from the model's own samples. Restores Consistency to 4/5.
-- Artifacts: `experiments/gan2026_reliability_p2_1_semantic_entropy_preflight150_2026-06-17.{json,md}`, `experiments/gan2026_reliability_p2_1_semantic_entropy_preflight25_2026-06-17.{json,md}`, `experiments/gan2026_reliability_p2_1_samples_preflight{25,150}_temp{0.3,0.5,0.7,1.0}_2026-06-17.jsonl`.
-
-### `gan2026_reliability_scorecard_phase1_2026-06-17`
-- Date/split: `2026-06-17`; `test450` (frozen holdout); aggregate-only, no-call replay.
-- Pipeline: `reliability_scorecard_phase1`; mode `no-call replay`; replay `deterministic_no_call`.
-- Model role: none; aggregate-only port of P0.2 (risk-coverage) and P0.5 (family parity) to the locked split, scored on the canonical `v0_reference` subject. Two-agent agreement leg only (weaker replay, decision 0018).
-- Repair mode/config: `reliability_scorecard_v1`.
-- Primary metrics: test_base_error_rate=0.191, agree_only_coverage=0.658, agree_only_selective_risk=0.122, disagree_set_error=0.325, two_agent_failure_auroc=0.648, parity_overall_acc=0.812, band_error_spread=0.199, band_acc_cv=0.082, worst_band=band_submonthly@0.695.
-- Evidence validity: Zero model calls; aggregate-only readout (0 forbidden markers: source_row_index/transition_vs_v0/score_layers absent). Both transforms predeclared and hash-frozen before touching test450 (two_agent_external_risk sha256, classify_boundary_families validation classifier sha256). Per-row correctness read internally for aggregation only; no row-level holdout inspection.
-- Claim language: Phase 1 freeze-warden-gated holdout port. The two-agent agreement leg still separates holdout error (abstaining the disagreement set cuts error 0.191→0.122; AUROC 0.648 < validation 0.781 by construction). Per-family parity confirms the validation picture: disparity in rate bands + over-reading families, not band_unknown. Not a new benchmark claim.
-- Artifacts: `experiments/gan2026_reliability_p1_1_test450_risk_coverage_2026-06-17.{json,md}`, `experiments/gan2026_reliability_p1_2_test450_error_parity_2026-06-17.{json,md}`.
-
-### `gan2026_reliability_scorecard_phase0_2026-06-17`
-- Date/split: `2026-06-17`; `validation750` + `test450` (aggregate, frozen); no-call re-analysis.
-- Pipeline: `reliability_scorecard_phase0`; mode `no-call replay`; replay `deterministic_no_call`.
-- Model role: none; deterministic re-analysis of frozen artifacts on the canonical `v0_reference` single-SE-mini subject layer (decision 0018). Shared code: `artifact_analysis/reliability_common.py`.
-- Repair mode/config: `reliability_scorecard_v1`.
-- Primary metrics: subject_purist_val=0.881, subject_purist_test=0.809, faithfulness_val=0.921, faithfulness_test=0.929, faithful_but_wrong_val=80, faithful_but_wrong_test=80, risk_coverage_auc=0.0404, external_score_failure_auroc=0.781, external_confidence_ece=0.080, external_confidence_brier=0.102, robustness_index_v0_5=0.547, robustness_index_v0_6=0.694, robustness_index_v0_7=1.000, band_error_spread=0.078, band_acc_cv=0.032, model_render_failures=0, recoverable_repairs=5483, est_cost_per_1000_notes_usd=1.16, hard50_temp0_unanimous_acc=0.689.
-- Evidence validity: Zero model calls. Every metric re-derived from frozen JSONL/JSON; subject numbers read from `v0_reference`, comparator numbers tagged. test450 touched only via aggregate-safe joins on the saved reasoner artifact. parse_errors are recoverable repairs (not failures); self-consistency leg is temp-0 reproducibility only (varying-temperature P2.1 pending).
-- Claim language: Phase 0 (zero-budget) reliability scorecard re-expressing the strand's logged evidence into ten reliability dimensions. Mean coverage ≈3.5/5; Calibration 2→3, Abstention 4→5, Operational 3→4, Consistency 3→2 (temp-0 caveat). Not a new benchmark claim; a re-expression of existing results onto the canonical subject layer.
-- Artifacts: `experiments/gan2026_reliability_master_scorecard_2026-06-17.{json,md}`, `experiments/gan2026_reliability_p0_1_faithfulness_correctness_2026-06-17.{json,md}`, `experiments/gan2026_reliability_p0_2_risk_coverage_validation750_2026-06-17.{json,md}`, `experiments/gan2026_reliability_p0_3_external_calibration_validation750_2026-06-17.{json,md}`, `experiments/gan2026_reliability_p0_4_robustness_index_2026-06-17.{json,md}`, `experiments/gan2026_reliability_p0_5_error_parity_validation750_2026-06-17.{json,md}`, `experiments/gan2026_reliability_p0_6_safety_table_2026-06-17.{json,md}`, `experiments/gan2026_reliability_p0_7_operational_2026-06-17.{json,md}`, `experiments/gan2026_reliability_p0_8_self_consistency_hard50_2026-06-17.{json,md}`.
+### `gan2026_confidence_one_vs_two_call_test450_2026-06-17`
+- Date/split: `2026-06-17`; `test`; `450` rows.
+- Pipeline: `confidence_one_vs_two_call_test450`; mode `live`; replay `live`.
+- Model role: holdout confirmation of the validation paired test — does variant-D's discrimination come from the decoupled call or the prompt wording?; model `openai/gpt-4.1-mini`.
+- Primary metrics: summary=joint(1-call) failure-AUROC **0.601** (ECE 0.146, Brier 0.197, top-bucket 92.4%); decoupled(2-call) **0.669** (ECE 0.146, Brier 0.190, top-bucket 80.9%); **paired AUROC difference (decoupled − joint) = +0.068, 95% CI [+0.014, +0.132]** (1000 reps; CI EXCLUDES 0). Joint-arm Purist accuracy **0.767** (< SE test baseline 0.809 — priming degrades the extractor on the holdout). Comparators (validation750): joint 0.609, decoupled 0.641, diff CI [−0.032, +0.098].
+- Evidence validity: Frozen aggregate-only holdout readout; no row-level test inspection; single run; preflight-gated. 0 parse failures either arm; 4 unscorable-gold rows dropped. Internally valid paired comparison (shared joint answer set).
+- Claim language: **The validation H_wording conclusion does NOT replicate on the holdout.** On test450 the decoupled two-call reviewer ranks errors significantly better than the one-call joint signal (paired diff +0.068, CI excludes 0), and folding the priming into the extraction pass costs ~4pp Purist accuracy. Direction (decoupled ≥ joint) was consistent across both splits; validation lacked the gap/power to call it. CORRECTED conclusion: KEEP the two-call decoupled `ConfidenceReviewer` stage — the extra call earns its cost on the holdout; the validation-only "removable" read was a false economy. Retracts the earlier validation-based recommendation. Both signals remain modest (< external 0.781) and gate nothing.
+- Artifacts: `experiments/gan2026_confidence_one_vs_two_call_test450_2026-06-17.json`, `experiments/gan2026_confidence_one_vs_two_call_test450_2026-06-17.md`, `experiments/gan2026_confidence_one_vs_two_joint_test450_2026-06-17.jsonl`, `experiments/gan2026_confidence_one_vs_two_decoupled_test450_2026-06-17.jsonl`, ``.
 
 ## Promote
 
@@ -136,7 +145,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Protocol summarizes completed validation artifacts; makes no model calls and reads no test rows.
 - Supersedes: `gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13`.
 - Claim language: Pre-registration only, not a holdout result and not user authorization by itself. Use only if the user explicitly authorizes one frozen aggregate-only test450 audit.
-- Artifacts: `docs/research/gan2026_fresh_evidence_reasoner_frozen_test450_protocol_2026-06-13.md`.
+- Artifacts: ``.
 
 ### `gan2026_agentic_structured_event_consensus_unanimous_exact_validation750_2026-06-13`
 - Date/split: `2026-06-13`; `validation`; `750` rows.
@@ -191,7 +200,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: agentic_hard50_multi_agent_matched_purist=22, agentic_hard50_single_agent_tools_purist=20, agentic_hard50_single_greedy_purist=34, holdout_row_level_analysis=no, se_test450_purist_correct_of_rendered=364, se_test450_rendered=448, se_validation750_purist_correct_of_rendered=661, se_validation750_rendered=748.
 - Evidence validity: No new run. Consolidates architecture-specific evidence metrics from existing validation750, aggregate test450, and validation hard50 artifacts; evidence metrics are not treated as interchangeable.
 - Claim language: Analysis-only close-off table. Validation results are development evidence; locked test450 values are aggregate-only. Does not authorize row-level holdout tuning or any benchmark-comparable claim. Describes hybrid_structured_events as hybrid LLM extraction plus deterministic normalization/projection.
-- Artifacts: `docs/research/gan2026_failure_mode_comparison_table_2026-06-12.md`.
+- Artifacts: ``.
 
 ### `gan2026_closeoff_report_2026-06-12`
 - Date/split: `2026-06-12`; `validation+test`; `1200` rows.
@@ -200,7 +209,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: deepseek_se_v06_validation250_delta_purist_correct=5, gpt41mini_test450_se_pragmatic_correct_of_rendered=381, gpt41mini_test450_se_purist_correct_of_rendered=364, gpt41mini_test450_se_rendered=448, gpt41mini_validation750_se_purist_correct_of_rendered=661, gpt41mini_validation750_se_rendered=748, promoted_architecture=hybrid_structured_events, qwen_se_v06_validation250_delta_purist_correct=5.
 - Evidence validity: Surfaces that evidence metrics differ by architecture: evidence_valid, evidence_text_contained, and CandidateSet source-id validity are not interchangeable.
 - Claim language: Close-off implementation-direction synthesis. Promotes hybrid_structured_events as the current Gan 2026 direction while preserving split discipline: validation is development evidence; completed test450 audit is aggregate-only; no row-level holdout tuning or new benchmark claim is authorized.
-- Artifacts: `docs/research/gan2026_closeoff_report_2026-06-12.md`.
+- Artifacts: ``.
 
 ## Promote To Phase3 Report
 
@@ -215,6 +224,373 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Artifacts: `experiments/gan2026_hybrid_v5_validation750_gpt41mini_2026-06-09.jsonl`.
 
 ## Revise
+
+### `exectv2_llm_sf_verifier_v03_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_llm_sf_verifier`; mode `live`; replay `native_run_split`.
+- Model role: SeizureFrequency-focused verifier v0.3 over the v0.5 single structured key-entity draft. The model owns normalized SeizureFrequency event text and may keep, delete, edit, or add SF mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
+- Primary metrics: evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_llm_sf_verifier_v0.3, seizure_frequency_clinical_headline_f1=0.831, seizure_frequency_clinical_headline_precision=0.794, seizure_frequency_clinical_headline_recall=0.871, seizure_frequency_source_near_f1=0.831.
+- Evidence validity: 0 call failures, 0 parse failures; 34/34 evidence-valid rendered mentions.
+- Supersedes: `exectv2_llm_sf_verifier_v02_dev25_gpt41mini_20260618`.
+- Claim language: First SeizureFrequency-specific candidate to clear the dev25 clinical-recovery target (0.831 > 0.8) while keeping evidence validity 1.0000. Development-surface success only; requires dev140 confirmation before any generalization claim.
+- Artifacts: `experiments/exectv2_llm_sf_verifier_v03_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_sf_verifier_v03_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/seizure_frequency/exectv2_sf_verifier_v03_pilot_report_2026-06-18.md`.
+
+### `exectv2_llm_sf_verifier_v02_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_llm_sf_verifier`; mode `live`; replay `native_run_split`.
+- Model role: SeizureFrequency-focused verifier v0.2 over the v0.5 single structured key-entity draft. The model owns normalized SeizureFrequency event text and may keep, delete, edit, or add SF mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
+- Primary metrics: evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_llm_sf_verifier_v0.2, seizure_frequency_clinical_headline_f1=0.788, seizure_frequency_clinical_headline_precision=0.743, seizure_frequency_clinical_headline_recall=0.839, seizure_frequency_source_near_f1=0.818.
+- Evidence validity: 0 call failures, 0 parse failures; 35/35 evidence-valid rendered mentions.
+- Supersedes: `exectv2_llm_sf_verifier_v01_dev25_gpt41mini_20260618`.
+- Claim language: Strong near-miss SeizureFrequency verifier iteration. v0.2 improves over v0.1 (0.788 vs 0.667) and v0.5 single structured (0.633) while keeping evidence validity 1.0000, but remains just below the 0.8 target. One narrow residual pass is justified before dev140.
+- Artifacts: `experiments/exectv2_llm_sf_verifier_v02_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_sf_verifier_v02_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/seizure_frequency/exectv2_sf_verifier_v02_pilot_report_2026-06-18.md`.
+
+### `exectv2_llm_sf_verifier_v01_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_llm_sf_verifier`; mode `live`; replay `native_run_split`.
+- Model role: SeizureFrequency-focused verifier v0.1 over the v0.5 single structured key-entity draft. The model owns normalized SeizureFrequency event text and may keep, delete, edit, or add SF mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
+- Primary metrics: evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_llm_sf_verifier_v0.1, seizure_frequency_clinical_headline_f1=0.667, seizure_frequency_clinical_headline_precision=0.629, seizure_frequency_clinical_headline_recall=0.71, seizure_frequency_source_near_f1=0.727.
+- Evidence validity: 0 call failures, 0 parse failures; 35/35 evidence-valid rendered mentions.
+- Claim language: First SeizureFrequency verifier diagnostic over the v0.5 single structured draft. It improves recall and headline F1 over v0.5 single structured (0.667 vs 0.633) while keeping evidence validity 1.0000, but remains below the 0.8 target and loses precision. Revise from residual errors before dev140.
+- Artifacts: `experiments/exectv2_llm_sf_verifier_v01_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_sf_verifier_v01_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/seizure_frequency/exectv2_sf_verifier_v01_pilot_report_2026-06-18.md`.
+
+### `exectv2_llm_only_key_entities_structured_v05_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_llm_only_key_entities_structured`; mode `live`; replay `native_run_split`.
+- Model role: LLM-only single-prompt structured clinical event extractor over medication, diagnosis, seizure frequency, and investigations; deterministic code limited to schema/evidence gates, neutral attribute repair, CUI projection, and scoring.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
+- Primary metrics: benchmark_per_item_f1=0.274, diagnosis_clinical_headline_f1=0.569, diagnosis_semantic_f1=0.407, evidence_validity_rate=0.9684, investigations_clinical_headline_f1=0.837, investigations_semantic_f1=0.512, parse_failures=0, phrase_only_per_item_f1=0.508, prescription_clinical_headline_f1=0.897, prescription_semantic_f1=0.204, prompt_version=exectv2_llm_only_key_entities_structured_v0.5, seizurefrequency_clinical_headline_f1=0.633, seizurefrequency_semantic_f1=0.433, semantic_per_item_f1=0.368, source_near_f1=0.729.
+- Evidence validity: 0 call failures, 0 parse failures; 153/158 evidence-valid rendered mentions (0.9684).
+- Supersedes: `exectv2_llm_only_key_entities_structured_v04_dev25_gpt41mini_20260618`.
+- Claim language: Best single-prompt structured dev25 candidate so far, but revise-only. v0.5 lifts Diagnosis headline F1 (0.460->0.569) while preserving medication (0.897) and Investigations (0.837) above target and SF near v0.4 (0.633). Next: specialist Diagnosis prompt comparison on dev25 before dev140.
+- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_v05_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_only_key_entities_structured_v05_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/key_entities/exectv2_key_entities_structured_v05_pilot_report_2026-06-18.md`.
+
+### `exectv2_llm_only_key_entities_structured_v04_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_llm_only_key_entities_structured`; mode `live`; replay `native_run_split`.
+- Model role: LLM-only single-prompt structured clinical event extractor over medication, diagnosis, seizure frequency, and investigations; deterministic code limited to schema/evidence gates, neutral attribute repair, CUI projection, and scoring.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
+- Primary metrics: benchmark_per_item_f1=0.256, diagnosis_clinical_headline_f1=0.46, diagnosis_semantic_f1=0.202, evidence_validity_rate=0.9695, investigations_clinical_headline_f1=0.837, investigations_semantic_f1=0.558, parse_failures=0, phrase_only_per_item_f1=0.446, prescription_clinical_headline_f1=0.9, prescription_semantic_f1=0.192, prompt_version=exectv2_llm_only_key_entities_structured_v0.4, seizurefrequency_clinical_headline_f1=0.644, seizurefrequency_semantic_f1=0.441, semantic_per_item_f1=0.295, source_near_f1=0.728.
+- Evidence validity: 0 call failures, 0 parse failures; 159/164 evidence-valid rendered mentions (0.9695).
+- Supersedes: `exectv2_llm_only_key_entities_structured_v03_dev25_gpt41mini_20260618`.
+- Superseded by: `exectv2_llm_only_key_entities_structured_v05_dev25_gpt41mini_20260618`.
+- Claim language: Best single-prompt structured dev25 candidate so far, but revise-only. v0.4 recovers SeizureFrequency headline F1 (0.421->0.644) while preserving medication (0.900) and Investigations (0.837) above target. Diagnosis remains the bottleneck (0.460), so next v0.5 should focus on Diagnosis hard cases before dev140 or specialist-prompt comparison.
+- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_v04_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_only_key_entities_structured_v04_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/key_entities/exectv2_key_entities_structured_v04_pilot_report_2026-06-18.md`.
+
+### `exectv2_llm_only_key_entities_structured_v03_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_llm_only_key_entities_structured`; mode `live`; replay `native_run_split`.
+- Model role: LLM-only single-prompt structured clinical event extractor over medication, diagnosis, seizure frequency, and investigations; deterministic code limited to schema/evidence gates, neutral attribute repair, CUI projection, and scoring.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
+- Primary metrics: benchmark_per_item_f1=0.235, diagnosis_clinical_headline_f1=0.455, diagnosis_semantic_f1=0.257, evidence_validity_rate=0.9441, investigations_clinical_headline_f1=0.878, investigations_semantic_f1=0.585, parse_failures=0, phrase_only_per_item_f1=0.436, prescription_clinical_headline_f1=0.883, prescription_semantic_f1=0.198, prompt_version=exectv2_llm_only_key_entities_structured_v0.3, seizurefrequency_clinical_headline_f1=0.421, seizurefrequency_semantic_f1=0.246, semantic_per_item_f1=0.282, source_near_f1=0.718.
+- Evidence validity: 0 call failures, 0 parse failures; 152/161 evidence-valid rendered mentions (0.9441).
+- Supersedes: `exectv2_llm_only_key_entities_structured_v02_dev25_gpt41mini_20260618`.
+- Superseded by: `exectv2_llm_only_key_entities_structured_v04_dev25_gpt41mini_20260618`.
+- Claim language: Revise-only development pilot for v0.3 single structured schema + single prompt. Medication and Investigations clear the clinical-recovery headline target (0.883/0.878), Diagnosis improves modestly (0.455), but SeizureFrequency regresses (0.421) and evidence validity falls (0.9441). Not promoted; next v0.4 should preserve medication/investigation wins and isolate SF headline-state misses.
+- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_v03_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_only_key_entities_structured_v03_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/key_entities/exectv2_key_entities_structured_v03_pilot_report_2026-06-18.md`.
+
+### `exectv2_llm_only_key_entities_structured_v02_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_llm_only_key_entities_structured`; mode `live`; replay `native_run_split`.
+- Model role: LLM-only single-prompt structured clinical event extractor over medication, diagnosis, seizure frequency, and investigations; deterministic code limited to schema/evidence gates, neutral attribute repair, CUI projection, and scoring.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
+- Primary metrics: benchmark_per_item_f1=0.22, diagnosis_clinical_headline_f1=0.414, diagnosis_semantic_f1=0.283, evidence_validity_rate=0.976, investigations_clinical_headline_f1=0.783, investigations_semantic_f1=0.522, parse_failures=0, phrase_only_per_item_f1=0.408, prescription_clinical_headline_f1=0.846, prescription_semantic_f1=0.172, prompt_version=exectv2_llm_only_key_entities_structured_v0.2, seizurefrequency_clinical_headline_f1=0.456, seizurefrequency_semantic_f1=0.21, semantic_per_item_f1=0.272, source_near_f1=0.68.
+- Evidence validity: 0 call failures, 0 parse failures; 163/167 evidence-valid rendered mentions (0.9760).
+- Supersedes: `exectv2_llm_only_key_entities_structured_dev25_gpt41mini_20260618`.
+- Superseded by: `exectv2_llm_only_key_entities_structured_v03_dev25_gpt41mini_20260618`.
+- Claim language: Development pilot for error-analysis-led v0.2 of the single structured schema + single prompt key-family architecture. Improved semantic item F1 0.206->0.272 and benchmark 0.158->0.220 with clean gate; refreshed clinical-recovery headlines show medication above target (0.846), Investigations near target (0.783), and Diagnosis/SF still below target (0.414/0.456). Not promoted. Next: v0.3 Diagnosis/SF hard-case panel, Investigation FP cleanup, and medication regression protection before dev140.
+- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_v02_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_only_key_entities_structured_v02_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/key_entities/exectv2_key_entities_structured_v02_pilot_report_2026-06-18.md`.
+
+### `exectv2_llm_only_key_entities_structured_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_llm_only_key_entities_structured`; mode `live`; replay `native_run_split`.
+- Model role: LLM-only single-prompt structured clinical event extractor over medication, diagnosis, seizure frequency, and investigations; deterministic code limited to schema/evidence gates, neutral attribute repair, CUI projection, and scoring.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only`.
+- Primary metrics: benchmark_per_item_f1=0.158, diagnosis_semantic_f1=0.204, evidence_validity_rate=0.9539, investigations_semantic_f1=0.267, parse_failures=0, phrase_only_per_item_f1=0.385, prescription_semantic_f1=0.264, prompt_version=exectv2_llm_only_key_entities_structured_v0.1, seizurefrequency_semantic_f1=0.07, semantic_per_item_f1=0.206, source_near_f1=0.722.
+- Evidence validity: 0 call failures, 0 parse failures; 145/152 evidence-valid rendered mentions (0.9539).
+- Claim language: Development pilot for the user-requested single structured schema + single prompt extreme over the four key families (Prescription/medication, Diagnosis, SeizureFrequency, Investigations). Viable schema and evidence gate, not promoted: source-near F1 0.722 but semantic item F1 only 0.206; next iteration should target attribute agreement and phrase altitude, especially SeizureFrequency quantification.
+- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_only_key_entities_structured_dev25_gpt41mini_20260618.md`.
+
+### `exectv2_llm_med_inv_verifier_v01_dev140_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_llm_med_inv_verifier`; mode `live`; replay `native_run_split`.
+- Model role: Prescription/Investigations verifier v0.1 over the v0.5 single structured key-entity draft. The model owns revised Prescription and Investigations mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
+- Primary metrics: evidence_validity_rate=0.9792, investigations_f1=0.496, parse_failures=0, prescription_f1=0.817, prescription_precision=0.773, prescription_recall=0.865, prompt_version=exectv2_llm_med_inv_verifier_v0.1.
+- Evidence validity: 0 call failures, 0 parse failures; 376/384 evidence-valid rendered mentions.
+- Claim language: Split decision. Use v0.1 as the current Prescription candidate because it clears dev140 target (0.817 > 0.8), but reject it for Investigations because it regresses from the single structured baseline (0.496 vs 0.786). Build a dedicated Investigations verifier next.
+- Artifacts: `experiments/exectv2_llm_med_inv_verifier_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_med_inv_verifier_v01_dev140_gpt41mini_20260618.md`, `docs/experiments/exectv2/medication_investigations/exectv2_med_inv_verifier_v01_dev140_report_2026-06-18.md`.
+
+### `exectv2_llm_investigations_verifier_v01_dev140_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_llm_investigations_verifier`; mode `live`; replay `native_run_split`.
+- Model role: Investigations-focused verifier v0.1 over the v0.5 single structured key-entity draft. The model owns revised Investigations mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
+- Primary metrics: evidence_validity_rate=0.9928, investigations_f1=0.872, investigations_precision=0.869, investigations_recall=0.875, parse_failures=0, prompt_version=exectv2_llm_investigations_verifier_v0.1.
+- Evidence validity: 0 call failures, 0 parse failures; 137/138 evidence-valid rendered mentions.
+- Claim language: First Investigations-specific candidate to clear the dev140 clinical-recovery target (0.872 > 0.8). Confirms Investigations should be split from medication verification.
+- Artifacts: `experiments/exectv2_llm_investigations_verifier_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_investigations_verifier_v01_dev140_gpt41mini_20260618.md`, `docs/experiments/exectv2/medication_investigations/exectv2_investigations_verifier_v01_dev140_report_2026-06-18.md`.
+
+### `exectv2_llm_diagnosis_verifier_v05_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_llm_diagnosis_verifier`; mode `live`; replay `native_run_split`.
+- Model role: Diagnosis-focused verifier v0.5 over the v0.5 single structured key-entity draft. The model owns normalized Diagnosis concept text and may keep, delete, edit, or add Diagnosis mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
+- Primary metrics: diagnosis_clinical_headline_f1=0.837, diagnosis_clinical_headline_precision=0.911, diagnosis_clinical_headline_recall=0.774, diagnosis_semantic_item_f1=0.62, diagnosis_source_near_f1=0.84, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_llm_diagnosis_verifier_v0.5.
+- Evidence validity: 0 call failures, 0 parse failures; 44/44 evidence-valid rendered mentions.
+- Supersedes: `exectv2_llm_diagnosis_verifier_v04_dev25_gpt41mini_20260618`.
+- Claim language: First Diagnosis-specific candidate to clear the dev25 clinical-recovery target (0.837 > 0.8) while keeping evidence validity 1.0000. Development-surface success only; requires dev140 confirmation before any generalization claim. Shift key-entity work to SeizureFrequency next.
+- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v05_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v05_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_verifier_v05_pilot_report_2026-06-18.md`.
+
+### `exectv2_llm_diagnosis_verifier_v04_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_llm_diagnosis_verifier`; mode `live`; replay `native_run_split`.
+- Model role: Diagnosis-focused verifier v0.4 over the v0.5 single structured key-entity draft. The model owns normalized Diagnosis concept text and may keep, delete, edit, or add Diagnosis mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
+- Primary metrics: diagnosis_clinical_headline_f1=0.768, diagnosis_clinical_headline_precision=0.826, diagnosis_clinical_headline_recall=0.717, diagnosis_semantic_item_f1=0.554, diagnosis_source_near_f1=0.792, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_llm_diagnosis_verifier_v0.4.
+- Evidence validity: 0 call failures, 0 parse failures; 45/45 evidence-valid rendered mentions.
+- Supersedes: `exectv2_llm_diagnosis_verifier_v03_dev25_gpt41mini_20260618`.
+- Claim language: Best Diagnosis-specific candidate so far, but revise-only. v0.4 improves over verifier v0.3 (0.768 vs 0.701) and v0.5 single structured (0.569) while keeping evidence validity 1.0000, but remains just below the 0.8 target. One more residual-error iteration is justified before dev140 if precision stays protected.
+- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v04_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v04_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_verifier_v04_pilot_report_2026-06-18.md`.
+
+### `exectv2_llm_diagnosis_verifier_v03_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_llm_diagnosis_verifier`; mode `live`; replay `native_run_split`.
+- Model role: Diagnosis-focused verifier v0.3 over the v0.5 single structured key-entity draft. The model owns normalized Diagnosis concept text and may keep, delete, edit, or add Diagnosis mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
+- Primary metrics: diagnosis_clinical_headline_f1=0.701, diagnosis_clinical_headline_precision=0.773, diagnosis_clinical_headline_recall=0.641, diagnosis_semantic_item_f1=0.49, diagnosis_source_near_f1=0.755, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_llm_diagnosis_verifier_v0.3.
+- Evidence validity: 0 call failures, 0 parse failures; 42/42 evidence-valid rendered mentions.
+- Supersedes: `exectv2_llm_diagnosis_verifier_v02_dev25_gpt41mini_20260618`.
+- Claim language: Best Diagnosis-specific candidate so far, but revise-only. v0.3 improves over verifier v0.2 (0.701 vs 0.619) and v0.5 single structured (0.569) while keeping evidence validity 1.0000, but remains below the 0.8 target. Run v0.4 from residual error analysis before dev140.
+- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v03_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v03_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_verifier_v03_pilot_report_2026-06-18.md`.
+
+### `exectv2_llm_diagnosis_verifier_v02_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_llm_diagnosis_verifier`; mode `live`; replay `native_run_split`.
+- Model role: Diagnosis-focused verifier v0.2 over the v0.5 single structured key-entity draft. The model owns normalized Diagnosis concept text and may keep, delete, edit, or add Diagnosis mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
+- Primary metrics: diagnosis_clinical_headline_f1=0.619, diagnosis_clinical_headline_precision=0.682, diagnosis_clinical_headline_recall=0.566, diagnosis_semantic_item_f1=0.424, diagnosis_source_near_f1=0.727, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_llm_diagnosis_verifier_v0.2.
+- Evidence validity: 0 call failures, 0 parse failures; 43/43 evidence-valid rendered mentions (1.0000).
+- Supersedes: `exectv2_llm_diagnosis_verifier_v01_dev25_gpt41mini_20260618`.
+- Claim language: Best Diagnosis-specific multi-prompt candidate so far, but revise-only. v0.2 improves over verifier v0.1 (0.619 vs 0.592) and v0.5 single structured (0.569) while keeping evidence validity 1.0000, but remains recall-limited and below the 0.8 target.
+- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v02_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v02_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_verifier_v02_pilot_report_2026-06-18.md`.
+
+### `exectv2_llm_diagnosis_verifier_v01_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_llm_diagnosis_verifier`; mode `live`; replay `native_run_split`.
+- Model role: Diagnosis-focused verifier over the v0.5 single structured key-entity draft. The model may keep, delete, edit, or add Diagnosis mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
+- Primary metrics: diagnosis_clinical_headline_f1=0.592, diagnosis_clinical_headline_precision=0.644, diagnosis_clinical_headline_recall=0.547, diagnosis_semantic_item_f1=0.449, diagnosis_source_near_f1=0.694, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_llm_diagnosis_verifier_v0.1.
+- Evidence validity: 0 call failures, 0 parse failures; 42/42 evidence-valid rendered mentions (1.0000).
+- Supersedes: `exectv2_llm_only_key_entities_structured_v05_dev25_gpt41mini_20260618`.
+- Superseded by: `exectv2_llm_diagnosis_verifier_v02_dev25_gpt41mini_20260618`.
+- Claim language: First multi-prompt variant to improve over the best single structured Diagnosis candidate (0.592 vs v0.5 0.569), but still far below the 0.8 target and recall-limited. Revise with targeted Diagnosis recall before dev140.
+- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v01_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v01_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_verifier_v01_pilot_report_2026-06-18.md`.
+
+### `exectv2_key_entities_dev140_transfer_readout_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_key_entities_transfer_readout`; mode `live`; replay `analysis_only`.
+- Model role: Transfer readout combining the single structured v0.5 dev140 draft with Diagnosis verifier v0.5 and SeizureFrequency verifier v0.3 dev140 runs.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema/evidence repair + benchmark CUI projection only; per-family outputs reported separately`.
+- Primary metrics: diagnosis_verifier_f1=0.616, investigations_f1=0.786, prescription_f1=0.777, seizure_frequency_verifier_f1=0.602, structured_call_failures=0, structured_parse_failures=0.
+- Evidence validity: Structured draft evidence validity 0.9563; Diagnosis verifier 0.9832; SeizureFrequency verifier 0.9796. All three dev140 runs had 0 call failures and 0 parse failures.
+- Supersedes: `exectv2_llm_sf_verifier_v03_dev25_gpt41mini_20260618`, `exectv2_llm_diagnosis_verifier_v05_dev25_gpt41mini_20260618`.
+- Claim language: Negative transfer readout. The dev25 target-clearing configuration does not transfer to dev140: all four key families remain below 0.8. Medication and Investigations are near misses; Diagnosis and SeizureFrequency require dev140 residual-led development. Do not promote or claim generalization from dev25.
+- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_v05_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_only_key_entities_structured_v05_dev140_gpt41mini_20260618.md`, `experiments/exectv2_llm_diagnosis_verifier_v05_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v05_dev140_gpt41mini_20260618.md`, `experiments/exectv2_llm_sf_verifier_v03_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_sf_verifier_v03_dev140_gpt41mini_20260618.md`, `docs/experiments/exectv2/key_entities/exectv2_key_entities_dev140_transfer_readout_2026-06-18.md`.
+
+### `exectv2_key_entities_clinical_error_ledger_diagv06_sfv04_dev140_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_key_entities_clinical_error_ledger`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Clinical-recovery error ledger over the residual-led dev140 Diagnosis v0.6 and SeizureFrequency v0.4 artifacts. Prescription/Investigations are unchanged from the single structured substrate in this ledger and should not supersede their current family-specific candidates.; model `none`.
+- Repair mode/config: `no model calls; clinical-recovery key analysis only`.
+- Primary metrics: diagnosis_f1=0.651, records=547, seizure_frequency_f1=0.623.
+- Evidence validity: No new model calls. Ledger keys are the same clinical-recovery keys used by the headline scorers.
+- Cache/reuse source: Read-only analysis over exectv2_llm_only_key_entities_structured_v05_dev140_gpt41mini_20260618, exectv2_llm_diagnosis_verifier_v06_dev140_gpt41mini_20260618, and exectv2_llm_sf_verifier_v04_dev140_gpt41mini_20260618.
+- Supersedes: `exectv2_key_entities_clinical_error_ledger_dev140_20260618`.
+- Claim language: Diagnostic residual taxonomy for the next Diagnosis/SF architecture loop. Current promoted family candidates remain Prescription verifier v0.1 and Investigations verifier v0.1; this ledger is for remaining below-target families.
+- Artifacts: `experiments/exectv2_key_entities_clinical_error_ledger_diagv06_sfv04_dev140_20260618.json`, `experiments/exectv2_key_entities_clinical_error_ledger_diagv06_sfv04_dev140_20260618.md`, `docs/experiments/exectv2/key_entities/exectv2_diag_sf_verifier_v06_v04_dev140_report_2026-06-18.md`.
+
+### `exectv2_key_entities_clinical_error_ledger_dev140_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_key_entities_clinical_error_ledger`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Clinical-recovery error ledger over the dev140 transfer artifacts: single structured v0.5 for Prescription/Investigations, Diagnosis verifier v0.5, and SeizureFrequency verifier v0.3.; model `none`.
+- Repair mode/config: `no model calls; clinical-recovery key analysis only`.
+- Primary metrics: diagnosis_f1=0.616, investigations_f1=0.786, prescription_f1=0.777, records=569, seizure_frequency_f1=0.602.
+- Evidence validity: No new model calls. Ledger keys are the same clinical-recovery keys used by the headline scorers.
+- Cache/reuse source: Read-only analysis over exectv2_llm_only_key_entities_structured_v05_dev140_gpt41mini_20260618, exectv2_llm_diagnosis_verifier_v05_dev140_gpt41mini_20260618, and exectv2_llm_sf_verifier_v03_dev140_gpt41mini_20260618.
+- Supersedes: `exectv2_key_entities_dev140_transfer_readout_20260618`.
+- Claim language: Diagnostic residual taxonomy for the failed dev140 transfer readout. Use this as the control surface for the next targeted verifier iteration; do not treat it as a promoted candidate.
+- Artifacts: `experiments/exectv2_key_entities_clinical_error_ledger_dev140_20260618.json`, `experiments/exectv2_key_entities_clinical_error_ledger_dev140_20260618.md`, `docs/experiments/exectv2/key_entities/exectv2_key_entities_dev140_clinical_error_ledger_readout_2026-06-18.md`.
+
+### `exectv2_hybrid_sf_state_adjudicator_v05_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_hybrid_sf_state_adjudicator`; mode `live`; replay `native_run_split`.
+- Model role: SeizureFrequency candidate-span state adjudicator v0.5 pilot over the v0.5 single structured key-entity draft. v0.5 adds explicit seizure-free-anchor specialization while preserving typed candidate metadata.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection; deterministic typed candidate spans and seizure-free anchor guide are attention scaffolding, not predictions`.
+- Primary metrics: candidate_spans=79, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_hybrid_sf_state_adjudicator_v0.5, seizure_frequency_f1=0.918, seizure_frequency_precision=0.933, seizure_frequency_recall=0.903.
+- Evidence validity: 0 call failures, 0 parse failures; 30/30 evidence-valid rendered mentions.
+- Supersedes: `exectv2_hybrid_sf_state_adjudicator_v04_dev25_gpt41mini_20260618`.
+- Claim language: Pilot-only signal. v0.5 remains above target on dev25 but below v0.4 local F1; dev140 transfer is the decision surface.
+- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v05_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v05_dev25_gpt41mini_20260618.md`.
+
+### `exectv2_hybrid_sf_state_adjudicator_v05_dev140_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_hybrid_sf_state_adjudicator`; mode `live`; replay `native_run_split`.
+- Model role: SeizureFrequency candidate-span state adjudicator v0.5 over the v0.5 single structured key-entity draft. v0.5 specializes seizure-free anchors and adds residual-supported benchmark-format SF CUI projection variants.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection; deterministic typed candidate spans and seizure-free anchor guide are attention scaffolding, not predictions`.
+- Primary metrics: active_rate_f1=0.762, candidate_spans=414, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_hybrid_sf_state_adjudicator_v0.5, seizure_free_f1=0.781, seizure_frequency_f1=0.721, seizure_frequency_precision=0.71, seizure_frequency_recall=0.733, unknown_f1=0.476.
+- Evidence validity: 0 call failures, 0 parse failures; 193/193 evidence-valid rendered mentions. Residual ledger is analysis-only over the same JSONL.
+- Supersedes: `exectv2_hybrid_sf_state_adjudicator_v04_dev140_gpt41mini_20260618`.
+- Claim language: Revise-only current best SF candidate. Seizure-free specialization improves dev140 from 0.707 to 0.721 and seizure-free F1 from 0.738 to 0.781, but unknown-state regression keeps the family below the 0.8 target.
+- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v05_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v05_dev140_gpt41mini_20260618.md`, `experiments/exectv2_sf_state_adjudicator_v05_residual_ledger_dev140_20260618.json`, `experiments/exectv2_sf_state_adjudicator_v05_residual_ledger_dev140_20260618.md`, `docs/experiments/exectv2/seizure_frequency/exectv2_sf_state_adjudicator_v05_dev140_report_2026-06-18.md`.
+
+### `exectv2_hybrid_sf_state_adjudicator_v04_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_hybrid_sf_state_adjudicator`; mode `live`; replay `native_run_split`.
+- Model role: SeizureFrequency candidate-span state adjudicator v0.4 pilot over the v0.5 single structured key-entity draft. v0.4 adds typed candidate metadata for generic/named active-rate, seizure-free anchors, qualitative change, prior-event references, and reject contexts.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection; deterministic typed candidate spans are attention scaffolding, not predictions`.
+- Primary metrics: candidate_spans=79, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_hybrid_sf_state_adjudicator_v0.4, seizure_frequency_f1=0.935, seizure_frequency_precision=0.935, seizure_frequency_recall=0.935.
+- Evidence validity: 0 call failures, 0 parse failures; 31/31 evidence-valid rendered mentions.
+- Supersedes: `exectv2_hybrid_sf_state_adjudicator_v03_dev25_gpt41mini_20260618`.
+- Claim language: Pilot-only escalation signal. Typed candidate decomposition stayed strong on dev25 and justified dev140 transfer testing.
+- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v04_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v04_dev25_gpt41mini_20260618.md`.
+
+### `exectv2_hybrid_sf_state_adjudicator_v04_dev140_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_hybrid_sf_state_adjudicator`; mode `live`; replay `native_run_split`.
+- Model role: SeizureFrequency candidate-span state adjudicator v0.4 over the v0.5 single structured key-entity draft. v0.4 adds typed candidate metadata before LLM adjudication while leaving final mention selection to the model.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection; deterministic typed candidate spans are attention scaffolding, not predictions`.
+- Primary metrics: active_rate_f1=0.746, candidate_spans=412, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_hybrid_sf_state_adjudicator_v0.4, seizure_free_f1=0.738, seizure_frequency_f1=0.707, seizure_frequency_precision=0.704, seizure_frequency_recall=0.711, unknown_f1=0.525.
+- Evidence validity: 0 call failures, 0 parse failures; 189/189 evidence-valid rendered mentions. Residual ledger is analysis-only over the same JSONL.
+- Supersedes: `exectv2_hybrid_sf_state_adjudicator_v03_dev140_gpt41mini_20260618`.
+- Claim language: Revise-only current best SF candidate. Typed candidate decomposition improves dev140 from 0.681 to 0.707 but remains below the 0.8 target; next loop should specialize seizure-free anchors.
+- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v04_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v04_dev140_gpt41mini_20260618.md`, `experiments/exectv2_sf_state_adjudicator_v04_residual_ledger_dev140_20260618.json`, `experiments/exectv2_sf_state_adjudicator_v04_residual_ledger_dev140_20260618.md`, `docs/experiments/exectv2/seizure_frequency/exectv2_sf_state_adjudicator_v04_dev140_report_2026-06-18.md`.
+
+### `exectv2_hybrid_sf_state_adjudicator_v03_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_hybrid_sf_state_adjudicator`; mode `live`; replay `native_run_split`.
+- Model role: SeizureFrequency candidate-span state adjudicator v0.3 pilot over the v0.5 single structured key-entity draft. v0.3 adds a separate unknown/change-state recovery lane on top of the v0.2 generic keep/reject policy; the model owns final mention selection and state choice.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection; deterministic candidate spans are attention scaffolding, not predictions`.
+- Primary metrics: candidate_spans=79, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_hybrid_sf_state_adjudicator_v0.3, seizure_frequency_f1=0.921, seizure_frequency_precision=0.906, seizure_frequency_recall=0.935.
+- Evidence validity: 0 call failures, 0 parse failures; 32/32 evidence-valid rendered mentions.
+- Supersedes: `exectv2_hybrid_sf_state_adjudicator_v02_dev25_gpt41mini_20260618`.
+- Claim language: Pilot-only continuation of the unknown/change-state recovery loop. v0.3 remained strong on dev25 but lower than v0.2; full dev140 was still required for transfer evidence.
+- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v03_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v03_dev25_gpt41mini_20260618.md`.
+
+### `exectv2_hybrid_sf_state_adjudicator_v03_dev140_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_hybrid_sf_state_adjudicator`; mode `live`; replay `native_run_split`.
+- Model role: SeizureFrequency candidate-span state adjudicator v0.3 over the v0.5 single structured key-entity draft. v0.3 adds a separate unknown/change-state recovery lane after v0.2 improved precision but collapsed unknown-state recall.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection; deterministic candidate spans are attention scaffolding, not predictions`.
+- Primary metrics: active_rate_f1=0.722, candidate_spans=412, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_hybrid_sf_state_adjudicator_v0.3, seizure_free_f1=0.754, seizure_frequency_f1=0.681, seizure_frequency_precision=0.667, seizure_frequency_recall=0.695, unknown_f1=0.424.
+- Evidence validity: 0 call failures, 0 parse failures; 195/195 evidence-valid rendered mentions. Residual ledger is analysis-only over the same JSONL.
+- Supersedes: `exectv2_hybrid_sf_state_adjudicator_v02_dev140_gpt41mini_20260618`.
+- Claim language: Revise-only. Best SF dev140 score so far (0.681) and unknown-state F1 improves from 0.235 to 0.424, but the gain is small and still below the 0.8 target. Next loop should use typed candidate decomposition plus constrained state classification rather than more broad prompt accretion.
+- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v03_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v03_dev140_gpt41mini_20260618.md`, `experiments/exectv2_sf_state_adjudicator_v03_residual_ledger_dev140_20260618.json`, `experiments/exectv2_sf_state_adjudicator_v03_residual_ledger_dev140_20260618.md`, `docs/experiments/exectv2/seizure_frequency/exectv2_sf_state_adjudicator_v03_dev140_report_2026-06-18.md`.
+
+### `exectv2_hybrid_sf_state_adjudicator_v02_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_hybrid_sf_state_adjudicator`; mode `live`; replay `native_run_split`.
+- Model role: SeizureFrequency candidate-span state adjudicator v0.2 pilot over the v0.5 single structured key-entity draft. v0.2 adds stricter generic active-rate/seizure-free/unknown keep-reject policy; the model still owns final mention selection and state choice.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection; deterministic candidate spans are attention scaffolding, not predictions`.
+- Primary metrics: candidate_spans=79, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_hybrid_sf_state_adjudicator_v0.2, seizure_frequency_f1=0.951, seizure_frequency_precision=0.967, seizure_frequency_recall=0.935.
+- Evidence validity: 0 call failures, 0 parse failures; 30/30 evidence-valid rendered mentions.
+- Supersedes: `exectv2_hybrid_sf_state_adjudicator_v01_dev25_gpt41mini_20260618`.
+- Claim language: Pilot-only escalation signal. Strong dev25 precision improvement (0.951 F1, precision 0.967) justified dev140, but the effect did not transfer.
+- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v02_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v02_dev25_gpt41mini_20260618.md`.
+
+### `exectv2_hybrid_sf_state_adjudicator_v02_dev140_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_hybrid_sf_state_adjudicator`; mode `live`; replay `native_run_split`.
+- Model role: SeizureFrequency candidate-span state adjudicator v0.2 over the v0.5 single structured key-entity draft. v0.2 adds stricter generic active-rate/seizure-free/unknown keep-reject policy; the model still owns final mention selection and state choice.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection; deterministic candidate spans are attention scaffolding, not predictions`.
+- Primary metrics: active_rate_f1=0.725, candidate_spans=412, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_hybrid_sf_state_adjudicator_v0.2, seizure_free_f1=0.77, seizure_frequency_f1=0.672, seizure_frequency_precision=0.687, seizure_frequency_recall=0.658, unknown_f1=0.235.
+- Evidence validity: 0 call failures, 0 parse failures; 179/179 evidence-valid rendered mentions. Residual ledger is analysis-only over the same JSONL.
+- Claim language: Revise-only. v0.2 improves precision versus v0.1 but loses enough recall that F1 is slightly worse (0.672 vs 0.674). Unknown-state recall collapses; next loop should add a separate unknown/change-state recovery lane rather than tighten generic rejection further.
+- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v02_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v02_dev140_gpt41mini_20260618.md`, `experiments/exectv2_sf_state_adjudicator_v02_residual_ledger_dev140_20260618.json`, `experiments/exectv2_sf_state_adjudicator_v02_residual_ledger_dev140_20260618.md`, `docs/experiments/exectv2/seizure_frequency/exectv2_sf_state_adjudicator_v02_dev140_report_2026-06-18.md`.
+
+### `exectv2_hybrid_sf_state_adjudicator_v01_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_hybrid_sf_state_adjudicator`; mode `live`; replay `native_run_split`.
+- Model role: SeizureFrequency candidate-span state adjudicator v0.1 pilot over the v0.5 single structured key-entity draft. Deterministic code proposes exact candidate evidence spans and hints; the model owns keep/reject, state choice, text normalization, and final mentions.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection; deterministic candidate spans are attention scaffolding, not predictions`.
+- Primary metrics: candidate_spans=79, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_hybrid_sf_state_adjudicator_v0.1, seizure_frequency_f1=0.921, seizure_frequency_precision=0.906, seizure_frequency_recall=0.935.
+- Evidence validity: 0 call failures, 0 parse failures; 32/32 evidence-valid rendered mentions.
+- Supersedes: `exectv2_llm_sf_verifier_v04_dev140_gpt41mini_20260618`.
+- Claim language: Pilot-only escalation signal. Candidate-span/state adjudication cleared dev25 strongly (0.921 F1) with clean gates, justifying the dev140 architecture probe. This is not a transfer or promotion claim.
+- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v01_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v01_dev25_gpt41mini_20260618.md`.
+
+### `exectv2_hybrid_sf_state_adjudicator_v01_dev140_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_hybrid_sf_state_adjudicator`; mode `live`; replay `native_run_split`.
+- Model role: SeizureFrequency candidate-span state adjudicator v0.1 over the v0.5 single structured key-entity draft. Deterministic code proposes exact candidate evidence spans and hints; the model owns keep/reject, state choice, text normalization, and final mentions. Post-processing only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection; deterministic candidate spans are attention scaffolding, not predictions`.
+- Primary metrics: active_rate_f1=0.726, candidate_spans=412, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_hybrid_sf_state_adjudicator_v0.1, seizure_free_f1=0.734, seizure_frequency_f1=0.674, seizure_frequency_precision=0.653, seizure_frequency_recall=0.695, unknown_f1=0.351.
+- Evidence validity: 0 call failures, 0 parse failures; 199/199 evidence-valid rendered mentions. Residual ledger is analysis-only over the same JSONL.
+- Supersedes: `exectv2_llm_sf_verifier_v04_dev140_gpt41mini_20260618`.
+- Claim language: Revise-only architecture evidence. Candidate-span/state adjudication improves over SF verifier v0.4 (0.623 -> 0.674) and keeps gates clean, but remains below the 0.8 target. Residuals show generic seizure active-rate over-emission and generic unknown/seizure-free misses; next loop should tighten generic candidate keep/reject rather than discard the architecture.
+- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v01_dev140_gpt41mini_20260618.md`, `experiments/exectv2_sf_state_adjudicator_v01_residual_ledger_dev140_20260618.json`, `experiments/exectv2_sf_state_adjudicator_v01_residual_ledger_dev140_20260618.md`, `docs/experiments/exectv2/seizure_frequency/exectv2_sf_state_adjudicator_v01_dev140_report_2026-06-18.md`.
+
+### `exectv2_hybrid_diagnosis_reconciler_v02_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_hybrid_diagnosis_reconciler`; mode `live`; replay `native_run_split`.
+- Model role: Diagnosis reconciler v0.2 pilot over Diagnosis verifier v0.6 and Diagnosis decomposer v0.1 candidates. v0.2 adds explicit candidate concept groups before final mention rendering.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection; verifier/decomposer inputs and concept groups are candidate scaffolding`.
+- Primary metrics: diagnosis_f1=0.844, diagnosis_precision=0.821, diagnosis_recall=0.868, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_hybrid_diagnosis_reconciler_v0.2, source_near_overlap_f1=0.86.
+- Evidence validity: 0 call failures, 0 parse failures; 65/65 evidence-valid rendered mentions.
+- Cache/reuse source: Uses saved Diagnosis verifier v0.6 and Diagnosis decomposer v0.1 dev140 artifacts as candidate inputs, restricted to the first 25 dev letters for this pilot.
+- Supersedes: `exectv2_hybrid_diagnosis_reconciler_v01_dev25_gpt41mini_20260618`.
+- Claim language: Pilot-only escalation signal. Concept grouping improved dev25 slightly over v0.1 (0.844 vs 0.833), but required dev140 transfer evidence before any candidate claim.
+- Artifacts: `experiments/exectv2_hybrid_diagnosis_reconciler_v02_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_diagnosis_reconciler_v02_dev25_gpt41mini_20260618.md`.
+
+### `exectv2_hybrid_diagnosis_reconciler_v01_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_hybrid_diagnosis_reconciler`; mode `live`; replay `native_run_split`.
+- Model role: Diagnosis reconciler v0.1 pilot over Diagnosis verifier v0.6 and Diagnosis decomposer v0.1 candidates. The model owns final keep/reject, concept specificity, certainty, and evidence selection.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection; verifier/decomposer inputs are candidate scaffolding`.
+- Primary metrics: diagnosis_f1=0.833, diagnosis_precision=0.818, diagnosis_recall=0.849, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_hybrid_diagnosis_reconciler_v0.1.
+- Evidence validity: 0 call failures, 0 parse failures; 64/64 evidence-valid rendered mentions.
+- Cache/reuse source: Uses saved Diagnosis verifier v0.6 and Diagnosis decomposer v0.1 dev140 artifacts as candidate inputs, restricted to the first 25 dev letters for this pilot.
+- Supersedes: `exectv2_hybrid_diagnosis_decomposer_v01_dev25_gpt41mini_20260618`.
+- Claim language: Pilot-only escalation signal. Strong dev25 balance (0.833 F1) justified the dev140 run but does not transfer by itself.
+- Artifacts: `experiments/exectv2_hybrid_diagnosis_reconciler_v01_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_diagnosis_reconciler_v01_dev25_gpt41mini_20260618.md`.
+
+### `exectv2_hybrid_diagnosis_reconciler_v01_dev140_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_hybrid_diagnosis_reconciler`; mode `live`; replay `native_run_split`.
+- Model role: Diagnosis reconciler v0.1 over Diagnosis verifier v0.6 and Diagnosis decomposer v0.1 candidates. The model owns final keep/reject, concept specificity, certainty, and evidence selection; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection; verifier/decomposer inputs are candidate scaffolding`.
+- Primary metrics: diagnosis_f1=0.658, diagnosis_precision=0.658, diagnosis_recall=0.658, evidence_validity_rate=0.9954, parse_failures=0, prompt_version=exectv2_hybrid_diagnosis_reconciler_v0.1, source_near_overlap_f1=0.787.
+- Evidence validity: 0 call failures, 0 parse failures; 436/438 evidence-valid rendered mentions. Residual ledger is analysis-only over the same JSONL.
+- Cache/reuse source: Uses saved Diagnosis verifier v0.6 and Diagnosis decomposer v0.1 dev140 artifacts as candidate inputs.
+- Supersedes: `exectv2_llm_diagnosis_verifier_v06_dev140_gpt41mini_20260618`.
+- Claim language: Revise-only. Best Diagnosis dev140 score so far, but only a small gain over verifier v0.6 (0.658 vs 0.651) and still far below the 0.8 target. Residuals show generic epilepsy and tonic-clonic over-emission plus focal epilepsy/secondary-generalised misses.
+- Artifacts: `experiments/exectv2_hybrid_diagnosis_reconciler_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_diagnosis_reconciler_v01_dev140_gpt41mini_20260618.md`, `experiments/exectv2_diagnosis_reconciler_v01_residual_ledger_dev140_20260618.json`, `experiments/exectv2_diagnosis_reconciler_v01_residual_ledger_dev140_20260618.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_reconciler_v01_dev140_report_2026-06-18.md`.
+
+### `exectv2_hybrid_diagnosis_decomposer_v01_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_hybrid_diagnosis_decomposer`; mode `live`; replay `native_run_split`.
+- Model role: Diagnosis heading/narrative decomposer v0.1 pilot over the v0.5 single structured key-entity draft. Deterministic code proposes heading and narrative candidate spans; the model owns final Diagnosis mentions.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection; deterministic diagnosis spans are checklist scaffolding, not predictions`.
+- Primary metrics: diagnosis_f1=0.814, diagnosis_precision=0.767, diagnosis_recall=0.868, diagnosis_spans=120, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_hybrid_diagnosis_decomposer_v0.1.
+- Evidence validity: 0 call failures, 0 parse failures; 69/69 evidence-valid rendered mentions.
+- Supersedes: `exectv2_llm_diagnosis_verifier_v06_dev140_gpt41mini_20260618`.
+- Claim language: Pilot-only escalation signal. Diagnosis heading/narrative decomposition cleared dev25 (0.814 F1) with clean gates, justifying the dev140 architecture probe. This is not a transfer or promotion claim.
+- Artifacts: `experiments/exectv2_hybrid_diagnosis_decomposer_v01_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_diagnosis_decomposer_v01_dev25_gpt41mini_20260618.md`.
+
+### `exectv2_diag_sf_verifier_v06_v04_dev140_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_diag_sf_verifier_residual_iteration`; mode `live`; replay `native_run_split`.
+- Model role: Residual-led Diagnosis verifier v0.6 and SeizureFrequency verifier v0.4 over the v0.5 single structured key-entity draft. The model owns revised family mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
+- Primary metrics: diagnosis_evidence_validity_rate=0.9906, diagnosis_f1=0.651, diagnosis_precision=0.706, diagnosis_recall=0.604, parse_failures=0, sf_evidence_validity_rate=0.9905, sf_f1=0.623, sf_precision=0.591, sf_recall=0.658.
+- Evidence validity: Diagnosis 0 call failures, 0 parse failures, 317/320 evidence-valid rendered mentions. SeizureFrequency 0 call failures, 0 parse failures, 208/210 evidence-valid rendered mentions.
+- Supersedes: `exectv2_key_entities_dev140_transfer_readout_20260618`.
+- Claim language: Revise-only dev140 improvement. Diagnosis improves 0.616 -> 0.651 and SeizureFrequency improves 0.602 -> 0.623, but both remain below the 0.8 target. Next iteration should use stronger task decomposition, not more broad prompt accretion.
+- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v06_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v06_dev140_gpt41mini_20260618.md`, `experiments/exectv2_llm_sf_verifier_v04_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_sf_verifier_v04_dev140_gpt41mini_20260618.md`, `docs/experiments/exectv2/key_entities/exectv2_diag_sf_verifier_v06_v04_dev140_report_2026-06-18.md`.
 
 ### `gan2026_cluster_axis_gate_v1_tightened_2026-06-16`
 - Date/split: `2026-06-16`; `validation+test`; `1200` rows.
@@ -356,7 +732,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: No-call replay preserves 239/250 exact evidence substrings on validation250 and 115/123 on the trigger panel; no call failures or parse/schema/label failures; semantic no-reference-to-unknown repairs are scorer-neutral.
 - Cache/reuse source: Raw outputs from gan2026_fresh_evidence_reasoner_validation250_live_gpt41_v0_6_safety_v0_7_2026-06-15 and trigger_full v0.6/safety-v0.7 artifacts.
 - Claim language: Validation diagnostic only. Safety v0.9 preserves the v0.8 Purist counts, repairs no-reference fallbacks to unknown on 5 validation250 rows and 4 trigger-panel rows, and still trails the v0.4 validation250 comparator (240/250 vs 242/250), so it is not a promoted holdout candidate and does not authorize a test450 run.
-- Artifacts: `docs/research/gan2026_unknown_frequency_policy_audit_2026-06-15.md`, `experiments/gan2026_fresh_evidence_reasoner_unknown_policy_trigger_full_validation_nocall_replay_v0_6_safety_v0_9_2026-06-15.jsonl`, `experiments/gan2026_fresh_evidence_reasoner_unknown_policy_trigger_full_validation_nocall_replay_v0_6_safety_v0_9_2026-06-15.md`, `experiments/gan2026_fresh_evidence_reasoner_validation250_nocall_replay_v0_6_safety_v0_9_2026-06-15.jsonl`, `experiments/gan2026_fresh_evidence_reasoner_validation250_nocall_replay_v0_6_safety_v0_9_2026-06-15.md`.
+- Artifacts: ``, `experiments/gan2026_fresh_evidence_reasoner_unknown_policy_trigger_full_validation_nocall_replay_v0_6_safety_v0_9_2026-06-15.jsonl`, `experiments/gan2026_fresh_evidence_reasoner_unknown_policy_trigger_full_validation_nocall_replay_v0_6_safety_v0_9_2026-06-15.md`, `experiments/gan2026_fresh_evidence_reasoner_validation250_nocall_replay_v0_6_safety_v0_9_2026-06-15.jsonl`, `experiments/gan2026_fresh_evidence_reasoner_validation250_nocall_replay_v0_6_safety_v0_9_2026-06-15.md`.
 
 ### `gan2026_consensus_fresh_agreement_selector_validation750_replay_2026-06-15`
 - Date/split: `2026-06-15`; `validation`; `750` rows.
@@ -650,7 +1026,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: No new prediction evidence. Uses validation-development metrics and aggregate-only locked-test metrics; V12 test row-level failures, rationales, evidence, selected events, and transitions were not inspected.
 - Cache/reuse source: Existing Gan 2026 registry, RUN_INDEX, project status, validation reports, and aggregate-only locked-test reports; no new model calls and no row-level test artifact inspection.
 - Claim language: Post-audit analysis-only synthesis. Summarizes why hybrid structured events remain the durable substrate, why agentic/consensus variants mostly failed or failed to transfer, and why V12 fresh_evidence_reasoner is the best completed holdout result but still missed the 383/450 Purist target. Does not authorize a new test run or any test-row tuning.
-- Artifacts: `docs/research/gan2026_hybrid_structured_events_agentic_consensus_fresh_evidence_analysis_2026-06-14.md`.
+- Artifacts: ``.
 
 ### `gan2026_llm_reasoning_agentic_test085_experiment_plan_2026-06-13`
 - Date/split: `2026-06-13`; `validation_planned_then_frozen_test`; `0` rows.
@@ -659,7 +1035,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: current_best_test450_structured_events_purist_correct=364, first_gate=validation25_contract_then_fixed_hard50_and_family_hard_slices, required_test450_gain_over_best_structured_events=19, second_gate=validation250, target_test450_purist_correct=383.
 - Evidence validity: Plan artifact only. No new model calls, no scorer changes, no test-row inspection.
 - Claim language: Next-cycle plan after deterministic-floor consensus failed to generalize. Requires LLM-owned selection over structured events, validation hard-slice and validation250 gates, and a frozen aggregate test audit only after explicit authorization.
-- Artifacts: `docs/research/gan2026_llm_reasoning_agentic_test085_experiment_plan_2026-06-13.md`.
+- Artifacts: ``.
 
 ### `gan2026_llm_event_reasoner_validation25_live_gpt41mini_v1_3_2026-06-13`
 - Date/split: `2026-06-13`; `validation`; `25` rows.
@@ -714,7 +1090,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: holdout_authorized=no, planned_phase_5=agent definition and matched-budget protocol, planned_phase_6=tool-using single-agent versus matched-budget multi-agent evaluation.
 - Evidence validity: No data run. The plan requires future tool traces to report evidence validity with architecture-specific definitions and explicit attribution.
 - Claim language: Planning artifact only. Does not authorize new holdout use, test-row inspection, or benchmark-facing claims. Establishes that multi-agent claims must be compared against single-agent self-consistency under matched model-call, token, tool-call, and aggregation budgets.
-- Artifacts: `docs/research/gan2026_agentic_pipeline_phase_plan_2026-06-12.md`.
+- Artifacts: ``.
 
 ### `gan2026_agentic_matched_budget_validation25_single_agent_live_prompt_v1_post_vote_2026-06-12`
 - Date/split: `2026-06-12`; `validation`; `25` rows.
@@ -1240,7 +1616,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: No structured record; output-contract smoke only.
 - Cache/reuse source: DSPy cache disabled; native Ollama /api/chat smoke used think=false.
 - Claim language: Endpoint setup is unblocked through ollama_chat/qwen3.6:35b with think=false, but v5 is not ladder-ready for Qwen: validation1 returned a nonempty Python-style dict and final_selector shape, producing a schema parse failure. Do not treat this as model-quality evidence or start validation5/25 until prompt hardening or a named schema-repair ablation exists. Dedicated schema-contract risk note logged for future Qwen prompt/repair design.
-- Artifacts: `experiments/gan2026_qwen36_35b_ollama_chat_setup_smoke_2026-06-01.md`, `docs/research/gan2026_qwen_schema_contract_risk_2026-06-01.md`, `experiments/gan2026_llm_only_claim_table_selector_validation1_prompt_only_v5_2026-06-01.jsonl`, `experiments/gan2026_llm_only_claim_table_selector_validation1_prompt_only_v5_2026-06-01.md`, `experiments/gan2026_llm_only_claim_table_selector_validation1_qwen36_35b_v5_ollama_chat_smoke_2026-06-01.jsonl`, `experiments/gan2026_llm_only_claim_table_selector_validation1_qwen36_35b_v5_ollama_chat_smoke_2026-06-01.md`.
+- Artifacts: `experiments/gan2026_qwen36_35b_ollama_chat_setup_smoke_2026-06-01.md`, ``, `experiments/gan2026_llm_only_claim_table_selector_validation1_prompt_only_v5_2026-06-01.jsonl`, `experiments/gan2026_llm_only_claim_table_selector_validation1_prompt_only_v5_2026-06-01.md`, `experiments/gan2026_llm_only_claim_table_selector_validation1_qwen36_35b_v5_ollama_chat_smoke_2026-06-01.jsonl`, `experiments/gan2026_llm_only_claim_table_selector_validation1_qwen36_35b_v5_ollama_chat_smoke_2026-06-01.md`.
 
 ### `gan2026_minimal_evidence_selector_validation25_gpt41mini_v0_2026-06-01`
 - Date/split: `2026-06-01`; `validation`; `25` rows.
@@ -1339,6 +1715,48 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Artifacts: `experiments/gan2026_section_claim_table_validation250_gpt41mini_v4_schema_replay_2026-06-01.jsonl`, `experiments/gan2026_section_claim_table_validation250_gpt41mini_v4_schema_replay_2026-06-01.md`.
 
 ## Reject
+
+### `exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_llm_only_per_entity`; mode `live`; replay `native_run_split`.
+- Model role: Existing focused per-entity Diagnosis prompt, run as the first specialist-prompt comparison against v0.5 single structured key-entity prompt.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only`.
+- Primary metrics: diagnosis_clinical_headline_f1=0.282, diagnosis_semantic_item_f1=0.259, diagnosis_source_near_f1=0.565, diagnosis_source_near_recall=0.429, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_llm_only_per_entity_v0.4.
+- Evidence validity: 0 call failures, 0 parse failures; 29/29 evidence-valid rendered mentions (1.0000).
+- Claim language: Negative specialist-prompt comparison. The existing per-entity Diagnosis prompt is cleaner than the old all-9 baseline on source-near recall, but it is not competitive with the v0.5 single structured prompt on objective-aligned Diagnosis clinical recovery (0.282 vs 0.569). Do not promote; next specialist attempt should start from v0.5 guidance or use a verifier/repair prompt.
+- Artifacts: `experiments/exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618_diagnosis.jsonl`, `experiments/exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618_diagnosis.md`, `experiments/exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618_combined.json`, `experiments/exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618_combined.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_specialist_prompt_comparison_2026-06-18.md`.
+
+### `exectv2_hybrid_diagnosis_reconciler_v02_dev140_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_hybrid_diagnosis_reconciler`; mode `live`; replay `native_run_split`.
+- Model role: Diagnosis reconciler v0.2 over Diagnosis verifier v0.6 and Diagnosis decomposer v0.1 candidates. v0.2 adds explicit candidate concept groups for generic epilepsy, focal-family, tonic-clonic, secondary-generalised, and structural/symptomatic decisions.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection; verifier/decomposer inputs and concept groups are candidate scaffolding`.
+- Primary metrics: diagnosis_f1=0.647, diagnosis_precision=0.636, diagnosis_recall=0.658, evidence_validity_rate=0.9956, parse_failures=0, prompt_version=exectv2_hybrid_diagnosis_reconciler_v0.2, source_near_overlap_f1=0.777.
+- Evidence validity: 0 call failures, 0 parse failures; 449/451 evidence-valid rendered mentions. Residual ledger is analysis-only over the same JSONL.
+- Cache/reuse source: Uses saved Diagnosis verifier v0.6 and Diagnosis decomposer v0.1 dev140 artifacts as candidate inputs.
+- Claim language: Reject as current Diagnosis candidate. v0.2 concept grouping improved dev25 but transferred worse than v0.1 on dev140 (0.647 vs 0.658), with higher FP count. Keep v0.1 as current numeric Diagnosis candidate; next loop should use constrained accept/reject gating.
+- Artifacts: `experiments/exectv2_hybrid_diagnosis_reconciler_v02_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_diagnosis_reconciler_v02_dev140_gpt41mini_20260618.md`, `experiments/exectv2_diagnosis_reconciler_v02_residual_ledger_dev140_20260618.json`, `experiments/exectv2_diagnosis_reconciler_v02_residual_ledger_dev140_20260618.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_reconciler_v02_dev140_report_2026-06-18.md`.
+
+### `exectv2_hybrid_diagnosis_decomposer_v01_dev140_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_hybrid_diagnosis_decomposer`; mode `live`; replay `native_run_split`.
+- Model role: Diagnosis heading/narrative decomposer v0.1 over the v0.5 single structured key-entity draft. Deterministic code proposes heading and narrative candidate spans; the model owns final Diagnosis mentions. Post-processing only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection; deterministic diagnosis spans are checklist scaffolding, not predictions`.
+- Primary metrics: diagnosis_f1=0.642, diagnosis_precision=0.631, diagnosis_recall=0.653, diagnosis_spans=812, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_hybrid_diagnosis_decomposer_v0.1.
+- Evidence validity: 0 call failures, 0 parse failures; 462/462 evidence-valid rendered mentions.
+- Claim language: Reject as current Diagnosis candidate. The decomposition increased source-near recall but over-emitted too many Diagnosis mentions and underperformed verifier v0.6 (0.642 vs 0.651). Keep v0.6 as current Diagnosis baseline; future decomposition needs an explicit reconciler/verifier.
+- Artifacts: `experiments/exectv2_hybrid_diagnosis_decomposer_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_diagnosis_decomposer_v01_dev140_gpt41mini_20260618.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_decomposer_v01_dev140_report_2026-06-18.md`.
+
+### `exectv2_hybrid_diagnosis_acceptance_gate_v01_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_hybrid_diagnosis_acceptance_gate`; mode `live`; replay `native_run_split`.
+- Model role: Diagnosis accept/reject gate v0.1 over fixed verifier v0.6 and decomposer v0.1 Diagnosis candidates. The model only accepts or rejects candidate IDs; deterministic code renders accepted candidates.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `fixed candidate rendering + neutral schema repair + benchmark CUI projection only; model owns accept/reject decisions but cannot invent mentions`.
+- Primary metrics: accepted_candidates=42, candidate_mentions=87, diagnosis_f1=0.625, diagnosis_precision=0.698, diagnosis_recall=0.566, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_hybrid_diagnosis_acceptance_gate_v0.1.
+- Evidence validity: 0 call failures, 0 parse failures; 42/42 evidence-valid rendered mentions.
+- Cache/reuse source: Uses saved Diagnosis verifier v0.6 and Diagnosis decomposer v0.1 dev140 artifacts as candidate inputs, restricted to the first 25 dev letters for this pilot.
+- Claim language: Reject before dev140. The constrained gate is clean but too conservative on dev25 (0.625 F1, recall 0.566), so a full dev140 run is not justified. Next gate needs named seizure-type recovery rather than a broad frequency-only rejection rule.
+- Artifacts: `experiments/exectv2_hybrid_diagnosis_acceptance_gate_v01_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_diagnosis_acceptance_gate_v01_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_acceptance_gate_v01_pilot_report_2026-06-18.md`.
 
 ### `gan2026_kg_family_gated_graph_trust_2026-06-16`
 - Date/split: `2026-06-16`; `validation`; `250` rows.
@@ -1836,7 +2254,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: architectures_analysed=4, cp_failures=169, cp_rule_fire_failure_rate_max=0.426, dl_failures=186, hybrid_failures=88, named_failure_modes=8, se_failures=89, universal_failures=20.
 - Evidence validity: Analysis draws directly from Phase 1 validation750 JSONL artifacts; row-by-row tables verified against source prediction and gold records.
 - Claim language: Phase 3 error analysis: row-by-row + thematic failure catalogue over Phase 1 validation750 results for four architectures (gpt-4.1-mini). Documents 8 named failure modes (FM-1 through FM-8) across 532 total failures. Critical finding: four highest-failure-rate CP rules (seizure_free_conflict 42.6%, same_window_additive_frequency 34.7%, denominator_window_mismatch 30.3%, concrete_frequency_precedence 27.8%) account for 143/169 CP failures where a rule was cited — model cites rule then violates it. 20 universal failures (all 4 architectures). Priority ranking: FM-2 seizure-free FP (97) > FM-1 denominator window (~66 LLM-improvable) > FM-3 unknown FP (132) > FM-6 highest-type selection (~25 universal). Input to Phase 3 prompt-engineering decisions.
-- Artifacts: `docs/research/gan2026_phase3_error_analysis_2026-06-09.md`.
+- Artifacts: ``.
 
 ### `gan2026_cross_model_comparison_2026-06-09`
 - Date/split: `2026-06-09`; `validation`; `750` rows.
@@ -1845,9 +2263,36 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: architectures_compared=6, deepseek_dl_sf_false_pos=56, deepseek_hybrid_rendered=604, deepseek_se_purist_rate=0.821, gpt41mini_dl_unknown_false_pos=59, gpt41mini_hybrid_rendered=589, gpt41mini_se_purist_rate=0.884, models_compared=3, qwen_dl_unknown_false_pos=91, qwen_hybrid_rendered=400, qwen_se_purist_rate=0.836.
 - Evidence validity: Derived from Phase 1 per-row JSONL comparison fields for DL, CP, SE; aggregate numbers from Phase 1 report JSONLs for hybrid and all architectures.
 - Claim language: Cross-model synthesis comparing all three Phase 1 models (gpt-4.1-mini, deepseek-v4-flash, qwen3.6-35b) across all six architecture configurations on validation750. Includes per-row failure category breakdowns for DL, CP, SE (hybrid row-level data not available for deepseek/qwen without deep-replay extraction). Key findings: (1) SE is consistently best across models but gpt-4.1-mini leads by 5-6pp; (2) qwen dominant failure is unknown_false_pos (91 DL vs 59 gpt-4.1-mini) -- reverse of deepseek (highest seizure_free_false_pos: 56 DL); (3) CP guidance block helps gpt-4.1-mini (+2.3pp) but harms qwen (-0.7pp); (4) FM-6 drop-attack selection is gpt-4.1-mini-specific -- qwen and deepseek already correct; (5) qwen hybrid renders only 400/750 rows vs 589/604 for gpt/deepseek; (6) deepseek hybrid routing dominated by rendered_label_supported_but_policy_sensitive (97/123) driven by its SF over-confidence.
-- Artifacts: `docs/research/gan2026_cross_model_comparison_2026-06-09.md`.
+- Artifacts: ``.
+
+## Inform Architecture Loop
+
+### `exectv2_deterministic_all9_dev_20260617`
+- Date/split: `2026-06-17`; `dev`; `140` rows.
+- Pipeline: `exectv2_deterministic_all9`; mode `deterministic`; replay `analysis_only`.
+- Model role: ExECTv2 deterministic all-9 baseline; active rules for Prescription, Investigations, Diagnosis, Onset, WhenDiagnosed, BirthHistory, EpilepsyCause, PatientHistory, and SeizureFrequency.; model `(model-independent)`.
+- Primary metrics: active_entities=['Prescription', 'Investigations', 'Diagnosis', 'Onset', 'WhenDiagnosed', 'BirthHistory', 'EpilepsyCause', 'PatientHistory', 'SeizureFrequency'], benchmark_per_item_f1=0.3625, benchmark_per_letter_f1=0.6747, call_failures=0, cui_attachment_rate=0.9909, evidence_not_substring_count=0, evidence_validity_rate=1.0, mentions_total=992, mentions_with_cui=983, parse_failures=0, phrase_only_per_item_f1=0.4571, phrase_only_per_letter_f1=0.7526, prescription_benchmark_with_cui_f1=0.302, prescription_clinical_headline_f1=0.9072, prompt_version=n/a (deterministic rules), routing_count=0, schema_error_count=0, schema_repairs=0, semantic_per_item_f1=0.3754, semantic_per_letter_f1=0.6814.
+- Evidence validity: exact source substring validation summarized in scorecard.
+- Claim language: First GPT-first rules_only all-9 substrate. Not freeze-ready; incomplete entity coverage remains explicit in per-entity scores.
+- Artifacts: `experiments/exectv2_deterministic_all9_dev_20260617.json`, `experiments/exectv2_deterministic_all9_dev_20260617.md`.
 
 ## Historical
+
+### `exectv2_arbitration_v02_dev140_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_hybrid`; mode `live`; replay `live`.
+- Model role: one arbitration call per letter over the union per-entity candidate pool; model `openai/gpt-4.1-mini`.
+- Primary metrics: summary=git_head=291a6c6d19d7, prompt_version=exectv2_arbitration_v0.2, semantic_per_item_f1=0.190 (P0.278 R0.144), benchmark_per_item_f1=0.137, diagnosis_semantic_f1=0.270, parse_failures=0.
+- Claim language: REJECTED as headline. Entity retyping works (named seizure types -> Diagnosis + SF replication) but a single combined call cannot reproduce the recall of nine focused passes -> 0.190 < 0.220 bare union. Regeneration is recall-limited.
+- Artifacts: `experiments/exectv2_arbitration_v02_dev140_gpt41mini_20260618.md`, `experiments/exectv2_arbitration_v02_dev140_gpt41mini_20260618.jsonl`.
+
+### `exectv2_altitude_proj_dev140_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `deterministic_benchmark_altitude`; mode `replay`; replay `saved_output_replay`.
+- Model role: deterministic compound-split + seizure-type entity-norm + affirmed-default attributes; no model; model `projection`.
+- Primary metrics: summary=git_head=291a6c6d19d7, prompt_version=benchmark_altitude_v0.1, semantic_per_item_f1=0.242 (from 0.220 bare union), diagnosis_semantic_f1=0.318 (from 0.243), patienthistory_semantic_f1=0.180, benchmark_per_item_f1=0.181.
+- Claim language: recall-preserving deterministic projection, separate projection credit (never LLM reasoning). Diagnosis +0.075, overall +0.022. Oracle phrase-snap caps F1=0.42; 0.7 on populous entities NOT reachable via projection (PH recall-bound, SF quantification-bound). See docs/research/exectv2_gpt_first_error_analysis_2026-06-18.md.
+- Artifacts: `experiments/exectv2_altitude_proj_dev140_20260618.md`, `experiments/exectv2_altitude_proj_dev140_20260618.jsonl`.
 
 ### `exectv2_audit_llm_only_all_entities_full200_gpt41mini_20260612`
 - Date/split: `2026-06-12`; `full200_overall_audit`; `200` rows.

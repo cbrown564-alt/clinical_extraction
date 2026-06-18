@@ -10,19 +10,19 @@ const require = createRequire(import.meta.url);
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SOURCE = path.join(
   ROOT,
-  "docs/research/gan2026_full_research_retrospective_2026-06-02.md",
+  "",
 );
 const HTML_OUT = path.join(
   ROOT,
-  "docs/research/gan2026_full_research_retrospective_2026-06-02.html",
+  "",
 );
 const PDF_OUT = path.join(
   ROOT,
-  "docs/research/gan2026_full_research_retrospective_2026-06-02.pdf",
+  "",
 );
 const SHOT_OUT = path.join(
   ROOT,
-  "docs/research/gan2026_full_research_retrospective_2026-06-02.preview.png",
+  "docs/research/gan2026/retrospectives/gan2026_full_research_retrospective_2026-06-02.preview.png",
 );
 const WANT_PREVIEW = process.argv.includes("--preview");
 

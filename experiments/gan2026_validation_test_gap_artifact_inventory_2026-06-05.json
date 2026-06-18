@@ -2,7 +2,7 @@
   "inventory_id": "gan2026_validation_test_gap_artifact_inventory_v0",
   "date": "2026-06-05",
   "split_manifest": "gan2026_split_v1",
-  "protocol": "docs/research/gan2026_validation_test_gap_protocol_2026-06-05.md",
+  "protocol": "docs/experiments/gan2026/validation_test_gap/gan2026_validation_test_gap_protocol_2026-06-05.md",
   "inspection_policy": {
     "validation": "row_level_allowed",
     "locked_test": "aggregate_or_predeclared_slice_only",
@@ -93,7 +93,7 @@
       "paths": [
         "experiments/gan2026_hidden_family_first_failure_atlas_2026-06-03.csv",
         "experiments/gan2026_hidden_family_first_failure_atlas_2026-06-03.json",
-        "docs/research/gan2026_hidden_family_first_failure_atlas_2026-06-03.md"
+        "docs/research/gan2026/error_analysis/gan2026_hidden_family_first_failure_atlas_2026-06-03.md"
       ],
       "artifact_role": "hidden_family_and_first_failure_join",
       "replay_status": "analysis_join",
@@ -119,8 +119,8 @@
       "paths": [
         "experiments/gan2026_rq7_family_component_matrix_2026-06-04.json",
         "experiments/gan2026_rq7_family_component_matrix_2026-06-04.md",
-        "docs/research/gan2026_rq7_family_indexed_component_matrix_answer_2026-06-04.md",
-        "docs/research/gan2026_rq7_hidden_family_generalization_synthesis_2026-06-04.md"
+        "docs/experiments/gan2026/rq_series/gan2026_rq7_family_indexed_component_matrix_answer_2026-06-04.md",
+        "docs/experiments/gan2026/rq_series/gan2026_rq7_hidden_family_generalization_synthesis_2026-06-04.md"
       ],
       "artifact_role": "family_component_synthesis",
       "replay_status": "analysis_summary",

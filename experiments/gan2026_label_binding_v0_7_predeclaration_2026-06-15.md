@@ -3,7 +3,7 @@
 Date: 2026-06-15
 
 Cycle 3 of the F1 dynamic workflow
-(`docs/research/gan2026_f1_dynamic_workflow_protocol_2026-06-15.md`). Predeclared
+(``). Predeclared
 **before any run**, per the predeclaration hard gate. This file states the exact
 consistency repair, the per-panel expected effect (direction + rough magnitude),
 the regression risk, and the stop rule. Nothing here is revised after the run.

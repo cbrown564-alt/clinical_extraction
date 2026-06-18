@@ -1,0 +1,455 @@
+{
+  "generated": "2026-06-18",
+  "jsonl": "experiments\\exectv2_hybrid_diagnosis_reconciler_v01_dev140_gpt41mini_20260618.jsonl",
+  "split": "dev",
+  "letters": 140,
+  "prompt_version": "exectv2_hybrid_diagnosis_reconciler_v0.1",
+  "pipeline_family": "exectv2_hybrid_diagnosis_reconciler",
+  "concept_assertion": {
+    "tp": 243,
+    "precision_tp": 243,
+    "recall_tp": 243,
+    "fp": 126,
+    "fn": 126,
+    "pred_count": 369,
+    "gold_count": 369,
+    "precision": 0.6585365853658537,
+    "recall": 0.6585365853658537,
+    "f1": 0.6585365853658537
+  },
+  "concept_only": {
+    "tp": 263,
+    "precision_tp": 263,
+    "recall_tp": 263,
+    "fp": 106,
+    "fn": 106,
+    "pred_count": 369,
+    "gold_count": 369,
+    "precision": 0.7127371273712737,
+    "recall": 0.7127371273712737,
+    "f1": 0.7127371273712737
+  },
+  "top_gold_misses": [
+    {
+      "count": 17,
+      "key": "[\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "example": "epilepsy",
+      "letters": [
+        "EA0006",
+        "EA0035",
+        "EA0039",
+        "EA0057",
+        "EA0128",
+        "EA0133",
+        "EA0137",
+        "EA0141"
+      ]
+    },
+    {
+      "count": 7,
+      "key": "[\"Diagnosis\", \"focal epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "example": "focal-epilepsy",
+      "letters": [
+        "EA0002",
+        "EA0061",
+        "EA0114",
+        "EA0121",
+        "EA0142",
+        "EA0153",
+        "EA0178"
+      ]
+    },
+    {
+      "count": 6,
+      "key": "[\"Diagnosis\", \"secondary generalised seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "example": "secondary-generalised-seizures",
+      "letters": [
+        "EA0040",
+        "EA0137",
+        "EA0150",
+        "EA0152",
+        "EA0157"
+      ]
+    },
+    {
+      "count": 5,
+      "key": "[\"Diagnosis\", \"focal seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "example": "focal-seizures",
+      "letters": [
+        "EA0002",
+        "EA0109",
+        "EA0126",
+        "EA0133",
+        "EA0158"
+      ]
+    },
+    {
+      "count": 5,
+      "key": "[\"Diagnosis\", \"tonic clonic seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "example": "generalised-tonic-clonic-seizures",
+      "letters": [
+        "EA0005",
+        "EA0049",
+        "EA0128",
+        "EA0168",
+        "EA0180"
+      ]
+    },
+    {
+      "count": 5,
+      "key": "[\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"4\"], [\"Negation\", \"Affirmed\"]]]",
+      "example": "epilepsy-with-generalised-tonic-clonic-seizure-alone",
+      "letters": [
+        "EA0005",
+        "EA0043",
+        "EA0062",
+        "EA0132",
+        "EA0164"
+      ]
+    },
+    {
+      "count": 4,
+      "key": "[\"Diagnosis\", \"focal seizures\", [[\"Certainty\", \"4\"], [\"Negation\", \"Affirmed\"]]]",
+      "example": "focal-seizures",
+      "letters": [
+        "EA0018",
+        "EA0110",
+        "EA0153",
+        "EA0171"
+      ]
+    },
+    {
+      "count": 4,
+      "key": "[\"Diagnosis\", \"symptomatic epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "example": "symptomatic-epilepsy",
+      "letters": [
+        "EA0079",
+        "EA0108",
+        "EA0169",
+        "EA0181"
+      ]
+    },
+    {
+      "count": 4,
+      "key": "[\"Diagnosis\", \"generalised\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "example": "generalised",
+      "letters": [
+        "EA0123",
+        "EA0128",
+        "EA0183",
+        "EA0195"
+      ]
+    },
+    {
+      "count": 3,
+      "key": "[\"Diagnosis\", \"juvenile myoclonic epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "example": "juvenile-myoclonic-epilepsy",
+      "letters": [
+        "EA0033",
+        "EA0049",
+        "EA0125"
+      ]
+    },
+    {
+      "count": 3,
+      "key": "[\"Diagnosis\", \"juvenile myoclonic epilepsy\", [[\"Certainty\", \"4\"], [\"Negation\", \"Affirmed\"]]]",
+      "example": "juvenile-myoclonic-epilepsy",
+      "letters": [
+        "EA0085",
+        "EA0113",
+        "EA0128"
+      ]
+    },
+    {
+      "count": 3,
+      "key": "[\"Diagnosis\", \"generalised tonic clonic seizure\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "example": "generalised-tonic-clonic-seizure",
+      "letters": [
+        "EA0087",
+        "EA0157",
+        "EA0161"
+      ]
+    },
+    {
+      "count": 3,
+      "key": "[\"Diagnosis\", \"tonic clonic seizures\", [[\"Certainty\", \"4\"], [\"Negation\", \"Affirmed\"]]]",
+      "example": "tonic-clonic-seizures",
+      "letters": [
+        "EA0111",
+        "EA0116",
+        "EA0200"
+      ]
+    },
+    {
+      "count": 2,
+      "key": "[\"Diagnosis\", \"focal to bilateral convulsive seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "example": "focal-to-bilateral-convulsive-seizures",
+      "letters": [
+        "EA0011",
+        "EA0061"
+      ]
+    },
+    {
+      "count": 2,
+      "key": "[\"Diagnosis\", \"epileptic seizures\", [[\"Certainty\", \"4\"], [\"Negation\", \"Affirmed\"]]]",
+      "example": "epileptic-seizures",
+      "letters": [
+        "EA0043",
+        "EA0164"
+      ]
+    },
+    {
+      "count": 2,
+      "key": "[\"Diagnosis\", \"epileptic seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "example": "epileptic-seizures",
+      "letters": [
+        "EA0057"
+      ]
+    },
+    {
+      "count": 2,
+      "key": "[\"Diagnosis\", \"focal\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "example": "Focal",
+      "letters": [
+        "EA0143",
+        "EA0190"
+      ]
+    },
+    {
+      "count": 2,
+      "key": "[\"Diagnosis\", \"temporal lobe epilepsy\", [[\"Certainty\", \"3\"], [\"Negation\", \"Affirmed\"]]]",
+      "example": "temporal-lobe-epilepsy",
+      "letters": [
+        "EA0149",
+        "EA0185"
+      ]
+    },
+    {
+      "count": 2,
+      "key": "[\"Diagnosis\", \"secondary\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "example": "secondary",
+      "letters": [
+        "EA0150",
+        "EA0188"
+      ]
+    },
+    {
+      "count": 2,
+      "key": "[\"Diagnosis\", \"dyscognitive seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "example": "dyscognitive-seizures",
+      "letters": [
+        "EA0169",
+        "EA0181"
+      ]
+    }
+  ],
+  "top_predicted_over_emissions": [
+    {
+      "count": 52,
+      "key": "[\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "example": "epilepsy",
+      "letters": [
+        "EA0002",
+        "EA0005",
+        "EA0010",
+        "EA0019",
+        "EA0021",
+        "EA0022",
+        "EA0034",
+        "EA0038"
+      ]
+    },
+    {
+      "count": 26,
+      "key": "[\"Diagnosis\", \"tonic clonic seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "example": "tonic clonic seizures",
+      "letters": [
+        "EA0020",
+        "EA0043",
+        "EA0087",
+        "EA0104",
+        "EA0108",
+        "EA0111",
+        "EA0116",
+        "EA0123"
+      ]
+    },
+    {
+      "count": 8,
+      "key": "[\"Diagnosis\", \"absence seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "example": "absence seizures",
+      "letters": [
+        "EA0020",
+        "EA0050",
+        "EA0082",
+        "EA0096",
+        "EA0124",
+        "EA0161",
+        "EA0184"
+      ]
+    },
+    {
+      "count": 7,
+      "key": "[\"Diagnosis\", \"symptomatic structural focal epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "example": "symptomatic structural focal epilepsy",
+      "letters": [
+        "EA0056",
+        "EA0072",
+        "EA0079",
+        "EA0108",
+        "EA0169",
+        "EA0181",
+        "EA0195"
+      ]
+    },
+    {
+      "count": 5,
+      "key": "[\"Diagnosis\", \"focal epilepsy\", [[\"Certainty\", \"4\"], [\"Negation\", \"Affirmed\"]]]",
+      "example": "focal epilepsy",
+      "letters": [
+        "EA0002",
+        "EA0061",
+        "EA0114",
+        "EA0171",
+        "EA0188"
+      ]
+    },
+    {
+      "count": 5,
+      "key": "[\"Diagnosis\", \"secondary generalised tonic clonic seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "example": "secondary generalised tonic clonic seizures",
+      "letters": [
+        "EA0104",
+        "EA0137",
+        "EA0150",
+        "EA0157",
+        "EA0188"
+      ]
+    },
+    {
+      "count": 4,
+      "key": "[\"Diagnosis\", \"focal seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "example": "focal seizures",
+      "letters": [
+        "EA0018",
+        "EA0057",
+        "EA0143",
+        "EA0153"
+      ]
+    },
+    {
+      "count": 3,
+      "key": "[\"Diagnosis\", \"absences\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "example": "absences",
+      "letters": [
+        "EA0033",
+        "EA0047",
+        "EA0125"
+      ]
+    },
+    {
+      "count": 3,
+      "key": "[\"Diagnosis\", \"single seizure\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "example": "single seizure",
+      "letters": [
+        "EA0071",
+        "EA0100"
+      ]
+    },
+    {
+      "count": 2,
+      "key": "[\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"4\"], [\"Negation\", \"Affirmed\"]]]",
+      "example": "epilepsy",
+      "letters": [
+        "EA0035",
+        "EA0168"
+      ]
+    },
+    {
+      "count": 2,
+      "key": "[\"Diagnosis\", \"focal seizures\", [[\"Certainty\", \"4\"], [\"Negation\", \"Affirmed\"]]]",
+      "example": "focal seizures",
+      "letters": [
+        "EA0109",
+        "EA0158"
+      ]
+    },
+    {
+      "count": 2,
+      "key": "[\"Diagnosis\", \"temporal lobe epilepsy\", [[\"Certainty\", \"4\"], [\"Negation\", \"Affirmed\"]]]",
+      "example": "temporal lobe epilepsy",
+      "letters": [
+        "EA0109",
+        "EA0149"
+      ]
+    },
+    {
+      "count": 2,
+      "key": "[\"Diagnosis\", \"focal to bilateral convulsive seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "example": "focal to bilateral convulsive seizures",
+      "letters": [
+        "EA0126",
+        "EA0186"
+      ]
+    },
+    {
+      "count": 2,
+      "key": "[\"Diagnosis\", \"myoclonus\", [[\"Certainty\", \"4\"], [\"Negation\", \"Affirmed\"]]]",
+      "example": "myoclonus",
+      "letters": [
+        "EA0168",
+        "EA0180"
+      ]
+    },
+    {
+      "count": 2,
+      "key": "[\"Diagnosis\", \"tonic clonic seizures\", [[\"Certainty\", \"4\"], [\"Negation\", \"Affirmed\"]]]",
+      "example": "tonic clonic seizures",
+      "letters": [
+        "EA0168",
+        "EA0180"
+      ]
+    },
+    {
+      "count": 2,
+      "key": "[\"Diagnosis\", \"focal dyscognitive seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "example": "focal dyscognitive seizures",
+      "letters": [
+        "EA0169",
+        "EA0181"
+      ]
+    },
+    {
+      "count": 1,
+      "key": "[\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"3\"], [\"Negation\", \"Affirmed\"]]]",
+      "example": "epilepsy",
+      "letters": [
+        "EA0006"
+      ]
+    },
+    {
+      "count": 1,
+      "key": "[\"Diagnosis\", \"absence like seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "example": "absence like seizures",
+      "letters": [
+        "EA0006"
+      ]
+    },
+    {
+      "count": 1,
+      "key": "[\"Diagnosis\", \"multiple seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "example": "multiple seizures",
+      "letters": [
+        "EA0009"
+      ]
+    },
+    {
+      "count": 1,
+      "key": "[\"Diagnosis\", \"convulsive seizure\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "example": "convulsive seizure",
+      "letters": [
+        "EA0039"
+      ]
+    }
+  ]
+}

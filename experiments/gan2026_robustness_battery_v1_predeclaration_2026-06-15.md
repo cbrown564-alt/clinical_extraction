@@ -3,7 +3,7 @@
 Date: 2026-06-15
 
 Cycle 1 of the F1 dynamic workflow
-(`docs/research/gan2026_f1_dynamic_workflow_protocol_2026-06-15.md`). This
+(``). This
 predeclares the adversarial/robustness/hard-case battery that is the **primary
 pre-test gate**, because `validation750` is saturated (selector oracle ceiling
 739/750; live component generation fixed 1/11 no-correct rows). The battery must

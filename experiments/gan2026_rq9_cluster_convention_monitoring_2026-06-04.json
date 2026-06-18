@@ -19,7 +19,7 @@
     "seizure_free_with_cluster_context": 7,
     "sentinel_no_reference_with_cluster_context": 13
   },
-  "predeclaration": "docs/research/gan2026_rq9_cluster_convention_monitoring_predeclaration_2026-06-04.md",
+  "predeclaration": "docs/experiments/gan2026/rq_series/gan2026_rq9_cluster_convention_monitoring_predeclaration_2026-06-04.md",
   "rationale": "Do not restore default human-review routing for cluster/convention rows. Most v3 prediction-bearing cluster/convention rows are development-correct, but convention-risk subfamilies should be monitored through a high-priority verifier queue.",
   "source_artifact": "experiments/gan2026_rq9_selective_action_router_v3_2026-06-04.jsonl",
   "verifier_priority_counts": {

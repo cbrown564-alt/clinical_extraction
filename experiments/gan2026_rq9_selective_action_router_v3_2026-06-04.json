@@ -5,7 +5,7 @@
     "predict": 716
   },
   "artifact_kind": "gan2026_rq9_selective_action_router",
-  "boundary_policy": "docs/research/gan2026_rq9_unknown_drop_attack_boundary_policy_2026-06-04.md",
+  "boundary_policy": "",
   "by_gold_label_kind": {
     "frequency": {
       "abstain_rows": 3,
@@ -63,7 +63,7 @@
     }
   },
   "claim_language": "Validation-development no-call selective-action router artifact. The router uses saved source predictions and predeclared boundary features; gold labels and human audit classes are development accounting only. It does not change scorer policy, prompts, deterministic rules, projection policy, locked-test behavior, or benchmark-comparable claims.",
-  "contract": "docs/research/gan2026_rq9_selective_action_evaluation_contract_2026-06-04.md",
+  "contract": "",
   "date": "2026-06-04",
   "gold_label_kind_counts": {
     "frequency": 468,

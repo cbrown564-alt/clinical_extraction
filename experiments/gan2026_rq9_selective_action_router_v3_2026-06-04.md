@@ -18,8 +18,8 @@ Validation-development no-call selective-action router artifact. The router uses
 - Source layer: `hybrid_adjudicator_with_adapters`
 - Inventory artifact: `experiments/gan2026_validation750_gold_reference_ambiguity_review_2026-06-04.csv`
 - Human decisions: `experiments/gold_audit_decisions.jsonl`
-- Contract: `docs/research/gan2026_rq9_selective_action_evaluation_contract_2026-06-04.md`
-- Boundary policy: `docs/research/gan2026_rq9_unknown_drop_attack_boundary_policy_2026-06-04.md`
+- Contract: ``
+- Boundary policy: ``
 
 ## Metrics
 

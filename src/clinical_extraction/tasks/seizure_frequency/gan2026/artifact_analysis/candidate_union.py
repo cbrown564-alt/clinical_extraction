@@ -30,7 +30,7 @@ DEFAULT_RICH_STATE_REPLAY_PATH = Path(
 DEFAULT_JSONL_PATH = Path("experiments/gan2026_candidate_union_saved_artifact_2026-06-04.jsonl")
 DEFAULT_JSON_PATH = Path("experiments/gan2026_candidate_union_saved_artifact_2026-06-04.json")
 DEFAULT_REPORT_PATH = Path("experiments/gan2026_candidate_union_saved_artifact_2026-06-04.md")
-DEFAULT_PROTOCOL_PATH = Path("docs/research/gan2026_candidate_union_protocol_2026-06-04.md")
+DEFAULT_PROTOCOL_PATH = Path("")
 MAX_UNION_CANDIDATES_PER_ROW = 12
 
 

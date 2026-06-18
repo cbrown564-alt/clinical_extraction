@@ -29,7 +29,7 @@ DEFAULT_JSON_PATH = Path(
     "experiments/gan2026_validation750_first_component_ablation_table_v6_2026-06-06.json"
 )
 DEFAULT_REPORT_PATH = Path(
-    "docs/research/gan2026_validation750_first_component_ablation_table_v6_2026-06-06.md"
+    ""
 )
 DEFAULT_ONE_FAMILY_OFF_SPECS = {
     "seizure_free_duration_date_instrumentation": {

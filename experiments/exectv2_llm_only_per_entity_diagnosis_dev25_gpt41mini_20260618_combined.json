@@ -1,0 +1,29 @@
+{
+  "generated_on": "2026-06-18",
+  "mode": "live",
+  "model": "openai/gpt-4.1-mini",
+  "n_letters": 25,
+  "per_entity": [
+    {
+      "baseline_over_emission": 6,
+      "baseline_semantic_item_f1": 0.1235,
+      "baseline_source_near_recall": 0.3393,
+      "call_failures": 0,
+      "delta_source_near_recall": 0.0893,
+      "entity": "Diagnosis",
+      "evidence_validity_rate": 1.0,
+      "over_emission": 5,
+      "parse_failures": 0,
+      "probe_semantic_item_f1": 0.2588,
+      "probe_semantic_letter_f1": 0.5455,
+      "probe_source_near_f1": 0.5647,
+      "probe_source_near_recall": 0.4286,
+      "published_item_f1": 0.85,
+      "regime": "recall_bound",
+      "verdict": "focused frame lifts LLM recall"
+    }
+  ],
+  "prompt_version": "exectv2_llm_only_per_entity_v0.4",
+  "source_near_recall_margin": 0.05,
+  "split": "dev"
+}

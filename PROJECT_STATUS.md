@@ -1,39 +1,54 @@
 # Project Status
 
-Last updated: 2026-06-17
+Last updated: 2026-06-18
 
 ## Active Objective
 
-ExECTv2 is now the forward workstream. Use the Gan 2026 closeout as the strategy
-template for full deterministic, LLM-only, and hybrid runs: source-near state,
-exact evidence, component attribution, benchmark-format ablations, and
-family-aware promotion gates. Use `gpt-4.1-mini` for rapid loops; keep Qwen
-3.6:35B as a later overnight transfer track.
+ExECTv2 is the forward workstream. The current key-family result should be
+framed as an architecture characterization, not a benchmark-complete claim. A
+single candidate-ID action prompt now reproduces the current per-family dev140
+readout by auditing candidate IDs and deterministically copying selected
+candidates. Prescription/medication and Investigations clear the dev140
+clinical-recovery target; SeizureFrequency remains a partial-gain family below
+`0.8`; Diagnosis remains a transparent ceiling/annotation-scope result on the
+current candidate set.
+
+Use the Gan 2026 closeout discipline as the template: source-near state, exact
+evidence, component attribution, benchmark-format ablations, and family-aware
+promotion gates.
+
+## Current Dev140 Readout
+
+| Family | Current candidate | F1 | P | R | Status |
+| --- | --- | ---: | ---: | ---: | --- |
+| Prescription / medication | Prescription verifier v0.1 | 0.817 | 0.773 | 0.865 | Clears target |
+| Investigations | Investigations verifier v0.1 | 0.872 | 0.869 | 0.875 | Clears target |
+| SeizureFrequency | SF unknown suppression v0.7 | 0.782 | 0.759 | 0.807 | Partial gain |
+| Diagnosis | Diagnosis reconciler v0.1 | 0.658 | 0.658 | 0.658 | Ceiling characterization |
+
+This does not authorize a new full-200 audit.
 
 ## Recent Context
 
-- Split discipline remains intact. Gan `test450` remains aggregate-only for
-  development; ExECTv2 full-200 audits are blocked until a GPT-first architecture
-  has benchmark-beating dev evidence and a predeclared readout. Gan is closed:
-  V12 fresh-evidence hybrid ceiling `379/450` Purist (`0.842`); recommended
-  simple labeler `364/450` Purist (`0.809`).
-- GPT-first ExECTv2 strategy:
-  `docs/research/exectv2_gpt_first_full_architecture_strategy_2026-06-17.md`.
-  Freeze blockers: rules-only all-9 below target, LLM-only all-9 still a
-  negative single-pass baseline, and hybrid evidence still SF-only.
-- Deterministic all-9 dev scorecard:
-  `experiments/exectv2_deterministic_all9_dev_20260617.md`; benchmark `0.3625`
-  item / `0.6747` letter. PatientHistory is conservative at `0.2087` item /
-  `0.5475` letter with `157/157` emitted mentions carrying CUI.
-- Shared `project_cuis` is now wired into ExECTv2 LLM-only and hybrid
-  post-steps, including SeizureFrequency. The source-near/semantic layers remain
-  inspectable while benchmark-format CUI projection is counted separately.
+- The single structured key-family prompt is a useful evidence-grounded
+  substrate, but dev25 target-clearing results did not transfer to dev140.
+- Medication and Investigations now clear dev140 with focused verifier stages.
+  Their success supports family-specific decision units over broad prompt
+  accretion.
+- Diagnosis should stop ordinary target chasing on the current candidate set.
+  The convention oracle reaches only `0.791`, below the `0.8` gate, and the
+  ceiling note documents the claim language.
+- SF v0.7 predeclared unknown suppression improves dev140 `0.763` -> `0.782`
+  after v0.6 state projection, with unknown FP `22` -> `12`, unknown FN
+  unchanged at `8`, and active-rate/seizure-free recall unchanged.
 
 ## Active Priorities
 
-1. Execute GPT-first ExECTv2: deterministic all-9, per-entity LLM-only
-   mention frames, and hybrid live candidate assessment.
-2. Require benchmark-beating dev evidence before any new full-200 audit:
+1. Report the current ExECTv2 result conservatively: two clear families, one
+   partial-gain SF family, and one Diagnosis ceiling/annotation-scope family.
+2. Treat SF v0.7 as a partial-gain candidate, not a target-clearing result;
+   further SF metric work needs a new predeclared hard-slice rationale.
+3. Require benchmark-beating dev evidence before any new full-200 audit:
    overall `0.87` per-item / `0.90` per-letter, plus per-entity tables,
    evidence/schema reliability, semantic-vs-CUI gaps, and ablations.
 
@@ -41,18 +56,14 @@ family-aware promotion gates. Use `gpt-4.1-mini` for rapid loops; keep Qwen
 
 ### Now
 
-- Run GPT per-entity LLM-only pilots for the entities most likely to move the
-  overall benchmark fastest: Prescription, Investigations, Diagnosis, then
-  SeizureFrequency as the hard transfer check.
-- Add an ExECTv2 projection-gap ledger before promoting any architecture:
-  phrase scope, CUI, attribute bundle, split/merge, current-regimen errors,
-  source/defaulted frequency, future medication, weight dosing, and rescue mismatch.
+- Convert the final synthesis tables into paper-ready results/ablation language
+  when manuscript drafting starts.
 
 ### Next
 
-- Extend the hybrid live candidate-assessment pattern from SF to all nine
-  entities, using deterministic and GPT mention-frame outputs as candidate
-  sources rather than hidden final truth.
+- Consider a genuinely new Diagnosis evidence-selection architecture only if it
+  changes the prediction-bearing evidence source; do not run another local gate
+  over the same candidate set.
 
 ### Blocked
 
@@ -61,25 +72,54 @@ family-aware promotion gates. Use `gpt-4.1-mini` for rapid loops; keep Qwen
 - New ExECTv2 full-200 audits are blocked until benchmark-beating GPT-first dev
   evidence and a predeclared aggregate readout.
 
-### Backlog
-
-- Resume ExECTv2 Qwen event-frame dev25/dev140 after GPT choices are clearer.
-
 ### Done Recently
 
-- 2026-06-17: Extended shared benchmark-format CUI projection to
-  SeizureFrequency and wired `project_cuis` into LLM-only SF, LLM-only all-entity,
-  clinical-findings, and hybrid post-steps. Preserved explicit
-  format/semantic-vs-CUI layers for ablation. Verified `1573` tests pass and
-  Ruff on touched files; full-project Ruff remains blocked by pre-existing lint
-  in old experiment/test surfaces.
-- 2026-06-17: Completed the deterministic all-9 substrate: Prescription,
-  Investigations, Diagnosis, Onset, WhenDiagnosed, BirthHistory, EpilepsyCause,
-  PatientHistory, SeizureFrequency, and the Prescription clinical headline plus
-  benchmark projection ladder. Current all-9 dev benchmark `0.3625` item /
-  `0.6747` letter.
-- 2026-06-14 to 2026-06-17: Closed the Gan strand and wrote the GPT-first
-  ExECTv2 architecture strategy; Qwen moved to an overnight transfer track.
+- 2026-06-18: Completed the candidate-ID action version of the single
+  family-conditioned prompt. v0.4 emits keep/reject actions over candidate IDs
+  and deterministic code copies selected candidate mentions verbatim. Live
+  dev140 matches current per-family prompts (`Rx 0.817`, `Dx 0.658`,
+  `SF 0.782`, `Inv 0.872`) with zero call/parse failures, removing the
+  full-object copy-drift failure. This is the current comparator-equivalent
+  single prompt design; it does not raise Diagnosis or SF above `0.8`.
+  See `docs/research/exectv2_single_prompt_design_iteration_2026-06-18.md`.
+- 2026-06-18: Implemented the candidate-backed single family-conditioned
+  adjudicator. The candidate bundle/passthrough ceiling reproduces the current
+  dev140 comparators (`Rx 0.817`, `Dx 0.658`, `SF 0.782`, `Inv 0.872`), and
+  v0.3 clears all four families on dev25 (`Rx 0.961`, `Dx 0.838`, `SF 0.875`,
+  `Inv 0.878`). Full dev140 live transfer still fails for full-object
+  re-emission (`Rx 0.817`, `Dx 0.657`, `SF 0.697`, `Inv 0.876`), mostly from
+  copy drift. Next single-design iteration should emit candidate-ID actions
+  only and deterministically copy selected candidate mentions. See
+  `docs/research/exectv2_single_prompt_design_iteration_2026-06-18.md`.
+- 2026-06-18: Implemented and tested the family-conditioned event-ledger
+  template through v0.1-v0.3. v0.3 looked promising on dev5 but failed the
+  dev25 gate except Prescription (`Rx 0.824`, `Dx 0.405`, `SF 0.429`,
+  `Inv 0.769`), so the direct-from-letter family-conditioned design is
+  rejected. Carry forward a single candidate-backed family-conditioned
+  adjudicator template instead. See
+  `docs/research/exectv2_single_prompt_design_iteration_2026-06-18.md`.
+- 2026-06-18: Iterated a Gan-inspired single all-family event-ledger prompt
+  through v0.6-v0.8 on dev25 plus a stronger-model pilot. The single-call
+  variant is rejected; carry forward one family-conditioned event-ledger prompt
+  template instead. See
+  `docs/research/exectv2_single_prompt_design_iteration_2026-06-18.md`.
+- 2026-06-18: Completed the predeclared SF unknown-suppression hard-slice study.
+  v0.7 drops 10 named-rule unknown over-emissions and improves SF dev140
+  `0.763` -> `0.782` without active-rate or seizure-free recall regression. See
+  `experiments/exectv2_hybrid_sf_unknown_suppression_v07_dev140_20260618.md`.
+- 2026-06-18: Drafted the final ExECTv2 key-family architecture synthesis and
+  paper-table scaffold:
+  `docs/research/exectv2_final_key_family_architecture_synthesis_2026-06-18.md`.
+- 2026-06-18: Predeclared the narrow SF unknown-suppression hard-slice study
+  with stop rules for active-rate and seizure-free recall regression.
+- 2026-06-18: Completed SF state projection v0.6. State-only/combined ablations
+  improve SF dev140 `0.721` -> `0.763`; ownership-only is flat. See
+  `docs/research/exectv2_sf_state_projection_v06_readout_2026-06-18.md`.
+- 2026-06-18: Completed the GPT-first key-family loop through dev140 transfer,
+  family-specific verifier/adjudicator experiments, convention decomposition,
+  and current combined readout.
+- 2026-06-17: Closed the Gan strand, completed the deterministic all-9 ExECTv2
+  substrate, and built the reusable all-entity projection-gap ledger.
 
 ## Guardrails
 
@@ -88,12 +128,17 @@ family-aware promotion gates. Use `gpt-4.1-mini` for rapid loops; keep Qwen
 - New Gan holdout-facing runs require explicit frozen-protocol authorization.
 - Keep architecture claims attribution-clean across `rules_only`, `llm_only`,
   and `hybrid`.
-- Treat Gan-specific rules and benchmark-format repairs as controlled variables,
-  not hidden implementation detail.
+- Treat deterministic rules and benchmark-format repairs as controlled
+  variables, not hidden implementation detail.
+- Treat SF v0.7 as a partial-improvement candidate, not a target-clearing
+  result.
+- Treat Diagnosis as ceiling/characterization evidence unless a new
+  evidence-selection architecture is proposed.
 
 ## Core Artifacts
 
-- `experiments/exectv2_deterministic_all9_dev_20260617.md`
-- `docs/research/exectv2_gpt_first_full_architecture_strategy_2026-06-17.md`
-- `docs/research/gan2026_research_closeout_synthesis_2026-06-17.md`
-- `experiments/RUN_INDEX.md`
+Start with
+`docs/research/exectv2_final_key_family_architecture_synthesis_2026-06-18.md`;
+it links the convention decomposition, SF v0.6/v0.7 readouts, Diagnosis ceiling note,
+SF unknown-suppression predeclaration, combined key-family ledger, and
+`experiments/RUN_INDEX.md`.

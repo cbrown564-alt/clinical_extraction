@@ -15,7 +15,7 @@ policy/guards byte-identical; only the trace-count wording reworded and the thir
 model dropped.
 
 Baseline: 3-agent fresh-evidence v0.4 on validation750 = 682/750 Purist.
-Plan: docs/research/gan2026_simplest_near_ceiling_architecture_plan_2026-06-16.md
+Plan: docs/research/gan2026/architecture/gan2026_simplest_near_ceiling_architecture_plan_2026-06-16.md
 NEVER reads or runs test450.
 
 Usage:
@@ -67,7 +67,7 @@ BASELINE_V04_JSONL = (
     / "gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.jsonl"
 )
 PLAN_PATH = (
-    "docs/research/gan2026_simplest_near_ceiling_architecture_plan_2026-06-16.md"
+    "docs/research/gan2026/architecture/gan2026_simplest_near_ceiling_architecture_plan_2026-06-16.md"
 )
 
 PEER = "deepseek"

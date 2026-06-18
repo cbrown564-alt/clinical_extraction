@@ -1,0 +1,128 @@
+{
+  "augment_rules": false,
+  "dimensions": {
+    "benchmark_format": {
+      "projection_delta_item_f1": -0.0385,
+      "semantic_minus_benchmark_item_f1": 0.0385
+    },
+    "calibration_routing": {
+      "by_reason": {
+        "bare_nonzero_count": 2,
+        "duplicate_mention": 5,
+        "no_frequency_attributes": 4
+      },
+      "routed_total": 11
+    },
+    "candidate_generation": {
+      "source_near_recall": 0.5284
+    },
+    "faithfulness": {
+      "evidence_not_substring_routed": 0
+    },
+    "operational": {
+      "candidates": 1337,
+      "routed": 11,
+      "scored": 1326
+    },
+    "robustness": [
+      {
+        "benchmark_item_f1": 0.2456,
+        "entity": "BirthHistory",
+        "gap_to_target": -0.7244,
+        "published_target": 0.97,
+        "semantic_item_f1": 0.2807
+      },
+      {
+        "benchmark_item_f1": 0.1717,
+        "entity": "Diagnosis",
+        "gap_to_target": -0.6783,
+        "published_target": 0.85,
+        "semantic_item_f1": 0.2433
+      },
+      {
+        "benchmark_item_f1": 0.175,
+        "entity": "EpilepsyCause",
+        "gap_to_target": -0.725,
+        "published_target": 0.9,
+        "semantic_item_f1": 0.175
+      },
+      {
+        "benchmark_item_f1": 0.4904,
+        "entity": "Investigations",
+        "gap_to_target": -0.4596,
+        "published_target": 0.95,
+        "semantic_item_f1": 0.5478
+      },
+      {
+        "benchmark_item_f1": 0.1296,
+        "entity": "Onset",
+        "gap_to_target": -0.8304,
+        "published_target": 0.96,
+        "semantic_item_f1": 0.1481
+      },
+      {
+        "benchmark_item_f1": 0.1064,
+        "entity": "PatientHistory",
+        "gap_to_target": -0.6736,
+        "published_target": 0.78,
+        "semantic_item_f1": 0.1608
+      },
+      {
+        "benchmark_item_f1": 0.1743,
+        "entity": "Prescription",
+        "gap_to_target": -0.6957,
+        "published_target": 0.87,
+        "semantic_item_f1": 0.1743
+      },
+      {
+        "benchmark_item_f1": 0.1311,
+        "entity": "SeizureFrequency",
+        "gap_to_target": -0.5289,
+        "published_target": 0.66,
+        "semantic_item_f1": 0.1311
+      },
+      {
+        "benchmark_item_f1": 0.0727,
+        "entity": "WhenDiagnosed",
+        "gap_to_target": -0.8373,
+        "published_target": 0.91,
+        "semantic_item_f1": 0.0727
+      }
+    ],
+    "schema_reliability": {
+      "candidates": 1337,
+      "mentions_scored": 1326,
+      "routed_taxonomy": {
+        "bare_nonzero_count": 2,
+        "duplicate_mention": 5,
+        "no_frequency_attributes": 4
+      }
+    },
+    "task_correctness": {
+      "benchmark_item_f1": 0.181,
+      "benchmark_item_f1_ci": [
+        0.1601,
+        0.2008
+      ],
+      "benchmark_letter_f1": 0.4203,
+      "phrase_item_f1": 0.3286,
+      "semantic_item_f1": 0.2195,
+      "semantic_item_f1_ci": [
+        0.1958,
+        0.2415
+      ]
+    }
+  },
+  "letters": 140,
+  "model": "openai/gpt-4.1-mini",
+  "promotion_gate": {
+    "benchmark_per_item_f1": 0.181,
+    "benchmark_per_letter_f1": 0.4203,
+    "freeze_target_per_item": 0.87,
+    "freeze_target_per_letter": 0.9,
+    "full_200_audit_authorized": false,
+    "gate_met": false,
+    "verdict": "Dev evidence does NOT clear the freeze targets; the full-200 holdout audit is NOT authorized."
+  },
+  "split": "dev"
+}

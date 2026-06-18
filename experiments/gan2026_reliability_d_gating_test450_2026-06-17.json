@@ -8,7 +8,7 @@
   "split": "test450 (frozen holdout)",
   "architecture": "single gpt-4.1-mini SE pass (primary)",
   "claim_boundary": "frozen aggregate-only holdout readout; no row-level test inspection",
-  "predeclaration": "docs/research/gan2026_d_gating_test450_predeclaration_2026-06-17.md",
+  "predeclaration": "docs/experiments/gan2026/reliability/gan2026_d_gating_test450_predeclaration_2026-06-17.md",
   "frozen_transforms": {
     "confidence_reviewer_module_sha256": "c3ea06caf2399c02daacf3980ef57620cb6b25bbe176b15fbc2a04ae6e49aed8",
     "gating_readout_sha256": "45c96e36a5157d99303eb2667d67d42e21bc984d1cd3ec4ea5ec53c7e9c6e854"

@@ -3,7 +3,7 @@
 Date: 2026-06-15
 
 Cycle 2 of the F1 dynamic workflow
-(`docs/research/gan2026_f1_dynamic_workflow_protocol_2026-06-15.md`). Predeclared
+(``). Predeclared
 **before any run**, per the predeclaration hard gate. This is the candidate
 evidence-presentation change that follows Cycle 1's verdict: the live
 `llm_only_direct_labeler` v0.5 on `gpt-4.1-mini` is **OVERFIT** on the robustness

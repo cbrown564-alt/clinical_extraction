@@ -6,7 +6,7 @@ Replay-only decomposition of the V12 fresh-evidence hybrid; no model calls,
 no test exposure. Source artifact:
 `experiments\gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.jsonl` (750 rows).
 
-Plan: `docs/research/gan2026_simplest_near_ceiling_architecture_plan_2026-06-16.md`.
+Plan: `docs/research/gan2026/architecture/gan2026_simplest_near_ceiling_architecture_plan_2026-06-16.md`.
 
 ## Ladder-middle Purist (each layer a superset of the one above)
 

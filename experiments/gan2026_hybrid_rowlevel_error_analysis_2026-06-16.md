@@ -64,4 +64,4 @@ residual does not scale up the way the generation residual does.
 > Epilogue: C5/C6/C7 executed this plan. C7's structural finding (the correct
 > `unknown` rows are feature-identical to genuine-rate rows on every inference-time
 > signal) explains why Clusters 1–2 are not closable via selection on
-> gpt-4.1-mini. See `docs/research/gan2026_f1_dynamic_workflow_night_synthesis_2026-06-16.md`.
+> gpt-4.1-mini. See ``.

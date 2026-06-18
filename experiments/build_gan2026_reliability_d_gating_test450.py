@@ -3,7 +3,7 @@
 Answers: is the variant-D calibrated confidence practically useful as an abstention
 gate on the primary single gpt-4.1-mini architecture, on the LOCKED holdout?
 
-Predeclared in docs/research/gan2026_d_gating_test450_predeclaration_2026-06-17.md.
+Predeclared in docs/experiments/gan2026/reliability/gan2026_d_gating_test450_predeclaration_2026-06-17.md.
 
 This is a LIVE holdout model run (one reviewer call per test450 row), so it is
 freeze-warden gated. It reads the canonical single-SE-mini answers from the
@@ -168,7 +168,7 @@ def main() -> None:
         "split": "test450 (frozen holdout)",
         "architecture": "single gpt-4.1-mini SE pass (primary)",
         "claim_boundary": "frozen aggregate-only holdout readout; no row-level test inspection",
-        "predeclaration": "docs/research/gan2026_d_gating_test450_predeclaration_2026-06-17.md",
+        "predeclaration": "docs/experiments/gan2026/reliability/gan2026_d_gating_test450_predeclaration_2026-06-17.md",
         "frozen_transforms": frozen_transform_hashes(),
         "asymmetry_note": (
             "Single-model self-signal computed live identically on both splits — NO "

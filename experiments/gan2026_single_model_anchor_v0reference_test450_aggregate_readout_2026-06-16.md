@@ -2,7 +2,7 @@
 
 Date: 2026-06-16
 Decision: **CERTIFIED (aggregate-only read of pre-existing layer)** — Freeze Warden
-Plan: `docs/research/gan2026_simplest_near_ceiling_architecture_plan_2026-06-16.md` (Step 3 anchor read)
+Plan: `docs/research/gan2026/architecture/gan2026_simplest_near_ceiling_architecture_plan_2026-06-16.md` (Step 3 anchor read)
 
 ## What this is (and is not)
 

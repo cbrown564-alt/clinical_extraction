@@ -34,7 +34,7 @@ DEFAULT_JSON_PATH = Path(
     "experiments/gan2026_selective_verifier_live_gpt41mini_2026-06-04.json"
 )
 DEFAULT_REPORT_PATH = Path(
-    "docs/research/gan2026_selective_verifier_live_gpt41mini_2026-06-04.md"
+    ""
 )
 PROMPT_VERSION = "gan2026_selective_verifier_v0"
 ALLOWED_RECOMMENDATIONS = predecl.ALLOWED_RECOMMENDATIONS

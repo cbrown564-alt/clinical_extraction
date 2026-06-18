@@ -31,7 +31,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io
 )
 
 DEFAULT_PROTOCOL_PATH = Path(
-    "docs/research/gan2026_fresh_evidence_reasoner_frozen_test450_protocol_2026-06-13.md"
+    ""
 )
 DEFAULT_TEST_JSONL_PATH = Path(
     "experiments/gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_6_safety_v0_9_2026-06-15.jsonl"

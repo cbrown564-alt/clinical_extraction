@@ -4,7 +4,7 @@ Date: 2026-06-16
 
 Simplest-near-ceiling plan, Step 2. validation750 development split (NOT test450). Tests whether dropping the Qwen + DeepSeek peer traces from the reasoner prompt retains the lift over a single GPT pass.
 
-Plan: `docs/research/gan2026_simplest_near_ceiling_architecture_plan_2026-06-16.md`
+Plan: `docs/research/gan2026/architecture/gan2026_simplest_near_ceiling_architecture_plan_2026-06-16.md`
 Candidate: `fresh_evidence_reasoner gan2026_fresh_evidence_reasoner_v0_11_gpt_only live, temp 0`
 Baseline: `fresh_evidence_reasoner v0.4 (3-agent) from gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.jsonl` (caveat: v0.4 prompt label; see header).
 
