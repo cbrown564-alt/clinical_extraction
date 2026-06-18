@@ -59,7 +59,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
-PROMPT_VERSION = "exectv2_llm_only_key_entities_structured_v0.2"
+PROMPT_VERSION = "exectv2_llm_only_key_entities_structured_v0.3"
 PIPELINE_FAMILY = "exectv2_llm_only_key_entities_structured"
 COMPONENT_OWNER = "llm_only_key_entities_structured"
 
@@ -220,6 +220,25 @@ def build_prompt_input(letter: ExectLetter) -> str:
                 "or seizure types unless the letter explicitly says otherwise."
             ),
             (
+                "For Diagnosis certainty, preserve diagnostic hedging: use "
+                "Certainty='4' for probable or likely diagnoses, Certainty='3' for "
+                "possible, suspected, query, or differential diagnoses, and "
+                "Certainty='5' only for established or unqualified statements."
+            ),
+            (
+                "For Diagnosis concepts, prefer the most specific epilepsy syndrome "
+                "or seizure type stated in the letter, such as focal epilepsy, "
+                "temporal lobe epilepsy, primary generalised epilepsy, or JME; do not "
+                "collapse these to generic 'epilepsy' when the specific phrase is "
+                "present."
+            ),
+            (
+                "Do not render vague symptoms, blackout/loss-of-consciousness "
+                "descriptions, anxiety, or non-epileptic events as Diagnosis unless "
+                "the same phrase is explicitly asserted as an epileptic seizure, "
+                "epilepsy diagnosis, or named seizure type."
+            ),
+            (
                 "For diagnosis, use DiagCategory='Epilepsy' for epilepsy syndromes or "
                 "diagnoses, 'SingleSeizure' for one named seizure type, and "
                 "'MultipleSeizures' only when the mention represents multiple seizure "
@@ -231,9 +250,30 @@ def build_prompt_input(letter: ExectLetter) -> str:
                 "event_state and attributes carry counts, periods, dates, and changes."
             ),
             (
+                "For SeizureFrequency anchors, use the generic seizure phrase when "
+                "the count refers to seizures generally; use a named seizure type only "
+                "when the count explicitly belongs to that type."
+            ),
+            (
                 "For seizure-frequency ranges, never write values like '2 to 3', "
                 "'2-4', or '3 or 4' in NumberOfSeizures. Use LowerNumberOfSeizures "
                 "and UpperNumberOfSeizures instead."
+            ),
+            (
+                "For interval rates such as 'one every 3 to 4 weeks', set "
+                "NumberOfSeizures='1', LowerNumberOfTimePeriods='3', "
+                "UpperNumberOfTimePeriods='4', and TimePeriod='Week'. Do not convert "
+                "the interval into 3 to 4 seizures."
+            ),
+            (
+                "For cluster statements, keep the cluster as the clinical event when "
+                "the note counts clusters, for example text 'cluster of seizures' with "
+                "NumberOfSeizures='1' and the stated date or time frame."
+            ),
+            (
+                "For frequency-change statements without an exact count, render a "
+                "SeizureFrequency mention with FrequencyChange only, such as "
+                "Frequent, Infrequent, Increased, Decreased, or Same."
             ),
             (
                 "For dated counts such as '2 to 3 in March', use Lower/Upper count "
@@ -251,6 +291,11 @@ def build_prompt_input(letter: ExectLetter) -> str:
                 "annual recurring rate."
             ),
             (
+                "For seizure-free statements, anchor text to the underlying seizure "
+                "phrase when it is present in the same sentence, such as 'seizures' or "
+                "'focal seizures'; otherwise use the exact seizure-free phrase."
+            ),
+            (
                 "For medication, mention text is the medication name where possible; "
                 "dose and frequency belong in attributes."
             ),
@@ -263,6 +308,17 @@ def build_prompt_input(letter: ExectLetter) -> str:
             (
                 "For investigations, use one event per modality such as EEG, MRI, or "
                 "CT; put performed, result, and EEG type in attributes."
+            ),
+            (
+                "Do not render future planned, requested, repeat, or follow-up "
+                "investigations as performed tests. Only render completed tests or "
+                "tests with a stated result."
+            ),
+            (
+                "Do not render a bare modality-only investigation when the note gives "
+                "no completion/result statement, and do not add a duplicate modality-only "
+                "mention when a result-bearing mention for the same modality is already "
+                "rendered."
             ),
             (
                 "For investigation text, use the shortest exact modality phrase: "
@@ -295,16 +351,20 @@ def _family_guidance() -> dict[str, str]:
         "diagnosis": (
             "Diagnostic concepts such as epilepsy, focal epilepsy, seizure disorder, "
             "or named seizure types. Render atomic Diagnosis mentions with "
-            "DiagCategory, Certainty, and Negation."
+            "DiagCategory, Certainty, and Negation. Preserve uncertainty words and "
+            "avoid vague symptoms or non-epileptic differentials unless they are "
+            "explicitly asserted as epileptic diagnoses."
         ),
         "seizure_frequency": (
             "How often a seizure type occurs, including seizure-free duration, "
-            "ranges, cluster cadence, dated counts, and frequency change. Preserve "
-            "the stated temporal frame instead of converting it into a guessed rate."
+            "ranges, interval cadence, cluster counts, dated counts, and frequency "
+            "change. Preserve the stated seizure anchor and temporal frame instead "
+            "of converting it into a guessed rate."
         ),
         "investigation": (
             "EEG, MRI, CT, telemetry, and related investigation statements. Render "
-            "Investigations with performed/result/type attributes."
+            "Investigations with performed/result/type attributes only for completed "
+            "or resulted tests, not planned repeats or bare modality references."
         ),
     }
 
@@ -439,6 +499,76 @@ def _worked_examples() -> list[dict[str, Any]]:
             },
         },
         {
+            "note_fragment": "She has seizures every 3 to 4 weeks.",
+            "correct_event": {
+                "family": "seizure_frequency",
+                "anchor_text": "seizures",
+                "evidence": "seizures every 3 to 4 weeks",
+                "event_state": {
+                    "seizure_type": "seizures",
+                    "rate": "1 per 3 to 4 Week",
+                },
+                "mentions": [
+                    {
+                        "entity": "SeizureFrequency",
+                        "text": "seizures",
+                        "attributes": {
+                            "NumberOfSeizures": "1",
+                            "LowerNumberOfTimePeriods": "3",
+                            "UpperNumberOfTimePeriods": "4",
+                            "TimePeriod": "Week",
+                        },
+                    }
+                ],
+                "confidence": "high",
+                "rationale": "The count is one seizure over a 3 to 4 week interval.",
+            },
+        },
+        {
+            "note_fragment": "She had a cluster of seizures in August 2017.",
+            "correct_event": {
+                "family": "seizure_frequency",
+                "anchor_text": "cluster of seizures",
+                "evidence": "cluster of seizures in August 2017",
+                "event_state": {"event": "cluster", "date": "August 2017"},
+                "mentions": [
+                    {
+                        "entity": "SeizureFrequency",
+                        "text": "cluster of seizures",
+                        "attributes": {
+                            "NumberOfSeizures": "1",
+                            "MonthDate": "8",
+                            "YearDate": "2017",
+                            "TimeSince_or_TimeOfEvent": "During",
+                        },
+                    }
+                ],
+                "confidence": "high",
+                "rationale": "The note counts one cluster rather than individual seizures.",
+            },
+        },
+        {
+            "note_fragment": "Since changing medication her focal seizures are infrequent.",
+            "correct_event": {
+                "family": "seizure_frequency",
+                "anchor_text": "focal seizures",
+                "evidence": "focal seizures are infrequent",
+                "event_state": {"change": "infrequent", "anchor": "DrugChange"},
+                "mentions": [
+                    {
+                        "entity": "SeizureFrequency",
+                        "text": "focal seizures",
+                        "attributes": {
+                            "FrequencyChange": "Infrequent",
+                            "PointInTime": "DrugChange",
+                        },
+                    }
+                ],
+                "confidence": "high",
+                "rationale": "The statement gives frequency change without an exact count.",
+            },
+        },
+        {
             "note_fragment": "She has 2 focal seizures per month.",
             "correct_event": {
                 "family": "seizure_frequency",
@@ -494,6 +624,58 @@ def _worked_examples() -> list[dict[str, Any]]:
                 ],
                 "confidence": "high",
                 "rationale": "Medication, dose, and frequency are stated.",
+            },
+        },
+        {
+            "note_fragment": "Diagnosis: probable temporal lobe epilepsy.",
+            "correct_event": {
+                "family": "diagnosis",
+                "anchor_text": "temporal lobe epilepsy",
+                "evidence": "probable temporal lobe epilepsy",
+                "event_state": {
+                    "diagnosis": "temporal lobe epilepsy",
+                    "certainty": "probable",
+                },
+                "mentions": [
+                    {
+                        "entity": "Diagnosis",
+                        "text": "temporal lobe epilepsy",
+                        "attributes": {
+                            "DiagCategory": "Epilepsy",
+                            "Certainty": "4",
+                            "Negation": "Affirmed",
+                        },
+                    }
+                ],
+                "confidence": "high",
+                "rationale": "Probable maps to Certainty 4 while preserving the specific syndrome.",
+            },
+        },
+        {
+            "note_fragment": (
+                "She has anxiety and unwitnessed blackouts, but no diagnosis of epilepsy."
+            ),
+            "correct_event": {
+                "family": "diagnosis",
+                "anchor_text": "no diagnosis of epilepsy",
+                "evidence": "no diagnosis of epilepsy",
+                "event_state": {"diagnosis": "epilepsy", "negation": "negated"},
+                "mentions": [
+                    {
+                        "entity": "Diagnosis",
+                        "text": "epilepsy",
+                        "attributes": {
+                            "DiagCategory": "Epilepsy",
+                            "Certainty": "5",
+                            "Negation": "Negated",
+                        },
+                    }
+                ],
+                "confidence": "high",
+                "rationale": (
+                    "Anxiety and blackouts are not rendered as Diagnosis; "
+                    "epilepsy is negated."
+                ),
             },
         },
         {
@@ -555,6 +737,18 @@ def _worked_examples() -> list[dict[str, Any]]:
                 ],
                 "confidence": "high",
                 "rationale": "The plain EEG is abnormal; no EEG_Type is stated.",
+            },
+        },
+        {
+            "note_fragment": "I will request a repeat MRI scan next year.",
+            "correct_event": {
+                "family": "investigation",
+                "anchor_text": "MRI scan",
+                "evidence": "I will request a repeat MRI scan next year.",
+                "event_state": {"planned": "repeat MRI"},
+                "mentions": [],
+                "confidence": "high",
+                "rationale": "A planned repeat MRI is not a completed investigation mention.",
             },
         },
     ]

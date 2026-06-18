@@ -44,6 +44,13 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   target (`0.783`), while Diagnosis (`0.414`) and SeizureFrequency (`0.456`)
   are the bottlenecks. See
   `docs/research/exectv2_key_entities_structured_v02_pilot_report_2026-06-18.md`.
+- v0.3 is a revise-only prompt iteration:
+  `experiments/exectv2_llm_only_key_entities_structured_v03_dev25_gpt41mini_20260618.md`.
+  Medication (`0.883`) and Investigations (`0.878`) now clear the clinical
+  headline target; Diagnosis improved modestly (`0.455`), but SeizureFrequency
+  slipped (`0.421`) and evidence validity fell to `0.9441`. Next work should be
+  SF/Diagnosis error-analysis first, not more broad prompt accretion. See
+  `docs/research/exectv2_key_entities_structured_v03_pilot_report_2026-06-18.md`.
 
 ## Active Priorities
 
@@ -59,9 +66,10 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
 
 ### Now
 
-- Build v0.3 on the same dev25 surface using clinical-recovery headline F1 as
-  the promotion readout: Diagnosis/SF targeted error analysis first,
-  Investigation FP cleanup second, and medication regression protection only.
+- Build v0.4 on the same dev25 surface using clinical-recovery headline F1 as
+  the promotion readout: preserve medication/investigation wins, diagnose the
+  SF headline-state regression by miss family, and continue Diagnosis certainty
+  and specific-syndrome work.
 
 ### Next
 
@@ -89,9 +97,10 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   pilot. v0.2 then lifted semantic item F1 to `0.272` and benchmark to `0.220`
   with a clean gate. The refreshed objective-aligned headline table shows
   medication already above target (`0.846`), Investigations near target
-  (`0.783`), and Diagnosis/SF below target (`0.414`/`0.456`). Both runs are
-  registered in `experiments/RUN_INDEX.md`; v0.2 report:
-  `docs/research/exectv2_key_entities_structured_v02_pilot_report_2026-06-18.md`.
+  (`0.783`), and Diagnosis/SF below target (`0.414`/`0.456`). v0.3 then moved
+  medication and Investigations above target (`0.883`/`0.878`) but regressed SF
+  (`0.421`). Runs are registered in `experiments/RUN_INDEX.md`; latest report:
+  `docs/research/exectv2_key_entities_structured_v03_pilot_report_2026-06-18.md`.
 - 2026-06-17: Built the reusable all-entity projection-gap ledger
   (`reports/projection_gap_ledger.py`). Classifies every gold FN / predicted FP
   into a layered `gap_family` (phrase coverage, attribute bundle, CUI
