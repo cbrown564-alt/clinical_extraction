@@ -19,7 +19,7 @@ hard row": three models agreeing means the row was easy, while 16-23 already
 -correct rows get broken. The durable selector metric is changed-label
 precision, not raw switch count, and any cross-model policy must guarantee
 identical panel/source coverage on both splits. See
-docs/research/gan2026_agentic_next_phase_brief_2026-06-14.md for the full
+ for the full
 rationale and the next-phase gates this surface should be measured against.
 """
 

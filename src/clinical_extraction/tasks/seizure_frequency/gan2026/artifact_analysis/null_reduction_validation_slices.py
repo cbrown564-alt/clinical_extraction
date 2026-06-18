@@ -19,7 +19,7 @@ DEFAULT_ROUTE_JSONL_PATH = Path(
     "experiments/gan2026_reset_clinical_assessment_pipeline_validation750_gpt41mini_v0.route.jsonl"
 )
 DEFAULT_OUTPUT_REPORT_PATH = Path(
-    "docs/research/gan2026_validation750_null_reduction_slices_baseline_2026-06-07.md"
+    ""
 )
 DEFAULT_OUTPUT_JSON_PATH = Path(
     "experiments/gan2026_validation750_null_reduction_slices_baseline_2026-06-07.json"

@@ -5,7 +5,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PROTOCOL_PATH = (
-    ROOT / "docs/research/gan2026_validation_test_gap_protocol_2026-06-05.md"
+    ROOT / ""
 )
 HYPOTHESIS_REGISTRY_PATH = (
     ROOT / "experiments/gan2026_validation_test_gap_hypothesis_registry_2026-06-05.json"

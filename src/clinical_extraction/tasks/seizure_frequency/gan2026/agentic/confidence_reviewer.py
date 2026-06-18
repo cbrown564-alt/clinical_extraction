@@ -7,7 +7,7 @@ the model's own events/rationale (the decoupling) and that explicitly names the
 dominant unknown↔rate over-reading failure (the priming).
 
 Why this exists (validated 2026-06-17; see
-``docs/research/gan2026_confidence_elicitation_predeclaration_2026-06-17.md`` and
+```` and
 ``experiments/gan2026_reliability_confidence_elicitation_pilot160_2026-06-17.md``):
 on a 160-row residual-enriched validation pilot, this decoupled + failure-primed
 elicitation produced a failure-prediction AUROC of **0.755** (near the external
@@ -16,7 +16,7 @@ cross-model-agreement signal, 0.781), versus **0.503** (chance) for the in-pass
 ``FreshEvidenceDecision.uncertainty``).
 
 **One-call vs two-call paired test (2026-06-17 — see**
-``docs/research/gan2026_confidence_one_vs_two_call_test450_predeclaration_2026-06-17.md``**).**
+````**).**
 Tested whether the priming alone (folded into the extraction call) replaces this
 decoupled call. Validation750 could not separate them (joint 0.609 vs decoupled 0.641,
 paired diff +0.032, 95% CI [-0.032, +0.098] — includes 0), which suggested the call was
