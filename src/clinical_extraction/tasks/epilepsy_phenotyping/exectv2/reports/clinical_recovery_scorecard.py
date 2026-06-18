@@ -23,6 +23,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities im
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.evaluation import (
     ENTITY_CLINICAL_RECOVERY_CLASSES,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry import (
+    RunRegistryEntry,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
     PredictedLetter,
     to_exect_letter,
@@ -34,6 +37,10 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.all_entities import (
     ACTIVE_DETERMINISTIC_ENTITIES,
     run_all9_on_letters,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.registry_sync import (
+    DEFAULT_RUN_INDEX_PATH,
+    register_run,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     PHRASE_ONLY,
@@ -152,6 +159,7 @@ def write_scorecard_artifacts(
     split: str = "dev",
     generated_on: str | None = None,
     registry_path: Path | None = None,
+    run_index_path: Path = DEFAULT_RUN_INDEX_PATH,
 ) -> tuple[Path, Path]:
     generated_on = generated_on or date.today().isoformat()
     gold_letters = load_letters_for_split(split)
@@ -164,11 +172,10 @@ def write_scorecard_artifacts(
     out_json.write_text(json.dumps(scorecard, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     out_md.write_text(_render_markdown(scorecard, json_path=out_json), encoding="utf-8")
     if registry_path is not None:
-        _append_registry_row(
+        register_run(
+            _registry_entry(scorecard, json_path=out_json, md_path=out_md),
             registry_path=registry_path,
-            scorecard=scorecard,
-            json_path=out_json,
-            md_path=out_md,
+            run_index_path=run_index_path,
         )
     return out_json, out_md
 
@@ -389,54 +396,54 @@ def _render_markdown(scorecard: dict[str, Any], *, json_path: Path) -> str:
     return "\n".join(lines)
 
 
-def _append_registry_row(
-    *,
-    registry_path: Path,
+def _registry_entry(
     scorecard: dict[str, Any],
+    *,
     json_path: Path,
     md_path: Path,
-) -> None:
+) -> RunRegistryEntry:
     date_slug = scorecard["generated_on"].replace("-", "")
-    run_id = f"exectv2_clinical_recovery_{scorecard['split']}_{date_slug}"
-    row = {
-        "run_id": run_id,
-        "artifact_paths": [str(json_path).replace("\\", "/"), str(md_path).replace("\\", "/")],
-        "date": scorecard["generated_on"],
-        "pipeline_family": PIPELINE_FAMILY,
-        "split": scorecard["split"],
-        "row_count": scorecard["row_count"],
-        "model": MODEL,
-        "mode": "deterministic",
-        "replay_status": "analysis_only",
-        "decision": "clinical_recovery_reporting",
-        "primary_metrics": {
-            "clinical_recovery_f1": scorecard["overall_clinical_recovery"]["f1"],
-            "clinical_recovery_precision": scorecard["overall_clinical_recovery"]["precision"],
-            "clinical_recovery_recall": scorecard["overall_clinical_recovery"]["recall"],
-            "headline_entities": scorecard["headline_entities"],
-            "coverage_diagnostic_entities": scorecard["coverage_diagnostic_entities"],
-        },
-        "claim_language_notes": (
+    overall = scorecard["overall_clinical_recovery"]
+    metrics: dict[str, Any] = {
+        "clinical_recovery_f1": overall["f1"],
+        "clinical_recovery_precision": overall["precision"],
+        "clinical_recovery_recall": overall["recall"],
+        "headline_entities": list(scorecard["headline_entities"]),
+        "coverage_diagnostic_entities": list(scorecard["coverage_diagnostic_entities"]),
+    }
+    for entity in scorecard["headline_entities"]:
+        metrics[f"{entity.lower()}_headline_f1"] = scorecard["headline_scores"][entity][
+            "headline"
+        ]["f1"]
+    return RunRegistryEntry(
+        run_id=f"exectv2_clinical_recovery_{scorecard['split']}_{date_slug}",
+        artifact_paths=(
+            str(json_path).replace("\\", "/"),
+            str(md_path).replace("\\", "/"),
+        ),
+        date=scorecard["generated_on"],
+        pipeline_family=PIPELINE_FAMILY,
+        split=scorecard["split"],
+        row_count=scorecard["row_count"],
+        model=MODEL,
+        model_role=(
+            "ExECTv2 clinical-recovery scorecard; per-entity clinical-fact recovery "
+            "headline above the demoted ExECT mention-phrase and CUI projection layer. "
+            "Deterministic scorers, no model calls."
+        ),
+        mode="deterministic",
+        replay_status="analysis_only",
+        decision="clinical_recovery_reporting",
+        primary_metrics=metrics,
+        evidence_validity=(
+            "Deterministic scorers over existing all-9 prediction artifacts; no model "
+            "calls. Headline recovery scored on normalized clinical concepts."
+        ),
+        claim_language_notes=(
             "Clinical-fact recovery scorecard; ExECT mention phrase and CUI "
             "projection remain separately reported artifact layers."
         ),
-    }
-    row_line = json.dumps(row, sort_keys=True, ensure_ascii=False)
-    lines: list[str] = []
-    replaced = False
-    if registry_path.exists():
-        for line in registry_path.read_text(encoding="utf-8").splitlines():
-            if not line.strip():
-                continue
-            existing_row = json.loads(line)
-            if existing_row.get("run_id") == run_id:
-                lines.append(row_line)
-                replaced = True
-            else:
-                lines.append(line)
-    if not replaced:
-        lines.append(row_line)
-    registry_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    )
 
 
 def main() -> None:
@@ -456,6 +463,7 @@ def main() -> None:
         default=Path("experiments/exectv2_clinical_recovery_dev_20260618.md"),
     )
     parser.add_argument("--registry", type=Path, default=DEFAULT_REGISTRY_PATH)
+    parser.add_argument("--run-index", type=Path, default=DEFAULT_RUN_INDEX_PATH)
     parser.add_argument("--no-register", action="store_true")
     args = parser.parse_args()
 
@@ -464,6 +472,7 @@ def main() -> None:
         out_md=args.out_md,
         split=args.split,
         registry_path=None if args.no_register else args.registry,
+        run_index_path=args.run_index,
     )
     print(f"Wrote {json_path}")
     print(f"Wrote {md_path}")
