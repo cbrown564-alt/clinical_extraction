@@ -162,13 +162,20 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   validity `1.0000`. The decomposition increases source-near recall but
   over-emits too many seizure-type diagnoses. See
   `docs/research/exectv2_diagnosis_decomposer_v01_dev140_report_2026-06-18.md`.
+- Diagnosis reconciler v0.1 over verifier v0.6 + decomposer v0.1 is the best
+  Diagnosis dev140 score so far but only marginally: `0.658`, precision `0.658`,
+  recall `0.658`, with `0` call/parse failures and evidence validity `0.9954`.
+  Residuals are now generic epilepsy and tonic-clonic over-emission, plus focal
+  epilepsy/secondary-generalised misses. See
+  `docs/research/exectv2_diagnosis_reconciler_v01_dev140_report_2026-06-18.md`.
 
 ## Active Priorities
 
 1. Redesign the remaining below-target Diagnosis and SeizureFrequency families
-   from the updated dev140 residual ledgers: Diagnosis needs a stricter
-   decomposition reconciler after v0.1 over-emitted; SF needs a stricter
-   generic-state candidate adjudicator after v0.1 improved but missed target.
+   from the updated dev140 residual ledgers: Diagnosis needs constrained
+   concept-group verification after v0.1 reconciler improved only to `0.658`;
+   SF needs a stricter generic-state candidate adjudicator after v0.1 improved
+   but missed target.
 2. Require benchmark-beating dev evidence before any new full-200 audit:
    overall `0.87` per-item / `0.90` per-letter, plus per-entity tables,
    evidence/schema reliability, semantic-vs-CUI gaps, and ablations.
@@ -177,8 +184,9 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
 
 ### Now
 
-- Build a Diagnosis decomposition reconciler/verifier over heading and narrative
-  candidates; do not use the v0.1 decomposer output directly.
+- Build a constrained Diagnosis concept-group verifier targeting generic
+  epilepsy and tonic-clonic over-emission while preserving focal epilepsy and
+  secondary-generalised recall.
 - Iterate SeizureFrequency candidate span/state adjudication with stricter
   generic seizure keep/reject and unknown-vs-active handling.
 

@@ -1858,6 +1858,26 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Inform Architecture Loop
 
+### `exectv2_hybrid_diagnosis_reconciler_v01_dev140_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_hybrid_diagnosis_reconciler`; mode `live`; replay `native_run_split`.
+- Model role: Diagnosis reconciler v0.1 over Diagnosis verifier v0.6 and Diagnosis decomposer v0.1 candidates. The model owns final keep/reject, concept specificity, certainty, and evidence selection; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection; verifier/decomposer inputs are candidate scaffolding`.
+- Primary metrics: diagnosis_f1=0.658, diagnosis_precision=0.658, diagnosis_recall=0.658, source_near_overlap_f1=0.787, evidence_validity_rate=0.9954, parse_failures=0.
+- Evidence validity: 0 call failures, 0 parse failures; 436/438 evidence-valid rendered mentions. Residual ledger is analysis-only over the same JSONL.
+- Claim language: Revise-only. Best Diagnosis dev140 score so far, but only a small gain over verifier v0.6 (`0.658` vs `0.651`) and still far below the `0.8` target. Residuals show generic epilepsy and tonic-clonic over-emission plus focal epilepsy/secondary-generalised misses.
+- Artifacts: `experiments/exectv2_hybrid_diagnosis_reconciler_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_diagnosis_reconciler_v01_dev140_gpt41mini_20260618.md`, `experiments/exectv2_diagnosis_reconciler_v01_residual_ledger_dev140_20260618.json`, `experiments/exectv2_diagnosis_reconciler_v01_residual_ledger_dev140_20260618.md`, `docs/research/exectv2_diagnosis_reconciler_v01_dev140_report_2026-06-18.md`.
+
+### `exectv2_hybrid_diagnosis_reconciler_v01_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_hybrid_diagnosis_reconciler`; mode `live`; replay `native_run_split`.
+- Model role: Small live architecture probe for the Diagnosis verifier/decomposer reconciler before full dev140 escalation.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `same as dev140 v0.1`.
+- Primary metrics: diagnosis_f1=0.833, diagnosis_precision=0.818, diagnosis_recall=0.849, evidence_validity_rate=1.0, parse_failures=0.
+- Evidence validity: 0 call failures, 0 parse failures; 64/64 evidence-valid rendered mentions.
+- Claim language: Pilot-only escalation signal. Strong dev25 balance justified the dev140 run but does not transfer by itself.
+- Artifacts: `experiments/exectv2_hybrid_diagnosis_reconciler_v01_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_diagnosis_reconciler_v01_dev25_gpt41mini_20260618.md`.
+
 ### `exectv2_hybrid_diagnosis_decomposer_v01_dev140_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `140` rows.
 - Pipeline: `exectv2_hybrid_diagnosis_decomposer`; mode `live`; replay `native_run_split`.
