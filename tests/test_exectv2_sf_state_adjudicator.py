@@ -59,15 +59,28 @@ def test_build_prompt_input_includes_candidate_span_guide_and_rules() -> None:
     )
 
     assert payload["prompt_version"] == adjudicator.PROMPT_VERSION
-    assert payload["prompt_version"].endswith("_v0.1")
+    assert payload["prompt_version"].endswith("_v0.2")
     assert payload["candidate_evidence_spans"]
+    assert payload["generic_seizure_policy"]
     assert {"active-rate", "seizure-free", "unknown", "reject"} <= set(
         payload["state_decision_guide"]
     )
     rules = " ".join(payload["clinical_rules"])
     assert "Candidate spans are not predictions" in rules
     assert "state_hint='reject'" in rules
+    assert "Do not emit a generic seizures active-rate" in rules
+    assert "unlabelled attacks, episodes, events" in rules
+    assert "driving-advice requirements" in rules
+    assert "epilepsy stability" in rules
     assert "Do not emit CUI or CUIPhrase" in rules
+    examples = payload["worked_examples"]
+    assert any(
+        "generalised tonic clonic seizure in his sleep" in e["note_fragment"]
+        for e in examples
+    )
+    assert any("history of staring episodes" in e["note_fragment"] for e in examples)
+    reject_free = " ".join(payload["generic_seizure_policy"]["reject_generic_seizure_free"])
+    assert "Driving advice" in reject_free
 
 
 def test_to_predicted_letter_strips_projection_attrs_and_projects_cui() -> None:
