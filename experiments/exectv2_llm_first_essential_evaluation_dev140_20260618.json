@@ -6,6 +6,7 @@
           "Certainty",
           "Negation"
         ],
+        "limitations": "This audit quantifies modal/default ceilings and certainty-dropped benchmark loss. It does not yet implement annotation-guideline certainty rules over evidence-correct rows, so it supports demoting certainty as a likely projection layer but not a completed guideline-rule projection claim.",
         "note": "SeizureFrequency already ignores Certainty/Negation in its benchmark key (guideline convention), so it contributes no certainty-only loss.",
         "overall": {
           "benchmark_f1": 0.3622,
@@ -348,7 +349,8 @@
               }
             }
           }
-        }
+        },
+        "status": "diagnostic_not_guideline_rule_projection"
       },
       "clinical_recovery": {
         "artifact_projection_scores": {
@@ -1019,42 +1021,30 @@
             }
           }
         },
-        "headline_scores": {
-          "BirthHistory": {
-            "f1": 0.8197,
-            "fn": 6,
-            "fp": 5,
-            "gold_count": 31,
-            "precision": 0.8333,
-            "precision_tp": 25,
-            "pred_count": 30,
-            "recall": 0.8065,
-            "recall_tp": 25,
-            "tp": 25
-          },
+        "cui_projected_headline_scores": {
           "Diagnosis": {
-            "f1": 0.268,
-            "fn": 302,
-            "fp": 64,
+            "f1": 0.328,
+            "fn": 287,
+            "fp": 49,
             "gold_count": 369,
-            "precision": 0.5115,
-            "precision_tp": 67,
+            "precision": 0.626,
+            "precision_tp": 82,
             "pred_count": 131,
-            "recall": 0.1816,
-            "recall_tp": 67,
-            "tp": 67
+            "recall": 0.2222,
+            "recall_tp": 82,
+            "tp": 82
           },
           "EpilepsyCause": {
-            "f1": 0.5778,
-            "fn": 8,
-            "fp": 11,
+            "f1": 0.6222,
+            "fn": 7,
+            "fp": 10,
             "gold_count": 21,
-            "precision": 0.5417,
-            "precision_tp": 13,
+            "precision": 0.5833,
+            "precision_tp": 14,
             "pred_count": 24,
-            "recall": 0.619,
-            "recall_tp": 13,
-            "tp": 13
+            "recall": 0.6667,
+            "recall_tp": 14,
+            "tp": 14
           },
           "Investigations": {
             "f1": 0.5263,
@@ -1065,18 +1055,6 @@
             "pred_count": 187,
             "recall": 0.625,
             "tp": 85
-          },
-          "Onset": {
-            "f1": 0.4,
-            "fn": 10,
-            "fp": 11,
-            "gold_count": 17,
-            "precision": 0.3889,
-            "precision_tp": 7,
-            "pred_count": 18,
-            "recall": 0.4118,
-            "recall_tp": 7,
-            "tp": 7
           },
           "Prescription": {
             "f1": 0.9072,
@@ -1097,6 +1075,44 @@
             "pred_count": 206,
             "recall": 0.8021,
             "tp": 150
+          }
+        },
+        "cui_projected_overall": {
+          "f1": 0.6129,
+          "fn": 404,
+          "fp": 230,
+          "gold_count": 906,
+          "precision": 0.6858,
+          "precision_tp": 502,
+          "pred_count": 732,
+          "recall": 0.5541,
+          "recall_tp": 502,
+          "tp": 502
+        },
+        "diagnostic_nonessential_scores": {
+          "BirthHistory": {
+            "f1": 0.8197,
+            "fn": 6,
+            "fp": 5,
+            "gold_count": 31,
+            "precision": 0.8333,
+            "precision_tp": 25,
+            "pred_count": 30,
+            "recall": 0.8065,
+            "recall_tp": 25,
+            "tp": 25
+          },
+          "Onset": {
+            "f1": 0.4,
+            "fn": 10,
+            "fp": 11,
+            "gold_count": 17,
+            "precision": 0.3889,
+            "precision_tp": 7,
+            "pred_count": 18,
+            "recall": 0.4118,
+            "recall_tp": 7,
+            "tp": 7
           },
           "WhenDiagnosed": {
             "f1": 0.8182,
@@ -1111,20 +1127,83 @@
             "tp": 9
           }
         },
+        "headline_scores": {
+          "Diagnosis": {
+            "f1": 0.328,
+            "fn": 287,
+            "fp": 49,
+            "gold_count": 369,
+            "precision": 0.626,
+            "precision_tp": 82,
+            "pred_count": 131,
+            "recall": 0.2222,
+            "recall_tp": 82,
+            "tp": 82
+          },
+          "EpilepsyCause": {
+            "f1": 0.6222,
+            "fn": 7,
+            "fp": 10,
+            "gold_count": 21,
+            "precision": 0.5833,
+            "precision_tp": 14,
+            "pred_count": 24,
+            "recall": 0.6667,
+            "recall_tp": 14,
+            "tp": 14
+          },
+          "Investigations": {
+            "f1": 0.5263,
+            "fn": 51,
+            "fp": 102,
+            "gold_count": 136,
+            "precision": 0.4545,
+            "pred_count": 187,
+            "recall": 0.625,
+            "tp": 85
+          },
+          "Prescription": {
+            "f1": 0.9072,
+            "fn": 22,
+            "fp": 13,
+            "gold_count": 193,
+            "precision": 0.9293,
+            "pred_count": 184,
+            "recall": 0.886,
+            "tp": 171
+          },
+          "SeizureFrequency": {
+            "f1": 0.7277,
+            "fn": 44,
+            "fp": 63,
+            "gold_count": 187,
+            "precision": 0.6942,
+            "pred_count": 206,
+            "recall": 0.7647,
+            "tp": 143
+          }
+        },
         "overall": {
-          "f1": 0.6002,
-          "fn": 438,
-          "fp": 264,
-          "gold_count": 965,
-          "precision": 0.6662,
-          "precision_tp": 527,
-          "pred_count": 791,
-          "recall": 0.5461,
-          "recall_tp": 527,
-          "tp": 527
-        }
+          "f1": 0.6044,
+          "fn": 411,
+          "fp": 237,
+          "gold_count": 906,
+          "precision": 0.6762,
+          "precision_tp": 495,
+          "pred_count": 732,
+          "recall": 0.5464,
+          "recall_tp": 495,
+          "tp": 495
+        },
+        "primary_entities": [
+          "Prescription",
+          "SeizureFrequency",
+          "Diagnosis",
+          "EpilepsyCause",
+          "Investigations"
+        ]
       },
-      "clinical_recovery_note": "Clinical-recovery headline computed on CUI-projected predictions (deterministic CUI attached before scoring, per the ownership ladder); the SeizureFrequency state key uses CUI as seizure-type identity.",
+      "clinical_recovery_note": "Primary clinical-recovery headline is CUI-free and aggregates only the five essential families. A CUI-projected companion score is reported separately because the legacy SeizureFrequency state key uses CUI as seizure-type identity when present.",
       "cui_audit": {
         "concept_buckets": {
           "bucket_concepts": {
@@ -1336,6 +1415,220 @@
             "projected": 11,
             "projected_correct": 11
           },
+          "__missing_mapping__": {
+            "concept_count": 184,
+            "examples": {
+              "BirthHistory": [
+                {
+                  "concept": "no problems when he was born",
+                  "entity": "BirthHistory",
+                  "gold_cui": "C3665337",
+                  "letter_id": "EA0045"
+                },
+                {
+                  "concept": "prematurely",
+                  "entity": "BirthHistory",
+                  "gold_cui": "C4054482",
+                  "letter_id": "EA0133"
+                },
+                {
+                  "concept": "hypoxia during a difficult birth.",
+                  "entity": "BirthHistory",
+                  "gold_cui": "C0559478",
+                  "letter_id": "EA0137"
+                },
+                {
+                  "concept": "birth was norma",
+                  "entity": "BirthHistory",
+                  "gold_cui": "C3665337",
+                  "letter_id": "EA0149"
+                }
+              ],
+              "Diagnosis": [
+                {
+                  "concept": "focal seizures",
+                  "entity": "Diagnosis",
+                  "gold_cui": "C0751495",
+                  "letter_id": "EA0002"
+                },
+                {
+                  "concept": "secondary generalised seizures",
+                  "entity": "Diagnosis",
+                  "gold_cui": "C0270838",
+                  "letter_id": "EA0002"
+                },
+                {
+                  "concept": "focal seizures",
+                  "entity": "Diagnosis",
+                  "gold_cui": "C0751495",
+                  "letter_id": "EA0002"
+                },
+                {
+                  "concept": "genetic generalised epilepsy",
+                  "entity": "Diagnosis",
+                  "gold_cui": "C0270850",
+                  "letter_id": "EA0005"
+                },
+                {
+                  "concept": "epilepsy with generalised tonic clonic seizures alone",
+                  "entity": "Diagnosis",
+                  "gold_cui": "C0393697",
+                  "letter_id": "EA0005"
+                },
+                {
+                  "concept": "generalised tonic clonic seizure",
+                  "entity": "Diagnosis",
+                  "gold_cui": "C0494475",
+                  "letter_id": "EA0005"
+                },
+                {
+                  "concept": "generalised tonic clonic seizures",
+                  "entity": "Diagnosis",
+                  "gold_cui": "C0494475",
+                  "letter_id": "EA0005"
+                },
+                {
+                  "concept": "epilepsy with generalised tonic clonic seizure alone",
+                  "entity": "Diagnosis",
+                  "gold_cui": "C0393697",
+                  "letter_id": "EA0005"
+                }
+              ],
+              "EpilepsyCause": [
+                {
+                  "concept": "erinatal insult",
+                  "entity": "EpilepsyCause",
+                  "gold_cui": "C0005604",
+                  "letter_id": "EA0010"
+                },
+                {
+                  "concept": "traumatic brain injury 2005",
+                  "entity": "EpilepsyCause",
+                  "gold_cui": "C0876926",
+                  "letter_id": "EA0046"
+                },
+                {
+                  "concept": "easle",
+                  "entity": "EpilepsyCause",
+                  "gold_cui": "C0025007",
+                  "letter_id": "EA0124"
+                },
+                {
+                  "concept": "hypoxia during a difficult birth.",
+                  "entity": "EpilepsyCause",
+                  "gold_cui": "C0559478",
+                  "letter_id": "EA0137"
+                },
+                {
+                  "concept": "neurocysticercosis.",
+                  "entity": "EpilepsyCause",
+                  "gold_cui": "C0338437",
+                  "letter_id": "EA0169"
+                }
+              ],
+              "Onset": [
+                {
+                  "concept": "epileps",
+                  "entity": "Onset",
+                  "gold_cui": "C0014544",
+                  "letter_id": "EA0033"
+                },
+                {
+                  "concept": "epilepsy since the age of four",
+                  "entity": "Onset",
+                  "gold_cui": "C0014544",
+                  "letter_id": "EA0039"
+                },
+                {
+                  "concept": "epilepsy started at the each of 12",
+                  "entity": "Onset",
+                  "gold_cui": "C0014544",
+                  "letter_id": "EA0049"
+                },
+                {
+                  "concept": "generalised tonic chronic seizure",
+                  "entity": "Onset",
+                  "gold_cui": "C0494475",
+                  "letter_id": "EA0049"
+                },
+                {
+                  "concept": "eepileps",
+                  "entity": "Onset",
+                  "gold_cui": "C0014544",
+                  "letter_id": "EA0128"
+                },
+                {
+                  "concept": "generalised tonic clonic seizure",
+                  "entity": "Onset",
+                  "gold_cui": "C0494475",
+                  "letter_id": "EA0128"
+                },
+                {
+                  "concept": "absence seizure",
+                  "entity": "Onset",
+                  "gold_cui": "C4316903",
+                  "letter_id": "EA0161"
+                },
+                {
+                  "concept": "generalised tonic clonic seizur",
+                  "entity": "Onset",
+                  "gold_cui": "C0494475",
+                  "letter_id": "EA0161"
+                }
+              ],
+              "PatientHistory": [
+                {
+                  "concept": "convulsive seizures",
+                  "entity": "PatientHistory",
+                  "gold_cui": "C0751494",
+                  "letter_id": "EA0002"
+                },
+                {
+                  "concept": "absence like seizures",
+                  "entity": "PatientHistory",
+                  "gold_cui": "C0563606",
+                  "letter_id": "EA0006"
+                },
+                {
+                  "concept": "absence like episodes",
+                  "entity": "PatientHistory",
+                  "gold_cui": "C0563606",
+                  "letter_id": "EA0006"
+                },
+                {
+                  "concept": "hypothyroidism",
+                  "entity": "PatientHistory",
+                  "gold_cui": "C0020676",
+                  "letter_id": "EA0007"
+                },
+                {
+                  "concept": "meningioma resection",
+                  "entity": "PatientHistory",
+                  "gold_cui": "C1096493",
+                  "letter_id": "EA0008"
+                },
+                {
+                  "concept": "sseizures",
+                  "entity": "PatientHistory",
+                  "gold_cui": "C0036572",
+                  "letter_id": "EA0008"
+                },
+                {
+                  "concept": "craniotomy",
+                  "entity": "PatientHistory",
+                  "gold_cui": "C0010280",
+                  "letter_id": "EA0009"
+                },
+                {
+                  "concept": "frontal lobe brain tumour",
+                  "entity": "PatientHistory",
+                  "gold_cui": "C0006118",
+                  "letter_id": "EA0009"
+                }
+              ]
+            },
+            "mention_count": 365
+          },
           "__overall__": {
             "correctness": 0.9443,
             "coverage": 0.7532,
@@ -1428,6 +1721,85 @@
           }
         }
       },
+      "error_taxonomy": {
+        "note": "Coarse diagnostic taxonomy; categories can overlap and do not replace row-level adjudication.",
+        "overall": {
+          "candidate_miss": 411,
+          "evidence_failure": 0,
+          "wrong_detail_selection": 237
+        },
+        "per_entity": {
+          "Diagnosis": {
+            "candidate_miss": 287,
+            "evidence_failure": 0,
+            "wrong_detail_selection": 49
+          },
+          "EpilepsyCause": {
+            "candidate_miss": 7,
+            "evidence_failure": 0,
+            "wrong_detail_selection": 10
+          },
+          "Investigations": {
+            "candidate_miss": 51,
+            "evidence_failure": 0,
+            "wrong_detail_selection": 102
+          },
+          "Prescription": {
+            "candidate_miss": 22,
+            "evidence_failure": 0,
+            "wrong_detail_selection": 13
+          },
+          "SeizureFrequency": {
+            "candidate_miss": 44,
+            "evidence_failure": 0,
+            "wrong_detail_selection": 63
+          }
+        }
+      },
+      "evidence_validation": {
+        "Diagnosis": {
+          "evidence_present": 161,
+          "evidence_present_rate": 1.0,
+          "exact_evidence": 161,
+          "exact_evidence_rate": 1.0,
+          "predicted_mentions": 161
+        },
+        "EpilepsyCause": {
+          "evidence_present": 24,
+          "evidence_present_rate": 1.0,
+          "exact_evidence": 24,
+          "exact_evidence_rate": 1.0,
+          "predicted_mentions": 24
+        },
+        "Investigations": {
+          "evidence_present": 187,
+          "evidence_present_rate": 1.0,
+          "exact_evidence": 187,
+          "exact_evidence_rate": 1.0,
+          "predicted_mentions": 187
+        },
+        "Prescription": {
+          "evidence_present": 198,
+          "evidence_present_rate": 1.0,
+          "exact_evidence": 198,
+          "exact_evidence_rate": 1.0,
+          "predicted_mentions": 198
+        },
+        "SeizureFrequency": {
+          "evidence_present": 206,
+          "evidence_present_rate": 1.0,
+          "exact_evidence": 206,
+          "exact_evidence_rate": 1.0,
+          "predicted_mentions": 206
+        },
+        "overall": {
+          "evidence_present": 776,
+          "evidence_present_rate": 1.0,
+          "exact_evidence": 776,
+          "exact_evidence_rate": 1.0,
+          "predicted_mentions": 776
+        }
+      },
       "name": "deterministic_all9",
       "ownership": "rules_only",
       "row_count": 140
@@ -1438,6 +1810,7 @@
           "Certainty",
           "Negation"
         ],
+        "limitations": "This audit quantifies modal/default ceilings and certainty-dropped benchmark loss. It does not yet implement annotation-guideline certainty rules over evidence-correct rows, so it supports demoting certainty as a likely projection layer but not a completed guideline-rule projection claim.",
         "note": "SeizureFrequency already ignores Certainty/Negation in its benchmark key (guideline convention), so it contributes no certainty-only loss.",
         "overall": {
           "benchmark_f1": 0.1013,
@@ -1780,7 +2153,8 @@
               }
             }
           }
-        }
+        },
+        "status": "diagnostic_not_guideline_rule_projection"
       },
       "clinical_recovery": {
         "artifact_projection_scores": {
@@ -2451,30 +2825,18 @@
             }
           }
         },
-        "headline_scores": {
-          "BirthHistory": {
-            "f1": 0.12,
-            "fn": 28,
-            "fp": 16,
-            "gold_count": 31,
-            "precision": 0.1579,
-            "precision_tp": 3,
-            "pred_count": 19,
-            "recall": 0.0968,
-            "recall_tp": 3,
-            "tp": 3
-          },
+        "cui_projected_headline_scores": {
           "Diagnosis": {
-            "f1": 0.3069,
-            "fn": 278,
-            "fp": 117,
+            "f1": 0.3161,
+            "fn": 275,
+            "fp": 115,
             "gold_count": 369,
-            "precision": 0.4061,
-            "precision_tp": 80,
+            "precision": 0.4162,
+            "precision_tp": 82,
             "pred_count": 197,
-            "recall": 0.2466,
-            "recall_tp": 91,
-            "tp": 91
+            "recall": 0.2547,
+            "recall_tp": 94,
+            "tp": 94
           },
           "EpilepsyCause": {
             "f1": 0.0,
@@ -2498,6 +2860,52 @@
             "recall": 0.8382,
             "tp": 114
           },
+          "Prescription": {
+            "f1": 0.7472,
+            "fn": 60,
+            "fp": 30,
+            "gold_count": 193,
+            "precision": 0.816,
+            "pred_count": 163,
+            "recall": 0.6891,
+            "tp": 133
+          },
+          "SeizureFrequency": {
+            "f1": 0.0118,
+            "fn": 185,
+            "fp": 150,
+            "gold_count": 187,
+            "precision": 0.0132,
+            "pred_count": 152,
+            "recall": 0.0107,
+            "tp": 2
+          }
+        },
+        "cui_projected_overall": {
+          "f1": 0.4224,
+          "fn": 563,
+          "fp": 362,
+          "gold_count": 906,
+          "precision": 0.4776,
+          "precision_tp": 331,
+          "pred_count": 693,
+          "recall": 0.3786,
+          "recall_tp": 343,
+          "tp": 343
+        },
+        "diagnostic_nonessential_scores": {
+          "BirthHistory": {
+            "f1": 0.12,
+            "fn": 28,
+            "fp": 16,
+            "gold_count": 31,
+            "precision": 0.1579,
+            "precision_tp": 3,
+            "pred_count": 19,
+            "recall": 0.0968,
+            "recall_tp": 3,
+            "tp": 3
+          },
           "Onset": {
             "f1": 0.0,
             "fn": 17,
@@ -2509,6 +2917,54 @@
             "recall": 0.0,
             "recall_tp": 0,
             "tp": 0
+          },
+          "WhenDiagnosed": {
+            "f1": 0.0,
+            "fn": 11,
+            "fp": 8,
+            "gold_count": 11,
+            "precision": 0.0,
+            "precision_tp": 0,
+            "pred_count": 8,
+            "recall": 0.0,
+            "recall_tp": 0,
+            "tp": 0
+          }
+        },
+        "headline_scores": {
+          "Diagnosis": {
+            "f1": 0.3161,
+            "fn": 275,
+            "fp": 115,
+            "gold_count": 369,
+            "precision": 0.4162,
+            "precision_tp": 82,
+            "pred_count": 197,
+            "recall": 0.2547,
+            "recall_tp": 94,
+            "tp": 94
+          },
+          "EpilepsyCause": {
+            "f1": 0.0,
+            "fn": 21,
+            "fp": 12,
+            "gold_count": 21,
+            "precision": 0.0,
+            "precision_tp": 0,
+            "pred_count": 12,
+            "recall": 0.0,
+            "recall_tp": 0,
+            "tp": 0
+          },
+          "Investigations": {
+            "f1": 0.7475,
+            "fn": 22,
+            "fp": 55,
+            "gold_count": 136,
+            "precision": 0.6746,
+            "pred_count": 169,
+            "recall": 0.8382,
+            "tp": 114
           },
           "Prescription": {
             "f1": 0.7472,
@@ -2529,34 +2985,29 @@
             "pred_count": 152,
             "recall": 0.0107,
             "tp": 2
-          },
-          "WhenDiagnosed": {
-            "f1": 0.0,
-            "fn": 11,
-            "fp": 8,
-            "gold_count": 11,
-            "precision": 0.0,
-            "precision_tp": 0,
-            "pred_count": 8,
-            "recall": 0.0,
-            "recall_tp": 0,
-            "tp": 0
           }
         },
         "overall": {
-          "f1": 0.3931,
-          "fn": 622,
-          "fp": 423,
-          "gold_count": 965,
-          "precision": 0.4397,
-          "precision_tp": 332,
-          "pred_count": 755,
-          "recall": 0.3554,
+          "f1": 0.4224,
+          "fn": 563,
+          "fp": 362,
+          "gold_count": 906,
+          "precision": 0.4776,
+          "precision_tp": 331,
+          "pred_count": 693,
+          "recall": 0.3786,
           "recall_tp": 343,
           "tp": 343
-        }
+        },
+        "primary_entities": [
+          "Prescription",
+          "SeizureFrequency",
+          "Diagnosis",
+          "EpilepsyCause",
+          "Investigations"
+        ]
       },
-      "clinical_recovery_note": "Clinical-recovery headline computed on CUI-projected predictions (deterministic CUI attached before scoring, per the ownership ladder); the SeizureFrequency state key uses CUI as seizure-type identity.",
+      "clinical_recovery_note": "Primary clinical-recovery headline is CUI-free and aggregates only the five essential families. A CUI-projected companion score is reported separately because the legacy SeizureFrequency state key uses CUI as seizure-type identity when present.",
       "cui_audit": {
         "concept_buckets": {
           "bucket_concepts": {
@@ -2768,6 +3219,220 @@
             "projected": 11,
             "projected_correct": 11
           },
+          "__missing_mapping__": {
+            "concept_count": 184,
+            "examples": {
+              "BirthHistory": [
+                {
+                  "concept": "no problems when he was born",
+                  "entity": "BirthHistory",
+                  "gold_cui": "C3665337",
+                  "letter_id": "EA0045"
+                },
+                {
+                  "concept": "prematurely",
+                  "entity": "BirthHistory",
+                  "gold_cui": "C4054482",
+                  "letter_id": "EA0133"
+                },
+                {
+                  "concept": "hypoxia during a difficult birth.",
+                  "entity": "BirthHistory",
+                  "gold_cui": "C0559478",
+                  "letter_id": "EA0137"
+                },
+                {
+                  "concept": "birth was norma",
+                  "entity": "BirthHistory",
+                  "gold_cui": "C3665337",
+                  "letter_id": "EA0149"
+                }
+              ],
+              "Diagnosis": [
+                {
+                  "concept": "focal seizures",
+                  "entity": "Diagnosis",
+                  "gold_cui": "C0751495",
+                  "letter_id": "EA0002"
+                },
+                {
+                  "concept": "secondary generalised seizures",
+                  "entity": "Diagnosis",
+                  "gold_cui": "C0270838",
+                  "letter_id": "EA0002"
+                },
+                {
+                  "concept": "focal seizures",
+                  "entity": "Diagnosis",
+                  "gold_cui": "C0751495",
+                  "letter_id": "EA0002"
+                },
+                {
+                  "concept": "genetic generalised epilepsy",
+                  "entity": "Diagnosis",
+                  "gold_cui": "C0270850",
+                  "letter_id": "EA0005"
+                },
+                {
+                  "concept": "epilepsy with generalised tonic clonic seizures alone",
+                  "entity": "Diagnosis",
+                  "gold_cui": "C0393697",
+                  "letter_id": "EA0005"
+                },
+                {
+                  "concept": "generalised tonic clonic seizure",
+                  "entity": "Diagnosis",
+                  "gold_cui": "C0494475",
+                  "letter_id": "EA0005"
+                },
+                {
+                  "concept": "generalised tonic clonic seizures",
+                  "entity": "Diagnosis",
+                  "gold_cui": "C0494475",
+                  "letter_id": "EA0005"
+                },
+                {
+                  "concept": "epilepsy with generalised tonic clonic seizure alone",
+                  "entity": "Diagnosis",
+                  "gold_cui": "C0393697",
+                  "letter_id": "EA0005"
+                }
+              ],
+              "EpilepsyCause": [
+                {
+                  "concept": "erinatal insult",
+                  "entity": "EpilepsyCause",
+                  "gold_cui": "C0005604",
+                  "letter_id": "EA0010"
+                },
+                {
+                  "concept": "traumatic brain injury 2005",
+                  "entity": "EpilepsyCause",
+                  "gold_cui": "C0876926",
+                  "letter_id": "EA0046"
+                },
+                {
+                  "concept": "easle",
+                  "entity": "EpilepsyCause",
+                  "gold_cui": "C0025007",
+                  "letter_id": "EA0124"
+                },
+                {
+                  "concept": "hypoxia during a difficult birth.",
+                  "entity": "EpilepsyCause",
+                  "gold_cui": "C0559478",
+                  "letter_id": "EA0137"
+                },
+                {
+                  "concept": "neurocysticercosis.",
+                  "entity": "EpilepsyCause",
+                  "gold_cui": "C0338437",
+                  "letter_id": "EA0169"
+                }
+              ],
+              "Onset": [
+                {
+                  "concept": "epileps",
+                  "entity": "Onset",
+                  "gold_cui": "C0014544",
+                  "letter_id": "EA0033"
+                },
+                {
+                  "concept": "epilepsy since the age of four",
+                  "entity": "Onset",
+                  "gold_cui": "C0014544",
+                  "letter_id": "EA0039"
+                },
+                {
+                  "concept": "epilepsy started at the each of 12",
+                  "entity": "Onset",
+                  "gold_cui": "C0014544",
+                  "letter_id": "EA0049"
+                },
+                {
+                  "concept": "generalised tonic chronic seizure",
+                  "entity": "Onset",
+                  "gold_cui": "C0494475",
+                  "letter_id": "EA0049"
+                },
+                {
+                  "concept": "eepileps",
+                  "entity": "Onset",
+                  "gold_cui": "C0014544",
+                  "letter_id": "EA0128"
+                },
+                {
+                  "concept": "generalised tonic clonic seizure",
+                  "entity": "Onset",
+                  "gold_cui": "C0494475",
+                  "letter_id": "EA0128"
+                },
+                {
+                  "concept": "absence seizure",
+                  "entity": "Onset",
+                  "gold_cui": "C4316903",
+                  "letter_id": "EA0161"
+                },
+                {
+                  "concept": "generalised tonic clonic seizur",
+                  "entity": "Onset",
+                  "gold_cui": "C0494475",
+                  "letter_id": "EA0161"
+                }
+              ],
+              "PatientHistory": [
+                {
+                  "concept": "convulsive seizures",
+                  "entity": "PatientHistory",
+                  "gold_cui": "C0751494",
+                  "letter_id": "EA0002"
+                },
+                {
+                  "concept": "absence like seizures",
+                  "entity": "PatientHistory",
+                  "gold_cui": "C0563606",
+                  "letter_id": "EA0006"
+                },
+                {
+                  "concept": "absence like episodes",
+                  "entity": "PatientHistory",
+                  "gold_cui": "C0563606",
+                  "letter_id": "EA0006"
+                },
+                {
+                  "concept": "hypothyroidism",
+                  "entity": "PatientHistory",
+                  "gold_cui": "C0020676",
+                  "letter_id": "EA0007"
+                },
+                {
+                  "concept": "meningioma resection",
+                  "entity": "PatientHistory",
+                  "gold_cui": "C1096493",
+                  "letter_id": "EA0008"
+                },
+                {
+                  "concept": "sseizures",
+                  "entity": "PatientHistory",
+                  "gold_cui": "C0036572",
+                  "letter_id": "EA0008"
+                },
+                {
+                  "concept": "craniotomy",
+                  "entity": "PatientHistory",
+                  "gold_cui": "C0010280",
+                  "letter_id": "EA0009"
+                },
+                {
+                  "concept": "frontal lobe brain tumour",
+                  "entity": "PatientHistory",
+                  "gold_cui": "C0006118",
+                  "letter_id": "EA0009"
+                }
+              ]
+            },
+            "mention_count": 365
+          },
           "__overall__": {
             "correctness": 0.9443,
             "coverage": 0.7532,
@@ -2860,6 +3525,85 @@
           }
         }
       },
+      "error_taxonomy": {
+        "note": "Coarse diagnostic taxonomy; categories can overlap and do not replace row-level adjudication.",
+        "overall": {
+          "candidate_miss": 563,
+          "evidence_failure": 0,
+          "wrong_detail_selection": 362
+        },
+        "per_entity": {
+          "Diagnosis": {
+            "candidate_miss": 275,
+            "evidence_failure": 0,
+            "wrong_detail_selection": 115
+          },
+          "EpilepsyCause": {
+            "candidate_miss": 21,
+            "evidence_failure": 0,
+            "wrong_detail_selection": 12
+          },
+          "Investigations": {
+            "candidate_miss": 22,
+            "evidence_failure": 0,
+            "wrong_detail_selection": 55
+          },
+          "Prescription": {
+            "candidate_miss": 60,
+            "evidence_failure": 0,
+            "wrong_detail_selection": 30
+          },
+          "SeizureFrequency": {
+            "candidate_miss": 185,
+            "evidence_failure": 0,
+            "wrong_detail_selection": 150
+          }
+        }
+      },
+      "evidence_validation": {
+        "Diagnosis": {
+          "evidence_present": 164,
+          "evidence_present_rate": 1.0,
+          "exact_evidence": 164,
+          "exact_evidence_rate": 1.0,
+          "predicted_mentions": 164
+        },
+        "EpilepsyCause": {
+          "evidence_present": 12,
+          "evidence_present_rate": 1.0,
+          "exact_evidence": 12,
+          "exact_evidence_rate": 1.0,
+          "predicted_mentions": 12
+        },
+        "Investigations": {
+          "evidence_present": 163,
+          "evidence_present_rate": 1.0,
+          "exact_evidence": 163,
+          "exact_evidence_rate": 1.0,
+          "predicted_mentions": 163
+        },
+        "Prescription": {
+          "evidence_present": 252,
+          "evidence_present_rate": 1.0,
+          "exact_evidence": 252,
+          "exact_evidence_rate": 1.0,
+          "predicted_mentions": 252
+        },
+        "SeizureFrequency": {
+          "evidence_present": 152,
+          "evidence_present_rate": 1.0,
+          "exact_evidence": 152,
+          "exact_evidence_rate": 1.0,
+          "predicted_mentions": 152
+        },
+        "overall": {
+          "evidence_present": 743,
+          "evidence_present_rate": 1.0,
+          "exact_evidence": 743,
+          "exact_evidence_rate": 1.0,
+          "predicted_mentions": 743
+        }
+      },
       "name": "llm_only_all_entities (single pass)",
       "ownership": "llm_first",
       "row_count": 140
@@ -2870,6 +3614,7 @@
           "Certainty",
           "Negation"
         ],
+        "limitations": "This audit quantifies modal/default ceilings and certainty-dropped benchmark loss. It does not yet implement annotation-guideline certainty rules over evidence-correct rows, so it supports demoting certainty as a likely projection layer but not a completed guideline-rule projection claim.",
         "note": "SeizureFrequency already ignores Certainty/Negation in its benchmark key (guideline convention), so it contributes no certainty-only loss.",
         "overall": {
           "benchmark_f1": 0.181,
@@ -3212,7 +3957,8 @@
               }
             }
           }
-        }
+        },
+        "status": "diagnostic_not_guideline_rule_projection"
       },
       "clinical_recovery": {
         "artifact_projection_scores": {
@@ -3883,30 +4629,18 @@
             }
           }
         },
-        "headline_scores": {
-          "BirthHistory": {
-            "f1": 0.5263,
-            "fn": 16,
-            "fp": 11,
-            "gold_count": 31,
-            "precision": 0.5769,
-            "precision_tp": 15,
-            "pred_count": 26,
-            "recall": 0.4839,
-            "recall_tp": 15,
-            "tp": 15
-          },
+        "cui_projected_headline_scores": {
           "Diagnosis": {
-            "f1": 0.3971,
-            "fn": 242,
-            "fp": 86,
+            "f1": 0.4605,
+            "fn": 225,
+            "fp": 71,
             "gold_count": 369,
-            "precision": 0.4691,
-            "precision_tp": 76,
+            "precision": 0.5617,
+            "precision_tp": 91,
             "pred_count": 162,
-            "recall": 0.3442,
-            "recall_tp": 127,
-            "tp": 127
+            "recall": 0.3902,
+            "recall_tp": 144,
+            "tp": 144
           },
           "EpilepsyCause": {
             "f1": 0.2,
@@ -3930,18 +4664,6 @@
             "recall": 0.8529,
             "tp": 116
           },
-          "Onset": {
-            "f1": 0.1481,
-            "fn": 9,
-            "fp": 83,
-            "gold_count": 17,
-            "precision": 0.0879,
-            "precision_tp": 8,
-            "pred_count": 91,
-            "recall": 0.4706,
-            "recall_tp": 8,
-            "tp": 8
-          },
           "Prescription": {
             "f1": 0.8241,
             "fn": 22,
@@ -3961,6 +4683,44 @@
             "pred_count": 164,
             "recall": 0.3476,
             "tp": 65
+          }
+        },
+        "cui_projected_overall": {
+          "f1": 0.5656,
+          "fn": 402,
+          "fp": 333,
+          "gold_count": 906,
+          "precision": 0.5753,
+          "precision_tp": 451,
+          "pred_count": 784,
+          "recall": 0.5563,
+          "recall_tp": 504,
+          "tp": 504
+        },
+        "diagnostic_nonessential_scores": {
+          "BirthHistory": {
+            "f1": 0.5263,
+            "fn": 16,
+            "fp": 11,
+            "gold_count": 31,
+            "precision": 0.5769,
+            "precision_tp": 15,
+            "pred_count": 26,
+            "recall": 0.4839,
+            "recall_tp": 15,
+            "tp": 15
+          },
+          "Onset": {
+            "f1": 0.1481,
+            "fn": 9,
+            "fp": 83,
+            "gold_count": 17,
+            "precision": 0.0879,
+            "precision_tp": 8,
+            "pred_count": 91,
+            "recall": 0.4706,
+            "recall_tp": 8,
+            "tp": 8
           },
           "WhenDiagnosed": {
             "f1": 0.0727,
@@ -3975,20 +4735,83 @@
             "tp": 2
           }
         },
+        "headline_scores": {
+          "Diagnosis": {
+            "f1": 0.4605,
+            "fn": 225,
+            "fp": 71,
+            "gold_count": 369,
+            "precision": 0.5617,
+            "precision_tp": 91,
+            "pred_count": 162,
+            "recall": 0.3902,
+            "recall_tp": 144,
+            "tp": 144
+          },
+          "EpilepsyCause": {
+            "f1": 0.2,
+            "fn": 13,
+            "fp": 51,
+            "gold_count": 21,
+            "precision": 0.1356,
+            "precision_tp": 8,
+            "pred_count": 59,
+            "recall": 0.381,
+            "recall_tp": 8,
+            "tp": 8
+          },
+          "Investigations": {
+            "f1": 0.7412,
+            "fn": 20,
+            "fp": 61,
+            "gold_count": 136,
+            "precision": 0.6554,
+            "pred_count": 177,
+            "recall": 0.8529,
+            "tp": 116
+          },
+          "Prescription": {
+            "f1": 0.8241,
+            "fn": 22,
+            "fp": 51,
+            "gold_count": 193,
+            "precision": 0.7703,
+            "pred_count": 222,
+            "recall": 0.886,
+            "tp": 171
+          },
+          "SeizureFrequency": {
+            "f1": 0.2963,
+            "fn": 135,
+            "fp": 112,
+            "gold_count": 187,
+            "precision": 0.3171,
+            "pred_count": 164,
+            "recall": 0.2781,
+            "tp": 52
+          }
+        },
         "overall": {
-          "f1": 0.5083,
-          "fn": 453,
-          "fp": 484,
-          "gold_count": 965,
-          "precision": 0.4878,
-          "precision_tp": 461,
-          "pred_count": 945,
-          "recall": 0.5306,
-          "recall_tp": 512,
-          "tp": 512
-        }
+          "f1": 0.5502,
+          "fn": 415,
+          "fp": 346,
+          "gold_count": 906,
+          "precision": 0.5587,
+          "precision_tp": 438,
+          "pred_count": 784,
+          "recall": 0.5419,
+          "recall_tp": 491,
+          "tp": 491
+        },
+        "primary_entities": [
+          "Prescription",
+          "SeizureFrequency",
+          "Diagnosis",
+          "EpilepsyCause",
+          "Investigations"
+        ]
       },
-      "clinical_recovery_note": "Clinical-recovery headline computed on CUI-projected predictions (deterministic CUI attached before scoring, per the ownership ladder); the SeizureFrequency state key uses CUI as seizure-type identity.",
+      "clinical_recovery_note": "Primary clinical-recovery headline is CUI-free and aggregates only the five essential families. A CUI-projected companion score is reported separately because the legacy SeizureFrequency state key uses CUI as seizure-type identity when present.",
       "cui_audit": {
         "concept_buckets": {
           "bucket_concepts": {
@@ -4200,6 +5023,220 @@
             "projected": 11,
             "projected_correct": 11
           },
+          "__missing_mapping__": {
+            "concept_count": 184,
+            "examples": {
+              "BirthHistory": [
+                {
+                  "concept": "no problems when he was born",
+                  "entity": "BirthHistory",
+                  "gold_cui": "C3665337",
+                  "letter_id": "EA0045"
+                },
+                {
+                  "concept": "prematurely",
+                  "entity": "BirthHistory",
+                  "gold_cui": "C4054482",
+                  "letter_id": "EA0133"
+                },
+                {
+                  "concept": "hypoxia during a difficult birth.",
+                  "entity": "BirthHistory",
+                  "gold_cui": "C0559478",
+                  "letter_id": "EA0137"
+                },
+                {
+                  "concept": "birth was norma",
+                  "entity": "BirthHistory",
+                  "gold_cui": "C3665337",
+                  "letter_id": "EA0149"
+                }
+              ],
+              "Diagnosis": [
+                {
+                  "concept": "focal seizures",
+                  "entity": "Diagnosis",
+                  "gold_cui": "C0751495",
+                  "letter_id": "EA0002"
+                },
+                {
+                  "concept": "secondary generalised seizures",
+                  "entity": "Diagnosis",
+                  "gold_cui": "C0270838",
+                  "letter_id": "EA0002"
+                },
+                {
+                  "concept": "focal seizures",
+                  "entity": "Diagnosis",
+                  "gold_cui": "C0751495",
+                  "letter_id": "EA0002"
+                },
+                {
+                  "concept": "genetic generalised epilepsy",
+                  "entity": "Diagnosis",
+                  "gold_cui": "C0270850",
+                  "letter_id": "EA0005"
+                },
+                {
+                  "concept": "epilepsy with generalised tonic clonic seizures alone",
+                  "entity": "Diagnosis",
+                  "gold_cui": "C0393697",
+                  "letter_id": "EA0005"
+                },
+                {
+                  "concept": "generalised tonic clonic seizure",
+                  "entity": "Diagnosis",
+                  "gold_cui": "C0494475",
+                  "letter_id": "EA0005"
+                },
+                {
+                  "concept": "generalised tonic clonic seizures",
+                  "entity": "Diagnosis",
+                  "gold_cui": "C0494475",
+                  "letter_id": "EA0005"
+                },
+                {
+                  "concept": "epilepsy with generalised tonic clonic seizure alone",
+                  "entity": "Diagnosis",
+                  "gold_cui": "C0393697",
+                  "letter_id": "EA0005"
+                }
+              ],
+              "EpilepsyCause": [
+                {
+                  "concept": "erinatal insult",
+                  "entity": "EpilepsyCause",
+                  "gold_cui": "C0005604",
+                  "letter_id": "EA0010"
+                },
+                {
+                  "concept": "traumatic brain injury 2005",
+                  "entity": "EpilepsyCause",
+                  "gold_cui": "C0876926",
+                  "letter_id": "EA0046"
+                },
+                {
+                  "concept": "easle",
+                  "entity": "EpilepsyCause",
+                  "gold_cui": "C0025007",
+                  "letter_id": "EA0124"
+                },
+                {
+                  "concept": "hypoxia during a difficult birth.",
+                  "entity": "EpilepsyCause",
+                  "gold_cui": "C0559478",
+                  "letter_id": "EA0137"
+                },
+                {
+                  "concept": "neurocysticercosis.",
+                  "entity": "EpilepsyCause",
+                  "gold_cui": "C0338437",
+                  "letter_id": "EA0169"
+                }
+              ],
+              "Onset": [
+                {
+                  "concept": "epileps",
+                  "entity": "Onset",
+                  "gold_cui": "C0014544",
+                  "letter_id": "EA0033"
+                },
+                {
+                  "concept": "epilepsy since the age of four",
+                  "entity": "Onset",
+                  "gold_cui": "C0014544",
+                  "letter_id": "EA0039"
+                },
+                {
+                  "concept": "epilepsy started at the each of 12",
+                  "entity": "Onset",
+                  "gold_cui": "C0014544",
+                  "letter_id": "EA0049"
+                },
+                {
+                  "concept": "generalised tonic chronic seizure",
+                  "entity": "Onset",
+                  "gold_cui": "C0494475",
+                  "letter_id": "EA0049"
+                },
+                {
+                  "concept": "eepileps",
+                  "entity": "Onset",
+                  "gold_cui": "C0014544",
+                  "letter_id": "EA0128"
+                },
+                {
+                  "concept": "generalised tonic clonic seizure",
+                  "entity": "Onset",
+                  "gold_cui": "C0494475",
+                  "letter_id": "EA0128"
+                },
+                {
+                  "concept": "absence seizure",
+                  "entity": "Onset",
+                  "gold_cui": "C4316903",
+                  "letter_id": "EA0161"
+                },
+                {
+                  "concept": "generalised tonic clonic seizur",
+                  "entity": "Onset",
+                  "gold_cui": "C0494475",
+                  "letter_id": "EA0161"
+                }
+              ],
+              "PatientHistory": [
+                {
+                  "concept": "convulsive seizures",
+                  "entity": "PatientHistory",
+                  "gold_cui": "C0751494",
+                  "letter_id": "EA0002"
+                },
+                {
+                  "concept": "absence like seizures",
+                  "entity": "PatientHistory",
+                  "gold_cui": "C0563606",
+                  "letter_id": "EA0006"
+                },
+                {
+                  "concept": "absence like episodes",
+                  "entity": "PatientHistory",
+                  "gold_cui": "C0563606",
+                  "letter_id": "EA0006"
+                },
+                {
+                  "concept": "hypothyroidism",
+                  "entity": "PatientHistory",
+                  "gold_cui": "C0020676",
+                  "letter_id": "EA0007"
+                },
+                {
+                  "concept": "meningioma resection",
+                  "entity": "PatientHistory",
+                  "gold_cui": "C1096493",
+                  "letter_id": "EA0008"
+                },
+                {
+                  "concept": "sseizures",
+                  "entity": "PatientHistory",
+                  "gold_cui": "C0036572",
+                  "letter_id": "EA0008"
+                },
+                {
+                  "concept": "craniotomy",
+                  "entity": "PatientHistory",
+                  "gold_cui": "C0010280",
+                  "letter_id": "EA0009"
+                },
+                {
+                  "concept": "frontal lobe brain tumour",
+                  "entity": "PatientHistory",
+                  "gold_cui": "C0006118",
+                  "letter_id": "EA0009"
+                }
+              ]
+            },
+            "mention_count": 365
+          },
           "__overall__": {
             "correctness": 0.9443,
             "coverage": 0.7532,
@@ -4290,6 +5327,85 @@
             "prediction_cui_coverage": 1.0,
             "semantic_f1": 0.0727
           }
+        }
+      },
+      "error_taxonomy": {
+        "note": "Coarse diagnostic taxonomy; categories can overlap and do not replace row-level adjudication.",
+        "overall": {
+          "candidate_miss": 415,
+          "evidence_failure": 0,
+          "wrong_detail_selection": 346
+        },
+        "per_entity": {
+          "Diagnosis": {
+            "candidate_miss": 225,
+            "evidence_failure": 0,
+            "wrong_detail_selection": 71
+          },
+          "EpilepsyCause": {
+            "candidate_miss": 13,
+            "evidence_failure": 0,
+            "wrong_detail_selection": 51
+          },
+          "Investigations": {
+            "candidate_miss": 20,
+            "evidence_failure": 0,
+            "wrong_detail_selection": 61
+          },
+          "Prescription": {
+            "candidate_miss": 22,
+            "evidence_failure": 0,
+            "wrong_detail_selection": 51
+          },
+          "SeizureFrequency": {
+            "candidate_miss": 135,
+            "evidence_failure": 0,
+            "wrong_detail_selection": 112
+          }
+        }
+      },
+      "evidence_validation": {
+        "Diagnosis": {
+          "evidence_present": 154,
+          "evidence_present_rate": 1.0,
+          "exact_evidence": 154,
+          "exact_evidence_rate": 1.0,
+          "predicted_mentions": 154
+        },
+        "EpilepsyCause": {
+          "evidence_present": 59,
+          "evidence_present_rate": 1.0,
+          "exact_evidence": 59,
+          "exact_evidence_rate": 1.0,
+          "predicted_mentions": 59
+        },
+        "Investigations": {
+          "evidence_present": 178,
+          "evidence_present_rate": 1.0,
+          "exact_evidence": 178,
+          "exact_evidence_rate": 1.0,
+          "predicted_mentions": 178
+        },
+        "Prescription": {
+          "evidence_present": 230,
+          "evidence_present_rate": 1.0,
+          "exact_evidence": 230,
+          "exact_evidence_rate": 1.0,
+          "predicted_mentions": 230
+        },
+        "SeizureFrequency": {
+          "evidence_present": 164,
+          "evidence_present_rate": 1.0,
+          "exact_evidence": 164,
+          "exact_evidence_rate": 1.0,
+          "predicted_mentions": 164
+        },
+        "overall": {
+          "evidence_present": 785,
+          "evidence_present_rate": 1.0,
+          "exact_evidence": 785,
+          "exact_evidence_rate": 1.0,
+          "predicted_mentions": 785
         }
       },
       "name": "hybrid_all_entities (candidate-set + verify)",

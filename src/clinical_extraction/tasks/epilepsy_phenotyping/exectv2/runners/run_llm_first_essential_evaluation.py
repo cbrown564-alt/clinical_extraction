@@ -102,7 +102,7 @@ def _f(x: float) -> str:
 
 def render_markdown(report: dict[str, Any]) -> str:
     archs = report["architectures"]
-    headline_entities = list(archs[0]["clinical_recovery"]["headline_scores"].keys())
+    headline_entities = list(archs[0]["clinical_recovery"]["primary_entities"])
     lines: list[str] = [
         "# ExECTv2 LLM-First Essential Clinical Evaluation",
         "",
@@ -123,11 +123,13 @@ def render_markdown(report: dict[str, Any]) -> str:
     # Section 5 first: the headline comparator the question turns on.
     lines += [
         "",
-        "## 5. Baseline and hybrid comparator — clinical-recovery headline",
+        "## 5. Baseline and hybrid comparator — essential clinical-recovery headline",
         "",
-        "Clinical-fact recovery (CUI, certainty, and benchmark phrase demoted to "
-        "deterministic projection layers below). This is the primary surface the "
-        "plan's research question is judged on.",
+        "Clinical-fact recovery over the five essential families only "
+        "(Prescription, SeizureFrequency, Diagnosis, EpilepsyCause, "
+        "Investigations). The primary headline is CUI-free; certainty remains "
+        "a diagnostic projection candidate rather than a completed guideline-rule "
+        "projection.",
         "",
         "| Architecture | Ownership | Recovery F1 | Precision | Recall |",
         "| --- | --- | ---: | ---: | ---: |",
@@ -137,6 +139,21 @@ def render_markdown(report: dict[str, Any]) -> str:
         lines.append(
             f"| {a['name']} | `{a['ownership']}` | {_f(o['f1'])} "
             f"| {_f(o['precision'])} | {_f(o['recall'])} |"
+        )
+
+    lines += [
+        "",
+        "CUI-projected companion score (reported because the legacy "
+        "SeizureFrequency state key can use CUI as seizure-type identity):",
+        "",
+        "| Architecture | CUI-projected essential F1 | Precision | Recall |",
+        "| --- | ---: | ---: | ---: |",
+    ]
+    for a in archs:
+        co = a["clinical_recovery"]["cui_projected_overall"]
+        lines.append(
+            f"| {a['name']} | {_f(co['f1'])} | {_f(co['precision'])} "
+            f"| {_f(co['recall'])} |"
         )
 
     lines += [
@@ -176,6 +193,25 @@ def render_markdown(report: dict[str, Any]) -> str:
                 f"| {entity} | {_f(h['f1'])} | {_f(h['precision'])} | {_f(h['recall'])} |"
             )
 
+        evidence = llm["evidence_validation"]["overall"]
+        errors = llm["error_taxonomy"]["overall"]
+        lines += [
+            "",
+            "### Evidence validation and error taxonomy",
+            "",
+            "Evidence policy: exact source-substring evidence is required when a "
+            "prediction emits evidence text. Error categories are coarse diagnostics "
+            "and can overlap.",
+            "",
+            f"- evidence present: **{evidence['evidence_present_rate']:.3f}** "
+            f"({evidence['evidence_present']}/{evidence['predicted_mentions']})",
+            f"- exact evidence: **{evidence['exact_evidence_rate']:.3f}** "
+            f"({evidence['exact_evidence']}/{evidence['predicted_mentions']})",
+            f"- candidate_miss: **{errors['candidate_miss']}**",
+            f"- wrong_detail_selection: **{errors['wrong_detail_selection']}**",
+            f"- evidence_failure: **{errors['evidence_failure']}**",
+        ]
+
     # Section 2: certainty projection audit (use llm_first numbers; gold dist is shared).
     cert = (llm or archs[0])["certainty_audit"]
     co = cert["overall"]
@@ -188,6 +224,9 @@ def render_markdown(report: dict[str, Any]) -> str:
         f"Certainty-only benchmark loss is **{_f(co['certainty_only_f1_gain_if_dropped'])} F1** "
         f"({co['certainty_only_tp_gain_if_dropped']} TP) — measured on CUI-projected "
         "predictions so the residual is owned by `Certainty`/`Negation`, not missing CUI.",
+        "",
+        f"Limitation: {cert['limitations']} This is diagnostic, not a completed "
+        "guideline-rule projection.",
         "",
         "Gold distribution and default-projection ceiling (fraction correct if a rule "
         "assigned the dominant value):",
@@ -233,6 +272,10 @@ def render_markdown(report: dict[str, Any]) -> str:
             f"| {bucket} | {buckets['bucket_concepts'].get(bucket, 0)} "
             f"| {buckets['bucket_mentions'].get(bucket, 0)} |"
         )
+    missing = cui["deterministic_projection"]["__missing_mapping__"]
+    lines.append(
+        f"| missing_mapping | {missing['concept_count']} | {missing['mention_count']} |"
+    )
     lines += [
         "",
         "Deterministic projection over gold (CUI stripped first, then re-attached — "
@@ -271,14 +314,14 @@ def render_markdown(report: dict[str, Any]) -> str:
         "",
         "## 1. Essential clinical scorer specification",
         "",
-        "The essential clinical scorer is the clinical-recovery headline in "
-        "`reports/clinical_recovery_scorecard.py` / `scoring.py` "
-        "(`score_prescription_components`, `score_investigations_components`, "
-        "`score_frequency_state`, `score_concept_identity`). Primary score ignores "
-        "CUI; SeizureFrequency already excludes Certainty/Negation by guideline "
-        "convention. CUI and certainty are reported as the demoted projection layers "
-        "above (§3, §2). Class assignments live in "
-        "`contract/evaluation.py::ENTITY_CLINICAL_RECOVERY_CLASSES`.",
+        "The essential clinical scorer is assembled in "
+        "`reports/llm_first_essential_evaluation.py` from the existing "
+        "`clinical_recovery_scorecard.py` / `scoring.py` primitives. It aggregates "
+        "only Prescription, SeizureFrequency, Diagnosis, EpilepsyCause, and "
+        "Investigations. The primary surface strips CUI from gold and predictions "
+        "before scoring; Diagnosis and EpilepsyCause use concept-only recovery so "
+        "`Certainty`/`Negation` do not drive the LLM-owned headline. CUI-projected "
+        "and certainty-dropped scores are reported as diagnostic projection layers.",
         "",
     ]
     return "\n".join(lines)

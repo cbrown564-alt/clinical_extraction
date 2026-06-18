@@ -347,44 +347,59 @@ with `tests/test_exectv2_llm_first_essential_evaluation.py`.
 
 ### Findings against the two direct hypotheses
 
-**Certainty is a deterministic projection layer, confirmed.** Certainty-only
-benchmark loss is **+0.003 F1 (4 TP)** measured on CUI-projected predictions, so
-the residual is genuinely certainty/negation rather than missing CUI. `Negation`
-is near-constant (`Affirmed`) on every entity that carries it (default-projection
-ceiling 0.95–1.00); `Certainty` is dominated by its modal value (Diagnosis 0.82,
-EpilepsyCause 0.86, BirthHistory 0.90, PatientHistory 0.92). Certainty is removed
-from the LLM burden and reported as an adapter layer.
+**Certainty remains a projection-layer candidate, not a completed guideline-rule
+projection.** Certainty-only benchmark loss is **+0.003 F1 (4 TP)** measured on
+CUI-projected predictions, so the observed residual is certainty/negation rather
+than missing CUI. `Negation` is near-constant (`Affirmed`) on every entity that
+carries it (default-projection ceiling 0.95–1.00); `Certainty` is dominated by
+its modal value (Diagnosis 0.82, EpilepsyCause 0.86, BirthHistory 0.90,
+PatientHistory 0.92). This supports demoting certainty from the primary
+LLM-owned headline, but the stronger plan requirement remains open: translate
+the annotation guidelines into explicit per-entity certainty projection rules and
+score those rules on gold or evidence-correct rows.
 
-**CUI is benchmark-format projection, confirmed.** The single LLM pass emits no
-CUI, so its raw benchmark F1 is 0.000; deterministic projection recovers it to
-0.101 versus the 0.115 CUI-free semantic surface (residual 0.014). In-sample
-projection over gold (CUI stripped then re-attached) reaches coverage 0.75 and
-**correctness 0.944**, with 365 `missing_mapping` mentions concentrated in the
-long-tail concepts the finite lexicon does not cover. No LLM-first claim depends
-on model-supplied CUI.
+**CUI is benchmark-format projection, with finite-lexicon limits exposed.** The
+single LLM pass emits no CUI, so its raw benchmark F1 is 0.000; deterministic
+projection recovers it to 0.101 versus the 0.115 CUI-free semantic surface
+(residual 0.014). In-sample projection over gold (CUI stripped then re-attached)
+reaches coverage 0.75 and **correctness 0.944**, with 365 `missing_mapping`
+mentions across 184 concepts concentrated in the long tail. No LLM-first claim
+depends on model-supplied CUI, and missing mappings are now reported explicitly
+rather than hidden inside one-to-one/gold-inconsistent concept counts.
 
-### Clinical-recovery headline (CUI/certainty/format demoted)
+### Essential clinical-recovery headline (primary CUI-free)
 
 | Architecture | Ownership | Recovery F1 |
 | --- | --- | ---: |
-| deterministic_all9 | `rules_only` | 0.600 |
-| hybrid_all_entities | `hybrid` | 0.508 |
-| llm_only_all_entities (single pass) | `llm_first` | 0.393 |
+| deterministic_all9 | `rules_only` | 0.604 |
+| hybrid_all_entities | `hybrid` | 0.550 |
+| llm_only_all_entities (single pass) | `llm_first` | 0.422 |
+
+The corrected primary headline aggregates only the five essential families
+(Prescription, SeizureFrequency, Diagnosis, EpilepsyCause, Investigations),
+strips CUI from gold and predictions before scoring, and uses concept-only
+Diagnosis/EpilepsyCause recovery so `Certainty`/`Negation` do not drive the
+LLM-owned score. BirthHistory, Onset, PatientHistory, and WhenDiagnosed remain
+diagnostic/all-nine context only.
 
 The single all-entities pass matches or beats rules on Prescription concept
 recovery, Investigations, and Diagnosis concept identity, but **collapses on
-SeizureFrequency (0.012)** and the low-frequency atomic entities (Onset,
-WhenDiagnosed, EpilepsyCause ~0). The SF collapse is genuine, not a scoring
-artifact: even after deterministic CUI projection the single pass does not emit
-the structured count attributes that define SF state.
+SeizureFrequency (0.012)** and EpilepsyCause (0.000). The SF collapse is genuine,
+not just a CUI scoring artifact: the single pass does not emit the structured
+count attributes that define SF state.
 
 > Scorer note: the SeizureFrequency state key uses CUI as the seizure-type
-> identity when present, and all gold SF mentions carry one. The clinical-recovery
-> headline is therefore computed on CUI-projected predictions (CUI attached
-> deterministically before scoring, per the ownership ladder). An alternative is
-> to make `_frequency_type_key` phrase-based so SF recovery is CUI-independent;
-> that touches an established scorer and its accepted numbers, so it is left as a
-> flagged decision rather than changed here.
+> identity when present, and all gold SF mentions carry one. The primary
+> essential headline is therefore computed on a CUI-free copy of gold and
+> predictions; a separate CUI-projected companion score is reported for continuity
+> with the legacy scorer (`rules_only` 0.613, `hybrid` 0.566, `llm_first` 0.422).
+
+Evidence validation is now included in the readout. The single all-entities
+artifact carries exact source-substring evidence for 743/743 emitted essential
+mentions, so the current failure is clinical-detail selection/coverage rather
+than evidence citation absence. The coarse error taxonomy reports 563
+candidate misses, 362 wrong-detail selections, and 0 evidence failures; these
+categories are diagnostic and can overlap.
 
 ### Step 5 decision
 
@@ -394,4 +409,6 @@ atomic entities, so a fresh general single call would repeat the known failure.
 The error-led redesign the plan calls for is: keep the single LLM pass for the
 families it already recovers (Prescription, Investigations, Diagnosis concept),
 and route SeizureFrequency to the structured event/state schema the specialist
-SF candidates already use. Certainty and CUI stay as deterministic adapters.
+SF candidates already use. Certainty and CUI stay outside the primary LLM-owned
+headline, but certainty still needs an explicit guideline-rule projection audit
+before stronger adapter-layer claim language is supported.

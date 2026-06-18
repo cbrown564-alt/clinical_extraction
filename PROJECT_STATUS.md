@@ -4,14 +4,12 @@ Last updated: 2026-06-18
 
 ## Active Objective
 
-ExECTv2 is the forward workstream, now refocused on the LLM-first essential
+ExECTv2 is the forward workstream, focused on the LLM-first essential
 clinical-detail question in
-`docs/plans/exectv2/11_llm_first_essential_clinical_evaluation_plan.md`. The
-current key-family result should be framed as an architecture characterization,
-not a benchmark-complete claim. A single candidate-ID action prompt reproduces
-the current per-family dev140 readout by auditing candidate IDs and
-deterministically copying selected candidates, which makes it a hybrid
-comparator rather than the primary LLM-first architecture.
+`docs/plans/exectv2/11_llm_first_essential_clinical_evaluation_plan.md`.
+Plan 11 is executed as an analysis-only replay, but its corrected interpretation
+is conservative: the single all-entities LLM pass is useful for some families,
+not a sufficient LLM-first architecture.
 
 Use the Gan 2026 closeout discipline as the template: source-near state, exact
 evidence, component attribution, benchmark-format ablations, and family-aware
@@ -19,54 +17,70 @@ promotion gates.
 
 ## Current Dev140 Readout
 
-| Family | Current candidate | F1 | P | R | Status |
-| --- | --- | ---: | ---: | ---: | --- |
-| Prescription / medication | Prescription verifier v0.1 | 0.817 | 0.773 | 0.865 | Clears target |
-| Investigations | Investigations verifier v0.1 | 0.872 | 0.869 | 0.875 | Clears target |
-| SeizureFrequency | SF unknown suppression v0.7 | 0.782 | 0.759 | 0.807 | Partial gain |
-| Diagnosis | Diagnosis reconciler v0.1 | 0.658 | 0.658 | 0.658 | Ceiling characterization |
+Plan 11 now reports the primary ExECTv2 essential headline as CUI-free and
+restricted to Prescription, SeizureFrequency, Diagnosis, EpilepsyCause, and
+Investigations. Non-essential all-nine families are diagnostic only.
 
-This does not authorize a new full-200 audit.
+| Architecture | Ownership | Essential F1 | P | R | Notes |
+| --- | --- | ---: | ---: | ---: | --- |
+| deterministic_all9 | `rules_only` | 0.604 | 0.676 | 0.546 | comparator/projection substrate |
+| hybrid_all_entities | `hybrid` | 0.550 | 0.559 | 0.542 | candidate-set + verify |
+| llm_only_all_entities | `llm_first` | 0.422 | 0.478 | 0.379 | collapses on SF and EpilepsyCause |
+
+LLM-first per-family F1: Prescription `0.747`, Investigations `0.748`,
+Diagnosis concept-only `0.316`, SeizureFrequency `0.012`, EpilepsyCause `0.000`.
+Evidence is exact source-substring for `743/743` emitted essential mentions, so
+the active failure is clinical-detail selection/coverage rather than evidence
+citation absence.
 
 ## Recent Context
 
-- The single structured key-family prompt is a useful evidence-grounded
-  substrate, but dev25 target-clearing results did not transfer to dev140.
-- Medication and Investigations now clear dev140 with focused verifier stages.
-  Their success supports family-specific decision units over broad prompt
-  accretion.
-- Diagnosis should stop ordinary target chasing on the current candidate set.
-  The convention oracle reaches only `0.791`, below the `0.8` gate, and the
-  ceiling note documents the claim language.
-- SF v0.7 predeclared unknown suppression improves dev140 `0.763` -> `0.782`
-  after v0.6 state projection, with unknown FP `22` -> `12`, unknown FN
-  unchanged at `8`, and active-rate/seizure-free recall unchanged.
-- The next evaluation pass should separate LLM-owned clinical extraction from
-  deterministic certainty, CUI, and benchmark-format projection.
+- Plan 11 originally over-aggregated all-nine headline entities and overclaimed
+  certainty/CUI conclusions. The implementation and readouts now separate the
+  five-family primary headline, CUI-projected companion score, evidence/error
+  diagnostics, and CUI missing mappings.
+- Certainty remains a likely deterministic projection layer, but only a
+  diagnostic modal/default audit exists so far. Stronger claim language requires
+  explicit annotation-guideline projection rules over gold or evidence-correct
+  rows.
+- CUI is benchmark-format projection for LLM-first claims. The in-sample
+  projector reaches coverage `0.753` and correctness `0.944`, with `365`
+  missing-mapping mentions across `184` concepts.
+- A fresh broad single-call run is not the next step. The current LLM pass is
+  the wrong shape for SeizureFrequency; route SF to an event/state schema and
+  keep Prescription/Investigations/Diagnosis as reusable LLM-owned components.
 
 ## Active Priorities
 
-1. Establish the essential clinical component scorer for Prescription,
-   SeizureFrequency, Diagnosis, EpilepsyCause, and Investigations.
-2. Audit certainty and CUI as deterministic projection layers rather than LLM
-   extraction targets.
-3. Replay existing single structured, deterministic, and hybrid artifacts under
-   the ownership-aware layer ladder before authorizing new model calls.
-4. Require benchmark-beating dev evidence before any new full-200 audit:
-   overall `0.87` per-item / `0.90` per-letter, plus per-entity tables,
-   evidence/schema reliability, semantic-vs-CUI gaps, and ablations.
+1. Complete the certainty projection audit with explicit guideline rules.
+2. Redesign SeizureFrequency around a structured event/state schema rather than
+   another broad all-family prompt.
+3. Turn the coarse Plan 11 error taxonomy into row-level miss/selection slices
+   for the five essential families.
+4. Keep benchmark-facing full-200 work blocked until dev evidence beats the
+   current comparators and a frozen protocol is predeclared.
 
 ## Work Board
 
 ### Now
 
-- Execute the LLM-first essential clinical evaluation plan: scorer spec,
-  certainty/CUI projection audits, and replay of existing artifacts.
+- Implement per-entity certainty/negation projection rules and score them on
+  gold or evidence-correct rows.
+- Draft the SF LLM-first event/state schema using the specialist SF candidate
+  shape, with CUI/certainty outside the model-owned headline.
+- Build a row-level essential-family error ledger splitting candidate misses,
+  wrong detail selections, projection gaps, and evidence failures.
 
 ### Next
 
-- Decide whether a new single-call LLM-first run is necessary after replaying
-  the existing single structured prompt under the refocused evaluation surface.
+- Expand the CUI missing-mapping ledger into prioritized lexicon additions and
+  mark which are benchmark-format only.
+- Predeclare a family-routed LLM-first comparison: single pass for
+  Prescription/Investigations/Diagnosis plus SF event/state route.
+- Add a focused evidence-validity table to the Plan 11 readout by family, not
+  only overall.
+- Decide whether EpilepsyCause needs a targeted extractor or should remain a
+  low-frequency diagnostic family.
 
 ### Blocked
 
@@ -74,53 +88,23 @@ This does not authorize a new full-200 audit.
   blocked without explicit authorization and a frozen protocol.
 - New ExECTv2 full-200 audits are blocked until benchmark-beating GPT-first dev
   evidence and a predeclared aggregate readout.
+- Full-suite verification is not clean at repo head: current unrelated failures
+  are `test_exectv2_projection_gap_ledger.py` total drift (`340` expected vs
+  `343`) and two `test_gan2026_validation_test_gap_protocol.py` path/protocol
+  assertions. Full `ruff check .` also reports pre-existing style debt outside
+  the touched Plan 11 files.
 
 ### Done Recently
 
+- 2026-06-18: Corrected Plan 11 implementation and readouts: essential-only
+  CUI-free headline, CUI-projected companion score, diagnostic certainty
+  language, explicit CUI missing mappings, evidence/error summaries, updated
+  run index, and regression tests.
 - 2026-06-18: Completed the candidate-ID action version of the single
-  family-conditioned prompt. v0.4 emits keep/reject actions over candidate IDs
-  and deterministic code copies selected candidate mentions verbatim. Live
-  dev140 matches current per-family prompts (`Rx 0.817`, `Dx 0.658`,
-  `SF 0.782`, `Inv 0.872`) with zero call/parse failures, removing the
-  full-object copy-drift failure. This is the current comparator-equivalent
-  single prompt design; it does not raise Diagnosis or SF above `0.8`.
-  See `docs/research/exectv2_single_prompt_design_iteration_2026-06-18.md`.
-- 2026-06-18: Implemented the candidate-backed single family-conditioned
-  adjudicator. The candidate bundle/passthrough ceiling reproduces the current
-  dev140 comparators (`Rx 0.817`, `Dx 0.658`, `SF 0.782`, `Inv 0.872`), and
-  v0.3 clears all four families on dev25 (`Rx 0.961`, `Dx 0.838`, `SF 0.875`,
-  `Inv 0.878`). Full dev140 live transfer still fails for full-object
-  re-emission (`Rx 0.817`, `Dx 0.657`, `SF 0.697`, `Inv 0.876`), mostly from
-  copy drift. Next single-design iteration should emit candidate-ID actions
-  only and deterministically copy selected candidate mentions. See
-  `docs/research/exectv2_single_prompt_design_iteration_2026-06-18.md`.
-- 2026-06-18: Implemented and tested the family-conditioned event-ledger
-  template through v0.1-v0.3. v0.3 looked promising on dev5 but failed the
-  dev25 gate except Prescription (`Rx 0.824`, `Dx 0.405`, `SF 0.429`,
-  `Inv 0.769`), so the direct-from-letter family-conditioned design is
-  rejected. Carry forward a single candidate-backed family-conditioned
-  adjudicator template instead. See
-  `docs/research/exectv2_single_prompt_design_iteration_2026-06-18.md`.
-- 2026-06-18: Iterated a Gan-inspired single all-family event-ledger prompt
-  through v0.6-v0.8 on dev25 plus a stronger-model pilot. The single-call
-  variant is rejected; carry forward one family-conditioned event-ledger prompt
-  template instead. See
-  `docs/research/exectv2_single_prompt_design_iteration_2026-06-18.md`.
-- 2026-06-18: Completed the predeclared SF unknown-suppression hard-slice study.
-  v0.7 drops 10 named-rule unknown over-emissions and improves SF dev140
-  `0.763` -> `0.782` without active-rate or seizure-free recall regression. See
-  `experiments/exectv2_hybrid_sf_unknown_suppression_v07_dev140_20260618.md`.
-- 2026-06-18: Drafted the final ExECTv2 key-family architecture synthesis and
-  paper-table scaffold:
-  `docs/research/exectv2_final_key_family_architecture_synthesis_2026-06-18.md`.
-- 2026-06-18: Predeclared the narrow SF unknown-suppression hard-slice study
-  with stop rules for active-rate and seizure-free recall regression.
-- 2026-06-18: Completed SF state projection v0.6. State-only/combined ablations
-  improve SF dev140 `0.721` -> `0.763`; ownership-only is flat. See
-  `docs/research/exectv2_sf_state_projection_v06_readout_2026-06-18.md`.
-- 2026-06-18: Completed the GPT-first key-family loop through dev140 transfer,
-  family-specific verifier/adjudicator experiments, convention decomposition,
-  and current combined readout.
+  family-conditioned prompt. It matches current per-family prompts on dev140 but
+  remains a hybrid comparator because deterministic candidates own generation.
+- 2026-06-18: Completed SF unknown suppression v0.7, improving SF dev140
+  `0.763` -> `0.782` without active-rate or seizure-free recall regression.
 - 2026-06-17: Closed the Gan strand, completed the deterministic all-9 ExECTv2
   substrate, and built the reusable all-entity projection-gap ledger.
 
@@ -128,20 +112,18 @@ This does not authorize a new full-200 audit.
 
 - Do not inspect Gan `test450` row-level failures, rationales, evidence,
   selected events, or transitions for development.
-- New Gan holdout-facing runs require explicit frozen-protocol authorization.
-- Keep architecture claims attribution-clean across `rules_only`, `llm_only`,
+- Keep architecture claims attribution-clean across `rules_only`, `llm_first`,
   and `hybrid`.
-- Treat deterministic rules and benchmark-format repairs as controlled
+- Treat deterministic certainty, CUI, and benchmark-format repairs as controlled
   variables, not hidden implementation detail.
-- Treat SF v0.7 as a partial-improvement candidate, not a target-clearing
-  result.
-- Treat Diagnosis as ceiling/characterization evidence unless a new
-  evidence-selection architecture is proposed.
+- Treat Diagnosis and SF as architecture-characterization surfaces until a new
+  evidence-selection/event-state design is proposed.
 
 ## Core Artifacts
 
 Start with
-`docs/research/exectv2_final_key_family_architecture_synthesis_2026-06-18.md`;
-it links the convention decomposition, SF v0.6/v0.7 readouts, Diagnosis ceiling note,
-SF unknown-suppression predeclaration, combined key-family ledger, and
-`experiments/RUN_INDEX.md`.
+`docs/experiments/exectv2/key_entities/exectv2_llm_first_essential_evaluation_2026-06-18.md`
+and
+`docs/plans/exectv2/11_llm_first_essential_clinical_evaluation_plan.md`.
+The broader synthesis remains
+`docs/research/exectv2_final_key_family_architecture_synthesis_2026-06-18.md`.

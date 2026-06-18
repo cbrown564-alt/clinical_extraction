@@ -13,51 +13,65 @@ Architectures and ownership (plan §Evaluation Contract):
 | llm_only_all_entities (single pass) | `llm_first` | experiments/exectv2_audit_llm_only_all_entities_full200_gpt41mini_20260612.jsonl |
 | hybrid_all_entities (candidate-set + verify) | `hybrid` | experiments/exectv2_hybrid_all_entities_dev140_gpt41mini_20260617.jsonl |
 
-## 5. Baseline and hybrid comparator — clinical-recovery headline
+## 5. Baseline and hybrid comparator — essential clinical-recovery headline
 
-Clinical-fact recovery (CUI, certainty, and benchmark phrase demoted to deterministic projection layers below). This is the primary surface the plan's research question is judged on.
+Clinical-fact recovery over the five essential families only (Prescription, SeizureFrequency, Diagnosis, EpilepsyCause, Investigations). The primary headline is CUI-free; certainty remains a diagnostic projection candidate rather than a completed guideline-rule projection.
 
 | Architecture | Ownership | Recovery F1 | Precision | Recall |
 | --- | --- | ---: | ---: | ---: |
-| deterministic_all9 | `rules_only` | 0.600 | 0.666 | 0.546 |
-| llm_only_all_entities (single pass) | `llm_first` | 0.393 | 0.440 | 0.355 |
-| hybrid_all_entities (candidate-set + verify) | `hybrid` | 0.508 | 0.488 | 0.531 |
+| deterministic_all9 | `rules_only` | 0.604 | 0.676 | 0.546 |
+| llm_only_all_entities (single pass) | `llm_first` | 0.422 | 0.478 | 0.379 |
+| hybrid_all_entities (candidate-set + verify) | `hybrid` | 0.550 | 0.559 | 0.542 |
+
+CUI-projected companion score (reported because the legacy SeizureFrequency state key can use CUI as seizure-type identity):
+
+| Architecture | CUI-projected essential F1 | Precision | Recall |
+| --- | ---: | ---: | ---: |
+| deterministic_all9 | 0.613 | 0.686 | 0.554 |
+| llm_only_all_entities (single pass) | 0.422 | 0.478 | 0.379 |
+| hybrid_all_entities (candidate-set + verify) | 0.566 | 0.575 | 0.556 |
 
 ### Per-entity clinical-recovery headline F1
 
 | Entity | deterministic_all9 | llm_only_all_entities | hybrid_all_entities |
 | --- | ---: | ---: | ---: |
 | Prescription | 0.907 | 0.747 | 0.824 |
+| SeizureFrequency | 0.728 | 0.012 | 0.296 |
+| Diagnosis | 0.328 | 0.316 | 0.461 |
+| EpilepsyCause | 0.622 | 0.000 | 0.200 |
 | Investigations | 0.526 | 0.748 | 0.741 |
-| SeizureFrequency | 0.763 | 0.012 | 0.370 |
-| BirthHistory | 0.820 | 0.120 | 0.526 |
-| Diagnosis | 0.268 | 0.307 | 0.397 |
-| EpilepsyCause | 0.578 | 0.000 | 0.200 |
-| Onset | 0.400 | 0.000 | 0.148 |
-| WhenDiagnosed | 0.818 | 0.000 | 0.073 |
 
 ## 4. LLM-first single-call report
 
-Single all-entities pass (`llm_only_all_entities (single pass)`), ownership `llm_first`. Overall clinical recovery F1 **0.393** (P 0.440 / R 0.355).
+Single all-entities pass (`llm_only_all_entities (single pass)`), ownership `llm_first`. Overall clinical recovery F1 **0.422** (P 0.478 / R 0.379).
 
 Per-entity reading (which families clear, which collapse):
 
 | Entity | Recovery F1 | Precision | Recall |
 | --- | ---: | ---: | ---: |
 | Prescription | 0.747 | 0.816 | 0.689 |
-| Investigations | 0.748 | 0.675 | 0.838 |
 | SeizureFrequency | 0.012 | 0.013 | 0.011 |
-| BirthHistory | 0.120 | 0.158 | 0.097 |
-| Diagnosis | 0.307 | 0.406 | 0.247 |
+| Diagnosis | 0.316 | 0.416 | 0.255 |
 | EpilepsyCause | 0.000 | 0.000 | 0.000 |
-| Onset | 0.000 | 0.000 | 0.000 |
-| WhenDiagnosed | 0.000 | 0.000 | 0.000 |
+| Investigations | 0.748 | 0.675 | 0.838 |
+
+### Evidence validation and error taxonomy
+
+Evidence policy: exact source-substring evidence is required when a prediction emits evidence text. Error categories are coarse diagnostics and can overlap.
+
+- evidence present: **1.000** (743/743)
+- exact evidence: **1.000** (743/743)
+- candidate_miss: **563**
+- wrong_detail_selection: **362**
+- evidence_failure: **0**
 
 ## 2. Certainty projection audit
 
 SeizureFrequency already ignores Certainty/Negation in its benchmark key (guideline convention), so it contributes no certainty-only loss.
 
 Certainty-only benchmark loss is **0.003 F1** (4 TP) — measured on CUI-projected predictions so the residual is owned by `Certainty`/`Negation`, not missing CUI.
+
+Limitation: This audit quantifies modal/default ceilings and certainty-dropped benchmark loss. It does not yet implement annotation-guideline certainty rules over evidence-correct rows, so it supports demoting certainty as a likely projection layer but not a completed guideline-rule projection claim. This is diagnostic, not a completed guideline-rule projection.
 
 Gold distribution and default-projection ceiling (fraction correct if a rule assigned the dominant value):
 
@@ -88,6 +102,7 @@ Concept bucket ledger (over gold concepts carrying a CUI):
 | one_to_one | 283 | 1325 |
 | result_conditioned | 2 | 10 |
 | gold_inconsistent | 8 | 144 |
+| missing_mapping | 184 | 365 |
 
 Deterministic projection over gold (CUI stripped first, then re-attached — an in-sample lexicon lookup):
 
@@ -107,4 +122,4 @@ Per architecture, the artifact projection layers from the clinical-recovery scor
 
 ## 1. Essential clinical scorer specification
 
-The essential clinical scorer is the clinical-recovery headline in `reports/clinical_recovery_scorecard.py` / `scoring.py` (`score_prescription_components`, `score_investigations_components`, `score_frequency_state`, `score_concept_identity`). Primary score ignores CUI; SeizureFrequency already excludes Certainty/Negation by guideline convention. CUI and certainty are reported as the demoted projection layers above (§3, §2). Class assignments live in `contract/evaluation.py::ENTITY_CLINICAL_RECOVERY_CLASSES`.
+The essential clinical scorer is assembled in `reports/llm_first_essential_evaluation.py` from the existing `clinical_recovery_scorecard.py` / `scoring.py` primitives. It aggregates only Prescription, SeizureFrequency, Diagnosis, EpilepsyCause, and Investigations. The primary surface strips CUI from gold and predictions before scoring; Diagnosis and EpilepsyCause use concept-only recovery so `Certainty`/`Negation` do not drive the LLM-owned headline. CUI-projected and certainty-dropped scores are reported as diagnostic projection layers.

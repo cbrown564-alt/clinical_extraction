@@ -33,7 +33,11 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.benchmark_projection
     project_cuis,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
+    DIAGNOSIS,
+    EPILEPSY_CAUSE,
     INVESTIGATIONS,
+    PRESCRIPTION,
+    SEIZURE_FREQUENCY,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
     PredictedLetter,
@@ -65,6 +69,14 @@ _NEGATION = "Negation"
 _CUI = "CUI"
 _CUI_PHRASE = "CUIPhrase"
 _CERTAINTY_ATTRS = frozenset({_CERTAINTY, _NEGATION})
+ESSENTIAL_CLINICAL_ENTITIES: tuple[str, ...] = (
+    PRESCRIPTION.name,
+    SEIZURE_FREQUENCY.name,
+    DIAGNOSIS.name,
+    EPILEPSY_CAUSE.name,
+    INVESTIGATIONS.name,
+)
+_ESSENTIAL_ATOMIC_CONCEPT_ONLY = frozenset({DIAGNOSIS.name, EPILEPSY_CAUSE.name})
 
 # Ownership ladder. ``rules_only`` = deterministic all-9; ``llm_first`` = LLM
 # owns candidate generation + selection, deterministic only projects; ``hybrid``
@@ -297,7 +309,15 @@ def certainty_projection_audit(
     overall_benchmark = benchmark.per_item
     overall_dropped = certainty_dropped.per_item
     return {
+        "status": "diagnostic_not_guideline_rule_projection",
         "ignored_attributes": sorted(_CERTAINTY_ATTRS),
+        "limitations": (
+            "This audit quantifies modal/default ceilings and certainty-dropped "
+            "benchmark loss. It does not yet implement annotation-guideline "
+            "certainty rules over evidence-correct rows, so it supports demoting "
+            "certainty as a likely projection layer but not a completed "
+            "guideline-rule projection claim."
+        ),
         "note": (
             "SeizureFrequency already ignores Certainty/Negation in its benchmark "
             "key (guideline convention), so it contributes no certainty-only loss."
@@ -328,14 +348,19 @@ def cui_concept_buckets(
 ) -> dict[str, Any]:
     """Bucket every gold clinical concept by its CUI projection character."""
 
-    # (entity, concept) -> CUIs observed in gold
+    # (entity, concept) -> CUIs / result states observed in gold
     concept_cuis: dict[tuple[str, str], Counter[str]] = defaultdict(Counter)
+    concept_results: dict[tuple[str, str], Counter[str]] = defaultdict(Counter)
     for letter in gold_letters:
         for entity in entities:
             for ann in letter.entities(entity):
                 cui = ann.attributes.get(_CUI)
                 if cui:
                     concept_cuis[(entity, _concept_key(ann))][cui] += 1
+                    if entity == INVESTIGATIONS.name:
+                        concept_results[(entity, _concept_key(ann))][
+                            _investigation_result_key(ann)
+                        ] += 1
 
     bucket_counts: Counter[str] = Counter()
     bucket_concepts: Counter[str] = Counter()
@@ -346,7 +371,7 @@ def cui_concept_buckets(
         distinct = len(cuis)
         if distinct == 1:
             bucket = "one_to_one"
-        elif entity == INVESTIGATIONS.name:
+        elif entity == INVESTIGATIONS.name and len(concept_results[(entity, concept)]) > 1:
             bucket = "result_conditioned"
         else:
             bucket = "gold_inconsistent"
@@ -366,6 +391,14 @@ def cui_concept_buckets(
     }
 
 
+def _investigation_result_key(ann: ExectAnnotation) -> str:
+    for modality in ("EEG", "MRI", "CT"):
+        result = ann.attributes.get(f"{modality}_Results")
+        if result:
+            return f"{modality}:{result}"
+    return "unknown_result"
+
+
 def cui_projection_coverage(
     gold_letters: Sequence[ExectLetter],
     entities: Sequence[str],
@@ -380,6 +413,8 @@ def cui_projection_coverage(
         e: {"gold_with_cui": 0, "projected": 0, "projected_correct": 0, "missing_mapping": 0}
         for e in entities
     }
+    missing_examples: dict[str, list[dict[str, str]]] = defaultdict(list)
+    missing_concepts: Counter[tuple[str, str]] = Counter()
     entity_set = set(entities)
     for letter in gold_letters:
         # Keep the original gold CUI for grading, but strip it before projecting
@@ -425,6 +460,23 @@ def cui_projection_coverage(
                     stats["projected_correct"] += 1
             else:
                 stats["missing_mapping"] += 1
+                concept = _concept_key(
+                    ExectAnnotation(
+                        src.entity,
+                        src.text,
+                        src.attributes,
+                    )
+                )
+                missing_concepts[(src.entity, concept)] += 1
+                if len(missing_examples[src.entity]) < 8:
+                    missing_examples[src.entity].append(
+                        {
+                            "letter_id": letter.letter_id,
+                            "entity": src.entity,
+                            "concept": concept,
+                            "gold_cui": gold_cui,
+                        }
+                    )
     out: dict[str, Any] = {}
     totals = {"gold_with_cui": 0, "projected": 0, "projected_correct": 0, "missing_mapping": 0}
     for entity, stats in per_entity.items():
@@ -443,6 +495,13 @@ def cui_projection_coverage(
         **totals,
         "coverage": round(proj_n / gold_n, 4) if gold_n else 0.0,
         "correctness": round(totals["projected_correct"] / proj_n, 4) if proj_n else 0.0,
+    }
+    out["__missing_mapping__"] = {
+        "concept_count": len(missing_concepts),
+        "mention_count": sum(missing_concepts.values()),
+        "examples": {
+            entity: examples for entity, examples in sorted(missing_examples.items())
+        },
     }
     return out
 
@@ -533,6 +592,51 @@ def _strip_and_project(pred_letters: Sequence[PredictedLetter]) -> list[Predicte
     return projected
 
 
+def _strip_prediction_cui(pred_letters: Sequence[PredictedLetter]) -> list[PredictedLetter]:
+    stripped: list[PredictedLetter] = []
+    for letter in pred_letters:
+        stripped.append(
+            PredictedLetter(
+                letter_id=letter.letter_id,
+                mentions=tuple(
+                    m.model_copy(
+                        update={
+                            "attributes": {
+                                k: v
+                                for k, v in m.attributes.items()
+                                if k not in (_CUI, _CUI_PHRASE)
+                            }
+                        }
+                    )
+                    for m in letter.mentions
+                ),
+                diagnostics=letter.diagnostics,
+            )
+        )
+    return stripped
+
+
+def _strip_gold_cui(gold_letters: Sequence[ExectLetter]) -> list[ExectLetter]:
+    return [
+        ExectLetter(
+            letter_id=letter.letter_id,
+            note_text=letter.note_text,
+            annotations=tuple(
+                ExectAnnotation(
+                    entity=ann.entity,
+                    text=ann.text,
+                    attributes={
+                        k: v for k, v in ann.attributes.items() if k not in (_CUI, _CUI_PHRASE)
+                    },
+                    raw_text=ann.raw_text,
+                )
+                for ann in letter.annotations
+            ),
+        )
+        for letter in gold_letters
+    ]
+
+
 def _as_predicted(pred_letters: Sequence[Any]) -> list[PredictedLetter]:
     out: list[PredictedLetter] = []
     for letter in pred_letters:
@@ -566,6 +670,145 @@ def _as_exect(pred_letters: Sequence[Any]) -> list[ExectLetter]:
     return out
 
 
+def _score_for_primary(entity: str, scorecard: dict[str, Any]) -> dict[str, Any]:
+    score = scorecard["headline_scores"][entity]
+    if entity in _ESSENTIAL_ATOMIC_CONCEPT_ONLY:
+        return score["concept_only"]
+    return score["headline"]
+
+
+def _aggregate_score_dicts(scores: Sequence[dict[str, Any]]) -> dict[str, Any]:
+    precision_tp = recall_tp = pred_count = gold_count = 0
+    for score in scores:
+        precision_tp += int(score.get("precision_tp", score["tp"]))
+        recall_tp += int(score.get("recall_tp", score["tp"]))
+        pred_count += int(score["pred_count"])
+        gold_count += int(score["gold_count"])
+    precision = precision_tp / pred_count if pred_count else 0.0
+    recall = recall_tp / gold_count if gold_count else 0.0
+    f1 = (2 * precision * recall / (precision + recall)) if precision + recall else 0.0
+    return {
+        "precision": round(precision, 4),
+        "recall": round(recall, 4),
+        "f1": round(f1, 4),
+        "tp": recall_tp,
+        "precision_tp": precision_tp,
+        "recall_tp": recall_tp,
+        "fp": max(0, pred_count - precision_tp),
+        "fn": max(0, gold_count - recall_tp),
+        "pred_count": pred_count,
+        "gold_count": gold_count,
+    }
+
+
+def _primary_recovery(
+    scorecard: dict[str, Any],
+) -> tuple[dict[str, Any], dict[str, dict[str, Any]]]:
+    scores = {
+        entity: _score_for_primary(entity, scorecard)
+        for entity in ESSENTIAL_CLINICAL_ENTITIES
+    }
+    return _aggregate_score_dicts(tuple(scores.values())), scores
+
+
+def evidence_validation_summary(
+    gold_letters: Sequence[ExectLetter],
+    pred_letters: Sequence[PredictedLetter],
+    entities: Sequence[str] = ESSENTIAL_CLINICAL_ENTITIES,
+) -> dict[str, Any]:
+    """Summarize exact evidence-substring validity for prediction mentions.
+
+    Evidence policy for this analysis-only replay is deliberately narrow:
+    evidence is valid only when the prediction carries non-empty evidence text
+    and that text appears verbatim in the source letter text. This is a source
+    validity gate, not a claim that the evidence proves the extracted concept.
+    """
+
+    note_by_id = {letter.letter_id: letter.note_text or "" for letter in gold_letters}
+    entity_set = set(entities)
+    per_entity: dict[str, dict[str, int]] = {
+        e: {"predicted_mentions": 0, "evidence_present": 0, "exact_evidence": 0}
+        for e in entities
+    }
+    for pred in pred_letters:
+        note = note_by_id.get(pred.letter_id, "")
+        for mention in pred.mentions:
+            if mention.entity not in entity_set:
+                continue
+            stats = per_entity[mention.entity]
+            stats["predicted_mentions"] += 1
+            evidence = mention.evidence.strip()
+            if not evidence:
+                continue
+            stats["evidence_present"] += 1
+            if note and evidence in note:
+                stats["exact_evidence"] += 1
+
+    totals = {"predicted_mentions": 0, "evidence_present": 0, "exact_evidence": 0}
+    out: dict[str, Any] = {}
+    for entity, stats in per_entity.items():
+        for key in totals:
+            totals[key] += stats[key]
+        pred_n = stats["predicted_mentions"]
+        out[entity] = {
+            **stats,
+            "evidence_present_rate": round(stats["evidence_present"] / pred_n, 4)
+            if pred_n
+            else 0.0,
+            "exact_evidence_rate": round(stats["exact_evidence"] / pred_n, 4)
+            if pred_n
+            else 0.0,
+        }
+    pred_n = totals["predicted_mentions"]
+    out["overall"] = {
+        **totals,
+        "evidence_present_rate": round(totals["evidence_present"] / pred_n, 4)
+        if pred_n
+        else 0.0,
+        "exact_evidence_rate": round(totals["exact_evidence"] / pred_n, 4)
+        if pred_n
+        else 0.0,
+    }
+    return out
+
+
+def error_taxonomy_summary(
+    primary_scores: dict[str, dict[str, Any]],
+    evidence_summary: dict[str, Any],
+) -> dict[str, Any]:
+    """Coarse corpus-level error taxonomy for the LLM-first report.
+
+    ``candidate_miss`` is unmatched gold clinical detail (FN);
+    ``wrong_detail_selection`` is unmatched emitted detail (FP);
+    ``evidence_failure`` is an emitted mention without exact source evidence.
+    The categories are diagnostic and can overlap.
+    """
+
+    per_entity: dict[str, dict[str, int]] = {}
+    totals = {"candidate_miss": 0, "wrong_detail_selection": 0, "evidence_failure": 0}
+    for entity in ESSENTIAL_CLINICAL_ENTITIES:
+        score = primary_scores[entity]
+        evidence = evidence_summary[entity]
+        row = {
+            "candidate_miss": int(score["fn"]),
+            "wrong_detail_selection": int(score["fp"]),
+            "evidence_failure": int(
+                evidence["predicted_mentions"] - evidence["exact_evidence"]
+            ),
+        }
+        per_entity[entity] = row
+        for key in totals:
+            totals[key] += row[key]
+    return {
+        "note": (
+            "Coarse diagnostic taxonomy; categories can overlap and do not replace "
+            "row-level adjudication."
+        ),
+        "overall": totals,
+        "per_entity": per_entity,
+    }
+
+
 def architecture_report(
     *,
     name: str,
@@ -577,31 +820,47 @@ def architecture_report(
     """Build the full layer ladder for one architecture over one artifact."""
 
     predicted = _as_predicted(pred_letters)
-    # The plan's ownership ladder attaches CUI deterministically *before* the key
-    # is rendered. The SeizureFrequency state key uses CUI as the seizure-type
-    # identity when present (and all gold SF mentions carry one), so scoring raw
-    # CUI-free LLM output collapses SF to 0 as a projection artifact. Projecting
-    # CUI first is idempotent for rules_only and harmless for the CUI-free concept
-    # and prescription/investigation component keys; it only un-gates SF.
+    cui_free_gold = _strip_gold_cui(gold_letters)
+    cui_free_predicted = _strip_prediction_cui(predicted)
+    cui_free_scorecard = build_scorecard(cui_free_gold, cui_free_predicted)
+    primary_overall, primary_scores = _primary_recovery(cui_free_scorecard)
+
+    # Companion diagnostic: attach deterministic CUI before scoring so the
+    # legacy SeizureFrequency key that prefers CUI can be compared explicitly.
     projected = _strip_and_project(predicted)
-    scorecard = build_scorecard(gold_letters, projected)
+    projected_scorecard = build_scorecard(gold_letters, projected)
+    projected_overall, projected_scores = _primary_recovery(projected_scorecard)
+    nonessential = {
+        entity: cui_free_scorecard["headline_scores"][entity]["headline"]
+        for entity in cui_free_scorecard["headline_entities"]
+        if entity not in ESSENTIAL_CLINICAL_ENTITIES
+    }
+    evidence_summary = evidence_validation_summary(
+        gold_letters,
+        predicted,
+        ESSENTIAL_CLINICAL_ENTITIES,
+    )
     return {
         "name": name,
         "ownership": ownership,
         "row_count": len(gold_letters),
         "clinical_recovery_note": (
-            "Clinical-recovery headline computed on CUI-projected predictions "
-            "(deterministic CUI attached before scoring, per the ownership ladder); "
-            "the SeizureFrequency state key uses CUI as seizure-type identity."
+            "Primary clinical-recovery headline is CUI-free and aggregates only "
+            "the five essential families. A CUI-projected companion score is "
+            "reported separately because the legacy SeizureFrequency state key "
+            "uses CUI as seizure-type identity when present."
         ),
         "clinical_recovery": {
-            "overall": scorecard["overall_clinical_recovery"],
-            "headline_scores": {
-                entity: scorecard["headline_scores"][entity]["headline"]
-                for entity in scorecard["headline_entities"]
-            },
-            "artifact_projection_scores": scorecard["artifact_projection_scores"],
+            "primary_entities": list(ESSENTIAL_CLINICAL_ENTITIES),
+            "overall": primary_overall,
+            "headline_scores": primary_scores,
+            "cui_projected_overall": projected_overall,
+            "cui_projected_headline_scores": projected_scores,
+            "diagnostic_nonessential_scores": nonessential,
+            "artifact_projection_scores": projected_scorecard["artifact_projection_scores"],
         },
+        "evidence_validation": evidence_summary,
+        "error_taxonomy": error_taxonomy_summary(primary_scores, evidence_summary),
         "certainty_audit": certainty_projection_audit(gold_letters, predicted, entities),
         "cui_audit": cui_projection_audit(gold_letters, predicted, entities),
     }
