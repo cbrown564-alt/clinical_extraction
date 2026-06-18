@@ -55,7 +55,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
-PROMPT_VERSION = "exectv2_llm_only_key_entities_structured_v0.1"
+PROMPT_VERSION = "exectv2_llm_only_key_entities_structured_v0.2"
 PIPELINE_FAMILY = "exectv2_llm_only_key_entities_structured"
 COMPONENT_OWNER = "llm_only_key_entities_structured"
 
@@ -211,16 +211,63 @@ def build_prompt_input(letter: ExectLetter) -> str:
                 "concepts when the letter names more than one seizure type."
             ),
             (
-                "For seizure frequency, mention text is the seizure-type anchor; "
+                "Every Diagnosis mention must include Certainty and Negation. Use "
+                "Certainty='5' and Negation='Affirmed' for directly stated diagnoses "
+                "or seizure types unless the letter explicitly says otherwise."
+            ),
+            (
+                "For diagnosis, use DiagCategory='Epilepsy' for epilepsy syndromes or "
+                "diagnoses, 'SingleSeizure' for one named seizure type, and "
+                "'MultipleSeizures' only when the mention represents multiple seizure "
+                "types or recurrent seizures as a category."
+            ),
+            (
+                "For seizure frequency, mention text is only the seizure-type anchor; "
+                "do not include counts, dates, or the words 'seizure frequency' in text. "
                 "event_state and attributes carry counts, periods, dates, and changes."
+            ),
+            (
+                "For seizure-frequency ranges, never write values like '2 to 3', "
+                "'2-4', or '3 or 4' in NumberOfSeizures. Use LowerNumberOfSeizures "
+                "and UpperNumberOfSeizures instead."
+            ),
+            (
+                "For dated counts such as '2 to 3 in March', use Lower/Upper count "
+                "fields plus MonthDate or YearDate and TimeSince_or_TimeOfEvent='During'; "
+                "do not invent TimePeriod='Month' unless the note says per month."
+            ),
+            (
+                "For 'since last clinic', use TimeSince_or_TimeOfEvent='Since' and "
+                "PointInTime='LastClinic'; do not put 'since last clinic' in TimePeriod."
+            ),
+            (
+                "For last-event or seizure-free statements, use NumberOfSeizures='0' "
+                "with TimeSince_or_TimeOfEvent='Since' and the stated MonthDate, "
+                "YearDate, or PointInTime. Do not convert last-event dates into an "
+                "annual recurring rate."
             ),
             (
                 "For medication, mention text is the medication name where possible; "
                 "dose and frequency belong in attributes."
             ),
             (
+                "For medication list entries that contain a compact regimen, render "
+                "text as the exact medication item span including dose and frequency "
+                "when those words are part of the same short line, for example "
+                "'Topiramate 100 mg BD'."
+            ),
+            (
                 "For investigations, use one event per modality such as EEG, MRI, or "
                 "CT; put performed, result, and EEG type in attributes."
+            ),
+            (
+                "For investigation text, use the shortest exact modality phrase: "
+                "'MRI scan' if those words occur together, otherwise 'MRI'; likewise "
+                "'EEG' or 'CT'. Do not include dates or results in text."
+            ),
+            (
+                "Only include EEG_Type when the letter explicitly says sleep-deprived "
+                "EEG or video telemetry. Do not default a plain EEG to Standard."
             ),
             "Do not invent CUI values. If a CUI is not explicitly available, omit it.",
             "If no requested findings are present, return {\"clinical_events\": []}.",
@@ -236,16 +283,20 @@ def _family_guidance() -> dict[str, str]:
     return {
         "medication": (
             "Anti-seizure medication events. Render Prescription mentions with "
-            "DrugName, DrugDose, DoseUnit, and Frequency when stated."
+            "DrugName, DrugDose, DoseUnit, and Frequency when stated. The rendered "
+            "text should preserve the medication item's annotation-facing span: "
+            "full compact regimen when present in a medication list, bare drug name "
+            "when that is all the note states."
         ),
         "diagnosis": (
             "Diagnostic concepts such as epilepsy, focal epilepsy, seizure disorder, "
-            "or named seizure types. Render Diagnosis with DiagCategory, Certainty, "
-            "and Negation when supported."
+            "or named seizure types. Render atomic Diagnosis mentions with "
+            "DiagCategory, Certainty, and Negation."
         ),
         "seizure_frequency": (
             "How often a seizure type occurs, including seizure-free duration, "
-            "ranges, cluster cadence, dated counts, and frequency change."
+            "ranges, cluster cadence, dated counts, and frequency change. Preserve "
+            "the stated temporal frame instead of converting it into a guessed rate."
         ),
         "investigation": (
             "EEG, MRI, CT, telemetry, and related investigation statements. Render "
@@ -308,6 +359,102 @@ def _worked_examples() -> list[dict[str, Any]]:
                         "entity": "SeizureFrequency",
                         "text": "focal seizures",
                         "attributes": {
+                            "LowerNumberOfSeizures": "2",
+                            "UpperNumberOfSeizures": "3",
+                            "MonthDate": "3",
+                            "TimeSince_or_TimeOfEvent": "During",
+                        },
+                    },
+                ],
+                "confidence": "high",
+                "rationale": "The diagnosis and dated seizure count are directly stated.",
+            },
+        },
+        {
+            "note_fragment": (
+                "Since her last clinic appointment she has had four secondary "
+                "generalised seizures."
+            ),
+            "correct_event": {
+                "family": "seizure_frequency",
+                "anchor_text": "secondary generalised seizures",
+                "evidence": (
+                    "Since her last clinic appointment she has had four secondary "
+                    "generalised seizures."
+                ),
+                "event_state": {
+                    "seizure_type": "secondary generalised seizures",
+                    "count": "4",
+                    "frame": "since last clinic",
+                },
+                "mentions": [
+                    {
+                        "entity": "Diagnosis",
+                        "text": "secondary generalised seizures",
+                        "attributes": {
+                            "DiagCategory": "SingleSeizure",
+                            "Certainty": "5",
+                            "Negation": "Affirmed",
+                        },
+                    },
+                    {
+                        "entity": "SeizureFrequency",
+                        "text": "secondary generalised seizures",
+                        "attributes": {
+                            "NumberOfSeizures": "4",
+                            "TimeSince_or_TimeOfEvent": "Since",
+                            "PointInTime": "LastClinic",
+                        },
+                    },
+                ],
+                "confidence": "high",
+                "rationale": "The count is tied to the period since last clinic.",
+            },
+        },
+        {
+            "note_fragment": "She has been seizure-free since July 2016.",
+            "correct_event": {
+                "family": "seizure_frequency",
+                "anchor_text": "seizure-free",
+                "evidence": "seizure-free since July 2016",
+                "event_state": {"state": "seizure-free", "since": "July 2016"},
+                "mentions": [
+                    {
+                        "entity": "SeizureFrequency",
+                        "text": "seizure-free",
+                        "attributes": {
+                            "NumberOfSeizures": "0",
+                            "MonthDate": "7",
+                            "YearDate": "2016",
+                            "TimeSince_or_TimeOfEvent": "Since",
+                        },
+                    }
+                ],
+                "confidence": "high",
+                "rationale": "The note states seizure-free since a month and year.",
+            },
+        },
+        {
+            "note_fragment": "She has 2 focal seizures per month.",
+            "correct_event": {
+                "family": "seizure_frequency",
+                "anchor_text": "focal seizures",
+                "evidence": "2 focal seizures per month",
+                "event_state": {"seizure_type": "focal seizures", "rate": "2 per 1 Month"},
+                "mentions": [
+                    {
+                        "entity": "Diagnosis",
+                        "text": "focal seizures",
+                        "attributes": {
+                            "DiagCategory": "SingleSeizure",
+                            "Certainty": "5",
+                            "Negation": "Affirmed",
+                        },
+                    },
+                    {
+                        "entity": "SeizureFrequency",
+                        "text": "focal seizures",
+                        "attributes": {
                             "NumberOfSeizures": "2",
                             "NumberOfTimePeriods": "1",
                             "TimePeriod": "Month",
@@ -332,7 +479,7 @@ def _worked_examples() -> list[dict[str, Any]]:
                 "mentions": [
                     {
                         "entity": "Prescription",
-                        "text": "lamotrigine",
+                        "text": "lamotrigine 200 mg twice daily",
                         "attributes": {
                             "DrugName": "lamotrigine",
                             "DrugDose": "200",
@@ -387,6 +534,24 @@ def _worked_examples() -> list[dict[str, Any]]:
                     "rationale": "Sleep-deprived EEG showed sharp waves.",
                 },
             ],
+        },
+        {
+            "note_fragment": "EEG 2012 generalised spike and wave.",
+            "correct_event": {
+                "family": "investigation",
+                "anchor_text": "EEG",
+                "evidence": "EEG 2012 generalised spike and wave",
+                "event_state": {"modality": "EEG", "result": "Abnormal"},
+                "mentions": [
+                    {
+                        "entity": "Investigations",
+                        "text": "EEG",
+                        "attributes": {"EEG_Performed": "Yes", "EEG_Results": "Abnormal"},
+                    }
+                ],
+                "confidence": "high",
+                "rationale": "The plain EEG is abnormal; no EEG_Type is stated.",
+            },
         },
     ]
 
@@ -524,7 +689,11 @@ def to_predicted_letter(
     predicted_mentions: list[PredictedMention] = []
     for mention in evidence_valid:
         spec = ENTITY_REGISTRY[mention.entity]
-        repaired_attrs, attr_warnings = repair_attributes(dict(mention.attributes), spec=spec)
+        attrs, projection_warnings = _strip_model_supplied_projection_attrs(
+            dict(mention.attributes)
+        )
+        all_warnings.extend(f"{mention.entity}: {warning}" for warning in projection_warnings)
+        repaired_attrs, attr_warnings = repair_attributes(attrs, spec=spec)
         all_warnings.extend(f"{mention.entity}: {warning}" for warning in attr_warnings)
         predicted_mentions.append(
             PredictedMention(
@@ -553,6 +722,18 @@ def to_predicted_letter(
         ),
         all_warnings,
     )
+
+
+def _strip_model_supplied_projection_attrs(
+    attrs: dict[str, str],
+) -> tuple[dict[str, str], list[str]]:
+    stripped = dict(attrs)
+    warnings: list[str] = []
+    for key in ("CUI", "CUIPhrase"):
+        if key in stripped:
+            stripped.pop(key)
+            warnings.append(f"dropped_model_supplied_projection_attribute: {key!r}")
+    return stripped, warnings
 
 
 def run_split(

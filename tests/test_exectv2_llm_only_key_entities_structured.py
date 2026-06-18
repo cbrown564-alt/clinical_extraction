@@ -42,6 +42,19 @@ def test_prompt_hygiene_and_four_family_schema() -> None:
     assert "seizure_frequency" in payload["family_guidance"]
     assert "DiagCategory" in payload["attribute_vocabulary"][DIAGNOSIS.name]
     assert "EEG_Type" in payload["attribute_vocabulary"][INVESTIGATIONS.name]
+    clinical_rules = " ".join(payload["clinical_rules"])
+    assert "LowerNumberOfSeizures" in clinical_rules
+    assert "PointInTime='LastClinic'" in clinical_rules
+    assert "Every Diagnosis mention must include Certainty and Negation" in clinical_rules
+    assert "Do not default a plain EEG to Standard" in clinical_rules
+    med_example = next(
+        example
+        for example in payload["worked_examples"]
+        if example["note_fragment"] == "Current treatment is lamotrigine 200 mg twice daily."
+    )
+    assert med_example["correct_event"]["mentions"][0]["text"] == (
+        "lamotrigine 200 mg twice daily"
+    )
 
 
 def test_parse_structured_events_coerces_nested_values() -> None:
@@ -149,6 +162,8 @@ def test_to_predicted_letter_gates_evidence_and_projects_cuis() -> None:
             entity=DIAGNOSIS.name,
             text="focal epilepsy",
             attributes={
+                "CUI": "WRONG",
+                "CUIPhrase": "wrong phrase",
                 "DiagCategory": "Epilepsy",
                 "Certainty": "5",
                 "FrequencyChange": "Increased",
@@ -195,6 +210,10 @@ def test_to_predicted_letter_gates_evidence_and_projects_cuis() -> None:
     assert any("dropped_out_of_scope_entity" in warning for warning in warnings)
     assert any("dropped_evidence_not_substring" in warning for warning in warnings)
     assert any("Diagnosis: dropped_illegal_attribute" in warning for warning in warnings)
+    assert any(
+        "Diagnosis: dropped_model_supplied_projection_attribute" in warning
+        for warning in warnings
+    )
 
 
 def test_summarize_rows_scores_only_key_entities() -> None:
