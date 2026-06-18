@@ -128,8 +128,8 @@ def render_markdown(report: dict[str, Any]) -> str:
         "Clinical-fact recovery over the five essential families only "
         "(Prescription, SeizureFrequency, Diagnosis, EpilepsyCause, "
         "Investigations). The primary headline is CUI-free; certainty remains "
-        "a diagnostic projection candidate rather than a completed guideline-rule "
-        "projection.",
+        "a deterministic projection layer and is reported separately from the "
+        "LLM-owned clinical headline.",
         "",
         "| Architecture | Ownership | Recovery F1 | Precision | Recall |",
         "| --- | --- | ---: | ---: | ---: |",
@@ -225,8 +225,11 @@ def render_markdown(report: dict[str, Any]) -> str:
         f"({co['certainty_only_tp_gain_if_dropped']} TP) — measured on CUI-projected "
         "predictions so the residual is owned by `Certainty`/`Negation`, not missing CUI.",
         "",
-        f"Limitation: {cert['limitations']} This is diagnostic, not a completed "
-        "guideline-rule projection.",
+        "Guideline-rule projection now uses ExECT v9 List 2 certainty triggers, "
+        "default affirmed negation, and the PatientHistory febrile-negation "
+        "exception. It is scored after the clinical concept is selected.",
+        "",
+        f"Limitation: {cert['limitations']}",
         "",
         "Gold distribution and default-projection ceiling (fraction correct if a rule "
         "assigned the dominant value):",
@@ -243,6 +246,23 @@ def render_markdown(report: dict[str, Any]) -> str:
             f"| {c['default_projection_ceiling']:.2f} "
             f"| {n['present_rate']:.2f} | {n['distinct_values']} "
             f"| {n['default_projection_ceiling']:.2f} |"
+        )
+
+    lines += [
+        "",
+        "Guideline projection accuracy over gold rows:",
+        "",
+        "| Entity | Certainty coverage | Certainty accuracy "
+        "| Negation coverage | Negation accuracy |",
+        "| --- | ---: | ---: | ---: | ---: |",
+    ]
+    for entity, e in cert["per_entity"].items():
+        gp = e["guideline_projection"]
+        c = gp["Certainty"]
+        n = gp["Negation"]
+        lines.append(
+            f"| {entity} | {c['coverage']:.2f} | {c['accuracy']:.2f} "
+            f"| {n['coverage']:.2f} | {n['accuracy']:.2f} |"
         )
 
     # Section 3: CUI projection audit.
