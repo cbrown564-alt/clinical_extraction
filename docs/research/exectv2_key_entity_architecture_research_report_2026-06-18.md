@@ -37,7 +37,7 @@ Current dev140 best candidates:
 | Prescription / medication | Prescription verifier v0.1 | 0.817 | 0.773 | 0.865 | Clears target |
 | Investigations | Investigations verifier v0.1 | 0.872 | 0.869 | 0.875 | Clears target |
 | Diagnosis | Diagnosis reconciler v0.1 | 0.658 | 0.658 | 0.658 | Below target |
-| SeizureFrequency | SF state adjudicator v0.5 | 0.721 | 0.710 | 0.733 | Below target |
+| SeizureFrequency | SF unknown suppression v0.7 | 0.782 | 0.759 | 0.807 | Below target |
 
 This is not yet a solved ExECTv2 architecture. It is a much clearer map of the
 problem.
@@ -196,8 +196,10 @@ convention decomposition sharpened the next loop: an oracle state plus
 generic-vs-named ownership projection reaches `0.805`. The predeclared v0.6
 deterministic replay recovered part of that headroom (`0.721` -> `0.763`) but
 did not clear `0.8`; ownership-only projection made no measurable movement. The
-oracle should therefore be treated as an upper bound, not as an achieved or
-safely reachable score.
+predeclared v0.7 unknown-suppression hard slice then improved `0.763` ->
+`0.782` by dropping 10 named-rule unknown over-emissions with no active-rate or
+seizure-free recall regression. The oracle should therefore be treated as an
+upper bound, not as an achieved or safely reachable score.
 
 ### 6. Medication and Investigations verifiers
 
@@ -392,13 +394,13 @@ The current best dev140 architecture is an assembled hybrid:
 | Prescription | single structured v0.5 | Prescription verifier v0.1 | evidence gate + CUI projection |
 | Investigations | single structured v0.5 | Investigations verifier v0.1 | evidence gate + modality/result projection |
 | Diagnosis | verifier v0.6 + decomposer v0.1 | Diagnosis reconciler v0.1 | evidence gate + benchmark projection |
-| SeizureFrequency | single structured v0.5 + candidate spans | SF state adjudicator v0.5 | evidence gate + finite SF CUI projection |
+| SeizureFrequency | single structured v0.5 + candidate spans | SF state adjudicator v0.5 | evidence gate + finite SF CUI/state projection + unknown suppression |
 
 This architecture clears two of four key families on dev140. It should be
 treated as revise-only for the overall benchmark objective, but the current
-research interpretation is now split: SF has a plausible convention-projection
-path over `0.8`, while Diagnosis is likely a benchmark-convention ceiling below
-`0.8`.
+research interpretation is now split: SF has a narrow convention-projection path
+that approaches but still does not reach `0.8`, while Diagnosis is likely a
+benchmark-convention ceiling below `0.8`.
 
 ## Open Problems
 
@@ -427,37 +429,26 @@ This is now captured as a paper-facing ceiling note:
 
 ### SeizureFrequency
 
-Current best: `0.763` after deterministic v0.6 state projection.
+Current best: `0.782` after deterministic v0.6 state projection plus v0.7
+unknown suppression.
 
-v0.5 nearly solved the seizure-free slice (`0.781`) but regressed unknown-state
-recovery (`0.476`). The remaining residuals are balanced:
+v0.6 improved recall while keeping precision acceptable, but left unknown-state
+precision weak. The targeted v0.6 hard-slice diagnostic showed 22 unknown
+over-emissions versus 8 unknown misses. The v0.7 suppression layer passes its
+predeclared gate by reducing unknown FP `22` -> `12`, keeping unknown FN at
+`8`, and leaving active-rate and seizure-free recall unchanged.
 
-- active-rate: 17 misses / 28 over-emissions;
-- seizure-free: 15 misses / 13 over-emissions;
-- unknown: 18 misses / 15 over-emissions.
-
-The v0.6 projection should be treated as a partial improvement, not a target
-crossing. It improves recall while keeping precision acceptable, but the unknown
-slice remains weak and ownership projection contributes no measurable gain. Any
-further SF work should be a targeted residual/error-slice study, not another
-broad aggregate prompt or projection pass.
-
-The targeted v0.6 hard-slice diagnostic shows that the remaining blocker is
-unknown-state precision: 22 unknown over-emissions versus 8 unknown misses.
-Another broad unknown/change recovery rule is therefore not supported.
+The v0.7 result should still be treated as a partial improvement, not a target
+crossing. Any further SF work should be a targeted residual/error-slice study
+with a new predeclaration, not another broad aggregate prompt or projection
+pass.
 
 ### Combined readout
 
-After the next Diagnosis and SF loops, regenerate a combined key-family
-clinical-recovery readout using the current best candidates. The combined
-readout should report:
+The combined key-family clinical-recovery readout has been regenerated with SF
+v0.7:
 
-- per-family F1/P/R;
-- call and parse failures;
-- evidence validity;
-- source-near versus clinical recovery;
-- semantic versus benchmark/CUI gap;
-- family-specific residual ledgers.
+- `experiments/exectv2_key_entities_clinical_error_ledger_v07sf_dev140_20260618.md`
 
 ## Recommended Next Research Plan
 
@@ -466,14 +457,15 @@ readout should report:
 2. Stop ordinary Diagnosis target-chasing on the current candidate set. Treat
    Diagnosis as a ceiling/characterization result unless a new architecture
    changes the prediction-bearing evidence source.
-3. Treat SF v0.6 as the current best SF candidate (`0.763`) but not a target
-   clearing result. Its state-only and combined ablations match; ownership-only
-   contributes no measurable gain.
+3. Treat SF v0.7 as the current best SF candidate (`0.782`) but not a target
+   clearing result. v0.6 state-only and combined ablations match;
+   ownership-only contributes no measurable gain; v0.7 adds a named-rule
+   unknown-suppression hard slice.
 4. Reassemble the best four-family dev140 candidate:
    - Prescription verifier v0.1;
    - Investigations verifier v0.1;
    - Diagnosis reconciler v0.1 as ceiling/semantic-layer evidence;
-   - SF v0.6 state projection.
+   - SF v0.7 unknown suppression after v0.6 state projection.
 5. Only after the revised architecture has benchmark-beating dev evidence, write
    a frozen protocol for any full-200 readout. That protocol should predeclare
    the architecture, artifacts, exact metrics, and no row-level post-hoc tuning.
@@ -501,15 +493,16 @@ Supported:
 Supported:
 
 > Residual convention decomposition splits the two below-target families:
-> SeizureFrequency has a reachable state/ownership convention-projection path
-> over `0.8`, while Diagnosis remains below `0.8` even under a generous
-> convention oracle.
+> SeizureFrequency has a state/ownership convention-projection oracle just over
+> `0.8`, but finite predeclared projection/suppression reaches only `0.782`;
+> Diagnosis remains below `0.8` even under a generous convention oracle.
 
 Supported:
 
 > Deterministic SF state projection over adjudicator candidates improves dev140
-> clinical-recovery F1 from `0.721` to `0.763`, but does not clear the `0.8`
-> target; the convention oracle is an upper bound rather than achieved evidence.
+> clinical-recovery F1 from `0.721` to `0.763`; predeclared unknown suppression
+> improves `0.763` to `0.782` without active-rate or seizure-free recall
+> regression. The `0.8` target remains uncleared.
 
 Not yet supported:
 
@@ -522,7 +515,8 @@ Not supported:
 
 Not supported:
 
-> SeizureFrequency clears `0.8` after deterministic convention projection.
+> SeizureFrequency clears `0.8` after deterministic convention projection or
+> unknown suppression.
 
 Not yet supported:
 
@@ -550,5 +544,6 @@ Not yet supported:
   `docs/experiments/exectv2/seizure_frequency/exectv2_sf_state_adjudicator_v05_dev140_report_2026-06-18.md`
 - Diagnosis ceiling note:
   `docs/research/exectv2_diagnosis_ceiling_note_2026-06-18.md`
-- SF v0.6 state projection and hard-slice readout:
+- SF v0.6 state projection, hard-slice diagnostic, and v0.7 suppression readout:
   `docs/research/exectv2_sf_state_projection_v06_readout_2026-06-18.md`
+  `experiments/exectv2_hybrid_sf_unknown_suppression_v07_dev140_20260618.md`

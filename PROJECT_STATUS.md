@@ -7,9 +7,9 @@ Last updated: 2026-06-18
 ExECTv2 is the forward workstream. The current key-family result should be
 framed as an architecture characterization, not a benchmark-complete claim:
 Prescription/medication and Investigations clear the dev140 clinical-recovery
-target; SeizureFrequency improves with deterministic state projection but
-remains below `0.8`; Diagnosis is a transparent ceiling/annotation-scope result
-on the current candidate set.
+target; SeizureFrequency improves with deterministic state projection plus
+predeclared unknown suppression but remains below `0.8`; Diagnosis is a
+transparent ceiling/annotation-scope result on the current candidate set.
 
 Use the Gan 2026 closeout discipline as the template: source-near state, exact
 evidence, component attribution, benchmark-format ablations, and family-aware
@@ -21,7 +21,7 @@ promotion gates.
 | --- | --- | ---: | ---: | ---: | --- |
 | Prescription / medication | Prescription verifier v0.1 | 0.817 | 0.773 | 0.865 | Clears target |
 | Investigations | Investigations verifier v0.1 | 0.872 | 0.869 | 0.875 | Clears target |
-| SeizureFrequency | SF state projection v0.6 | 0.763 | 0.722 | 0.807 | Partial gain |
+| SeizureFrequency | SF unknown suppression v0.7 | 0.782 | 0.759 | 0.807 | Partial gain |
 | Diagnosis | Diagnosis reconciler v0.1 | 0.658 | 0.658 | 0.658 | Ceiling characterization |
 
 This does not authorize a new full-200 audit.
@@ -36,15 +36,16 @@ This does not authorize a new full-200 audit.
 - Diagnosis should stop ordinary target chasing on the current candidate set.
   The convention oracle reaches only `0.791`, below the `0.8` gate, and the
   ceiling note documents the claim language.
-- SF v0.6 deterministic state projection improves dev140 `0.721` -> `0.763`.
-  The remaining hard slice is unknown-state precision: 22 unknown FPs vs 8 FNs.
+- SF v0.7 predeclared unknown suppression improves dev140 `0.763` -> `0.782`
+  after v0.6 state projection, with unknown FP `22` -> `12`, unknown FN
+  unchanged at `8`, and active-rate/seizure-free recall unchanged.
 
 ## Active Priorities
 
 1. Report the current ExECTv2 result conservatively: two clear families, one
    partial-gain SF family, and one Diagnosis ceiling/annotation-scope family.
-2. If SF work continues, use a predeclared unknown-suppression hard-slice study
-   with a stop rule for active-rate or seizure-free recall regression.
+2. Treat SF v0.7 as a partial-gain candidate, not a target-clearing result;
+   further SF metric work needs a new predeclared hard-slice rationale.
 3. Require benchmark-beating dev evidence before any new full-200 audit:
    overall `0.87` per-item / `0.90` per-letter, plus per-entity tables,
    evidence/schema reliability, semantic-vs-CUI gaps, and ablations.
@@ -53,13 +54,11 @@ This does not authorize a new full-200 audit.
 
 ### Now
 
-- Run the predeclared SF unknown-suppression hard-slice study only if the
-  project chooses to continue metric work.
+- Convert the final synthesis tables into paper-ready results/ablation language
+  when manuscript drafting starts.
 
 ### Next
 
-- Convert the final synthesis tables into paper-ready results/ablation language
-  when manuscript drafting starts.
 - Consider a genuinely new Diagnosis evidence-selection architecture only if it
   changes the prediction-bearing evidence source; do not run another local gate
   over the same candidate set.
@@ -73,6 +72,10 @@ This does not authorize a new full-200 audit.
 
 ### Done Recently
 
+- 2026-06-18: Completed the predeclared SF unknown-suppression hard-slice study.
+  v0.7 drops 10 named-rule unknown over-emissions and improves SF dev140
+  `0.763` -> `0.782` without active-rate or seizure-free recall regression. See
+  `experiments/exectv2_hybrid_sf_unknown_suppression_v07_dev140_20260618.md`.
 - 2026-06-18: Drafted the final ExECTv2 key-family architecture synthesis and
   paper-table scaffold:
   `docs/research/exectv2_final_key_family_architecture_synthesis_2026-06-18.md`.
@@ -96,7 +99,7 @@ This does not authorize a new full-200 audit.
   and `hybrid`.
 - Treat deterministic rules and benchmark-format repairs as controlled
   variables, not hidden implementation detail.
-- Treat SF v0.6 as a partial-improvement candidate, not a target-clearing
+- Treat SF v0.7 as a partial-improvement candidate, not a target-clearing
   result.
 - Treat Diagnosis as ceiling/characterization evidence unless a new
   evidence-selection architecture is proposed.
@@ -105,6 +108,6 @@ This does not authorize a new full-200 audit.
 
 Start with
 `docs/research/exectv2_final_key_family_architecture_synthesis_2026-06-18.md`;
-it links the convention decomposition, SF v0.6 readout, Diagnosis ceiling note,
+it links the convention decomposition, SF v0.6/v0.7 readouts, Diagnosis ceiling note,
 SF unknown-suppression predeclaration, combined key-family ledger, and
 `experiments/RUN_INDEX.md`.
