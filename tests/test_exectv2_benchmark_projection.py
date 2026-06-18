@@ -112,6 +112,47 @@ def test_reviewed_diagnosis_projection_variants_are_benchmark_format_only() -> N
     assert diagnosis_concept("focal") is None
 
 
+def test_reviewed_diagnosis_missing_mapping_variants_are_projection_only() -> None:
+    assert diagnosis_concept("bilateral convulsive seizure") == BenchmarkConcept(
+        "Epilepsy",
+        "C0877017",
+        "focal-to-bilateral-convulsive-seizures",
+    )
+    assert diagnosis_concept("localisation related epilepsy") == BenchmarkConcept(
+        "Epilepsy",
+        "C0014547",
+        "localisation-related-epilepsy",
+    )
+    assert diagnosis_concept("symptomatic focal epilepsy") == BenchmarkConcept(
+        "Epilepsy",
+        "C0472349",
+        "symptomatic-focal-epilepsy",
+    )
+    assert diagnosis_concept("myoclonic seizures") == BenchmarkConcept(
+        "Epilepsy",
+        "C4317123",
+        "myoclonic-seizures",
+    )
+    assert diagnosis_concept("drug refractory epilepsies") == BenchmarkConcept(
+        "Epilepsy",
+        "C1096063",
+        "intractable-epilepsy",
+    )
+    assert diagnosis_concept("status epilepticus") == BenchmarkConcept(
+        "Epilepsy",
+        "C0038220",
+        "status-epilepticus",
+    )
+    assert diagnosis_concept("typical absences") == BenchmarkConcept(
+        "Epilepsy",
+        "C4316903",
+        "absence-seizures",
+    )
+    assert diagnosis_concept("secondary") is None
+    assert diagnosis_concept("drug") is None
+    assert diagnosis_concept("symptomatic") is None
+
+
 def test_onset_projection_maps_source_near_epilepsy_phrase() -> None:
     assert onset_concept("epilepsy") == BenchmarkConcept("epilepsy", "C0014544", "epilepsy")
 
@@ -142,6 +183,34 @@ def test_new_structured_entity_projections_are_finite_benchmark_lookups() -> Non
         "type-1-diabetes",
         "C0011854",
         "type-1-diabetes",
+    )
+
+
+def test_reviewed_epilepsy_cause_missing_mapping_variants_are_projection_only() -> None:
+    assert epilepsy_cause_concept("erinatal insult") == BenchmarkConcept(
+        "perinatal-insult",
+        "C0005604",
+        "perinatal-insult",
+    )
+    assert epilepsy_cause_concept("traumatic brain injury 2005") == BenchmarkConcept(
+        "traumatic-brain-injury",
+        "C0876926",
+        "traumatic-brain-injury",
+    )
+    assert epilepsy_cause_concept("easle") == BenchmarkConcept(
+        "Measles",
+        "C0025007",
+        "Measles",
+    )
+    assert epilepsy_cause_concept("hypoxia during a difficult birth.") == BenchmarkConcept(
+        "hypoxia-during-birth",
+        "C0559478",
+        "hypoxia-during-birth",
+    )
+    assert epilepsy_cause_concept("neurocysticercosis.") == BenchmarkConcept(
+        "neurocysticercosis",
+        "C0338437",
+        "neurocysticercosis",
     )
 
 
