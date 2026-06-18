@@ -26,7 +26,7 @@ from __future__ import annotations
 import json
 import re
 from collections import Counter, defaultdict
-from collections.abc import Sequence
+from collections.abc import Hashable, Sequence
 from pathlib import Path
 from typing import Any
 
@@ -58,8 +58,13 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.cui_projecti
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     MatchConfig,
+    _concept_keys,
+    _frequency_state_keys,
+    _investigation_component_keys,
+    _prescription_component_keys,
     benchmark_config_for,
     benchmark_ignore_for,
+    match_key,
     normalize_phrase,
     score_overall,
     semantic_config_for,
@@ -965,24 +970,30 @@ def evidence_validation_summary(
         for key in totals:
             totals[key] += stats[key]
         pred_n = stats["predicted_mentions"]
+        invalid = pred_n - stats["exact_evidence"]
         out[entity] = {
             **stats,
+            "invalid_evidence": invalid,
             "evidence_present_rate": round(stats["evidence_present"] / pred_n, 4)
             if pred_n
             else 0.0,
             "exact_evidence_rate": round(stats["exact_evidence"] / pred_n, 4)
             if pred_n
             else 0.0,
+            "invalid_evidence_rate": round(invalid / pred_n, 4) if pred_n else 0.0,
         }
     pred_n = totals["predicted_mentions"]
+    invalid = pred_n - totals["exact_evidence"]
     out["overall"] = {
         **totals,
+        "invalid_evidence": invalid,
         "evidence_present_rate": round(totals["evidence_present"] / pred_n, 4)
         if pred_n
         else 0.0,
         "exact_evidence_rate": round(totals["exact_evidence"] / pred_n, 4)
         if pred_n
         else 0.0,
+        "invalid_evidence_rate": round(invalid / pred_n, 4) if pred_n else 0.0,
     }
     return out
 
@@ -1024,6 +1035,241 @@ def error_taxonomy_summary(
     }
 
 
+_ERROR_TYPES: tuple[str, ...] = (
+    "candidate_miss",
+    "wrong_detail_selection",
+    "projection_gap",
+    "evidence_failure",
+)
+
+
+def _counter_match_counts(
+    gold_keys: Sequence[Hashable],
+    pred_keys: Sequence[Hashable],
+) -> tuple[int, int, int]:
+    gold = Counter(gold_keys)
+    pred = Counter(pred_keys)
+    tp = sum((gold & pred).values())
+    return tp, max(0, sum(gold.values()) - tp), max(0, sum(pred.values()) - tp)
+
+
+def _limited_counter_examples(keys: Sequence[Hashable], limit: int = 4) -> str:
+    examples = []
+    for key, count in Counter(keys).most_common(limit):
+        suffix = f" x{count}" if count > 1 else ""
+        examples.append(f"{key!r}{suffix}")
+    return "; ".join(examples)
+
+
+def _entity_letter(
+    letter_id: str,
+    note_text: str,
+    annotations: Sequence[ExectAnnotation],
+) -> ExectLetter:
+    return ExectLetter(letter_id=letter_id, note_text=note_text, annotations=tuple(annotations))
+
+
+def _pred_to_exect_with_note(pred: PredictedLetter, note_text: str) -> ExectLetter:
+    return ExectLetter(
+        letter_id=pred.letter_id,
+        note_text=note_text,
+        annotations=tuple(
+            ExectAnnotation(
+                entity=m.entity,
+                text=m.text,
+                attributes=dict(m.attributes),
+            )
+            for m in pred.mentions
+        ),
+    )
+
+
+def _primary_row_key_sets(
+    *,
+    family: str,
+    gold: ExectLetter,
+    pred: ExectLetter,
+) -> tuple[list[Hashable], list[Hashable], list[Hashable]]:
+    """Return gold, precision-prediction, and recall-prediction keys.
+
+    Diagnosis and EpilepsyCause use the same entity-agnostic recall/home-tagged
+    precision contract as ``score_concept_identity``. The other essential
+    families use their headline component keys directly.
+    """
+
+    if family == PRESCRIPTION.name:
+        gold_keys = _prescription_component_keys(
+            gold.entities(family),
+            "clinical_headline",
+            gold.note_text,
+        )
+        pred_keys = _prescription_component_keys(
+            pred.entities(family),
+            "clinical_headline",
+            pred.note_text,
+        )
+        return gold_keys, pred_keys, pred_keys
+    if family == SEIZURE_FREQUENCY.name:
+        gold_keys = _frequency_state_keys(gold.entities(family), "clinical_headline")
+        pred_keys = _frequency_state_keys(pred.entities(family), "clinical_headline")
+        return gold_keys, pred_keys, pred_keys
+    if family == INVESTIGATIONS.name:
+        gold_keys = _investigation_component_keys(gold.entities(family), "clinical_headline")
+        pred_keys = _investigation_component_keys(pred.entities(family), "clinical_headline")
+        return gold_keys, pred_keys, pred_keys
+    if family in _ESSENTIAL_ATOMIC_CONCEPT_ONLY:
+        return (
+            _concept_keys(gold.entities(family), family, "concept"),
+            _concept_keys(pred.entities(family), family, "concept"),
+            _concept_keys(pred.annotations, family, "concept"),
+        )
+    raise ValueError(f"Unsupported essential family {family!r}")
+
+
+def _entity_match_tp(
+    gold: ExectLetter,
+    pred: ExectLetter,
+    family: str,
+    config: MatchConfig,
+) -> int:
+    return _counter_match_counts(
+        [match_key(a, config) for a in gold.entities(family)],
+        [match_key(a, config) for a in pred.entities(family)],
+    )[0]
+
+
+def _exact_evidence_counts(
+    gold: ExectLetter,
+    pred: PredictedLetter,
+    family: str,
+) -> tuple[int, int, int, str]:
+    note = gold.note_text or ""
+    predicted = 0
+    exact = 0
+    failures: list[str] = []
+    for mention in pred.mentions:
+        if mention.entity != family:
+            continue
+        predicted += 1
+        evidence = mention.evidence.strip()
+        if evidence and note and evidence in note:
+            exact += 1
+        else:
+            failures.append(evidence or "<missing>")
+    return predicted, exact, predicted - exact, "; ".join(failures[:4])
+
+
+def row_level_error_ledger(
+    *,
+    architecture: str,
+    ownership: str,
+    gold_letters: Sequence[ExectLetter],
+    pred_letters: Sequence[PredictedLetter],
+    families: Sequence[str] = ESSENTIAL_CLINICAL_ENTITIES,
+) -> list[dict[str, Any]]:
+    """Build a dev-row essential-family error ledger from replayed artifacts.
+
+    Rows are ``letter_id`` + ``family`` + ``error_type``. Counts reconcile with
+    the primary CUI-free headline for candidate misses and wrong detail
+    selections. Projection gaps are benchmark-layer losses after deterministic
+    CUI projection: a CUI-free semantic mention match exists but the projected
+    benchmark key still does not match.
+    """
+
+    pred_by_id = {letter.letter_id: letter for letter in pred_letters}
+    projected_by_id = {
+        letter.letter_id: letter for letter in _strip_and_project(_as_predicted(pred_letters))
+    }
+    rows: list[dict[str, Any]] = []
+    for gold in gold_letters:
+        pred = pred_by_id.get(
+            gold.letter_id,
+            PredictedLetter(letter_id=gold.letter_id, mentions=()),
+        )
+        projected = projected_by_id.get(gold.letter_id, pred)
+
+        gold_cui_free = _strip_gold_cui([gold])[0]
+        pred_cui_free = _pred_to_exect_with_note(_strip_prediction_cui([pred])[0], gold.note_text)
+        projected_exect = _pred_to_exect_with_note(projected, gold.note_text)
+        raw_pred_exect = _pred_to_exect_with_note(pred, gold.note_text)
+
+        for family in families:
+            family_gold = _entity_letter(
+                gold_cui_free.letter_id,
+                gold_cui_free.note_text,
+                gold_cui_free.entities(family),
+            )
+            family_pred = _entity_letter(
+                pred_cui_free.letter_id,
+                pred_cui_free.note_text,
+                pred_cui_free.entities(family),
+            )
+            gold_keys, home_pred_keys, recall_pred_keys = _primary_row_key_sets(
+                family=family,
+                gold=gold_cui_free,
+                pred=pred_cui_free,
+            )
+            _, candidate_miss, _ = _counter_match_counts(gold_keys, recall_pred_keys)
+            _, _, wrong_detail_selection = _counter_match_counts(
+                gold_keys,
+                home_pred_keys,
+            )
+            semantic_tp = _entity_match_tp(
+                family_gold,
+                family_pred,
+                family,
+                semantic_config_for(family),
+            )
+            projected_benchmark_tp = _entity_match_tp(
+                gold,
+                projected_exect,
+                family,
+                benchmark_config_for(family),
+            )
+            projection_gap = max(0, semantic_tp - projected_benchmark_tp)
+            evidence_predicted, exact_evidence, evidence_failure, evidence_examples = (
+                _exact_evidence_counts(gold, pred, family)
+            )
+            counts = {
+                "candidate_miss": candidate_miss,
+                "wrong_detail_selection": wrong_detail_selection,
+                "projection_gap": projection_gap,
+                "evidence_failure": evidence_failure,
+            }
+            base = {
+                "architecture": architecture,
+                "ownership": ownership,
+                "letter_id": gold.letter_id,
+                "family": family,
+                "gold_count": len(gold_keys),
+                "pred_count": len(home_pred_keys),
+                "primary_tp": _counter_match_counts(gold_keys, recall_pred_keys)[0],
+                "candidate_miss": candidate_miss,
+                "wrong_detail_selection": wrong_detail_selection,
+                "projection_gap": projection_gap,
+                "evidence_failure": evidence_failure,
+                "semantic_tp": semantic_tp,
+                "projected_benchmark_tp": projected_benchmark_tp,
+                "raw_benchmark_tp": _entity_match_tp(
+                    gold,
+                    raw_pred_exect,
+                    family,
+                    benchmark_config_for(family),
+                ),
+                "evidence_predicted": evidence_predicted,
+                "exact_evidence": exact_evidence,
+                "gold_examples": _limited_counter_examples(gold_keys),
+                "pred_examples": _limited_counter_examples(home_pred_keys),
+                "evidence_examples": evidence_examples,
+            }
+            for error_type in _ERROR_TYPES:
+                count = counts[error_type]
+                if count <= 0:
+                    continue
+                rows.append({**base, "error_type": error_type, "count": count})
+    return rows
+
+
 def architecture_report(
     *,
     name: str,
@@ -1031,6 +1277,7 @@ def architecture_report(
     gold_letters: Sequence[ExectLetter],
     pred_letters: Sequence[PredictedLetter],
     entities: Sequence[str] = ARTIFACT_LAYER_ENTITIES,
+    include_row_error_ledger: bool = False,
 ) -> dict[str, Any]:
     """Build the full layer ladder for one architecture over one artifact."""
 
@@ -1055,7 +1302,7 @@ def architecture_report(
         predicted,
         ESSENTIAL_CLINICAL_ENTITIES,
     )
-    return {
+    report = {
         "name": name,
         "ownership": ownership,
         "row_count": len(gold_letters),
@@ -1079,3 +1326,11 @@ def architecture_report(
         "certainty_audit": certainty_projection_audit(gold_letters, predicted, entities),
         "cui_audit": cui_projection_audit(gold_letters, predicted, entities),
     }
+    if include_row_error_ledger:
+        report["row_error_ledger"] = row_level_error_ledger(
+            architecture=name,
+            ownership=ownership,
+            gold_letters=gold_letters,
+            pred_letters=predicted,
+        )
+    return report

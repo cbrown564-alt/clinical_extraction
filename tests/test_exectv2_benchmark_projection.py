@@ -59,6 +59,21 @@ def test_diagnosis_projection_maps_observed_phrases_to_category_and_cui() -> Non
         "C0270853",
         "juvenile myoclonic epilepsy",
     )
+    assert diagnosis_concept("generalised tonic clonic seizures") == BenchmarkConcept(
+        "Epilepsy",
+        "C0494475",
+        "generalised-tonic-clonic-seizures",
+    )
+    assert diagnosis_concept("focal to bilateral convulsive seizure") == BenchmarkConcept(
+        "Epilepsy",
+        "C0877017",
+        "focal-to-bilateral-convulsive-seizures",
+    )
+    assert diagnosis_concept("complex partial seizures") == BenchmarkConcept(
+        "Epilepsy",
+        "C0149958",
+        "complex-partial-seizures",
+    )
 
 
 def test_onset_projection_maps_source_near_epilepsy_phrase() -> None:
@@ -81,6 +96,16 @@ def test_new_structured_entity_projections_are_finite_benchmark_lookups() -> Non
         "febrile-convulsions",
         "C0009952",
         "febrile-convulsions",
+    )
+    assert patient_history_concept("episodes of loss of consciousness") == BenchmarkConcept(
+        "loss-of-consciousness",
+        "C0041657",
+        "loss-of-consciousness",
+    )
+    assert patient_history_concept("type 1 diabetes") == BenchmarkConcept(
+        "type-1-diabetes",
+        "C0011854",
+        "type-1-diabetes",
     )
 
 

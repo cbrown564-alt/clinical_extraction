@@ -125,6 +125,94 @@ _DIAGNOSIS_ENTRIES: tuple[tuple[BenchmarkConcept, tuple[str, ...]], ...] = (
         BenchmarkConcept("Epilepsy", "C0014547", "symptomatic structural focal epilepsy"),
         ("symptomatic structural focal epilepsy",),
     ),
+    (
+        BenchmarkConcept("Epilepsy", "C0494475", "generalised-tonic-clonic-seizures"),
+        (
+            "generalised tonic clonic seizures",
+            "generalised tonic clonic seizure",
+            "tonic clonic seizures",
+        ),
+    ),
+    (
+        BenchmarkConcept("Epilepsy", "C0751495", "focal-seizures"),
+        ("focal seizures", "focal seizure"),
+    ),
+    (
+        BenchmarkConcept("Epilepsy", "C0877017", "focal-to-bilateral-convulsive-seizures"),
+        (
+            "focal to bilateral convulsive seizures",
+            "focal to bilateral convulsive seizure",
+            "secondary generalised tonic clonic seizures",
+        ),
+    ),
+    (
+        BenchmarkConcept("Epilepsy", "C0270834", "focal-seizures-with-altered-awareness"),
+        (
+            "focal seizures with altered awareness",
+            "focal impaired awareness seizures",
+            "dyscognitive seizures",
+        ),
+    ),
+    (
+        BenchmarkConcept("Epilepsy", "C0149958", "complex-partial-seizures"),
+        ("complex partial seizures",),
+    ),
+    (
+        BenchmarkConcept("Epilepsy", "C0270838", "secondary-generalised-seizures"),
+        ("secondary generalised seizures",),
+    ),
+    (
+        BenchmarkConcept("Epilepsy", "C0234533", "generalised-seizures"),
+        ("generalised seizures",),
+    ),
+    (
+        BenchmarkConcept("Epilepsy", "C0016399", "focal-motor-seizures"),
+        ("focal motor seizures",),
+    ),
+    (
+        BenchmarkConcept("Epilepsy", "C4317109", "epileptic-seizures"),
+        ("epileptic seizures",),
+    ),
+    (
+        BenchmarkConcept("Epilepsy", "C0270850", "primary-generalised-epilepsy"),
+        ("primary generalised epilepsy", "genetic generalised epilepsy"),
+    ),
+    (
+        BenchmarkConcept("Epilepsy", "C0014548", "generalised-epilepsy"),
+        ("generalised epilepsy",),
+    ),
+    (
+        BenchmarkConcept(
+            "Epilepsy",
+            "C0393697",
+            "epilepsy-with-generalised-tonic-clonic-seizures-alone",
+        ),
+        ("epilepsy with generalised tonic clonic seizures alone",),
+    ),
+    (
+        BenchmarkConcept("Epilepsy", "C0393691", "occipital-lobe-epilepsy"),
+        ("occipital lobe epilepsy",),
+    ),
+    (
+        BenchmarkConcept("Epilepsy", "C4317339", "juvenile-absence-epilepsy"),
+        ("juvenile absence epilepsy",),
+    ),
+    (
+        BenchmarkConcept("Epilepsy", "C1096063", "intractable-epilepsy"),
+        ("intractable epilepsy",),
+    ),
+    (
+        BenchmarkConcept("Epilepsy", "C0085541", "frontal-lobe-epilepsy"),
+        ("frontal lobe epilepsy",),
+    ),
+    (
+        BenchmarkConcept("Epilepsy", "C0014556", "temporal-lobe-seizure"),
+        ("temporal lobe seizure",),
+    ),
+    (
+        BenchmarkConcept("Epilepsy", "C4316903", "absence-seizures"),
+        ("absence seizures",),
+    ),
 )
 _DIAGNOSIS_CONCEPT_BY_PHRASE: dict[str, BenchmarkConcept] = {
     normalize_phrase(variant): concept
@@ -291,9 +379,19 @@ _PATIENT_HISTORY_ENTRIES: tuple[tuple[BenchmarkConcept, tuple[str, ...]], ...] =
     ),
     (
         BenchmarkConcept("loss-of-consciousness", "C0041657", "loss-of-consciousness"),
-        ("loss of consciousness", "loss-of-consciousness"),
+        (
+            "loss of consciousness",
+            "loss-of-consciousness",
+            "episodes of loss of consciousness",
+            "episode of loss of consciousness",
+            "loss of consciousnes",
+        ),
     ),
     (BenchmarkConcept("diabetes", "C0011849", "diabetes"), ("diabetes",)),
+    (
+        BenchmarkConcept("type-1-diabetes", "C0011854", "type-1-diabetes"),
+        ("type 1 diabetes", "insulin dependent diabetes"),
+    ),
     (BenchmarkConcept("gliosis", "C0017639", "gliosis"), ("gliosis",)),
     (
         BenchmarkConcept("cortical-dysplasia", "C0431380", "cortical-dysplasia"),
