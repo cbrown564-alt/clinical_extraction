@@ -189,12 +189,20 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   increased generic epilepsy over-emission, so v0.1 remains the current numeric
   Diagnosis candidate. See
   `docs/research/exectv2_diagnosis_reconciler_v02_dev140_report_2026-06-18.md`.
+- Diagnosis acceptance gate v0.1 is rejected before dev140. It cleanly frames
+  verifier+decomposer candidates as fixed accept/reject decisions but is too
+  conservative on dev25: F1 `0.625`, precision `0.698`, recall `0.566`, with
+  `0` call/parse failures and evidence validity `1.0000`. The next gate needs
+  a named seizure-type recovery lane rather than a broad frequency-only
+  rejection rule. See
+  `docs/research/exectv2_diagnosis_acceptance_gate_v01_pilot_report_2026-06-18.md`.
 
 ## Active Priorities
 
 1. Redesign the remaining below-target Diagnosis and SeizureFrequency families
    from the updated dev140 residual ledgers: Diagnosis needs constrained
-   accept/reject gating after v0.2 concept grouping regressed to `0.647`;
+   accept/reject gating with named seizure-type recovery after v0.1 gating
+   under-recalled at `0.625` dev25;
    SF needs typed candidate decomposition after v0.3 improved unknown-state
    recall but only moved the headline to `0.681`.
 2. Require benchmark-beating dev evidence before any new full-200 audit:
@@ -206,8 +214,9 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
 ### Now
 
 - Build a constrained Diagnosis accept/reject gate for normalized concept-family
-  candidates, targeting generic epilepsy and tonic-clonic over-emission while
-  preserving focal epilepsy and secondary-generalised recall.
+  candidates with separate recovery for named seizure-type/frequency headings,
+  targeting generic epilepsy and tonic-clonic over-emission while preserving
+  focal epilepsy and secondary-generalised recall.
 - Redesign SeizureFrequency candidate span/state adjudication as typed
   candidate decomposition plus constrained state classification.
 

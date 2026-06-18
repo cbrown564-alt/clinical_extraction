@@ -1703,6 +1703,17 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Claim language: Reject as current Diagnosis candidate. The decomposition increased source-near recall but over-emitted too many Diagnosis mentions and underperformed verifier v0.6 (0.642 vs 0.651). Keep v0.6 as current Diagnosis baseline; future decomposition needs an explicit reconciler/verifier.
 - Artifacts: `experiments/exectv2_hybrid_diagnosis_decomposer_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_diagnosis_decomposer_v01_dev140_gpt41mini_20260618.md`, `docs/research/exectv2_diagnosis_decomposer_v01_dev140_report_2026-06-18.md`.
 
+### `exectv2_hybrid_diagnosis_acceptance_gate_v01_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_hybrid_diagnosis_acceptance_gate`; mode `live`; replay `native_run_split`.
+- Model role: Diagnosis accept/reject gate v0.1 over fixed verifier v0.6 and decomposer v0.1 Diagnosis candidates. The model only accepts or rejects candidate IDs; deterministic code renders accepted candidates.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `fixed candidate rendering + neutral schema repair + benchmark CUI projection only; model owns accept/reject decisions but cannot invent mentions`.
+- Primary metrics: accepted_candidates=42, candidate_mentions=87, diagnosis_f1=0.625, diagnosis_precision=0.698, diagnosis_recall=0.566, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_hybrid_diagnosis_acceptance_gate_v0.1.
+- Evidence validity: 0 call failures, 0 parse failures; 42/42 evidence-valid rendered mentions.
+- Cache/reuse source: Uses saved Diagnosis verifier v0.6 and Diagnosis decomposer v0.1 dev140 artifacts as candidate inputs, restricted to the first 25 dev letters for this pilot.
+- Claim language: Reject before dev140. The constrained gate is clean but too conservative on dev25 (0.625 F1, recall 0.566), so a full dev140 run is not justified. Next gate needs named seizure-type recovery rather than a broad frequency-only rejection rule.
+- Artifacts: `experiments/exectv2_hybrid_diagnosis_acceptance_gate_v01_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_diagnosis_acceptance_gate_v01_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_diagnosis_acceptance_gate_v01_pilot_report_2026-06-18.md`.
+
 ### `gan2026_kg_family_gated_graph_trust_2026-06-16`
 - Date/split: `2026-06-16`; `validation`; `250` rows.
 - Pipeline: `hybrid_clinical_frequency_state_graph`; mode `no-call replay`; replay `saved_output_replay`.
