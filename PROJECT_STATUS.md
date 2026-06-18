@@ -130,6 +130,12 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   misses normal/abnormal result attributes, Diagnosis needs hierarchy/assertion
   normalization, and SF needs generic-vs-specific state classification. See
   `docs/research/exectv2_key_entities_dev140_clinical_error_ledger_readout_2026-06-18.md`.
+- Prescription/Investigations verifier v0.1 is a split decision on dev140:
+  Prescription clears target (`0.817`, precision `0.773`, recall `0.865`) and
+  should replace the single structured medication output for now, but
+  Investigations regresses badly (`0.496`) and should stay on the single
+  structured v0.5 baseline (`0.786`) until a dedicated verifier exists. See
+  `docs/research/exectv2_med_inv_verifier_v01_dev140_report_2026-06-18.md`.
 
 ## Active Priorities
 
@@ -144,8 +150,8 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
 
 ### Now
 
-- Build the first dev140-led near-target verifier for Prescription and/or
-  Investigations using the clinical-recovery ledger residuals.
+- Build a dedicated Investigations verifier from the dev140 ledger. Keep
+  Prescription verifier v0.1 as the current medication candidate.
 
 ### Next
 

@@ -1858,6 +1858,16 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Inform Architecture Loop
 
+### `exectv2_llm_med_inv_verifier_v01_dev140_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_llm_med_inv_verifier`; mode `live`; replay `native_run_split`.
+- Model role: Prescription/Investigations verifier v0.1 over the v0.5 single structured key-entity draft. The model owns revised Prescription and Investigations mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
+- Primary metrics: prescription_f1=0.817, prescription_precision=0.773, prescription_recall=0.865, investigations_f1=0.496, evidence_validity_rate=0.9792, parse_failures=0.
+- Evidence validity: 0 call failures, 0 parse failures; 376/384 evidence-valid rendered mentions.
+- Claim language: Split decision. Use v0.1 as the current Prescription candidate because it clears dev140 target (`0.817` > `0.8`), but reject it for Investigations because it regresses from the single structured baseline (`0.496` vs `0.786`). Build a dedicated Investigations verifier next.
+- Artifacts: `experiments/exectv2_llm_med_inv_verifier_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_med_inv_verifier_v01_dev140_gpt41mini_20260618.md`, `docs/research/exectv2_med_inv_verifier_v01_dev140_report_2026-06-18.md`.
+
 ### `exectv2_key_entities_clinical_error_ledger_dev140_20260618`
 - Date/split: `2026-06-18`; `dev`; `140` rows.
 - Pipeline: `exectv2_key_entities_clinical_error_ledger`; mode `analysis-only`; replay `analysis_only`.
