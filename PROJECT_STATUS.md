@@ -9,7 +9,8 @@ ExECTv2 Plan 11 now optimizes exactly four indicators:
 Success requires core F1 `>0.900` for each on the predeclared development
 headline using a hybrid pipeline: one LLM call per letter for candidate
 generation/selection, then deterministic normalization and projection with
-explicit attribution.
+explicit attribution. Rapid iteration uses `gpt-4.1-mini`; the destination
+model is local `ollama_chat/qwen3.6:35b` via Ollama with thinking disabled.
 
 ## Current Dev140 Readout
 
@@ -42,6 +43,12 @@ SeizureFrequency `0.7277` (deterministic all9), Prescription `0.9072`
 (single-pass LLM). The current focused routed assembly remains below target on
 all four (`0.7127` / `0.6321` / `0.7472` / `0.7475`).
 
+First compliant single-call target-only runner exists. On dev10,
+`exectv2_target_indicators_single_call_v0.2` with `gpt-4.1-mini` reached
+overall `0.6043`, with D `0.2857`, SF `0.5000`, P `0.9189`, I `0.8333`.
+This proves the one-call architecture and format-normalization loop, but the
+candidate-selection prompt is still far below the target on Diagnosis and SF.
+
 ## Recent Context
 
 - Coordinated Plan 11 follow-ups are merged into this checkout: SF route
@@ -64,19 +71,20 @@ all four (`0.7127` / `0.6321` / `0.7472` / `0.7475`).
 
 1. Treat routed and focused-replay results as qualified dev architecture
    evidence, not benchmark-complete claims.
-2. Optimize the one-call hybrid route by target priority: preserve deterministic
-   Prescription, raise Investigations precision, then lift SF and Diagnosis
-   recall without adding non-target families.
-3. Use the SF v0.8 hard-slice panel to make a predeclared gate decision before
+2. Optimize the one-call hybrid route by target priority: preserve Prescription
+   above `0.900`, lift Investigations above `0.900`, then attack the large
+   Diagnosis/SF recall gaps without adding non-target families.
+3. Prepare a local-model smoke path for `ollama_chat/qwen3.6:35b` after the
+   hosted prompt/normalization loop has a credible target score.
+4. Use the SF v0.8 hard-slice panel to make a predeclared gate decision before
    any prediction-bearing SF code.
 
 ## Work Board
 
 ### Now
 
-- Build the first single-call four-indicator hybrid candidate/readout using the
-  ADR 0030 target surface and compare raw LLM-selected candidates with
-  deterministic normalization/projection.
+- Run a v0.3 dev10 single-call iteration that explicitly enumerates Diagnosis
+  and SF target facts; compare against v0.2 before escalating beyond 10/25 rows.
 - Review `experiments/exectv2_sf_v08_hard_slice_panel_dev140_20260618.md` and
   write the SF v0.8 gate decision: either no prediction-bearing change, or one
   predeclared bucket/action class that clears attribution, non-gold-feature, and
@@ -84,9 +92,8 @@ all four (`0.7127` / `0.6321` / `0.7472` / `0.7475`).
 
 ### Next
 
-- Assemble the single-call hybrid candidate report: one LLM candidate
-  generation/selection pass per letter, deterministic normalization/projection,
-  and target-only attribution/ablation tables.
+- Verify local Ollama availability, model tag/digest, and a one-row
+  `qwen3.6:35b` native chat smoke before any local comparison run.
 - Decide whether to fold the promoted Diagnosis enumeration lane into the
   canonical family-routed runner (replacing the shared-pass Diagnosis lane),
   with an ownership-clean preflight note; or keep it as a guarded dev candidate
@@ -107,6 +114,11 @@ all four (`0.7127` / `0.6321` / `0.7472` / `0.7475`).
 
 ### Done Recently
 
+- 2026-06-19: Added the one-call ADR 0030 target-indicator runner
+  (`exectv2_target_indicators_single_call_v0.2`). Dev10 `gpt-4.1-mini` pilot:
+  overall `0.6043`, D `0.2857`, SF `0.5000`, P `0.9189`, I `0.8333`.
+  Deterministic format normalization improved range attributes, dose units, and
+  day-to-week period projection.
 - 2026-06-19: Added the ADR 0030 target-only report and runner. Current dev140
   best-by-indicator is D `0.7302`, SF `0.7277`, P `0.9072`, I `0.7475`; only
   Prescription currently clears `>0.900`.
