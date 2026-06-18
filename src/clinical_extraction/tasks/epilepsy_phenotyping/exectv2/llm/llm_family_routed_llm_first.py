@@ -97,6 +97,26 @@ DEFAULT_PILOT_JSON = Path(
 DEFAULT_PILOT_JSONL = Path(
     "experiments/exectv2_family_routed_llm_first_pilot25_gpt41mini_20260618.jsonl"
 )
+DEFAULT_FOCUSED_DIAGNOSIS_OUT_JSON = Path(
+    "experiments/"
+    "exectv2_family_routed_with_focused_diagnosis_route_dev140_gpt41mini_20260618.json"
+)
+DEFAULT_FOCUSED_DIAGNOSIS_OUT_JSONL = Path(
+    "experiments/"
+    "exectv2_family_routed_with_focused_diagnosis_route_dev140_gpt41mini_20260618.jsonl"
+)
+DEFAULT_FOCUSED_DIAGNOSIS_OUT_MD = Path(
+    "docs/experiments/exectv2/key_entities/"
+    "exectv2_focused_diagnosis_route_no_call_replay_2026-06-18.md"
+)
+DEFAULT_FOCUSED_DIAGNOSIS_PILOT_JSON = Path(
+    "experiments/"
+    "exectv2_family_routed_with_focused_diagnosis_route_pilot25_gpt41mini_20260618.json"
+)
+DEFAULT_FOCUSED_DIAGNOSIS_PILOT_JSONL = Path(
+    "experiments/"
+    "exectv2_family_routed_with_focused_diagnosis_route_pilot25_gpt41mini_20260618.jsonl"
+)
 
 
 def combine_family_routed_predictions(
@@ -177,6 +197,7 @@ def build_family_routed_comparison(
     pilot_size: int | None = None,
     shared_pass_artifact: Path = DEFAULT_SHARED_PASS_ARTIFACT,
     sf_route_artifact: Path = DEFAULT_SF_ROUTE_ARTIFACT,
+    diagnosis_route_artifact: Path | None = None,
     hybrid_comparator_artifact: Path = DEFAULT_HYBRID_COMPARATOR_ARTIFACT,
 ) -> dict[str, Any]:
     """Build the predeclared routed comparison without model calls."""
@@ -192,12 +213,27 @@ def build_family_routed_comparison(
 
     shared_by_id = predicted_by_id_from_artifact(shared_pass_artifact)
     sf_by_id = predicted_by_id_from_artifact(sf_route_artifact)
+    diagnosis_by_id = (
+        predicted_by_id_from_artifact(diagnosis_route_artifact)
+        if diagnosis_route_artifact is not None
+        else None
+    )
     hybrid_by_id = predicted_by_id_from_artifact(hybrid_comparator_artifact)
 
     deterministic = run_all9_on_letters(gold_letters)
     llm_only = align_predictions_to_gold(gold_letters, shared_by_id)
     hybrid = align_predictions_to_gold(gold_letters, hybrid_by_id)
     routed = combine_family_routed_predictions(gold_letters, shared_by_id, sf_by_id)
+    focused_routed = (
+        combine_family_routed_predictions(
+            gold_letters,
+            shared_by_id,
+            sf_by_id,
+            diagnosis_by_id,
+        )
+        if diagnosis_by_id is not None
+        else None
+    )
 
     candidates = [
         _candidate_report(
@@ -225,12 +261,33 @@ def build_family_routed_comparison(
             pred_letters=routed,
         ),
     ]
+    if focused_routed is not None:
+        candidates.append(
+            _candidate_report(
+                name="family_routed_with_focused_diagnosis_route",
+                ownership=FOCUSED_DIAGNOSIS_AGGREGATE_OWNERSHIP,
+                gold_letters=gold_letters,
+                pred_letters=focused_routed,
+            )
+        )
     route_summary = _route_summary(
         gold_letters=gold_letters,
         shared_rows=_rows_by_id(shared_pass_artifact),
+        diagnosis_rows=(
+            _rows_by_id(diagnosis_route_artifact)
+            if diagnosis_route_artifact is not None
+            else None
+        ),
         sf_rows=_rows_by_id(sf_route_artifact),
-        routed_predictions=routed,
+        routed_predictions=focused_routed if focused_routed is not None else routed,
     )
+    input_artifacts = {
+        "shared_pass": str(shared_pass_artifact).replace("\\", "/"),
+        "sf_route": str(sf_route_artifact).replace("\\", "/"),
+        "hybrid_comparator": str(hybrid_comparator_artifact).replace("\\", "/"),
+    }
+    if diagnosis_route_artifact is not None:
+        input_artifacts["diagnosis_route"] = str(diagnosis_route_artifact).replace("\\", "/")
     return {
         "pipeline_family": PIPELINE_FAMILY,
         "model": MODEL,
@@ -239,11 +296,7 @@ def build_family_routed_comparison(
         "stage": f"pilot{pilot_size}" if pilot_size is not None else "dev140",
         "row_count": len(gold_letters),
         "primary_entities": list(ROUTED_PRIMARY_ENTITIES),
-        "input_artifacts": {
-            "shared_pass": str(shared_pass_artifact).replace("\\", "/"),
-            "sf_route": str(sf_route_artifact).replace("\\", "/"),
-            "hybrid_comparator": str(hybrid_comparator_artifact).replace("\\", "/"),
-        },
+        "input_artifacts": input_artifacts,
         "preflight": {
             "can_run_dev_ladder": preflight.can_run_dev_ladder,
             "planned_dev_ladder": list(preflight.planned_dev_ladder),
@@ -256,20 +309,50 @@ def build_family_routed_comparison(
 
 def write_family_routed_outputs(
     *,
-    out_json: Path = DEFAULT_OUT_JSON,
-    out_jsonl: Path = DEFAULT_OUT_JSONL,
-    out_md: Path = DEFAULT_OUT_MD,
-    pilot_json: Path = DEFAULT_PILOT_JSON,
-    pilot_jsonl: Path = DEFAULT_PILOT_JSONL,
+    out_json: Path | None = None,
+    out_jsonl: Path | None = None,
+    out_md: Path | None = None,
+    pilot_json: Path | None = None,
+    pilot_jsonl: Path | None = None,
     split: str = "dev",
     pilot_size: int = 25,
+    diagnosis_route_artifact: Path | None = None,
 ) -> dict[str, Path]:
     """Run pilot25 then dev140 replay and write comparison artifacts."""
 
-    pilot_report = build_family_routed_comparison(split=split, pilot_size=pilot_size)
-    dev_report = build_family_routed_comparison(split=split)
+    focused = diagnosis_route_artifact is not None
+    out_json = out_json or (
+        DEFAULT_FOCUSED_DIAGNOSIS_OUT_JSON if focused else DEFAULT_OUT_JSON
+    )
+    out_jsonl = out_jsonl or (
+        DEFAULT_FOCUSED_DIAGNOSIS_OUT_JSONL if focused else DEFAULT_OUT_JSONL
+    )
+    out_md = out_md or (
+        DEFAULT_FOCUSED_DIAGNOSIS_OUT_MD if focused else DEFAULT_OUT_MD
+    )
+    pilot_json = pilot_json or (
+        DEFAULT_FOCUSED_DIAGNOSIS_PILOT_JSON if focused else DEFAULT_PILOT_JSON
+    )
+    pilot_jsonl = pilot_jsonl or (
+        DEFAULT_FOCUSED_DIAGNOSIS_PILOT_JSONL if focused else DEFAULT_PILOT_JSONL
+    )
+
+    pilot_report = build_family_routed_comparison(
+        split=split,
+        pilot_size=pilot_size,
+        diagnosis_route_artifact=diagnosis_route_artifact,
+    )
+    dev_report = build_family_routed_comparison(
+        split=split,
+        diagnosis_route_artifact=diagnosis_route_artifact,
+    )
     shared_rows = _rows_by_id(DEFAULT_SHARED_PASS_ARTIFACT)
     sf_rows = _rows_by_id(DEFAULT_SF_ROUTE_ARTIFACT)
+    diagnosis_rows = (
+        _rows_by_id(diagnosis_route_artifact)
+        if diagnosis_route_artifact is not None
+        else None
+    )
 
     out_json.parent.mkdir(parents=True, exist_ok=True)
     out_jsonl.parent.mkdir(parents=True, exist_ok=True)
@@ -290,14 +373,18 @@ def write_family_routed_outputs(
         split=split,
         pilot_size=pilot_size,
         shared_rows=shared_rows,
+        diagnosis_rows=diagnosis_rows,
         sf_rows=sf_rows,
+        diagnosis_route_artifact=diagnosis_route_artifact,
     )
     _write_routed_jsonl(
         out_jsonl,
         split=split,
         pilot_size=None,
         shared_rows=shared_rows,
+        diagnosis_rows=diagnosis_rows,
         sf_rows=sf_rows,
+        diagnosis_route_artifact=diagnosis_route_artifact,
     )
     out_md.write_text(
         render_family_routed_markdown(
@@ -328,17 +415,24 @@ def render_family_routed_markdown(
 
     candidates = {c["name"]: c for c in report["candidates"]}
     routed = candidates["family_routed_llm_first"]
+    focused = candidates.get("family_routed_with_focused_diagnosis_route")
+    headline_candidate = focused or routed
     single = candidates["llm_only_all_entities"]
     gate = report["gate_decision"]
+    title = (
+        "ExECTv2 Focused Diagnosis Route No-Call Replay"
+        if focused is not None
+        else "ExECTv2 Family-Routed LLM-First Comparison"
+    )
     lines = [
-        "# ExECTv2 Family-Routed LLM-First Comparison",
+        f"# {title}",
         "",
         f"- Generated: `{report['generated_on']}`",
         f"- Split/stage: `{report['split']}` / `{report['stage']}`",
         f"- Rows: `{report['row_count']}`",
         f"- Primary routed families: `{', '.join(report['primary_entities'])}`",
         f"- Gate decision: **{gate['decision']}**",
-        f"- Ownership: `{routed['ownership']}`",
+        f"- Ownership: `{headline_candidate['ownership']}`",
     ]
     if json_path is not None:
         lines.append(f"- JSON: `{json_path.as_posix()}`")
@@ -348,28 +442,50 @@ def render_family_routed_markdown(
         pilot_gate = pilot_report["gate_decision"]["decision"]
         lines.append(f"- Pilot25 replay: `{pilot_gate}` over `{pilot_report['row_count']}` rows")
 
+    lines += ["", "## Key Insight", ""]
+    if focused is not None:
+        current_diag = routed["routed_primary_recovery"]["headline_scores"][DIAGNOSIS.name]
+        focused_diag = focused["routed_primary_recovery"]["headline_scores"][DIAGNOSIS.name]
+        lines += [
+            (
+                "This no-call replay keeps Prescription and Investigations on the shared "
+                "broad pass, keeps SeizureFrequency on the existing event/state route, "
+                "and substitutes the frozen Diagnosis reconciler v0.1 artifact only for "
+                "Diagnosis."
+            ),
+            "",
+            (
+                "Current routed Diagnosis remains weak at "
+                f"`{current_diag['f1']:.4f}`. The focused Diagnosis lane replays at "
+                f"`{focused_diag['f1']:.4f}` on dev140, but this is still a qualified "
+                "development route rather than a solved Diagnosis component or a "
+                "full-200/test authorization."
+            ),
+        ]
+    else:
+        lines += [
+            (
+                "The family-routed candidate improves the four-family CUI-free "
+                "clinical-recovery headline from "
+                f"`{single['routed_primary_recovery']['overall']['f1']:.4f}` to "
+                f"`{routed['routed_primary_recovery']['overall']['f1']:.4f}` by "
+                "replacing the collapsed single-pass SeizureFrequency surface with the "
+                "event/state route. The result is a qualified architecture win, not a "
+                "clean LLM-first benchmark claim, because the SF source uses "
+                "deterministic candidate/projection and unknown-suppression policy."
+            ),
+            "",
+            (
+                "Prescription and Investigations are deliberately preserved from the "
+                "shared broad all-entities pass in this routed candidate. Specialist "
+                "P/I verifier artifacts remain separate candidates until a fresh "
+                "predeclaration and ablation show that replacing the shared pass "
+                "improves the intended routed surface without family regression or "
+                "ownership ambiguity."
+            ),
+        ]
+
     lines += [
-        "",
-        "## Key Insight",
-        "",
-        (
-            "The family-routed candidate improves the four-family CUI-free "
-            "clinical-recovery headline from "
-            f"`{single['routed_primary_recovery']['overall']['f1']:.4f}` to "
-            f"`{routed['routed_primary_recovery']['overall']['f1']:.4f}` by replacing the "
-            "collapsed single-pass SeizureFrequency surface with the event/state route. "
-            "The result is a qualified architecture win, not a clean LLM-first benchmark "
-            "claim, because the SF source uses deterministic candidate/projection and "
-            "unknown-suppression policy."
-        ),
-        "",
-        (
-            "Prescription and Investigations are deliberately preserved from the shared "
-            "broad all-entities pass in this routed candidate. Specialist P/I verifier "
-            "artifacts remain separate candidates until a fresh predeclaration and "
-            "ablation show that replacing the shared pass improves the intended routed "
-            "surface without family regression or ownership ambiguity."
-        ),
         "",
         "## Table 1: Architecture Ownership",
         "",
@@ -381,7 +497,11 @@ def render_family_routed_markdown(
     ]
     for candidate in report["candidates"]:
         ownership = candidate["ownership"]
-        if candidate["name"] == "family_routed_llm_first":
+        if candidate["name"] == "family_routed_with_focused_diagnosis_route":
+            component = "shared P/I pass + focused Diagnosis route + SF event/state route"
+            adapters = "evidence/CUI/certainty/rendering + SF suppression/projection"
+            claim = "dev-only no-call route evidence, not Diagnosis solved"
+        elif candidate["name"] == "family_routed_llm_first":
             component = "shared P/I/D pass + SF event/state route"
             adapters = "evidence/CUI/certainty/rendering + SF suppression/projection"
             claim = "dev architecture evidence, qualified ownership"
@@ -425,17 +545,22 @@ def render_family_routed_markdown(
         "",
         "## Table 3: Per-Family Recovery",
         "",
-        "| Family | Single-pass F1 | Routed F1 | Delta | Evidence exact | Dominant residual |",
+        (
+            "| Family | Baseline F1 | Replay F1 | Delta | Evidence exact | "
+            "Dominant residual |"
+        ),
         "| --- | ---: | ---: | ---: | ---: | --- |",
     ]
+    baseline = routed if focused is not None else single
+    replay = focused if focused is not None else routed
     for family in ROUTED_PRIMARY_ENTITIES:
-        single_score = single["routed_primary_recovery"]["headline_scores"][family]
-        routed_score = routed["routed_primary_recovery"]["headline_scores"][family]
-        delta = routed_score["f1"] - single_score["f1"]
-        evidence = routed["routed_primary_evidence"][family]["exact_evidence_rate"]
-        residual = _dominant_residual(routed["routed_primary_errors"]["per_entity"][family])
+        baseline_score = baseline["routed_primary_recovery"]["headline_scores"][family]
+        replay_score = replay["routed_primary_recovery"]["headline_scores"][family]
+        delta = replay_score["f1"] - baseline_score["f1"]
+        evidence = replay["routed_primary_evidence"][family]["exact_evidence_rate"]
+        residual = _dominant_residual(replay["routed_primary_errors"]["per_entity"][family])
         lines.append(
-            f"| {family} | {single_score['f1']:.4f} | {routed_score['f1']:.4f} "
+            f"| {family} | {baseline_score['f1']:.4f} | {replay_score['f1']:.4f} "
             f"| {delta:+.4f} | {evidence:.4f} | {residual} |"
         )
 
@@ -470,10 +595,29 @@ def render_family_routed_markdown(
             f"| deterministic unknown suppression/defaulting | {route['suppression_actions']} | "
             "named suppression layer |"
         ),
-        "",
-        "## Gate Notes",
-        "",
     ]
+    diagnosis_route = report["route_summary"].get("diagnosis_route")
+    if diagnosis_route is not None:
+        lines += [
+            "",
+            "## Focused Diagnosis Route Diagnostics",
+            "",
+            "| Diagnosis diagnostic | Count or rate | Notes |",
+            "| --- | ---: | --- |",
+            (
+                f"| emitted Diagnosis records | {diagnosis_route['predicted_mentions']} | "
+                "dev focused Diagnosis mentions |"
+            ),
+            (
+                f"| exact evidence records | {diagnosis_route['exact_evidence_mentions']} | "
+                f"{diagnosis_route['exact_evidence_rate']:.4f} exact-evidence rate |"
+            ),
+            (
+                f"| parse/call failures | {diagnosis_route['call_or_parse_failures']} | "
+                "source artifact row-level statuses |"
+            ),
+        ]
+    lines += ["", "## Gate Notes", ""]
     for note in gate["notes"]:
         lines.append(f"- {note}")
     lines.append("")
@@ -565,6 +709,10 @@ def _gate_decision(
     by_name = {c["name"]: c for c in candidates}
     single = by_name["llm_only_all_entities"]
     routed = by_name["family_routed_llm_first"]
+    focused = by_name.get("family_routed_with_focused_diagnosis_route")
+    if focused is not None:
+        return _focused_diagnosis_gate_decision(routed, focused, route_summary)
+
     single_overall = single["routed_primary_recovery"]["overall"]["f1"]
     routed_overall = routed["routed_primary_recovery"]["overall"]["f1"]
     sf_score = routed["routed_primary_recovery"]["headline_scores"][SEIZURE_FREQUENCY.name]
@@ -606,10 +754,80 @@ def _gate_decision(
     return {"decision": decision, "notes": notes}
 
 
+def _focused_diagnosis_gate_decision(
+    routed: Mapping[str, Any],
+    focused: Mapping[str, Any],
+    route_summary: Mapping[str, Any],
+) -> dict[str, Any]:
+    current_overall = routed["routed_primary_recovery"]["overall"]["f1"]
+    focused_overall = focused["routed_primary_recovery"]["overall"]["f1"]
+    current_diag = routed["routed_primary_recovery"]["headline_scores"][DIAGNOSIS.name]
+    focused_diag = focused["routed_primary_recovery"]["headline_scores"][DIAGNOSIS.name]
+    diagnosis_delta = focused_diag["f1"] - current_diag["f1"]
+    diagnosis_evidence = focused["routed_primary_evidence"][DIAGNOSIS.name][
+        "exact_evidence_rate"
+    ]
+    stable_families = (PRESCRIPTION.name, INVESTIGATIONS.name, SEIZURE_FREQUENCY.name)
+    drifts = {
+        family: (
+            focused["routed_primary_recovery"]["headline_scores"][family]["f1"]
+            - routed["routed_primary_recovery"]["headline_scores"][family]["f1"]
+        )
+        for family in stable_families
+    }
+    sf_failures = route_summary["sf_route"]["call_or_parse_failures"]
+    diagnosis_failures = route_summary.get("diagnosis_route", {}).get(
+        "call_or_parse_failures",
+        0,
+    )
+    useful_route = (
+        focused_overall > current_overall
+        and diagnosis_delta >= 0.25
+        and focused_diag["f1"] >= 0.60
+        and diagnosis_evidence >= 0.99
+        and all(abs(delta) <= 0.001 for delta in drifts.values())
+        and sf_failures == 0
+        and diagnosis_failures == 0
+    )
+    decision = (
+        "dev-architecture-route-useful-qualified"
+        if useful_route
+        else "dev-route-not-promoted"
+    )
+    notes = [
+        (
+            "Four-family F1 delta vs current routed candidate: "
+            f"{focused_overall - current_overall:+.4f} "
+            f"({current_overall:.4f} -> {focused_overall:.4f})."
+        ),
+        (
+            f"Diagnosis F1 delta vs current routed Diagnosis: {diagnosis_delta:+.4f} "
+            f"({current_diag['f1']:.4f} -> {focused_diag['f1']:.4f}); "
+            "usefulness thresholds were +0.2500 and >=0.6000."
+        ),
+        f"Focused Diagnosis exact-evidence rate: {diagnosis_evidence:.4f}.",
+        (
+            "Prescription/Investigations/SeizureFrequency F1 drift vs current routed: "
+            + ", ".join(f"{family} {delta:+.4f}" for family, delta in drifts.items())
+            + "; allowed absolute drift was <=0.001."
+        ),
+        (
+            f"Route source parse/call failures: Diagnosis {diagnosis_failures}, "
+            f"SeizureFrequency {sf_failures}."
+        ),
+        (
+            "This is a no-call dev replay only; it does not solve Diagnosis and does "
+            "not authorize full-200/test evaluation."
+        ),
+    ]
+    return {"decision": decision, "notes": notes}
+
+
 def _route_summary(
     *,
     gold_letters: Sequence[ExectLetter],
     shared_rows: Mapping[str, Mapping[str, Any]],
+    diagnosis_rows: Mapping[str, Mapping[str, Any]] | None = None,
     sf_rows: Mapping[str, Mapping[str, Any]],
     routed_predictions: Sequence[PredictedLetter],
 ) -> dict[str, Any]:
@@ -620,24 +838,39 @@ def _route_summary(
     call_or_parse_failures = 0
     exact_evidence = 0
     predicted = 0
+    diagnosis_call_or_parse_failures = 0
+    diagnosis_exact_evidence = 0
+    diagnosis_predicted = 0
     for letter in routed_predictions:
         row = sf_rows.get(letter.letter_id, {})
         projection_actions += len(row.get("projection_actions", []))
         suppression_actions += len(row.get("suppression_actions", []))
         if row.get("call_error") or row.get("parse_errors"):
             call_or_parse_failures += 1
+        diagnosis_row = (
+            diagnosis_rows.get(letter.letter_id, {}) if diagnosis_rows is not None else {}
+        )
+        if diagnosis_row.get("call_error") or diagnosis_row.get("parse_errors"):
+            diagnosis_call_or_parse_failures += 1
         note = gold_by_id[letter.letter_id].note_text
         for mention in letter.mentions:
-            if mention.entity != SEIZURE_FREQUENCY.name:
-                continue
-            predicted += 1
-            state_counts[_sf_state(mention)] += 1
-            if mention.evidence and mention.evidence in note:
-                exact_evidence += 1
-    return {
+            if mention.entity == SEIZURE_FREQUENCY.name:
+                predicted += 1
+                state_counts[_sf_state(mention)] += 1
+                if mention.evidence and mention.evidence in note:
+                    exact_evidence += 1
+            if diagnosis_rows is not None and mention.entity == DIAGNOSIS.name:
+                diagnosis_predicted += 1
+                if mention.evidence and mention.evidence in note:
+                    diagnosis_exact_evidence += 1
+    summary: dict[str, Any] = {
         "shared_pass": {
             "artifact_rows": len(shared_rows),
-            "families_used": sorted(SHARED_PASS_ENTITIES),
+            "families_used": sorted(
+                {PRESCRIPTION.name, INVESTIGATIONS.name}
+                if diagnosis_rows is not None
+                else SHARED_PASS_ENTITIES
+            ),
         },
         "sf_route": {
             "artifact_rows": len(sf_rows),
@@ -652,6 +885,24 @@ def _route_summary(
             "call_or_parse_failures": call_or_parse_failures,
         },
     }
+    if diagnosis_rows is not None:
+        summary["diagnosis_route"] = {
+            "artifact_rows": len(diagnosis_rows),
+            "families_used": sorted(DIAGNOSIS_ROUTE_ENTITIES),
+            "component_owner": _most_common_field(
+                diagnosis_rows.values(),
+                "component_owner",
+            ),
+            "predicted_mentions": diagnosis_predicted,
+            "exact_evidence_mentions": diagnosis_exact_evidence,
+            "exact_evidence_rate": (
+                round(diagnosis_exact_evidence / diagnosis_predicted, 4)
+                if diagnosis_predicted
+                else 0.0
+            ),
+            "call_or_parse_failures": diagnosis_call_or_parse_failures,
+        }
+    return summary
 
 
 def _write_routed_jsonl(
@@ -660,21 +911,52 @@ def _write_routed_jsonl(
     split: str,
     pilot_size: int | None,
     shared_rows: Mapping[str, Mapping[str, Any]],
+    diagnosis_rows: Mapping[str, Mapping[str, Any]] | None = None,
     sf_rows: Mapping[str, Mapping[str, Any]],
+    diagnosis_route_artifact: Path | None = None,
 ) -> None:
     gold_letters = load_letters_for_split(split)
     if pilot_size is not None:
         gold_letters = gold_letters[:pilot_size]
     shared_by_id = predicted_by_id_from_artifact(DEFAULT_SHARED_PASS_ARTIFACT)
     sf_by_id = predicted_by_id_from_artifact(DEFAULT_SF_ROUTE_ARTIFACT)
+    diagnosis_by_id = (
+        predicted_by_id_from_artifact(diagnosis_route_artifact)
+        if diagnosis_route_artifact is not None
+        else None
+    )
     routed_by_id = {
         letter.letter_id: letter
-        for letter in combine_family_routed_predictions(gold_letters, shared_by_id, sf_by_id)
+        for letter in combine_family_routed_predictions(
+            gold_letters,
+            shared_by_id,
+            sf_by_id,
+            diagnosis_by_id,
+        )
     }
+    shared_entities = (
+        frozenset({PRESCRIPTION.name, INVESTIGATIONS.name})
+        if diagnosis_by_id is not None
+        else SHARED_PASS_ENTITIES
+    )
+    ownership = (
+        FOCUSED_DIAGNOSIS_AGGREGATE_OWNERSHIP
+        if diagnosis_by_id is not None
+        else "llm_first_with_hybrid_sf_route"
+    )
+    sources = {
+        "shared_pass": DEFAULT_SHARED_PASS_ARTIFACT.as_posix(),
+        "sf_route": DEFAULT_SF_ROUTE_ARTIFACT.as_posix(),
+    }
+    if diagnosis_route_artifact is not None:
+        sources["diagnosis_route"] = diagnosis_route_artifact.as_posix()
     lines = []
     for gold in gold_letters:
         routed = routed_by_id[gold.letter_id]
         shared_row = shared_rows.get(gold.letter_id, {})
+        diagnosis_row = (
+            diagnosis_rows.get(gold.letter_id, {}) if diagnosis_rows is not None else {}
+        )
         sf_row = sf_rows.get(gold.letter_id, {})
         row = {
             "letter_id": gold.letter_id,
@@ -682,11 +964,8 @@ def _write_routed_jsonl(
             "stage": f"pilot{pilot_size}" if pilot_size is not None else "dev140",
             "pipeline_family": PIPELINE_FAMILY,
             "model": MODEL,
-            "ownership": "llm_first_with_hybrid_sf_route",
-            "sources": {
-                "shared_pass": DEFAULT_SHARED_PASS_ARTIFACT.as_posix(),
-                "sf_route": DEFAULT_SF_ROUTE_ARTIFACT.as_posix(),
-            },
+            "ownership": ownership,
+            "sources": sources,
             "gold_mentions": [
                 _gold_to_row(a)
                 for a in gold.annotations
@@ -699,8 +978,20 @@ def _write_routed_jsonl(
                     gold.letter_id,
                     PredictedLetter(letter_id=gold.letter_id, mentions=()),
                 ).mentions
-                if m.entity in SHARED_PASS_ENTITIES
+                if m.entity in shared_entities
             ],
+            "diagnosis_route_mentions": (
+                [
+                    _mention_to_row(m)
+                    for m in diagnosis_by_id.get(
+                        gold.letter_id,
+                        PredictedLetter(letter_id=gold.letter_id, mentions=()),
+                    ).mentions
+                    if m.entity in DIAGNOSIS_ROUTE_ENTITIES
+                ]
+                if diagnosis_by_id is not None
+                else []
+            ),
             "sf_route_mentions": [
                 _mention_to_row(m)
                 for m in sf_by_id.get(
@@ -710,8 +1001,10 @@ def _write_routed_jsonl(
                 if m.entity in SF_ROUTE_ENTITIES
             ],
             "shared_pass_status": _status_from_row(shared_row),
+            "diagnosis_route_status": _status_from_row(diagnosis_row),
             "sf_route_status": _status_from_row(sf_row),
             "shared_pass_raw_output": shared_row.get("raw_output", ""),
+            "diagnosis_route_raw_output": diagnosis_row.get("raw_output", ""),
             "sf_route_raw_output": sf_row.get("raw_output", ""),
             "sf_route_diagnostics": {
                 "component_owner": sf_row.get("component_owner", ""),
@@ -809,17 +1102,31 @@ def main() -> None:
     )
     parser.add_argument("--split", default="dev")
     parser.add_argument("--pilot-size", type=int, default=25)
-    parser.add_argument("--out-json", type=Path, default=DEFAULT_OUT_JSON)
-    parser.add_argument("--out-jsonl", type=Path, default=DEFAULT_OUT_JSONL)
-    parser.add_argument("--out-md", type=Path, default=DEFAULT_OUT_MD)
+    parser.add_argument(
+        "--diagnosis-route-artifact",
+        type=Path,
+        default=None,
+        help=(
+            "Optional frozen Diagnosis route JSONL for the no-call focused Diagnosis "
+            "assembly replay"
+        ),
+    )
+    parser.add_argument("--out-json", type=Path, default=None)
+    parser.add_argument("--out-jsonl", type=Path, default=None)
+    parser.add_argument("--out-md", type=Path, default=None)
+    parser.add_argument("--pilot-json", type=Path, default=None)
+    parser.add_argument("--pilot-jsonl", type=Path, default=None)
     args = parser.parse_args()
 
     outputs = write_family_routed_outputs(
         out_json=args.out_json,
         out_jsonl=args.out_jsonl,
         out_md=args.out_md,
+        pilot_json=args.pilot_json,
+        pilot_jsonl=args.pilot_jsonl,
         split=args.split,
         pilot_size=args.pilot_size,
+        diagnosis_route_artifact=args.diagnosis_route_artifact,
     )
     for name, path in outputs.items():
         print(f"Wrote {name}: {path}")

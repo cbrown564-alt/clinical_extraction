@@ -7,6 +7,7 @@ model or reads held-out rows.
 
 from __future__ import annotations
 
+import ast
 import importlib.util
 from collections.abc import Iterable
 from dataclasses import dataclass
@@ -28,6 +29,15 @@ REQUIRED_ROUTE_MODULE = (
 SCHEMA_BASE_MODULE = (
     "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm."
     "llm_only_clinical_findings"
+)
+SCHEMA_BASE_SOURCE_PATH = Path(
+    "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/"
+    "llm_only_clinical_findings.py"
+)
+REQUIRED_SCHEMA_BASE_CLASSES = (
+    "ClinicalFindingsRecord",
+    "EventFrameRecord",
+    "ClinicalFindingRecord",
 )
 
 DEV_LADDER_STAGES = ("pilot25", "dev140")
@@ -89,8 +99,11 @@ def build_family_routed_preflight(root: Path | str = Path(".")) -> FamilyRoutedP
         ),
         PreflightCheck(
             "sf_schema_base_importable",
-            _schema_base_importable(),
-            f"{SCHEMA_BASE_MODULE} must expose ClinicalFindingsRecord/EventFrameRecord",
+            _schema_base_available(repo_root),
+            (
+                f"{SCHEMA_BASE_MODULE} must expose or declare "
+                "ClinicalFindingsRecord/EventFrameRecord"
+            ),
         ),
         PreflightCheck(
             "plan11_routed_adapter_contract_implemented",
@@ -178,12 +191,28 @@ def _module_importable(module: str) -> bool:
         return False
 
 
+def _schema_base_available(repo_root: Path) -> bool:
+    if _schema_base_importable():
+        return True
+    return _schema_base_classes_declared(repo_root / SCHEMA_BASE_SOURCE_PATH)
+
+
 def _schema_base_importable() -> bool:
     try:
         module = __import__(SCHEMA_BASE_MODULE, fromlist=["ClinicalFindingsRecord"])
     except ImportError:
         return False
-    return all(
-        hasattr(module, name)
-        for name in ("ClinicalFindingsRecord", "EventFrameRecord", "ClinicalFindingRecord")
-    )
+    return all(hasattr(module, name) for name in REQUIRED_SCHEMA_BASE_CLASSES)
+
+
+def _schema_base_classes_declared(path: Path) -> bool:
+    try:
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+    except (FileNotFoundError, SyntaxError):
+        return False
+    declared = {
+        node.name
+        for node in tree.body
+        if isinstance(node, ast.ClassDef)
+    }
+    return all(name in declared for name in REQUIRED_SCHEMA_BASE_CLASSES)

@@ -126,13 +126,27 @@ _DIAGNOSIS_ENTRIES: tuple[tuple[BenchmarkConcept, tuple[str, ...]], ...] = (
         ("symptomatic structural focal epilepsy",),
     ),
     (
+        BenchmarkConcept("Epilepsy", "C0014547", "localisation-related-epilepsy"),
+        ("localisation related epilepsy",),
+    ),
+    (
+        BenchmarkConcept("Epilepsy", "C0472349", "symptomatic-focal-epilepsy"),
+        ("symptomatic focal epilepsy",),
+    ),
+    (
         BenchmarkConcept("Epilepsy", "C0494475", "generalised-tonic-clonic-seizures"),
         (
             "generalised tonic clonic seizures",
             "generalised tonic clonic seizure",
             "generalized tonic clonic seizures",
             "tonic clonic seizures",
+            "tonic clonic convulsion",
+            "grand mal",
         ),
+    ),
+    (
+        BenchmarkConcept("Epilepsy", "C0270844", "generalised-tonic-seizures"),
+        ("generalised tonic seizures",),
     ),
     (
         BenchmarkConcept("Epilepsy", "C0751495", "focal-seizures"),
@@ -143,6 +157,8 @@ _DIAGNOSIS_ENTRIES: tuple[tuple[BenchmarkConcept, tuple[str, ...]], ...] = (
         (
             "focal to bilateral convulsive seizures",
             "focal to bilateral convulsive seizure",
+            "bilateral convulsive seizures",
+            "bilateral convulsive seizure",
             "secondary generalised tonic clonic seizures",
         ),
     ),
@@ -160,7 +176,12 @@ _DIAGNOSIS_ENTRIES: tuple[tuple[BenchmarkConcept, tuple[str, ...]], ...] = (
     ),
     (
         BenchmarkConcept("Epilepsy", "C0270838", "secondary-generalised-seizures"),
-        ("secondary generalised seizures",),
+        (
+            "secondary generalised seizures",
+            "secondary generalised seizure",
+            "secondarily generalised seizures",
+            "secondary generalisation",
+        ),
     ),
     (
         BenchmarkConcept("Epilepsy", "C0234533", "generalised-seizures"),
@@ -168,11 +189,27 @@ _DIAGNOSIS_ENTRIES: tuple[tuple[BenchmarkConcept, tuple[str, ...]], ...] = (
     ),
     (
         BenchmarkConcept("Epilepsy", "C0016399", "focal-motor-seizures"),
-        ("focal motor seizures", "focal motor seizure"),
+        ("focal motor seizures", "focal motor seizure", "partial motor seizures"),
     ),
     (
         BenchmarkConcept("Epilepsy", "C4317109", "epileptic-seizures"),
         ("epileptic seizures", "epileptic seizure"),
+    ),
+    (
+        BenchmarkConcept("Epilepsy", "C0038220", "status-epilepticus"),
+        ("status epilepticus",),
+    ),
+    (
+        BenchmarkConcept("Epilepsy", "C4317123", "myoclonic-seizures"),
+        ("myoclonic seizures",),
+    ),
+    (
+        BenchmarkConcept("Epilepsy", "C0748605", "nocturnal-seizures"),
+        ("nocturnal seizures",),
+    ),
+    (
+        BenchmarkConcept("Epilepsy", "C0234974", "simple-partial-seizures"),
+        ("simple partial seizures",),
     ),
     (
         BenchmarkConcept("Epilepsy", "C0270850", "primary-generalised-epilepsy"),
@@ -191,11 +228,16 @@ _DIAGNOSIS_ENTRIES: tuple[tuple[BenchmarkConcept, tuple[str, ...]], ...] = (
         (
             "epilepsy with generalised tonic clonic seizures alone",
             "epilepsy with generalised tonic clonic seizure alone",
+            "epilepsy with generalised tonic clonic seizures on awakening",
         ),
     ),
     (
         BenchmarkConcept("Epilepsy", "C0393691", "occipital-lobe-epilepsy"),
-        ("occipital lobe epilepsy",),
+        ("occipital lobe epilepsy", "occipital lobe seizures"),
+    ),
+    (
+        BenchmarkConcept("Epilepsy", "C0393690", "parietal-lobe-epilepsy"),
+        ("parietal lobe epilepsy",),
     ),
     (
         BenchmarkConcept("Epilepsy", "C4317339", "juvenile-absence-epilepsy"),
@@ -203,19 +245,29 @@ _DIAGNOSIS_ENTRIES: tuple[tuple[BenchmarkConcept, tuple[str, ...]], ...] = (
     ),
     (
         BenchmarkConcept("Epilepsy", "C1096063", "intractable-epilepsy"),
-        ("intractable epilepsy",),
+        (
+            "intractable epilepsy",
+            "refractory epilepsies",
+            "drug resistant epilepsy",
+            "drug refractory epilepsy",
+            "drug refractory epilepsies",
+        ),
     ),
     (
         BenchmarkConcept("Epilepsy", "C0085541", "frontal-lobe-epilepsy"),
-        ("frontal lobe epilepsy",),
+        ("frontal lobe epilepsy", "frontal lobe onset seizure", "frontal lobe seizures"),
     ),
     (
         BenchmarkConcept("Epilepsy", "C0014556", "temporal-lobe-seizure"),
-        ("temporal lobe seizure", "temporal lobe seizures"),
+        (
+            "temporal lobe seizure",
+            "temporal lobe seizures",
+            "temporal lobe onset seizure",
+        ),
     ),
     (
         BenchmarkConcept("Epilepsy", "C4316903", "absence-seizures"),
-        ("absence seizures",),
+        ("absence seizures", "typical absences"),
     ),
 )
 _DIAGNOSIS_CONCEPT_BY_PHRASE: dict[str, BenchmarkConcept] = {
@@ -299,18 +351,18 @@ _BIRTH_HISTORY_CONCEPT_BY_PHRASE: dict[str, BenchmarkConcept] = {
 _EPILEPSY_CAUSE_ENTRIES: tuple[tuple[BenchmarkConcept, tuple[str, ...]], ...] = (
     (
         BenchmarkConcept("perinatal-insult", "C0005604", "perinatal-insult"),
-        ("perinatal insult",),
+        ("perinatal insult", "erinatal insult"),
     ),
     (BenchmarkConcept("strokes", "C0038454", "strokes"), ("stroke",)),
     (
         BenchmarkConcept("traumatic-brain-injury", "C0876926", "traumatic-brain-injury"),
-        ("traumatic brain injury",),
+        ("traumatic brain injury", "traumatic brain injury 2005"),
     ),
     (BenchmarkConcept("brain-surgery", "C0195775", "brain-surgery"), ("brain surgery",)),
     (BenchmarkConcept("cerebral-abscess", "C1510428", "cerebral-abscess"), ("cerebral abcess",)),
     (BenchmarkConcept("meningitis", "C0025289", "meningitis"), ("meningitis",)),
     (BenchmarkConcept("cranial-meningioma", "C0349604", "cranial-meningioma"), ("meningioma",)),
-    (BenchmarkConcept("Measles", "C0025007", "Measles"), ("measles",)),
+    (BenchmarkConcept("Measles", "C0025007", "Measles"), ("measles", "easle")),
     (
         BenchmarkConcept("Tuberous-sclerosis", "C0041341", "Tuberous-sclerosis"),
         ("tuberous sclerosis",),
@@ -321,7 +373,11 @@ _EPILEPSY_CAUSE_ENTRIES: tuple[tuple[BenchmarkConcept, tuple[str, ...]], ...] = 
     ),
     (
         BenchmarkConcept("hypoxia-during-birth", "C0559478", "hypoxia-during-birth"),
-        ("hypoxia during a difficult birth", "hypoxia during birth"),
+        (
+            "hypoxia during a difficult birth",
+            "hypoxia during a difficult birth.",
+            "hypoxia during birth",
+        ),
     ),
     (
         BenchmarkConcept("herpes-encephalitis", "C0276226", "herpes-encephalitis"),
@@ -330,7 +386,7 @@ _EPILEPSY_CAUSE_ENTRIES: tuple[tuple[BenchmarkConcept, tuple[str, ...]], ...] = 
     (BenchmarkConcept("encephalitis", "C0014038", "encephalitis"), ("encephalitis",)),
     (
         BenchmarkConcept("neurocysticercosis", "C0338437", "neurocysticercosis"),
-        ("neurocysticercosis",),
+        ("neurocysticercosis", "neurocysticercosis."),
     ),
     (BenchmarkConcept("brain", "C1456496", "brain"), ("ischaemic damage", "ischemic damage")),
 )
