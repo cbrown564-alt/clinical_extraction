@@ -70,7 +70,11 @@ src/clinical_extraction/
 docs/
   design/                       Architecture and pipeline design notes.
   decisions/                    Lightweight architecture decision records.
+  experiments/                  Human-readable experiment reports and predeclarations.
+  plans/                        Forward implementation plans by workstream.
+  research/                     Thesis, synthesis, error analysis, and paper-facing notes.
   runbooks/                     Repeatable development/evaluation workflows.
+  literature/                   Literature reviews and source PDFs.
 experiments/                    Run outputs and experiment records.
 notebooks/                      Living notebooks for loading, extraction, evaluation, errors.
 tests/                          Focused tests for data contracts and deterministic behavior.

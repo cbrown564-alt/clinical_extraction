@@ -70,7 +70,7 @@ work follows the LLM candidate, never whether the LLM is the candidate source.
 ### Phase A — Per-entity LLM-only candidate-source probe (DONE 2026-06-17)
 
 A candidate-generation experiment, not a final-labeler experiment. Predeclared in
-`docs/research/exectv2_llm_only_per_entity_pilot_predeclaration_2026-06-17.md`
+`docs/experiments/exectv2/predeclarations/exectv2_llm_only_per_entity_pilot_predeclaration_2026-06-17.md`
 (Results section filled).
 
 1. Generalize `llm/llm_only_per_entity.py` beyond its SF hardwiring: an
@@ -132,7 +132,7 @@ Extended the focused frame to the remaining five entities (Onset, WhenDiagnosed,
 BirthHistory, EpilepsyCause, PatientHistory) so "one focused call per entity" is
 general; bumped to `v0.4` and re-ran all nine for a single-version map.
 Predeclared/recorded in
-`docs/research/exectv2_per_entity_phase_b_predeclaration_2026-06-17.md`. The Qwen
+`docs/experiments/exectv2/predeclarations/exectv2_per_entity_phase_b_predeclaration_2026-06-17.md`. The Qwen
 3.6:35B transfer read is available via `--model` but was not run this phase.
 
 **Result (dev140, gpt-4.1-mini, temp 0.0, prompt `v0.4`).** Gate clean — zero
@@ -286,7 +286,7 @@ scorecard (the measurement-plan axes) from any combined hybrid JSONL, with a
 per-letter (cluster) bootstrap CI on the benchmark + semantic headlines and an
 explicit `promotion_gate` verdict; `runners/run_reliability_scorecard.py` emits
 it. The full-200 audit protocol is frozen in advance in
-`docs/research/exectv2_phase_e_full200_audit_predeclaration_2026-06-17.md`. No
+`docs/experiments/exectv2/predeclarations/exectv2_phase_e_full200_audit_predeclaration_2026-06-17.md`. No
 model calls; the locked test split is never touched.
 
 **Gate read (dev140, gpt-4.1-mini).** Scorecards:

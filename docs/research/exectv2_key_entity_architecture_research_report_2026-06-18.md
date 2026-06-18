@@ -503,16 +503,16 @@ Not yet supported:
 - Clinical-recovery scorer plan:
   `docs/plans/exectv2/10_clinical_recovery_scorer_build_plan.md`
 - Single structured v0.5 pilot:
-  `docs/research/exectv2_key_entities_structured_v05_pilot_report_2026-06-18.md`
+  `docs/experiments/exectv2/key_entities/exectv2_key_entities_structured_v05_pilot_report_2026-06-18.md`
 - dev140 transfer readout:
-  `docs/research/exectv2_key_entities_dev140_transfer_readout_2026-06-18.md`
+  `docs/experiments/exectv2/key_entities/exectv2_key_entities_dev140_transfer_readout_2026-06-18.md`
 - dev140 clinical ledger:
-  `docs/research/exectv2_key_entities_dev140_clinical_error_ledger_readout_2026-06-18.md`
+  `docs/experiments/exectv2/key_entities/exectv2_key_entities_dev140_clinical_error_ledger_readout_2026-06-18.md`
 - Medication/Investigations verifier:
-  `docs/research/exectv2_med_inv_verifier_v01_dev140_report_2026-06-18.md`
+  `docs/experiments/exectv2/medication_investigations/exectv2_med_inv_verifier_v01_dev140_report_2026-06-18.md`
 - Investigations verifier:
-  `docs/research/exectv2_investigations_verifier_v01_dev140_report_2026-06-18.md`
+  `docs/experiments/exectv2/medication_investigations/exectv2_investigations_verifier_v01_dev140_report_2026-06-18.md`
 - Diagnosis reconciler:
-  `docs/research/exectv2_diagnosis_reconciler_v02_dev140_report_2026-06-18.md`
+  `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_reconciler_v02_dev140_report_2026-06-18.md`
 - SeizureFrequency state adjudicator:
-  `docs/research/exectv2_sf_state_adjudicator_v05_dev140_report_2026-06-18.md`
+  `docs/experiments/exectv2/seizure_frequency/exectv2_sf_state_adjudicator_v05_dev140_report_2026-06-18.md`

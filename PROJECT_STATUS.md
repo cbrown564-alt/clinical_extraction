@@ -43,41 +43,41 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   Prescription/medication is above target (`0.846`), Investigations is near
   target (`0.783`), while Diagnosis (`0.414`) and SeizureFrequency (`0.456`)
   are the bottlenecks. See
-  `docs/research/exectv2_key_entities_structured_v02_pilot_report_2026-06-18.md`.
+  `docs/experiments/exectv2/key_entities/exectv2_key_entities_structured_v02_pilot_report_2026-06-18.md`.
 - v0.3 is a revise-only prompt iteration:
   `experiments/exectv2_llm_only_key_entities_structured_v03_dev25_gpt41mini_20260618.md`.
   Medication (`0.883`) and Investigations (`0.878`) now clear the clinical
   headline target; Diagnosis improved modestly (`0.455`), but SeizureFrequency
   slipped (`0.421`) and evidence validity fell to `0.9441`. Next work should be
   SF/Diagnosis error-analysis first, not more broad prompt accretion. See
-  `docs/research/exectv2_key_entities_structured_v03_pilot_report_2026-06-18.md`.
+  `docs/experiments/exectv2/key_entities/exectv2_key_entities_structured_v03_pilot_report_2026-06-18.md`.
 - v0.4 is now the best single-prompt dev25 candidate:
   `experiments/exectv2_llm_only_key_entities_structured_v04_dev25_gpt41mini_20260618.md`.
   It recovered SeizureFrequency to `0.644` clinical headline F1 while preserving
   medication (`0.900`) and Investigations (`0.837`) above target. Diagnosis only
   moved to `0.460`, making concept/assertion recovery the primary bottleneck.
-  See `docs/research/exectv2_key_entities_structured_v04_pilot_report_2026-06-18.md`.
+  See `docs/experiments/exectv2/key_entities/exectv2_key_entities_structured_v04_pilot_report_2026-06-18.md`.
 - v0.5 is the best single-prompt dev25 candidate so far:
   `experiments/exectv2_llm_only_key_entities_structured_v05_dev25_gpt41mini_20260618.md`.
   Diagnosis improved to `0.569` clinical headline F1 while medication (`0.897`)
   and Investigations (`0.837`) stayed above target and SF stayed at `0.633`.
   This supports moving to a specialist Diagnosis prompt comparison on the same
   dev25 surface before dev140. See
-  `docs/research/exectv2_key_entities_structured_v05_pilot_report_2026-06-18.md`.
+  `docs/experiments/exectv2/key_entities/exectv2_key_entities_structured_v05_pilot_report_2026-06-18.md`.
 - The existing per-entity Diagnosis specialist prompt is not competitive with
   v0.5: clinical headline F1 `0.282` vs v0.5 single structured `0.569`, despite
   a clean gate and source-near recall lift versus the old all-9 baseline. See
-  `docs/research/exectv2_diagnosis_specialist_prompt_comparison_2026-06-18.md`.
+  `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_specialist_prompt_comparison_2026-06-18.md`.
 - Diagnosis verifier v0.1 is the first multi-prompt variant to beat v0.5 on the
   objective-aligned Diagnosis headline: `0.592` vs `0.569`, with a clean gate and
   evidence validity `1.0000`. It improves precision but loses recall, so v0.2
   should target recall without reintroducing symptom/non-epileptic FPs. See
-  `docs/research/exectv2_diagnosis_verifier_v01_pilot_report_2026-06-18.md`.
+  `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_verifier_v01_pilot_report_2026-06-18.md`.
 - Diagnosis verifier v0.2 is now the best Diagnosis-specific candidate:
   clinical headline F1 `0.619` with precision `0.682`, recall `0.566`, and
   evidence validity `1.0000`. It improves over v0.1 by allowing model-owned
   normalized concept text while keeping exact evidence. See
-  `docs/research/exectv2_diagnosis_verifier_v02_pilot_report_2026-06-18.md`.
+  `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_verifier_v02_pilot_report_2026-06-18.md`.
 - Diagnosis verifier v0.3 is now the best Diagnosis-specific candidate:
   clinical headline F1 `0.701` with precision `0.773`, recall `0.641`, and
   evidence validity `1.0000`. It targeted v0.2 residual misses around repeated
@@ -85,7 +85,7 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   syndrome rendering, uncertain temporal/focal seizure-type diagnoses, and
   non-named symptom suppression. It is still revise-only because Diagnosis
   remains below `0.8`. See
-  `docs/research/exectv2_diagnosis_verifier_v03_pilot_report_2026-06-18.md`.
+  `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_verifier_v03_pilot_report_2026-06-18.md`.
 - Diagnosis verifier v0.4 is now the best Diagnosis-specific candidate:
   clinical headline F1 `0.768` with precision `0.826`, recall `0.717`, and
   evidence validity `1.0000`. It targeted only v0.3 residual families
@@ -94,34 +94,34 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   epilepsy, epileptic-event normalization, febrile-history suppression, and
   generic reviewed-with-epilepsy recovery). It remains revise-only but is close
   enough to justify one residual-error v0.5 loop before dev140. See
-  `docs/research/exectv2_diagnosis_verifier_v04_pilot_report_2026-06-18.md`.
+  `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_verifier_v04_pilot_report_2026-06-18.md`.
 - Diagnosis verifier v0.5 is the first Diagnosis-specific candidate to clear the
   dev25 target: clinical headline F1 `0.837` with precision `0.911`, recall
   `0.774`, and evidence validity `1.0000`. This is a development-surface
   success only and needs dev140 confirmation before any generalization claim.
   The remaining below-target key family on dev25 is now SeizureFrequency
   (`0.633` best single structured headline). See
-  `docs/research/exectv2_diagnosis_verifier_v05_pilot_report_2026-06-18.md`.
+  `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_verifier_v05_pilot_report_2026-06-18.md`.
 - SeizureFrequency verifier v0.1 is a clean diagnostic improvement over the
   v0.5 single structured draft, but not a promoted candidate: clinical headline
   F1 `0.667` vs `0.633`, precision `0.629`, recall `0.710`, evidence validity
   `1.0000`. It confirms the verifier path can add recall, but v0.2 must recover
   precision and still clear `0.8` before any dev140 run. See
-  `docs/research/exectv2_sf_verifier_v01_pilot_report_2026-06-18.md`.
+  `docs/experiments/exectv2/seizure_frequency/exectv2_sf_verifier_v01_pilot_report_2026-06-18.md`.
 - SeizureFrequency verifier v0.3 is the first SF-specific candidate to clear the
   dev25 target: clinical headline F1 `0.831` with precision `0.794`, recall
   `0.871`, and evidence validity `1.0000`. Together with medication (`0.897`),
   Diagnosis verifier v0.5 (`0.837`), and Investigations (`0.837`), all four key
   families now clear `0.8` on dev25. This is still development-surface evidence
   only; next step is a predeclared dev140 readout. See
-  `docs/research/exectv2_sf_verifier_v03_pilot_report_2026-06-18.md`.
+  `docs/experiments/exectv2/seizure_frequency/exectv2_sf_verifier_v03_pilot_report_2026-06-18.md`.
 - The dev140 transfer readout did not confirm the dev25 result. Single
   structured v0.5 dev140 is clean but below target for medication (`0.777`) and
   Investigations (`0.786`); Diagnosis verifier v0.5 transfers to only `0.616`;
   SeizureFrequency verifier v0.3 transfers to only `0.602`. Treat the dev25
   success as local development evidence and restart from dev140 residual slices.
   See
-  `docs/research/exectv2_key_entities_dev140_transfer_readout_2026-06-18.md`.
+  `docs/experiments/exectv2/key_entities/exectv2_key_entities_dev140_transfer_readout_2026-06-18.md`.
 - The dev140 clinical-recovery error ledger is now built:
   `experiments/exectv2_key_entities_clinical_error_ledger_dev140_20260618.md`.
   It confirms the next loop should use the single structured draft as substrate
@@ -129,25 +129,25 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   titration/future doses, Investigations over-emits modality-only tests and
   misses normal/abnormal result attributes, Diagnosis needs hierarchy/assertion
   normalization, and SF needs generic-vs-specific state classification. See
-  `docs/research/exectv2_key_entities_dev140_clinical_error_ledger_readout_2026-06-18.md`.
+  `docs/experiments/exectv2/key_entities/exectv2_key_entities_dev140_clinical_error_ledger_readout_2026-06-18.md`.
 - Prescription/Investigations verifier v0.1 is a split decision on dev140:
   Prescription clears target (`0.817`, precision `0.773`, recall `0.865`) and
   should replace the single structured medication output for now, but
   Investigations regresses badly (`0.496`) and should stay on the single
   structured v0.5 baseline (`0.786`) until a dedicated verifier exists. See
-  `docs/research/exectv2_med_inv_verifier_v01_dev140_report_2026-06-18.md`.
+  `docs/experiments/exectv2/medication_investigations/exectv2_med_inv_verifier_v01_dev140_report_2026-06-18.md`.
 - Dedicated Investigations verifier v0.1 clears the dev140 target: F1 `0.872`,
   precision `0.869`, recall `0.875`, evidence validity `0.9928`, with `0`
   call/parse failures. Current dev140 candidates now clear two families:
   Prescription (`0.817`) and Investigations (`0.872`). Diagnosis (`0.616`) and
   SeizureFrequency (`0.602`) remain below target. See
-  `docs/research/exectv2_investigations_verifier_v01_dev140_report_2026-06-18.md`.
+  `docs/experiments/exectv2/medication_investigations/exectv2_investigations_verifier_v01_dev140_report_2026-06-18.md`.
 - Residual-led Diagnosis v0.6 and SeizureFrequency v0.4 improve dev140 but do
   not clear target: Diagnosis `0.616` -> `0.651`, SF `0.602` -> `0.623`, with
   clean call/parse gates and evidence validity around `0.99`. The updated
   ledger still shows broad residual families, so the next loop should use
   stronger decomposition rather than more broad verifier-prompt accretion. See
-  `docs/research/exectv2_diag_sf_verifier_v06_v04_dev140_report_2026-06-18.md`.
+  `docs/experiments/exectv2/key_entities/exectv2_diag_sf_verifier_v06_v04_dev140_report_2026-06-18.md`.
 - SeizureFrequency candidate-span/state adjudicator v0.1 improves the dev140 SF
   headline from verifier v0.4 `0.623` to `0.674` with `0` call failures, `0`
   parse failures, and evidence validity `1.0000`, but still misses the `0.8`
@@ -155,13 +155,13 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   revise-only evidence for the architecture. The residual ledger now points to
   generic seizure-state precision/recall: active-rate over-emission and unknown
   state misses. See
-  `docs/research/exectv2_sf_state_adjudicator_v01_dev140_report_2026-06-18.md`.
+  `docs/experiments/exectv2/seizure_frequency/exectv2_sf_state_adjudicator_v01_dev140_report_2026-06-18.md`.
 - SeizureFrequency state adjudicator v0.2 tightened generic seizure rules and
   improved dev25 to `0.951`, but dev140 stayed flat/slightly worse at `0.672`
   (`P 0.687`, `R 0.658`). It reduced over-emission but collapsed unknown-state
   recall (`unknown F1 0.235`), so v0.1 remains the current numeric SF candidate.
   See
-  `docs/research/exectv2_sf_state_adjudicator_v02_dev140_report_2026-06-18.md`.
+  `docs/experiments/exectv2/seizure_frequency/exectv2_sf_state_adjudicator_v02_dev140_report_2026-06-18.md`.
 - SeizureFrequency state adjudicator v0.3 added a separate unknown/change-state
   recovery lane and is now the best SF dev140 candidate, but only marginally:
   F1 `0.681`, precision `0.667`, recall `0.695`, with `0` call/parse failures
@@ -169,20 +169,20 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   `0.424`, but active-rate, seizure-free, and unknown residuals are now balanced
   enough that the next SF loop needs stronger typed candidate decomposition, not
   more broad prompt accretion. See
-  `docs/research/exectv2_sf_state_adjudicator_v03_dev140_report_2026-06-18.md`.
+  `docs/experiments/exectv2/seizure_frequency/exectv2_sf_state_adjudicator_v03_dev140_report_2026-06-18.md`.
 - SeizureFrequency state adjudicator v0.4 is now the best SF dev140 candidate:
   F1 `0.707`, precision `0.704`, recall `0.711`, with `0` call/parse failures
   and evidence validity `1.0000`. Typed candidate decomposition improved both
   precision and recall over v0.3; unknown-state F1 rose to `0.525`, but
   seizure-free anchors are now the largest residual pocket. See
-  `docs/research/exectv2_sf_state_adjudicator_v04_dev140_report_2026-06-18.md`.
+  `docs/experiments/exectv2/seizure_frequency/exectv2_sf_state_adjudicator_v04_dev140_report_2026-06-18.md`.
 - SeizureFrequency state adjudicator v0.5 is now the best SF dev140 candidate:
   F1 `0.721`, precision `0.710`, recall `0.733`, with `0` call/parse failures
   and evidence validity `1.0000`. Seizure-free-anchor specialization moved
   seizure-free F1 from `0.738` to `0.781`, but unknown-state F1 regressed to
   `0.476`; the next SF loop should recover explicit seizure change states while
   preserving the seizure-free gains. See
-  `docs/research/exectv2_sf_state_adjudicator_v05_dev140_report_2026-06-18.md`.
+  `docs/experiments/exectv2/seizure_frequency/exectv2_sf_state_adjudicator_v05_dev140_report_2026-06-18.md`.
 - The interim key-family architecture synthesis is now written:
   `docs/research/exectv2_key_entity_architecture_research_report_2026-06-18.md`.
   Its conclusion is that the single structured prompt is a useful evidence
@@ -194,27 +194,27 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   on dev140, below verifier v0.6 (`0.651`), despite clean gates and evidence
   validity `1.0000`. The decomposition increases source-near recall but
   over-emits too many seizure-type diagnoses. See
-  `docs/research/exectv2_diagnosis_decomposer_v01_dev140_report_2026-06-18.md`.
+  `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_decomposer_v01_dev140_report_2026-06-18.md`.
 - Diagnosis reconciler v0.1 over verifier v0.6 + decomposer v0.1 is the best
   Diagnosis dev140 score so far but only marginally: `0.658`, precision `0.658`,
   recall `0.658`, with `0` call/parse failures and evidence validity `0.9954`.
   Residuals are now generic epilepsy and tonic-clonic over-emission, plus focal
   epilepsy/secondary-generalised misses. See
-  `docs/research/exectv2_diagnosis_reconciler_v01_dev140_report_2026-06-18.md`.
+  `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_reconciler_v01_dev140_report_2026-06-18.md`.
 - Diagnosis reconciler v0.2 is rejected as the current Diagnosis candidate. It
   adds explicit candidate concept groups and improves dev25 to `0.844`, but
   transfers worse on dev140 (`0.647`, precision `0.636`, recall `0.658`) than
   v0.1 (`0.658`). The residuals show grouping alone did not solve recall and
   increased generic epilepsy over-emission, so v0.1 remains the current numeric
   Diagnosis candidate. See
-  `docs/research/exectv2_diagnosis_reconciler_v02_dev140_report_2026-06-18.md`.
+  `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_reconciler_v02_dev140_report_2026-06-18.md`.
 - Diagnosis acceptance gate v0.1 is rejected before dev140. It cleanly frames
   verifier+decomposer candidates as fixed accept/reject decisions but is too
   conservative on dev25: F1 `0.625`, precision `0.698`, recall `0.566`, with
   `0` call/parse failures and evidence validity `1.0000`. The next gate needs
   a named seizure-type recovery lane rather than a broad frequency-only
   rejection rule. See
-  `docs/research/exectv2_diagnosis_acceptance_gate_v01_pilot_report_2026-06-18.md`.
+  `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_acceptance_gate_v01_pilot_report_2026-06-18.md`.
 
 ## Active Priorities
 
@@ -278,7 +278,7 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   `0.633` to `0.667` (v0.1), `0.788` (v0.2), and finally `0.831` (v0.3) with
   clean gates, clearing all four key families on dev25. Latest
   report:
-  `docs/research/exectv2_sf_verifier_v03_pilot_report_2026-06-18.md`.
+  `docs/experiments/exectv2/seizure_frequency/exectv2_sf_verifier_v03_pilot_report_2026-06-18.md`.
 - 2026-06-17: Built the reusable all-entity projection-gap ledger
   (`reports/projection_gap_ledger.py`). Classifies every gold FN / predicted FP
   into a layered `gap_family` (phrase coverage, attribute bundle, CUI

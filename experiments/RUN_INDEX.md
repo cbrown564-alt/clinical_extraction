@@ -234,7 +234,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: 0 call failures, 0 parse failures; 34/34 evidence-valid rendered mentions.
 - Supersedes: `exectv2_llm_sf_verifier_v02_dev25_gpt41mini_20260618`.
 - Claim language: First SeizureFrequency-specific candidate to clear the dev25 clinical-recovery target (0.831 > 0.8) while keeping evidence validity 1.0000. Development-surface success only; requires dev140 confirmation before any generalization claim.
-- Artifacts: `experiments/exectv2_llm_sf_verifier_v03_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_sf_verifier_v03_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_sf_verifier_v03_pilot_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_llm_sf_verifier_v03_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_sf_verifier_v03_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/seizure_frequency/exectv2_sf_verifier_v03_pilot_report_2026-06-18.md`.
 
 ### `exectv2_llm_sf_verifier_v02_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -245,7 +245,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: 0 call failures, 0 parse failures; 35/35 evidence-valid rendered mentions.
 - Supersedes: `exectv2_llm_sf_verifier_v01_dev25_gpt41mini_20260618`.
 - Claim language: Strong near-miss SeizureFrequency verifier iteration. v0.2 improves over v0.1 (0.788 vs 0.667) and v0.5 single structured (0.633) while keeping evidence validity 1.0000, but remains just below the 0.8 target. One narrow residual pass is justified before dev140.
-- Artifacts: `experiments/exectv2_llm_sf_verifier_v02_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_sf_verifier_v02_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_sf_verifier_v02_pilot_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_llm_sf_verifier_v02_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_sf_verifier_v02_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/seizure_frequency/exectv2_sf_verifier_v02_pilot_report_2026-06-18.md`.
 
 ### `exectv2_llm_sf_verifier_v01_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -255,7 +255,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_llm_sf_verifier_v0.1, seizure_frequency_clinical_headline_f1=0.667, seizure_frequency_clinical_headline_precision=0.629, seizure_frequency_clinical_headline_recall=0.71, seizure_frequency_source_near_f1=0.727.
 - Evidence validity: 0 call failures, 0 parse failures; 35/35 evidence-valid rendered mentions.
 - Claim language: First SeizureFrequency verifier diagnostic over the v0.5 single structured draft. It improves recall and headline F1 over v0.5 single structured (0.667 vs 0.633) while keeping evidence validity 1.0000, but remains below the 0.8 target and loses precision. Revise from residual errors before dev140.
-- Artifacts: `experiments/exectv2_llm_sf_verifier_v01_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_sf_verifier_v01_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_sf_verifier_v01_pilot_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_llm_sf_verifier_v01_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_sf_verifier_v01_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/seizure_frequency/exectv2_sf_verifier_v01_pilot_report_2026-06-18.md`.
 
 ### `exectv2_llm_only_key_entities_structured_v05_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -266,7 +266,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: 0 call failures, 0 parse failures; 153/158 evidence-valid rendered mentions (0.9684).
 - Supersedes: `exectv2_llm_only_key_entities_structured_v04_dev25_gpt41mini_20260618`.
 - Claim language: Best single-prompt structured dev25 candidate so far, but revise-only. v0.5 lifts Diagnosis headline F1 (0.460->0.569) while preserving medication (0.897) and Investigations (0.837) above target and SF near v0.4 (0.633). Next: specialist Diagnosis prompt comparison on dev25 before dev140.
-- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_v05_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_only_key_entities_structured_v05_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_key_entities_structured_v05_pilot_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_v05_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_only_key_entities_structured_v05_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/key_entities/exectv2_key_entities_structured_v05_pilot_report_2026-06-18.md`.
 
 ### `exectv2_llm_only_key_entities_structured_v04_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -278,7 +278,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Supersedes: `exectv2_llm_only_key_entities_structured_v03_dev25_gpt41mini_20260618`.
 - Superseded by: `exectv2_llm_only_key_entities_structured_v05_dev25_gpt41mini_20260618`.
 - Claim language: Best single-prompt structured dev25 candidate so far, but revise-only. v0.4 recovers SeizureFrequency headline F1 (0.421->0.644) while preserving medication (0.900) and Investigations (0.837) above target. Diagnosis remains the bottleneck (0.460), so next v0.5 should focus on Diagnosis hard cases before dev140 or specialist-prompt comparison.
-- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_v04_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_only_key_entities_structured_v04_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_key_entities_structured_v04_pilot_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_v04_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_only_key_entities_structured_v04_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/key_entities/exectv2_key_entities_structured_v04_pilot_report_2026-06-18.md`.
 
 ### `exectv2_llm_only_key_entities_structured_v03_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -290,7 +290,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Supersedes: `exectv2_llm_only_key_entities_structured_v02_dev25_gpt41mini_20260618`.
 - Superseded by: `exectv2_llm_only_key_entities_structured_v04_dev25_gpt41mini_20260618`.
 - Claim language: Revise-only development pilot for v0.3 single structured schema + single prompt. Medication and Investigations clear the clinical-recovery headline target (0.883/0.878), Diagnosis improves modestly (0.455), but SeizureFrequency regresses (0.421) and evidence validity falls (0.9441). Not promoted; next v0.4 should preserve medication/investigation wins and isolate SF headline-state misses.
-- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_v03_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_only_key_entities_structured_v03_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_key_entities_structured_v03_pilot_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_v03_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_only_key_entities_structured_v03_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/key_entities/exectv2_key_entities_structured_v03_pilot_report_2026-06-18.md`.
 
 ### `exectv2_llm_only_key_entities_structured_v02_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -302,7 +302,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Supersedes: `exectv2_llm_only_key_entities_structured_dev25_gpt41mini_20260618`.
 - Superseded by: `exectv2_llm_only_key_entities_structured_v03_dev25_gpt41mini_20260618`.
 - Claim language: Development pilot for error-analysis-led v0.2 of the single structured schema + single prompt key-family architecture. Improved semantic item F1 0.206->0.272 and benchmark 0.158->0.220 with clean gate; refreshed clinical-recovery headlines show medication above target (0.846), Investigations near target (0.783), and Diagnosis/SF still below target (0.414/0.456). Not promoted. Next: v0.3 Diagnosis/SF hard-case panel, Investigation FP cleanup, and medication regression protection before dev140.
-- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_v02_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_only_key_entities_structured_v02_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_key_entities_structured_v02_pilot_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_v02_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_only_key_entities_structured_v02_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/key_entities/exectv2_key_entities_structured_v02_pilot_report_2026-06-18.md`.
 
 ### `exectv2_llm_only_key_entities_structured_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -322,7 +322,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: evidence_validity_rate=0.9792, investigations_f1=0.496, parse_failures=0, prescription_f1=0.817, prescription_precision=0.773, prescription_recall=0.865, prompt_version=exectv2_llm_med_inv_verifier_v0.1.
 - Evidence validity: 0 call failures, 0 parse failures; 376/384 evidence-valid rendered mentions.
 - Claim language: Split decision. Use v0.1 as the current Prescription candidate because it clears dev140 target (0.817 > 0.8), but reject it for Investigations because it regresses from the single structured baseline (0.496 vs 0.786). Build a dedicated Investigations verifier next.
-- Artifacts: `experiments/exectv2_llm_med_inv_verifier_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_med_inv_verifier_v01_dev140_gpt41mini_20260618.md`, `docs/research/exectv2_med_inv_verifier_v01_dev140_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_llm_med_inv_verifier_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_med_inv_verifier_v01_dev140_gpt41mini_20260618.md`, `docs/experiments/exectv2/medication_investigations/exectv2_med_inv_verifier_v01_dev140_report_2026-06-18.md`.
 
 ### `exectv2_llm_investigations_verifier_v01_dev140_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `140` rows.
@@ -332,7 +332,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: evidence_validity_rate=0.9928, investigations_f1=0.872, investigations_precision=0.869, investigations_recall=0.875, parse_failures=0, prompt_version=exectv2_llm_investigations_verifier_v0.1.
 - Evidence validity: 0 call failures, 0 parse failures; 137/138 evidence-valid rendered mentions.
 - Claim language: First Investigations-specific candidate to clear the dev140 clinical-recovery target (0.872 > 0.8). Confirms Investigations should be split from medication verification.
-- Artifacts: `experiments/exectv2_llm_investigations_verifier_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_investigations_verifier_v01_dev140_gpt41mini_20260618.md`, `docs/research/exectv2_investigations_verifier_v01_dev140_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_llm_investigations_verifier_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_investigations_verifier_v01_dev140_gpt41mini_20260618.md`, `docs/experiments/exectv2/medication_investigations/exectv2_investigations_verifier_v01_dev140_report_2026-06-18.md`.
 
 ### `exectv2_llm_diagnosis_verifier_v05_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -343,7 +343,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: 0 call failures, 0 parse failures; 44/44 evidence-valid rendered mentions.
 - Supersedes: `exectv2_llm_diagnosis_verifier_v04_dev25_gpt41mini_20260618`.
 - Claim language: First Diagnosis-specific candidate to clear the dev25 clinical-recovery target (0.837 > 0.8) while keeping evidence validity 1.0000. Development-surface success only; requires dev140 confirmation before any generalization claim. Shift key-entity work to SeizureFrequency next.
-- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v05_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v05_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_diagnosis_verifier_v05_pilot_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v05_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v05_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_verifier_v05_pilot_report_2026-06-18.md`.
 
 ### `exectv2_llm_diagnosis_verifier_v04_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -354,7 +354,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: 0 call failures, 0 parse failures; 45/45 evidence-valid rendered mentions.
 - Supersedes: `exectv2_llm_diagnosis_verifier_v03_dev25_gpt41mini_20260618`.
 - Claim language: Best Diagnosis-specific candidate so far, but revise-only. v0.4 improves over verifier v0.3 (0.768 vs 0.701) and v0.5 single structured (0.569) while keeping evidence validity 1.0000, but remains just below the 0.8 target. One more residual-error iteration is justified before dev140 if precision stays protected.
-- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v04_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v04_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_diagnosis_verifier_v04_pilot_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v04_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v04_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_verifier_v04_pilot_report_2026-06-18.md`.
 
 ### `exectv2_llm_diagnosis_verifier_v03_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -365,7 +365,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: 0 call failures, 0 parse failures; 42/42 evidence-valid rendered mentions.
 - Supersedes: `exectv2_llm_diagnosis_verifier_v02_dev25_gpt41mini_20260618`.
 - Claim language: Best Diagnosis-specific candidate so far, but revise-only. v0.3 improves over verifier v0.2 (0.701 vs 0.619) and v0.5 single structured (0.569) while keeping evidence validity 1.0000, but remains below the 0.8 target. Run v0.4 from residual error analysis before dev140.
-- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v03_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v03_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_diagnosis_verifier_v03_pilot_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v03_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v03_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_verifier_v03_pilot_report_2026-06-18.md`.
 
 ### `exectv2_llm_diagnosis_verifier_v02_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -376,7 +376,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: 0 call failures, 0 parse failures; 43/43 evidence-valid rendered mentions (1.0000).
 - Supersedes: `exectv2_llm_diagnosis_verifier_v01_dev25_gpt41mini_20260618`.
 - Claim language: Best Diagnosis-specific multi-prompt candidate so far, but revise-only. v0.2 improves over verifier v0.1 (0.619 vs 0.592) and v0.5 single structured (0.569) while keeping evidence validity 1.0000, but remains recall-limited and below the 0.8 target.
-- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v02_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v02_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_diagnosis_verifier_v02_pilot_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v02_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v02_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_verifier_v02_pilot_report_2026-06-18.md`.
 
 ### `exectv2_llm_diagnosis_verifier_v01_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -388,7 +388,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Supersedes: `exectv2_llm_only_key_entities_structured_v05_dev25_gpt41mini_20260618`.
 - Superseded by: `exectv2_llm_diagnosis_verifier_v02_dev25_gpt41mini_20260618`.
 - Claim language: First multi-prompt variant to improve over the best single structured Diagnosis candidate (0.592 vs v0.5 0.569), but still far below the 0.8 target and recall-limited. Revise with targeted Diagnosis recall before dev140.
-- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v01_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v01_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_diagnosis_verifier_v01_pilot_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v01_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v01_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_verifier_v01_pilot_report_2026-06-18.md`.
 
 ### `exectv2_key_entities_dev140_transfer_readout_20260618`
 - Date/split: `2026-06-18`; `dev`; `140` rows.
@@ -399,7 +399,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: Structured draft evidence validity 0.9563; Diagnosis verifier 0.9832; SeizureFrequency verifier 0.9796. All three dev140 runs had 0 call failures and 0 parse failures.
 - Supersedes: `exectv2_llm_sf_verifier_v03_dev25_gpt41mini_20260618`, `exectv2_llm_diagnosis_verifier_v05_dev25_gpt41mini_20260618`.
 - Claim language: Negative transfer readout. The dev25 target-clearing configuration does not transfer to dev140: all four key families remain below 0.8. Medication and Investigations are near misses; Diagnosis and SeizureFrequency require dev140 residual-led development. Do not promote or claim generalization from dev25.
-- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_v05_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_only_key_entities_structured_v05_dev140_gpt41mini_20260618.md`, `experiments/exectv2_llm_diagnosis_verifier_v05_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v05_dev140_gpt41mini_20260618.md`, `experiments/exectv2_llm_sf_verifier_v03_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_sf_verifier_v03_dev140_gpt41mini_20260618.md`, `docs/research/exectv2_key_entities_dev140_transfer_readout_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_v05_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_only_key_entities_structured_v05_dev140_gpt41mini_20260618.md`, `experiments/exectv2_llm_diagnosis_verifier_v05_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v05_dev140_gpt41mini_20260618.md`, `experiments/exectv2_llm_sf_verifier_v03_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_sf_verifier_v03_dev140_gpt41mini_20260618.md`, `docs/experiments/exectv2/key_entities/exectv2_key_entities_dev140_transfer_readout_2026-06-18.md`.
 
 ### `exectv2_key_entities_clinical_error_ledger_diagv06_sfv04_dev140_20260618`
 - Date/split: `2026-06-18`; `dev`; `140` rows.
@@ -411,7 +411,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Read-only analysis over exectv2_llm_only_key_entities_structured_v05_dev140_gpt41mini_20260618, exectv2_llm_diagnosis_verifier_v06_dev140_gpt41mini_20260618, and exectv2_llm_sf_verifier_v04_dev140_gpt41mini_20260618.
 - Supersedes: `exectv2_key_entities_clinical_error_ledger_dev140_20260618`.
 - Claim language: Diagnostic residual taxonomy for the next Diagnosis/SF architecture loop. Current promoted family candidates remain Prescription verifier v0.1 and Investigations verifier v0.1; this ledger is for remaining below-target families.
-- Artifacts: `experiments/exectv2_key_entities_clinical_error_ledger_diagv06_sfv04_dev140_20260618.json`, `experiments/exectv2_key_entities_clinical_error_ledger_diagv06_sfv04_dev140_20260618.md`, `docs/research/exectv2_diag_sf_verifier_v06_v04_dev140_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_key_entities_clinical_error_ledger_diagv06_sfv04_dev140_20260618.json`, `experiments/exectv2_key_entities_clinical_error_ledger_diagv06_sfv04_dev140_20260618.md`, `docs/experiments/exectv2/key_entities/exectv2_diag_sf_verifier_v06_v04_dev140_report_2026-06-18.md`.
 
 ### `exectv2_key_entities_clinical_error_ledger_dev140_20260618`
 - Date/split: `2026-06-18`; `dev`; `140` rows.
@@ -423,7 +423,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Read-only analysis over exectv2_llm_only_key_entities_structured_v05_dev140_gpt41mini_20260618, exectv2_llm_diagnosis_verifier_v05_dev140_gpt41mini_20260618, and exectv2_llm_sf_verifier_v03_dev140_gpt41mini_20260618.
 - Supersedes: `exectv2_key_entities_dev140_transfer_readout_20260618`.
 - Claim language: Diagnostic residual taxonomy for the failed dev140 transfer readout. Use this as the control surface for the next targeted verifier iteration; do not treat it as a promoted candidate.
-- Artifacts: `experiments/exectv2_key_entities_clinical_error_ledger_dev140_20260618.json`, `experiments/exectv2_key_entities_clinical_error_ledger_dev140_20260618.md`, `docs/research/exectv2_key_entities_dev140_clinical_error_ledger_readout_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_key_entities_clinical_error_ledger_dev140_20260618.json`, `experiments/exectv2_key_entities_clinical_error_ledger_dev140_20260618.md`, `docs/experiments/exectv2/key_entities/exectv2_key_entities_dev140_clinical_error_ledger_readout_2026-06-18.md`.
 
 ### `exectv2_hybrid_sf_state_adjudicator_v05_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -445,7 +445,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: 0 call failures, 0 parse failures; 193/193 evidence-valid rendered mentions. Residual ledger is analysis-only over the same JSONL.
 - Supersedes: `exectv2_hybrid_sf_state_adjudicator_v04_dev140_gpt41mini_20260618`.
 - Claim language: Revise-only current best SF candidate. Seizure-free specialization improves dev140 from 0.707 to 0.721 and seizure-free F1 from 0.738 to 0.781, but unknown-state regression keeps the family below the 0.8 target.
-- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v05_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v05_dev140_gpt41mini_20260618.md`, `experiments/exectv2_sf_state_adjudicator_v05_residual_ledger_dev140_20260618.json`, `experiments/exectv2_sf_state_adjudicator_v05_residual_ledger_dev140_20260618.md`, `docs/research/exectv2_sf_state_adjudicator_v05_dev140_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v05_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v05_dev140_gpt41mini_20260618.md`, `experiments/exectv2_sf_state_adjudicator_v05_residual_ledger_dev140_20260618.json`, `experiments/exectv2_sf_state_adjudicator_v05_residual_ledger_dev140_20260618.md`, `docs/experiments/exectv2/seizure_frequency/exectv2_sf_state_adjudicator_v05_dev140_report_2026-06-18.md`.
 
 ### `exectv2_hybrid_sf_state_adjudicator_v04_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -467,7 +467,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: 0 call failures, 0 parse failures; 189/189 evidence-valid rendered mentions. Residual ledger is analysis-only over the same JSONL.
 - Supersedes: `exectv2_hybrid_sf_state_adjudicator_v03_dev140_gpt41mini_20260618`.
 - Claim language: Revise-only current best SF candidate. Typed candidate decomposition improves dev140 from 0.681 to 0.707 but remains below the 0.8 target; next loop should specialize seizure-free anchors.
-- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v04_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v04_dev140_gpt41mini_20260618.md`, `experiments/exectv2_sf_state_adjudicator_v04_residual_ledger_dev140_20260618.json`, `experiments/exectv2_sf_state_adjudicator_v04_residual_ledger_dev140_20260618.md`, `docs/research/exectv2_sf_state_adjudicator_v04_dev140_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v04_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v04_dev140_gpt41mini_20260618.md`, `experiments/exectv2_sf_state_adjudicator_v04_residual_ledger_dev140_20260618.json`, `experiments/exectv2_sf_state_adjudicator_v04_residual_ledger_dev140_20260618.md`, `docs/experiments/exectv2/seizure_frequency/exectv2_sf_state_adjudicator_v04_dev140_report_2026-06-18.md`.
 
 ### `exectv2_hybrid_sf_state_adjudicator_v03_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -489,7 +489,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: 0 call failures, 0 parse failures; 195/195 evidence-valid rendered mentions. Residual ledger is analysis-only over the same JSONL.
 - Supersedes: `exectv2_hybrid_sf_state_adjudicator_v02_dev140_gpt41mini_20260618`.
 - Claim language: Revise-only. Best SF dev140 score so far (0.681) and unknown-state F1 improves from 0.235 to 0.424, but the gain is small and still below the 0.8 target. Next loop should use typed candidate decomposition plus constrained state classification rather than more broad prompt accretion.
-- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v03_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v03_dev140_gpt41mini_20260618.md`, `experiments/exectv2_sf_state_adjudicator_v03_residual_ledger_dev140_20260618.json`, `experiments/exectv2_sf_state_adjudicator_v03_residual_ledger_dev140_20260618.md`, `docs/research/exectv2_sf_state_adjudicator_v03_dev140_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v03_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v03_dev140_gpt41mini_20260618.md`, `experiments/exectv2_sf_state_adjudicator_v03_residual_ledger_dev140_20260618.json`, `experiments/exectv2_sf_state_adjudicator_v03_residual_ledger_dev140_20260618.md`, `docs/experiments/exectv2/seizure_frequency/exectv2_sf_state_adjudicator_v03_dev140_report_2026-06-18.md`.
 
 ### `exectv2_hybrid_sf_state_adjudicator_v02_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -510,7 +510,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: active_rate_f1=0.725, candidate_spans=412, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_hybrid_sf_state_adjudicator_v0.2, seizure_free_f1=0.77, seizure_frequency_f1=0.672, seizure_frequency_precision=0.687, seizure_frequency_recall=0.658, unknown_f1=0.235.
 - Evidence validity: 0 call failures, 0 parse failures; 179/179 evidence-valid rendered mentions. Residual ledger is analysis-only over the same JSONL.
 - Claim language: Revise-only. v0.2 improves precision versus v0.1 but loses enough recall that F1 is slightly worse (0.672 vs 0.674). Unknown-state recall collapses; next loop should add a separate unknown/change-state recovery lane rather than tighten generic rejection further.
-- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v02_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v02_dev140_gpt41mini_20260618.md`, `experiments/exectv2_sf_state_adjudicator_v02_residual_ledger_dev140_20260618.json`, `experiments/exectv2_sf_state_adjudicator_v02_residual_ledger_dev140_20260618.md`, `docs/research/exectv2_sf_state_adjudicator_v02_dev140_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v02_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v02_dev140_gpt41mini_20260618.md`, `experiments/exectv2_sf_state_adjudicator_v02_residual_ledger_dev140_20260618.json`, `experiments/exectv2_sf_state_adjudicator_v02_residual_ledger_dev140_20260618.md`, `docs/experiments/exectv2/seizure_frequency/exectv2_sf_state_adjudicator_v02_dev140_report_2026-06-18.md`.
 
 ### `exectv2_hybrid_sf_state_adjudicator_v01_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -532,7 +532,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: 0 call failures, 0 parse failures; 199/199 evidence-valid rendered mentions. Residual ledger is analysis-only over the same JSONL.
 - Supersedes: `exectv2_llm_sf_verifier_v04_dev140_gpt41mini_20260618`.
 - Claim language: Revise-only architecture evidence. Candidate-span/state adjudication improves over SF verifier v0.4 (0.623 -> 0.674) and keeps gates clean, but remains below the 0.8 target. Residuals show generic seizure active-rate over-emission and generic unknown/seizure-free misses; next loop should tighten generic candidate keep/reject rather than discard the architecture.
-- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v01_dev140_gpt41mini_20260618.md`, `experiments/exectv2_sf_state_adjudicator_v01_residual_ledger_dev140_20260618.json`, `experiments/exectv2_sf_state_adjudicator_v01_residual_ledger_dev140_20260618.md`, `docs/research/exectv2_sf_state_adjudicator_v01_dev140_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v01_dev140_gpt41mini_20260618.md`, `experiments/exectv2_sf_state_adjudicator_v01_residual_ledger_dev140_20260618.json`, `experiments/exectv2_sf_state_adjudicator_v01_residual_ledger_dev140_20260618.md`, `docs/experiments/exectv2/seizure_frequency/exectv2_sf_state_adjudicator_v01_dev140_report_2026-06-18.md`.
 
 ### `exectv2_hybrid_diagnosis_reconciler_v02_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -568,7 +568,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Uses saved Diagnosis verifier v0.6 and Diagnosis decomposer v0.1 dev140 artifacts as candidate inputs.
 - Supersedes: `exectv2_llm_diagnosis_verifier_v06_dev140_gpt41mini_20260618`.
 - Claim language: Revise-only. Best Diagnosis dev140 score so far, but only a small gain over verifier v0.6 (0.658 vs 0.651) and still far below the 0.8 target. Residuals show generic epilepsy and tonic-clonic over-emission plus focal epilepsy/secondary-generalised misses.
-- Artifacts: `experiments/exectv2_hybrid_diagnosis_reconciler_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_diagnosis_reconciler_v01_dev140_gpt41mini_20260618.md`, `experiments/exectv2_diagnosis_reconciler_v01_residual_ledger_dev140_20260618.json`, `experiments/exectv2_diagnosis_reconciler_v01_residual_ledger_dev140_20260618.md`, `docs/research/exectv2_diagnosis_reconciler_v01_dev140_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_hybrid_diagnosis_reconciler_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_diagnosis_reconciler_v01_dev140_gpt41mini_20260618.md`, `experiments/exectv2_diagnosis_reconciler_v01_residual_ledger_dev140_20260618.json`, `experiments/exectv2_diagnosis_reconciler_v01_residual_ledger_dev140_20260618.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_reconciler_v01_dev140_report_2026-06-18.md`.
 
 ### `exectv2_hybrid_diagnosis_decomposer_v01_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -590,7 +590,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: Diagnosis 0 call failures, 0 parse failures, 317/320 evidence-valid rendered mentions. SeizureFrequency 0 call failures, 0 parse failures, 208/210 evidence-valid rendered mentions.
 - Supersedes: `exectv2_key_entities_dev140_transfer_readout_20260618`.
 - Claim language: Revise-only dev140 improvement. Diagnosis improves 0.616 -> 0.651 and SeizureFrequency improves 0.602 -> 0.623, but both remain below the 0.8 target. Next iteration should use stronger task decomposition, not more broad prompt accretion.
-- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v06_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v06_dev140_gpt41mini_20260618.md`, `experiments/exectv2_llm_sf_verifier_v04_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_sf_verifier_v04_dev140_gpt41mini_20260618.md`, `docs/research/exectv2_diag_sf_verifier_v06_v04_dev140_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v06_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v06_dev140_gpt41mini_20260618.md`, `experiments/exectv2_llm_sf_verifier_v04_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_sf_verifier_v04_dev140_gpt41mini_20260618.md`, `docs/experiments/exectv2/key_entities/exectv2_diag_sf_verifier_v06_v04_dev140_report_2026-06-18.md`.
 
 ### `gan2026_cluster_axis_gate_v1_tightened_2026-06-16`
 - Date/split: `2026-06-16`; `validation+test`; `1200` rows.
@@ -1724,7 +1724,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: diagnosis_clinical_headline_f1=0.282, diagnosis_semantic_item_f1=0.259, diagnosis_source_near_f1=0.565, diagnosis_source_near_recall=0.429, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_llm_only_per_entity_v0.4.
 - Evidence validity: 0 call failures, 0 parse failures; 29/29 evidence-valid rendered mentions (1.0000).
 - Claim language: Negative specialist-prompt comparison. The existing per-entity Diagnosis prompt is cleaner than the old all-9 baseline on source-near recall, but it is not competitive with the v0.5 single structured prompt on objective-aligned Diagnosis clinical recovery (0.282 vs 0.569). Do not promote; next specialist attempt should start from v0.5 guidance or use a verifier/repair prompt.
-- Artifacts: `experiments/exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618_diagnosis.jsonl`, `experiments/exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618_diagnosis.md`, `experiments/exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618_combined.json`, `experiments/exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618_combined.md`, `docs/research/exectv2_diagnosis_specialist_prompt_comparison_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618_diagnosis.jsonl`, `experiments/exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618_diagnosis.md`, `experiments/exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618_combined.json`, `experiments/exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618_combined.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_specialist_prompt_comparison_2026-06-18.md`.
 
 ### `exectv2_hybrid_diagnosis_reconciler_v02_dev140_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `140` rows.
@@ -1735,7 +1735,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: 0 call failures, 0 parse failures; 449/451 evidence-valid rendered mentions. Residual ledger is analysis-only over the same JSONL.
 - Cache/reuse source: Uses saved Diagnosis verifier v0.6 and Diagnosis decomposer v0.1 dev140 artifacts as candidate inputs.
 - Claim language: Reject as current Diagnosis candidate. v0.2 concept grouping improved dev25 but transferred worse than v0.1 on dev140 (0.647 vs 0.658), with higher FP count. Keep v0.1 as current numeric Diagnosis candidate; next loop should use constrained accept/reject gating.
-- Artifacts: `experiments/exectv2_hybrid_diagnosis_reconciler_v02_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_diagnosis_reconciler_v02_dev140_gpt41mini_20260618.md`, `experiments/exectv2_diagnosis_reconciler_v02_residual_ledger_dev140_20260618.json`, `experiments/exectv2_diagnosis_reconciler_v02_residual_ledger_dev140_20260618.md`, `docs/research/exectv2_diagnosis_reconciler_v02_dev140_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_hybrid_diagnosis_reconciler_v02_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_diagnosis_reconciler_v02_dev140_gpt41mini_20260618.md`, `experiments/exectv2_diagnosis_reconciler_v02_residual_ledger_dev140_20260618.json`, `experiments/exectv2_diagnosis_reconciler_v02_residual_ledger_dev140_20260618.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_reconciler_v02_dev140_report_2026-06-18.md`.
 
 ### `exectv2_hybrid_diagnosis_decomposer_v01_dev140_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `140` rows.
@@ -1745,7 +1745,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: diagnosis_f1=0.642, diagnosis_precision=0.631, diagnosis_recall=0.653, diagnosis_spans=812, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_hybrid_diagnosis_decomposer_v0.1.
 - Evidence validity: 0 call failures, 0 parse failures; 462/462 evidence-valid rendered mentions.
 - Claim language: Reject as current Diagnosis candidate. The decomposition increased source-near recall but over-emitted too many Diagnosis mentions and underperformed verifier v0.6 (0.642 vs 0.651). Keep v0.6 as current Diagnosis baseline; future decomposition needs an explicit reconciler/verifier.
-- Artifacts: `experiments/exectv2_hybrid_diagnosis_decomposer_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_diagnosis_decomposer_v01_dev140_gpt41mini_20260618.md`, `docs/research/exectv2_diagnosis_decomposer_v01_dev140_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_hybrid_diagnosis_decomposer_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_diagnosis_decomposer_v01_dev140_gpt41mini_20260618.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_decomposer_v01_dev140_report_2026-06-18.md`.
 
 ### `exectv2_hybrid_diagnosis_acceptance_gate_v01_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -1756,7 +1756,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: 0 call failures, 0 parse failures; 42/42 evidence-valid rendered mentions.
 - Cache/reuse source: Uses saved Diagnosis verifier v0.6 and Diagnosis decomposer v0.1 dev140 artifacts as candidate inputs, restricted to the first 25 dev letters for this pilot.
 - Claim language: Reject before dev140. The constrained gate is clean but too conservative on dev25 (0.625 F1, recall 0.566), so a full dev140 run is not justified. Next gate needs named seizure-type recovery rather than a broad frequency-only rejection rule.
-- Artifacts: `experiments/exectv2_hybrid_diagnosis_acceptance_gate_v01_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_diagnosis_acceptance_gate_v01_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_diagnosis_acceptance_gate_v01_pilot_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_hybrid_diagnosis_acceptance_gate_v01_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_diagnosis_acceptance_gate_v01_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_acceptance_gate_v01_pilot_report_2026-06-18.md`.
 
 ### `gan2026_kg_family_gated_graph_trust_2026-06-16`
 - Date/split: `2026-06-16`; `validation`; `250` rows.
