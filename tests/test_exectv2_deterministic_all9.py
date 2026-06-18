@@ -30,6 +30,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.all_en
     run_all9_on_letters,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports import (
+    clinical_recovery_scorecard,
     deterministic_all9_scorecard,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
@@ -537,6 +538,68 @@ def test_deterministic_all9_scorecard_reports_prescription_projection_ladder() -
         "attribute_bundle",
         "cui_projection",
     }
+
+
+def test_clinical_recovery_scorecard_separates_headline_from_projection() -> None:
+    letter = _letter()
+    gold = ExectLetter(
+        letter.letter_id,
+        letter.note_text,
+        (
+            _ann(
+                DIAGNOSIS.name,
+                "focal epilepsy",
+                DiagCategory="Epilepsy",
+                Certainty="5",
+                Negation="Affirmed",
+                CUI="C0014547",
+                CUIPhrase="focal epilepsy",
+            ),
+            _ann(
+                PRESCRIPTION.name,
+                "Lamotrigine 150mg bd",
+                DrugName="lamotrigine",
+                DrugDose="150",
+                DoseUnit="mg",
+                Frequency="2",
+                CUI="C0064636",
+                CUIPhrase="lamotrigine",
+            ),
+            _ann(
+                PATIENT_HISTORY.name,
+                "depression",
+                Certainty="5",
+                Negation="Affirmed",
+                CUI="C0011570",
+                CUIPhrase="depression",
+            ),
+        ),
+    )
+
+    scorecard = clinical_recovery_scorecard.build_scorecard(
+        [gold],
+        [extract_deterministic_all9(letter)],
+    )
+
+    assert PATIENT_HISTORY.name not in scorecard["headline_entities"]
+    assert PATIENT_HISTORY.name in scorecard["coverage_diagnostic_entities"]
+    assert scorecard["entity_classes"][PATIENT_HISTORY.name] == "coverage_diagnostic"
+    assert "overall_clinical_recovery" in scorecard
+    assert scorecard["headline_scores"][PRESCRIPTION.name]["headline_kind"] == (
+        "Clinical Component Score"
+    )
+    assert scorecard["headline_scores"][DIAGNOSIS.name]["headline_kind"] == (
+        "Concept-Identity Headline"
+    )
+    assert scorecard["headline_scores"][SEIZURE_FREQUENCY.name]["headline_kind"] == (
+        "Frequency State Recovery"
+    )
+    assert set(scorecard["artifact_projection_scores"]) == {
+        "phrase_only",
+        "semantic",
+        "benchmark",
+    }
+    assert "patient_history_coverage" in scorecard
 
 
 def test_run_all9_on_letters_preserves_order() -> None:

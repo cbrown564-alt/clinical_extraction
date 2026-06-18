@@ -1,7 +1,8 @@
 """Phase 4 frozen test450 aggregate audit report (4 architectures, gpt-4.1-mini).
 
-Authorized 2026-06-09 (docs/research/gan2026_three_way_architecture_comparison_and_
-cross_pollination_plan_2026-06-07.md, Section 6, Phase 4): one-shot frozen aggregate
+Authorized 2026-06-09
+(docs/research/gan2026/architecture/gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07.md,
+Section 6, Phase 4): one-shot frozen aggregate
 read of the locked `test450` split for four of the six PipelineArchitecture configs --
 `deterministic_canonical_pipeline`, `hybrid` (v5 prompt), `hybrid_structured_events`,
 `llm_only_canonical_pipeline` (v0.5 prompt). `deterministic` and

@@ -60,7 +60,7 @@ PROMPT_VERSION_V0_10 = "gan2026_fresh_evidence_reasoner_v0_10_triage"
 # reviews ONLY the saved GPT structured-event trace (Qwen + DeepSeek dropped from
 # the prompt). Tests whether the reasoner's lift survives without the peer
 # ensemble, collapsing 3 upstream models to 1.
-# Plan: docs/research/gan2026_simplest_near_ceiling_architecture_plan_2026-06-16.md
+# Plan: docs/research/gan2026/architecture/gan2026_simplest_near_ceiling_architecture_plan_2026-06-16.md
 PROMPT_VERSION_V0_11_GPT_ONLY = "gan2026_fresh_evidence_reasoner_v0_11_gpt_only"
 # A4 simplest-architecture variant: GPT + exactly ONE peer trace (2 upstream
 # models). Same policy/guards as v0.6; the included peer is selected via

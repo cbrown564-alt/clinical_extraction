@@ -24,10 +24,10 @@ DEFAULT_JSON_PATH = Path(
     "experiments/gan2026_selective_verifier_predeclaration_2026-06-04.json"
 )
 DEFAULT_REPORT_PATH = Path(
-    "docs/research/gan2026_selective_verifier_predeclaration_2026-06-04.md"
+    ""
 )
 DEFAULT_PROTOCOL_PATH = Path(
-    "docs/research/gan2026_ambiguity_ownership_protocol_2026-06-04.md"
+    ""
 )
 
 ALLOWED_RECOMMENDATIONS = [

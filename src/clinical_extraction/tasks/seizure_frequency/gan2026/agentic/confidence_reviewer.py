@@ -7,7 +7,7 @@ the model's own events/rationale (the decoupling) and that explicitly names the
 dominant unknown↔rate over-reading failure (the priming).
 
 Why this exists (validated 2026-06-17; see
-``docs/research/gan2026_confidence_elicitation_predeclaration_2026-06-17.md`` and
+```` and
 ``experiments/gan2026_reliability_confidence_elicitation_pilot160_2026-06-17.md``):
 on a 160-row residual-enriched validation pilot, this decoupled + failure-primed
 elicitation produced a failure-prediction AUROC of **0.755** (near the external
@@ -15,19 +15,19 @@ cross-model-agreement signal, 0.781), versus **0.503** (chance) for the in-pass
 *joint* self-confidence fields it sits beside (``StructuredSelectionRecord.confidence``,
 ``FreshEvidenceDecision.uncertainty``).
 
-**Correction (2026-06-17 paired test — see**
-``docs/research/gan2026_confidence_one_vs_two_call_predeclaration_2026-06-17.md``**).**
-The earlier belief that decoupling is the active ingredient — and that folding the
-priming back into the joint extraction pass would "re-degenerate" — was tested and
-**falsified**. On a paired validation750 run (same answers/error labels), a single
-call emitting a *primed* integer probability scores failure-AUROC **0.609** vs the
-decoupled reviewer's **0.641** (paired difference +0.032, 95% CI [-0.032, +0.098] —
-includes 0), with *better* ECE/Brier. The discrimination is a **wording effect**, not
-a decoupling effect: the degenerate ``selection.confidence`` (0.497) is degenerate
-because it is unprimed/categorical, not because it is in-pass. This decoupled stage is
-therefore retained for compatibility but is **no longer the recommended carrier** —
-the same signal can ride along in the extraction call for free. Both remain modest
-(< external corroboration 0.781) and gate nothing.
+**One-call vs two-call paired test (2026-06-17 — see**
+````**).**
+Tested whether the priming alone (folded into the extraction call) replaces this
+decoupled call. Validation750 could not separate them (joint 0.609 vs decoupled 0.641,
+paired diff +0.032, 95% CI [-0.032, +0.098] — includes 0), which suggested the call was
+removable. **The frozen test450 holdout overturned that:** decoupled 0.669 vs joint
+0.601, paired diff **+0.068, 95% CI [+0.014, +0.132] — excludes 0**; and folding the
+priming into extraction *degraded* Purist accuracy (0.767 vs SE 0.809). Direction
+(decoupled ≥ joint) was consistent on both splits. **Conclusion: keep this decoupled
+stage** — the separate rationale-blind call earns its cost on the holdout. (The
+degenerate in-pass ``selection.confidence`` (0.497) is still degenerate because it is
+unprimed/categorical, but a primed in-pass field does not match this decoupled call on
+test.) Both self-signals remain modest (< external corroboration 0.781) and gate nothing.
 
 **SHADOW STAGE.** This estimator never changes the label. It only stamps a continuous
 ``calibrated_confidence`` (+ ``risk = 1 - calibrated_confidence``) alongside the

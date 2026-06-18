@@ -28,6 +28,10 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.all_en
     ACTIVE_DETERMINISTIC_ENTITIES,
     run_all9_on_letters,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.registry_sync import (
+    DEFAULT_RUN_INDEX_PATH,
+    register_run,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     PHRASE_ONLY,
     benchmark_config_for,
@@ -35,6 +39,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     score_prescription_benchmark_projection,
     score_prescription_components,
     semantic_config_for,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry import (
+    RunRegistryEntry,
 )
 
 DEFAULT_REGISTRY_PATH = Path("experiments/registry.jsonl")
@@ -143,8 +150,9 @@ def write_scorecard_artifacts(
     split: str = "dev",
     generated_on: str | None = None,
     registry_path: Path | None = None,
+    run_index_path: Path = DEFAULT_RUN_INDEX_PATH,
 ) -> tuple[Path, Path]:
-    """Run, write JSON/Markdown artifacts, and optionally append a registry row."""
+    """Run, write JSON/Markdown artifacts, and optionally register the run."""
 
     generated_on = generated_on or date.today().isoformat()
     gold_letters = load_letters_for_split(split)
@@ -158,11 +166,10 @@ def write_scorecard_artifacts(
     out_md.write_text(_render_markdown(scorecard, json_path=out_json), encoding="utf-8")
 
     if registry_path is not None:
-        _append_registry_row(
+        register_run(
+            _registry_entry(scorecard, json_path=out_json, md_path=out_md),
             registry_path=registry_path,
-            scorecard=scorecard,
-            json_path=out_json,
-            md_path=out_md,
+            run_index_path=run_index_path,
         )
     return out_json, out_md
 
@@ -429,62 +436,49 @@ def _render_markdown(scorecard: dict[str, Any], *, json_path: Path) -> str:
     return "\n".join(lines)
 
 
-def _append_registry_row(
-    *,
-    registry_path: Path,
+def _registry_entry(
     scorecard: dict[str, Any],
+    *,
     json_path: Path,
     md_path: Path,
-) -> None:
-    metrics = _primary_metrics(scorecard)
+) -> RunRegistryEntry:
     date_slug = scorecard["generated_on"].replace("-", "")
-    run_id = f"exectv2_deterministic_all9_{scorecard['split']}_{date_slug}"
-    row = {
-        "run_id": run_id,
-        "artifact_paths": [str(json_path).replace("\\", "/"), str(md_path).replace("\\", "/")],
-        "date": scorecard["generated_on"],
-        "pipeline_family": PIPELINE_FAMILY,
-        "split": scorecard["split"],
-        "row_count": scorecard["row_count"],
-        "model": MODEL,
-        "mode": "deterministic",
-        "replay_status": "analysis_only",
-        "decision": "inform_architecture_loop",
-        "model_role": (
+    return RunRegistryEntry(
+        run_id=f"exectv2_deterministic_all9_{scorecard['split']}_{date_slug}",
+        artifact_paths=(
+            str(json_path).replace("\\", "/"),
+            str(md_path).replace("\\", "/"),
+        ),
+        date=scorecard["generated_on"],
+        pipeline_family=PIPELINE_FAMILY,
+        split=scorecard["split"],
+        row_count=scorecard["row_count"],
+        model=MODEL,
+        model_role=(
             "ExECTv2 deterministic all-9 baseline; active rules for Prescription, "
             "Investigations, Diagnosis, Onset, WhenDiagnosed, BirthHistory, "
             "EpilepsyCause, PatientHistory, and SeizureFrequency."
         ),
-        "evidence_validity": "exact source substring validation summarized in scorecard.",
-        "repair_mode": None,
-        "cache_reuse_source": None,
-        "superseded_by": None,
-        "supersedes": [],
-        "primary_metrics": metrics,
-        "claim_language_notes": (
+        mode="deterministic",
+        replay_status="analysis_only",
+        decision="inform_architecture_loop",
+        primary_metrics=_primary_metrics(scorecard),
+        evidence_validity="exact source substring validation summarized in scorecard.",
+        claim_language_notes=(
             "First GPT-first rules_only all-9 substrate. Not freeze-ready; incomplete "
             "entity coverage remains explicit in per-entity scores."
         ),
-    }
-    row_line = json.dumps(row, sort_keys=True, ensure_ascii=False)
-    lines: list[str] = []
-    replaced = False
-    if registry_path.exists():
-        for line in registry_path.read_text(encoding="utf-8").splitlines():
-            if not line.strip():
-                continue
-            existing_row = json.loads(line)
-            if existing_row.get("run_id") == run_id:
-                lines.append(row_line)
-                replaced = True
-            else:
-                lines.append(line)
-    if not replaced:
-        lines.append(row_line)
-    registry_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    )
 
 
 def _primary_metrics(scorecard: dict[str, Any]) -> dict[str, Any]:
+    """Flat registry-summary metrics.
+
+    Nested component/ledger breakdowns live in the scorecard JSON artifact; the
+    registry keeps only scalar (and flat-list) summary metrics so the row stays
+    loadable by the typed run registry.
+    """
+
     validation = scorecard["validation"]
     metrics: dict[str, Any] = {
         "prompt_version": "n/a (deterministic rules)",
@@ -499,15 +493,16 @@ def _primary_metrics(scorecard: dict[str, Any]) -> dict[str, Any]:
         "cui_attachment_rate": scorecard["cui_attachment_rate"],
         "routing_count": scorecard["routing_count"],
         "active_entities": scorecard["active_entities"],
+        "prescription_clinical_headline_f1": scorecard["prescription_component_scores"][
+            "clinical_headline"
+        ]["f1"],
+        "prescription_benchmark_with_cui_f1": scorecard[
+            "prescription_benchmark_projection_scores"
+        ]["benchmark_with_cui"]["f1"],
     }
     for layer in ("phrase_only", "semantic", "benchmark"):
         metrics[f"{layer}_per_item_f1"] = scorecard["scores"][layer]["per_item"]["f1"]
         metrics[f"{layer}_per_letter_f1"] = scorecard["scores"][layer]["per_letter"]["f1"]
-    metrics["prescription_component_f1"] = scorecard["prescription_component_scores"]
-    metrics["prescription_benchmark_projection_f1"] = scorecard[
-        "prescription_benchmark_projection_scores"
-    ]
-    metrics["patient_history_error_ledger"] = scorecard["patient_history_error_ledger"]
     return metrics
 
 
@@ -528,6 +523,7 @@ def main() -> None:
         default=Path("experiments/exectv2_deterministic_all9_dev_20260617.md"),
     )
     parser.add_argument("--registry", type=Path, default=DEFAULT_REGISTRY_PATH)
+    parser.add_argument("--run-index", type=Path, default=DEFAULT_RUN_INDEX_PATH)
     parser.add_argument("--no-register", action="store_true")
     args = parser.parse_args()
 
@@ -536,6 +532,7 @@ def main() -> None:
         out_md=args.out_md,
         split=args.split,
         registry_path=None if args.no_register else args.registry,
+        run_index_path=args.run_index,
     )
     print(f"Wrote {json_path}")
     print(f"Wrote {md_path}")

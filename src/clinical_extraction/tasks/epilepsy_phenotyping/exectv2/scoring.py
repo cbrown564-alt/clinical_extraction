@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import re
-from collections.abc import Callable, Hashable, Iterable, Sequence
+from collections import Counter
+from collections.abc import Callable, Hashable, Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
 
 from pydantic import BaseModel
@@ -14,6 +15,10 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.evaluation 
     semantic_ignore_attributes_for,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectAnnotation, ExectLetter
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalization import (
+    annotation_clinical_concepts,
+    collapse_concepts_to_most_specific,
+)
 
 # CUIPhrase mirrors the annotated phrase, so including it in the match key is
 # redundant with the phrase itself. CUI is a normalization artifact the benchmark
@@ -204,6 +209,54 @@ class PrescriptionBenchmarkProjectionScores(BaseModel):
     guideline_defaulted_frequency: PRF1
 
 
+class ClinicalRecoveryPRF1(BaseModel):
+    """Precision/recall where recall may use a wider candidate pool than precision."""
+
+    model_config = {"frozen": True}
+
+    tp: int
+    precision_tp: int
+    recall_tp: int
+    fp: int
+    fn: int
+    pred_count: int
+    gold_count: int
+    precision: float
+    recall: float
+    f1: float
+
+
+class ConceptIdentityScores(BaseModel):
+    model_config = {"frozen": True}
+
+    entity: str
+    concept_only: ClinicalRecoveryPRF1
+    concept_assertion: ClinicalRecoveryPRF1
+
+
+class InvestigationsComponentScores(BaseModel):
+    model_config = {"frozen": True}
+
+    clinical_headline: PRF1
+    eeg: PRF1
+    mri: PRF1
+    ct: PRF1
+    performed: PRF1
+    result: PRF1
+    eeg_type: PRF1
+
+
+class FrequencyStateScores(BaseModel):
+    model_config = {"frozen": True}
+
+    clinical_headline: PRF1
+    active_rate: PRF1
+    seizure_free: PRF1
+    unknown: PRF1
+    exact_semantic: PRF1
+    benchmark_with_cui: PRF1
+
+
 def match_key(annotation: ExectAnnotation, config: MatchConfig = PHRASE_AND_FEATURES) -> Hashable:
     phrase = normalize_phrase(annotation.text)
     if not config.include_attributes:
@@ -390,6 +443,77 @@ def score_prescription_benchmark_projection(
     )
 
 
+def score_concept_identity(
+    gold_letters: Sequence[ExectLetter],
+    pred_letters: Sequence[ExectLetter],
+    entity: str,
+) -> ConceptIdentityScores:
+    """Score a Class-B clinical concept with entity-agnostic recall.
+
+    Recall is credited from any predicted entity whose normalized clinical
+    concept maps to ``entity``. Precision is home-tagged: only predictions emitted
+    on ``entity`` enter the precision denominator.
+    """
+
+    return ConceptIdentityScores(
+        entity=entity,
+        concept_only=_score_concept_identity(gold_letters, pred_letters, entity, "concept"),
+        concept_assertion=_score_concept_identity(
+            gold_letters,
+            pred_letters,
+            entity,
+            "assertion",
+        ),
+    )
+
+
+def score_investigations_components(
+    gold_letters: Sequence[ExectLetter],
+    pred_letters: Sequence[ExectLetter],
+) -> InvestigationsComponentScores:
+    components = {
+        component: _score_investigations_component(gold_letters, pred_letters, component)
+        for component in (
+            "clinical_headline",
+            "eeg",
+            "mri",
+            "ct",
+            "performed",
+            "result",
+            "eeg_type",
+        )
+    }
+    return InvestigationsComponentScores(**components)
+
+
+def score_frequency_state(
+    gold_letters: Sequence[ExectLetter],
+    pred_letters: Sequence[ExectLetter],
+) -> FrequencyStateScores:
+    return FrequencyStateScores(
+        clinical_headline=_score_frequency_state_component(
+            gold_letters,
+            pred_letters,
+            "clinical_headline",
+        ),
+        active_rate=_score_frequency_state_component(gold_letters, pred_letters, "active-rate"),
+        seizure_free=_score_frequency_state_component(gold_letters, pred_letters, "seizure-free"),
+        unknown=_score_frequency_state_component(gold_letters, pred_letters, "unknown"),
+        exact_semantic=score_entity(
+            gold_letters,
+            pred_letters,
+            "SeizureFrequency",
+            semantic_config_for("SeizureFrequency"),
+        ).per_item,
+        benchmark_with_cui=score_entity(
+            gold_letters,
+            pred_letters,
+            "SeizureFrequency",
+            benchmark_config_for("SeizureFrequency"),
+        ).per_item,
+    )
+
+
 def _has_source_stated_frequency(annotation: ExectAnnotation, note_text: str = "") -> bool:
     return any(
         _PRESCRIPTION_SOURCE_FREQUENCY.search(candidate)
@@ -496,6 +620,228 @@ def _prescription_drugname_cui_keys(
             )
         )
     return keys
+
+
+def _score_concept_identity(
+    gold_letters: Sequence[ExectLetter],
+    pred_letters: Sequence[ExectLetter],
+    entity: str,
+    variant: str,
+) -> ClinicalRecoveryPRF1:
+    gold_by_id = _letters_by_id(gold_letters)
+    pred_by_id = _letters_by_id(pred_letters)
+    all_ids = sorted(gold_by_id.keys() | pred_by_id.keys())
+
+    precision_tp = recall_tp = pred_count = gold_count = 0
+    for letter_id in all_ids:
+        gold_mentions = (
+            gold_by_id[letter_id].entities(entity) if letter_id in gold_by_id else ()
+        )
+        pred_mentions = pred_by_id[letter_id].annotations if letter_id in pred_by_id else ()
+        home_pred_mentions = (
+            pred_by_id[letter_id].entities(entity) if letter_id in pred_by_id else ()
+        )
+
+        gold = Counter(_concept_keys(gold_mentions, entity, variant))
+        recall_pool = Counter(_concept_keys(pred_mentions, entity, variant))
+        home_pred = Counter(_concept_keys(home_pred_mentions, entity, variant))
+
+        precision_tp += sum((gold & home_pred).values())
+        recall_tp += sum((gold & recall_pool).values())
+        pred_count += sum(home_pred.values())
+        gold_count += sum(gold.values())
+
+    return _clinical_recovery_prf1(
+        precision_tp=precision_tp,
+        recall_tp=recall_tp,
+        pred_count=pred_count,
+        gold_count=gold_count,
+    )
+
+
+def _concept_keys(
+    annotations: Iterable[ExectAnnotation],
+    entity: str,
+    variant: str,
+) -> list[Hashable]:
+    concepts = collapse_concepts_to_most_specific(
+        concept
+        for annotation in annotations
+        for concept in annotation_clinical_concepts(
+            annotation.entity,
+            annotation.text,
+            annotation.attributes,
+        )
+        if concept.entity == entity
+    )
+    if variant == "concept":
+        return [concept.concept_key for concept in concepts]
+    if variant == "assertion":
+        return [concept.assertion_key for concept in concepts]
+    raise ValueError(f"Unknown concept identity variant {variant!r}")
+
+
+def _clinical_recovery_prf1(
+    *,
+    precision_tp: int,
+    recall_tp: int,
+    pred_count: int,
+    gold_count: int,
+) -> ClinicalRecoveryPRF1:
+    precision = precision_tp / pred_count if pred_count else 0.0
+    recall = recall_tp / gold_count if gold_count else 0.0
+    f1 = (2 * precision * recall / (precision + recall)) if precision + recall else 0.0
+    return ClinicalRecoveryPRF1(
+        tp=recall_tp,
+        precision_tp=precision_tp,
+        recall_tp=recall_tp,
+        fp=max(0, pred_count - precision_tp),
+        fn=max(0, gold_count - recall_tp),
+        pred_count=pred_count,
+        gold_count=gold_count,
+        precision=precision,
+        recall=recall,
+        f1=f1,
+    )
+
+
+def _score_investigations_component(
+    gold_letters: Sequence[ExectLetter],
+    pred_letters: Sequence[ExectLetter],
+    component: str,
+) -> PRF1:
+    gold_by_id = _letters_by_id(gold_letters)
+    pred_by_id = _letters_by_id(pred_letters)
+    all_ids = sorted(gold_by_id.keys() | pred_by_id.keys())
+    return sum_prf1(
+        multiset_prf1(
+            _investigation_component_keys(
+                gold_by_id[letter_id].entities("Investigations")
+                if letter_id in gold_by_id
+                else (),
+                component,
+            ),
+            _investigation_component_keys(
+                pred_by_id[letter_id].entities("Investigations")
+                if letter_id in pred_by_id
+                else (),
+                component,
+            ),
+        )
+        for letter_id in all_ids
+    )
+
+
+def _investigation_component_keys(
+    annotations: Iterable[ExectAnnotation],
+    component: str,
+) -> list[Hashable]:
+    keys: list[Hashable] = []
+    for annotation in annotations:
+        for modality in ("EEG", "MRI", "CT"):
+            modality_key = _investigation_modality_key(annotation, modality)
+            if modality_key is None:
+                continue
+            if component == "clinical_headline":
+                keys.append(modality_key)
+            elif component == modality.lower():
+                keys.append(modality_key)
+            elif component == "performed" and modality_key[1] is not None:
+                keys.append((modality, modality_key[1]))
+            elif component == "result" and modality_key[2] is not None:
+                keys.append((modality, modality_key[2]))
+            elif component == "eeg_type" and modality == "EEG" and modality_key[3] is not None:
+                keys.append((modality, modality_key[3]))
+            elif component not in {
+                "clinical_headline",
+                "eeg",
+                "mri",
+                "ct",
+                "performed",
+                "result",
+                "eeg_type",
+            }:
+                raise ValueError(f"Unknown investigations component {component!r}")
+    return keys
+
+
+def _investigation_modality_key(
+    annotation: ExectAnnotation,
+    modality: str,
+) -> tuple[str, str | None, str | None, str | None] | None:
+    attrs = annotation.attributes
+    performed = attrs.get(f"{modality}_Performed")
+    result = attrs.get(f"{modality}_Results")
+    eeg_type = attrs.get("EEG_Type") if modality == "EEG" else None
+    text_has_modality = modality.lower() in normalize_phrase(annotation.text).split()
+    if not any((performed, result, eeg_type, text_has_modality)):
+        return None
+    return (
+        modality,
+        canonicalize_attribute_value(f"{modality}_Performed", performed) if performed else None,
+        canonicalize_attribute_value(f"{modality}_Results", result) if result else None,
+        canonicalize_attribute_value("EEG_Type", eeg_type) if eeg_type else None,
+    )
+
+
+def _score_frequency_state_component(
+    gold_letters: Sequence[ExectLetter],
+    pred_letters: Sequence[ExectLetter],
+    component: str,
+) -> PRF1:
+    gold_by_id = _letters_by_id(gold_letters)
+    pred_by_id = _letters_by_id(pred_letters)
+    all_ids = sorted(gold_by_id.keys() | pred_by_id.keys())
+    return sum_prf1(
+        multiset_prf1(
+            _frequency_state_keys(
+                gold_by_id[letter_id].entities("SeizureFrequency")
+                if letter_id in gold_by_id
+                else (),
+                component,
+            ),
+            _frequency_state_keys(
+                pred_by_id[letter_id].entities("SeizureFrequency")
+                if letter_id in pred_by_id
+                else (),
+                component,
+            ),
+        )
+        for letter_id in all_ids
+    )
+
+
+def _frequency_state_keys(
+    annotations: Iterable[ExectAnnotation],
+    component: str,
+) -> list[Hashable]:
+    keys: list[Hashable] = []
+    for annotation in annotations:
+        state = _frequency_state(annotation.attributes)
+        if component != "clinical_headline" and component != state:
+            continue
+        keys.append((_frequency_type_key(annotation), state))
+    return keys
+
+
+def _frequency_type_key(annotation: ExectAnnotation) -> Hashable:
+    cui = annotation.attributes.get("CUI")
+    if cui:
+        return ("cui", canonicalize_attribute_value("CUI", cui))
+    return ("phrase", normalize_phrase(annotation.text))
+
+
+def _frequency_state(attributes: Mapping[str, str]) -> str:
+    count_values = [
+        attributes.get("NumberOfSeizures"),
+        attributes.get("LowerNumberOfSeizures"),
+        attributes.get("UpperNumberOfSeizures"),
+    ]
+    if any(value == "0" for value in count_values if value is not None):
+        return "seizure-free"
+    if any(value for value in count_values):
+        return "active-rate"
+    return "unknown"
 
 
 def _letters_by_id(letters: Sequence[ExectLetter]) -> dict[str, ExectLetter]:

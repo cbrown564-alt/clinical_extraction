@@ -336,9 +336,9 @@ def build_reset_stage_component_inventory() -> dict[str, Any]:
         "source_artifacts": [
             "PROJECT_STATUS.md",
             "docs/research/contribution_thesis.md",
-            "docs/research/gan2026_architecture_reset_synthesis_and_next_questions_2026-06-06.md",
-            "docs/research/gan2026_component_architecture_reset_completed_tasks_2026-06-05.md",
-            "docs/research/gan2026_component_architecture_reset_review_plan_2026-06-05.md",
+            "",
+            "",
+            "",
         ],
         "summary": {
             "component_families": len(entries),

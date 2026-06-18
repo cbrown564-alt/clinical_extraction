@@ -20,7 +20,7 @@ DEFAULT_JSON_PATH = Path(
     "experiments/gan2026_validation750_first_verifier_accounting_v6_2026-06-06.json"
 )
 DEFAULT_REPORT_PATH = Path(
-    "docs/research/gan2026_validation750_first_verifier_accounting_v6_2026-06-06.md"
+    ""
 )
 
 
