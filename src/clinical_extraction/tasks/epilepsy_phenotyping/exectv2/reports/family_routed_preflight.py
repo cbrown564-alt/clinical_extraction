@@ -18,6 +18,10 @@ PREDECLARATION_PATH = Path(
     "docs/experiments/exectv2/predeclarations/"
     "exectv2_family_routed_llm_first_comparison_predeclaration_2026-06-18.md"
 )
+PI_PRESERVATION_PATH = Path(
+    "docs/experiments/exectv2/predeclarations/"
+    "exectv2_prescription_investigations_shared_pass_preservation_2026-06-18.md"
+)
 SF_SCHEMA_DESIGN_PATH = Path(
     "docs/experiments/exectv2/seizure_frequency/"
     "exectv2_sf_llm_first_event_state_schema_design_2026-06-18.md"
@@ -42,6 +46,7 @@ REQUIRED_SCHEMA_BASE_CLASSES = (
 
 DEV_LADDER_STAGES = ("pilot25", "dev140")
 BLOCKED_SURFACES = ("full-200", "test450", "holdout", "full 200")
+PI_ROUTE_POLICY = "shared_broad_pass_only"
 
 
 @dataclass(frozen=True)
@@ -74,6 +79,7 @@ def build_family_routed_preflight(root: Path | str = Path(".")) -> FamilyRoutedP
     repo_root = Path(root)
     plan_text = _read_text(repo_root / PLAN11_PATH)
     predeclaration_text = _read_text(repo_root / PREDECLARATION_PATH)
+    pi_preservation_text = _read_text(repo_root / PI_PRESERVATION_PATH)
     schema_text = _read_text(repo_root / SF_SCHEMA_DESIGN_PATH)
     checks = (
         PreflightCheck(
@@ -85,6 +91,14 @@ def build_family_routed_preflight(root: Path | str = Path(".")) -> FamilyRoutedP
             "routed_predeclaration_present",
             bool(predeclaration_text),
             _presence_detail(PREDECLARATION_PATH, bool(predeclaration_text)),
+        ),
+        PreflightCheck(
+            "prescription_investigations_shared_pass_preserved",
+            _pi_preservation_policy_present(pi_preservation_text),
+            (
+                "Prescription/Investigations must remain on the shared broad pass "
+                "unless a fresh no-call ablation is predeclared and passes"
+            ),
         ),
         PreflightCheck(
             "dev_ladder_scope_predeclared",
@@ -136,6 +150,7 @@ def render_preflight_markdown(report: FamilyRoutedPreflightReport) -> str:
         f"- Decision: **{decision}**",
         f"- Planned dev ladder: `{' -> '.join(report.planned_dev_ladder)}`",
         "- Blocked surfaces: `Gan test450`, ExECTv2 full-200/test, holdout row-level review",
+        f"- Prescription/Investigations route policy: `{PI_ROUTE_POLICY}`",
         "",
         "## Gate Checklist",
         "",
@@ -171,6 +186,21 @@ def _read_text(path: Path) -> str:
 def _contains_all(text: str, needles: Iterable[str]) -> bool:
     lower = text.lower()
     return all(needle.lower() in lower for needle in needles)
+
+
+def _pi_preservation_policy_present(text: str) -> bool:
+    lower = text.lower()
+    return (
+        PI_ROUTE_POLICY in text
+        and "preserve prescription and investigations" in lower
+        and (
+            "fresh predeclaration" in lower
+            or "fresh predeclared" in lower
+            or "new predeclaration" in lower
+        )
+        and "no-call" in lower
+        and "regression" in lower
+    )
 
 
 def _presence_detail(path: Path, present: bool) -> str:

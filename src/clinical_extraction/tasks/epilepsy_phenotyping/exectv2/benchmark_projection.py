@@ -275,6 +275,19 @@ _DIAGNOSIS_CONCEPT_BY_PHRASE: dict[str, BenchmarkConcept] = {
     for concept, variants in _DIAGNOSIS_ENTRIES
     for variant in variants
 }
+_DIAGNOSIS_DIAGNOSTIC_ONLY_RESIDUALS: frozenset[str] = frozenset(
+    normalize_phrase(phrase)
+    for phrase in (
+        "generalised",
+        "secondary",
+        "focal",
+        "drug",
+        "symptomatic",
+        "occipital",
+        "temporal",
+        "epileptic",
+    )
+)
 DIAGNOSIS_SURFACE_FORMS: tuple[str, ...] = tuple(
     variant for _concept, variants in _DIAGNOSIS_ENTRIES for variant in variants
 )
@@ -351,18 +364,18 @@ _BIRTH_HISTORY_CONCEPT_BY_PHRASE: dict[str, BenchmarkConcept] = {
 _EPILEPSY_CAUSE_ENTRIES: tuple[tuple[BenchmarkConcept, tuple[str, ...]], ...] = (
     (
         BenchmarkConcept("perinatal-insult", "C0005604", "perinatal-insult"),
-        ("perinatal insult", "erinatal insult"),
+        ("perinatal insult",),
     ),
     (BenchmarkConcept("strokes", "C0038454", "strokes"), ("stroke",)),
     (
         BenchmarkConcept("traumatic-brain-injury", "C0876926", "traumatic-brain-injury"),
-        ("traumatic brain injury", "traumatic brain injury 2005"),
+        ("traumatic brain injury",),
     ),
     (BenchmarkConcept("brain-surgery", "C0195775", "brain-surgery"), ("brain surgery",)),
     (BenchmarkConcept("cerebral-abscess", "C1510428", "cerebral-abscess"), ("cerebral abcess",)),
     (BenchmarkConcept("meningitis", "C0025289", "meningitis"), ("meningitis",)),
     (BenchmarkConcept("cranial-meningioma", "C0349604", "cranial-meningioma"), ("meningioma",)),
-    (BenchmarkConcept("Measles", "C0025007", "Measles"), ("measles", "easle")),
+    (BenchmarkConcept("Measles", "C0025007", "Measles"), ("measles",)),
     (
         BenchmarkConcept("Tuberous-sclerosis", "C0041341", "Tuberous-sclerosis"),
         ("tuberous sclerosis",),
@@ -374,8 +387,6 @@ _EPILEPSY_CAUSE_ENTRIES: tuple[tuple[BenchmarkConcept, tuple[str, ...]], ...] = 
     (
         BenchmarkConcept("hypoxia-during-birth", "C0559478", "hypoxia-during-birth"),
         (
-            "hypoxia during a difficult birth",
-            "hypoxia during a difficult birth.",
             "hypoxia during birth",
         ),
     ),
@@ -386,7 +397,7 @@ _EPILEPSY_CAUSE_ENTRIES: tuple[tuple[BenchmarkConcept, tuple[str, ...]], ...] = 
     (BenchmarkConcept("encephalitis", "C0014038", "encephalitis"), ("encephalitis",)),
     (
         BenchmarkConcept("neurocysticercosis", "C0338437", "neurocysticercosis"),
-        ("neurocysticercosis", "neurocysticercosis."),
+        ("neurocysticercosis",),
     ),
     (BenchmarkConcept("brain", "C1456496", "brain"), ("ischaemic damage", "ischemic damage")),
 )
@@ -395,6 +406,16 @@ _EPILEPSY_CAUSE_CONCEPT_BY_PHRASE: dict[str, BenchmarkConcept] = {
     for concept, variants in _EPILEPSY_CAUSE_ENTRIES
     for variant in variants
 }
+_EPILEPSY_CAUSE_BOUNDARY_CONTROL_RESIDUALS: frozenset[str] = frozenset(
+    normalize_phrase(phrase)
+    for phrase in (
+        "erinatal insult",
+        "traumatic brain injury 2005",
+        "easle",
+        "hypoxia during a difficult birth.",
+        "neurocysticercosis.",
+    )
+)
 _PATIENT_HISTORY_ENTRIES: tuple[tuple[BenchmarkConcept, tuple[str, ...]], ...] = (
     (BenchmarkConcept("seizures", "C0036572", "seizures"), ("seizures", "seizure")),
     (
@@ -551,7 +572,10 @@ def prescription_concept(phrase: str) -> BenchmarkConcept | None:
 def diagnosis_concept(phrase: str) -> BenchmarkConcept | None:
     """Return the benchmark diagnosis concept for ``phrase`` if known."""
 
-    return _DIAGNOSIS_CONCEPT_BY_PHRASE.get(normalize_phrase(phrase))
+    normalized = normalize_phrase(phrase)
+    if normalized in _DIAGNOSIS_DIAGNOSTIC_ONLY_RESIDUALS:
+        return None
+    return _DIAGNOSIS_CONCEPT_BY_PHRASE.get(normalized)
 
 
 def investigation_concept(modality: str, result: str | None) -> BenchmarkConcept | None:
@@ -581,7 +605,10 @@ def birth_history_concept(phrase: str) -> BenchmarkConcept | None:
 def epilepsy_cause_concept(phrase: str) -> BenchmarkConcept | None:
     """Return the benchmark epilepsy-cause concept for ``phrase`` if known."""
 
-    return _EPILEPSY_CAUSE_CONCEPT_BY_PHRASE.get(normalize_phrase(phrase))
+    normalized = normalize_phrase(phrase)
+    if normalized in _EPILEPSY_CAUSE_BOUNDARY_CONTROL_RESIDUALS:
+        return None
+    return _EPILEPSY_CAUSE_CONCEPT_BY_PHRASE.get(normalized)
 
 
 def patient_history_concept(phrase: str) -> BenchmarkConcept | None:

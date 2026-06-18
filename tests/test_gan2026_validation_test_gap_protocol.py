@@ -5,8 +5,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PROTOCOL_PATH = (
-    ROOT / ""
+    ROOT
+    / "docs/experiments/gan2026/validation_test_gap/"
+    "gan2026_validation_test_gap_protocol_2026-06-05.md"
 )
+GATED_BLOCKERS_PATH = ROOT / "docs/runbooks/gated_blockers_2026-06-18.md"
 HYPOTHESIS_REGISTRY_PATH = (
     ROOT / "experiments/gan2026_validation_test_gap_hypothesis_registry_2026-06-05.json"
 )
@@ -24,6 +27,26 @@ def test_gap_protocol_blocks_locked_test_row_level_tuning() -> None:
         "No first-wave analysis should introduce a new prediction-bearing architecture"
         in protocol
     )
+
+
+def test_gated_blockers_runbook_keeps_holdout_and_full200_blocked() -> None:
+    runbook = GATED_BLOCKERS_PATH.read_text()
+
+    assert "does not permit Gan `test450` row-level inspection" in runbook
+    assert "post-test tuning" in runbook
+    assert "new ExECTv2 full-200 audits" in runbook
+
+    assert "explicit user authorization for the specific run" in runbook
+    assert "dated frozen protocol" in runbook
+    assert "allowed readouts: aggregate Purist/Pragmatic" in runbook
+    assert "no row-level locked-test failures during development" in runbook
+
+    assert "benchmark-beating GPT-first dev evidence" in runbook
+    assert "predeclared aggregate readout" in runbook
+    assert "separate frozen full-200 protocol" in runbook
+    assert "no row-level tuning" in runbook
+
+    assert "The next permitted action is dev-only ExECTv2 analysis" in runbook
 
 
 def test_gap_hypothesis_registry_is_complete_and_machine_readable() -> None:
