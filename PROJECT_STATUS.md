@@ -35,6 +35,13 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   Gate is clean (`0` call/parse failures, evidence validity `0.9539`) but not
   near target: semantic item F1 `0.206`, benchmark `0.158`, source-near `0.722`.
   This is a viable architecture baseline, not a promoted candidate.
+- v0.2 confirms error-analysis-led prompt optimization works but is not enough:
+  `experiments/exectv2_llm_only_key_entities_structured_v02_dev25_gpt41mini_20260618.md`
+  improved semantic item F1 `0.206`→`0.272` and benchmark `0.158`→`0.220`
+  with `0` call/parse failures and evidence validity `0.9760`. Diagnosis,
+  SeizureFrequency, and Investigations improved; Prescription regressed
+  (`0.264`→`0.172`) from text-altitude overcorrection. See
+  `docs/research/exectv2_key_entities_structured_v02_pilot_report_2026-06-18.md`.
 
 ## Active Priorities
 
@@ -49,14 +56,15 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
 
 ### Now
 
-- Analyze the v0.1 four-family structured-event dev25 misses by entity and layer
-  (source-near vs semantic vs benchmark). Prioritize SeizureFrequency
-  quantification, Diagnosis atomic phrase/Certainty, medication phrase altitude,
-  and investigation modality/result rendering before any dev140 promotion.
+- Build v0.3 on the same dev25 surface: keep the v0.2 SF/investigation gains,
+  undo the Prescription text-altitude regression, and add a small hard-case panel
+  for SF ranges, dated counts, vague counts, and last-event statements before any
+  dev140 promotion.
 
 ### Next
 
-- Build v0.2 prompt/schema changes from that error analysis, then rerun dev25.
+- If v0.3 improves semantic F1 without entity-level collapse, run dev140 and
+  compare against the per-entity prompt family.
 - Compare the best single-prompt structured-event variant against the existing
   per-entity prompt family before returning to specialist/verifier variants.
 
@@ -76,9 +84,10 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
 - 2026-06-18: Added `llm_only_key_entities_structured`, a single-prompt
   structured clinical-event extractor for Prescription/medication, Diagnosis,
   SeizureFrequency, and Investigations, plus runner/tests and a live dev25 GPT
-  pilot. Results: source-near F1 `0.722`, semantic item F1 `0.206`,
-  benchmark item F1 `0.158`, `0` call/parse failures, evidence validity
-  `0.9539`; registered in `experiments/RUN_INDEX.md`.
+  pilot. v0.2 then lifted semantic item F1 to `0.272` and benchmark to `0.220`
+  with a clean gate, while exposing a Prescription regression. Both runs are
+  registered in `experiments/RUN_INDEX.md`; v0.2 report:
+  `docs/research/exectv2_key_entities_structured_v02_pilot_report_2026-06-18.md`.
 - 2026-06-17: Built the reusable all-entity projection-gap ledger
   (`reports/projection_gap_ledger.py`). Classifies every gold FN / predicted FP
   into a layered `gap_family` (phrase coverage, attribute bundle, CUI

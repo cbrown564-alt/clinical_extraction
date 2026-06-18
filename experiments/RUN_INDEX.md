@@ -1858,6 +1858,16 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Inform Architecture Loop
 
+### `exectv2_llm_only_key_entities_structured_v02_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_llm_only_key_entities_structured`; mode `live`; replay `native_run_split`.
+- Model role: LLM-only single-prompt structured clinical event extractor over medication, Diagnosis, SeizureFrequency, and Investigations; deterministic code limited to schema/evidence gates, neutral attribute repair, CUI projection, and scoring.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
+- Primary metrics: prompt_version=exectv2_llm_only_key_entities_structured_v0.2, semantic_per_item_f1=0.272, benchmark_per_item_f1=0.220, phrase_only_per_item_f1=0.408, source_near_f1=0.680, prescription_semantic_f1=0.172, diagnosis_semantic_f1=0.283, seizurefrequency_semantic_f1=0.210, investigations_semantic_f1=0.522, parse_failures=0, evidence_validity_rate=0.9760.
+- Evidence validity: 0 call failures, 0 parse failures; 163/167 evidence-valid rendered mentions.
+- Claim language: Development pilot for error-analysis-led v0.2 of the single structured schema + single prompt key-family architecture. Improved semantic item F1 `0.206->0.272` and benchmark `0.158->0.220` with clean gate, but still far below target and not promoted. Diagnosis/SF/Investigations improved; Prescription regressed from text-altitude overcorrection. Next: v0.3 hard-case panel and medication rendering correction before dev140.
+- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_v02_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_only_key_entities_structured_v02_dev25_gpt41mini_20260618.md`, `docs/research/exectv2_key_entities_structured_v02_pilot_report_2026-06-18.md`.
+
 ### `exectv2_llm_only_key_entities_structured_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
 - Pipeline: `exectv2_llm_only_key_entities_structured`; mode `live`; replay `native_run_split`.
