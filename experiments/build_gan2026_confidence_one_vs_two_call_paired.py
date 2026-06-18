@@ -4,7 +4,7 @@ Tests whether variant D's failure-prediction discrimination (validation750 AUROC
 0.684 vs 0.497 intrinsic) comes from the **decoupled second call** or simply from
 the **changed prompt wording** (the failure-mode priming).
 
-Design (see docs/research/gan2026_confidence_one_vs_two_call_predeclaration_2026-06-17.md):
+Design (see docs/experiments/gan2026/reliability/gan2026_confidence_one_vs_two_call_predeclaration_2026-06-17.md):
 both confidence signals are scored against the SAME answers / SAME error labels —
 
   * JOINT arm (1 call/row): a single SE extraction pass whose prompt embeds the
@@ -357,7 +357,7 @@ def main() -> None:
             "se_calls": "live joint pass (1/row)",
             "reviewer_calls": "live (1/row over joint answers)",
             "answers_shared_across_arms": True,
-            "predeclaration": "docs/research/gan2026_confidence_one_vs_two_call_predeclaration_2026-06-17.md",
+            "predeclaration": "docs/experiments/gan2026/reliability/gan2026_confidence_one_vs_two_call_predeclaration_2026-06-17.md",
         },
     }
     out_json = rc.EXPERIMENTS / f"gan2026_confidence_one_vs_two_call_{tag}_{DATE}.json"

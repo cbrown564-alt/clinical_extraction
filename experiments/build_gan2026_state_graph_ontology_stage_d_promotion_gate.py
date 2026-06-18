@@ -1,6 +1,6 @@
 """Stage D - 250-row promotion gate for the graph query on the no-correct residual.
 
-Design note: ``docs/research/gan2026_kg_grounded_component_generation_design_2026-06-15.md``
+Design note: ````
 §5 (Stage D), §6 (promotion contract / kill metric), and §8.5 (the Stage C
 ``revise`` that mandates this stage); ADR ``0017`` (the C2 parallel posture);
 resolve_label spec ``docs/design/gan2026_resolve_label_spec.md`` §5 (the ablation

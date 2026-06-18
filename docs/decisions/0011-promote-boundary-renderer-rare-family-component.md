@@ -97,7 +97,7 @@ Disallowed claims:
 ## Related Artifacts
 
 - `PROJECT_STATUS.md`
-- `docs/research/gan2026_validation_test_gap_staged_action_plan_2026-06-05.md`
+- ``
 - `experiments/gan2026_boundary_event_contract_v1_2026-06-05.json`
 - `experiments/gan2026_boundary_event_validation_panel_v1_2026-06-05.json`
 - `experiments/gan2026_h7_minimal_pair_panel_v1_2026-06-05.json`

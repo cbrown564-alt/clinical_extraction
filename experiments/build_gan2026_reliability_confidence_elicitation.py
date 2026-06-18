@@ -14,7 +14,7 @@ Both yield p_correct in [0,1] vs ``purist_correct``. We report distribution SPRE
 (headline), ECE/Brier, and failure-prediction AUROC, against the documented
 degenerate self-confidence comparator.
 
-Predeclared in docs/research/gan2026_confidence_elicitation_predeclaration_2026-06-17.md.
+Predeclared in docs/experiments/gan2026/reliability/gan2026_confidence_elicitation_predeclaration_2026-06-17.md.
 Validation only; the production path is NOT modified (this is a candidate self-signal).
 Elicitation temperature is 0.0 (single-shot calibration probe, not a consistency probe).
 
@@ -346,7 +346,7 @@ def analyse(samples_by_variant, answers, residual_idx, indices, tag, out_json, o
         "variants": metrics,
         "verdicts": verdicts,
         "comparator_self_confidence": comparator,
-        "predeclaration": "docs/research/gan2026_confidence_elicitation_predeclaration_2026-06-17.md",
+        "predeclaration": "docs/experiments/gan2026/reliability/gan2026_confidence_elicitation_predeclaration_2026-06-17.md",
         "provenance": {
             "model_calls": f"{len(indices)}x{len(samples_by_variant)} live gpt-4.1-mini elicitations (temp 0)",
             "production_path_modified": False,
@@ -364,7 +364,7 @@ def render_md(r: dict[str, Any]) -> str:
              f"· n={r['n_rows_selected']} · subject: {r['subject']}\n")
     L.append("Decoupled second-pass elicitation over the production answers; the production "
              "path is NOT modified. Predeclared in "
-             "`docs/research/gan2026_confidence_elicitation_predeclaration_2026-06-17.md`.\n")
+             "`docs/experiments/gan2026/reliability/gan2026_confidence_elicitation_predeclaration_2026-06-17.md`.\n")
     c = r.get("comparator_self_confidence")
     if c:
         L.append(f"**[comparator] degenerate joint self-confidence** (direct labeler): "

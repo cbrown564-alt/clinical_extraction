@@ -114,6 +114,6 @@
     "se_calls": "live joint pass (1/row)",
     "reviewer_calls": "live (1/row over joint answers)",
     "answers_shared_across_arms": true,
-    "predeclaration": "docs/research/gan2026_confidence_one_vs_two_call_predeclaration_2026-06-17.md"
+    "predeclaration": "docs/experiments/gan2026/reliability/gan2026_confidence_one_vs_two_call_predeclaration_2026-06-17.md"
   }
 }

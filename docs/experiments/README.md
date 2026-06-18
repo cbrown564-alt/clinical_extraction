@@ -10,6 +10,4 @@ scripts, JSON/JSONL files, and generated scorecards in the repository-level
 Suggested layout:
 
 - `exectv2/`: ExECTv2 run reports and predeclarations.
-- `gan2026/`: Gan 2026 run reports and predeclarations. Older Gan docs are still
-  being migrated out of `docs/research/`.
-
+- `gan2026/`: Gan 2026 run reports and predeclarations.

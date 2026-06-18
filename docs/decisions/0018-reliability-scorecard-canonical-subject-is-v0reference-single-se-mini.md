@@ -9,7 +9,7 @@ Accepted.
 ## Decision
 
 The Gan 2026 reliability scorecard
-(`docs/research/gan2026_reliability_scorecard_and_phased_plan_2026-06-17.md`) has
+(``) has
 **one canonical subject**: the frozen production architecture — the single GPT
 structured-event pass on `gpt-4.1-mini` — read per-row from the `v0_reference`
 layer of the V12 fresh-evidence-reasoner artifacts
@@ -84,9 +84,9 @@ actually frozen for go-forward use.
 
 ## Related Artifacts
 
-- `docs/research/gan2026_reliability_scorecard_and_phased_plan_2026-06-17.md` —
+- `` —
   the plan this decision governs.
-- `docs/research/gan2026_research_closeout_synthesis_2026-06-17.md` — Provenance
+- `` — Provenance
   Caveat #5, the load-bearing prior.
 - `experiments/gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_4_2026-06-13.jsonl`
   — carries the `v0_reference` layer (`comparison.purist_correct`,

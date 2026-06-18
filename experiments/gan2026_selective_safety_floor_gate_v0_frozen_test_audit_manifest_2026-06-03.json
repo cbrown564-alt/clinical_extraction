@@ -1,6 +1,6 @@
 {
   "artifact_kind": "gan2026_frozen_test_audit_manifest",
-  "audit_plan": "docs/research/gan2026_selective_safety_floor_gate_v0_frozen_test_audit_plan_2026-06-03.md",
+  "audit_plan": "",
   "candidate_name": "selective_safety_floor_gate_v0",
   "candidate_seed": "combined_selective_gate_v0",
   "claim_language": "Frozen-test first readout for a hybrid deterministic-safety-floor selective-action candidate; not an LLM-first, production-policy, benchmark-comparable, or tuning result.",

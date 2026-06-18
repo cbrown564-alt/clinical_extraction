@@ -13,7 +13,7 @@ Related:
 - Existing code: `tasks/epilepsy_phenotyping/exectv2/deterministic/lexicon.py`
   (`SF_CUI_LEXICON`, `assign_cui`), `.../deterministic/normalizer.py`,
   `.../contract/entities.py` (per-entity `closed_vocab`)
-- Sibling note: `docs/research/gan2026_kg_grounded_component_generation_design_2026-06-15.md`
+- Sibling note: ``
 
 ---
 

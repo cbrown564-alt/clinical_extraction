@@ -1,7 +1,7 @@
 {
   "schema": "gan2026_f1_orchestrator_state/v1",
   "updated": "2026-06-16",
-  "campaign_status": "CLOSED 2026-06-16 — user accepted 379/450 (0.842) as the honest gpt-4.1-mini ceiling for the V12 hybrid and chose to consolidate. 0.90 not pursued further on mini (C7 structural finding). Synthesis: docs/research/gan2026_f1_dynamic_workflow_night_synthesis_2026-06-16.md. Unrefuted future route to >0.90: a stronger/frontier model (changes the mini constraint).",
+  "campaign_status": "CLOSED 2026-06-16 — user accepted 379/450 (0.842) as the honest gpt-4.1-mini ceiling for the V12 hybrid and chose to consolidate. 0.90 not pursued further on mini (C7 structural finding). Synthesis: . Unrefuted future route to >0.90: a stronger/frontier model (changes the mini constraint).",
   "goal": {
     "metric": "micro_f1_purist_eq_accuracy",
     "target_test450": 405,
@@ -11,7 +11,7 @@
     "pipeline_kinds": ["llm_only", "hybrid"],
     "generalisation_target": "real KCL letters (distribution shift vs GAN-synthetic Gan 2026)"
   },
-  "protocol_doc": "docs/research/gan2026_f1_dynamic_workflow_protocol_2026-06-15.md",
+  "protocol_doc": "",
   "situation": {
     "validation750_saturated": true,
     "selector_only_oracle_ceiling_validation": "739/750",
@@ -157,7 +157,7 @@
       "key_insight": "Component generation is no longer the wall: a clean dual-validated competing component is now produced for 7/11 residual rows with ZERO regression under corroboration gating. The wall moved to SELECTION -- need a corroboration-free trust rule for the graph's clean 'unknown' on the no-correct residual that avoids P3's genuine-rate regressions. This does NOT contradict C5 (coerce-to-unknown breaks things); the KG path is additive and regression-safe, it is simply not picked. Realized end-to-end uplift on the F1 goal metric is still nil today.",
       "next_question": "selection trust rule (admit a clean, dual-validated, source-anchored graph 'unknown' on the no-correct residual without re-introducing P3 regressions) -- a selector problem, not a generation problem, and not a holdout run.",
       "artifacts": [
-        "docs/research/gan2026_kg_grounded_component_generation_design_2026-06-15.md (§8.6)",
+        " (§8.6)",
         "experiments/build_gan2026_state_graph_ontology_stage_d_promotion_gate.py",
         "experiments/gan2026_state_graph_ontology_stage_d_promotion_gate_2026-06-15.json",
         "experiments/gan2026_state_graph_ontology_stage_d_promotion_gate_2026-06-15.md",

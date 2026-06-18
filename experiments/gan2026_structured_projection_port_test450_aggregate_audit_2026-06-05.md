@@ -51,5 +51,5 @@ promoted_audit_rejected_or_revise
 ## Artifacts
 
 - Summary JSON: `experiments/gan2026_structured_projection_port_test450_aggregate_audit_2026-06-05.json`
-- Protocol: `docs/research/gan2026_structured_projection_port_frozen_test_protocol_2026-06-05.md`
+- Protocol: ``
 - Source test artifact: `experiments/gan2026_hybrid_parallel_state_candidate_reasoner_test450_gpt41mini_v0_deterministic_safety_floor_live_2026-06-03.jsonl`

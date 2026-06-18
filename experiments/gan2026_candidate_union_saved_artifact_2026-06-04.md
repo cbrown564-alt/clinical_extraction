@@ -12,7 +12,7 @@ Validation-development saved-artifact candidate-union diagnostic only. No new li
 
 ## Artifacts
 
-- Protocol: `docs/research/gan2026_candidate_union_protocol_2026-06-04.md`
+- Protocol: ``
 - Candidate-union JSONL: `experiments/gan2026_candidate_union_saved_artifact_2026-06-04.jsonl`
 - Summary JSON: `experiments/gan2026_candidate_union_saved_artifact_2026-06-04.json`
 - Source replay: `experiments/gan2026_rich_selected_state_hard_panel_policy_replay_2026-06-04.jsonl`

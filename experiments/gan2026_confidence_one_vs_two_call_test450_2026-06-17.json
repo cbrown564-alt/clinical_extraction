@@ -5,7 +5,7 @@
   "split": "test450 (frozen holdout)",
   "architecture": "fresh joint gpt-4.1-mini SE+confidence pass (paired with decoupled reviewer)",
   "claim_boundary": "frozen aggregate-only holdout readout; no row-level test inspection",
-  "predeclaration": "docs/research/gan2026_confidence_one_vs_two_call_test450_predeclaration_2026-06-17.md",
+  "predeclaration": "docs/experiments/gan2026/reliability/gan2026_confidence_one_vs_two_call_test450_predeclaration_2026-06-17.md",
   "frozen_transforms": {
     "joint_transform_sha256": "bf053a2127911c0f1f2b266490d7a200926aae240d010106f2206a57951e24d0",
     "confidence_reviewer_module_sha256": "c9198087ce03ffa070d7333ccb22c6bd255818208afb17df411c04b69ac79231",

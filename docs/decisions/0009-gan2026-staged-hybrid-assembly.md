@@ -52,12 +52,12 @@ fallback remain prediction-bearing.
 
 Primary readiness report:
 
-- `docs/research/gan2026_architecture_assembly_readiness_decision_2026-06-04.md`
+- ``
 
 Supporting RQ answers:
 
-- `docs/research/gan2026_rq6_selective_llm_value_answer_2026-06-04.md`
-- `docs/research/gan2026_rq7_family_indexed_component_matrix_answer_2026-06-04.md`
-- `docs/research/gan2026_rq8_efficiency_operational_reliability_answer_2026-06-04.md`
-- `docs/research/gan2026_rq9_selective_action_answer_2026-06-04.md`
-- `docs/research/gan2026_rq10_gold_scorer_ambiguity_audit_answer_2026-06-04.md`
+- ``
+- ``
+- ``
+- ``
+- ``

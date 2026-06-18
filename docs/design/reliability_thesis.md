@@ -120,7 +120,7 @@ or formats.
 
 The three families are not redundant; each answers a different question, and the
 *comparison* is the contribution (see
-`docs/research/gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07.md`
+``
 for the task-1 instantiation):
 
 - **Rules-based** is the portability and reproducibility baseline, and the

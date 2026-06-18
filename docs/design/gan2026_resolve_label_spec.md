@@ -9,7 +9,7 @@ the existing 25→50→250 validation ladder and the `gan2026_split_v1` lock.
 Related:
 - `docs/design/gan2026_rule_register.md` (the rules this query consolidates;
   contradictions C1–C5)
-- `docs/research/gan2026_kg_grounded_component_generation_design_2026-06-15.md`
+- ``
   §3.4 (the parent design)
 - Code: `state_graph/{graph,edges,ontology,projection}.py`
 

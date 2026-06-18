@@ -1,4 +1,4 @@
-﻿# Codebase Thermonuclear Review
+# Codebase Thermonuclear Review
 
 Date: 2026-06-01
 
@@ -22,9 +22,9 @@ Inputs reviewed:
 - `docs/design/data_contract.md`
 - `docs/design/gan2026_split_protocol.md`
 - `docs/design/gan2026_normalization_semantics.md`
-- `docs/research/gan2026_current_pipeline_results_report_2026-06-01.md`
-- `docs/research/gan2026_deterministic_rule_review_2026-05-31.md`
-- `docs/research/gan2026_research_drift_audit_2026-06-01.md`
+- ``
+- ``
+- ``
 - source under `src/clinical_extraction/`
 - tests under `tests/`
 - artifact inventory under `experiments/`
@@ -156,8 +156,8 @@ Files:
 
 - `src/clinical_extraction/tasks/seizure_frequency/gan2026/pipeline_v1.py`
 - `tests/test_gan2026_pipeline_v1.py`
-- `docs/research/gan2026_deterministic_rule_review_2026-05-31.md`
-- `docs/research/gan2026_current_pipeline_results_report_2026-06-01.md`
+- ``
+- ``
 
 Existing project reports already record the decisive signal:
 
@@ -189,7 +189,7 @@ Files:
 - `src/clinical_extraction/tasks/seizure_frequency/gan2026/hybrid_structured_events.py`
 - `src/clinical_extraction/tasks/seizure_frequency/gan2026/hybrid_structured_events_repair_ablation.py`
 - `src/clinical_extraction/tasks/seizure_frequency/gan2026/normalize.py`
-- `docs/research/gan2026_current_pipeline_results_report_2026-06-01.md`
+- ``
 
 `StructuredRepairConfig` exposes useful repair-family switches:
 

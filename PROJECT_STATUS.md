@@ -319,5 +319,5 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
 - `experiments/exectv2_projection_gap_ledger_dev.md`
 - `docs/research/exectv2_gpt_first_full_architecture_strategy_2026-06-17.md`
 - `docs/research/exectv2_key_entity_architecture_research_report_2026-06-18.md`
-- `docs/research/gan2026_research_closeout_synthesis_2026-06-17.md`
+- ``
 - `experiments/RUN_INDEX.md`

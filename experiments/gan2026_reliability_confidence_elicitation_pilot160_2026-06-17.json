@@ -162,7 +162,7 @@
     "failure_prediction_auroc": 0.5026881720430108,
     "note": "different architecture (direct labeler) + JOINT elicitation; comparator only."
   },
-  "predeclaration": "docs/research/gan2026_confidence_elicitation_predeclaration_2026-06-17.md",
+  "predeclaration": "docs/experiments/gan2026/reliability/gan2026_confidence_elicitation_predeclaration_2026-06-17.md",
   "provenance": {
     "model_calls": "160x2 live gpt-4.1-mini elicitations (temp 0)",
     "production_path_modified": false

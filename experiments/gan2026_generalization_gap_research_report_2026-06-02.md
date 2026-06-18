@@ -19,7 +19,7 @@ program rather than another whole-pipeline iteration. The Phase 0 protocol,
 artifact inventory, hypothesis registry, aggregate-only surface map, and first
 validation-only gap matrix have been materialized:
 
-- `docs/research/gan2026_validation_test_gap_protocol_2026-06-05.md`
+- ``
 - `experiments/gan2026_validation_test_gap_artifact_inventory_2026-06-05.json`
 - `experiments/gan2026_validation_test_gap_hypothesis_registry_2026-06-05.json`
 - `experiments/gan2026_validation_test_surface_map_v0_2026-06-05.md`

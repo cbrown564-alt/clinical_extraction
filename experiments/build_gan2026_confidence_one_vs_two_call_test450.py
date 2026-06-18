@@ -3,7 +3,7 @@
 Confirms the validation750 finding (the variant-D gain is a prompt-WORDING effect,
 not a decoupling effect) on the locked holdout. Freeze-warden gated, run once.
 
-Predeclared: docs/research/gan2026_confidence_one_vs_two_call_test450_predeclaration_2026-06-17.md
+Predeclared: docs/experiments/gan2026/reliability/gan2026_confidence_one_vs_two_call_test450_predeclaration_2026-06-17.md
 
 The joint-arm transform is imported BYTE-IDENTICAL from the validation driver
 (`build_gan2026_confidence_one_vs_two_call_paired`) and hash-frozen before touching
@@ -229,7 +229,7 @@ def main() -> None:
         "split": "test450 (frozen holdout)",
         "architecture": "fresh joint gpt-4.1-mini SE+confidence pass (paired with decoupled reviewer)",
         "claim_boundary": "frozen aggregate-only holdout readout; no row-level test inspection",
-        "predeclaration": "docs/research/gan2026_confidence_one_vs_two_call_test450_predeclaration_2026-06-17.md",
+        "predeclaration": "docs/experiments/gan2026/reliability/gan2026_confidence_one_vs_two_call_test450_predeclaration_2026-06-17.md",
         "frozen_transforms": frozen,
         "model": "openai/gpt-4.1-mini",
         "n_joint_prob_parse_fail": n_joint_prob_fail,

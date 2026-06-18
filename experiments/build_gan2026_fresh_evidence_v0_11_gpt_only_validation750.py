@@ -15,7 +15,7 @@ here is the peer-ensemble drop, so a within-tolerance landing supports A3
 regardless of residual v0.4-vs-v0.6 prompt drift. If it lands materially below
 tolerance, a matched 3-agent v0.6 run is required to attribute the loss.
 
-Plan: docs/research/gan2026_simplest_near_ceiling_architecture_plan_2026-06-16.md
+Plan: docs/research/gan2026/architecture/gan2026_simplest_near_ceiling_architecture_plan_2026-06-16.md
 NEVER reads or runs test450.
 
 Usage:
@@ -67,7 +67,7 @@ BASELINE_V04_JSONL = (
     / "gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.jsonl"
 )
 PLAN_PATH = (
-    "docs/research/gan2026_simplest_near_ceiling_architecture_plan_2026-06-16.md"
+    "docs/research/gan2026/architecture/gan2026_simplest_near_ceiling_architecture_plan_2026-06-16.md"
 )
 
 DATE = "2026-06-16"

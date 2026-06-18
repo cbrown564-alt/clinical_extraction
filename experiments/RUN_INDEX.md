@@ -50,7 +50,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: summary=base accuracy 364/450 = **0.8089** (Wilson CI 0.770–0.843), base error 0.1911; D failure-AUROC **0.649** (CI 0.581–0.717, > chance). Gating (selective acc · abstention precision vs 0.191 random bar): 95% cov → 0.820 · 0.409; 90% cov → 0.825 · 0.333 (1.74× random, +14.2pp); 80% cov → 0.856 · 0.378; 70% cov → 0.867 · 0.326; 50% cov → 0.880 · 0.262. Selective-accuracy lift positive + monotone.
 - Evidence validity: Frozen aggregate-only holdout readout; no row-level test inspection; no test tuning; single run. Test-split-integrity preflight passed (450/450 unique, coverage == manifest, v0_reference on all 450); V12 source-symmetry preflight structurally inapplicable to a single-model run (substituted direct integrity check, per house precedent). Subject source-symmetry inherited from the certified v0.4 artifact.
 - Claim language: MEETS the predeclared success criterion — variant-D confidence is a usable abstention/triage gate on the primary single gpt-4.1-mini architecture on the locked holdout (AUROC CI above chance; 90%-cov abstention precision 1.74× random; monotone selective-accuracy lift). But the benefit is MODEST and ATTENUATES from validation (AUROC 0.684→0.649; 90%-cov selective acc 0.905→0.825; abstention precision 2.6×→1.74× random). Absolute lift small (80.9%→82.5% at 90% cov costs 10% coverage) because confident over-reading errors are invisible to any self-signal. Does NOT change champion/label/robustness status; it is a triage knob costing one extra mini call/row.
-- Artifacts: `experiments/gan2026_reliability_d_gating_test450_2026-06-17.json`, `experiments/gan2026_reliability_d_gating_test450_2026-06-17.md`, `experiments/gan2026_reliability_d_gating_test450_samples_2026-06-17.jsonl`, `docs/research/gan2026_d_gating_test450_predeclaration_2026-06-17.md`.
+- Artifacts: `experiments/gan2026_reliability_d_gating_test450_2026-06-17.json`, `experiments/gan2026_reliability_d_gating_test450_2026-06-17.md`, `experiments/gan2026_reliability_d_gating_test450_samples_2026-06-17.jsonl`, ``.
 
 ### `gan2026_reliability_confidence_elicitation_pilot160_2026-06-17`
 - Date/split: `2026-06-17`; `validation`; `160` rows.
@@ -58,7 +58,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Model role: DECOUPLED second-pass confidence elicitation over the canonical `v0_reference` production answers (decision 0018); production path NOT modified. Two predeclared variants — C (second-reader agreement) and D (failure-mode-primed correctness). Single-shot calibration probe; model `openai/gpt-4.1-mini`.
 - Repair mode/config: `none (probability elicitation only; robust JSON parse with int fallback, 0 parse failures)`.
 - Primary metrics: summary=n=160, failures=12; baseline joint self-confidence top-bucket=99.9%/AUROC=0.503 (chance); variant C top-bucket=40.6%, ECE=0.070, Brier=0.081, failure_AUROC=0.611; variant D top-bucket=78.1%, ECE=0.069, Brier=0.073, failure_AUROC=0.755; external-signal comparator AUROC=0.781; verdict (strict conjunctive gate) H0 both, but axes decompose: D recovers DISCRIMINATION (near-external AUROC) via failure-mode priming, C recovers spread-without-signal.
-- Evidence validity: Validation-only; test450 untouched. Subject answers read per-row from `v0_reference` layer (single-SE-mini, decision 0018). Elicitation is a separate candidate self-signal, not a production change. Predeclared before run in `docs/research/gan2026_confidence_elicitation_predeclaration_2026-06-17.md`. AUROC CIs wide (12 failures); validation750 needed to confirm D's 0.755.
+- Evidence validity: Validation-only; test450 untouched. Subject answers read per-row from `v0_reference` layer (single-SE-mini, decision 0018). Elicitation is a separate candidate self-signal, not a production change. Predeclared before run in ``. AUROC CIs wide (12 failures); validation750 needed to confirm D's 0.755.
 - Claim language: Calibration probe. Joint self-confidence is dead (AUROC 0.503). Verbalized self-confidence is NOT strictly irrecoverable — naming the dominant unknown↔rate failure mode (variant D) recovers a discriminative self-signal (failure AUROC 0.755, near the external-corroboration 0.781) from one extra mini call, though it stays high-valued and still hides ~half the failures at ≥0.9. Second-reader framing (C) spreads confidence but the spread is noise (AUROC 0.611). Does not promote any candidate or change champion/robustness status.
 - Artifacts: `experiments/gan2026_reliability_confidence_elicitation_pilot160_2026-06-17.json`, `experiments/gan2026_reliability_confidence_elicitation_pilot160_2026-06-17.md`, `experiments/gan2026_reliability_confidence_elicitation_samples_pilot160_C_2026-06-17.jsonl`, `experiments/gan2026_reliability_confidence_elicitation_samples_pilot160_D_2026-06-17.jsonl`.
 
@@ -88,7 +88,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: summary=joint(1-call) failure-AUROC **0.609** (ECE 0.050, Brier 0.119, top-bucket 91.0%); decoupled(2-call) failure-AUROC **0.641** (ECE 0.080, Brier 0.139, top-bucket 79.8%); **paired AUROC difference (decoupled − joint) = +0.032, 95% CI [−0.032, +0.098]** (1000 bootstrap reps; CI includes 0). Joint-arm Purist acc 0.863 (≈ SE baseline 0.881 — priming doesn't move the answer at scale). Comparators: decoupled-on-frozen-SE 0.684, intrinsic in-pass 0.497, external corroboration 0.781.
 - Evidence validity: Validation-only; test450 untouched. 0 parse failures either arm; 13 unscorable-gold rows dropped. Internally valid paired comparison (both signals share the joint answer set).
 - Claim language: **H_wording — the variant-D gain is a PROMPT-WORDING effect, not a decoupling effect.** Folding the verbatim failure-mode priming into the single extraction call recovers essentially the same failure-prediction discrimination (0.609 vs 0.641, difference CI straddles 0) at ONE call instead of two, with BETTER calibration (ECE/Brier). Falsifies the prior belief (recorded in `confidence_reviewer.py`) that joint-pass folding "re-degenerates" — it does not. The degenerate intrinsic `selection.confidence` (0.497) is degenerate because it is unprimed/categorical, not because it is in-pass. Both signals remain modest (<external 0.781) and gate nothing; the practical implication is the decoupled second call can be retired in favour of the free in-pass primed field.
-- Artifacts: `experiments/gan2026_confidence_one_vs_two_call_validation750_2026-06-17.json`, `experiments/gan2026_confidence_one_vs_two_call_validation750_2026-06-17.md`, `experiments/gan2026_confidence_one_vs_two_joint_validation750_2026-06-17.jsonl`, `experiments/gan2026_confidence_one_vs_two_decoupled_validation750_2026-06-17.jsonl`, `docs/research/gan2026_confidence_one_vs_two_call_predeclaration_2026-06-17.md`.
+- Artifacts: `experiments/gan2026_confidence_one_vs_two_call_validation750_2026-06-17.json`, `experiments/gan2026_confidence_one_vs_two_call_validation750_2026-06-17.md`, `experiments/gan2026_confidence_one_vs_two_joint_validation750_2026-06-17.jsonl`, `experiments/gan2026_confidence_one_vs_two_decoupled_validation750_2026-06-17.jsonl`, ``.
 
 ### `gan2026_confidence_one_vs_two_call_test450_2026-06-17`
 - Date/split: `2026-06-17`; `test`; `450` rows.
@@ -97,7 +97,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: summary=joint(1-call) failure-AUROC **0.601** (ECE 0.146, Brier 0.197, top-bucket 92.4%); decoupled(2-call) **0.669** (ECE 0.146, Brier 0.190, top-bucket 80.9%); **paired AUROC difference (decoupled − joint) = +0.068, 95% CI [+0.014, +0.132]** (1000 reps; CI EXCLUDES 0). Joint-arm Purist accuracy **0.767** (< SE test baseline 0.809 — priming degrades the extractor on the holdout). Comparators (validation750): joint 0.609, decoupled 0.641, diff CI [−0.032, +0.098].
 - Evidence validity: Frozen aggregate-only holdout readout; no row-level test inspection; single run; preflight-gated. 0 parse failures either arm; 4 unscorable-gold rows dropped. Internally valid paired comparison (shared joint answer set).
 - Claim language: **The validation H_wording conclusion does NOT replicate on the holdout.** On test450 the decoupled two-call reviewer ranks errors significantly better than the one-call joint signal (paired diff +0.068, CI excludes 0), and folding the priming into the extraction pass costs ~4pp Purist accuracy. Direction (decoupled ≥ joint) was consistent across both splits; validation lacked the gap/power to call it. CORRECTED conclusion: KEEP the two-call decoupled `ConfidenceReviewer` stage — the extra call earns its cost on the holdout; the validation-only "removable" read was a false economy. Retracts the earlier validation-based recommendation. Both signals remain modest (< external 0.781) and gate nothing.
-- Artifacts: `experiments/gan2026_confidence_one_vs_two_call_test450_2026-06-17.json`, `experiments/gan2026_confidence_one_vs_two_call_test450_2026-06-17.md`, `experiments/gan2026_confidence_one_vs_two_joint_test450_2026-06-17.jsonl`, `experiments/gan2026_confidence_one_vs_two_decoupled_test450_2026-06-17.jsonl`, `docs/research/gan2026_confidence_one_vs_two_call_test450_predeclaration_2026-06-17.md`.
+- Artifacts: `experiments/gan2026_confidence_one_vs_two_call_test450_2026-06-17.json`, `experiments/gan2026_confidence_one_vs_two_call_test450_2026-06-17.md`, `experiments/gan2026_confidence_one_vs_two_joint_test450_2026-06-17.jsonl`, `experiments/gan2026_confidence_one_vs_two_decoupled_test450_2026-06-17.jsonl`, ``.
 
 ## Promote
 
@@ -145,7 +145,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Protocol summarizes completed validation artifacts; makes no model calls and reads no test rows.
 - Supersedes: `gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13`.
 - Claim language: Pre-registration only, not a holdout result and not user authorization by itself. Use only if the user explicitly authorizes one frozen aggregate-only test450 audit.
-- Artifacts: `docs/research/gan2026_fresh_evidence_reasoner_frozen_test450_protocol_2026-06-13.md`.
+- Artifacts: ``.
 
 ### `gan2026_agentic_structured_event_consensus_unanimous_exact_validation750_2026-06-13`
 - Date/split: `2026-06-13`; `validation`; `750` rows.
@@ -200,7 +200,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: agentic_hard50_multi_agent_matched_purist=22, agentic_hard50_single_agent_tools_purist=20, agentic_hard50_single_greedy_purist=34, holdout_row_level_analysis=no, se_test450_purist_correct_of_rendered=364, se_test450_rendered=448, se_validation750_purist_correct_of_rendered=661, se_validation750_rendered=748.
 - Evidence validity: No new run. Consolidates architecture-specific evidence metrics from existing validation750, aggregate test450, and validation hard50 artifacts; evidence metrics are not treated as interchangeable.
 - Claim language: Analysis-only close-off table. Validation results are development evidence; locked test450 values are aggregate-only. Does not authorize row-level holdout tuning or any benchmark-comparable claim. Describes hybrid_structured_events as hybrid LLM extraction plus deterministic normalization/projection.
-- Artifacts: `docs/research/gan2026_failure_mode_comparison_table_2026-06-12.md`.
+- Artifacts: ``.
 
 ### `gan2026_closeoff_report_2026-06-12`
 - Date/split: `2026-06-12`; `validation+test`; `1200` rows.
@@ -209,7 +209,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: deepseek_se_v06_validation250_delta_purist_correct=5, gpt41mini_test450_se_pragmatic_correct_of_rendered=381, gpt41mini_test450_se_purist_correct_of_rendered=364, gpt41mini_test450_se_rendered=448, gpt41mini_validation750_se_purist_correct_of_rendered=661, gpt41mini_validation750_se_rendered=748, promoted_architecture=hybrid_structured_events, qwen_se_v06_validation250_delta_purist_correct=5.
 - Evidence validity: Surfaces that evidence metrics differ by architecture: evidence_valid, evidence_text_contained, and CandidateSet source-id validity are not interchangeable.
 - Claim language: Close-off implementation-direction synthesis. Promotes hybrid_structured_events as the current Gan 2026 direction while preserving split discipline: validation is development evidence; completed test450 audit is aggregate-only; no row-level holdout tuning or new benchmark claim is authorized.
-- Artifacts: `docs/research/gan2026_closeoff_report_2026-06-12.md`.
+- Artifacts: ``.
 
 ## Promote To Phase3 Report
 
@@ -732,7 +732,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: No-call replay preserves 239/250 exact evidence substrings on validation250 and 115/123 on the trigger panel; no call failures or parse/schema/label failures; semantic no-reference-to-unknown repairs are scorer-neutral.
 - Cache/reuse source: Raw outputs from gan2026_fresh_evidence_reasoner_validation250_live_gpt41_v0_6_safety_v0_7_2026-06-15 and trigger_full v0.6/safety-v0.7 artifacts.
 - Claim language: Validation diagnostic only. Safety v0.9 preserves the v0.8 Purist counts, repairs no-reference fallbacks to unknown on 5 validation250 rows and 4 trigger-panel rows, and still trails the v0.4 validation250 comparator (240/250 vs 242/250), so it is not a promoted holdout candidate and does not authorize a test450 run.
-- Artifacts: `docs/research/gan2026_unknown_frequency_policy_audit_2026-06-15.md`, `experiments/gan2026_fresh_evidence_reasoner_unknown_policy_trigger_full_validation_nocall_replay_v0_6_safety_v0_9_2026-06-15.jsonl`, `experiments/gan2026_fresh_evidence_reasoner_unknown_policy_trigger_full_validation_nocall_replay_v0_6_safety_v0_9_2026-06-15.md`, `experiments/gan2026_fresh_evidence_reasoner_validation250_nocall_replay_v0_6_safety_v0_9_2026-06-15.jsonl`, `experiments/gan2026_fresh_evidence_reasoner_validation250_nocall_replay_v0_6_safety_v0_9_2026-06-15.md`.
+- Artifacts: ``, `experiments/gan2026_fresh_evidence_reasoner_unknown_policy_trigger_full_validation_nocall_replay_v0_6_safety_v0_9_2026-06-15.jsonl`, `experiments/gan2026_fresh_evidence_reasoner_unknown_policy_trigger_full_validation_nocall_replay_v0_6_safety_v0_9_2026-06-15.md`, `experiments/gan2026_fresh_evidence_reasoner_validation250_nocall_replay_v0_6_safety_v0_9_2026-06-15.jsonl`, `experiments/gan2026_fresh_evidence_reasoner_validation250_nocall_replay_v0_6_safety_v0_9_2026-06-15.md`.
 
 ### `gan2026_consensus_fresh_agreement_selector_validation750_replay_2026-06-15`
 - Date/split: `2026-06-15`; `validation`; `750` rows.
@@ -1026,7 +1026,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: No new prediction evidence. Uses validation-development metrics and aggregate-only locked-test metrics; V12 test row-level failures, rationales, evidence, selected events, and transitions were not inspected.
 - Cache/reuse source: Existing Gan 2026 registry, RUN_INDEX, project status, validation reports, and aggregate-only locked-test reports; no new model calls and no row-level test artifact inspection.
 - Claim language: Post-audit analysis-only synthesis. Summarizes why hybrid structured events remain the durable substrate, why agentic/consensus variants mostly failed or failed to transfer, and why V12 fresh_evidence_reasoner is the best completed holdout result but still missed the 383/450 Purist target. Does not authorize a new test run or any test-row tuning.
-- Artifacts: `docs/research/gan2026_hybrid_structured_events_agentic_consensus_fresh_evidence_analysis_2026-06-14.md`.
+- Artifacts: ``.
 
 ### `gan2026_llm_reasoning_agentic_test085_experiment_plan_2026-06-13`
 - Date/split: `2026-06-13`; `validation_planned_then_frozen_test`; `0` rows.
@@ -1035,7 +1035,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: current_best_test450_structured_events_purist_correct=364, first_gate=validation25_contract_then_fixed_hard50_and_family_hard_slices, required_test450_gain_over_best_structured_events=19, second_gate=validation250, target_test450_purist_correct=383.
 - Evidence validity: Plan artifact only. No new model calls, no scorer changes, no test-row inspection.
 - Claim language: Next-cycle plan after deterministic-floor consensus failed to generalize. Requires LLM-owned selection over structured events, validation hard-slice and validation250 gates, and a frozen aggregate test audit only after explicit authorization.
-- Artifacts: `docs/research/gan2026_llm_reasoning_agentic_test085_experiment_plan_2026-06-13.md`.
+- Artifacts: ``.
 
 ### `gan2026_llm_event_reasoner_validation25_live_gpt41mini_v1_3_2026-06-13`
 - Date/split: `2026-06-13`; `validation`; `25` rows.
@@ -1090,7 +1090,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: holdout_authorized=no, planned_phase_5=agent definition and matched-budget protocol, planned_phase_6=tool-using single-agent versus matched-budget multi-agent evaluation.
 - Evidence validity: No data run. The plan requires future tool traces to report evidence validity with architecture-specific definitions and explicit attribution.
 - Claim language: Planning artifact only. Does not authorize new holdout use, test-row inspection, or benchmark-facing claims. Establishes that multi-agent claims must be compared against single-agent self-consistency under matched model-call, token, tool-call, and aggregation budgets.
-- Artifacts: `docs/research/gan2026_agentic_pipeline_phase_plan_2026-06-12.md`.
+- Artifacts: ``.
 
 ### `gan2026_agentic_matched_budget_validation25_single_agent_live_prompt_v1_post_vote_2026-06-12`
 - Date/split: `2026-06-12`; `validation`; `25` rows.
@@ -1616,7 +1616,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: No structured record; output-contract smoke only.
 - Cache/reuse source: DSPy cache disabled; native Ollama /api/chat smoke used think=false.
 - Claim language: Endpoint setup is unblocked through ollama_chat/qwen3.6:35b with think=false, but v5 is not ladder-ready for Qwen: validation1 returned a nonempty Python-style dict and final_selector shape, producing a schema parse failure. Do not treat this as model-quality evidence or start validation5/25 until prompt hardening or a named schema-repair ablation exists. Dedicated schema-contract risk note logged for future Qwen prompt/repair design.
-- Artifacts: `experiments/gan2026_qwen36_35b_ollama_chat_setup_smoke_2026-06-01.md`, `docs/research/gan2026_qwen_schema_contract_risk_2026-06-01.md`, `experiments/gan2026_llm_only_claim_table_selector_validation1_prompt_only_v5_2026-06-01.jsonl`, `experiments/gan2026_llm_only_claim_table_selector_validation1_prompt_only_v5_2026-06-01.md`, `experiments/gan2026_llm_only_claim_table_selector_validation1_qwen36_35b_v5_ollama_chat_smoke_2026-06-01.jsonl`, `experiments/gan2026_llm_only_claim_table_selector_validation1_qwen36_35b_v5_ollama_chat_smoke_2026-06-01.md`.
+- Artifacts: `experiments/gan2026_qwen36_35b_ollama_chat_setup_smoke_2026-06-01.md`, ``, `experiments/gan2026_llm_only_claim_table_selector_validation1_prompt_only_v5_2026-06-01.jsonl`, `experiments/gan2026_llm_only_claim_table_selector_validation1_prompt_only_v5_2026-06-01.md`, `experiments/gan2026_llm_only_claim_table_selector_validation1_qwen36_35b_v5_ollama_chat_smoke_2026-06-01.jsonl`, `experiments/gan2026_llm_only_claim_table_selector_validation1_qwen36_35b_v5_ollama_chat_smoke_2026-06-01.md`.
 
 ### `gan2026_minimal_evidence_selector_validation25_gpt41mini_v0_2026-06-01`
 - Date/split: `2026-06-01`; `validation`; `25` rows.
@@ -2254,7 +2254,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: architectures_analysed=4, cp_failures=169, cp_rule_fire_failure_rate_max=0.426, dl_failures=186, hybrid_failures=88, named_failure_modes=8, se_failures=89, universal_failures=20.
 - Evidence validity: Analysis draws directly from Phase 1 validation750 JSONL artifacts; row-by-row tables verified against source prediction and gold records.
 - Claim language: Phase 3 error analysis: row-by-row + thematic failure catalogue over Phase 1 validation750 results for four architectures (gpt-4.1-mini). Documents 8 named failure modes (FM-1 through FM-8) across 532 total failures. Critical finding: four highest-failure-rate CP rules (seizure_free_conflict 42.6%, same_window_additive_frequency 34.7%, denominator_window_mismatch 30.3%, concrete_frequency_precedence 27.8%) account for 143/169 CP failures where a rule was cited — model cites rule then violates it. 20 universal failures (all 4 architectures). Priority ranking: FM-2 seizure-free FP (97) > FM-1 denominator window (~66 LLM-improvable) > FM-3 unknown FP (132) > FM-6 highest-type selection (~25 universal). Input to Phase 3 prompt-engineering decisions.
-- Artifacts: `docs/research/gan2026_phase3_error_analysis_2026-06-09.md`.
+- Artifacts: ``.
 
 ### `gan2026_cross_model_comparison_2026-06-09`
 - Date/split: `2026-06-09`; `validation`; `750` rows.
@@ -2263,7 +2263,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: architectures_compared=6, deepseek_dl_sf_false_pos=56, deepseek_hybrid_rendered=604, deepseek_se_purist_rate=0.821, gpt41mini_dl_unknown_false_pos=59, gpt41mini_hybrid_rendered=589, gpt41mini_se_purist_rate=0.884, models_compared=3, qwen_dl_unknown_false_pos=91, qwen_hybrid_rendered=400, qwen_se_purist_rate=0.836.
 - Evidence validity: Derived from Phase 1 per-row JSONL comparison fields for DL, CP, SE; aggregate numbers from Phase 1 report JSONLs for hybrid and all architectures.
 - Claim language: Cross-model synthesis comparing all three Phase 1 models (gpt-4.1-mini, deepseek-v4-flash, qwen3.6-35b) across all six architecture configurations on validation750. Includes per-row failure category breakdowns for DL, CP, SE (hybrid row-level data not available for deepseek/qwen without deep-replay extraction). Key findings: (1) SE is consistently best across models but gpt-4.1-mini leads by 5-6pp; (2) qwen dominant failure is unknown_false_pos (91 DL vs 59 gpt-4.1-mini) -- reverse of deepseek (highest seizure_free_false_pos: 56 DL); (3) CP guidance block helps gpt-4.1-mini (+2.3pp) but harms qwen (-0.7pp); (4) FM-6 drop-attack selection is gpt-4.1-mini-specific -- qwen and deepseek already correct; (5) qwen hybrid renders only 400/750 rows vs 589/604 for gpt/deepseek; (6) deepseek hybrid routing dominated by rendered_label_supported_but_policy_sensitive (97/123) driven by its SF over-confidence.
-- Artifacts: `docs/research/gan2026_cross_model_comparison_2026-06-09.md`.
+- Artifacts: ``.
 
 ## Inform Architecture Loop
 

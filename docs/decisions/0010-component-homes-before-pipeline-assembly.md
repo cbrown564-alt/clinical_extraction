@@ -141,4 +141,4 @@ not merely make Gan tidier for its own sake.
 - `docs/decisions/0008-component-evidence-contract-for-candidate-promotion.md`
 - `docs/decisions/0009-gan2026-staged-hybrid-assembly.md`
 - `docs/research/contribution_thesis.md`
-- `docs/research/gan2026_architecture_assembly_readiness_decision_2026-06-04.md`
+- ``

@@ -47,7 +47,7 @@ until tool context and role design are changed?
 | `experiments/gan2026_agentic_matched_budget_validation_hard50_active_conditions_live_prompt_v1_2026-06-12.jsonl` | Per-row condition traces, raw model calls, normalized votes, call-level comparisons. |
 | `experiments/gan2026_agentic_matched_budget_validation_hard50_active_conditions_live_prompt_v1_2026-06-12.md` | Reported hard50 metrics and budget summary. |
 | `experiments/gan2026_agentic_validation_hard50_manifest_2026-06-12.json` | Fixed validation hard50 row list and predeclared hidden-family tags. |
-| `docs/research/gan2026_agentic_pipeline_phase_plan_2026-06-12.md` | Phase 5/6 definitions, matched-budget requirements, and tool contracts. |
+| `` | Phase 5/6 definitions, matched-budget requirements, and tool contracts. |
 | `docs/design/gan2026_saturated_validation_protocol.md` | Controls why this design uses hard slices, selective action, and no-call replay before broader validation. |
 
 ## Current Result
