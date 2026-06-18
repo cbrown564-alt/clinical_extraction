@@ -34,7 +34,7 @@ def test_build_prompt_input_includes_draft_and_v03_sf_rules() -> None:
     )
 
     assert payload["prompt_version"] == verifier.PROMPT_VERSION
-    assert payload["prompt_version"].endswith("_v0.3")
+    assert payload["prompt_version"].endswith("_v0.4")
     assert payload["draft_seizure_frequency_mentions"][0]["text"] == (
         "generalised tonic chronic seizures"
     )
@@ -55,6 +55,10 @@ def test_build_prompt_input_includes_draft_and_v03_sf_rules() -> None:
     assert "completely under control" in rules
     assert "FrequencyChange='Infrequent'" in rules
     assert "teenage years" in rules
+    assert "not the numeric or temporal fragment" in rules
+    assert "seizures have returned" in rules
+    assert "two generic seizure-free mentions" in rules
+    assert "recent named seizure" in rules
     typo_example = next(
         example
         for example in payload["worked_examples"]
@@ -93,6 +97,34 @@ def test_build_prompt_input_includes_draft_and_v03_sf_rules() -> None:
     )
     assert improvement_example["correct"][0]["text"] == "seizures"
     assert improvement_example["correct"][0]["attributes"]["FrequencyChange"] == "Infrequent"
+    returned_example = next(
+        example
+        for example in payload["worked_examples"]
+        if "seizures have returned" in example["note_fragment"]
+    )
+    assert returned_example["correct"][0]["text"] == "seizures"
+    assert returned_example["correct"][0]["attributes"]["FrequencyChange"] == "Increased"
+    dual_free_example = next(
+        example
+        for example in payload["worked_examples"]
+        if "since her last clinic" in example["note_fragment"]
+    )
+    assert [mention["attributes"]["PointInTime"] for mention in dual_free_example["correct"]] == [
+        "LastClinic",
+        "DrugChange",
+    ]
+    numeric_anchor_example = next(
+        example
+        for example in payload["worked_examples"]
+        if "total of 3 in 2020" in example["note_fragment"]
+    )
+    assert numeric_anchor_example["correct"][0]["text"] == "seizures"
+    recent_named_example = next(
+        example
+        for example in payload["worked_examples"]
+        if "recent generalised" in example["note_fragment"]
+    )
+    assert recent_named_example["correct"][0]["text"] == "generalised tonic clonic seizure"
 
 
 def test_draft_mentions_by_letter_filters_sf_mentions() -> None:

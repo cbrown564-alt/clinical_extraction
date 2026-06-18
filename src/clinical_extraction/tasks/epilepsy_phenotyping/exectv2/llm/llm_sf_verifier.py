@@ -44,7 +44,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
-PROMPT_VERSION = "exectv2_llm_sf_verifier_v0.3"
+PROMPT_VERSION = "exectv2_llm_sf_verifier_v0.4"
 PIPELINE_FAMILY = "exectv2_llm_sf_verifier"
 COMPONENT_OWNER = "llm_sf_verifier"
 
@@ -178,6 +178,23 @@ def _clinical_rules() -> list[str]:
             "NumberOfSeizures is 0, and unknown when only FrequencyChange is present."
         ),
         (
+            "Use the clean scored seizure anchor as text, not the numeric or temporal "
+            "fragment. For generic seizure rates use text 'seizures' or 'seizure'; "
+            "for 'a total of 3 in 2020' in a seizure paragraph use text 'seizures', "
+            "not '3 in 2020'."
+        ),
+        (
+            "When a sentence states a generic seizure state change such as "
+            "'seizures have returned', emit text 'seizure' or 'seizures' with "
+            "FrequencyChange='Increased'."
+        ),
+        (
+            "When one evidence span contains two explicit seizure-free anchors, "
+            "such as no further seizures since last clinic and since starting a "
+            "drug, emit two generic seizure-free mentions with the same evidence "
+            "but different PointInTime values."
+        ),
+        (
             "Apply a named-seizure-frequency gate. Emit SF only when the evidence "
             "itself gives a named seizure type, generic seizure(s), or seizure-free "
             "state together with a rate, count, last-event/seizure-free target, or "
@@ -263,6 +280,16 @@ def _clinical_rules() -> list[str]:
             "FrequencyChange='Infrequent' and PointInTime='DrugChange'."
         ),
         (
+            "When the letter says a patient had a recent named seizure after years "
+            "of seizure freedom, keep the recent named seizure as active-rate and "
+            "do not replace it with the older seizure-free interval."
+        ),
+        (
+            "When a named seizure-type sentence is followed by 'these seizures' "
+            "with a count or range, use text 'seizures' for the generic counted "
+            "state if the source wording does not repeat the named type."
+        ),
+        (
             "When a last-event phrase names focal to bilateral convulsive seizures, "
             "also render the component convulsive seizure seizure-free state if the "
             "letter explicitly supports it."
@@ -344,6 +371,62 @@ def _worked_examples() -> list[dict[str, Any]]:
         },
         {
             "note_fragment": (
+                "Unfortunately after the period of seizure freedom the seizures "
+                "have returned."
+            ),
+            "draft": [],
+            "correct": [
+                {
+                    "text": "seizures",
+                    "attributes": {"FrequencyChange": "Increased"},
+                    "evidence": "the seizures have returned",
+                    "confidence": "medium",
+                    "rationale": "Returned seizures are a generic increased-frequency state.",
+                }
+            ],
+        },
+        {
+            "note_fragment": (
+                "She has not had any further seizures since her last clinic "
+                "appointment and since starting the lamotrigine."
+            ),
+            "draft": [{"text": "seizures"}],
+            "correct": [
+                {
+                    "text": "seizures",
+                    "attributes": {
+                        "NumberOfSeizures": "0",
+                        "PointInTime": "LastClinic",
+                        "TimeSince_or_TimeOfEvent": "Since",
+                    },
+                    "evidence": (
+                        "not had any further seizures since her last clinic "
+                        "appointment and since starting the lamotrigine"
+                    ),
+                    "confidence": "high",
+                    "rationale": "The sentence explicitly gives last-clinic seizure freedom.",
+                },
+                {
+                    "text": "seizures",
+                    "attributes": {
+                        "NumberOfSeizures": "0",
+                        "PointInTime": "DrugChange",
+                        "TimeSince_or_TimeOfEvent": "Since",
+                    },
+                    "evidence": (
+                        "not had any further seizures since her last clinic "
+                        "appointment and since starting the lamotrigine"
+                    ),
+                    "confidence": "high",
+                    "rationale": (
+                        "The same sentence also anchors seizure freedom to treatment "
+                        "start."
+                    ),
+                },
+            ],
+        },
+        {
+            "note_fragment": (
                 "Seizure type and frequency: 2 generalised tonic clonic seizures "
                 "2014, absence like seizures 2014. As you know he had 2 "
                 "generalised tonic clonic seizures in 2014."
@@ -387,6 +470,40 @@ def _worked_examples() -> list[dict[str, Any]]:
         },
         {
             "note_fragment": (
+                "He has had on average one seizure a year since the age of 17 "
+                "but a total of 3 in 2020."
+            ),
+            "draft": [{"text": "3 in 2020"}],
+            "correct": [
+                {
+                    "text": "seizures",
+                    "attributes": {
+                        "NumberOfSeizures": "3",
+                        "TimeSince_or_TimeOfEvent": "During",
+                        "YearDate": "2020",
+                    },
+                    "evidence": "a total of 3 in 2020",
+                    "confidence": "high",
+                    "rationale": "The count belongs to generic seizures, not the numeric phrase.",
+                },
+                {
+                    "text": "seizure",
+                    "attributes": {
+                        "NumberOfSeizures": "1",
+                        "NumberOfTimePeriods": "1",
+                        "TimePeriod": "Year",
+                        "AgeLower": "17",
+                        "AgeUnit": "Year",
+                        "TimeSince_or_TimeOfEvent": "Since",
+                    },
+                    "evidence": "one seizure a year since the age of 17",
+                    "confidence": "high",
+                    "rationale": "The earlier clause also gives a generic active rate.",
+                },
+            ],
+        },
+        {
+            "note_fragment": (
                 "Seizure type and frequency: Generalised tonic clonic seizure-last "
                 "event July 2016. Previous event December 2015."
             ),
@@ -424,6 +541,26 @@ def _worked_examples() -> list[dict[str, Any]]:
                     "evidence": "had a generalised tonic clonic seizure",
                     "confidence": "high",
                     "rationale": "The prior generic event is not a separate rate.",
+                }
+            ],
+        },
+        {
+            "note_fragment": (
+                "She has had a recent generalised tonic chronic seizure at home. "
+                "Before the seizure she had been seizure free for 3 years."
+            ),
+            "draft": [{"text": "seizure free"}],
+            "correct": [
+                {
+                    "text": "generalised tonic clonic seizure",
+                    "attributes": {
+                        "NumberOfSeizures": "1",
+                        "NumberOfTimePeriods": "1",
+                        "TimePeriod": "Year",
+                    },
+                    "evidence": "recent generalised tonic chronic seizure",
+                    "confidence": "high",
+                    "rationale": "The recent named seizure is the current active-rate fact.",
                 }
             ],
         },

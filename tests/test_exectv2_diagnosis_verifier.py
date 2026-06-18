@@ -34,7 +34,7 @@ def test_build_prompt_input_includes_draft_and_v05_diagnosis_rules() -> None:
     )
 
     assert payload["prompt_version"] == verifier.PROMPT_VERSION
-    assert payload["prompt_version"].endswith("_v0.5")
+    assert payload["prompt_version"].endswith("_v0.6")
     assert payload["draft_diagnosis_mentions"][0]["text"] == "possible JME"
     rules = " ".join(payload["clinical_rules"])
     assert "Diagnosis text may be a normalized core clinical concept" in rules
@@ -48,6 +48,9 @@ def test_build_prompt_input_includes_draft_and_v05_diagnosis_rules() -> None:
     assert "general seizures" in rules
     assert "Myoclonic jerks are not a Diagnosis mention" in rules
     assert "reviewed this patient with epilepsy" in rules
+    assert "multi-concept" in rules
+    assert "explicit generic epilepsy" in rules
+    assert "symptomatic structural focal epilepsy" in rules
     assert "focal onset epilepsy" in rules
     assert "intractable epilepsy" in rules
     assert "febrile seizures" in rules
@@ -62,7 +65,10 @@ def test_build_prompt_input_includes_draft_and_v05_diagnosis_rules() -> None:
         for example in payload["worked_examples"]
         if example["note_fragment"] == "Diagnosis: epilepsy - probable focal."
     )
-    assert focal_example["correct"][0]["text"] == "focal epilepsy"
+    assert [mention["text"] for mention in focal_example["correct"]] == [
+        "epilepsy",
+        "focal epilepsy",
+    ]
     jme_example = next(
         example
         for example in payload["worked_examples"]
@@ -81,9 +87,18 @@ def test_build_prompt_input_includes_draft_and_v05_diagnosis_rules() -> None:
     uncertain_example = next(
         example
         for example in payload["worked_examples"]
-        if "possibly generalised" in example["note_fragment"]
+        if example["note_fragment"] == "Diagnosis: Epilepsy - unclassified, possibly generalised."
     )
-    assert uncertain_example["correct"][0]["text"] == "generalised epilepsy"
+    assert [mention["text"] for mention in uncertain_example["correct"]] == [
+        "epilepsy",
+        "generalised epilepsy",
+    ]
+    structural_example = next(
+        example
+        for example in payload["worked_examples"]
+        if "cerebral abscess" in example["note_fragment"]
+    )
+    assert structural_example["correct"][0]["text"] == "symptomatic structural focal epilepsy"
     singular_example = next(
         example
         for example in payload["worked_examples"]
