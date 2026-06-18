@@ -50,7 +50,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
-PROMPT_VERSION = "exectv2_llm_diagnosis_verifier_v0.2"
+PROMPT_VERSION = "exectv2_llm_diagnosis_verifier_v0.3"
 PIPELINE_FAMILY = "exectv2_llm_diagnosis_verifier"
 COMPONENT_OWNER = "llm_diagnosis_verifier"
 
@@ -165,7 +165,9 @@ def _clinical_rules() -> list[str]:
         "Do not emit CUI or CUIPhrase; projection is a separate deterministic layer.",
         (
             "Render only the core clinical concept span in text. Strip section labels, "
-            "dashes, hedging words, 'single', 'alone', and explanatory context."
+            "dashes, hedging words, 'single' in simple single-seizure phrases, "
+            "and explanatory context. Do not strip 'alone' from an epilepsy-with-"
+            "generalised-tonic-clonic-seizures-alone syndrome."
         ),
         (
             "Use Certainty='4' for probable or likely diagnoses; Certainty='3' for "
@@ -175,8 +177,13 @@ def _clinical_rules() -> list[str]:
         (
             "Prefer the most specific epilepsy syndrome stated in the source, such "
             "as focal epilepsy, temporal lobe epilepsy, focal onset epilepsy, "
-            "symptomatic structural focal epilepsy, primary/generalised epilepsy, "
-            "juvenile myoclonic epilepsy, or JME."
+            "symptomatic structural focal epilepsy, intractable epilepsy, "
+            "primary/generalised epilepsy, juvenile myoclonic epilepsy, or JME."
+        ),
+        (
+            "When the source says 'Epilepsy - unclassified, possibly generalised', "
+            "emit 'generalised epilepsy' with Certainty='3'. Do not emit generic "
+            "'epilepsy' with Certainty='3' for that phrase."
         ),
         (
             "Use the exact abbreviation as text when the source says JME; do not "
@@ -190,8 +197,9 @@ def _clinical_rules() -> list[str]:
         (
             "Keep named seizure types when they are asserted as seizure diagnoses: "
             "focal seizures, focal seizures with altered awareness, focal to bilateral "
-            "convulsive seizures, tonic clonic seizures, complex partial seizures, "
-            "absence seizures, and bilateral convulsive seizure."
+            "convulsive seizures, tonic clonic seizures, secondary generalised "
+            "tonic clonic seizures, complex partial seizures, absence seizures, "
+            "and bilateral convulsive seizure."
         ),
         (
             "Do not drop true named seizure types just because they occur in a "
@@ -199,9 +207,35 @@ def _clinical_rules() -> list[str]:
             "the Diagnosis mention as well as any SF handled elsewhere."
         ),
         (
+            "Do not deduplicate separately supported diagnosis assertions. If both "
+            "a Diagnosis line and a seizure-type/frequency line independently assert "
+            "tonic clonic seizures, return two Diagnosis mentions with their own "
+            "exact evidence strings."
+        ),
+        (
             "Use normalized seizure-type text for scoring-facing Diagnosis mentions: "
             "'generalised tonic clonic seizures' -> 'tonic clonic seizures'; "
-            "'single focal seizure' -> 'focal seizure'."
+            "'single focal seizure' -> 'focal seizure'. Use plural "
+            "'tonic clonic seizures' for recurring, plural, or frequency-context "
+            "tonic-clonic events."
+        ),
+        (
+            "If the source states an epilepsy-with-generalised-tonic-clonic-"
+            "seizures-alone syndrome, preserve the full syndrome as a Diagnosis "
+            "text mention, add the generic 'epilepsy' concept only when the word "
+            "epilepsy is explicit in that evidence, and add tonic-clonic seizure "
+            "type mentions for each separately supported tonic-clonic assertion."
+        ),
+        (
+            "For source phrases such as 'I think these are in keeping with temporal "
+            "lobe onset focal seizures', emit seizure-type diagnoses such as "
+            "'temporal lobe seizure' and 'focal seizures' with Certainty='4'; do "
+            "not convert them into 'temporal lobe epilepsy'."
+        ),
+        (
+            "A bare adjective such as 'general seizures' is not a named seizure "
+            "type. If a phrase says 'general and complex partial seizures', keep "
+            "the named 'complex partial seizures' and do not emit 'general seizures'."
         ),
         "Never write 'tonic chronic'; preserve tonic clonic or tonic-clonic.",
         "Never use attribute labels such as 'MultipleSeizures' as mention text.",
@@ -209,6 +243,11 @@ def _clinical_rules() -> list[str]:
             "Do not emit isolated symptoms or aura features as Diagnosis, including "
             "myoclonic jerks, jerks, flashing lights, odd sensations, altered "
             "awareness alone, dizziness, blackouts, collapse, or anxiety."
+        ),
+        (
+            "Myoclonic jerks are not a Diagnosis mention by themselves, even when "
+            "frequent. If the source also says possible JME, emit JME with "
+            "Certainty='3' and omit myoclonic jerks."
         ),
         (
             "Do not emit dissociative, non-epileptic, or psychogenic events as an "
@@ -282,6 +321,139 @@ def _worked_examples() -> list[dict[str, Any]]:
                     "confidence": "high",
                     "rationale": "The named seizure type is asserted and normalized.",
                 }
+            ],
+        },
+        {
+            "note_fragment": (
+                "Diagnosis: epilepsy with generalised tonic clonic seizures alone. "
+                "Seizure type and frequency: Generalised tonic clonic seizures: "
+                "six per year."
+            ),
+            "draft": [{"text": "tonic clonic seizures"}],
+            "correct": [
+                {
+                    "text": "epilepsy",
+                    "attributes": {
+                        "DiagCategory": "Epilepsy",
+                        "Certainty": "5",
+                        "Negation": "Affirmed",
+                    },
+                    "evidence": "epilepsy with generalised tonic clonic seizures alone",
+                    "confidence": "high",
+                    "rationale": "The source explicitly states epilepsy.",
+                },
+                {
+                    "text": "generalised tonic clonic seizures alone",
+                    "attributes": {
+                        "DiagCategory": "Epilepsy",
+                        "Certainty": "5",
+                        "Negation": "Affirmed",
+                    },
+                    "evidence": "epilepsy with generalised tonic clonic seizures alone",
+                    "confidence": "high",
+                    "rationale": "The syndrome includes the clinically meaningful alone qualifier.",
+                },
+                {
+                    "text": "tonic clonic seizures",
+                    "attributes": {
+                        "DiagCategory": "MultipleSeizures",
+                        "Certainty": "5",
+                        "Negation": "Affirmed",
+                    },
+                    "evidence": "generalised tonic clonic seizures",
+                    "confidence": "high",
+                    "rationale": "The named seizure type is present in the diagnosis line.",
+                },
+                {
+                    "text": "tonic clonic seizures",
+                    "attributes": {
+                        "DiagCategory": "MultipleSeizures",
+                        "Certainty": "5",
+                        "Negation": "Affirmed",
+                    },
+                    "evidence": "Generalised tonic clonic seizures: six per year",
+                    "confidence": "high",
+                    "rationale": (
+                        "A separate frequency line independently asserts the "
+                        "same seizure type."
+                    ),
+                },
+            ],
+        },
+        {
+            "note_fragment": (
+                "Diagnosis: Epilepsy - unclassified, possibly generalised. "
+                "Seizure type and frequency: 2 generalised tonic clonic seizures."
+            ),
+            "draft": [{"text": "epilepsy", "attributes": {"Certainty": "3"}}],
+            "correct": [
+                {
+                    "text": "generalised epilepsy",
+                    "attributes": {
+                        "DiagCategory": "Epilepsy",
+                        "Certainty": "3",
+                        "Negation": "Affirmed",
+                    },
+                    "evidence": "Epilepsy - unclassified, possibly generalised",
+                    "confidence": "medium",
+                    "rationale": "Possibly generalised is the uncertain specific syndrome.",
+                },
+                {
+                    "text": "tonic clonic seizures",
+                    "attributes": {
+                        "DiagCategory": "MultipleSeizures",
+                        "Certainty": "5",
+                        "Negation": "Affirmed",
+                    },
+                    "evidence": "2 generalised tonic clonic seizures",
+                    "confidence": "high",
+                    "rationale": "The named seizure type is asserted in a seizure-type line.",
+                },
+            ],
+        },
+        {
+            "note_fragment": (
+                "I think these are in keeping with temporal lobe onset focal "
+                "seizures. She continues to get general and complex partial seizures."
+            ),
+            "draft": [{"text": "temporal lobe epilepsy"}, {"text": "general seizures"}],
+            "correct": [
+                {
+                    "text": "temporal lobe seizure",
+                    "attributes": {
+                        "DiagCategory": "MultipleSeizures",
+                        "Certainty": "4",
+                        "Negation": "Affirmed",
+                    },
+                    "evidence": "in keeping with temporal lobe onset focal seizures",
+                    "confidence": "medium",
+                    "rationale": (
+                        "The source states a probable seizure type, not "
+                        "epilepsy syndrome."
+                    ),
+                },
+                {
+                    "text": "focal seizures",
+                    "attributes": {
+                        "DiagCategory": "MultipleSeizures",
+                        "Certainty": "4",
+                        "Negation": "Affirmed",
+                    },
+                    "evidence": "in keeping with temporal lobe onset focal seizures",
+                    "confidence": "medium",
+                    "rationale": "The same phrase also asserts focal seizures with uncertainty.",
+                },
+                {
+                    "text": "complex partial seizures",
+                    "attributes": {
+                        "DiagCategory": "MultipleSeizures",
+                        "Certainty": "5",
+                        "Negation": "Affirmed",
+                    },
+                    "evidence": "complex partial seizures",
+                    "confidence": "high",
+                    "rationale": "Complex partial seizures are a named seizure type.",
+                },
             ],
         },
         {

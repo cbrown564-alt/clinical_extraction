@@ -34,7 +34,7 @@ def test_build_prompt_input_includes_draft_and_v05_diagnosis_rules() -> None:
     )
 
     assert payload["prompt_version"] == verifier.PROMPT_VERSION
-    assert payload["prompt_version"].endswith("_v0.2")
+    assert payload["prompt_version"].endswith("_v0.3")
     assert payload["draft_diagnosis_mentions"][0]["text"] == "possible JME"
     rules = " ".join(payload["clinical_rules"])
     assert "Diagnosis text may be a normalized core clinical concept" in rules
@@ -42,6 +42,11 @@ def test_build_prompt_input_includes_draft_and_v05_diagnosis_rules() -> None:
     assert "Do not emit CUI or CUIPhrase" in rules
     assert "'epilepsy - probable focal' -> 'focal epilepsy'" in rules
     assert "'generalised tonic clonic seizures' -> 'tonic clonic seizures'" in rules
+    assert "Do not deduplicate separately supported diagnosis assertions" in rules
+    assert "generalised epilepsy" in rules
+    assert "temporal lobe seizure" in rules
+    assert "general seizures" in rules
+    assert "Myoclonic jerks are not a Diagnosis mention" in rules
     assert "Never write 'tonic chronic'" in rules
     assert "Never use attribute labels" in rules
     assert "myoclonic jerks" in rules
@@ -58,6 +63,20 @@ def test_build_prompt_input_includes_draft_and_v05_diagnosis_rules() -> None:
     )
     assert jme_example["correct"][0]["text"] == "JME"
     assert jme_example["correct"][0]["attributes"]["Certainty"] == "3"
+    alone_example = next(
+        example
+        for example in payload["worked_examples"]
+        if "seizures alone" in example["note_fragment"]
+    )
+    assert [mention["text"] for mention in alone_example["correct"]].count(
+        "tonic clonic seizures"
+    ) == 2
+    uncertain_example = next(
+        example
+        for example in payload["worked_examples"]
+        if "possibly generalised" in example["note_fragment"]
+    )
+    assert uncertain_example["correct"][0]["text"] == "generalised epilepsy"
 
 
 def test_draft_mentions_by_letter_filters_diagnosis_mentions() -> None:
