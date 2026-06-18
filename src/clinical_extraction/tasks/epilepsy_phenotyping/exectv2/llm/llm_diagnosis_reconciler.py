@@ -22,6 +22,10 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
     PredictedMention,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalization import (
+    canonicalize_concept,
+    normalize_phrase,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_diagnosis_verifier as verifier_base,
 )
@@ -35,7 +39,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
-PROMPT_VERSION = "exectv2_hybrid_diagnosis_reconciler_v0.1"
+PROMPT_VERSION = "exectv2_hybrid_diagnosis_reconciler_v0.2"
 PIPELINE_FAMILY = "exectv2_hybrid_diagnosis_reconciler"
 COMPONENT_OWNER = "hybrid_diagnosis_reconciler"
 
@@ -116,6 +120,11 @@ def build_prompt_input(
             "decomposer_mentions": list(decomposer_mentions),
             "diagnosis_candidate_spans": list(diagnosis_spans),
         },
+        "candidate_concept_groups": candidate_concept_groups(
+            verifier_mentions=verifier_mentions,
+            decomposer_mentions=decomposer_mentions,
+            diagnosis_spans=diagnosis_spans,
+        ),
         "output_schema": {
             "mentions": [
                 {
@@ -141,6 +150,169 @@ def build_prompt_input(
     return json.dumps(payload, ensure_ascii=False, sort_keys=True)
 
 
+def candidate_concept_groups(
+    *,
+    verifier_mentions: Sequence[Mapping[str, Any]],
+    decomposer_mentions: Sequence[Mapping[str, Any]],
+    diagnosis_spans: Sequence[Mapping[str, Any]],
+) -> list[dict[str, Any]]:
+    """Group candidate evidence by the clinical decisions left after v0.1."""
+
+    grouped: dict[str, list[dict[str, Any]]] = {
+        group_id: []
+        for group_id in (
+            "generic_epilepsy",
+            "focal_epilepsy_family",
+            "tonic_clonic_family",
+            "secondary_generalised_family",
+            "structural_symptomatic_family",
+            "other_seizure_type_family",
+            "other_diagnosis",
+        )
+    }
+    for source, mentions in (
+        ("verifier", verifier_mentions),
+        ("decomposer", decomposer_mentions),
+    ):
+        for index, mention in enumerate(mentions):
+            text = str(mention.get("text", ""))
+            evidence = str(mention.get("evidence", ""))
+            candidate = _group_candidate(
+                source=source,
+                candidate_id=f"{source[0].upper()}{index}",
+                text=text,
+                evidence=evidence,
+                attributes=dict(mention.get("attributes") or {}),
+            )
+            for group_id in _concept_group_ids(text, evidence):
+                grouped[group_id].append(candidate)
+
+    for index, span in enumerate(diagnosis_spans):
+        hints = [str(hint) for hint in span.get("concept_hints", [])]
+        evidence = str(span.get("evidence", ""))
+        text = _span_group_text(hints, evidence)
+        candidate = _group_candidate(
+            source="span",
+            candidate_id=str(span.get("span_id") or f"S{index}"),
+            text=text,
+            evidence=evidence,
+            attributes={},
+            span_role=str(span.get("span_role", "")),
+            concept_hints=hints,
+        )
+        for group_id in _concept_group_ids(text, evidence):
+            grouped[group_id].append(candidate)
+
+    return [
+        {
+            "group_id": group_id,
+            "decision_question": _group_decision_question(group_id),
+            "candidates": candidates,
+        }
+        for group_id, candidates in grouped.items()
+        if candidates
+    ]
+
+
+def _group_candidate(
+    *,
+    source: str,
+    candidate_id: str,
+    text: str,
+    evidence: str,
+    attributes: Mapping[str, Any],
+    span_role: str | None = None,
+    concept_hints: Sequence[str] = (),
+) -> dict[str, Any]:
+    candidate: dict[str, Any] = {
+        "source": source,
+        "candidate_id": candidate_id,
+        "text": text,
+        "canonical_text": canonicalize_concept(text),
+        "certainty": str(attributes.get("Certainty", "")),
+        "negation": str(attributes.get("Negation", "")),
+        "evidence": evidence,
+    }
+    if span_role:
+        candidate["span_role"] = span_role
+    if concept_hints:
+        candidate["concept_hints"] = list(concept_hints)
+    return candidate
+
+
+def _span_group_text(hints: Sequence[str], evidence: str) -> str:
+    for hint in hints:
+        if hint:
+            return hint
+    return evidence
+
+
+def _concept_group_ids(text: str, evidence: str) -> tuple[str, ...]:
+    haystack = normalize_phrase(f"{text} {evidence}")
+    concept = canonicalize_concept(text)
+    groups: list[str] = []
+    if concept == "epilepsy":
+        return ("generic_epilepsy",)
+    if "epilepsy" in haystack and not any(
+        term in haystack for term in ("focal", "generalised", "generalized")
+    ):
+        groups.append("generic_epilepsy")
+    if "secondary generalised" in haystack or "secondary generalized" in haystack:
+        groups.append("secondary_generalised_family")
+    if "tonic clonic" in haystack or "tonic chronic" in haystack:
+        groups.append("tonic_clonic_family")
+    if "symptomatic" in haystack or "structural" in haystack:
+        groups.append("structural_symptomatic_family")
+    if any(
+        phrase in haystack
+        for phrase in (
+            "focal epilepsy",
+            "focal onset",
+            "temporal lobe epilepsy",
+            "probable focal",
+            "temporal",
+        )
+    ):
+        groups.append("focal_epilepsy_family")
+    if any(
+        term in haystack
+        for term in (
+            "focal seizures",
+            "absence",
+            "complex partial",
+            "dyscognitive",
+            "myoclonic",
+            "convulsive seizure",
+        )
+    ):
+        groups.append("other_seizure_type_family")
+    return tuple(dict.fromkeys(groups or ["other_diagnosis"]))
+
+
+def _group_decision_question(group_id: str) -> str:
+    questions = {
+        "generic_epilepsy": (
+            "Is generic epilepsy directly asserted for the patient, historical/background, "
+            "section context only, or reject?"
+        ),
+        "focal_epilepsy_family": "Which focal-family Diagnosis concepts are directly asserted?",
+        "tonic_clonic_family": (
+            "Which tonic-clonic concepts are diagnosis assertions rather than frequency-only facts?"
+        ),
+        "secondary_generalised_family": (
+            "Which secondary-generalised concepts are directly asserted and should be preserved?"
+        ),
+        "structural_symptomatic_family": (
+            "Is symptomatic or structural focal epilepsy directly asserted rather than inferred?"
+        ),
+        "other_seizure_type_family": (
+            "Which named seizure-type concepts are true Diagnosis assertions?"
+        ),
+        "other_diagnosis": "Which remaining Diagnosis concepts are directly asserted?",
+    }
+    return questions[group_id]
+
+
 def _reconciliation_rules() -> list[str]:
     return [
         (
@@ -149,8 +321,14 @@ def _reconciliation_rules() -> list[str]:
             "Diagnosis concept, not merely a seizure-frequency line."
         ),
         (
-            "Recover generic epilepsy when the evidence explicitly contains the "
-            "word epilepsy and applies to the patient, even if the verifier missed it."
+            "Classify each candidate_concept_groups bucket before emitting final "
+            "mentions. The groups are attention scaffolding, not predictions."
+        ),
+        (
+            "For generic epilepsy, choose one of: patient-level established, "
+            "historical/background, section context only, or reject. Emit generic "
+            "epilepsy only for patient-level established evidence that explicitly "
+            "contains the word epilepsy."
         ),
         (
             "Recover a specific epilepsy syndrome from decomposer candidates only "
@@ -164,6 +342,21 @@ def _reconciliation_rules() -> list[str]:
             "partial seizure diagnoses only when the source asserts them as the "
             "patient's seizure diagnosis/type, not just an episode count, aura, "
             "symptom, family history, or non-epileptic event."
+        ),
+        (
+            "Group tonic-clonic, generalised tonic-clonic, and tonic chronic spellings "
+            "before choosing the normalized concept. Do not emit both a broad tonic "
+            "clonic concept and a longer variant unless separate evidence requires it."
+        ),
+        (
+            "Preserve secondary generalised seizure concepts when they are directly "
+            "asserted; do not collapse them into tonic clonic seizures unless the "
+            "source separately asserts tonic-clonic seizures."
+        ),
+        (
+            "Do not infer symptomatic structural focal epilepsy from MRI, stroke, "
+            "tumour, abscess, or lesion context alone. Emit it only when the evidence "
+            "directly asserts symptomatic/structural epilepsy."
         ),
         (
             "If verifier and decomposer disagree on certainty, choose the certainty "

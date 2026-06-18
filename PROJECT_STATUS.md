@@ -182,12 +182,19 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   Residuals are now generic epilepsy and tonic-clonic over-emission, plus focal
   epilepsy/secondary-generalised misses. See
   `docs/research/exectv2_diagnosis_reconciler_v01_dev140_report_2026-06-18.md`.
+- Diagnosis reconciler v0.2 is rejected as the current Diagnosis candidate. It
+  adds explicit candidate concept groups and improves dev25 to `0.844`, but
+  transfers worse on dev140 (`0.647`, precision `0.636`, recall `0.658`) than
+  v0.1 (`0.658`). The residuals show grouping alone did not solve recall and
+  increased generic epilepsy over-emission, so v0.1 remains the current numeric
+  Diagnosis candidate. See
+  `docs/research/exectv2_diagnosis_reconciler_v02_dev140_report_2026-06-18.md`.
 
 ## Active Priorities
 
 1. Redesign the remaining below-target Diagnosis and SeizureFrequency families
    from the updated dev140 residual ledgers: Diagnosis needs constrained
-   concept-group verification after v0.1 reconciler improved only to `0.658`;
+   accept/reject gating after v0.2 concept grouping regressed to `0.647`;
    SF needs typed candidate decomposition after v0.3 improved unknown-state
    recall but only moved the headline to `0.681`.
 2. Require benchmark-beating dev evidence before any new full-200 audit:
@@ -198,9 +205,9 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
 
 ### Now
 
-- Build a constrained Diagnosis concept-group verifier targeting generic
-  epilepsy and tonic-clonic over-emission while preserving focal epilepsy and
-  secondary-generalised recall.
+- Build a constrained Diagnosis accept/reject gate for normalized concept-family
+  candidates, targeting generic epilepsy and tonic-clonic over-emission while
+  preserving focal epilepsy and secondary-generalised recall.
 - Redesign SeizureFrequency candidate span/state adjudication as typed
   candidate decomposition plus constrained state classification.
 

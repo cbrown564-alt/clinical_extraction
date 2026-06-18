@@ -490,6 +490,18 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Claim language: Revise-only architecture evidence. Candidate-span/state adjudication improves over SF verifier v0.4 (0.623 -> 0.674) and keeps gates clean, but remains below the 0.8 target. Residuals show generic seizure active-rate over-emission and generic unknown/seizure-free misses; next loop should tighten generic candidate keep/reject rather than discard the architecture.
 - Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v01_dev140_gpt41mini_20260618.md`, `experiments/exectv2_sf_state_adjudicator_v01_residual_ledger_dev140_20260618.json`, `experiments/exectv2_sf_state_adjudicator_v01_residual_ledger_dev140_20260618.md`, `docs/research/exectv2_sf_state_adjudicator_v01_dev140_report_2026-06-18.md`.
 
+### `exectv2_hybrid_diagnosis_reconciler_v02_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_hybrid_diagnosis_reconciler`; mode `live`; replay `native_run_split`.
+- Model role: Diagnosis reconciler v0.2 pilot over Diagnosis verifier v0.6 and Diagnosis decomposer v0.1 candidates. v0.2 adds explicit candidate concept groups before final mention rendering.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection; verifier/decomposer inputs and concept groups are candidate scaffolding`.
+- Primary metrics: diagnosis_f1=0.844, diagnosis_precision=0.821, diagnosis_recall=0.868, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_hybrid_diagnosis_reconciler_v0.2, source_near_overlap_f1=0.86.
+- Evidence validity: 0 call failures, 0 parse failures; 65/65 evidence-valid rendered mentions.
+- Cache/reuse source: Uses saved Diagnosis verifier v0.6 and Diagnosis decomposer v0.1 dev140 artifacts as candidate inputs, restricted to the first 25 dev letters for this pilot.
+- Supersedes: `exectv2_hybrid_diagnosis_reconciler_v01_dev25_gpt41mini_20260618`.
+- Claim language: Pilot-only escalation signal. Concept grouping improved dev25 slightly over v0.1 (0.844 vs 0.833), but required dev140 transfer evidence before any candidate claim.
+- Artifacts: `experiments/exectv2_hybrid_diagnosis_reconciler_v02_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_diagnosis_reconciler_v02_dev25_gpt41mini_20260618.md`.
+
 ### `exectv2_hybrid_diagnosis_reconciler_v01_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
 - Pipeline: `exectv2_hybrid_diagnosis_reconciler`; mode `live`; replay `native_run_split`.
@@ -1669,6 +1681,17 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: 0 call failures, 0 parse failures; 29/29 evidence-valid rendered mentions (1.0000).
 - Claim language: Negative specialist-prompt comparison. The existing per-entity Diagnosis prompt is cleaner than the old all-9 baseline on source-near recall, but it is not competitive with the v0.5 single structured prompt on objective-aligned Diagnosis clinical recovery (0.282 vs 0.569). Do not promote; next specialist attempt should start from v0.5 guidance or use a verifier/repair prompt.
 - Artifacts: `experiments/exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618_diagnosis.jsonl`, `experiments/exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618_diagnosis.md`, `experiments/exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618_combined.json`, `experiments/exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618_combined.md`, `docs/research/exectv2_diagnosis_specialist_prompt_comparison_2026-06-18.md`.
+
+### `exectv2_hybrid_diagnosis_reconciler_v02_dev140_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_hybrid_diagnosis_reconciler`; mode `live`; replay `native_run_split`.
+- Model role: Diagnosis reconciler v0.2 over Diagnosis verifier v0.6 and Diagnosis decomposer v0.1 candidates. v0.2 adds explicit candidate concept groups for generic epilepsy, focal-family, tonic-clonic, secondary-generalised, and structural/symptomatic decisions.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection; verifier/decomposer inputs and concept groups are candidate scaffolding`.
+- Primary metrics: diagnosis_f1=0.647, diagnosis_precision=0.636, diagnosis_recall=0.658, evidence_validity_rate=0.9956, parse_failures=0, prompt_version=exectv2_hybrid_diagnosis_reconciler_v0.2, source_near_overlap_f1=0.777.
+- Evidence validity: 0 call failures, 0 parse failures; 449/451 evidence-valid rendered mentions. Residual ledger is analysis-only over the same JSONL.
+- Cache/reuse source: Uses saved Diagnosis verifier v0.6 and Diagnosis decomposer v0.1 dev140 artifacts as candidate inputs.
+- Claim language: Reject as current Diagnosis candidate. v0.2 concept grouping improved dev25 but transferred worse than v0.1 on dev140 (0.647 vs 0.658), with higher FP count. Keep v0.1 as current numeric Diagnosis candidate; next loop should use constrained accept/reject gating.
+- Artifacts: `experiments/exectv2_hybrid_diagnosis_reconciler_v02_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_diagnosis_reconciler_v02_dev140_gpt41mini_20260618.md`, `experiments/exectv2_diagnosis_reconciler_v02_residual_ledger_dev140_20260618.json`, `experiments/exectv2_diagnosis_reconciler_v02_residual_ledger_dev140_20260618.md`, `docs/research/exectv2_diagnosis_reconciler_v02_dev140_report_2026-06-18.md`.
 
 ### `exectv2_hybrid_diagnosis_decomposer_v01_dev140_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `140` rows.
