@@ -50,7 +50,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
-PROMPT_VERSION = "exectv2_llm_diagnosis_verifier_v0.5"
+PROMPT_VERSION = "exectv2_llm_diagnosis_verifier_v0.6"
 PIPELINE_FAMILY = "exectv2_llm_diagnosis_verifier"
 COMPONENT_OWNER = "llm_diagnosis_verifier"
 
@@ -170,6 +170,19 @@ def _clinical_rules() -> list[str]:
             "generalised-tonic-clonic-seizures-alone syndrome."
         ),
         (
+            "Diagnosis clinical recovery is multi-concept. If an exact evidence "
+            "span explicitly contains the word epilepsy, emit a generic 'epilepsy' "
+            "mention with the certainty carried by that word even when the same "
+            "span also supports focal, generalised, symptomatic structural, JME, "
+            "or another more specific epilepsy concept."
+        ),
+        (
+            "For diagnosis headings such as 'epilepsy - probable focal' or "
+            "'Epilepsy - unclassified, possibly generalised', emit both the "
+            "explicit generic epilepsy concept with Certainty='5' and the "
+            "uncertain specific concept with Certainty='4' or '3'."
+        ),
+        (
             "Use Certainty='4' for probable or likely diagnoses; Certainty='3' for "
             "possible, suspected, query, or differential diagnoses; Certainty='5' "
             "only for established or unqualified statements."
@@ -188,8 +201,9 @@ def _clinical_rules() -> list[str]:
         (
             "When a narrative states 'reviewed this patient with epilepsy' or "
             "otherwise explicitly says the patient has epilepsy, emit a generic "
-            "'epilepsy' Diagnosis unless a more specific epilepsy syndrome in the "
-            "same assertion should replace it."
+            "'epilepsy' Diagnosis. Do not suppress this generic mention merely "
+            "because another sentence or clause states a more specific epilepsy "
+            "syndrome."
         ),
         (
             "Do not infer epilepsy from a generic clinic-review sentence, medication "
@@ -300,6 +314,12 @@ def _clinical_rules() -> list[str]:
             "as the text; do not reduce it to generic epilepsy."
         ),
         (
+            "When the source says symptomatic structural epilepsy due to a focal "
+            "brain lesion, previous abscess, tumour, perinatal insult, or other "
+            "structural focal cause, normalize the syndrome text to 'symptomatic "
+            "structural focal epilepsy' with Certainty='5'."
+        ),
+        (
             "If the source says focal seizures are completely under control, this is "
             "still an affirmed Diagnosis mention for 'focal seizures'; use "
             "Certainty='4' when introduced by 'I think'."
@@ -375,6 +395,17 @@ def _worked_examples() -> list[dict[str, Any]]:
             "draft": [{"text": "epilepsy - probable focal"}],
             "correct": [
                 {
+                    "text": "epilepsy",
+                    "attributes": {
+                        "DiagCategory": "Epilepsy",
+                        "Certainty": "5",
+                        "Negation": "Affirmed",
+                    },
+                    "evidence": "epilepsy",
+                    "confidence": "high",
+                    "rationale": "The generic epilepsy diagnosis is explicitly stated.",
+                },
+                {
                     "text": "focal epilepsy",
                     "attributes": {
                         "DiagCategory": "Epilepsy",
@@ -385,6 +416,71 @@ def _worked_examples() -> list[dict[str, Any]]:
                     "confidence": "medium",
                     "rationale": "Discontinuous probable focal epilepsy is normalized.",
                 }
+            ],
+        },
+        {
+            "note_fragment": "Diagnosis: Epilepsy - unclassified, possibly generalised.",
+            "draft": [{"text": "generalised epilepsy"}],
+            "correct": [
+                {
+                    "text": "epilepsy",
+                    "attributes": {
+                        "DiagCategory": "Epilepsy",
+                        "Certainty": "5",
+                        "Negation": "Affirmed",
+                    },
+                    "evidence": "Epilepsy",
+                    "confidence": "high",
+                    "rationale": "Epilepsy itself is established in the heading.",
+                },
+                {
+                    "text": "generalised epilepsy",
+                    "attributes": {
+                        "DiagCategory": "Epilepsy",
+                        "Certainty": "3",
+                        "Negation": "Affirmed",
+                    },
+                    "evidence": "possibly generalised",
+                    "confidence": "medium",
+                    "rationale": "The possible generalised modifier is uncertain.",
+                },
+            ],
+        },
+        {
+            "note_fragment": (
+                "Diagnosis: Symptomatic structural epilepsy secondary to previous "
+                "cerebral abscess. His epilepsy started after brain surgery."
+            ),
+            "draft": [{"text": "symptomatic structural epilepsy"}],
+            "correct": [
+                {
+                    "text": "symptomatic structural focal epilepsy",
+                    "attributes": {
+                        "DiagCategory": "Epilepsy",
+                        "Certainty": "5",
+                        "Negation": "Affirmed",
+                    },
+                    "evidence": (
+                        "Symptomatic structural epilepsy secondary to previous "
+                        "cerebral abscess"
+                    ),
+                    "confidence": "high",
+                    "rationale": (
+                        "Structural brain lesion context supports focal structural "
+                        "epilepsy."
+                    ),
+                },
+                {
+                    "text": "epilepsy",
+                    "attributes": {
+                        "DiagCategory": "Epilepsy",
+                        "Certainty": "5",
+                        "Negation": "Affirmed",
+                    },
+                    "evidence": "epilepsy",
+                    "confidence": "high",
+                    "rationale": "The narrative explicitly repeats epilepsy.",
+                },
             ],
         },
         {

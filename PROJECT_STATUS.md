@@ -142,12 +142,19 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   Prescription (`0.817`) and Investigations (`0.872`). Diagnosis (`0.616`) and
   SeizureFrequency (`0.602`) remain below target. See
   `docs/research/exectv2_investigations_verifier_v01_dev140_report_2026-06-18.md`.
+- Residual-led Diagnosis v0.6 and SeizureFrequency v0.4 improve dev140 but do
+  not clear target: Diagnosis `0.616` -> `0.651`, SF `0.602` -> `0.623`, with
+  clean call/parse gates and evidence validity around `0.99`. The updated
+  ledger still shows broad residual families, so the next loop should use
+  stronger decomposition rather than more broad verifier-prompt accretion. See
+  `docs/research/exectv2_diag_sf_verifier_v06_v04_dev140_report_2026-06-18.md`.
 
 ## Active Priorities
 
-1. Build dev140 clinical-recovery error ledgers for Prescription,
-   Investigations, Diagnosis, and SeizureFrequency; use them to separate source
-   coverage, concept normalization, attribute/state rendering, and over-emission.
+1. Redesign the remaining below-target Diagnosis and SeizureFrequency families
+   from the updated dev140 residual ledger: Diagnosis needs heading
+   decomposition plus narrative seizure-type collection; SF needs candidate
+   span/state adjudication.
 2. Require benchmark-beating dev evidence before any new full-200 audit:
    overall `0.87` per-item / `0.90` per-letter, plus per-entity tables,
    evidence/schema reliability, semantic-vs-CUI gaps, and ablations.
@@ -156,16 +163,16 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
 
 ### Now
 
-- Redesign Diagnosis and SeizureFrequency from dev140 residual ledgers; keep
-  Prescription verifier v0.1 and Investigations verifier v0.1 as current
-  family candidates.
+- Build a Diagnosis decomposition prototype: diagnosis-heading decomposer plus
+  narrative seizure-type collector, reconciled into one Diagnosis output.
+- Build a SeizureFrequency candidate span/state adjudicator that classifies
+  candidate spans as `active-rate`, `seizure-free`, `unknown`, or `reject`.
 
 ### Next
 
-- Draft a dev140-led v0.6/v0.4 architecture plan after residual ledgers identify
-  which families need prompt-only fixes versus new verifier decomposition.
-- Compare the best single-prompt structured-event variant against the existing
-  per-entity prompt family before returning to specialist/verifier variants.
+- Regenerate the combined key-family clinical-recovery readout using current
+  best candidates: Prescription verifier v0.1, Investigations verifier v0.1,
+  Diagnosis v0.6 or successor, and SF v0.4 or successor.
 
 ### Blocked
 

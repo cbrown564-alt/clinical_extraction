@@ -1858,6 +1858,26 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Inform Architecture Loop
 
+### `exectv2_diag_sf_verifier_v06_v04_dev140_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_llm_diagnosis_verifier` + `exectv2_llm_sf_verifier`; mode `live`; replay `native_run_split`.
+- Model role: Residual-led Diagnosis verifier v0.6 and SeizureFrequency verifier v0.4 over the v0.5 single structured key-entity draft. The model owns revised family mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
+- Primary metrics: diagnosis_f1=0.651, diagnosis_precision=0.706, diagnosis_recall=0.604, diagnosis_evidence_validity_rate=0.9906, sf_f1=0.623, sf_precision=0.591, sf_recall=0.658, sf_evidence_validity_rate=0.9905, parse_failures=0.
+- Evidence validity: Diagnosis 0 call failures, 0 parse failures, 317/320 evidence-valid rendered mentions. SeizureFrequency 0 call failures, 0 parse failures, 208/210 evidence-valid rendered mentions.
+- Claim language: Revise-only dev140 improvement. Diagnosis improves `0.616` -> `0.651` and SeizureFrequency improves `0.602` -> `0.623`, but both remain below the `0.8` target. Next iteration should use stronger task decomposition, not more broad prompt accretion.
+- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v06_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v06_dev140_gpt41mini_20260618.md`, `experiments/exectv2_llm_sf_verifier_v04_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_sf_verifier_v04_dev140_gpt41mini_20260618.md`, `docs/research/exectv2_diag_sf_verifier_v06_v04_dev140_report_2026-06-18.md`.
+
+### `exectv2_key_entities_clinical_error_ledger_diagv06_sfv04_dev140_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_key_entities_clinical_error_ledger`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Clinical-recovery error ledger over the residual-led dev140 Diagnosis v0.6 and SeizureFrequency v0.4 artifacts. Prescription/Investigations are unchanged from the single structured substrate in this ledger and should not supersede their current family-specific candidates.; model `none`.
+- Repair mode/config: `no model calls; clinical-recovery key analysis only`.
+- Primary metrics: diagnosis_f1=0.651, seizure_frequency_f1=0.623, records=547.
+- Evidence validity: No new model calls. Ledger keys are the same clinical-recovery keys used by the headline scorers.
+- Claim language: Diagnostic residual taxonomy for the next Diagnosis/SF architecture loop. Current promoted family candidates remain Prescription verifier v0.1 and Investigations verifier v0.1; this ledger is for remaining below-target families.
+- Artifacts: `experiments/exectv2_key_entities_clinical_error_ledger_diagv06_sfv04_dev140_20260618.json`, `experiments/exectv2_key_entities_clinical_error_ledger_diagv06_sfv04_dev140_20260618.md`, `docs/research/exectv2_diag_sf_verifier_v06_v04_dev140_report_2026-06-18.md`.
+
 ### `exectv2_llm_investigations_verifier_v01_dev140_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `140` rows.
 - Pipeline: `exectv2_llm_investigations_verifier`; mode `live`; replay `native_run_split`.
