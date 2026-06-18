@@ -1,12 +1,15 @@
 # Project Status
 
-Last updated: 2026-06-18
+Last updated: 2026-06-19
 
 ## Active Objective
 
-ExECTv2 is the forward Plan 11 workstream. The single all-entities LLM pass is
-useful but insufficient; keep source-near state, exact evidence, component
-attribution, benchmark-format ablations, and family-aware promotion gates.
+ExECTv2 Plan 11 now optimizes exactly four indicators:
+`Diagnosis`, `SeizureFrequency`, `Prescription`, and `Investigations`.
+Success requires core F1 `>0.900` for each on the predeclared development
+headline using a hybrid pipeline: one LLM call per letter for candidate
+generation/selection, then deterministic normalization and projection with
+explicit attribution.
 
 ## Current Dev140 Readout
 
@@ -26,6 +29,10 @@ routed four-family CUI-free headline to `0.7081`, with Diagnosis `0.7127`, but
 the current routed Diagnosis baseline remains weak at `0.2898`; treat the
 focused lane as qualified architecture evidence, not solved Diagnosis or
 full-200/test authorization.
+
+ADR `0030-four-exact-indicators-drive-exectv2-plan11.md` freezes the current
+target surface and says error analysis should exclude non-target ExECT families
+unless a later ADR expands the scope.
 
 ## Recent Context
 
@@ -49,15 +56,18 @@ full-200/test authorization.
 
 1. Treat routed and focused-replay results as qualified dev architecture
    evidence, not benchmark-complete claims.
-2. Use the SF v0.8 hard-slice panel to make a predeclared gate decision before
+2. Build a four-indicator error-analysis/readout that reports only Diagnosis,
+   SeizureFrequency, Prescription, and Investigations, with raw LLM output
+   separated from deterministic normalization/projection.
+3. Use the SF v0.8 hard-slice panel to make a predeclared gate decision before
    any prediction-bearing SF code.
-3. Keep full-200/test and Gan-facing work blocked until explicit authorization,
-   frozen protocol, and predeclared aggregate readout are present.
 
 ## Work Board
 
 ### Now
 
+- Measure the current four-indicator hybrid surface with the ADR 0030 target
+  contract and identify which target indicator blocks `>0.900` first.
 - Review `experiments/exectv2_sf_v08_hard_slice_panel_dev140_20260618.md` and
   write the SF v0.8 gate decision: either no prediction-bearing change, or one
   predeclared bucket/action class that clears attribution, non-gold-feature, and
@@ -65,6 +75,9 @@ full-200/test authorization.
 
 ### Next
 
+- Assemble the single-call hybrid candidate report: one LLM candidate
+  generation/selection pass per letter, deterministic normalization/projection,
+  and target-only attribution/ablation tables.
 - Decide whether to fold the promoted Diagnosis enumeration lane into the
   canonical family-routed runner (replacing the shared-pass Diagnosis lane),
   with an ownership-clean preflight note; or keep it as a guarded dev candidate
@@ -85,6 +98,9 @@ full-200/test authorization.
 
 ### Done Recently
 
+- 2026-06-19: Added ADR 0030 to lock the four exact ExECTv2 target indicators
+  and the `>0.900` core-F1 hybrid-pipeline objective; narrowed error analysis to
+  Diagnosis, SeizureFrequency, Prescription, and Investigations.
 - 2026-06-19: Ran the predeclared Diagnosis enumeration recall pass (live
   `gpt-4.1-mini`, dev ladder). Clean `llm_first` Diagnosis lane lifts routed
   Diagnosis `0.2898 -> 0.6530` and four-family `0.5592 -> 0.6835`, P `0.4162 ->
