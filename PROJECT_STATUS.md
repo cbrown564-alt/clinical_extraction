@@ -57,6 +57,13 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   medication (`0.900`) and Investigations (`0.837`) above target. Diagnosis only
   moved to `0.460`, making concept/assertion recovery the primary bottleneck.
   See `docs/research/exectv2_key_entities_structured_v04_pilot_report_2026-06-18.md`.
+- v0.5 is the best single-prompt dev25 candidate so far:
+  `experiments/exectv2_llm_only_key_entities_structured_v05_dev25_gpt41mini_20260618.md`.
+  Diagnosis improved to `0.569` clinical headline F1 while medication (`0.897`)
+  and Investigations (`0.837`) stayed above target and SF stayed at `0.633`.
+  This supports moving to a specialist Diagnosis prompt comparison on the same
+  dev25 surface before dev140. See
+  `docs/research/exectv2_key_entities_structured_v05_pilot_report_2026-06-18.md`.
 
 ## Active Priorities
 
@@ -72,10 +79,10 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
 
 ### Now
 
-- Build v0.5 on the same dev25 surface using clinical-recovery headline F1 as
-  the promotion readout: preserve medication/Investigation/SF gains and focus
-  on Diagnosis hard cases before deciding whether to compare a specialist
-  Diagnosis prompt.
+- Compare a specialist Diagnosis prompt against v0.5 single-prompt structured
+  Diagnosis on the same dev25 surface; keep medication/Investigation/SF from
+  v0.5 as the single-prompt reference unless the comparison shows a cleaner
+  architecture.
 
 ### Next
 
@@ -106,9 +113,10 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   (`0.783`), and Diagnosis/SF below target (`0.414`/`0.456`). v0.3 then moved
   medication and Investigations above target (`0.883`/`0.878`) but regressed SF
   (`0.421`). v0.4 recovered SF to `0.644` while preserving medication and
-  Investigations above target; Diagnosis remains below target (`0.460`). Runs
-  are registered in `experiments/RUN_INDEX.md`; latest report:
-  `docs/research/exectv2_key_entities_structured_v04_pilot_report_2026-06-18.md`.
+  Investigations above target; v0.5 then lifted Diagnosis to `0.569` while
+  preserving the other family wins. Runs are registered in
+  `experiments/RUN_INDEX.md`; latest report:
+  `docs/research/exectv2_key_entities_structured_v05_pilot_report_2026-06-18.md`.
 - 2026-06-17: Built the reusable all-entity projection-gap ledger
   (`reports/projection_gap_ledger.py`). Classifies every gold FN / predicted FP
   into a layered `gap_family` (phrase coverage, attribute bundle, CUI
