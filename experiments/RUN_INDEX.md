@@ -425,6 +425,28 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Claim language: Diagnostic residual taxonomy for the failed dev140 transfer readout. Use this as the control surface for the next targeted verifier iteration; do not treat it as a promoted candidate.
 - Artifacts: `experiments/exectv2_key_entities_clinical_error_ledger_dev140_20260618.json`, `experiments/exectv2_key_entities_clinical_error_ledger_dev140_20260618.md`, `docs/research/exectv2_key_entities_dev140_clinical_error_ledger_readout_2026-06-18.md`.
 
+### `exectv2_hybrid_sf_state_adjudicator_v04_dev25_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `25` rows.
+- Pipeline: `exectv2_hybrid_sf_state_adjudicator`; mode `live`; replay `native_run_split`.
+- Model role: SeizureFrequency candidate-span state adjudicator v0.4 pilot over the v0.5 single structured key-entity draft. v0.4 adds typed candidate metadata for generic/named active-rate, seizure-free anchors, qualitative change, prior-event references, and reject contexts.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection; deterministic typed candidate spans are attention scaffolding, not predictions`.
+- Primary metrics: candidate_spans=79, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_hybrid_sf_state_adjudicator_v0.4, seizure_frequency_f1=0.935, seizure_frequency_precision=0.935, seizure_frequency_recall=0.935.
+- Evidence validity: 0 call failures, 0 parse failures; 31/31 evidence-valid rendered mentions.
+- Supersedes: `exectv2_hybrid_sf_state_adjudicator_v03_dev25_gpt41mini_20260618`.
+- Claim language: Pilot-only escalation signal. Typed candidate decomposition stayed strong on dev25 and justified dev140 transfer testing.
+- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v04_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v04_dev25_gpt41mini_20260618.md`.
+
+### `exectv2_hybrid_sf_state_adjudicator_v04_dev140_gpt41mini_20260618`
+- Date/split: `2026-06-18`; `dev`; `140` rows.
+- Pipeline: `exectv2_hybrid_sf_state_adjudicator`; mode `live`; replay `native_run_split`.
+- Model role: SeizureFrequency candidate-span state adjudicator v0.4 over the v0.5 single structured key-entity draft. v0.4 adds typed candidate metadata before LLM adjudication while leaving final mention selection to the model.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection; deterministic typed candidate spans are attention scaffolding, not predictions`.
+- Primary metrics: active_rate_f1=0.746, candidate_spans=412, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_hybrid_sf_state_adjudicator_v0.4, seizure_free_f1=0.738, seizure_frequency_f1=0.707, seizure_frequency_precision=0.704, seizure_frequency_recall=0.711, unknown_f1=0.525.
+- Evidence validity: 0 call failures, 0 parse failures; 189/189 evidence-valid rendered mentions. Residual ledger is analysis-only over the same JSONL.
+- Supersedes: `exectv2_hybrid_sf_state_adjudicator_v03_dev140_gpt41mini_20260618`.
+- Claim language: Revise-only current best SF candidate. Typed candidate decomposition improves dev140 from 0.681 to 0.707 but remains below the 0.8 target; next loop should specialize seizure-free anchors.
+- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v04_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v04_dev140_gpt41mini_20260618.md`, `experiments/exectv2_sf_state_adjudicator_v04_residual_ledger_dev140_20260618.json`, `experiments/exectv2_sf_state_adjudicator_v04_residual_ledger_dev140_20260618.md`, `docs/research/exectv2_sf_state_adjudicator_v04_dev140_report_2026-06-18.md`.
+
 ### `exectv2_hybrid_sf_state_adjudicator_v03_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
 - Pipeline: `exectv2_hybrid_sf_state_adjudicator`; mode `live`; replay `native_run_split`.

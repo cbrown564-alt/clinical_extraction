@@ -170,6 +170,12 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   enough that the next SF loop needs stronger typed candidate decomposition, not
   more broad prompt accretion. See
   `docs/research/exectv2_sf_state_adjudicator_v03_dev140_report_2026-06-18.md`.
+- SeizureFrequency state adjudicator v0.4 is now the best SF dev140 candidate:
+  F1 `0.707`, precision `0.704`, recall `0.711`, with `0` call/parse failures
+  and evidence validity `1.0000`. Typed candidate decomposition improved both
+  precision and recall over v0.3; unknown-state F1 rose to `0.525`, but
+  seizure-free anchors are now the largest residual pocket. See
+  `docs/research/exectv2_sf_state_adjudicator_v04_dev140_report_2026-06-18.md`.
 - Diagnosis heading/narrative decomposer v0.1 is rejected as the current
   Diagnosis candidate. It clears dev25 (`0.814`) but transfers to only `0.642`
   on dev140, below verifier v0.6 (`0.651`), despite clean gates and evidence
@@ -203,8 +209,8 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
    from the updated dev140 residual ledgers: Diagnosis needs constrained
    accept/reject gating with named seizure-type recovery after v0.1 gating
    under-recalled at `0.625` dev25;
-   SF needs typed candidate decomposition after v0.3 improved unknown-state
-   recall but only moved the headline to `0.681`.
+   SF needs seizure-free-anchor specialization after typed candidate
+   decomposition moved the headline to `0.707`.
 2. Require benchmark-beating dev evidence before any new full-200 audit:
    overall `0.87` per-item / `0.90` per-letter, plus per-entity tables,
    evidence/schema reliability, semantic-vs-CUI gaps, and ablations.
@@ -218,7 +224,7 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   targeting generic epilepsy and tonic-clonic over-emission while preserving
   focal epilepsy and secondary-generalised recall.
 - Redesign SeizureFrequency candidate span/state adjudication as typed
-  candidate decomposition plus constrained state classification.
+  candidate decomposition plus seizure-free-anchor specialization.
 
 ### Next
 

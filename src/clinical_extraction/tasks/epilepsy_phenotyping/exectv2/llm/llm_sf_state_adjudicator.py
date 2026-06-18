@@ -49,7 +49,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
-PROMPT_VERSION = "exectv2_hybrid_sf_state_adjudicator_v0.3"
+PROMPT_VERSION = "exectv2_hybrid_sf_state_adjudicator_v0.4"
 PIPELINE_FAMILY = "exectv2_hybrid_sf_state_adjudicator"
 COMPONENT_OWNER = "hybrid_sf_state_adjudicator"
 
@@ -103,6 +103,8 @@ class CandidateSpan:
     evidence: str
     state_hint: str
     text_hint: str
+    candidate_type: str
+    decision_lane: str
     source: str
     start: int
     end: int
@@ -113,6 +115,8 @@ class CandidateSpan:
             "evidence": self.evidence,
             "state_hint": self.state_hint,
             "text_hint": self.text_hint,
+            "candidate_type": self.candidate_type,
+            "decision_lane": self.decision_lane,
             "source": self.source,
         }
 
@@ -176,6 +180,8 @@ def candidate_spans_for_letter(
                 evidence=clean,
                 state_hint=_state_hint(clean),
                 text_hint=_text_hint(clean),
+                candidate_type=_candidate_type(clean),
+                decision_lane=_decision_lane(clean),
                 source=source,
                 start=start,
                 end=end,
@@ -251,6 +257,7 @@ def build_prompt_input(
         },
         "draft_seizure_frequency_mentions": list(draft_mentions),
         "candidate_evidence_spans": [candidate.as_payload() for candidate in candidates],
+        "typed_candidate_guide": _typed_candidate_guide(),
         "state_decision_guide": _state_decision_guide(),
         "generic_seizure_policy": _generic_seizure_policy(),
         "unknown_change_recovery_lane": _unknown_change_recovery_lane(),
@@ -279,6 +286,16 @@ def _clinical_rules() -> list[str]:
             "A candidate with state_hint='reject' should usually be omitted unless "
             "the letter clearly contains a count, seizure-free target, last-event "
             "anchor, or frequency-change statement."
+        ),
+        (
+            "Use candidate_type and decision_lane before deciding. generic_active_rate "
+            "and named_active_rate are different decisions; do not add generic "
+            "seizures when a named_active_rate already owns the count."
+        ),
+        (
+            "candidate_type='prior_event_reference' is usually not an active-rate "
+            "mention. It may support seizure-free only when the annotation scheme "
+            "has a clear last-event anchor and no newer seizure contradicts it."
         ),
         (
             "Do not emit a generic seizures active-rate when the evidence names a "
@@ -362,6 +379,56 @@ def _generic_seizure_policy() -> dict[str, list[str]]:
                 "naming seizure(s)."
             ),
             "Jerks or stares improved without a scored seizure type.",
+        ],
+    }
+
+
+def _typed_candidate_guide() -> dict[str, list[str]]:
+    return {
+        "generic_active_rate": [
+            "Generic seizure(s) plus a count/rate/current period.",
+            "Emit only when the count belongs to generic seizure(s), not a named seizure type.",
+        ],
+        "named_active_rate": [
+            "A named seizure type plus count/rate/current period.",
+            (
+                "Prefer the named type and suppress duplicate generic seizures "
+                "unless separately stated."
+            ),
+        ],
+        "generic_seizure_free_anchor": [
+            "No further seizures, last seizure(s), seizure-free since a supported anchor.",
+            (
+                "Reject driving advice, historical best periods, or "
+                "previous-event-before-newer-seizure spans."
+            ),
+        ],
+        "named_seizure_free_anchor": [
+            "Named seizure type plus last-event/seizure-free anchor.",
+            "Render the named type when the last-event anchor attaches to that type.",
+        ],
+        "generic_qualitative_change": [
+            "Generic seizures improved/worsened/returned/frequent/infrequent/controlled.",
+            "Use FrequencyChange and no numeric seizure count.",
+        ],
+        "named_qualitative_change": [
+            "Named seizure type improved/worsened/frequent/infrequent/controlled.",
+            "Use the named type only when the change attaches to it directly.",
+        ],
+        "prior_event_reference": [
+            "Previous event before a recent seizure or 'last had a seizure before this'.",
+            (
+                "Usually reject as active-rate; consider seizure-free only for true "
+                "last-event anchors."
+            ),
+        ],
+        "unlabelled_episode_event": [
+            "Episodes/events/blackouts/stares/jerks without explicit seizure wording.",
+            "Reject unless the evidence itself names a scored seizure type.",
+        ],
+        "diagnosis_or_context": [
+            "Diagnosis, family history, no-history, or context-only seizure wording.",
+            "Reject as SeizureFrequency.",
         ],
     }
 
@@ -561,6 +628,69 @@ def _state_hint(evidence: str) -> str:
     ):
         return "active-rate"
     return "reject"
+
+
+def _candidate_type(evidence: str) -> str:
+    lower = evidence.lower()
+    if _BLOCKING_CONTEXT_RE.search(lower):
+        return "diagnosis_or_context"
+    if re.search(r"\b(episodes?|events?|blackouts?|stares?|turns?)\b", lower) and not re.search(
+        r"\bseizures?\b", lower
+    ):
+        return "unlabelled_episode_event"
+    if re.search(r"\b(previous event|seizure before this|before the recent seizure)\b", lower):
+        return "prior_event_reference"
+    named = _has_named_seizure_type(lower)
+    seizure_free = re.search(
+        r"\b(seizure[- ]free|not had|no further|last event|last seizures?)\b",
+        lower,
+    )
+    change = re.search(
+        r"\b(returned|increased|decreased|frequent|infrequent|improved|"
+        r"improvement|worse|controlled|under control)\b",
+        lower,
+    )
+    rate = re.search(
+        r"\b(\d+|one|two|three|four|five|six|seven|eight|nine|ten|few|several|total|per|every|cluster)\b",
+        lower,
+    )
+    if seizure_free:
+        return "named_seizure_free_anchor" if named else "generic_seizure_free_anchor"
+    if change:
+        return "named_qualitative_change" if named else "generic_qualitative_change"
+    if rate:
+        return "named_active_rate" if named else "generic_active_rate"
+    return "diagnosis_or_context"
+
+
+def _decision_lane(evidence: str) -> str:
+    candidate_type = _candidate_type(evidence)
+    if candidate_type in {"generic_active_rate", "named_active_rate"}:
+        return "active_rate"
+    if candidate_type in {"generic_seizure_free_anchor", "named_seizure_free_anchor"}:
+        return "seizure_free"
+    if candidate_type in {"generic_qualitative_change", "named_qualitative_change"}:
+        return "qualitative_change"
+    if candidate_type == "prior_event_reference":
+        return "reject_or_seizure_free"
+    return "reject"
+
+
+def _has_named_seizure_type(lower: str) -> bool:
+    return bool(
+        re.search(
+            r"\b("
+            r"generalised\s+tonic\s+(?:clonic|chronic)|"
+            r"generalized\s+tonic\s+(?:clonic|chronic)|"
+            r"tonic\s+(?:clonic|chronic)|"
+            r"focal\s+to\s+bilateral|"
+            r"focal\s+(?:motor\s+)?seizures?|"
+            r"complex\s+partial|dyscognitive|absence|absences|"
+            r"myoclonic\s+jerks|convulsive\s+seizures?"
+            r")\b",
+            lower,
+        )
+    )
 
 
 def _text_hint(evidence: str) -> str:

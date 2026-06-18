@@ -31,17 +31,44 @@ def test_candidate_spans_cover_residual_state_patterns() -> None:
     )
     assert returned["state_hint"] == "unknown"
     assert returned["text_hint"] == "seizures"
+    assert returned["candidate_type"] == "generic_qualitative_change"
+    assert returned["decision_lane"] == "qualitative_change"
 
     seizure_free = next(
         item for item in payloads if item["evidence"].startswith("not had any further seizures")
     )
     assert seizure_free["state_hint"] == "seizure-free"
+    assert seizure_free["candidate_type"] == "generic_seizure_free_anchor"
 
     active = next(item for item in payloads if item["evidence"] == "a total of 3 in 2020")
     assert active["state_hint"] == "active-rate"
     assert active["text_hint"] == "seizures"
+    assert active["candidate_type"] == "generic_active_rate"
 
     assert all("Family history" not in item["evidence"] for item in payloads)
+
+
+def test_candidate_spans_type_named_rates_and_prior_event_references() -> None:
+    note = (
+        "He gets around 1 generalised tonic clonic seizure in his sleep per month. "
+        "He last had a seizure before this around a year ago."
+    )
+    letter = ExectLetter(letter_id="TEST002", note_text=note)
+
+    payloads = [
+        candidate.as_payload()
+        for candidate in adjudicator.candidate_spans_for_letter(letter)
+    ]
+
+    named_rate = next(
+        item for item in payloads if "generalised tonic clonic seizure" in item["evidence"]
+    )
+    assert named_rate["candidate_type"] == "named_active_rate"
+    assert named_rate["decision_lane"] == "active_rate"
+
+    previous = next(item for item in payloads if "seizure before this" in item["evidence"])
+    assert previous["candidate_type"] == "prior_event_reference"
+    assert previous["decision_lane"] == "reject_or_seizure_free"
 
 
 def test_build_prompt_input_includes_candidate_span_guide_and_rules() -> None:
@@ -59,8 +86,10 @@ def test_build_prompt_input_includes_candidate_span_guide_and_rules() -> None:
     )
 
     assert payload["prompt_version"] == adjudicator.PROMPT_VERSION
-    assert payload["prompt_version"].endswith("_v0.3")
+    assert payload["prompt_version"].endswith("_v0.4")
     assert payload["candidate_evidence_spans"]
+    assert payload["typed_candidate_guide"]
+    assert payload["candidate_evidence_spans"][0]["candidate_type"]
     assert payload["generic_seizure_policy"]
     assert payload["unknown_change_recovery_lane"]
     assert {"active-rate", "seizure-free", "unknown", "reject"} <= set(
@@ -74,6 +103,8 @@ def test_build_prompt_input_includes_candidate_span_guide_and_rules() -> None:
     assert "driving-advice requirements" in rules
     assert "epilepsy stability" in rules
     assert "Unknown/change-state recovery is a separate lane" in rules
+    assert "candidate_type" in rules
+    assert "prior_event_reference" in rules
     assert "split them" in rules
     assert "Do not emit CUI or CUIPhrase" in rules
     examples = payload["worked_examples"]
