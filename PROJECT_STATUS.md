@@ -176,6 +176,13 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   precision and recall over v0.3; unknown-state F1 rose to `0.525`, but
   seizure-free anchors are now the largest residual pocket. See
   `docs/research/exectv2_sf_state_adjudicator_v04_dev140_report_2026-06-18.md`.
+- SeizureFrequency state adjudicator v0.5 is now the best SF dev140 candidate:
+  F1 `0.721`, precision `0.710`, recall `0.733`, with `0` call/parse failures
+  and evidence validity `1.0000`. Seizure-free-anchor specialization moved
+  seizure-free F1 from `0.738` to `0.781`, but unknown-state F1 regressed to
+  `0.476`; the next SF loop should recover explicit seizure change states while
+  preserving the seizure-free gains. See
+  `docs/research/exectv2_sf_state_adjudicator_v05_dev140_report_2026-06-18.md`.
 - Diagnosis heading/narrative decomposer v0.1 is rejected as the current
   Diagnosis candidate. It clears dev25 (`0.814`) but transfers to only `0.642`
   on dev140, below verifier v0.6 (`0.651`), despite clean gates and evidence
@@ -209,8 +216,8 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
    from the updated dev140 residual ledgers: Diagnosis needs constrained
    accept/reject gating with named seizure-type recovery after v0.1 gating
    under-recalled at `0.625` dev25;
-   SF needs seizure-free-anchor specialization after typed candidate
-   decomposition moved the headline to `0.707`.
+   SF needs constrained unknown/change-state recovery after seizure-free-anchor
+   specialization moved the headline to `0.721`.
 2. Require benchmark-beating dev evidence before any new full-200 audit:
    overall `0.87` per-item / `0.90` per-letter, plus per-entity tables,
    evidence/schema reliability, semantic-vs-CUI gaps, and ablations.
@@ -223,8 +230,9 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   candidates with separate recovery for named seizure-type/frequency headings,
   targeting generic epilepsy and tonic-clonic over-emission while preserving
   focal epilepsy and secondary-generalised recall.
-- Redesign SeizureFrequency candidate span/state adjudication as typed
-  candidate decomposition plus seizure-free-anchor specialization.
+- Redesign SeizureFrequency state adjudication as typed candidate decomposition
+  plus a constrained unknown/change-state recovery lane, preserving v0.5
+  seizure-free-anchor rendering.
 
 ### Next
 

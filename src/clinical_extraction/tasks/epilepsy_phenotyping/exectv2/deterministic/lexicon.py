@@ -47,7 +47,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import norma
 # first). Counts in comments are gold-mention frequencies, 2026-06-10 corpus.
 SF_CUI_LEXICON: dict[str, tuple[str, ...]] = {
     # Generic seizure (111). Bare "seizure"/"seizures" resolve here.
-    "C0036572": ("seizures", "seizure"),
+    "C0036572": ("seizures", "seizure", "no further seizures"),
     # Generalised tonic-clonic seizure (32).
     "C0494475": (
         "generalised tonic clonic seizures",
@@ -62,6 +62,8 @@ SF_CUI_LEXICON: dict[str, tuple[str, ...]] = {
     "C0877017": (
         "focal to bilateral convulsive seizures",
         "focal to bilateral convulsive seizure",
+        "focal to bilateral seizures",
+        "focal to bilateral seizure",
         "bilateral convulsive seizures",
         "focal",
     ),
@@ -72,6 +74,8 @@ SF_CUI_LEXICON: dict[str, tuple[str, ...]] = {
         "focal seizures with altered awareness",
         "focal seizures with loss of awareness",
         "focal seizures with impaired awareness",
+        "focal impaired awareness seizures",
+        "focal dyscognitive seizures",
         "dyscognitive seizures",
         "dyscognitive",
     ),
@@ -83,7 +87,7 @@ SF_CUI_LEXICON: dict[str, tuple[str, ...]] = {
         "secondarily generalised seizures",
     ),
     # Absence seizure (10).
-    "C0563606": ("absences", "absence", "absence like seizures"),
+    "C0563606": ("absences", "absence", "absence like seizures", "absence events"),
     # Myoclonic jerk (8).
     "C0027066": ("myoclonic jerks", "myoclonic jerk"),
     # Focal seizure (6).
