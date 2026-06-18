@@ -183,6 +183,12 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
   `0.476`; the next SF loop should recover explicit seizure change states while
   preserving the seizure-free gains. See
   `docs/research/exectv2_sf_state_adjudicator_v05_dev140_report_2026-06-18.md`.
+- The interim key-family architecture synthesis is now written:
+  `docs/research/exectv2_key_entity_architecture_research_report_2026-06-18.md`.
+  Its conclusion is that the single structured prompt is a useful evidence
+  substrate, but final clinical recovery needs family-specific verifier or
+  adjudicator stages. Medication and Investigations clear dev140; Diagnosis and
+  SeizureFrequency remain below target.
 - Diagnosis heading/narrative decomposer v0.1 is rejected as the current
   Diagnosis candidate. It clears dev25 (`0.814`) but transfers to only `0.642`
   on dev140, below verifier v0.6 (`0.651`), despite clean gates and evidence
@@ -312,5 +318,6 @@ rapid loops and keep Qwen 3.6:35B as a later transfer track.
 - `experiments/exectv2_deterministic_all9_dev_20260617.md`
 - `experiments/exectv2_projection_gap_ledger_dev.md`
 - `docs/research/exectv2_gpt_first_full_architecture_strategy_2026-06-17.md`
+- `docs/research/exectv2_key_entity_architecture_research_report_2026-06-18.md`
 - `docs/research/gan2026_research_closeout_synthesis_2026-06-17.md`
 - `experiments/RUN_INDEX.md`
