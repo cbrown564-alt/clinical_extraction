@@ -58,13 +58,14 @@ normalization/projection loop, but the corrected error view shows Diagnosis
 and SF remain candidate-recall/selection problems, not just representation
 problems.
 
-The best target single-call development readout so far is the v0.12 no-call
-reprojection of the v0.11 live dev25 raw outputs:
-overall `0.8221`, D `0.7313`, SF `0.7170`, P `0.9351`, I `0.9048`.
-Prescription and Investigations now clear the dev25 target; the active
-blockers are Diagnosis and SeizureFrequency. This is still a hybrid
-development artifact because the score depends on named deterministic
-normalization/projection over saved raw LLM output.
+The best target single-call development readouts so far are close variants:
+v0.14 live dev25 is best overall at `0.8349` (D `0.7729`, SF `0.7059`, P
+`0.9211`, I `0.9500`), while v0.13 no-call reprojection of v0.11 raw has the
+best Diagnosis/SF pair at D `0.7799`, SF `0.7170`, P `0.9351`, I `0.9048`.
+Prescription and Investigations clear the dev25 target in both; the active
+blockers are Diagnosis and SeizureFrequency. These remain hybrid development
+artifacts because the score depends on named deterministic
+normalization/projection over saved or fresh LLM output.
 
 ## Recent Context
 
@@ -100,7 +101,7 @@ normalization/projection over saved raw LLM output.
 
 ### Now
 
-- Use the v0.12 dev25 residuals to design the next narrow Diagnosis/SF
+- Use the v0.13/v0.14 dev25 residuals to design the next narrow Diagnosis/SF
   iteration. Do not optimize Prescription or Investigations unless a later run
   regresses either below `0.900`.
 - Review `experiments/exectv2_sf_v08_hard_slice_panel_dev140_20260618.md` and
@@ -159,6 +160,11 @@ normalization/projection over saved raw LLM output.
   v0.11 live dev25 clears P/I (`0.9351`/`0.9048`); v0.12 no-call reprojection
   of v0.11 raw is the best current target artifact: overall `0.8221`, D
   `0.7313`, SF `0.7170`, P `0.9351`, I `0.9048`.
+- 2026-06-19: Added v0.13/v0.14 target refinements: narrow Diagnosis aliases
+  for temporal-lobe-onset and complex-partial conjunctions plus residual-focused
+  prompt examples for epilepsy category headers and no-frequency SF boundaries.
+  v0.14 live dev25 is now best overall at `0.8349`; v0.13 no-call remains the
+  best D/SF-pair diagnostic at D `0.7799`, SF `0.7170`.
 - 2026-06-19: Added the ADR 0030 target-only report and runner. Current dev140
   best-by-indicator is D `0.7302`, SF `0.7277`, P `0.9072`, I `0.7475`; only
   Prescription currently clears `>0.900`.

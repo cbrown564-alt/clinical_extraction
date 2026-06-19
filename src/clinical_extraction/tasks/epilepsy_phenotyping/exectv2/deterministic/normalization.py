@@ -88,6 +88,10 @@ _DIAGNOSIS_CONCEPT_ALIASES: dict[str, str] = {
     ),
     "bilateral convulsive seizure": "focal to bilateral convulsive seizures",
     "bilateral convulsive seizures": "focal to bilateral convulsive seizures",
+    "temporal lobe onset focal seizures": "temporal lobe seizure",
+    "temporal lobe onset focal seizure": "temporal lobe seizure",
+    "general and complex partial seizures": "complex partial seizures",
+    "general and complex partial seizure": "complex partial seizures",
     "jme": "juvenile myoclonic epilepsy",
 }
 _PROTECTED_DIAGNOSIS_COMPOUNDS: frozenset[str] = frozenset(
@@ -98,6 +102,8 @@ _PROTECTED_DIAGNOSIS_COMPOUNDS: frozenset[str] = frozenset(
         "epilepsy with generalised tonic clonic seizures alone",
         "epilepsy with generalised tonic clonic seizure alone",
         "epilepsy with generalised tonic clonic seizures on awakening",
+        "general and complex partial seizures",
+        "general and complex partial seizure",
     }
 )
 

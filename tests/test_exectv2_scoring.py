@@ -300,6 +300,76 @@ def test_diagnosis_concept_identity_normalizes_common_llm_typo() -> None:
     assert score.concept_only.f1 == 1.0
 
 
+def test_diagnosis_concept_identity_projects_temporal_lobe_onset_focal_seizures() -> None:
+    gold = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    DIAGNOSIS.name,
+                    "temporal lobe seizure",
+                    Certainty="5",
+                    Negation="Affirmed",
+                ),
+            ),
+        )
+    ]
+    pred = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    DIAGNOSIS.name,
+                    "temporal lobe onset focal seizures",
+                    Certainty="5",
+                    Negation="Affirmed",
+                ),
+            ),
+        )
+    ]
+
+    score = score_concept_identity(gold, pred, DIAGNOSIS.name)
+
+    assert score.concept_only.f1 == 1.0
+
+
+def test_diagnosis_concept_identity_projects_complex_partial_conjunction() -> None:
+    gold = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    DIAGNOSIS.name,
+                    "complex partial seizures",
+                    Certainty="5",
+                    Negation="Affirmed",
+                ),
+            ),
+        )
+    ]
+    pred = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    DIAGNOSIS.name,
+                    "general and complex partial seizures",
+                    Certainty="5",
+                    Negation="Affirmed",
+                ),
+            ),
+        )
+    ]
+
+    score = score_concept_identity(gold, pred, DIAGNOSIS.name)
+
+    assert score.concept_only.f1 == 1.0
+
+
 def test_investigations_headline_ignores_eeg_type_component() -> None:
     gold = [
         ExectLetter(
