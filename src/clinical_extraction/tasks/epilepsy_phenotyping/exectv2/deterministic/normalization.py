@@ -65,6 +65,8 @@ _DIAGNOSIS_CONCEPT_ALIASES: dict[str, str] = {
     "single focal seizure": "focal seizure",
     "focal onset seizures": "focal seizures",
     "generalized epilepsy": "generalised epilepsy",
+    "epilepsy unclassified": "epilepsy",
+    "unclassified epilepsy": "epilepsy",
     "generalized seizures": "generalised seizures",
     "generalised tonic clonic seizure": "tonic clonic seizures",
     "generalised tonic clonic seizures": "tonic clonic seizures",
