@@ -20,6 +20,24 @@ TARGET_INDICATORS: tuple[str, ...] = (
 )
 DEFAULT_TARGET_F1 = 0.9
 ADR_PATH = "docs/decisions/0030-four-exact-indicators-drive-exectv2-plan11.md"
+HEADLINE_SCORE_POLICIES: dict[str, str] = {
+    DIAGNOSIS.name: (
+        "projected clinical-fact concept_only score after deterministic "
+        "Diagnosis normalization/projection; one core fact per letter"
+    ),
+    SEIZURE_FREQUENCY.name: (
+        "projected seizure-state clinical_headline score after deterministic "
+        "frequency-state normalization/projection"
+    ),
+    PRESCRIPTION.name: (
+        "clinical_headline regimen score after deterministic medication "
+        "normalization/projection"
+    ),
+    INVESTIGATIONS.name: (
+        "clinical_headline modality/performed/result score after deterministic "
+        "investigation normalization/projection"
+    ),
+}
 
 
 def build_target_indicator_report(
@@ -47,6 +65,7 @@ def build_target_indicator_report(
         "adr": ADR_PATH,
         "target_f1": threshold,
         "target_indicators": list(TARGET_INDICATORS),
+        "headline_score_policies": dict(HEADLINE_SCORE_POLICIES),
         "scope_note": (
             "ADR 0030 surface only: Diagnosis, SeizureFrequency, Prescription, "
             "and Investigations. Non-target ExECT families are intentionally omitted."
@@ -68,11 +87,22 @@ def render_target_indicator_markdown(report: Mapping[str, Any]) -> str:
         f"- Target F1: `>{report['target_f1']:.3f}` for each indicator",
         f"- ADR: `{report['adr']}`",
         "",
+        "## Headline Scoring Policy",
+        "",
+        "| Indicator | Headline score used |",
+        "| --- | --- |",
+    ]
+    for indicator in report["target_indicators"]:
+        lines.append(
+            f"| {indicator} | {report['headline_score_policies'][indicator]} |"
+        )
+    lines.extend([
+        "",
         "## Candidate Readout",
         "",
         "| Candidate | Ownership | Overall target F1 | Clears all four? | Blocking indicators |",
         "| --- | --- | ---: | --- | --- |",
-    ]
+    ])
     for candidate in report["candidates"]:
         blocking = ", ".join(candidate["blocking_indicators"]) or "none"
         clears = "yes" if candidate["meets_all_targets"] else "no"

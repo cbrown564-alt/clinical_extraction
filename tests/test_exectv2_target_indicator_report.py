@@ -1,6 +1,7 @@
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.target_indicator_report import (  # noqa: E501
     TARGET_INDICATORS,
     build_target_indicator_report,
+    render_target_indicator_markdown,
 )
 
 
@@ -89,6 +90,13 @@ def test_target_indicator_report_is_limited_to_adr_0030_families() -> None:
     assert candidate["meets_all_targets"] is False
     assert candidate["blocking_indicators"] == ["Diagnosis"]
     assert candidate["headline_scores"]["Diagnosis"]["shortfall_to_target"] == 0.2333
+    assert report["headline_score_policies"]["Diagnosis"].startswith(
+        "projected clinical-fact concept_only score"
+    )
+
+    markdown = render_target_indicator_markdown(report)
+    assert "## Headline Scoring Policy" in markdown
+    assert "projected clinical-fact concept_only score" in markdown
 
 
 def test_target_indicator_report_marks_candidate_when_all_targets_clear() -> None:
@@ -124,4 +132,3 @@ def test_target_indicator_report_marks_candidate_when_all_targets_clear() -> Non
 
     assert report["candidates"][0]["meets_all_targets"] is True
     assert report["candidates"][0]["blocking_indicators"] == []
-

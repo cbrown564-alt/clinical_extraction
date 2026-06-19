@@ -7,6 +7,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_all_ent
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_target_indicators_single_call import (  # noqa: E501
     COMPONENT_OWNER,
     build_prompt_input,
+    summarize_rows,
     to_predicted_letter,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.target_indicator_report import (
@@ -191,6 +192,53 @@ def test_target_single_call_adapter_projects_diagnosis_text_to_core_fact() -> No
     assert mention.evidence == "probable focal epilepsy (perinatal insult)"
     assert mention.attributes["CUI"] == "C0014547"
     assert any("normalized_diagnosis_text" in warning for warning in warnings)
+
+
+def test_target_single_call_report_scores_projected_diagnosis_clinical_fact() -> None:
+    note = "Diagnosis: probable focal epilepsy (perinatal insult)."
+    predicted, _warnings = to_predicted_letter(
+        "EA1",
+        [
+            MentionRecord(
+                entity="Diagnosis",
+                text="probable focal epilepsy (perinatal insult)",
+                attributes={"Certainty": "4", "Negation": "Affirmed"},
+                evidence="probable focal epilepsy (perinatal insult)",
+            )
+        ],
+        note_text=note,
+    )
+    row = {
+        "letter_id": "EA1",
+        "split": "dev",
+        "predicted_mentions": [
+            {
+                "entity": mention.entity,
+                "text": mention.text,
+                "attributes": dict(mention.attributes),
+                "evidence": mention.evidence,
+            }
+            for mention in predicted.mentions
+        ],
+        "gold_mentions": [
+            {
+                "entity": "Diagnosis",
+                "text": "focal epilepsy",
+                "attributes": {"Certainty": "5", "Negation": "Affirmed"},
+            }
+        ],
+    }
+
+    summary = summarize_rows([row])
+    target_report = summary["target_report"]
+    diagnosis = target_report["candidates"][0]["headline_scores"]["Diagnosis"]
+
+    assert target_report["headline_score_policies"]["Diagnosis"].startswith(
+        "projected clinical-fact concept_only score"
+    )
+    assert diagnosis["f1"] == 1.0
+    assert diagnosis["gold_count"] == 1
+    assert diagnosis["pred_count"] == 1
 
 
 def test_target_single_call_adapter_drops_non_epilepsy_diagnosis_core() -> None:
