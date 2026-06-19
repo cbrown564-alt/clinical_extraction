@@ -86,14 +86,17 @@ reprojection of v0.21 local dev5 raw clears all four (overall `0.9855`), but a
 fresh v0.22 local dev5 live rerun does not reproduce: overall `0.8550`, D
 `0.7887`, SF `0.7500`, P `0.8889`, I `1.0000`. Subsequent fresh local dev5
 runs remain candidate-variable, but deterministic projection is now catching
-the current residual shapes: v0.28 reprojects the latest fresh v0.27 Qwen raw
-output to overall `0.9859`, Diagnosis `0.9524`, SeizureFrequency `1.0000`,
-Prescription `1.0000`, and Investigations `1.0000`. This proves the latest
+the current residual shapes: v0.30 reprojects the fresh v0.29 Qwen raw output
+to overall `0.9859`, Diagnosis `0.9524`, SeizureFrequency `1.0000`,
+Prescription `1.0000`, and Investigations `1.0000`. This proves many local
 residuals are scorer-facing normalization/projection issues over captured facts,
 including malformed-rationale JSON salvage, frequency-state projection,
 Diagnosis/SF focal-onset projection, and prescription regimen normalization.
-The local Qwen destination still needs a fresh v0.28 live rerun before claiming
-the requested reproducible `>0.900` target.
+However, fresh v0.30 live dev5 remains below the requested gate: overall
+`0.8824`, D `0.8000`, SF `0.8000`, P `0.9412`, I `1.0000`, driven by
+candidate-variable omissions/evidence choices in EA0002, EA0006, and EA0007.
+The local Qwen destination still needs a prompt/candidate-stability pass before
+claiming reproducible `>0.900` on all four.
 
 ## Recent Context
 
@@ -121,9 +124,9 @@ the requested reproducible `>0.900` target.
    candidate; next validation should test reproducibility beyond pilot25 before
    any broader benchmark claim.
 3. Stabilize the local `ollama_chat/qwen3.6:35b` candidate-generation behavior;
-   the runtime path works only with CPU/off-GPU options. The latest fresh raw
-   output clears after v0.28 projection, but a fresh v0.28 live dev5 run remains
-   the next reproducibility gate.
+   the runtime path works only with CPU/off-GPU options. Latest replay clears
+   after v0.30 projection, but fresh v0.30 live dev5 remains below target due
+   candidate variability.
 4. Use the SF v0.8 hard-slice panel to make a predeclared gate decision before
    any prediction-bearing SF code.
 
@@ -131,9 +134,9 @@ the requested reproducible `>0.900` target.
 
 ### Now
 
-- Rerun local Qwen dev5 live with v0.28 (`num_gpu=0`, `num_ctx=16384`, no DSPy
-  cache) to test whether the projection-cleared latest raw output reproduces
-  with fresh candidate generation.
+- Stabilize local Qwen candidate generation for dev5: latest v0.30 projection
+  clears fresh v0.29 raw, but fresh v0.30 live still misses Diagnosis and
+  SeizureFrequency through candidate/evidence variability.
 - Review `experiments/exectv2_sf_v08_hard_slice_panel_dev140_20260618.md` and
   write the SF v0.8 gate decision: either no prediction-bearing change, or one
   predeclared bucket/action class that clears attribution, non-gold-feature, and
@@ -174,6 +177,14 @@ the requested reproducible `>0.900` target.
   tests). v0.28 no-call reproject of fresh v0.27 local Qwen dev5 raw clears all
   four target indicators: overall `0.9859`, D `0.9524`, SF `1.0000`,
   P `1.0000`, I `1.0000`.
+- 2026-06-19: Extended the local-Qwen target projection path through v0.30.
+  Added planned repeat-MRI suppression, dated absence-like zero-to-active
+  projection, temporal-lobe investigation-only Diagnosis suppression, exact
+  Diagnosis deduplication, and prior-event SF suppression. Focused tests/Ruff
+  pass (`70` target/config tests). v0.30 no-call reproject of fresh v0.29 local
+  Qwen dev5 raw clears all four target indicators: overall `0.9859`, D
+  `0.9524`, SF `1.0000`, P `1.0000`, I `1.0000`. Fresh v0.30 live dev5 did
+  not reproduce because Qwen omitted or malformed new target candidates.
 - 2026-06-19: Added v0.23 deterministic target projection rules for local Qwen
   residuals: ellipsis evidence repair, protected Diagnosis syndrome projection,
   every-N-to-M seizure-frequency projection, frequency-phrase Diagnosis
