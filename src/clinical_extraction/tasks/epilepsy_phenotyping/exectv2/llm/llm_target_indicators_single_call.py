@@ -49,7 +49,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.target_indic
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
-PROMPT_VERSION = "exectv2_target_indicators_single_call_v0.12"
+PROMPT_VERSION = "exectv2_target_indicators_single_call_v0.14"
 PIPELINE_FAMILY = "exectv2_target_indicators_single_call"
 COMPONENT_OWNER = "llm_single_call_target_indicators"
 _DIAGNOSIS_ALLOWED_CORE = re.compile(
@@ -176,6 +176,11 @@ def build_prompt_input(letter: ExectLetter) -> str:
                     "epileptic attack, or single focal seizure."
                 ),
                 (
+                    "If a diagnosis header gives a broad epilepsy category and the "
+                    "history gives seizure types, emit both the category/syndrome "
+                    "and the seizure types."
+                ),
+                (
                     "Phrases such as 'I suspect epilepsy' or 'possible epilepsy' "
                     "are Diagnosis facts with lower Certainty, not omissions."
                 ),
@@ -240,6 +245,15 @@ def build_prompt_input(letter: ExectLetter) -> str:
                     "If the text says seizures became infrequent, controlled, or "
                     "changed after a drug change, use PointInTime=DrugChange with "
                     "the FrequencyChange value when stated."
+                ),
+                (
+                    "Do not emit SeizureFrequency for historical seizure descriptions "
+                    "unless a count, rate, date-window, since-anchor, seizure-free "
+                    "state, or explicit change word is stated."
+                ),
+                (
+                    "Do not emit SeizureFrequency for 'frequency unknown', diagnostic "
+                    "seizure types, or old history without a current/stated state."
                 ),
                 "Use NumberOfTimePeriods=1 with TimePeriod for per-day/week/month/year cadence.",
                 (
@@ -1038,6 +1052,101 @@ def _worked_examples() -> list[dict[str, Any]]:
                 "Completed historical CT with a result counts; requested future "
                 "MRI/EEG does not."
             ),
+        },
+        {
+            "letter_fragment": (
+                "Diagnosis: epilepsy - unclassified, possibly generalised. In 2014 "
+                "she had two generalised tonic clonic seizures and one absence-like "
+                "seizure."
+            ),
+            "mentions": [
+                {
+                    "entity": "Diagnosis",
+                    "text": "generalised epilepsy",
+                    "attributes": {
+                        "DiagCategory": "Epilepsy",
+                        "Certainty": "3",
+                        "Negation": "Affirmed",
+                    },
+                    "evidence": "epilepsy - unclassified, possibly generalised",
+                },
+                {
+                    "entity": "Diagnosis",
+                    "text": "generalised tonic clonic seizures",
+                    "attributes": {
+                        "DiagCategory": "MultipleSeizures",
+                        "Certainty": "5",
+                        "Negation": "Affirmed",
+                    },
+                    "evidence": "generalised tonic clonic seizures",
+                },
+                {
+                    "entity": "Diagnosis",
+                    "text": "absence-like seizure",
+                    "attributes": {
+                        "DiagCategory": "SingleSeizure",
+                        "Certainty": "5",
+                        "Negation": "Affirmed",
+                    },
+                    "evidence": "absence-like seizure",
+                },
+                {
+                    "entity": "SeizureFrequency",
+                    "text": "generalised tonic clonic seizures",
+                    "attributes": {
+                        "NumberOfSeizures": "2",
+                        "TimeSince_or_TimeOfEvent": "During",
+                        "YearDate": "2014",
+                    },
+                    "evidence": "In 2014 she had two generalised tonic clonic seizures",
+                },
+                {
+                    "entity": "SeizureFrequency",
+                    "text": "absence-like seizure",
+                    "attributes": {
+                        "NumberOfSeizures": "1",
+                        "TimeSince_or_TimeOfEvent": "During",
+                        "YearDate": "2014",
+                    },
+                    "evidence": (
+                        "2014 she had two generalised tonic clonic seizures and "
+                        "one absence-like seizure"
+                    ),
+                },
+            ],
+            "note": (
+                "Diagnosis category and seizure types are separate facts; dated "
+                "counts are SF facts."
+            ),
+        },
+        {
+            "letter_fragment": (
+                "Diagnosis: intractable epilepsy with complex partial seizures. "
+                "No seizure frequency was documented today."
+            ),
+            "mentions": [
+                {
+                    "entity": "Diagnosis",
+                    "text": "intractable epilepsy",
+                    "attributes": {
+                        "DiagCategory": "Epilepsy",
+                        "Certainty": "5",
+                        "Negation": "Affirmed",
+                    },
+                    "evidence": "intractable epilepsy",
+                },
+                {
+                    "entity": "Diagnosis",
+                    "text": "complex partial seizures",
+                    "attributes": {
+                        "DiagCategory": "MultipleSeizures",
+                        "Certainty": "5",
+                        "Negation": "Affirmed",
+                    },
+                    "evidence": "complex partial seizures",
+                },
+            ],
+            "note": "Do not emit SeizureFrequency when the note says frequency is not documented.",
         },
     ]
 
