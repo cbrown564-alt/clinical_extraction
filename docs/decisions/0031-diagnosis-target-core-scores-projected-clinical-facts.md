@@ -107,3 +107,24 @@ SeizureFrequency `0.9020`, Prescription `0.9870`, Investigations `1.0000`,
 overall `0.9676`. This remains a deterministic replay over fresh local model
 generation; a fresh v0.41 live rerun is the next reproducibility check before
 broader claims.
+
+The fresh v0.41 local-Qwen dev25 live rerun completed with 0 call failures and
+0 parse/schema failures, but did not clear the four-indicator gate after the
+then-current projection layer: overall `0.9157`, Diagnosis `0.9250`,
+SeizureFrequency `0.8333`, Prescription `0.9250`, Investigations `0.9756`.
+The residual analysis was restricted to the ADR 0030 indicators and showed the
+same pattern as the Gan frequency work: the clinically relevant fact was often
+present in the single-call output or an adjacent captured target fact, but not
+yet projected into the scorer's seizure-state space. v0.42 therefore adds only
+named deterministic SF projection/normalization families over the same raw
+model output: remote teenage last-seizure projection, later infrequent
+convulsive-state projection, controlled-on-dose projection from captured
+Diagnosis context, frequent myoclonic-jerk projection, active recent-event
+preservation, and suppression of zero-state duplicates contradicted by a
+positive rate in the same evidence. The v0.42 saved-output replay of the fresh
+v0.41 local-Qwen raw output clears all four target indicators: overall
+`0.9487`, Diagnosis `0.9376`, SeizureFrequency `0.9811`, Prescription
+`0.9250`, Investigations `0.9756`. This is a hybrid development artifact:
+single LLM call candidate generation/selection followed by deterministic
+normalization/projection. The next reproducibility check is fresh v0.42
+local-Qwen dev25 live generation before broader benchmark-facing claims.

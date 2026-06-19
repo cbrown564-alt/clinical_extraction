@@ -98,7 +98,14 @@ failures but did not clear before final projection (`0.8840` overall; D
 `0.8792`, SF `0.8235`, P `0.8800`, I `0.9756`, with 1 parse/schema failure).
 The v0.41 no-call replay of those exact fresh raw outputs clears all four:
 overall `0.9676`, Diagnosis `0.9750`, SeizureFrequency `0.9020`, Prescription
-`0.9870`, Investigations `1.0000`.
+`0.9870`, Investigations `1.0000`. A fresh v0.41 local-Qwen dev25 live run then
+completed cleanly with 0 call failures and 0 parse/schema failures, but did not
+clear all four before the new projection pass: overall `0.9157`, Diagnosis
+`0.9250`, SeizureFrequency `0.8333`, Prescription `0.9250`, Investigations
+`0.9756`. The v0.42 no-call replay of that same fresh raw output adds only
+target-scoped SF projection repairs and clears all four: overall `0.9487`,
+Diagnosis `0.9376`, SeizureFrequency `0.9811`, Prescription `0.9250`,
+Investigations `0.9756`.
 
 The corrected Diagnosis target definition is ADR 0031: measure projected
 clinical-fact `concept_only` after deterministic normalization/projection, not
@@ -109,9 +116,9 @@ evidence remains visible: v0.39 reprojects the fresh v0.37 local Qwen raw output
 to overall `0.9714`, with D `0.9524`, SF `0.9333`, P `1.0000`, and I `1.0000`.
 Earlier v0.31-v0.38 runs are retained as residual probes showing the progression
 from candidate variability and parser/projection gaps to the current cleared
-local dev5 artifact. The next promotion question is reproducibility beyond
-pilot25 with a fresh v0.41 local-Qwen live run before any broader benchmark
-claim, not more non-target error analysis.
+local dev5 artifact. The next promotion question is whether fresh v0.42
+local-Qwen live generation reproduces the dev25 target gate before any broader
+benchmark claim, not more non-target error analysis.
 
 ## Recent Context
 
@@ -141,8 +148,10 @@ claim, not more non-target error analysis.
 3. Promote the local `ollama_chat/qwen3.6:35b` candidate cautiously: v0.39 dev5
    live clears all four target indicators, v0.40 no-call replay clears the
    saved v0.39 dev25 raw output, and v0.41 no-call replay clears a later fresh
-   v0.40 dev25 raw output. The next gate is a fresh v0.41 dev25 live run before
-   any broader benchmark-comparable claim.
+   v0.40 dev25 raw output. Fresh v0.41 dev25 live is retained as a clean raw
+   source that did not clear SF (`0.8333`), while v0.42 replay of that same raw
+   output clears all four. The next gate is fresh v0.42 dev25 live before any
+   broader benchmark-comparable claim.
 4. Use the SF v0.8 hard-slice panel to make a predeclared gate decision before
    any prediction-bearing SF code.
 
@@ -150,7 +159,7 @@ claim, not more non-target error analysis.
 
 ### Now
 
-- Run a fresh local Qwen v0.41 dev25 live confirmation only if runtime budget
+- Run a fresh local Qwen v0.42 dev25 live confirmation only if runtime budget
   allows; keep error analysis restricted to Diagnosis, SeizureFrequency,
   Prescription, and Investigations.
 - Review `experiments/exectv2_sf_v08_hard_slice_panel_dev140_20260618.md` and
@@ -160,7 +169,7 @@ claim, not more non-target error analysis.
 
 ### Next
 
-- Run the local Qwen v0.41 ladder on `dev25` with `num_gpu=0`, `num_ctx=16384`,
+- Run the local Qwen v0.42 ladder on `dev25` with `num_gpu=0`, `num_ctx=16384`,
   and no DSPy cache; compare fresh live and no-call projection artifacts before
   any dev140 or holdout-facing claim.
 - Decide whether to fold the promoted Diagnosis enumeration lane into the
@@ -183,6 +192,19 @@ claim, not more non-target error analysis.
 
 ### Done Recently
 
+- 2026-06-19: Ran the fresh local Qwen v0.41 dev25 live confirmation requested
+  after the projection replay. It completed cleanly (0 call failures, 0
+  parse/schema failures) but did not clear all four target indicators: overall
+  `0.9157`, D `0.9250`, SF `0.8333`, P `0.9250`, I `0.9756`. Target-only SF
+  residual analysis identified projection-layer gaps on already captured facts
+  and no non-target errors were used. v0.42 adds remote teenage last-seizure
+  projection, later infrequent convulsive-state projection, controlled-on-dose
+  projection from captured Diagnosis context, frequent myoclonic-jerk
+  projection, active recent-event preservation, and positive-rate zero-state
+  suppression. No-call v0.42 replay of the same fresh local-Qwen raw output
+  clears all four: overall `0.9487`, Diagnosis `0.9376`, SeizureFrequency
+  `0.9811`, Prescription `0.9250`, Investigations `0.9756`. Focused tests and
+  Ruff pass (`171` tests). Next reproducibility gate: fresh v0.42 dev25 live.
 - 2026-06-19: Ran a fresh local Qwen v0.40 dev25 live confirmation and tightened
   deterministic projection through v0.41 using target-only residual analysis.
   The fresh live source completed with 0 call failures but did not clear before
