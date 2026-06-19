@@ -61,3 +61,12 @@ Examples:
 - Error analysis for Diagnosis should classify remaining misses after this
   projection layer; a miss caused only by allowed surface-form variation is a
   projection bug, not an LLM candidate-generation failure.
+
+## Implementation Note, 2026-06-19
+
+The executable target report now records the Diagnosis headline policy as:
+projected clinical-fact `concept_only` score after deterministic Diagnosis
+normalization/projection, scored as projected core facts per letter. This is the
+same normalization/projection discipline used for Gan frequency statements:
+the LLM captures clinically relevant candidates in one call, while deterministic
+rules project surface variants onto scorer-facing clinical facts.

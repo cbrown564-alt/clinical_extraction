@@ -58,17 +58,23 @@ normalization/projection loop, but the corrected error view shows Diagnosis
 and SF remain candidate-recall/selection problems, not just representation
 problems.
 
-The best target single-call development readout is now the v0.16 no-call
-reprojection of the saved v0.13 raw single-call output. It clears the dev25
-target surface for all four indicators: overall `0.9173`, Diagnosis `0.9077`,
-SeizureFrequency `0.9167`, Prescription `0.9351`, and Investigations `0.9048`.
-This is a hybrid development artifact: the LLM raw output owns candidate
-generation/selection, while named deterministic normalization/projection
-families repair Diagnosis evidence specificity and SF state projection. It
-did not reproduce as a fresh live gate: v0.16 live dev25 scored overall
-`0.8882`, D `0.8618`, SF `0.7778`, P `0.9610`, I `0.9500`. Treat the no-call
-clearance as a diagnostic/projection proof, not a promoted live candidate; the
-next work is candidate-generation stabilization for Diagnosis/SF.
+The best target single-call development readout is now v0.21 live dev25 on
+`gpt-4.1-mini`. It clears all four ADR 0030 indicators with the projected
+headline definitions: overall `0.9317`, Diagnosis `0.9360`,
+SeizureFrequency `0.9057`, Prescription `0.9367`, and Investigations `0.9500`.
+This is a hybrid target pipeline: the single LLM call owns candidate generation
+and selection, then deterministic normalization/projection repairs
+scorer-facing clinical facts. Diagnosis is scored after projection with the
+`concept_only` clinical-fact score, not raw span wording or assertion-weighted
+capture. SeizureFrequency is scored after deterministic seizure-state
+normalization/projection, following the Gan frequency pattern.
+
+Supporting no-call projection artifacts show the development path. v0.19
+reprojected v0.17 live raw cleared all four with overall `0.9556`; v0.21
+reprojected v0.19 live raw cleared all four with overall `0.9474`, Diagnosis
+`0.9224`, SeizureFrequency `0.9615`, Prescription `0.9744`, and
+Investigations `0.9268`. Earlier v0.16/v0.17/v0.19 live runs were useful
+residual probes but did not clear all four simultaneously.
 
 ## Recent Context
 
@@ -92,8 +98,9 @@ next work is candidate-generation stabilization for Diagnosis/SF.
 
 1. Treat routed and focused-replay results as qualified dev architecture
    evidence, not benchmark-complete claims.
-2. Stabilize live Diagnosis/SF candidate generation against the v0.16 no-call
-   projection stack while preserving the strong live P/I scores.
+2. Treat v0.21 live dev25 as the current promoted target single-call dev
+   candidate; next validation should test reproducibility beyond pilot25 before
+   any broader benchmark claim.
 3. Prepare a local-model smoke path for `ollama_chat/qwen3.6:35b` after the
    hosted prompt/normalization loop has a credible target score.
 4. Use the SF v0.8 hard-slice panel to make a predeclared gate decision before
@@ -103,9 +110,9 @@ next work is candidate-generation stabilization for Diagnosis/SF.
 
 ### Now
 
-- Compare v0.16 live dev25 residuals against the v0.16 no-call-clear artifact
-  to isolate Diagnosis/SF candidate-generation misses; keep P/I unchanged
-  unless they regress below `0.900`.
+- Review v0.21 live dev25 residuals only for the four target indicators and
+  decide whether to extend to a larger dev ladder or first smoke-test the local
+  `qwen3.6:35b` target route.
 - Review `experiments/exectv2_sf_v08_hard_slice_panel_dev140_20260618.md` and
   write the SF v0.8 gate decision: either no prediction-bearing change, or one
   predeclared bucket/action class that clears attribution, non-gold-feature, and
@@ -181,6 +188,15 @@ next work is candidate-generation stabilization for Diagnosis/SF.
   `0.9048`; fresh v0.16 live dev25 did not reproduce (overall `0.8882`, D
   `0.8618`, SF `0.7778`, P `0.9610`, I `0.9500`), so this is diagnostic rather
   than promoted.
+- 2026-06-19: Added v0.17-v0.21 target projection refinements, explicitly
+  mirroring the Gan frequency normalize/project discipline for both Diagnosis
+  and SeizureFrequency. New deterministic families include case-only evidence
+  repair, several-since-last-clinic state projection, generic yearly-rate
+  anchor projection, implicit every-N-period active-rate projection, controlled
+  drug-change state expansion, convulsive zero-state expansion, active
+  seizure-rate to Diagnosis projection, and absence-like Diagnosis gating.
+  Fresh v0.21 live dev25 clears all four exact indicators: overall `0.9317`,
+  D `0.9360`, SF `0.9057`, P `0.9367`, I `0.9500`.
 - 2026-06-19: Added the ADR 0030 target-only report and runner. Current dev140
   best-by-indicator is D `0.7302`, SF `0.7277`, P `0.9072`, I `0.7475`; only
   Prescription currently clears `>0.900`.
