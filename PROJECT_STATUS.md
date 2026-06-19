@@ -58,17 +58,15 @@ normalization/projection loop, but the corrected error view shows Diagnosis
 and SF remain candidate-recall/selection problems, not just representation
 problems.
 
-The best target single-call development readouts so far are close variants:
-v0.14 live dev25 is best overall at `0.8349` (D `0.7729`, SF `0.7059`, P
-`0.9211`, I `0.9500`), while v0.13 no-call reprojection of v0.11 raw has the
-best Diagnosis/SF pair at D `0.7799`, SF `0.7170`, P `0.9351`, I `0.9048`.
-Prescription and Investigations clear the dev25 target in both; the active
-blockers are Diagnosis and SeizureFrequency. These remain hybrid development
-artifacts because the score depends on named deterministic
-normalization/projection over saved or fresh LLM output. v0.15 live dev25
-clarified the target report's headline scoring policy but regressed to overall
-`0.8161` (D `0.7549`, SF `0.7059`, P `0.9333`, I `0.8500`), so it is
-measured-not-promoted.
+The best target single-call development readout is now the v0.16 no-call
+reprojection of the saved v0.13 raw single-call output. It clears the dev25
+target surface for all four indicators: overall `0.9173`, Diagnosis `0.9077`,
+SeizureFrequency `0.9167`, Prescription `0.9351`, and Investigations `0.9048`.
+This is a hybrid development artifact: the LLM raw output owns candidate
+generation/selection, while named deterministic normalization/projection
+families repair Diagnosis evidence specificity and SF state projection. It
+must be followed by a fresh live v0.16 run and then a larger dev ladder before
+any benchmark-complete or local-Qwen claim.
 
 ## Recent Context
 
@@ -92,9 +90,9 @@ measured-not-promoted.
 
 1. Treat routed and focused-replay results as qualified dev architecture
    evidence, not benchmark-complete claims.
-2. Optimize the one-call hybrid route by target priority: preserve Prescription
-   above `0.900`, lift Investigations above `0.900`, then attack the large
-   Diagnosis/SF recall gaps without adding non-target families.
+2. Promote v0.16 cautiously: run fresh live `gpt-4.1-mini` dev25 with the same
+   projection stack, then scale only if all four target indicators remain above
+   `0.900`.
 3. Prepare a local-model smoke path for `ollama_chat/qwen3.6:35b` after the
    hosted prompt/normalization loop has a credible target score.
 4. Use the SF v0.8 hard-slice panel to make a predeclared gate decision before
@@ -104,9 +102,8 @@ measured-not-promoted.
 
 ### Now
 
-- Use the v0.13/v0.14 dev25 residuals to design the next narrow Diagnosis/SF
-  iteration. Do not optimize Prescription or Investigations unless a later run
-  regresses either below `0.900`.
+- Run fresh live v0.16 dev25 with `gpt-4.1-mini`; compare against the no-call
+  v0.16 artifact and inspect only the four ADR 0030 indicators.
 - Review `experiments/exectv2_sf_v08_hard_slice_panel_dev140_20260618.md` and
   write the SF v0.8 gate decision: either no prediction-bearing change, or one
   predeclared bucket/action class that clears attribution, non-gold-feature, and
@@ -173,6 +170,13 @@ measured-not-promoted.
   score after deterministic normalization/projection. v0.15 live dev25 recorded
   the policy in artifacts but regressed overall to `0.8161`, so v0.14/v0.13
   remain the current bests.
+- 2026-06-19: Added v0.16 deterministic projection families for the target
+  single-call route: epilepsy-word Diagnosis gate repair, evidence-specific
+  Diagnosis projection, remote-last-seizure SF projection, vague yearly-rate
+  projection, cluster splitting, unsupported zero-state drops, and unsupported
+  minor-episode drops. No-call reprojection of v0.13 raw dev25 now clears all
+  four targets: overall `0.9173`, D `0.9077`, SF `0.9167`, P `0.9351`, I
+  `0.9048`; still requires fresh live and scale-up verification.
 - 2026-06-19: Added the ADR 0030 target-only report and runner. Current dev140
   best-by-indicator is D `0.7302`, SF `0.7277`, P `0.9072`, I `0.7475`; only
   Prescription currently clears `>0.900`.
