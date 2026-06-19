@@ -49,11 +49,11 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.target_indic
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
-PROMPT_VERSION = "exectv2_target_indicators_single_call_v0.15"
+PROMPT_VERSION = "exectv2_target_indicators_single_call_v0.16"
 PIPELINE_FAMILY = "exectv2_target_indicators_single_call"
 COMPONENT_OWNER = "llm_single_call_target_indicators"
 _DIAGNOSIS_ALLOWED_CORE = re.compile(
-    r"\b(epilep|seizures?|jme|absence|absences|myoclonic|tonic|clonic|"
+    r"\b(epilep\w*|seizures?|jme|absence|absences|myoclonic|tonic|clonic|"
     r"convulsive|partial|focal|generalised|generalized|status|grand mal)\b",
     re.IGNORECASE,
 )
@@ -93,7 +93,54 @@ _SEIZURE_FREQUENCY_ANCHOR = re.compile(
     r"tonic|clonic|focal|generalised|generalized|partial)\b",
     re.IGNORECASE,
 )
+_SEIZURE_FREQUENCY_PROHIBITED_ANCHOR = re.compile(
+    r"\b(?:febrile|dissociative|non.?epileptic|psychogenic)\s+"
+    r"(?:seizures?|convulsions?|events?)\b",
+    re.IGNORECASE,
+)
+_REMOTE_LAST_SEIZURES_IN_TEENS = re.compile(
+    r"\blast\s+seizures?\s+were\s+in\s+(?:(?:his|her|their)\s+)?teenage\s+years\b",
+    re.IGNORECASE,
+)
+_VAGUE_YEARLY_SEIZURE_RATE = re.compile(
+    r"\b(?:a\s+)?(?:few|couple|several)\s+\w*seizures?\s+per\s+year\b",
+    re.IGNORECASE,
+)
+_CLUSTER_OF_SEIZURES = re.compile(r"\bcluster\s+of\s+seizures\b", re.IGNORECASE)
+_INFREQUENT_DIAGNOSIS_YEAR = re.compile(
+    r"\binfrequent\b.+\byear\s+of\s+(?:his|her|the)\s+diagnosis\b",
+    re.IGNORECASE | re.DOTALL,
+)
+_GENERALIZED_EPILEPSY_GTCS_ALONE = re.compile(
+    r"\bepilepsy\s+with\s+general(?:ised|ized)\s+tonic\s+(?:clonic|chronic)\s+"
+    r"seizures?\s+alone\b",
+    re.IGNORECASE,
+)
+_SPECIFIC_SEIZURE_EVIDENCE = re.compile(
+    r"\b(seizures?|convulsions?|absences?|focal|tonic|clonic|partial|myoclonic)\b",
+    re.IGNORECASE,
+)
 _UNKNOWN_LIKE_NUMBER = frozenset({"unknown", "unclear"})
+_SF_STATE_ATTRIBUTES = frozenset(
+    {
+        "AgeLower",
+        "AgeUnit",
+        "AgeUpper",
+        "DayDate",
+        "FrequencyChange",
+        "LowerNumberOfSeizures",
+        "LowerNumberOfTimePeriods",
+        "MonthDate",
+        "NumberOfSeizures",
+        "NumberOfTimePeriods",
+        "PointInTime",
+        "TimePeriod",
+        "TimeSince_or_TimeOfEvent",
+        "UpperNumberOfSeizures",
+        "UpperNumberOfTimePeriods",
+        "YearDate",
+    }
+)
 
 Mode = Literal["live", "prompt-only"]
 
@@ -400,8 +447,23 @@ def to_predicted_letter(
             spec=spec,
         )
         warnings.extend(f"{mention.entity}: {warning}" for warning in attr_warnings)
-        text, text_warnings = _normalize_target_text(mention.entity, mention.text)
+        text, text_warnings = _normalize_target_text(
+            mention.entity,
+            mention.text,
+            evidence=mention.evidence,
+        )
         warnings.extend(f"{mention.entity}: {warning}" for warning in text_warnings)
+        if mention.entity == "SeizureFrequency":
+            text, attrs, state_warnings = _project_sf_state_from_evidence(
+                text,
+                attrs,
+                mention.evidence,
+            )
+            warnings.extend(f"{mention.entity}: {warning}" for warning in state_warnings)
+            drop_warning = _sf_state_drop_reason(text, attrs, mention.evidence)
+            if drop_warning:
+                warnings.append(f"SeizureFrequency: {drop_warning}: {text!r}")
+                continue
         if mention.entity == "Diagnosis" and not _is_allowed_diagnosis_core(text):
             warnings.append(f"Diagnosis: dropped_non_epilepsy_core: {text!r}")
             continue
@@ -514,13 +576,122 @@ def _normalize_target_attributes(
     return normalized, warnings
 
 
-def _normalize_target_text(entity: str, text: str) -> tuple[str, list[str]]:
+def _normalize_target_text(
+    entity: str,
+    text: str,
+    *,
+    evidence: str = "",
+) -> tuple[str, list[str]]:
     if entity != "Diagnosis":
         return text, []
     normalized = canonicalize_diagnosis_concept(text)
+    normalized = _project_diagnosis_text_from_evidence(normalized, evidence)
     if normalized and normalized != text:
         return normalized, [f"normalized_diagnosis_text: {text!r} -> {normalized!r}"]
     return text, []
+
+
+def _project_diagnosis_text_from_evidence(text: str, evidence: str) -> str:
+    source = normalize_phrase(f"{text} {evidence}")
+    if text in {"epilepsy", "focal epilepsy"} and "epilep" in source:
+        if "probable temporal" in source or "temporal lobe epilepsy" in source:
+            return "temporal lobe epilepsy"
+    if text == "epilepsy" and "epilep" in source:
+        if "probable focal" in source or "focal onset" in source:
+            return "focal epilepsy"
+        if "possibly generalised" in source or "possibly generalized" in source:
+            return "generalised epilepsy"
+    return text
+
+
+def _project_sf_state_from_evidence(
+    text: str,
+    attrs: dict[str, str],
+    evidence: str,
+) -> tuple[str, dict[str, str], list[str]]:
+    if _INFREQUENT_DIAGNOSIS_YEAR.search(evidence):
+        return (
+            text,
+            {"FrequencyChange": "Infrequent"},
+            ["projected_infrequent_diagnosis_year_to_change_state"],
+        )
+    if not _REMOTE_LAST_SEIZURES_IN_TEENS.search(evidence):
+        if _VAGUE_YEARLY_SEIZURE_RATE.search(evidence):
+            projected = {
+                key: value
+                for key, value in attrs.items()
+                if key
+                not in {
+                    "FrequencyChange",
+                    "TimeSince_or_TimeOfEvent",
+                    "PointInTime",
+                    "DayDate",
+                    "MonthDate",
+                    "YearDate",
+                }
+            }
+            projected.update(
+                {
+                    "NumberOfSeizures": "2",
+                    "NumberOfTimePeriods": "1",
+                    "TimePeriod": "Year",
+                }
+            )
+            return text, projected, ["projected_vague_yearly_rate"]
+        return text, attrs, []
+    projected = {
+        key: value
+        for key, value in attrs.items()
+        if key
+        not in {
+            "NumberOfSeizures",
+            "LowerNumberOfSeizures",
+            "UpperNumberOfSeizures",
+            "NumberOfTimePeriods",
+            "LowerNumberOfTimePeriods",
+            "UpperNumberOfTimePeriods",
+            "TimePeriod",
+            "FrequencyChange",
+        }
+    }
+    projected.update(
+        {
+            "NumberOfSeizures": "0",
+            "TimeSince_or_TimeOfEvent": "Since",
+            "AgeLower": "13",
+            "AgeUpper": "19",
+            "AgeUnit": "Year",
+        }
+    )
+    return "seizures", projected, ["projected_remote_last_seizures_to_seizure_free"]
+
+
+def _sf_state_drop_reason(
+    text: str,
+    attrs: dict[str, str],
+    evidence: str,
+) -> str | None:
+    normalized_evidence = normalize_phrase(evidence)
+    if (
+        normalize_phrase(text) == "minor seizures"
+        and "episode" in normalized_evidence
+        and not _SPECIFIC_SEIZURE_EVIDENCE.search(normalized_evidence)
+    ):
+        return "dropped_unsupported_episode_frequency_anchor"
+    if not any(key in attrs for key in _SF_STATE_ATTRIBUTES):
+        if "unknown" in normalized_evidence or "not documented" in normalized_evidence:
+            return None
+        return "dropped_empty_sf_state_after_normalization"
+    if attrs.get("NumberOfSeizures") != "0":
+        return None
+    if "last had a seizure before this" in normalized_evidence:
+        return "dropped_relative_prior_event_not_seizure_free"
+    if "well controlled" in normalized_evidence and not any(
+        marker in normalized_evidence
+        for marker in ("no ", "not had", "not have", "since", "last event")
+    ):
+        return "dropped_controlled_without_zero_anchor"
+    return None
 
 
 def _is_allowed_diagnosis_core(text: str) -> bool:
@@ -531,7 +702,9 @@ def _is_allowed_diagnosis_core(text: str) -> bool:
 
 
 def _is_allowed_sf_anchor(text: str) -> bool:
-    return bool(_SEIZURE_FREQUENCY_ANCHOR.search(text))
+    return bool(_SEIZURE_FREQUENCY_ANCHOR.search(text)) and not bool(
+        _SEIZURE_FREQUENCY_PROHIBITED_ANCHOR.search(text)
+    )
 
 
 def _is_planned_prescription(mention: PredictedMention, note_text: str) -> bool:
@@ -577,12 +750,91 @@ def _local_evidence_context(
 def _expand_target_mention(
     mention: PredictedMention,
 ) -> tuple[list[PredictedMention], list[str]]:
+    if mention.entity == "Diagnosis":
+        return _expand_diagnosis_projection(mention)
+    if mention.entity == "SeizureFrequency":
+        return _expand_seizure_frequency_state(mention)
     if mention.entity != "Prescription":
         return [mention], []
     expanded, warnings = _expand_asymmetric_prescription(mention)
     if expanded:
         return expanded, warnings
     return [mention], warnings
+
+
+def _expand_diagnosis_projection(
+    mention: PredictedMention,
+) -> tuple[list[PredictedMention], list[str]]:
+    match = _GENERALIZED_EPILEPSY_GTCS_ALONE.search(mention.evidence)
+    if not match:
+        return [mention], []
+    syndrome = "epilepsy with generalised tonic clonic seizures alone"
+    if normalize_phrase(mention.text) == syndrome:
+        return [mention], []
+    syndrome_mention = mention.model_copy(
+        update={
+            "text": syndrome,
+            "attributes": {
+                **mention.attributes,
+                "DiagCategory": "Epilepsy",
+            },
+        }
+    )
+    return [mention, syndrome_mention], ["split_generalised_epilepsy_syndrome"]
+
+
+def _expand_seizure_frequency_state(
+    mention: PredictedMention,
+) -> tuple[list[PredictedMention], list[str]]:
+    expanded = [mention]
+    warnings: list[str] = []
+    if (
+        mention.attributes.get("NumberOfSeizures") == "0"
+        and "focal to bilateral convulsive seizures" in normalize_phrase(mention.evidence)
+        and normalize_phrase(mention.text) == "seizures"
+    ):
+        expanded.append(
+            mention.model_copy(
+                update={
+                    "entity": "Diagnosis",
+                    "text": "focal to bilateral convulsive seizures",
+                    "attributes": {
+                        "Certainty": "5",
+                        "DiagCategory": "MultipleSeizures",
+                        "Negation": "Affirmed",
+                    },
+                }
+            )
+        )
+        warnings.append("projected_remote_seizure_type_to_diagnosis")
+    if not _CLUSTER_OF_SEIZURES.search(mention.evidence):
+        return expanded, warnings
+    if normalize_phrase(mention.text) == "cluster of seizures":
+        return expanded, warnings
+    cluster_attrs = {
+        key: value
+        for key, value in mention.attributes.items()
+        if key
+        not in {
+            "LowerNumberOfSeizures",
+            "UpperNumberOfSeizures",
+            "NumberOfTimePeriods",
+            "LowerNumberOfTimePeriods",
+            "UpperNumberOfTimePeriods",
+            "TimePeriod",
+            "FrequencyChange",
+        }
+    }
+    cluster_attrs["NumberOfSeizures"] = "1"
+    cluster = mention.model_copy(
+        update={
+            "text": "cluster of seizures",
+            "attributes": cluster_attrs,
+        }
+    )
+    expanded.append(cluster)
+    warnings.append("split_cluster_of_seizures_state")
+    return expanded, warnings
 
 
 def _expand_asymmetric_prescription(

@@ -92,6 +92,9 @@ _DIAGNOSIS_CONCEPT_ALIASES: dict[str, str] = {
     "temporal lobe onset focal seizure": "temporal lobe seizure",
     "general and complex partial seizures": "complex partial seizures",
     "general and complex partial seizure": "complex partial seizures",
+    "temporal epilepsy": "temporal lobe epilepsy",
+    "epileptic events": "epileptic attack",
+    "epileptic event": "epileptic attack",
     "jme": "juvenile myoclonic epilepsy",
 }
 _PROTECTED_DIAGNOSIS_COMPOUNDS: frozenset[str] = frozenset(
