@@ -62,6 +62,8 @@ _CONCEPT_ALIASES: dict[str, str] = {
 }
 _DIAGNOSIS_CONCEPT_ALIASES: dict[str, str] = {
     "focal onset epilepsy": "focal epilepsy",
+    "genetic generalised epilepsy": "genetic generalised epilepsy",
+    "genetic generalized epilepsy": "genetic generalised epilepsy",
     "single focal seizure": "focal seizure",
     "focal seizures without change in awareness": "focal seizures",
     "focal onset seizures": "focal seizures",
@@ -96,6 +98,7 @@ _DIAGNOSIS_CONCEPT_ALIASES: dict[str, str] = {
     "bilateral convulsive seizures": "focal to bilateral convulsive seizures",
     "temporal lobe onset focal seizures": "temporal lobe seizure",
     "temporal lobe onset focal seizure": "temporal lobe seizure",
+    "temporal focal epilepsy": "temporal lobe epilepsy",
     "general and complex partial seizures": "complex partial seizures",
     "general and complex partial seizure": "complex partial seizures",
     "temporal epilepsy": "temporal lobe epilepsy",
