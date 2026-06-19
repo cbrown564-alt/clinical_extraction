@@ -76,6 +76,17 @@ reprojected v0.19 live raw cleared all four with overall `0.9474`, Diagnosis
 Investigations `0.9268`. Earlier v0.16/v0.17/v0.19 live runs were useful
 residual probes but did not clear all four simultaneously.
 
+Local `ollama_chat/qwen3.6:35b` is now reachable but not solved. The installed
+model is digest `07d35212591fc27746f0a317c975a6d68754fb38e9053d82e25f06057af28522`,
+`36.0B`, `Q4_K_M`. GPU loading on the 8 GB RTX 4070 Laptop GPU fails with CUDA
+out-of-memory, so current local runs use `CLINICAL_EXTRACTION_OLLAMA_NUM_GPU=0`
+and `CLINICAL_EXTRACTION_OLLAMA_NUM_CTX=16384` via the shared `ollama_chat`
+builder. v0.21 live dev1 clears all four locally, and v0.22 no-call
+reprojection of v0.21 local dev5 raw clears all four (overall `0.9855`), but a
+fresh v0.22 local dev5 live rerun does not reproduce: overall `0.8550`, D
+`0.7887`, SF `0.7500`, P `0.8889`, I `1.0000`. Treat local Qwen as runnable
+but still below the requested `>0.900` target.
+
 ## Recent Context
 
 - Coordinated Plan 11 follow-ups are merged into this checkout: SF route
@@ -101,8 +112,9 @@ residual probes but did not clear all four simultaneously.
 2. Treat v0.21 live dev25 as the current promoted target single-call dev
    candidate; next validation should test reproducibility beyond pilot25 before
    any broader benchmark claim.
-3. Prepare a local-model smoke path for `ollama_chat/qwen3.6:35b` after the
-   hosted prompt/normalization loop has a credible target score.
+3. Stabilize the local `ollama_chat/qwen3.6:35b` candidate-generation behavior;
+   the runtime path works only with CPU/off-GPU options, but fresh dev5 remains
+   below target.
 4. Use the SF v0.8 hard-slice panel to make a predeclared gate decision before
    any prediction-bearing SF code.
 
@@ -110,9 +122,9 @@ residual probes but did not clear all four simultaneously.
 
 ### Now
 
-- Review v0.21 live dev25 residuals only for the four target indicators and
-  decide whether to extend to a larger dev ladder or first smoke-test the local
-  `qwen3.6:35b` target route.
+- Analyze the fresh v0.22 local Qwen dev5 residuals for the four target
+  indicators only, comparing them with the v0.22 no-call replay that cleared on
+  the previous local dev5 raw outputs.
 - Review `experiments/exectv2_sf_v08_hard_slice_panel_dev140_20260618.md` and
   write the SF v0.8 gate decision: either no prediction-bearing change, or one
   predeclared bucket/action class that clears attribution, non-gold-feature, and
@@ -120,9 +132,10 @@ residual probes but did not clear all four simultaneously.
 
 ### Next
 
-- Start Ollama and verify the local model tag/digest for `qwen3.6:35b`; the
-  latest check on 2026-06-19 returned `OLLAMA_UNREACHABLE` on
-  `localhost:11434`, so no local comparison run is available yet.
+- If local Qwen residuals remain candidate-selection failures, adjust prompt
+  examples/policy for Qwen and rerun the slow ladder one step at a time
+  (`dev1 -> dev5 -> dev25`) with `num_gpu=0`, `num_ctx=16384`, and no DSPy
+  cache.
 - Decide whether to fold the promoted Diagnosis enumeration lane into the
   canonical family-routed runner (replacing the shared-pass Diagnosis lane),
   with an ownership-clean preflight note; or keep it as a guarded dev candidate
@@ -197,6 +210,12 @@ residual probes but did not clear all four simultaneously.
   seizure-rate to Diagnosis projection, and absence-like Diagnosis gating.
   Fresh v0.21 live dev25 clears all four exact indicators: overall `0.9317`,
   D `0.9360`, SF `0.9057`, P `0.9367`, I `0.9500`.
+- 2026-06-19: Brought the local Qwen target route online through native
+  Ollama chat. `qwen3.6:35b` is installed but GPU startup OOMs on the 8 GB
+  laptop GPU; the shared LM builder now supports environment-driven
+  `num_gpu=0` and `num_ctx=16384` options. Local v0.21 dev1 clears, v0.22
+  replay of local dev5 raw clears, but fresh v0.22 local dev5 remains below
+  target (overall `0.8550`; D/SF/P below `0.900`, I clear).
 - 2026-06-19: Added the ADR 0030 target-only report and runner. Current dev140
   best-by-indicator is D `0.7302`, SF `0.7277`, P `0.9072`, I `0.7475`; only
   Prescription currently clears `>0.900`.

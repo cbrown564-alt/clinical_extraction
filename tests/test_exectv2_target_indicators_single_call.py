@@ -78,6 +78,32 @@ def test_target_single_call_adapter_repairs_case_only_evidence() -> None:
     assert any("repaired_evidence_case" in warning for warning in warnings)
 
 
+def test_target_single_call_adapter_repairs_prescription_frequency_synonym_evidence() -> None:
+    note = "Current medication: carbamazepine 400 mg twice a day."
+    mentions = [
+        MentionRecord(
+            entity="Prescription",
+            text="carbamazepine 400 mg bd",
+            attributes={
+                "DrugName": "carbamazepine",
+                "DrugDose": "400",
+                "DoseUnit": "mg",
+                "Frequency": "2",
+            },
+            evidence="carbamazepine 400 mg bd",
+        )
+    ]
+
+    predicted, warnings = to_predicted_letter("EA1", mentions, note_text=note)
+
+    assert len(predicted.mentions) == 1
+    assert predicted.mentions[0].evidence == "carbamazepine 400 mg twice a day"
+    assert any(
+        "repaired_prescription_frequency_synonym_evidence" in warning
+        for warning in warnings
+    )
+
+
 def test_target_single_call_adapter_normalizes_format_only_attribute_variants() -> None:
     note = "She had 2 to 3 focal seizures every 3 to 4 weeks."
     mentions = [
@@ -347,6 +373,29 @@ def test_target_single_call_adapter_projects_diagnosis_from_selected_evidence() 
         "generalised epilepsy",
     ]
     assert sum("normalized_diagnosis_text" in warning for warning in warnings) == 3
+
+
+def test_target_single_call_adapter_projects_unclassified_and_focal_onset_diagnosis() -> None:
+    note = "Diagnosis: epilepsy - unclassified. He has seizures, possibly focal onset."
+    mentions = [
+        MentionRecord(
+            entity="Diagnosis",
+            text="epilepsy unclassified",
+            attributes={"Certainty": "5", "Negation": "Affirmed"},
+            evidence="epilepsy - unclassified",
+        ),
+        MentionRecord(
+            entity="Diagnosis",
+            text="seizures possibly focal onset",
+            attributes={"Certainty": "3", "Negation": "Affirmed"},
+            evidence="seizures, possibly focal onset",
+        ),
+    ]
+
+    predicted, warnings = to_predicted_letter("EA1", mentions, note_text=note)
+
+    assert [mention.text for mention in predicted.mentions] == ["epilepsy", "focal epilepsy"]
+    assert sum("normalized_diagnosis_text" in warning for warning in warnings) == 2
 
 
 def test_target_single_call_adapter_drops_generic_and_nonepileptic_seizure_diagnoses() -> None:
@@ -649,6 +698,23 @@ def test_target_single_call_adapter_drops_unsupported_zero_frequency_states() ->
     assert any("dropped_relative_prior_event_not_seizure_free" in warning for warning in warnings)
 
 
+def test_target_single_call_adapter_drops_typed_zero_from_generic_seizure_free() -> None:
+    note = "He remains seizure free."
+    mentions = [
+        MentionRecord(
+            entity="SeizureFrequency",
+            text="generalised tonic clonic seizures",
+            attributes={"NumberOfSeizures": "0", "TimeSince_or_TimeOfEvent": "Since"},
+            evidence="He remains seizure free",
+        )
+    ]
+
+    predicted, warnings = to_predicted_letter("EA1", mentions, note_text=note)
+
+    assert predicted.mentions == ()
+    assert any("dropped_generic_zero_state_for_typed_anchor" in warning for warning in warnings)
+
+
 def test_target_single_call_adapter_drops_unsupported_minor_episode_rate() -> None:
     mentions = [
         MentionRecord(
@@ -778,6 +844,26 @@ def test_target_single_call_adapter_expands_secondary_gtc_diagnosis() -> None:
         "tonic clonic seizures",
     ]
     assert any("split_secondary_gtc_to_tonic_clonic_diagnosis" in warning for warning in warnings)
+
+
+def test_target_single_call_adapter_expands_syndrome_to_gtc_diagnosis() -> None:
+    note = "epilepsy with generalised tonic clonic seizure alone"
+    mentions = [
+        MentionRecord(
+            entity="Diagnosis",
+            text="epilepsy with generalised tonic clonic seizure alone",
+            attributes={"Certainty": "5", "Negation": "Affirmed"},
+            evidence="epilepsy with generalised tonic clonic seizure alone",
+        )
+    ]
+
+    predicted, warnings = to_predicted_letter("EA1", mentions, note_text=note)
+
+    assert [mention.text for mention in predicted.mentions] == [
+        "epilepsy with generalised tonic clonic seizures alone",
+        "tonic clonic seizures",
+    ]
+    assert any("split_syndrome_to_tonic_clonic_diagnosis" in warning for warning in warnings)
 
 
 def test_target_single_call_adapter_expands_convulsive_zero_state() -> None:

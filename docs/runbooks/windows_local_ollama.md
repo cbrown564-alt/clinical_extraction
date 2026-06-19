@@ -46,11 +46,26 @@ $body = @{
 Invoke-RestMethod -Method Post -Uri http://localhost:11434/api/chat -ContentType "application/json" -Body $body
 ```
 
+If `qwen3.6:35b` fails with CUDA out-of-memory on an 8 GB laptop GPU, keep the
+native route but disable GPU offload and set a realistic context window for the
+repo prompt:
+
+```powershell
+$env:CLINICAL_EXTRACTION_OLLAMA_NUM_GPU = "0"
+$env:CLINICAL_EXTRACTION_OLLAMA_NUM_CTX = "16384"
+```
+
+The shared DSPy LM builder passes those environment variables to native
+`ollama_chat/...` requests as Ollama `options.num_gpu` and `options.num_ctx`,
+while still sending `think=false`.
+
 For DSPy/LiteLLM, use Ollama's native chat provider route, not the
 OpenAI-compatible `/v1/chat/completions` route:
 
 ```powershell
 $env:OPENAI_API_KEY = "ollama"
+$env:CLINICAL_EXTRACTION_OLLAMA_NUM_GPU = "0"
+$env:CLINICAL_EXTRACTION_OLLAMA_NUM_CTX = "16384"
 gan2026-llm-experiment --pipeline llm_only_claim_table_selector --mode live --limit 1 --model ollama_chat/qwen3.6:35b --api-base http://localhost:11434 --disable-dspy-cache --jsonl experiments\windows_qwen1.jsonl --markdown experiments\windows_qwen1.md
 ```
 

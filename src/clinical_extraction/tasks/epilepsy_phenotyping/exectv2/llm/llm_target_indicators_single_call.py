@@ -49,7 +49,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.target_indic
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
-PROMPT_VERSION = "exectv2_target_indicators_single_call_v0.21"
+PROMPT_VERSION = "exectv2_target_indicators_single_call_v0.22"
 PIPELINE_FAMILY = "exectv2_target_indicators_single_call"
 COMPONENT_OWNER = "llm_single_call_target_indicators"
 _DIAGNOSIS_ALLOWED_CORE = re.compile(
@@ -573,8 +573,37 @@ def _repair_case_only_evidence(
                     repaired.append(mention.model_copy(update={"evidence": exact}))
                     warnings.append(f"repaired_last_event_evidence: {mention.text!r}")
                     continue
+            if mention.entity == "Prescription":
+                synonym = _repair_prescription_frequency_synonym_evidence(
+                    mention,
+                    note_text,
+                )
+                if synonym:
+                    repaired.append(mention.model_copy(update={"evidence": synonym}))
+                    warnings.append(
+                        "repaired_prescription_frequency_synonym_evidence: "
+                        f"{mention.text!r}"
+                    )
+                    continue
         repaired.append(mention)
     return repaired, warnings
+
+
+def _repair_prescription_frequency_synonym_evidence(
+    mention: MentionRecord,
+    note_text: str,
+) -> str | None:
+    attrs = {str(k): str(v) for k, v in dict(mention.attributes).items()}
+    drug = normalize_phrase(attrs.get("DrugName", ""))
+    dose = attrs.get("DrugDose", "").strip()
+    if not drug or not dose or attrs.get("Frequency") != "2":
+        return None
+    pattern = re.compile(
+        rf"\b{re.escape(drug)}\s+{re.escape(dose)}\s*mg\s+twice\s+a\s+day\b",
+        re.IGNORECASE,
+    )
+    match = pattern.search(note_text)
+    return match.group(0) if match else None
 
 
 def _normalize_target_attributes(
@@ -675,7 +704,11 @@ def _project_diagnosis_text_from_evidence(text: str, evidence: str) -> str:
         and "general and complex partial seizures" in source
     ):
         return "complex partial seizures"
-    if text == "focal seizures" and "focal onset" in source:
+    if "focal onset" in source and text in {
+        "epilepsy",
+        "focal seizures",
+        "seizures possibly focal onset",
+    }:
         return "focal epilepsy"
     if text in {"epilepsy", "focal epilepsy"} and "epilep" in source:
         if "probable temporal" in source or "temporal lobe epilepsy" in source:
@@ -858,6 +891,13 @@ def _sf_state_drop_reason(
         if "unknown" in normalized_evidence or "not documented" in normalized_evidence:
             return None
         return "dropped_empty_sf_state_after_normalization"
+    if (
+        attrs.get("NumberOfSeizures") == "0"
+        and normalized_text not in {"seizure", "seizures"}
+        and normalized_text not in normalized_evidence
+        and "seizure free" in normalized_evidence
+    ):
+        return "dropped_generic_zero_state_for_typed_anchor"
     if "last had a seizure before this" in normalized_evidence:
         return "dropped_relative_prior_event_not_seizure_free"
     if "well controlled" in normalized_evidence and not any(
@@ -971,6 +1011,19 @@ def _expand_diagnosis_projection(
             }
         )
         return [mention, companion], ["split_secondary_gtc_to_tonic_clonic_diagnosis"]
+    if normalize_phrase(mention.text) == (
+        "epilepsy with generalised tonic clonic seizures alone"
+    ):
+        companion = mention.model_copy(
+            update={
+                "text": "tonic clonic seizures",
+                "attributes": {
+                    **mention.attributes,
+                    "DiagCategory": "MultipleSeizures",
+                },
+            }
+        )
+        return [mention, companion], ["split_syndrome_to_tonic_clonic_diagnosis"]
     match = _GENERALIZED_EPILEPSY_GTCS_ALONE.search(mention.evidence)
     if not match:
         return [mention], []
@@ -1110,7 +1163,7 @@ def _expand_asymmetric_prescription(
     attrs = dict(mention.attributes)
     if attrs.get("DoseUnit") != "mg" or attrs.get("Frequency") != "1":
         return [], []
-    match = _ASYMMETRIC_DOSING.search(mention.evidence)
+    match = _ASYMMETRIC_DOSING.search(f"{mention.text} {mention.evidence}")
     if not match:
         return [], []
     first = _clean_number(match.group("first"))
