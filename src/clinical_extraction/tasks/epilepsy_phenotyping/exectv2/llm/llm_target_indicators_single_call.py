@@ -48,9 +48,29 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.target_indic
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
-PROMPT_VERSION = "exectv2_target_indicators_single_call_v0.4"
+PROMPT_VERSION = "exectv2_target_indicators_single_call_v0.9"
 PIPELINE_FAMILY = "exectv2_target_indicators_single_call"
 COMPONENT_OWNER = "llm_single_call_target_indicators"
+_DIAGNOSIS_ALLOWED_CORE = re.compile(
+    r"\b(epilep|seizures?|jme|absence|absences|myoclonic|tonic|clonic|"
+    r"convulsive|partial|focal|generalised|generalized|status|grand mal)\b",
+    re.IGNORECASE,
+)
+_PLANNED_PRESCRIPTION_CONTEXT = re.compile(
+    r"\b(?:to start|starts?|suggest(?:ed|s|ing)? adding|would suggest|"
+    r"plan(?:ned)? to start|if attacks recur|target dose)\b",
+    re.IGNORECASE,
+)
+_PLANNED_INVESTIGATION_CONTEXT = re.compile(
+    r"\b(?:will arrange|will request|i will request|to arrange|to request|"
+    r"further tests including|await(?:ing)?|planned)\b",
+    re.IGNORECASE,
+)
+_ASYMMETRIC_DOSING = re.compile(
+    r"(?P<first>\d+(?:\.\d+)?)\s*mg\b.{0,40}\b(?:mane|morning|am)\b"
+    r".{0,80}?(?P<second>\d+(?:\.\d+)?)\s*mg\b.{0,40}\b(?:nocte|night|pm)\b",
+    re.IGNORECASE | re.DOTALL,
+)
 
 Mode = Literal["live", "prompt-only"]
 
@@ -122,8 +142,15 @@ def build_prompt_input(letter: ExectLetter) -> str:
                     "named epileptic seizure diagnoses."
                 ),
                 (
+                    "Every named epileptic seizure type in a diagnosis, history, "
+                    "current-seizure, or frequency statement is also a Diagnosis "
+                    "fact, even when you also emit SeizureFrequency."
+                ),
+                (
                     "Do not extract family history, education, driving advice, or "
-                    "hypothetical risk as Diagnosis."
+                    "hypothetical risk as Diagnosis. Do not extract migraine, "
+                    "headache, anxiety, depression, syncope, or learning difficulty "
+                    "as Diagnosis."
                 ),
                 (
                     "Split coordinated diagnosis phrases into atomic concepts when "
@@ -150,7 +177,27 @@ def build_prompt_input(letter: ExectLetter) -> str:
                     "Use NumberOfSeizures=0 for seizure-free statements with a "
                     "duration, date, or since-anchor."
                 ),
+                (
+                    "For 'no seizures since <date/year/event>', emit a seizure-free "
+                    "SeizureFrequency mention with NumberOfSeizures=0, "
+                    "TimeSince_or_TimeOfEvent=Since, and YearDate/MonthDate or "
+                    "PointInTime when stated."
+                ),
+                (
+                    "For 'since last clinic' or similar clinic anchors, use "
+                    "TimeSince_or_TimeOfEvent=Since and PointInTime=LastClinic."
+                ),
+                (
+                    "For explicit change words such as increased, decreased, better, "
+                    "worse, rare, infrequent, or clusters, emit a separate "
+                    "SeizureFrequency mention carrying FrequencyChange or the "
+                    "stated dated/windowed count."
+                ),
                 "Use NumberOfTimePeriods=1 with TimePeriod for per-day/week/month/year cadence.",
+                (
+                    "Do not collapse states: the same seizure anchor can have both "
+                    "an active rate and a seizure-free/since-date fact."
+                ),
                 "Do not emit bare seizure words with no frequency/state attributes.",
             ],
             "Prescription": [
@@ -170,6 +217,15 @@ def build_prompt_input(letter: ExectLetter) -> str:
                 "Mention text should be the test phrase, usually EEG, MRI, CT, telemetry, or scan.",
                 "Set performed/result/type attributes when explicitly stated.",
                 "Normal and abnormal results must be attached to the correct modality.",
+                (
+                    "Extract completed historical investigations when a result is "
+                    "stated, for example a previous CT showing infarct is CT "
+                    "performed with abnormal result."
+                ),
+                (
+                    "Do not extract planned, requested, or future tests unless the "
+                    "letter also gives a result."
+                ),
             ],
         },
         "worked_examples": _worked_examples(),
@@ -200,6 +256,11 @@ def build_prompt_input(letter: ExectLetter) -> str:
                 "Emit every distinct SeizureFrequency state for the same anchor when "
                 "the letter states multiple dates, windows, zero-since facts, or "
                 "frequency-change facts."
+            ),
+            (
+                "Before final JSON, explicitly check whether each named seizure "
+                "type appears in both Diagnosis and SeizureFrequency when the "
+                "letter gives both the clinical type and a frequency/state."
             ),
             "If no target findings are present, return {\"mentions\": []}.",
             "Return exactly one JSON object. No markdown fences.",
@@ -250,17 +311,33 @@ def to_predicted_letter(
         warnings.extend(f"{mention.entity}: {warning}" for warning in attr_warnings)
         text, text_warnings = _normalize_target_text(mention.entity, mention.text)
         warnings.extend(f"{mention.entity}: {warning}" for warning in text_warnings)
-        predicted_mentions.append(
-            PredictedMention(
-                entity=mention.entity,
-                text=text,
-                attributes=attrs,
-                evidence=mention.evidence,
-                confidence=mention.confidence,
-                rationale=mention.rationale,
-                component_owner=COMPONENT_OWNER,
-            )
+        if mention.entity == "Diagnosis" and not _is_allowed_diagnosis_core(text):
+            warnings.append(f"Diagnosis: dropped_non_epilepsy_core: {text!r}")
+            continue
+        base_mention = PredictedMention(
+            entity=mention.entity,
+            text=text,
+            attributes=attrs,
+            evidence=mention.evidence,
+            confidence=mention.confidence,
+            rationale=mention.rationale,
+            component_owner=COMPONENT_OWNER,
         )
+        if mention.entity == "Prescription" and _is_planned_prescription(
+            base_mention,
+            note_text,
+        ):
+            warnings.append(f"Prescription: dropped_planned_prescription: {text!r}")
+            continue
+        if mention.entity == "Investigations" and _is_planned_investigation(
+            base_mention,
+            note_text,
+        ):
+            warnings.append(f"Investigations: dropped_planned_investigation: {text!r}")
+            continue
+        expanded_mentions, expansion_warnings = _expand_target_mention(base_mention)
+        warnings.extend(f"{mention.entity}: {warning}" for warning in expansion_warnings)
+        predicted_mentions.extend(expanded_mentions)
     return (
         project_cuis(
             PredictedLetter(
@@ -342,6 +419,82 @@ def _normalize_target_text(entity: str, text: str) -> tuple[str, list[str]]:
     if normalized and normalized != text:
         return normalized, [f"normalized_diagnosis_text: {text!r} -> {normalized!r}"]
     return text, []
+
+
+def _is_allowed_diagnosis_core(text: str) -> bool:
+    return bool(_DIAGNOSIS_ALLOWED_CORE.search(text))
+
+
+def _is_planned_prescription(mention: PredictedMention, note_text: str) -> bool:
+    if mention.entity != "Prescription":
+        return False
+    context = _local_evidence_context(note_text, mention.evidence, before=96, after=24)
+    return bool(_PLANNED_PRESCRIPTION_CONTEXT.search(context))
+
+
+def _is_planned_investigation(mention: PredictedMention, note_text: str) -> bool:
+    if mention.entity != "Investigations":
+        return False
+    attrs = mention.attributes
+    has_result = any(
+        attrs.get(key) in {"Normal", "Abnormal", "Unknown"}
+        for key in ("EEG_Results", "MRI_Results", "CT_Results")
+    )
+    if has_result:
+        return False
+    context = _local_evidence_context(note_text, mention.evidence, before=96, after=24)
+    return bool(_PLANNED_INVESTIGATION_CONTEXT.search(context))
+
+
+def _local_evidence_context(
+    note_text: str,
+    evidence: str,
+    *,
+    before: int,
+    after: int,
+) -> str:
+    if not note_text or not evidence:
+        return evidence
+    lowered_note = note_text.lower()
+    lowered_evidence = evidence.lower()
+    index = lowered_note.find(lowered_evidence)
+    if index < 0:
+        return evidence
+    start = max(0, index - before)
+    end = min(len(note_text), index + len(evidence) + after)
+    return note_text[start:end]
+
+
+def _expand_target_mention(
+    mention: PredictedMention,
+) -> tuple[list[PredictedMention], list[str]]:
+    if mention.entity != "Prescription":
+        return [mention], []
+    expanded, warnings = _expand_asymmetric_prescription(mention)
+    if expanded:
+        return expanded, warnings
+    return [mention], warnings
+
+
+def _expand_asymmetric_prescription(
+    mention: PredictedMention,
+) -> tuple[list[PredictedMention], list[str]]:
+    attrs = dict(mention.attributes)
+    if attrs.get("DoseUnit") != "mg" or attrs.get("Frequency") != "1":
+        return [], []
+    match = _ASYMMETRIC_DOSING.search(mention.evidence)
+    if not match:
+        return [], []
+    first = _clean_number(match.group("first"))
+    second = _clean_number(match.group("second"))
+    if first == second:
+        return [], []
+    first_attrs = {**attrs, "DrugDose": first, "Frequency": "1"}
+    second_attrs = {**attrs, "DrugDose": second, "Frequency": "1"}
+    return [
+        mention.model_copy(update={"attributes": first_attrs}),
+        mention.model_copy(update={"attributes": second_attrs}),
+    ], [f"split_asymmetric_same_drug_dosing: {first}/{second} mg"]
 
 
 def _convert_day_period_to_week(attrs: dict[str, str], warnings: list[str]) -> None:
@@ -719,6 +872,94 @@ def _worked_examples() -> list[dict[str, Any]]:
                 }
             ],
             "note": "Previous and conditional future medications are not current prescriptions.",
+        },
+        {
+            "letter_fragment": (
+                "Diagnosis: temporal lobe epilepsy with focal seizures with altered "
+                "awareness and focal to bilateral convulsive seizures. She has focal "
+                "seizures with altered awareness once every 2 weeks and has had no "
+                "focal to bilateral convulsive seizures since December 2017."
+            ),
+            "mentions": [
+                {
+                    "entity": "Diagnosis",
+                    "text": "temporal lobe epilepsy",
+                    "attributes": {
+                        "DiagCategory": "Epilepsy",
+                        "Certainty": "5",
+                        "Negation": "Affirmed",
+                    },
+                    "evidence": "temporal lobe epilepsy",
+                },
+                {
+                    "entity": "Diagnosis",
+                    "text": "focal seizures with altered awareness",
+                    "attributes": {
+                        "DiagCategory": "MultipleSeizures",
+                        "Certainty": "5",
+                        "Negation": "Affirmed",
+                    },
+                    "evidence": "focal seizures with altered awareness",
+                },
+                {
+                    "entity": "Diagnosis",
+                    "text": "focal to bilateral convulsive seizures",
+                    "attributes": {
+                        "DiagCategory": "MultipleSeizures",
+                        "Certainty": "5",
+                        "Negation": "Affirmed",
+                    },
+                    "evidence": "focal to bilateral convulsive seizures",
+                },
+                {
+                    "entity": "SeizureFrequency",
+                    "text": "focal seizures with altered awareness",
+                    "attributes": {
+                        "NumberOfSeizures": "1",
+                        "NumberOfTimePeriods": "2",
+                        "TimePeriod": "Week",
+                    },
+                    "evidence": "focal seizures with altered awareness once every 2 weeks",
+                },
+                {
+                    "entity": "SeizureFrequency",
+                    "text": "focal to bilateral convulsive seizures",
+                    "attributes": {
+                        "NumberOfSeizures": "0",
+                        "TimeSince_or_TimeOfEvent": "Since",
+                        "MonthDate": "12",
+                        "YearDate": "2017",
+                    },
+                    "evidence": "no focal to bilateral convulsive seizures since December 2017",
+                },
+            ],
+            "note": (
+                "Named seizure diagnoses and their frequency states are both target "
+                "facts; zero-since statements are not active rates."
+            ),
+        },
+        {
+            "letter_fragment": (
+                "There was a previous CT scan from 2017 showing a left hemisphere "
+                "infarct. I will request an MRI of the brain and EEG."
+            ),
+            "mentions": [
+                {
+                    "entity": "Investigations",
+                    "text": "CT scan",
+                    "attributes": {
+                        "CT_Performed": "Yes",
+                        "CT_Results": "Abnormal",
+                    },
+                    "evidence": (
+                        "previous CT scan from 2017 showing a left hemisphere infarct"
+                    ),
+                }
+            ],
+            "note": (
+                "Completed historical CT with a result counts; requested future "
+                "MRI/EEG does not."
+            ),
         },
     ]
 

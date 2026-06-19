@@ -197,6 +197,74 @@ def test_concept_identity_recall_is_entity_agnostic_precision_home_tagged() -> N
     assert score.concept_assertion.gold_count == 1
 
 
+def test_diagnosis_concept_identity_recall_accepts_seizure_frequency_anchor() -> None:
+    gold = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    DIAGNOSIS.name,
+                    "focal to bilateral convulsive seizures",
+                    DiagCategory="MultipleSeizures",
+                    Certainty="5",
+                    Negation="Affirmed",
+                ),
+            ),
+        )
+    ]
+    pred = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    SEIZURE_FREQUENCY.name,
+                    "focal to bilateral convulsive seizures",
+                    NumberOfSeizures="0",
+                    TimeSince_or_TimeOfEvent="Since",
+                    YearDate="2017",
+                ),
+            ),
+        )
+    ]
+
+    score = score_concept_identity(gold, pred, DIAGNOSIS.name)
+
+    assert score.concept_only.recall == 1.0
+    assert score.concept_only.precision == 0.0
+    assert score.concept_only.pred_count == 0
+
+
+def test_diagnosis_recall_from_seizure_frequency_uses_projected_core_vocabulary() -> None:
+    gold = [
+        ExectLetter(
+            "L1",
+            "note",
+            (_ann(DIAGNOSIS.name, "tonic clonic seizures", Certainty="5", Negation="Affirmed"),),
+        )
+    ]
+    pred = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    SEIZURE_FREQUENCY.name,
+                    "generalised tonic clonic seizure",
+                    NumberOfSeizures="0",
+                    TimeSince_or_TimeOfEvent="Since",
+                    YearDate="2017",
+                ),
+            ),
+        )
+    ]
+
+    score = score_concept_identity(gold, pred, DIAGNOSIS.name)
+
+    assert score.concept_only.recall == 1.0
+
+
 def test_concept_identity_collapses_diagnosis_specificity_to_most_specific() -> None:
     gold = [
         ExectLetter(

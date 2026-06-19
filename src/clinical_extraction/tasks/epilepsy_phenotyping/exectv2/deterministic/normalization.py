@@ -13,6 +13,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities im
     EPILEPSY_CAUSE,
     ONSET,
     PATIENT_HISTORY,
+    SEIZURE_FREQUENCY,
     WHEN_DIAGNOSED,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
@@ -245,8 +246,16 @@ def annotation_clinical_concepts(
         normalized_attrs = _assertion_attributes(entity, part, attributes)
         if entity in CONCEPT_IDENTITY_ENTITIES:
             concepts.append(ClinicalConcept(entity, part, normalized_attrs))
-        if entity == PATIENT_HISTORY.name and is_epilepsy_seizure_type(part):
-            concepts.append(ClinicalConcept(DIAGNOSIS.name, part, normalized_attrs))
+        if entity in {PATIENT_HISTORY.name, SEIZURE_FREQUENCY.name} and is_epilepsy_seizure_type(
+            part
+        ):
+            concepts.append(
+                ClinicalConcept(
+                    DIAGNOSIS.name,
+                    canonicalize_diagnosis_concept(part),
+                    normalized_attrs,
+                )
+            )
     return tuple(concepts)
 
 

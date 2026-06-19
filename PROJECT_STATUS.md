@@ -58,6 +58,14 @@ normalization/projection loop, but the corrected error view shows Diagnosis
 and SF remain candidate-recall/selection problems, not just representation
 problems.
 
+The best target single-call development readout so far is the v0.9 no-call
+reprojection of the v0.8 live dev25 raw outputs:
+overall `0.7365`, D `0.5879`, SF `0.6552`, P `0.9474`, I `0.7179`.
+The v0.9 live dev25 prompt did not beat it (overall `0.7194`, D `0.5636`,
+SF `0.6207`, P `0.9351`, I `0.7317`). Treat v0.9 as a useful prompt/gating
+diagnostic, not a promoted candidate. Prescription now clears target on dev25;
+the active blockers are Diagnosis, SeizureFrequency, and Investigations.
+
 ## Recent Context
 
 - Coordinated Plan 11 follow-ups are merged into this checkout: SF route
@@ -92,9 +100,9 @@ problems.
 
 ### Now
 
-- Run a v0.4 live dev10/dev25 single-call iteration under the ADR 0031
-  projected Diagnosis-core definition; compare against the no-call v0.4
-  reprojection before escalating beyond 25 rows.
+- Use the v0.8 live dev25 / v0.9 reproject error ledger to design the next
+  narrow Diagnosis/SF/Investigations iteration. Do not optimize Prescription
+  unless a later run regresses it below `0.900`.
 - Review `experiments/exectv2_sf_v08_hard_slice_panel_dev140_20260618.md` and
   write the SF v0.8 gate decision: either no prediction-bearing change, or one
   predeclared bucket/action class that clears attribution, non-gold-feature, and
@@ -135,6 +143,14 @@ problems.
   compounds, and normalizing benchmark-equivalent phrases. No-call reprojection
   of the saved v0.3 dev10 raw outputs: overall `0.6667`, D `0.4242`, SF
   `0.5405`, P `0.9143`, I `0.8333`.
+- 2026-06-19: Added v0.8/v0.9 target single-call optimizations: SF-owned
+  seizure-type facts recover Diagnosis recall through the projected Diagnosis
+  core vocabulary; non-epilepsy Diagnosis noise is gated; asymmetric same-drug
+  prescription dosing is split; planned prescriptions/investigations without
+  results are dropped; prompt examples now cover zero-since SF states and
+  completed-vs-planned investigations. Best dev25 readout is v0.9 no-call
+  reprojection of v0.8 raw: overall `0.7365`, D `0.5879`, SF `0.6552`, P
+  `0.9474`, I `0.7179`.
 - 2026-06-19: Added the ADR 0030 target-only report and runner. Current dev140
   best-by-indicator is D `0.7302`, SF `0.7277`, P `0.9072`, I `0.7475`; only
   Prescription currently clears `>0.900`.
