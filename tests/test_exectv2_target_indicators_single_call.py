@@ -362,6 +362,23 @@ def test_target_single_call_adapter_drops_planned_investigations_without_results
     assert sum("dropped_planned_investigation" in warning for warning in warnings) == 2
 
 
+def test_target_single_call_adapter_drops_useful_to_get_planned_investigation() -> None:
+    note = "It would be useful to get a repeat MRI scan."
+    mentions = [
+        MentionRecord(
+            entity="Investigations",
+            text="repeat MRI scan",
+            attributes={"MRI_Performed": "Yes"},
+            evidence="useful to get a repeat MRI scan",
+        )
+    ]
+
+    predicted, warnings = to_predicted_letter("EA1", mentions, note_text=note)
+
+    assert predicted.mentions == ()
+    assert any("dropped_planned_investigation" in warning for warning in warnings)
+
+
 def test_target_single_call_adapter_removes_cross_modal_eeg_type_from_mri() -> None:
     note = "The previous MRI has been normal. An EEG in 2014 did show temporal slowing."
     mentions = [
@@ -401,6 +418,48 @@ def test_target_single_call_adapter_projects_diagnosis_text_to_core_fact() -> No
     assert mention.evidence == "probable focal epilepsy (perinatal insult)"
     assert mention.attributes["CUI"] == "C0014547"
     assert any("normalized_diagnosis_text" in warning for warning in warnings)
+
+
+def test_target_single_call_adapter_drops_investigation_only_temporal_diagnosis() -> None:
+    note = "MRI shows a subtle high intensity signal in the left temporal lobe."
+    mentions = [
+        MentionRecord(
+            entity="Diagnosis",
+            text="temporal lobe epilepsy",
+            attributes={"Certainty": "5", "Negation": "Affirmed"},
+            evidence="subtle high intensity signal in the left temporal lobe",
+        )
+    ]
+
+    predicted, warnings = to_predicted_letter("EA1", mentions, note_text=note)
+
+    assert predicted.mentions == ()
+    assert any(
+        "dropped_investigation_only_diagnosis_context" in warning
+        for warning in warnings
+    )
+
+
+def test_target_single_call_adapter_deduplicates_same_diagnosis_evidence() -> None:
+    note = "The events are possibly focal onset."
+    mentions = [
+        MentionRecord(
+            entity="Diagnosis",
+            text="focal epilepsy",
+            attributes={"Certainty": "4", "Negation": "Affirmed"},
+            evidence="possibly focal onset",
+        ),
+        MentionRecord(
+            entity="Diagnosis",
+            text="focal epilepsy",
+            attributes={"Certainty": "3", "Negation": "Affirmed"},
+            evidence="possibly focal onset",
+        ),
+    ]
+
+    predicted, _warnings = to_predicted_letter("EA1", mentions, note_text=note)
+
+    assert [mention.text for mention in predicted.mentions] == ["focal epilepsy"]
 
 
 def test_target_single_call_report_scores_projected_diagnosis_clinical_fact() -> None:
@@ -1389,6 +1448,54 @@ def test_target_single_call_adapter_projects_last_event_count_to_zero_since() ->
         "projected_last_event_month_year_to_zero_since" in warning
         for warning in warnings
     )
+
+
+def test_target_single_call_adapter_projects_dated_absence_like_zero_to_active() -> None:
+    note = "2 generalised tonic clonic seizures 2014, absence like seizures 2014"
+    mentions = [
+        MentionRecord(
+            entity="SeizureFrequency",
+            text="absence-like seizures",
+            attributes={
+                "NumberOfSeizures": "0",
+                "TimeSince_or_TimeOfEvent": "During",
+                "YearDate": "2014",
+            },
+            evidence="2 generalised tonic clonic seizures 2014, absence like seizures 2014",
+        )
+    ]
+
+    predicted, warnings = to_predicted_letter("EA1", mentions, note_text=note)
+
+    mention = predicted.mentions[0]
+    assert mention.attributes["NumberOfSeizures"] == "1"
+    assert mention.attributes["TimeSince_or_TimeOfEvent"] == "During"
+    assert mention.attributes["YearDate"] == "2014"
+    assert any(
+        "projected_dated_absence_like_zero_to_active_rate" in warning
+        for warning in warnings
+    )
+
+
+def test_target_single_call_adapter_drops_previous_event_frequency_state() -> None:
+    note = "Generalised tonic clonic seizure-last event July 2016. Previous event December 2015."
+    mentions = [
+        MentionRecord(
+            entity="SeizureFrequency",
+            text="Generalised tonic clonic seizure",
+            attributes={
+                "NumberOfSeizures": "1",
+                "TimeSince_or_TimeOfEvent": "During",
+                "MonthDate": "12",
+            },
+            evidence="Previous event December 2015",
+        )
+    ]
+
+    predicted, warnings = to_predicted_letter("EA1", mentions, note_text=note)
+
+    assert predicted.mentions == ()
+    assert any("dropped_previous_event_not_headline_frequency" in warning for warning in warnings)
 
 
 def test_target_single_call_adapter_projects_active_rate_to_diagnosis() -> None:

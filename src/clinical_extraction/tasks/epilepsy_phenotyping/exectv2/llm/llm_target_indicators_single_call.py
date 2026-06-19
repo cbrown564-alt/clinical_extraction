@@ -51,7 +51,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.target_indic
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
-PROMPT_VERSION = "exectv2_target_indicators_single_call_v0.28"
+PROMPT_VERSION = "exectv2_target_indicators_single_call_v0.30"
 PIPELINE_FAMILY = "exectv2_target_indicators_single_call"
 COMPONENT_OWNER = "llm_single_call_target_indicators"
 _DIAGNOSIS_ALLOWED_CORE = re.compile(
@@ -84,7 +84,7 @@ _PLANNED_PRESCRIPTION_CONTEXT = re.compile(
 )
 _PLANNED_INVESTIGATION_CONTEXT = re.compile(
     r"\b(?:will arrange|will request|i will request|to arrange|to request|"
-    r"further tests including|await(?:ing)?|planned)\b",
+    r"further tests including|await(?:ing)?|planned|useful to get)\b",
     re.IGNORECASE,
 )
 _ASYMMETRIC_DOSING = re.compile(
@@ -688,6 +688,13 @@ def to_predicted_letter(
                 f"Diagnosis: dropped_zero_since_only_diagnosis_context: {text!r}"
             )
             continue
+        if mention.entity == "Diagnosis" and _is_investigation_only_diagnosis_context(
+            base_mention
+        ):
+            warnings.append(
+                f"Diagnosis: dropped_investigation_only_diagnosis_context: {text!r}"
+            )
+            continue
         if mention.entity == "Diagnosis" and _is_frequency_phrase_diagnosis_context(
             base_mention
         ):
@@ -730,7 +737,7 @@ def to_predicted_letter(
         project_cuis(
             PredictedLetter(
                 letter_id=letter_id,
-                mentions=tuple(predicted_mentions),
+                mentions=tuple(_deduplicate_exact_diagnosis_mentions(predicted_mentions)),
                 diagnostics={
                     "prompt_version": PROMPT_VERSION,
                     "pipeline_family": PIPELINE_FAMILY,
@@ -1084,6 +1091,33 @@ def _project_sf_state_from_evidence(
             {"FrequencyChange": "Infrequent"},
             ["projected_infrequent_diagnosis_year_to_change_state"],
         )
+    year_match = _YEAR_IN_TEXT.search(evidence)
+    if (
+        attrs.get("NumberOfSeizures") == "0"
+        and normalize_phrase(text) in {"absence like seizure", "absence like seizures"}
+        and year_match
+    ):
+        projected = {
+            key: value
+            for key, value in attrs.items()
+            if key
+            not in {
+                "NumberOfSeizures",
+                "LowerNumberOfSeizures",
+                "UpperNumberOfSeizures",
+                "FrequencyChange",
+                "PointInTime",
+                "TimePeriod",
+            }
+        }
+        projected.update(
+            {
+                "NumberOfSeizures": "1",
+                "TimeSince_or_TimeOfEvent": "During",
+                "YearDate": year_match.group("year"),
+            }
+        )
+        return text, projected, ["projected_dated_absence_like_zero_to_active_rate"]
     last_event_match = _LAST_EVENT_MONTH_YEAR.search(evidence)
     if last_event_match and attrs.get("NumberOfSeizures") != "0":
         projected = {
@@ -1318,6 +1352,8 @@ def _sf_state_drop_reason(
         return "dropped_unanchored_current_seizure_free_state"
     if "last had a seizure before this" in normalized_evidence:
         return "dropped_relative_prior_event_not_seizure_free"
+    if normalized_evidence.startswith("previous event"):
+        return "dropped_previous_event_not_headline_frequency"
     if "well controlled" in normalized_evidence and not any(
         marker in normalized_evidence
         for marker in ("no ", "not had", "not have", "since", "last event")
@@ -1534,6 +1570,23 @@ def _is_zero_since_only_diagnosis_context(
     )
 
 
+def _is_investigation_only_diagnosis_context(mention: PredictedMention) -> bool:
+    if mention.entity != "Diagnosis":
+        return False
+    if normalize_phrase(mention.text) != "temporal lobe epilepsy":
+        return False
+    evidence = normalize_phrase(mention.evidence)
+    return "temporal lobe" in evidence and not any(
+        marker in evidence
+        for marker in (
+            "epilep",
+            "seizure",
+            "diagnosis",
+            "probable temporal",
+        )
+    )
+
+
 def _is_frequency_phrase_diagnosis_context(mention: PredictedMention) -> bool:
     if mention.entity != "Diagnosis":
         return False
@@ -1563,6 +1616,27 @@ def _local_evidence_context(
     start = max(0, index - before)
     end = min(len(note_text), index + len(evidence) + after)
     return note_text[start:end]
+
+
+def _deduplicate_exact_diagnosis_mentions(
+    mentions: Sequence[PredictedMention],
+) -> list[PredictedMention]:
+    deduplicated: list[PredictedMention] = []
+    seen: set[tuple[str, str, str]] = set()
+    for mention in mentions:
+        if mention.entity != "Diagnosis":
+            deduplicated.append(mention)
+            continue
+        key = (
+            mention.entity,
+            canonicalize_diagnosis_concept(mention.text),
+            normalize_phrase(mention.evidence),
+        )
+        if key in seen:
+            continue
+        seen.add(key)
+        deduplicated.append(mention)
+    return deduplicated
 
 
 def _expand_target_mention(
