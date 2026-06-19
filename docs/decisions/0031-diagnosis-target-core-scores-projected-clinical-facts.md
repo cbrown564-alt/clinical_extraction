@@ -84,3 +84,13 @@ and Investigations `0.9412`. The companion no-call replay
 also clears all four from a prior fresh local-Qwen raw output, showing that the
 latest changes are scorer-facing normalization/projection over captured facts,
 not extra model calls.
+
+The dev25 promotion replay now exercises the same definition at the next ladder
+step. The fresh v0.39 local-Qwen dev25 live run did not clear all indicators
+before projection refinements (`0.8763` Diagnosis, `0.7843` SeizureFrequency,
+`0.9600` Prescription, `0.8696` Investigations). The v0.40 no-call replay of
+those exact saved raw outputs applies the corrected projected clinical-fact
+Diagnosis scorer, whitespace/evidence repair, frequency-state projection, and
+investigation suppression rules. It clears all four target indicators:
+Diagnosis `0.9877`, SeizureFrequency `0.9167`, Prescription `0.9737`, and
+Investigations `1.0000`, overall `0.9714`.

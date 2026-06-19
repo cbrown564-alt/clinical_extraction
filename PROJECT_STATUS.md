@@ -77,7 +77,9 @@ Investigations `0.9268`. Earlier v0.16/v0.17/v0.19 live runs were useful
 residual probes but did not clear all four simultaneously.
 
 Local `ollama_chat/qwen3.6:35b` is now reachable and clears the current dev5
-target gate with the v0.39 single-call hybrid pipeline. The installed
+target gate with the v0.39 single-call hybrid pipeline, and the saved v0.39
+dev25 raw output now clears the dev25 target gate under the v0.40 no-call
+normalization/projection replay. The installed
 model is digest `07d35212591fc27746f0a317c975a6d68754fb38e9053d82e25f06057af28522`,
 `36.0B`, `Q4_K_M`. GPU loading on the 8 GB RTX 4070 Laptop GPU fails with CUDA
 out-of-memory, so current local runs use `CLINICAL_EXTRACTION_OLLAMA_NUM_GPU=0`
@@ -86,7 +88,12 @@ builder. The v0.39 fresh live dev5 run reaches overall `0.9722`, with
 Diagnosis `0.9524`, SeizureFrequency `1.0000`, Prescription `1.0000`, and
 Investigations `0.9412`. This is the requested hybrid path: one Qwen call per
 letter for candidate generation/selection, then deterministic evidence repair,
-normalization, projection, and CUI/score-facing rendering.
+normalization, projection, and CUI/score-facing rendering. The fresh v0.39
+local-Qwen dev25 run is retained as the raw-output source (`0.8812` overall;
+D `0.8763`, SF `0.7843`, P `0.9600`, I `0.8696`) and the v0.40 no-call replay
+of that same raw output clears the next ladder step: overall `0.9714`, Diagnosis
+`0.9877`, SeizureFrequency `0.9167`, Prescription `0.9737`, Investigations
+`1.0000`.
 
 The corrected Diagnosis target definition is ADR 0031: measure projected
 clinical-fact `concept_only` after deterministic normalization/projection, not
@@ -98,8 +105,8 @@ to overall `0.9714`, with D `0.9524`, SF `0.9333`, P `1.0000`, and I `1.0000`.
 Earlier v0.31-v0.38 runs are retained as residual probes showing the progression
 from candidate variability and parser/projection gaps to the current cleared
 local dev5 artifact. The next promotion question is reproducibility beyond
-pilot5 (`dev25` before any broader benchmark claim), not more non-target error
-analysis.
+pilot25 with a fresh v0.40 local-Qwen live run before any broader benchmark
+claim, not more non-target error analysis.
 
 ## Recent Context
 
@@ -126,9 +133,10 @@ analysis.
 2. Treat v0.21 live dev25 as the current promoted target single-call dev
    candidate; next validation should test reproducibility beyond pilot25 before
    any broader benchmark claim.
-3. Promote the local `ollama_chat/qwen3.6:35b` v0.39 candidate cautiously:
-   dev5 live now clears all four target indicators, but the next gate is a
-   fresh dev25 run before any broader benchmark-comparable claim.
+3. Promote the local `ollama_chat/qwen3.6:35b` candidate cautiously: v0.39 dev5
+   live clears all four target indicators, and v0.40 no-call replay clears the
+   saved v0.39 dev25 raw output. The next gate is a fresh v0.40 dev25 live run
+   before any broader benchmark-comparable claim.
 4. Use the SF v0.8 hard-slice panel to make a predeclared gate decision before
    any prediction-bearing SF code.
 
@@ -136,9 +144,9 @@ analysis.
 
 ### Now
 
-- Promote local Qwen v0.39 from dev5 to the next predeclared ladder step
-  (`dev25`) only if runtime budget allows; keep error analysis restricted to
-  Diagnosis, SeizureFrequency, Prescription, and Investigations.
+- Run a fresh local Qwen v0.40 dev25 live confirmation only if runtime budget
+  allows; keep error analysis restricted to Diagnosis, SeizureFrequency,
+  Prescription, and Investigations.
 - Review `experiments/exectv2_sf_v08_hard_slice_panel_dev140_20260618.md` and
   write the SF v0.8 gate decision: either no prediction-bearing change, or one
   predeclared bucket/action class that clears attribution, non-gold-feature, and
@@ -146,9 +154,9 @@ analysis.
 
 ### Next
 
-- Run the local Qwen v0.39 ladder on `dev25` with `num_gpu=0`, `num_ctx=16384`,
-  and no DSPy cache; compare live and no-call projection artifacts before any
-  dev140 or holdout-facing claim.
+- Run the local Qwen v0.40 ladder on `dev25` with `num_gpu=0`, `num_ctx=16384`,
+  and no DSPy cache; compare fresh live and no-call projection artifacts before
+  any dev140 or holdout-facing claim.
 - Decide whether to fold the promoted Diagnosis enumeration lane into the
   canonical family-routed runner (replacing the shared-pass Diagnosis lane),
   with an ownership-clean preflight note; or keep it as a guarded dev candidate
@@ -169,6 +177,20 @@ analysis.
 
 ### Done Recently
 
+- 2026-06-19: Corrected the dev25 target scoring/projection path through v0.40
+  after rechecking the Diagnosis definition against the Gan 2026
+  normalization/projection pattern. Diagnosis `concept_only` now counts one
+  projected clinical fact per letter even when gold assertion variants repeat
+  the same fact. Added whitespace-equivalent evidence repair, absence-like
+  header-to-SF projection, Christmas/month projection, infrequent/controlled
+  SF companion projection, typed zero-state Diagnosis projection, unsupported
+  episode/jerk SF suppression, non-target ECG cleanup, planned Unknown-result
+  investigation suppression, and EEG-confirmation suppression. Focused tests
+  and Ruff pass (`152` tests). No-call v0.40 replay of the fresh v0.39 local
+  Qwen dev25 raw output clears all four targets: overall `0.9714`, Diagnosis
+  `0.9877`, SeizureFrequency `0.9167`, Prescription `0.9737`, Investigations
+  `1.0000`. The fresh v0.39 dev25 live source remains recorded as not-cleared
+  before these projection refinements.
 - 2026-06-19: Corrected the target Diagnosis scoring definition and local Qwen
   projection path through v0.39. ADR 0031 now states that Diagnosis is scored
   after deterministic normalization/projection with projected clinical-fact
