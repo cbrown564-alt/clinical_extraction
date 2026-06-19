@@ -77,9 +77,9 @@ Investigations `0.9268`. Earlier v0.16/v0.17/v0.19 live runs were useful
 residual probes but did not clear all four simultaneously.
 
 Local `ollama_chat/qwen3.6:35b` is now reachable and clears the current dev5
-target gate with the v0.39 single-call hybrid pipeline, and the saved v0.39
-dev25 raw output now clears the dev25 target gate under the v0.40 no-call
-normalization/projection replay. The installed
+target gate with the v0.39 single-call hybrid pipeline. Saved fresh local-Qwen
+dev25 raw outputs now clear the dev25 target gate under no-call
+normalization/projection replays. The installed
 model is digest `07d35212591fc27746f0a317c975a6d68754fb38e9053d82e25f06057af28522`,
 `36.0B`, `Q4_K_M`. GPU loading on the 8 GB RTX 4070 Laptop GPU fails with CUDA
 out-of-memory, so current local runs use `CLINICAL_EXTRACTION_OLLAMA_NUM_GPU=0`
@@ -93,7 +93,12 @@ local-Qwen dev25 run is retained as the raw-output source (`0.8812` overall;
 D `0.8763`, SF `0.7843`, P `0.9600`, I `0.8696`) and the v0.40 no-call replay
 of that same raw output clears the next ladder step: overall `0.9714`, Diagnosis
 `0.9877`, SeizureFrequency `0.9167`, Prescription `0.9737`, Investigations
-`1.0000`.
+`1.0000`. A later fresh v0.40 local-Qwen dev25 live run completed with 0 call
+failures but did not clear before final projection (`0.8840` overall; D
+`0.8792`, SF `0.8235`, P `0.8800`, I `0.9756`, with 1 parse/schema failure).
+The v0.41 no-call replay of those exact fresh raw outputs clears all four:
+overall `0.9676`, Diagnosis `0.9750`, SeizureFrequency `0.9020`, Prescription
+`0.9870`, Investigations `1.0000`.
 
 The corrected Diagnosis target definition is ADR 0031: measure projected
 clinical-fact `concept_only` after deterministic normalization/projection, not
@@ -105,7 +110,7 @@ to overall `0.9714`, with D `0.9524`, SF `0.9333`, P `1.0000`, and I `1.0000`.
 Earlier v0.31-v0.38 runs are retained as residual probes showing the progression
 from candidate variability and parser/projection gaps to the current cleared
 local dev5 artifact. The next promotion question is reproducibility beyond
-pilot25 with a fresh v0.40 local-Qwen live run before any broader benchmark
+pilot25 with a fresh v0.41 local-Qwen live run before any broader benchmark
 claim, not more non-target error analysis.
 
 ## Recent Context
@@ -134,9 +139,10 @@ claim, not more non-target error analysis.
    candidate; next validation should test reproducibility beyond pilot25 before
    any broader benchmark claim.
 3. Promote the local `ollama_chat/qwen3.6:35b` candidate cautiously: v0.39 dev5
-   live clears all four target indicators, and v0.40 no-call replay clears the
-   saved v0.39 dev25 raw output. The next gate is a fresh v0.40 dev25 live run
-   before any broader benchmark-comparable claim.
+   live clears all four target indicators, v0.40 no-call replay clears the
+   saved v0.39 dev25 raw output, and v0.41 no-call replay clears a later fresh
+   v0.40 dev25 raw output. The next gate is a fresh v0.41 dev25 live run before
+   any broader benchmark-comparable claim.
 4. Use the SF v0.8 hard-slice panel to make a predeclared gate decision before
    any prediction-bearing SF code.
 
@@ -144,7 +150,7 @@ claim, not more non-target error analysis.
 
 ### Now
 
-- Run a fresh local Qwen v0.40 dev25 live confirmation only if runtime budget
+- Run a fresh local Qwen v0.41 dev25 live confirmation only if runtime budget
   allows; keep error analysis restricted to Diagnosis, SeizureFrequency,
   Prescription, and Investigations.
 - Review `experiments/exectv2_sf_v08_hard_slice_panel_dev140_20260618.md` and
@@ -154,7 +160,7 @@ claim, not more non-target error analysis.
 
 ### Next
 
-- Run the local Qwen v0.40 ladder on `dev25` with `num_gpu=0`, `num_ctx=16384`,
+- Run the local Qwen v0.41 ladder on `dev25` with `num_gpu=0`, `num_ctx=16384`,
   and no DSPy cache; compare fresh live and no-call projection artifacts before
   any dev140 or holdout-facing claim.
 - Decide whether to fold the promoted Diagnosis enumeration lane into the
@@ -177,6 +183,19 @@ claim, not more non-target error analysis.
 
 ### Done Recently
 
+- 2026-06-19: Ran a fresh local Qwen v0.40 dev25 live confirmation and tightened
+  deterministic projection through v0.41 using target-only residual analysis.
+  The fresh live source completed with 0 call failures but did not clear before
+  projection (`0.8840` overall; D `0.8792`, SF `0.8235`, P `0.8800`, I
+  `0.9756`; 1 parse/schema failure). v0.41 adds truncated-array JSON salvage,
+  unsupported Diagnosis/SF over-inference suppression, returned-seizure
+  increased-state projection, context parent-epilepsy projection, combined
+  epileptic/non-epileptic event projection, morning/evening prescription
+  splitting, nocte frequency repair, and neuro-exam investigation suppression.
+  Focused tests and Ruff pass (`165` tests). No-call v0.41 replay of the fresh
+  v0.40 local-Qwen dev25 raw output clears all four targets: overall `0.9676`,
+  Diagnosis `0.9750`, SeizureFrequency `0.9020`, Prescription `0.9870`,
+  Investigations `1.0000`. Next reproducibility gate: fresh v0.41 dev25 live.
 - 2026-06-19: Corrected the dev25 target scoring/projection path through v0.40
   after rechecking the Diagnosis definition against the Gan 2026
   normalization/projection pattern. Diagnosis `concept_only` now counts one

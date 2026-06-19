@@ -65,6 +65,25 @@ def test_target_single_call_parser_accepts_python_literal_payload() -> None:
     assert errors == ["parsed_python_literal_payload"]
 
 
+def test_target_single_call_parser_salvages_complete_objects_from_truncated_array() -> None:
+    raw = (
+        '{"mentions": ['
+        '{"entity": "Diagnosis", "text": "suspected epilepsy", '
+        '"attributes": {"Certainty": "3"}, "evidence": "I suspect this lady has epilepsy"}, '
+        '{"entity": "Investigations", "text": "MR brain", '
+        '"attributes": {"MRI_Performed": "Yes"}, "evidence": "I will arrange an MR brain"} '
+    )
+
+    extraction, errors = _parse_target_extraction_json(raw)
+
+    assert extraction is not None
+    assert [mention.entity for mention in extraction.mentions] == [
+        "Diagnosis",
+        "Investigations",
+    ]
+    assert any("salvaged_invalid_json_mentions" in error for error in errors)
+
+
 def test_target_single_call_adapter_drops_non_target_and_invalid_evidence() -> None:
     note = "Diagnosis: focal epilepsy. MRI was normal."
     mentions = [
@@ -406,6 +425,58 @@ def test_target_single_call_adapter_splits_asymmetric_same_drug_dosing() -> None
     assert any("split_asymmetric_same_drug_dosing" in warning for warning in warnings)
 
 
+def test_target_single_call_adapter_splits_morning_evening_same_drug_dosing() -> None:
+    note = "Epilim 300 mg in the morning and 600 mg in the evening."
+    mentions = [
+        MentionRecord(
+            entity="Prescription",
+            text="Epilim 300 mg in the morning and 600 mg in the evening",
+            attributes={
+                "DrugName": "Epilim",
+                "DrugDose": "300 mg in the morning and 600 mg in the evening",
+                "DoseUnit": "mg",
+                "Frequency": "1",
+            },
+            evidence="Epilim 300 mg in the morning and 600 mg in the evening",
+        )
+    ]
+
+    predicted, warnings = to_predicted_letter("EA1", mentions, note_text=note)
+
+    assert [mention.attributes["DrugDose"] for mention in predicted.mentions] == [
+        "300",
+        "600",
+    ]
+    assert all(mention.attributes["Frequency"] == "1" for mention in predicted.mentions)
+    assert any("split_asymmetric_same_drug_dosing" in warning for warning in warnings)
+
+
+def test_target_single_call_adapter_splits_morning_afternoon_same_drug_dosing() -> None:
+    note = "Lamictal 100 mg in the morning, 175 mg in the afternoon."
+    mentions = [
+        MentionRecord(
+            entity="Prescription",
+            text="Lamictal 100 mg in the morning, 175 mg in the afternoon",
+            attributes={
+                "DrugName": "Lamictal",
+                "DrugDose": "100/175",
+                "DoseUnit": "mg",
+                "Frequency": "2",
+            },
+            evidence="Lamictal 100 mg in the morning, 175 mg in the afternoon",
+        )
+    ]
+
+    predicted, warnings = to_predicted_letter("EA1", mentions, note_text=note)
+
+    assert [mention.attributes["DrugDose"] for mention in predicted.mentions] == [
+        "100",
+        "175",
+    ]
+    assert all(mention.attributes["Frequency"] == "1" for mention in predicted.mentions)
+    assert any("split_asymmetric_same_drug_dosing" in warning for warning in warnings)
+
+
 def test_target_single_call_adapter_splits_asymmetric_total_daily_dosing() -> None:
     note = "Current medication: levetiracetam 750mg mane, 500 mg nocte."
     mentions = [
@@ -487,6 +558,28 @@ def test_target_single_call_adapter_repairs_total_daily_dose_to_per_dose() -> No
 
     assert predicted.mentions[0].attributes["DrugDose"] == "75"
     assert any("inferred_prescription_dose" in warning for warning in warnings)
+
+
+def test_target_single_call_adapter_projects_nocte_frequency_from_evidence() -> None:
+    note = "Sodium Valproate 800mg nocte."
+    mentions = [
+        MentionRecord(
+            entity="Prescription",
+            text="Sodium Valproate 800mg bd",
+            attributes={
+                "DrugName": "Sodium Valproate",
+                "DrugDose": "800",
+                "DoseUnit": "mg",
+                "Frequency": "2",
+            },
+            evidence="800mg nocte",
+        )
+    ]
+
+    predicted, warnings = to_predicted_letter("EA1", mentions, note_text=note)
+
+    assert predicted.mentions[0].attributes["Frequency"] == "1"
+    assert any("projected_prescription_frequency_from_evidence" in warning for warning in warnings)
 
 
 def test_target_single_call_adapter_drops_planned_prescriptions() -> None:
@@ -2250,6 +2343,64 @@ def test_target_single_call_adapter_projects_epileptic_events_to_attack() -> Non
     assert any("normalized_diagnosis_text" in warning for warning in warnings)
 
 
+def test_target_single_call_adapter_projects_combined_epileptic_nonepileptic_events() -> None:
+    note = "She continues to get a combination of epileptic and nonepileptic events."
+    mentions = [
+        MentionRecord(
+            entity="Diagnosis",
+            text="epileptic and nonepileptic events",
+            attributes={"Certainty": "5", "DiagCategory": "MultipleSeizures"},
+            evidence="combination of epileptic and nonepileptic events",
+        )
+    ]
+
+    predicted, warnings = to_predicted_letter("EA1", mentions, note_text=note)
+
+    assert len(predicted.mentions) == 1
+    assert predicted.mentions[0].text == "epileptic attack"
+    assert any("normalized_diagnosis_text" in warning for warning in warnings)
+
+
+def test_target_single_call_adapter_drops_epilepsy_inferred_only_from_seizures() -> None:
+    note = "She has not had any further seizures."
+    mentions = [
+        MentionRecord(
+            entity="Diagnosis",
+            text="epilepsy",
+            attributes={"Certainty": "5", "DiagCategory": "Epilepsy"},
+            evidence="has not had any further seizures",
+        )
+    ]
+
+    predicted, warnings = to_predicted_letter("EA1", mentions, note_text=note)
+
+    assert predicted.mentions == ()
+    assert any("dropped_unsupported_inferred_diagnosis" in warning for warning in warnings)
+
+
+def test_target_single_call_adapter_projects_context_parent_epilepsy() -> None:
+    note = (
+        "I reviewed this lady with epilepsy, together with her husband. "
+        "I think these are in keeping with temporal lobe onset focal seizures."
+    )
+    mentions = [
+        MentionRecord(
+            entity="Diagnosis",
+            text="temporal lobe onset focal seizures",
+            attributes={"Certainty": "4", "DiagCategory": "MultipleSeizures"},
+            evidence="temporal lobe onset focal seizures",
+        )
+    ]
+
+    predicted, warnings = to_predicted_letter("EA1", mentions, note_text=note)
+
+    assert any(
+        mention.entity == "Diagnosis" and mention.text == "epilepsy"
+        for mention in predicted.mentions
+    )
+    assert any("projected_context_parent_epilepsy" in warning for warning in warnings)
+
+
 def test_target_single_call_adapter_splits_temporal_lobe_onset_to_focal_seizures() -> None:
     note = "I think these are in keeping with temporal lobe onset focal seizures."
     mentions = [
@@ -2354,6 +2505,35 @@ def test_target_single_call_adapter_projects_controlled_focal_state() -> None:
     )
 
 
+def test_target_single_call_adapter_projects_returned_seizures_to_increased_state() -> None:
+    note = (
+        "Seizure type and frequency: focal seizures with altered awareness every 3 weeks. "
+        "Unfortunately after the period of seizure freedom the seizures have returned."
+    )
+    mentions = [
+        MentionRecord(
+            entity="SeizureFrequency",
+            text="focal seizures with altered awareness",
+            attributes={
+                "NumberOfSeizures": "1",
+                "NumberOfTimePeriods": "3",
+                "TimePeriod": "Week",
+            },
+            evidence="focal seizures with altered awareness every 3 weeks",
+        )
+    ]
+
+    predicted, warnings = to_predicted_letter("EA1", mentions, note_text=note)
+
+    assert any(
+        mention.entity == "SeizureFrequency"
+        and mention.text == "seizure"
+        and mention.attributes.get("FrequencyChange") == "Increased"
+        for mention in predicted.mentions
+    )
+    assert any("projected_returned_context_to_increased_state" in warning for warning in warnings)
+
+
 def test_target_single_call_adapter_drops_unsupported_loss_of_consciousness_rate() -> None:
     mentions = [
         MentionRecord(
@@ -2392,6 +2572,92 @@ def test_target_single_call_adapter_drops_single_event_frequency_state() -> None
 
     assert predicted.mentions == ()
     assert any("dropped_single_event_not_frequency_state" in warning for warning in warnings)
+
+
+def test_target_single_call_adapter_drops_single_focal_event_frequency_state() -> None:
+    mentions = [
+        MentionRecord(
+            entity="SeizureFrequency",
+            text="focal seizure",
+            attributes={"NumberOfSeizures": "1", "DayDate": "22"},
+            evidence="He had an event on 22 December.",
+        )
+    ]
+
+    predicted, warnings = to_predicted_letter(
+        "EA1",
+        mentions,
+        note_text="He had an event on 22 December.",
+    )
+
+    assert predicted.mentions == ()
+    assert any("dropped_single_event_not_frequency_state" in warning for warning in warnings)
+
+
+def test_target_single_call_adapter_drops_improvement_frequency_change_duplicate() -> None:
+    mentions = [
+        MentionRecord(
+            entity="SeizureFrequency",
+            text="focal seizures",
+            attributes={"FrequencyChange": "Decreased"},
+            evidence="significant improvement since increasing the dose of lamotrigine",
+        )
+    ]
+
+    predicted, warnings = to_predicted_letter(
+        "EA1",
+        mentions,
+        note_text=mentions[0].evidence,
+    )
+
+    assert predicted.mentions == ()
+    assert any("dropped_improvement_phrase_not_headline_state" in warning for warning in warnings)
+
+
+def test_target_single_call_adapter_drops_frequency_when_type_not_in_evidence() -> None:
+    mentions = [
+        MentionRecord(
+            entity="SeizureFrequency",
+            text="focal seizures",
+            attributes={"FrequencyChange": "Increased"},
+            evidence="they seem to happen more often if he is angry or upset",
+        )
+    ]
+
+    predicted, warnings = to_predicted_letter(
+        "EA1",
+        mentions,
+        note_text=mentions[0].evidence,
+    )
+
+    assert predicted.mentions == ()
+    assert any("dropped_unsupported_episode_frequency_anchor" in warning for warning in warnings)
+
+
+def test_target_single_call_adapter_normalizes_untyped_seizures_over_months() -> None:
+    mentions = [
+        MentionRecord(
+            entity="SeizureFrequency",
+            text="generalised tonic clonic seizures with myoclonic jerks",
+            attributes={
+                "NumberOfSeizures": "15",
+                "NumberOfTimePeriods": "4",
+                "TimePeriod": "Month",
+            },
+            evidence="approximately 15 seizures over 4 months which all happen during sleep",
+        )
+    ]
+
+    predicted, warnings = to_predicted_letter(
+        "EA1",
+        mentions,
+        note_text=mentions[0].evidence,
+    )
+
+    assert len(predicted.mentions) == 1
+    assert predicted.mentions[0].entity == "SeizureFrequency"
+    assert predicted.mentions[0].text == "seizures"
+    assert any("normalized_seizure_frequency_text" in warning for warning in warnings)
 
 
 def test_target_single_call_adapter_drops_occasional_jerks_zero_state() -> None:
@@ -2493,3 +2759,23 @@ def test_target_single_call_adapter_drops_eeg_confirmation_without_result_langua
 
     assert predicted.mentions == ()
     assert any("dropped_unsupported_eeg_confirmation" in warning for warning in warnings)
+
+
+def test_target_single_call_adapter_drops_investigation_result_from_neuro_exam() -> None:
+    mentions = [
+        MentionRecord(
+            entity="Investigations",
+            text="MRI scan",
+            attributes={"MRI_Performed": "Yes", "MRI_Results": "Normal"},
+            evidence="neurological examination was normal",
+        )
+    ]
+
+    predicted, warnings = to_predicted_letter(
+        "EA1",
+        mentions,
+        note_text="neurological examination was normal",
+    )
+
+    assert predicted.mentions == ()
+    assert any("dropped_unsupported_investigation_evidence" in warning for warning in warnings)

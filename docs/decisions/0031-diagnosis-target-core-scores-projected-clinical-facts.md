@@ -94,3 +94,16 @@ Diagnosis scorer, whitespace/evidence repair, frequency-state projection, and
 investigation suppression rules. It clears all four target indicators:
 Diagnosis `0.9877`, SeizureFrequency `0.9167`, Prescription `0.9737`, and
 Investigations `1.0000`, overall `0.9714`.
+
+Fresh v0.40 local-Qwen dev25 live generation was then run as the next
+confirmation. It produced 25 rows with 0 call failures but did not clear before
+the final deterministic projection pass: overall `0.8840`, Diagnosis `0.8792`,
+SeizureFrequency `0.8235`, Prescription `0.8800`, Investigations `0.9756`, with
+one malformed JSON row. The v0.41 no-call replay of those exact fresh local raw
+outputs adds parser salvage for truncated arrays, target-only over-inference
+suppression, prescription regimen splitting, and frequency-state projection. It
+clears the four indicators on the fresh local raw output: Diagnosis `0.9750`,
+SeizureFrequency `0.9020`, Prescription `0.9870`, Investigations `1.0000`,
+overall `0.9676`. This remains a deterministic replay over fresh local model
+generation; a fresh v0.41 live rerun is the next reproducibility check before
+broader claims.
