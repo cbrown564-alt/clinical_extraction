@@ -31,7 +31,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normal
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_all_entities import (
     MentionRecord,
     _mention_to_row,
-    parse_extraction_json,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_all_entities import (
+    parse_extraction_json as parse_all_entities_extraction_json,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
     _has_blocking_parse_issue,
@@ -49,7 +51,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.target_indic
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
-PROMPT_VERSION = "exectv2_target_indicators_single_call_v0.23"
+PROMPT_VERSION = "exectv2_target_indicators_single_call_v0.28"
 PIPELINE_FAMILY = "exectv2_target_indicators_single_call"
 COMPONENT_OWNER = "llm_single_call_target_indicators"
 _DIAGNOSIS_ALLOWED_CORE = re.compile(
@@ -113,6 +115,12 @@ _GENERIC_YEARLY_SEIZURE_RATE = re.compile(
     re.IGNORECASE,
 )
 _YEAR_IN_TEXT = re.compile(r"\b(?P<year>19\d{2}|20\d{2})\b")
+_LAST_EVENT_MONTH_YEAR = re.compile(
+    r"\blast\s+(?:event|seizure)\s+"
+    r"(?P<month>january|february|march|april|may|june|july|august|september|"
+    r"october|november|december)\s+(?P<year>19\d{2}|20\d{2})\b",
+    re.IGNORECASE,
+)
 _SEVERAL_SINCE_LAST_CLINIC = re.compile(
     r"\bseveral\s+seizures?\s+since\s+(?:the\s+)?last\s+clinic(?:\s+appointment)?\b",
     re.IGNORECASE,
@@ -168,6 +176,21 @@ _SF_STATE_ATTRIBUTES = frozenset(
 _SF_TEXT_ALIASES = {
     "absence like seizure": "absence like seizures",
     "absence like seizures": "absence like seizures",
+    "focal seizures without change in awareness": "focal seizures",
+}
+_MONTH_TO_NUMBER = {
+    "january": "1",
+    "february": "2",
+    "march": "3",
+    "april": "4",
+    "may": "5",
+    "june": "6",
+    "july": "7",
+    "august": "8",
+    "september": "9",
+    "october": "10",
+    "november": "11",
+    "december": "12",
 }
 
 Mode = Literal["live", "prompt-only"]
@@ -203,6 +226,125 @@ class DspyTargetIndicatorsExtractor(dspy.Module):
 
     def forward(self, prompt_input_json: str) -> dspy.Prediction:
         return self.predict(prompt_input_json=prompt_input_json)
+
+
+def _parse_target_extraction_json(
+    raw_output: str,
+) -> tuple[ExtractionRecord | None, list[str]]:
+    extraction, errors = parse_all_entities_extraction_json(raw_output)
+    if extraction is not None:
+        return ExtractionRecord(mentions=list(extraction.mentions)), errors
+    if not any(error.startswith("invalid_json:") for error in errors):
+        return None, errors
+    salvaged_mentions, dropped = _salvage_mentions_from_malformed_json(raw_output)
+    if not salvaged_mentions:
+        return None, errors
+    salvage_errors = [f"salvaged_invalid_json_mentions: {len(salvaged_mentions)}"]
+    if dropped:
+        salvage_errors.append(f"dropped_malformed_json_mentions: {dropped}")
+    return ExtractionRecord(mentions=salvaged_mentions), salvage_errors
+
+
+def _salvage_mentions_from_malformed_json(raw_output: str) -> tuple[list[MentionRecord], int]:
+    mentions: list[MentionRecord] = []
+    dropped = 0
+    for obj_text in _iter_top_level_json_objects(raw_output):
+        payload = _loads_salvageable_mention_object(obj_text)
+        if payload is None:
+            dropped += 1
+            continue
+        try:
+            mentions.append(MentionRecord.model_validate(payload))
+        except Exception:
+            dropped += 1
+    return mentions, dropped
+
+
+def _iter_top_level_json_objects(raw_output: str) -> list[str]:
+    mentions_index = raw_output.find('"mentions"')
+    if mentions_index < 0:
+        return []
+    array_start = raw_output.find("[", mentions_index)
+    array_end = raw_output.rfind("]")
+    if array_start < 0 or array_end <= array_start:
+        return []
+    body = raw_output[array_start + 1 : array_end]
+    objects: list[str] = []
+    level = 0
+    start: int | None = None
+    for index, char in enumerate(body):
+        if char == "{":
+            if level == 0:
+                start = index
+            level += 1
+        elif char == "}":
+            level -= 1
+            if level == 0 and start is not None:
+                objects.append(body[start : index + 1])
+                start = None
+    return objects
+
+
+def _loads_salvageable_mention_object(obj_text: str) -> dict[str, Any] | None:
+    try:
+        payload = json.loads(obj_text)
+        return payload if isinstance(payload, dict) else None
+    except json.JSONDecodeError:
+        return _loads_malformed_rationale_mention_object(obj_text)
+
+
+def _loads_malformed_rationale_mention_object(obj_text: str) -> dict[str, Any] | None:
+    entity = _extract_json_string_field(obj_text, "entity")
+    evidence = _extract_json_string_field(obj_text, "evidence")
+    if not entity or not evidence:
+        return None
+    attributes = _extract_json_object_field(obj_text, "attributes") or {}
+    text = _extract_json_string_field(obj_text, "text") or _infer_text_from_evidence(
+        entity,
+        evidence,
+    )
+    if not text:
+        return None
+    payload: dict[str, Any] = {
+        "entity": entity,
+        "text": text,
+        "attributes": attributes,
+        "evidence": evidence,
+    }
+    confidence = _extract_json_string_field(obj_text, "confidence")
+    if confidence:
+        payload["confidence"] = confidence
+    return payload
+
+
+def _extract_json_string_field(obj_text: str, field: str) -> str | None:
+    match = re.search(
+        rf'"{re.escape(field)}"\s*:\s*"(?P<value>(?:[^"\\]|\\.)*)"',
+        obj_text,
+        re.DOTALL,
+    )
+    if not match:
+        return None
+    return json.loads(f'"{match.group("value")}"')
+
+
+def _extract_json_object_field(obj_text: str, field: str) -> dict[str, Any] | None:
+    match = re.search(rf'"{re.escape(field)}"\s*:\s*', obj_text)
+    if not match:
+        return None
+    decoder = json.JSONDecoder()
+    try:
+        value, _ = decoder.raw_decode(obj_text[match.end() :])
+    except json.JSONDecodeError:
+        return None
+    return value if isinstance(value, dict) else None
+
+
+def _infer_text_from_evidence(entity: str, evidence: str) -> str:
+    normalized = normalize_phrase(evidence)
+    if entity == "SeizureFrequency" and "seizure" in normalized:
+        return "seizures"
+    return ""
 
 
 def build_prompt_input(letter: ExectLetter) -> str:
@@ -483,6 +625,8 @@ def to_predicted_letter(
         normalized_attrs, normalization_warnings = _normalize_target_attributes(
             mention.entity,
             {str(k): str(v) for k, v in dict(mention.attributes).items()},
+            text=mention.text,
+            evidence=mention.evidence,
         )
         warnings.extend(f"{mention.entity}: {warning}" for warning in normalization_warnings)
         attrs, attr_warnings = repair_attributes(
@@ -559,6 +703,28 @@ def to_predicted_letter(
             continue
         expanded_mentions, expansion_warnings = _expand_target_mention(base_mention)
         warnings.extend(f"{mention.entity}: {warning}" for warning in expansion_warnings)
+        if mention.entity == "Diagnosis":
+            projected_sf = _project_focal_diagnosis_context_to_sf(
+                base_mention,
+                note_text,
+            )
+            if projected_sf is not None:
+                expanded_mentions.append(projected_sf)
+                warnings.append(
+                    "Diagnosis: projected_focal_diagnosis_context_to_sf_state: "
+                    f"{text!r}"
+                )
+        if mention.entity == "SeizureFrequency":
+            projected_diagnosis = _project_sf_context_to_focal_diagnosis(
+                base_mention,
+                note_text,
+            )
+            if projected_diagnosis is not None:
+                expanded_mentions.append(projected_diagnosis)
+                warnings.append(
+                    "SeizureFrequency: projected_sf_context_to_focal_diagnosis: "
+                    f"{text!r}"
+                )
         predicted_mentions.extend(expanded_mentions)
     return (
         project_cuis(
@@ -593,6 +759,11 @@ def _repair_case_only_evidence(
                 exact = note_text[index : index + len(evidence)]
                 repaired.append(mention.model_copy(update={"evidence": exact}))
                 warnings.append(f"repaired_evidence_case: {mention.text!r}")
+                continue
+            absence_like = _repair_absence_like_frequency_evidence(mention, note_text)
+            if absence_like:
+                repaired.append(mention.model_copy(update={"evidence": absence_like}))
+                warnings.append(f"repaired_absence_like_frequency_evidence: {mention.text!r}")
                 continue
             if (
                 mention.entity == "SeizureFrequency"
@@ -640,6 +811,27 @@ def _repair_ellipsis_evidence(evidence: str, note_text: str) -> str | None:
     return note_text[suffix_index : suffix_index + len(suffix)]
 
 
+def _repair_absence_like_frequency_evidence(
+    mention: MentionRecord,
+    note_text: str,
+) -> str | None:
+    attrs = {str(k): str(v) for k, v in dict(mention.attributes).items()}
+    normalized_text = normalize_phrase(mention.text)
+    year = attrs.get("YearDate", "").strip()
+    if (
+        mention.entity != "SeizureFrequency"
+        or normalized_text not in {"absence like seizure", "absence like seizures"}
+        or not year
+    ):
+        return None
+    pattern = re.compile(
+        rf"\babsence\s+like\s+seizures?\s+{re.escape(year)}\b",
+        re.IGNORECASE,
+    )
+    match = pattern.search(note_text)
+    return match.group(0) if match else None
+
+
 def _repair_prescription_frequency_synonym_evidence(
     mention: MentionRecord,
     note_text: str,
@@ -657,15 +849,97 @@ def _repair_prescription_frequency_synonym_evidence(
     return match.group(0) if match else None
 
 
+def _repair_prescription_attrs_from_text(
+    attrs: dict[str, str],
+    *,
+    source: str,
+) -> list[str]:
+    warnings: list[str] = []
+    normalized_source = normalize_phrase(source)
+    drug_aliases = {
+        "carbamazepine": "carbamazepine",
+        "clobazam": "clobazam",
+        "lamotrigine": "lamotrigine",
+        "levetiracetam": "levetiracetam",
+        "phenytoin": "phenytoin",
+        "sodium valproate": "sodium-valproate",
+        "topiramate": "topiramate",
+    }
+    if not attrs.get("DrugName"):
+        for phrase, drug_name in drug_aliases.items():
+            if phrase in normalized_source:
+                attrs["DrugName"] = drug_name
+                warnings.append(f"inferred_prescription_drug_name: {drug_name}")
+                break
+    dose_match = re.search(
+        r"\b(?P<dose>\d+(?:\.\d+)?)\s*(?P<unit>milligrams?|mgs?|mg|grams?|g)\b",
+        source,
+        re.IGNORECASE,
+    )
+    if dose_match:
+        source_dose = _clean_number(dose_match.group("dose"))
+        if not attrs.get("DrugDose") or _is_daily_total_dose(
+            attrs.get("DrugDose", ""),
+            source_dose,
+            attrs.get("Frequency", ""),
+        ):
+            attrs["DrugDose"] = source_dose
+            warnings.append(f"inferred_prescription_dose: {source_dose}")
+        if not attrs.get("DoseUnit"):
+            attrs["DoseUnit"] = dose_match.group("unit")
+            warnings.append(f"inferred_prescription_dose_unit: {dose_match.group('unit')}")
+    if not attrs.get("Frequency"):
+        frequency = _frequency_from_prescription_source(normalized_source)
+        if frequency:
+            attrs["Frequency"] = frequency
+            warnings.append(f"inferred_prescription_frequency: {frequency}")
+    return warnings
+
+
+def _is_daily_total_dose(raw_dose: str, source_dose: str, frequency: str) -> bool:
+    if not raw_dose or not source_dose or not frequency.isdigit():
+        return False
+    try:
+        return float(raw_dose) == float(source_dose) * int(frequency)
+    except ValueError:
+        return False
+
+
+def _frequency_from_prescription_source(normalized_source: str) -> str | None:
+    if re.search(r"\b(?:bd|twice\s+(?:a\s+)?day|twice\s+daily)\b", normalized_source):
+        return "2"
+    if re.search(
+        r"\b(?:tds|three\s+times\s+(?:a\s+)?day|three\s+times\s+daily)\b",
+        normalized_source,
+    ):
+        return "3"
+    if re.search(
+        r"\b(?:mane|morning|nocte|night|once\s+(?:a\s+)?day|once\s+daily)\b",
+        normalized_source,
+    ):
+        return "1"
+    if re.search(r"\b(?:prn|as\s+required|rescue)\b", normalized_source):
+        return "As_Required"
+    return None
+
+
 def _normalize_target_attributes(
     entity: str,
     attrs: dict[str, str],
+    *,
+    text: str = "",
+    evidence: str = "",
 ) -> tuple[dict[str, str], list[str]]:
     """Format-only normalization before scorer-facing schema repair."""
 
     normalized = dict(attrs)
     warnings: list[str] = []
     if entity == "Prescription":
+        prescription_warnings = _repair_prescription_attrs_from_text(
+            normalized,
+            source=f"{text} {evidence}",
+        )
+        warnings.extend(prescription_warnings)
         unit = normalized.get("DoseUnit", "").strip().lower()
         if unit in {"milligram", "milligrams", "mgs"}:
             normalized["DoseUnit"] = "mg"
@@ -722,6 +996,14 @@ def _normalize_target_attributes(
                 warnings.append(f"normalized_time_period: {period} -> {period_map[period]}")
         if normalized.get("TimePeriod") == "Day":
             _convert_day_period_to_week(normalized, warnings)
+    if entity == "Investigations":
+        if (
+            "EEG_Type" in normalized
+            and any(key.startswith("MRI_") for key in normalized)
+            and not any(key in {"EEG_Performed", "EEG_Results"} for key in normalized)
+        ):
+            normalized.pop("EEG_Type", None)
+            warnings.append("removed_cross_modal_eeg_type_from_mri")
     return normalized, warnings
 
 
@@ -802,6 +1084,33 @@ def _project_sf_state_from_evidence(
             {"FrequencyChange": "Infrequent"},
             ["projected_infrequent_diagnosis_year_to_change_state"],
         )
+    last_event_match = _LAST_EVENT_MONTH_YEAR.search(evidence)
+    if last_event_match and attrs.get("NumberOfSeizures") != "0":
+        projected = {
+            key: value
+            for key, value in attrs.items()
+            if key
+            not in {
+                "NumberOfSeizures",
+                "LowerNumberOfSeizures",
+                "UpperNumberOfSeizures",
+                "NumberOfTimePeriods",
+                "LowerNumberOfTimePeriods",
+                "UpperNumberOfTimePeriods",
+                "TimePeriod",
+                "FrequencyChange",
+                "PointInTime",
+            }
+        }
+        projected.update(
+            {
+                "NumberOfSeizures": "0",
+                "TimeSince_or_TimeOfEvent": "Since",
+                "MonthDate": _MONTH_TO_NUMBER[last_event_match.group("month").lower()],
+                "YearDate": last_event_match.group("year"),
+            }
+        )
+        return text, projected, ["projected_last_event_month_year_to_zero_since"]
     if not _REMOTE_LAST_SEIZURES_IN_TEENS.search(evidence):
         if _SEVERAL_SINCE_LAST_CLINIC.search(evidence):
             projected = {
@@ -1002,7 +1311,7 @@ def _sf_state_drop_reason(
         return "dropped_generic_zero_state_for_typed_anchor"
     if (
         attrs.get("NumberOfSeizures") == "0"
-        and normalized_text in {"seizure", "seizures"}
+        and normalized_text in {"seizure", "seizures", "seizure free"}
         and "remains seizure free" in normalized_evidence
         and "since" not in normalized_evidence
     ):
@@ -1100,6 +1409,108 @@ def _project_diagnosis_frequency_header_to_sf(
                 "TimeSince_or_TimeOfEvent": "During",
                 "YearDate": year_match.group("year"),
             },
+        }
+    )
+
+
+def _project_focal_diagnosis_context_to_sf(
+    mention: PredictedMention,
+    note_text: str,
+) -> PredictedMention | None:
+    if mention.entity != "Diagnosis":
+        return None
+    if normalize_phrase(mention.text) != "focal epilepsy":
+        return None
+    if "focal onset" not in normalize_phrase(mention.evidence):
+        return None
+    context = _local_evidence_context(note_text, mention.evidence, before=96, after=16)
+    range_match = re.search(
+        r"\bseizures?\s+every\s+(?P<lower>\d+)\s*(?:-|to)\s*(?P<upper>\d+)\s+"
+        r"(?P<period>days?|weeks?|months?|years?)\b",
+        context,
+        re.IGNORECASE,
+    )
+    if range_match:
+        return mention.model_copy(
+            update={
+                "entity": "SeizureFrequency",
+                "text": "seizures",
+                "attributes": {
+                    "NumberOfSeizures": "1",
+                    "LowerNumberOfTimePeriods": range_match.group("lower"),
+                    "UpperNumberOfTimePeriods": range_match.group("upper"),
+                    "TimePeriod": _period_to_canonical(range_match.group("period")),
+                },
+                "evidence": range_match.group(0),
+            }
+        )
+    single_match = re.search(
+        r"\bseizures?\s+every\s+(?P<n>\d+)\s+(?P<period>days?|weeks?|months?|years?)\b",
+        context,
+        re.IGNORECASE,
+    )
+    if not single_match:
+        return None
+    return mention.model_copy(
+        update={
+            "entity": "SeizureFrequency",
+            "text": "seizures",
+            "attributes": {
+                "NumberOfSeizures": "1",
+                "NumberOfTimePeriods": single_match.group("n"),
+                "TimePeriod": _period_to_canonical(single_match.group("period")),
+            },
+            "evidence": single_match.group(0),
+        }
+    )
+
+
+def _project_sf_context_to_focal_diagnosis(
+    mention: PredictedMention,
+    note_text: str,
+) -> PredictedMention | None:
+    if mention.entity != "SeizureFrequency":
+        return None
+    if normalize_phrase(mention.text) not in {"seizure", "seizures"}:
+        return None
+    if not any(
+        key in mention.attributes
+        for key in (
+            "NumberOfSeizures",
+            "LowerNumberOfSeizures",
+            "UpperNumberOfSeizures",
+        )
+    ):
+        return None
+    context = _local_evidence_context(note_text, mention.evidence, before=40, after=80)
+    match = re.search(r"\b(?:possibly\s+)?focal\s+onset\b", context, re.IGNORECASE)
+    if not match and _EVERY_N_TO_M_PERIODS.search(mention.evidence):
+        header_match = re.search(
+            r"\bseizures?\s+every\s+\d+\s*(?:-|to)\s*\d+\s+"
+            r"(?:days?|weeks?|months?|years?)\s*,\s*"
+            r"(?P<focal>(?:possibly\s+)?focal\s+onset)\b",
+            note_text,
+            re.IGNORECASE,
+        )
+        if header_match:
+            match = re.search(
+                r"\b(?:possibly\s+)?focal\s+onset\b",
+                header_match.group("focal"),
+                re.IGNORECASE,
+            )
+    if not match:
+        return None
+    certainty = "3" if "possibly" in match.group(0).lower() else "5"
+    return mention.model_copy(
+        update={
+            "entity": "Diagnosis",
+            "text": "focal epilepsy",
+            "attributes": {
+                "Certainty": certainty,
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed",
+            },
+            "evidence": match.group(0),
         }
     )
 
@@ -1347,7 +1758,7 @@ def _expand_asymmetric_prescription(
     mention: PredictedMention,
 ) -> tuple[list[PredictedMention], list[str]]:
     attrs = dict(mention.attributes)
-    if attrs.get("DoseUnit") != "mg" or attrs.get("Frequency") != "1":
+    if attrs.get("DoseUnit") != "mg":
         return [], []
     match = _ASYMMETRIC_DOSING.search(f"{mention.text} {mention.evidence}")
     if not match:
@@ -1476,7 +1887,7 @@ def run_split(
                 call_error = f"{type(exc).__name__}: {exc}"
 
         extraction, parse_errors = (
-            parse_extraction_json(raw_output) if raw_output else (None, ["not_run"])
+            _parse_target_extraction_json(raw_output) if raw_output else (None, ["not_run"])
         )
         mentions = extraction.mentions if extraction else []
         predicted_letter, gate_warnings = to_predicted_letter(

@@ -63,6 +63,7 @@ _CONCEPT_ALIASES: dict[str, str] = {
 _DIAGNOSIS_CONCEPT_ALIASES: dict[str, str] = {
     "focal onset epilepsy": "focal epilepsy",
     "single focal seizure": "focal seizure",
+    "focal seizures without change in awareness": "focal seizures",
     "focal onset seizures": "focal seizures",
     "generalized epilepsy": "generalised epilepsy",
     "epilepsy unclassified": "epilepsy",
