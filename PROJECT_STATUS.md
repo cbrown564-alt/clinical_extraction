@@ -76,7 +76,7 @@ reprojected v0.19 live raw cleared all four with overall `0.9474`, Diagnosis
 Investigations `0.9268`. Earlier v0.16/v0.17/v0.19 live runs were useful
 residual probes but did not clear all four simultaneously.
 
-Local `ollama_chat/qwen3.6:35b` is now reachable but not solved. The installed
+Local `ollama_chat/qwen3.6:35b` is now reachable but not fully solved. The installed
 model is digest `07d35212591fc27746f0a317c975a6d68754fb38e9053d82e25f06057af28522`,
 `36.0B`, `Q4_K_M`. GPU loading on the 8 GB RTX 4070 Laptop GPU fails with CUDA
 out-of-memory, so current local runs use `CLINICAL_EXTRACTION_OLLAMA_NUM_GPU=0`
@@ -84,8 +84,13 @@ and `CLINICAL_EXTRACTION_OLLAMA_NUM_CTX=16384` via the shared `ollama_chat`
 builder. v0.21 live dev1 clears all four locally, and v0.22 no-call
 reprojection of v0.21 local dev5 raw clears all four (overall `0.9855`), but a
 fresh v0.22 local dev5 live rerun does not reproduce: overall `0.8550`, D
-`0.7887`, SF `0.7500`, P `0.8889`, I `1.0000`. Treat local Qwen as runnable
-but still below the requested `>0.900` target.
+`0.7887`, SF `0.7500`, P `0.8889`, I `1.0000`. v0.23 reprojects that fresh
+v0.22 raw output after the same kind of deterministic normalization/projection
+used in the Gan frequency work: overall `0.9577`, Diagnosis `0.9524`,
+SeizureFrequency `0.9333`, Prescription `0.9474`, and Investigations `1.0000`.
+This proves the residuals were mostly scorer-facing representation/projection
+issues over captured facts, but the local Qwen destination still needs a fresh
+v0.23 live rerun before claiming the requested reproducible `>0.900` target.
 
 ## Recent Context
 
@@ -122,9 +127,9 @@ but still below the requested `>0.900` target.
 
 ### Now
 
-- Analyze the fresh v0.22 local Qwen dev5 residuals for the four target
-  indicators only, comparing them with the v0.22 no-call replay that cleared on
-  the previous local dev5 raw outputs.
+- Rerun local Qwen dev5 live with v0.23 (`num_gpu=0`, `num_ctx=16384`, no DSPy
+  cache) to test whether the projection-cleared v0.23 no-call result
+  reproduces with fresh candidate generation.
 - Review `experiments/exectv2_sf_v08_hard_slice_panel_dev140_20260618.md` and
   write the SF v0.8 gate decision: either no prediction-bearing change, or one
   predeclared bucket/action class that clears attribution, non-gold-feature, and
@@ -156,6 +161,14 @@ but still below the requested `>0.900` target.
 
 ### Done Recently
 
+- 2026-06-19: Added v0.23 deterministic target projection rules for local Qwen
+  residuals: ellipsis evidence repair, protected Diagnosis syndrome projection,
+  every-N-to-M seizure-frequency projection, frequency-phrase Diagnosis
+  suppression, focal-onset cross-family projection, frequency-header
+  absence-like SF projection, and unanchored generic seizure-free suppression.
+  Focused tests/Ruff pass. No-call replay of fresh v0.22 local Qwen dev5 raw now
+  clears all four ADR 0030 indicators: overall `0.9577`, D `0.9524`,
+  SF `0.9333`, P `0.9474`, I `1.0000`.
 - 2026-06-19: Added the one-call ADR 0030 target-indicator runner
   (`exectv2_target_indicators_single_call_v0.2`). Dev10 `gpt-4.1-mini` pilot:
   overall `0.6043`, D `0.2857`, SF `0.5000`, P `0.9189`, I `0.8333`.

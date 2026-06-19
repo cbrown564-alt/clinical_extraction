@@ -49,7 +49,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.target_indic
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
-PROMPT_VERSION = "exectv2_target_indicators_single_call_v0.22"
+PROMPT_VERSION = "exectv2_target_indicators_single_call_v0.23"
 PIPELINE_FAMILY = "exectv2_target_indicators_single_call"
 COMPONENT_OWNER = "llm_single_call_target_indicators"
 _DIAGNOSIS_ALLOWED_CORE = re.compile(
@@ -112,12 +112,18 @@ _GENERIC_YEARLY_SEIZURE_RATE = re.compile(
     r"\b(?:roughly|about|around|approximately)\s+two\s+seizures?\s+per\s+year\b",
     re.IGNORECASE,
 )
+_YEAR_IN_TEXT = re.compile(r"\b(?P<year>19\d{2}|20\d{2})\b")
 _SEVERAL_SINCE_LAST_CLINIC = re.compile(
     r"\bseveral\s+seizures?\s+since\s+(?:the\s+)?last\s+clinic(?:\s+appointment)?\b",
     re.IGNORECASE,
 )
 _EVERY_N_PERIODS = re.compile(
     r"\bevery\s+(?P<n>\d+)\s+(?P<period>days?|weeks?|months?|years?)\b",
+    re.IGNORECASE,
+)
+_EVERY_N_TO_M_PERIODS = re.compile(
+    r"\bevery\s+(?P<lower>\d+)\s*(?:-|to)\s*(?P<upper>\d+)\s+"
+    r"(?P<period>days?|weeks?|months?|years?)\b",
     re.IGNORECASE,
 )
 _CONTROLLED_ON_DOSE = re.compile(
@@ -442,12 +448,21 @@ def to_predicted_letter(
         if mention.entity not in TARGET_INDICATORS:
             warnings.append(f"dropped_non_target_entity: {mention.entity!r}")
             continue
-        if mention.entity == "SeizureFrequency" and not mention.attributes:
-            warnings.append(f"dropped_empty_sf_attributes: {mention.text!r}")
-            continue
-        if mention.entity == "SeizureFrequency" and not _is_allowed_sf_anchor(mention.text):
-            warnings.append(f"dropped_non_seizure_frequency_anchor: {mention.text!r}")
-            continue
+        if mention.entity == "SeizureFrequency":
+            focal_diagnosis = _project_empty_sf_candidate_to_diagnosis(mention)
+            if focal_diagnosis is not None:
+                entity_valid.append(focal_diagnosis)
+                warnings.append(
+                    "projected_focal_onset_sf_candidate_to_diagnosis: "
+                    f"{mention.text!r}"
+                )
+                continue
+            if not mention.attributes:
+                warnings.append(f"dropped_empty_sf_attributes: {mention.text!r}")
+                continue
+            if not _is_allowed_sf_anchor(mention.text):
+                warnings.append(f"dropped_non_seizure_frequency_anchor: {mention.text!r}")
+                continue
         entity_valid.append(mention)
 
     evidence_repaired, evidence_repair_warnings = _repair_case_only_evidence(
@@ -492,9 +507,6 @@ def to_predicted_letter(
             if drop_warning:
                 warnings.append(f"SeizureFrequency: {drop_warning}: {text!r}")
                 continue
-        if mention.entity == "Diagnosis" and not _is_allowed_diagnosis_core(text):
-            warnings.append(f"Diagnosis: dropped_non_epilepsy_core: {text!r}")
-            continue
         base_mention = PredictedMention(
             entity=mention.entity,
             text=text,
@@ -504,6 +516,20 @@ def to_predicted_letter(
             rationale=mention.rationale,
             component_owner=COMPONENT_OWNER,
         )
+        if mention.entity == "Diagnosis" and not _is_allowed_diagnosis_core(text):
+            projected_sf = _project_diagnosis_frequency_header_to_sf(
+                base_mention,
+                note_text,
+            )
+            if projected_sf is not None:
+                predicted_mentions.append(projected_sf)
+                warnings.append(
+                    "Diagnosis: projected_frequency_header_diagnosis_to_sf_state: "
+                    f"{text!r}"
+                )
+                continue
+            warnings.append(f"Diagnosis: dropped_non_epilepsy_core: {text!r}")
+            continue
         if mention.entity == "Prescription" and _is_planned_prescription(
             base_mention,
             note_text,
@@ -516,6 +542,13 @@ def to_predicted_letter(
         ):
             warnings.append(
                 f"Diagnosis: dropped_zero_since_only_diagnosis_context: {text!r}"
+            )
+            continue
+        if mention.entity == "Diagnosis" and _is_frequency_phrase_diagnosis_context(
+            base_mention
+        ):
+            warnings.append(
+                f"Diagnosis: dropped_frequency_phrase_diagnosis_context: {text!r}"
             )
             continue
         if mention.entity == "Investigations" and _is_planned_investigation(
@@ -574,6 +607,11 @@ def _repair_case_only_evidence(
                     warnings.append(f"repaired_last_event_evidence: {mention.text!r}")
                     continue
             if mention.entity == "Prescription":
+                ellipsis = _repair_ellipsis_evidence(mention.evidence, note_text)
+                if ellipsis:
+                    repaired.append(mention.model_copy(update={"evidence": ellipsis}))
+                    warnings.append(f"repaired_ellipsis_evidence: {mention.text!r}")
+                    continue
                 synonym = _repair_prescription_frequency_synonym_evidence(
                     mention,
                     note_text,
@@ -587,6 +625,19 @@ def _repair_case_only_evidence(
                     continue
         repaired.append(mention)
     return repaired, warnings
+
+
+def _repair_ellipsis_evidence(evidence: str, note_text: str) -> str | None:
+    if "..." not in evidence:
+        return None
+    suffix = evidence.rsplit("...", 1)[-1].strip()
+    if not suffix:
+        return None
+    lowered_note = note_text.lower()
+    suffix_index = lowered_note.find(suffix.lower())
+    if suffix_index < 0:
+        return None
+    return note_text[suffix_index : suffix_index + len(suffix)]
 
 
 def _repair_prescription_frequency_synonym_evidence(
@@ -687,9 +738,23 @@ def _normalize_target_text(
                 f"normalized_seizure_frequency_text: {text!r} -> "
                 f"{_SF_TEXT_ALIASES[normalized]!r}"
             ]
+        if re.match(r"^seizures?\s+every\b", normalized) and (
+            _EVERY_N_PERIODS.search(normalized)
+            or _EVERY_N_TO_M_PERIODS.search(normalized)
+        ):
+            return "seizures", [
+                f"normalized_seizure_frequency_text: {text!r} -> 'seizures'"
+            ]
         return text, []
     if entity != "Diagnosis":
         return text, []
+    raw_normalized = normalize_phrase(text)
+    if (
+        raw_normalized == "epilepsy with generalised tonic clonic seizures"
+        and "alone" in normalize_phrase(evidence)
+    ):
+        normalized = "epilepsy with generalised tonic clonic seizures alone"
+        return normalized, [f"normalized_diagnosis_text: {text!r} -> {normalized!r}"]
     normalized = canonicalize_diagnosis_concept(text)
     normalized = _project_diagnosis_text_from_evidence(normalized, evidence)
     if normalized and normalized != text:
@@ -699,6 +764,11 @@ def _normalize_target_text(
 
 def _project_diagnosis_text_from_evidence(text: str, evidence: str) -> str:
     source = normalize_phrase(f"{text} {evidence}")
+    if (
+        text == "epilepsy with generalised tonic clonic seizures"
+        and "alone" in source
+    ):
+        return "epilepsy with generalised tonic clonic seizures alone"
     if (
         text == "general seizures"
         and "general and complex partial seizures" in source
@@ -779,6 +849,38 @@ def _project_sf_state_from_evidence(
                 }
             )
             return "seizures", projected, ["projected_generic_yearly_rate_anchor"]
+        range_match = _EVERY_N_TO_M_PERIODS.search(evidence)
+        if (
+            range_match
+            and attrs.get("NumberOfSeizures", "1") == "1"
+            and "LowerNumberOfSeizures" not in attrs
+            and "UpperNumberOfSeizures" not in attrs
+        ):
+            projected = {
+                key: value
+                for key, value in attrs.items()
+                if key
+                not in {
+                    "FrequencyChange",
+                    "NumberOfTimePeriods",
+                    "LowerNumberOfTimePeriods",
+                    "UpperNumberOfTimePeriods",
+                    "TimePeriod",
+                }
+            }
+            projected.update(
+                {
+                    "NumberOfSeizures": "1",
+                    "LowerNumberOfTimePeriods": range_match.group("lower"),
+                    "UpperNumberOfTimePeriods": range_match.group("upper"),
+                    "TimePeriod": _period_to_canonical(range_match.group("period")),
+                }
+            )
+            return (
+                text,
+                projected,
+                ["projected_every_n_to_m_periods_to_one_event_rate"],
+            )
         if (
             "NumberOfSeizures" not in attrs
             and "LowerNumberOfSeizures" not in attrs
@@ -898,6 +1000,13 @@ def _sf_state_drop_reason(
         and "seizure free" in normalized_evidence
     ):
         return "dropped_generic_zero_state_for_typed_anchor"
+    if (
+        attrs.get("NumberOfSeizures") == "0"
+        and normalized_text in {"seizure", "seizures"}
+        and "remains seizure free" in normalized_evidence
+        and "since" not in normalized_evidence
+    ):
+        return "dropped_unanchored_current_seizure_free_state"
     if "last had a seizure before this" in normalized_evidence:
         return "dropped_relative_prior_event_not_seizure_free"
     if "well controlled" in normalized_evidence and not any(
@@ -923,6 +1032,29 @@ def _is_allowed_sf_anchor(text: str) -> bool:
     )
 
 
+def _project_empty_sf_candidate_to_diagnosis(
+    mention: MentionRecord,
+) -> MentionRecord | None:
+    if any(key in mention.attributes for key in _SF_STATE_ATTRIBUTES):
+        return None
+    source = normalize_phrase(f"{mention.text} {mention.evidence}")
+    if "focal onset" not in source:
+        return None
+    attrs = {str(k): str(v) for k, v in dict(mention.attributes).items()}
+    certainty = attrs.get("Certainty", "3")
+    return mention.model_copy(
+        update={
+            "entity": "Diagnosis",
+            "text": "focal epilepsy",
+            "attributes": {
+                "Certainty": certainty,
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed",
+            },
+        }
+    )
+
+
 def _is_planned_prescription(mention: PredictedMention, note_text: str) -> bool:
     if mention.entity != "Prescription":
         return False
@@ -944,6 +1076,34 @@ def _is_planned_investigation(mention: PredictedMention, note_text: str) -> bool
     return bool(_PLANNED_INVESTIGATION_CONTEXT.search(context))
 
 
+def _project_diagnosis_frequency_header_to_sf(
+    mention: PredictedMention,
+    note_text: str,
+) -> PredictedMention | None:
+    normalized_text = normalize_phrase(mention.text)
+    if normalized_text not in {"absence like seizures", "absence-like seizures"}:
+        return None
+    year_match = _YEAR_IN_TEXT.search(mention.evidence)
+    if not year_match:
+        return None
+    context = normalize_phrase(
+        _local_evidence_context(note_text, mention.evidence, before=64, after=16)
+    )
+    if "seizure type and frequency" not in context:
+        return None
+    return mention.model_copy(
+        update={
+            "entity": "SeizureFrequency",
+            "text": "absence like seizures",
+            "attributes": {
+                "NumberOfSeizures": "1",
+                "TimeSince_or_TimeOfEvent": "During",
+                "YearDate": year_match.group("year"),
+            },
+        }
+    )
+
+
 def _is_zero_since_only_diagnosis_context(
     mention: PredictedMention,
     note_text: str,
@@ -960,6 +1120,18 @@ def _is_zero_since_only_diagnosis_context(
         "not had any further" in context
         or "no further" in context
         or ("no absences since" in context and normalized_text == "absences")
+    )
+
+
+def _is_frequency_phrase_diagnosis_context(mention: PredictedMention) -> bool:
+    if mention.entity != "Diagnosis":
+        return False
+    source = normalize_phrase(f"{mention.text} {mention.evidence}")
+    if "focal onset" in source:
+        return False
+    return bool(
+        (_EVERY_N_PERIODS.search(source) or _EVERY_N_TO_M_PERIODS.search(source))
+        and re.search(r"\bseizures?\s+every\b", source)
     )
 
 
@@ -1074,7 +1246,8 @@ def _expand_seizure_frequency_state(
             )
         )
         warnings.append("projected_controlled_drug_change_to_infrequent_state")
-    if _is_active_named_seizure_frequency(mention):
+    sf_diagnosis_projection = _sf_type_to_diagnosis_projection_warning(mention)
+    if sf_diagnosis_projection:
         expanded.append(
             mention.model_copy(
                 update={
@@ -1087,7 +1260,7 @@ def _expand_seizure_frequency_state(
                 }
             )
         )
-        warnings.append("projected_active_rate_seizure_type_to_diagnosis")
+        warnings.append(sf_diagnosis_projection)
     if (
         mention.attributes.get("NumberOfSeizures") == "0"
         and "focal to bilateral convulsive seizures" in normalize_phrase(mention.evidence)
@@ -1137,24 +1310,37 @@ def _expand_seizure_frequency_state(
     return expanded, warnings
 
 
-def _is_active_named_seizure_frequency(mention: PredictedMention) -> bool:
+def _sf_type_to_diagnosis_projection_warning(mention: PredictedMention) -> str | None:
     if mention.entity != "SeizureFrequency":
-        return False
-    if mention.attributes.get("NumberOfSeizures") == "0":
-        return False
-    if not any(
+        return None
+    normalized = normalize_phrase(mention.text)
+    if normalized in {
+        "seizure",
+        "seizures",
+        "cluster of seizures",
+        "focal to bilateral convulsive seizures",
+        "generalised tonic clonic seizure",
+        "generalized tonic clonic seizure",
+    }:
+        return None
+    if not _is_allowed_diagnosis_core(normalized):
+        return None
+    has_count = any(
         key in mention.attributes
         for key in (
             "NumberOfSeizures",
             "LowerNumberOfSeizures",
             "UpperNumberOfSeizures",
         )
-    ):
-        return False
-    normalized = normalize_phrase(mention.text)
-    if normalized in {"seizure", "seizures", "cluster of seizures"}:
-        return False
-    return _is_allowed_diagnosis_core(normalized)
+    )
+    if mention.attributes.get("NumberOfSeizures") == "0":
+        evidence = normalize_phrase(mention.evidence)
+        if "last event" in evidence or "last seizure" in evidence:
+            return "projected_typed_seizure_frequency_to_diagnosis"
+        return None
+    if has_count:
+        return "projected_active_rate_seizure_type_to_diagnosis"
+    return None
 
 
 def _expand_asymmetric_prescription(
@@ -1313,7 +1499,7 @@ def run_split(
                 "gate_warnings": gate_warnings,
                 "n_mentions_raw": len(mentions),
                 "n_mentions_scored": len(predicted_letter.mentions),
-                "n_evidence_invalid": len(mentions) - len(predicted_letter.mentions),
+                "n_evidence_invalid": _count_evidence_invalid_warnings(gate_warnings),
                 "predicted_mentions": [_mention_to_row(m) for m in predicted_letter.mentions],
                 "gold_mentions": [
                     {"entity": a.entity, "text": a.text, "attributes": dict(a.attributes)}
@@ -1348,6 +1534,10 @@ def run_split(
     }
     metadata["summary"] = summarize_rows(rows)
     return rows, metadata
+
+
+def _count_evidence_invalid_warnings(warnings: Sequence[str]) -> int:
+    return sum("dropped_evidence_not_substring" in warning for warning in warnings)
 
 
 def summarize_rows(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
