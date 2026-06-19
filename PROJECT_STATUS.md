@@ -4,17 +4,93 @@ Last updated: 2026-06-19
 
 ## Active Objective
 
-ExECTv2 Plan 11 now optimizes exactly four indicators:
-`Diagnosis`, `SeizureFrequency`, `Prescription`, and `Investigations`.
-Success requires core F1 `>0.900` for each on the predeclared development
-headline using a hybrid pipeline: one LLM call per letter for candidate
-generation/selection, then deterministic normalization and projection with
-explicit attribution. Rapid iteration uses `gpt-4.1-mini`; the destination
-model is local `ollama_chat/qwen3.6:35b` via Ollama with thinking disabled.
-ADR 0031 clarifies that the Diagnosis target headline is the projected
-`concept_only` clinical-fact score after deterministic normalization/projection,
-not raw surface-form or assertion-weighted capture; repeated Diagnosis mentions
-of the same projected fact count once per letter.
+ExECTv2 Plan 11 targets exactly four indicators:
+`Diagnosis`, `SeizureFrequency`, `Prescription`, and `Investigations`, via a
+hybrid pipeline: one LLM call per letter for candidate generation/selection, then
+deterministic normalization and projection with explicit attribution. Rapid
+iteration uses `gpt-4.1-mini`; the destination model is local
+`ollama_chat/qwen3.6:35b` via Ollama with thinking disabled. ADR 0031 defines the
+Diagnosis headline as the projected `concept_only` clinical-fact score after
+deterministic normalization/projection; repeated mentions count once per letter.
+
+**Objective reframed (2026-06-19, after Phase 0 + key-level deep dive):** the
+old ">0.900 headline cleared" framing is retired as the success criterion — that
+headline is a lenient redefined-surface signal, not a benchmark/paper claim (see
+"Phase 0 Metric Reconciliation"). The deep dive found the per-indicator picture
+is not uniform: for Prescription and Investigations the headline is arguably the
+MORE clinically valid target (the benchmark gap is annotation-span + CUI
+artifact); Diagnosis concept_only is mostly defensible; SeizureFrequency
+clinical_headline is genuinely lossy (control-state phenotype, not frequency).
+The live objective is now a clinically-faithful per-indicator scorer — headline +
+the two fidelity companions (`concept_negation`, `active_rate_fidelity`) — judged
+for generalization on a held-out surface (Phase 1), not a single >0.900 number.
+
+**IMPORTANT (2026-06-19, Phase 0 reconciliation):** the `>0.900` headline is a
+*redefined-surface* score and is NOT benchmark- or paper-comparable. See the
+"Phase 0 Metric Reconciliation" section below. The same v0.42 predictions score
+~0.95 on the headline key but ~0.38 on the paper-comparable benchmark key — the
+gap is entirely the scoring-surface redefinition, not capability. Treat the 0.94
+family of numbers as development artifacts on a lenient key, not progress against
+the established benchmark ceiling (~0.39).
+
+## Phase 0 Metric Reconciliation (2026-06-19)
+
+The v0.42 saved-output replay (the strongest "all four cleared" artifact) was
+re-scored under both scoring surfaces from the SAME predictions on the SAME 25
+dev letters, with no model calls
+(`scripts/phase0_dual_scoring.py`, via `architecture_report`):
+
+| Indicator | Headline key (claimed) | Benchmark key (paper-comparable) | Redefinition gap |
+| --- | ---: | ---: | ---: |
+| Diagnosis | 0.9376 | 0.2857 | +0.6519 |
+| SeizureFrequency | 0.9811 | 0.6885 | +0.2926 |
+| Prescription | 0.9250 | 0.1205 | +0.8045 |
+| Investigations | 0.9756 | 0.5854 | +0.3902 |
+| Overall | 0.9487 | 0.3675 (0.3816 after CUI projection) | +0.57 |
+
+Findings:
+
+- The paper-comparable benchmark F1 is `0.3675` raw / `0.3816` after CUI
+  projection. This matches the project's long-established benchmark-surface
+  ceiling (~`0.39`); the v0.42 model + projection layer did not move capability
+  against that ceiling. The headline `>0.900` is the lenient `concept_only` /
+  `clinical_headline` key, which drops Certainty/Negation and the exact-attribute
+  matching the benchmark item key requires.
+- CUI projection accounts for only `+0.0141` of the gap. The leniency is the
+  headline key itself, not CUI re-attachment.
+- Per-indicator interpretation differs sharply (see the 2026-06-19 key-level
+  deep dive, `scripts/phase0_key_inspect.py`). The aggregate gap is NOT uniform
+  "leniency": for Prescription and Investigations the benchmark key is the
+  artifact (gold annotation spans include header prose / years and brand names;
+  CUI), while the headline key keeps the full clinically actionable content
+  (Rx: DrugName+Dose+Unit+Frequency; Inv: modality+performed+result). For these
+  two the headline is arguably the MORE clinically valid target. Diagnosis
+  concept_only is mostly defensible (collapses duplicate/single-vs-multiple
+  annotations, drops projectable Certainty AND projectable DiagCategory — the
+  model stamping 'Epilepsy' on everything is a projection gap, not a
+  clinical-reasoning failure) with one genuine latent hole: Negation is dropped,
+  benign only because this dev25 is all-Affirmed. SeizureFrequency is
+  the genuinely lossy key: it preserves only free/active/unknown and discards the
+  rate magnitude and dates (e.g. "2-4/month" and "6-9/week" both score as
+  "active-rate"). It measures a control-state phenotype, not frequency.
+- Two clinical-fidelity companions are now wired into the scorer and surfaced in
+  the target report (`scoring.py`: Diagnosis `concept_negation`, SeizureFrequency
+  `active_rate_fidelity`; rendered in `target_indicator_report.py` "Clinical
+  Fidelity Companions"). On the v0.42 replay: Diagnosis `concept_negation` 0.9376
+  (gap 0.0000 — negation hole is latent, this dev25 is all-Affirmed) and
+  SeizureFrequency `active_rate_fidelity` 0.7879 vs headline 0.9630 (gap 0.1751 —
+  the SF headline overstates by ~0.18 F1 once rate magnitude must be right).
+  DiagCategory is deterministically projectable (`diagnosis_category_for_concept`)
+  and so is NOT a headline concern — the model stamping 'Epilepsy' is a projection
+  gap, not a clinical-reasoning failure.
+- Consequence: the `>0.900` claim, ADR 0030/0031 headline definitions, and every
+  v0.21–v0.42 "cleared all four" statement are development artifacts on a
+  redefined surface. They do not authorize a benchmark or paper-facing claim.
+  Before any further projection-rule optimization, the open question is whether
+  the redefined target is the right clinical question (cross-reference the
+  convention-decomposition finding that benchmark Diagnosis ~0.8 is unreachable
+  on the grounded surface), and whether the headline key holds up out-of-sample
+  (Phase 1: freeze v0.42 rules, score on a held-out dev surface with no edits).
 
 ## Current Dev140 Readout
 
@@ -140,28 +216,37 @@ benchmark claim, not more non-target error analysis.
 
 ## Active Priorities
 
-1. Treat routed and focused-replay results as qualified dev architecture
-   evidence, not benchmark-complete claims.
-2. Treat v0.21 live dev25 as the current promoted target single-call dev
-   candidate; next validation should test reproducibility beyond pilot25 before
-   any broader benchmark claim.
-3. Promote the local `ollama_chat/qwen3.6:35b` candidate cautiously: v0.39 dev5
-   live clears all four target indicators, v0.40 no-call replay clears the
-   saved v0.39 dev25 raw output, and v0.41 no-call replay clears a later fresh
-   v0.40 dev25 raw output. Fresh v0.41 dev25 live is retained as a clean raw
-   source that did not clear SF (`0.8333`), while v0.42 replay of that same raw
-   output clears all four. The next gate is fresh v0.42 dev25 live before any
-   broader benchmark-comparable claim.
-4. Use the SF v0.8 hard-slice panel to make a predeclared gate decision before
+1. Phase 0 is done (see "Phase 0 Metric Reconciliation"): the `>0.900` headline
+   is a redefined-surface number; benchmark-comparable overall is ~`0.38`. Do NOT
+   resume projection-rule optimization on the headline key until Phase 1 settles
+   generalization and the redefined target's legitimacy is decided.
+2. Phase 1 (next): freeze the v0.42 projection rules with no edits and score on a
+   held-out dev surface (dev140 or a fresh split the rules never saw). Report the
+   dev25-vs-dev140 and replay-vs-live gaps as the headline deliverable; the
+   expectation given dev140 history (D `0.73`, SF `0.73`, I `0.75`) is a large
+   drop. Report both the headline key AND the benchmark key on that surface.
+3. Phase 2: audit the named SF/Diagnosis projection families for overfit. Count
+   the dev letters each fires on; classify generalizable-normalization (keep) vs
+   letter-specific patch (e.g. the hard-coded "four secondary generalised
+   seizures" / "last one being around christmas" matches — flag/cut).
+4. Treat routed and focused-replay results, and all v0.21–v0.42 "cleared four"
+   artifacts, as qualified dev evidence on a lenient key, not benchmark claims.
+5. Do NOT run a fresh v0.42 dev25 live confirmation as a promotion gate: per
+   Phase 0 it would only reproduce a ~0.38 benchmark-comparable result regardless
+   of headline. Reproducibility of the headline is no longer the binding question.
+6. Use the SF v0.8 hard-slice panel to make a predeclared gate decision before
    any prediction-bearing SF code.
 
 ## Work Board
 
 ### Now
 
-- Run a fresh local Qwen v0.42 dev25 live confirmation only if runtime budget
-  allows; keep error analysis restricted to Diagnosis, SeizureFrequency,
-  Prescription, and Investigations.
+- Phase 1: freeze v0.42 projection rules and re-score the saved v0.42 predictions
+  AND a fresh held-out dev surface under both the headline key and the benchmark
+  key. Use `scripts/phase0_dual_scoring.py` as the dual-scoring template.
+- (Superseded) A fresh local Qwen v0.42 dev25 live confirmation is no longer a
+  promotion gate; Phase 0 showed the headline-key clearance does not move the
+  benchmark-comparable result off the ~0.38 ceiling.
 - Review `experiments/exectv2_sf_v08_hard_slice_panel_dev140_20260618.md` and
   write the SF v0.8 gate decision: either no prediction-bearing change, or one
   predeclared bucket/action class that clears attribution, non-gold-feature, and
@@ -192,6 +277,27 @@ benchmark claim, not more non-target error analysis.
 
 ### Done Recently
 
+- 2026-06-19: Wired two clinical-fidelity companions into the scorer after the
+  key-level deep dive. `scoring.py` adds Diagnosis `concept_negation` (concept +
+  Negation, excluding projectable Certainty) and SeizureFrequency
+  `active_rate_fidelity` (rate magnitude among active states, excluding dates);
+  both surfaced in the clinical-recovery scorecard and the target report's new
+  "Clinical Fidelity Companions" table. 4 new focused tests + full focused suite
+  pass (`175` across scoring/target/error-ledger/llm-config); ruff clean on
+  touched files. v0.42 replay: Dx concept_negation
+  0.9376 (latent — all-Affirmed dev25), SF active_rate_fidelity 0.7879 vs 0.9630
+  headline. Confirmed DiagCategory is projectable, not a headline concern (my
+  earlier "hidden failure" framing for DiagCategory was wrong; Negation is the
+  real latent hole). Deep-dive tooling: `scripts/phase0_key_inspect.py`.
+- 2026-06-19: Phase 0 metric reconciliation. Re-scored the v0.42 saved-output
+  replay under both scoring surfaces from identical predictions/letters with no
+  model calls (`scripts/phase0_dual_scoring.py`). Headline overall `0.9487` vs
+  benchmark-comparable `0.3675` raw / `0.3816` after CUI projection; per-indicator
+  redefinition gaps D `+0.6519`, SF `+0.2926`, P `+0.8045`, I `+0.3902`. The
+  benchmark figure matches the established ~`0.39` ceiling, so the `>0.900`
+  headline is entirely the lenient key, not capability. Reframed the Active
+  Objective, priorities, and work board accordingly. Next: Phase 1 generalization
+  (freeze rules, held-out surface, both keys).
 - 2026-06-19: Wrote the research-facing synthesis report for the target-only
   hybrid pipeline:
   `docs/research/exectv2_target_indicator_hybrid_pipeline_report_2026-06-19.md`.

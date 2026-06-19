@@ -1270,6 +1270,42 @@ def row_level_error_ledger(
     return rows
 
 
+def _clinical_fidelity_companions(scorecard: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    """Surface the two clinical-fidelity companions next to the lenient headline.
+
+    Diagnosis ``concept_only`` silently forgives Negation; SeizureFrequency
+    ``clinical_headline`` silently forgives rate magnitude. These companions make
+    the divergence visible so the headline cannot be read as the whole story.
+    """
+
+    headline_scores = scorecard.get("headline_scores", {})
+    out: dict[str, dict[str, Any]] = {}
+    diagnosis = headline_scores.get(DIAGNOSIS.name, {})
+    if "concept_negation" in diagnosis:
+        headline_f1 = float(diagnosis["concept_only"]["f1"])
+        companion_f1 = float(diagnosis["concept_negation"]["f1"])
+        out[DIAGNOSIS.name] = {
+            "companion": "concept_negation",
+            "forgives": "Negation (negated vs affirmed)",
+            "headline_f1": headline_f1,
+            "companion_f1": companion_f1,
+            "fidelity_gap": round(headline_f1 - companion_f1, 4),
+        }
+    frequency = headline_scores.get(SEIZURE_FREQUENCY.name, {})
+    components = frequency.get("components", {})
+    if "active_rate_fidelity" in components:
+        headline_f1 = float(components["clinical_headline"]["f1"])
+        companion_f1 = float(components["active_rate_fidelity"]["f1"])
+        out[SEIZURE_FREQUENCY.name] = {
+            "companion": "active_rate_fidelity",
+            "forgives": "rate magnitude among active states",
+            "headline_f1": headline_f1,
+            "companion_f1": companion_f1,
+            "fidelity_gap": round(headline_f1 - companion_f1, 4),
+        }
+    return out
+
+
 def architecture_report(
     *,
     name: str,
@@ -1286,6 +1322,8 @@ def architecture_report(
     cui_free_predicted = _strip_prediction_cui(predicted)
     cui_free_scorecard = build_scorecard(cui_free_gold, cui_free_predicted)
     primary_overall, primary_scores = _primary_recovery(cui_free_scorecard)
+
+    fidelity_companions = _clinical_fidelity_companions(cui_free_scorecard)
 
     # Companion diagnostic: attach deterministic CUI before scoring so the
     # legacy SeizureFrequency key that prefers CUI can be compared explicitly.
@@ -1318,6 +1356,7 @@ def architecture_report(
             "headline_scores": primary_scores,
             "cui_projected_overall": projected_overall,
             "cui_projected_headline_scores": projected_scores,
+            "fidelity_companions": fidelity_companions,
             "diagnostic_nonessential_scores": nonessential,
             "artifact_projection_scores": projected_scorecard["artifact_projection_scores"],
         },

@@ -23,9 +23,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities im
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.evaluation import (
     ENTITY_CLINICAL_RECOVERY_CLASSES,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry import (
-    RunRegistryEntry,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
     PredictedLetter,
     to_exect_letter,
@@ -54,6 +51,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     score_prescription_components,
     semantic_config_for,
     source_near_diagnostic,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry import (
+    RunRegistryEntry,
 )
 
 PIPELINE_FAMILY = "exectv2_clinical_recovery"
@@ -211,6 +211,7 @@ def _headline_scores(
             "headline_kind": "Concept-Identity Headline",
             "headline": concept.concept_assertion,
             "concept_only": concept.concept_only,
+            "concept_negation": concept.concept_negation,
             "concept_assertion": concept.concept_assertion,
         }
     return scores
@@ -227,6 +228,7 @@ def _headline_score_to_dict(score: Mapping[str, Any]) -> dict[str, Any]:
         out["projection"] = _model_scores_to_dict(score["projection"])
     if "concept_only" in score:
         out["concept_only"] = _score_to_dict(score["concept_only"])
+        out["concept_negation"] = _score_to_dict(score["concept_negation"])
         out["concept_assertion"] = _score_to_dict(score["concept_assertion"])
     return out
 
