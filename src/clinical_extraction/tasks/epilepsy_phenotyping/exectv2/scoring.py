@@ -675,7 +675,7 @@ def _concept_keys(
         if concept.entity == entity
     )
     if variant == "concept":
-        return [concept.concept_key for concept in concepts]
+        return list(dict.fromkeys(concept.concept_key for concept in concepts))
     if variant == "assertion":
         return [concept.assertion_key for concept in concepts]
     raise ValueError(f"Unknown concept identity variant {variant!r}")
