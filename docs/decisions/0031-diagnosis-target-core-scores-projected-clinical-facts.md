@@ -36,6 +36,9 @@ The ADR 0030 Diagnosis headline is a projected clinical-fact score:
    remove parenthetical causal context, normalize spelling/plural variants,
    preserve protected seizure-type compounds, and map benchmark-equivalent
    diagnosis phrases to the same clinical core.
+7. Error analysis for this phase is performed after normalization and scoring
+   projection, and only for the four ADR 0030 target indicators. Non-target
+   ExECT families remain out of scope.
 
 Examples:
 
@@ -70,3 +73,14 @@ normalization/projection, scored as projected core facts per letter. This is the
 same normalization/projection discipline used for Gan frequency statements:
 the LLM captures clinically relevant candidates in one call, while deterministic
 rules project surface variants onto scorer-facing clinical facts.
+
+Local Qwen v0.39 evidence confirms the intended scoring definition is executable:
+the fresh `ollama_chat/qwen3.6:35b` dev5 live run
+`experiments/exectv2_target_indicators_single_call_v039_live_dev5_qwen36_35b_ollama_cpu_ctx16384_20260619.md`
+clears the four ADR 0030 targets after deterministic projection:
+Diagnosis `0.9524`, SeizureFrequency `1.0000`, Prescription `1.0000`,
+and Investigations `0.9412`. The companion no-call replay
+`experiments/exectv2_target_indicators_single_call_v039_reproject_v037live_dev5_qwen36_35b_ollama_cpu_ctx16384_20260619.md`
+also clears all four from a prior fresh local-Qwen raw output, showing that the
+latest changes are scorer-facing normalization/projection over captured facts,
+not extra model calls.

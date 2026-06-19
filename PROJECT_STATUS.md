@@ -76,27 +76,30 @@ reprojected v0.19 live raw cleared all four with overall `0.9474`, Diagnosis
 Investigations `0.9268`. Earlier v0.16/v0.17/v0.19 live runs were useful
 residual probes but did not clear all four simultaneously.
 
-Local `ollama_chat/qwen3.6:35b` is now reachable but not fully solved. The installed
+Local `ollama_chat/qwen3.6:35b` is now reachable and clears the current dev5
+target gate with the v0.39 single-call hybrid pipeline. The installed
 model is digest `07d35212591fc27746f0a317c975a6d68754fb38e9053d82e25f06057af28522`,
 `36.0B`, `Q4_K_M`. GPU loading on the 8 GB RTX 4070 Laptop GPU fails with CUDA
 out-of-memory, so current local runs use `CLINICAL_EXTRACTION_OLLAMA_NUM_GPU=0`
 and `CLINICAL_EXTRACTION_OLLAMA_NUM_CTX=16384` via the shared `ollama_chat`
-builder. v0.21 live dev1 clears all four locally, and v0.22 no-call
-reprojection of v0.21 local dev5 raw clears all four (overall `0.9855`), but a
-fresh v0.22 local dev5 live rerun does not reproduce: overall `0.8550`, D
-`0.7887`, SF `0.7500`, P `0.8889`, I `1.0000`. Subsequent fresh local dev5
-runs remain candidate-variable, but deterministic projection is now catching
-the current residual shapes: v0.30 reprojects the fresh v0.29 Qwen raw output
-to overall `0.9859`, Diagnosis `0.9524`, SeizureFrequency `1.0000`,
-Prescription `1.0000`, and Investigations `1.0000`. This proves many local
-residuals are scorer-facing normalization/projection issues over captured facts,
-including malformed-rationale JSON salvage, frequency-state projection,
-Diagnosis/SF focal-onset projection, and prescription regimen normalization.
-However, fresh v0.30 live dev5 remains below the requested gate: overall
-`0.8824`, D `0.8000`, SF `0.8000`, P `0.9412`, I `1.0000`, driven by
-candidate-variable omissions/evidence choices in EA0002, EA0006, and EA0007.
-The local Qwen destination still needs a prompt/candidate-stability pass before
-claiming reproducible `>0.900` on all four.
+builder. The v0.39 fresh live dev5 run reaches overall `0.9722`, with
+Diagnosis `0.9524`, SeizureFrequency `1.0000`, Prescription `1.0000`, and
+Investigations `0.9412`. This is the requested hybrid path: one Qwen call per
+letter for candidate generation/selection, then deterministic evidence repair,
+normalization, projection, and CUI/score-facing rendering.
+
+The corrected Diagnosis target definition is ADR 0031: measure projected
+clinical-fact `concept_only` after deterministic normalization/projection, not
+raw span wording or assertion-weighted capture. This mirrors the Gan 2026
+frequency pattern: the LLM captures clinically relevant facts; deterministic
+rules project varied surface forms into scorer space. Supporting no-call replay
+evidence remains visible: v0.39 reprojects the fresh v0.37 local Qwen raw output
+to overall `0.9714`, with D `0.9524`, SF `0.9333`, P `1.0000`, and I `1.0000`.
+Earlier v0.31-v0.38 runs are retained as residual probes showing the progression
+from candidate variability and parser/projection gaps to the current cleared
+local dev5 artifact. The next promotion question is reproducibility beyond
+pilot5 (`dev25` before any broader benchmark claim), not more non-target error
+analysis.
 
 ## Recent Context
 
@@ -123,10 +126,9 @@ claiming reproducible `>0.900` on all four.
 2. Treat v0.21 live dev25 as the current promoted target single-call dev
    candidate; next validation should test reproducibility beyond pilot25 before
    any broader benchmark claim.
-3. Stabilize the local `ollama_chat/qwen3.6:35b` candidate-generation behavior;
-   the runtime path works only with CPU/off-GPU options. Latest replay clears
-   after v0.30 projection, but fresh v0.30 live dev5 remains below target due
-   candidate variability.
+3. Promote the local `ollama_chat/qwen3.6:35b` v0.39 candidate cautiously:
+   dev5 live now clears all four target indicators, but the next gate is a
+   fresh dev25 run before any broader benchmark-comparable claim.
 4. Use the SF v0.8 hard-slice panel to make a predeclared gate decision before
    any prediction-bearing SF code.
 
@@ -134,9 +136,9 @@ claiming reproducible `>0.900` on all four.
 
 ### Now
 
-- Stabilize local Qwen candidate generation for dev5: latest v0.30 projection
-  clears fresh v0.29 raw, but fresh v0.30 live still misses Diagnosis and
-  SeizureFrequency through candidate/evidence variability.
+- Promote local Qwen v0.39 from dev5 to the next predeclared ladder step
+  (`dev25`) only if runtime budget allows; keep error analysis restricted to
+  Diagnosis, SeizureFrequency, Prescription, and Investigations.
 - Review `experiments/exectv2_sf_v08_hard_slice_panel_dev140_20260618.md` and
   write the SF v0.8 gate decision: either no prediction-bearing change, or one
   predeclared bucket/action class that clears attribution, non-gold-feature, and
@@ -144,10 +146,9 @@ claiming reproducible `>0.900` on all four.
 
 ### Next
 
-- If local Qwen residuals remain candidate-selection failures, adjust prompt
-  examples/policy for Qwen and rerun the slow ladder one step at a time
-  (`dev1 -> dev5 -> dev25`) with `num_gpu=0`, `num_ctx=16384`, and no DSPy
-  cache.
+- Run the local Qwen v0.39 ladder on `dev25` with `num_gpu=0`, `num_ctx=16384`,
+  and no DSPy cache; compare live and no-call projection artifacts before any
+  dev140 or holdout-facing claim.
 - Decide whether to fold the promoted Diagnosis enumeration lane into the
   canonical family-routed runner (replacing the shared-pass Diagnosis lane),
   with an ownership-clean preflight note; or keep it as a guarded dev candidate
@@ -168,6 +169,20 @@ claiming reproducible `>0.900` on all four.
 
 ### Done Recently
 
+- 2026-06-19: Corrected the target Diagnosis scoring definition and local Qwen
+  projection path through v0.39. ADR 0031 now states that Diagnosis is scored
+  after deterministic normalization/projection with projected clinical-fact
+  `concept_only`, mirroring the Gan 2026 frequency projection discipline. Added
+  parser salvage for Python-literal Qwen JSON, target-only evidence/prompt
+  safeguards, diagnosis concept dedupe, temporal/genetic/generalised diagnosis
+  projection, dated diagnosis-to-SF projection, March range SF projection,
+  prescription dose-number normalization, cross-modal investigation cleanup, and
+  adjacent MRI/EEG context projection. Focused tests/Ruff pass (`93` target/config
+  tests). Fresh v0.39 local Qwen dev5 live clears all four targets: overall
+  `0.9722`, Diagnosis `0.9524`, SeizureFrequency `1.0000`, Prescription
+  `1.0000`, Investigations `0.9412`. v0.39 no-call replay of fresh v0.37 local
+  Qwen raw also clears all four: overall `0.9714`, D `0.9524`, SF `0.9333`,
+  P `1.0000`, I `1.0000`.
 - 2026-06-19: Extended the local-Qwen target projection path through v0.28.
   Added malformed JSON mention salvage, focal-onset Diagnosis/SF context
   projection, last-event zero-state projection, absence-like frequency evidence
