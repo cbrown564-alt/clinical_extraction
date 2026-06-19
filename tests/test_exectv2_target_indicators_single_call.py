@@ -60,6 +60,24 @@ def test_target_single_call_adapter_drops_non_target_and_invalid_evidence() -> N
     assert any("dropped_evidence_not_substring" in warning for warning in warnings)
 
 
+def test_target_single_call_adapter_repairs_case_only_evidence() -> None:
+    note = "Seizure type and frequency: Generalised tonic clonic seizure-last event July 2016."
+    mentions = [
+        MentionRecord(
+            entity="SeizureFrequency",
+            text="generalised tonic clonic seizure",
+            attributes={"NumberOfSeizures": "0", "TimeSince_or_TimeOfEvent": "Since"},
+            evidence="generalised tonic clonic seizure-last event July 2016",
+        )
+    ]
+
+    predicted, warnings = to_predicted_letter("EA1", mentions, note_text=note)
+
+    assert len(predicted.mentions) == 1
+    assert predicted.mentions[0].evidence == "Generalised tonic clonic seizure-last event July 2016"
+    assert any("repaired_evidence_case" in warning for warning in warnings)
+
+
 def test_target_single_call_adapter_normalizes_format_only_attribute_variants() -> None:
     note = "She had 2 to 3 focal seizures every 3 to 4 weeks."
     mentions = [
@@ -354,6 +372,23 @@ def test_target_single_call_adapter_drops_generic_and_nonepileptic_seizure_diagn
     assert sum("dropped_non_epilepsy_core" in warning for warning in warnings) == 2
 
 
+def test_target_single_call_adapter_drops_absence_like_diagnosis_core() -> None:
+    note = "She had absence like seizures in 2014."
+    mentions = [
+        MentionRecord(
+            entity="Diagnosis",
+            text="absence like seizures",
+            attributes={"Certainty": "5", "Negation": "Affirmed"},
+            evidence="absence like seizures",
+        )
+    ]
+
+    predicted, warnings = to_predicted_letter("EA1", mentions, note_text=note)
+
+    assert predicted.mentions == ()
+    assert any("dropped_non_epilepsy_core" in warning for warning in warnings)
+
+
 def test_target_single_call_adapter_drops_febrile_seizure_frequency() -> None:
     note = "He had 4 febrile seizures at the age of 3, 4 and then around five."
     mentions = [
@@ -423,6 +458,107 @@ def test_target_single_call_adapter_projects_vague_yearly_rate() -> None:
     assert attrs["TimePeriod"] == "Year"
     assert "FrequencyChange" not in attrs
     assert any("projected_vague_yearly_rate" in warning for warning in warnings)
+
+
+def test_target_single_call_adapter_projects_generic_roughly_two_yearly_rate() -> None:
+    note = "He has had roughly two seizures per year since then."
+    mentions = [
+        MentionRecord(
+            entity="SeizureFrequency",
+            text="generalised tonic clonic seizure",
+            attributes={
+                "NumberOfSeizures": "2",
+                "NumberOfTimePeriods": "1",
+                "TimePeriod": "Year",
+            },
+            evidence="roughly two seizures per year since then",
+        )
+    ]
+
+    predicted, warnings = to_predicted_letter("EA1", mentions, note_text=note)
+
+    mention = predicted.mentions[0]
+    assert mention.text == "seizures"
+    assert mention.attributes["NumberOfSeizures"] == "2"
+    assert mention.attributes["TimePeriod"] == "Year"
+    assert any("projected_generic_yearly_rate_anchor" in warning for warning in warnings)
+
+
+def test_target_single_call_adapter_projects_several_since_last_clinic() -> None:
+    note = "He has had several seizures since the last clinic appointment."
+    mentions = [
+        MentionRecord(
+            entity="SeizureFrequency",
+            text="seizures",
+            attributes={"FrequencyChange": "Frequent"},
+            evidence="several seizures since the last clinic appointment",
+        )
+    ]
+
+    predicted, warnings = to_predicted_letter("EA1", mentions, note_text=note)
+
+    attrs = predicted.mentions[0].attributes
+    assert attrs["NumberOfSeizures"] == "3"
+    assert attrs["TimeSince_or_TimeOfEvent"] == "Since"
+    assert attrs["PointInTime"] == "LastClinic"
+    assert "FrequencyChange" not in attrs
+    assert any("projected_several_since_last_clinic" in warning for warning in warnings)
+
+
+def test_target_single_call_adapter_projects_every_n_periods_to_one_event_rate() -> None:
+    note = "Seizure type and frequency: focal seizures with altered awareness every 3 weeks."
+    mentions = [
+        MentionRecord(
+            entity="SeizureFrequency",
+            text="focal seizures with altered awareness",
+            attributes={"NumberOfTimePeriods": "3", "TimePeriod": "weeks"},
+            evidence="focal seizures with altered awareness every 3 weeks",
+        )
+    ]
+
+    predicted, warnings = to_predicted_letter("EA1", mentions, note_text=note)
+
+    attrs = predicted.mentions[0].attributes
+    assert attrs["NumberOfSeizures"] == "1"
+    assert attrs["NumberOfTimePeriods"] == "3"
+    assert attrs["TimePeriod"] == "Week"
+    assert any("projected_every_n_periods_to_one_event_rate" in warning for warning in warnings)
+
+
+def test_target_single_call_adapter_projects_controlled_drug_change_state() -> None:
+    note = (
+        "There has been improvement since increasing lamotrigine. The focal "
+        "seizures are completely under control on the dose of lamotrigine "
+        "200 mg twice a day."
+    )
+    mentions = [
+        MentionRecord(
+            entity="SeizureFrequency",
+            text="focal seizures",
+            attributes={
+                "NumberOfSeizures": "0",
+                "TimeSince_or_TimeOfEvent": "Since",
+                "PointInTime": "DrugChange",
+            },
+            evidence=(
+                "the focal seizures are completely under control on the dose "
+                "of lamotrigine 200 mg twice a day"
+            ),
+        )
+    ]
+
+    predicted, warnings = to_predicted_letter("EA1", mentions, note_text=note)
+
+    assert [mention.text for mention in predicted.mentions] == ["focal seizures", "seizures"]
+    zero_state = predicted.mentions[0]
+    drug_change = predicted.mentions[1]
+    assert zero_state.attributes["NumberOfSeizures"] == "0"
+    assert drug_change.attributes["FrequencyChange"] == "Infrequent"
+    assert drug_change.attributes["PointInTime"] == "DrugChange"
+    assert any(
+        "projected_controlled_drug_change_to_infrequent_state" in warning
+        for warning in warnings
+    )
 
 
 def test_target_single_call_adapter_splits_cluster_frequency_state() -> None:
@@ -538,6 +674,40 @@ def test_target_single_call_adapter_drops_unsupported_minor_episode_rate() -> No
     assert any("dropped_unsupported_episode_frequency_anchor" in warning for warning in warnings)
 
 
+def test_target_single_call_adapter_drops_unsupported_episode_rate_for_typed_anchor() -> None:
+    mentions = [
+        MentionRecord(
+            entity="SeizureFrequency",
+            text="complex partial seizures",
+            attributes={
+                "LowerNumberOfSeizures": "4",
+                "UpperNumberOfSeizures": "5",
+                "NumberOfTimePeriods": "1",
+                "TimePeriod": "Year",
+            },
+            evidence="The episodes last no longer than 3 minutes and occur 4 to 5 times a year.",
+        ),
+        MentionRecord(
+            entity="SeizureFrequency",
+            text="temporal lobe onset focal seizures",
+            attributes={"FrequencyChange": "Frequent"},
+            evidence="she has been getting episodes around twice a week of an unusual thought",
+        ),
+    ]
+
+    predicted, warnings = to_predicted_letter(
+        "EA1",
+        mentions,
+        note_text=" ".join(m.evidence for m in mentions),
+    )
+
+    assert predicted.mentions == ()
+    assert (
+        sum("dropped_unsupported_episode_frequency_anchor" in warning for warning in warnings)
+        == 2
+    )
+
+
 def test_target_single_call_adapter_splits_full_generalised_epilepsy_syndrome() -> None:
     note = (
         "Diagnosis: genetic generalised epilepsy-epilepsy with generalised tonic "
@@ -562,6 +732,151 @@ def test_target_single_call_adapter_splits_full_generalised_epilepsy_syndrome() 
         "epilepsy with generalised tonic clonic seizures alone",
     ]
     assert any("split_generalised_epilepsy_syndrome" in warning for warning in warnings)
+
+
+def test_target_single_call_adapter_projects_complex_partial_conjunction_noise() -> None:
+    note = "she continues to get general and complex partial seizures."
+    mentions = [
+        MentionRecord(
+            entity="Diagnosis",
+            text="general seizures",
+            attributes={"Certainty": "5", "Negation": "Affirmed"},
+            evidence="general and complex partial seizures",
+        ),
+        MentionRecord(
+            entity="SeizureFrequency",
+            text="complex partial seizures",
+            attributes={"FrequencyChange": "Same"},
+            evidence="she continues to get general and complex partial seizures",
+        ),
+    ]
+
+    predicted, warnings = to_predicted_letter("EA1", mentions, note_text=note)
+
+    assert len(predicted.mentions) == 1
+    assert predicted.mentions[0].entity == "Diagnosis"
+    assert predicted.mentions[0].text == "complex partial seizures"
+    assert any("normalized_diagnosis_text" in warning for warning in warnings)
+    assert any("dropped_ongoing_same_without_frequency" in warning for warning in warnings)
+
+
+def test_target_single_call_adapter_expands_secondary_gtc_diagnosis() -> None:
+    note = "Complex partial seizures with secondary generalised tonic clonic seizures."
+    mentions = [
+        MentionRecord(
+            entity="Diagnosis",
+            text="secondary generalised tonic clonic seizures",
+            attributes={"Certainty": "5", "Negation": "Affirmed"},
+            evidence="secondary generalised tonic clonic seizures",
+        )
+    ]
+
+    predicted, warnings = to_predicted_letter("EA1", mentions, note_text=note)
+
+    assert [mention.text for mention in predicted.mentions] == [
+        "secondary generalised tonic clonic seizures",
+        "tonic clonic seizures",
+    ]
+    assert any("split_secondary_gtc_to_tonic_clonic_diagnosis" in warning for warning in warnings)
+
+
+def test_target_single_call_adapter_expands_convulsive_zero_state() -> None:
+    note = "focal to bilateral convulsive seizures, last event around Christmas 2017"
+    mentions = [
+        MentionRecord(
+            entity="SeizureFrequency",
+            text="focal to bilateral convulsive seizures",
+            attributes={
+                "NumberOfSeizures": "0",
+                "TimeSince_or_TimeOfEvent": "Since",
+                "YearDate": "2017",
+            },
+            evidence="focal to bilateral convulsive seizures, last event around Christmas 2017",
+        )
+    ]
+
+    predicted, warnings = to_predicted_letter("EA1", mentions, note_text=note)
+
+    assert [mention.text for mention in predicted.mentions] == [
+        "focal to bilateral convulsive seizures",
+        "convulsive seizure",
+    ]
+    assert all(mention.attributes["NumberOfSeizures"] == "0" for mention in predicted.mentions)
+    assert any("split_convulsive_zero_state" in warning for warning in warnings)
+
+
+def test_target_single_call_adapter_projects_active_rate_to_diagnosis() -> None:
+    note = "In March she had 2 to 3 of her focal seizures."
+    mentions = [
+        MentionRecord(
+            entity="SeizureFrequency",
+            text="focal seizures",
+            attributes={
+                "LowerNumberOfSeizures": "2",
+                "UpperNumberOfSeizures": "3",
+                "NumberOfTimePeriods": "1",
+                "TimePeriod": "Month",
+            },
+            evidence="In March she had 2 to 3 of her focal seizures",
+        )
+    ]
+
+    predicted, warnings = to_predicted_letter("EA1", mentions, note_text=note)
+
+    assert [mention.entity for mention in predicted.mentions] == [
+        "SeizureFrequency",
+        "Diagnosis",
+    ]
+    assert predicted.mentions[1].text == "focal seizures"
+    assert any("projected_active_rate_seizure_type_to_diagnosis" in warning for warning in warnings)
+
+
+def test_target_single_call_adapter_drops_zero_since_only_diagnosis_context() -> None:
+    note = "She has not had any further generalised tonic clonic seizures since August 2016."
+    mentions = [
+        MentionRecord(
+            entity="Diagnosis",
+            text="generalised tonic clonic seizures",
+            attributes={"Certainty": "5", "Negation": "Affirmed"},
+            evidence="generalised tonic clonic seizures",
+        )
+    ]
+
+    predicted, warnings = to_predicted_letter("EA1", mentions, note_text=note)
+
+    assert predicted.mentions == ()
+    assert any("dropped_zero_since_only_diagnosis_context" in warning for warning in warnings)
+
+
+def test_target_single_call_adapter_repairs_last_event_suffix_evidence() -> None:
+    note = (
+        "He can get infrequent focal to bilateral convulsive seizures having "
+        "around two in the year of his diagnosis and his last one being around "
+        "Christmas time in 2017."
+    )
+    mentions = [
+        MentionRecord(
+            entity="SeizureFrequency",
+            text="focal to bilateral convulsive seizures",
+            attributes={
+                "NumberOfSeizures": "0",
+                "TimeSince_or_TimeOfEvent": "Since",
+                "YearDate": "2017",
+            },
+            evidence=(
+                "no further seizures having around two in the year of his diagnosis "
+                "and his last one being around Christmas time in 2017"
+            ),
+        )
+    ]
+
+    predicted, warnings = to_predicted_letter("EA1", mentions, note_text=note)
+
+    assert [mention.text for mention in predicted.mentions] == [
+        "focal to bilateral convulsive seizures",
+        "convulsive seizure",
+    ]
+    assert any("repaired_last_event_evidence" in warning for warning in warnings)
 
 
 def test_target_single_call_adapter_converts_day_period_to_week_when_exact() -> None:

@@ -23,7 +23,7 @@ ADR_PATH = "docs/decisions/0030-four-exact-indicators-drive-exectv2-plan11.md"
 HEADLINE_SCORE_POLICIES: dict[str, str] = {
     DIAGNOSIS.name: (
         "projected clinical-fact concept_only score after deterministic "
-        "Diagnosis normalization/projection; one core fact per letter"
+        "Diagnosis normalization/projection; scored as projected core facts per letter"
     ),
     SEIZURE_FREQUENCY.name: (
         "projected seizure-state clinical_headline score after deterministic "
