@@ -65,8 +65,10 @@ SeizureFrequency `0.9167`, Prescription `0.9351`, and Investigations `0.9048`.
 This is a hybrid development artifact: the LLM raw output owns candidate
 generation/selection, while named deterministic normalization/projection
 families repair Diagnosis evidence specificity and SF state projection. It
-must be followed by a fresh live v0.16 run and then a larger dev ladder before
-any benchmark-complete or local-Qwen claim.
+did not reproduce as a fresh live gate: v0.16 live dev25 scored overall
+`0.8882`, D `0.8618`, SF `0.7778`, P `0.9610`, I `0.9500`. Treat the no-call
+clearance as a diagnostic/projection proof, not a promoted live candidate; the
+next work is candidate-generation stabilization for Diagnosis/SF.
 
 ## Recent Context
 
@@ -90,9 +92,8 @@ any benchmark-complete or local-Qwen claim.
 
 1. Treat routed and focused-replay results as qualified dev architecture
    evidence, not benchmark-complete claims.
-2. Promote v0.16 cautiously: run fresh live `gpt-4.1-mini` dev25 with the same
-   projection stack, then scale only if all four target indicators remain above
-   `0.900`.
+2. Stabilize live Diagnosis/SF candidate generation against the v0.16 no-call
+   projection stack while preserving the strong live P/I scores.
 3. Prepare a local-model smoke path for `ollama_chat/qwen3.6:35b` after the
    hosted prompt/normalization loop has a credible target score.
 4. Use the SF v0.8 hard-slice panel to make a predeclared gate decision before
@@ -102,8 +103,9 @@ any benchmark-complete or local-Qwen claim.
 
 ### Now
 
-- Run fresh live v0.16 dev25 with `gpt-4.1-mini`; compare against the no-call
-  v0.16 artifact and inspect only the four ADR 0030 indicators.
+- Compare v0.16 live dev25 residuals against the v0.16 no-call-clear artifact
+  to isolate Diagnosis/SF candidate-generation misses; keep P/I unchanged
+  unless they regress below `0.900`.
 - Review `experiments/exectv2_sf_v08_hard_slice_panel_dev140_20260618.md` and
   write the SF v0.8 gate decision: either no prediction-bearing change, or one
   predeclared bucket/action class that clears attribution, non-gold-feature, and
@@ -176,7 +178,9 @@ any benchmark-complete or local-Qwen claim.
   projection, cluster splitting, unsupported zero-state drops, and unsupported
   minor-episode drops. No-call reprojection of v0.13 raw dev25 now clears all
   four targets: overall `0.9173`, D `0.9077`, SF `0.9167`, P `0.9351`, I
-  `0.9048`; still requires fresh live and scale-up verification.
+  `0.9048`; fresh v0.16 live dev25 did not reproduce (overall `0.8882`, D
+  `0.8618`, SF `0.7778`, P `0.9610`, I `0.9500`), so this is diagnostic rather
+  than promoted.
 - 2026-06-19: Added the ADR 0030 target-only report and runner. Current dev140
   best-by-indicator is D `0.7302`, SF `0.7277`, P `0.9072`, I `0.7475`; only
   Prescription currently clears `>0.900`.
