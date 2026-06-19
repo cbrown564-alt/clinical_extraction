@@ -743,7 +743,7 @@ def _investigation_component_keys(
             if modality_key is None:
                 continue
             if component == "clinical_headline":
-                keys.append(modality_key)
+                keys.append(modality_key[:3])
             elif component == modality.lower():
                 keys.append(modality_key)
             elif component == "performed" and modality_key[1] is not None:
@@ -821,7 +821,7 @@ def _frequency_state_keys(
         if component != "clinical_headline" and component != state:
             continue
         keys.append((_frequency_type_key(annotation), state))
-    return keys
+    return list(dict.fromkeys(keys))
 
 
 def _frequency_type_key(annotation: ExectAnnotation) -> Hashable:

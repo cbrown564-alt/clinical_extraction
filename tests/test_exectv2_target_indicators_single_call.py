@@ -210,6 +210,29 @@ def test_target_single_call_adapter_drops_non_epilepsy_diagnosis_core() -> None:
     assert any("dropped_non_epilepsy_core" in warning for warning in warnings)
 
 
+def test_target_single_call_adapter_drops_generic_and_nonepileptic_seizure_diagnoses() -> None:
+    note = "She has seizures and previous dissociative seizures."
+    mentions = [
+        MentionRecord(
+            entity="Diagnosis",
+            text="seizures",
+            attributes={"Certainty": "5", "Negation": "Affirmed"},
+            evidence="seizures",
+        ),
+        MentionRecord(
+            entity="Diagnosis",
+            text="dissociative seizures",
+            attributes={"Certainty": "5", "Negation": "Affirmed"},
+            evidence="dissociative seizures",
+        ),
+    ]
+
+    predicted, warnings = to_predicted_letter("EA1", mentions, note_text=note)
+
+    assert predicted.mentions == ()
+    assert sum("dropped_non_epilepsy_core" in warning for warning in warnings) == 2
+
+
 def test_target_single_call_adapter_converts_day_period_to_week_when_exact() -> None:
     note = "She has focal seizures once every 14 days."
     mentions = [
@@ -255,3 +278,42 @@ def test_target_single_call_adapter_normalizes_since_last_clinic_period() -> Non
     assert attrs["PointInTime"] == "LastClinic"
     assert "TimePeriod" not in attrs
     assert any("normalized_since_last_clinic" in warning for warning in warnings)
+
+
+def test_target_single_call_adapter_drops_non_seizure_frequency_anchor() -> None:
+    note = "Her epilepsy is controlled."
+    mentions = [
+        MentionRecord(
+            entity="SeizureFrequency",
+            text="epilepsy",
+            attributes={"NumberOfSeizures": "0"},
+            evidence="epilepsy is controlled",
+        )
+    ]
+
+    predicted, warnings = to_predicted_letter("EA1", mentions, note_text=note)
+
+    assert predicted.mentions == ()
+    assert any("dropped_non_seizure_frequency_anchor" in warning for warning in warnings)
+
+
+def test_target_single_call_adapter_removes_unknown_like_frequency_numbers() -> None:
+    note = "She has complex partial seizures, frequency unknown."
+    mentions = [
+        MentionRecord(
+            entity="SeizureFrequency",
+            text="complex partial seizures",
+            attributes={
+                "NumberOfSeizures": "unknown",
+                "NumberOfTimePeriods": "unknown",
+            },
+            evidence="complex partial seizures, frequency unknown",
+        )
+    ]
+
+    predicted, warnings = to_predicted_letter("EA1", mentions, note_text=note)
+
+    attrs = predicted.mentions[0].attributes
+    assert "NumberOfSeizures" not in attrs
+    assert "NumberOfTimePeriods" not in attrs
+    assert any("removed_unknown_like_frequency_number" in warning for warning in warnings)

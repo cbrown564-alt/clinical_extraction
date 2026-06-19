@@ -62,6 +62,7 @@ _CONCEPT_ALIASES: dict[str, str] = {
 }
 _DIAGNOSIS_CONCEPT_ALIASES: dict[str, str] = {
     "focal onset epilepsy": "focal epilepsy",
+    "single focal seizure": "focal seizure",
     "focal onset seizures": "focal seizures",
     "generalized epilepsy": "generalised epilepsy",
     "generalized seizures": "generalised seizures",
@@ -70,6 +71,9 @@ _DIAGNOSIS_CONCEPT_ALIASES: dict[str, str] = {
     "generalized tonic clonic seizure": "tonic clonic seizures",
     "generalized tonic clonic seizures": "tonic clonic seizures",
     "tonic clonic seizure": "tonic clonic seizures",
+    "tonic chronic seizures": "tonic clonic seizures",
+    "generalised tonic chronic seizures": "tonic clonic seizures",
+    "generalized tonic chronic seizures": "tonic clonic seizures",
     "symptomatic structural focal epilepsy": "focal epilepsy",
     "localisation related epilepsy": "focal epilepsy",
     "localization related epilepsy": "focal epilepsy",
@@ -139,13 +143,21 @@ def canonicalize_concept(text: str) -> str:
 def canonicalize_diagnosis_concept(text: str) -> str:
     """Project a diagnosis phrase to the core clinical fact used for scoring."""
 
-    normalized = normalize_phrase(_PARENTHETICAL.sub(" ", str(text)))
+    normalized = normalize_phrase(
+        _PARENTHETICAL.sub(" ", str(text)).replace("–", " ").replace("—", " ")
+    )
     previous = None
     while normalized and normalized != previous:
         previous = normalized
         normalized = _DIAGNOSIS_QUALIFIER_PREFIX.sub("", normalized).strip()
     normalized = canonicalize_concept(normalized)
-    return _DIAGNOSIS_CONCEPT_ALIASES.get(normalized, normalized)
+    if normalized in _DIAGNOSIS_CONCEPT_ALIASES:
+        return _DIAGNOSIS_CONCEPT_ALIASES[normalized]
+    if "epilep" in normalized and "generalised" in normalized:
+        return "generalised epilepsy"
+    if "epilep" in normalized and "generalized" in normalized:
+        return "generalised epilepsy"
+    return normalized
 
 
 def split_compound_phrase(text: str, *, entity: str | None = None) -> list[str]:
