@@ -82,6 +82,9 @@ _DIAGNOSIS_CONCEPT_ALIASES: dict[str, str] = {
     "epilepsy with generalised tonic clonic seizure alone": (
         "epilepsy with generalised tonic clonic seizures alone"
     ),
+    "epilepsy with generalised tonic clonic seizures alone": (
+        "epilepsy with generalised tonic clonic seizures alone"
+    ),
     "epilepsy with generalized tonic clonic seizure alone": (
         "epilepsy with generalised tonic clonic seizures alone"
     ),
