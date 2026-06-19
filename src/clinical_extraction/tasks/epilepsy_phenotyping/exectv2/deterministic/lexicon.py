@@ -53,6 +53,8 @@ SF_CUI_LEXICON: dict[str, tuple[str, ...]] = {
         "generalised tonic clonic seizures",
         "generalised tonic clonic seizure",
         "generalized tonic clonic seizures",
+        "generalised tonic chronic seizures",
+        "generalized tonic chronic seizures",
         "tonic clonic seizures",
         "tonic clonic seizure",
         "generalised",

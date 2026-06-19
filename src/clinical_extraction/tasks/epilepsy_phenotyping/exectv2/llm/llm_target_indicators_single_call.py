@@ -26,6 +26,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalization import (
     canonicalize_diagnosis_concept,
+    normalize_phrase,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_all_entities import (
     MentionRecord,
@@ -48,13 +49,29 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.target_indic
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
-PROMPT_VERSION = "exectv2_target_indicators_single_call_v0.9"
+PROMPT_VERSION = "exectv2_target_indicators_single_call_v0.12"
 PIPELINE_FAMILY = "exectv2_target_indicators_single_call"
 COMPONENT_OWNER = "llm_single_call_target_indicators"
 _DIAGNOSIS_ALLOWED_CORE = re.compile(
     r"\b(epilep|seizures?|jme|absence|absences|myoclonic|tonic|clonic|"
     r"convulsive|partial|focal|generalised|generalized|status|grand mal)\b",
     re.IGNORECASE,
+)
+_DIAGNOSIS_PROHIBITED_CORES = frozenset(
+    {
+        "seizure",
+        "seizures",
+        "febrile seizure",
+        "febrile seizures",
+        "dissociative seizure",
+        "dissociative seizures",
+        "non epileptic seizure",
+        "non epileptic seizures",
+        "psychogenic seizure",
+        "psychogenic seizures",
+        "myoclonic jerk",
+        "myoclonic jerks",
+    }
 )
 _PLANNED_PRESCRIPTION_CONTEXT = re.compile(
     r"\b(?:to start|starts?|suggest(?:ed|s|ing)? adding|would suggest|"
@@ -71,6 +88,12 @@ _ASYMMETRIC_DOSING = re.compile(
     r".{0,80}?(?P<second>\d+(?:\.\d+)?)\s*mg\b.{0,40}\b(?:nocte|night|pm)\b",
     re.IGNORECASE | re.DOTALL,
 )
+_SEIZURE_FREQUENCY_ANCHOR = re.compile(
+    r"\b(seizures?|attacks?|episodes?|convulsions?|absences?|jerks?|myoclon(?:ic|us)|"
+    r"tonic|clonic|focal|generalised|generalized|partial)\b",
+    re.IGNORECASE,
+)
+_UNKNOWN_LIKE_NUMBER = frozenset({"unknown", "unclear"})
 
 Mode = Literal["live", "prompt-only"]
 
@@ -147,6 +170,16 @@ def build_prompt_input(letter: ExectLetter) -> str:
                     "fact, even when you also emit SeizureFrequency."
                 ),
                 (
+                    "Always preserve the diagnosis header/impression syndrome or "
+                    "category as its own Diagnosis fact, such as temporal lobe "
+                    "epilepsy, intractable epilepsy, primary/generalised epilepsy, "
+                    "epileptic attack, or single focal seizure."
+                ),
+                (
+                    "Phrases such as 'I suspect epilepsy' or 'possible epilepsy' "
+                    "are Diagnosis facts with lower Certainty, not omissions."
+                ),
+                (
                     "Do not extract family history, education, driving advice, or "
                     "hypothetical risk as Diagnosis. Do not extract migraine, "
                     "headache, anxiety, depression, syncope, or learning difficulty "
@@ -184,14 +217,29 @@ def build_prompt_input(letter: ExectLetter) -> str:
                     "PointInTime when stated."
                 ),
                 (
+                    "For 'no further seizures' or 'no recurrent seizures' with no "
+                    "date, emit NumberOfSeizures=0 on the seizure anchor."
+                ),
+                (
                     "For 'since last clinic' or similar clinic anchors, use "
                     "TimeSince_or_TimeOfEvent=Since and PointInTime=LastClinic."
+                ),
+                (
+                    "For 'last week', 'last month', or 'last year' occurrence "
+                    "windows, use TimeSince_or_TimeOfEvent=During with "
+                    "PointInTime=Last_Week, Last_Month, or Last_Year rather than "
+                    "converting to a per-week/month/year rate."
                 ),
                 (
                     "For explicit change words such as increased, decreased, better, "
                     "worse, rare, infrequent, or clusters, emit a separate "
                     "SeizureFrequency mention carrying FrequencyChange or the "
                     "stated dated/windowed count."
+                ),
+                (
+                    "If the text says seizures became infrequent, controlled, or "
+                    "changed after a drug change, use PointInTime=DrugChange with "
+                    "the FrequencyChange value when stated."
                 ),
                 "Use NumberOfTimePeriods=1 with TimePeriod for per-day/week/month/year cadence.",
                 (
@@ -221,6 +269,15 @@ def build_prompt_input(letter: ExectLetter) -> str:
                     "Extract completed historical investigations when a result is "
                     "stated, for example a previous CT showing infarct is CT "
                     "performed with abnormal result."
+                ),
+                (
+                    "Words such as showed, showing, revealed, demonstrated, "
+                    "consistent with, slowing, gliosis, infarct, lesion, or "
+                    "epileptiform indicate an abnormal result for the named test."
+                ),
+                (
+                    "Phrases such as no epileptiform activity, normal EEG, or normal "
+                    "MRI indicate a normal result for the named test."
                 ),
                 (
                     "Do not extract planned, requested, or future tests unless the "
@@ -287,6 +344,9 @@ def to_predicted_letter(
             continue
         if mention.entity == "SeizureFrequency" and not mention.attributes:
             warnings.append(f"dropped_empty_sf_attributes: {mention.text!r}")
+            continue
+        if mention.entity == "SeizureFrequency" and not _is_allowed_sf_anchor(mention.text):
+            warnings.append(f"dropped_non_seizure_frequency_anchor: {mention.text!r}")
             continue
         entity_valid.append(mention)
 
@@ -372,6 +432,17 @@ def _normalize_target_attributes(
             normalized["DoseUnit"] = "g"
             warnings.append("normalized_dose_unit: grams -> g")
     if entity == "SeizureFrequency":
+        for key in (
+            "NumberOfSeizures",
+            "LowerNumberOfSeizures",
+            "UpperNumberOfSeizures",
+            "NumberOfTimePeriods",
+            "LowerNumberOfTimePeriods",
+            "UpperNumberOfTimePeriods",
+        ):
+            if normalized.get(key, "").strip().lower() in _UNKNOWN_LIKE_NUMBER:
+                normalized.pop(key, None)
+                warnings.append(f"removed_unknown_like_frequency_number: {key}")
         period_raw = normalized.get("TimePeriod", "").strip().lower()
         if "last clinic" in period_raw:
             normalized.pop("TimePeriod", None)
@@ -422,7 +493,14 @@ def _normalize_target_text(entity: str, text: str) -> tuple[str, list[str]]:
 
 
 def _is_allowed_diagnosis_core(text: str) -> bool:
-    return bool(_DIAGNOSIS_ALLOWED_CORE.search(text))
+    normalized = normalize_phrase(text)
+    return normalized not in _DIAGNOSIS_PROHIBITED_CORES and bool(
+        _DIAGNOSIS_ALLOWED_CORE.search(text)
+    )
+
+
+def _is_allowed_sf_anchor(text: str) -> bool:
+    return bool(_SEIZURE_FREQUENCY_ANCHOR.search(text))
 
 
 def _is_planned_prescription(mention: PredictedMention, note_text: str) -> bool:

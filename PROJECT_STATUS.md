@@ -58,13 +58,13 @@ normalization/projection loop, but the corrected error view shows Diagnosis
 and SF remain candidate-recall/selection problems, not just representation
 problems.
 
-The best target single-call development readout so far is the v0.9 no-call
-reprojection of the v0.8 live dev25 raw outputs:
-overall `0.7365`, D `0.5879`, SF `0.6552`, P `0.9474`, I `0.7179`.
-The v0.9 live dev25 prompt did not beat it (overall `0.7194`, D `0.5636`,
-SF `0.6207`, P `0.9351`, I `0.7317`). Treat v0.9 as a useful prompt/gating
-diagnostic, not a promoted candidate. Prescription now clears target on dev25;
-the active blockers are Diagnosis, SeizureFrequency, and Investigations.
+The best target single-call development readout so far is the v0.12 no-call
+reprojection of the v0.11 live dev25 raw outputs:
+overall `0.8221`, D `0.7313`, SF `0.7170`, P `0.9351`, I `0.9048`.
+Prescription and Investigations now clear the dev25 target; the active
+blockers are Diagnosis and SeizureFrequency. This is still a hybrid
+development artifact because the score depends on named deterministic
+normalization/projection over saved raw LLM output.
 
 ## Recent Context
 
@@ -100,9 +100,9 @@ the active blockers are Diagnosis, SeizureFrequency, and Investigations.
 
 ### Now
 
-- Use the v0.8 live dev25 / v0.9 reproject error ledger to design the next
-  narrow Diagnosis/SF/Investigations iteration. Do not optimize Prescription
-  unless a later run regresses it below `0.900`.
+- Use the v0.12 dev25 residuals to design the next narrow Diagnosis/SF
+  iteration. Do not optimize Prescription or Investigations unless a later run
+  regresses either below `0.900`.
 - Review `experiments/exectv2_sf_v08_hard_slice_panel_dev140_20260618.md` and
   write the SF v0.8 gate decision: either no prediction-bearing change, or one
   predeclared bucket/action class that clears attribution, non-gold-feature, and
@@ -110,8 +110,9 @@ the active blockers are Diagnosis, SeizureFrequency, and Investigations.
 
 ### Next
 
-- Verify local Ollama availability, model tag/digest, and a one-row
-  `qwen3.6:35b` native chat smoke before any local comparison run.
+- Start Ollama and verify the local model tag/digest for `qwen3.6:35b`; the
+  latest check on 2026-06-19 returned `OLLAMA_UNREACHABLE` on
+  `localhost:11434`, so no local comparison run is available yet.
 - Decide whether to fold the promoted Diagnosis enumeration lane into the
   canonical family-routed runner (replacing the shared-pass Diagnosis lane),
   with an ownership-clean preflight note; or keep it as a guarded dev candidate
@@ -151,6 +152,13 @@ the active blockers are Diagnosis, SeizureFrequency, and Investigations.
   completed-vs-planned investigations. Best dev25 readout is v0.9 no-call
   reprojection of v0.8 raw: overall `0.7365`, D `0.5879`, SF `0.6552`, P
   `0.9474`, I `0.7179`.
+- 2026-06-19: Added v0.10-v0.12 target projection/prompt improvements:
+  Diagnosis typo/dash/core projection, SF unique projected-state scoring,
+  unknown-like SF number cleanup, non-seizure SF anchor gating, and
+  investigation headline scoring that separates modality/result from EEG type.
+  v0.11 live dev25 clears P/I (`0.9351`/`0.9048`); v0.12 no-call reprojection
+  of v0.11 raw is the best current target artifact: overall `0.8221`, D
+  `0.7313`, SF `0.7170`, P `0.9351`, I `0.9048`.
 - 2026-06-19: Added the ADR 0030 target-only report and runner. Current dev140
   best-by-indicator is D `0.7302`, SF `0.7277`, P `0.9072`, I `0.7475`; only
   Prescription currently clears `>0.900`.

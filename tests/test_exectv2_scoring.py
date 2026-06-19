@@ -265,6 +265,78 @@ def test_diagnosis_recall_from_seizure_frequency_uses_projected_core_vocabulary(
     assert score.concept_only.recall == 1.0
 
 
+def test_diagnosis_concept_identity_normalizes_common_llm_typo() -> None:
+    gold = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    DIAGNOSIS.name,
+                    "tonic clonic seizures",
+                    Certainty="5",
+                    Negation="Affirmed",
+                ),
+            ),
+        )
+    ]
+    pred = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    DIAGNOSIS.name,
+                    "generalised tonic chronic seizures",
+                    Certainty="5",
+                    Negation="Affirmed",
+                ),
+            ),
+        )
+    ]
+
+    score = score_concept_identity(gold, pred, DIAGNOSIS.name)
+
+    assert score.concept_only.f1 == 1.0
+
+
+def test_investigations_headline_ignores_eeg_type_component() -> None:
+    gold = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    INVESTIGATIONS.name,
+                    "EEG",
+                    EEG_Performed="Yes",
+                    EEG_Results="Normal",
+                ),
+            ),
+        )
+    ]
+    pred = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    INVESTIGATIONS.name,
+                    "video EEG",
+                    EEG_Performed="Yes",
+                    EEG_Results="Normal",
+                    EEG_Type="VideoTelemetry",
+                ),
+            ),
+        )
+    ]
+
+    score = score_investigations_components(gold, pred)
+
+    assert score.clinical_headline.f1 == 1.0
+    assert score.eeg_type.precision == 0.0
+
+
 def test_concept_identity_collapses_diagnosis_specificity_to_most_specific() -> None:
     gold = [
         ExectLetter(
@@ -569,6 +641,31 @@ def test_frequency_state_scores_active_seizure_free_and_unknown_states() -> None
     assert score.active_rate.tp == 1
     assert score.unknown.tp == 1
     assert score.seizure_free.tp == 1
+
+
+def test_frequency_state_counts_unique_projected_states_per_letter() -> None:
+    gold = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(SEIZURE_FREQUENCY.name, "seizures", NumberOfSeizures="1", CUI="C0036572"),
+                _ann(SEIZURE_FREQUENCY.name, "seizures", NumberOfSeizures="1", CUI="C0036572"),
+            ),
+        )
+    ]
+    pred = [
+        ExectLetter(
+            "L1",
+            "note",
+            (_ann(SEIZURE_FREQUENCY.name, "seizures", NumberOfSeizures="1", CUI="C0036572"),),
+        )
+    ]
+
+    score = score_frequency_state(gold, pred)
+
+    assert score.clinical_headline.gold_count == 1
+    assert score.clinical_headline.f1 == 1.0
 
 
 def test_prescription_drugname_cui_projection_accepts_format_variants_with_same_cui() -> None:
