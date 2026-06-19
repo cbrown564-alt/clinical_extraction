@@ -192,6 +192,13 @@ benchmark claim, not more non-target error analysis.
 
 ### Done Recently
 
+- 2026-06-19: Wrote the research-facing synthesis report for the target-only
+  hybrid pipeline:
+  `docs/research/exectv2_target_indicator_hybrid_pipeline_report_2026-06-19.md`.
+  It records the avenues explored, the Diagnosis scoring correction, the
+  GPT-mini and local-Qwen outcomes, the v0.42 saved-output projection result,
+  and the interpretation that fresh v0.42 local-Qwen live remains the next
+  reproducibility gate.
 - 2026-06-19: Ran the fresh local Qwen v0.41 dev25 live confirmation requested
   after the projection replay. It completed cleanly (0 call failures, 0
   parse/schema failures) but did not clear all four target indicators: overall
