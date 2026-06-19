@@ -2,10 +2,16 @@
 
 Date: 2026-06-19
 
-Scope: analysis only. No prediction behavior was changed. Counts below are
-derived from saved per-letter `gate_warnings` in the v0.39-v0.42 local-Qwen
-dev25 artifacts. These are warning-family fire counts, not a formal rule
-registry.
+Original scope: analysis only. The counts below are derived from saved
+per-letter `gate_warnings` in the v0.39-v0.42 local-Qwen dev25 artifacts. These
+are warning-family fire counts, not a formal rule registry.
+
+Follow-up implementation, 2026-06-19:
+`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/llm_target_indicators_single_call.py`
+now quarantines the named one-letter target projection families by default and
+exposes `audit_only_projection_replay_switches()` for same-raw replay. A
+quarantined family emits `quarantined_projection_family: <family>` instead of
+adding prediction-bearing mentions or applying the phrase-specific repair.
 
 ## Sources
 
@@ -104,10 +110,9 @@ projection from a benchmark-letter patch.
 
 ## Recommended Next Action
 
-Before Phase 1/2 promotion, cut or quarantine the clearly letter-specific
-families (`projected_four_since_last_clinic`, the exact since-clinic evidence
-repair, the exact Christmas evidence repair, `projected_infrequent_context_state`,
-and `projected_diagnosis_context_to_frequent_myoclonic_jerks`). Keep broad
-normalizers only with a small family registry or warning taxonomy, then run the
-frozen held-out Phase 1 scoring with headline and benchmark keys. Add a positive
-warning hook for active recent-event preservation if it remains prediction-bearing.
+Before Phase 1/2 promotion, run same-raw ablations for the quarantined families
+and decide keep/cut from attribution evidence rather than headline tuning. Keep
+broad normalizers only with a small family registry or warning taxonomy, then
+run any frozen held-out Phase 1 scoring with headline and benchmark keys. Add a
+positive warning hook for active recent-event preservation if it remains
+prediction-bearing.

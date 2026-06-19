@@ -55,6 +55,22 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build
 PROMPT_VERSION = "exectv2_target_indicators_single_call_v0.42"
 PIPELINE_FAMILY = "exectv2_target_indicators_single_call"
 COMPONENT_OWNER = "llm_single_call_target_indicators"
+QUARANTINED_TARGET_PROJECTION_FAMILIES = frozenset(
+    {
+        "projected_diagnosis_context_to_remote_last_seizures_state",
+        "projected_diagnosis_context_to_controlled_sf_state",
+        "projected_diagnosis_context_to_frequent_myoclonic_jerks",
+        "projected_infrequent_context_state",
+        "projected_four_since_last_clinic",
+        "projected_several_since_last_clinic",
+        "repaired_since_last_clinic_count_evidence",
+        "repaired_last_event_evidence",
+        "projected_christmas_point_to_month_date",
+    }
+)
+TARGET_PROJECTION_AUDIT_REPLAY_SWITCHES = {
+    family: True for family in sorted(QUARANTINED_TARGET_PROJECTION_FAMILIES)
+}
 _DIAGNOSIS_ALLOWED_CORE = re.compile(
     r"\b(epilep\w*|seizures?|jme|absence|absences|myoclonic|tonic|clonic|"
     r"convulsive|partial|focal|generalised|generalized|status|grand mal)\b",
@@ -196,6 +212,37 @@ _MONTH_TO_NUMBER = {
 }
 
 Mode = Literal["live", "prompt-only"]
+ProjectionFamilySwitches = Mapping[str, bool]
+
+
+def audit_only_projection_replay_switches() -> dict[str, bool]:
+    """Enable quarantined projection families for same-raw replay audits only."""
+
+    return dict(TARGET_PROJECTION_AUDIT_REPLAY_SWITCHES)
+
+
+def effective_target_projection_family_switches(
+    switches: ProjectionFamilySwitches | None = None,
+) -> dict[str, bool]:
+    """Return the effective enabled/disabled state for quarantined families."""
+
+    return {
+        family: _is_projection_family_enabled(family, switches)
+        for family in sorted(QUARANTINED_TARGET_PROJECTION_FAMILIES)
+    }
+
+
+def _is_projection_family_enabled(
+    family: str,
+    switches: ProjectionFamilySwitches | None,
+) -> bool:
+    if switches is not None and family in switches:
+        return switches[family]
+    return family not in QUARANTINED_TARGET_PROJECTION_FAMILIES
+
+
+def _quarantined_projection_family_warning(family: str) -> str:
+    return f"quarantined_projection_family: {family}"
 
 
 class ExtractionRecord(BaseModel):
@@ -618,6 +665,7 @@ def to_predicted_letter(
     mentions: Sequence[MentionRecord],
     *,
     note_text: str,
+    projection_family_switches: ProjectionFamilySwitches | None = None,
 ) -> tuple[PredictedLetter, list[str]]:
     """Validate entity/evidence and apply deterministic schema repair/projection."""
 
@@ -647,6 +695,7 @@ def to_predicted_letter(
     evidence_repaired, evidence_repair_warnings = _repair_case_only_evidence(
         entity_valid,
         note_text=note_text,
+        projection_family_switches=projection_family_switches,
     )
     warnings.extend(evidence_repair_warnings)
 
@@ -664,6 +713,7 @@ def to_predicted_letter(
             {str(k): str(v) for k, v in dict(mention.attributes).items()},
             text=mention.text,
             evidence=mention.evidence,
+            projection_family_switches=projection_family_switches,
         )
         warnings.extend(f"{mention.entity}: {warning}" for warning in normalization_warnings)
         attrs, attr_warnings = repair_attributes(
@@ -687,6 +737,7 @@ def to_predicted_letter(
                 text,
                 attrs,
                 mention.evidence,
+                projection_family_switches=projection_family_switches,
             )
             warnings.extend(f"{mention.entity}: {warning}" for warning in state_warnings)
             drop_warning = _sf_state_drop_reason(text, attrs, mention.evidence)
@@ -780,18 +831,18 @@ def to_predicted_letter(
             if context_parent is not None:
                 expanded_mentions.append(context_parent)
                 warnings.append("Diagnosis: projected_context_parent_epilepsy")
-            diagnosis_sf_states = _project_diagnosis_context_to_sf_states(
-                base_mention,
-                note_text,
+            diagnosis_sf_states, diagnosis_sf_state_warnings = (
+                _project_diagnosis_context_to_sf_states(
+                    base_mention,
+                    note_text,
+                    projection_family_switches=projection_family_switches,
+                )
             )
             if diagnosis_sf_states:
                 expanded_mentions.extend(diagnosis_sf_states)
-                warnings.extend(
-                    f"Diagnosis: {warning}"
-                    for warning in _diagnosis_context_sf_state_warnings(
-                        diagnosis_sf_states
-                    )
-                )
+            warnings.extend(
+                f"Diagnosis: {warning}" for warning in diagnosis_sf_state_warnings
+            )
             projected_sf = _project_focal_diagnosis_context_to_sf(
                 base_mention,
                 note_text,
@@ -841,8 +892,18 @@ def to_predicted_letter(
                 note_text,
             )
             if infrequent_state is not None:
-                expanded_mentions.append(infrequent_state)
-                warnings.append("SeizureFrequency: projected_infrequent_context_state")
+                family = "projected_infrequent_context_state"
+                if _is_projection_family_enabled(
+                    family,
+                    projection_family_switches,
+                ):
+                    expanded_mentions.append(infrequent_state)
+                    warnings.append(f"SeizureFrequency: {family}")
+                else:
+                    warnings.append(
+                        "SeizureFrequency: "
+                        + _quarantined_projection_family_warning(family)
+                    )
             increased_state = _project_returned_context_to_increased_state(
                 base_mention,
                 note_text,
@@ -884,6 +945,11 @@ def to_predicted_letter(
                     "prompt_version": PROMPT_VERSION,
                     "pipeline_family": PIPELINE_FAMILY,
                     "n_evidence_invalid": len(evidence_invalid),
+                    "target_projection_family_switches": (
+                        effective_target_projection_family_switches(
+                            projection_family_switches
+                        )
+                    ),
                     "attribute_warnings": warnings,
                 },
             )
@@ -896,6 +962,7 @@ def _repair_case_only_evidence(
     mentions: Sequence[MentionRecord],
     *,
     note_text: str,
+    projection_family_switches: ProjectionFamilySwitches | None = None,
 ) -> tuple[list[MentionRecord], list[str]]:
     repaired: list[MentionRecord] = []
     warnings: list[str] = []
@@ -955,8 +1022,13 @@ def _repair_case_only_evidence(
                 continue
             since_clinic = _repair_since_last_clinic_count_evidence(mention, note_text)
             if since_clinic:
-                repaired.append(mention.model_copy(update={"evidence": since_clinic}))
-                warnings.append(f"repaired_since_last_clinic_count_evidence: {mention.text!r}")
+                family = "repaired_since_last_clinic_count_evidence"
+                if _is_projection_family_enabled(family, projection_family_switches):
+                    repaired.append(mention.model_copy(update={"evidence": since_clinic}))
+                    warnings.append(f"{family}: {mention.text!r}")
+                else:
+                    repaired.append(mention)
+                    warnings.append(_quarantined_projection_family_warning(family))
                 continue
             no_further = _repair_no_further_since_evidence(mention, note_text)
             if no_further:
@@ -971,9 +1043,14 @@ def _repair_case_only_evidence(
                 marker = "last one being around christmas time in 2017"
                 marker_index = lowered_note.find(marker)
                 if marker_index >= 0:
+                    family = "repaired_last_event_evidence"
                     exact = note_text[marker_index : marker_index + len(marker)]
-                    repaired.append(mention.model_copy(update={"evidence": exact}))
-                    warnings.append(f"repaired_last_event_evidence: {mention.text!r}")
+                    if _is_projection_family_enabled(family, projection_family_switches):
+                        repaired.append(mention.model_copy(update={"evidence": exact}))
+                        warnings.append(f"{family}: {mention.text!r}")
+                    else:
+                        repaired.append(mention)
+                        warnings.append(_quarantined_projection_family_warning(family))
                     continue
             if mention.entity == "Prescription":
                 ellipsis = _repair_ellipsis_evidence(mention.evidence, note_text)
@@ -1210,6 +1287,7 @@ def _normalize_target_attributes(
     *,
     text: str = "",
     evidence: str = "",
+    projection_family_switches: ProjectionFamilySwitches | None = None,
 ) -> tuple[dict[str, str], list[str]]:
     """Format-only normalization before scorer-facing schema repair."""
 
@@ -1262,9 +1340,13 @@ def _normalize_target_attributes(
             normalized.setdefault("PointInTime", "LastClinic")
             warnings.append("normalized_since_last_clinic_period")
         if normalized.get("PointInTime", "").strip().lower() == "christmas":
-            normalized.pop("PointInTime", None)
-            normalized.setdefault("MonthDate", "12")
-            warnings.append("projected_christmas_point_to_month_date")
+            family = "projected_christmas_point_to_month_date"
+            if _is_projection_family_enabled(family, projection_family_switches):
+                normalized.pop("PointInTime", None)
+                normalized.setdefault("MonthDate", "12")
+                warnings.append(family)
+            else:
+                warnings.append(_quarantined_projection_family_warning(family))
         _split_range_attribute(
             normalized,
             source_key="NumberOfSeizures",
@@ -1446,6 +1528,8 @@ def _project_sf_state_from_evidence(
     text: str,
     attrs: dict[str, str],
     evidence: str,
+    *,
+    projection_family_switches: ProjectionFamilySwitches | None = None,
 ) -> tuple[str, dict[str, str], list[str]]:
     if _INFREQUENT_DIAGNOSIS_YEAR.search(evidence):
         return (
@@ -1541,6 +1625,9 @@ def _project_sf_state_from_evidence(
             evidence,
             re.IGNORECASE,
         ):
+            family = "projected_four_since_last_clinic"
+            if not _is_projection_family_enabled(family, projection_family_switches):
+                return text, attrs, [_quarantined_projection_family_warning(family)]
             projected = {
                 key: value
                 for key, value in attrs.items()
@@ -1563,8 +1650,11 @@ def _project_sf_state_from_evidence(
                     "PointInTime": "LastClinic",
                 }
             )
-            return text, projected, ["projected_four_since_last_clinic"]
+            return text, projected, [family]
         if _SEVERAL_SINCE_LAST_CLINIC.search(evidence):
+            family = "projected_several_since_last_clinic"
+            if not _is_projection_family_enabled(family, projection_family_switches):
+                return text, attrs, [_quarantined_projection_family_warning(family)]
             projected = {
                 key: value
                 for key, value in attrs.items()
@@ -1587,7 +1677,7 @@ def _project_sf_state_from_evidence(
                     "PointInTime": "LastClinic",
                 }
             )
-            return text, projected, ["projected_several_since_last_clinic"]
+            return text, projected, [family]
         if _GENERIC_YEARLY_SEIZURE_RATE.search(evidence):
             projected = {
                 key: value
@@ -2117,104 +2207,105 @@ def _project_infrequent_context_state(
 def _project_diagnosis_context_to_sf_states(
     mention: PredictedMention,
     note_text: str,
-) -> list[PredictedMention]:
+    *,
+    projection_family_switches: ProjectionFamilySwitches | None = None,
+) -> tuple[list[PredictedMention], list[str]]:
     if mention.entity != "Diagnosis":
-        return []
+        return [], []
     context = normalize_phrase(
         _local_evidence_context(note_text, mention.evidence, before=80, after=900)
     )
     normalized_text = normalize_phrase(mention.text)
     states: list[PredictedMention] = []
+    warnings: list[str] = []
     if (
         normalized_text == "focal epilepsy"
         and _REMOTE_LAST_SEIZURES_IN_TEENS.search(context)
     ):
-        states.append(
-            mention.model_copy(
-                update={
-                    "entity": "SeizureFrequency",
-                    "text": "seizures",
-                    "attributes": {
-                        "NumberOfSeizures": "0",
-                        "TimeSince_or_TimeOfEvent": "Since",
-                        "AgeLower": "13",
-                        "AgeUpper": "19",
-                        "AgeUnit": "Year",
-                    },
-                    "evidence": _remote_last_seizures_evidence(note_text) or mention.evidence,
-                }
+        family = "projected_diagnosis_context_to_remote_last_seizures_state"
+        if _is_projection_family_enabled(family, projection_family_switches):
+            states.append(
+                mention.model_copy(
+                    update={
+                        "entity": "SeizureFrequency",
+                        "text": "seizures",
+                        "attributes": {
+                            "NumberOfSeizures": "0",
+                            "TimeSince_or_TimeOfEvent": "Since",
+                            "AgeLower": "13",
+                            "AgeUpper": "19",
+                            "AgeUnit": "Year",
+                        },
+                        "evidence": (
+                            _remote_last_seizures_evidence(note_text)
+                            or mention.evidence
+                        ),
+                    }
+                )
             )
-        )
+            warnings.append(family)
+        else:
+            warnings.append(_quarantined_projection_family_warning(family))
     if (
         normalized_text == "focal epilepsy"
         and "focal seizures" in context
         and _CONTROLLED_ON_DOSE.search(context)
     ):
-        evidence = _controlled_focal_seizures_evidence(note_text) or mention.evidence
-        states.append(
-            mention.model_copy(
-                update={
-                    "entity": "SeizureFrequency",
-                    "text": "focal seizures",
-                    "attributes": {
-                        "NumberOfSeizures": "0",
-                        "PointInTime": "DrugChange",
-                    },
-                    "evidence": evidence,
-                }
+        family = "projected_diagnosis_context_to_controlled_sf_state"
+        if _is_projection_family_enabled(family, projection_family_switches):
+            evidence = _controlled_focal_seizures_evidence(note_text) or mention.evidence
+            states.append(
+                mention.model_copy(
+                    update={
+                        "entity": "SeizureFrequency",
+                        "text": "focal seizures",
+                        "attributes": {
+                            "NumberOfSeizures": "0",
+                            "PointInTime": "DrugChange",
+                        },
+                        "evidence": evidence,
+                    }
+                )
             )
-        )
-        states.append(
-            mention.model_copy(
-                update={
-                    "entity": "SeizureFrequency",
-                    "text": "seizures",
-                    "attributes": {
-                        "FrequencyChange": "Infrequent",
-                        "PointInTime": "DrugChange",
-                    },
-                    "evidence": evidence,
-                }
+            states.append(
+                mention.model_copy(
+                    update={
+                        "entity": "SeizureFrequency",
+                        "text": "seizures",
+                        "attributes": {
+                            "FrequencyChange": "Infrequent",
+                            "PointInTime": "DrugChange",
+                        },
+                        "evidence": evidence,
+                    }
+                )
             )
-        )
+            warnings.append(family)
+        else:
+            warnings.append(_quarantined_projection_family_warning(family))
     if (
         "myoclonic jerks" in normalize_phrase(f"{mention.text} {mention.evidence}")
         and "very frequent myoclonic jerks" in context
     ):
-        states.append(
-            mention.model_copy(
-                update={
-                    "entity": "SeizureFrequency",
-                    "text": "myoclonic jerks",
-                    "attributes": {
-                        "FrequencyChange": "Frequent",
-                    },
-                    "evidence": _frequent_myoclonic_jerks_evidence(note_text)
-                    or "very frequent myoclonic jerks",
-                }
+        family = "projected_diagnosis_context_to_frequent_myoclonic_jerks"
+        if _is_projection_family_enabled(family, projection_family_switches):
+            states.append(
+                mention.model_copy(
+                    update={
+                        "entity": "SeizureFrequency",
+                        "text": "myoclonic jerks",
+                        "attributes": {
+                            "FrequencyChange": "Frequent",
+                        },
+                        "evidence": _frequent_myoclonic_jerks_evidence(note_text)
+                        or "very frequent myoclonic jerks",
+                    }
+                )
             )
-        )
-    return states
-
-
-def _diagnosis_context_sf_state_warnings(
-    states: Sequence[PredictedMention],
-) -> list[str]:
-    warnings: list[str] = []
-    for state in states:
-        normalized_text = normalize_phrase(state.text)
-        if normalized_text == "seizures" and state.attributes.get("AgeLower") == "13":
-            warnings.append("projected_diagnosis_context_to_remote_last_seizures_state")
-        elif normalized_text == "focal seizures":
-            warnings.append("projected_diagnosis_context_to_controlled_sf_state")
-        elif (
-            normalized_text == "seizures"
-            and state.attributes.get("PointInTime") == "DrugChange"
-        ):
-            warnings.append("projected_diagnosis_context_to_controlled_sf_state")
-        elif normalized_text == "myoclonic jerks":
-            warnings.append("projected_diagnosis_context_to_frequent_myoclonic_jerks")
-    return list(dict.fromkeys(warnings))
+            warnings.append(family)
+        else:
+            warnings.append(_quarantined_projection_family_warning(family))
+    return states, list(dict.fromkeys(warnings))
 
 
 def _remote_last_seizures_evidence(note_text: str) -> str | None:

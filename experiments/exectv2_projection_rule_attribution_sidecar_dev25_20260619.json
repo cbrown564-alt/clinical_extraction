@@ -1,0 +1,2089 @@
+{
+  "attribution_note": "Counts compare saved post-projection mentions with the same row's raw LLM output when available. They are warning-family attribution, not single-rule causal ablations, until switches are wired into the adapter.",
+  "pipeline_family": "exectv2_projection_rule_attribution_sidecar",
+  "registry": {
+    "dropped_inconsistent_zero_state_with_active_rate": {
+      "enabled_by_default": true,
+      "entity": "SeizureFrequency",
+      "portability_category": "seizure_frequency",
+      "rule_id": "dropped_inconsistent_zero_state_with_active_rate",
+      "switch_name": "projection_rules.dropped_inconsistent_zero_state_with_active_rate",
+      "switch_status": "declared_registry_only"
+    },
+    "dropped_non_epilepsy_core": {
+      "enabled_by_default": true,
+      "entity": "Diagnosis",
+      "portability_category": "clinical_epilepsy",
+      "rule_id": "dropped_non_epilepsy_core",
+      "switch_name": "projection_rules.dropped_non_epilepsy_core",
+      "switch_status": "declared_registry_only"
+    },
+    "dropped_unsupported_episode_frequency_anchor": {
+      "enabled_by_default": true,
+      "entity": "SeizureFrequency",
+      "portability_category": "seizure_frequency",
+      "rule_id": "dropped_unsupported_episode_frequency_anchor",
+      "switch_name": "projection_rules.dropped_unsupported_episode_frequency_anchor",
+      "switch_status": "declared_registry_only"
+    },
+    "normalized_diagnosis_text": {
+      "enabled_by_default": true,
+      "entity": "Diagnosis",
+      "portability_category": "clinical_epilepsy",
+      "rule_id": "normalized_diagnosis_text",
+      "switch_name": "projection_rules.normalized_diagnosis_text",
+      "switch_status": "declared_registry_only"
+    },
+    "normalized_seizure_frequency_text": {
+      "enabled_by_default": true,
+      "entity": "SeizureFrequency",
+      "portability_category": "seizure_frequency",
+      "rule_id": "normalized_seizure_frequency_text",
+      "switch_name": "projection_rules.normalized_seizure_frequency_text",
+      "switch_status": "declared_registry_only"
+    },
+    "normalized_time_period": {
+      "enabled_by_default": true,
+      "entity": "SeizureFrequency",
+      "portability_category": "general",
+      "rule_id": "normalized_time_period",
+      "switch_name": "projection_rules.normalized_time_period",
+      "switch_status": "declared_registry_only"
+    },
+    "projected_active_rate_seizure_type_to_diagnosis": {
+      "enabled_by_default": true,
+      "entity": "Diagnosis",
+      "portability_category": "seizure_frequency",
+      "rule_id": "projected_active_rate_seizure_type_to_diagnosis",
+      "switch_name": "projection_rules.projected_active_rate_seizure_type_to_diagnosis",
+      "switch_status": "declared_registry_only"
+    },
+    "projected_christmas_point_to_month_date": {
+      "enabled_by_default": false,
+      "entity": "SeizureFrequency",
+      "portability_category": "benchmark_format",
+      "rule_id": "projected_christmas_point_to_month_date",
+      "switch_name": "target_projection_family_switches.projected_christmas_point_to_month_date",
+      "switch_status": "adapter_quarantined_default_audit_replay"
+    },
+    "projected_context_parent_epilepsy": {
+      "enabled_by_default": true,
+      "entity": "Diagnosis",
+      "portability_category": "clinical_epilepsy",
+      "rule_id": "projected_context_parent_epilepsy",
+      "switch_name": "projection_rules.projected_context_parent_epilepsy",
+      "switch_status": "declared_registry_only"
+    },
+    "projected_controlled_context_to_infrequent_state": {
+      "enabled_by_default": true,
+      "entity": "SeizureFrequency",
+      "portability_category": "clinical_epilepsy",
+      "rule_id": "projected_controlled_context_to_infrequent_state",
+      "switch_name": "projection_rules.projected_controlled_context_to_infrequent_state",
+      "switch_status": "declared_registry_only"
+    },
+    "projected_controlled_drug_change_to_infrequent_state": {
+      "enabled_by_default": true,
+      "entity": "SeizureFrequency",
+      "portability_category": "clinical_epilepsy",
+      "rule_id": "projected_controlled_drug_change_to_infrequent_state",
+      "switch_name": "projection_rules.projected_controlled_drug_change_to_infrequent_state",
+      "switch_status": "declared_registry_only"
+    },
+    "projected_dated_absence_like_zero_to_active_rate": {
+      "enabled_by_default": true,
+      "entity": "SeizureFrequency",
+      "portability_category": "gan2026_specific",
+      "rule_id": "projected_dated_absence_like_zero_to_active_rate",
+      "switch_name": "projection_rules.projected_dated_absence_like_zero_to_active_rate",
+      "switch_status": "declared_registry_only"
+    },
+    "projected_dated_diagnosis_context_to_sf": {
+      "enabled_by_default": true,
+      "entity": "SeizureFrequency",
+      "portability_category": "clinical_epilepsy",
+      "rule_id": "projected_dated_diagnosis_context_to_sf",
+      "switch_name": "projection_rules.projected_dated_diagnosis_context_to_sf",
+      "switch_status": "declared_registry_only"
+    },
+    "projected_diagnosis_context_to_controlled_sf_state": {
+      "enabled_by_default": false,
+      "entity": "SeizureFrequency",
+      "portability_category": "clinical_epilepsy",
+      "rule_id": "projected_diagnosis_context_to_controlled_sf_state",
+      "switch_name": "target_projection_family_switches.projected_diagnosis_context_to_controlled_sf_state",
+      "switch_status": "adapter_quarantined_default_audit_replay"
+    },
+    "projected_diagnosis_context_to_frequent_myoclonic_jerks": {
+      "enabled_by_default": false,
+      "entity": "SeizureFrequency",
+      "portability_category": "gan2026_specific",
+      "rule_id": "projected_diagnosis_context_to_frequent_myoclonic_jerks",
+      "switch_name": "target_projection_family_switches.projected_diagnosis_context_to_frequent_myoclonic_jerks",
+      "switch_status": "adapter_quarantined_default_audit_replay"
+    },
+    "projected_diagnosis_context_to_remote_last_seizures_state": {
+      "enabled_by_default": false,
+      "entity": "SeizureFrequency",
+      "portability_category": "gan2026_specific",
+      "rule_id": "projected_diagnosis_context_to_remote_last_seizures_state",
+      "switch_name": "target_projection_family_switches.projected_diagnosis_context_to_remote_last_seizures_state",
+      "switch_status": "adapter_quarantined_default_audit_replay"
+    },
+    "projected_dropped_sf_to_diagnosis": {
+      "enabled_by_default": true,
+      "entity": "Diagnosis",
+      "portability_category": "seizure_frequency",
+      "rule_id": "projected_dropped_sf_to_diagnosis",
+      "switch_name": "projection_rules.projected_dropped_sf_to_diagnosis",
+      "switch_status": "declared_registry_only"
+    },
+    "projected_eeg_context_to_mri_normal": {
+      "enabled_by_default": true,
+      "entity": "Investigations",
+      "portability_category": "benchmark_format",
+      "rule_id": "projected_eeg_context_to_mri_normal",
+      "switch_name": "projection_rules.projected_eeg_context_to_mri_normal",
+      "switch_status": "declared_registry_only"
+    },
+    "projected_every_n_periods_to_one_event_rate": {
+      "enabled_by_default": true,
+      "entity": "SeizureFrequency",
+      "portability_category": "benchmark_format",
+      "rule_id": "projected_every_n_periods_to_one_event_rate",
+      "switch_name": "projection_rules.projected_every_n_periods_to_one_event_rate",
+      "switch_status": "declared_registry_only"
+    },
+    "projected_every_n_to_m_periods_to_one_event_rate": {
+      "enabled_by_default": true,
+      "entity": "SeizureFrequency",
+      "portability_category": "benchmark_format",
+      "rule_id": "projected_every_n_to_m_periods_to_one_event_rate",
+      "switch_name": "projection_rules.projected_every_n_to_m_periods_to_one_event_rate",
+      "switch_status": "declared_registry_only"
+    },
+    "projected_focal_diagnosis_context_to_sf_state": {
+      "enabled_by_default": true,
+      "entity": "SeizureFrequency",
+      "portability_category": "clinical_epilepsy",
+      "rule_id": "projected_focal_diagnosis_context_to_sf_state",
+      "switch_name": "projection_rules.projected_focal_diagnosis_context_to_sf_state",
+      "switch_status": "declared_registry_only"
+    },
+    "projected_focal_onset_sf_candidate_to_diagnosis": {
+      "enabled_by_default": true,
+      "entity": "Diagnosis",
+      "portability_category": "seizure_frequency",
+      "rule_id": "projected_focal_onset_sf_candidate_to_diagnosis",
+      "switch_name": "projection_rules.projected_focal_onset_sf_candidate_to_diagnosis",
+      "switch_status": "declared_registry_only"
+    },
+    "projected_four_since_last_clinic": {
+      "enabled_by_default": false,
+      "entity": "SeizureFrequency",
+      "portability_category": "gan2026_specific",
+      "rule_id": "projected_four_since_last_clinic",
+      "switch_name": "target_projection_family_switches.projected_four_since_last_clinic",
+      "switch_status": "adapter_quarantined_default_audit_replay"
+    },
+    "projected_frequency_header_diagnosis_to_sf_state": {
+      "enabled_by_default": true,
+      "entity": "SeizureFrequency",
+      "portability_category": "clinical_epilepsy",
+      "rule_id": "projected_frequency_header_diagnosis_to_sf_state",
+      "switch_name": "projection_rules.projected_frequency_header_diagnosis_to_sf_state",
+      "switch_status": "declared_registry_only"
+    },
+    "projected_generic_yearly_rate_anchor": {
+      "enabled_by_default": true,
+      "entity": "SeizureFrequency",
+      "portability_category": "gan2026_specific",
+      "rule_id": "projected_generic_yearly_rate_anchor",
+      "switch_name": "projection_rules.projected_generic_yearly_rate_anchor",
+      "switch_status": "declared_registry_only"
+    },
+    "projected_header_parent_epilepsy": {
+      "enabled_by_default": true,
+      "entity": "Diagnosis",
+      "portability_category": "clinical_epilepsy",
+      "rule_id": "projected_header_parent_epilepsy",
+      "switch_name": "projection_rules.projected_header_parent_epilepsy",
+      "switch_status": "declared_registry_only"
+    },
+    "projected_infrequent_context_state": {
+      "enabled_by_default": false,
+      "entity": "SeizureFrequency",
+      "portability_category": "gan2026_specific",
+      "rule_id": "projected_infrequent_context_state",
+      "switch_name": "target_projection_family_switches.projected_infrequent_context_state",
+      "switch_status": "adapter_quarantined_default_audit_replay"
+    },
+    "projected_infrequent_diagnosis_year_to_change_state": {
+      "enabled_by_default": true,
+      "entity": "SeizureFrequency",
+      "portability_category": "gan2026_specific",
+      "rule_id": "projected_infrequent_diagnosis_year_to_change_state",
+      "switch_name": "projection_rules.projected_infrequent_diagnosis_year_to_change_state",
+      "switch_status": "declared_registry_only"
+    },
+    "projected_last_event_month_year_to_zero_since": {
+      "enabled_by_default": true,
+      "entity": "SeizureFrequency",
+      "portability_category": "benchmark_format",
+      "rule_id": "projected_last_event_month_year_to_zero_since",
+      "switch_name": "projection_rules.projected_last_event_month_year_to_zero_since",
+      "switch_status": "declared_registry_only"
+    },
+    "projected_march_range_count": {
+      "enabled_by_default": true,
+      "entity": "SeizureFrequency",
+      "portability_category": "gan2026_specific",
+      "rule_id": "projected_march_range_count",
+      "switch_name": "projection_rules.projected_march_range_count",
+      "switch_status": "declared_registry_only"
+    },
+    "projected_mri_context_to_eeg_result": {
+      "enabled_by_default": true,
+      "entity": "Investigations",
+      "portability_category": "benchmark_format",
+      "rule_id": "projected_mri_context_to_eeg_result",
+      "switch_name": "projection_rules.projected_mri_context_to_eeg_result",
+      "switch_status": "declared_registry_only"
+    },
+    "projected_prescription_frequency_from_evidence": {
+      "enabled_by_default": true,
+      "entity": "Prescription",
+      "portability_category": "general",
+      "rule_id": "projected_prescription_frequency_from_evidence",
+      "switch_name": "projection_rules.projected_prescription_frequency_from_evidence",
+      "switch_status": "declared_registry_only"
+    },
+    "projected_remote_last_seizures_to_seizure_free": {
+      "enabled_by_default": true,
+      "entity": "SeizureFrequency",
+      "portability_category": "clinical_epilepsy",
+      "rule_id": "projected_remote_last_seizures_to_seizure_free",
+      "switch_name": "projection_rules.projected_remote_last_seizures_to_seizure_free",
+      "switch_status": "declared_registry_only"
+    },
+    "projected_remote_seizure_type_to_diagnosis": {
+      "enabled_by_default": true,
+      "entity": "Diagnosis",
+      "portability_category": "clinical_epilepsy",
+      "rule_id": "projected_remote_seizure_type_to_diagnosis",
+      "switch_name": "projection_rules.projected_remote_seizure_type_to_diagnosis",
+      "switch_status": "declared_registry_only"
+    },
+    "projected_returned_context_to_increased_state": {
+      "enabled_by_default": true,
+      "entity": "SeizureFrequency",
+      "portability_category": "clinical_epilepsy",
+      "rule_id": "projected_returned_context_to_increased_state",
+      "switch_name": "projection_rules.projected_returned_context_to_increased_state",
+      "switch_status": "declared_registry_only"
+    },
+    "projected_several_since_last_clinic": {
+      "enabled_by_default": false,
+      "entity": "SeizureFrequency",
+      "portability_category": "gan2026_specific",
+      "rule_id": "projected_several_since_last_clinic",
+      "switch_name": "target_projection_family_switches.projected_several_since_last_clinic",
+      "switch_status": "adapter_quarantined_default_audit_replay"
+    },
+    "projected_sf_context_to_focal_diagnosis": {
+      "enabled_by_default": true,
+      "entity": "Diagnosis",
+      "portability_category": "seizure_frequency",
+      "rule_id": "projected_sf_context_to_focal_diagnosis",
+      "switch_name": "projection_rules.projected_sf_context_to_focal_diagnosis",
+      "switch_status": "declared_registry_only"
+    },
+    "projected_typed_controlled_state_to_diagnosis": {
+      "enabled_by_default": true,
+      "entity": "Diagnosis",
+      "portability_category": "seizure_frequency",
+      "rule_id": "projected_typed_controlled_state_to_diagnosis",
+      "switch_name": "projection_rules.projected_typed_controlled_state_to_diagnosis",
+      "switch_status": "declared_registry_only"
+    },
+    "projected_typed_seizure_frequency_to_diagnosis": {
+      "enabled_by_default": true,
+      "entity": "Diagnosis",
+      "portability_category": "seizure_frequency",
+      "rule_id": "projected_typed_seizure_frequency_to_diagnosis",
+      "switch_name": "projection_rules.projected_typed_seizure_frequency_to_diagnosis",
+      "switch_status": "declared_registry_only"
+    },
+    "projected_vague_yearly_rate": {
+      "enabled_by_default": true,
+      "entity": "SeizureFrequency",
+      "portability_category": "seizure_frequency",
+      "rule_id": "projected_vague_yearly_rate",
+      "switch_name": "projection_rules.projected_vague_yearly_rate",
+      "switch_status": "declared_registry_only"
+    },
+    "repaired_last_event_evidence": {
+      "enabled_by_default": false,
+      "entity": "SeizureFrequency",
+      "portability_category": "benchmark_format",
+      "rule_id": "repaired_last_event_evidence",
+      "switch_name": "target_projection_family_switches.repaired_last_event_evidence",
+      "switch_status": "adapter_quarantined_default_audit_replay"
+    },
+    "repaired_since_last_clinic_count_evidence": {
+      "enabled_by_default": false,
+      "entity": "SeizureFrequency",
+      "portability_category": "gan2026_specific",
+      "rule_id": "repaired_since_last_clinic_count_evidence",
+      "switch_name": "target_projection_family_switches.repaired_since_last_clinic_count_evidence",
+      "switch_status": "adapter_quarantined_default_audit_replay"
+    },
+    "split_cluster_of_seizures_state": {
+      "enabled_by_default": true,
+      "entity": "SeizureFrequency",
+      "portability_category": "seizure_frequency",
+      "rule_id": "split_cluster_of_seizures_state",
+      "switch_name": "projection_rules.split_cluster_of_seizures_state",
+      "switch_status": "declared_registry_only"
+    },
+    "split_convulsive_zero_state": {
+      "enabled_by_default": true,
+      "entity": "SeizureFrequency",
+      "portability_category": "seizure_frequency",
+      "rule_id": "split_convulsive_zero_state",
+      "switch_name": "projection_rules.split_convulsive_zero_state",
+      "switch_status": "declared_registry_only"
+    },
+    "split_generalised_epilepsy_syndrome": {
+      "enabled_by_default": true,
+      "entity": "Diagnosis",
+      "portability_category": "clinical_epilepsy",
+      "rule_id": "split_generalised_epilepsy_syndrome",
+      "switch_name": "projection_rules.split_generalised_epilepsy_syndrome",
+      "switch_status": "declared_registry_only"
+    },
+    "split_range_attribute": {
+      "enabled_by_default": true,
+      "entity": "SeizureFrequency",
+      "portability_category": "general",
+      "rule_id": "split_range_attribute",
+      "switch_name": "projection_rules.split_range_attribute",
+      "switch_status": "declared_registry_only"
+    },
+    "split_secondary_gtc_to_tonic_clonic_diagnosis": {
+      "enabled_by_default": true,
+      "entity": "Diagnosis",
+      "portability_category": "clinical_epilepsy",
+      "rule_id": "split_secondary_gtc_to_tonic_clonic_diagnosis",
+      "switch_name": "projection_rules.split_secondary_gtc_to_tonic_clonic_diagnosis",
+      "switch_status": "declared_registry_only"
+    },
+    "split_syndrome_to_tonic_clonic_diagnosis": {
+      "enabled_by_default": true,
+      "entity": "Diagnosis",
+      "portability_category": "clinical_epilepsy",
+      "rule_id": "split_syndrome_to_tonic_clonic_diagnosis",
+      "switch_name": "projection_rules.split_syndrome_to_tonic_clonic_diagnosis",
+      "switch_status": "declared_registry_only"
+    },
+    "split_temporal_lobe_onset_to_focal_seizures": {
+      "enabled_by_default": true,
+      "entity": "Diagnosis",
+      "portability_category": "clinical_epilepsy",
+      "rule_id": "split_temporal_lobe_onset_to_focal_seizures",
+      "switch_name": "projection_rules.split_temporal_lobe_onset_to_focal_seizures",
+      "switch_status": "declared_registry_only"
+    }
+  },
+  "row_count": 100,
+  "rules": [
+    {
+      "changed_row_count": 1,
+      "changed_rows": [
+        "EA0025"
+      ],
+      "correct_to_wrong_count": 0,
+      "enabled_by_default": true,
+      "entity": "SeizureFrequency",
+      "fidelity_effects": [
+        {
+          "after": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "tp": 1
+          },
+          "after_f1": 1.0,
+          "before": {
+            "f1": 0.0,
+            "fn": 1,
+            "fp": 1,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "before_f1": 0.0,
+          "delta_f1": 1.0,
+          "metric": "SeizureFrequency.active_rate_fidelity"
+        }
+      ],
+      "portability_category": "seizure_frequency",
+      "rule_id": "dropped_inconsistent_zero_state_with_active_rate",
+      "switch_name": "projection_rules.dropped_inconsistent_zero_state_with_active_rate",
+      "switch_status": "declared_registry_only",
+      "warning_examples": [
+        "SeizureFrequency: dropped_inconsistent_zero_state_with_active_rate: 'generalised tonic clonic seizures'"
+      ],
+      "wrong_to_correct_count": 1
+    },
+    {
+      "changed_row_count": 13,
+      "changed_rows": [
+        "EA0006",
+        "EA0009",
+        "EA0022",
+        "EA0024"
+      ],
+      "correct_to_wrong_count": 0,
+      "enabled_by_default": true,
+      "entity": "Diagnosis",
+      "fidelity_effects": [
+        {
+          "after": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "tp": 5
+          },
+          "after_f1": 1.0,
+          "before": {
+            "f1": 0.6154,
+            "fn": 1,
+            "fp": 4,
+            "precision": 0.5,
+            "recall": 0.8,
+            "tp": 4
+          },
+          "before_f1": 0.6154,
+          "delta_f1": 0.3846,
+          "metric": "Diagnosis.concept_negation"
+        }
+      ],
+      "portability_category": "clinical_epilepsy",
+      "rule_id": "dropped_non_epilepsy_core",
+      "switch_name": "projection_rules.dropped_non_epilepsy_core",
+      "switch_status": "declared_registry_only",
+      "warning_examples": [
+        "Diagnosis: dropped_non_epilepsy_core: 'absence like seizure'",
+        "Diagnosis: dropped_non_epilepsy_core: 'absence like seizures'",
+        "Diagnosis: dropped_non_epilepsy_core: 'blackouts'",
+        "Diagnosis: dropped_non_epilepsy_core: 'dissociative seizures'",
+        "Diagnosis: dropped_non_epilepsy_core: 'mild head injury'"
+      ],
+      "wrong_to_correct_count": 9
+    },
+    {
+      "changed_row_count": 11,
+      "changed_rows": [
+        "EA0014",
+        "EA0018",
+        "EA0021",
+        "EA0023",
+        "EA0027"
+      ],
+      "correct_to_wrong_count": 0,
+      "enabled_by_default": true,
+      "entity": "SeizureFrequency",
+      "fidelity_effects": [
+        {
+          "after": {
+            "f1": 0.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "after_f1": 0.0,
+          "before": {
+            "f1": 0.0,
+            "fn": 0,
+            "fp": 3,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "before_f1": 0.0,
+          "delta_f1": 0.0,
+          "metric": "SeizureFrequency.active_rate_fidelity"
+        }
+      ],
+      "portability_category": "seizure_frequency",
+      "rule_id": "dropped_unsupported_episode_frequency_anchor",
+      "switch_name": "projection_rules.dropped_unsupported_episode_frequency_anchor",
+      "switch_status": "declared_registry_only",
+      "warning_examples": [
+        "SeizureFrequency: dropped_unsupported_episode_frequency_anchor: 'episodes of loss of consciousness'",
+        "SeizureFrequency: dropped_unsupported_episode_frequency_anchor: 'focal seizures'",
+        "SeizureFrequency: dropped_unsupported_episode_frequency_anchor: 'focal to bilateral tonic-clonic seizure'",
+        "SeizureFrequency: dropped_unsupported_episode_frequency_anchor: 'general and complex partial seizures'",
+        "SeizureFrequency: dropped_unsupported_episode_frequency_anchor: 'loss of consciousness episodes'"
+      ],
+      "wrong_to_correct_count": 0
+    },
+    {
+      "changed_row_count": 67,
+      "changed_rows": [
+        "EA0002",
+        "EA0004",
+        "EA0005",
+        "EA0006",
+        "EA0007",
+        "EA0008",
+        "EA0009",
+        "EA0011",
+        "EA0014",
+        "EA0015",
+        "EA0016",
+        "EA0018",
+        "EA0019",
+        "EA0021",
+        "EA0022",
+        "EA0023",
+        "EA0024",
+        "EA0025",
+        "EA0026",
+        "EA0027",
+        "EA0030"
+      ],
+      "correct_to_wrong_count": 1,
+      "enabled_by_default": true,
+      "entity": "Diagnosis",
+      "fidelity_effects": [
+        {
+          "after": {
+            "f1": 0.9726,
+            "fn": 1,
+            "fp": 1,
+            "precision": 0.9722,
+            "recall": 0.973,
+            "tp": 36
+          },
+          "after_f1": 0.9726,
+          "before": {
+            "f1": 0.7223,
+            "fn": 7,
+            "fp": 15,
+            "precision": 0.6512,
+            "recall": 0.8108,
+            "tp": 30
+          },
+          "before_f1": 0.7223,
+          "delta_f1": 0.2503,
+          "metric": "Diagnosis.concept_negation"
+        }
+      ],
+      "portability_category": "clinical_epilepsy",
+      "rule_id": "normalized_diagnosis_text",
+      "switch_name": "projection_rules.normalized_diagnosis_text",
+      "switch_status": "declared_registry_only",
+      "warning_examples": [
+        "Diagnosis: normalized_diagnosis_text: 'Complex partial seizures' -> 'complex partial seizures'",
+        "Diagnosis: normalized_diagnosis_text: 'Dissociative seizures' -> 'dissociative seizures'",
+        "Diagnosis: normalized_diagnosis_text: 'Focal epilepsy' -> 'focal epilepsy'",
+        "Diagnosis: normalized_diagnosis_text: 'Generalised Tonic Clonic Seizures' -> 'tonic clonic seizures'",
+        "Diagnosis: normalized_diagnosis_text: 'JME' -> 'juvenile myoclonic epilepsy'"
+      ],
+      "wrong_to_correct_count": 34
+    },
+    {
+      "changed_row_count": 8,
+      "changed_rows": [
+        "EA0002",
+        "EA0006",
+        "EA0026"
+      ],
+      "correct_to_wrong_count": 0,
+      "enabled_by_default": true,
+      "entity": "SeizureFrequency",
+      "fidelity_effects": [
+        {
+          "after": {
+            "f1": 0.8,
+            "fn": 1,
+            "fp": 1,
+            "precision": 0.8,
+            "recall": 0.8,
+            "tp": 4
+          },
+          "after_f1": 0.8,
+          "before": {
+            "f1": 0.0,
+            "fn": 5,
+            "fp": 5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "before_f1": 0.0,
+          "delta_f1": 0.8,
+          "metric": "SeizureFrequency.active_rate_fidelity"
+        }
+      ],
+      "portability_category": "seizure_frequency",
+      "rule_id": "normalized_seizure_frequency_text",
+      "switch_name": "projection_rules.normalized_seizure_frequency_text",
+      "switch_status": "declared_registry_only",
+      "warning_examples": [
+        "SeizureFrequency: normalized_seizure_frequency_text: 'absence-like seizures' -> 'absence like seizures'",
+        "SeizureFrequency: normalized_seizure_frequency_text: 'focal seizures without change in awareness' -> 'focal seizures'",
+        "SeizureFrequency: normalized_seizure_frequency_text: 'generalised tonic clonic seizures with myoclonic jerks' -> 'seizures'"
+      ],
+      "wrong_to_correct_count": 5
+    },
+    {
+      "changed_row_count": 48,
+      "changed_rows": [
+        "EA0002",
+        "EA0004",
+        "EA0005",
+        "EA0006",
+        "EA0007",
+        "EA0008",
+        "EA0009",
+        "EA0011",
+        "EA0018",
+        "EA0019",
+        "EA0021",
+        "EA0023",
+        "EA0025",
+        "EA0026",
+        "EA0027"
+      ],
+      "correct_to_wrong_count": 0,
+      "enabled_by_default": true,
+      "entity": "SeizureFrequency",
+      "fidelity_effects": [
+        {
+          "after": {
+            "f1": 0.7647,
+            "fn": 3,
+            "fp": 5,
+            "precision": 0.7222,
+            "recall": 0.8125,
+            "tp": 13
+          },
+          "after_f1": 0.7647,
+          "before": {
+            "f1": 0.1111,
+            "fn": 14,
+            "fp": 18,
+            "precision": 0.1,
+            "recall": 0.125,
+            "tp": 2
+          },
+          "before_f1": 0.1111,
+          "delta_f1": 0.6536,
+          "metric": "SeizureFrequency.active_rate_fidelity"
+        }
+      ],
+      "portability_category": "general",
+      "rule_id": "normalized_time_period",
+      "switch_name": "projection_rules.normalized_time_period",
+      "switch_status": "declared_registry_only",
+      "warning_examples": [
+        "SeizureFrequency: normalized_time_period: day -> Day",
+        "SeizureFrequency: normalized_time_period: month -> Month",
+        "SeizureFrequency: normalized_time_period: week -> Week",
+        "SeizureFrequency: normalized_time_period: year -> Year"
+      ],
+      "wrong_to_correct_count": 29
+    },
+    {
+      "changed_row_count": 20,
+      "changed_rows": [
+        "EA0002",
+        "EA0006",
+        "EA0008",
+        "EA0011",
+        "EA0016",
+        "EA0021",
+        "EA0025"
+      ],
+      "correct_to_wrong_count": 2,
+      "enabled_by_default": true,
+      "entity": "Diagnosis",
+      "fidelity_effects": [
+        {
+          "after": {
+            "f1": 0.9697,
+            "fn": 0,
+            "fp": 1,
+            "precision": 0.9412,
+            "recall": 1.0,
+            "tp": 16
+          },
+          "after_f1": 0.9697,
+          "before": {
+            "f1": 0.8705,
+            "fn": 1,
+            "fp": 3,
+            "precision": 0.8125,
+            "recall": 0.9375,
+            "tp": 15
+          },
+          "before_f1": 0.8705,
+          "delta_f1": 0.0992,
+          "metric": "Diagnosis.concept_negation"
+        }
+      ],
+      "portability_category": "seizure_frequency",
+      "rule_id": "projected_active_rate_seizure_type_to_diagnosis",
+      "switch_name": "projection_rules.projected_active_rate_seizure_type_to_diagnosis",
+      "switch_status": "declared_registry_only",
+      "warning_examples": [
+        "SeizureFrequency: projected_active_rate_seizure_type_to_diagnosis"
+      ],
+      "wrong_to_correct_count": 8
+    },
+    {
+      "changed_row_count": 1,
+      "changed_rows": [
+        "EA0011"
+      ],
+      "correct_to_wrong_count": 0,
+      "enabled_by_default": false,
+      "entity": "SeizureFrequency",
+      "fidelity_effects": [
+        {
+          "after": {
+            "f1": 0.0,
+            "fn": 1,
+            "fp": 1,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "after_f1": 0.0,
+          "before": {
+            "f1": 0.0,
+            "fn": 1,
+            "fp": 1,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "before_f1": 0.0,
+          "delta_f1": 0.0,
+          "metric": "SeizureFrequency.active_rate_fidelity"
+        }
+      ],
+      "portability_category": "benchmark_format",
+      "rule_id": "projected_christmas_point_to_month_date",
+      "switch_name": "target_projection_family_switches.projected_christmas_point_to_month_date",
+      "switch_status": "adapter_quarantined_default_audit_replay",
+      "warning_examples": [
+        "SeizureFrequency: projected_christmas_point_to_month_date"
+      ],
+      "wrong_to_correct_count": 0
+    },
+    {
+      "changed_row_count": 2,
+      "changed_rows": [
+        "EA0022"
+      ],
+      "correct_to_wrong_count": 0,
+      "enabled_by_default": true,
+      "entity": "SeizureFrequency",
+      "fidelity_effects": [
+        {
+          "after": {
+            "f1": 0.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "after_f1": 0.0,
+          "before": {
+            "f1": 0.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "before_f1": 0.0,
+          "delta_f1": 0.0,
+          "metric": "SeizureFrequency.active_rate_fidelity"
+        }
+      ],
+      "portability_category": "clinical_epilepsy",
+      "rule_id": "projected_controlled_context_to_infrequent_state",
+      "switch_name": "projection_rules.projected_controlled_context_to_infrequent_state",
+      "switch_status": "declared_registry_only",
+      "warning_examples": [
+        "SeizureFrequency: projected_controlled_context_to_infrequent_state"
+      ],
+      "wrong_to_correct_count": 2
+    },
+    {
+      "changed_row_count": 1,
+      "changed_rows": [
+        "EA0022"
+      ],
+      "correct_to_wrong_count": 0,
+      "enabled_by_default": true,
+      "entity": "SeizureFrequency",
+      "fidelity_effects": [
+        {
+          "after": {
+            "f1": 0.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "after_f1": 0.0,
+          "before": {
+            "f1": 0.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "before_f1": 0.0,
+          "delta_f1": 0.0,
+          "metric": "SeizureFrequency.active_rate_fidelity"
+        }
+      ],
+      "portability_category": "clinical_epilepsy",
+      "rule_id": "projected_controlled_drug_change_to_infrequent_state",
+      "switch_name": "projection_rules.projected_controlled_drug_change_to_infrequent_state",
+      "switch_status": "declared_registry_only",
+      "warning_examples": [
+        "SeizureFrequency: projected_controlled_drug_change_to_infrequent_state"
+      ],
+      "wrong_to_correct_count": 1
+    },
+    {
+      "changed_row_count": 4,
+      "changed_rows": [
+        "EA0006"
+      ],
+      "correct_to_wrong_count": 0,
+      "enabled_by_default": true,
+      "entity": "SeizureFrequency",
+      "fidelity_effects": [
+        {
+          "after": {
+            "f1": 0.4,
+            "fn": 1,
+            "fp": 2,
+            "precision": 0.3333,
+            "recall": 0.5,
+            "tp": 1
+          },
+          "after_f1": 0.4,
+          "before": {
+            "f1": 0.0,
+            "fn": 2,
+            "fp": 2,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "before_f1": 0.0,
+          "delta_f1": 0.4,
+          "metric": "SeizureFrequency.active_rate_fidelity"
+        }
+      ],
+      "portability_category": "clinical_epilepsy",
+      "rule_id": "projected_dated_diagnosis_context_to_sf",
+      "switch_name": "projection_rules.projected_dated_diagnosis_context_to_sf",
+      "switch_status": "declared_registry_only",
+      "warning_examples": [
+        "Diagnosis: projected_dated_diagnosis_context_to_sf"
+      ],
+      "wrong_to_correct_count": 2
+    },
+    {
+      "changed_row_count": 1,
+      "changed_rows": [
+        "EA0022"
+      ],
+      "correct_to_wrong_count": 0,
+      "enabled_by_default": false,
+      "entity": "SeizureFrequency",
+      "fidelity_effects": [
+        {
+          "after": {
+            "f1": 0.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "after_f1": 0.0,
+          "before": {
+            "f1": 0.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "before_f1": 0.0,
+          "delta_f1": 0.0,
+          "metric": "SeizureFrequency.active_rate_fidelity"
+        }
+      ],
+      "portability_category": "clinical_epilepsy",
+      "rule_id": "projected_diagnosis_context_to_controlled_sf_state",
+      "switch_name": "target_projection_family_switches.projected_diagnosis_context_to_controlled_sf_state",
+      "switch_status": "adapter_quarantined_default_audit_replay",
+      "warning_examples": [
+        "Diagnosis: projected_diagnosis_context_to_controlled_sf_state"
+      ],
+      "wrong_to_correct_count": 1
+    },
+    {
+      "changed_row_count": 1,
+      "changed_rows": [
+        "EA0025"
+      ],
+      "correct_to_wrong_count": 0,
+      "enabled_by_default": false,
+      "entity": "SeizureFrequency",
+      "fidelity_effects": [
+        {
+          "after": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "tp": 1
+          },
+          "after_f1": 1.0,
+          "before": {
+            "f1": 0.0,
+            "fn": 1,
+            "fp": 1,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "before_f1": 0.0,
+          "delta_f1": 1.0,
+          "metric": "SeizureFrequency.active_rate_fidelity"
+        }
+      ],
+      "portability_category": "gan2026_specific",
+      "rule_id": "projected_diagnosis_context_to_frequent_myoclonic_jerks",
+      "switch_name": "target_projection_family_switches.projected_diagnosis_context_to_frequent_myoclonic_jerks",
+      "switch_status": "adapter_quarantined_default_audit_replay",
+      "warning_examples": [
+        "Diagnosis: projected_diagnosis_context_to_frequent_myoclonic_jerks"
+      ],
+      "wrong_to_correct_count": 1
+    },
+    {
+      "changed_row_count": 1,
+      "changed_rows": [
+        "EA0010"
+      ],
+      "correct_to_wrong_count": 0,
+      "enabled_by_default": false,
+      "entity": "SeizureFrequency",
+      "fidelity_effects": [
+        {
+          "after": {
+            "f1": 0.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "after_f1": 0.0,
+          "before": {
+            "f1": 0.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "before_f1": 0.0,
+          "delta_f1": 0.0,
+          "metric": "SeizureFrequency.active_rate_fidelity"
+        }
+      ],
+      "portability_category": "gan2026_specific",
+      "rule_id": "projected_diagnosis_context_to_remote_last_seizures_state",
+      "switch_name": "target_projection_family_switches.projected_diagnosis_context_to_remote_last_seizures_state",
+      "switch_status": "adapter_quarantined_default_audit_replay",
+      "warning_examples": [
+        "Diagnosis: projected_diagnosis_context_to_remote_last_seizures_state"
+      ],
+      "wrong_to_correct_count": 1
+    },
+    {
+      "changed_row_count": 2,
+      "changed_rows": [
+        "EA0014"
+      ],
+      "correct_to_wrong_count": 0,
+      "enabled_by_default": true,
+      "entity": "Diagnosis",
+      "fidelity_effects": [
+        {
+          "after": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "tp": 2
+          },
+          "after_f1": 1.0,
+          "before": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "tp": 2
+          },
+          "before_f1": 1.0,
+          "delta_f1": 0.0,
+          "metric": "Diagnosis.concept_negation"
+        }
+      ],
+      "portability_category": "seizure_frequency",
+      "rule_id": "projected_dropped_sf_to_diagnosis",
+      "switch_name": "projection_rules.projected_dropped_sf_to_diagnosis",
+      "switch_status": "declared_registry_only",
+      "warning_examples": [
+        "SeizureFrequency: projected_dropped_sf_to_diagnosis: 'general and complex partial seizures'"
+      ],
+      "wrong_to_correct_count": 0
+    },
+    {
+      "changed_row_count": 4,
+      "changed_rows": [
+        "EA0004"
+      ],
+      "correct_to_wrong_count": 0,
+      "enabled_by_default": true,
+      "entity": "Investigations",
+      "fidelity_effects": [],
+      "portability_category": "benchmark_format",
+      "rule_id": "projected_eeg_context_to_mri_normal",
+      "switch_name": "projection_rules.projected_eeg_context_to_mri_normal",
+      "switch_status": "declared_registry_only",
+      "warning_examples": [
+        "Investigations: projected_eeg_context_to_mri_normal"
+      ],
+      "wrong_to_correct_count": 0
+    },
+    {
+      "changed_row_count": 4,
+      "changed_rows": [
+        "EA0007"
+      ],
+      "correct_to_wrong_count": 0,
+      "enabled_by_default": true,
+      "entity": "SeizureFrequency",
+      "fidelity_effects": [
+        {
+          "after": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "tp": 1
+          },
+          "after_f1": 1.0,
+          "before": {
+            "f1": 0.0,
+            "fn": 1,
+            "fp": 1,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "before_f1": 0.0,
+          "delta_f1": 1.0,
+          "metric": "SeizureFrequency.active_rate_fidelity"
+        }
+      ],
+      "portability_category": "benchmark_format",
+      "rule_id": "projected_every_n_to_m_periods_to_one_event_rate",
+      "switch_name": "projection_rules.projected_every_n_to_m_periods_to_one_event_rate",
+      "switch_status": "declared_registry_only",
+      "warning_examples": [
+        "SeizureFrequency: projected_every_n_to_m_periods_to_one_event_rate"
+      ],
+      "wrong_to_correct_count": 4
+    },
+    {
+      "changed_row_count": 1,
+      "changed_rows": [
+        "EA0007"
+      ],
+      "correct_to_wrong_count": 0,
+      "enabled_by_default": true,
+      "entity": "SeizureFrequency",
+      "fidelity_effects": [
+        {
+          "after": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "tp": 1
+          },
+          "after_f1": 1.0,
+          "before": {
+            "f1": 0.0,
+            "fn": 1,
+            "fp": 1,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "before_f1": 0.0,
+          "delta_f1": 1.0,
+          "metric": "SeizureFrequency.active_rate_fidelity"
+        }
+      ],
+      "portability_category": "clinical_epilepsy",
+      "rule_id": "projected_focal_diagnosis_context_to_sf_state",
+      "switch_name": "projection_rules.projected_focal_diagnosis_context_to_sf_state",
+      "switch_status": "declared_registry_only",
+      "warning_examples": [
+        "Diagnosis: projected_focal_diagnosis_context_to_sf_state: 'focal epilepsy'"
+      ],
+      "wrong_to_correct_count": 1
+    },
+    {
+      "changed_row_count": 4,
+      "changed_rows": [
+        "EA0002"
+      ],
+      "correct_to_wrong_count": 0,
+      "enabled_by_default": false,
+      "entity": "SeizureFrequency",
+      "fidelity_effects": [
+        {
+          "after": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "tp": 2
+          },
+          "after_f1": 1.0,
+          "before": {
+            "f1": 0.0,
+            "fn": 2,
+            "fp": 2,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "before_f1": 0.0,
+          "delta_f1": 1.0,
+          "metric": "SeizureFrequency.active_rate_fidelity"
+        }
+      ],
+      "portability_category": "gan2026_specific",
+      "rule_id": "projected_four_since_last_clinic",
+      "switch_name": "target_projection_family_switches.projected_four_since_last_clinic",
+      "switch_status": "adapter_quarantined_default_audit_replay",
+      "warning_examples": [
+        "SeizureFrequency: projected_four_since_last_clinic"
+      ],
+      "wrong_to_correct_count": 3
+    },
+    {
+      "changed_row_count": 4,
+      "changed_rows": [
+        "EA0005"
+      ],
+      "correct_to_wrong_count": 0,
+      "enabled_by_default": true,
+      "entity": "SeizureFrequency",
+      "fidelity_effects": [
+        {
+          "after": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "tp": 1
+          },
+          "after_f1": 1.0,
+          "before": {
+            "f1": 0.0,
+            "fn": 1,
+            "fp": 2,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "before_f1": 0.0,
+          "delta_f1": 1.0,
+          "metric": "SeizureFrequency.active_rate_fidelity"
+        }
+      ],
+      "portability_category": "gan2026_specific",
+      "rule_id": "projected_generic_yearly_rate_anchor",
+      "switch_name": "projection_rules.projected_generic_yearly_rate_anchor",
+      "switch_status": "declared_registry_only",
+      "warning_examples": [
+        "SeizureFrequency: projected_generic_yearly_rate_anchor"
+      ],
+      "wrong_to_correct_count": 4
+    },
+    {
+      "changed_row_count": 8,
+      "changed_rows": [
+        "EA0004",
+        "EA0006"
+      ],
+      "correct_to_wrong_count": 0,
+      "enabled_by_default": true,
+      "entity": "Diagnosis",
+      "fidelity_effects": [
+        {
+          "after": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "tp": 3
+          },
+          "after_f1": 1.0,
+          "before": {
+            "f1": 0.8571,
+            "fn": 0,
+            "fp": 1,
+            "precision": 0.75,
+            "recall": 1.0,
+            "tp": 3
+          },
+          "before_f1": 0.8571,
+          "delta_f1": 0.1429,
+          "metric": "Diagnosis.concept_negation"
+        }
+      ],
+      "portability_category": "clinical_epilepsy",
+      "rule_id": "projected_header_parent_epilepsy",
+      "switch_name": "projection_rules.projected_header_parent_epilepsy",
+      "switch_status": "declared_registry_only",
+      "warning_examples": [
+        "Diagnosis: projected_header_parent_epilepsy"
+      ],
+      "wrong_to_correct_count": 4
+    },
+    {
+      "changed_row_count": 1,
+      "changed_rows": [
+        "EA0011"
+      ],
+      "correct_to_wrong_count": 0,
+      "enabled_by_default": false,
+      "entity": "SeizureFrequency",
+      "fidelity_effects": [
+        {
+          "after": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "tp": 1
+          },
+          "after_f1": 1.0,
+          "before": {
+            "f1": 0.0,
+            "fn": 1,
+            "fp": 1,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "before_f1": 0.0,
+          "delta_f1": 1.0,
+          "metric": "SeizureFrequency.active_rate_fidelity"
+        }
+      ],
+      "portability_category": "gan2026_specific",
+      "rule_id": "projected_infrequent_context_state",
+      "switch_name": "target_projection_family_switches.projected_infrequent_context_state",
+      "switch_status": "adapter_quarantined_default_audit_replay",
+      "warning_examples": [
+        "SeizureFrequency: projected_infrequent_context_state"
+      ],
+      "wrong_to_correct_count": 1
+    },
+    {
+      "changed_row_count": 4,
+      "changed_rows": [
+        "EA0005"
+      ],
+      "correct_to_wrong_count": 0,
+      "enabled_by_default": true,
+      "entity": "SeizureFrequency",
+      "fidelity_effects": [
+        {
+          "after": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "tp": 1
+          },
+          "after_f1": 1.0,
+          "before": {
+            "f1": 0.0,
+            "fn": 1,
+            "fp": 2,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "before_f1": 0.0,
+          "delta_f1": 1.0,
+          "metric": "SeizureFrequency.active_rate_fidelity"
+        }
+      ],
+      "portability_category": "benchmark_format",
+      "rule_id": "projected_last_event_month_year_to_zero_since",
+      "switch_name": "projection_rules.projected_last_event_month_year_to_zero_since",
+      "switch_status": "declared_registry_only",
+      "warning_examples": [
+        "SeizureFrequency: projected_last_event_month_year_to_zero_since"
+      ],
+      "wrong_to_correct_count": 4
+    },
+    {
+      "changed_row_count": 4,
+      "changed_rows": [
+        "EA0002"
+      ],
+      "correct_to_wrong_count": 0,
+      "enabled_by_default": true,
+      "entity": "SeizureFrequency",
+      "fidelity_effects": [
+        {
+          "after": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "tp": 2
+          },
+          "after_f1": 1.0,
+          "before": {
+            "f1": 0.0,
+            "fn": 2,
+            "fp": 2,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "before_f1": 0.0,
+          "delta_f1": 1.0,
+          "metric": "SeizureFrequency.active_rate_fidelity"
+        }
+      ],
+      "portability_category": "gan2026_specific",
+      "rule_id": "projected_march_range_count",
+      "switch_name": "projection_rules.projected_march_range_count",
+      "switch_status": "declared_registry_only",
+      "warning_examples": [
+        "SeizureFrequency: projected_march_range_count"
+      ],
+      "wrong_to_correct_count": 3
+    },
+    {
+      "changed_row_count": 4,
+      "changed_rows": [
+        "EA0004"
+      ],
+      "correct_to_wrong_count": 0,
+      "enabled_by_default": true,
+      "entity": "Investigations",
+      "fidelity_effects": [],
+      "portability_category": "benchmark_format",
+      "rule_id": "projected_mri_context_to_eeg_result",
+      "switch_name": "projection_rules.projected_mri_context_to_eeg_result",
+      "switch_status": "declared_registry_only",
+      "warning_examples": [
+        "Investigations: projected_mri_context_to_eeg_result"
+      ],
+      "wrong_to_correct_count": 0
+    },
+    {
+      "changed_row_count": 2,
+      "changed_rows": [
+        "EA0021",
+        "EA0025"
+      ],
+      "correct_to_wrong_count": 0,
+      "enabled_by_default": true,
+      "entity": "Prescription",
+      "fidelity_effects": [],
+      "portability_category": "general",
+      "rule_id": "projected_prescription_frequency_from_evidence",
+      "switch_name": "projection_rules.projected_prescription_frequency_from_evidence",
+      "switch_status": "declared_registry_only",
+      "warning_examples": [
+        "Prescription: projected_prescription_frequency_from_evidence: 1"
+      ],
+      "wrong_to_correct_count": 0
+    },
+    {
+      "changed_row_count": 2,
+      "changed_rows": [
+        "EA0008"
+      ],
+      "correct_to_wrong_count": 0,
+      "enabled_by_default": true,
+      "entity": "SeizureFrequency",
+      "fidelity_effects": [
+        {
+          "after": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "tp": 1
+          },
+          "after_f1": 1.0,
+          "before": {
+            "f1": 0.0,
+            "fn": 1,
+            "fp": 1,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "before_f1": 0.0,
+          "delta_f1": 1.0,
+          "metric": "SeizureFrequency.active_rate_fidelity"
+        }
+      ],
+      "portability_category": "clinical_epilepsy",
+      "rule_id": "projected_returned_context_to_increased_state",
+      "switch_name": "projection_rules.projected_returned_context_to_increased_state",
+      "switch_status": "declared_registry_only",
+      "warning_examples": [
+        "SeizureFrequency: projected_returned_context_to_increased_state"
+      ],
+      "wrong_to_correct_count": 2
+    },
+    {
+      "changed_row_count": 4,
+      "changed_rows": [
+        "EA0004"
+      ],
+      "correct_to_wrong_count": 0,
+      "enabled_by_default": false,
+      "entity": "SeizureFrequency",
+      "fidelity_effects": [
+        {
+          "after": {
+            "f1": 0.6667,
+            "fn": 1,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 0.5,
+            "tp": 1
+          },
+          "after_f1": 0.6667,
+          "before": {
+            "f1": 0.0,
+            "fn": 2,
+            "fp": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "before_f1": 0.0,
+          "delta_f1": 0.6667,
+          "metric": "SeizureFrequency.active_rate_fidelity"
+        }
+      ],
+      "portability_category": "gan2026_specific",
+      "rule_id": "projected_several_since_last_clinic",
+      "switch_name": "target_projection_family_switches.projected_several_since_last_clinic",
+      "switch_status": "adapter_quarantined_default_audit_replay",
+      "warning_examples": [
+        "SeizureFrequency: projected_several_since_last_clinic"
+      ],
+      "wrong_to_correct_count": 2
+    },
+    {
+      "changed_row_count": 4,
+      "changed_rows": [
+        "EA0007"
+      ],
+      "correct_to_wrong_count": 0,
+      "enabled_by_default": true,
+      "entity": "Diagnosis",
+      "fidelity_effects": [
+        {
+          "after": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "tp": 1
+          },
+          "after_f1": 1.0,
+          "before": {
+            "f1": 0.0,
+            "fn": 1,
+            "fp": 2,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "before_f1": 0.0,
+          "delta_f1": 1.0,
+          "metric": "Diagnosis.concept_negation"
+        }
+      ],
+      "portability_category": "seizure_frequency",
+      "rule_id": "projected_sf_context_to_focal_diagnosis",
+      "switch_name": "projection_rules.projected_sf_context_to_focal_diagnosis",
+      "switch_status": "declared_registry_only",
+      "warning_examples": [
+        "SeizureFrequency: projected_sf_context_to_focal_diagnosis: 'seizures'"
+      ],
+      "wrong_to_correct_count": 4
+    },
+    {
+      "changed_row_count": 2,
+      "changed_rows": [
+        "EA0022"
+      ],
+      "correct_to_wrong_count": 0,
+      "enabled_by_default": true,
+      "entity": "Diagnosis",
+      "fidelity_effects": [
+        {
+          "after": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "tp": 2
+          },
+          "after_f1": 1.0,
+          "before": {
+            "f1": 0.5,
+            "fn": 0,
+            "fp": 2,
+            "precision": 0.3333,
+            "recall": 1.0,
+            "tp": 2
+          },
+          "before_f1": 0.5,
+          "delta_f1": 0.5,
+          "metric": "Diagnosis.concept_negation"
+        }
+      ],
+      "portability_category": "seizure_frequency",
+      "rule_id": "projected_typed_controlled_state_to_diagnosis",
+      "switch_name": "projection_rules.projected_typed_controlled_state_to_diagnosis",
+      "switch_status": "declared_registry_only",
+      "warning_examples": [
+        "SeizureFrequency: projected_typed_controlled_state_to_diagnosis"
+      ],
+      "wrong_to_correct_count": 2
+    },
+    {
+      "changed_row_count": 3,
+      "changed_rows": [
+        "EA0011"
+      ],
+      "correct_to_wrong_count": 0,
+      "enabled_by_default": true,
+      "entity": "Diagnosis",
+      "fidelity_effects": [
+        {
+          "after": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "tp": 3
+          },
+          "after_f1": 1.0,
+          "before": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "tp": 3
+          },
+          "before_f1": 1.0,
+          "delta_f1": 0.0,
+          "metric": "Diagnosis.concept_negation"
+        }
+      ],
+      "portability_category": "seizure_frequency",
+      "rule_id": "projected_typed_seizure_frequency_to_diagnosis",
+      "switch_name": "projection_rules.projected_typed_seizure_frequency_to_diagnosis",
+      "switch_status": "declared_registry_only",
+      "warning_examples": [
+        "SeizureFrequency: projected_typed_seizure_frequency_to_diagnosis"
+      ],
+      "wrong_to_correct_count": 0
+    },
+    {
+      "changed_row_count": 1,
+      "changed_rows": [
+        "EA0004"
+      ],
+      "correct_to_wrong_count": 0,
+      "enabled_by_default": true,
+      "entity": "SeizureFrequency",
+      "fidelity_effects": [
+        {
+          "after": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "tp": 2
+          },
+          "after_f1": 1.0,
+          "before": {
+            "f1": 0.0,
+            "fn": 2,
+            "fp": 2,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "before_f1": 0.0,
+          "delta_f1": 1.0,
+          "metric": "SeizureFrequency.active_rate_fidelity"
+        }
+      ],
+      "portability_category": "seizure_frequency",
+      "rule_id": "projected_vague_yearly_rate",
+      "switch_name": "projection_rules.projected_vague_yearly_rate",
+      "switch_status": "declared_registry_only",
+      "warning_examples": [
+        "SeizureFrequency: projected_vague_yearly_rate"
+      ],
+      "wrong_to_correct_count": 1
+    },
+    {
+      "changed_row_count": 4,
+      "changed_rows": [
+        "EA0009"
+      ],
+      "correct_to_wrong_count": 0,
+      "enabled_by_default": true,
+      "entity": "SeizureFrequency",
+      "fidelity_effects": [
+        {
+          "after": {
+            "f1": 0.6667,
+            "fn": 1,
+            "fp": 1,
+            "precision": 0.6667,
+            "recall": 0.6667,
+            "tp": 2
+          },
+          "after_f1": 0.6667,
+          "before": {
+            "f1": 0.0,
+            "fn": 3,
+            "fp": 2,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "before_f1": 0.0,
+          "delta_f1": 0.6667,
+          "metric": "SeizureFrequency.active_rate_fidelity"
+        }
+      ],
+      "portability_category": "seizure_frequency",
+      "rule_id": "split_cluster_of_seizures_state",
+      "switch_name": "projection_rules.split_cluster_of_seizures_state",
+      "switch_status": "declared_registry_only",
+      "warning_examples": [
+        "SeizureFrequency: split_cluster_of_seizures_state"
+      ],
+      "wrong_to_correct_count": 4
+    },
+    {
+      "changed_row_count": 4,
+      "changed_rows": [
+        "EA0011"
+      ],
+      "correct_to_wrong_count": 0,
+      "enabled_by_default": true,
+      "entity": "SeizureFrequency",
+      "fidelity_effects": [
+        {
+          "after": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "tp": 1
+          },
+          "after_f1": 1.0,
+          "before": {
+            "f1": 0.0,
+            "fn": 1,
+            "fp": 1,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "before_f1": 0.0,
+          "delta_f1": 1.0,
+          "metric": "SeizureFrequency.active_rate_fidelity"
+        }
+      ],
+      "portability_category": "seizure_frequency",
+      "rule_id": "split_convulsive_zero_state",
+      "switch_name": "projection_rules.split_convulsive_zero_state",
+      "switch_status": "declared_registry_only",
+      "warning_examples": [
+        "SeizureFrequency: split_convulsive_zero_state"
+      ],
+      "wrong_to_correct_count": 1
+    },
+    {
+      "changed_row_count": 4,
+      "changed_rows": [
+        "EA0005"
+      ],
+      "correct_to_wrong_count": 0,
+      "enabled_by_default": true,
+      "entity": "Diagnosis",
+      "fidelity_effects": [
+        {
+          "after": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "tp": 3
+          },
+          "after_f1": 1.0,
+          "before": {
+            "f1": 0.4444,
+            "fn": 1,
+            "fp": 2,
+            "precision": 0.3333,
+            "recall": 0.6667,
+            "tp": 2
+          },
+          "before_f1": 0.4444,
+          "delta_f1": 0.5556,
+          "metric": "Diagnosis.concept_negation"
+        }
+      ],
+      "portability_category": "clinical_epilepsy",
+      "rule_id": "split_generalised_epilepsy_syndrome",
+      "switch_name": "projection_rules.split_generalised_epilepsy_syndrome",
+      "switch_status": "declared_registry_only",
+      "warning_examples": [
+        "Diagnosis: split_generalised_epilepsy_syndrome"
+      ],
+      "wrong_to_correct_count": 4
+    },
+    {
+      "changed_row_count": 12,
+      "changed_rows": [
+        "EA0002",
+        "EA0009",
+        "EA0021",
+        "EA0025"
+      ],
+      "correct_to_wrong_count": 0,
+      "enabled_by_default": true,
+      "entity": "SeizureFrequency",
+      "fidelity_effects": [
+        {
+          "after": {
+            "f1": 0.8333,
+            "fn": 1,
+            "fp": 1,
+            "precision": 0.8333,
+            "recall": 0.8333,
+            "tp": 5
+          },
+          "after_f1": 0.8333,
+          "before": {
+            "f1": 0.0,
+            "fn": 6,
+            "fp": 6,
+            "precision": 0.0,
+            "recall": 0.0,
+            "tp": 0
+          },
+          "before_f1": 0.0,
+          "delta_f1": 0.8333,
+          "metric": "SeizureFrequency.active_rate_fidelity"
+        }
+      ],
+      "portability_category": "general",
+      "rule_id": "split_range_attribute",
+      "switch_name": "projection_rules.split_range_attribute",
+      "switch_status": "declared_registry_only",
+      "warning_examples": [
+        "SeizureFrequency: split_range_attribute: NumberOfSeizures -> LowerNumberOfSeizures/UpperNumberOfSeizures"
+      ],
+      "wrong_to_correct_count": 9
+    },
+    {
+      "changed_row_count": 3,
+      "changed_rows": [
+        "EA0021"
+      ],
+      "correct_to_wrong_count": 1,
+      "enabled_by_default": true,
+      "entity": "Diagnosis",
+      "fidelity_effects": [
+        {
+          "after": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "tp": 3
+          },
+          "after_f1": 1.0,
+          "before": {
+            "f1": 0.8,
+            "fn": 1,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 0.6667,
+            "tp": 2
+          },
+          "before_f1": 0.8,
+          "delta_f1": 0.2,
+          "metric": "Diagnosis.concept_negation"
+        }
+      ],
+      "portability_category": "clinical_epilepsy",
+      "rule_id": "split_secondary_gtc_to_tonic_clonic_diagnosis",
+      "switch_name": "projection_rules.split_secondary_gtc_to_tonic_clonic_diagnosis",
+      "switch_status": "declared_registry_only",
+      "warning_examples": [
+        "Diagnosis: split_secondary_gtc_to_tonic_clonic_diagnosis"
+      ],
+      "wrong_to_correct_count": 1
+    },
+    {
+      "changed_row_count": 4,
+      "changed_rows": [
+        "EA0005"
+      ],
+      "correct_to_wrong_count": 0,
+      "enabled_by_default": true,
+      "entity": "Diagnosis",
+      "fidelity_effects": [
+        {
+          "after": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "tp": 3
+          },
+          "after_f1": 1.0,
+          "before": {
+            "f1": 0.4444,
+            "fn": 1,
+            "fp": 2,
+            "precision": 0.3333,
+            "recall": 0.6667,
+            "tp": 2
+          },
+          "before_f1": 0.4444,
+          "delta_f1": 0.5556,
+          "metric": "Diagnosis.concept_negation"
+        }
+      ],
+      "portability_category": "clinical_epilepsy",
+      "rule_id": "split_syndrome_to_tonic_clonic_diagnosis",
+      "switch_name": "projection_rules.split_syndrome_to_tonic_clonic_diagnosis",
+      "switch_status": "declared_registry_only",
+      "warning_examples": [
+        "Diagnosis: split_syndrome_to_tonic_clonic_diagnosis"
+      ],
+      "wrong_to_correct_count": 4
+    },
+    {
+      "changed_row_count": 3,
+      "changed_rows": [
+        "EA0018"
+      ],
+      "correct_to_wrong_count": 0,
+      "enabled_by_default": true,
+      "entity": "Diagnosis",
+      "fidelity_effects": [
+        {
+          "after": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "tp": 4
+          },
+          "after_f1": 1.0,
+          "before": {
+            "f1": 0.8571,
+            "fn": 1,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 0.75,
+            "tp": 3
+          },
+          "before_f1": 0.8571,
+          "delta_f1": 0.1429,
+          "metric": "Diagnosis.concept_negation"
+        }
+      ],
+      "portability_category": "clinical_epilepsy",
+      "rule_id": "split_temporal_lobe_onset_to_focal_seizures",
+      "switch_name": "projection_rules.split_temporal_lobe_onset_to_focal_seizures",
+      "switch_status": "declared_registry_only",
+      "warning_examples": [
+        "Diagnosis: split_temporal_lobe_onset_to_focal_seizures"
+      ],
+      "wrong_to_correct_count": 2
+    }
+  ],
+  "source_artifacts": [
+    "experiments/exectv2_target_indicators_single_call_v039_live_dev25_qwen36_35b_ollama_cpu_ctx16384_20260619.jsonl",
+    "experiments/exectv2_target_indicators_single_call_v040_reproject_v039live_dev25_qwen36_35b_ollama_cpu_ctx16384_20260619.jsonl",
+    "experiments/exectv2_target_indicators_single_call_v041_reproject_v040live_dev25_qwen36_35b_ollama_cpu_ctx16384_20260619.jsonl",
+    "experiments/exectv2_target_indicators_single_call_v042_reproject_v041live_dev25_qwen36_35b_ollama_cpu_ctx16384_20260619.jsonl"
+  ],
+  "unknown_projection_warnings": [
+    "Diagnosis: dropped_unsupported_inferred_diagnosis: 'epilepsy'",
+    "Diagnosis: dropped_unsupported_inferred_diagnosis: 'focal to bilateral tonic clonic seizure'",
+    "Diagnosis: dropped_unsupported_inferred_diagnosis: 'reflex seizures'",
+    "Diagnosis: dropped_unsupported_inferred_diagnosis: 'tonic clonic seizures'",
+    "Investigations: dropped_empty_investigation_attrs: 'ECG'",
+    "Investigations: dropped_illegal_attribute: 'ECTG_Performed'",
+    "Investigations: dropped_illegal_attribute: 'ECTG_Results'",
+    "Investigations: dropped_planned_investigation: 'EEG'",
+    "Investigations: dropped_planned_investigation: 'MR brain and EEG'",
+    "Investigations: dropped_planned_investigation: 'MR brain'",
+    "Investigations: dropped_planned_investigation: 'MRI scan of the brain'",
+    "Investigations: dropped_planned_investigation: 'MRI scan'",
+    "Investigations: dropped_planned_investigation: 'MRI'",
+    "Investigations: dropped_unsupported_eeg_confirmation: 'EEG recording'",
+    "Investigations: dropped_unsupported_eeg_confirmation: 'EEG'",
+    "Investigations: dropped_unsupported_investigation_evidence: 'MRI scan'",
+    "Prescription: dropped_illegal_value: 'DoseUnit'='string copied or normalized from the letter' not in ['g', 'mg']",
+    "Prescription: dropped_planned_prescription: 'Clobazam 10-20 mg as required'",
+    "Prescription: dropped_planned_prescription: 'lamotrigine 75 mg twice a day'",
+    "Prescription: dropped_planned_prescription: 'levetiracetam 250mg once-a-day'",
+    "Prescription: dropped_planned_prescription: 'levetiracetam 750 mg twice daily'",
+    "Prescription: normalized_attribute_value: 'DrugName'='Carbamazepine' -> 'carbamazepine'",
+    "Prescription: normalized_attribute_value: 'DrugName'='Citalopram' -> 'citalopram'",
+    "Prescription: normalized_attribute_value: 'DrugName'='Clobazam' -> 'clobazam'",
+    "Prescription: normalized_attribute_value: 'DrugName'='Epilim' -> 'epilim'",
+    "Prescription: normalized_attribute_value: 'DrugName'='Keppra' -> 'keppra'",
+    "Prescription: normalized_attribute_value: 'DrugName'='Lamictal' -> 'lamictal'",
+    "Prescription: normalized_attribute_value: 'DrugName'='Lamotrigine' -> 'lamotrigine'",
+    "Prescription: normalized_attribute_value: 'DrugName'='Levetiracetam' -> 'levetiracetam'",
+    "Prescription: normalized_attribute_value: 'DrugName'='Phenytoin' -> 'phenytoin'",
+    "Prescription: normalized_attribute_value: 'DrugName'='Sodium Valproate' -> 'sodium valproate'",
+    "Prescription: normalized_attribute_value: 'DrugName'='Tegretol' -> 'tegretol'",
+    "Prescription: normalized_attribute_value: 'DrugName'='Topiramate' -> 'topiramate'",
+    "Prescription: normalized_attribute_value: 'DrugName'='Zonisamide' -> 'zonisamide'",
+    "Prescription: split_asymmetric_same_drug_dosing: 100/175 mg",
+    "Prescription: split_asymmetric_same_drug_dosing: 300/600 mg",
+    "Prescription: split_asymmetric_same_drug_dosing: 700/800 mg",
+    "Prescription: split_asymmetric_same_drug_dosing: 750/500 mg",
+    "SeizureFrequency: dropped_empty_sf_state_after_normalization: 'generalised tonic clonic seizures'",
+    "SeizureFrequency: dropped_empty_sf_state_after_normalization: 'minor seizures'",
+    "SeizureFrequency: dropped_generic_zero_state_for_typed_anchor: 'absence like seizures'",
+    "SeizureFrequency: dropped_generic_zero_state_for_typed_anchor: 'focal seizures with altered awareness'",
+    "SeizureFrequency: dropped_generic_zero_state_for_typed_anchor: 'generalised tonic clonic seizures'",
+    "SeizureFrequency: dropped_illegal_attribute: 'MonthDateEnd'",
+    "SeizureFrequency: dropped_illegal_value: 'PointInTime'='' not in ['Birthday', 'DrugChange', 'LastClinic', 'Last_Month', 'Last_Week', 'Last_Year', 'Surgery']",
+    "SeizureFrequency: dropped_illegal_value: 'PointInTime'='August 2017' not in ['Birthday', 'DrugChange', 'LastClinic', 'Last_Month', 'Last_Week', 'Last_Year', 'Surgery']",
+    "SeizureFrequency: dropped_illegal_value: 'PointInTime'='Christmas' not in ['Birthday', 'DrugChange', 'LastClinic', 'Last_Month', 'Last_Week', 'Last_Year', 'Surgery']",
+    "SeizureFrequency: dropped_illegal_value: 'TimePeriod'='Unknown' not in ['Day', 'Month', 'Week', 'Year', 'days']",
+    "SeizureFrequency: dropped_improvement_phrase_not_headline_state: 'focal seizures'",
+    "SeizureFrequency: dropped_occasional_jerks_not_seizure_free: 'jerks with flashing lights'",
+    "SeizureFrequency: dropped_previous_event_not_headline_frequency: 'Generalised tonic clonic seizure'",
+    "SeizureFrequency: dropped_previous_event_not_headline_frequency: 'generalised tonic clonic seizure'",
+    "SeizureFrequency: dropped_relative_prior_event_not_seizure_free: 'seizure'",
+    "SeizureFrequency: dropped_relative_prior_event_not_seizure_free: 'seizures'",
+    "SeizureFrequency: dropped_single_event_not_frequency_state: 'focal seizure'",
+    "SeizureFrequency: dropped_single_event_not_frequency_state: 'single focal seizure'",
+    "SeizureFrequency: dropped_unanchored_current_seizure_free_state: 'seizures'",
+    "dropped_evidence_not_substring: text='Temporal lobe epilepsy'",
+    "dropped_evidence_not_substring: text='epilepsy'",
+    "dropped_evidence_not_substring: text='eslicarbazepine 800 mg once a day'",
+    "dropped_evidence_not_substring: text='focal seizures'",
+    "dropped_evidence_not_substring: text='generalised tonic clonic seizures'",
+    "dropped_evidence_not_substring: text='minor seizures'",
+    "dropped_evidence_not_substring: text='occipital lobe seizures'",
+    "dropped_non_seizure_frequency_anchor: 'events'",
+    "dropped_non_seizure_frequency_anchor: 'headaches'",
+    "dropped_non_seizure_frequency_anchor: 'loss of consciousness'",
+    "dropped_non_seizure_frequency_anchor: 'transient loss of consciousness'",
+    "dropped_non_seizure_frequency_anchor: 'unusual thought'",
+    "repaired_ellipsis_evidence: 'Clobazam 10-20 mg as required'",
+    "repaired_evidence_case: 'blackouts'",
+    "repaired_evidence_case: 'epilepsy'",
+    "repaired_evidence_case: 'focal epilepsy'",
+    "repaired_no_further_since_evidence: 'generalised tonic clonic seizures'",
+    "repaired_prescription_frequency_synonym_evidence: 'carbamazepine 400 mg bd'",
+    "repaired_whitespace_equivalent_evidence: 'Mild head injury'",
+    "repaired_whitespace_equivalent_evidence: 'Temporal lobe epilepsy'",
+    "repaired_whitespace_equivalent_evidence: 'bilateral convulsive seizures'",
+    "repaired_whitespace_equivalent_evidence: 'eslicarbazepine 800 mg once a day'"
+  ]
+}
