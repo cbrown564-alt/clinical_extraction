@@ -11,10 +11,10 @@ headline using a hybrid pipeline: one LLM call per letter for candidate
 generation/selection, then deterministic normalization and projection with
 explicit attribution. Rapid iteration uses `gpt-4.1-mini`; the destination
 model is local `ollama_chat/qwen3.6:35b` via Ollama with thinking disabled.
-ADR 0031 clarifies that the Diagnosis target headline is scored after
-deterministic clinical-fact normalization/projection, not as raw surface-form
-capture; repeated Diagnosis mentions of the same projected fact count once per
-letter.
+ADR 0031 clarifies that the Diagnosis target headline is the projected
+`concept_only` clinical-fact score after deterministic normalization/projection,
+not raw surface-form or assertion-weighted capture; repeated Diagnosis mentions
+of the same projected fact count once per letter.
 
 ## Current Dev140 Readout
 
@@ -65,7 +65,10 @@ best Diagnosis/SF pair at D `0.7799`, SF `0.7170`, P `0.9351`, I `0.9048`.
 Prescription and Investigations clear the dev25 target in both; the active
 blockers are Diagnosis and SeizureFrequency. These remain hybrid development
 artifacts because the score depends on named deterministic
-normalization/projection over saved or fresh LLM output.
+normalization/projection over saved or fresh LLM output. v0.15 live dev25
+clarified the target report's headline scoring policy but regressed to overall
+`0.8161` (D `0.7549`, SF `0.7059`, P `0.9333`, I `0.8500`), so it is
+measured-not-promoted.
 
 ## Recent Context
 
@@ -165,6 +168,11 @@ normalization/projection over saved or fresh LLM output.
   prompt examples for epilepsy category headers and no-frequency SF boundaries.
   v0.14 live dev25 is now best overall at `0.8349`; v0.13 no-call remains the
   best D/SF-pair diagnostic at D `0.7799`, SF `0.7170`.
+- 2026-06-19: Clarified the executable Diagnosis target definition in ADR 0031
+  and target reports: Diagnosis uses the projected `concept_only` clinical-fact
+  score after deterministic normalization/projection. v0.15 live dev25 recorded
+  the policy in artifacts but regressed overall to `0.8161`, so v0.14/v0.13
+  remain the current bests.
 - 2026-06-19: Added the ADR 0030 target-only report and runner. Current dev140
   best-by-indicator is D `0.7302`, SF `0.7277`, P `0.9072`, I `0.7475`; only
   Prescription currently clears `>0.900`.

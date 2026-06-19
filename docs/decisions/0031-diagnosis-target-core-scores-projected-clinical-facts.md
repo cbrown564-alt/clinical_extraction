@@ -29,7 +29,10 @@ The ADR 0030 Diagnosis headline is a projected clinical-fact score:
    relevant core fact before scoring.
 4. The scoring unit is one projected Diagnosis fact per letter, not repeated
    surface mentions of the same fact.
-5. Projection may strip certainty prefixes such as `probable` or `possible`,
+5. The executable target score is the projected `concept_only` clinical-fact
+   score. Certainty/negation assertion scoring remains diagnostic because the
+   current target asks whether the LLM captured the clinically relevant facts.
+6. Projection may strip certainty prefixes such as `probable` or `possible`,
    remove parenthetical causal context, normalize spelling/plural variants,
    preserve protected seizure-type compounds, and map benchmark-equivalent
    diagnosis phrases to the same clinical core.
@@ -49,9 +52,10 @@ Examples:
 
 - Target reports should use the deterministic normalization/projection layer
   for Diagnosis rather than raw phrase capture.
-- Legacy CUI-free concept identity remains a comparator and diagnostic, but it
-  is not the ADR 0030 Diagnosis target headline when it disagrees with the
-  projected clinical-fact score.
+- Raw ExECT item scoring and assertion-weighted concept identity remain
+  comparators and diagnostics, but they are not the ADR 0030 Diagnosis target
+  headline when they disagree with the projected `concept_only` clinical-fact
+  score.
 - Any future projection that changes Diagnosis fact identity must be named,
   tested, and visible in run artifacts.
 - Error analysis for Diagnosis should classify remaining misses after this

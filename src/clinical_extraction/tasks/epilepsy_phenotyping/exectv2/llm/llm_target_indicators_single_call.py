@@ -49,7 +49,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.target_indic
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
-PROMPT_VERSION = "exectv2_target_indicators_single_call_v0.14"
+PROMPT_VERSION = "exectv2_target_indicators_single_call_v0.15"
 PIPELINE_FAMILY = "exectv2_target_indicators_single_call"
 COMPONENT_OWNER = "llm_single_call_target_indicators"
 _DIAGNOSIS_ALLOWED_CORE = re.compile(
@@ -176,6 +176,17 @@ def build_prompt_input(letter: ExectLetter) -> str:
                     "epileptic attack, or single focal seizure."
                 ),
                 (
+                    "Do not replace a specific diagnosis header with a looser parent. "
+                    "If the header says temporal lobe epilepsy, emit temporal lobe "
+                    "epilepsy; if it says focal epilepsy or possible focal onset, emit "
+                    "focal epilepsy with the appropriate Certainty."
+                ),
+                (
+                    "If the source says epilepsy with generalised tonic clonic "
+                    "seizures alone/on awakening, keep that full syndrome Diagnosis "
+                    "as well as any seizure-type Diagnosis facts."
+                ),
+                (
                     "If a diagnosis header gives a broad epilepsy category and the "
                     "history gives seizure types, emit both the category/syndrome "
                     "and the seizure types."
@@ -254,6 +265,12 @@ def build_prompt_input(letter: ExectLetter) -> str:
                 (
                     "Do not emit SeizureFrequency for 'frequency unknown', diagnostic "
                     "seizure types, or old history without a current/stated state."
+                ),
+                (
+                    "Remote lifetime history such as childhood febrile seizures or "
+                    "'last seizures were in teenage years' is not an active rate; "
+                    "only emit a seizure-free/since state if the text gives a clear "
+                    "since-anchor."
                 ),
                 "Use NumberOfTimePeriods=1 with TimePeriod for per-day/week/month/year cadence.",
                 (
