@@ -231,6 +231,7 @@ class ConceptIdentityScores(BaseModel):
 
     entity: str
     concept_only: ClinicalRecoveryPRF1
+    concept_negation: ClinicalRecoveryPRF1
     concept_assertion: ClinicalRecoveryPRF1
 
 
@@ -251,10 +252,26 @@ class FrequencyStateScores(BaseModel):
 
     clinical_headline: PRF1
     active_rate: PRF1
+    active_rate_fidelity: PRF1
     seizure_free: PRF1
     unknown: PRF1
     exact_semantic: PRF1
     benchmark_with_cui: PRF1
+
+
+# Rate-bearing attributes for active-rate fidelity: seizure counts and cadence,
+# excluding dates / point-in-time so this isolates burden magnitude, not timing.
+_FREQUENCY_RATE_ATTRIBUTES: frozenset[str] = frozenset(
+    {
+        "NumberOfSeizures",
+        "LowerNumberOfSeizures",
+        "UpperNumberOfSeizures",
+        "NumberOfTimePeriods",
+        "LowerNumberOfTimePeriods",
+        "UpperNumberOfTimePeriods",
+        "TimePeriod",
+    }
+)
 
 
 def match_key(annotation: ExectAnnotation, config: MatchConfig = PHRASE_AND_FEATURES) -> Hashable:
@@ -458,6 +475,12 @@ def score_concept_identity(
     return ConceptIdentityScores(
         entity=entity,
         concept_only=_score_concept_identity(gold_letters, pred_letters, entity, "concept"),
+        concept_negation=_score_concept_identity(
+            gold_letters,
+            pred_letters,
+            entity,
+            "negation",
+        ),
         concept_assertion=_score_concept_identity(
             gold_letters,
             pred_letters,
@@ -497,6 +520,7 @@ def score_frequency_state(
             "clinical_headline",
         ),
         active_rate=_score_frequency_state_component(gold_letters, pred_letters, "active-rate"),
+        active_rate_fidelity=_score_frequency_active_rate_fidelity(gold_letters, pred_letters),
         seizure_free=_score_frequency_state_component(gold_letters, pred_letters, "seizure-free"),
         unknown=_score_frequency_state_component(gold_letters, pred_letters, "unknown"),
         exact_semantic=score_entity(
@@ -678,6 +702,21 @@ def _concept_keys(
         return list(dict.fromkeys(concept.concept_key for concept in concepts))
     if variant == "assertion":
         return [concept.assertion_key for concept in concepts]
+    if variant == "negation":
+        # Concept identity plus Negation only. Certainty is deliberately excluded
+        # because it is deterministically projectable (guideline-rule defaulted),
+        # whereas Negation is a genuine context-dependent clinical judgement that
+        # the concept_only headline silently forgives.
+        return list(
+            dict.fromkeys(
+                (
+                    concept.entity,
+                    concept.concept,
+                    dict(concept.assertion).get("Negation", "Affirmed"),
+                )
+                for concept in concepts
+            )
+        )
     raise ValueError(f"Unknown concept identity variant {variant!r}")
 
 
@@ -821,6 +860,55 @@ def _frequency_state_keys(
         if component != "clinical_headline" and component != state:
             continue
         keys.append((_frequency_type_key(annotation), state))
+    return list(dict.fromkeys(keys))
+
+
+def _score_frequency_active_rate_fidelity(
+    gold_letters: Sequence[ExectLetter],
+    pred_letters: Sequence[ExectLetter],
+) -> PRF1:
+    """Among active-rate states, does the seizure-burden magnitude agree?
+
+    The ``clinical_headline`` key collapses every active rate to the single token
+    ``active-rate``, so "2-4 per month" and "6-9 per week" score as the same key.
+    This companion keys the rate-bearing attributes (counts + cadence, excluding
+    dates) per seizure type, so a wrong rate among matched active states is no
+    longer silently forgiven.
+    """
+
+    gold_by_id = _letters_by_id(gold_letters)
+    pred_by_id = _letters_by_id(pred_letters)
+    all_ids = sorted(gold_by_id.keys() | pred_by_id.keys())
+    return sum_prf1(
+        multiset_prf1(
+            _frequency_active_rate_keys(
+                gold_by_id[letter_id].entities("SeizureFrequency")
+                if letter_id in gold_by_id
+                else (),
+            ),
+            _frequency_active_rate_keys(
+                pred_by_id[letter_id].entities("SeizureFrequency")
+                if letter_id in pred_by_id
+                else (),
+            ),
+        )
+        for letter_id in all_ids
+    )
+
+
+def _frequency_active_rate_keys(annotations: Iterable[ExectAnnotation]) -> list[Hashable]:
+    keys: list[Hashable] = []
+    for annotation in annotations:
+        if _frequency_state(annotation.attributes) != "active-rate":
+            continue
+        rate = tuple(
+            sorted(
+                (key, canonicalize_attribute_value(key, value))
+                for key, value in annotation.attributes.items()
+                if key in _FREQUENCY_RATE_ATTRIBUTES and value
+            )
+        )
+        keys.append((_frequency_type_key(annotation), rate))
     return list(dict.fromkeys(keys))
 
 

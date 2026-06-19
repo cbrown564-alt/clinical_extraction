@@ -152,6 +152,36 @@ def render_target_indicator_markdown(report: Mapping[str, Any]) -> str:
 
     lines += [
         "",
+        "## Clinical Fidelity Companions",
+        "",
+        (
+            "Headline keys deliberately demote projectable attributes, but two keys "
+            "also forgive a genuine clinical judgement. These companions expose that "
+            "gap so the headline is not read as the whole story: Diagnosis "
+            "`concept_only` forgives Negation; SeizureFrequency `clinical_headline` "
+            "forgives rate magnitude (e.g. 2-4/month and 6-9/week share one key)."
+        ),
+        "",
+        (
+            "| Candidate | Indicator | Companion | Forgives | Headline F1 "
+            "| Companion F1 | Fidelity gap |"
+        ),
+        "| --- | --- | --- | --- | ---: | ---: | ---: |",
+    ]
+    for candidate in report["candidates"]:
+        companions = candidate.get("fidelity_companions", {})
+        for indicator in report["target_indicators"]:
+            companion = companions.get(indicator)
+            if not companion:
+                continue
+            lines.append(
+                f"| {candidate['name']} | {indicator} | `{companion['companion']}` "
+                f"| {companion['forgives']} | {companion['headline_f1']:.4f} "
+                f"| {companion['companion_f1']:.4f} | {companion['fidelity_gap']:.4f} |"
+            )
+
+    lines += [
+        "",
         "## Best Current Indicator Scores",
         "",
         "| Indicator | Best candidate | F1 | Shortfall |",
@@ -192,6 +222,7 @@ def _candidate_target_report(
         "error_analysis": {
             "per_indicator": _target_only_errors(candidate),
         },
+        "fidelity_companions": dict(candidate.get("fidelity_companions", {})),
     }
 
 

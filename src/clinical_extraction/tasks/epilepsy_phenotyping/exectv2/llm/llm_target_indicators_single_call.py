@@ -3059,6 +3059,9 @@ def summarize_rows(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
                 "routed_primary_errors": {
                     "per_entity": arch["error_taxonomy"]["per_entity"],
                 },
+                "fidelity_companions": arch["clinical_recovery"].get(
+                    "fidelity_companions", {}
+                ),
             }
         ],
     }

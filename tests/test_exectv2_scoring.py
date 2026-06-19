@@ -158,6 +158,133 @@ def test_prescription_benchmark_projection_separates_clinical_identity_from_cui(
     assert score.benchmark_with_cui.f1 == 0.0
 
 
+def test_concept_negation_penalizes_negated_match_that_concept_only_forgives() -> None:
+    # concept_only ignores assertion entirely, so an affirmed prediction "matches"
+    # a negated gold. concept_negation must catch this; certainty is still ignored.
+    gold = [
+        ExectLetter(
+            "L1",
+            "note",
+            (_ann(DIAGNOSIS.name, "epilepsy", Certainty="5", Negation="Negated"),),
+        )
+    ]
+    pred = [
+        ExectLetter(
+            "L1",
+            "note",
+            (_ann(DIAGNOSIS.name, "epilepsy", Certainty="3", Negation="Affirmed"),),
+        )
+    ]
+
+    score = score_concept_identity(gold, pred, DIAGNOSIS.name)
+
+    assert score.concept_only.f1 == 1.0  # forgives the negation flip
+    assert score.concept_negation.f1 == 0.0  # catches it
+    assert score.concept_negation.gold_count == 1
+    assert score.concept_negation.recall == 0.0
+
+
+def test_concept_negation_ignores_certainty_when_negation_agrees() -> None:
+    gold = [
+        ExectLetter(
+            "L1",
+            "note",
+            (_ann(DIAGNOSIS.name, "epilepsy", Certainty="4", Negation="Affirmed"),),
+        )
+    ]
+    pred = [
+        ExectLetter(
+            "L1",
+            "note",
+            (_ann(DIAGNOSIS.name, "epilepsy", Certainty="5", Negation="Affirmed"),),
+        )
+    ]
+
+    score = score_concept_identity(gold, pred, DIAGNOSIS.name)
+
+    # Certainty differs but is deterministically projectable, so concept_negation
+    # treats this as a match; only concept_assertion penalizes the certainty gap.
+    assert score.concept_negation.f1 == 1.0
+    assert score.concept_assertion.f1 == 0.0
+
+
+def test_active_rate_fidelity_penalizes_wrong_rate_headline_forgives() -> None:
+    gold = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    SEIZURE_FREQUENCY.name,
+                    "seizures",
+                    NumberOfSeizures="6",
+                    NumberOfTimePeriods="1",
+                    TimePeriod="Week",
+                ),
+            ),
+        )
+    ]
+    pred = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    SEIZURE_FREQUENCY.name,
+                    "seizures",
+                    NumberOfSeizures="6",
+                    NumberOfTimePeriods="3",  # 6 per 3 weeks, not 6 per week
+                    TimePeriod="Week",
+                ),
+            ),
+        )
+    ]
+
+    score = score_frequency_state(gold, pred)
+
+    assert score.clinical_headline.f1 == 1.0  # both collapse to active-rate
+    assert score.active_rate_fidelity.f1 == 0.0  # rate magnitude disagrees
+
+
+def test_active_rate_fidelity_ignores_dates_when_rate_agrees() -> None:
+    gold = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    SEIZURE_FREQUENCY.name,
+                    "seizures",
+                    NumberOfSeizures="2",
+                    NumberOfTimePeriods="1",
+                    TimePeriod="Month",
+                    YearDate="2017",
+                ),
+            ),
+        )
+    ]
+    pred = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    SEIZURE_FREQUENCY.name,
+                    "seizures",
+                    NumberOfSeizures="2",
+                    NumberOfTimePeriods="1",
+                    TimePeriod="Month",
+                ),
+            ),
+        )
+    ]
+
+    score = score_frequency_state(gold, pred)
+
+    # Rate matches; the missing date is timing, not magnitude, so fidelity is clean.
+    assert score.active_rate_fidelity.f1 == 1.0
+
+
 def test_concept_identity_recall_is_entity_agnostic_precision_home_tagged() -> None:
     gold = [
         ExectLetter(
