@@ -1,0 +1,285 @@
+{
+  "configs": {
+    "audit_all": {
+      "benchmark_by_indicator": {
+        "Diagnosis": 0.2828,
+        "Investigations": 0.65,
+        "Prescription": 0.2025,
+        "SeizureFrequency": 0.6552
+      },
+      "benchmark_overall": 0.3913,
+      "dx_concept_negation_f1": 0.9877,
+      "family_fires": {
+        "projected_christmas_point_to_month_date": 1,
+        "projected_diagnosis_context_to_controlled_sf_state": 1,
+        "projected_diagnosis_context_to_frequent_myoclonic_jerks": 1,
+        "projected_diagnosis_context_to_remote_last_seizures_state": 1,
+        "projected_four_since_last_clinic": 1,
+        "projected_infrequent_context_state": 1,
+        "projected_several_since_last_clinic": 1
+      },
+      "headline_by_indicator": {
+        "Diagnosis": 0.9877,
+        "Investigations": 1.0,
+        "Prescription": 0.9737,
+        "SeizureFrequency": 0.9804
+      },
+      "headline_overall": 0.9839,
+      "sf_active_rate_fidelity_f1": 0.6667
+    },
+    "baseline": {
+      "benchmark_by_indicator": {
+        "Diagnosis": 0.2828,
+        "Investigations": 0.65,
+        "Prescription": 0.2025,
+        "SeizureFrequency": 0.5455
+      },
+      "benchmark_overall": 0.3663,
+      "dx_concept_negation_f1": 0.9877,
+      "family_fires": {},
+      "headline_by_indicator": {
+        "Diagnosis": 0.9877,
+        "Investigations": 1.0,
+        "Prescription": 0.9737,
+        "SeizureFrequency": 0.898
+      },
+      "headline_overall": 0.9675,
+      "sf_active_rate_fidelity_f1": 0.6207
+    },
+    "projected_christmas_point_to_month_date": {
+      "benchmark_by_indicator": {
+        "Diagnosis": 0.2828,
+        "Investigations": 0.65,
+        "Prescription": 0.2025,
+        "SeizureFrequency": 0.5455
+      },
+      "benchmark_overall": 0.3663,
+      "dx_concept_negation_f1": 0.9877,
+      "family_fires": {
+        "projected_christmas_point_to_month_date": 1
+      },
+      "headline_by_indicator": {
+        "Diagnosis": 0.9877,
+        "Investigations": 1.0,
+        "Prescription": 0.9737,
+        "SeizureFrequency": 0.898
+      },
+      "headline_overall": 0.9675,
+      "sf_active_rate_fidelity_f1": 0.6207
+    },
+    "projected_diagnosis_context_to_controlled_sf_state": {
+      "benchmark_by_indicator": {
+        "Diagnosis": 0.2828,
+        "Investigations": 0.65,
+        "Prescription": 0.2025,
+        "SeizureFrequency": 0.5714
+      },
+      "benchmark_overall": 0.3723,
+      "dx_concept_negation_f1": 0.9877,
+      "family_fires": {
+        "projected_diagnosis_context_to_controlled_sf_state": 1
+      },
+      "headline_by_indicator": {
+        "Diagnosis": 0.9877,
+        "Investigations": 1.0,
+        "Prescription": 0.9737,
+        "SeizureFrequency": 0.898
+      },
+      "headline_overall": 0.9675,
+      "sf_active_rate_fidelity_f1": 0.6207
+    },
+    "projected_diagnosis_context_to_frequent_myoclonic_jerks": {
+      "benchmark_by_indicator": {
+        "Diagnosis": 0.2828,
+        "Investigations": 0.65,
+        "Prescription": 0.2025,
+        "SeizureFrequency": 0.5455
+      },
+      "benchmark_overall": 0.3663,
+      "dx_concept_negation_f1": 0.9877,
+      "family_fires": {
+        "projected_diagnosis_context_to_frequent_myoclonic_jerks": 1
+      },
+      "headline_by_indicator": {
+        "Diagnosis": 0.9877,
+        "Investigations": 1.0,
+        "Prescription": 0.9737,
+        "SeizureFrequency": 0.898
+      },
+      "headline_overall": 0.9675,
+      "sf_active_rate_fidelity_f1": 0.6207
+    },
+    "projected_diagnosis_context_to_remote_last_seizures_state": {
+      "benchmark_by_indicator": {
+        "Diagnosis": 0.2828,
+        "Investigations": 0.65,
+        "Prescription": 0.2025,
+        "SeizureFrequency": 0.5714
+      },
+      "benchmark_overall": 0.3723,
+      "dx_concept_negation_f1": 0.9877,
+      "family_fires": {
+        "projected_diagnosis_context_to_remote_last_seizures_state": 1
+      },
+      "headline_by_indicator": {
+        "Diagnosis": 0.9877,
+        "Investigations": 1.0,
+        "Prescription": 0.9737,
+        "SeizureFrequency": 0.92
+      },
+      "headline_overall": 0.9717,
+      "sf_active_rate_fidelity_f1": 0.6207
+    },
+    "projected_four_since_last_clinic": {
+      "benchmark_by_indicator": {
+        "Diagnosis": 0.2828,
+        "Investigations": 0.65,
+        "Prescription": 0.2025,
+        "SeizureFrequency": 0.5455
+      },
+      "benchmark_overall": 0.3663,
+      "dx_concept_negation_f1": 0.9877,
+      "family_fires": {
+        "projected_four_since_last_clinic": 1
+      },
+      "headline_by_indicator": {
+        "Diagnosis": 0.9877,
+        "Investigations": 1.0,
+        "Prescription": 0.9737,
+        "SeizureFrequency": 0.898
+      },
+      "headline_overall": 0.9675,
+      "sf_active_rate_fidelity_f1": 0.6207
+    },
+    "projected_infrequent_context_state": {
+      "benchmark_by_indicator": {
+        "Diagnosis": 0.2828,
+        "Investigations": 0.65,
+        "Prescription": 0.2025,
+        "SeizureFrequency": 0.5714
+      },
+      "benchmark_overall": 0.3723,
+      "dx_concept_negation_f1": 0.9877,
+      "family_fires": {
+        "projected_infrequent_context_state": 1
+      },
+      "headline_by_indicator": {
+        "Diagnosis": 0.9877,
+        "Investigations": 1.0,
+        "Prescription": 0.9737,
+        "SeizureFrequency": 0.92
+      },
+      "headline_overall": 0.9717,
+      "sf_active_rate_fidelity_f1": 0.6207
+    },
+    "projected_several_since_last_clinic": {
+      "benchmark_by_indicator": {
+        "Diagnosis": 0.2828,
+        "Investigations": 0.65,
+        "Prescription": 0.2025,
+        "SeizureFrequency": 0.5818
+      },
+      "benchmark_overall": 0.3736,
+      "dx_concept_negation_f1": 0.9877,
+      "family_fires": {
+        "projected_several_since_last_clinic": 1
+      },
+      "headline_by_indicator": {
+        "Diagnosis": 0.9877,
+        "Investigations": 1.0,
+        "Prescription": 0.9737,
+        "SeizureFrequency": 0.9388
+      },
+      "headline_overall": 0.9756,
+      "sf_active_rate_fidelity_f1": 0.6667
+    },
+    "repaired_last_event_evidence": {
+      "benchmark_by_indicator": {
+        "Diagnosis": 0.2828,
+        "Investigations": 0.65,
+        "Prescription": 0.2025,
+        "SeizureFrequency": 0.5455
+      },
+      "benchmark_overall": 0.3663,
+      "dx_concept_negation_f1": 0.9877,
+      "family_fires": {},
+      "headline_by_indicator": {
+        "Diagnosis": 0.9877,
+        "Investigations": 1.0,
+        "Prescription": 0.9737,
+        "SeizureFrequency": 0.898
+      },
+      "headline_overall": 0.9675,
+      "sf_active_rate_fidelity_f1": 0.6207
+    },
+    "repaired_since_last_clinic_count_evidence": {
+      "benchmark_by_indicator": {
+        "Diagnosis": 0.2828,
+        "Investigations": 0.65,
+        "Prescription": 0.2025,
+        "SeizureFrequency": 0.5455
+      },
+      "benchmark_overall": 0.3663,
+      "dx_concept_negation_f1": 0.9877,
+      "family_fires": {},
+      "headline_by_indicator": {
+        "Diagnosis": 0.9877,
+        "Investigations": 1.0,
+        "Prescription": 0.9737,
+        "SeizureFrequency": 0.898
+      },
+      "headline_overall": 0.9675,
+      "sf_active_rate_fidelity_f1": 0.6207
+    }
+  },
+  "date": "2026-06-20",
+  "row_count": 25,
+  "source_artifact": "exectv2_target_indicators_single_call_v039_live_dev25_qwen36_35b_ollama_cpu_ctx16384_20260619.jsonl",
+  "source_note": "v0.39 live raw_output is the genuine untouched model output; the v0.40-v0.42 reproject artifacts store post-projection raw and are unsuitable as the same-raw source.",
+  "source_path": "experiments\\exectv2_target_indicators_single_call_v039_live_dev25_qwen36_35b_ollama_cpu_ctx16384_20260619.jsonl",
+  "split": "dev",
+  "surfaces": {
+    "benchmark": "cui_audit benchmark_f1_after_cui_projection (paper-comparable)",
+    "dx_fidelity": "Diagnosis.concept_negation companion",
+    "headline": "cui_projected_headline_scores (lenient redefined key)",
+    "sf_fidelity": "SeizureFrequency.active_rate_fidelity companion"
+  },
+  "verdicts": {
+    "projected_christmas_point_to_month_date": {
+      "reason": "fires but no net score movement on source rows",
+      "verdict": "INSUFFICIENT EVIDENCE"
+    },
+    "projected_diagnosis_context_to_controlled_sf_state": {
+      "reason": "improves the paper-comparable benchmark key",
+      "verdict": "KEEP CANDIDATE"
+    },
+    "projected_diagnosis_context_to_frequent_myoclonic_jerks": {
+      "reason": "fires but no net score movement on source rows",
+      "verdict": "INSUFFICIENT EVIDENCE"
+    },
+    "projected_diagnosis_context_to_remote_last_seizures_state": {
+      "reason": "improves the paper-comparable benchmark key",
+      "verdict": "KEEP CANDIDATE"
+    },
+    "projected_four_since_last_clinic": {
+      "reason": "fires but no net score movement on source rows",
+      "verdict": "INSUFFICIENT EVIDENCE"
+    },
+    "projected_infrequent_context_state": {
+      "reason": "improves the paper-comparable benchmark key",
+      "verdict": "KEEP CANDIDATE"
+    },
+    "projected_several_since_last_clinic": {
+      "reason": "improves the paper-comparable benchmark key",
+      "verdict": "KEEP CANDIDATE"
+    },
+    "repaired_last_event_evidence": {
+      "reason": "no same-raw fire or score change on source rows",
+      "verdict": "INSUFFICIENT EVIDENCE"
+    },
+    "repaired_since_last_clinic_count_evidence": {
+      "reason": "no same-raw fire or score change on source rows",
+      "verdict": "INSUFFICIENT EVIDENCE"
+    }
+  }
+}

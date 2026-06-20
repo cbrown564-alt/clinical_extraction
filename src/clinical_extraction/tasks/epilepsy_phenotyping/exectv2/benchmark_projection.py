@@ -433,7 +433,10 @@ _PATIENT_HISTORY_ENTRIES: tuple[tuple[BenchmarkConcept, tuple[str, ...]], ...] =
         BenchmarkConcept("myoclonic-jerks", "C0027066", "myoclonic-jerks"),
         ("myoclonic jerks", "myoclonic-jerks"),
     ),
-    (BenchmarkConcept("absences", "C0563606", "absences"), ("absences",)),
+    (
+        BenchmarkConcept("absences", "C0563606", "absences"),
+        ("absences", "absence like seizure", "absence like seizures"),
+    ),
     (
         BenchmarkConcept("dissociative-seizures", "C0349245", "dissociative-seizures"),
         (

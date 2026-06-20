@@ -29,6 +29,32 @@ def test_build_dspy_lm_routes_ollama_chat_with_thinking_disabled(monkeypatch) ->
     assert calls["kwargs"]["cache"] is False
 
 
+def test_build_dspy_lm_adds_ollama_options_from_environment(monkeypatch) -> None:
+    calls: dict[str, Any] = {}
+
+    def fake_lm(model: str, **kwargs):
+        calls["model"] = model
+        calls["kwargs"] = kwargs
+        return object()
+
+    monkeypatch.setattr(llm_config.dspy, "LM", fake_lm)
+    monkeypatch.setenv("CLINICAL_EXTRACTION_OLLAMA_NUM_GPU", "0")
+    monkeypatch.setenv("CLINICAL_EXTRACTION_OLLAMA_NUM_CTX", "1024")
+
+    llm_config.build_dspy_lm(
+        "ollama_chat/qwen3.6:35b",
+        temperature=0.0,
+        max_tokens=1400,
+        cache=False,
+        api_base="http://localhost:11434",
+    )
+
+    assert calls["kwargs"]["extra_body"] == {
+        "think": False,
+        "options": {"num_gpu": 0, "num_ctx": 1024},
+    }
+
+
 def test_build_dspy_lm_preserves_openai_compatible_route(monkeypatch) -> None:
     calls: dict[str, Any] = {}
 
