@@ -19,7 +19,7 @@ For each configuration we read four surfaces from architecture_report:
 The marginal effect of each family is its config minus the baseline. A family
 that moves benchmark and/or fidelity in the right direction is a KEEP candidate;
 one that only moves the lenient headline, or hurts a fidelity companion, is a
-CUT; one with no same-raw effect is INSUFFICIENT EVIDENCE on dev25.
+CUT; one with no same-raw effect is INSUFFICIENT EVIDENCE on the source rows.
 
 Why v0.39 live and not the v0.42 reproject artifact: the v0.40-v0.42 reproject
 artifacts re-serialize an already-projected output into ``raw_output``, so they
@@ -29,6 +29,7 @@ v0.39 live ``raw_output`` is the untouched model output.
 
 from __future__ import annotations
 
+import argparse
 import json
 from collections import Counter
 from pathlib import Path
@@ -63,6 +64,11 @@ OUT_MD = Path(
     "exectv2_phase2_family_ablation_same_raw_dev25_20260620.md"
 )
 OWNERSHIP = "llm_first_with_deterministic_normalization_projection"
+DEFAULT_SOURCE_NOTE = (
+    "v0.39 live raw_output is the genuine untouched model output; the "
+    "v0.40-v0.42 reproject artifacts store post-projection raw and are "
+    "unsuitable as the same-raw source."
+)
 
 
 def _load_rows(path: Path) -> list[dict[str, Any]]:
@@ -175,7 +181,7 @@ def _verdict(family: str, base: dict[str, Any], cfg: dict[str, Any]) -> tuple[st
         d_sf is not None and d_sf < -1e-9
     )
     if fires == 0 and abs(d_bench) < 1e-9 and abs(d_head) < 1e-9:
-        return "INSUFFICIENT EVIDENCE", "no same-raw fire or score change on dev25"
+        return "INSUFFICIENT EVIDENCE", "no same-raw fire or score change on source rows"
     if hurts_fidelity:
         return "CUT", "degrades a clinical-fidelity companion"
     if d_bench > 1e-9:
@@ -184,13 +190,24 @@ def _verdict(family: str, base: dict[str, Any], cfg: dict[str, Any]) -> tuple[st
         return "CUT", "lowers the paper-comparable benchmark key"
     if d_head > 1e-9:
         return "CUT", "moves only the lenient headline, not benchmark"
-    return "INSUFFICIENT EVIDENCE", "fires but no net score movement on dev25"
+    return "INSUFFICIENT EVIDENCE", "fires but no net score movement on source rows"
 
 
 def main() -> None:
-    rows = _load_rows(SOURCE)
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--source", type=Path, default=SOURCE)
+    parser.add_argument("--out-json", type=Path, default=None)
+    parser.add_argument("--out-md", type=Path, default=None)
+    parser.add_argument("--date", default="2026-06-20")
+    parser.add_argument("--source-note", default=None)
+    args = parser.parse_args()
+
+    source = args.source
+    out_json = args.out_json or OUT_JSON
+    out_md = args.out_md or OUT_MD
+    rows = _load_rows(source)
     split = str(rows[0].get("split", "dev"))
-    note_by_id = {l.letter_id: l.note_text for l in load_letters_for_split(split)}
+    note_by_id = {letter.letter_id: letter.note_text for letter in load_letters_for_split(split)}
 
     families = sorted(QUARANTINED_TARGET_PROJECTION_FAMILIES)
     configs: dict[str, dict[str, bool] | None] = {"baseline": None}
@@ -207,12 +224,10 @@ def main() -> None:
         verdicts[family] = {"verdict": verdict, "reason": reason}
 
     payload = {
-        "source_artifact": SOURCE.name,
-        "source_note": (
-            "v0.39 live raw_output is the genuine untouched model output; the "
-            "v0.40-v0.42 reproject artifacts store post-projection raw and are "
-            "unsuitable as the same-raw source."
-        ),
+        "date": args.date,
+        "source_artifact": source.name,
+        "source_path": str(source),
+        "source_note": args.source_note or DEFAULT_SOURCE_NOTE,
         "split": split,
         "row_count": len(rows),
         "surfaces": {
@@ -224,15 +239,15 @@ def main() -> None:
         "configs": results,
         "verdicts": verdicts,
     }
-    OUT_JSON.parent.mkdir(parents=True, exist_ok=True)
-    OUT_JSON.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    out_json.parent.mkdir(parents=True, exist_ok=True)
+    out_json.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
-    OUT_MD.parent.mkdir(parents=True, exist_ok=True)
-    OUT_MD.write_text(_render_markdown(payload), encoding="utf-8")
+    out_md.parent.mkdir(parents=True, exist_ok=True)
+    out_md.write_text(_render_markdown(payload), encoding="utf-8")
 
     _print_console(payload)
-    print(f"\nWrote {OUT_JSON}")
-    print(f"Wrote {OUT_MD}")
+    print(f"\nWrote {out_json}")
+    print(f"Wrote {out_md}")
 
 
 def _fmt(value: float | None) -> str:
@@ -288,12 +303,12 @@ def _render_markdown(payload: dict[str, Any]) -> str:
     lines: list[str] = []
     lines.append("# ExECTv2 Phase 2 Same-Raw Projection-Family Ablation")
     lines.append("")
-    lines.append("Date: 2026-06-20")
+    lines.append(f"Date: {payload['date']}")
     lines.append("")
     lines.append(
-        "No model calls. Re-projects the genuine v0.39 live LLM `raw_output` "
-        "through current v0.42 deterministic projection under each quarantine "
-        "switch configuration, then scores the same dev25 letters."
+        "No model calls. Re-projects the source live LLM `raw_output` through "
+        "current v0.42 deterministic projection under each quarantine switch "
+        "configuration, then scores the same source letters."
     )
     lines.append("")
     lines.append(f"- Source artifact: `{payload['source_artifact']}`")
@@ -307,9 +322,8 @@ def _render_markdown(payload: dict[str, Any]) -> str:
     lines.append("")
     lines.append("## Configuration Scores")
     lines.append("")
-    lines.append(
-        "| Config | Headline | Benchmark | Dx concept_negation | SF active_rate_fidelity | Family fires |"
-    )
+    lines.append("| Config | Headline | Benchmark | Dx concept_negation |")
+    lines[-1] += " SF active_rate_fidelity | Family fires |"
     lines.append("| --- | ---: | ---: | ---: | ---: | ---: |")
     for name, cfg in payload["configs"].items():
         family_fire = (
@@ -352,31 +366,40 @@ def _render_markdown(payload: dict[str, Any]) -> str:
         "Keep candidates are families that move the paper-comparable benchmark "
         "key without degrading a clinical-fidelity companion. Families that move "
         "only the lenient headline, lower the benchmark, or hurt fidelity are "
-        "cut. Families with no same-raw effect on dev25 stay quarantined as "
-        "insufficient-evidence until a broader held-out surface exists."
+        "cut. Families with no same-raw effect stay quarantined as "
+        "insufficient-evidence until a broader surface exists."
     )
     lines.append("")
     lines.append(
         "**Single-letter caveat.** Every keep-candidate family fires on exactly "
-        "one dev25 letter, so each benchmark gain rests on a single letter. This "
-        "is the overfit risk the projection-family overfit audit named: a "
+        "one source letter, so each benchmark gain rests on a single letter. "
+        "This is the overfit risk the projection-family overfit audit named: a "
         "one-letter benchmark nudge cannot distinguish a clinically general "
         "projection from a benchmark-letter patch. 'Keep candidate' here means "
-        "'promote to a held-out check', not 'restore to the default pipeline'."
+        "'promote to a broader check', not 'restore to the default pipeline'."
     )
     lines.append("")
     base_head = base["headline_overall"]
     base_bench = base["benchmark_overall"]
-    lines.append(
-        "**Reproducibility note.** This same-raw baseline (default quarantine) "
-        f"scores headline {base_head:.4f} / benchmark {base_bench:.4f} when the "
-        "genuine v0.39 live raw is re-projected through v0.42 code. The published "
-        "Phase 0 v0.42 artifact reads headline 0.9487 / benchmark-after-CUI "
-        "0.3816. The two differ because the v0.40-v0.42 reproject chain stored "
-        "already-projected output back into `raw_output` and re-projected it at "
-        "each hop. The genuine-raw re-projection is the defensible same-raw "
-        "surface for this ablation; the chained artifact is double-projected."
-    )
+    if "v039_live_dev25" in str(payload["source_artifact"]):
+        lines.append(
+            "**Reproducibility note.** This same-raw baseline (default quarantine) "
+            f"scores headline {base_head:.4f} / benchmark {base_bench:.4f} when the "
+            "genuine v0.39 live raw is re-projected through v0.42 code. The published "
+            "Phase 0 v0.42 artifact reads headline 0.9487 / benchmark-after-CUI "
+            "0.3816. The two differ because the v0.40-v0.42 reproject chain stored "
+            "already-projected output back into `raw_output` and re-projected it at "
+            "each hop. The genuine-raw re-projection is the defensible same-raw "
+            "surface for this ablation; the chained artifact is double-projected."
+        )
+    else:
+        lines.append(
+            "**Reproducibility note.** This same-raw baseline (default quarantine) "
+            f"scores headline {base_head:.4f} / benchmark {base_bench:.4f}. "
+            "All marginal family effects above are within-source replays of the "
+            "same saved live raw output; they should not be compared as separate "
+            "live model conditions."
+        )
     lines.append("")
     return "\n".join(lines)
 

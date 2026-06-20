@@ -1,128 +1,110 @@
 # Project Status
 
-Last updated: 2026-06-19
+Last updated: 2026-06-20
 
 ## Active Objective
 
 ExECTv2 Plan 11 targets exactly four indicators: `Diagnosis`,
 `SeizureFrequency`, `Prescription`, and `Investigations`. The current objective
-is attribution-clean clinical scoring, not headline F1 alone: headline key plus
-fidelity companions (`Diagnosis.concept_negation`,
-`SeizureFrequency.active_rate_fidelity`) and explicit projection provenance.
+is attribution-clean clinical scoring, not headline F1 alone: report the
+headline key with benchmark score, `Diagnosis.concept_negation`,
+`SeizureFrequency.active_rate_fidelity`, and projection provenance.
 
-The old "`>0.900` headline cleared" framing is retired as a success criterion.
-Phase 0 showed that the headline key is a redefined, lenient target surface, not
-a benchmark/paper-comparable result.
+The old "`>0.900` headline cleared" framing is retired. The headline key is a
+redefined, lenient target surface, not a benchmark/paper-comparable result.
 
 ## Current Read
 
-Phase 0 dual scoring on exact v0.42 saved dev25 predictions: headline `0.9487`,
-benchmark raw `0.3675`, benchmark after CUI `0.3816`. Per-indicator
-headline-to-benchmark gaps are large: Diagnosis `+0.6519`, SeizureFrequency
-`+0.2926`, Prescription `+0.8045`, Investigations `+0.3902`.
+Exact v0.42 saved dev25 predictions scored headline `0.9487`, benchmark raw
+`0.3675`, and benchmark after CUI `0.3816`; the headline-to-benchmark gap is
+large and cannot support a benchmark claim.
 
-Phase 1 no-call generalization report:
-`docs/experiments/exectv2/key_entities/exectv2_phase1_dual_scoring_generalization_report_20260619.md`.
-No exact v0.42 local-Qwen dev140 artifact exists. Existing dev140 target
-comparators remain the held-out warning signal: best headline overall `0.7301`
-(`deterministic_all9`), best focused routed hybrid headline `0.7081`,
-benchmark-after-CUI `0.3540` deterministic / `0.2316` focused routed hybrid,
-and only Prescription clears `>0.900`.
+The predeclared local-Qwen dev140 run now exists:
+`experiments/exectv2_target_indicators_single_call_v042_live_default_quarantine_dev140_qwen36_35b_ollama_autogpu_ctx16384_20260620.md`.
+It used default-quarantined projection families, local `qwen3.6:35b`,
+`num_ctx=16384`, and auto partial GPU offload (`num_gpu` unset). Gate summary:
+1 call failure, 4 parse/schema failures, 21 evidence-invalid mentions dropped.
 
-Conclusion: reject the v0.42 headline generalization claim as currently
-supported. The exact v0.42 dev140 local-Qwen run is no-go/deferred until
-same-raw projection attribution exists:
-`docs/experiments/exectv2/key_entities/exectv2_v042_dev140_local_qwen_run_decision_20260619.md`.
+Dev140 default-quarantine readout: headline `0.7153`, benchmark `0.2339`,
+`Diagnosis.concept_negation` `0.6693`, and
+`SeizureFrequency.active_rate_fidelity` `0.2887`. Indicator headline F1:
+Diagnosis `0.6693`, SeizureFrequency `0.5572`, Prescription `0.8214`,
+Investigations `0.8615`. This is useful attribution data, not a promotion.
+
+Same-raw dev140 family ablation:
+`docs/experiments/exectv2/key_entities/exectv2_phase3_family_ablation_same_raw_dev140_qwen36_35b_20260620.md`.
+`audit_all` moves benchmark only `0.2339 -> 0.2383`; every positive
+single-family effect fires on exactly one dev140 letter. No quarantined family
+returns to the default prediction pipeline.
+
+Error-led architecture decision:
+`docs/experiments/exectv2/key_entities/exectv2_dev140_error_led_architecture_decision_20260620.md`.
+Next move is a predeclared focused-lane component-evidence comparison:
+preserve Prescription/Investigations controls, test focused Diagnosis
+hierarchy reconciliation and SeizureFrequency span/state adjudication, and
+report headline, benchmark, fidelity companions, ownership, evidence, and
+changed-row regressions.
 
 ## Recent Context
 
 - Projection-rule attribution sidecar:
   `docs/experiments/exectv2/key_entities/exectv2_projection_rule_attribution_sidecar_dev25_20260619.md`.
-  It summarizes saved v0.39-v0.42 dev25 `gate_warnings`, portability category,
-  changed rows, correction/regression counts, and fidelity effects. Counts are
-  same-row warning-family attribution, not isolated rule-disable ablations.
+  Counts are same-row warning-family attribution, not isolated rule-disable
+  ablations.
 - One-letter v0.42 projection families are quarantined by default with explicit
-  audit replay switches for same-raw ablation. This covers remote-last-seizure
-  state, controlled-state from Diagnosis context, frequent myoclonic jerks,
-  infrequent-context state, phrase-specific `last clinic` repairs, and
-  Christmas/date projection.
-- Projection-family overfit audit:
-  `docs/experiments/exectv2/key_entities/exectv2_phase2_projection_family_overfit_audit_20260619.md`.
-- SF v0.8 hard-slice gate:
+  audit replay switches. Prediction diagnostics record effective switch state.
+- Dev25 same-raw ablation:
+  `docs/experiments/exectv2/key_entities/exectv2_phase2_family_ablation_same_raw_dev25_20260620.md`.
+- SF v0.8 hard-slice gate was rejected for prediction-bearing implementation;
+  retain diagnostic-only:
   `docs/experiments/exectv2/seizure_frequency/exectv2_sf_v08_hard_slice_gate_decision_2026-06-19.md`.
-  Rejected for prediction-bearing implementation; retain diagnostic-only.
-- Local `ollama_chat/qwen3.6:35b` runs with auto partial GPU offload on this
-  laptop: leave `num_gpu` unset (env `CLINICAL_EXTRACTION_OLLAMA_NUM_GPU`
-  omitted) and set `num_ctx=16384`. Verified 2026-06-20 on one dev letter:
-  ~4.8 GB of 23.7 GB in the 8 GB RTX 4070 VRAM (~20% layers on GPU), rest on
-  CPU, no OOM, ~2m33s including cold load. The earlier "`num_gpu=0` CPU-only,
-  GPU OOMs" note was an over-correction from forcing a full GPU load; do not
-  pin `num_gpu=0`.
 
 ## Active Priorities
 
-1. Do not resume projection-rule optimization on the headline key until
-   attribution and generalization are explicit.
-2. Treat all v0.21-v0.42 "cleared four" artifacts as qualified dev evidence on
-   a lenient key, not benchmark claims.
-3. Use the projection-rule attribution sidecar and audit replay switches before
-   adding, cutting, or promoting deterministic repair families.
-4. Any future exact v0.42 dev140 local-Qwen run must be predeclared with cost,
-   purpose, runtime settings, scorer surfaces, and stop rule.
+1. Do not restore quarantined projection families by default on single-letter
+   benchmark nudges.
+2. Treat v0.21-v0.42 "cleared four" artifacts as qualified dev evidence on a
+   lenient key, not benchmark claims.
+3. Use same-raw ablations and fidelity companions before adding, cutting, or
+   promoting deterministic repair families.
+4. Any full-200 or locked-test-facing ExECTv2 audit still needs
+   benchmark-beating dev evidence and a predeclared aggregate readout.
 
 ## Work Board
 
 ### Now
 
-- Decide promotion of the four same-raw KEEP-CANDIDATE families against a
-  broader held-out surface than dev25. Each currently fires on exactly one
-  dev25 letter, so the benchmark gains are single-letter and cannot yet be
-  separated from benchmark-letter overfit. Do not restore any family to the
-  default pipeline on dev25 evidence alone.
+- Predeclare the focused-lane component-evidence comparison chosen by the
+  dev140 architecture read: exact candidate sources, runtime/model, score
+  ladder, P/I regression controls, Diagnosis/SF fidelity gates, and stop rule.
 
 ### Next
 
-- Reconsider the exact v0.42 dev140 local-Qwen run only after the same-raw
-  ablation replay identifies which projection families are portable enough to
-  keep. If predeclared then, run with local Qwen auto partial GPU offload
-  (`num_gpu` unset, `num_ctx=16384`) and report headline, benchmark,
-  `concept_negation`, and `active_rate_fidelity`.
-- Revisit the clinical target definition after attribution: Prescription and
-  Investigations may be clinically better represented by the headline key,
-  while SeizureFrequency needs active-rate fidelity and Diagnosis needs
-  negation-aware validation.
+- If another live dev140 experiment is proposed, predeclare the exact
+  comparison, runtime, scorer surfaces, and stop rule before spending calls.
 
 ### Blocked
 
 - Gan holdout-facing reruns, row-level test analysis, and post-test tuning need
   explicit authorization plus a frozen protocol.
-- New ExECTv2 full-200 audits need benchmark-beating GPT-first dev evidence and
-  a predeclared aggregate readout.
+- New ExECTv2 full-200 audits need benchmark-beating dev evidence and a
+  predeclared aggregate readout.
 
 ### Done Recently
 
-- 2026-06-20: Same-raw projection-family ablation built and run
-  (`scripts/phase2_family_ablation.py`,
-  `docs/experiments/exectv2/key_entities/exectv2_phase2_family_ablation_same_raw_dev25_20260620.md`).
-  Re-projects genuine v0.39 live raw through v0.42 code per quarantine switch.
-  No family is a cut; 4 are single-letter KEEP CANDIDATES
-  (`projected_several_since_last_clinic`,
-  `projected_diagnosis_context_to_remote_last_seizures_state`,
-  `projected_infrequent_context_state`,
-  `projected_diagnosis_context_to_controlled_sf_state`), the other 5 are
-  insufficient-evidence (fire with no dev25 score movement or never fire).
-  Also found the v0.40-v0.42 reproject artifacts store post-projection raw, so
-  only the v0.39 live raw is a faithful same-raw source.
+- 2026-06-20: Completed the dev140 error-led architecture decision. Result:
+  projection promotion stays rejected; next live work must be a predeclared
+  focused-lane component-evidence comparison with P/I controls, Diagnosis
+  hierarchy reconciliation, and SF span/state adjudication.
+- 2026-06-20: Predeclared and ran the exact v0.42 local-Qwen dev140
+  default-quarantine condition, then ran same-raw family ablation on the saved
+  raw output. Result: no projection-family promotion; all risky families stay
+  quarantined/audit-only.
+- 2026-06-20: Made `scripts/phase2_family_ablation.py` source/output
+  configurable while preserving the dev25 ablation artifact.
 - 2026-06-19: Coordinated three parallel Codex workstreams and integrated the
-  useful outputs back into this checkout.
-- 2026-06-19: Projection-rule registry/attribution sidecar added and generated
-  from saved v0.39-v0.42 dev25 target artifacts.
-- 2026-06-19: Quarantined one-letter v0.42 projection families by default and
-  added explicit audit replay switches.
-- 2026-06-19: Exact v0.42 dev140 local-Qwen run decision completed; no-go/defer
-  until attribution.
-- 2026-06-19: Phase 1 generalization, Phase 0 metric reconciliation, SF v0.8
-  gate, and projection-family warning audit completed.
+  projection-rule sidecar, default quarantine/audit switches, and dev140
+  no-go-until-attribution decision.
 
 ## Guardrails
 
@@ -130,5 +112,5 @@ same-raw projection attribution exists:
   selected events, or transitions for development.
 - Keep claims attribution-clean across `rules_only`, `llm_first`, and `hybrid`.
   Deterministic certainty/CUI/format repairs are controlled projection layers.
-- Do not add more letter-specific projection patches without an attribution
-  ablation and explicit portability category.
+- Do not add more letter-specific projection patches without attribution
+  ablation, portability category, and focused tests.

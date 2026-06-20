@@ -232,9 +232,11 @@
       "sf_active_rate_fidelity_f1": 0.6207
     }
   },
+  "date": "2026-06-20",
   "row_count": 25,
   "source_artifact": "exectv2_target_indicators_single_call_v039_live_dev25_qwen36_35b_ollama_cpu_ctx16384_20260619.jsonl",
   "source_note": "v0.39 live raw_output is the genuine untouched model output; the v0.40-v0.42 reproject artifacts store post-projection raw and are unsuitable as the same-raw source.",
+  "source_path": "experiments\\exectv2_target_indicators_single_call_v039_live_dev25_qwen36_35b_ollama_cpu_ctx16384_20260619.jsonl",
   "split": "dev",
   "surfaces": {
     "benchmark": "cui_audit benchmark_f1_after_cui_projection (paper-comparable)",
@@ -244,7 +246,7 @@
   },
   "verdicts": {
     "projected_christmas_point_to_month_date": {
-      "reason": "fires but no net score movement on dev25",
+      "reason": "fires but no net score movement on source rows",
       "verdict": "INSUFFICIENT EVIDENCE"
     },
     "projected_diagnosis_context_to_controlled_sf_state": {
@@ -252,7 +254,7 @@
       "verdict": "KEEP CANDIDATE"
     },
     "projected_diagnosis_context_to_frequent_myoclonic_jerks": {
-      "reason": "fires but no net score movement on dev25",
+      "reason": "fires but no net score movement on source rows",
       "verdict": "INSUFFICIENT EVIDENCE"
     },
     "projected_diagnosis_context_to_remote_last_seizures_state": {
@@ -260,7 +262,7 @@
       "verdict": "KEEP CANDIDATE"
     },
     "projected_four_since_last_clinic": {
-      "reason": "fires but no net score movement on dev25",
+      "reason": "fires but no net score movement on source rows",
       "verdict": "INSUFFICIENT EVIDENCE"
     },
     "projected_infrequent_context_state": {
@@ -272,11 +274,11 @@
       "verdict": "KEEP CANDIDATE"
     },
     "repaired_last_event_evidence": {
-      "reason": "no same-raw fire or score change on dev25",
+      "reason": "no same-raw fire or score change on source rows",
       "verdict": "INSUFFICIENT EVIDENCE"
     },
     "repaired_since_last_clinic_count_evidence": {
-      "reason": "no same-raw fire or score change on dev25",
+      "reason": "no same-raw fire or score change on source rows",
       "verdict": "INSUFFICIENT EVIDENCE"
     }
   }
