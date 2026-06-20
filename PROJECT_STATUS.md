@@ -51,8 +51,13 @@ same-raw projection attribution exists:
 - SF v0.8 hard-slice gate:
   `docs/experiments/exectv2/seizure_frequency/exectv2_sf_v08_hard_slice_gate_decision_2026-06-19.md`.
   Rejected for prediction-bearing implementation; retain diagnostic-only.
-- Local `ollama_chat/qwen3.6:35b` is usable CPU-side only on this laptop
-  (`num_gpu=0`, `num_ctx=16384`); GPU loading OOMs on the 8 GB RTX 4070.
+- Local `ollama_chat/qwen3.6:35b` runs with auto partial GPU offload on this
+  laptop: leave `num_gpu` unset (env `CLINICAL_EXTRACTION_OLLAMA_NUM_GPU`
+  omitted) and set `num_ctx=16384`. Verified 2026-06-20 on one dev letter:
+  ~4.8 GB of 23.7 GB in the 8 GB RTX 4070 VRAM (~20% layers on GPU), rest on
+  CPU, no OOM, ~2m33s including cold load. The earlier "`num_gpu=0` CPU-only,
+  GPU OOMs" note was an over-correction from forcing a full GPU load; do not
+  pin `num_gpu=0`.
 
 ## Active Priorities
 
@@ -69,19 +74,19 @@ same-raw projection attribution exists:
 
 ### Now
 
-- Build a same-raw ablation replay for the quarantined v0.42 projection
-  families, comparing default quarantine versus `audit_only_projection_replay`
-  on saved dev25 raw outputs. Report keep/cut decisions by rule family using
-  headline, benchmark, `Diagnosis.concept_negation`, and
-  `SeizureFrequency.active_rate_fidelity`; do not run new LLM calls.
+- Decide promotion of the four same-raw KEEP-CANDIDATE families against a
+  broader held-out surface than dev25. Each currently fires on exactly one
+  dev25 letter, so the benchmark gains are single-letter and cannot yet be
+  separated from benchmark-letter overfit. Do not restore any family to the
+  default pipeline on dev25 evidence alone.
 
 ### Next
 
 - Reconsider the exact v0.42 dev140 local-Qwen run only after the same-raw
   ablation replay identifies which projection families are portable enough to
-  keep. If predeclared then, run with local Qwen CPU settings (`num_gpu=0`,
-  `num_ctx=16384`) and report headline, benchmark, `concept_negation`, and
-  `active_rate_fidelity`.
+  keep. If predeclared then, run with local Qwen auto partial GPU offload
+  (`num_gpu` unset, `num_ctx=16384`) and report headline, benchmark,
+  `concept_negation`, and `active_rate_fidelity`.
 - Revisit the clinical target definition after attribution: Prescription and
   Investigations may be clinically better represented by the headline key,
   while SeizureFrequency needs active-rate fidelity and Diagnosis needs
@@ -96,6 +101,18 @@ same-raw projection attribution exists:
 
 ### Done Recently
 
+- 2026-06-20: Same-raw projection-family ablation built and run
+  (`scripts/phase2_family_ablation.py`,
+  `docs/experiments/exectv2/key_entities/exectv2_phase2_family_ablation_same_raw_dev25_20260620.md`).
+  Re-projects genuine v0.39 live raw through v0.42 code per quarantine switch.
+  No family is a cut; 4 are single-letter KEEP CANDIDATES
+  (`projected_several_since_last_clinic`,
+  `projected_diagnosis_context_to_remote_last_seizures_state`,
+  `projected_infrequent_context_state`,
+  `projected_diagnosis_context_to_controlled_sf_state`), the other 5 are
+  insufficient-evidence (fire with no dev25 score movement or never fire).
+  Also found the v0.40-v0.42 reproject artifacts store post-projection raw, so
+  only the v0.39 live raw is a faithful same-raw source.
 - 2026-06-19: Coordinated three parallel Codex workstreams and integrated the
   useful outputs back into this checkout.
 - 2026-06-19: Projection-rule registry/attribution sidecar added and generated
