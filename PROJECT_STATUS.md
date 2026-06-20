@@ -37,14 +37,15 @@ Same-raw dev140 family ablation:
 single-family effect fires on exactly one dev140 letter. No quarantined family
 returns to the default prediction pipeline.
 
-Error-led architecture decision:
-`docs/experiments/exectv2/key_entities/exectv2_dev140_error_led_architecture_decision_20260620.md`.
-Focused-lane component-evidence comparison is now predeclared:
-`docs/experiments/exectv2/key_entities/exectv2_focused_lane_component_evidence_predeclaration_20260620.md`.
-Next move is a no-call replay/report harness that combines frozen v0.42 P/I
-control lanes with focused Diagnosis and SF lane artifacts, then reports the
-declared score ladder, ownership, evidence, fidelity companions, and changed-row
-regressions.
+Focused-lane component-evidence replay is complete:
+`docs/experiments/exectv2/key_entities/exectv2_focused_lane_component_evidence_v01_dev140_20260620.md`.
+The no-call harness combined frozen v0.42 P/I controls with focused Diagnosis
+and SF lanes, emitted JSONL/JSON/MD artifacts, and passed the declared dev-only
+gates. Headline target `0.8006`; benchmark raw/after-CUI `0.2968/0.3157`;
+`Diagnosis.concept_negation` `0.7572`;
+`SeizureFrequency.active_rate_fidelity` `0.3931`; P/I controls unchanged.
+This promotes the focused-lane architecture only as dev140 component evidence,
+not as a benchmark/full-200/test claim.
 
 ## Recent Context
 
@@ -75,16 +76,15 @@ regressions.
 
 ### Now
 
-- Build the no-call focused-lane component-evidence replay/report harness for
-  the predeclared dev140 sources. It must align rows by `letter_id`, preserve
-  lane provenance, emit JSONL/JSON/MD artifacts, and enforce the declared score
-  ladder and gates before any live calls.
+- Write the focused-lane promotion boundary/addendum before any broader audit:
+  what is promoted (`hybrid_diagnosis_route` + `hybrid_sf_route` with v0.42
+  P/I controls), what remains dev-only, and what aggregate/full-200 protocol
+  would be required next.
 
 ### Next
 
-- Run the frozen no-call focused-lane replay only after the harness exists; if
-  either Diagnosis or SF fails its gate, write a lane-specific addendum before
-  any fresh calls.
+- If moving beyond dev140, predeclare the exact aggregate/full-200 readout,
+  scorer surfaces, runtime/model, stop rule, and no-test-inspection boundary.
 - If another live dev140 experiment is proposed, predeclare the exact
   comparison, runtime, scorer surfaces, and stop rule before spending calls.
 
@@ -97,6 +97,10 @@ regressions.
 
 ### Done Recently
 
+- 2026-06-20: Built and ran the no-call focused-lane component-evidence
+  replay/report harness. It aligns frozen dev140 rows, preserves lane
+  provenance, emits JSONL/JSON/MD artifacts, reports the declared score ladder
+  and changed-row accounting, and passes the dev-only promotion gates.
 - 2026-06-20: Predeclared the focused-lane component-evidence comparison:
   frozen v0.42 P/I controls, focused Diagnosis and SF sources, score ladder,
   P/I regression controls, Diagnosis/SF fidelity gates, and stop rule. No live
@@ -111,9 +115,6 @@ regressions.
   quarantined/audit-only.
 - 2026-06-20: Made `scripts/phase2_family_ablation.py` source/output
   configurable while preserving the dev25 ablation artifact.
-- 2026-06-19: Coordinated three parallel Codex workstreams and integrated the
-  projection-rule sidecar, default quarantine/audit switches, and dev140
-  no-go-until-attribution decision.
 
 ## Guardrails
 
