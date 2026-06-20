@@ -145,6 +145,53 @@ def test_optional_focused_diagnosis_route_replaces_shared_diagnosis_only() -> No
     )
 
 
+def test_clean_llm_first_diagnosis_route_keeps_clean_ownership() -> None:
+    """The enumeration recall pass routes Diagnosis at clean ``llm_first``.
+
+    Predeclaration: exectv2_diagnosis_enumeration_recall_pass_predeclaration_2026-06-18.
+    """
+
+    gold = [ExectLetter(letter_id="EA0001", note_text="")]
+    shared = PredictedLetter(
+        letter_id="EA0001",
+        mentions=(
+            _mention("Prescription", "lamotrigine"),
+            _mention("Investigations", "MRI"),
+            _mention("Diagnosis", "shared epilepsy"),
+        ),
+    )
+    enumeration_route = PredictedLetter(
+        letter_id="EA0001",
+        mentions=(_mention("Diagnosis", "enumerated focal seizures"),),
+    )
+    sf_route = PredictedLetter(
+        letter_id="EA0001",
+        mentions=(_mention("SeizureFrequency", "monthly seizures"),),
+    )
+
+    routed = combine_family_routed_predictions(
+        gold,
+        {"EA0001": shared},
+        {"EA0001": sf_route},
+        {"EA0001": enumeration_route},
+        diagnosis_route_owner="llm_first",
+        diagnosis_aggregate_ownership="llm_first_with_hybrid_sf_route",
+    )
+
+    # Only the shared Diagnosis is replaced; P/I/SF lanes are untouched.
+    assert [m.text for m in routed[0].mentions] == [
+        "lamotrigine",
+        "MRI",
+        "enumerated focal seizures",
+        "monthly seizures",
+    ]
+    # Diagnosis lane carries clean llm_first ownership, not the hybrid reconciler.
+    assert routed[0].mentions[2].component_owner == "llm_first"
+    assert routed[0].diagnostics["aggregate_ownership"] == (
+        "llm_first_with_hybrid_sf_route"
+    )
+
+
 def test_build_comparison_with_focused_diagnosis_adds_no_call_replay_candidate(
     monkeypatch,
 ) -> None:
