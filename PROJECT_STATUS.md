@@ -39,11 +39,12 @@ returns to the default prediction pipeline.
 
 Error-led architecture decision:
 `docs/experiments/exectv2/key_entities/exectv2_dev140_error_led_architecture_decision_20260620.md`.
-Next move is a predeclared focused-lane component-evidence comparison:
-preserve Prescription/Investigations controls, test focused Diagnosis
-hierarchy reconciliation and SeizureFrequency span/state adjudication, and
-report headline, benchmark, fidelity companions, ownership, evidence, and
-changed-row regressions.
+Focused-lane component-evidence comparison is now predeclared:
+`docs/experiments/exectv2/key_entities/exectv2_focused_lane_component_evidence_predeclaration_20260620.md`.
+Next move is a no-call replay/report harness that combines frozen v0.42 P/I
+control lanes with focused Diagnosis and SF lane artifacts, then reports the
+declared score ladder, ownership, evidence, fidelity companions, and changed-row
+regressions.
 
 ## Recent Context
 
@@ -74,12 +75,16 @@ changed-row regressions.
 
 ### Now
 
-- Predeclare the focused-lane component-evidence comparison chosen by the
-  dev140 architecture read: exact candidate sources, runtime/model, score
-  ladder, P/I regression controls, Diagnosis/SF fidelity gates, and stop rule.
+- Build the no-call focused-lane component-evidence replay/report harness for
+  the predeclared dev140 sources. It must align rows by `letter_id`, preserve
+  lane provenance, emit JSONL/JSON/MD artifacts, and enforce the declared score
+  ladder and gates before any live calls.
 
 ### Next
 
+- Run the frozen no-call focused-lane replay only after the harness exists; if
+  either Diagnosis or SF fails its gate, write a lane-specific addendum before
+  any fresh calls.
 - If another live dev140 experiment is proposed, predeclare the exact
   comparison, runtime, scorer surfaces, and stop rule before spending calls.
 
@@ -92,6 +97,10 @@ changed-row regressions.
 
 ### Done Recently
 
+- 2026-06-20: Predeclared the focused-lane component-evidence comparison:
+  frozen v0.42 P/I controls, focused Diagnosis and SF sources, score ladder,
+  P/I regression controls, Diagnosis/SF fidelity gates, and stop rule. No live
+  calls authorized until the no-call replay/report harness exists.
 - 2026-06-20: Completed the dev140 error-led architecture decision. Result:
   projection promotion stays rejected; next live work must be a predeclared
   focused-lane component-evidence comparison with P/I controls, Diagnosis
