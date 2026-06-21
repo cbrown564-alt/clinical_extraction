@@ -1,7 +1,7 @@
 # Satellite 12 - Holistic Clinical Finding Architecture
 
 Parent: [[00_overarching_implementation_plan]]  
-Status: proposed refactor plan, 2026-06-21  
+Status: completed behavior-preserving structural replay, 2026-06-21
 Scope: ExECTv2 Plan 11 architecture/refactoring only. This is not a new
 full-200, locked-test, or benchmark claim.
 
@@ -533,3 +533,52 @@ This plan is complete when:
 - every final mention can be traced to raw source, lens decision, evidence gate,
   and scoring view.
 
+## 14. Completion Record
+
+Completed 2026-06-21 as a no-call structural replay over the frozen dev140
+artifacts.
+
+Implemented code:
+
+- `src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/`
+  contains clinical finding objects, the per-letter store, saved JSONL
+  producers, manifest parsing, thin entity lenses, scoring views, and the
+  manifest-driven pipeline.
+- `reports/focused_lane_component_evidence.py` is now a compatibility wrapper
+  over `build_finding_assembly`; source selection and assembly decisions live in
+  the assembly layer.
+- `tests/test_exectv2_clinical_finding_assembly.py` covers the data model,
+  manifest parser, producer fail-closed behavior, evidence-invalid raw retention,
+  final evidence gates, provenance, and view registration.
+
+Registered candidate:
+
+- Manifest:
+  `configs/exectv2/finding_assembly/exectv2_holistic_finding_assembly_v01_dev140.yaml`
+- JSONL:
+  `experiments/exectv2_holistic_finding_assembly_v01_dev140_20260621.jsonl`
+- JSON:
+  `experiments/exectv2_holistic_finding_assembly_v01_dev140_20260621.json`
+- Report:
+  `docs/experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v01_dev140_20260621.md`
+- ADR:
+  `docs/decisions/0032-clinical-finding-assembly-is-the-exectv2-plan11-spine.md`
+
+Verification result:
+
+- Gate decision: `promote-dev-holistic-finding-assembly`
+- Headline target overall: `0.8006`
+- Indicator headline F1: Diagnosis `0.7572`, SeizureFrequency `0.8068`,
+  Prescription `0.8214`, Investigations `0.8615`
+- Benchmark raw/after-CUI: `0.2968` / `0.3157`
+- Fidelity companions: Diagnosis.concept_negation `0.7572`,
+  SeizureFrequency.active_rate_fidelity `0.3931`
+
+Claim boundary:
+
+> On dev140, the holistic finding-assembly implementation reproduces the
+> focused-lane component-evidence result while expressing the architecture as a
+> unified evidence-backed clinical finding pipeline with entity-specific lenses
+> and explicit scoring views.
+
+This completion does not authorize a benchmark, full-200, or locked-test claim.

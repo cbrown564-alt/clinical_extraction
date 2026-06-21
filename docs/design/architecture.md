@@ -40,6 +40,32 @@ defines how every candidate answers which component solved each clinical
 subproblem, under which evidence gate, with what regression risk, and on which
 distribution.
 
+## ExECTv2 Clinical Finding Assembly
+
+For ExECTv2 Plan 11, the implementation spine is a manifest-driven clinical
+finding assembly:
+
+- `ClinicalFinding`: an evidence-backed clinical assertion with entity, text,
+  attributes, evidence, source metadata, and provenance.
+- `ClinicalFindingStore`: a per-letter collection of raw and scored findings
+  from all candidate producers.
+- `CandidateProducer`: a component that proposes findings, currently including
+  saved JSONL replay adapters for frozen LLM or hybrid artifacts.
+- `EntityLens`: entity-specific reconciliation over the store, such as
+  Diagnosis hierarchy/negation, SeizureFrequency state adjudication,
+  Prescription regimen, or Investigations result lenses.
+- `FindingView`: a scoring/rendering view over the final findings, including
+  raw candidate, evidence-valid, clinical headline, fidelity companion, and
+  benchmark/CUI views.
+- `AttributionSidecar`: row-level `FindingSource` and `ProvenanceEvent` records
+  that preserve producer ownership, deterministic actions, evidence status, and
+  view-specific rendering.
+
+The first implementation is behavior-preserving:
+`exectv2_holistic_finding_assembly_v01_dev140` structurally replays frozen
+dev140 artifacts through this object model. It is architecture cleanup and
+component evidence only, not a full-200, holdout, or benchmark claim.
+
 ## Rule Taxonomy
 
 Deterministic behavior should not collapse into an unstructured regex pile. Rules should be grouped by clinical meaning and expected portability:
