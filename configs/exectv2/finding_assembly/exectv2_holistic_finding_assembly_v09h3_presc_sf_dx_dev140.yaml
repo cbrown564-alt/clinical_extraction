@@ -1,0 +1,65 @@
+candidate_id: exectv2_holistic_finding_assembly_v09h3_presc_sf_dx_dev140
+pipeline_family: exectv2_holistic_finding_assembly
+ownership: partial_hybrid_gpt_inv_plus_focused_presc_sf_dx
+split: dev
+row_count: 140
+claim_boundary: dev_only_component_evidence
+baseline_producer: key_entities_structured_v09
+focused_comparator_artifact: experiments/exectv2_holistic_finding_assembly_v08_dev140_20260621.jsonl
+promotion_decision: diagnostic-dev-partial-hybrid
+producers:
+  key_entities_structured_v09:
+    kind: saved_jsonl
+    artifact: experiments/exectv2_llm_only_key_entities_structured_v09_dev140_gpt41mini_20260621.jsonl
+    ownership_label: single_gpt_key_family_event_ledger
+    source_lane: single_gpt_structured_v09
+    label: single GPT-4.1-mini structured key-family event ledger v0.9
+  diagnosis_reconciler_v01:
+    kind: saved_jsonl
+    artifact: experiments/exectv2_hybrid_diagnosis_reconciler_v01_dev140_gpt41mini_20260618.jsonl
+    ownership_label: hybrid_diagnosis_route
+    source_lane: focused_diagnosis_reconciler_v01
+    label: focused Diagnosis reconciler v0.1 (kept from v08)
+  sf_union_arbitration_v08:
+    kind: saved_jsonl
+    artifact: experiments/exectv2_hybrid_sf_union_arbitration_v08_dev140_20260621.jsonl
+    ownership_label: hybrid_sf_route+deterministic_union_arbitration
+    source_lane: focused_sf_union_arbitration_v08
+    label: SF union arbitration v0.8 (kept from v08)
+  prescription_repair_v03:
+    kind: saved_jsonl
+    artifact: experiments/exectv2_deterministic_prescription_repair_v03_dev140_20260621.jsonl
+    ownership_label: deterministic_prescription_repair_v03
+    source_lane: focused_prescription_deterministic_repair_v03
+    label: deterministic Prescription regimen repair v0.3 (kept from v08)
+lenses:
+  Diagnosis:
+    producer: diagnosis_reconciler_v01
+    lens: diagnosis_heading_recovery_residual_benchmark_v05
+    source_lane: focused_diagnosis_reconciler_v01
+    ownership_label: hybrid_diagnosis_route
+    portability: benchmark_format
+  SeizureFrequency:
+    producer: sf_union_arbitration_v08
+    lens: sf_state_union_arbitration_v08
+    source_lane: focused_sf_union_arbitration_v08
+    ownership_label: hybrid_sf_route+deterministic_union_arbitration
+    portability: seizure_frequency
+  Prescription:
+    producer: prescription_repair_v03
+    lens: prescription_regimen_v01
+    source_lane: focused_prescription_deterministic_repair_v03
+    ownership_label: deterministic_prescription_repair_v03
+    portability: clinical_epilepsy
+  Investigations:
+    producer: key_entities_structured_v09
+    lens: investigations_passthrough_v09
+    source_lane: single_gpt_structured_v09
+    ownership_label: single_gpt_investigations_prompt_owned
+    portability: clinical_epilepsy
+views:
+  - raw_candidate
+  - evidence_valid
+  - clinical_headline
+  - fidelity_companion
+  - benchmark_cui

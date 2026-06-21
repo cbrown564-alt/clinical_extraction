@@ -29,6 +29,17 @@ arbitration `0.8789` with SF `0.9053`; v07 Investigations arbitration `0.8873`
 with Investigations `0.9132`; v08 Prescription repair `0.9152` with all four
 families above `0.900`. All are dev-only component evidence, not benchmark/full-200/test claims.
 
+2026-06-21 v09 simplification study: a single GPT structured pass (prompt v0.9) +
+`standard_dictionary` translation layer does NOT clear 0.9 (dev140
+`headline_target` `0.7552`; +deterministic prescription `0.7997`). The focused
+producers did real work — Prescription recall, generic-epilepsy recall, SF
+arbitration. Accepted the partial hybrid
+`exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140` = `0.9059`
+(focused Diagnosis + SF + deterministic Prescription, GPT-only prompt-owned
+Investigations), which drops v08's Investigations verifier + pending-test
+arbitration stack at `-0.006` overall. Study:
+`docs/experiments/exectv2/key_entities/exectv2_v09_single_gpt_simplification_study_dev140_20260621.md`.
+
 ## Active Priorities
 
 1. Treat v08 as the achieved dev140 control and use the reliability scorecard for
