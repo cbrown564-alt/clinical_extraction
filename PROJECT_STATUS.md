@@ -57,9 +57,20 @@ arbitration stack at `-0.006` overall. Study:
 
 ### Now
 
-- Treat v08 as the current holistic assembly control.
+- **Next phase: implement the v0.9 single-GPT engine on local Qwen3.6:35b and
+  iterate until dev140 `headline_target` F1 > 0.9.** Run
+  `run_llm_only_key_entities_structured` with the local Qwen runtime
+  (`ollama` `qwen3.6:35b`, `num_ctx=16384`, auto partial GPU offload — do NOT pin
+  `num_gpu=0`; see local-Qwen-runtime memory), score through the assembly
+  `headline_target` view via `run_finding_assembly`, and use the real-scorer
+  error ledger after each iteration. The GPT-4.1-mini v0.9 baseline is dev140
+  `0.7552` (pure) / `0.9059` (accepted partial hybrid); the goal is to drive the
+  Qwen single-GPT engine itself toward > 0.9, reducing reliance on the focused
+  producers. Prompt/dictionary changes must stay attribution-clean and dev-only.
+- Treat v08 (and the v09 partial hybrid `0.9059`) as the current holistic
+  assembly controls to beat.
 - Use `docs/experiments/exectv2/reliability/exectv2_reliability_scorecard_and_phased_plan_2026-06-21.md`
-  as the next-step plan.
+  as the governance reference.
 
 ### Next
 
