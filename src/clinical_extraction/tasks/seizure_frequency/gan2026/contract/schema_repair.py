@@ -150,6 +150,8 @@ _TEMPORALITY_ALIASES = {
     "active": "current",
     "current/recent": "recent",
     "current to recent": "recent",
+    "historical/current": "current",
+    "hypothetical": "future",
     "ongoing": "current",
     "past": "historical",
     "remote": "historical",

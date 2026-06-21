@@ -60,7 +60,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
-PROMPT_VERSION = "exectv2_hybrid_key_family_event_ledger_v0.8"
+PROMPT_VERSION = "exectv2_hybrid_key_family_event_ledger_v0.9"
 PIPELINE_FAMILY = "exectv2_hybrid_key_family_event_ledger"
 COMPONENT_OWNER = "hybrid_key_family_event_ledger"
 
@@ -431,6 +431,36 @@ def build_prompt_input(letter: ExectLetter) -> str:
                 "'focal seizures'; otherwise use the exact seizure-free phrase."
             ),
             (
+                "SF precision: do not render safety-advice, conditional, or "
+                "instructional statements as SeizureFrequency. Phrases such as 'if "
+                "you have a seizure', 'in the event of a seizure', 'advised what to do "
+                "if seizures occur', or general SUDEP/driving advice describe guidance, "
+                "not a current rate."
+            ),
+            (
+                "SF precision: do not emit a bare seizure-free or 'well controlled' "
+                "SeizureFrequency mention unless it is tied to a seizure type, a count, "
+                "or a temporal anchor (since/last/date). A standalone 'seizure free' "
+                "with no seizure type and no time frame is not a scorable SF state."
+            ),
+            (
+                "SF precision: do not use an anaphoric anchor such as 'these seizures', "
+                "'such episodes', or 'the events' as the SeizureFrequency text. Use the "
+                "specific named seizure type stated earlier in the same context, or the "
+                "generic 'seizures' when the count refers to seizures in general."
+            ),
+            (
+                "SF precision: when a sentence names two seizure types joined by 'and' "
+                "with a single shared count, render the count against the seizure type "
+                "it actually belongs to, not a merged 'X and Y' anchor; only split into "
+                "two SF mentions if the letter gives each type its own count or state."
+            ),
+            (
+                "SF precision: emit at most one SeizureFrequency mention per distinct "
+                "rate statement. Do not emit both a generic 'seizures' mention and a "
+                "named-type mention for the same single count in the same clause."
+            ),
+            (
                 "For medication, mention text is the medication name where possible; "
                 "dose and frequency belong in attributes."
             ),
@@ -459,6 +489,19 @@ def build_prompt_input(letter: ExectLetter) -> str:
                 "Do not render future planned, requested, repeat, or follow-up "
                 "investigations as performed tests. Only render completed tests or "
                 "tests with a stated result."
+            ),
+            (
+                "Investigation pending-test cues are decisive: if the test sentence "
+                "contains 'will', 'arrange', 'request', 'await'/'awaiting', "
+                "'appointment', 'suggest', 'recommend', 'should update', 'chase', 'up "
+                "to date', 'not yet performed/received', or 'planned', treat it as a "
+                "pending test and do not emit an Investigations mention for it unless a "
+                "separate completed result for the same modality is also stated."
+            ),
+            (
+                "Never emit an Investigations mention whose only support is a pending "
+                "cue with Performed='No' or an unknown result; a requested or awaited "
+                "test is not a completed historical test."
             ),
             (
                 "Do not render a bare modality-only investigation when the note gives "
@@ -1290,6 +1333,32 @@ def _worked_examples() -> list[dict[str, Any]]:
                 "mentions": [],
                 "confidence": "high",
                 "rationale": "A planned repeat MRI is not a completed investigation mention.",
+            },
+        },
+        {
+            "note_fragment": "We are awaiting an EEG appointment for her.",
+            "correct_event": {
+                "family": "investigation",
+                "anchor_text": "EEG",
+                "evidence": "awaiting an EEG appointment",
+                "event_state": {"pending": "EEG awaiting appointment"},
+                "mentions": [],
+                "confidence": "high",
+                "rationale": "An awaited EEG appointment is a pending test, not a completed one.",
+            },
+        },
+        {
+            "note_fragment": (
+                "I advised her what to do if she has a seizure while driving."
+            ),
+            "correct_event": {
+                "family": "seizure_frequency",
+                "anchor_text": "seizure",
+                "evidence": "what to do if she has a seizure",
+                "event_state": {"advice": "conditional safety advice"},
+                "mentions": [],
+                "confidence": "high",
+                "rationale": "Conditional safety advice is not a current seizure-frequency state.",
             },
         },
         {

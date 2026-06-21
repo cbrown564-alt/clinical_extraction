@@ -177,6 +177,15 @@ def test_deterministic_all9_scores_tiny_active_entity_gold() -> None:
                 CUIPhrase="epilepsy",
             ),
             _ann(
+                DIAGNOSIS.name,
+                "focal seizures",
+                DiagCategory="Epilepsy",
+                Certainty="5",
+                Negation="Affirmed",
+                CUI="C0751495",
+                CUIPhrase="focal-seizures",
+            ),
+            _ann(
                 INVESTIGATIONS.name,
                 "EEG",
                 EEG_Performed="Yes",
@@ -664,6 +673,131 @@ def test_patient_history_keeps_distinct_occurrences_diagnosis_collapses_prose() 
         for span in spans
     )
     assert len(epilepsy) == 1
+
+
+def test_prescription_extracts_current_regimen_after_previous_trials() -> None:
+    letter = ExectLetter(
+        "PRESC-CURRENT-AFTER-TRIALS",
+        (
+            "He has previously tried topiramate and phenytoin and he is currently "
+            "taking levetiracetam 1250mg twice a day and carbamazepine 400mg "
+            "twice a day."
+        ),
+    )
+
+    prediction = extract_deterministic_all9(letter)
+    prescriptions = [m for m in prediction.mentions if m.entity == PRESCRIPTION.name]
+
+    assert {
+        (
+            m.attributes["DrugName"],
+            m.attributes["DrugDose"],
+            m.attributes["DoseUnit"],
+            m.attributes["Frequency"],
+        )
+        for m in prescriptions
+    } == {
+        ("levetiracetam", "1250", "mg", "2"),
+        ("carbamazepine", "400", "mg", "2"),
+    }
+
+
+def test_prescription_keeps_current_dose_before_parenthetical_titration() -> None:
+    letter = ExectLetter(
+        "PRESC-CURRENT-BEFORE-TITRATION",
+        "Medication: lamtorigine 250mg bd (to reduce as detailed below).",
+    )
+
+    prediction = extract_deterministic_all9(letter)
+    prescriptions = [m for m in prediction.mentions if m.entity == PRESCRIPTION.name]
+
+    assert len(prescriptions) == 1
+    assert prescriptions[0].text == "lamtorigine 250mg bd"
+    assert prescriptions[0].attributes["DrugName"] == "lamotrigine"
+    assert prescriptions[0].attributes["DrugDose"] == "250"
+    assert prescriptions[0].attributes["Frequency"] == "2"
+
+
+def test_prescription_extracts_left_regimen_of_medication() -> None:
+    letter = ExectLetter(
+        "PRESC-LEFT-REGIMEN",
+        "Current medication is 500mg bd of levetiracetam.",
+    )
+
+    prediction = extract_deterministic_all9(letter)
+    prescriptions = [m for m in prediction.mentions if m.entity == PRESCRIPTION.name]
+
+    assert len(prescriptions) == 1
+    assert prescriptions[0].attributes["DrugName"] == "levetiracetam"
+    assert prescriptions[0].attributes["DrugDose"] == "500"
+    assert prescriptions[0].attributes["Frequency"] == "2"
+
+
+def test_prescription_splits_current_am_pm_before_titration_tail() -> None:
+    letter = ExectLetter(
+        "PRESC-SPLIT-BEFORE-TITRATION",
+        "Medication: Lamotrigine 50mg am, 75mg pm increasing by 25mg every 2 weeks.",
+    )
+
+    prediction = extract_deterministic_all9(letter)
+    prescriptions = [m for m in prediction.mentions if m.entity == PRESCRIPTION.name]
+
+    regimen_keys = [
+        (m.text, m.attributes["DrugDose"], m.attributes["Frequency"])
+        for m in prescriptions
+    ]
+
+    assert regimen_keys == [
+        ("Lamotrigine 50mg am", "50", "1"),
+        ("Lamotrigine 50mg am, 75mg pm", "75", "1"),
+    ]
+
+
+def test_prescription_suppresses_future_and_weight_based_headline_contexts() -> None:
+    letter = ExectLetter(
+        "PRESC-FUTURE-WEIGHT",
+        (
+            "I suggest that the dose should be increased by 100mg so that he is on "
+            "Sodium Valproate 800mg bd. Medication: Levetiracetam 1500mg bd "
+            "(60mg/kg/day). I suggest adding in some Clobazam to take on an as "
+            "required basis for seizure clusters."
+        ),
+    )
+
+    prediction = extract_deterministic_all9(letter)
+    prescriptions = [m for m in prediction.mentions if m.entity == PRESCRIPTION.name]
+
+    assert prescriptions == []
+
+
+def test_prescription_suppresses_to_start_and_suggest_introducing_plans() -> None:
+    letter = ExectLetter(
+        "PRESC-FUTURE-STARTS",
+        (
+            "Medication: To start Carbamazepine 100mg bd increasing gradually to "
+            "400mg bd. If this increase is not successful then I would suggest "
+            "introducing zonisamide 25mg od increasing by 25mg every fortnight."
+        ),
+    )
+
+    prediction = extract_deterministic_all9(letter)
+    prescriptions = [m for m in prediction.mentions if m.entity == PRESCRIPTION.name]
+
+    assert prescriptions == []
+
+
+def test_prescription_handles_twice_aday_typo() -> None:
+    letter = ExectLetter(
+        "PRESC-TWICE-ADAY",
+        "Medications: Lamotrigine 100mg twice aday.",
+    )
+
+    prediction = extract_deterministic_all9(letter)
+    prescriptions = [m for m in prediction.mentions if m.entity == PRESCRIPTION.name]
+
+    assert len(prescriptions) == 1
+    assert prescriptions[0].attributes["DrugDose"] == "100"
+    assert prescriptions[0].attributes["Frequency"] == "2"
 
 
 def test_dev_split_prescription_component_scores_clear_goal_threshold() -> None:

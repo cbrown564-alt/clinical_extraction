@@ -163,6 +163,12 @@ def repair_prediction_label_with_evidence(
         return raw_repaired
     if evidence_label is None and raw_repaired == "no seizure frequency reference":
         evidence_label = prediction_label_from_selected_evidence(str(raw), context_text)
+    if (
+        evidence_label
+        and raw_repaired.startswith("seizure free")
+        and not evidence_label.startswith("seizure free")
+    ):
+        return raw_repaired
     if evidence_label and should_prefer_selected_evidence_label(
         raw,
         raw_repaired,

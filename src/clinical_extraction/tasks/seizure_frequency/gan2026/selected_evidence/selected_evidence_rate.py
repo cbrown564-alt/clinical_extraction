@@ -44,6 +44,9 @@ _SMALL_COUNT = (
     r"(?:\d+(?:\s*(?:to|-|–|—|or)\s*\d+)?|once|twice|thrice|one|two|three|four|"
     r"five|six|seven|eight|nine|ten|eleven|twelve)"
 )
+_EVENT_NOUN = (
+    r"seizures?|events?|episodes?|spells?|absences?|attacks?|auras?|jerks?|convulsions?"
+)
 
 
 def early_rate_label_from_selected_evidence(text: str) -> str | None:
@@ -104,13 +107,39 @@ def early_rate_label_from_selected_evidence(text: str) -> str | None:
     if evidence_describes_current_non_epileptic_events(text):
         return "seizure free for multiple year"
 
+    if _evidence_describes_medication_use_limit(text):
+        return None
+
+    yesterday = _yesterday_count_label(text)
+    if yesterday:
+        return yesterday
+
+    daily = daily_label_from_selected_evidence(text)
+    if daily:
+        return daily
+
+    explicit_rate = _best_explicit_rate_label(text)
+    if explicit_rate:
+        return explicit_rate
+
     upper_bound = re.search(
         rf"(?:≤|<=|up to|at most|no more than)\s+(?P<count>{_COUNT})\s+"
-        rf"(?:seizures?\s+)?per\s+(?P<unit>{_UNIT})s?\b",
+        rf"(?:[a-z]+(?:-[a-z]+)?\s+){{0,5}}"
+        rf"(?:{_EVENT_NOUN}\s+)?per\s+(?P<unit>{_UNIT})s?\b",
         text,
     )
     if upper_bound:
         return _format_prediction_rate(upper_bound.group("count"), upper_bound.group("unit"))
+    upper_bound_period_word = re.search(
+        rf"(?:≤|<=|up to|at most|no more than)\s+(?P<count>{_COUNT})\s+"
+        r"(?P<period>daily|weekly|monthly|yearly|annually)\b",
+        text,
+    )
+    if upper_bound_period_word:
+        return _format_prediction_rate(
+            upper_bound_period_word.group("count"),
+            _unit_from_period_word(upper_bound_period_word.group("period")),
+        )
     upper_bound_in_weeks = re.search(
         rf"(?:≤|<=|up to|at most|no more than)\s+(?P<count>{_COUNT})\s+"
         r"(?:[a-z]+(?:-[a-z]+)?\s+){0,4}"
@@ -241,6 +270,84 @@ def early_rate_label_from_selected_evidence(text: str) -> str | None:
         return "multiple per day"
 
     return None
+
+
+def _best_explicit_rate_label(text: str) -> str | None:
+    if re.search(r"\b(?:clusters?|bursts?|grouped|gather(?:ed)? into)\b", text):
+        return None
+    candidates: list[tuple[float, str, str]] = []
+    for match in re.finditer(
+        rf"\b(?P<count>{_COUNT})\s+"
+        rf"(?:times?\s+)?(?:[a-z]+(?:-[a-z]+)?\s+){{0,5}}"
+        rf"(?:{_EVENT_NOUN}\s+)?(?:per|each|every)\s+"
+        rf"(?P<unit>{_UNIT})s?\b",
+        text,
+    ):
+        candidates.append(
+            (
+                _monthly_burden(match.group("count"), match.group("unit")),
+                match.group("count"),
+                match.group("unit"),
+            )
+        )
+    for match in re.finditer(
+        rf"\b(?P<count>{_COUNT})\s+"
+        r"(?P<period>daily|weekly|monthly|yearly|annually)\b",
+        text,
+    ):
+        unit = _unit_from_period_word(match.group("period"))
+        candidates.append(
+            (
+                _monthly_burden(match.group("count"), unit),
+                match.group("count"),
+                unit,
+            )
+        )
+    if not candidates:
+        return None
+    _, count, unit = max(candidates, key=lambda candidate: candidate[0])
+    return _format_prediction_rate(count, unit)
+
+
+def _evidence_describes_medication_use_limit(text: str) -> bool:
+    return bool(
+        re.search(r"\b(?:clobazam|midazolam|rescue|as required|patient-led|mg)\b", text)
+        and re.search(r"\b(?:maximum|no more than|as required|patient-led)\b", text)
+    )
+
+
+def _yesterday_count_label(text: str) -> str | None:
+    yesterday = re.search(
+        r"\b\d+\s+(?!(?:day|week|month|year)s?\b)"
+        r"(?=(?:[a-z]+(?:-[a-z]+)?\s+){0,4}"
+        r"(?:seizure|attack|convulsion|spasm|mal|event)).*\byesterday\b",
+        text,
+    )
+    if not yesterday:
+        return None
+    return _format_prediction_rate("1", "day")
+
+
+def _monthly_burden(count_text: str, unit: str) -> float:
+    count_match = re.findall(r"\d+", count_text)
+    count = float(count_match[-1]) if count_match else 1.0
+    factor = {
+        "day": 30.0,
+        "week": 52.0 / 12.0,
+        "month": 1.0,
+        "year": 1.0 / 12.0,
+    }[unit.rstrip("s")]
+    return count * factor
+
+
+def _unit_from_period_word(period: str) -> str:
+    return {
+        "daily": "day",
+        "weekly": "week",
+        "monthly": "month",
+        "yearly": "year",
+        "annually": "year",
+    }[period]
 
 
 def pre_window_rate_label_from_selected_evidence(text: str) -> str | None:
@@ -401,18 +508,27 @@ def late_rate_label_from_selected_evidence(
 
 
 def daily_label_from_selected_evidence(text: str) -> str | None:
-    if re.search(r"\b(?:no|without)\b.{0,80}\b(?:events?|spells?|seizures?)\b", text):
+    event_nouns = rf"(?:{_EVENT_NOUN})"
+    if re.search(rf"\b(?:no|without)\b.{{0,80}}\b{event_nouns}\b", text):
         return None
     if re.search(r"\bdaily\s+(?:entries|diary|logs?)\b", text):
         return None
     if re.search(
-        r"\b(?:dozens?|scores?)\b.{0,30}\b(?:in|per|each|a)\s+(?:day|24\s*hours?)\b",
+        r"\b(?:dozens?|scores?)\b.{0,30}\b(?:in|per|each|a)\s+"
+        r"(?:day|24\s*hours?)\b",
         text,
     ):
         return "multiple per day"
+    if re.search(r"\bdaily\s+brief\s+events?\b", text):
+        return "multiple per day"
     if re.search(
-        r"\b(?:multiple|several|many|daily)\b.{0,40}"
-        r"\b(?:events?|seizures?|spells?)\b",
+        rf"\bdaily\b.{{0,40}}\b{event_nouns}\b",
+        text,
+    ):
+        return _format_prediction_rate("1", "day")
+    if re.search(
+        rf"\b(?:multiple|several|many)\b.{{0,40}}\b{event_nouns}\b.{{0,30}}"
+        r"\b(?:in|per|each|a)\s+(?:day|24\s*hours?)\b",
         text,
     ):
         return "multiple per day"

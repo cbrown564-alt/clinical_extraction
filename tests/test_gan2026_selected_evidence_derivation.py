@@ -21,6 +21,87 @@ def test_selected_evidence_derives_vague_count_over_period() -> None:
     )
 
 
+def test_selected_evidence_derives_episode_count_after_window_phrase() -> None:
+    assert (
+        selected_evidence_derivation.prediction_label_from_selected_evidence(
+            "Over the past six weeks, four episodes have occurred"
+        )
+        == "4 per 6 week"
+    )
+
+
+def test_selected_evidence_sums_episode_and_aura_counts_after_window_phrase() -> None:
+    assert (
+        selected_evidence_derivation.prediction_label_from_selected_evidence(
+            "Clustering over the past six weeks "
+            "(four focal impaired-awareness episodes and two focal aware auras)."
+        )
+        == "6 per 6 week"
+    )
+
+
+def test_selected_evidence_does_not_derive_count_from_including_example() -> None:
+    assert (
+        selected_evidence_derivation.prediction_label_from_selected_evidence(
+            "These events have been occurring multiple times in past week, "
+            "including two episodes witnessed by a friend."
+        )
+        is None
+    )
+
+
+def test_selected_evidence_derives_explicit_times_per_day() -> None:
+    assert (
+        selected_evidence_derivation.prediction_label_from_selected_evidence(
+            "He still has simple partial seizures 4 times per day, drop attacks "
+            "occurring in batches, and tonic-clonic seizures 2 times per month."
+        )
+        == "4 per day"
+    )
+
+
+def test_selected_evidence_derives_explicit_absences_per_day() -> None:
+    assert (
+        selected_evidence_derivation.prediction_label_from_selected_evidence(
+            "She has 4 absences per day. She experiences one to two "
+            "generalised tonic-clonic seizures monthly."
+        )
+        == "4 per day"
+    )
+
+
+def test_selected_evidence_prefers_daily_attack_burden_over_lower_window_rate() -> None:
+    assert (
+        selected_evidence_derivation.prediction_label_from_selected_evidence(
+            "Seizure frequency remains unchanged over the last six months; "
+            "he continues to have up to 3 or 4 generalised tonic-clonic seizures "
+            "per week. He also has daily drop attacks."
+        )
+        == "1 per day"
+    )
+
+
+def test_selected_evidence_derives_upper_bound_with_intervening_seizure_words() -> None:
+    assert (
+        selected_evidence_derivation.prediction_label_from_selected_evidence(
+            "Absence seizures remain infrequent, usually no more than twice weekly, "
+            "and myoclonic jerks are reported only occasionally."
+        )
+        == "2 per week"
+    )
+
+
+def test_selected_evidence_prefers_recent_yesterday_count_over_lower_weekly_rate() -> None:
+    assert (
+        selected_evidence_derivation.prediction_label_from_selected_evidence(
+            "Yesterday he experienced three tonic-clonic seizures yesterday; "
+            "He describes interictal brief auras occurring approximately once "
+            "or twice per week without progression."
+        )
+        == "1 per day"
+    )
+
+
 def test_selected_evidence_derives_vague_weekday_burden() -> None:
     assert (
         selected_evidence_derivation.prediction_label_from_selected_evidence(

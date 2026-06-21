@@ -694,6 +694,16 @@ def test_repair_prediction_label_with_evidence_repairs_single_count_over_window(
     )
 
 
+def test_repair_prediction_label_with_evidence_repairs_episode_count_after_window() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "4 in 6 weeks",
+            "Over the past six weeks, four episodes have occurred",
+        )
+        == "4 per 6 week"
+    )
+
+
 def test_repair_prediction_label_with_evidence_repairs_up_to_count_in_bad_weeks() -> None:
     assert (
         repair_prediction_label_with_evidence(
@@ -763,6 +773,28 @@ def test_repair_prediction_label_with_evidence_repairs_plural_daily_events() -> 
             "They described daily brief events with preserved awareness.",
         )
         == "multiple per day"
+    )
+
+
+def test_repair_with_evidence_preserves_seizure_free_over_medication_dose() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "seizure free since August 2023",
+            "since titration to levetiracetam 1000 mg twice daily in August 2023, "
+            "there have been no further events suggestive of seizures.",
+        )
+        == "seizure free for multiple year"
+    )
+
+
+def test_repair_prediction_label_with_evidence_ignores_rescue_medication_use_limit() -> None:
+    assert (
+        repair_prediction_label_with_evidence(
+            "2 to 3 clusters per week",
+            "Clobazam 10 mg at night as required for clusters "
+            "(patient-led use, no more than 2-3 nights per week)",
+        )
+        == "unknown"
     )
 
 
