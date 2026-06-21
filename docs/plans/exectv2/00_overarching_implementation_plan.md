@@ -250,3 +250,6 @@ canonical pipeline, ADR 0013).
    taxonomy, component + rule ablations, uncertainty calibration.
 8. [[08_paper_outputs_and_milestones]] — tables/figures, milestones, the path to
    the paper.
+9. [[12_holistic_clinical_finding_architecture]] — refactor Plan 11 around a
+   unified clinical finding store, entity lenses, manifest-driven assembly, and
+   explicit scoring views.
