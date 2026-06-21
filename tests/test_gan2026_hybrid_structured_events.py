@@ -378,7 +378,8 @@ def test_named_clean_scorer_mode_does_not_use_hybrid_semantic_repair() -> None:
     assert clean_extraction.selection.final_label == "1 2 week ago"
     assert clean_errors == [
         "final_label_repaired: '1 event 2 weeks ago' -> '1 2 week ago'",
-        "unscorable_final_label: Unparsable label (raw: '1 2 week ago' / normalized: '1 2 week ago')",
+        "unscorable_final_label: Unparsable label "
+        "(raw: '1 2 week ago' / normalized: '1 2 week ago')",
     ]
     assert hybrid_extraction is not None
     assert hybrid_extraction.selection.final_label == "1 per 6 month"
@@ -1418,6 +1419,59 @@ def test_parse_structured_json_repairs_recent_last_event_window_over_seizure_fre
     assert extraction is not None
     assert extraction.selection.final_label == "1 per 1 month"
     assert errors == ["final_label_repaired: 'seizure free for 1 month' -> '1 per 1 month'"]
+
+
+def test_parse_structured_json_preserves_sustained_selected_seizure_free_interval() -> None:
+    raw = json.dumps(
+        {
+            "events": [
+                {
+                    "event_id": "e1",
+                    "kind": "last_event_only",
+                    "raw_value": "18 May 2025",
+                    "applies_to": None,
+                    "time_window": "18 May 2025",
+                    "temporality": "historical",
+                    "assertion_status": "asserted",
+                    "evidence": "The last capture of a typical episode was on 18 May 2025",
+                    "notes": None,
+                },
+                {
+                    "event_id": "e2",
+                    "kind": "seizure_free",
+                    "raw_value": "over four months",
+                    "applies_to": None,
+                    "time_window": "18 May 2025 to 02 October 2025",
+                    "temporality": "current",
+                    "assertion_status": "asserted",
+                    "evidence": (
+                        "they have maintained an absence of events for over four months"
+                    ),
+                    "notes": None,
+                },
+            ],
+            "selection": {
+                "selected_event_ids": ["e2"],
+                "final_kind": "seizure_free",
+                "final_label": "seizure free for 4+ months",
+                "evidence": "they have maintained an absence of events for over four months",
+                "confidence": "high",
+                "rationale": "This sustained remission supersedes the last event date.",
+            },
+        }
+    )
+
+    extraction, _, errors = parse_structured_json(
+        raw,
+        note_text="Clinic Date: 02 October 2025",
+    )
+
+    assert extraction is not None
+    assert extraction.selection.final_label == "seizure free for multiple year"
+    assert errors == [
+        "final_label_repaired: 'seizure free for 4+ months' -> "
+        "'seizure free for multiple year'"
+    ]
 
 
 def test_parse_structured_json_repairs_count_since_dated_last_event() -> None:

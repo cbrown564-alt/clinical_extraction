@@ -1,0 +1,463 @@
+{
+  "dspy_version": "3.2.1",
+  "max_tokens": 2600,
+  "mode": "prompt-only",
+  "model": "openai/gpt-4.1-mini",
+  "n_panel_letters": 32,
+  "n_resumed": 0,
+  "n_rows": 64,
+  "panel": [
+    {
+      "letter_id": "EA0006",
+      "rank": 1,
+      "reasons": [
+        "generic_epilepsy:gold:epilepsy [\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+        "tonic_clonic:predicted:absence like seizures [\"Diagnosis\", \"absence like seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+        "generic_epilepsy:predicted:epilepsy [\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"3\"], [\"Negation\", \"Affirmed\"]]]"
+      ],
+      "residual_families": [
+        "generic_epilepsy",
+        "tonic_clonic"
+      ]
+    },
+    {
+      "letter_id": "EA0005",
+      "rank": 2,
+      "reasons": [
+        "tonic_clonic:gold:epilepsy-with-generalised-tonic-clonic-seizure-alone [\"Diagnosis\", \"epilepsy with generalised tonic clonic seizures alone\", [[\"Certainty\", \"4\"], [\"Negation\", \"Affirmed\"]]]",
+        "tonic_clonic:gold:generalised-tonic-clonic-seizure [\"Diagnosis\", \"tonic clonic seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+        "tonic_clonic:predicted:epilepsy [\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]"
+      ],
+      "residual_families": [
+        "tonic_clonic"
+      ]
+    },
+    {
+      "letter_id": "EA0002",
+      "rank": 3,
+      "reasons": [
+        "focal_family:gold:focal-seizures [\"Diagnosis\", \"focal seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+        "focal_family:predicted:epilepsy [\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+        "focal_family:predicted:focal epilepsy [\"Diagnosis\", \"focal epilepsy\", [[\"Certainty\", \"4\"], [\"Negation\", \"Affirmed\"]]]"
+      ],
+      "residual_families": [
+        "focal_family"
+      ]
+    },
+    {
+      "letter_id": "EA0040",
+      "rank": 4,
+      "reasons": [
+        "secondary_generalised:gold:secondary-generalised-seizures [\"Diagnosis\", \"secondary generalised seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+        "focal_family:predicted:epilepsy [\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+        "focal_family:predicted:secondarily generalised seizures [\"Diagnosis\", \"secondarily generalised seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]"
+      ],
+      "residual_families": [
+        "focal_family",
+        "secondary_generalised"
+      ]
+    },
+    {
+      "letter_id": "EA0033",
+      "rank": 5,
+      "reasons": [
+        "syndrome_structural:gold:juvenile-myoclonic-epilepsy [\"Diagnosis\", \"juvenile myoclonic epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+        "tonic_clonic:predicted:absences [\"Diagnosis\", \"absences\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]"
+      ],
+      "residual_families": [
+        "tonic_clonic",
+        "syndrome_structural"
+      ]
+    },
+    {
+      "letter_id": "EA0009",
+      "rank": 6,
+      "reasons": [
+        "other_diagnosis:predicted:multiple seizures [\"Diagnosis\", \"multiple seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]"
+      ],
+      "residual_families": [
+        "other_diagnosis"
+      ]
+    },
+    {
+      "letter_id": "EA0137",
+      "rank": 7,
+      "reasons": [
+        "secondary_generalised:gold:epilepsy [\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+        "secondary_generalised:gold:secondary-generalised-seizures [\"Diagnosis\", \"secondary generalised seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+        "tonic_clonic:predicted:secondary generalised tonic clonic seizures [\"Diagnosis\", \"secondary generalised tonic clonic seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+        "tonic_clonic:predicted:tonic clonic seizures [\"Diagnosis\", \"tonic clonic seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]"
+      ],
+      "residual_families": [
+        "tonic_clonic",
+        "secondary_generalised"
+      ]
+    },
+    {
+      "letter_id": "EA0057",
+      "rank": 8,
+      "reasons": [
+        "syndrome_structural:gold:epilepsy [\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+        "generic_epilepsy:gold:epileptic-seizures [\"Diagnosis\", \"epileptic seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+        "focal_family:predicted:focal seizures [\"Diagnosis\", \"focal seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]"
+      ],
+      "residual_families": [
+        "generic_epilepsy",
+        "focal_family",
+        "syndrome_structural"
+      ]
+    },
+    {
+      "letter_id": "EA0016",
+      "rank": 9,
+      "reasons": [
+        "other_diagnosis:gold:focal-seizure [\"Diagnosis\", \"focal seizure\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]"
+      ],
+      "residual_families": [
+        "other_diagnosis"
+      ]
+    },
+    {
+      "letter_id": "EA0019",
+      "rank": 10,
+      "reasons": [
+        "generic_epilepsy:predicted:epilepsy [\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]"
+      ],
+      "residual_families": [
+        "generic_epilepsy"
+      ]
+    },
+    {
+      "letter_id": "EA0059",
+      "rank": 11,
+      "reasons": [
+        "syndrome_structural:predicted:epilepsy [\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+        "syndrome_structural:predicted:learning difficulties [\"Diagnosis\", \"learning difficulties\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]"
+      ],
+      "residual_families": [
+        "syndrome_structural"
+      ]
+    },
+    {
+      "letter_id": "EA0020",
+      "rank": 12,
+      "reasons": [
+        "other_diagnosis:predicted:absence seizures [\"Diagnosis\", \"absence seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+        "tonic_clonic:predicted:tonic clonic seizures [\"Diagnosis\", \"tonic clonic seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]"
+      ],
+      "residual_families": [
+        "tonic_clonic",
+        "other_diagnosis"
+      ]
+    },
+    {
+      "letter_id": "EA0038",
+      "rank": 13,
+      "reasons": [
+        "generic_epilepsy:predicted:epilepsy [\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]"
+      ],
+      "residual_families": [
+        "generic_epilepsy"
+      ]
+    },
+    {
+      "letter_id": "EA0008",
+      "rank": 14,
+      "reasons": [
+        "focal_family:gold:focal-seizures-with-altered-awareness [\"Diagnosis\", \"focal seizures with altered awareness\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+        "focal_family:predicted:symptomatic structural focal epilepsy [\"Diagnosis\", \"focal epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+        "focal_family:predicted:focal seizures [\"Diagnosis\", \"focal seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]"
+      ],
+      "residual_families": [
+        "focal_family"
+      ]
+    },
+    {
+      "letter_id": "EA0188",
+      "rank": 15,
+      "reasons": [
+        "generic_epilepsy:gold:drug [\"Diagnosis\", \"drug\", [[\"Certainty\", \"4\"], [\"Negation\", \"Affirmed\"]]]",
+        "focal_family:gold:focal [\"Diagnosis\", \"focal\", [[\"Certainty\", \"4\"], [\"Negation\", \"Affirmed\"]]]",
+        "generic_epilepsy:gold:Occipital [\"Diagnosis\", \"occipital\", [[\"Certainty\", \"4\"], [\"Negation\", \"Affirmed\"]]]",
+        "secondary_generalised:gold:secondary [\"Diagnosis\", \"secondary\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+        "focal_family:predicted:focal epilepsy [\"Diagnosis\", \"focal epilepsy\", [[\"Certainty\", \"4\"], [\"Negation\", \"Affirmed\"]]]",
+        "tonic_clonic:predicted:secondary generalised tonic clonic seizures [\"Diagnosis\", \"secondary generalised tonic clonic seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+        "tonic_clonic:predicted:tonic clonic seizures [\"Diagnosis\", \"tonic clonic seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]"
+      ],
+      "residual_families": [
+        "generic_epilepsy",
+        "tonic_clonic",
+        "focal_family",
+        "secondary_generalised"
+      ]
+    },
+    {
+      "letter_id": "EA0047",
+      "rank": 16,
+      "reasons": [
+        "other_diagnosis:gold:generalised-seizures [\"Diagnosis\", \"generalised seizures\", [[\"Certainty\", \"3\"], [\"Negation\", \"Affirmed\"]]]",
+        "other_diagnosis:predicted:absences [\"Diagnosis\", \"absences\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]"
+      ],
+      "residual_families": [
+        "other_diagnosis"
+      ]
+    },
+    {
+      "letter_id": "EA0039",
+      "rank": 17,
+      "reasons": [
+        "generic_epilepsy:gold:epilepsy [\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+        "generic_epilepsy:predicted:convulsive seizure [\"Diagnosis\", \"convulsive seizure\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]"
+      ],
+      "residual_families": [
+        "generic_epilepsy"
+      ]
+    },
+    {
+      "letter_id": "EA0085",
+      "rank": 18,
+      "reasons": [
+        "syndrome_structural:gold:juvenile-myoclonic-epilepsy [\"Diagnosis\", \"juvenile myoclonic epilepsy\", [[\"Certainty\", \"4\"], [\"Negation\", \"Affirmed\"]]]",
+        "syndrome_structural:predicted:epilepsy [\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]"
+      ],
+      "residual_families": [
+        "syndrome_structural"
+      ]
+    },
+    {
+      "letter_id": "EA0021",
+      "rank": 19,
+      "reasons": [
+        "tonic_clonic:predicted:epilepsy [\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]"
+      ],
+      "residual_families": [
+        "tonic_clonic"
+      ]
+    },
+    {
+      "letter_id": "EA0050",
+      "rank": 20,
+      "reasons": [
+        "other_diagnosis:predicted:absence seizures [\"Diagnosis\", \"absence seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]"
+      ],
+      "residual_families": [
+        "other_diagnosis"
+      ]
+    },
+    {
+      "letter_id": "EA0043",
+      "rank": 21,
+      "reasons": [
+        "tonic_clonic:gold:epilepsy-with-generalised-tonic-clonic-seizures-alone [\"Diagnosis\", \"epilepsy with generalised tonic clonic seizures alone\", [[\"Certainty\", \"4\"], [\"Negation\", \"Affirmed\"]]]",
+        "tonic_clonic:gold:epileptic-seizures [\"Diagnosis\", \"epileptic seizures\", [[\"Certainty\", \"4\"], [\"Negation\", \"Affirmed\"]]]",
+        "generic_epilepsy:predicted:epilepsy [\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+        "tonic_clonic:predicted:epilepsy with tonic clonic seizures alone [\"Diagnosis\", \"tonic clonic seizures alone\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+        "tonic_clonic:predicted:tonic clonic seizures [\"Diagnosis\", \"tonic clonic seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]"
+      ],
+      "residual_families": [
+        "generic_epilepsy",
+        "tonic_clonic"
+      ]
+    },
+    {
+      "letter_id": "EA0010",
+      "rank": 22,
+      "reasons": [
+        "focal_family:predicted:epilepsy [\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+        "focal_family:predicted:symptomatic structural focal epilepsy [\"Diagnosis\", \"focal epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]"
+      ],
+      "residual_families": [
+        "focal_family"
+      ]
+    },
+    {
+      "letter_id": "EA0113",
+      "rank": 23,
+      "reasons": [
+        "syndrome_structural:gold:juvenile-myoclonic-epilepsy [\"Diagnosis\", \"juvenile myoclonic epilepsy\", [[\"Certainty\", \"4\"], [\"Negation\", \"Affirmed\"]]]",
+        "syndrome_structural:predicted:epilepsy [\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]"
+      ],
+      "residual_families": [
+        "syndrome_structural"
+      ]
+    },
+    {
+      "letter_id": "EA0071",
+      "rank": 24,
+      "reasons": [
+        "other_diagnosis:predicted:single seizure [\"Diagnosis\", \"single seizure\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]"
+      ],
+      "residual_families": [
+        "other_diagnosis"
+      ]
+    },
+    {
+      "letter_id": "EA0035",
+      "rank": 25,
+      "reasons": [
+        "tonic_clonic:gold:epilepsy [\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+        "tonic_clonic:predicted:epilepsy [\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"4\"], [\"Negation\", \"Affirmed\"]]]"
+      ],
+      "residual_families": [
+        "tonic_clonic"
+      ]
+    },
+    {
+      "letter_id": "EA0082",
+      "rank": 26,
+      "reasons": [
+        "other_diagnosis:predicted:absence seizures [\"Diagnosis\", \"absence seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+        "generic_epilepsy:predicted:epilepsy [\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]"
+      ],
+      "residual_families": [
+        "generic_epilepsy",
+        "other_diagnosis"
+      ]
+    },
+    {
+      "letter_id": "EA0062",
+      "rank": 27,
+      "reasons": [
+        "generic_epilepsy:gold:epilepsy [\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"4\"], [\"Negation\", \"Affirmed\"]]]",
+        "generic_epilepsy:predicted:epilepsy [\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]"
+      ],
+      "residual_families": [
+        "generic_epilepsy"
+      ]
+    },
+    {
+      "letter_id": "EA0011",
+      "rank": 28,
+      "reasons": [
+        "focal_family:gold:focal-to-bilateral-convulsive-seizures [\"Diagnosis\", \"focal to bilateral convulsive seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]"
+      ],
+      "residual_families": [
+        "focal_family"
+      ]
+    },
+    {
+      "letter_id": "EA0125",
+      "rank": 29,
+      "reasons": [
+        "other_diagnosis:gold:generalised-tonic-seizures [\"Diagnosis\", \"generalised tonic seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+        "syndrome_structural:gold:juvenile-myoclonic-epilepsy [\"Diagnosis\", \"juvenile myoclonic epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+        "other_diagnosis:predicted:absences [\"Diagnosis\", \"absences\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+        "generic_epilepsy:predicted:epilepsy [\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+        "tonic_clonic:predicted:tonic clonic seizures [\"Diagnosis\", \"tonic clonic seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]"
+      ],
+      "residual_families": [
+        "generic_epilepsy",
+        "tonic_clonic",
+        "syndrome_structural",
+        "other_diagnosis"
+      ]
+    },
+    {
+      "letter_id": "EA0096",
+      "rank": 30,
+      "reasons": [
+        "other_diagnosis:predicted:absence seizures [\"Diagnosis\", \"absence seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]"
+      ],
+      "residual_families": [
+        "other_diagnosis"
+      ]
+    },
+    {
+      "letter_id": "EA0018",
+      "rank": 31,
+      "reasons": [
+        "focal_family:gold:focal-seizures [\"Diagnosis\", \"focal seizures\", [[\"Certainty\", \"4\"], [\"Negation\", \"Affirmed\"]]]",
+        "focal_family:predicted:focal seizures [\"Diagnosis\", \"focal seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]"
+      ],
+      "residual_families": [
+        "focal_family"
+      ]
+    },
+    {
+      "letter_id": "EA0133",
+      "rank": 32,
+      "reasons": [
+        "syndrome_structural:gold:epilepsy [\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+        "focal_family:gold:epileptic-seizure [\"Diagnosis\", \"epileptic seizure\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+        "focal_family:gold:focal-seizures [\"Diagnosis\", \"focal seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]"
+      ],
+      "residual_families": [
+        "focal_family",
+        "syndrome_structural"
+      ]
+    }
+  ],
+  "pipeline_family": "exectv2_diagnosis_phase2_residual_panel",
+  "prompt_version": "exectv2_diagnosis_phase2_residual_panel_v0.1",
+  "split": "dev",
+  "summary": {
+    "baseline_v02": {
+      "f1": 0.7093,
+      "fn": 19,
+      "fp": 31,
+      "gold_count": 80,
+      "precision": 0.663,
+      "precision_tp": 61,
+      "pred_count": 92,
+      "recall": 0.7625,
+      "recall_tp": 61,
+      "tp": 61
+    },
+    "panel_letters": 32,
+    "panel_residual_family_counts": {
+      "focal_family": 9,
+      "generic_epilepsy": 10,
+      "other_diagnosis": 9,
+      "secondary_generalised": 3,
+      "syndrome_structural": 7,
+      "tonic_clonic": 10
+    },
+    "variant_scores": {
+      "candidate_selector": {
+        "call_failures": 0,
+        "changed_rows_vs_v02": 32,
+        "delta_f1_vs_v02": -0.7093,
+        "evidence_validity_rate": 1.0,
+        "f1": 0.0,
+        "fn": 80,
+        "fp": 0,
+        "gold_count": 80,
+        "n_evidence_invalid": 0,
+        "n_mentions_raw": 0,
+        "n_mentions_scored": 0,
+        "parse_failures": 32,
+        "precision": 0.0,
+        "precision_tp": 0,
+        "pred_count": 0,
+        "recall": 0.0,
+        "recall_tp": 0,
+        "tp": 0
+      },
+      "direct_rereader": {
+        "call_failures": 0,
+        "changed_rows_vs_v02": 32,
+        "delta_f1_vs_v02": -0.7093,
+        "evidence_validity_rate": 1.0,
+        "f1": 0.0,
+        "fn": 80,
+        "fp": 0,
+        "gold_count": 80,
+        "n_evidence_invalid": 0,
+        "n_mentions_raw": 0,
+        "n_mentions_scored": 0,
+        "parse_failures": 32,
+        "precision": 0.0,
+        "precision_tp": 0,
+        "pred_count": 0,
+        "recall": 0.0,
+        "recall_tp": 0,
+        "tp": 0
+      }
+    }
+  },
+  "temperature": 0.0,
+  "variants": [
+    "candidate_selector",
+    "direct_rereader"
+  ]
+}

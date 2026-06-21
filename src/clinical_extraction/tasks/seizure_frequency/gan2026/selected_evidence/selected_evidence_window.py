@@ -19,6 +19,15 @@ def sum_counts_over_window(text: str) -> str | None:
     )
     if not window:
         return None
+    if re.search(
+        r"\bmultiple\s+times?\s+"
+        r"(?:in|over|during|for)\s+(?:the\s+)?(?:past|last)\s+"
+        r"(?:\d+\s+)?(?:day|week|month|year)s?\b.{0,80}"
+        r"\bincluding\s+\d+\s+(?:[a-z]+(?:-[a-z]+)?\s+){0,4}"
+        r"(?:seizure|attack|convulsion|spasm|mal|event|episode|aura)",
+        text,
+    ):
+        return None
 
     prefix = text
     counts = [
@@ -28,7 +37,7 @@ def sum_counts_over_window(text: str) -> str | None:
             r"(?!(?:seizure[- ]free|free)\b)"
             r"(?=(?:tonic(?:-clonic)?|drop|absence|"
             r"(?:[a-z]+(?:-[a-z]+)?\s+){0,4}"
-            r"(?:seizure|attack|convulsion|spasm|mal|event)))",
+            r"(?:seizure|attack|convulsion|spasm|mal|event|episode|aura)))",
             prefix,
         )
     ]
@@ -52,7 +61,7 @@ def range_count_over_window(text: str) -> str | None:
     range_match = re.search(
         r"\b(?P<low>\d+)\s*(?:to|-|–|—|or)\s*(?P<high>\d+)\s+"
         r"(?=(?:[a-z]+(?:-[a-z]+)?\s+){0,4}"
-        r"(?:seizure|attack|convulsion|spasm|mal|event|tonic))",
+        r"(?:seizure|attack|convulsion|spasm|mal|event|episode|tonic))",
         text,
     )
     if not range_match:

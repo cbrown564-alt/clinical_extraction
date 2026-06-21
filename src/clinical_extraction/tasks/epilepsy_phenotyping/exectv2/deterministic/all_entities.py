@@ -63,10 +63,18 @@ ACTIVE_DETERMINISTIC_ENTITIES: tuple[str, ...] = (
 
 _OWNER_PREFIX = "deterministic"
 _MEDICATION_LEXICON = PRESCRIPTION_CONCEPT_BY_PHRASE
+_MEDICATION_EXTRA_SURFACE_ALIASES = {
+    "lamtorigine": "lamotrigine",
+}
 _MEDICATION_PATTERN = re.compile(
     r"\b("
     + "|".join(
-        re.escape(name) for name in sorted(PRESCRIPTION_SURFACE_FORMS, key=len, reverse=True)
+        re.escape(name)
+        for name in sorted(
+            [*PRESCRIPTION_SURFACE_FORMS, *_MEDICATION_EXTRA_SURFACE_ALIASES],
+            key=len,
+            reverse=True,
+        )
     )
     + r")\b",
     re.IGNORECASE,
@@ -86,7 +94,8 @@ _FREQUENCY_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
     ),
     (
         re.compile(
-            r"\b(?:bd|b\.d\.|twice\s+(?:a\s+)?day|twice\s+daily|twice\s+today)\b",
+            r"\b(?:bd|b\.d\.|twice\s+(?:a\s+)?day|twice\s+aday|"
+            r"twice\s+daily|twice\s+today)\b",
             re.IGNORECASE,
         ),
         "2",
@@ -113,8 +122,18 @@ _PRESCRIPTION_PLAN_CONTEXT = re.compile(
     r"every\s+fortnight|until)\b",
     re.IGNORECASE,
 )
+_PRESCRIPTION_FUTURE_LEFT_CONTEXT = re.compile(
+    r"\b(?:should\s+be\s+increased|so\s+that\s+(?:he|she|they)\s+is\s+on|"
+    r"suggest\s+adding|suggested\s+adding|suggest\s+introducing|"
+    r"suggested\s+introducing|to\s+start\s+treatment\s+with)\b",
+    re.IGNORECASE,
+)
+_PRESCRIPTION_WEIGHT_BASED_CONTEXT = re.compile(
+    r"\b\d+(?:\.\d+)?\s*(?:mg|mgs|mgms|g|grams?)\s*/?\s*kg(?:\s*/?\s*day)?\b",
+    re.IGNORECASE,
+)
 _PRESCRIPTION_ACTIVE_CONTEXT = re.compile(
-    r"\b(?:current|currently|medications?:|antiepileptic|anti-epileptic|"
+    r"\b(?:current|currently|medications?\b:?|antiepileptic|anti-epileptic|"
     r"anti\s+convulsant|anticonvulsant|taking|takes|on|prescribed|regimen|"
     r"continue|remains\s+on|is\s+on|she\s+is\s+on|he\s+is\s+on|rescue)\b",
     re.IGNORECASE,
@@ -123,6 +142,8 @@ _DOSE_CONNECTOR = re.compile(r"(?:[/,+&]|\band\b|\bplus\b|\bthen\b)\s*$", re.IGN
 _TRAILING_CONNECTOR = re.compile(r"\s+(?:and|as well as|plus)$", re.IGNORECASE)
 _LEFT_DOSE_BEFORE_MEDICATION = re.compile(
     r"(?P<dose>\b\d+(?:\.\d+)?\s*(?:mg|mgs|mgms|milligrams?|milligrammes?|g|grams?))"
+    r"(?:\s+(?:bd|b\.d\.|twice\s+(?:a\s+)?day|twice\s+daily|od|o\.d\.|"
+    r"once\s+(?:a\s+)?day|once\s+daily|daily|mane|nocte|nightly|am|pm))?"
     r"\s+of\s+$",
     re.IGNORECASE,
 )
@@ -577,7 +598,7 @@ def _extract_prescriptions(text: str) -> tuple[PredictedMention, ...]:
         if _is_parenthetical_alias(text, match):
             continue
         surface = match.group(1)
-        entry = _MEDICATION_LEXICON[normalize_phrase(surface)]
+        entry = _MEDICATION_LEXICON[_canonical_medication_surface(surface)]
         evidence = _prescription_context(text, match, medication_matches[index + 1 :])
         if not _is_prescription_context(text, match, evidence):
             continue
@@ -613,6 +634,8 @@ def _prescription_attribute_sets(
     if not dose_matches:
         frequency = _frequency_from_text(evidence)
         if frequency == "As_Required":
+            if _future_plan_before_medication(evidence):
+                return ()
             return (({**base_attrs, "Frequency": frequency}, surface),)
         return ()
 
@@ -621,6 +644,8 @@ def _prescription_attribute_sets(
     items: list[tuple[dict[str, str], str]] = []
     for dose_index, dose in enumerate(dose_matches):
         if evidence[dose.end() : dose.end() + 4].lower().startswith("/kg"):
+            continue
+        if _PRESCRIPTION_WEIGHT_BASED_CONTEXT.search(evidence):
             continue
         local_right = (
             dose_matches[dose_index + 1].start()
@@ -647,7 +672,9 @@ def _prescription_attribute_sets(
             "DoseUnit": unit,
             "Frequency": frequency,
         }
-        phrase_text = _dose_phrase_text(surface, evidence, dose, between)
+        phrase_text = _trim_planned_regimen_tail(
+            _dose_phrase_text(surface, evidence, dose, between)
+        )
         if _is_planned_dose_phrase(phrase_text):
             continue
         items.append((attrs, phrase_text))
@@ -668,6 +695,17 @@ def _dose_phrase_text(
         start = 0
     end = dose.end() + len(between)
     return evidence[start:end].strip(" ,;")
+
+
+def _trim_planned_regimen_tail(text: str) -> str:
+    trimmed = re.split(
+        r"\s*(?:\((?:to|please|increase|increasing|reduce|reducing)\b|"
+        r"\bincreasing\s+by\b|\breducing\s+by\b)",
+        text,
+        maxsplit=1,
+        flags=re.IGNORECASE,
+    )[0]
+    return trimmed.strip(" ,;")
 
 
 def _canonical_dose_unit(unit: str) -> str:
@@ -747,7 +785,9 @@ def _prescription_context_start(text: str, match: re.Match[str]) -> int:
 def _is_prescription_context(text: str, match: re.Match[str], evidence: str) -> bool:
     local_left = text[max(0, match.start() - 180) : match.start()]
     sentence_left = text[max(0, text.rfind(".", 0, match.start()) + 1) : match.start()]
-    if _PRESCRIPTION_NEGATIVE_CONTEXT.search(sentence_left):
+    if _PRESCRIPTION_NEGATIVE_CONTEXT.search(sentence_left) and not _active_after_negative_context(
+        sentence_left
+    ):
         return False
     has_complete_regimen = bool(
         _DOSE_PATTERN.search(evidence)
@@ -779,11 +819,32 @@ def _is_prescription_context(text: str, match: re.Match[str], evidence: str) -> 
         re.IGNORECASE,
     )
     active_left = _PRESCRIPTION_ACTIVE_CONTEXT.search(local_left)
+    if _PRESCRIPTION_FUTURE_LEFT_CONTEXT.search(local_left):
+        return False
     if planned_prefix or planned_left:
         return False
     if planned_increment and not active_left:
         return False
     return True
+
+
+def _canonical_medication_surface(surface: str) -> str:
+    normalized = normalize_phrase(surface)
+    return _MEDICATION_EXTRA_SURFACE_ALIASES.get(normalized, normalized)
+
+
+def _active_after_negative_context(text: str) -> bool:
+    negative = list(_PRESCRIPTION_NEGATIVE_CONTEXT.finditer(text))
+    if not negative:
+        return False
+    return _PRESCRIPTION_ACTIVE_CONTEXT.search(text[negative[-1].end() :]) is not None
+
+
+def _future_plan_before_medication(evidence: str) -> bool:
+    first_med = _MEDICATION_PATTERN.search(evidence)
+    if first_med is None:
+        return False
+    return _PRESCRIPTION_FUTURE_LEFT_CONTEXT.search(evidence[: first_med.start()]) is not None
 
 
 def _legacy_extract_prescriptions(text: str) -> tuple[PredictedMention, ...]:

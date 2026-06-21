@@ -2,6 +2,97 @@
 
 Generated from `experiments/registry.jsonl`. The JSONL file remains the canonical machine-readable registry.
 
+## ExECTv2 Plan 11
+
+### `exectv2_holistic_finding_assembly_v08_dev140_20260621`
+- Date/split: `2026-06-21`; `dev140`; `140` rows.
+- Pipeline: `exectv2_holistic_finding_assembly`; mode `no-call replay`; replay `saved_output_replay`.
+- Model role: frozen Diagnosis producer from `openai/gpt-4.1-mini`, SF union arbitration over frozen GPT-4.1-mini route plus deterministic all-entity SF, GPT-4.1-mini Investigations verifier with deterministic pending-test arbitration, and deterministic Prescription regimen repair.
+- Repair mode/config: `deterministic_prescription_repair_v03`; repairs current-regimen parsing after prior-trial language, typo aliases, left-bound regimens, split AM/PM dosing, titration-tail trimming, and future/weight-based suppression.
+- Primary metrics: summary=overall_headline_f1=0.9152, diagnosis_headline_f1=0.9083, seizurefrequency_headline_f1=0.9053, prescription_headline_f1=0.9357, investigations_headline_f1=0.9132. All four target families clear `>0.900`.
+- Evidence validity: no live calls; Prescription exact evidence rate 1.0000. Deterministic Prescription repairs are prediction-bearing and category `clinical_epilepsy`.
+- Claim language: Dev-only all-four-family clearance. This is not a benchmark/full-200/holdout claim; the assembly gate still encodes older P/I no-change checks, so family-headline clearance is the active goal criterion.
+- Artifacts: `experiments/exectv2_deterministic_prescription_repair_v03_dev140_20260621.jsonl`, `experiments/exectv2_deterministic_prescription_repair_v03_error_ledger_dev140_20260621.md`, `experiments/exectv2_holistic_finding_assembly_v08_dev140_20260621.json`, `experiments/exectv2_holistic_finding_assembly_v08_dev140_20260621.jsonl`, `docs/experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v08_dev140_20260621.md`, `docs/experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v08_prescription_phase1_error_analysis_20260621.md`, `experiments/exectv2_holistic_finding_assembly_v08_error_ledger_dev140_20260621.json`, `experiments/exectv2_holistic_finding_assembly_v08_error_ledger_dev140_20260621.md`, `docs/experiments/exectv2/reliability/exectv2_reliability_scorecard_and_phased_plan_2026-06-21.md`.
+
+### `exectv2_holistic_finding_assembly_v07_dev140_20260621`
+- Date/split: `2026-06-21`; `dev140`; `140` rows.
+- Pipeline: `exectv2_holistic_finding_assembly`; mode `no-call replay`; replay `saved_output_replay`.
+- Model role: frozen Diagnosis producer from `openai/gpt-4.1-mini`, SF union arbitration over frozen GPT-4.1-mini route plus deterministic all-entity SF, frozen Prescription local-Qwen control, and frozen GPT-4.1-mini Investigations verifier with deterministic pending-test arbitration.
+- Repair mode/config: `exectv2_llm_investigations_arbitration_v02`; drops planned/requested/awaited tests miscast as completed `No` or `Unknown` Investigations mentions.
+- Primary metrics: summary=overall_headline_f1=0.8873, diagnosis_headline_f1=0.9083, seizurefrequency_headline_f1=0.9053, prescription_headline_f1=0.8214, investigations_headline_f1=0.9132, investigations_delta_vs_v06=+0.0517.
+- Evidence validity: no live calls; Investigations exact evidence rate 1.0000. Pending-test suppressions are prediction-bearing and stamped by `deterministic_investigations_arbitration`; category `clinical_epilepsy`.
+- Claim language: Dev-only Investigations Phase 1 improvement. Investigations clears the declared `>0.900` assembly family headline; remaining target gap is Prescription.
+- Artifacts: `experiments/exectv2_llm_investigations_arbitration_v02_dev140_20260621.jsonl`, `experiments/exectv2_llm_investigations_arbitration_v02_dev140_20260621.md`, `experiments/exectv2_holistic_finding_assembly_v07_dev140_20260621.json`, `experiments/exectv2_holistic_finding_assembly_v07_dev140_20260621.jsonl`, `docs/experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v07_dev140_20260621.md`, `docs/experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v07_investigations_phase1_error_analysis_20260621.md`, `experiments/exectv2_holistic_finding_assembly_v07_error_ledger_dev140_20260621.json`, `experiments/exectv2_holistic_finding_assembly_v07_error_ledger_dev140_20260621.md`.
+
+### `exectv2_holistic_finding_assembly_v06_dev140_20260621`
+- Date/split: `2026-06-21`; `dev140`; `140` rows.
+- Pipeline: `exectv2_holistic_finding_assembly`; mode `no-call replay`; replay `saved_output_replay`.
+- Model role: frozen Diagnosis producer from `openai/gpt-4.1-mini`, SF union arbitration over frozen GPT-4.1-mini route plus deterministic all-entity SF, frozen Prescription/Investigations local-Qwen control.
+- Repair mode/config: `sf_state_union_arbitration_v08`; deterministic union arbitration suppresses source-shortened/non-target/historical/anaphoric SF states and rewrites residual benchmark surface mismatches.
+- Primary metrics: summary=overall_headline_f1=0.8789, diagnosis_headline_f1=0.9083, seizurefrequency_headline_f1=0.9053, prescription_headline_f1=0.8214, investigations_headline_f1=0.8615, sf_direct_component_f1=0.9263, sf_delta_vs_v05=+0.0985.
+- Evidence validity: no live calls; SF exact evidence rate 1.0000. Semantic SF adds/drops/rewrites are prediction-bearing and stamped by `deterministic_sf_union_arbitration`; suppressions are `seizure_frequency`, residual surface rewrites are `benchmark_format`.
+- Claim language: Dev-only SeizureFrequency Phase 1 improvement. SeizureFrequency clears the declared `>0.900` assembly family headline; active-rate fidelity remains lower (`0.5969`), so this is a type/state headline result, not a complete rate-magnitude solution.
+- Artifacts: `experiments/exectv2_hybrid_sf_union_arbitration_v08_dev140_20260621.jsonl`, `experiments/exectv2_hybrid_sf_union_arbitration_v08_dev140_20260621.md`, `experiments/exectv2_holistic_finding_assembly_v06_dev140_20260621.json`, `experiments/exectv2_holistic_finding_assembly_v06_dev140_20260621.jsonl`, `docs/experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v06_dev140_20260621.md`, `docs/experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v06_sf_phase1_error_analysis_20260621.md`, `experiments/exectv2_holistic_finding_assembly_v06_error_ledger_dev140_20260621.json`, `experiments/exectv2_holistic_finding_assembly_v06_error_ledger_dev140_20260621.md`.
+
+### `exectv2_holistic_finding_assembly_v05_dev140_20260621`
+- Date/split: `2026-06-21`; `dev140`; `140` rows.
+- Pipeline: `exectv2_holistic_finding_assembly`; mode `no-call replay`; replay `saved_output_replay`.
+- Model role: frozen Diagnosis producer from `openai/gpt-4.1-mini`, frozen SF GPT-4.1-mini route, frozen Prescription/Investigations local-Qwen control; v05 adds deterministic benchmark-format Diagnosis residual repair after v04 alias repair.
+- Repair mode/config: `diagnosis_heading_recovery_residual_benchmark_v05`; rewrites residual convention phrases, adds exact source-phrase benchmark residual concepts, and drops residual generic/tonic-clonic Diagnosis noise.
+- Primary metrics: summary=overall_headline_f1=0.8576, diagnosis_headline_f1=0.9083, seizurefrequency_headline_f1=0.8068, prescription_headline_f1=0.8214, investigations_headline_f1=0.8615, diagnosis_delta_vs_v04=+0.0782, changed_diagnosis_rows_vs_v04=48.
+- Evidence validity: no live calls; Diagnosis exact evidence rate 1.0000. Semantic adds/drops/rewrites are prediction-bearing and stamped with `deterministic_residual_benchmark_repair` provenance/category `benchmark_format`.
+- Claim language: Dev-only Diagnosis Phase 4 improvement. Diagnosis clears the declared `>0.900` concept-only family headline, but strict assertion ledger remains `0.8127`; not a benchmark/full-200/holdout claim.
+- Artifacts: `experiments/exectv2_holistic_finding_assembly_v05_dev140_20260621.json`, `experiments/exectv2_holistic_finding_assembly_v05_dev140_20260621.jsonl`, `docs/experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v05_dev140_20260621.md`, `docs/experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v05_diagnosis_phase4_error_analysis_20260621.md`, `experiments/exectv2_holistic_finding_assembly_v05_error_ledger_dev140_20260621.json`, `experiments/exectv2_holistic_finding_assembly_v05_error_ledger_dev140_20260621.md`.
+
+### `exectv2_holistic_finding_assembly_v04_dev140_20260621`
+- Date/split: `2026-06-21`; `dev140`; `140` rows.
+- Pipeline: `exectv2_holistic_finding_assembly`; mode `no-call replay`; replay `saved_output_replay`.
+- Model role: frozen Diagnosis producer from `openai/gpt-4.1-mini`, frozen SF GPT-4.1-mini route, frozen Prescription/Investigations local-Qwen control; v04 adds deterministic benchmark-format Diagnosis convention alias repair after v03 cleanup.
+- Repair mode/config: `diagnosis_heading_recovery_convention_alias_v04`; rewrites scored-convention aliases and drops residual non-diagnostic Diagnosis noise.
+- Primary metrics: summary=overall_headline_f1=0.8278, diagnosis_headline_f1=0.8301, seizurefrequency_headline_f1=0.8068, prescription_headline_f1=0.8214, investigations_headline_f1=0.8615, diagnosis_delta_vs_v03=+0.0407, changed_diagnosis_rows_vs_v03=17.
+- Evidence validity: no live calls; Diagnosis exact evidence rate 1.0000. Semantic rewrites are prediction-bearing and stamped with `deterministic_convention_alias_repair` provenance/category `benchmark_format`.
+- Claim language: Dev-only Diagnosis Phase 3 improvement. Still below the `>0.900` family target and not a benchmark/full-200/holdout claim.
+- Artifacts: `experiments/exectv2_holistic_finding_assembly_v04_dev140_20260621.json`, `experiments/exectv2_holistic_finding_assembly_v04_dev140_20260621.jsonl`, `docs/experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v04_dev140_20260621.md`, `docs/experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v04_diagnosis_phase3_error_analysis_20260621.md`, `experiments/exectv2_holistic_finding_assembly_v04_error_ledger_dev140_20260621.json`, `experiments/exectv2_holistic_finding_assembly_v04_error_ledger_dev140_20260621.md`.
+
+### `exectv2_holistic_finding_assembly_v03_dev140_20260621`
+- Date/split: `2026-06-21`; `dev140`; `140` rows.
+- Pipeline: `exectv2_holistic_finding_assembly`; mode `no-call replay`; replay `saved_output_replay`.
+- Model role: frozen Diagnosis producer from `openai/gpt-4.1-mini`, frozen SF GPT-4.1-mini route, frozen Prescription/Investigations local-Qwen control; v03 adds deterministic Diagnosis convention cleanup after v02 heading recovery.
+- Repair mode/config: `diagnosis_heading_recovery_convention_cleanup_v03`; drops narrow standalone symptom/non-diagnostic over-emissions and weak generic epilepsy contexts.
+- Primary metrics: summary=overall_headline_f1=0.8130, diagnosis_headline_f1=0.7894, seizurefrequency_headline_f1=0.8068, prescription_headline_f1=0.8214, investigations_headline_f1=0.8615, diagnosis_delta_vs_v02=+0.0236, changed_diagnosis_rows_vs_v02=21.
+- Evidence validity: no live calls; Diagnosis exact evidence rate 1.0000. Semantic drops are prediction-bearing and stamped with `deterministic_diagnosis_convention_cleanup` provenance/category `clinical_epilepsy`.
+- Claim language: Dev-only Diagnosis Phase 2 improvement. Still far below the `>0.900` family target and not a benchmark/full-200/holdout claim.
+- Artifacts: `experiments/exectv2_holistic_finding_assembly_v03_dev140_20260621.json`, `experiments/exectv2_holistic_finding_assembly_v03_dev140_20260621.jsonl`, `docs/experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v03_dev140_20260621.md`, `docs/experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v03_diagnosis_phase2_error_analysis_20260621.md`, `experiments/exectv2_holistic_finding_assembly_v03_error_ledger_dev140_20260621.json`, `experiments/exectv2_holistic_finding_assembly_v03_error_ledger_dev140_20260621.md`.
+
+### `exectv2_diagnosis_phase2_panel_live_dev32_gpt41mini_20260621`
+- Date/split: `2026-06-21`; `dev`; `32` residual-enriched panel letters, two variants (`64` live calls).
+- Pipeline: `exectv2_diagnosis_phase2_residual_panel`; mode `live`; replay `live`.
+- Model role: GPT-4.1-mini Diagnosis candidate selector and direct re-reader over v02 residual panel; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `candidate_selector` and `direct_rereader` panel variants; no production promotion.
+- Primary metrics: summary=v02_panel_control_f1=0.709, candidate_selector_f1=0.697, direct_rereader_f1=0.693, call_failures=0, parse_failures=0, evidence_validity=1.000.
+- Evidence validity: exact evidence gate held for all live outputs.
+- Claim language: Negative dev-only diagnostic. Both GPT-4.1-mini variants failed to recover false negatives and added false positives; do not promote without a changed hypothesis.
+- Artifacts: `experiments/exectv2_diagnosis_phase2_panel_live_dev32_gpt41mini_20260621.json`, `experiments/exectv2_diagnosis_phase2_panel_live_dev32_gpt41mini_20260621.jsonl`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_phase2_panel_live_dev32_gpt41mini_20260621.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_phase2_residual_panel_predeclaration_20260621.md`.
+
+### `exectv2_holistic_finding_assembly_v02_dev140_20260621`
+- Date/split: `2026-06-21`; `dev140`; `140` rows.
+- Pipeline: `exectv2_holistic_finding_assembly`; mode `no-call replay`; replay `saved_output_replay`.
+- Model role: frozen Diagnosis producer from `openai/gpt-4.1-mini`, frozen SF GPT-4.1-mini route, frozen Prescription/Investigations local-Qwen control; v02 adds a deterministic `clinical_epilepsy` Diagnosis lens rule for explicit `Diagnosis:` heading `focal epilepsy`.
+- Repair mode/config: `diagnosis_heading_recovery_v02` over holistic finding store; P/SF/I lenses unchanged from v01.
+- Primary metrics: summary=overall_headline_f1=0.8038, diagnosis_headline_f1=0.7658, seizurefrequency_headline_f1=0.8068, prescription_headline_f1=0.8214, investigations_headline_f1=0.8615, diagnosis_delta_vs_v01=+0.0086, changed_diagnosis_rows_vs_v01=10.
+- Evidence validity: no live calls; Diagnosis exact evidence 446/446 scored mentions. Semantic heading addition is prediction-bearing and stamped with `deterministic_heading_recovery` provenance/category `clinical_epilepsy`.
+- Claim language: Dev-only Diagnosis Phase 1 improvement. The accepted rule is narrow and ablation-backed; broader heading insertion and generic/tonic-clonic pruning were rejected. Still far below the `>0.900` family target and not a benchmark/full-200/holdout claim.
+- Artifacts: `experiments/exectv2_holistic_finding_assembly_v02_dev140_20260621.json`, `experiments/exectv2_holistic_finding_assembly_v02_dev140_20260621.jsonl`, `docs/experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v02_dev140_20260621.md`, `docs/experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v02_diagnosis_phase1_error_analysis_20260621.md`, `experiments/exectv2_holistic_finding_assembly_v02_error_ledger_dev140_20260621.json`, `experiments/exectv2_holistic_finding_assembly_v02_error_ledger_dev140_20260621.md`.
+
+### `exectv2_holistic_finding_assembly_v01_error_ledger_dev140_20260621`
+- Date/split: `2026-06-21`; `dev140`; `140` rows.
+- Pipeline: `exectv2_clinical_recovery_error_ledger`; mode `no-call replay`; replay `analysis_only`.
+- Model role: none; row-level clinical-recovery residual ledger over the frozen v01 holistic assembly.
+- Primary metrics: summary=strict_diagnosis_f1=0.6934, strict_prescription_f1=0.8214, strict_seizurefrequency_f1=0.8068, strict_investigations_f1=0.8615.
+- Evidence validity: analysis over saved v01 JSONL only.
+- Claim language: Baseline row-level error analysis for the renewed `>0.900` family goal. Used to select and ablate Diagnosis Phase 1 interventions.
+- Artifacts: `experiments/exectv2_holistic_finding_assembly_v01_error_ledger_dev140_20260621.json`, `experiments/exectv2_holistic_finding_assembly_v01_error_ledger_dev140_20260621.md`.
+
 ## Reliability Scorecard
 
 ### `gan2026_reliability_scorecard_phase1_2026-06-17`

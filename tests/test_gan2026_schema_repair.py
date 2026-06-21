@@ -113,6 +113,52 @@ def test_repair_structured_extraction_payload_handles_cluster_final_kind_alias()
     }
 
 
+def test_repair_structured_extraction_payload_handles_qwen_temporality_aliases() -> None:
+    payload = repair_structured_extraction_payload(
+        {
+            "events": [
+                {
+                    "assertion_status": "asserted",
+                    "kind": "frequency_rate",
+                    "temporality": "hypothetical",
+                },
+                {
+                    "assertion_status": "negated",
+                    "kind": "seizure_free",
+                    "temporality": "historical/current",
+                },
+                {
+                    "assertion_status": "current",
+                    "kind": "frequency_rate",
+                    "temporality": "recent",
+                },
+            ],
+            "selection": {"final_kind": "frequency"},
+        }
+    )
+
+    assert payload == {
+        "events": [
+            {
+                "assertion_status": "asserted",
+                "kind": "frequency_rate",
+                "temporality": "future",
+            },
+            {
+                "assertion_status": "negated",
+                "kind": "seizure_free",
+                "temporality": "current",
+            },
+            {
+                "assertion_status": "asserted",
+                "kind": "frequency_rate",
+                "temporality": "recent",
+            },
+        ],
+        "selection": {"final_kind": "frequency", "confidence": "medium"},
+    }
+
+
 def test_repair_structured_extraction_payload_handles_last_event_final_kind_alias() -> None:
     payload = repair_structured_extraction_payload(
         {

@@ -5,67 +5,55 @@ Last updated: 2026-06-21
 ## Active Objective
 
 ExECTv2 Plan 11 targets exactly four indicators: `Diagnosis`,
-`SeizureFrequency`, `Prescription`, and `Investigations`. The current objective
-is attribution-clean clinical scoring and architecture clarity: report the
-headline key with benchmark score, `Diagnosis.concept_negation`,
-`SeizureFrequency.active_rate_fidelity`, projection provenance, and the finding
-assembly source/lens/view path.
-
-The old "`>0.900` headline cleared" framing is retired. The headline key is a
-redefined, lenient target surface, not a benchmark/paper-comparable result.
+`SeizureFrequency`, `Prescription`, and `Investigations`. The active goal is to
+use the holistic finding-assembly architecture with GPT-4.1-mini-family
+producers/lenses to push each dev140 clinical-headline family above `0.900`,
+prioritizing Diagnosis first and keeping row-level error analysis plus ablations
+after every major phase. This remains dev-only until a broader audit protocol is
+predeclared.
 
 ## Current Read
 
-Dev140 v0.42 default-quarantine local-Qwen baseline:
-`experiments/exectv2_target_indicators_single_call_v042_live_default_quarantine_dev140_qwen36_35b_ollama_autogpu_ctx16384_20260620.md`.
-Headline `0.7153`, benchmark `0.2339`,
-`Diagnosis.concept_negation` `0.6693`,
-`SeizureFrequency.active_rate_fidelity` `0.2887`; indicator headline F1:
-Diagnosis `0.6693`, SeizureFrequency `0.5572`, Prescription `0.8214`,
-Investigations `0.8615`.
+Current control: v08 holistic assembly:
+`docs/experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v08_prescription_phase1_error_analysis_20260621.md`.
+v08 keeps Diagnosis v05, SF v06/v08, and Investigations v07 fixed, then replaces
+Prescription with deterministic regimen repair v03. Official family headlines:
+Diagnosis `0.9083`, SeizureFrequency `0.9053`, Prescription `0.9357`,
+Investigations `0.9132`, overall `0.9152`. The renewed dev140 goal is achieved.
 
-Focused-lane component-evidence replay:
-`docs/experiments/exectv2/key_entities/exectv2_focused_lane_component_evidence_v01_dev140_20260620.md`.
-The no-call harness combined frozen v0.42 P/I controls with focused Diagnosis
-and SF lanes. Headline target `0.8006`; benchmark raw/after-CUI
-`0.2968/0.3157`; `Diagnosis.concept_negation` `0.7572`;
-`SeizureFrequency.active_rate_fidelity` `0.3931`; P/I controls unchanged.
-
-Holistic finding-assembly replay is complete:
-`docs/experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v01_dev140_20260621.md`.
-It reproduces the focused-lane score ladder from the same frozen source
-artifacts while expressing the system as a clinical finding store, entity
-lenses, explicit scoring views, and row-level provenance. This is dev-only
-component evidence and architecture cleanup, not a benchmark/full-200/test
-claim.
+Key lineage: v0.42 default-quarantine baseline headline `0.7153`; v01 holistic
+finding assembly `0.8006`; v02 explicit `focal epilepsy` heading recovery
+`0.8038`; v03 convention cleanup `0.8130`; v04 convention aliases `0.8278`;
+v05 residual benchmark repair `0.8576` with Diagnosis `0.9083`; v06 SF union
+arbitration `0.8789` with SF `0.9053`; v07 Investigations arbitration `0.8873`
+with Investigations `0.9132`; v08 Prescription repair `0.9152` with all four
+families above `0.900`. All are dev-only component evidence, not benchmark/full-200/test claims.
 
 ## Active Priorities
 
-1. Keep claims attribution-clean across `rules_only`, `llm_first`, and
+1. Treat v08 as the achieved dev140 control and use the reliability scorecard for
+   any next-step governance.
+2. Keep claims attribution-clean across `rules_only`, `llm_first`, and
    `hybrid`; semantic deterministic lens behavior is prediction-bearing.
-2. Do not restore quarantined projection families by default on single-letter
+3. Do not restore quarantined projection families by default on single-letter
    benchmark nudges.
-3. Treat v0.21-v0.42 "cleared four" artifacts as qualified dev evidence on a
+4. Treat v0.21-v0.42 "cleared four" artifacts as qualified dev evidence on a
    lenient key, not benchmark claims.
-4. Any full-200 or locked-test-facing ExECTv2 audit still needs
+5. Any full-200 or locked-test-facing ExECTv2 audit still needs
    benchmark-beating dev evidence and a predeclared aggregate readout.
 
 ## Work Board
 
 ### Now
 
-- Decide whether the next ExECTv2 step is optional behavior-preserving logic
-  consolidation into lenses or a predeclared broader audit protocol. Do not
-  spend live calls or inspect holdout rows without a written protocol.
+- Treat v08 as the current holistic assembly control.
+- Use `docs/experiments/exectv2/reliability/exectv2_reliability_scorecard_and_phased_plan_2026-06-21.md`
+  as the next-step plan.
 
 ### Next
 
 - If moving beyond dev140, predeclare the exact aggregate/full-200 readout,
   scorer surfaces, runtime/model, stop rule, and no-test-inspection boundary.
-- If consolidating logic into reusable lenses, require same-source before/after
-  output comparison, portability categories, and provenance for each moved
-  semantic action.
-
 ### Blocked
 
 - Gan holdout-facing reruns, row-level test analysis, and post-test tuning need
@@ -75,11 +63,27 @@ claim.
 
 ### Done Recently
 
-- 2026-06-21: Completed the ExECTv2 holistic clinical finding assembly refactor:
-  added the `assembly/` layer, manifest parser, saved JSONL producers, thin
-  entity lenses, scoring views, focused-report wrapper, holistic manifest, ADR
-  0032, and dev140 structural replay report. The replay reproduces headline
-  `0.8006` with the same four indicator scores and no live calls.
+- 2026-06-21: Completed the Gan 2026 Qwen v0.6 `hybrid_structured_events`
+  repairfix frozen aggregate test450 audit. After technical recovery of
+  call-failed rows, Purist micro-F1 proxy is `0.8133` (366/450), Pragmatic is
+  `0.8467` (381/450), with zero call failures and no row-level test inspection
+  for development. Claim as a hybrid repairfix holdout result, not an
+  attribution-clean LLM-first result.
+- 2026-06-21: Completed ExECTv2 v08 all-four clearance and reliability scorecard.
+  Official family F1s: Diagnosis `0.9083`, SF `0.9053`, Prescription `0.9357`,
+  Investigations `0.9132`; overall `0.9152`.
+- 2026-06-21: Completed ExECTv2 Investigations Phase 1 / v07 pending-test
+  arbitration. Official Investigations assembly headline is now `0.9132`.
+- 2026-06-21: Completed ExECTv2 SeizureFrequency Phase 1 / v06 union
+  arbitration. Official SF assembly headline is now `0.9053`; the direct SF
+  artifact scores `0.9263`. Active-rate fidelity remains `0.5969`.
+- 2026-06-21: Completed ExECTv2 Diagnosis Phase 4 / v05 residual benchmark
+  repair. Diagnosis headline is now `0.9083` on the declared concept-only
+  target surface; strict Diagnosis ledger is `0.8127`.
+- 2026-06-21: Completed ExECTv2 Diagnosis Phase 1-3 through v04: rejected
+  direct GPT-4.1-mini panel variants, accepted explicit `focal epilepsy`
+  heading recovery, narrow convention cleanup, and benchmark-format alias
+  repair; Diagnosis headline is now `0.8301`.
 - 2026-06-20: Built and ran the no-call focused-lane component-evidence
   replay/report harness. It aligns frozen dev140 rows, preserves lane
   provenance, emits JSONL/JSON/MD artifacts, reports the declared score ladder

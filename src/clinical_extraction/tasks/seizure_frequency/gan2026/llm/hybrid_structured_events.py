@@ -641,7 +641,11 @@ def parse_structured_json(
             repaired_label,
             note_text=note_text,
         )
-        if elapsed_window_label:
+        if elapsed_window_label and not _should_preserve_sustained_selected_seizure_free(
+            extraction,
+            repaired_label,
+            elapsed_window_label,
+        ):
             repaired_label = _replace_repaired_label(errors, repaired_label, elapsed_window_label)
     try:
         label_to_frequency_record(repaired_label)
@@ -686,6 +690,41 @@ def _replace_repaired_label(errors: list[str], old_label: str, new_label: str) -
     return new_label
 
 
+def _should_preserve_sustained_selected_seizure_free(
+    extraction: StructuredExtractionRecord,
+    repaired_label: str,
+    elapsed_window_label: str,
+) -> bool:
+    if extraction.selection.final_kind != "seizure_free":
+        return False
+    if not repaired_label.startswith("seizure free"):
+        return False
+    match = re.fullmatch(r"1 per (?P<months>\d+) month", elapsed_window_label)
+    if not match or int(match.group("months")) < 4:
+        return False
+    selected_event_ids = set(extraction.selection.selected_event_ids)
+    selected_events = [event for event in extraction.events if event.event_id in selected_event_ids]
+    if not selected_events or any(event.kind != "seizure_free" for event in selected_events):
+        return False
+    support_text = " ".join(
+        str(value or "")
+        for event in selected_events
+        for value in (event.raw_value, event.time_window, event.evidence, event.notes)
+    )
+    support_text = (
+        f"{support_text} {extraction.selection.evidence} "
+        f"{extraction.selection.rationale}"
+    )
+    support_text = support_text.lower()
+    return bool(
+        re.search(
+            r"\b(?:absence of events|no recorded|no further|no unprovoked|"
+            r"seizure[- ]free|remission|no events|none since)\b",
+            support_text,
+        )
+    )
+
+
 def run_split(
     records: Sequence[GanFrequencyRecord],
     *,
@@ -704,7 +743,7 @@ def run_split(
     checkpoint_jsonl_path: Path | None = None,
     checkpoint_report_path: Path | None = None,
     repair_config: StructuredRepairConfig | None = None,
-    confidence_reviewer: "ConfidenceReviewer | None" = None,
+    confidence_reviewer: ConfidenceReviewer | None = None,
     reuse_confidence_reviews: Mapping[int, dict[str, Any]] | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     repair_config = repair_config or StructuredRepairConfig()

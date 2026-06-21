@@ -1,0 +1,1170 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ExECTv2 Holistic Finding Assembly | Visual Research Report</title>
+  <style>
+    :root {
+      --paper: #f7f2ea;
+      --paper-2: #ece5da;
+      --ink: #171512;
+      --muted: #665f55;
+      --line: #d7cdbf;
+      --line-strong: #a89b89;
+      --green: #16805f;
+      --green-soft: #d9eee5;
+      --amber: #b96e16;
+      --amber-soft: #f5dfbd;
+      --red: #b74338;
+      --red-soft: #f1d4d0;
+      --blue: #356ba3;
+      --blue-soft: #d9e5f1;
+      --violet: #7356a5;
+      --violet-soft: #e5ddf0;
+      --shadow: 0 24px 60px rgba(30, 26, 21, 0.12);
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --serif: Georgia, "Times New Roman", serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(90deg, rgba(23, 21, 18, 0.035) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(23, 21, 18, 0.028) 1px, transparent 1px),
+        var(--paper);
+      background-size: 72px 72px;
+      font-family: var(--sans);
+      line-height: 1.55;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0 0 auto;
+      height: 4px;
+      background: linear-gradient(90deg, var(--green), var(--amber), var(--blue));
+      transform: scaleX(var(--scroll, 0));
+      transform-origin: left;
+      z-index: 20;
+    }
+
+    a {
+      color: inherit;
+      text-decoration-color: rgba(23, 21, 18, 0.32);
+      text-underline-offset: 0.22em;
+    }
+
+    .hero {
+      min-height: 94svh;
+      display: grid;
+      grid-template-columns: minmax(24px, 1fr) minmax(0, 1320px) minmax(24px, 1fr);
+      align-items: stretch;
+      border-bottom: 1px solid var(--line);
+      background:
+        radial-gradient(circle at 76% 18%, rgba(22, 128, 95, 0.16), transparent 32%),
+        linear-gradient(135deg, rgba(247, 242, 234, 0.94), rgba(236, 229, 218, 0.74));
+    }
+
+    .hero-inner {
+      grid-column: 2;
+      display: grid;
+      grid-template-columns: minmax(0, 1.02fr) minmax(420px, 0.98fr);
+      gap: clamp(28px, 5vw, 80px);
+      align-items: center;
+      padding: clamp(56px, 8vw, 108px) 0 clamp(38px, 6vw, 76px);
+    }
+
+    .kicker,
+    .eyebrow {
+      margin: 0 0 18px;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      line-height: 1.35;
+      color: var(--muted);
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3 {
+      line-height: 0.98;
+      letter-spacing: 0;
+      margin: 0;
+    }
+
+    h1 {
+      max-width: 880px;
+      font-family: var(--serif);
+      font-size: clamp(3.6rem, 10vw, 8.9rem);
+      font-weight: 500;
+    }
+
+    .hero-copy {
+      max-width: 680px;
+      margin: 28px 0 0;
+      color: #39342e;
+      font-size: clamp(1.05rem, 1.8vw, 1.36rem);
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 34px;
+    }
+
+    .button {
+      display: inline-flex;
+      min-height: 46px;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px 18px;
+      border: 1px solid var(--ink);
+      border-radius: 999px;
+      background: var(--ink);
+      color: var(--paper);
+      font-weight: 700;
+      text-decoration: none;
+      transition: transform 180ms ease, background 180ms ease, color 180ms ease;
+    }
+
+    .button.secondary {
+      background: transparent;
+      color: var(--ink);
+    }
+
+    .button:hover,
+    .button:focus-visible {
+      transform: translateY(-2px);
+      background: var(--green);
+      color: white;
+      outline: none;
+    }
+
+    .hero-visual {
+      position: relative;
+      min-height: 620px;
+      padding: 18px;
+      border-left: 1px solid var(--line);
+    }
+
+    .poster {
+      height: 100%;
+      min-height: 584px;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 26px;
+      padding: clamp(22px, 4vw, 42px);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.42), rgba(255,255,255,0.06)),
+        var(--paper-2);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .poster-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .score-lockup {
+      align-self: center;
+    }
+
+    .score-lockup .label {
+      color: var(--muted);
+      font-family: var(--mono);
+      text-transform: uppercase;
+      font-size: 0.78rem;
+    }
+
+    .score {
+      margin-top: 8px;
+      font-family: var(--serif);
+      font-size: clamp(5rem, 13vw, 10rem);
+      line-height: 0.84;
+      font-weight: 500;
+    }
+
+    .score-note {
+      max-width: 430px;
+      margin-top: 26px;
+      font-size: 1.05rem;
+      color: var(--muted);
+    }
+
+    .family-strips {
+      display: grid;
+      gap: 10px;
+    }
+
+    .strip {
+      display: grid;
+      grid-template-columns: 150px 1fr 64px;
+      gap: 12px;
+      align-items: center;
+      font-size: 0.9rem;
+    }
+
+    .strip .bar {
+      height: 10px;
+      background: rgba(23, 21, 18, 0.1);
+      overflow: hidden;
+    }
+
+    .strip .fill {
+      display: block;
+      height: 100%;
+      background: var(--green);
+      transform-origin: left;
+      animation: grow 900ms cubic-bezier(.2, .8, .2, 1) both;
+    }
+
+    .strip:nth-child(2) .fill { background: var(--blue); animation-delay: 70ms; }
+    .strip:nth-child(3) .fill { background: var(--violet); animation-delay: 140ms; }
+    .strip:nth-child(4) .fill { background: var(--amber); animation-delay: 210ms; }
+
+    .section {
+      display: grid;
+      grid-template-columns: minmax(24px, 1fr) minmax(0, 1180px) minmax(24px, 1fr);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .section > .wrap {
+      grid-column: 2;
+      min-width: 0;
+      padding: clamp(58px, 8vw, 108px) 0;
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(0, 0.72fr) minmax(280px, 0.28fr);
+      gap: 36px;
+      align-items: end;
+      margin-bottom: clamp(34px, 5vw, 64px);
+    }
+
+    .section-head > *,
+    .story-grid > * {
+      min-width: 0;
+    }
+
+    h2 {
+      font-family: var(--serif);
+      font-size: clamp(2.5rem, 6vw, 5.8rem);
+      font-weight: 500;
+      max-width: 980px;
+    }
+
+    .section-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      border-top: 1px solid var(--line-strong);
+      border-left: 1px solid var(--line-strong);
+    }
+
+    .metric {
+      min-height: 220px;
+      padding: 24px;
+      border-right: 1px solid var(--line-strong);
+      border-bottom: 1px solid var(--line-strong);
+      background: rgba(255,255,255,0.28);
+      transition: background 180ms ease, transform 180ms ease;
+    }
+
+    .metric:hover {
+      background: rgba(255,255,255,0.56);
+      transform: translateY(-2px);
+    }
+
+    .metric .name {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 24px;
+      font-family: var(--mono);
+      color: var(--muted);
+      font-size: 0.76rem;
+      text-transform: uppercase;
+    }
+
+    .metric strong {
+      display: block;
+      font-family: var(--serif);
+      font-size: clamp(2.7rem, 5.2vw, 4.7rem);
+      line-height: 0.86;
+      font-weight: 500;
+    }
+
+    .metric dl {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin: 26px 0 0;
+    }
+
+    .metric dt {
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+    }
+
+    .metric dd {
+      margin: 2px 0 0;
+      font-weight: 700;
+    }
+
+    .story-grid {
+      display: grid;
+      grid-template-columns: minmax(220px, 0.26fr) minmax(0, 0.74fr);
+      gap: clamp(26px, 5vw, 74px);
+      align-items: start;
+    }
+
+    .sticky-nav {
+      position: sticky;
+      top: 24px;
+      display: grid;
+      gap: 10px;
+      padding-top: 4px;
+    }
+
+    .sticky-nav a {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+
+    .sticky-nav a:hover,
+    .sticky-nav a:focus-visible {
+      color: var(--ink);
+      outline: none;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 0;
+      border-top: 1px solid var(--line-strong);
+    }
+
+    .phase {
+      display: grid;
+      grid-template-columns: 118px minmax(0, 1fr);
+      gap: clamp(20px, 4vw, 42px);
+      padding: 34px 0;
+      border-bottom: 1px solid var(--line-strong);
+    }
+
+    .phase-index {
+      font-family: var(--serif);
+      font-size: 3.4rem;
+      line-height: 0.9;
+      color: var(--green);
+    }
+
+    .phase h3 {
+      margin-bottom: 12px;
+      font-size: clamp(1.7rem, 3vw, 2.6rem);
+      font-family: var(--serif);
+      font-weight: 500;
+    }
+
+    .phase p {
+      max-width: 780px;
+      margin: 0;
+      color: #3d3831;
+    }
+
+    .phase-foot {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+      margin-top: 22px;
+    }
+
+    .spark {
+      height: 16px;
+      background: linear-gradient(90deg, var(--green) var(--w), rgba(23, 21, 18, 0.1) 0);
+    }
+
+    .delta {
+      font-family: var(--mono);
+      color: var(--muted);
+      font-size: 0.82rem;
+      white-space: nowrap;
+    }
+
+    .surface-table {
+      width: 100%;
+      border-collapse: collapse;
+      border-top: 1px solid var(--line-strong);
+      font-size: 0.94rem;
+    }
+
+    .table-scroll {
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
+      overflow-x: auto;
+      contain: inline-size;
+    }
+
+    .surface-table th,
+    .surface-table td {
+      padding: 15px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .surface-table th {
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .surface-table td strong {
+      font-family: var(--serif);
+      font-size: 1.55rem;
+      font-weight: 500;
+    }
+
+    .surface-table tr.highlight {
+      background: rgba(22, 128, 95, 0.11);
+    }
+
+    .architecture {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1px;
+      background: var(--line-strong);
+      border: 1px solid var(--line-strong);
+    }
+
+    .component {
+      min-height: 280px;
+      padding: 24px;
+      background: var(--paper);
+    }
+
+    .component .tag {
+      display: inline-block;
+      margin-bottom: 22px;
+      padding: 5px 8px;
+      background: var(--green-soft);
+      color: #0e6047;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+    }
+
+    .component:nth-child(2) .tag { background: var(--blue-soft); color: #214e79; }
+    .component:nth-child(3) .tag { background: var(--violet-soft); color: #533d7e; }
+    .component:nth-child(4) .tag { background: var(--amber-soft); color: #83500e; }
+
+    .component h3 {
+      font-family: var(--serif);
+      font-size: 2rem;
+      font-weight: 500;
+      margin-bottom: 14px;
+    }
+
+    .component p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 18px;
+      margin-top: 44px;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .flow-step {
+      position: relative;
+      min-height: 132px;
+      padding: 18px;
+      border-top: 3px solid var(--ink);
+      background: rgba(255,255,255,0.25);
+    }
+
+    .flow-step::after {
+      content: none;
+    }
+
+    .flow-step:last-child::after {
+      display: none;
+    }
+
+    .flow-step b {
+      display: block;
+      margin-bottom: 8px;
+      font-family: var(--mono);
+      font-size: 0.76rem;
+      text-transform: uppercase;
+    }
+
+    .flow-step span {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .chart-wrap {
+      padding: 18px 0 0;
+      max-width: 100%;
+      overflow-x: auto;
+    }
+
+    .chart {
+      min-width: 760px;
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .chart text {
+      font-family: var(--mono);
+      fill: var(--muted);
+      font-size: 12px;
+    }
+
+    .chart .label {
+      fill: var(--ink);
+      font-weight: 700;
+    }
+
+    .risk-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: clamp(24px, 4vw, 56px);
+      align-items: start;
+    }
+
+    .risk-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .risk {
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      gap: 18px;
+      padding: 18px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .pill {
+      align-self: start;
+      display: inline-flex;
+      min-height: 30px;
+      align-items: center;
+      justify-content: center;
+      padding: 5px 10px;
+      border: 1px solid currentColor;
+      border-radius: 999px;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+    }
+
+    .low { color: var(--green); }
+    .medium { color: var(--amber); }
+    .high { color: var(--red); }
+
+    .risk h3 {
+      margin-bottom: 6px;
+      font-family: var(--sans);
+      font-size: 1.05rem;
+      line-height: 1.25;
+    }
+
+    .risk p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .callout {
+      padding: clamp(28px, 4vw, 44px);
+      background: var(--ink);
+      color: var(--paper);
+    }
+
+    .callout h3 {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 4vw, 3.7rem);
+      font-weight: 500;
+      margin-bottom: 18px;
+    }
+
+    .callout p {
+      margin: 0;
+      color: rgba(247, 242, 234, 0.78);
+    }
+
+    .implications {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1px;
+      background: var(--line-strong);
+      border: 1px solid var(--line-strong);
+    }
+
+    .implication {
+      min-height: 250px;
+      padding: 28px;
+      background: var(--paper);
+    }
+
+    .implication span {
+      display: block;
+      margin-bottom: 24px;
+      font-family: var(--mono);
+      color: var(--muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+    }
+
+    .implication h3 {
+      font-family: var(--serif);
+      font-size: 2.2rem;
+      font-weight: 500;
+      margin-bottom: 16px;
+    }
+
+    .implication p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .footer {
+      padding: 48px 24px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 0.92rem;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 600ms ease, transform 600ms ease;
+    }
+
+    .reveal.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @keyframes grow {
+      from { transform: scaleX(0); }
+      to { transform: scaleX(1); }
+    }
+
+    @media (max-width: 980px) {
+      .hero-inner,
+      .section-head,
+      .story-grid,
+      .risk-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-visual {
+        min-height: auto;
+        border-left: 0;
+        padding: 0 0 24px;
+      }
+
+      .poster {
+        min-height: auto;
+      }
+
+      .metrics,
+      .architecture,
+      .implications {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .flow {
+        grid-template-columns: 1fr;
+      }
+
+      .flow-step::after {
+        display: none;
+      }
+
+      .sticky-nav {
+        position: static;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .hero {
+        grid-template-columns: 18px 1fr 18px;
+      }
+
+      .section {
+        grid-template-columns: 18px 1fr 18px;
+      }
+
+      h1 {
+        font-size: clamp(3rem, 18vw, 4.4rem);
+      }
+
+      .metrics,
+      .architecture,
+      .implications {
+        grid-template-columns: 1fr;
+      }
+
+      .strip {
+        grid-template-columns: 1fr;
+      }
+
+      .phase {
+        grid-template-columns: 1fr;
+      }
+
+      .phase-index {
+        font-size: 2.3rem;
+      }
+
+      .phase-foot {
+        grid-template-columns: 1fr;
+      }
+
+      .risk {
+        grid-template-columns: 1fr;
+      }
+
+      .sticky-nav {
+        grid-template-columns: 1fr;
+      }
+
+      .table-scroll .surface-table {
+        min-width: 720px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-inner">
+      <div>
+        <p class="kicker">ExECTv2 research report / dev140 / 2026-06-21</p>
+        <h1>Holistic finding assembly clears the target.</h1>
+        <p class="hero-copy">
+          v08 pushed all four key families above 0.900 headline F1 by freezing producers,
+          assembling one family at a time, and promoting only rule families with visible error-reduction mechanisms.
+        </p>
+        <div class="hero-actions" aria-label="Report links">
+          <a class="button" href="#phase-story">Read the phase story</a>
+          <a class="button secondary" href="exectv2_holistic_finding_assembly_research_report_2026-06-21.md">Source Markdown</a>
+        </div>
+      </div>
+      <div class="hero-visual" aria-label="Headline score summary">
+        <div class="poster">
+          <div class="poster-top">
+            <span>candidate v08</span>
+            <span>claim boundary: dev-only</span>
+          </div>
+          <div class="score-lockup">
+            <div class="label">headline overall F1</div>
+            <div class="score">0.9152</div>
+            <p class="score-note">
+              Strong headline performance, but not a full-200, locked-test, benchmark,
+              or deployment claim. The companion surfaces remain part of the result.
+            </p>
+          </div>
+          <div class="family-strips">
+            <div class="strip"><span>Diagnosis</span><span class="bar"><span class="fill" style="width:90.83%"></span></span><b>0.9083</b></div>
+            <div class="strip"><span>SeizureFrequency</span><span class="bar"><span class="fill" style="width:90.53%"></span></span><b>0.9053</b></div>
+            <div class="strip"><span>Prescription</span><span class="bar"><span class="fill" style="width:93.57%"></span></span><b>0.9357</b></div>
+            <div class="strip"><span>Investigations</span><span class="bar"><span class="fill" style="width:91.32%"></span></span><b>0.9132</b></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="section" id="headline">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <h2>Four families. One declared headline surface.</h2>
+          <p>
+            The target was not a generic benchmark win. It was a family-level clinical extraction
+            readout under the declared target indicator policy, with precision, recall, and counts still visible.
+          </p>
+        </div>
+        <div class="metrics reveal" aria-label="Final headline metrics by family">
+          <article class="metric">
+            <div class="name"><span>Diagnosis</span><span>280 / 39 / 17</span></div>
+            <strong>0.9083</strong>
+            <dl><div><dt>Precision</dt><dd>0.8762</dd></div><div><dt>Recall</dt><dd>0.9428</dd></div></dl>
+          </article>
+          <article class="metric">
+            <div class="name"><span>SeizureFrequency</span><span>153 / 17 / 15</span></div>
+            <strong>0.9053</strong>
+            <dl><div><dt>Precision</dt><dd>0.9000</dd></div><div><dt>Recall</dt><dd>0.9107</dd></div></dl>
+          </article>
+          <article class="metric">
+            <div class="name"><span>Prescription</span><span>182 / 14 / 11</span></div>
+            <strong>0.9357</strong>
+            <dl><div><dt>Precision</dt><dd>0.9286</dd></div><div><dt>Recall</dt><dd>0.9430</dd></div></dl>
+          </article>
+          <article class="metric">
+            <div class="name"><span>Investigations</span><span>121 / 8 / 15</span></div>
+            <strong>0.9132</strong>
+            <dl><div><dt>Precision</dt><dd>0.9380</dd></div><div><dt>Recall</dt><dd>0.8897</dd></div></dl>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="surfaces">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <h2>The headline is real, but bounded.</h2>
+          <p>
+            The scoring ladder keeps the story honest: raw lanes, evidence-valid survivors,
+            CUI projection, headline target, benchmark, and fidelity companions answer different questions.
+          </p>
+        </div>
+        <div class="reveal table-scroll">
+          <table class="surface-table">
+            <thead>
+              <tr>
+                <th>View</th>
+                <th>Overall F1</th>
+                <th>What it shows</th>
+                <th>Implication</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>raw_lane_score</code></td>
+                <td><strong>0.8328</strong></td>
+                <td>Producer and lens candidates before evidence filtering.</td>
+                <td>The raw recall reservoir still contains too much noise.</td>
+              </tr>
+              <tr>
+                <td><code>evidence_valid_score</code></td>
+                <td><strong>0.8872</strong></td>
+                <td>Exact-evidence survivors without target projection.</td>
+                <td>Grounding is strong, but grounding alone is not clinical correctness.</td>
+              </tr>
+              <tr>
+                <td><code>cui_projection_companion</code></td>
+                <td><strong>0.8872</strong></td>
+                <td>Deterministic CUI projection companion.</td>
+                <td>Concept projection does not erase the family-specific residual risks.</td>
+              </tr>
+              <tr class="highlight">
+                <td><code>headline_target</code></td>
+                <td><strong>0.9152</strong></td>
+                <td>Declared clinical target projection.</td>
+                <td>The renewed dev140 goal is satisfied.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="phase-story">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <h2>The improvement was assembled over time.</h2>
+          <p>
+            Each phase froze the already-cleared families, changed one family, checked row-level ledgers,
+            rejected broad plausible fixes, and promoted only the narrow mechanism that survived ablation.
+          </p>
+        </div>
+        <div class="story-grid">
+          <nav class="sticky-nav" aria-label="Phase navigation">
+            <a href="#v01"><span>v01</span><span>Replay</span></a>
+            <a href="#v05"><span>v02-v05</span><span>Diagnosis</span></a>
+            <a href="#v06"><span>v06</span><span>SF</span></a>
+            <a href="#v07"><span>v07</span><span>Investigations</span></a>
+            <a href="#v08"><span>v08</span><span>Prescription</span></a>
+          </nav>
+          <div>
+            <div class="chart-wrap reveal" aria-label="Phase score progression chart">
+              <svg class="chart" viewBox="0 0 980 330" role="img">
+                <title>Overall F1 progression from v01 to v08</title>
+                <line x1="70" y1="270" x2="930" y2="270" stroke="#a89b89" />
+                <line x1="70" y1="40" x2="70" y2="270" stroke="#a89b89" />
+                <text x="30" y="274">0.80</text>
+                <text x="30" y="145">0.86</text>
+                <text x="30" y="48">0.91</text>
+                <polyline points="80,268 195,261 310,242 425,210 540,145 655,99 770,81 885,20"
+                  fill="none" stroke="#16805f" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+                <g fill="#171512">
+                  <circle cx="80" cy="268" r="6" /><circle cx="195" cy="261" r="6" />
+                  <circle cx="310" cy="242" r="6" /><circle cx="425" cy="210" r="6" />
+                  <circle cx="540" cy="145" r="6" /><circle cx="655" cy="99" r="6" />
+                  <circle cx="770" cy="81" r="6" /><circle cx="885" cy="20" r="6" />
+                </g>
+                <g>
+                  <text class="label" x="62" y="306">v01</text><text x="54" y="322">0.8006</text>
+                  <text class="label" x="177" y="306">v02</text><text x="169" y="322">0.8038</text>
+                  <text class="label" x="292" y="306">v03</text><text x="284" y="322">0.8130</text>
+                  <text class="label" x="407" y="306">v04</text><text x="399" y="322">0.8278</text>
+                  <text class="label" x="522" y="306">v05</text><text x="514" y="322">0.8576</text>
+                  <text class="label" x="637" y="306">v06</text><text x="629" y="322">0.8789</text>
+                  <text class="label" x="752" y="306">v07</text><text x="744" y="322">0.8873</text>
+                  <text class="label" x="867" y="306">v08</text><text x="859" y="322">0.9152</text>
+                </g>
+                <text x="610" y="52" fill="#16805f">one-family-at-a-time gains</text>
+              </svg>
+            </div>
+            <div class="timeline">
+              <article class="phase reveal" id="v01">
+                <div class="phase-index">01</div>
+                <div>
+                  <h3>Behavior-preserving replay made the system measurable.</h3>
+                  <p>
+                    v01 moved earlier focused artifacts into a common ClinicalFindingStore.
+                    The value was not score lift; it was provenance, comparable scoring views, and a shared assembly spine.
+                  </p>
+                  <div class="phase-foot"><span class="spark" style="--w:80.06%"></span><span class="delta">overall F1 0.8006</span></div>
+                </div>
+              </article>
+              <article class="phase reveal" id="v05">
+                <div class="phase-index">02-05</div>
+                <div>
+                  <h3>Diagnosis needed convention-aware benchmark repair.</h3>
+                  <p>
+                    The hardest family was not solved by asking GPT-4.1-mini harder. It needed heading recovery,
+                    standalone-noise cleanup, alias repair, and residual source-phrase convention fixes.
+                  </p>
+                  <div class="phase-foot"><span class="spark" style="--w:90.83%"></span><span class="delta">Diagnosis F1 0.7572 to 0.9083</span></div>
+                </div>
+              </article>
+              <article class="phase reveal" id="v06">
+                <div class="phase-index">06</div>
+                <div>
+                  <h3>SeizureFrequency used union as a reservoir, not an answer.</h3>
+                  <p>
+                    The current GPT lane and deterministic all-entity lane carried complementary signal.
+                    Naive union was noisy; source-aware arbitration suppressed short anchors, historical advice, and anaphoric state errors.
+                  </p>
+                  <div class="phase-foot"><span class="spark" style="--w:90.53%"></span><span class="delta">SF F1 0.8068 to 0.9053</span></div>
+                </div>
+              </article>
+              <article class="phase reveal" id="v07">
+                <div class="phase-index">07</div>
+                <div>
+                  <h3>Investigations turned a clinical rule into an executable gate.</h3>
+                  <p>
+                    The verifier recovered completed-test recall but left pending-test false positives.
+                    Deterministic arbitration made the completed-vs-planned boundary explicit.
+                  </p>
+                  <div class="phase-foot"><span class="spark" style="--w:91.32%"></span><span class="delta">Investigations F1 0.8615 to 0.9132</span></div>
+                </div>
+              </article>
+              <article class="phase reveal" id="v08">
+                <div class="phase-index">08</div>
+                <div>
+                  <h3>Prescription gained from parser boundaries, not broader prompting.</h3>
+                  <p>
+                    GPT variants were tested and rejected. Deterministic regimen repair handled aliases,
+                    split doses, weight-based exclusions, future-plan suppression, and current-regimen trimming.
+                  </p>
+                  <div class="phase-foot"><span class="spark" style="--w:93.57%"></span><span class="delta">Prescription F1 0.8214 to 0.9357</span></div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="architecture">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <h2>The architecture made family-specific fixes auditable.</h2>
+          <p>
+            The final candidate is a no-call manifest-driven replay over frozen producer artifacts.
+            Semantic deterministic rules are prediction-bearing components, not invisible cleanup.
+          </p>
+        </div>
+        <div class="architecture reveal">
+          <article class="component">
+            <span class="tag">benchmark format</span>
+            <h3>Diagnosis</h3>
+            <p>Frozen reconciler plus heading recovery, convention cleanup, alias rewrites, and residual benchmark repair.</p>
+          </article>
+          <article class="component">
+            <span class="tag">seizure frequency</span>
+            <h3>SF</h3>
+            <p>GPT lane unioned with deterministic all9, then source-aware type and state arbitration.</p>
+          </article>
+          <article class="component">
+            <span class="tag">clinical epilepsy</span>
+            <h3>Prescription</h3>
+            <p>Deterministic regimen parser repair with explicit dose, frequency, plan-boundary, and alias handling.</p>
+          </article>
+          <article class="component">
+            <span class="tag">clinical epilepsy</span>
+            <h3>Investigations</h3>
+            <p>GPT verifier plus deterministic completed-test arbitration for planned, requested, or pending tests.</p>
+          </article>
+        </div>
+        <div class="flow reveal" aria-label="Assembly method">
+          <div class="flow-step"><b>Freeze</b><span>Lock candidate producers before optimizing the assembly.</span></div>
+          <div class="flow-step"><b>Diagnose</b><span>Read row-level ledgers and locate coherent error clusters.</span></div>
+          <div class="flow-step"><b>Arbitrate</b><span>Use family-specific lenses rather than global prompt swaps.</span></div>
+          <div class="flow-step"><b>Ablate</b><span>Reject broad plausible fixes that fail precision or recall checks.</span></div>
+          <div class="flow-step"><b>Label</b><span>Report clinical, benchmark, CUI, and fidelity surfaces separately.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="risk">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <h2>The risks are now sharper, not hidden.</h2>
+          <p>
+            The project can claim the dev140 headline target while still naming which gains are portable
+            clinical behavior and which are benchmark-surface repairs.
+          </p>
+        </div>
+        <div class="risk-grid">
+          <div class="risk-list reveal">
+            <article class="risk">
+              <span class="pill high">High</span>
+              <div>
+                <h3>Diagnosis residual additions</h3>
+                <p>Directly dev-residual and benchmark-surface oriented; useful, but not a clinical-generalization claim.</p>
+              </div>
+            </article>
+            <article class="risk">
+              <span class="pill medium">Medium</span>
+              <div>
+                <h3>Diagnosis aliases and SF benchmark rewrites</h3>
+                <p>Effective for ExECTv2 conventions, but should remain labeled as benchmark-format repair.</p>
+              </div>
+            </article>
+            <article class="risk">
+              <span class="pill low">Low</span>
+              <div>
+                <h3>Investigations pending-test suppression</h3>
+                <p>A portable clinical-extraction principle for a completed-test target.</p>
+              </div>
+            </article>
+            <article class="risk">
+              <span class="pill medium">Medium</span>
+              <div>
+                <h3>Prescription regimen parser repair</h3>
+                <p>Mostly portable parser behavior, with residual risk around titration plans and annotation oddities.</p>
+              </div>
+            </article>
+          </div>
+          <aside class="callout reveal">
+            <h3>The main caveat is SeizureFrequency fidelity.</h3>
+            <p>
+              SF headline F1 is above target, but active-rate fidelity remains 0.5969.
+              The improvement is best understood as a type/state headline gain, not solved quantitative-rate extraction.
+            </p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="implications">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <h2>What this changes.</h2>
+          <p>
+            v08 is a research milestone because it clarifies the mechanism of improvement,
+            not because it erases the need for a locked evaluation.
+          </p>
+        </div>
+        <div class="implications reveal">
+          <article class="implication">
+            <span>Research implication</span>
+            <h3>Assembly beats monolithic prompting here.</h3>
+            <p>Focused producers mattered, but the stable lift came from auditable family-specific reconciliation.</p>
+          </article>
+          <article class="implication">
+            <span>Reporting implication</span>
+            <h3>Headline and companion surfaces must travel together.</h3>
+            <p>The page should never let 0.9152 stand alone without benchmark and fidelity context.</p>
+          </article>
+          <article class="implication">
+            <span>Next evidence</span>
+            <h3>Predeclare before opening more rows.</h3>
+            <p>Any full-200 or holdout-facing readout needs a protocol before row-level failures are inspected.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    Visual narrative converted from <a href="exectv2_holistic_finding_assembly_research_report_2026-06-21.md">the source Markdown report</a>.
+    Canonical candidate: <code>exectv2_holistic_finding_assembly_v08_dev140</code>.
+  </footer>
+
+  <script>
+    const root = document.documentElement;
+    const updateScroll = () => {
+      const max = document.body.scrollHeight - window.innerHeight;
+      root.style.setProperty("--scroll", max > 0 ? window.scrollY / max : 0);
+    };
+    updateScroll();
+    window.addEventListener("scroll", updateScroll, { passive: true });
+    window.addEventListener("resize", updateScroll);
+
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        }
+      }
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll(".reveal").forEach((node) => observer.observe(node));
+  </script>
+</body>
+</html>
