@@ -23,10 +23,20 @@ This replay builds a per-letter clinical finding store, applies entity-specific 
 
 | View | Legacy surface | Overall F1 | Diagnosis | SeizureFrequency | Prescription | Investigations |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
-| raw_candidate | `raw_lane_score` | 0.0000 | 0.0000 | 0.0000 | 0.0000 | 0.0000 |
+| raw_candidate | `raw_lane_score` | 0.6406 | 0.6109 | 0.3733 | 0.8786 | 0.7176 |
 | evidence_valid | `evidence_valid_score` | 0.8567 | 0.8563 | 0.6966 | 0.9343 | 0.9579 |
 | benchmark_cui | `cui_projection_companion` | 0.8567 | 0.8563 | 0.6966 | 0.9343 | 0.9579 |
 | clinical_headline | `headline_target` | 0.9001 | 0.8563 | 0.8908 | 0.9343 | 0.9579 |
+
+## Materialized Intermediate Surfaces
+
+| Surface | Overall F1 | Diagnosis | SeizureFrequency | Prescription | Investigations |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `source_scored` | 0.6406 | 0.6109 | 0.3733 | 0.8786 | 0.7176 |
+| `evidence_valid` | 0.6406 | 0.6109 | 0.3733 | 0.8786 | 0.7176 |
+| `dictionary_normalized` | 0.7526 | 0.7506 | 0.5461 | 0.9043 | 0.7857 |
+| `residual_benchmark_added` | 0.8567 | 0.8563 | 0.6966 | 0.9343 | 0.9579 |
+| `final` | 0.8567 | 0.8563 | 0.6966 | 0.9343 | 0.9579 |
 
 ## Benchmark And Fidelity Views
 
@@ -67,7 +77,7 @@ This replay builds a per-letter clinical finding store, applies entity-specific 
 | versus_v042_default_quarantine | SeizureFrequency | 91 | active_rate=68, seizure_free=42, unknown=6, unknown_or_change_state=37, generic_vs_specific=5 |
 | versus_v042_default_quarantine | Prescription | 29 | model_output=29 |
 | versus_v042_default_quarantine | Investigations | 48 | model_output=48 |
-| versus_existing_focused_route_comparator | Diagnosis | 124 | assertion_or_negation_change=86, hierarchy_reconciliation_or_duplicate_collapse=86, hierarchy_reconciliation=38 |
+| versus_existing_focused_route_comparator | Diagnosis | 124 | assertion_or_negation_change=87, hierarchy_reconciliation_or_duplicate_collapse=87, hierarchy_reconciliation=37 |
 | versus_existing_focused_route_comparator | SeizureFrequency | 106 | active_rate=77, seizure_free=48, unknown_or_change_state=37, unknown=5, generic_vs_specific=4 |
 | versus_existing_focused_route_comparator | Prescription | 113 | model_output=113 |
 | versus_existing_focused_route_comparator | Investigations | 64 | model_output=64 |

@@ -87,10 +87,22 @@ function familyTint(family: string): string {
   }
 }
 
+/**
+ * Letter-level gold/predicted totals against the clinical-recovery headline unit
+ * (summed from the de-duplicated `family_counts`), so every count in the surface —
+ * the lens strip, the letter dropdown, and the source meta — agrees with the
+ * headline chips rather than the raw mention multiset.
+ */
+function headlineTotals(letter: Exectv2LetterRecord): { gold: number; predicted: number } {
+  return {
+    gold: FAMILY_IDS.reduce((n, id) => n + letter.family_counts.gold[id], 0),
+    predicted: FAMILY_IDS.reduce((n, id) => n + letter.family_counts.predicted[id], 0),
+  };
+}
+
 /** The family lens row — the ExECTv2 analogue of Gan's stage strip. */
 function familyLensItems(letter: Exectv2LetterRecord): LensItem[] {
-  const totalGold = FAMILY_IDS.reduce((n, id) => n + letter.family_counts.gold[id], 0);
-  const totalPred = FAMILY_IDS.reduce((n, id) => n + letter.family_counts.predicted[id], 0);
+  const { gold: totalGold, predicted: totalPred } = headlineTotals(letter);
   return [
     {
       id: "all",
@@ -134,13 +146,49 @@ function runMetricChips(run: Exectv2RunSummary): MetricChip[] {
   ];
 }
 
+/**
+ * How the clinical-recovery headline treats a mention's scoring unit. The
+ * drill-down renders every raw mention, but the headline chips score the
+ * de-duplicated `Headline Scoring Unit`, so this badge keeps the two from
+ * silently disagreeing: a deduplicated mention looks like a miss but is not
+ * charged, while a distinct-assertion duplicate is genuinely counted. See
+ * CONTEXT.md (`Redundant-Convention Duplicate`, `Distinct-Assertion Duplicate`).
+ */
+function HeadlineStatusBadge({ status }: { status: Exectv2Mention["headline_status"] }) {
+  if (status === "deduplicated") {
+    return (
+      <span
+        className="inline-block rounded border border-dashed border-muted/40 bg-surface-raised px-1.5 py-0.5 text-[9px] font-medium text-muted"
+        title="The clinical-recovery headline scores one unit per distinct fact; this mention's unit was already counted from an earlier mention (it differs only in a headline-demoted attribute), so the model is not charged for it."
+      >
+        removed from headline scoring - deduplicated
+      </span>
+    );
+  }
+  if (status === "distinct_assertion") {
+    return (
+      <span
+        className="inline-block rounded border border-deterministic-alt/25 bg-deterministic-alt/8 px-1.5 py-0.5 text-[9px] font-medium text-deterministic-alt"
+        title="The same concept asserted again at a distinct point in the letter. The benchmark counts each occurrence, so the headline preserves it rather than collapsing — it is a genuine required mention."
+      >
+        distinct assertion — counted
+      </span>
+    );
+  }
+  return null;
+}
+
 function MentionRow({ mention }: { mention: Exectv2Mention }) {
   const attrs = Object.entries(mention.attributes).slice(0, 6);
+  const deduplicated = mention.headline_status === "deduplicated";
   return (
-    <div className="border-b border-border/60 px-3 py-2 last:border-b-0">
+    <div className={`border-b border-border/60 px-3 py-2 last:border-b-0 ${deduplicated ? "opacity-60" : ""}`}>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="truncate text-[11px] font-semibold text-foreground" title={mention.text}>
+          <p
+            className={`truncate text-[11px] font-semibold text-foreground ${deduplicated ? "line-through decoration-muted/60" : ""}`}
+            title={mention.text}
+          >
             {mention.text || "(blank mention)"}
           </p>
           <p className="mt-1 line-clamp-2 text-[10px] leading-snug text-muted" title={mention.evidence}>
@@ -155,6 +203,11 @@ function MentionRow({ mention }: { mention: Exectv2Mention }) {
           {mention.evidence_valid ? "exact" : "invalid"}
         </span>
       </div>
+      {mention.headline_status && (
+        <div className="mt-2">
+          <HeadlineStatusBadge status={mention.headline_status} />
+        </div>
+      )}
       {attrs.length > 0 && (
         <div className="mt-2 flex flex-wrap gap-1">
           {attrs.map(([key, value]) => (
@@ -187,14 +240,19 @@ function FamilyPanel({
 }) {
   const gold = letter.gold_mentions.filter((m) => m.entity === family);
   const predicted = letter.predicted_mentions.filter((m) => m.entity === family);
+  // Counts are the headline-unit counts (deduplicated mentions excluded), so the
+  // panel header agrees with the headline chips rather than the raw multiset of
+  // rendered rows below it.
+  const goldUnits = letter.family_counts.gold[family];
+  const predictedUnits = letter.family_counts.predicted[family];
   return (
     <section className={`overflow-hidden rounded-md border ${familyTint(family)}`}>
       <div className="flex items-center justify-between border-b border-border/60 px-3 py-2">
         <h3 className="text-[11px] font-semibold text-foreground">{familyLabel(family)}</h3>
         <div className="flex items-center gap-1 font-mono text-[10px] text-muted">
-          <span>G {gold.length}</span>
+          <span>G {goldUnits}</span>
           <span>/</span>
-          <span>P {predicted.length}</span>
+          <span>P {predictedUnits}</span>
         </div>
       </div>
       <div className="grid grid-cols-1 divide-y divide-border/60 bg-surface md:grid-cols-2 md:divide-x md:divide-y-0">
@@ -332,11 +390,14 @@ export default function Exectv2ExampleExplorer() {
               onChange={(event) => set({ letter: event.target.value })}
               className="min-w-[200px]"
             >
-              {selectedRun.letters.map((letter) => (
-                <option key={letter.letter_id} value={letter.letter_id}>
-                  {letter.letter_id} — {letter.predicted_mentions.length}P / {letter.gold_mentions.length}G
-                </option>
-              ))}
+              {selectedRun.letters.map((letter) => {
+                const totals = headlineTotals(letter);
+                return (
+                  <option key={letter.letter_id} value={letter.letter_id}>
+                    {letter.letter_id} — {totals.predicted}P / {totals.gold}G
+                  </option>
+                );
+              })}
             </ControlSelect>
           </ControlField>
         }
@@ -378,7 +439,7 @@ export default function Exectv2ExampleExplorer() {
               {selectedLetter.letter_id}
             </span>
             <span className="text-[10px] text-muted">
-              {selectedLetter.predicted_mentions.length} predicted / {selectedLetter.gold_mentions.length} gold
+              {headlineTotals(selectedLetter).predicted} predicted / {headlineTotals(selectedLetter).gold} gold
             </span>
             <span className="font-mono text-[10px] text-muted">
               {selectedLetter.letter_text.length.toLocaleString()} chars

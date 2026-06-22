@@ -4,8 +4,11 @@
     "versus_existing_focused_route_comparator": {
       "by_indicator": {
         "Diagnosis": {
-          "categories": {},
-          "changed_rows": 0
+          "categories": {
+            "assertion_or_negation_change": 20,
+            "hierarchy_reconciliation_or_duplicate_collapse": 20
+          },
+          "changed_rows": 20
         },
         "Investigations": {
           "categories": {},
@@ -23,6 +26,125 @@
         }
       },
       "details": [
+        {
+          "categories": [
+            "assertion_or_negation_change",
+            "hierarchy_reconciliation_or_duplicate_collapse"
+          ],
+          "indicator": "Diagnosis",
+          "letter_id": "EA0002",
+          "new_mentions": [
+            {
+              "attributes": {
+                "CUI": "C0014547",
+                "CUIPhrase": "focal epilepsy",
+                "Certainty": "4",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis: focal epilepsy-Probable temporal",
+              "text": "focal epilepsy"
+            },
+            {
+              "attributes": {
+                "CUI": "C0014556",
+                "CUIPhrase": "temporal lobe epilepsy",
+                "Certainty": "4",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis: focal epilepsy-Probable temporal",
+              "text": "temporal lobe epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "In March she had 2 to 3 of her focal seizures without change in awareness.",
+              "text": "focal seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Since her last clinic appointment she has had four secondary generalised seizures.",
+              "text": "secondary generalised seizures"
+            }
+          ],
+          "old_mentions": [
+            {
+              "attributes": {
+                "CUI": "C0014547",
+                "CUIPhrase": "focal epilepsy",
+                "Certainty": "4",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis: focal epilepsy-Probable temporal",
+              "text": "focal epilepsy"
+            },
+            {
+              "attributes": {
+                "CUI": "C0014556",
+                "CUIPhrase": "temporal lobe epilepsy",
+                "Certainty": "4",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis: focal epilepsy-Probable temporal",
+              "text": "temporal lobe epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "In March she had 2 to 3 of her focal seizures without change in awareness.",
+              "text": "focal seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Since her last clinic appointment she has had four secondary generalised seizures.",
+              "text": "secondary generalised seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_heading_recovery",
+              "entity": "Diagnosis",
+              "evidence": "focal epilepsy",
+              "text": "focal epilepsy"
+            }
+          ]
+        },
         {
           "categories": [
             "model_output"
@@ -265,6 +387,88 @@
         },
         {
           "categories": [
+            "assertion_or_negation_change",
+            "hierarchy_reconciliation_or_duplicate_collapse"
+          ],
+          "indicator": "Diagnosis",
+          "letter_id": "EA0008",
+          "new_mentions": [
+            {
+              "attributes": {
+                "CUI": "C0014547",
+                "CUIPhrase": "symptomatic structural focal epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis: symptomatic structural focal epilepsy",
+              "text": "symptomatic structural focal epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "focal seizures with altered awareness every 3 weeks",
+              "text": "focal seizures"
+            }
+          ],
+          "old_mentions": [
+            {
+              "attributes": {
+                "CUI": "C0014547",
+                "CUIPhrase": "symptomatic structural focal epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis: symptomatic structural focal epilepsy",
+              "text": "symptomatic structural focal epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "focal seizures with altered awareness every 3 weeks",
+              "text": "focal seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_heading_recovery",
+              "entity": "Diagnosis",
+              "evidence": "focal epilepsy",
+              "text": "focal epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
+              "entity": "Diagnosis",
+              "evidence": "Seizure type and frequency: focal seizures with altered awareness",
+              "text": "focal"
+            }
+          ]
+        },
+        {
+          "categories": [
             "model_output"
           ],
           "indicator": "Prescription",
@@ -304,6 +508,103 @@
         },
         {
           "categories": [
+            "assertion_or_negation_change",
+            "hierarchy_reconciliation_or_duplicate_collapse"
+          ],
+          "indicator": "Diagnosis",
+          "letter_id": "EA0010",
+          "new_mentions": [
+            {
+              "attributes": {
+                "CUI": "C0014547",
+                "CUIPhrase": "symptomatic structural focal epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Symptomatic structural focal epilepsy (probable perinatal insult)",
+              "text": "symptomatic structural focal epilepsy"
+            },
+            {
+              "attributes": {
+                "CUI": "C0014544",
+                "CUIPhrase": "epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "given his epilepsy",
+              "text": "epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "he probably had around 3 or 4 focal to bilateral convulsive seizures",
+              "text": "focal to bilateral convulsive seizures"
+            }
+          ],
+          "old_mentions": [
+            {
+              "attributes": {
+                "CUI": "C0014547",
+                "CUIPhrase": "symptomatic structural focal epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Symptomatic structural focal epilepsy (probable perinatal insult)",
+              "text": "symptomatic structural focal epilepsy"
+            },
+            {
+              "attributes": {
+                "CUI": "C0014544",
+                "CUIPhrase": "epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "given his epilepsy",
+              "text": "epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "he probably had around 3 or 4 focal to bilateral convulsive seizures",
+              "text": "focal to bilateral convulsive seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_heading_recovery",
+              "entity": "Diagnosis",
+              "evidence": "focal epilepsy",
+              "text": "focal epilepsy"
+            }
+          ]
+        },
+        {
+          "categories": [
             "model_output"
           ],
           "indicator": "Prescription",
@@ -338,6 +639,125 @@
               "entity": "Prescription",
               "evidence": "150 mg of lamotrigine twice a day",
               "text": "lamotrigine 150 mg bd"
+            }
+          ]
+        },
+        {
+          "categories": [
+            "assertion_or_negation_change",
+            "hierarchy_reconciliation_or_duplicate_collapse"
+          ],
+          "indicator": "Diagnosis",
+          "letter_id": "EA0011",
+          "new_mentions": [
+            {
+              "attributes": {
+                "CUI": "C0014556",
+                "CUIPhrase": "temporal lobe epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis:\u00a0 Temporal lobe epilepsy",
+              "text": "temporal lobe epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Focal seizures with altered awareness approximately 1 per fortnight",
+              "text": "focal seizures with altered awareness"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Focal to bilateral convulsive seizures, last event around Christmas 2017",
+              "text": "focal to bilateral convulsive seizures"
+            },
+            {
+              "attributes": {
+                "CUI": "C0014544",
+                "CUIPhrase": "epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "He has previously been reviewed by other epilepsy colleagues and has had extensive workup for his epilepsy in the past.",
+              "text": "epilepsy"
+            }
+          ],
+          "old_mentions": [
+            {
+              "attributes": {
+                "CUI": "C0014556",
+                "CUIPhrase": "temporal lobe epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis:\u00a0 Temporal lobe epilepsy",
+              "text": "temporal lobe epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Focal seizures with altered awareness approximately 1 per fortnight",
+              "text": "focal seizures with altered awareness"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Focal to bilateral convulsive seizures, last event around Christmas 2017",
+              "text": "focal to bilateral convulsive seizures"
+            },
+            {
+              "attributes": {
+                "CUI": "C0014544",
+                "CUIPhrase": "epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "He has previously been reviewed by other epilepsy colleagues and has had extensive workup for his epilepsy in the past.",
+              "text": "epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
+              "entity": "Diagnosis",
+              "evidence": "Seizure type and frequency:\u00a0 Focal seizures with altered awareness",
+              "text": "focal"
             }
           ]
         },
@@ -638,6 +1058,121 @@
               "entity": "Prescription",
               "evidence": "carbamazepine 300mg bd",
               "text": "carbamazepine"
+            }
+          ]
+        },
+        {
+          "categories": [
+            "assertion_or_negation_change",
+            "hierarchy_reconciliation_or_duplicate_collapse"
+          ],
+          "indicator": "Diagnosis",
+          "letter_id": "EA0021",
+          "new_mentions": [
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis: Complex partial seizures with secondary generalised tonic clonic seizures",
+              "text": "complex partial seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis: Complex partial seizures with secondary generalised tonic clonic seizures",
+              "text": "secondary generalised tonic clonic seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "generalised tonic clonic seizures, which were well controlled on Sodium Valproate",
+              "text": "tonic clonic seizures"
+            },
+            {
+              "attributes": {
+                "CUI": "C0014544",
+                "CUIPhrase": "epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "John\u2019s epilepsy started at the age of 4.",
+              "text": "epilepsy"
+            }
+          ],
+          "old_mentions": [
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis: Complex partial seizures with secondary generalised tonic clonic seizures",
+              "text": "complex partial seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis: Complex partial seizures with secondary generalised tonic clonic seizures",
+              "text": "secondary generalised tonic clonic seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "generalised tonic clonic seizures, which were well controlled on Sodium Valproate",
+              "text": "tonic clonic seizures"
+            },
+            {
+              "attributes": {
+                "CUI": "C0014544",
+                "CUIPhrase": "epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "John\u2019s epilepsy started at the age of 4.",
+              "text": "epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
+              "entity": "Diagnosis",
+              "evidence": "Complex partial seizures with secondary generalised tonic clonic seizures",
+              "text": "generalised"
             }
           ]
         },
@@ -1537,6 +2072,191 @@
         },
         {
           "categories": [
+            "assertion_or_negation_change",
+            "hierarchy_reconciliation_or_duplicate_collapse"
+          ],
+          "indicator": "Diagnosis",
+          "letter_id": "EA0054",
+          "new_mentions": [
+            {
+              "attributes": {
+                "CUI": "C0014547",
+                "CUIPhrase": "symptomatic structural focal epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis: symptomatic structural frontal lobe epilepsy",
+              "text": "symptomatic structural focal epilepsy"
+            },
+            {
+              "attributes": {
+                "CUI": "C0014544",
+                "CUIPhrase": "epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis: symptomatic structural frontal lobe epilepsy",
+              "text": "epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_convention_alias_repair",
+              "entity": "Diagnosis",
+              "evidence": "focal cortical dysplasia",
+              "text": "symptomatic structural focal epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "SingleSeizure",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "focal seizures with altered awareness (right arm movement)",
+              "text": "focal seizures with altered awareness"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "focal seizures with altered awareness (right arm movement)",
+              "text": "focal seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Focal to bilateral convulsive seizures August 2014 and September 2015",
+              "text": "focal to bilateral convulsive seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis: symptomatic structural frontal lobe epilepsy",
+              "text": "frontal lobe epilepsy"
+            }
+          ],
+          "old_mentions": [
+            {
+              "attributes": {
+                "CUI": "C0014547",
+                "CUIPhrase": "symptomatic structural focal epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis: symptomatic structural frontal lobe epilepsy",
+              "text": "symptomatic structural focal epilepsy"
+            },
+            {
+              "attributes": {
+                "CUI": "C0014544",
+                "CUIPhrase": "epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis: symptomatic structural frontal lobe epilepsy",
+              "text": "epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_convention_alias_repair",
+              "entity": "Diagnosis",
+              "evidence": "focal cortical dysplasia",
+              "text": "symptomatic structural focal epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "SingleSeizure",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "focal seizures with altered awareness (right arm movement)",
+              "text": "focal seizures with altered awareness"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "focal seizures with altered awareness (right arm movement)",
+              "text": "focal seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Focal to bilateral convulsive seizures August 2014 and September 2015",
+              "text": "focal to bilateral convulsive seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis: symptomatic structural frontal lobe epilepsy",
+              "text": "frontal lobe epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
+              "entity": "Diagnosis",
+              "evidence": "Seizure type and frequency: focal seizures with altered awareness",
+              "text": "focal"
+            }
+          ]
+        },
+        {
+          "categories": [
             "model_output"
           ],
           "indicator": "Prescription",
@@ -1599,6 +2319,184 @@
               "entity": "Prescription",
               "evidence": "Lamotrigine 200mg bd",
               "text": "lamotrigine"
+            }
+          ]
+        },
+        {
+          "categories": [
+            "assertion_or_negation_change",
+            "hierarchy_reconciliation_or_duplicate_collapse"
+          ],
+          "indicator": "Diagnosis",
+          "letter_id": "EA0061",
+          "new_mentions": [
+            {
+              "attributes": {
+                "CUI": "C0014547",
+                "CUIPhrase": "focal epilepsy",
+                "Certainty": "4",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis: focal epilepsy, probable parietal onset",
+              "text": "focal epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "SingleSeizure",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Seizure type and frequency: focal seizures with altered awareness (unusual arm sensation), last event 3 years ago",
+              "text": "focal seizures with altered awareness"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_convention_alias_repair",
+              "entity": "Diagnosis",
+              "evidence": "focal to bilateral seizures 2 events in total, last event 10 years ago.",
+              "text": "focal to bilateral convulsive seizures"
+            },
+            {
+              "attributes": {
+                "CUI": "C0014544",
+                "CUIPhrase": "epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "His previous epilepsy investigations and care has been in Scotland.",
+              "text": "epilepsy"
+            },
+            {
+              "attributes": {
+                "CUI": "C0014544",
+                "CUIPhrase": "epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "His epilepsy started when he was 10 years old.",
+              "text": "epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis: focal epilepsy, probable parietal onset",
+              "text": "parietal lobe epilepsy"
+            }
+          ],
+          "old_mentions": [
+            {
+              "attributes": {
+                "CUI": "C0014547",
+                "CUIPhrase": "focal epilepsy",
+                "Certainty": "4",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis: focal epilepsy, probable parietal onset",
+              "text": "focal epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "SingleSeizure",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Seizure type and frequency: focal seizures with altered awareness (unusual arm sensation), last event 3 years ago",
+              "text": "focal seizures with altered awareness"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_convention_alias_repair",
+              "entity": "Diagnosis",
+              "evidence": "focal to bilateral seizures 2 events in total, last event 10 years ago.",
+              "text": "focal to bilateral convulsive seizures"
+            },
+            {
+              "attributes": {
+                "CUI": "C0014544",
+                "CUIPhrase": "epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "His previous epilepsy investigations and care has been in Scotland.",
+              "text": "epilepsy"
+            },
+            {
+              "attributes": {
+                "CUI": "C0014544",
+                "CUIPhrase": "epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "His epilepsy started when he was 10 years old.",
+              "text": "epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_heading_recovery",
+              "entity": "Diagnosis",
+              "evidence": "focal epilepsy",
+              "text": "focal epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis: focal epilepsy, probable parietal onset",
+              "text": "parietal lobe epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
+              "entity": "Diagnosis",
+              "evidence": "Seizure type and frequency: focal seizures with altered awareness",
+              "text": "focal"
             }
           ]
         },
@@ -2731,6 +3629,121 @@
         },
         {
           "categories": [
+            "assertion_or_negation_change",
+            "hierarchy_reconciliation_or_duplicate_collapse"
+          ],
+          "indicator": "Diagnosis",
+          "letter_id": "EA0114",
+          "new_mentions": [
+            {
+              "attributes": {
+                "CUI": "C0014547",
+                "CUIPhrase": "focal epilepsy",
+                "Certainty": "4",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Focal epilepsy ? right temporal lobe onset",
+              "text": "focal epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "SingleSeizure",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "He has had a couple of focal impaired awareness seizures consisting of a rising epigastric sensation",
+              "text": "focal impaired awareness seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "SingleSeizure",
+                "Negation": "Negated"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "but no focal to bilateral tonic clonic seizures",
+              "text": "focal to bilateral tonic clonic seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
+              "entity": "Diagnosis",
+              "evidence": "Focal epilepsy ? right temporal lobe onset",
+              "text": "temporal lobe onset seizure"
+            }
+          ],
+          "old_mentions": [
+            {
+              "attributes": {
+                "CUI": "C0014547",
+                "CUIPhrase": "focal epilepsy",
+                "Certainty": "4",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Focal epilepsy ? right temporal lobe onset",
+              "text": "focal epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "SingleSeizure",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "He has had a couple of focal impaired awareness seizures consisting of a rising epigastric sensation",
+              "text": "focal impaired awareness seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "SingleSeizure",
+                "Negation": "Negated"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "but no focal to bilateral tonic clonic seizures",
+              "text": "focal to bilateral tonic clonic seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_heading_recovery",
+              "entity": "Diagnosis",
+              "evidence": "Focal epilepsy",
+              "text": "focal epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
+              "entity": "Diagnosis",
+              "evidence": "Focal epilepsy ? right temporal lobe onset",
+              "text": "temporal lobe onset seizure"
+            }
+          ]
+        },
+        {
+          "categories": [
             "model_output"
           ],
           "indicator": "Prescription",
@@ -3339,6 +4352,73 @@
         },
         {
           "categories": [
+            "assertion_or_negation_change",
+            "hierarchy_reconciliation_or_duplicate_collapse"
+          ],
+          "indicator": "Diagnosis",
+          "letter_id": "EA0127",
+          "new_mentions": [
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Complex partial seizures",
+              "text": "complex partial seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "secondary generalised tonic clonic seizures",
+              "text": "secondary generalised tonic clonic seizures"
+            }
+          ],
+          "old_mentions": [
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Complex partial seizures",
+              "text": "complex partial seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "secondary generalised tonic clonic seizures",
+              "text": "secondary generalised tonic clonic seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
+              "entity": "Diagnosis",
+              "evidence": "Complex partial seizures with secondary generalised tonic clonic seizures",
+              "text": "generalised"
+            }
+          ]
+        },
+        {
+          "categories": [
             "model_output"
           ],
           "indicator": "Prescription",
@@ -3446,6 +4526,147 @@
               "entity": "Prescription",
               "evidence": "sodium valproate at 400mg twice a day",
               "text": "sodium valproate 400mg twice a day"
+            }
+          ]
+        },
+        {
+          "categories": [
+            "assertion_or_negation_change",
+            "hierarchy_reconciliation_or_duplicate_collapse"
+          ],
+          "indicator": "Diagnosis",
+          "letter_id": "EA0132",
+          "new_mentions": [
+            {
+              "attributes": {
+                "CUI": "C0014547",
+                "CUIPhrase": "focal epilepsy",
+                "Certainty": "4",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis:\tProbable focal epilepsy",
+              "text": "focal epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Seizure type and frequency:\tFocal seizures with altered awareness, several per month",
+              "text": "focal seizures with altered awareness"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "SingleSeizure",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "He has only ever had one episode of loss of consciousness which in hindsight was probably a focal to bilateral convulsive seizure.",
+              "text": "focal to bilateral convulsive seizure"
+            },
+            {
+              "attributes": {
+                "Certainty": "4",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "I think that the episodes that he is getting are focal seizures, I therefore think that he has epilepsy and the EEG is supportive of this.",
+              "text": "focal seizures"
+            },
+            {
+              "attributes": {
+                "CUI": "C0014544",
+                "CUIPhrase": "epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "I explained the diagnosis of epilepsy to Mr Hanson.",
+              "text": "epilepsy"
+            }
+          ],
+          "old_mentions": [
+            {
+              "attributes": {
+                "CUI": "C0014547",
+                "CUIPhrase": "focal epilepsy",
+                "Certainty": "4",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis:\tProbable focal epilepsy",
+              "text": "focal epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Seizure type and frequency:\tFocal seizures with altered awareness, several per month",
+              "text": "focal seizures with altered awareness"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "SingleSeizure",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "He has only ever had one episode of loss of consciousness which in hindsight was probably a focal to bilateral convulsive seizure.",
+              "text": "focal to bilateral convulsive seizure"
+            },
+            {
+              "attributes": {
+                "Certainty": "4",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "I think that the episodes that he is getting are focal seizures, I therefore think that he has epilepsy and the EEG is supportive of this.",
+              "text": "focal seizures"
+            },
+            {
+              "attributes": {
+                "CUI": "C0014544",
+                "CUIPhrase": "epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "I explained the diagnosis of epilepsy to Mr Hanson.",
+              "text": "epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
+              "entity": "Diagnosis",
+              "evidence": "Seizure type and frequency:\tFocal seizures with altered awareness",
+              "text": "focal"
             }
           ]
         },
@@ -3749,6 +4970,151 @@
         },
         {
           "categories": [
+            "assertion_or_negation_change",
+            "hierarchy_reconciliation_or_duplicate_collapse"
+          ],
+          "indicator": "Diagnosis",
+          "letter_id": "EA0143",
+          "new_mentions": [
+            {
+              "attributes": {
+                "CUI": "C0014544",
+                "CUIPhrase": "epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "she was diagnosed with epilepsy at the age of 22",
+              "text": "epilepsy"
+            },
+            {
+              "attributes": {
+                "CUI": "C0014544",
+                "CUIPhrase": "epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Her seizures started at the age of 19 and she was diagnosed with epilepsy at the age of 22.",
+              "text": "epilepsy"
+            },
+            {
+              "attributes": {
+                "CUI": "C0014556",
+                "CUIPhrase": "temporal lobe epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Her seizures were consistent with a temporal lobe semiology.",
+              "text": "temporal lobe epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "These events, which are focal seizures with altered awareness, used to happen weekly but her last event was more than five years ago.",
+              "text": "focal seizures with altered awareness"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_convention_alias_repair",
+              "entity": "Diagnosis",
+              "evidence": "She has only every had one secondarily generalised seizures which happend when she was 22, the morning after a night out.",
+              "text": "secondary generalised seizures"
+            }
+          ],
+          "old_mentions": [
+            {
+              "attributes": {
+                "CUI": "C0014544",
+                "CUIPhrase": "epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "she was diagnosed with epilepsy at the age of 22",
+              "text": "epilepsy"
+            },
+            {
+              "attributes": {
+                "CUI": "C0014544",
+                "CUIPhrase": "epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Her seizures started at the age of 19 and she was diagnosed with epilepsy at the age of 22.",
+              "text": "epilepsy"
+            },
+            {
+              "attributes": {
+                "CUI": "C0014556",
+                "CUIPhrase": "temporal lobe epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Her seizures were consistent with a temporal lobe semiology.",
+              "text": "temporal lobe epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "These events, which are focal seizures with altered awareness, used to happen weekly but her last event was more than five years ago.",
+              "text": "focal seizures with altered awareness"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_convention_alias_repair",
+              "entity": "Diagnosis",
+              "evidence": "She has only every had one secondarily generalised seizures which happend when she was 22, the morning after a night out.",
+              "text": "secondary generalised seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
+              "entity": "Diagnosis",
+              "evidence": "diagnosed with epilepsy at the age of 22",
+              "text": "focal"
+            }
+          ]
+        },
+        {
+          "categories": [
             "model_output"
           ],
           "indicator": "Prescription",
@@ -3805,6 +5171,125 @@
               "entity": "Prescription",
               "evidence": "Carbamazepine 200mg twice a day",
               "text": "Carbamazepine 200mg"
+            }
+          ]
+        },
+        {
+          "categories": [
+            "assertion_or_negation_change",
+            "hierarchy_reconciliation_or_duplicate_collapse"
+          ],
+          "indicator": "Diagnosis",
+          "letter_id": "EA0150",
+          "new_mentions": [
+            {
+              "attributes": {
+                "CUI": "C0014547",
+                "CUIPhrase": "symptomatic structural focal epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "symptomatic structural epilepsy",
+              "text": "symptomatic structural focal epilepsy"
+            },
+            {
+              "attributes": {
+                "CUI": "C0014544",
+                "CUIPhrase": "epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "epilepsy",
+              "text": "epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "complex partial seizures (deja-vu and orofacial automatsisms)",
+              "text": "complex partial seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
+              "entity": "Diagnosis",
+              "evidence": "secondary generalised seizures",
+              "text": "secondary generalised seizures"
+            }
+          ],
+          "old_mentions": [
+            {
+              "attributes": {
+                "CUI": "C0014547",
+                "CUIPhrase": "symptomatic structural focal epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "symptomatic structural epilepsy",
+              "text": "symptomatic structural focal epilepsy"
+            },
+            {
+              "attributes": {
+                "CUI": "C0014544",
+                "CUIPhrase": "epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "epilepsy",
+              "text": "epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "complex partial seizures (deja-vu and orofacial automatsisms)",
+              "text": "complex partial seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
+              "entity": "Diagnosis",
+              "evidence": "secondary generalised seizures",
+              "text": "secondary generalised seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
+              "entity": "Diagnosis",
+              "evidence": "complex partial seizures (deja-vu and orofacial automatsisms) as well as secondary generalised seizures. The complex partial seizures are now happening once a month, and he has around 1-2 secondary generalised seizures",
+              "text": "secondary"
             }
           ]
         },
@@ -3941,6 +5426,158 @@
         },
         {
           "categories": [
+            "assertion_or_negation_change",
+            "hierarchy_reconciliation_or_duplicate_collapse"
+          ],
+          "indicator": "Diagnosis",
+          "letter_id": "EA0152",
+          "new_mentions": [
+            {
+              "attributes": {
+                "CUI": "C0014547",
+                "CUIPhrase": "symptomatic structural focal epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis:\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0 Symptomatic structural epilepsy",
+              "text": "symptomatic structural focal epilepsy"
+            },
+            {
+              "attributes": {
+                "CUI": "C0014544",
+                "CUIPhrase": "epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "As you know she was diagnosed with epilepsy at the age of 22 after having 2 secondary generalised seizures in 2 days.",
+              "text": "epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_convention_alias_repair",
+              "entity": "Diagnosis",
+              "evidence": "Focal cortical dysplasia right temporal lobe",
+              "text": "symptomatic structural focal epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Complex partial seizures (deja-vu, automatism) 1-2 per month",
+              "text": "complex partial seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Secondary generalised seizures 3-4 per year",
+              "text": "secondary generalised seizures"
+            }
+          ],
+          "old_mentions": [
+            {
+              "attributes": {
+                "CUI": "C0014547",
+                "CUIPhrase": "symptomatic structural focal epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis:\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0 Symptomatic structural epilepsy",
+              "text": "symptomatic structural focal epilepsy"
+            },
+            {
+              "attributes": {
+                "CUI": "C0014544",
+                "CUIPhrase": "epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "As you know she was diagnosed with epilepsy at the age of 22 after having 2 secondary generalised seizures in 2 days.",
+              "text": "epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_convention_alias_repair",
+              "entity": "Diagnosis",
+              "evidence": "Focal cortical dysplasia right temporal lobe",
+              "text": "symptomatic structural focal epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Complex partial seizures (deja-vu, automatism) 1-2 per month",
+              "text": "complex partial seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Secondary generalised seizures 3-4 per year",
+              "text": "secondary generalised seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
+              "entity": "Diagnosis",
+              "evidence": "Complex partial seizures (deja-vu, automatism) 1-2 per month\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0 Secondary generalised seizures 3-4 per year\n\u00a0\nanti-epileptic medication:\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0 Carbamazapine 400mg bd\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0 Clobazam 10-20mg bd for seizure clusters\n\u00a0\nPrevious medications tried: Lamotrigine (rash)\n\u00a0\nInvestigations: \u00a0 MRI 14/3/2006 right temporal lobe focal cortical dysplasia\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0 EEG sharp waves, right temporal lobe\n\u00a0\nI reviewed this 40 year old woman in clinic today. As you know she was diagnosed with epilepsy at the age of 22 after having 2 secondary generalised seizures",
+              "text": "secondary"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
+              "entity": "Diagnosis",
+              "evidence": "diagnosed with epilepsy at the age of 22",
+              "text": "focal"
+            }
+          ]
+        },
+        {
+          "categories": [
             "model_output"
           ],
           "indicator": "Prescription",
@@ -4001,6 +5638,129 @@
               "entity": "Prescription",
               "evidence": "Clobazam 10-20mg bd for seizure clusters",
               "text": "Clobazam 10-20mg bd for seizure clusters"
+            }
+          ]
+        },
+        {
+          "categories": [
+            "assertion_or_negation_change",
+            "hierarchy_reconciliation_or_duplicate_collapse"
+          ],
+          "indicator": "Diagnosis",
+          "letter_id": "EA0153",
+          "new_mentions": [
+            {
+              "attributes": {
+                "CUI": "C0014547",
+                "CUIPhrase": "focal epilepsy",
+                "Certainty": "3",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis: Focal epilepsy ?left temporal lobe",
+              "text": "focal epilepsy"
+            },
+            {
+              "attributes": {
+                "CUI": "C0014556",
+                "CUIPhrase": "temporal lobe epilepsy",
+                "Certainty": "3",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis: Focal epilepsy ?left temporal lobe",
+              "text": "temporal lobe epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "I think that these sterotyped brief epsiodes are focal seizures with altered awareness and that gives the diagnosis of epilepsy.",
+              "text": "focal seizures with altered awareness"
+            },
+            {
+              "attributes": {
+                "CUI": "C0014544",
+                "CUIPhrase": "epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "I explained the diagnosis of epilepsy, some safety implications and the DVLA driving regulations on epilepsy and driving.",
+              "text": "epilepsy"
+            }
+          ],
+          "old_mentions": [
+            {
+              "attributes": {
+                "CUI": "C0014547",
+                "CUIPhrase": "focal epilepsy",
+                "Certainty": "3",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis: Focal epilepsy ?left temporal lobe",
+              "text": "focal epilepsy"
+            },
+            {
+              "attributes": {
+                "CUI": "C0014556",
+                "CUIPhrase": "temporal lobe epilepsy",
+                "Certainty": "3",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis: Focal epilepsy ?left temporal lobe",
+              "text": "temporal lobe epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "I think that these sterotyped brief epsiodes are focal seizures with altered awareness and that gives the diagnosis of epilepsy.",
+              "text": "focal seizures with altered awareness"
+            },
+            {
+              "attributes": {
+                "CUI": "C0014544",
+                "CUIPhrase": "epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "I explained the diagnosis of epilepsy, some safety implications and the DVLA driving regulations on epilepsy and driving.",
+              "text": "epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_heading_recovery",
+              "entity": "Diagnosis",
+              "evidence": "Focal epilepsy",
+              "text": "focal epilepsy"
             }
           ]
         },
@@ -4933,6 +6693,121 @@
         },
         {
           "categories": [
+            "assertion_or_negation_change",
+            "hierarchy_reconciliation_or_duplicate_collapse"
+          ],
+          "indicator": "Diagnosis",
+          "letter_id": "EA0183",
+          "new_mentions": [
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis: Complex partial seizures with secondary generalised tonic clonic seizures",
+              "text": "complex partial seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis: Complex partial seizures with secondary generalised tonic clonic seizures",
+              "text": "secondary generalised tonic clonic seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "He suffered with generalised tonic clonic seizures, which were well controlled on Sodium Valproate",
+              "text": "tonic clonic seizures"
+            },
+            {
+              "attributes": {
+                "CUI": "C0014544",
+                "CUIPhrase": "epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "John\u2019s epilepsy started at the age of 4.",
+              "text": "epilepsy"
+            }
+          ],
+          "old_mentions": [
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis: Complex partial seizures with secondary generalised tonic clonic seizures",
+              "text": "complex partial seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis: Complex partial seizures with secondary generalised tonic clonic seizures",
+              "text": "secondary generalised tonic clonic seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "He suffered with generalised tonic clonic seizures, which were well controlled on Sodium Valproate",
+              "text": "tonic clonic seizures"
+            },
+            {
+              "attributes": {
+                "CUI": "C0014544",
+                "CUIPhrase": "epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "John\u2019s epilepsy started at the age of 4.",
+              "text": "epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
+              "entity": "Diagnosis",
+              "evidence": "Complex partial seizures with secondary generalised tonic clonic seizures",
+              "text": "generalised"
+            }
+          ]
+        },
+        {
+          "categories": [
             "model_output"
           ],
           "indicator": "Prescription",
@@ -5106,6 +6981,121 @@
         },
         {
           "categories": [
+            "assertion_or_negation_change",
+            "hierarchy_reconciliation_or_duplicate_collapse"
+          ],
+          "indicator": "Diagnosis",
+          "letter_id": "EA0186",
+          "new_mentions": [
+            {
+              "attributes": {
+                "CUI": "C0014547",
+                "CUIPhrase": "symptomatic structural focal epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis: Symptomatic structural focal epilepsy",
+              "text": "symptomatic structural focal epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "I think therefore that this was a focal to bilateral convulsive seizures.",
+              "text": "focal to bilateral convulsive seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Mr Owens has had focal motor seizures in the past where he has had jerking of his right leg.",
+              "text": "focal motor seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "SingleSeizure",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "He has had one previous focal to bilateral convulsive seizure at the time of diagnosis of his epilepsy in May 2017.",
+              "text": "focal to bilateral convulsive seizure"
+            }
+          ],
+          "old_mentions": [
+            {
+              "attributes": {
+                "CUI": "C0014547",
+                "CUIPhrase": "symptomatic structural focal epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis: Symptomatic structural focal epilepsy",
+              "text": "symptomatic structural focal epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "I think therefore that this was a focal to bilateral convulsive seizures.",
+              "text": "focal to bilateral convulsive seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Mr Owens has had focal motor seizures in the past where he has had jerking of his right leg.",
+              "text": "focal motor seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "SingleSeizure",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "He has had one previous focal to bilateral convulsive seizure at the time of diagnosis of his epilepsy in May 2017.",
+              "text": "focal to bilateral convulsive seizure"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_heading_recovery",
+              "entity": "Diagnosis",
+              "evidence": "focal epilepsy",
+              "text": "focal epilepsy"
+            }
+          ]
+        },
+        {
+          "categories": [
             "model_output"
           ],
           "indicator": "Prescription",
@@ -5140,6 +7130,195 @@
               "entity": "Prescription",
               "evidence": "He is currently taking lamotrigine 75mg twice a day",
               "text": "lamotrigine 75mg twice a day"
+            }
+          ]
+        },
+        {
+          "categories": [
+            "assertion_or_negation_change",
+            "hierarchy_reconciliation_or_duplicate_collapse"
+          ],
+          "indicator": "Diagnosis",
+          "letter_id": "EA0188",
+          "new_mentions": [
+            {
+              "attributes": {
+                "CUI": "C0014547",
+                "CUIPhrase": "focal epilepsy",
+                "Certainty": "4",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis Focal epilepsy, probable occipital lobe onset",
+              "text": "focal epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "4",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis Focal epilepsy, probable occipital lobe onset",
+              "text": "occipital lobe epilepsy"
+            },
+            {
+              "attributes": {
+                "CUI": "C0014544",
+                "CUIPhrase": "epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "She has a complicated epilepsy history and I did not have the full medical notes with me today and so I will need to review those.",
+              "text": "epilepsy"
+            },
+            {
+              "attributes": {
+                "CUI": "C0014547",
+                "CUIPhrase": "focal epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Impression it does seem that this lady has a drug refractory focal (occipital lobe) epilepsy.",
+              "text": "focal epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "About once a month she will have a secondary generalised seizure which start like her normal seizure but then will progress to involve loss of consciousness with limb shaking.",
+              "text": "secondary generalised tonic clonic seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
+              "entity": "Diagnosis",
+              "evidence": "drug refractory focal (occipital lobe) epilepsy",
+              "text": "drug"
+            }
+          ],
+          "old_mentions": [
+            {
+              "attributes": {
+                "CUI": "C0014547",
+                "CUIPhrase": "focal epilepsy",
+                "Certainty": "4",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis Focal epilepsy, probable occipital lobe onset",
+              "text": "focal epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "4",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis Focal epilepsy, probable occipital lobe onset",
+              "text": "occipital lobe epilepsy"
+            },
+            {
+              "attributes": {
+                "CUI": "C0014544",
+                "CUIPhrase": "epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "She has a complicated epilepsy history and I did not have the full medical notes with me today and so I will need to review those.",
+              "text": "epilepsy"
+            },
+            {
+              "attributes": {
+                "CUI": "C0014547",
+                "CUIPhrase": "focal epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Impression it does seem that this lady has a drug refractory focal (occipital lobe) epilepsy.",
+              "text": "focal epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "About once a month she will have a secondary generalised seizure which start like her normal seizure but then will progress to involve loss of consciousness with limb shaking.",
+              "text": "secondary generalised tonic clonic seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
+              "entity": "Diagnosis",
+              "evidence": "drug refractory focal (occipital lobe) epilepsy",
+              "text": "secondary"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
+              "entity": "Diagnosis",
+              "evidence": "drug refractory focal (occipital lobe) epilepsy",
+              "text": "focal"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
+              "entity": "Diagnosis",
+              "evidence": "drug refractory focal (occipital lobe) epilepsy",
+              "text": "drug"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
+              "entity": "Diagnosis",
+              "evidence": "drug refractory focal (occipital lobe) epilepsy",
+              "text": "occipital"
             }
           ]
         },
@@ -5212,6 +7391,121 @@
         },
         {
           "categories": [
+            "assertion_or_negation_change",
+            "hierarchy_reconciliation_or_duplicate_collapse"
+          ],
+          "indicator": "Diagnosis",
+          "letter_id": "EA0190",
+          "new_mentions": [
+            {
+              "attributes": {
+                "CUI": "C0014556",
+                "CUIPhrase": "temporal lobe epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis: temporal lobe epilepsy",
+              "text": "temporal lobe epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_convention_alias_repair",
+              "entity": "Diagnosis",
+              "evidence": "right hippocampal sclerosis",
+              "text": "temporal lobe epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "SingleSeizure",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "focal seizures with altered awareness (deja-vu)",
+              "text": "focal seizures with altered awareness"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "focal to bilateral convulsive seizures",
+              "text": "focal to bilateral convulsive seizures"
+            }
+          ],
+          "old_mentions": [
+            {
+              "attributes": {
+                "CUI": "C0014556",
+                "CUIPhrase": "temporal lobe epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis: temporal lobe epilepsy",
+              "text": "temporal lobe epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_convention_alias_repair",
+              "entity": "Diagnosis",
+              "evidence": "right hippocampal sclerosis",
+              "text": "temporal lobe epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "SingleSeizure",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "focal seizures with altered awareness (deja-vu)",
+              "text": "focal seizures with altered awareness"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "focal to bilateral convulsive seizures",
+              "text": "focal to bilateral convulsive seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
+              "entity": "Diagnosis",
+              "evidence": "Seizure type and frequency: focal seizures with altered awareness",
+              "text": "focal"
+            }
+          ]
+        },
+        {
+          "categories": [
             "model_output"
           ],
           "indicator": "Prescription",
@@ -5246,6 +7540,143 @@
               "entity": "Prescription",
               "evidence": "Current anti-seizure medication: lamotrigine 200mg bd",
               "text": "lamotrigine 200mg bd"
+            }
+          ]
+        },
+        {
+          "categories": [
+            "assertion_or_negation_change",
+            "hierarchy_reconciliation_or_duplicate_collapse"
+          ],
+          "indicator": "Diagnosis",
+          "letter_id": "EA0195",
+          "new_mentions": [
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis:\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0 Symptomatic epilepsy with generalised tonic clonic seizures with right temporal meningioma (2013)",
+              "text": "symptomatic epilepsy"
+            },
+            {
+              "attributes": {
+                "CUI": "C0014544",
+                "CUIPhrase": "epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis:\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0 Symptomatic epilepsy with generalised tonic clonic seizures with right temporal meningioma (2013)",
+              "text": "epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis:\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0 Symptomatic epilepsy with generalised tonic clonic seizures with right temporal meningioma (2013)",
+              "text": "tonic clonic seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "SingleSeizure",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "However he had another seizure whilst he was asleep on the 2nd November. His wife heard a loud and unusual noise which woke her up. He then went stiff and was shaking for around 5 mins.",
+              "text": "generalised tonic clonic seizure"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair+deterministic_residual_benchmark_repair",
+              "entity": "Diagnosis",
+              "evidence": "Symptomatic epilepsy with generalised tonic clonic seizures with right temporal meningioma",
+              "text": "generalised"
+            }
+          ],
+          "old_mentions": [
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis:\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0 Symptomatic epilepsy with generalised tonic clonic seizures with right temporal meningioma (2013)",
+              "text": "symptomatic epilepsy"
+            },
+            {
+              "attributes": {
+                "CUI": "C0014544",
+                "CUIPhrase": "epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis:\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0 Symptomatic epilepsy with generalised tonic clonic seizures with right temporal meningioma (2013)",
+              "text": "epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis:\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0 Symptomatic epilepsy with generalised tonic clonic seizures with right temporal meningioma (2013)",
+              "text": "tonic clonic seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "SingleSeizure",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "However he had another seizure whilst he was asleep on the 2nd November. His wife heard a loud and unusual noise which woke her up. He then went stiff and was shaking for around 5 mins.",
+              "text": "generalised tonic clonic seizure"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair+deterministic_residual_benchmark_repair",
+              "entity": "Diagnosis",
+              "evidence": "Symptomatic epilepsy with generalised tonic clonic seizures with right temporal meningioma",
+              "text": "generalised"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair+deterministic_residual_benchmark_repair",
+              "entity": "Diagnosis",
+              "evidence": "Symptomatic epilepsy with generalised tonic clonic seizures with right temporal meningioma",
+              "text": "symptomatic"
             }
           ]
         },
@@ -5342,6 +7773,99 @@
         },
         {
           "categories": [
+            "assertion_or_negation_change",
+            "hierarchy_reconciliation_or_duplicate_collapse"
+          ],
+          "indicator": "Diagnosis",
+          "letter_id": "EA0198",
+          "new_mentions": [
+            {
+              "attributes": {
+                "CUI": "C0014544",
+                "CUIPhrase": "epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Her epilepsy started fifteen years ago at the age of 23 after a minor head injury.",
+              "text": "epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Complex partial seizures with secondary generalised seizures",
+              "text": "complex partial seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Complex partial seizures with secondary generalised seizures",
+              "text": "secondary generalised seizures"
+            }
+          ],
+          "old_mentions": [
+            {
+              "attributes": {
+                "CUI": "C0014544",
+                "CUIPhrase": "epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Her epilepsy started fifteen years ago at the age of 23 after a minor head injury.",
+              "text": "epilepsy"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Complex partial seizures with secondary generalised seizures",
+              "text": "complex partial seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route",
+              "entity": "Diagnosis",
+              "evidence": "Complex partial seizures with secondary generalised seizures",
+              "text": "secondary generalised seizures"
+            },
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
+              "entity": "Diagnosis",
+              "evidence": "Complex partial seizures with secondary generalised seizures",
+              "text": "secondary"
+            }
+          ]
+        },
+        {
+          "categories": [
             "model_output"
           ],
           "indicator": "Prescription",
@@ -5409,9 +7933,9 @@
       "by_indicator": {
         "Diagnosis": {
           "categories": {
-            "assertion_or_negation_change": 94,
-            "hierarchy_reconciliation": 35,
-            "hierarchy_reconciliation_or_duplicate_collapse": 93
+            "assertion_or_negation_change": 91,
+            "hierarchy_reconciliation": 38,
+            "hierarchy_reconciliation_or_duplicate_collapse": 90
           },
           "changed_rows": 129
         },
@@ -5496,17 +8020,6 @@
               "entity": "Diagnosis",
               "evidence": "Since her last clinic appointment she has had four secondary generalised seizures.",
               "text": "secondary generalised seizures"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_heading_recovery",
-              "entity": "Diagnosis",
-              "evidence": "focal epilepsy",
-              "text": "focal epilepsy"
             }
           ],
           "old_mentions": [
@@ -6774,8 +9287,7 @@
         },
         {
           "categories": [
-            "assertion_or_negation_change",
-            "hierarchy_reconciliation_or_duplicate_collapse"
+            "hierarchy_reconciliation"
           ],
           "indicator": "Diagnosis",
           "letter_id": "EA0008",
@@ -6803,28 +9315,6 @@
               "entity": "Diagnosis",
               "evidence": "focal seizures with altered awareness every 3 weeks",
               "text": "focal seizures"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_heading_recovery",
-              "entity": "Diagnosis",
-              "evidence": "focal epilepsy",
-              "text": "focal epilepsy"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
-              "entity": "Diagnosis",
-              "evidence": "Seizure type and frequency: focal seizures with altered awareness",
-              "text": "focal"
             }
           ],
           "old_mentions": [
@@ -7211,17 +9701,6 @@
               "entity": "Diagnosis",
               "evidence": "he probably had around 3 or 4 focal to bilateral convulsive seizures",
               "text": "focal to bilateral convulsive seizures"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_heading_recovery",
-              "entity": "Diagnosis",
-              "evidence": "focal epilepsy",
-              "text": "focal epilepsy"
             }
           ],
           "old_mentions": [
@@ -7334,17 +9813,6 @@
               "entity": "Diagnosis",
               "evidence": "He has previously been reviewed by other epilepsy colleagues and has had extensive workup for his epilepsy in the past.",
               "text": "epilepsy"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
-              "entity": "Diagnosis",
-              "evidence": "Seizure type and frequency:\u00a0 Focal seizures with altered awareness",
-              "text": "focal"
             }
           ],
           "old_mentions": [
@@ -8569,8 +11037,7 @@
         },
         {
           "categories": [
-            "assertion_or_negation_change",
-            "hierarchy_reconciliation_or_duplicate_collapse"
+            "hierarchy_reconciliation"
           ],
           "indicator": "Diagnosis",
           "letter_id": "EA0021",
@@ -8620,17 +11087,6 @@
               "entity": "Diagnosis",
               "evidence": "John\u2019s epilepsy started at the age of 4.",
               "text": "epilepsy"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
-              "entity": "Diagnosis",
-              "evidence": "Complex partial seizures with secondary generalised tonic clonic seizures",
-              "text": "generalised"
             }
           ],
           "old_mentions": [
@@ -12658,17 +15114,6 @@
               "entity": "Diagnosis",
               "evidence": "Diagnosis: symptomatic structural frontal lobe epilepsy",
               "text": "frontal lobe epilepsy"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
-              "entity": "Diagnosis",
-              "evidence": "Seizure type and frequency: focal seizures with altered awareness",
-              "text": "focal"
             }
           ],
           "old_mentions": [
@@ -13624,32 +16069,10 @@
                 "DiagCategory": "Epilepsy",
                 "Negation": "Affirmed"
               },
-              "component_owner": "hybrid_diagnosis_route+deterministic_heading_recovery",
-              "entity": "Diagnosis",
-              "evidence": "focal epilepsy",
-              "text": "focal epilepsy"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
               "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
               "entity": "Diagnosis",
               "evidence": "Diagnosis: focal epilepsy, probable parietal onset",
               "text": "parietal lobe epilepsy"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
-              "entity": "Diagnosis",
-              "evidence": "Seizure type and frequency: focal seizures with altered awareness",
-              "text": "focal"
             }
           ],
           "old_mentions": [
@@ -18566,17 +20989,6 @@
                 "DiagCategory": "Epilepsy",
                 "Negation": "Affirmed"
               },
-              "component_owner": "hybrid_diagnosis_route+deterministic_heading_recovery",
-              "entity": "Diagnosis",
-              "evidence": "Focal epilepsy",
-              "text": "focal epilepsy"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
               "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
               "entity": "Diagnosis",
               "evidence": "Focal epilepsy ? right temporal lobe onset",
@@ -20855,7 +23267,8 @@
         },
         {
           "categories": [
-            "hierarchy_reconciliation"
+            "assertion_or_negation_change",
+            "hierarchy_reconciliation_or_duplicate_collapse"
           ],
           "indicator": "Diagnosis",
           "letter_id": "EA0127",
@@ -20881,17 +23294,6 @@
               "entity": "Diagnosis",
               "evidence": "secondary generalised tonic clonic seizures",
               "text": "secondary generalised tonic clonic seizures"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
-              "entity": "Diagnosis",
-              "evidence": "Complex partial seizures with secondary generalised tonic clonic seizures",
-              "text": "generalised"
             }
           ],
           "old_mentions": [
@@ -21733,17 +24135,6 @@
               "entity": "Diagnosis",
               "evidence": "I explained the diagnosis of epilepsy to Mr Hanson.",
               "text": "epilepsy"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
-              "entity": "Diagnosis",
-              "evidence": "Seizure type and frequency:\tFocal seizures with altered awareness",
-              "text": "focal"
             }
           ],
           "old_mentions": [
@@ -23211,17 +25602,6 @@
               "entity": "Diagnosis",
               "evidence": "She has only every had one secondarily generalised seizures which happend when she was 22, the morning after a night out.",
               "text": "secondary generalised seizures"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
-              "entity": "Diagnosis",
-              "evidence": "diagnosed with epilepsy at the age of 22",
-              "text": "focal"
             }
           ],
           "old_mentions": [
@@ -23712,8 +26092,7 @@
         },
         {
           "categories": [
-            "assertion_or_negation_change",
-            "hierarchy_reconciliation_or_duplicate_collapse"
+            "hierarchy_reconciliation"
           ],
           "indicator": "Diagnosis",
           "letter_id": "EA0150",
@@ -23765,17 +26144,6 @@
               "entity": "Diagnosis",
               "evidence": "secondary generalised seizures",
               "text": "secondary generalised seizures"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
-              "entity": "Diagnosis",
-              "evidence": "complex partial seizures (deja-vu and orofacial automatsisms) as well as secondary generalised seizures. The complex partial seizures are now happening once a month, and he has around 1-2 secondary generalised seizures",
-              "text": "secondary"
             }
           ],
           "old_mentions": [
@@ -24290,28 +26658,6 @@
               "entity": "Diagnosis",
               "evidence": "Secondary generalised seizures 3-4 per year",
               "text": "secondary generalised seizures"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
-              "entity": "Diagnosis",
-              "evidence": "Complex partial seizures (deja-vu, automatism) 1-2 per month\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0 Secondary generalised seizures 3-4 per year\n\u00a0\nanti-epileptic medication:\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0 Carbamazapine 400mg bd\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0 Clobazam 10-20mg bd for seizure clusters\n\u00a0\nPrevious medications tried: Lamotrigine (rash)\n\u00a0\nInvestigations: \u00a0 MRI 14/3/2006 right temporal lobe focal cortical dysplasia\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0 EEG sharp waves, right temporal lobe\n\u00a0\nI reviewed this 40 year old woman in clinic today. As you know she was diagnosed with epilepsy at the age of 22 after having 2 secondary generalised seizures",
-              "text": "secondary"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
-              "entity": "Diagnosis",
-              "evidence": "diagnosed with epilepsy at the age of 22",
-              "text": "focal"
             }
           ],
           "old_mentions": [
@@ -24668,17 +27014,6 @@
               "entity": "Diagnosis",
               "evidence": "I explained the diagnosis of epilepsy, some safety implications and the DVLA driving regulations on epilepsy and driving.",
               "text": "epilepsy"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_heading_recovery",
-              "entity": "Diagnosis",
-              "evidence": "Focal epilepsy",
-              "text": "focal epilepsy"
             }
           ],
           "old_mentions": [
@@ -28738,8 +31073,7 @@
         },
         {
           "categories": [
-            "assertion_or_negation_change",
-            "hierarchy_reconciliation_or_duplicate_collapse"
+            "hierarchy_reconciliation"
           ],
           "indicator": "Diagnosis",
           "letter_id": "EA0183",
@@ -28789,17 +31123,6 @@
               "entity": "Diagnosis",
               "evidence": "John\u2019s epilepsy started at the age of 4.",
               "text": "epilepsy"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
-              "entity": "Diagnosis",
-              "evidence": "Complex partial seizures with secondary generalised tonic clonic seizures",
-              "text": "generalised"
             }
           ],
           "old_mentions": [
@@ -29252,17 +31575,6 @@
               "entity": "Diagnosis",
               "evidence": "He has had one previous focal to bilateral convulsive seizure at the time of diagnosis of his epilepsy in May 2017.",
               "text": "focal to bilateral convulsive seizure"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_heading_recovery",
-              "entity": "Diagnosis",
-              "evidence": "focal epilepsy",
-              "text": "focal epilepsy"
             }
           ],
           "old_mentions": [
@@ -29565,40 +31877,7 @@
               "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
               "entity": "Diagnosis",
               "evidence": "drug refractory focal (occipital lobe) epilepsy",
-              "text": "secondary"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
-              "entity": "Diagnosis",
-              "evidence": "drug refractory focal (occipital lobe) epilepsy",
-              "text": "focal"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
-              "entity": "Diagnosis",
-              "evidence": "drug refractory focal (occipital lobe) epilepsy",
               "text": "drug"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
-              "entity": "Diagnosis",
-              "evidence": "drug refractory focal (occipital lobe) epilepsy",
-              "text": "occipital"
             }
           ],
           "old_mentions": [
@@ -29897,17 +32176,6 @@
               "entity": "Diagnosis",
               "evidence": "focal to bilateral convulsive seizures",
               "text": "focal to bilateral convulsive seizures"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
-              "entity": "Diagnosis",
-              "evidence": "Seizure type and frequency: focal seizures with altered awareness",
-              "text": "focal"
             }
           ],
           "old_mentions": [
@@ -30242,17 +32510,6 @@
               "entity": "Diagnosis",
               "evidence": "Symptomatic epilepsy with generalised tonic clonic seizures with right temporal meningioma",
               "text": "generalised"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair+deterministic_residual_benchmark_repair",
-              "entity": "Diagnosis",
-              "evidence": "Symptomatic epilepsy with generalised tonic clonic seizures with right temporal meningioma",
-              "text": "symptomatic"
             }
           ],
           "old_mentions": [
@@ -30610,17 +32867,6 @@
               "entity": "Diagnosis",
               "evidence": "Complex partial seizures with secondary generalised seizures",
               "text": "secondary generalised seizures"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
-              "entity": "Diagnosis",
-              "evidence": "Complex partial seizures with secondary generalised seizures",
-              "text": "secondary"
             }
           ],
           "old_mentions": []
@@ -30987,12 +33233,12 @@
         "passed": true
       },
       {
-        "detail": "0.9083; must beat 0.6693 and tie/beat 0.7127",
+        "detail": "0.9090; must beat 0.6693 and tie/beat 0.7127",
         "name": "Diagnosis headline",
         "passed": true
       },
       {
-        "detail": "0.9083; baseline 0.6693",
+        "detail": "0.9090; baseline 0.6693",
         "name": "Diagnosis concept_negation",
         "passed": true
       },
@@ -31019,7 +33265,7 @@
     ],
     "decision": "do-not-promote"
   },
-  "generated_on": "2026-06-21",
+  "generated_on": "2026-06-22",
   "input_artifacts": {
     "diagnosis_reconciler_v01": "experiments/exectv2_hybrid_diagnosis_reconciler_v01_dev140_gpt41mini_20260618.jsonl",
     "focused_comparator": "experiments/exectv2_holistic_finding_assembly_v07_dev140_20260621.jsonl",
@@ -31032,11 +33278,11 @@
     "Diagnosis": {
       "call_failures": 0,
       "evidence_invalid_dropped": 2,
-      "exact_evidence_mentions": 421,
+      "exact_evidence_mentions": 396,
       "exact_evidence_rate": 1.0,
       "parse_schema_failures": 0,
       "raw_mentions": 438,
-      "scored_mentions": 421
+      "scored_mentions": 396
     },
     "Investigations": {
       "call_failures": 0,
@@ -31097,29 +33343,29 @@
   "row_count": 140,
   "score_ladder": {
     "benchmark": {
-      "after_cui_projection": 0.399,
+      "after_cui_projection": 0.4,
       "by_indicator_raw": {
-        "Diagnosis": 0.2857,
+        "Diagnosis": 0.2946,
         "Investigations": 0.4981,
         "Prescription": 0.2948,
         "SeizureFrequency": 0.512
       },
-      "raw": 0.3693
+      "raw": 0.3741
     },
     "cui_projection_companion": {
       "by_indicator": {
         "Diagnosis": {
-          "f1": 0.9083,
-          "fn": 17,
-          "fp": 39,
+          "f1": 0.909,
+          "fn": 25,
+          "fp": 29,
           "gold_count": 297,
-          "precision": 0.8762,
-          "precision_tp": 276,
-          "pred_count": 315,
-          "recall": 0.9428,
-          "recall_tp": 280,
+          "precision": 0.9024,
+          "precision_tp": 268,
+          "pred_count": 297,
+          "recall": 0.9158,
+          "recall_tp": 272,
           "shortfall_to_target": 0.0,
-          "tp": 280
+          "tp": 272
         },
         "Investigations": {
           "f1": 0.9132,
@@ -31157,31 +33403,31 @@
       },
       "overall": {
         "f1": 0.8872,
-        "fn": 72,
-        "fp": 112,
+        "fn": 80,
+        "fp": 102,
         "gold_count": 798,
-        "precision": 0.8657,
-        "precision_tp": 722,
-        "pred_count": 834,
-        "recall": 0.9098,
-        "recall_tp": 726,
-        "tp": 726
+        "precision": 0.875,
+        "precision_tp": 714,
+        "pred_count": 816,
+        "recall": 0.8997,
+        "recall_tp": 718,
+        "tp": 718
       }
     },
     "evidence_valid_score": {
       "by_indicator": {
         "Diagnosis": {
-          "f1": 0.9083,
-          "fn": 17,
-          "fp": 39,
+          "f1": 0.909,
+          "fn": 25,
+          "fp": 29,
           "gold_count": 297,
-          "precision": 0.8762,
-          "precision_tp": 276,
-          "pred_count": 315,
-          "recall": 0.9428,
-          "recall_tp": 280,
+          "precision": 0.9024,
+          "precision_tp": 268,
+          "pred_count": 297,
+          "recall": 0.9158,
+          "recall_tp": 272,
           "shortfall_to_target": 0.0,
-          "tp": 280
+          "tp": 272
         },
         "Investigations": {
           "f1": 0.9132,
@@ -31219,23 +33465,23 @@
       },
       "overall": {
         "f1": 0.8872,
-        "fn": 72,
-        "fp": 112,
+        "fn": 80,
+        "fp": 102,
         "gold_count": 798,
-        "precision": 0.8657,
-        "precision_tp": 722,
-        "pred_count": 834,
-        "recall": 0.9098,
-        "recall_tp": 726,
-        "tp": 726
+        "precision": 0.875,
+        "precision_tp": 714,
+        "pred_count": 816,
+        "recall": 0.8997,
+        "recall_tp": 718,
+        "tp": 718
       }
     },
     "fidelity_companions": {
       "Diagnosis": {
         "concept_negation": {
-          "f1": 0.9083,
+          "f1": 0.909,
           "fidelity_gap": 0.0,
-          "headline_f1": 0.9083
+          "headline_f1": 0.909
         }
       },
       "SeizureFrequency": {
@@ -31249,17 +33495,17 @@
     "headline_target": {
       "by_indicator": {
         "Diagnosis": {
-          "f1": 0.9083,
-          "fn": 17,
-          "fp": 39,
+          "f1": 0.909,
+          "fn": 25,
+          "fp": 29,
           "gold_count": 297,
-          "precision": 0.8762,
-          "precision_tp": 276,
-          "pred_count": 315,
-          "recall": 0.9428,
-          "recall_tp": 280,
+          "precision": 0.9024,
+          "precision_tp": 268,
+          "pred_count": 297,
+          "recall": 0.9158,
+          "recall_tp": 272,
           "shortfall_to_target": 0.0,
-          "tp": 280
+          "tp": 272
         },
         "Investigations": {
           "f1": 0.9132,
@@ -31296,16 +33542,328 @@
         }
       },
       "overall": {
-        "f1": 0.9152,
-        "fn": 58,
-        "fp": 78,
+        "f1": 0.9155,
+        "fn": 66,
+        "fp": 68,
         "gold_count": 794,
-        "precision": 0.9037,
-        "precision_tp": 732,
-        "pred_count": 810,
-        "recall": 0.927,
-        "recall_tp": 736,
-        "tp": 736
+        "precision": 0.9141,
+        "precision_tp": 724,
+        "pred_count": 792,
+        "recall": 0.9169,
+        "recall_tp": 728,
+        "tp": 728
+      }
+    },
+    "materialized_surfaces": {
+      "dictionary_normalized": {
+        "by_indicator": {
+          "Diagnosis": {
+            "f1": 0.8614,
+            "fn": 50,
+            "fp": 29,
+            "gold_count": 297,
+            "precision": 0.8934,
+            "precision_tp": 243,
+            "pred_count": 272,
+            "recall": 0.8316,
+            "recall_tp": 247,
+            "shortfall_to_target": 0.0386,
+            "tp": 247
+          },
+          "Investigations": {
+            "f1": 0.9132,
+            "fn": 15,
+            "fp": 8,
+            "gold_count": 136,
+            "precision": 0.938,
+            "pred_count": 129,
+            "recall": 0.8897,
+            "shortfall_to_target": 0.0,
+            "tp": 121
+          },
+          "Prescription": {
+            "f1": 0.9357,
+            "fn": 11,
+            "fp": 14,
+            "gold_count": 193,
+            "precision": 0.9286,
+            "pred_count": 196,
+            "recall": 0.943,
+            "shortfall_to_target": 0.0,
+            "tp": 182
+          },
+          "SeizureFrequency": {
+            "f1": 0.7814,
+            "fn": 29,
+            "fp": 51,
+            "gold_count": 172,
+            "precision": 0.7371,
+            "pred_count": 194,
+            "recall": 0.8314,
+            "shortfall_to_target": 0.1186,
+            "tp": 143
+          }
+        },
+        "overall": {
+          "f1": 0.8697,
+          "fn": 105,
+          "fp": 102,
+          "gold_count": 798,
+          "precision": 0.871,
+          "precision_tp": 689,
+          "pred_count": 791,
+          "recall": 0.8684,
+          "recall_tp": 693,
+          "tp": 693
+        }
+      },
+      "evidence_valid": {
+        "by_indicator": {
+          "Diagnosis": {
+            "f1": 0.7572,
+            "fn": 65,
+            "fp": 82,
+            "gold_count": 297,
+            "precision": 0.7346,
+            "precision_tp": 227,
+            "pred_count": 309,
+            "recall": 0.7811,
+            "recall_tp": 232,
+            "shortfall_to_target": 0.1428,
+            "tp": 232
+          },
+          "Investigations": {
+            "f1": 0.9132,
+            "fn": 15,
+            "fp": 8,
+            "gold_count": 136,
+            "precision": 0.938,
+            "pred_count": 129,
+            "recall": 0.8897,
+            "shortfall_to_target": 0.0,
+            "tp": 121
+          },
+          "Prescription": {
+            "f1": 0.9357,
+            "fn": 11,
+            "fp": 14,
+            "gold_count": 193,
+            "precision": 0.9286,
+            "pred_count": 196,
+            "recall": 0.943,
+            "shortfall_to_target": 0.0,
+            "tp": 182
+          },
+          "SeizureFrequency": {
+            "f1": 0.7814,
+            "fn": 29,
+            "fp": 51,
+            "gold_count": 172,
+            "precision": 0.7371,
+            "pred_count": 194,
+            "recall": 0.8314,
+            "shortfall_to_target": 0.1186,
+            "tp": 143
+          }
+        },
+        "overall": {
+          "f1": 0.8308,
+          "fn": 120,
+          "fp": 155,
+          "gold_count": 798,
+          "precision": 0.8128,
+          "precision_tp": 673,
+          "pred_count": 828,
+          "recall": 0.8496,
+          "recall_tp": 678,
+          "tp": 678
+        }
+      },
+      "final": {
+        "by_indicator": {
+          "Diagnosis": {
+            "f1": 0.909,
+            "fn": 25,
+            "fp": 29,
+            "gold_count": 297,
+            "precision": 0.9024,
+            "precision_tp": 268,
+            "pred_count": 297,
+            "recall": 0.9158,
+            "recall_tp": 272,
+            "shortfall_to_target": 0.0,
+            "tp": 272
+          },
+          "Investigations": {
+            "f1": 0.9132,
+            "fn": 15,
+            "fp": 8,
+            "gold_count": 136,
+            "precision": 0.938,
+            "pred_count": 129,
+            "recall": 0.8897,
+            "shortfall_to_target": 0.0,
+            "tp": 121
+          },
+          "Prescription": {
+            "f1": 0.9357,
+            "fn": 11,
+            "fp": 14,
+            "gold_count": 193,
+            "precision": 0.9286,
+            "pred_count": 196,
+            "recall": 0.943,
+            "shortfall_to_target": 0.0,
+            "tp": 182
+          },
+          "SeizureFrequency": {
+            "f1": 0.7814,
+            "fn": 29,
+            "fp": 51,
+            "gold_count": 172,
+            "precision": 0.7371,
+            "pred_count": 194,
+            "recall": 0.8314,
+            "shortfall_to_target": 0.1186,
+            "tp": 143
+          }
+        },
+        "overall": {
+          "f1": 0.8872,
+          "fn": 80,
+          "fp": 102,
+          "gold_count": 798,
+          "precision": 0.875,
+          "precision_tp": 714,
+          "pred_count": 816,
+          "recall": 0.8997,
+          "recall_tp": 718,
+          "tp": 718
+        }
+      },
+      "residual_benchmark_added": {
+        "by_indicator": {
+          "Diagnosis": {
+            "f1": 0.909,
+            "fn": 25,
+            "fp": 29,
+            "gold_count": 297,
+            "precision": 0.9024,
+            "precision_tp": 268,
+            "pred_count": 297,
+            "recall": 0.9158,
+            "recall_tp": 272,
+            "shortfall_to_target": 0.0,
+            "tp": 272
+          },
+          "Investigations": {
+            "f1": 0.9132,
+            "fn": 15,
+            "fp": 8,
+            "gold_count": 136,
+            "precision": 0.938,
+            "pred_count": 129,
+            "recall": 0.8897,
+            "shortfall_to_target": 0.0,
+            "tp": 121
+          },
+          "Prescription": {
+            "f1": 0.9357,
+            "fn": 11,
+            "fp": 14,
+            "gold_count": 193,
+            "precision": 0.9286,
+            "pred_count": 196,
+            "recall": 0.943,
+            "shortfall_to_target": 0.0,
+            "tp": 182
+          },
+          "SeizureFrequency": {
+            "f1": 0.7814,
+            "fn": 29,
+            "fp": 51,
+            "gold_count": 172,
+            "precision": 0.7371,
+            "pred_count": 194,
+            "recall": 0.8314,
+            "shortfall_to_target": 0.1186,
+            "tp": 143
+          }
+        },
+        "overall": {
+          "f1": 0.8872,
+          "fn": 80,
+          "fp": 102,
+          "gold_count": 798,
+          "precision": 0.875,
+          "precision_tp": 714,
+          "pred_count": 816,
+          "recall": 0.8997,
+          "recall_tp": 718,
+          "tp": 718
+        }
+      },
+      "source_scored": {
+        "by_indicator": {
+          "Diagnosis": {
+            "f1": 0.7572,
+            "fn": 65,
+            "fp": 82,
+            "gold_count": 297,
+            "precision": 0.7346,
+            "precision_tp": 227,
+            "pred_count": 309,
+            "recall": 0.7811,
+            "recall_tp": 232,
+            "shortfall_to_target": 0.1428,
+            "tp": 232
+          },
+          "Investigations": {
+            "f1": 0.9132,
+            "fn": 15,
+            "fp": 8,
+            "gold_count": 136,
+            "precision": 0.938,
+            "pred_count": 129,
+            "recall": 0.8897,
+            "shortfall_to_target": 0.0,
+            "tp": 121
+          },
+          "Prescription": {
+            "f1": 0.9357,
+            "fn": 11,
+            "fp": 14,
+            "gold_count": 193,
+            "precision": 0.9286,
+            "pred_count": 196,
+            "recall": 0.943,
+            "shortfall_to_target": 0.0,
+            "tp": 182
+          },
+          "SeizureFrequency": {
+            "f1": 0.7814,
+            "fn": 29,
+            "fp": 51,
+            "gold_count": 172,
+            "precision": 0.7371,
+            "pred_count": 194,
+            "recall": 0.8314,
+            "shortfall_to_target": 0.1186,
+            "tp": 143
+          }
+        },
+        "overall": {
+          "f1": 0.8308,
+          "fn": 120,
+          "fp": 155,
+          "gold_count": 798,
+          "precision": 0.8128,
+          "precision_tp": 673,
+          "pred_count": 828,
+          "recall": 0.8496,
+          "recall_tp": 678,
+          "tp": 678
+        }
       }
     },
     "raw_lane_score": {
@@ -31389,9 +33947,9 @@
     "best_by_indicator": {
       "Diagnosis": {
         "candidate": "exectv2_holistic_finding_assembly_v08_dev140",
-        "f1": 0.9083,
-        "precision": 0.8762,
-        "recall": 0.9428,
+        "f1": 0.909,
+        "precision": 0.9024,
+        "recall": 0.9158,
         "shortfall_to_target": 0.0
       },
       "Investigations": {
@@ -31422,9 +33980,9 @@
         "error_analysis": {
           "per_indicator": {
             "Diagnosis": {
-              "candidate_miss": 17,
+              "candidate_miss": 25,
               "evidence_failure": 0,
-              "wrong_detail_selection": 39
+              "wrong_detail_selection": 29
             },
             "Investigations": {
               "candidate_miss": 15,
@@ -31446,10 +34004,10 @@
         "fidelity_companions": {
           "Diagnosis": {
             "companion": "concept_negation",
-            "companion_f1": 0.9083,
+            "companion_f1": 0.909,
             "fidelity_gap": 0.0,
             "forgives": "Negation (negated vs affirmed)",
-            "headline_f1": 0.9083
+            "headline_f1": 0.909
           },
           "SeizureFrequency": {
             "companion": "active_rate_fidelity",
@@ -31461,17 +34019,17 @@
         },
         "headline_scores": {
           "Diagnosis": {
-            "f1": 0.9083,
-            "fn": 17,
-            "fp": 39,
+            "f1": 0.909,
+            "fn": 25,
+            "fp": 29,
             "gold_count": 297,
-            "precision": 0.8762,
-            "precision_tp": 276,
-            "pred_count": 315,
-            "recall": 0.9428,
-            "recall_tp": 280,
+            "precision": 0.9024,
+            "precision_tp": 268,
+            "pred_count": 297,
+            "recall": 0.9158,
+            "recall_tp": 272,
             "shortfall_to_target": 0.0,
-            "tp": 280
+            "tp": 272
           },
           "Investigations": {
             "f1": 0.9132,
@@ -31510,16 +34068,16 @@
         "meets_all_targets": true,
         "name": "exectv2_holistic_finding_assembly_v08_dev140",
         "overall_target_score": {
-          "f1": 0.9152,
-          "fn": 58,
-          "fp": 78,
+          "f1": 0.9155,
+          "fn": 66,
+          "fp": 68,
           "gold_count": 794,
-          "precision": 0.9037,
-          "precision_tp": 732,
-          "pred_count": 810,
-          "recall": 0.927,
-          "recall_tp": 736,
-          "tp": 736
+          "precision": 0.9141,
+          "precision_tp": 724,
+          "pred_count": 792,
+          "recall": 0.9169,
+          "recall_tp": 728,
+          "tp": 728
         },
         "ownership": "component_attributed_holistic_finding_replay"
       }

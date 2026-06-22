@@ -2,8 +2,8 @@
 
 Date: 2026-06-22
 
-Scope: Phase 0 selection memo for the architecture set worth carrying into the
-closeout reports, frontend review surface, and paper-facing tables.
+Scope: Phase 1 refreshed selection memo for the architecture set worth carrying
+into the closeout reports, frontend review surface, and paper-facing tables.
 
 ## Selection Principles
 

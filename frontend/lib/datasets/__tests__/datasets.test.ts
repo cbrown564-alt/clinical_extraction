@@ -90,6 +90,7 @@ function mention(partial: Partial<Exectv2Mention> & { entity: string; text: stri
     assertion: "",
     attributes: {},
     status: "predicted",
+    headline_status: "",
     ...partial,
   };
 }

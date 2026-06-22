@@ -1,0 +1,839 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Qwen Repair-Mediated Results: Raw to Final</title>
+  <style>
+    :root {
+      --ink: #151515;
+      --muted: #6f716d;
+      --paper: #f7f4ee;
+      --panel: #fffcf5;
+      --line: #d8d1c4;
+      --accent: #be3f2f;
+      --accent-dark: #822d25;
+      --mint: #c8ded4;
+      --blue: #c8d7e6;
+      --gold: #ead28e;
+      --charcoal: #272826;
+      --radius: 8px;
+      --max: 1180px;
+      --shadow: 0 24px 80px rgba(32, 28, 20, 0.12);
+      color-scheme: light;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background:
+        linear-gradient(90deg, rgba(21, 21, 21, 0.045) 1px, transparent 1px) 0 0 / 42px 42px,
+        linear-gradient(180deg, rgba(21, 21, 21, 0.035) 1px, transparent 1px) 0 0 / 42px 42px,
+        var(--paper);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }
+
+    a {
+      color: inherit;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+
+    .hero {
+      min-height: 92svh;
+      display: grid;
+      align-items: end;
+      padding: 42px 28px 64px;
+      background:
+        radial-gradient(circle at 82% 12%, rgba(190, 63, 47, 0.18), transparent 28%),
+        linear-gradient(140deg, rgba(39, 40, 38, 0.98), rgba(39, 40, 38, 0.84) 48%, rgba(247, 244, 238, 0.1)),
+        var(--charcoal);
+      color: #fff8ee;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto 28px 22px 28px;
+      height: 1px;
+      background: rgba(255, 248, 238, 0.24);
+    }
+
+    .hero-inner {
+      width: min(var(--max), 100%);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1.18fr) minmax(300px, 0.82fr);
+      gap: 56px;
+      align-items: end;
+      position: relative;
+      z-index: 1;
+    }
+
+    .kicker {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: #f2c5b9;
+      margin: 0 0 18px;
+      font-weight: 760;
+    }
+
+    h1 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(52px, 9vw, 128px);
+      line-height: 0.88;
+      letter-spacing: 0;
+      margin: 0;
+      max-width: 920px;
+      font-weight: 500;
+    }
+
+    .hero-copy {
+      max-width: 630px;
+      margin: 26px 0 0;
+      color: rgba(255, 248, 238, 0.82);
+      font-size: clamp(17px, 2vw, 22px);
+      line-height: 1.45;
+    }
+
+    .hero-panel {
+      align-self: stretch;
+      display: grid;
+      align-content: end;
+      gap: 14px;
+      min-height: 420px;
+      border-left: 1px solid rgba(255, 248, 238, 0.24);
+      padding-left: 28px;
+    }
+
+    .signal {
+      display: grid;
+      grid-template-columns: 88px 1fr;
+      gap: 14px;
+      align-items: baseline;
+      padding: 16px 0;
+      border-top: 1px solid rgba(255, 248, 238, 0.16);
+    }
+
+    .signal strong {
+      font-size: clamp(28px, 4vw, 52px);
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+      color: #fff8ee;
+    }
+
+    .signal span {
+      color: rgba(255, 248, 238, 0.74);
+      line-height: 1.35;
+    }
+
+    main {
+      position: relative;
+    }
+
+    .section {
+      width: min(var(--max), calc(100% - 48px));
+      margin: 0 auto;
+      padding: 86px 0;
+    }
+
+    .section-tight {
+      padding-top: 56px;
+    }
+
+    .eyebrow {
+      color: var(--accent-dark);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    h2 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(36px, 5vw, 74px);
+      line-height: 0.98;
+      font-weight: 500;
+      letter-spacing: 0;
+      max-width: 920px;
+    }
+
+    .lede {
+      margin: 20px 0 0;
+      max-width: 760px;
+      color: var(--muted);
+      font-size: 19px;
+      line-height: 1.55;
+    }
+
+    .metrics {
+      margin-top: 42px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .metric {
+      padding: 24px 22px;
+      min-height: 150px;
+      border-right: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .metric:last-child {
+      border-right: 0;
+    }
+
+    .metric b {
+      display: block;
+      font-size: clamp(30px, 5vw, 58px);
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+      font-weight: 810;
+    }
+
+    .metric span {
+      color: var(--muted);
+      line-height: 1.35;
+      margin-top: 12px;
+      display: block;
+    }
+
+    .bar-story {
+      margin-top: 44px;
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 36px;
+      align-items: start;
+    }
+
+    .bar-label {
+      position: sticky;
+      top: 18px;
+      color: var(--muted);
+      line-height: 1.48;
+    }
+
+    .bars {
+      display: grid;
+      gap: 16px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 170px 1fr 78px;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .bar-row span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .bar-track {
+      height: 18px;
+      background: #e4ded2;
+      border-radius: 999px;
+      overflow: hidden;
+      box-shadow: inset 0 0 0 1px rgba(21, 21, 21, 0.08);
+    }
+
+    .bar-fill {
+      height: 100%;
+      width: var(--w);
+      background: linear-gradient(90deg, var(--accent), #e5a15a);
+      border-radius: inherit;
+      transform-origin: left;
+      animation: grow 950ms ease both;
+    }
+
+    .story-grid {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 42px;
+      align-items: start;
+    }
+
+    .rail {
+      position: sticky;
+      top: 20px;
+      padding-top: 8px;
+      border-top: 2px solid var(--ink);
+    }
+
+    .rail a {
+      display: block;
+      padding: 12px 0;
+      color: var(--muted);
+      font-size: 14px;
+      text-decoration: none;
+      border-bottom: 1px solid var(--line);
+      transition: color 160ms ease, padding-left 160ms ease;
+    }
+
+    .rail a:hover {
+      color: var(--accent-dark);
+      padding-left: 8px;
+    }
+
+    .examples {
+      display: grid;
+      gap: 22px;
+    }
+
+    .example {
+      background: rgba(255, 252, 245, 0.72);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: clip;
+      box-shadow: 0 12px 34px rgba(32, 28, 20, 0.06);
+    }
+
+    .example summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 22px;
+      display: grid;
+      grid-template-columns: 86px 1fr 150px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .example summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .num {
+      color: var(--accent-dark);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 36px;
+      line-height: 1;
+    }
+
+    .example h3 {
+      margin: 0;
+      font-size: clamp(21px, 2.4vw, 30px);
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    .tag {
+      justify-self: end;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 30px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--accent-dark);
+      font-size: 12px;
+      font-weight: 760;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 6px 10px;
+      white-space: nowrap;
+    }
+
+    .example-body {
+      border-top: 1px solid var(--line);
+      padding: 0 22px 24px;
+      animation: reveal 240ms ease both;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: 1fr 56px 1fr;
+      gap: 18px;
+      margin-top: 22px;
+      align-items: stretch;
+    }
+
+    .state {
+      background: var(--panel);
+      border-radius: var(--radius);
+      padding: 18px;
+      border: 1px solid rgba(216, 209, 196, 0.72);
+      min-height: 160px;
+    }
+
+    .state h4 {
+      margin: 0 0 12px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      color: var(--muted);
+    }
+
+    .state ul {
+      margin: 0;
+      padding-left: 18px;
+      line-height: 1.52;
+    }
+
+    .state li + li {
+      margin-top: 8px;
+    }
+
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 0.92em;
+      background: rgba(39, 40, 38, 0.08);
+      border: 1px solid rgba(39, 40, 38, 0.08);
+      border-radius: 5px;
+      padding: 1px 5px;
+      word-break: break-word;
+    }
+
+    .arrow {
+      display: grid;
+      place-items: center;
+      color: var(--accent-dark);
+      font-weight: 900;
+      font-size: 26px;
+    }
+
+    .repair-note {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 18px;
+      padding: 18px 0 0;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      line-height: 1.48;
+    }
+
+    .repair-note b {
+      color: var(--ink);
+    }
+
+    .callout {
+      margin: 44px 0 0;
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(280px, 0.56fr);
+      gap: 34px;
+      align-items: stretch;
+      background: var(--charcoal);
+      color: #fff8ee;
+      border-radius: var(--radius);
+      padding: 34px;
+      box-shadow: var(--shadow);
+    }
+
+    .callout h3 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(32px, 4vw, 58px);
+      line-height: 1;
+      font-weight: 500;
+      margin: 0;
+    }
+
+    .callout p {
+      color: rgba(255, 248, 238, 0.76);
+      line-height: 1.56;
+      margin: 18px 0 0;
+      font-size: 18px;
+    }
+
+    .ladder {
+      display: grid;
+      gap: 10px;
+      align-content: center;
+    }
+
+    .rung {
+      display: grid;
+      grid-template-columns: 1fr 70px;
+      gap: 12px;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255, 248, 238, 0.18);
+      color: rgba(255, 248, 238, 0.82);
+    }
+
+    .rung strong {
+      color: #fff8ee;
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+    }
+
+    .implications {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1px;
+      background: var(--line);
+      border: 1px solid var(--line);
+      margin-top: 42px;
+    }
+
+    .implication {
+      background: var(--paper);
+      padding: 28px;
+      min-height: 210px;
+    }
+
+    .implication b {
+      display: block;
+      font-size: 18px;
+      margin-bottom: 14px;
+    }
+
+    .implication p {
+      color: var(--muted);
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    .sources {
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .sources ul {
+      columns: 2;
+      gap: 28px;
+      padding-left: 18px;
+    }
+
+    .sources li {
+      break-inside: avoid;
+      margin-bottom: 8px;
+    }
+
+    @keyframes grow {
+      from { transform: scaleX(0); }
+      to { transform: scaleX(1); }
+    }
+
+    @keyframes reveal {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 900px) {
+      .hero-inner,
+      .story-grid,
+      .bar-story,
+      .callout {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-panel {
+        min-height: auto;
+        border-left: 0;
+        border-top: 1px solid rgba(255, 248, 238, 0.24);
+        padding-left: 0;
+        padding-top: 22px;
+      }
+
+      .metrics,
+      .implications {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .rail,
+      .bar-label {
+        position: static;
+      }
+
+      .flow {
+        grid-template-columns: 1fr;
+      }
+
+      .arrow {
+        transform: rotate(90deg);
+        min-height: 24px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .hero {
+        padding: 34px 20px 52px;
+      }
+
+      .section {
+        width: min(100% - 32px, var(--max));
+        padding: 62px 0;
+      }
+
+      .metrics,
+      .implications {
+        grid-template-columns: 1fr;
+      }
+
+      .metric {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .metric:last-child {
+        border-bottom: 0;
+      }
+
+      .example summary {
+        grid-template-columns: 52px 1fr;
+      }
+
+      .tag {
+        grid-column: 2;
+        justify-self: start;
+      }
+
+      .repair-note {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .bar-row {
+        grid-template-columns: 1fr;
+        gap: 7px;
+      }
+
+      .sources ul {
+        columns: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-inner">
+      <div>
+        <p class="kicker">ExECTv2 and Gan 2026 forensic readout</p>
+        <h1>Qwen looks strong after repair.</h1>
+        <p class="hero-copy">The important finding is not that Qwen failed. It is that the useful result belongs to a hybrid system: Qwen source-near extraction plus deterministic dictionaries, schema cleanup, residual additions, and label repair.</p>
+      </div>
+      <aside class="hero-panel" aria-label="headline metrics">
+        <div class="signal"><strong>0.0000</strong><span>ExECTv2 raw-candidate score view before assembly rendering.</span></div>
+        <div class="signal"><strong>0.9001</strong><span>Final clinical headline after standard dictionaries and residual repair.</span></div>
+        <div class="signal"><strong>508</strong><span>Gan validation labels changed by the full repair stack over the same raw Qwen outputs.</span></div>
+      </aside>
+    </div>
+  </header>
+
+  <main>
+    <section class="section section-tight" id="claim">
+      <div class="eyebrow">The Claim Boundary</div>
+      <h2>The score is real. The ownership is mixed.</h2>
+      <p class="lede">Qwen supplied many useful signals, but the final answers repeatedly depend on deterministic repair. The report should therefore describe a repair-sensitive local-model system, not raw local-model parity.</p>
+
+      <div class="metrics" aria-label="summary metrics">
+        <div class="metric"><b>10</b><span>parse/schema failures on each ExECTv2 shared family lens surface</span></div>
+        <div class="metric"><b>0.3618</b><span>SeizureFrequency active-rate fidelity despite high headline SF F1</span></div>
+        <div class="metric"><b>301</b><span>Gan raw-wrong rows moved to full-correct after repair</span></div>
+        <div class="metric"><b>8</b><span>Gan raw-correct rows regressed to full-wrong after repair</span></div>
+      </div>
+
+      <div class="bar-story" id="ladder">
+        <p class="bar-label">The Gan same-raw attribution ladder shows how much of the final result arrives after the model has already spoken.</p>
+        <div class="bars">
+          <div class="bar-row"><span>Strict JSON raw</span><div class="bar-track"><div class="bar-fill" style="--w: 0%"></div></div><span>0.0000</span></div>
+          <div class="bar-row"><span>JSON dialect only</span><div class="bar-track"><div class="bar-fill" style="--w: 49.2%"></div></div><span>0.4920</span></div>
+          <div class="bar-row"><span>Strict format</span><div class="bar-track"><div class="bar-fill" style="--w: 53.6%"></div></div><span>0.5360</span></div>
+          <div class="bar-row"><span>Selected evidence</span><div class="bar-track"><div class="bar-fill" style="--w: 80.4%"></div></div><span>0.8040</span></div>
+          <div class="bar-row"><span>Full stack</span><div class="bar-track"><div class="bar-fill" style="--w: 88.27%"></div></div><span>0.8827</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="examples">
+      <div class="story-grid">
+        <nav class="rail" aria-label="example navigation">
+          <a href="#ex1">1. Fragment dropped, concept added</a>
+          <a href="#ex2">2. Investigation defaults stripped</a>
+          <a href="#ex3">3. Tonic chronic rewritten</a>
+          <a href="#ex4">4. Diagnosis filtered</a>
+          <a href="#ex5">5. SF residuals added</a>
+          <a href="#ex6">6. Rate normalized</a>
+          <a href="#ex7">7. Diagnosis expanded</a>
+          <a href="#ex8">8. Bad SF dropped</a>
+          <a href="#ex9">9. Projection repaired</a>
+          <a href="#ex10">10. Gan label canonicalized</a>
+        </nav>
+
+        <div>
+          <div class="eyebrow">Ten Raw-To-Final Examples</div>
+          <h2>What changed, line by line.</h2>
+          <p class="lede">Each example starts with Qwen's source artifact and ends with the repaired answer that reached the scorer. The crucial question is whether the final answer is still mostly Qwen, or Qwen plus prediction-bearing deterministic repair.</p>
+
+          <div class="examples">
+            <details class="example" id="ex1" open>
+              <summary><span class="num">01</span><h3>EA0002 Diagnosis: a fragment is dropped and a seizure type is added.</h3><span class="tag">Diagnosis</span></summary>
+              <div class="example-body">
+                <div class="flow">
+                  <div class="state"><h4>Raw Qwen</h4><ul><li><code>focal epilepsy</code></li><li><code>Probable temporal</code></li></ul></div>
+                  <div class="arrow">-&gt;</div>
+                  <div class="state"><h4>Final Answer</h4><ul><li><code>focal epilepsy</code> with CUI <code>C0014547</code></li><li><code>secondary generalised seizures</code></li></ul></div>
+                </div>
+                <div class="repair-note"><b>Repair move</b><span>The diagnosis dictionary keeps the real diagnosis, drops the non-standalone temporal fragment, and residual repair adds <code>secondary generalised seizures</code> from source evidence.</span></div>
+              </div>
+            </details>
+
+            <details class="example" id="ex2">
+              <summary><span class="num">02</span><h3>EA0002 Investigations: unsupported default negatives are removed.</h3><span class="tag">Investigations</span></summary>
+              <div class="example-body">
+                <div class="flow">
+                  <div class="state"><h4>Raw Qwen</h4><ul><li><code>previous MRI scan in 2012</code></li><li><code>CT_Performed=No</code>, <code>EEG_Performed=No</code></li><li><code>MRI_Performed=Yes</code>, <code>MRI_Results=Abnormal</code></li></ul></div>
+                  <div class="arrow">-&gt;</div>
+                  <div class="state"><h4>Final Answer</h4><ul><li><code>previous MRI scan in 2012</code></li><li><code>CUI=C1319851</code>, <code>CUIPhrase=mri abnormal</code></li><li><code>MRI_Performed=Yes</code>, <code>MRI_Results=Abnormal</code></li></ul></div>
+                </div>
+                <div class="repair-note"><b>Repair move</b><span>The lens strips CT and EEG negatives that were not asserted by the evidence, then normalizes the MRI to the abnormal-MRI scoring concept.</span></div>
+              </div>
+            </details>
+
+            <details class="example" id="ex3">
+              <summary><span class="num">03</span><h3>EA0005 Diagnosis: spelling, category, and benchmark concepts change.</h3><span class="tag">Diagnosis</span></summary>
+              <div class="example-body">
+                <div class="flow">
+                  <div class="state"><h4>Raw Qwen</h4><ul><li><code>genetic generalised epilepsy</code></li><li><code>epilepsy with generalised tonic chronic seizures alone</code></li></ul></div>
+                  <div class="arrow">-&gt;</div>
+                  <div class="state"><h4>Final Answer</h4><ul><li><code>genetic generalised epilepsy</code></li><li><code>epilepsy with generalised tonic clonic seizures alone</code></li><li><code>generalised epilepsy</code></li><li><code>generalised tonic clonic seizures</code></li></ul></div>
+                </div>
+                <div class="repair-note"><b>Repair move</b><span>The dictionary rewrites <code>tonic chronic</code> to <code>tonic clonic</code>, adjusts the seizure-type category, and residual repair adds two benchmark concepts.</span></div>
+              </div>
+            </details>
+
+            <details class="example" id="ex4">
+              <summary><span class="num">04</span><h3>EA0006 Diagnosis: a broad diagnosis is normalized and a noisy seizure concept is removed.</h3><span class="tag">Diagnosis</span></summary>
+              <div class="example-body">
+                <div class="flow">
+                  <div class="state"><h4>Raw Qwen</h4><ul><li><code>unclassified epilepsy</code> with <code>Certainty=3</code></li><li><code>generalised tonic clonic seizures</code></li><li><code>absence like seizures</code></li></ul></div>
+                  <div class="arrow">-&gt;</div>
+                  <div class="state"><h4>Final Answer</h4><ul><li><code>epilepsy</code> with <code>Certainty=5</code></li><li><code>generalised tonic clonic seizures</code></li></ul></div>
+                </div>
+                <div class="repair-note"><b>Repair move</b><span>The lens rewrites <code>unclassified epilepsy</code> to the generic benchmark diagnosis, repairs certainty/category shape, and drops <code>absence like seizures</code> from Diagnosis.</span></div>
+              </div>
+            </details>
+
+            <details class="example" id="ex5">
+              <summary><span class="num">05</span><h3>EA0006 SeizureFrequency: missing operands become scorable events.</h3><span class="tag">SeizureFrequency</span></summary>
+              <div class="example-body">
+                <div class="flow">
+                  <div class="state"><h4>Raw Qwen</h4><ul><li><code>seizures</code>, zero since last clinic</li><li><code>generalised tonic clonic seizures</code>, <code>2</code> during <code>2014</code></li><li><code>absence like seizures</code>, year <code>2014</code>, no count</li></ul></div>
+                  <div class="arrow">-&gt;</div>
+                  <div class="state"><h4>Final Answer</h4><ul><li><code>generalised tonic clonic seizures</code>, <code>2</code>, during <code>2014</code></li><li><code>absence like seizures</code>, <code>1</code>, during <code>2014</code></li><li><code>seizure-free</code>, <code>0</code></li></ul></div>
+                </div>
+                <div class="repair-note"><b>Repair move</b><span>Residual SF repair fills count semantics and projects state labels. The final answer is an assembled frequency-state set, not a direct raw mention list.</span></div>
+              </div>
+            </details>
+
+            <details class="example" id="ex6">
+              <summary><span class="num">06</span><h3>EA0007 SeizureFrequency: a phrase becomes a normalized rate.</h3><span class="tag">SeizureFrequency</span></summary>
+              <div class="example-body">
+                <div class="flow">
+                  <div class="state"><h4>Raw Qwen</h4><ul><li><code>seizures every 3 to 4 weeks</code></li><li>range attributes attached to the full phrase</li></ul></div>
+                  <div class="arrow">-&gt;</div>
+                  <div class="state"><h4>Final Answer</h4><ul><li><code>seizures</code> with CUI <code>C0036572</code></li><li><code>NumberOfSeizures=1</code></li><li><code>TimePeriod=Week</code>, lower/upper period <code>3</code> to <code>4</code></li></ul></div>
+                </div>
+                <div class="repair-note"><b>Repair move</b><span>The convention dictionary rewrites the full cadence phrase to a generic benchmark seizure-rate object and adds CUI projection.</span></div>
+              </div>
+            </details>
+
+            <details class="example" id="ex7">
+              <summary><span class="num">07</span><h3>EA0008 Diagnosis: a broad epilepsy diagnosis is expanded into seizure-type concepts.</h3><span class="tag">Diagnosis</span></summary>
+              <div class="example-body">
+                <div class="flow">
+                  <div class="state"><h4>Raw Qwen</h4><ul><li><code>symptomatic structural focal epilepsy</code></li></ul></div>
+                  <div class="arrow">-&gt;</div>
+                  <div class="state"><h4>Final Answer</h4><ul><li><code>symptomatic structural focal epilepsy</code></li><li><code>focal seizures with altered awareness</code></li><li><code>focal seizures</code></li></ul></div>
+                </div>
+                <div class="repair-note"><b>Repair move</b><span>Residual benchmark repair adds two seizure-type diagnoses from nearby source evidence. The final diagnosis inventory is larger than Qwen's raw output.</span></div>
+              </div>
+            </details>
+
+            <details class="example" id="ex8">
+              <summary><span class="num">08</span><h3>EA0016: a malformed SF answer is dropped, while Diagnosis and CT are repaired.</h3><span class="tag">Mixed</span></summary>
+              <div class="example-body">
+                <div class="flow">
+                  <div class="state"><h4>Raw Qwen</h4><ul><li>Diagnosis: <code>single focal seizure</code> as <code>SingleSeizure</code></li><li>SF: <code>seizures</code> with diagnosis-style attributes, no valid frequency state</li></ul></div>
+                  <div class="arrow">-&gt;</div>
+                  <div class="state"><h4>Final Answer</h4><ul><li><code>single focal seizure</code> as <code>MultipleSeizures</code></li><li>added <code>focal seizures</code></li><li>dropped the bad SF mention</li><li>added abnormal <code>CT</code></li></ul></div>
+                </div>
+                <div class="repair-note"><b>Repair move</b><span>The malformed SF mention is excluded; diagnosis attributes are repaired; residual repair adds a focal-seizure concept and a CT investigation from source evidence.</span></div>
+              </div>
+            </details>
+
+            <details class="example" id="ex9">
+              <summary><span class="num">09</span><h3>EA0171 Investigations: empty projection fields become scored MRI and EEG concepts.</h3><span class="tag">Investigations</span></summary>
+              <div class="example-body">
+                <div class="flow">
+                  <div class="state"><h4>Raw Qwen</h4><ul><li><code>MRI</code> with empty <code>CUI</code>, empty <code>CUIPhrase</code>, and <code>CT_Performed=No</code></li><li><code>EEG</code> with empty projection fields and <code>CT_Performed=No</code></li></ul></div>
+                  <div class="arrow">-&gt;</div>
+                  <div class="state"><h4>Final Answer</h4><ul><li><code>MRI</code>, <code>C0436481</code>, <code>mri normal</code></li><li><code>EEG</code>, <code>C0744602</code>, <code>eeg normal</code></li><li>unsupported CT defaults removed</li></ul></div>
+                </div>
+                <div class="repair-note"><b>Repair move</b><span>The investigation lens discards model-supplied empty projection attributes, removes unsupported modality negatives, and supplies the scored normal-MRI and normal-EEG concepts.</span></div>
+              </div>
+            </details>
+
+            <details class="example" id="ex10">
+              <summary><span class="num">10</span><h3>Gan row 725: a close raw label becomes an exact benchmark label.</h3><span class="tag">Gan 2026</span></summary>
+              <div class="example-body">
+                <div class="flow">
+                  <div class="state"><h4>Raw Qwen</h4><ul><li><code>daily</code></li></ul></div>
+                  <div class="arrow">-&gt;</div>
+                  <div class="state"><h4>Final Answer</h4><ul><li><code>1 per day</code></li><li>Gold: <code>1 per day</code></li></ul></div>
+                </div>
+                <div class="repair-note"><b>Repair move</b><span>This is final-label repair rather than entity-lens repair. The raw answer is semantically close, but the scorer sees the canonical label only after deterministic conversion.</span></div>
+              </div>
+            </details>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="implications">
+      <div class="callout">
+        <div>
+          <div class="eyebrow">Interpretation</div>
+          <h3>The finding is portability with caveats, not raw parity.</h3>
+          <p>Qwen is extracting useful clinical material, but the final score often depends on deterministic layers that add, drop, rewrite, normalize, or canonicalize the answer. Hiding that repair makes the model comparison look cleaner than it is.</p>
+        </div>
+        <div class="ladder" aria-label="repair contribution">
+          <div class="rung"><span>Changed Gan final labels</span><strong>508</strong></div>
+          <div class="rung"><span>Raw wrong to full correct</span><strong>301</strong></div>
+          <div class="rung"><span>Raw correct to full wrong</span><strong>8</strong></div>
+          <div class="rung"><span>Qwen ExECTv2 active-rate fidelity</span><strong>0.3618</strong></div>
+        </div>
+      </div>
+
+      <div class="implications">
+        <div class="implication"><b>Report as a system.</b><p>Use language like Qwen plus deterministic repair, standard dictionaries, and residual lenses. Do not frame the final row as model-only performance.</p></div>
+        <div class="implication"><b>Keep attribution visible.</b><p>Tables should preserve raw, format-only, selected-evidence, and full-stack views so readers can see where performance enters.</p></div>
+        <div class="implication"><b>Gate on clinical behavior.</b><p>Headline F1 is not enough. Active-rate fidelity, evidence validity, parse stability, and changed-row controls decide whether the result can promote.</p></div>
+      </div>
+    </section>
+
+    <section class="section sources" id="sources">
+      <div class="eyebrow">Evidence Spine</div>
+      <ul>
+        <li><a href="../../../../experiments/exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140_20260622.md">ExECTv2 Qwen v0.9.22 assembly report</a></li>
+        <li><a href="../../../../experiments/exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140_20260622.jsonl">ExECTv2 Qwen v0.9.22 repaired JSONL</a></li>
+        <li><a href="../../../../experiments/exectv2_llm_only_key_entities_structured_v0910_qwencompact_dev140_qwen36_35b_ollama_cuda11435_ctx12288_maxtok2500_20260622.jsonl">ExECTv2 Qwen raw structured-event source JSONL</a></li>
+        <li><a href="../../../../experiments/gan2026_v06_validation750_qwen3635b_repairfix_attribution_2026-06-21.md">Gan 2026 Qwen repairfix attribution</a></li>
+        <li><a href="exectv2_cross_model_closeout_2026-06-22.md">ExECTv2 cross-model closeout</a></li>
+        <li><a href="../reliability/exectv2_cross_model_reliability_scorecard_2026-06-22.md">ExECTv2 cross-model reliability scorecard</a></li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

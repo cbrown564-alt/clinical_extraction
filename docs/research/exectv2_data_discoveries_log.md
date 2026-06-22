@@ -371,6 +371,39 @@ Status: **firm (decided and audited 2026-06-12); aggregation landed in
 `score_overall`, gold-vs-gold overall/per-entity behavior is pinned in tests,
 and the first all-entity LLM-only full-200 audit confirms the reporting caveat.**
 
+### D20 — The headline collapses same-unit redundant duplicates but preserves distinct-offset duplicates `[all]`
+**Discovery.** A letter can carry two-or-more raw gold mentions that reduce to the
+*same* headline scoring unit, differing only in a headline-demoted attribute —
+a **Redundant-Convention Duplicate** the clinical-recovery headline de-duplicates
+and does **not** require the model to reproduce. These are distinct from
+**Distinct-Assertion Duplicates** (the same concept at distinct offsets, P5 /
+all-9 Finding 3), which the headline **preserves** because the published
+offset-based benchmark counts each.
+**Evidence.** EA0044 SeizureFrequency carries two `seizures` mentions at the
+**same offset 395–403**, both `NumberOfSeizures=0` (seizure-free), differing only
+in `PointInTime` (`LastClinic` vs `DrugChange`). `scoring._frequency_state_keys`
+keys SF on `(seizure_type, state)` then `dict.fromkeys`-dedups → one unit. Corpus
+headline gold vs. raw-mention gold: SF 187→168 (collapse + current-state
+suppression); **Investigations 136→136 (no collapse** — distinct-offset EEG
+duplicates preserved, e.g. EA0044 EEG at offsets 226 and 770); Diagnosis 405→297;
+Prescription 206→193.
+**Rules implication.** The redundant-vs-distinct split is per-family: SF collapses
+on `(seizure_type, state)`, Diagnosis on the [[Concept Recovery Unit]], Prescription
+on the regimen tuple; Investigations never collapses. Keep this keying in
+`scoring.py` (one home); do not re-derive it per surface.
+**LLM implication.** The model is correct to emit one mention per headline scoring
+unit; emitting the redundant `PointInTime` twin earns no headline credit and is not
+penalised. Do not few-shot the redundant twin as a target.
+**Frontend implication.** A per-letter exploration surface (the Example Explorer)
+must report match status and family counts against the headline scoring unit, not
+the raw mention multiset — the two disagree exactly on duplicate-bearing letters,
+which is why the explorer's `G/P` drill-down contradicted the `headline_target`
+chips above it. Redundant-Convention Duplicates are badged "removed from headline
+scoring - deduplicated"; Distinct-Assertion Duplicates are badged "distinct
+assertion — counted". Tagging is computed in `frontend_review.py` reusing the
+scorer keys (single source of truth), not re-implemented in TypeScript.
+Status: **firm (EA0044 + dev140 corpus counts, 2026-06-22).**
+
 ---
 
 ## Distributional facts (shape the work, not strictly schema)

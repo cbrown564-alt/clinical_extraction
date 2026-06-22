@@ -2545,9 +2545,9 @@
       "by_indicator": {
         "Diagnosis": {
           "categories": {
-            "assertion_or_negation_change": 101,
-            "hierarchy_reconciliation": 29,
-            "hierarchy_reconciliation_or_duplicate_collapse": 101
+            "assertion_or_negation_change": 96,
+            "hierarchy_reconciliation": 34,
+            "hierarchy_reconciliation_or_duplicate_collapse": 96
           },
           "changed_rows": 130
         },
@@ -2576,8 +2576,7 @@
       "details": [
         {
           "categories": [
-            "assertion_or_negation_change",
-            "hierarchy_reconciliation_or_duplicate_collapse"
+            "hierarchy_reconciliation"
           ],
           "indicator": "Diagnosis",
           "letter_id": "EA0002",
@@ -2629,17 +2628,6 @@
               "entity": "Diagnosis",
               "evidence": "Since her last clinic appointment she has had four secondary generalised seizures.",
               "text": "secondary generalised seizures"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_heading_recovery",
-              "entity": "Diagnosis",
-              "evidence": "focal epilepsy",
-              "text": "focal epilepsy"
             }
           ],
           "old_mentions": [
@@ -3685,8 +3673,7 @@
         },
         {
           "categories": [
-            "assertion_or_negation_change",
-            "hierarchy_reconciliation_or_duplicate_collapse"
+            "hierarchy_reconciliation"
           ],
           "indicator": "Diagnosis",
           "letter_id": "EA0008",
@@ -3714,28 +3701,6 @@
               "entity": "Diagnosis",
               "evidence": "focal seizures with altered awareness every 3 weeks",
               "text": "focal seizures"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_heading_recovery",
-              "entity": "Diagnosis",
-              "evidence": "focal epilepsy",
-              "text": "focal epilepsy"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
-              "entity": "Diagnosis",
-              "evidence": "Seizure type and frequency: focal seizures with altered awareness",
-              "text": "focal"
             }
           ],
           "old_mentions": [
@@ -4134,17 +4099,6 @@
               "entity": "Diagnosis",
               "evidence": "he probably had around 3 or 4 focal to bilateral convulsive seizures",
               "text": "focal to bilateral convulsive seizures"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_heading_recovery",
-              "entity": "Diagnosis",
-              "evidence": "focal epilepsy",
-              "text": "focal epilepsy"
             }
           ],
           "old_mentions": [
@@ -4281,17 +4235,6 @@
               "entity": "Diagnosis",
               "evidence": "He has previously been reviewed by other epilepsy colleagues and has had extensive workup for his epilepsy in the past.",
               "text": "epilepsy"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
-              "entity": "Diagnosis",
-              "evidence": "Seizure type and frequency:\u00a0 Focal seizures with altered awareness",
-              "text": "focal"
             }
           ],
           "old_mentions": [
@@ -5720,17 +5663,6 @@
               "entity": "Diagnosis",
               "evidence": "John\u2019s epilepsy started at the age of 4.",
               "text": "epilepsy"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
-              "entity": "Diagnosis",
-              "evidence": "Complex partial seizures with secondary generalised tonic clonic seizures",
-              "text": "generalised"
             }
           ],
           "old_mentions": [
@@ -9535,17 +9467,6 @@
               "entity": "Diagnosis",
               "evidence": "Diagnosis: symptomatic structural frontal lobe epilepsy",
               "text": "frontal lobe epilepsy"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
-              "entity": "Diagnosis",
-              "evidence": "Seizure type and frequency: focal seizures with altered awareness",
-              "text": "focal"
             }
           ],
           "old_mentions": [
@@ -10685,32 +10606,10 @@
                 "DiagCategory": "Epilepsy",
                 "Negation": "Affirmed"
               },
-              "component_owner": "hybrid_diagnosis_route+deterministic_heading_recovery",
-              "entity": "Diagnosis",
-              "evidence": "focal epilepsy",
-              "text": "focal epilepsy"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
               "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
               "entity": "Diagnosis",
               "evidence": "Diagnosis: focal epilepsy, probable parietal onset",
               "text": "parietal lobe epilepsy"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
-              "entity": "Diagnosis",
-              "evidence": "Seizure type and frequency: focal seizures with altered awareness",
-              "text": "focal"
             }
           ],
           "old_mentions": [
@@ -15463,17 +15362,6 @@
                 "DiagCategory": "Epilepsy",
                 "Negation": "Affirmed"
               },
-              "component_owner": "hybrid_diagnosis_route+deterministic_heading_recovery",
-              "entity": "Diagnosis",
-              "evidence": "Focal epilepsy",
-              "text": "focal epilepsy"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
               "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
               "entity": "Diagnosis",
               "evidence": "Focal epilepsy ? right temporal lobe onset",
@@ -17620,8 +17508,7 @@
         },
         {
           "categories": [
-            "assertion_or_negation_change",
-            "hierarchy_reconciliation_or_duplicate_collapse"
+            "hierarchy_reconciliation"
           ],
           "indicator": "Diagnosis",
           "letter_id": "EA0127",
@@ -17647,17 +17534,6 @@
               "entity": "Diagnosis",
               "evidence": "secondary generalised tonic clonic seizures",
               "text": "secondary generalised tonic clonic seizures"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
-              "entity": "Diagnosis",
-              "evidence": "Complex partial seizures with secondary generalised tonic clonic seizures",
-              "text": "generalised"
             }
           ],
           "old_mentions": [
@@ -18216,8 +18092,7 @@
         },
         {
           "categories": [
-            "assertion_or_negation_change",
-            "hierarchy_reconciliation_or_duplicate_collapse"
+            "hierarchy_reconciliation"
           ],
           "indicator": "Diagnosis",
           "letter_id": "EA0132",
@@ -18280,17 +18155,6 @@
               "entity": "Diagnosis",
               "evidence": "I explained the diagnosis of epilepsy to Mr Hanson.",
               "text": "epilepsy"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
-              "entity": "Diagnosis",
-              "evidence": "Seizure type and frequency:\tFocal seizures with altered awareness",
-              "text": "focal"
             }
           ],
           "old_mentions": [
@@ -19815,17 +19679,6 @@
               "entity": "Diagnosis",
               "evidence": "She has only every had one secondarily generalised seizures which happend when she was 22, the morning after a night out.",
               "text": "secondary generalised seizures"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
-              "entity": "Diagnosis",
-              "evidence": "diagnosed with epilepsy at the age of 22",
-              "text": "focal"
             }
           ],
           "old_mentions": [
@@ -20500,17 +20353,6 @@
               "entity": "Diagnosis",
               "evidence": "secondary generalised seizures",
               "text": "secondary generalised seizures"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
-              "entity": "Diagnosis",
-              "evidence": "complex partial seizures (deja-vu and orofacial automatsisms) as well as secondary generalised seizures. The complex partial seizures are now happening once a month, and he has around 1-2 secondary generalised seizures",
-              "text": "secondary"
             }
           ],
           "old_mentions": [
@@ -20997,28 +20839,6 @@
               "entity": "Diagnosis",
               "evidence": "Secondary generalised seizures 3-4 per year",
               "text": "secondary generalised seizures"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
-              "entity": "Diagnosis",
-              "evidence": "Complex partial seizures (deja-vu, automatism) 1-2 per month\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0 Secondary generalised seizures 3-4 per year\n\u00a0\nanti-epileptic medication:\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0 Carbamazapine 400mg bd\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0 Clobazam 10-20mg bd for seizure clusters\n\u00a0\nPrevious medications tried: Lamotrigine (rash)\n\u00a0\nInvestigations: \u00a0 MRI 14/3/2006 right temporal lobe focal cortical dysplasia\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0 EEG sharp waves, right temporal lobe\n\u00a0\nI reviewed this 40 year old woman in clinic today. As you know she was diagnosed with epilepsy at the age of 22 after having 2 secondary generalised seizures",
-              "text": "secondary"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
-              "entity": "Diagnosis",
-              "evidence": "diagnosed with epilepsy at the age of 22",
-              "text": "focal"
             }
           ],
           "old_mentions": [
@@ -21328,17 +21148,6 @@
               "entity": "Diagnosis",
               "evidence": "I explained the diagnosis of epilepsy, some safety implications and the DVLA driving regulations on epilepsy and driving.",
               "text": "epilepsy"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_heading_recovery",
-              "entity": "Diagnosis",
-              "evidence": "Focal epilepsy",
-              "text": "focal epilepsy"
             }
           ],
           "old_mentions": [
@@ -25305,17 +25114,6 @@
               "entity": "Diagnosis",
               "evidence": "John\u2019s epilepsy started at the age of 4.",
               "text": "epilepsy"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
-              "entity": "Diagnosis",
-              "evidence": "Complex partial seizures with secondary generalised tonic clonic seizures",
-              "text": "generalised"
             }
           ],
           "old_mentions": [
@@ -25783,8 +25581,7 @@
         },
         {
           "categories": [
-            "assertion_or_negation_change",
-            "hierarchy_reconciliation_or_duplicate_collapse"
+            "hierarchy_reconciliation"
           ],
           "indicator": "Diagnosis",
           "letter_id": "EA0186",
@@ -25834,17 +25631,6 @@
               "entity": "Diagnosis",
               "evidence": "He has had one previous focal to bilateral convulsive seizure at the time of diagnosis of his epilepsy in May 2017.",
               "text": "focal to bilateral convulsive seizure"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_heading_recovery",
-              "entity": "Diagnosis",
-              "evidence": "focal epilepsy",
-              "text": "focal epilepsy"
             }
           ],
           "old_mentions": [
@@ -26139,40 +25925,7 @@
               "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
               "entity": "Diagnosis",
               "evidence": "drug refractory focal (occipital lobe) epilepsy",
-              "text": "secondary"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
-              "entity": "Diagnosis",
-              "evidence": "drug refractory focal (occipital lobe) epilepsy",
-              "text": "focal"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
-              "entity": "Diagnosis",
-              "evidence": "drug refractory focal (occipital lobe) epilepsy",
               "text": "drug"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
-              "entity": "Diagnosis",
-              "evidence": "drug refractory focal (occipital lobe) epilepsy",
-              "text": "occipital"
             }
           ],
           "old_mentions": [
@@ -26419,17 +26172,6 @@
               "entity": "Diagnosis",
               "evidence": "focal to bilateral convulsive seizures",
               "text": "focal to bilateral convulsive seizures"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
-              "entity": "Diagnosis",
-              "evidence": "Seizure type and frequency: focal seizures with altered awareness",
-              "text": "focal"
             }
           ],
           "old_mentions": [
@@ -26882,17 +26624,6 @@
               "entity": "Diagnosis",
               "evidence": "Symptomatic epilepsy with generalised tonic clonic seizures with right temporal meningioma",
               "text": "generalised"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair+deterministic_residual_benchmark_repair",
-              "entity": "Diagnosis",
-              "evidence": "Symptomatic epilepsy with generalised tonic clonic seizures with right temporal meningioma",
-              "text": "symptomatic"
             }
           ],
           "old_mentions": [
@@ -27244,17 +26975,6 @@
               "entity": "Diagnosis",
               "evidence": "Complex partial seizures with secondary generalised seizures",
               "text": "secondary generalised seizures"
-            },
-            {
-              "attributes": {
-                "Certainty": "5",
-                "DiagCategory": "Epilepsy",
-                "Negation": "Affirmed"
-              },
-              "component_owner": "hybrid_diagnosis_route+deterministic_residual_benchmark_repair",
-              "entity": "Diagnosis",
-              "evidence": "Complex partial seizures with secondary generalised seizures",
-              "text": "secondary"
             }
           ],
           "old_mentions": [
@@ -27680,12 +27400,12 @@
         "passed": true
       },
       {
-        "detail": "0.9083; must beat 0.6693 and tie/beat 0.7127",
+        "detail": "0.9090; must beat 0.6693 and tie/beat 0.7127",
         "name": "Diagnosis headline",
         "passed": true
       },
       {
-        "detail": "0.9083; baseline 0.6693",
+        "detail": "0.9090; baseline 0.6693",
         "name": "Diagnosis concept_negation",
         "passed": true
       },
@@ -27712,7 +27432,7 @@
     ],
     "decision": "do-not-promote"
   },
-  "generated_on": "2026-06-21",
+  "generated_on": "2026-06-22",
   "input_artifacts": {
     "diagnosis_reconciler_v01": "experiments/exectv2_hybrid_diagnosis_reconciler_v01_dev140_gpt41mini_20260618.jsonl",
     "focused_comparator": "experiments/exectv2_holistic_finding_assembly_v08_dev140_20260621.jsonl",
@@ -27724,11 +27444,11 @@
     "Diagnosis": {
       "call_failures": 0,
       "evidence_invalid_dropped": 2,
-      "exact_evidence_mentions": 421,
+      "exact_evidence_mentions": 396,
       "exact_evidence_rate": 1.0,
       "parse_schema_failures": 0,
       "raw_mentions": 438,
-      "scored_mentions": 421
+      "scored_mentions": 396
     },
     "Investigations": {
       "call_failures": 0,
@@ -27736,7 +27456,7 @@
       "exact_evidence_mentions": 119,
       "exact_evidence_rate": 1.0,
       "parse_schema_failures": 0,
-      "raw_mentions": 0,
+      "raw_mentions": 119,
       "scored_mentions": 119
     },
     "Prescription": {
@@ -27789,29 +27509,29 @@
   "row_count": 140,
   "score_ladder": {
     "benchmark": {
-      "after_cui_projection": 0.4093,
+      "after_cui_projection": 0.4104,
       "by_indicator_raw": {
-        "Diagnosis": 0.2857,
+        "Diagnosis": 0.2946,
         "Investigations": 0.5804,
         "Prescription": 0.2948,
         "SeizureFrequency": 0.512
       },
-      "raw": 0.3794
+      "raw": 0.3844
     },
     "cui_projection_companion": {
       "by_indicator": {
         "Diagnosis": {
-          "f1": 0.9083,
-          "fn": 17,
-          "fp": 39,
+          "f1": 0.909,
+          "fn": 25,
+          "fp": 29,
           "gold_count": 297,
-          "precision": 0.8762,
-          "precision_tp": 276,
-          "pred_count": 315,
-          "recall": 0.9428,
-          "recall_tp": 280,
+          "precision": 0.9024,
+          "precision_tp": 268,
+          "pred_count": 297,
+          "recall": 0.9158,
+          "recall_tp": 272,
           "shortfall_to_target": 0.0,
-          "tp": 280
+          "tp": 272
         },
         "Investigations": {
           "f1": 0.8549,
@@ -27848,32 +27568,32 @@
         }
       },
       "overall": {
-        "f1": 0.8779,
-        "fn": 84,
-        "fp": 114,
+        "f1": 0.8778,
+        "fn": 92,
+        "fp": 104,
         "gold_count": 798,
-        "precision": 0.8617,
-        "precision_tp": 710,
-        "pred_count": 824,
-        "recall": 0.8947,
-        "recall_tp": 714,
-        "tp": 714
+        "precision": 0.871,
+        "precision_tp": 702,
+        "pred_count": 806,
+        "recall": 0.8847,
+        "recall_tp": 706,
+        "tp": 706
       }
     },
     "evidence_valid_score": {
       "by_indicator": {
         "Diagnosis": {
-          "f1": 0.9083,
-          "fn": 17,
-          "fp": 39,
+          "f1": 0.909,
+          "fn": 25,
+          "fp": 29,
           "gold_count": 297,
-          "precision": 0.8762,
-          "precision_tp": 276,
-          "pred_count": 315,
-          "recall": 0.9428,
-          "recall_tp": 280,
+          "precision": 0.9024,
+          "precision_tp": 268,
+          "pred_count": 297,
+          "recall": 0.9158,
+          "recall_tp": 272,
           "shortfall_to_target": 0.0,
-          "tp": 280
+          "tp": 272
         },
         "Investigations": {
           "f1": 0.8549,
@@ -27910,24 +27630,24 @@
         }
       },
       "overall": {
-        "f1": 0.8779,
-        "fn": 84,
-        "fp": 114,
+        "f1": 0.8778,
+        "fn": 92,
+        "fp": 104,
         "gold_count": 798,
-        "precision": 0.8617,
-        "precision_tp": 710,
-        "pred_count": 824,
-        "recall": 0.8947,
-        "recall_tp": 714,
-        "tp": 714
+        "precision": 0.871,
+        "precision_tp": 702,
+        "pred_count": 806,
+        "recall": 0.8847,
+        "recall_tp": 706,
+        "tp": 706
       }
     },
     "fidelity_companions": {
       "Diagnosis": {
         "concept_negation": {
-          "f1": 0.9083,
+          "f1": 0.909,
           "fidelity_gap": 0.0,
-          "headline_f1": 0.9083
+          "headline_f1": 0.909
         }
       },
       "SeizureFrequency": {
@@ -27941,17 +27661,17 @@
     "headline_target": {
       "by_indicator": {
         "Diagnosis": {
-          "f1": 0.9083,
-          "fn": 17,
-          "fp": 39,
+          "f1": 0.909,
+          "fn": 25,
+          "fp": 29,
           "gold_count": 297,
-          "precision": 0.8762,
-          "precision_tp": 276,
-          "pred_count": 315,
-          "recall": 0.9428,
-          "recall_tp": 280,
+          "precision": 0.9024,
+          "precision_tp": 268,
+          "pred_count": 297,
+          "recall": 0.9158,
+          "recall_tp": 272,
           "shortfall_to_target": 0.0,
-          "tp": 280
+          "tp": 272
         },
         "Investigations": {
           "f1": 0.8549,
@@ -27988,16 +27708,328 @@
         }
       },
       "overall": {
-        "f1": 0.9059,
-        "fn": 70,
-        "fp": 80,
+        "f1": 0.9061,
+        "fn": 78,
+        "fp": 70,
         "gold_count": 794,
-        "precision": 0.9,
-        "precision_tp": 720,
-        "pred_count": 800,
-        "recall": 0.9118,
-        "recall_tp": 724,
-        "tp": 724
+        "precision": 0.9105,
+        "precision_tp": 712,
+        "pred_count": 782,
+        "recall": 0.9018,
+        "recall_tp": 716,
+        "tp": 716
+      }
+    },
+    "materialized_surfaces": {
+      "dictionary_normalized": {
+        "by_indicator": {
+          "Diagnosis": {
+            "f1": 0.8614,
+            "fn": 50,
+            "fp": 29,
+            "gold_count": 297,
+            "precision": 0.8934,
+            "precision_tp": 243,
+            "pred_count": 272,
+            "recall": 0.8316,
+            "recall_tp": 247,
+            "shortfall_to_target": 0.0386,
+            "tp": 247
+          },
+          "Investigations": {
+            "f1": 0.8549,
+            "fn": 27,
+            "fp": 10,
+            "gold_count": 136,
+            "precision": 0.916,
+            "pred_count": 119,
+            "recall": 0.8015,
+            "shortfall_to_target": 0.0451,
+            "tp": 109
+          },
+          "Prescription": {
+            "f1": 0.9357,
+            "fn": 11,
+            "fp": 14,
+            "gold_count": 193,
+            "precision": 0.9286,
+            "pred_count": 196,
+            "recall": 0.943,
+            "shortfall_to_target": 0.0,
+            "tp": 182
+          },
+          "SeizureFrequency": {
+            "f1": 0.7814,
+            "fn": 29,
+            "fp": 51,
+            "gold_count": 172,
+            "precision": 0.7371,
+            "pred_count": 194,
+            "recall": 0.8314,
+            "shortfall_to_target": 0.1186,
+            "tp": 143
+          }
+        },
+        "overall": {
+          "f1": 0.8601,
+          "fn": 117,
+          "fp": 104,
+          "gold_count": 798,
+          "precision": 0.8668,
+          "precision_tp": 677,
+          "pred_count": 781,
+          "recall": 0.8534,
+          "recall_tp": 681,
+          "tp": 681
+        }
+      },
+      "evidence_valid": {
+        "by_indicator": {
+          "Diagnosis": {
+            "f1": 0.7572,
+            "fn": 65,
+            "fp": 82,
+            "gold_count": 297,
+            "precision": 0.7346,
+            "precision_tp": 227,
+            "pred_count": 309,
+            "recall": 0.7811,
+            "recall_tp": 232,
+            "shortfall_to_target": 0.1428,
+            "tp": 232
+          },
+          "Investigations": {
+            "f1": 0.8549,
+            "fn": 27,
+            "fp": 10,
+            "gold_count": 136,
+            "precision": 0.916,
+            "pred_count": 119,
+            "recall": 0.8015,
+            "shortfall_to_target": 0.0451,
+            "tp": 109
+          },
+          "Prescription": {
+            "f1": 0.9357,
+            "fn": 11,
+            "fp": 14,
+            "gold_count": 193,
+            "precision": 0.9286,
+            "pred_count": 196,
+            "recall": 0.943,
+            "shortfall_to_target": 0.0,
+            "tp": 182
+          },
+          "SeizureFrequency": {
+            "f1": 0.7814,
+            "fn": 29,
+            "fp": 51,
+            "gold_count": 172,
+            "precision": 0.7371,
+            "pred_count": 194,
+            "recall": 0.8314,
+            "shortfall_to_target": 0.1186,
+            "tp": 143
+          }
+        },
+        "overall": {
+          "f1": 0.8211,
+          "fn": 132,
+          "fp": 157,
+          "gold_count": 798,
+          "precision": 0.8081,
+          "precision_tp": 661,
+          "pred_count": 818,
+          "recall": 0.8346,
+          "recall_tp": 666,
+          "tp": 666
+        }
+      },
+      "final": {
+        "by_indicator": {
+          "Diagnosis": {
+            "f1": 0.909,
+            "fn": 25,
+            "fp": 29,
+            "gold_count": 297,
+            "precision": 0.9024,
+            "precision_tp": 268,
+            "pred_count": 297,
+            "recall": 0.9158,
+            "recall_tp": 272,
+            "shortfall_to_target": 0.0,
+            "tp": 272
+          },
+          "Investigations": {
+            "f1": 0.8549,
+            "fn": 27,
+            "fp": 10,
+            "gold_count": 136,
+            "precision": 0.916,
+            "pred_count": 119,
+            "recall": 0.8015,
+            "shortfall_to_target": 0.0451,
+            "tp": 109
+          },
+          "Prescription": {
+            "f1": 0.9357,
+            "fn": 11,
+            "fp": 14,
+            "gold_count": 193,
+            "precision": 0.9286,
+            "pred_count": 196,
+            "recall": 0.943,
+            "shortfall_to_target": 0.0,
+            "tp": 182
+          },
+          "SeizureFrequency": {
+            "f1": 0.7814,
+            "fn": 29,
+            "fp": 51,
+            "gold_count": 172,
+            "precision": 0.7371,
+            "pred_count": 194,
+            "recall": 0.8314,
+            "shortfall_to_target": 0.1186,
+            "tp": 143
+          }
+        },
+        "overall": {
+          "f1": 0.8778,
+          "fn": 92,
+          "fp": 104,
+          "gold_count": 798,
+          "precision": 0.871,
+          "precision_tp": 702,
+          "pred_count": 806,
+          "recall": 0.8847,
+          "recall_tp": 706,
+          "tp": 706
+        }
+      },
+      "residual_benchmark_added": {
+        "by_indicator": {
+          "Diagnosis": {
+            "f1": 0.909,
+            "fn": 25,
+            "fp": 29,
+            "gold_count": 297,
+            "precision": 0.9024,
+            "precision_tp": 268,
+            "pred_count": 297,
+            "recall": 0.9158,
+            "recall_tp": 272,
+            "shortfall_to_target": 0.0,
+            "tp": 272
+          },
+          "Investigations": {
+            "f1": 0.8549,
+            "fn": 27,
+            "fp": 10,
+            "gold_count": 136,
+            "precision": 0.916,
+            "pred_count": 119,
+            "recall": 0.8015,
+            "shortfall_to_target": 0.0451,
+            "tp": 109
+          },
+          "Prescription": {
+            "f1": 0.9357,
+            "fn": 11,
+            "fp": 14,
+            "gold_count": 193,
+            "precision": 0.9286,
+            "pred_count": 196,
+            "recall": 0.943,
+            "shortfall_to_target": 0.0,
+            "tp": 182
+          },
+          "SeizureFrequency": {
+            "f1": 0.7814,
+            "fn": 29,
+            "fp": 51,
+            "gold_count": 172,
+            "precision": 0.7371,
+            "pred_count": 194,
+            "recall": 0.8314,
+            "shortfall_to_target": 0.1186,
+            "tp": 143
+          }
+        },
+        "overall": {
+          "f1": 0.8778,
+          "fn": 92,
+          "fp": 104,
+          "gold_count": 798,
+          "precision": 0.871,
+          "precision_tp": 702,
+          "pred_count": 806,
+          "recall": 0.8847,
+          "recall_tp": 706,
+          "tp": 706
+        }
+      },
+      "source_scored": {
+        "by_indicator": {
+          "Diagnosis": {
+            "f1": 0.7572,
+            "fn": 65,
+            "fp": 82,
+            "gold_count": 297,
+            "precision": 0.7346,
+            "precision_tp": 227,
+            "pred_count": 309,
+            "recall": 0.7811,
+            "recall_tp": 232,
+            "shortfall_to_target": 0.1428,
+            "tp": 232
+          },
+          "Investigations": {
+            "f1": 0.8549,
+            "fn": 27,
+            "fp": 10,
+            "gold_count": 136,
+            "precision": 0.916,
+            "pred_count": 119,
+            "recall": 0.8015,
+            "shortfall_to_target": 0.0451,
+            "tp": 109
+          },
+          "Prescription": {
+            "f1": 0.9357,
+            "fn": 11,
+            "fp": 14,
+            "gold_count": 193,
+            "precision": 0.9286,
+            "pred_count": 196,
+            "recall": 0.943,
+            "shortfall_to_target": 0.0,
+            "tp": 182
+          },
+          "SeizureFrequency": {
+            "f1": 0.7814,
+            "fn": 29,
+            "fp": 51,
+            "gold_count": 172,
+            "precision": 0.7371,
+            "pred_count": 194,
+            "recall": 0.8314,
+            "shortfall_to_target": 0.1186,
+            "tp": 143
+          }
+        },
+        "overall": {
+          "f1": 0.8211,
+          "fn": 132,
+          "fp": 157,
+          "gold_count": 798,
+          "precision": 0.8081,
+          "precision_tp": 661,
+          "pred_count": 818,
+          "recall": 0.8346,
+          "recall_tp": 666,
+          "tp": 666
+        }
       }
     },
     "raw_lane_score": {
@@ -28016,15 +28048,15 @@
           "tp": 234
         },
         "Investigations": {
-          "f1": 0.0,
-          "fn": 136,
-          "fp": 0,
+          "f1": 0.8549,
+          "fn": 27,
+          "fp": 10,
           "gold_count": 136,
-          "precision": 0.0,
-          "pred_count": 0,
-          "recall": 0.0,
-          "shortfall_to_target": 0.9,
-          "tp": 0
+          "precision": 0.916,
+          "pred_count": 119,
+          "recall": 0.8015,
+          "shortfall_to_target": 0.0451,
+          "tp": 109
         },
         "Prescription": {
           "f1": 0.9357,
@@ -28050,16 +28082,16 @@
         }
       },
       "overall": {
-        "f1": 0.7432,
-        "fn": 239,
-        "fp": 146,
+        "f1": 0.8231,
+        "fn": 130,
+        "fp": 156,
         "gold_count": 798,
-        "precision": 0.7914,
-        "precision_tp": 554,
-        "pred_count": 700,
-        "recall": 0.7005,
-        "recall_tp": 559,
-        "tp": 559
+        "precision": 0.8095,
+        "precision_tp": 663,
+        "pred_count": 819,
+        "recall": 0.8371,
+        "recall_tp": 668,
+        "tp": 668
       }
     }
   },
@@ -28080,9 +28112,9 @@
     "best_by_indicator": {
       "Diagnosis": {
         "candidate": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
-        "f1": 0.9083,
-        "precision": 0.8762,
-        "recall": 0.9428,
+        "f1": 0.909,
+        "precision": 0.9024,
+        "recall": 0.9158,
         "shortfall_to_target": 0.0
       },
       "Investigations": {
@@ -28115,9 +28147,9 @@
         "error_analysis": {
           "per_indicator": {
             "Diagnosis": {
-              "candidate_miss": 17,
+              "candidate_miss": 25,
               "evidence_failure": 0,
-              "wrong_detail_selection": 39
+              "wrong_detail_selection": 29
             },
             "Investigations": {
               "candidate_miss": 27,
@@ -28139,10 +28171,10 @@
         "fidelity_companions": {
           "Diagnosis": {
             "companion": "concept_negation",
-            "companion_f1": 0.9083,
+            "companion_f1": 0.909,
             "fidelity_gap": 0.0,
             "forgives": "Negation (negated vs affirmed)",
-            "headline_f1": 0.9083
+            "headline_f1": 0.909
           },
           "SeizureFrequency": {
             "companion": "active_rate_fidelity",
@@ -28154,17 +28186,17 @@
         },
         "headline_scores": {
           "Diagnosis": {
-            "f1": 0.9083,
-            "fn": 17,
-            "fp": 39,
+            "f1": 0.909,
+            "fn": 25,
+            "fp": 29,
             "gold_count": 297,
-            "precision": 0.8762,
-            "precision_tp": 276,
-            "pred_count": 315,
-            "recall": 0.9428,
-            "recall_tp": 280,
+            "precision": 0.9024,
+            "precision_tp": 268,
+            "pred_count": 297,
+            "recall": 0.9158,
+            "recall_tp": 272,
             "shortfall_to_target": 0.0,
-            "tp": 280
+            "tp": 272
           },
           "Investigations": {
             "f1": 0.8549,
@@ -28203,16 +28235,16 @@
         "meets_all_targets": false,
         "name": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
         "overall_target_score": {
-          "f1": 0.9059,
-          "fn": 70,
-          "fp": 80,
+          "f1": 0.9061,
+          "fn": 78,
+          "fp": 70,
           "gold_count": 794,
-          "precision": 0.9,
-          "precision_tp": 720,
-          "pred_count": 800,
-          "recall": 0.9118,
-          "recall_tp": 724,
-          "tp": 724
+          "precision": 0.9105,
+          "precision_tp": 712,
+          "pred_count": 782,
+          "recall": 0.9018,
+          "recall_tp": 716,
+          "tp": 716
         },
         "ownership": "partial_hybrid_gpt_inv_plus_focused_presc_sf_dx"
       }
