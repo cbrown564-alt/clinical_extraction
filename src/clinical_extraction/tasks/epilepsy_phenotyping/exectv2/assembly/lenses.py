@@ -761,6 +761,7 @@ class PrescriptionDictionaryLens(_ThinArtifactLens):
         )
         out: list[ClinicalFinding] = []
         normalized = 0
+        split_regimens = 0
         for finding in selected:
             attrs = dict(finding.attributes)
             changed = False
@@ -776,6 +777,36 @@ class PrescriptionDictionaryLens(_ThinArtifactLens):
                 if canonical != unit:
                     attrs["DoseUnit"] = canonical
                     changed = True
+            dose = attrs.get("DrugDose")
+            if dose:
+                normalized_dose = sd.normalize_dose_value(dose)
+                if normalized_dose != dose:
+                    attrs["DrugDose"] = normalized_dose
+                    changed = True
+            split_rows = sd.split_daily_dose_regimen(
+                finding.text,
+                evidence=finding.evidence,
+                attributes=attrs,
+            )
+            if split_rows:
+                for index, (text, split_attrs, rule) in enumerate(split_rows):
+                    out.append(
+                        _finding_with_text_attributes(
+                            finding,
+                            text=text,
+                            attributes=split_attrs,
+                            owner_suffix=f"standard_dictionary_prescription_split_{index}",
+                            provenance=ProvenanceEvent(
+                                stage="entity_lens",
+                                action="split_prescription_regimen_from_dictionary",
+                                owner="standard_dictionary",
+                                portability="clinical_epilepsy",
+                                detail={"lens_id": self.lens_id, "rule": rule},
+                            ),
+                        )
+                    )
+                split_regimens += 1
+                continue
             if changed:
                 finding = _finding_with_text_attributes(
                     finding,
@@ -803,6 +834,7 @@ class PrescriptionDictionaryLens(_ThinArtifactLens):
                 "producer_id": policy.producer_id,
                 "source_lane": policy.source_lane,
                 "normalized_count": normalized,
+                "split_regimen_count": split_regimens,
             },
         )
         final_findings = tuple(finding.with_provenance(event) for finding in out)
@@ -813,6 +845,7 @@ class PrescriptionDictionaryLens(_ThinArtifactLens):
             diagnostics={
                 "lens_id": self.lens_id,
                 "normalized_dictionary_findings": normalized,
+                "split_regimen_dictionary_findings": split_regimens,
                 "selected_findings": len(final_findings),
             },
         )

@@ -73,13 +73,21 @@ def test_diagnosis_dictionary_lens_rewrites_drops_and_adds() -> None:
             {
                 "entity": "Diagnosis",
                 "text": "focal dyscognitive seizures",
-                "attributes": {"DiagCategory": "Epilepsy", "Certainty": "5", "Negation": "Affirmed"},
+                "attributes": {
+                    "DiagCategory": "Epilepsy",
+                    "Certainty": "5",
+                    "Negation": "Affirmed",
+                },
                 "evidence": "focal dyscognitive seizures",
             },
             {
                 "entity": "Diagnosis",
                 "text": "myoclonic jerks",
-                "attributes": {"DiagCategory": "SingleSeizure", "Certainty": "5", "Negation": "Affirmed"},
+                "attributes": {
+                    "DiagCategory": "SingleSeizure",
+                    "Certainty": "5",
+                    "Negation": "Affirmed",
+                },
                 "evidence": "myoclonic jerks",
             },
         ],
@@ -142,3 +150,55 @@ def test_prescription_dictionary_lens_normalizes_name_and_unit() -> None:
     attrs = dict(result.findings[0].attributes)
     assert attrs["DrugName"] == "lamotrigine"
     assert attrs["DoseUnit"] == "mg"
+
+
+def test_prescription_dictionary_lens_normalizes_atomic_dose_value() -> None:
+    note = "Current treatment is Phenytoin 75mg tds."
+    store = _store(
+        note,
+        [
+            {
+                "entity": "Prescription",
+                "text": "Phenytoin 75mg tds",
+                "attributes": {
+                    "DrugName": "phenytoin",
+                    "DrugDose": "75mg",
+                    "DoseUnit": "mg",
+                    "Frequency": "3",
+                },
+                "evidence": "Phenytoin 75mg tds",
+            }
+        ],
+    )
+    result = PrescriptionDictionaryLens(
+        lens_id="prescription_dictionary_v09", entity="Prescription"
+    ).reconcile(store, policy=_policy())
+    assert result.findings[0].attributes["DrugDose"] == "75"
+
+
+def test_prescription_dictionary_lens_splits_explicit_uneven_daily_regimen() -> None:
+    note = "Current antiepileptic medication: levetiracetam 750mg mane, 500 mg nocte."
+    store = _store(
+        note,
+        [
+            {
+                "entity": "Prescription",
+                "text": "levetiracetam 750mg mane, 500 mg nocte",
+                "attributes": {
+                    "DrugName": "levetiracetam",
+                    "DrugDose": "750mg mane, 500 mg nocte",
+                    "DoseUnit": "mg",
+                    "Frequency": "2",
+                },
+                "evidence": "levetiracetam 750mg mane, 500 mg nocte",
+            }
+        ],
+    )
+    result = PrescriptionDictionaryLens(
+        lens_id="prescription_dictionary_v09", entity="Prescription"
+    ).reconcile(store, policy=_policy())
+    doses = [finding.attributes["DrugDose"] for finding in result.findings]
+    freqs = [finding.attributes["Frequency"] for finding in result.findings]
+    assert doses == ["750", "500"]
+    assert freqs == ["1", "1"]
+    assert result.diagnostics["split_regimen_dictionary_findings"] == 1

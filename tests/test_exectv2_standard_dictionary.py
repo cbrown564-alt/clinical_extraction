@@ -14,6 +14,8 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.benchmark_projection
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
     all_entities,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
     standard_dictionary as sd,
 )
 
@@ -58,6 +60,12 @@ def test_dose_from_text() -> None:
     assert sd.dose_from_text("no dose here") is None
 
 
+def test_normalize_dose_value_strips_redundant_unit_only_for_atomic_dose() -> None:
+    assert sd.normalize_dose_value("75mg") == "75"
+    assert sd.normalize_dose_value("75 mg") == "75"
+    assert sd.normalize_dose_value("750mg mane, 500 mg nocte") == "750mg mane, 500 mg nocte"
+
+
 @pytest.mark.parametrize(
     ("text", "expected"),
     [
@@ -77,6 +85,42 @@ def test_frequency_code(text: str, expected: str | None) -> None:
     assert sd.frequency_code(text) == expected
     # Parity with the deterministic extractor's frequency reader.
     assert sd.frequency_code(text) == all_entities._frequency_from_text(text)
+
+
+def test_split_daily_dose_regimen_uses_source_time_markers() -> None:
+    rows = sd.split_daily_dose_regimen(
+        "levetiracetam 750mg mane, 500 mg nocte",
+        evidence="Current antiepileptic medication: levetiracetam 750mg mane, 500 mg nocte",
+        attributes={"DrugName": "levetiracetam", "DrugDose": "750mg mane, 500 mg nocte"},
+    )
+    assert [attrs["DrugDose"] for _, attrs, _ in rows] == ["750", "500"]
+    assert [attrs["Frequency"] for _, attrs, _ in rows] == ["1", "1"]
+    assert {rule for _, _, rule in rows} == {"split_explicit_uneven_daily_dose_regimen"}
+
+
+def test_split_daily_dose_regimen_does_not_split_single_twice_daily_dose() -> None:
+    assert (
+        sd.split_daily_dose_regimen(
+            "Sodium Valproate 800mg bd",
+            evidence=(
+                "I suggest that the dose should be increased so he is on "
+                "Sodium Valproate 800mg bd."
+            ),
+            attributes={"DrugName": "sodium-valproate", "DrugDose": "800", "Frequency": "2"},
+        )
+        == []
+    )
+
+
+def test_split_daily_dose_regimen_does_not_resplit_already_split_once_daily_dose() -> None:
+    assert (
+        sd.split_daily_dose_regimen(
+            "levetiracetam 750mg mane",
+            evidence="Current antiepileptic medication: levetiracetam 750mg mane, 500 mg nocte",
+            attributes={"DrugName": "levetiracetam", "DrugDose": "750", "Frequency": "1"},
+        )
+        == []
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -106,7 +150,12 @@ def test_diagnosis_residual_benchmark_target_uses_evidence() -> None:
         == "symptomatic epilepsy"
     )
     # No matching convention -> unchanged.
-    assert sd.diagnosis_convention_target("temporal lobe epilepsy", evidence="temporal lobe epilepsy") is None
+    assert (
+        sd.diagnosis_convention_target(
+            "temporal lobe epilepsy", evidence="temporal lobe epilepsy"
+        )
+        is None
+    )
 
 
 def test_is_diagnosis_convention_noise() -> None:

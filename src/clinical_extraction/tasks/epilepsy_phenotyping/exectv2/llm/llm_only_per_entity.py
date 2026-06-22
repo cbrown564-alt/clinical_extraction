@@ -1056,16 +1056,24 @@ def run_split(
                 "n_evidence_invalid": evidence_invalid_count,
                 "predicted_mentions": [
                     {
+                        "entity": m.entity,
                         "text": m.text,
                         "attributes": dict(m.attributes),
                         "evidence": m.evidence,
                         "confidence": m.confidence,
                         "rationale": m.rationale,
+                        "component_owner": m.component_owner,
+                        "source_lane": COMPONENT_OWNER,
                     }
                     for m in predicted_letter.mentions
                 ],
                 "gold_mentions": [
-                    {"text": a.text, "attributes": dict(a.attributes)} for a in gold
+                    {
+                        "entity": a.entity,
+                        "text": a.text,
+                        "attributes": dict(a.attributes),
+                    }
+                    for a in gold
                 ],
             }
         )
