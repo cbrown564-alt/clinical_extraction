@@ -14,7 +14,7 @@ def main() -> None:
     parser.add_argument("--reload", action="store_true")
     args = parser.parse_args()
     uvicorn.run(
-        "clinical_extraction.tasks.seizure_frequency.gan2026.observatory.api:app",
+        "clinical_extraction.observatory.api:app",
         host=args.host,
         port=args.port,
         reload=args.reload,

@@ -19,12 +19,14 @@ import ExportPanel from "./ExportPanel";
 import type { RunSummary } from "@/lib/types";
 import GeneralisationGap from "@/components/observatory/GeneralisationGap";
 import ConfusionMatrix from "@/components/observatory/ConfusionMatrix";
+import { gan2026Dataset } from "@/lib/datasets";
+import { SurfaceHeader, SurfaceLayout } from "@/components/surface";
 
 type ReviewTab = "comparison" | "matrix";
 
 /** Abbreviate a long run ID to something readable. */
 function abbreviateRunId(runId: string): string {
-  let s = runId.replace(/^gan2026_/, "").replace(/_2026-\d{2}-\d{2}$/, "");
+  const s = runId.replace(/^gan2026_/, "").replace(/_2026-\d{2}-\d{2}$/, "");
   if (s.length > 28) {
     return s.slice(0, 13) + "…" + s.slice(-12);
   }
@@ -186,9 +188,18 @@ export default function ReportBuilder() {
   }
 
   return (
-    <div className="flex h-full flex-col bg-background">
+    <SurfaceLayout
+      variant="fill"
+      header={
+        <SurfaceHeader
+          surface="observatory"
+          dataset={gan2026Dataset}
+          description="Compare pipeline runs side by side: purist/pragmatic accuracy, micro-F1, and the validation→test generalisation gap."
+        />
+      }
+    >
       {/* Tab bar */}
-      <div className="flex items-center gap-1 border-b border-border px-5">
+      <div className="flex shrink-0 items-center gap-1 border-b border-border px-5">
         <TabButton
           active={activeTab === "comparison"}
           onClick={() => setActiveTab("comparison")}
@@ -205,7 +216,7 @@ export default function ReportBuilder() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-hidden">
+      <div className="min-h-0 flex-1 overflow-hidden">
         {activeTab === "comparison" && (
           <div className="h-full overflow-y-auto p-5 max-w-[1400px] mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
@@ -295,6 +306,6 @@ export default function ReportBuilder() {
           </div>
         )}
       </div>
-    </div>
+    </SurfaceLayout>
   );
 }

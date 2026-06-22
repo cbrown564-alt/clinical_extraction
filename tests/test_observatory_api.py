@@ -5,7 +5,7 @@ from pathlib import Path
 
 from fastapi.testclient import TestClient
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.observatory.api import create_app
+from clinical_extraction.observatory.api import create_app
 
 
 def test_observatory_registry_rules_prompts_and_artifacts(tmp_path: Path) -> None:

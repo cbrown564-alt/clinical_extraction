@@ -1,12 +1,24 @@
 "use client";
 
 import { useMemo } from "react";
-import Link from "next/link";
-import { BarChart3, ExternalLink, GalleryHorizontalEnd, ShieldAlert } from "lucide-react";
-import { EXECTV2_FAMILIES, surfaceHref } from "@/lib/datasets";
-import type { RunDecision } from "@/lib/datasets";
+import { Check } from "lucide-react";
+import { exectv2Dataset, EXECTV2_FAMILIES } from "@/lib/datasets";
 import type { Exectv2Entity, Exectv2RunSummary } from "@/lib/types";
-import { compactRunLabel, formatMetric, useExectv2Runs, useExectv2UrlState } from "./useExectv2";
+import {
+  SurfaceHeader,
+  SurfaceLayout,
+  SurfaceLoading,
+  SurfaceError,
+  DecisionBadge,
+  F1Cell,
+  SurfaceLink,
+  formatMetricValue,
+} from "@/components/surface";
+import {
+  compactRunLabel,
+  useExectv2Runs,
+  useExectv2Selection,
+} from "./useExectv2";
 
 const FAMILY_IDS = EXECTV2_FAMILIES.map((f) => f.id as Exectv2Entity);
 
@@ -15,33 +27,20 @@ function splitLabel(runs: Exectv2RunSummary[]): string {
   return Array.from(new Set(runs.map((r) => r.split))).sort().join(" + ");
 }
 
-function decisionBadge(decision: string): string {
-  switch (decision as RunDecision) {
-    case "control":
-      return "border-deterministic/25 bg-deterministic/10 text-deterministic";
-    case "simplification":
-      return "border-success/25 bg-success/10 text-success";
-    case "diagnostic":
-      return "border-llm/25 bg-llm/10 text-llm";
-    default:
-      return "border-muted/20 bg-muted/10 text-muted";
-  }
-}
-
-/** F1 cell shaded by magnitude so weak families read at a glance. */
-function F1Cell({ value, lead }: { value: number | null | undefined; lead?: boolean }) {
-  const tone =
-    typeof value !== "number"
-      ? "text-muted"
-      : value >= 0.9
-      ? "text-success"
-      : value >= 0.8
-      ? "text-foreground"
-      : "text-error";
+function SelectBox({ selected, indeterminate = false }: { selected: boolean; indeterminate?: boolean }) {
   return (
-    <td className={`px-2 py-2 text-right font-mono text-[11px] ${tone} ${lead ? "font-semibold" : ""}`}>
-      {formatMetric(value, 3)}
-    </td>
+    <div
+      className={`flex h-3.5 w-3.5 items-center justify-center rounded border transition-colors ${
+        selected
+          ? "border-deterministic bg-deterministic"
+          : indeterminate
+          ? "border-deterministic bg-surface"
+          : "border-border bg-surface"
+      }`}
+    >
+      {selected && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}
+      {!selected && indeterminate && <div className="h-1.5 w-1.5 rounded-sm bg-deterministic" />}
+    </div>
   );
 }
 
@@ -49,19 +48,30 @@ function RunGroup({
   title,
   caption,
   runs,
-  activeRunId,
-  onSelect,
+  selectedIds,
+  onToggle,
+  onToggleGroup,
 }: {
   title: string;
   caption: string;
   runs: Exectv2RunSummary[];
-  activeRunId: string | undefined;
-  onSelect: (runId: string) => void;
+  selectedIds: Set<string>;
+  onToggle: (runId: string) => void;
+  onToggleGroup: (runIds: string[], select: boolean) => void;
 }) {
   if (runs.length === 0) return null;
+  const allSelected = runs.every((r) => selectedIds.has(r.run_id));
+  const someSelected = runs.some((r) => selectedIds.has(r.run_id));
   return (
     <div className="space-y-2">
-      <div className="flex items-baseline gap-2">
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => onToggleGroup(runs.map((r) => r.run_id), !allSelected)}
+          className="flex items-center"
+          title={allSelected ? "Deselect group" : "Select group"}
+        >
+          <SelectBox selected={allSelected} indeterminate={!allSelected && someSelected} />
+        </button>
         <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted">{title}</h3>
         <span className="text-[10px] text-muted">{caption}</span>
       </div>
@@ -69,6 +79,7 @@ function RunGroup({
         <table className="w-full border-collapse text-[11px]">
           <thead>
             <tr className="border-b border-border bg-surface-raised/60 text-[10px] uppercase tracking-wider text-muted">
+              <th className="w-8 px-3 py-2" />
               <th className="px-3 py-2 text-left font-semibold">Architecture</th>
               <th className="px-2 py-2 text-right font-semibold">Overall</th>
               {FAMILY_IDS.map((family) => (
@@ -85,20 +96,21 @@ function RunGroup({
           </thead>
           <tbody>
             {runs.map((run) => {
-              const active = run.run_id === activeRunId;
+              const selected = selectedIds.has(run.run_id);
               return (
                 <tr
                   key={run.run_id}
-                  onClick={() => onSelect(run.run_id)}
+                  onClick={() => onToggle(run.run_id)}
                   className={`cursor-pointer border-b border-border/60 transition-colors last:border-b-0 ${
-                    active ? "bg-deterministic/8" : "hover:bg-surface-raised/50"
+                    selected ? "bg-deterministic/8" : "hover:bg-surface-raised/50"
                   }`}
                 >
                   <td className="px-3 py-2">
+                    <SelectBox selected={selected} />
+                  </td>
+                  <td className="px-3 py-2">
                     <div className="flex items-center gap-2">
-                      <span className={`shrink-0 rounded border px-1.5 py-0.5 text-[9px] font-medium ${decisionBadge(run.decision)}`}>
-                        {run.decision}
-                      </span>
+                      <DecisionBadge decision={run.decision} />
                       <div className="min-w-0">
                         <p className="truncate font-semibold text-foreground">{compactRunLabel(run)}</p>
                         <p className="truncate font-mono text-[9px] text-muted">{run.model}</p>
@@ -110,7 +122,7 @@ function RunGroup({
                     <F1Cell key={family} value={run.metrics.families[family]?.f1} />
                   ))}
                   <td className="px-2 py-2 text-right font-mono text-[11px] text-muted">
-                    {formatMetric(run.operational.exact_evidence_rate, 2)}
+                    {formatMetricValue(run.operational.exact_evidence_rate, "rate")}
                   </td>
                   <td className={`px-2 py-2 text-right font-mono text-[11px] ${run.operational.call_failures > 0 ? "text-error" : "text-muted"}`}>
                     {run.operational.call_failures}
@@ -120,21 +132,8 @@ function RunGroup({
                   </td>
                   <td className="px-2 py-2 text-right font-mono text-[11px] text-muted">{run.row_count}</td>
                   <td className="px-3 py-2">
-                    <div className="flex items-center gap-1.5">
-                      <Link
-                        href={surfaceHref("workbench", "exectv2", { run: run.run_id })}
-                        className="inline-flex items-center gap-1 rounded border border-deterministic/20 bg-deterministic/5 px-1.5 py-0.5 text-[9px] font-medium text-deterministic hover:bg-deterministic/10"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <ExternalLink className="h-2.5 w-2.5" /> Explore
-                      </Link>
-                      <Link
-                        href={surfaceHref("gallery", "exectv2", { run: run.run_id })}
-                        className="inline-flex items-center gap-1 rounded border border-error/20 bg-error/5 px-1.5 py-0.5 text-[9px] font-medium text-error hover:bg-error/10"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <GalleryHorizontalEnd className="h-2.5 w-2.5" /> Errors
-                      </Link>
+                    <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+                      <SurfaceLink surface="workbench" datasetId="exectv2" params={{ run: run.run_id }} label="Explore" />
                     </div>
                   </td>
                 </tr>
@@ -149,8 +148,7 @@ function RunGroup({
 
 export default function Exectv2AggregatePerformance() {
   const { runs, isLoading, error } = useExectv2Runs();
-  const { get, set } = useExectv2UrlState();
-  const activeRunId = get("run");
+  const { selectedIds, selectedRunIds, toggle, setSelection } = useExectv2Selection(runs);
 
   const { controls, diagnostics } = useMemo(() => {
     const controls = runs.filter((r) => r.decision === "control" || r.decision === "simplification");
@@ -158,73 +156,94 @@ export default function Exectv2AggregatePerformance() {
     return { controls, diagnostics };
   }, [runs]);
 
-  const selectedRun = useMemo(() => runs.find((r) => r.run_id === activeRunId) ?? controls[0] ?? runs[0], [runs, activeRunId, controls]);
+  // The primary run drives the claim-boundary detail panel: first selected, in display order.
+  const primaryRun = useMemo(
+    () => runs.find((r) => selectedIds.has(r.run_id)) ?? controls[0] ?? runs[0],
+    [runs, selectedIds, controls]
+  );
 
-  if (isLoading) {
-    return (
-      <div className="flex h-full items-center justify-center bg-background text-muted">
-        <p className="text-sm font-medium">Loading aggregate performance…</p>
-      </div>
-    );
-  }
+  const toggleGroup = (runIds: string[], select: boolean) => {
+    const next = new Set(selectedIds);
+    for (const id of runIds) {
+      if (select) next.add(id);
+      else next.delete(id);
+    }
+    setSelection([...next]);
+  };
 
-  if (error) {
-    return (
-      <div className="flex h-full items-center justify-center bg-background p-8">
-        <div className="max-w-md rounded-md border border-error/25 bg-error/8 p-5">
-          <div className="flex items-center gap-2 text-error">
-            <ShieldAlert className="h-4 w-4" />
-            <p className="text-sm font-semibold">ExECTv2 data failed to load</p>
-          </div>
-          <p className="mt-2 text-xs text-muted">{String(error)}</p>
-        </div>
-      </div>
-    );
-  }
+  if (isLoading) return <SurfaceLoading message="Loading aggregate performance…" />;
+  if (error) return <SurfaceError title="ExECTv2 data failed to load" detail={String(error)} />;
 
   return (
-    <div className="flex h-full flex-col overflow-y-auto bg-background">
-      <header className="border-b border-border bg-surface px-5 py-3">
-        <div className="flex items-center gap-2">
-          <BarChart3 className="h-4 w-4 text-llm" />
-          <h1 className="text-sm font-semibold text-foreground">ExECTv2 · Aggregate Performance</h1>
-        </div>
-        <p className="mt-1 text-[11px] text-muted">
-          Clinical mention F1 by family across the selected architecture set. Controls are
-          separated from diagnostics; diagnostics are not promoted replacements.
-        </p>
-      </header>
-
-      <div className="mx-auto w-full max-w-[1200px] space-y-6 p-5">
-        <RunGroup
-          title={`${splitLabel(controls)} controls`}
-          caption="performance & simplicity controls (claimable boundary)"
-          runs={controls}
-          activeRunId={selectedRun?.run_id}
-          onSelect={(runId) => set({ run: runId })}
+    <SurfaceLayout
+      variant="report"
+      contentClassName="space-y-6"
+      header={
+        <SurfaceHeader
+          surface="observatory"
+          dataset={exectv2Dataset}
+          description="Clinical mention F1 by family across the selected architecture set. Select architectures to compare; the set flows into the Error Gallery."
+          right={
+            <>
+              <span className="rounded border border-border bg-surface-raised px-2 py-0.5 text-[10px] text-muted">
+                {selectedRunIds.length} selected
+              </span>
+              <button
+                onClick={() => setSelection(runs.map((r) => r.run_id))}
+                className="text-[10px] font-medium text-muted transition-colors hover:text-foreground"
+              >
+                Select all
+              </button>
+              <button
+                onClick={() => setSelection([])}
+                className="text-[10px] font-medium text-muted transition-colors hover:text-foreground"
+              >
+                Clear
+              </button>
+              <SurfaceLink
+                surface="gallery"
+                datasetId="exectv2"
+                params={{ runs: selectedRunIds.join(",") || undefined }}
+                label={`Errors (${selectedRunIds.length})`}
+              />
+            </>
+          }
         />
-        <RunGroup
-          title={`${splitLabel(diagnostics)} diagnostics`}
-          caption="cross-model comparators — diagnostic only, not promoted"
-          runs={diagnostics}
-          activeRunId={selectedRun?.run_id}
-          onSelect={(runId) => set({ run: runId })}
-        />
+      }
+    >
+      <RunGroup
+        title={`${splitLabel(controls)} controls`}
+        caption="performance & simplicity controls (claimable boundary)"
+        runs={controls}
+        selectedIds={selectedIds}
+        onToggle={toggle}
+        onToggleGroup={toggleGroup}
+      />
+      <RunGroup
+        title={`${splitLabel(diagnostics)} diagnostics`}
+        caption="cross-model comparators — diagnostic only, not promoted"
+        runs={diagnostics}
+        selectedIds={selectedIds}
+        onToggle={toggle}
+        onToggleGroup={toggleGroup}
+      />
 
-        {selectedRun && (
-          <section className="rounded-md border border-border bg-surface p-4">
+      {primaryRun && (
+        <section className="rounded-md border border-border bg-surface p-4">
+          <div className="flex items-center gap-2">
             <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted">
-              {compactRunLabel(selectedRun)} · claim boundary
+              {compactRunLabel(primaryRun)} · claim boundary
             </h3>
-            <p className="mt-2 text-[12px] leading-relaxed text-foreground">{selectedRun.claim_boundary}</p>
-            <div className="mt-3 flex flex-wrap gap-2 text-[10px] text-muted">
-              <span className="rounded border border-border bg-surface-raised px-2 py-1 font-mono">{selectedRun.architecture_family}</span>
-              <span className="rounded border border-border bg-surface-raised px-2 py-1 font-mono">{selectedRun.scorer_view}</span>
-              <span className="rounded border border-border bg-surface-raised px-2 py-1 font-mono">promotion: {selectedRun.promotion_decision}</span>
-            </div>
-          </section>
-        )}
-      </div>
-    </div>
+            <SurfaceLink surface="workbench" datasetId="exectv2" params={{ run: primaryRun.run_id }} label="Explore" />
+          </div>
+          <p className="mt-2 text-[12px] leading-relaxed text-foreground">{primaryRun.claim_boundary}</p>
+          <div className="mt-3 flex flex-wrap gap-2 text-[10px] text-muted">
+            <span className="rounded border border-border bg-surface-raised px-2 py-1 font-mono">{primaryRun.architecture_family}</span>
+            <span className="rounded border border-border bg-surface-raised px-2 py-1 font-mono">{primaryRun.scorer_view}</span>
+            <span className="rounded border border-border bg-surface-raised px-2 py-1 font-mono">promotion: {primaryRun.promotion_decision}</span>
+          </div>
+        </section>
+      )}
+    </SurfaceLayout>
   );
 }

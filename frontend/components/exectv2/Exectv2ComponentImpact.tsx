@@ -1,15 +1,10 @@
 "use client";
 
 import { useMemo } from "react";
-import Link from "next/link";
-import { Boxes, ExternalLink, ShieldAlert, Wrench } from "lucide-react";
-import {
-  exectv2Dataset,
-  EXECTV2_FAMILIES,
-  surfaceHref,
-  TONE_CLASSES,
-} from "@/lib/datasets";
+import { Info, Wrench } from "lucide-react";
+import { exectv2Dataset, EXECTV2_FAMILIES, TONE_CLASSES } from "@/lib/datasets";
 import type { ComponentTypeDescriptor } from "@/lib/datasets";
+import type { Exectv2Entity } from "@/lib/types";
 import {
   familyDeltas,
   summarizeComponents,
@@ -17,7 +12,17 @@ import {
   type Exectv2ComponentTypeId,
 } from "@/lib/datasets/adapters/exectv2Components";
 import type { Exectv2RunSummary } from "@/lib/types";
-import { compactRunLabel, formatMetric, useExectv2Runs, useExectv2UrlState } from "./useExectv2";
+import {
+  SurfaceHeader,
+  SurfaceLayout,
+  SurfaceLoading,
+  SurfaceError,
+  SurfaceEmpty,
+  SurfaceLink,
+  F1Cell,
+  formatMetricValue,
+} from "@/components/surface";
+import { compactRunLabel, useExectv2Runs, useExectv2UrlState } from "./useExectv2";
 
 const FAMILY_IDS = EXECTV2_FAMILIES.map((f) => f.id);
 const COMPONENT_TYPES = exectv2Dataset.componentTypes;
@@ -66,7 +71,7 @@ function ComponentCard({ component }: { component: Exectv2ComponentSummary }) {
       </div>
 
       <div className="mt-2 flex items-center justify-between text-[9px] text-muted">
-        <span>evidence exact {formatMetric(component.evidenceValidRate, 2)}</span>
+        <span>evidence exact {formatMetricValue(component.evidenceValidRate, "rate")}</span>
         <span className="truncate" title={component.lanes.join(", ")}>
           {component.lanes.length} lane{component.lanes.length === 1 ? "" : "s"}
         </span>
@@ -81,10 +86,10 @@ function DeltaTable({ base, variant }: { base: Exectv2RunSummary; variant: Exect
     <section className="rounded-md border border-border bg-surface">
       <div className="border-b border-border px-3 py-2">
         <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted">
-          {compactRunLabel(base)} → {compactRunLabel(variant)} · family F1 delta
+          {compactRunLabel(base)} → {compactRunLabel(variant)}
         </h3>
         <p className="mt-1 text-[10px] text-muted">
-          Where the partial-hybrid simplification trades headroom against the performance control.
+          Family F1 delta where the partial-hybrid simplification trades headroom against the control.
         </p>
       </div>
       <table className="w-full border-collapse text-[11px]">
@@ -103,8 +108,8 @@ function DeltaTable({ base, variant }: { base: Exectv2RunSummary; variant: Exect
             return (
               <tr key={d.family} className="border-b border-border/60 last:border-b-0">
                 <td className="px-3 py-1.5 text-foreground">{d.family}</td>
-                <td className="px-3 py-1.5 text-right font-mono text-muted">{formatMetric(d.baseF1, 3)}</td>
-                <td className="px-3 py-1.5 text-right font-mono text-muted">{formatMetric(d.variantF1, 3)}</td>
+                <td className="px-3 py-1.5 text-right font-mono text-muted">{formatMetricValue(d.baseF1, "f1")}</td>
+                <td className="px-3 py-1.5 text-right font-mono text-muted">{formatMetricValue(d.variantF1, "f1")}</td>
                 <td className={`px-3 py-1.5 text-right font-mono ${tone}`}>
                   {d.delta === null ? "—" : `${d.delta >= 0 ? "+" : ""}${d.delta.toFixed(3)}`}
                 </td>
@@ -114,6 +119,62 @@ function DeltaTable({ base, variant }: { base: Exectv2RunSummary; variant: Exect
         </tbody>
       </table>
     </section>
+  );
+}
+
+/**
+ * The right pane, parallel to Gan's live SimulationPanel. ExECTv2 architectures
+ * are checkpointed rather than re-runnable here, so instead of a live ablation we
+ * report the *observed* family F1 of the focused run and the v08→v09 delta — with
+ * an explicit note about why there's no Simulate button.
+ */
+function ObservedImpactPanel({
+  run,
+  base,
+  variant,
+}: {
+  run: Exectv2RunSummary;
+  base?: Exectv2RunSummary;
+  variant?: Exectv2RunSummary;
+}) {
+  return (
+    <div className="space-y-4">
+      <div>
+        <h2 className="text-xs font-semibold uppercase tracking-wider text-foreground">Observed Impact</h2>
+        <div className="mt-2 flex items-start gap-2 rounded-md border border-deterministic-alt/25 bg-deterministic-alt/8 px-2.5 py-2 text-[10px] leading-snug text-muted">
+          <Info className="mt-0.5 h-3 w-3 shrink-0 text-deterministic-alt" />
+          <span>
+            Live ablation runs against the backend for Gan. ExECTv2 architectures are checkpointed, so this
+            panel reports <span className="font-medium text-foreground">observed</span> family F1 and deltas
+            rather than a live simulation.
+          </span>
+        </div>
+      </div>
+
+      <section className="rounded-md border border-border bg-surface">
+        <div className="border-b border-border px-3 py-2">
+          <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted">
+            {compactRunLabel(run)} · family F1
+          </h3>
+        </div>
+        <table className="w-full border-collapse text-[11px]">
+          <tbody>
+            <tr className="border-b border-border/60">
+              <td className="px-3 py-1.5 font-semibold text-foreground">Overall</td>
+              <F1Cell value={run.metrics.overall_f1} lead />
+            </tr>
+            {EXECTV2_FAMILIES.map((family) => (
+              <tr key={family.id} className="border-b border-border/60 last:border-b-0">
+                <td className="px-3 py-1.5 text-foreground">{family.label}</td>
+                <F1Cell value={run.metrics.families[family.id as Exectv2Entity]?.f1} />
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
+
+      {base && variant && <DeltaTable base={base} variant={variant} />}
+    </div>
   );
 }
 
@@ -142,52 +203,17 @@ export default function Exectv2ComponentImpact() {
   const baseRun = useMemo(() => runs.find((r) => r.run_id.includes("v08")), [runs]);
   const variantRun = useMemo(() => runs.find((r) => r.run_id.includes("v09_partial_hybrid")), [runs]);
 
-  if (isLoading) {
-    return (
-      <div className="flex h-full items-center justify-center bg-background text-muted">
-        <p className="text-sm font-medium">Loading component impact…</p>
-      </div>
-    );
-  }
+  if (isLoading) return <SurfaceLoading message="Loading component impact…" />;
+  if (error) return <SurfaceError title="ExECTv2 data failed to load" detail={String(error)} />;
 
-  if (error) {
-    return (
-      <div className="flex h-full items-center justify-center bg-background p-8">
-        <div className="max-w-md rounded-md border border-error/25 bg-error/8 p-5">
-          <div className="flex items-center gap-2 text-error">
-            <ShieldAlert className="h-4 w-4" />
-            <p className="text-sm font-semibold">ExECTv2 data failed to load</p>
-          </div>
-          <p className="mt-2 text-xs text-muted">{String(error)}</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!selectedRun) {
-    return (
-      <div className="flex h-full items-center justify-center bg-background text-muted">
-        <p className="text-sm font-medium">No ExECTv2 runs available.</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex h-full flex-col overflow-y-auto bg-background">
-      <header className="border-b border-border bg-surface px-5 py-3">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-2">
-              <Boxes className="h-4 w-4 text-deterministic-alt" />
-              <h1 className="text-sm font-semibold text-foreground">ExECTv2 · Component Impact</h1>
-            </div>
-            <p className="mt-1 text-[11px] text-muted">
-              Prediction-bearing components by provenance: producer lanes, dictionaries, lenses,
-              assembly, and evidence validation. Deterministic formatting is flagged separately from
-              semantic add/drop/replace.
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
+  const header = (
+    <SurfaceHeader
+      surface="laboratory"
+      dataset={exectv2Dataset}
+      description="Prediction-bearing components by provenance: producer lanes, dictionaries, lenses, assembly, and evidence validation. Deterministic formatting is flagged separately from semantic add/drop/replace."
+      right={
+        selectedRun && (
+          <>
             <select
               value={selectedRun.run_id}
               onChange={(e) => set({ run: e.target.value })}
@@ -199,39 +225,54 @@ export default function Exectv2ComponentImpact() {
                 </option>
               ))}
             </select>
-            <Link
-              href={surfaceHref("workbench", "exectv2", { run: selectedRun.run_id })}
-              className="inline-flex items-center gap-1 rounded border border-deterministic/20 bg-deterministic/5 px-2 py-1 text-[10px] font-medium text-deterministic hover:bg-deterministic/10"
-            >
-              <ExternalLink className="h-3 w-3" /> Explore
-            </Link>
-          </div>
+            <SurfaceLink surface="workbench" datasetId="exectv2" params={{ run: selectedRun.run_id }} label="Explore" />
+          </>
+        )
+      }
+    />
+  );
+
+  if (!selectedRun) {
+    return (
+      <SurfaceLayout variant="fill" header={header}>
+        <div className="p-5">
+          <SurfaceEmpty message="No ExECTv2 architectures available." />
         </div>
-      </header>
+      </SurfaceLayout>
+    );
+  }
 
-      <div className="mx-auto w-full max-w-[1200px] space-y-6 p-5">
-        {baseRun && variantRun && <DeltaTable base={baseRun} variant={variantRun} />}
+  return (
+    <SurfaceLayout variant="fill" header={header}>
+      <div className="flex min-h-0 flex-1">
+        {/* Left: component inventory */}
+        <div className="min-h-0 flex-1 space-y-6 overflow-y-auto p-5">
+          {COMPONENT_TYPES.map((type) => {
+            const list = grouped.get(type.id as Exectv2ComponentTypeId) ?? [];
+            if (list.length === 0) return null;
+            return (
+              <section key={type.id} className="space-y-2">
+                <div className="flex items-baseline gap-2">
+                  <span className={`rounded border px-1.5 py-0.5 text-[10px] font-medium ${TONE_CLASSES[type.tone]}`}>
+                    {type.label}
+                  </span>
+                  <span className="text-[10px] text-muted">{type.description}</span>
+                </div>
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+                  {list.map((component) => (
+                    <ComponentCard key={component.owner} component={component} />
+                  ))}
+                </div>
+              </section>
+            );
+          })}
+        </div>
 
-        {COMPONENT_TYPES.map((type) => {
-          const list = grouped.get(type.id as Exectv2ComponentTypeId) ?? [];
-          if (list.length === 0) return null;
-          return (
-            <section key={type.id} className="space-y-2">
-              <div className="flex items-baseline gap-2">
-                <span className={`rounded border px-1.5 py-0.5 text-[10px] font-medium ${TONE_CLASSES[type.tone]}`}>
-                  {type.label}
-                </span>
-                <span className="text-[10px] text-muted">{type.description}</span>
-              </div>
-              <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
-                {list.map((component) => (
-                  <ComponentCard key={component.owner} component={component} />
-                ))}
-              </div>
-            </section>
-          );
-        })}
+        {/* Right: observed impact (parallel to Gan's live simulation panel) */}
+        <div className="w-[380px] shrink-0 overflow-y-auto border-l border-border bg-surface p-5">
+          <ObservedImpactPanel run={selectedRun} base={baseRun} variant={variantRun} />
+        </div>
       </div>
-    </div>
+    </SurfaceLayout>
   );
 }
