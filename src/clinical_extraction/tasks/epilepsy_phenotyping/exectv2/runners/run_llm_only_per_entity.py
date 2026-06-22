@@ -33,6 +33,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from datetime import date
 from pathlib import Path
@@ -103,6 +104,15 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--max-tokens", type=int, default=2400)
     p.add_argument("--no-dspy-cache", action="store_true", help="Disable DSPy response caching.")
     p.add_argument("--api-base", default=None, help="Optional OpenAI-compatible API base URL.")
+    p.add_argument(
+        "--ollama-num-ctx",
+        type=int,
+        default=None,
+        help=(
+            "Set CLINICAL_EXTRACTION_OLLAMA_NUM_CTX for native ollama_chat runs. "
+            "Does not set CLINICAL_EXTRACTION_OLLAMA_NUM_GPU."
+        ),
+    )
     p.add_argument("--pilot", type=int, default=None, help="Restrict to the first N letters.")
     p.add_argument(
         "--entities",
@@ -137,7 +147,14 @@ def _build_parser() -> argparse.ArgumentParser:
 
 
 def _auto_prefix(split: str, model: str, n: int) -> str:
-    model_slug = model.split("/")[-1].replace("-", "").replace(".", "")
+    model_slug = (
+        model.split("/")[-1]
+        .replace("-", "")
+        .replace(".", "")
+        .replace(":", "")
+        .replace("\\", "")
+        .replace("/", "")
+    )
     today = date.today().isoformat().replace("-", "")
     n_str = str(n) if n else "all"
     return f"exectv2_llm_only_per_entity_{split}{n_str}_{model_slug}_{today}"
@@ -378,6 +395,9 @@ def _i(value: Any) -> str:
 
 def main() -> None:
     args = _build_parser().parse_args()
+
+    if args.ollama_num_ctx is not None:
+        os.environ["CLINICAL_EXTRACTION_OLLAMA_NUM_CTX"] = str(args.ollama_num_ctx)
 
     if args.split == "test":
         print(

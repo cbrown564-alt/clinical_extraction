@@ -1,6 +1,6 @@
 # Project Status
 
-Last updated: 2026-06-21
+Last updated: 2026-06-22
 
 ## Active Objective
 
@@ -40,6 +40,54 @@ Investigations), which drops v08's Investigations verifier + pending-test
 arbitration stack at `-0.006` overall. Study:
 `docs/experiments/exectv2/key_entities/exectv2_v09_single_gpt_simplification_study_dev140_20260621.md`.
 
+2026-06-22 local-Qwen v09/v091/v092 development pass: native Ollama
+`ollama_chat/qwen3.6:35b` with `num_ctx=16384`, `CLINICAL_EXTRACTION_OLLAMA_NUM_GPU`
+unset for automatic partial GPU offload, `think=false`, and DSPy cache disabled
+is operational for `run_llm_only_key_entities_structured`. The runner now has a
+Windows-safe Qwen artifact slug, an explicit `--ollama-num-ctx` option that does
+not set `num_gpu`, and a `--prompt-profile` switch. Prompt/schema hardening added
+format-only Python-literal JSON repair, no-mention `reject` event dropping, and
+short-rationale guidance. Best tiny-prefix assembly read was a diagnostic
+no-call reparse of v0.9.1 dev5: `headline_target` `0.8493`. The meaningful dev25
+gate did not hold: live v0.9.1 scored `0.7057`; diagnostic parser reparse scored
+`0.7312` with Diagnosis `0.6464`, SeizureFrequency `0.6316`, Prescription
+`0.7887`, Investigations `0.9500`. A v0.9.3 prescription dictionary repair
+lifted the same Qwen dev25 artifact to `0.7772` by raising Prescription to
+`0.9459`, but Diagnosis and SF remained far below target. A v0.9.3
+`qwen_compact` event-frame profile was operationally clean on live dev5 (0 call
+failures, 0 parse failures) but regressed assembly headline to `0.7259`
+(`Diagnosis` `0.3529`, `SF` `0.6250`, `Prescription` `0.8750`,
+`Investigations` `1.0000`). This rejects the compact-profile branch and is not
+dev140 escalation evidence. A surgical full-prompt v0.9.4 correction stopped
+teaching bare `focal`/`generalised` diagnosis mentions; local Qwen dev1 parsed
+cleanly and assembled to `0.8000`, so it is only a parser smoke, not promotion
+evidence. v0.9.4 live dev5 then cleared the tiny gate (`headline_target`
+`0.9296`) but did not justify dev140. v0.9.5 added dev-only Diagnosis examples
+for generic+uncertain subtype and plural seizure-type wording, plus
+format-only top-level event-array repair and exact model-selected text evidence
+repair for Prescription/Diagnosis. The meaningful live dev25 gate improved to
+`0.8155`; diagnostic same-raw reparse improved to `0.8297` with Diagnosis
+`0.8104`, SeizureFrequency `0.6429`, Prescription `0.9231`, Investigations
+`0.9500`. This is the new best Qwen single-GPT checkpoint, but SF remains the
+blocking family. v0.9.6 added dev-only SF state-selection examples/rules for
+active-rate headings, returned seizures, full named anchors such as `focal
+seizures with altered awareness`, and rejection of generic spell anchors
+(`events`, `episodes`, `episodes of loss of consciousness`, `minor seizures`,
+`jerks`). Live dev5 was parse-clean and scored `headline_target` `0.9275`
+(Diagnosis `0.8421`, SeizureFrequency `0.8750`, Prescription `1.0000`,
+Investigations `1.0000`) with ledger residuals concentrated in Diagnosis
+tonic-clonic heading/syndrome handling and SF active-rate heading recall
+(`several seizures since last clinic`, dated GTC/absence-like headings). It is
+dev25-escalation evidence only, not dev140 evidence; the subsequent live dev25
+gate did not promote (`headline_target` `0.7975`, Diagnosis `0.7972`, SF
+`0.6429`, Prescription `0.8312`, Investigations `0.9500`). Runtime note: with
+`CLINICAL_EXTRACTION_OLLAMA_NUM_GPU` unset, Ollama loaded `qwen3.6:35b` at
+`100% CPU` on this machine. A `num_ctx=12288`, `max_tokens=2200` full-prompt
+dev5 timing probe was stopped after one checkpoint; it showed one clean row but
+also a truncation warning and very slow CPU-only throughput. The next Qwen branch
+is the smaller per-family prompt test described in
+`docs/experiments/exectv2/key_entities/exectv2_qwen36_v096_context_and_small_prompt_handoff_20260622.md`.
+
 ## Active Priorities
 
 1. Treat v08 as the achieved dev140 control and use the reliability scorecard for
@@ -57,16 +105,11 @@ arbitration stack at `-0.006` overall. Study:
 
 ### Now
 
-- **Next phase: implement the v0.9 single-GPT engine on local Qwen3.6:35b and
-  iterate until dev140 `headline_target` F1 > 0.9.** Run
-  `run_llm_only_key_entities_structured` with the local Qwen runtime
-  (`ollama` `qwen3.6:35b`, `num_ctx=16384`, auto partial GPU offload — do NOT pin
-  `num_gpu=0`; see local-Qwen-runtime memory), score through the assembly
-  `headline_target` view via `run_finding_assembly`, and use the real-scorer
-  error ledger after each iteration. The GPT-4.1-mini v0.9 baseline is dev140
-  `0.7552` (pure) / `0.9059` (accepted partial hybrid); the goal is to drive the
-  Qwen single-GPT engine itself toward > 0.9, reducing reliance on the focused
-  producers. Prompt/dictionary changes must stay attribution-clean and dev-only.
+- Local-Qwen single-GPT v09-v096 is measured-and-revise on dev25, not
+  ladder-ready for dev140. The best dev25 assembly is v0.9.5 diagnostic reparse
+  `0.8297`; v0.9.6 live dev25 regressed to `0.7975`. Next test is the smaller
+  per-family Qwen prompt path on dev5 with `num_ctx=12288`, `max_tokens=2200`,
+  and `--progress-every 1`.
 - Treat v08 (and the v09 partial hybrid `0.9059`) as the current holistic
   assembly controls to beat.
 - Use `docs/experiments/exectv2/reliability/exectv2_reliability_scorecard_and_phased_plan_2026-06-21.md`
@@ -76,6 +119,8 @@ arbitration stack at `-0.006` overall. Study:
 
 - If moving beyond dev140, predeclare the exact aggregate/full-200 readout,
   scorer surfaces, runtime/model, stop rule, and no-test-inspection boundary.
+- Build a four-producer assembly config for per-family Qwen artifacts if the
+  sharded dev5 probe is runtime-viable.
 ### Blocked
 
 - Gan holdout-facing reruns, row-level test analysis, and post-test tuning need

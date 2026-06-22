@@ -1,0 +1,2210 @@
+{
+  "diagnosis_jsonl": null,
+  "entities": [
+    "Prescription",
+    "Diagnosis",
+    "SeizureFrequency",
+    "Investigations"
+  ],
+  "generated_on": "2026-06-22",
+  "investigations_jsonl": null,
+  "records": [
+    {
+      "count": 1,
+      "entity": "Prescription",
+      "evidence": "Clobazam",
+      "example_attributes": {
+        "CUI": "C0055891",
+        "CUIPhrase": "clobazam",
+        "DoseUnit": "mg",
+        "DrugDose": "10-20",
+        "DrugName": "clobazam",
+        "Frequency": "As_Required"
+      },
+      "example_text": "Clobazam",
+      "key": "[\"rescue\", \"clobazam\", \"as_required\"]",
+      "letter_id": "EA0011",
+      "note_excerpt": "in his right posterior temporal lobe. An EEG in 2016 did show some focal slowing in the right temporal leads. I suggest adding in some Clobazam to take on an as required basis for seizure clusters. He can take 10 mg at night increasing to 20 mg if necessary or 10 mg twice a day. T",
+      "side": "predicted"
+    },
+    {
+      "count": 1,
+      "entity": "Prescription",
+      "evidence": "Currently-she-is-taking-sodium-valproate-500-mg-twice-a-day",
+      "example_attributes": {
+        "CUI": "C0037567",
+        "CUIPhrase": "sodium-valproate",
+        "DoseUnit": "mg",
+        "DrugDose": "500",
+        "DrugName": "sodium-valproate",
+        "Frequency": "2"
+      },
+      "example_text": "Currently-she-is-taking-sodium-valproate-500-mg-twice-a-day",
+      "key": "[\"ordinary\", \"sodium-valproate\", \"500\", \"mg\", \"2\"]",
+      "letter_id": "EA0018",
+      "note_excerpt": "s interesting as previously she was getting events with coloured objects in her field of vision which were probably occipital lobe seizures. Currently she is taking sodium valproate 500 mg twice a day and levetiracetam 1000 mg twice today. She has previously tried carbamazepine but this give her a rash. I explained the new MHRA rules on",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "Prescription",
+      "evidence": "levetiracetam-1000-mg-twice-today",
+      "example_attributes": {
+        "CUI": "C0377265",
+        "CUIPhrase": "levetiracetam",
+        "DoseUnit": "mg",
+        "DrugDose": "1000",
+        "DrugName": "levetiracetam",
+        "Frequency": "2"
+      },
+      "example_text": "levetiracetam-1000-mg-twice-today",
+      "key": "[\"ordinary\", \"levetiracetam\", \"1000\", \"mg\", \"2\"]",
+      "letter_id": "EA0018",
+      "note_excerpt": "objects in her field of vision which were probably occipital lobe seizures. Currently she is taking sodium valproate 500 mg twice a day and levetiracetam 1000 mg twice today. She has previously tried carbamazepine but this give her a rash. I explained the new MHRA rules on prescribing sodium valproate in women",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "Prescription",
+      "evidence": "sodium valproate",
+      "example_attributes": {
+        "CUI": "C0037567",
+        "CUIPhrase": "sodium-valproate",
+        "DrugName": "sodium-valproate",
+        "Frequency": "As_Required"
+      },
+      "example_text": "sodium valproate",
+      "key": "[\"rescue\", \"sodium-valproate\", \"as_required\"]",
+      "letter_id": "EA0018",
+      "note_excerpt": "y she was getting events with coloured objects in her field of vision which were probably occipital lobe seizures. Currently she is taking sodium valproate 500 mg twice a day and levetiracetam 1000 mg twice today. She has previously tried carbamazepine but this give her a rash. I explained the",
+      "side": "predicted"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "focal-seizures",
+      "example_attributes": {
+        "CUI": "C0751495",
+        "CUIPhrase": "focal-seizures",
+        "Certainty": "5",
+        "DiagCategory": "MultipleSeizures",
+        "Negation": "Affirmed"
+      },
+      "example_text": "focal-seizures",
+      "key": "[\"Diagnosis\", \"focal seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0002",
+      "note_excerpt": "twice a day Topiramate 100 mg BD I revealed this 42 year old lady together with her husband in clinic today. In March she had 2 to 3 of her focal seizures without change in awareness. Since her last clinic appointment she has had four secondary generalised seizures. During her focal seizures",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "epilepsy-with-generalised-tonic-chronic-seizures-alone",
+      "example_attributes": {
+        "CUI": "C0393697",
+        "CUIPhrase": "epilepsy-with-generalised-tonic-clonic-seizures-alone",
+        "Certainty": "5",
+        "DiagCategory": "Epilepsy",
+        "Negation": "Affirmed"
+      },
+      "example_text": "epilepsy-with-generalised-tonic-clonic-seizures-alone",
+      "key": "[\"Diagnosis\", \"epilepsy with generalised tonic clonic seizures alone\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0005",
+      "note_excerpt": "Dear Dr, Diagnosis: genetic generalised epilepsy-epilepsy with generalised tonic chronic seizures alone. Current medication: sodium valproate 500 mg twice a day Carbamazepine 200 mg twice a day Seizure type and frequency: Generalised tonic",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "-Generalised-tonic-clonic-seizure",
+      "example_attributes": {
+        "CUI": "C0494475",
+        "CUIPhrase": "generalised-tonic-clonic-seizure",
+        "Certainty": "5",
+        "DiagCategory": "SingleSeizure",
+        "Negation": "Affirmed"
+      },
+      "example_text": "generalised-tonic-clonic-seizure",
+      "key": "[\"Diagnosis\", \"tonic clonic seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0005",
+      "note_excerpt": "chronic seizures alone. Current medication: sodium valproate 500 mg twice a day Carbamazepine 200 mg twice a day Seizure type and frequency: Generalised tonic clonic seizure-last event July 2016. Previous event December 2015. Investigations: MRI 2012 normal. EEG 2012 generalised spike and wave. I reviewed th",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "epilepsy-with-generalised-tonic-clonic-seizure-alone",
+      "example_attributes": {
+        "CUI": "C0393697",
+        "CUIPhrase": "epilepsy-with-generalised-tonic-clonic-seizure-alone",
+        "Certainty": "4",
+        "DiagCategory": "Epilepsy",
+        "Negation": "Affirmed"
+      },
+      "example_text": "epilepsy-with-generalised-tonic-clonic-seizure-alone",
+      "key": "[\"Diagnosis\", \"epilepsy with generalised tonic clonic seizures alone\", [[\"Certainty\", \"4\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0005",
+      "note_excerpt": "ink any alcohol. He lives with his partner. Impression: as he has only ever had generalised tonic chronic seizures I think he has the syndrome of epilepsy with generalised tonic clonic seizure alone. Comments: we had a discussion about epilepsy in general. Mr Williams is aware that seizures involving loss of consciousness have a",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "generalised-tonic-clonic-seizures",
+      "example_attributes": {
+        "CUI": "C0494475",
+        "CUIPhrase": "generalised-tonic-clonic-seizures",
+        "Certainty": "5",
+        "DiagCategory": "MultipleSeizures",
+        "Negation": "Affirmed"
+      },
+      "example_text": "generalised-tonic-clonic-seizures",
+      "key": "[\"Diagnosis\", \"tonic clonic seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0006",
+      "note_excerpt": "medication: levetiracetam 500 mg twice a day Previous antiepileptic medication: lamotrigine and carbamazepine. Seizure type and frequency: 2 generalised tonic clonic seizures 2014, absence like seizures 2014 Investigations: MRI 2015 normal, EEG 2015 normal. I reviewed this 26 year old man alone in clinic to",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "epilepsy-",
+      "example_attributes": {
+        "CUI": "C0014544",
+        "CUIPhrase": "epilepsy",
+        "Certainty": "5",
+        "DiagCategory": "Epilepsy",
+        "Negation": "Affirmed"
+      },
+      "example_text": "epilepsy",
+      "key": "[\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0007",
+      "note_excerpt": "Dear Dr, Diagnosis: epilepsy \u2013 unclassified Diabetes, hypothyroidism Current antiepileptic medication: levetiracetam 750mg mane, 500 mg nocte Phenytoin 75mg tds",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "focal-onset",
+      "example_attributes": {
+        "CUI": "C0014547",
+        "CUIPhrase": "focal-onset-epilepsy",
+        "Certainty": "3",
+        "DiagCategory": "MultipleSeizures",
+        "Negation": "Affirmed"
+      },
+      "example_text": "focal-onset-epilepsy",
+      "key": "[\"Diagnosis\", \"focal epilepsy\", [[\"Certainty\", \"3\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0007",
+      "note_excerpt": "r medication includes: Ramipril, lansoprazole, metformin, propranolol, clopidogrel. Seizure type and frequency: seizures every 3 to 4 weeks, possibly focal onset Previous investigations MRI 2011 Normal I reviewed this 37 year old lady together with her husband in clinic today. She has ha",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "generalised epilepsy",
+      "example_attributes": {
+        "CUI": "C0014548",
+        "CUIPhrase": "generalised-epilepsy",
+        "Certainty": "3",
+        "DiagCategory": "Epilepsy",
+        "Negation": "Affirmed"
+      },
+      "example_text": "generalised epilepsy",
+      "key": "[\"Diagnosis\", \"generalised epilepsy\", [[\"Certainty\", \"3\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0007",
+      "note_excerpt": "",
+      "side": "predicted"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "symptomatic-structural-focal-epilepsy",
+      "example_attributes": {
+        "CUI": "C0472349",
+        "CUIPhrase": "symptomatic-structural-focal-epilepsy",
+        "Certainty": "5",
+        "DiagCategory": "Epilepsy",
+        "Negation": "Affirmed"
+      },
+      "example_text": "symptomatic-structural-focal-epilepsy",
+      "key": "[\"Diagnosis\", \"focal epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0008",
+      "note_excerpt": "Dear Dr, Diagnosis: symptomatic structural focal epilepsy Previous meningioma resection 3rd January 2005 Seizure type and frequency: focal seizures with altered awareness every 3 weeks Current",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "focal-seizures-with-altered-awareness",
+      "example_attributes": {
+        "CUI": "C0270834",
+        "CUIPhrase": "focal-seizures-with-altered-awareness",
+        "Certainty": "5",
+        "DiagCategory": "MultipleSeizures",
+        "Negation": "Affirmed"
+      },
+      "example_text": "focal-seizures-with-altered-awareness",
+      "key": "[\"Diagnosis\", \"focal seizures with altered awareness\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0008",
+      "note_excerpt": "Dear Dr, Diagnosis: symptomatic structural focal epilepsy Previous meningioma resection 3rd January 2005 Seizure type and frequency: focal seizures with altered awareness every 3 weeks Current anti-epileptic medication: lamotrigine 75mg bd (to reduce and stop as detailed below) To start levetiracetam as d",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "bilateral-convulsive-seizure",
+      "example_attributes": {
+        "CUI": "C0877017",
+        "CUIPhrase": "bilateral-convulsive-seizure",
+        "Certainty": "5",
+        "DiagCategory": "SingleSeizure",
+        "Negation": "Affirmed"
+      },
+      "example_text": "bilateral-convulsive-seizure",
+      "key": "[\"Diagnosis\", \"focal to bilateral convulsive seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0009",
+      "note_excerpt": "lly has a left-handed stiffness which progresses to her shoulder. Around 50% of the time she will then lose consciousness before going in to a bilateral convulsive seizure. Her seizure frequency does vary. Currently she get around 2-4 seizures per month. Although she did have a cluster of seizures in Au",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "seizures",
+      "example_attributes": {
+        "Certainty": "5",
+        "DiagCategory": "Epilepsy",
+        "Negation": "Affirmed"
+      },
+      "example_text": "seizures",
+      "key": "[\"Diagnosis\", \"seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0009",
+      "note_excerpt": "Dear Dr , I reviewed this 42-year-old woman in the clinic this morning. As you know she has experienced seizures since around 4 weeks after her operation. This was a craniotomy for her frontal lobe brain tumour. During her seizures she typically has",
+      "side": "predicted"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "cluster of seizures",
+      "example_attributes": {
+        "Certainty": "5",
+        "DiagCategory": "MultipleSeizures",
+        "Negation": "Affirmed"
+      },
+      "example_text": "cluster of seizures",
+      "key": "[\"Diagnosis\", \"cluster of seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0009",
+      "note_excerpt": "a bilateral convulsive seizure. Her seizure frequency does vary. Currently she get around 2-4 seizures per month. Although she did have a cluster of seizures in August, 2017 where she had 6-9 seizures every week for 3 weeks. She was born normally but did have 2 febrile seizures at the age of 2 m",
+      "side": "predicted"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "focal-to-bilateral-convulsive-seizures",
+      "example_attributes": {
+        "CUI": "C0877017",
+        "CUIPhrase": "focal-to-bilateral-convulsive-seizures",
+        "Certainty": "5",
+        "DiagCategory": "MultipleSeizures",
+        "Negation": "Affirmed"
+      },
+      "example_text": "focal-to-bilateral-convulsive-seizures",
+      "key": "[\"Diagnosis\", \"focal to bilateral convulsive seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0010",
+      "note_excerpt": "ble from an epilepsy point of view. As you know he is taking 150 mg of lamotrigine twice a day. His last seizures were in his teenage years where he probably had around 3 or 4 focal to bilateral convulsive seizures. There were some perinatal problems and he was born to a long and traumatic labour. He had to spend",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "epilepsy",
+      "example_attributes": {
+        "CUI": "C0014544",
+        "CUIPhrase": "epilepsy",
+        "Certainty": "5",
+        "DiagCategory": "Epilepsy",
+        "Negation": "Affirmed"
+      },
+      "example_text": "epilepsy",
+      "key": "[\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0010",
+      "note_excerpt": "Diagnosis: Episodic migraine Symptomatic structural focal epilepsy (probable perinatal insult) Dear Dr I reviewed this 39-year-old man in clinic today. His main issue is migraines which occur around 3 tim",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "focal epilepsy",
+      "example_attributes": {
+        "CUI": "C0014547",
+        "CUIPhrase": "focal epilepsy",
+        "Certainty": "4",
+        "DiagCategory": "Epilepsy",
+        "Negation": "Affirmed"
+      },
+      "example_text": "focal epilepsy",
+      "key": "[\"Diagnosis\", \"focal epilepsy\", [[\"Certainty\", \"4\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0010",
+      "note_excerpt": "Diagnosis: Episodic migraine Symptomatic structural focal epilepsy (probable perinatal insult) Dear Dr I reviewed this 39-year-old man in clinic today. His main issue is migraines which occur around 3 tim",
+      "side": "predicted"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "focal to bilateral convulsive seizures",
+      "example_attributes": {
+        "CUI": "C0877017",
+        "CUIPhrase": "focal-to-bilateral-convulsive-seizures",
+        "Certainty": "4",
+        "DiagCategory": "Epilepsy",
+        "Negation": "Affirmed"
+      },
+      "example_text": "focal to bilateral convulsive seizures",
+      "key": "[\"Diagnosis\", \"focal to bilateral convulsive seizures\", [[\"Certainty\", \"4\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0010",
+      "note_excerpt": "s you know he is taking 150 mg of lamotrigine twice a day. His last seizures were in his teenage years where he probably had around 3 or 4 focal to bilateral convulsive seizures. There were some perinatal problems and he was born to a long and traumatic labour. He had to spend around 2 weeks in Special care baby U",
+      "side": "predicted"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "Temporal-lobe-epilepsy",
+      "example_attributes": {
+        "CUI": "C0014556",
+        "CUIPhrase": "temporal-lobe-epilepsy",
+        "Certainty": "5",
+        "DiagCategory": "Epilepsy",
+        "Negation": "Affirmed"
+      },
+      "example_text": "temporal-lobe-epilepsy",
+      "key": "[\"Diagnosis\", \"temporal lobe epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0011",
+      "note_excerpt": "Diagnosis: Temporal lobe epilepsy Seizure type and frequency: Focal seizures with altered awareness approximately 1 per fortnight Focal to bilateral convulsive seizures,",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "Focal-seizures-with-altered-awareness",
+      "example_attributes": {
+        "CUI": "C0270834",
+        "CUIPhrase": "focal-seizures-with-altered-awareness",
+        "Certainty": "5",
+        "DiagCategory": "MultipleSeizures",
+        "Negation": "Affirmed"
+      },
+      "example_text": "focal-seizures-with-altered-awareness",
+      "key": "[\"Diagnosis\", \"focal seizures with altered awareness\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0011",
+      "note_excerpt": "Diagnosis: Temporal lobe epilepsy Seizure type and frequency: Focal seizures with altered awareness approximately 1 per fortnight Focal to bilateral convulsive seizures, last event around Christmas 2017 Current antiepileptic medicati",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "Focal-to-bilateral-convulsive-seizures",
+      "example_attributes": {
+        "CUI": "C0877017",
+        "CUIPhrase": "focal-to-bilateral-convulsive-seizures",
+        "Certainty": "5",
+        "DiagCategory": "MultipleSeizures",
+        "Negation": "Affirmed"
+      },
+      "example_text": "focal-to-bilateral-convulsive-seizures",
+      "key": "[\"Diagnosis\", \"focal to bilateral convulsive seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0011",
+      "note_excerpt": "Diagnosis: Temporal lobe epilepsy Seizure type and frequency: Focal seizures with altered awareness approximately 1 per fortnight Focal to bilateral convulsive seizures, last event around Christmas 2017 Current antiepileptic medication: eslicarbazepine, 800 mg once a day Zonisamide 75 mg twice a day",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "epilepsy-",
+      "example_attributes": {
+        "CUI": "C0014544",
+        "CUIPhrase": "epilepsy",
+        "Certainty": "5",
+        "DiagCategory": "Epilepsy",
+        "Negation": "Affirmed"
+      },
+      "example_text": "epilepsy",
+      "key": "[\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0011",
+      "note_excerpt": "Diagnosis: Temporal lobe epilepsy Seizure type and frequency: Focal seizures with altered awareness approximately 1 per fortnight Focal to bilateral convulsive seizures,",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "focal",
+      "example_attributes": {
+        "Certainty": "5",
+        "DiagCategory": "Epilepsy",
+        "Negation": "Affirmed"
+      },
+      "example_text": "focal",
+      "key": "[\"Diagnosis\", \"focal\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0011",
+      "note_excerpt": "Diagnosis: Temporal lobe epilepsy Seizure type and frequency: Focal seizures with altered awareness approximately 1 per fortnight Focal to bilateral convulsive seizures, last event around Christmas 2017 Cu",
+      "side": "predicted"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "general seizures",
+      "example_attributes": {
+        "Certainty": "5",
+        "DiagCategory": "MultipleSeizures",
+        "Negation": "Affirmed"
+      },
+      "example_text": "general seizures",
+      "key": "[\"Diagnosis\", \"general seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0014",
+      "note_excerpt": "",
+      "side": "predicted"
+    },
+    {
+      "count": 2,
+      "entity": "Diagnosis",
+      "evidence": "epilepsy",
+      "example_attributes": {
+        "CUI": "C0014544",
+        "CUIPhrase": "epilepsy",
+        "Certainty": "5",
+        "DiagCategory": "Epilepsy",
+        "Negation": "Affirmed"
+      },
+      "example_text": "epilepsy",
+      "key": "[\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0015",
+      "note_excerpt": "",
+      "side": "predicted"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "focal-seizure",
+      "example_attributes": {
+        "CUI": "C0751495",
+        "CUIPhrase": "focal-seizure",
+        "Certainty": "5",
+        "DiagCategory": "SingleSeizure",
+        "Negation": "Affirmed"
+      },
+      "example_text": "focal-seizure",
+      "key": "[\"Diagnosis\", \"focal seizure\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0016",
+      "note_excerpt": "Clinic Date 1/2/2019 Diagnosis: single focal seizure CVA with right hemiparesis 2017 Medication : simvastatin, Aspirin I saw this 52 year old gentleman together With his partner in clinic",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "focal-seizures",
+      "example_attributes": {
+        "CUI": "C0751495",
+        "CUIPhrase": "focal-seizures",
+        "Certainty": "4",
+        "DiagCategory": "MultipleSeizures",
+        "Negation": "Affirmed"
+      },
+      "example_text": "focal-seizures",
+      "key": "[\"Diagnosis\", \"focal seizures\", [[\"Certainty\", \"4\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0018",
+      "note_excerpt": "as like an overfamiliar or d\u00e9j\u00e0 vu feeling. These thoughts last for around 30 seconds. I think these are in keeping with temporal lobe onset focal seizures. This is interesting as previously she was getting events with coloured objects in her field of vision which were probably occipital lobe",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "generalised tonic clonic seizures",
+      "example_attributes": {
+        "CUI": "C0494475",
+        "CUIPhrase": "generalised-tonic-clonic-seizures",
+        "Certainty": "5",
+        "DiagCategory": "Epilepsy",
+        "Negation": "Affirmed"
+      },
+      "example_text": "generalised tonic clonic seizures",
+      "key": "[\"Diagnosis\", \"tonic clonic seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0020",
+      "note_excerpt": "Dear Dr, I reviewed this lady with epilepsy in clinic today. I was pleased to hear that she has not had any further generalised tonic clonic seizures since August 2016. There have been no absences since November 2016. She takes Keppra 500 mg twice a day. She is now four months pregnant.",
+      "side": "predicted"
+    },
+    {
+      "count": 2,
+      "entity": "Diagnosis",
+      "evidence": "-generalised-tonic-clonic-seizures",
+      "example_attributes": {
+        "CUI": "C0494475",
+        "CUIPhrase": "generalised-tonic-clonic-seizures",
+        "Certainty": "5",
+        "DiagCategory": "MultipleSeizures",
+        "Negation": "Affirmed"
+      },
+      "example_text": "generalised-tonic-clonic-seizures",
+      "key": "[\"Diagnosis\", \"tonic clonic seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0021",
+      "note_excerpt": "Dr Xxxx Re: John Jones dob: 01.06.1996, NHS No. 000 000 0000 1 Old Road Old Town XX1 1XX Diagnosis: Complex partial seizures with secondary generalised tonic clonic seizures Medication: Sodium Valproate 700mg in the morning and 800mg nocte John\u2019s epilepsy started at the age of 4. He suffered with generali",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "epilepsy",
+      "example_attributes": {
+        "CUI": "C0014544",
+        "CUIPhrase": "epilepsy",
+        "Certainty": "5",
+        "DiagCategory": "Epilepsy",
+        "Negation": "Affirmed"
+      },
+      "example_text": "epilepsy",
+      "key": "[\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0021",
+      "note_excerpt": "partial seizures with secondary generalised tonic clonic seizures Medication: Sodium Valproate 700mg in the morning and 800mg nocte John\u2019s epilepsy started at the age of 4. He suffered with generalised tonic clonic seizures, which were well controlled on Sodium Valproate. In the last 2",
+      "side": "predicted"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "minor seizures",
+      "example_attributes": {
+        "Certainty": "5",
+        "Negation": "Affirmed"
+      },
+      "example_text": "minor seizures",
+      "key": "[\"Diagnosis\", \"minor seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0021",
+      "note_excerpt": ". He suffered with generalised tonic clonic seizures, which were well controlled on Sodium Valproate. In the last 2 years he developed some minor seizures. He says he feels dizzy at the start, followed by a slight headache and nausea. He has been told that during the episodes he is unresponsiv",
+      "side": "predicted"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "episodes",
+      "example_attributes": {
+        "Certainty": "5",
+        "DiagCategory": "MultipleSeizures",
+        "Negation": "Affirmed"
+      },
+      "example_text": "episodes",
+      "key": "[\"Diagnosis\", \"episodes\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0021",
+      "note_excerpt": "eloped some minor seizures. He says he feels dizzy at the start, followed by a slight headache and nausea. He has been told that during the episodes he is unresponsive and that his hands may shake slightly. The episodes last no longer than 3 minutes and occur 4 to 5 times a year. His EEG",
+      "side": "predicted"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "generalised",
+      "example_attributes": {
+        "Certainty": "5",
+        "DiagCategory": "Epilepsy",
+        "Negation": "Affirmed"
+      },
+      "example_text": "generalised",
+      "key": "[\"Diagnosis\", \"generalised\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0021",
+      "note_excerpt": "Re: John Jones dob: 01.06.1996, NHS No. 000 000 0000 1 Old Road Old Town XX1 1XX Diagnosis: Complex partial seizures with secondary generalised tonic clonic seizures Medication: Sodium Valproate 700mg in the morning and 800mg nocte John\u2019s epilepsy started at the age of 4. He suffer",
+      "side": "predicted"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "focal-seizures",
+      "example_attributes": {
+        "CUI": "C0751495",
+        "CUIPhrase": "focal-seizures",
+        "Certainty": "4",
+        "DiagCategory": "MultipleSeizures",
+        "Negation": "Affirmed"
+      },
+      "example_text": "focal-seizures",
+      "key": "[\"Diagnosis\", \"focal seizures\", [[\"Certainty\", \"4\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0022",
+      "note_excerpt": "2. Dissociative seizures 3. Focal epilepsy There has been significant improvement since increasing the dose of lamotrigine. I think that the focal seizures are completely under control on the dose of lamotrigine 200 mg twice a day. She does not get any significant side effects from this.",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "Focal epilepsy",
+      "example_attributes": {
+        "CUI": "C0014547",
+        "CUIPhrase": "focal epilepsy",
+        "Certainty": "5",
+        "DiagCategory": "Epilepsy",
+        "Negation": "Affirmed"
+      },
+      "example_text": "Focal epilepsy",
+      "key": "[\"Diagnosis\", \"focal epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0022",
+      "note_excerpt": "Diagnosis: 1. Mild head injury 2. Dissociative seizures 3. Focal epilepsy There has been significant improvement since increasing the dose of lamotrigine. I think that the focal seizures are completely under co",
+      "side": "predicted"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "events",
+      "example_attributes": {
+        "Certainty": "5",
+        "DiagCategory": "MultipleSeizures",
+        "Negation": "Affirmed"
+      },
+      "example_text": "events",
+      "key": "[\"Diagnosis\", \"events\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0024",
+      "note_excerpt": "lopram, co-codamol, lansoprazole, multivitamins Many thanks for referring this 47 year old gentleman who I saw alone in clinic today. The events have been going on now for around 9 months. He has suffered around 10 events in total. He has not had any for the last 2 weeks. They seemed",
+      "side": "predicted"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "generalised-tonic-clonic-seizures",
+      "example_attributes": {
+        "CUI": "C0494475",
+        "CUIPhrase": "generalised-tonic-clonic-seizures",
+        "Certainty": "5",
+        "DiagCategory": "MultipleSeizures",
+        "Negation": "Affirmed"
+      },
+      "example_text": "generalised-tonic-clonic-seizures",
+      "key": "[\"Diagnosis\", \"tonic clonic seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0025",
+      "note_excerpt": "Ann Richards. D.O.B. 21/04/1974 Diagnosis: generalised tonic clonic seizures with myoclonic jerks, possible JME Anti-convulsant medication: epilim 500 mg BD Lamictal 100 mg in the morning, 175 mg in the afternoon",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "epilepsy",
+      "example_attributes": {
+        "CUI": "C0014544",
+        "CUIPhrase": "epilepsy",
+        "Certainty": "4",
+        "DiagCategory": "Epilepsy",
+        "Negation": "Affirmed"
+      },
+      "example_text": "epilepsy",
+      "key": "[\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"4\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0027",
+      "note_excerpt": "but she still gets occasional jerks with flashing lights. She does not have any other past medical history. There is no family history of epilepsy. Neurological examination was normal. I suspect this lady has epilepsy. I will arrange further tests including an MR brain and EEG and re",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "epilepsy",
+      "example_attributes": {
+        "CUI": "C0014544",
+        "CUIPhrase": "epilepsy",
+        "Certainty": "3",
+        "DiagCategory": "Epilepsy",
+        "Negation": "Affirmed"
+      },
+      "example_text": "epilepsy",
+      "key": "[\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"3\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0027",
+      "note_excerpt": "but she still gets occasional jerks with flashing lights. She does not have any other past medical history. There is no family history of epilepsy. Neurological examination was normal. I suspect this lady has epilepsy. I will arrange further tests including an MR brain and EEG and re",
+      "side": "predicted"
+    },
+    {
+      "count": 1,
+      "entity": "SeizureFrequency",
+      "evidence": "seizures-since-the-last-clinic-appointment",
+      "example_attributes": {
+        "CUI": "C0036572",
+        "CUIPhrase": "seizures",
+        "NumberOfSeizures": "3",
+        "PointInTime": "LastClinic",
+        "TimeSince_or_TimeOfEvent": "Since"
+      },
+      "example_text": "seizures",
+      "key": "[[\"cui\", \"C0036572\"], \"active-rate\"]",
+      "letter_id": "EA0004",
+      "note_excerpt": "lepsy \u2013 probable focal Current antiepileptic medication: Lamotrigine 125 milligrams twice a day Seizure taking frequency: Uncertain, several seizures since the last clinic appointment I reviewed this 68-year-old man alone in clinic today. He lives with his son and has no recollection of his seizures. Unfortunately, his",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "SeizureFrequency",
+      "evidence": "generalised-tonic-clonic-seizures-2014",
+      "example_attributes": {
+        "CUI": "C0494475",
+        "CUIPhrase": "generalised-tonic-clonic-seizures",
+        "NumberOfSeizures": "2",
+        "TimeSince_or_TimeOfEvent": "During",
+        "YearDate": "2014"
+      },
+      "example_text": "generalised-tonic-clonic-seizures",
+      "key": "[[\"cui\", \"C0494475\"], \"active-rate\"]",
+      "letter_id": "EA0006",
+      "note_excerpt": "medication: levetiracetam 500 mg twice a day Previous antiepileptic medication: lamotrigine and carbamazepine. Seizure type and frequency: 2 generalised tonic clonic seizures 2014, absence like seizures 2014 Investigations: MRI 2015 normal, EEG 2015 normal. I reviewed this 26 year old man alone in clinic today.",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "SeizureFrequency",
+      "evidence": "absence-like-seizures",
+      "example_attributes": {
+        "CUI": "C0563606",
+        "CUIPhrase": "absence-like-seizures",
+        "NumberOfSeizures": "1",
+        "TimeSince_or_TimeOfEvent": "During",
+        "YearDate": "2014"
+      },
+      "example_text": "absence-like-seizures",
+      "key": "[[\"cui\", \"C0563606\"], \"active-rate\"]",
+      "letter_id": "EA0006",
+      "note_excerpt": "a day Previous antiepileptic medication: lamotrigine and carbamazepine. Seizure type and frequency: 2 generalised tonic clonic seizures 2014, absence like seizures 2014 Investigations: MRI 2015 normal, EEG 2015 normal. I reviewed this 26 year old man alone in clinic today. I was pleased to hear t",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "SeizureFrequency",
+      "evidence": "seizures-e",
+      "example_attributes": {
+        "CUI": "C0036572",
+        "CUIPhrase": "seizures",
+        "LowerNumberOfTimePeriods": "3",
+        "NumberOfSeizures": "1",
+        "TimePeriod": "Week",
+        "UpperNumberOfTimePeriods": "4"
+      },
+      "example_text": "seizures",
+      "key": "[[\"cui\", \"C0036572\"], \"active-rate\"]",
+      "letter_id": "EA0007",
+      "note_excerpt": "mg nocte Phenytoin 75mg tds Other medication includes: Ramipril, lansoprazole, metformin, propranolol, clopidogrel. Seizure type and frequency: seizures every 3 to 4 weeks, possibly focal onset Previous investigations MRI 2011 Normal I reviewed this 37 year old lady together with",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "SeizureFrequency",
+      "evidence": "focal-seizures-with-altered-awarenes",
+      "example_attributes": {
+        "CUI": "C0270834",
+        "CUIPhrase": "focal-seizures-with-altered-awareness",
+        "NumberOfSeizures": "1",
+        "NumberOfTimePeriods": "3",
+        "TimePeriod": "Week"
+      },
+      "example_text": "focal-seizures-with-altered-awareness",
+      "key": "[[\"cui\", \"C0270834\"], \"active-rate\"]",
+      "letter_id": "EA0008",
+      "note_excerpt": "Dear Dr, Diagnosis: symptomatic structural focal epilepsy Previous meningioma resection 3rd January 2005 Seizure type and frequency: focal seizures with altered awareness every 3 weeks Current anti-epileptic medication: lamotrigine 75mg bd (to reduce and stop as detailed below) To start levetiracetam as",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "SeizureFrequency",
+      "evidence": "seizures-have-returned",
+      "example_attributes": {
+        "CUI": "C0036572",
+        "CUIPhrase": "seizure",
+        "FrequencyChange": "Increased"
+      },
+      "example_text": "seizure",
+      "key": "[[\"cui\", \"C0036572\"], \"unknown\"]",
+      "letter_id": "EA0008",
+      "note_excerpt": "as detailed below I reviewed this 62 year old man together with his wife in clinic today. Unfortunately after the period of seizure freedom the seizures have returned. The seizures are very stereotyped and asked similar to the events he had before surgery. He will get a warning of an unusual burning",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "SeizureFrequency",
+      "evidence": "seizure",
+      "example_attributes": {
+        "CUI": "C0036572",
+        "CUIPhrase": "seizures",
+        "LowerNumberOfSeizures": "2",
+        "NumberOfTimePeriods": "1",
+        "TimePeriod": "Month",
+        "UpperNumberOfSeizures": "4"
+      },
+      "example_text": "seizures",
+      "key": "[[\"cui\", \"C0036572\"], \"active-rate\"]",
+      "letter_id": "EA0009",
+      "note_excerpt": "Dear Dr , I reviewed this 42-year-old woman in the clinic this morning. As you know she has experienced seizures since around 4 weeks after her operation. This was a craniotomy for her frontal lobe brain tumour. During her seizures she typically has",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "SeizureFrequency",
+      "evidence": "seizures",
+      "example_attributes": {
+        "CUI": "C0036572",
+        "CUIPhrase": "seizures",
+        "FrequencyChange": "Increased",
+        "PointInTime": "DrugChange",
+        "TimeSince_or_TimeOfEvent": "Since"
+      },
+      "example_text": "seizures",
+      "key": "[[\"cui\", \"C0036572\"], \"unknown\"]",
+      "letter_id": "EA0009",
+      "note_excerpt": "Dear Dr , I reviewed this 42-year-old woman in the clinic this morning. As you know she has experienced seizures since around 4 weeks after her operation. This was a craniotomy for her frontal lobe brain tumour. During her seizures she typically has",
+      "side": "predicted"
+    },
+    {
+      "count": 1,
+      "entity": "SeizureFrequency",
+      "evidence": "seizures-",
+      "example_attributes": {
+        "AgeLower": "13",
+        "AgeUnit": "Year",
+        "AgeUpper": "19",
+        "CUI": "C0036572",
+        "CUIPhrase": "seizures",
+        "NumberOfSeizures": "0",
+        "TimeSince_or_TimeOfEvent": "Since"
+      },
+      "example_text": "seizures",
+      "key": "[[\"cui\", \"C0036572\"], \"seizure-free\"]",
+      "letter_id": "EA0010",
+      "note_excerpt": "st of severe headache with nausea and photophobia. Things are quite stable from an epilepsy point of view. As you know he is taking 150 mg of lamotrigine twice a day. His last seizures were in his teenage years where he probably had around 3 or 4 focal to bilateral convulsive seizures.",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "SeizureFrequency",
+      "evidence": "focal to bilateral convulsive seizures",
+      "example_attributes": {
+        "CUI": "C0877017",
+        "CUIPhrase": "focal to bilateral convulsive seizures",
+        "LowerNumberOfSeizures": "3",
+        "PointInTime": "Last_Month",
+        "TimeSince_or_TimeOfEvent": "Since",
+        "UpperNumberOfSeizures": "4"
+      },
+      "example_text": "focal to bilateral convulsive seizures",
+      "key": "[[\"cui\", \"C0877017\"], \"active-rate\"]",
+      "letter_id": "EA0010",
+      "note_excerpt": "s you know he is taking 150 mg of lamotrigine twice a day. His last seizures were in his teenage years where he probably had around 3 or 4 focal to bilateral convulsive seizures. There were some perinatal problems and he was born to a long and traumatic labour. He had to spend around 2 weeks in Special care baby U",
+      "side": "predicted"
+    },
+    {
+      "count": 1,
+      "entity": "SeizureFrequency",
+      "evidence": "ocal-seizures-with-altered-awarenes",
+      "example_attributes": {
+        "CUI": "C0270834",
+        "CUIPhrase": "focal-seizures-with-altered-awareness",
+        "NumberOfSeizures": "1",
+        "NumberOfTimePeriods": "2",
+        "TimePeriod": "Week"
+      },
+      "example_text": "focal-seizures-with-altered-awareness",
+      "key": "[[\"cui\", \"C0270834\"], \"active-rate\"]",
+      "letter_id": "EA0011",
+      "note_excerpt": "Diagnosis: Temporal lobe epilepsy Seizure type and frequency: Focal seizures with altered awareness approximately 1 per fortnight Focal to bilateral convulsive seizures, last event around Christmas 2017 Current antiepileptic medicat",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "SeizureFrequency",
+      "evidence": "Focal-to-bilateral-convulsive-seizure",
+      "example_attributes": {
+        "CUI": "C0877017",
+        "CUIPhrase": "focal-to-bilateral-convulsive-seizure",
+        "MonthDate": "12",
+        "NumberOfSeizures": "0",
+        "TimeSince_or_TimeOfEvent": "Since",
+        "YearDate": "2017"
+      },
+      "example_text": "focal-to-bilateral-convulsive-seizure",
+      "key": "[[\"cui\", \"C0877017\"], \"seizure-free\"]",
+      "letter_id": "EA0011",
+      "note_excerpt": "Diagnosis: Temporal lobe epilepsy Seizure type and frequency: Focal seizures with altered awareness approximately 1 per fortnight Focal to bilateral convulsive seizures, last event around Christmas 2017 Current antiepileptic medication: eslicarbazepine, 800 mg once a day Zonisamide 75 mg twice a day",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "SeizureFrequency",
+      "evidence": "cal-to-bilateral-convulsive-seizures",
+      "example_attributes": {
+        "CUI": "C0877017",
+        "CUIPhrase": "focal-to-bilateral-convulsive-seizures",
+        "FrequencyChange": "Infrequent"
+      },
+      "example_text": "focal-to-bilateral-convulsive-seizures",
+      "key": "[[\"cui\", \"C0877017\"], \"unknown\"]",
+      "letter_id": "EA0011",
+      "note_excerpt": "Diagnosis: Temporal lobe epilepsy Seizure type and frequency: Focal seizures with altered awareness approximately 1 per fortnight Focal to bilateral convulsive seizures, last event around Christmas 2017 Current antiepileptic medication: eslicarbazepine, 800 mg once a day Zonisamide 75 mg twice a day",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "SeizureFrequency",
+      "evidence": "convulsive-seizur",
+      "example_attributes": {
+        "CUI": "C0751494",
+        "CUIPhrase": "convulsive-seizure",
+        "NumberOfSeizures": "0",
+        "TimeSince_or_TimeOfEvent": "Since",
+        "YearDate": "2017"
+      },
+      "example_text": "convulsive-seizure",
+      "key": "[[\"cui\", \"C0751494\"], \"seizure-free\"]",
+      "letter_id": "EA0011",
+      "note_excerpt": ": Temporal lobe epilepsy Seizure type and frequency: Focal seizures with altered awareness approximately 1 per fortnight Focal to bilateral convulsive seizures, last event around Christmas 2017 Current antiepileptic medication: eslicarbazepine, 800 mg once a day Zonisamide 75 mg twice a da",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "SeizureFrequency",
+      "evidence": "general and complex partial seizures",
+      "example_attributes": {
+        "FrequencyChange": "Frequent",
+        "TimeSince_or_TimeOfEvent": "During"
+      },
+      "example_text": "general and complex partial seizures",
+      "key": "[[\"phrase\", \"general and complex partial seizures\"], \"unknown\"]",
+      "letter_id": "EA0014",
+      "note_excerpt": "d this lady with intractable epilepsy in clinic today. She is on Keppra 1000 mg BD, Zonisamide 125 mg BD. Despite this she continues to get general and complex partial seizures. She\u2019s not very keen on her anticonvulsant medication. She continues to get chronic daily headaches. There is a postural variation in her h",
+      "side": "predicted"
+    },
+    {
+      "count": 1,
+      "entity": "SeizureFrequency",
+      "evidence": "seizures",
+      "example_attributes": {
+        "CUI": "C0036572",
+        "CUIPhrase": "seizures",
+        "LowerNumberOfSeizures": "0",
+        "MonthDate": "12",
+        "NumberOfSeizures": "0",
+        "PointInTime": "Last_Month",
+        "TimeSince_or_TimeOfEvent": "Since",
+        "UpperNumberOfSeizures": "0",
+        "YearDate": "2018"
+      },
+      "example_text": "seizures",
+      "key": "[[\"cui\", \"C0036572\"], \"seizure-free\"]",
+      "letter_id": "EA0016",
+      "note_excerpt": "ok him around four minutes to recover during which time his partner noticed that he had some lip smacking. He has not had any the previous seizures. Apart from the previous stroke, he is well. He lives with his partner and is currently a teacher and has stopped driving. He gave up smoki",
+      "side": "predicted"
+    },
+    {
+      "count": 1,
+      "entity": "SeizureFrequency",
+      "evidence": "focal seizures",
+      "example_attributes": {
+        "CUI": "C0751495",
+        "CUIPhrase": "focal seizures",
+        "LowerNumberOfSeizures": "2",
+        "TimePeriod": "Week",
+        "UpperNumberOfSeizures": "2"
+      },
+      "example_text": "focal seizures",
+      "key": "[[\"cui\", \"C0751495\"], \"active-rate\"]",
+      "letter_id": "EA0018",
+      "note_excerpt": "s like an overfamiliar or d\u00e9j\u00e0 vu feeling. These thoughts last for around 30 seconds. I think these are in keeping with temporal lobe onset focal seizures. This is interesting as previously she was getting events with coloured objects in her field of vision which were probably occipital lobe s",
+      "side": "predicted"
+    },
+    {
+      "count": 1,
+      "entity": "SeizureFrequency",
+      "evidence": "seizure",
+      "example_attributes": {
+        "CUI": "C0036572",
+        "CUIPhrase": "seizure",
+        "NumberOfSeizures": "0",
+        "TimeSince_or_TimeOfEvent": "Since",
+        "YearDate": "1 year"
+      },
+      "example_text": "seizure",
+      "key": "[[\"cui\", \"C0036572\"], \"seizure-free\"]",
+      "letter_id": "EA0019",
+      "note_excerpt": "and carbamazepine 300mg bd. Unfortunately he forgot to take his normal dose of carbamazepine last week and had a generalised tonic clonic seizure. He last had a seizure before this around a year ago. I suggest that we don\u2019t make any management changes at present. If he were to have a",
+      "side": "predicted"
+    },
+    {
+      "count": 1,
+      "entity": "SeizureFrequency",
+      "evidence": "absences",
+      "example_attributes": {
+        "CUI": "C0563606",
+        "CUIPhrase": "absences",
+        "MonthDate": "11",
+        "NumberOfSeizures": "0",
+        "TimeSince_or_TimeOfEvent": "Since",
+        "YearDate": "2016"
+      },
+      "example_text": "absences",
+      "key": "[[\"cui\", \"C0563606\"], \"seizure-free\"]",
+      "letter_id": "EA0020",
+      "note_excerpt": "linic today. I was pleased to hear that she has not had any further generalised tonic clonic seizures since August 2016. There have been no absences since November 2016. She takes Keppra 500 mg twice a day. She is now four months pregnant. I have not made any changes and will see her ag",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "SeizureFrequency",
+      "evidence": "minor seizures",
+      "example_attributes": {
+        "FrequencyChange": "Increased",
+        "LowerNumberOfSeizures": "2",
+        "MonthDate": "06",
+        "PointInTime": "Last_Year",
+        "TimeSince_or_TimeOfEvent": "During",
+        "UpperNumberOfSeizures": "5",
+        "YearDate": "2011"
+      },
+      "example_text": "minor seizures",
+      "key": "[[\"phrase\", \"minor seizures\"], \"active-rate\"]",
+      "letter_id": "EA0021",
+      "note_excerpt": ". He suffered with generalised tonic clonic seizures, which were well controlled on Sodium Valproate. In the last 2 years he developed some minor seizures. He says he feels dizzy at the start, followed by a slight headache and nausea. He has been told that during the episodes he is unresponsiv",
+      "side": "predicted"
+    },
+    {
+      "count": 1,
+      "entity": "SeizureFrequency",
+      "evidence": "episodes",
+      "example_attributes": {
+        "LowerNumberOfSeizures": "4",
+        "NumberOfTimePeriods": "1",
+        "TimePeriod": "Year",
+        "UpperNumberOfSeizures": "5"
+      },
+      "example_text": "episodes",
+      "key": "[[\"phrase\", \"episodes\"], \"active-rate\"]",
+      "letter_id": "EA0021",
+      "note_excerpt": "eloped some minor seizures. He says he feels dizzy at the start, followed by a slight headache and nausea. He has been told that during the episodes he is unresponsive and that his hands may shake slightly. The episodes last no longer than 3 minutes and occur 4 to 5 times a year. His EEG",
+      "side": "predicted"
+    },
+    {
+      "count": 1,
+      "entity": "SeizureFrequency",
+      "evidence": "seizures",
+      "example_attributes": {
+        "CUI": "C0036572",
+        "CUIPhrase": "seizures",
+        "FrequencyChange": "Infrequent",
+        "PointInTime": "DrugChange"
+      },
+      "example_text": "seizures",
+      "key": "[[\"cui\", \"C0036572\"], \"unknown\"]",
+      "letter_id": "EA0022",
+      "note_excerpt": "Diagnosis: 1. Mild head injury 2. Dissociative seizures 3. Focal epilepsy There has been significant improvement since increasing the dose of lamotrigine. I think that the focal seizures are c",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "SeizureFrequency",
+      "evidence": "episodes of loss of consciousness",
+      "example_attributes": {
+        "LowerNumberOfSeizures": "7",
+        "TimeSince_or_TimeOfEvent": "During",
+        "UpperNumberOfSeizures": "8"
+      },
+      "example_text": "episodes of loss of consciousness",
+      "key": "[[\"phrase\", \"episodes of loss of consciousness\"], \"active-rate\"]",
+      "letter_id": "EA0023",
+      "note_excerpt": "This gentleman was referred to Neurology through the medical department. Mr Williams tells me that he has had around 7 episodes of loss of consciousness since the beginning of the year. They can occur at any time but they seem to happen more often if he is angry or upset. He will lose cons",
+      "side": "predicted"
+    },
+    {
+      "count": 1,
+      "entity": "SeizureFrequency",
+      "evidence": "events",
+      "example_attributes": {
+        "NumberOfSeizures": "10",
+        "TimeSince_or_TimeOfEvent": "During"
+      },
+      "example_text": "events",
+      "key": "[[\"phrase\", \"events\"], \"active-rate\"]",
+      "letter_id": "EA0024",
+      "note_excerpt": "lopram, co-codamol, lansoprazole, multivitamins Many thanks for referring this 47 year old gentleman who I saw alone in clinic today. The events have been going on now for around 9 months. He has suffered around 10 events in total. He has not had any for the last 2 weeks. They seemed",
+      "side": "predicted"
+    },
+    {
+      "count": 1,
+      "entity": "SeizureFrequency",
+      "evidence": "seizure-free",
+      "example_attributes": {
+        "CUI": "C1299590",
+        "CUIPhrase": "seizure-free",
+        "NumberOfSeizures": "0",
+        "TimeSince_or_TimeOfEvent": "Since"
+      },
+      "example_text": "seizure-free",
+      "key": "[[\"cui\", \"C1299590\"], \"seizure-free\"]",
+      "letter_id": "EA0024",
+      "note_excerpt": "",
+      "side": "predicted"
+    },
+    {
+      "count": 1,
+      "entity": "SeizureFrequency",
+      "evidence": "jerks",
+      "example_attributes": {
+        "FrequencyChange": "Same",
+        "TimeSince_or_TimeOfEvent": "During"
+      },
+      "example_text": "jerks",
+      "key": "[[\"phrase\", \"jerks\"], \"unknown\"]",
+      "letter_id": "EA0027",
+      "note_excerpt": "Thank you for referring this patient who I saw in clinic today. She says that she\u2019s had jerks while travelling in a car when light flickers through passing trees. In June last year she was in a party when lights were flashing. As the",
+      "side": "predicted"
+    },
+    {
+      "count": 1,
+      "entity": "Investigations",
+      "evidence": "EEG",
+      "example_attributes": {
+        "CUI": "C0151611",
+        "CUIPhrase": "eeg abnormal",
+        "EEG_Performed": "Yes",
+        "EEG_Results": "Abnormal"
+      },
+      "example_text": "EEG",
+      "key": "[\"EEG\", \"Yes\", \"Abnormal\"]",
+      "letter_id": "EA0015",
+      "note_excerpt": "hnoid haemorrhage around 12 years ago. She continues to get a combination of epileptic and nonepileptic events which was confirmed with an EEG recording. Currently she is taking Tegretol 500 mg BD and levetiracetam 250 mg BD. She is also on fluoxetine for depression of 10 mg.",
+      "side": "predicted"
+    },
+    {
+      "count": 1,
+      "entity": "Investigations",
+      "evidence": "CT-scan",
+      "example_attributes": {
+        "CT_Performed": "Yes",
+        "CT_Results": "Abnormal",
+        "CUI": "C0436539",
+        "CUIPhrase": "ct-abnormal"
+      },
+      "example_text": "CT-scan",
+      "key": "[\"CT\", \"Yes\", \"Abnormal\"]",
+      "letter_id": "EA0016",
+      "note_excerpt": "oking 10 years ago and he drinks three cans of lager every week. On examination he had a right hemiparesis. ECG was normal. There was a previous CT scan from 2017 showing a left hemisphere infarct Impression This history is consistent with a single focal seizure secondary to a known",
+      "side": "gold"
+    }
+  ],
+  "row_count": 25,
+  "sf_jsonl": null,
+  "split": "dev",
+  "structured_jsonl": "experiments\\exectv2_holistic_finding_assembly_v095_qwen_dev25_20260621.jsonl",
+  "summary": {
+    "per_entity": {
+      "Diagnosis": {
+        "headline": {
+          "f1": 0.6744,
+          "fn": 13,
+          "fp": 15,
+          "gold_count": 42,
+          "precision": 0.6591,
+          "precision_tp": 29,
+          "pred_count": 44,
+          "recall": 0.6905,
+          "recall_tp": 29,
+          "tp": 29
+        },
+        "residual_error_counts": {
+          "candidate_miss": 23,
+          "wrong_detail_selection": 17
+        },
+        "top_gold_misses": [
+          {
+            "count": 5,
+            "example_attributes": {
+              "CUI": "C0494475",
+              "CUIPhrase": "generalised-tonic-clonic-seizure",
+              "Certainty": "5",
+              "DiagCategory": "SingleSeizure",
+              "Negation": "Affirmed"
+            },
+            "example_evidence": "-Generalised-tonic-clonic-seizure",
+            "example_excerpt": "chronic seizures alone. Current medication: sodium valproate 500 mg twice a day Carbamazepine 200 mg twice a day Seizure type and frequency: Generalised tonic clonic seizure-last event July 2016. Previous event December 2015. Investigations: MRI 2012 normal. EEG 2012 generalised spike and wave. I reviewed th",
+            "example_text": "generalised-tonic-clonic-seizure",
+            "key": "[\"Diagnosis\", \"tonic clonic seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+            "letters": [
+              "EA0005",
+              "EA0006",
+              "EA0021",
+              "EA0025"
+            ]
+          },
+          {
+            "count": 3,
+            "example_attributes": {
+              "CUI": "C0014544",
+              "CUIPhrase": "epilepsy",
+              "Certainty": "5",
+              "DiagCategory": "Epilepsy",
+              "Negation": "Affirmed"
+            },
+            "example_evidence": "epilepsy-",
+            "example_excerpt": "Dear Dr, Diagnosis: epilepsy \u2013 unclassified Diabetes, hypothyroidism Current antiepileptic medication: levetiracetam 750mg mane, 500 mg nocte Phenytoin 75mg tds",
+            "example_text": "epilepsy",
+            "key": "[\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+            "letters": [
+              "EA0007",
+              "EA0010",
+              "EA0011"
+            ]
+          },
+          {
+            "count": 3,
+            "example_attributes": {
+              "CUI": "C0877017",
+              "CUIPhrase": "bilateral-convulsive-seizure",
+              "Certainty": "5",
+              "DiagCategory": "SingleSeizure",
+              "Negation": "Affirmed"
+            },
+            "example_evidence": "bilateral-convulsive-seizure",
+            "example_excerpt": "lly has a left-handed stiffness which progresses to her shoulder. Around 50% of the time she will then lose consciousness before going in to a bilateral convulsive seizure. Her seizure frequency does vary. Currently she get around 2-4 seizures per month. Although she did have a cluster of seizures in Au",
+            "example_text": "bilateral-convulsive-seizure",
+            "key": "[\"Diagnosis\", \"focal to bilateral convulsive seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+            "letters": [
+              "EA0009",
+              "EA0010",
+              "EA0011"
+            ]
+          },
+          {
+            "count": 2,
+            "example_attributes": {
+              "CUI": "C0270834",
+              "CUIPhrase": "focal-seizures-with-altered-awareness",
+              "Certainty": "5",
+              "DiagCategory": "MultipleSeizures",
+              "Negation": "Affirmed"
+            },
+            "example_evidence": "focal-seizures-with-altered-awareness",
+            "example_excerpt": "Dear Dr, Diagnosis: symptomatic structural focal epilepsy Previous meningioma resection 3rd January 2005 Seizure type and frequency: focal seizures with altered awareness every 3 weeks Current anti-epileptic medication: lamotrigine 75mg bd (to reduce and stop as detailed below) To start levetiracetam as d",
+            "example_text": "focal-seizures-with-altered-awareness",
+            "key": "[\"Diagnosis\", \"focal seizures with altered awareness\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+            "letters": [
+              "EA0008",
+              "EA0011"
+            ]
+          },
+          {
+            "count": 2,
+            "example_attributes": {
+              "CUI": "C0751495",
+              "CUIPhrase": "focal-seizures",
+              "Certainty": "4",
+              "DiagCategory": "MultipleSeizures",
+              "Negation": "Affirmed"
+            },
+            "example_evidence": "focal-seizures",
+            "example_excerpt": "as like an overfamiliar or d\u00e9j\u00e0 vu feeling. These thoughts last for around 30 seconds. I think these are in keeping with temporal lobe onset focal seizures. This is interesting as previously she was getting events with coloured objects in her field of vision which were probably occipital lobe",
+            "example_text": "focal-seizures",
+            "key": "[\"Diagnosis\", \"focal seizures\", [[\"Certainty\", \"4\"], [\"Negation\", \"Affirmed\"]]]",
+            "letters": [
+              "EA0018",
+              "EA0022"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "CUI": "C0393697",
+              "CUIPhrase": "epilepsy-with-generalised-tonic-clonic-seizure-alone",
+              "Certainty": "4",
+              "DiagCategory": "Epilepsy",
+              "Negation": "Affirmed"
+            },
+            "example_evidence": "epilepsy-with-generalised-tonic-clonic-seizure-alone",
+            "example_excerpt": "ink any alcohol. He lives with his partner. Impression: as he has only ever had generalised tonic chronic seizures I think he has the syndrome of epilepsy with generalised tonic clonic seizure alone. Comments: we had a discussion about epilepsy in general. Mr Williams is aware that seizures involving loss of consciousness have a",
+            "example_text": "epilepsy-with-generalised-tonic-clonic-seizure-alone",
+            "key": "[\"Diagnosis\", \"epilepsy with generalised tonic clonic seizures alone\", [[\"Certainty\", \"4\"], [\"Negation\", \"Affirmed\"]]]",
+            "letters": [
+              "EA0005"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "CUI": "C0393697",
+              "CUIPhrase": "epilepsy-with-generalised-tonic-clonic-seizures-alone",
+              "Certainty": "5",
+              "DiagCategory": "Epilepsy",
+              "Negation": "Affirmed"
+            },
+            "example_evidence": "epilepsy-with-generalised-tonic-chronic-seizures-alone",
+            "example_excerpt": "Dear Dr, Diagnosis: genetic generalised epilepsy-epilepsy with generalised tonic chronic seizures alone. Current medication: sodium valproate 500 mg twice a day Carbamazepine 200 mg twice a day Seizure type and frequency: Generalised tonic",
+            "example_text": "epilepsy-with-generalised-tonic-clonic-seizures-alone",
+            "key": "[\"Diagnosis\", \"epilepsy with generalised tonic clonic seizures alone\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+            "letters": [
+              "EA0005"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "CUI": "C0014544",
+              "CUIPhrase": "epilepsy",
+              "Certainty": "4",
+              "DiagCategory": "Epilepsy",
+              "Negation": "Affirmed"
+            },
+            "example_evidence": "epilepsy",
+            "example_excerpt": "but she still gets occasional jerks with flashing lights. She does not have any other past medical history. There is no family history of epilepsy. Neurological examination was normal. I suspect this lady has epilepsy. I will arrange further tests including an MR brain and EEG and re",
+            "example_text": "epilepsy",
+            "key": "[\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"4\"], [\"Negation\", \"Affirmed\"]]]",
+            "letters": [
+              "EA0027"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "CUI": "C0014547",
+              "CUIPhrase": "focal-onset-epilepsy",
+              "Certainty": "3",
+              "DiagCategory": "MultipleSeizures",
+              "Negation": "Affirmed"
+            },
+            "example_evidence": "focal-onset",
+            "example_excerpt": "r medication includes: Ramipril, lansoprazole, metformin, propranolol, clopidogrel. Seizure type and frequency: seizures every 3 to 4 weeks, possibly focal onset Previous investigations MRI 2011 Normal I reviewed this 37 year old lady together with her husband in clinic today. She has ha",
+            "example_text": "focal-onset-epilepsy",
+            "key": "[\"Diagnosis\", \"focal epilepsy\", [[\"Certainty\", \"3\"], [\"Negation\", \"Affirmed\"]]]",
+            "letters": [
+              "EA0007"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "CUI": "C0472349",
+              "CUIPhrase": "symptomatic-structural-focal-epilepsy",
+              "Certainty": "5",
+              "DiagCategory": "Epilepsy",
+              "Negation": "Affirmed"
+            },
+            "example_evidence": "symptomatic-structural-focal-epilepsy",
+            "example_excerpt": "Dear Dr, Diagnosis: symptomatic structural focal epilepsy Previous meningioma resection 3rd January 2005 Seizure type and frequency: focal seizures with altered awareness every 3 weeks Current",
+            "example_text": "symptomatic-structural-focal-epilepsy",
+            "key": "[\"Diagnosis\", \"focal epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+            "letters": [
+              "EA0008"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "CUI": "C0751495",
+              "CUIPhrase": "focal-seizure",
+              "Certainty": "5",
+              "DiagCategory": "SingleSeizure",
+              "Negation": "Affirmed"
+            },
+            "example_evidence": "focal-seizure",
+            "example_excerpt": "Clinic Date 1/2/2019 Diagnosis: single focal seizure CVA with right hemiparesis 2017 Medication : simvastatin, Aspirin I saw this 52 year old gentleman together With his partner in clinic",
+            "example_text": "focal-seizure",
+            "key": "[\"Diagnosis\", \"focal seizure\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+            "letters": [
+              "EA0016"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "CUI": "C0751495",
+              "CUIPhrase": "focal-seizures",
+              "Certainty": "5",
+              "DiagCategory": "MultipleSeizures",
+              "Negation": "Affirmed"
+            },
+            "example_evidence": "focal-seizures",
+            "example_excerpt": "twice a day Topiramate 100 mg BD I revealed this 42 year old lady together with her husband in clinic today. In March she had 2 to 3 of her focal seizures without change in awareness. Since her last clinic appointment she has had four secondary generalised seizures. During her focal seizures",
+            "example_text": "focal-seizures",
+            "key": "[\"Diagnosis\", \"focal seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+            "letters": [
+              "EA0002"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "CUI": "C0014556",
+              "CUIPhrase": "temporal-lobe-epilepsy",
+              "Certainty": "5",
+              "DiagCategory": "Epilepsy",
+              "Negation": "Affirmed"
+            },
+            "example_evidence": "Temporal-lobe-epilepsy",
+            "example_excerpt": "Diagnosis: Temporal lobe epilepsy Seizure type and frequency: Focal seizures with altered awareness approximately 1 per fortnight Focal to bilateral convulsive seizures,",
+            "example_text": "temporal-lobe-epilepsy",
+            "key": "[\"Diagnosis\", \"temporal lobe epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+            "letters": [
+              "EA0011"
+            ]
+          }
+        ],
+        "top_predicted_over_emissions": [
+          {
+            "count": 3,
+            "example_attributes": {
+              "CUI": "C0014544",
+              "CUIPhrase": "epilepsy",
+              "Certainty": "5",
+              "DiagCategory": "Epilepsy",
+              "Negation": "Affirmed"
+            },
+            "example_evidence": "epilepsy",
+            "example_excerpt": "",
+            "example_text": "epilepsy",
+            "key": "[\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+            "letters": [
+              "EA0015",
+              "EA0021"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "Certainty": "5",
+              "DiagCategory": "MultipleSeizures",
+              "Negation": "Affirmed"
+            },
+            "example_evidence": "cluster of seizures",
+            "example_excerpt": "a bilateral convulsive seizure. Her seizure frequency does vary. Currently she get around 2-4 seizures per month. Although she did have a cluster of seizures in August, 2017 where she had 6-9 seizures every week for 3 weeks. She was born normally but did have 2 febrile seizures at the age of 2 m",
+            "example_text": "cluster of seizures",
+            "key": "[\"Diagnosis\", \"cluster of seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+            "letters": [
+              "EA0009"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "CUI": "C0014544",
+              "CUIPhrase": "epilepsy",
+              "Certainty": "3",
+              "DiagCategory": "Epilepsy",
+              "Negation": "Affirmed"
+            },
+            "example_evidence": "epilepsy",
+            "example_excerpt": "but she still gets occasional jerks with flashing lights. She does not have any other past medical history. There is no family history of epilepsy. Neurological examination was normal. I suspect this lady has epilepsy. I will arrange further tests including an MR brain and EEG and re",
+            "example_text": "epilepsy",
+            "key": "[\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"3\"], [\"Negation\", \"Affirmed\"]]]",
+            "letters": [
+              "EA0027"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "Certainty": "5",
+              "DiagCategory": "MultipleSeizures",
+              "Negation": "Affirmed"
+            },
+            "example_evidence": "episodes",
+            "example_excerpt": "eloped some minor seizures. He says he feels dizzy at the start, followed by a slight headache and nausea. He has been told that during the episodes he is unresponsive and that his hands may shake slightly. The episodes last no longer than 3 minutes and occur 4 to 5 times a year. His EEG",
+            "example_text": "episodes",
+            "key": "[\"Diagnosis\", \"episodes\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+            "letters": [
+              "EA0021"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "Certainty": "5",
+              "DiagCategory": "MultipleSeizures",
+              "Negation": "Affirmed"
+            },
+            "example_evidence": "events",
+            "example_excerpt": "lopram, co-codamol, lansoprazole, multivitamins Many thanks for referring this 47 year old gentleman who I saw alone in clinic today. The events have been going on now for around 9 months. He has suffered around 10 events in total. He has not had any for the last 2 weeks. They seemed",
+            "example_text": "events",
+            "key": "[\"Diagnosis\", \"events\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+            "letters": [
+              "EA0024"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "CUI": "C0014547",
+              "CUIPhrase": "focal epilepsy",
+              "Certainty": "4",
+              "DiagCategory": "Epilepsy",
+              "Negation": "Affirmed"
+            },
+            "example_evidence": "focal epilepsy",
+            "example_excerpt": "Diagnosis: Episodic migraine Symptomatic structural focal epilepsy (probable perinatal insult) Dear Dr I reviewed this 39-year-old man in clinic today. His main issue is migraines which occur around 3 tim",
+            "example_text": "focal epilepsy",
+            "key": "[\"Diagnosis\", \"focal epilepsy\", [[\"Certainty\", \"4\"], [\"Negation\", \"Affirmed\"]]]",
+            "letters": [
+              "EA0010"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "CUI": "C0014547",
+              "CUIPhrase": "focal epilepsy",
+              "Certainty": "5",
+              "DiagCategory": "Epilepsy",
+              "Negation": "Affirmed"
+            },
+            "example_evidence": "Focal epilepsy",
+            "example_excerpt": "Diagnosis: 1. Mild head injury 2. Dissociative seizures 3. Focal epilepsy There has been significant improvement since increasing the dose of lamotrigine. I think that the focal seizures are completely under co",
+            "example_text": "Focal epilepsy",
+            "key": "[\"Diagnosis\", \"focal epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+            "letters": [
+              "EA0022"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "CUI": "C0877017",
+              "CUIPhrase": "focal-to-bilateral-convulsive-seizures",
+              "Certainty": "4",
+              "DiagCategory": "Epilepsy",
+              "Negation": "Affirmed"
+            },
+            "example_evidence": "focal to bilateral convulsive seizures",
+            "example_excerpt": "s you know he is taking 150 mg of lamotrigine twice a day. His last seizures were in his teenage years where he probably had around 3 or 4 focal to bilateral convulsive seizures. There were some perinatal problems and he was born to a long and traumatic labour. He had to spend around 2 weeks in Special care baby U",
+            "example_text": "focal to bilateral convulsive seizures",
+            "key": "[\"Diagnosis\", \"focal to bilateral convulsive seizures\", [[\"Certainty\", \"4\"], [\"Negation\", \"Affirmed\"]]]",
+            "letters": [
+              "EA0010"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "Certainty": "5",
+              "DiagCategory": "Epilepsy",
+              "Negation": "Affirmed"
+            },
+            "example_evidence": "focal",
+            "example_excerpt": "Diagnosis: Temporal lobe epilepsy Seizure type and frequency: Focal seizures with altered awareness approximately 1 per fortnight Focal to bilateral convulsive seizures, last event around Christmas 2017 Cu",
+            "example_text": "focal",
+            "key": "[\"Diagnosis\", \"focal\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+            "letters": [
+              "EA0011"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "Certainty": "5",
+              "DiagCategory": "MultipleSeizures",
+              "Negation": "Affirmed"
+            },
+            "example_evidence": "general seizures",
+            "example_excerpt": "",
+            "example_text": "general seizures",
+            "key": "[\"Diagnosis\", \"general seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+            "letters": [
+              "EA0014"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "CUI": "C0014548",
+              "CUIPhrase": "generalised-epilepsy",
+              "Certainty": "3",
+              "DiagCategory": "Epilepsy",
+              "Negation": "Affirmed"
+            },
+            "example_evidence": "generalised epilepsy",
+            "example_excerpt": "",
+            "example_text": "generalised epilepsy",
+            "key": "[\"Diagnosis\", \"generalised epilepsy\", [[\"Certainty\", \"3\"], [\"Negation\", \"Affirmed\"]]]",
+            "letters": [
+              "EA0007"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "Certainty": "5",
+              "DiagCategory": "Epilepsy",
+              "Negation": "Affirmed"
+            },
+            "example_evidence": "generalised",
+            "example_excerpt": "Re: John Jones dob: 01.06.1996, NHS No. 000 000 0000 1 Old Road Old Town XX1 1XX Diagnosis: Complex partial seizures with secondary generalised tonic clonic seizures Medication: Sodium Valproate 700mg in the morning and 800mg nocte John\u2019s epilepsy started at the age of 4. He suffer",
+            "example_text": "generalised",
+            "key": "[\"Diagnosis\", \"generalised\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+            "letters": [
+              "EA0021"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "Certainty": "5",
+              "Negation": "Affirmed"
+            },
+            "example_evidence": "minor seizures",
+            "example_excerpt": ". He suffered with generalised tonic clonic seizures, which were well controlled on Sodium Valproate. In the last 2 years he developed some minor seizures. He says he feels dizzy at the start, followed by a slight headache and nausea. He has been told that during the episodes he is unresponsiv",
+            "example_text": "minor seizures",
+            "key": "[\"Diagnosis\", \"minor seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+            "letters": [
+              "EA0021"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "Certainty": "5",
+              "DiagCategory": "Epilepsy",
+              "Negation": "Affirmed"
+            },
+            "example_evidence": "seizures",
+            "example_excerpt": "Dear Dr , I reviewed this 42-year-old woman in the clinic this morning. As you know she has experienced seizures since around 4 weeks after her operation. This was a craniotomy for her frontal lobe brain tumour. During her seizures she typically has",
+            "example_text": "seizures",
+            "key": "[\"Diagnosis\", \"seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+            "letters": [
+              "EA0009"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "CUI": "C0494475",
+              "CUIPhrase": "generalised-tonic-clonic-seizures",
+              "Certainty": "5",
+              "DiagCategory": "Epilepsy",
+              "Negation": "Affirmed"
+            },
+            "example_evidence": "generalised tonic clonic seizures",
+            "example_excerpt": "Dear Dr, I reviewed this lady with epilepsy in clinic today. I was pleased to hear that she has not had any further generalised tonic clonic seizures since August 2016. There have been no absences since November 2016. She takes Keppra 500 mg twice a day. She is now four months pregnant.",
+            "example_text": "generalised tonic clonic seizures",
+            "key": "[\"Diagnosis\", \"tonic clonic seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+            "letters": [
+              "EA0020"
+            ]
+          }
+        ]
+      },
+      "Investigations": {
+        "headline": {
+          "f1": 0.95,
+          "fn": 1,
+          "fp": 1,
+          "gold_count": 20,
+          "precision": 0.95,
+          "pred_count": 20,
+          "recall": 0.95,
+          "tp": 19
+        },
+        "residual_error_counts": {
+          "candidate_miss": 1,
+          "wrong_detail_selection": 1
+        },
+        "top_gold_misses": [
+          {
+            "count": 1,
+            "example_attributes": {
+              "CT_Performed": "Yes",
+              "CT_Results": "Abnormal",
+              "CUI": "C0436539",
+              "CUIPhrase": "ct-abnormal"
+            },
+            "example_evidence": "CT-scan",
+            "example_excerpt": "oking 10 years ago and he drinks three cans of lager every week. On examination he had a right hemiparesis. ECG was normal. There was a previous CT scan from 2017 showing a left hemisphere infarct Impression This history is consistent with a single focal seizure secondary to a known",
+            "example_text": "CT-scan",
+            "key": "[\"CT\", \"Yes\", \"Abnormal\"]",
+            "letters": [
+              "EA0016"
+            ]
+          }
+        ],
+        "top_predicted_over_emissions": [
+          {
+            "count": 1,
+            "example_attributes": {
+              "CUI": "C0151611",
+              "CUIPhrase": "eeg abnormal",
+              "EEG_Performed": "Yes",
+              "EEG_Results": "Abnormal"
+            },
+            "example_evidence": "EEG",
+            "example_excerpt": "hnoid haemorrhage around 12 years ago. She continues to get a combination of epileptic and nonepileptic events which was confirmed with an EEG recording. Currently she is taking Tegretol 500 mg BD and levetiracetam 250 mg BD. She is also on fluoxetine for depression of 10 mg.",
+            "example_text": "EEG",
+            "key": "[\"EEG\", \"Yes\", \"Abnormal\"]",
+            "letters": [
+              "EA0015"
+            ]
+          }
+        ]
+      },
+      "Prescription": {
+        "headline": {
+          "f1": 0.9474,
+          "fn": 2,
+          "fp": 2,
+          "gold_count": 38,
+          "precision": 0.9474,
+          "pred_count": 38,
+          "recall": 0.9474,
+          "tp": 36
+        },
+        "residual_error_counts": {
+          "candidate_miss": 2,
+          "wrong_detail_selection": 2
+        },
+        "top_gold_misses": [
+          {
+            "count": 1,
+            "example_attributes": {
+              "CUI": "C0377265",
+              "CUIPhrase": "levetiracetam",
+              "DoseUnit": "mg",
+              "DrugDose": "1000",
+              "DrugName": "levetiracetam",
+              "Frequency": "2"
+            },
+            "example_evidence": "levetiracetam-1000-mg-twice-today",
+            "example_excerpt": "objects in her field of vision which were probably occipital lobe seizures. Currently she is taking sodium valproate 500 mg twice a day and levetiracetam 1000 mg twice today. She has previously tried carbamazepine but this give her a rash. I explained the new MHRA rules on prescribing sodium valproate in women",
+            "example_text": "levetiracetam-1000-mg-twice-today",
+            "key": "[\"ordinary\", \"levetiracetam\", \"1000\", \"mg\", \"2\"]",
+            "letters": [
+              "EA0018"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "CUI": "C0037567",
+              "CUIPhrase": "sodium-valproate",
+              "DoseUnit": "mg",
+              "DrugDose": "500",
+              "DrugName": "sodium-valproate",
+              "Frequency": "2"
+            },
+            "example_evidence": "Currently-she-is-taking-sodium-valproate-500-mg-twice-a-day",
+            "example_excerpt": "s interesting as previously she was getting events with coloured objects in her field of vision which were probably occipital lobe seizures. Currently she is taking sodium valproate 500 mg twice a day and levetiracetam 1000 mg twice today. She has previously tried carbamazepine but this give her a rash. I explained the new MHRA rules on",
+            "example_text": "Currently-she-is-taking-sodium-valproate-500-mg-twice-a-day",
+            "key": "[\"ordinary\", \"sodium-valproate\", \"500\", \"mg\", \"2\"]",
+            "letters": [
+              "EA0018"
+            ]
+          }
+        ],
+        "top_predicted_over_emissions": [
+          {
+            "count": 1,
+            "example_attributes": {
+              "CUI": "C0055891",
+              "CUIPhrase": "clobazam",
+              "DoseUnit": "mg",
+              "DrugDose": "10-20",
+              "DrugName": "clobazam",
+              "Frequency": "As_Required"
+            },
+            "example_evidence": "Clobazam",
+            "example_excerpt": "in his right posterior temporal lobe. An EEG in 2016 did show some focal slowing in the right temporal leads. I suggest adding in some Clobazam to take on an as required basis for seizure clusters. He can take 10 mg at night increasing to 20 mg if necessary or 10 mg twice a day. T",
+            "example_text": "Clobazam",
+            "key": "[\"rescue\", \"clobazam\", \"as_required\"]",
+            "letters": [
+              "EA0011"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "CUI": "C0037567",
+              "CUIPhrase": "sodium-valproate",
+              "DrugName": "sodium-valproate",
+              "Frequency": "As_Required"
+            },
+            "example_evidence": "sodium valproate",
+            "example_excerpt": "y she was getting events with coloured objects in her field of vision which were probably occipital lobe seizures. Currently she is taking sodium valproate 500 mg twice a day and levetiracetam 1000 mg twice today. She has previously tried carbamazepine but this give her a rash. I explained the",
+            "example_text": "sodium valproate",
+            "key": "[\"rescue\", \"sodium-valproate\", \"as_required\"]",
+            "letters": [
+              "EA0018"
+            ]
+          }
+        ]
+      },
+      "SeizureFrequency": {
+        "headline": {
+          "f1": 0.6182,
+          "fn": 9,
+          "fp": 12,
+          "gold_count": 26,
+          "precision": 0.5862,
+          "pred_count": 29,
+          "recall": 0.6538,
+          "tp": 17
+        },
+        "residual_error_counts": {
+          "candidate_miss": 14,
+          "wrong_detail_selection": 12
+        },
+        "residual_state_counts": {
+          "gold": {
+            "active-rate": 7,
+            "seizure-free": 4,
+            "unknown": 3
+          },
+          "predicted": {
+            "active-rate": 6,
+            "seizure-free": 3,
+            "unknown": 3
+          }
+        },
+        "top_gold_misses": [
+          {
+            "count": 3,
+            "example_attributes": {
+              "CUI": "C0036572",
+              "CUIPhrase": "seizures",
+              "NumberOfSeizures": "3",
+              "PointInTime": "LastClinic",
+              "TimeSince_or_TimeOfEvent": "Since"
+            },
+            "example_evidence": "seizures-since-the-last-clinic-appointment",
+            "example_excerpt": "lepsy \u2013 probable focal Current antiepileptic medication: Lamotrigine 125 milligrams twice a day Seizure taking frequency: Uncertain, several seizures since the last clinic appointment I reviewed this 68-year-old man alone in clinic today. He lives with his son and has no recollection of his seizures. Unfortunately, his",
+            "example_text": "seizures",
+            "key": "[[\"cui\", \"C0036572\"], \"active-rate\"]",
+            "letters": [
+              "EA0004",
+              "EA0007",
+              "EA0009"
+            ]
+          },
+          {
+            "count": 2,
+            "example_attributes": {
+              "CUI": "C0036572",
+              "CUIPhrase": "seizure",
+              "FrequencyChange": "Increased"
+            },
+            "example_evidence": "seizures-have-returned",
+            "example_excerpt": "as detailed below I reviewed this 62 year old man together with his wife in clinic today. Unfortunately after the period of seizure freedom the seizures have returned. The seizures are very stereotyped and asked similar to the events he had before surgery. He will get a warning of an unusual burning",
+            "example_text": "seizure",
+            "key": "[[\"cui\", \"C0036572\"], \"unknown\"]",
+            "letters": [
+              "EA0008",
+              "EA0022"
+            ]
+          },
+          {
+            "count": 2,
+            "example_attributes": {
+              "CUI": "C0270834",
+              "CUIPhrase": "focal-seizures-with-altered-awareness",
+              "NumberOfSeizures": "1",
+              "NumberOfTimePeriods": "3",
+              "TimePeriod": "Week"
+            },
+            "example_evidence": "focal-seizures-with-altered-awarenes",
+            "example_excerpt": "Dear Dr, Diagnosis: symptomatic structural focal epilepsy Previous meningioma resection 3rd January 2005 Seizure type and frequency: focal seizures with altered awareness every 3 weeks Current anti-epileptic medication: lamotrigine 75mg bd (to reduce and stop as detailed below) To start levetiracetam as",
+            "example_text": "focal-seizures-with-altered-awareness",
+            "key": "[[\"cui\", \"C0270834\"], \"active-rate\"]",
+            "letters": [
+              "EA0008",
+              "EA0011"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "AgeLower": "13",
+              "AgeUnit": "Year",
+              "AgeUpper": "19",
+              "CUI": "C0036572",
+              "CUIPhrase": "seizures",
+              "NumberOfSeizures": "0",
+              "TimeSince_or_TimeOfEvent": "Since"
+            },
+            "example_evidence": "seizures-",
+            "example_excerpt": "st of severe headache with nausea and photophobia. Things are quite stable from an epilepsy point of view. As you know he is taking 150 mg of lamotrigine twice a day. His last seizures were in his teenage years where he probably had around 3 or 4 focal to bilateral convulsive seizures.",
+            "example_text": "seizures",
+            "key": "[[\"cui\", \"C0036572\"], \"seizure-free\"]",
+            "letters": [
+              "EA0010"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "CUI": "C0494475",
+              "CUIPhrase": "generalised-tonic-clonic-seizures",
+              "NumberOfSeizures": "2",
+              "TimeSince_or_TimeOfEvent": "During",
+              "YearDate": "2014"
+            },
+            "example_evidence": "generalised-tonic-clonic-seizures-2014",
+            "example_excerpt": "medication: levetiracetam 500 mg twice a day Previous antiepileptic medication: lamotrigine and carbamazepine. Seizure type and frequency: 2 generalised tonic clonic seizures 2014, absence like seizures 2014 Investigations: MRI 2015 normal, EEG 2015 normal. I reviewed this 26 year old man alone in clinic today.",
+            "example_text": "generalised-tonic-clonic-seizures",
+            "key": "[[\"cui\", \"C0494475\"], \"active-rate\"]",
+            "letters": [
+              "EA0006"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "CUI": "C0563606",
+              "CUIPhrase": "absence-like-seizures",
+              "NumberOfSeizures": "1",
+              "TimeSince_or_TimeOfEvent": "During",
+              "YearDate": "2014"
+            },
+            "example_evidence": "absence-like-seizures",
+            "example_excerpt": "a day Previous antiepileptic medication: lamotrigine and carbamazepine. Seizure type and frequency: 2 generalised tonic clonic seizures 2014, absence like seizures 2014 Investigations: MRI 2015 normal, EEG 2015 normal. I reviewed this 26 year old man alone in clinic today. I was pleased to hear t",
+            "example_text": "absence-like-seizures",
+            "key": "[[\"cui\", \"C0563606\"], \"active-rate\"]",
+            "letters": [
+              "EA0006"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "CUI": "C0563606",
+              "CUIPhrase": "absences",
+              "MonthDate": "11",
+              "NumberOfSeizures": "0",
+              "TimeSince_or_TimeOfEvent": "Since",
+              "YearDate": "2016"
+            },
+            "example_evidence": "absences",
+            "example_excerpt": "linic today. I was pleased to hear that she has not had any further generalised tonic clonic seizures since August 2016. There have been no absences since November 2016. She takes Keppra 500 mg twice a day. She is now four months pregnant. I have not made any changes and will see her ag",
+            "example_text": "absences",
+            "key": "[[\"cui\", \"C0563606\"], \"seizure-free\"]",
+            "letters": [
+              "EA0020"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "CUI": "C0751494",
+              "CUIPhrase": "convulsive-seizure",
+              "NumberOfSeizures": "0",
+              "TimeSince_or_TimeOfEvent": "Since",
+              "YearDate": "2017"
+            },
+            "example_evidence": "convulsive-seizur",
+            "example_excerpt": ": Temporal lobe epilepsy Seizure type and frequency: Focal seizures with altered awareness approximately 1 per fortnight Focal to bilateral convulsive seizures, last event around Christmas 2017 Current antiepileptic medication: eslicarbazepine, 800 mg once a day Zonisamide 75 mg twice a da",
+            "example_text": "convulsive-seizure",
+            "key": "[[\"cui\", \"C0751494\"], \"seizure-free\"]",
+            "letters": [
+              "EA0011"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "CUI": "C0877017",
+              "CUIPhrase": "focal-to-bilateral-convulsive-seizure",
+              "MonthDate": "12",
+              "NumberOfSeizures": "0",
+              "TimeSince_or_TimeOfEvent": "Since",
+              "YearDate": "2017"
+            },
+            "example_evidence": "Focal-to-bilateral-convulsive-seizure",
+            "example_excerpt": "Diagnosis: Temporal lobe epilepsy Seizure type and frequency: Focal seizures with altered awareness approximately 1 per fortnight Focal to bilateral convulsive seizures, last event around Christmas 2017 Current antiepileptic medication: eslicarbazepine, 800 mg once a day Zonisamide 75 mg twice a day",
+            "example_text": "focal-to-bilateral-convulsive-seizure",
+            "key": "[[\"cui\", \"C0877017\"], \"seizure-free\"]",
+            "letters": [
+              "EA0011"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "CUI": "C0877017",
+              "CUIPhrase": "focal-to-bilateral-convulsive-seizures",
+              "FrequencyChange": "Infrequent"
+            },
+            "example_evidence": "cal-to-bilateral-convulsive-seizures",
+            "example_excerpt": "Diagnosis: Temporal lobe epilepsy Seizure type and frequency: Focal seizures with altered awareness approximately 1 per fortnight Focal to bilateral convulsive seizures, last event around Christmas 2017 Current antiepileptic medication: eslicarbazepine, 800 mg once a day Zonisamide 75 mg twice a day",
+            "example_text": "focal-to-bilateral-convulsive-seizures",
+            "key": "[[\"cui\", \"C0877017\"], \"unknown\"]",
+            "letters": [
+              "EA0011"
+            ]
+          }
+        ],
+        "top_predicted_over_emissions": [
+          {
+            "count": 2,
+            "example_attributes": {
+              "CUI": "C0036572",
+              "CUIPhrase": "seizures",
+              "LowerNumberOfSeizures": "0",
+              "MonthDate": "12",
+              "NumberOfSeizures": "0",
+              "PointInTime": "Last_Month",
+              "TimeSince_or_TimeOfEvent": "Since",
+              "UpperNumberOfSeizures": "0",
+              "YearDate": "2018"
+            },
+            "example_evidence": "seizures",
+            "example_excerpt": "ok him around four minutes to recover during which time his partner noticed that he had some lip smacking. He has not had any the previous seizures. Apart from the previous stroke, he is well. He lives with his partner and is currently a teacher and has stopped driving. He gave up smoki",
+            "example_text": "seizures",
+            "key": "[[\"cui\", \"C0036572\"], \"seizure-free\"]",
+            "letters": [
+              "EA0016",
+              "EA0019"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "CUI": "C0036572",
+              "CUIPhrase": "seizures",
+              "FrequencyChange": "Increased",
+              "PointInTime": "DrugChange",
+              "TimeSince_or_TimeOfEvent": "Since"
+            },
+            "example_evidence": "seizures",
+            "example_excerpt": "Dear Dr , I reviewed this 42-year-old woman in the clinic this morning. As you know she has experienced seizures since around 4 weeks after her operation. This was a craniotomy for her frontal lobe brain tumour. During her seizures she typically has",
+            "example_text": "seizures",
+            "key": "[[\"cui\", \"C0036572\"], \"unknown\"]",
+            "letters": [
+              "EA0009"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "CUI": "C0751495",
+              "CUIPhrase": "focal seizures",
+              "LowerNumberOfSeizures": "2",
+              "TimePeriod": "Week",
+              "UpperNumberOfSeizures": "2"
+            },
+            "example_evidence": "focal seizures",
+            "example_excerpt": "s like an overfamiliar or d\u00e9j\u00e0 vu feeling. These thoughts last for around 30 seconds. I think these are in keeping with temporal lobe onset focal seizures. This is interesting as previously she was getting events with coloured objects in her field of vision which were probably occipital lobe s",
+            "example_text": "focal seizures",
+            "key": "[[\"cui\", \"C0751495\"], \"active-rate\"]",
+            "letters": [
+              "EA0018"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "CUI": "C0877017",
+              "CUIPhrase": "focal to bilateral convulsive seizures",
+              "LowerNumberOfSeizures": "3",
+              "PointInTime": "Last_Month",
+              "TimeSince_or_TimeOfEvent": "Since",
+              "UpperNumberOfSeizures": "4"
+            },
+            "example_evidence": "focal to bilateral convulsive seizures",
+            "example_excerpt": "s you know he is taking 150 mg of lamotrigine twice a day. His last seizures were in his teenage years where he probably had around 3 or 4 focal to bilateral convulsive seizures. There were some perinatal problems and he was born to a long and traumatic labour. He had to spend around 2 weeks in Special care baby U",
+            "example_text": "focal to bilateral convulsive seizures",
+            "key": "[[\"cui\", \"C0877017\"], \"active-rate\"]",
+            "letters": [
+              "EA0010"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "CUI": "C1299590",
+              "CUIPhrase": "seizure-free",
+              "NumberOfSeizures": "0",
+              "TimeSince_or_TimeOfEvent": "Since"
+            },
+            "example_evidence": "seizure-free",
+            "example_excerpt": "",
+            "example_text": "seizure-free",
+            "key": "[[\"cui\", \"C1299590\"], \"seizure-free\"]",
+            "letters": [
+              "EA0024"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "LowerNumberOfSeizures": "7",
+              "TimeSince_or_TimeOfEvent": "During",
+              "UpperNumberOfSeizures": "8"
+            },
+            "example_evidence": "episodes of loss of consciousness",
+            "example_excerpt": "This gentleman was referred to Neurology through the medical department. Mr Williams tells me that he has had around 7 episodes of loss of consciousness since the beginning of the year. They can occur at any time but they seem to happen more often if he is angry or upset. He will lose cons",
+            "example_text": "episodes of loss of consciousness",
+            "key": "[[\"phrase\", \"episodes of loss of consciousness\"], \"active-rate\"]",
+            "letters": [
+              "EA0023"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "LowerNumberOfSeizures": "4",
+              "NumberOfTimePeriods": "1",
+              "TimePeriod": "Year",
+              "UpperNumberOfSeizures": "5"
+            },
+            "example_evidence": "episodes",
+            "example_excerpt": "eloped some minor seizures. He says he feels dizzy at the start, followed by a slight headache and nausea. He has been told that during the episodes he is unresponsive and that his hands may shake slightly. The episodes last no longer than 3 minutes and occur 4 to 5 times a year. His EEG",
+            "example_text": "episodes",
+            "key": "[[\"phrase\", \"episodes\"], \"active-rate\"]",
+            "letters": [
+              "EA0021"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "NumberOfSeizures": "10",
+              "TimeSince_or_TimeOfEvent": "During"
+            },
+            "example_evidence": "events",
+            "example_excerpt": "lopram, co-codamol, lansoprazole, multivitamins Many thanks for referring this 47 year old gentleman who I saw alone in clinic today. The events have been going on now for around 9 months. He has suffered around 10 events in total. He has not had any for the last 2 weeks. They seemed",
+            "example_text": "events",
+            "key": "[[\"phrase\", \"events\"], \"active-rate\"]",
+            "letters": [
+              "EA0024"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "FrequencyChange": "Frequent",
+              "TimeSince_or_TimeOfEvent": "During"
+            },
+            "example_evidence": "general and complex partial seizures",
+            "example_excerpt": "d this lady with intractable epilepsy in clinic today. She is on Keppra 1000 mg BD, Zonisamide 125 mg BD. Despite this she continues to get general and complex partial seizures. She\u2019s not very keen on her anticonvulsant medication. She continues to get chronic daily headaches. There is a postural variation in her h",
+            "example_text": "general and complex partial seizures",
+            "key": "[[\"phrase\", \"general and complex partial seizures\"], \"unknown\"]",
+            "letters": [
+              "EA0014"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "FrequencyChange": "Same",
+              "TimeSince_or_TimeOfEvent": "During"
+            },
+            "example_evidence": "jerks",
+            "example_excerpt": "Thank you for referring this patient who I saw in clinic today. She says that she\u2019s had jerks while travelling in a car when light flickers through passing trees. In June last year she was in a party when lights were flashing. As the",
+            "example_text": "jerks",
+            "key": "[[\"phrase\", \"jerks\"], \"unknown\"]",
+            "letters": [
+              "EA0027"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "FrequencyChange": "Increased",
+              "LowerNumberOfSeizures": "2",
+              "MonthDate": "06",
+              "PointInTime": "Last_Year",
+              "TimeSince_or_TimeOfEvent": "During",
+              "UpperNumberOfSeizures": "5",
+              "YearDate": "2011"
+            },
+            "example_evidence": "minor seizures",
+            "example_excerpt": ". He suffered with generalised tonic clonic seizures, which were well controlled on Sodium Valproate. In the last 2 years he developed some minor seizures. He says he feels dizzy at the start, followed by a slight headache and nausea. He has been told that during the episodes he is unresponsiv",
+            "example_text": "minor seizures",
+            "key": "[[\"phrase\", \"minor seizures\"], \"active-rate\"]",
+            "letters": [
+              "EA0021"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,428 @@
+{
+  "diagnosis_jsonl": null,
+  "entities": [
+    "Prescription",
+    "Diagnosis",
+    "SeizureFrequency",
+    "Investigations"
+  ],
+  "generated_on": "2026-06-22",
+  "investigations_jsonl": null,
+  "records": [
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "epilepsy-with-generalised-tonic-chronic-seizures-alone",
+      "example_attributes": {
+        "CUI": "C0393697",
+        "CUIPhrase": "epilepsy-with-generalised-tonic-clonic-seizures-alone",
+        "Certainty": "5",
+        "DiagCategory": "Epilepsy",
+        "Negation": "Affirmed"
+      },
+      "example_text": "epilepsy-with-generalised-tonic-clonic-seizures-alone",
+      "key": "[\"Diagnosis\", \"epilepsy with generalised tonic clonic seizures alone\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0005",
+      "note_excerpt": "Dear Dr, Diagnosis: genetic generalised epilepsy-epilepsy with generalised tonic chronic seizures alone. Current medication: sodium valproate 500 mg twice a day Carbamazepine 200 mg twice a day Seizure type and frequency: Generalised tonic",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "-Generalised-tonic-clonic-seizure",
+      "example_attributes": {
+        "CUI": "C0494475",
+        "CUIPhrase": "generalised-tonic-clonic-seizure",
+        "Certainty": "5",
+        "DiagCategory": "SingleSeizure",
+        "Negation": "Affirmed"
+      },
+      "example_text": "generalised-tonic-clonic-seizure",
+      "key": "[\"Diagnosis\", \"tonic clonic seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0005",
+      "note_excerpt": "chronic seizures alone. Current medication: sodium valproate 500 mg twice a day Carbamazepine 200 mg twice a day Seizure type and frequency: Generalised tonic clonic seizure-last event July 2016. Previous event December 2015. Investigations: MRI 2012 normal. EEG 2012 generalised spike and wave. I reviewed th",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "Epilepsy-",
+      "example_attributes": {
+        "CUI": "C0014544",
+        "CUIPhrase": "epilepsy",
+        "Certainty": "5",
+        "DiagCategory": "Epilepsy",
+        "Negation": "Affirmed"
+      },
+      "example_text": "epilepsy",
+      "key": "[\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0006",
+      "note_excerpt": "Dear Dr, Diagnosis: Epilepsy \u2013 unclassified, possibly generalised. Current antiepileptic medication: levetiracetam 500 mg twice a day Previous antiepileptic medicatio",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "Epilepsy",
+      "example_attributes": {
+        "CUI": "C0014544",
+        "CUIPhrase": "epilepsy",
+        "Certainty": "3",
+        "DiagCategory": "Epilepsy",
+        "Negation": "Affirmed"
+      },
+      "example_text": "Epilepsy",
+      "key": "[\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"3\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0006",
+      "note_excerpt": "Dear Dr, Diagnosis: Epilepsy \u2013 unclassified, possibly generalised. Current antiepileptic medication: levetiracetam 500 mg twice a day Previous antiepileptic medicatio",
+      "side": "predicted"
+    },
+    {
+      "count": 2,
+      "entity": "Diagnosis",
+      "evidence": "absence like seizure",
+      "example_attributes": {
+        "Certainty": "5",
+        "DiagCategory": "SingleSeizure",
+        "Negation": "Affirmed"
+      },
+      "example_text": "absence like seizure",
+      "key": "[\"Diagnosis\", \"absence like seizure\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0006",
+      "note_excerpt": "y Previous antiepileptic medication: lamotrigine and carbamazepine. Seizure type and frequency: 2 generalised tonic clonic seizures 2014, absence like seizures 2014 Investigations: MRI 2015 normal, EEG 2015 normal. I reviewed this 26 year old man alone in clinic today. I was pleased to hear that",
+      "side": "predicted"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "absence-like episode",
+      "example_attributes": {
+        "Certainty": "5",
+        "DiagCategory": "SingleSeizure",
+        "Negation": "Affirmed"
+      },
+      "example_text": "absence-like episode",
+      "key": "[\"Diagnosis\", \"absence like episode\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0006",
+      "note_excerpt": "2 generalised tonic clonic seizures in 2014 without warning. They may have been preceded by leg jerking. Around the same time he would also have \u201cabsence-like\u201d episodes. During these he would stop and stare for a few seconds. He himself did not know that these were happening. He has not had any oth",
+      "side": "predicted"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "epilepsy-",
+      "example_attributes": {
+        "CUI": "C0014544",
+        "CUIPhrase": "epilepsy",
+        "Certainty": "5",
+        "DiagCategory": "Epilepsy",
+        "Negation": "Affirmed"
+      },
+      "example_text": "epilepsy",
+      "key": "[\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0007",
+      "note_excerpt": "Dear Dr, Diagnosis: epilepsy \u2013 unclassified Diabetes, hypothyroidism Current antiepileptic medication: levetiracetam 750mg mane, 500 mg nocte Phenytoin 75mg tds",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "Diagnosis",
+      "evidence": "focal-onset",
+      "example_attributes": {
+        "CUI": "C0014547",
+        "CUIPhrase": "focal-onset-epilepsy",
+        "Certainty": "3",
+        "DiagCategory": "MultipleSeizures",
+        "Negation": "Affirmed"
+      },
+      "example_text": "focal-onset-epilepsy",
+      "key": "[\"Diagnosis\", \"focal epilepsy\", [[\"Certainty\", \"3\"], [\"Negation\", \"Affirmed\"]]]",
+      "letter_id": "EA0007",
+      "note_excerpt": "r medication includes: Ramipril, lansoprazole, metformin, propranolol, clopidogrel. Seizure type and frequency: seizures every 3 to 4 weeks, possibly focal onset Previous investigations MRI 2011 Normal I reviewed this 37 year old lady together with her husband in clinic today. She has ha",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "SeizureFrequency",
+      "evidence": "absence-like-seizures",
+      "example_attributes": {
+        "CUI": "C0563606",
+        "CUIPhrase": "absence-like-seizures",
+        "NumberOfSeizures": "1",
+        "TimeSince_or_TimeOfEvent": "During",
+        "YearDate": "2014"
+      },
+      "example_text": "absence-like-seizures",
+      "key": "[[\"cui\", \"C0563606\"], \"active-rate\"]",
+      "letter_id": "EA0006",
+      "note_excerpt": "a day Previous antiepileptic medication: lamotrigine and carbamazepine. Seizure type and frequency: 2 generalised tonic clonic seizures 2014, absence like seizures 2014 Investigations: MRI 2015 normal, EEG 2015 normal. I reviewed this 26 year old man alone in clinic today. I was pleased to hear t",
+      "side": "gold"
+    },
+    {
+      "count": 1,
+      "entity": "SeizureFrequency",
+      "evidence": "seizures-e",
+      "example_attributes": {
+        "CUI": "C0036572",
+        "CUIPhrase": "seizures",
+        "LowerNumberOfTimePeriods": "3",
+        "NumberOfSeizures": "1",
+        "TimePeriod": "Week",
+        "UpperNumberOfTimePeriods": "4"
+      },
+      "example_text": "seizures",
+      "key": "[[\"cui\", \"C0036572\"], \"active-rate\"]",
+      "letter_id": "EA0007",
+      "note_excerpt": "mg nocte Phenytoin 75mg tds Other medication includes: Ramipril, lansoprazole, metformin, propranolol, clopidogrel. Seizure type and frequency: seizures every 3 to 4 weeks, possibly focal onset Previous investigations MRI 2011 Normal I reviewed this 37 year old lady together with",
+      "side": "gold"
+    }
+  ],
+  "row_count": 5,
+  "sf_jsonl": null,
+  "split": "dev",
+  "structured_jsonl": "experiments\\exectv2_holistic_finding_assembly_v094_qwen_dev5_20260621.jsonl",
+  "summary": {
+    "per_entity": {
+      "Diagnosis": {
+        "headline": {
+          "f1": 0.7826,
+          "fn": 2,
+          "fp": 3,
+          "gold_count": 11,
+          "precision": 0.75,
+          "precision_tp": 9,
+          "pred_count": 12,
+          "recall": 0.8182,
+          "recall_tp": 9,
+          "tp": 9
+        },
+        "residual_error_counts": {
+          "candidate_miss": 5,
+          "wrong_detail_selection": 4
+        },
+        "top_gold_misses": [
+          {
+            "count": 2,
+            "example_attributes": {
+              "CUI": "C0014544",
+              "CUIPhrase": "epilepsy",
+              "Certainty": "5",
+              "DiagCategory": "Epilepsy",
+              "Negation": "Affirmed"
+            },
+            "example_evidence": "Epilepsy-",
+            "example_excerpt": "Dear Dr, Diagnosis: Epilepsy \u2013 unclassified, possibly generalised. Current antiepileptic medication: levetiracetam 500 mg twice a day Previous antiepileptic medicatio",
+            "example_text": "epilepsy",
+            "key": "[\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+            "letters": [
+              "EA0006",
+              "EA0007"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "CUI": "C0393697",
+              "CUIPhrase": "epilepsy-with-generalised-tonic-clonic-seizures-alone",
+              "Certainty": "5",
+              "DiagCategory": "Epilepsy",
+              "Negation": "Affirmed"
+            },
+            "example_evidence": "epilepsy-with-generalised-tonic-chronic-seizures-alone",
+            "example_excerpt": "Dear Dr, Diagnosis: genetic generalised epilepsy-epilepsy with generalised tonic chronic seizures alone. Current medication: sodium valproate 500 mg twice a day Carbamazepine 200 mg twice a day Seizure type and frequency: Generalised tonic",
+            "example_text": "epilepsy-with-generalised-tonic-clonic-seizures-alone",
+            "key": "[\"Diagnosis\", \"epilepsy with generalised tonic clonic seizures alone\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+            "letters": [
+              "EA0005"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "CUI": "C0014547",
+              "CUIPhrase": "focal-onset-epilepsy",
+              "Certainty": "3",
+              "DiagCategory": "MultipleSeizures",
+              "Negation": "Affirmed"
+            },
+            "example_evidence": "focal-onset",
+            "example_excerpt": "r medication includes: Ramipril, lansoprazole, metformin, propranolol, clopidogrel. Seizure type and frequency: seizures every 3 to 4 weeks, possibly focal onset Previous investigations MRI 2011 Normal I reviewed this 37 year old lady together with her husband in clinic today. She has ha",
+            "example_text": "focal-onset-epilepsy",
+            "key": "[\"Diagnosis\", \"focal epilepsy\", [[\"Certainty\", \"3\"], [\"Negation\", \"Affirmed\"]]]",
+            "letters": [
+              "EA0007"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "CUI": "C0494475",
+              "CUIPhrase": "generalised-tonic-clonic-seizure",
+              "Certainty": "5",
+              "DiagCategory": "SingleSeizure",
+              "Negation": "Affirmed"
+            },
+            "example_evidence": "-Generalised-tonic-clonic-seizure",
+            "example_excerpt": "chronic seizures alone. Current medication: sodium valproate 500 mg twice a day Carbamazepine 200 mg twice a day Seizure type and frequency: Generalised tonic clonic seizure-last event July 2016. Previous event December 2015. Investigations: MRI 2012 normal. EEG 2012 generalised spike and wave. I reviewed th",
+            "example_text": "generalised-tonic-clonic-seizure",
+            "key": "[\"Diagnosis\", \"tonic clonic seizures\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+            "letters": [
+              "EA0005"
+            ]
+          }
+        ],
+        "top_predicted_over_emissions": [
+          {
+            "count": 2,
+            "example_attributes": {
+              "Certainty": "5",
+              "DiagCategory": "SingleSeizure",
+              "Negation": "Affirmed"
+            },
+            "example_evidence": "absence like seizure",
+            "example_excerpt": "y Previous antiepileptic medication: lamotrigine and carbamazepine. Seizure type and frequency: 2 generalised tonic clonic seizures 2014, absence like seizures 2014 Investigations: MRI 2015 normal, EEG 2015 normal. I reviewed this 26 year old man alone in clinic today. I was pleased to hear that",
+            "example_text": "absence like seizure",
+            "key": "[\"Diagnosis\", \"absence like seizure\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+            "letters": [
+              "EA0006"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "Certainty": "5",
+              "DiagCategory": "SingleSeizure",
+              "Negation": "Affirmed"
+            },
+            "example_evidence": "absence-like episode",
+            "example_excerpt": "2 generalised tonic clonic seizures in 2014 without warning. They may have been preceded by leg jerking. Around the same time he would also have \u201cabsence-like\u201d episodes. During these he would stop and stare for a few seconds. He himself did not know that these were happening. He has not had any oth",
+            "example_text": "absence-like episode",
+            "key": "[\"Diagnosis\", \"absence like episode\", [[\"Certainty\", \"5\"], [\"Negation\", \"Affirmed\"]]]",
+            "letters": [
+              "EA0006"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "CUI": "C0014544",
+              "CUIPhrase": "epilepsy",
+              "Certainty": "3",
+              "DiagCategory": "Epilepsy",
+              "Negation": "Affirmed"
+            },
+            "example_evidence": "Epilepsy",
+            "example_excerpt": "Dear Dr, Diagnosis: Epilepsy \u2013 unclassified, possibly generalised. Current antiepileptic medication: levetiracetam 500 mg twice a day Previous antiepileptic medicatio",
+            "example_text": "Epilepsy",
+            "key": "[\"Diagnosis\", \"epilepsy\", [[\"Certainty\", \"3\"], [\"Negation\", \"Affirmed\"]]]",
+            "letters": [
+              "EA0006"
+            ]
+          }
+        ]
+      },
+      "Investigations": {
+        "headline": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "gold_count": 8,
+          "precision": 1.0,
+          "pred_count": 8,
+          "recall": 1.0,
+          "tp": 8
+        },
+        "residual_error_counts": {
+          "candidate_miss": 0,
+          "wrong_detail_selection": 0
+        },
+        "top_gold_misses": [],
+        "top_predicted_over_emissions": []
+      },
+      "Prescription": {
+        "headline": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "gold_count": 9,
+          "precision": 1.0,
+          "pred_count": 9,
+          "recall": 1.0,
+          "tp": 9
+        },
+        "residual_error_counts": {
+          "candidate_miss": 0,
+          "wrong_detail_selection": 0
+        },
+        "top_gold_misses": [],
+        "top_predicted_over_emissions": []
+      },
+      "SeizureFrequency": {
+        "headline": {
+          "f1": 0.9333,
+          "fn": 1,
+          "fp": 0,
+          "gold_count": 8,
+          "precision": 1.0,
+          "pred_count": 7,
+          "recall": 0.875,
+          "tp": 7
+        },
+        "residual_error_counts": {
+          "candidate_miss": 2,
+          "wrong_detail_selection": 0
+        },
+        "residual_state_counts": {
+          "gold": {
+            "active-rate": 2,
+            "seizure-free": 0,
+            "unknown": 0
+          },
+          "predicted": {
+            "active-rate": 0,
+            "seizure-free": 0,
+            "unknown": 0
+          }
+        },
+        "top_gold_misses": [
+          {
+            "count": 1,
+            "example_attributes": {
+              "CUI": "C0036572",
+              "CUIPhrase": "seizures",
+              "LowerNumberOfTimePeriods": "3",
+              "NumberOfSeizures": "1",
+              "TimePeriod": "Week",
+              "UpperNumberOfTimePeriods": "4"
+            },
+            "example_evidence": "seizures-e",
+            "example_excerpt": "mg nocte Phenytoin 75mg tds Other medication includes: Ramipril, lansoprazole, metformin, propranolol, clopidogrel. Seizure type and frequency: seizures every 3 to 4 weeks, possibly focal onset Previous investigations MRI 2011 Normal I reviewed this 37 year old lady together with",
+            "example_text": "seizures",
+            "key": "[[\"cui\", \"C0036572\"], \"active-rate\"]",
+            "letters": [
+              "EA0007"
+            ]
+          },
+          {
+            "count": 1,
+            "example_attributes": {
+              "CUI": "C0563606",
+              "CUIPhrase": "absence-like-seizures",
+              "NumberOfSeizures": "1",
+              "TimeSince_or_TimeOfEvent": "During",
+              "YearDate": "2014"
+            },
+            "example_evidence": "absence-like-seizures",
+            "example_excerpt": "a day Previous antiepileptic medication: lamotrigine and carbamazepine. Seizure type and frequency: 2 generalised tonic clonic seizures 2014, absence like seizures 2014 Investigations: MRI 2015 normal, EEG 2015 normal. I reviewed this 26 year old man alone in clinic today. I was pleased to hear t",
+            "example_text": "absence-like-seizures",
+            "key": "[[\"cui\", \"C0563606\"], \"active-rate\"]",
+            "letters": [
+              "EA0006"
+            ]
+          }
+        ],
+        "top_predicted_over_emissions": []
+      }
+    }
+  }
+}

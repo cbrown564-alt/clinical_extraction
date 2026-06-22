@@ -111,6 +111,17 @@ def dose_from_text(text: str) -> tuple[str, str] | None:
     return match.group(1), normalize_dose_unit(match.group(2))
 
 
+def normalize_dose_value(value: str) -> str:
+    """Remove a redundant unit from a dose value when the value is otherwise atomic."""
+
+    match = re.fullmatch(
+        r"\s*(\d+(?:\.\d+)?)\s*(?:mg|mgs|mgms|milligrams?|milligrammes?|g|grams?)?\s*",
+        value,
+        re.IGNORECASE,
+    )
+    return match.group(1) if match is not None else value.strip()
+
+
 def frequency_code(text: str) -> str | None:
     """Map free-text frequency wording to an ExECTv2 ``Frequency`` code."""
 
@@ -118,6 +129,53 @@ def frequency_code(text: str) -> str | None:
         if pattern.search(text):
             return value
     return None
+
+
+def split_daily_dose_regimen(
+    text: str,
+    *,
+    evidence: str,
+    attributes: Mapping[str, Any],
+) -> list[tuple[str, dict[str, Any], str]]:
+    """Split an explicitly stated uneven once-daily regimen into dose facts.
+
+    This is deliberately a convention repair over a model-selected prescription
+    span: it only fires when the selected text/evidence itself contains multiple
+    dose tokens and each token is followed by a once-daily time marker such as
+    ``mane``, ``nocte``, ``morning`` or ``afternoon``.
+    """
+
+    surface = evidence or text
+    matches = tuple(_DOSE_UNIT_RE.finditer(surface))
+    if len(matches) < 2:
+        return []
+
+    existing_dose = normalize_dose_value(str(attributes.get("DrugDose", "")))
+    if str(attributes.get("Frequency", "")) == "1" and existing_dose in {
+        normalize_dose_value(match.group(1)) for match in matches
+    }:
+        return []
+
+    split_rows: list[tuple[str, dict[str, Any], str]] = []
+    for index, match in enumerate(matches):
+        next_start = matches[index + 1].start() if index + 1 < len(matches) else len(surface)
+        local_text = surface[match.start() : next_start].strip(" ,;.")
+        following = surface[match.end() : next_start]
+        frequency = frequency_code(following)
+        if frequency != "1":
+            return []
+        attrs = dict(attributes)
+        attrs["DrugDose"] = normalize_dose_value(match.group(1))
+        attrs["DoseUnit"] = normalize_dose_unit(match.group(2))
+        attrs["Frequency"] = "1"
+        split_rows.append(
+            (
+                local_text,
+                attrs,
+                "split_explicit_uneven_daily_dose_regimen",
+            )
+        )
+    return split_rows
 
 
 # ---------------------------------------------------------------------------

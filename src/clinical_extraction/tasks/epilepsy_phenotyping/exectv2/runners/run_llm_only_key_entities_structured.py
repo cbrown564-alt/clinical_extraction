@@ -13,6 +13,8 @@ Usage examples::
 from __future__ import annotations
 
 import argparse
+import os
+import re
 import sys
 from datetime import date
 from pathlib import Path
@@ -56,6 +58,21 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Disable DSPy response caching.",
     )
     parser.add_argument("--api-base", default=None, help="Optional OpenAI-compatible API base URL.")
+    parser.add_argument(
+        "--ollama-num-ctx",
+        type=int,
+        default=None,
+        help=(
+            "Set CLINICAL_EXTRACTION_OLLAMA_NUM_CTX for native ollama_chat runs. "
+            "Does not set CLINICAL_EXTRACTION_OLLAMA_NUM_GPU."
+        ),
+    )
+    parser.add_argument(
+        "--prompt-profile",
+        choices=["full", "qwen_compact"],
+        default="full",
+        help="Prompt payload profile. qwen_compact keeps the v0.9 schema but shortens the prompt.",
+    )
     parser.add_argument("--pilot", type=int, default=None, help="Restrict to the first N letters.")
     parser.add_argument(
         "--resume",
@@ -68,11 +85,15 @@ def _build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def _auto_path(split: str, model: str, n: int, suffix: str) -> Path:
-    model_slug = model.split("/")[-1].replace("-", "").replace(".", "")
+def _auto_path(split: str, model: str, n: int, suffix: str, *, prompt_profile: str) -> Path:
+    model_slug = re.sub(r"[^A-Za-z0-9]+", "", model.split("/")[-1])
+    profile_slug = "" if prompt_profile == "full" else f"_{prompt_profile}"
     today = date.today().isoformat().replace("-", "")
     n_str = str(n) if n else "all"
-    name = f"exectv2_llm_only_key_entities_structured_{split}{n_str}_{model_slug}_{today}"
+    name = (
+        f"exectv2_llm_only_key_entities_structured{profile_slug}_"
+        f"{split}{n_str}_{model_slug}_{today}"
+    )
     return Path("experiments") / f"{name}.{suffix}"
 
 
@@ -84,18 +105,25 @@ def main() -> None:
             file=sys.stderr,
         )
         sys.exit(1)
+    if args.ollama_num_ctx is not None:
+        os.environ["CLINICAL_EXTRACTION_OLLAMA_NUM_CTX"] = str(args.ollama_num_ctx)
 
     letters = load_letters_for_split(args.split)
     if args.pilot:
         letters = letters[: args.pilot]
 
     n = len(letters)
-    jsonl_path = args.out_jsonl or _auto_path(args.split, args.model, n, "jsonl")
-    report_path = args.out_report or _auto_path(args.split, args.model, n, "md")
+    jsonl_path = args.out_jsonl or _auto_path(
+        args.split, args.model, n, "jsonl", prompt_profile=args.prompt_profile
+    )
+    report_path = args.out_report or _auto_path(
+        args.split, args.model, n, "md", prompt_profile=args.prompt_profile
+    )
 
     print(
         f"Running llm_only_key_entities_structured / mode={args.mode} / "
-        f"model={args.model} over {n} letters from split '{args.split}' ...",
+        f"model={args.model} / prompt_profile={args.prompt_profile} "
+        f"over {n} letters from split '{args.split}' ...",
         flush=True,
     )
 
@@ -112,6 +140,7 @@ def main() -> None:
         checkpoint_jsonl_path=jsonl_path,
         checkpoint_report_path=report_path,
         resume=args.resume,
+        prompt_profile=args.prompt_profile,
     )
 
     write_jsonl(rows, jsonl_path)
