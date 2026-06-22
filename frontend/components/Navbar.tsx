@@ -5,13 +5,9 @@ import { usePathname } from "next/navigation";
 import { Microscope, FileCheck } from "lucide-react";
 import { DATASET_PARAM, useActiveDataset, DEFAULT_DATASET } from "@/lib/datasets";
 import DatasetSwitcher from "@/components/shell/DatasetSwitcher";
+import { SURFACE_META, SURFACE_ORDER, SURFACE_TONE_ACTIVE } from "@/components/surface";
 
-const navItems = [
-  { href: "/workbench", label: "Example Explorer", color: "deterministic" },
-  { href: "/observatory", label: "Aggregate Performance", color: "llm" },
-  { href: "/laboratory", label: "Component Impact", color: "deterministic-alt" },
-  { href: "/gallery", label: "Error Gallery", color: "error" },
-] as const;
+const navItems = SURFACE_ORDER.map((surface) => SURFACE_META[surface]);
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -39,27 +35,19 @@ export default function Navbar() {
         <div className="flex items-center gap-1.5">
           {navItems.map((item) => {
             const active = pathname === item.href;
-            const colorClass =
-              item.color === "deterministic"
-                ? "bg-deterministic/10 text-deterministic border-deterministic/20"
-                : item.color === "llm"
-                ? "bg-llm/10 text-llm border-llm/20"
-                : item.color === "deterministic-alt"
-                ? "bg-deterministic-alt/10 text-deterministic-alt border-deterministic-alt/20"
-                : item.color === "error"
-                ? "bg-error/10 text-error border-error/20"
-                : "bg-muted/10 text-muted border-muted/20";
+            const Icon = item.Icon;
 
             return (
               <Link
                 key={item.href}
                 href={`${item.href}${datasetQuery}`}
-                className={`rounded-md px-3 py-1 text-xs font-medium transition-colors border ${
+                className={`flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-medium transition-colors border ${
                   active
-                    ? colorClass
+                    ? SURFACE_TONE_ACTIVE[item.tone]
                     : "text-muted border-transparent hover:bg-surface-raised hover:text-foreground"
                 }`}
               >
+                <Icon className="h-3.5 w-3.5" />
                 {item.label}
               </Link>
             );

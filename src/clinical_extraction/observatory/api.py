@@ -1,4 +1,10 @@
-﻿"""Thin FastAPI wrapper for Gan 2026 Observatory data and pipelines."""
+﻿"""Thin FastAPI wrapper for the clinical-extraction Observatory.
+
+Shared cross-task backend the frontend consumes: Gan 2026 (registry, records,
+rules, live pipeline/ablation execution) and ExECTv2 (the live ``/exectv2/runs``
+frontend dataset). Lives at the package top level rather than under the gan2026
+task because it now serves both datasets.
+"""
 
 from __future__ import annotations
 
@@ -14,7 +20,12 @@ from pathlib import Path
 from typing import Any, Literal
 
 from fastapi import FastAPI, HTTPException, Query
+from fastapi.responses import Response
 from pydantic import BaseModel, ConfigDict, Field
+
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.frontend_review import (
+    cached_exectv2_runs_json,
+)
 
 from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis.gold_audit_active_sampler import (  # noqa: E501
     enrich_rows_for_active_sampling,
@@ -250,13 +261,28 @@ def create_app(
     app = FastAPI(
         title="Clinical Extraction Observatory API",
         version="0.1.0",
-        summary="Thin backend over Gan 2026 clinical-extraction pipelines and artifacts.",
+        summary="Thin backend over the clinical-extraction pipelines, artifacts, and frontend datasets (Gan 2026 and ExECTv2).",
     )
     app.state.observatory_settings = settings
 
     @app.get("/health")
     def health() -> dict[str, str]:
         return {"status": "ok"}
+
+    @app.get("/exectv2/runs")
+    def get_exectv2_runs() -> Response:
+        """Live ExECTv2 frontend dataset — parity with Gan's live registry/artifacts.
+
+        Rendered from the canonical artifact index by the shared
+        ``exectv2.frontend_review`` module (the same source the committed dev
+        fallback is generated from). The serialized body is process-cached.
+        """
+        try:
+            return Response(content=cached_exectv2_runs_json(), media_type="application/json")
+        except FileNotFoundError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+        except Exception as exc:  # pragma: no cover - defensive
+            raise HTTPException(status_code=500, detail=f"Failed to build ExECTv2 runs: {exc}") from exc
 
     @app.post("/run/note")
     def run_note(request: RunNoteRequest) -> dict[str, Any]:

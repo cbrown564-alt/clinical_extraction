@@ -1,45 +1,33 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
-import {
-  Activity,
-  BarChart3,
-  CheckCircle2,
-  FileText,
-  GalleryHorizontalEnd,
-  Layers3,
-  Search,
-  ShieldAlert,
-} from "lucide-react";
+import { Activity, CheckCircle2, Layers3, Search } from "lucide-react";
 import LetterRenderer from "@/components/observatory/LetterRenderer";
-import { exectv2Dataset, EXECTV2_FAMILIES, surfaceHref } from "@/lib/datasets";
-import type { RunDecision } from "@/lib/datasets";
+import { exectv2Dataset, EXECTV2_FAMILIES } from "@/lib/datasets";
 import type {
   Exectv2Entity,
   Exectv2LetterRecord,
   Exectv2Mention,
   Exectv2RunSummary,
 } from "@/lib/types";
-import { compactRunLabel, formatMetric, useExectv2Runs, useExectv2UrlState } from "./useExectv2";
+import {
+  SurfaceHeader,
+  SurfaceLayout,
+  SurfaceLoading,
+  SurfaceError,
+  SurfaceEmpty,
+  MetricStrip,
+  DecisionBadge,
+  SurfaceLink,
+  formatMetricValue,
+  type MetricTile,
+} from "@/components/surface";
+import { compactRunLabel, useExectv2Runs, useExectv2UrlState } from "./useExectv2";
 
 const FAMILY_IDS = EXECTV2_FAMILIES.map((f) => f.id as Exectv2Entity);
 
 function shortFamily(family: string): string {
   return EXECTV2_FAMILIES.find((f) => f.id === family)?.shortLabel ?? family.slice(0, 2);
-}
-
-function decisionClass(decision: string): string {
-  switch (decision as RunDecision) {
-    case "control":
-      return "border-deterministic/25 bg-deterministic/10 text-deterministic";
-    case "simplification":
-      return "border-success/25 bg-success/10 text-success";
-    case "diagnostic":
-      return "border-llm/25 bg-llm/10 text-llm";
-    default:
-      return "border-muted/20 bg-muted/10 text-muted";
-  }
 }
 
 function familyTint(family: string): string {
@@ -56,6 +44,95 @@ function familyTint(family: string): string {
     default:
       return "border-border bg-surface";
   }
+}
+
+/** Solid active fill per family tone, matching the Gan StageStrip's active look. */
+const FAMILY_SOLID: Record<string, string> = {
+  deterministic: "border-deterministic bg-deterministic text-white shadow-sm",
+  llm: "border-llm bg-llm text-white shadow-sm",
+  success: "border-success bg-success text-white shadow-sm",
+  "deterministic-alt": "border-deterministic-alt bg-deterministic-alt text-white shadow-sm",
+  muted: "border-muted bg-muted text-white shadow-sm",
+};
+
+type FamilyFilter = Exectv2Entity | "all";
+
+/**
+ * The ExECTv2 analogue of Gan's StageStrip: a row of family lenses across the top
+ * of the explorer. Same role — pick a lens on the loaded specimen — but the
+ * contents are the four key-finding families with gold/predicted counts instead
+ * of the five pipeline stages. Selecting one narrows the panels below.
+ */
+function FamilyStrip({
+  letter,
+  active,
+  onSelect,
+}: {
+  letter: Exectv2LetterRecord;
+  active: FamilyFilter;
+  onSelect: (family: FamilyFilter) => void;
+}) {
+  return (
+    <div className="shrink-0 border-b border-border bg-surface px-4 py-2">
+      <div className="flex items-stretch gap-1.5">
+        <button
+          onClick={() => onSelect("all")}
+          className={`flex min-w-[96px] flex-col justify-center gap-0.5 rounded-md border px-3 py-1.5 text-left transition-all ${
+            active === "all"
+              ? "border-foreground bg-foreground text-white shadow-sm"
+              : "border-border bg-surface text-foreground hover:bg-surface-raised"
+          }`}
+        >
+          <span className="text-[11px] font-semibold">All families</span>
+          <span className={`text-[10px] leading-tight ${active === "all" ? "text-white/90" : "text-muted"}`}>
+            4 families
+          </span>
+        </button>
+        {EXECTV2_FAMILIES.map((family) => {
+          const id = family.id as Exectv2Entity;
+          const gold = letter.family_counts.gold[id];
+          const predicted = letter.family_counts.predicted[id];
+          const isActive = active === id;
+          return (
+            <button
+              key={id}
+              onClick={() => onSelect(id)}
+              className={`flex min-w-[120px] flex-1 flex-col justify-center gap-0.5 rounded-md border px-3 py-1.5 text-left transition-all ${
+                isActive ? FAMILY_SOLID[family.tone] : "border-border bg-surface text-foreground hover:bg-surface-raised"
+              }`}
+            >
+              <div className="flex items-center gap-1.5">
+                <span className="text-[11px] font-semibold">{family.label}</span>
+                <span
+                  className={`ml-0.5 rounded-full px-1.5 py-0 text-[10px] font-semibold ${
+                    isActive ? "bg-white/25 text-white" : "bg-surface-raised text-muted"
+                  }`}
+                >
+                  {predicted}/{gold}
+                </span>
+              </div>
+              <span className={`text-[10px] leading-tight ${isActive ? "text-white/90" : "text-muted"}`}>
+                {predicted} predicted / {gold} gold
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/** Build the shared metric strip tiles from a run's family F1s. */
+function runMetricTiles(run: Exectv2RunSummary): MetricTile[] {
+  return [
+    { label: "Overall", value: run.metrics.overall_f1, format: "f1", emphasis: true, shade: true },
+    ...EXECTV2_FAMILIES.map((family) => ({
+      label: family.label,
+      value: run.metrics.families[family.id as Exectv2Entity]?.f1,
+      format: "f1" as const,
+      shade: true,
+    })),
+  ];
 }
 
 function MentionRow({ mention }: { mention: Exectv2Mention }) {
@@ -168,38 +245,17 @@ function RunButton({
           <p className="truncate text-[11px] font-semibold text-foreground">{compactRunLabel(run)}</p>
           <p className="mt-0.5 truncate font-mono text-[9px] text-muted">{run.model}</p>
         </div>
-        <span className={`shrink-0 rounded border px-1.5 py-0.5 text-[9px] font-medium ${decisionClass(run.decision)}`}>
-          {run.decision}
-        </span>
+        <DecisionBadge decision={run.decision} />
       </div>
       <div className="mt-2 grid grid-cols-5 gap-1 font-mono text-[9px] text-muted">
-        <span>O {formatMetric(run.metrics.overall_f1, 3)}</span>
+        <span>O {formatMetricValue(run.metrics.overall_f1, "f1")}</span>
         {FAMILY_IDS.map((family) => (
           <span key={family}>
-            {shortFamily(family)} {formatMetric(run.metrics.families[family]?.f1, 3)}
+            {shortFamily(family)} {formatMetricValue(run.metrics.families[family]?.f1, "f1")}
           </span>
         ))}
       </div>
     </button>
-  );
-}
-
-function MetricStrip({ run }: { run: Exectv2RunSummary }) {
-  return (
-    <div className="grid grid-cols-2 gap-2 md:grid-cols-5">
-      <div className="rounded-md border border-border bg-surface px-3 py-2">
-        <p className="text-[10px] uppercase tracking-wider text-muted">Overall</p>
-        <p className="font-mono text-lg font-semibold text-foreground">{formatMetric(run.metrics.overall_f1)}</p>
-      </div>
-      {FAMILY_IDS.map((family) => (
-        <div key={family} className="rounded-md border border-border bg-surface px-3 py-2">
-          <p className="truncate text-[10px] uppercase tracking-wider text-muted">{family}</p>
-          <p className="font-mono text-lg font-semibold text-foreground">
-            {formatMetric(run.metrics.families[family]?.f1)}
-          </p>
-        </div>
-      ))}
-    </div>
   );
 }
 
@@ -227,7 +283,7 @@ function SameLetterComparison({
           <div key={run.run_id} className="grid grid-cols-[150px_1fr] gap-3 px-3 py-2">
             <div className="min-w-0">
               <p className="truncate text-[11px] font-semibold text-foreground">{compactRunLabel(run)}</p>
-              <p className="font-mono text-[9px] text-muted">{formatMetric(run.metrics.overall_f1)}</p>
+              <p className="font-mono text-[9px] text-muted">{formatMetricValue(run.metrics.overall_f1, "f1")}</p>
             </div>
             <div className="grid grid-cols-4 gap-1 font-mono text-[9px] text-muted">
               {FAMILY_IDS.map((family) => (
@@ -244,9 +300,10 @@ function SameLetterComparison({
 }
 
 export default function Exectv2ExampleExplorer() {
-  const { runs, isLoading, error, sourceIndex } = useExectv2Runs();
+  const { runs, isLoading, error } = useExectv2Runs();
   const { get, set } = useExectv2UrlState();
   const [letterSearch, setLetterSearch] = useState("");
+  const [activeFamily, setActiveFamily] = useState<FamilyFilter>("all");
 
   const selectedRun = useMemo(
     () => runs.find((run) => run.run_id === get("run")) ?? runs[0],
@@ -279,36 +336,16 @@ export default function Exectv2ExampleExplorer() {
     );
   }, [filteredLetters, get, selectedRun]);
 
-  if (isLoading) {
-    return (
-      <div className="flex h-full items-center justify-center bg-background text-muted">
-        <div className="space-y-3 text-center">
-          <div className="mx-auto h-8 w-40 animate-pulse rounded bg-surface-raised" />
-          <p className="text-sm font-medium">Loading ExECTv2 data…</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex h-full items-center justify-center bg-background p-8">
-        <div className="max-w-md rounded-md border border-error/25 bg-error/8 p-5">
-          <div className="flex items-center gap-2 text-error">
-            <ShieldAlert className="h-4 w-4" />
-            <p className="text-sm font-semibold">ExECTv2 data failed to load</p>
-          </div>
-          <p className="mt-2 text-xs text-muted">{String(error)}</p>
-        </div>
-      </div>
-    );
-  }
+  if (isLoading) return <SurfaceLoading message="Loading ExECTv2 data…" />;
+  if (error) return <SurfaceError title="ExECTv2 data failed to load" detail={String(error)} />;
 
   if (!selectedRun || !selectedLetter) {
     return (
-      <div className="flex h-full items-center justify-center bg-background text-muted">
-        <p className="text-sm font-medium">No ExECTv2 runs available.</p>
-      </div>
+      <SurfaceLayout variant="fill" header={<SurfaceHeader surface="workbench" dataset={exectv2Dataset} />}>
+        <div className="p-5">
+          <SurfaceEmpty message="No ExECTv2 architectures available." />
+        </div>
+      </SurfaceLayout>
     );
   }
 
@@ -320,42 +357,29 @@ export default function Exectv2ExampleExplorer() {
   }));
 
   return (
-    <div className="flex h-full min-h-0 flex-col bg-background">
-      <header className="shrink-0 border-b border-border bg-surface px-5 py-3">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-2">
-              <FileText className="h-4 w-4 text-deterministic" />
-              <h1 className="text-sm font-semibold text-foreground">ExECTv2 · Example Explorer</h1>
-              <span className="rounded border border-border bg-surface-raised px-2 py-0.5 text-[10px] text-muted">
-                {runs.length} {exectv2Dataset.runLabel}s
+    <SurfaceLayout
+      variant="fill"
+      header={
+        <SurfaceHeader
+          surface="workbench"
+          dataset={exectv2Dataset}
+          description="Gold vs predicted mentions per family, with evidence highlighting on the source letter."
+          right={
+            <>
+              <SurfaceLink surface="observatory" datasetId="exectv2" params={{ runs: selectedRun.run_id }} label="Aggregate" />
+              <SurfaceLink surface="gallery" datasetId="exectv2" params={{ runs: selectedRun.run_id }} label="Errors" />
+              <span className="rounded border border-success/25 bg-success/10 px-2 py-1 text-[10px] font-medium text-success">
+                exact evidence {formatMetricValue(selectedRun.operational.exact_evidence_rate, "rate")}
               </span>
-            </div>
-            <p className="mt-1 font-mono text-[10px] text-muted">{sourceIndex}</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Link
-              href={surfaceHref("observatory", "exectv2", { run: selectedRun.run_id })}
-              className="inline-flex items-center gap-1 rounded border border-llm/25 bg-llm/10 px-2 py-1 text-[10px] font-medium text-llm transition-colors hover:bg-llm/15"
-            >
-              <BarChart3 className="h-3 w-3" /> Aggregate
-            </Link>
-            <Link
-              href={surfaceHref("gallery", "exectv2", { run: selectedRun.run_id })}
-              className="inline-flex items-center gap-1 rounded border border-error/25 bg-error/8 px-2 py-1 text-[10px] font-medium text-error transition-colors hover:bg-error/12"
-            >
-              <GalleryHorizontalEnd className="h-3 w-3" /> Errors
-            </Link>
-            <span className="rounded border border-success/25 bg-success/10 px-2 py-1 text-[10px] font-medium text-success">
-              exact evidence {formatMetric(selectedRun.operational.exact_evidence_rate, 2)}
-            </span>
-            <span className="rounded border border-border bg-surface-raised px-2 py-1 font-mono text-[10px] text-muted">
-              {selectedRun.split} / {selectedRun.row_count}
-            </span>
-          </div>
-        </div>
-      </header>
-
+              <span className="rounded border border-border bg-surface-raised px-2 py-1 font-mono text-[10px] text-muted">
+                {selectedRun.split} / {selectedRun.row_count}
+              </span>
+            </>
+          }
+        />
+      }
+    >
+      <FamilyStrip letter={selectedLetter} active={activeFamily} onSelect={setActiveFamily} />
       <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[320px_1fr]">
         <aside className="min-h-0 overflow-y-auto border-b border-border bg-surface-raised/40 p-4 lg:border-b-0 lg:border-r">
           <div className="mb-3 flex items-center gap-2">
@@ -382,7 +406,7 @@ export default function Exectv2ExampleExplorer() {
 
         <main className="min-h-0 overflow-y-auto p-4 lg:p-5">
           <div className="mx-auto max-w-[1400px] space-y-4">
-            <MetricStrip run={selectedRun} />
+            <MetricStrip metrics={runMetricTiles(selectedRun)} />
 
             <div className="grid grid-cols-1 gap-4 xl:grid-cols-[260px_1fr]">
               <section className="rounded-md border border-border bg-surface">
@@ -420,28 +444,16 @@ export default function Exectv2ExampleExplorer() {
 
               <div className="min-w-0 space-y-4">
                 <div className="rounded-md border border-border bg-surface px-3 py-2">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div>
-                      <p className="font-mono text-xs font-semibold text-foreground">{selectedLetter.letter_id}</p>
-                      <p className="mt-1 text-[11px] text-muted">
-                        {selectedRun.label} / {selectedRun.model}
-                      </p>
-                    </div>
-                    <div className="flex flex-wrap gap-1 font-mono text-[9px] text-muted">
-                      {FAMILY_IDS.map((family) => (
-                        <span key={family} className="rounded border border-border bg-surface-raised px-1.5 py-0.5">
-                          {shortFamily(family)} {selectedLetter.family_counts.predicted[family]}/
-                          {selectedLetter.family_counts.gold[family]}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
+                  <p className="font-mono text-xs font-semibold text-foreground">{selectedLetter.letter_id}</p>
+                  <p className="mt-1 text-[11px] text-muted">
+                    {selectedRun.label} / {selectedRun.model}
+                  </p>
                 </div>
 
                 <LetterRenderer text={selectedLetter.letter_text} highlights={highlightSpans} />
 
                 <div className="grid grid-cols-1 gap-3">
-                  {FAMILY_IDS.map((family) => (
+                  {(activeFamily === "all" ? FAMILY_IDS : [activeFamily]).map((family) => (
                     <FamilyPanel key={family} family={family} letter={selectedLetter} />
                   ))}
                 </div>
@@ -452,6 +464,6 @@ export default function Exectv2ExampleExplorer() {
           </div>
         </main>
       </div>
-    </div>
+    </SurfaceLayout>
   );
 }

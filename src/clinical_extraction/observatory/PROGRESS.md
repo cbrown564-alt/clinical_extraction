@@ -62,5 +62,5 @@ so historical rows do not repopulate active run selection.
 ## Backend Restart Command
 
 ```powershell
-.venv\Scripts\python.exe -m uvicorn clinical_extraction.tasks.seizure_frequency.gan2026.observatory.api:app --reload --port 8000
+.venv\Scripts\python.exe -m uvicorn clinical_extraction.observatory.api:app --reload --port 8000
 ```

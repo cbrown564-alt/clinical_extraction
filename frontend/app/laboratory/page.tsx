@@ -6,7 +6,8 @@ import { useRules, useRunAblation, useLaboratoryUrlSync } from "@/lib/hooks";
 import { useLaboratoryStore } from "@/lib/stores";
 import RuleInventory from "@/components/laboratory/RuleInventory";
 import SimulationPanel from "@/components/laboratory/SimulationPanel";
-import { useActiveDataset } from "@/lib/datasets";
+import { useActiveDataset, gan2026Dataset } from "@/lib/datasets";
+import { SurfaceHeader, SurfaceLayout } from "@/components/surface";
 import Exectv2ComponentImpact from "@/components/exectv2/Exectv2ComponentImpact";
 
 function LaboratoryInner() {
@@ -78,26 +79,35 @@ function LaboratoryInner() {
   }, [setAblationConfig]);
 
   return (
-    <div className="flex h-full flex-col bg-background">
-      {/* Header */}
-      <div className="flex items-center justify-end border-b border-border bg-surface px-4 py-2 gap-3">
-        <div className="flex items-center gap-1.5 rounded-md bg-surface-raised px-2 py-1 border border-border">
-          <span className="text-[10px] text-muted">Active:</span>
-          <span className="text-[11px] font-semibold text-deterministic">
-            {enabledCount}
-          </span>
-          <span className="text-[10px] text-muted">/ {rules.length}</span>
-        </div>
-        <button
-          onClick={handleReset}
-          className="text-[11px] font-medium text-muted hover:text-foreground transition-colors"
-        >
-          Reset all
-        </button>
-      </div>
-
+    <SurfaceLayout
+      variant="fill"
+      header={
+        <SurfaceHeader
+          surface="laboratory"
+          dataset={gan2026Dataset}
+          description="Toggle rule groups and rule IDs, then simulate the ablated pipeline live against a split to see the impact on accuracy and F1."
+          right={
+            <>
+              <div className="flex items-center gap-1.5 rounded-md bg-surface-raised px-2 py-1 border border-border">
+                <span className="text-[10px] text-muted">Active:</span>
+                <span className="text-[11px] font-semibold text-deterministic">
+                  {enabledCount}
+                </span>
+                <span className="text-[10px] text-muted">/ {rules.length}</span>
+              </div>
+              <button
+                onClick={handleReset}
+                className="text-[11px] font-medium text-muted hover:text-foreground transition-colors"
+              >
+                Reset all
+              </button>
+            </>
+          }
+        />
+      }
+    >
       {/* Content */}
-      <div className="flex-1 overflow-hidden">
+      <div className="min-h-0 flex-1 overflow-hidden">
         <div className="flex h-full">
           {/* Left: Rule Inventory */}
           <div className="flex-1 overflow-y-auto p-5">
@@ -162,7 +172,7 @@ function LaboratoryInner() {
           </div>
         </div>
       </div>
-    </div>
+    </SurfaceLayout>
   );
 }
 

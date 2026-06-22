@@ -8,7 +8,8 @@ import { useArchitectUrlSync } from "@/lib/hooks";
 import StageStrip from "@/components/architect/StageStrip";
 import StageInspector from "@/components/architect/StageInspector";
 import ArchitectNoteRenderer from "@/components/architect/ArchitectNoteRenderer";
-import { useActiveDataset } from "@/lib/datasets";
+import { useActiveDataset, gan2026Dataset } from "@/lib/datasets";
+import { SurfaceHeader, SurfaceLayout, SurfaceLink } from "@/components/surface";
 import Exectv2ExampleExplorer from "@/components/exectv2/Exectv2ExampleExplorer";
 
 function PatientNoteMeta() {
@@ -52,7 +53,22 @@ function PatientNoteMeta() {
 function WorkbenchInner() {
   useArchitectUrlSync();
   return (
-    <div className="flex h-full flex-col bg-background">
+    <SurfaceLayout
+      variant="fill"
+      header={
+        <SurfaceHeader
+          surface="workbench"
+          dataset={gan2026Dataset}
+          description="Trace one note through the pipeline stage by stage: candidates, normalisation, selection, repair, and scoring."
+          right={
+            <>
+              <SurfaceLink surface="observatory" datasetId="gan2026" label="Aggregate" />
+              <SurfaceLink surface="gallery" datasetId="gan2026" label="Errors" />
+            </>
+          }
+        />
+      }
+    >
       {/* Controls */}
       <TraceControls />
 
@@ -60,7 +76,7 @@ function WorkbenchInner() {
       <StageStrip />
 
       {/* Main content: Note + Inspector */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex min-h-0 flex-1 overflow-hidden">
         {/* Left — Note */}
         <div className="flex w-[55%] flex-col border-r border-border">
           <div className="flex items-center justify-between border-b border-border bg-surface-raised/50 px-4 py-1.5">
@@ -79,7 +95,7 @@ function WorkbenchInner() {
           <StageInspector />
         </div>
       </div>
-    </div>
+    </SurfaceLayout>
   );
 }
 

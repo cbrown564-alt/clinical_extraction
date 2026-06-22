@@ -24,7 +24,8 @@ import {
 import Link from "next/link";
 import { useObservatoryData } from "@/components/observatory/useObservatoryData";
 import { useGalleryUrlSync } from "@/lib/hooks";
-import { useActiveDataset } from "@/lib/datasets";
+import { useActiveDataset, gan2026Dataset } from "@/lib/datasets";
+import { SurfaceHeader, SurfaceLayout } from "@/components/surface";
 import Exectv2ErrorGallery from "@/components/exectv2/Exectv2ErrorGallery";
 import type { RowScore, RunSummary } from "@/lib/types";
 import {
@@ -863,9 +864,18 @@ function GalleryInner() {
   }));
 
   return (
-    <div className="flex h-full flex-col bg-background">
+    <SurfaceLayout
+      variant="fill"
+      header={
+        <SurfaceHeader
+          surface="gallery"
+          dataset={gan2026Dataset}
+          description="Residual seizure-frequency errors grouped by type, with severity, evidence, and run-to-run comparison. Populated from the runs selected in Aggregate Performance."
+        />
+      }
+    >
       {/* Content */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="min-h-0 flex-1 overflow-y-auto">
         {selectedSummaries.length === 0 ? (
           <div className="p-5">
             <EmptyState message="Select runs in Aggregate Performance first to populate the gallery." />
@@ -964,7 +974,7 @@ function GalleryInner() {
           </div>
         )}
       </div>
-    </div>
+    </SurfaceLayout>
   );
 }
 
