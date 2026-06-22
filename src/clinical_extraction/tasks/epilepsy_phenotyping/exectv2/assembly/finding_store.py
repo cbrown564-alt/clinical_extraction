@@ -6,6 +6,7 @@ from collections.abc import Iterable
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.clinical_finding import (
     ClinicalFinding,
+    FindingSource,
 )
 
 
@@ -16,6 +17,7 @@ class ClinicalFindingStore:
         self.letter_id = letter_id
         self.note_text = note_text
         self._findings: list[ClinicalFinding] = []
+        self._sources: list[FindingSource] = []
 
     def add(self, finding: ClinicalFinding) -> None:
         if finding.letter_id != self.letter_id:
@@ -24,6 +26,10 @@ class ClinicalFindingStore:
                 f"not {self.letter_id}"
             )
         self._findings.append(finding)
+
+    def register_source(self, source: FindingSource) -> None:
+        if source not in self._sources:
+            self._sources.append(source)
 
     def extend(self, findings: Iterable[ClinicalFinding]) -> None:
         for finding in findings:
@@ -50,6 +56,12 @@ class ClinicalFindingStore:
 
     def by_entity(self, entity: str) -> tuple[ClinicalFinding, ...]:
         return self.findings(entity=entity)
+
+    def sources(self, *, producer_id: str | None = None) -> tuple[FindingSource, ...]:
+        out = self._sources
+        if producer_id is not None:
+            out = [source for source in out if source.producer_id == producer_id]
+        return tuple(out)
 
     def __len__(self) -> int:
         return len(self._findings)

@@ -323,6 +323,7 @@ def _assemble_letter(
             row,
             source_lane=lens_config.source_lane or producer.source_lane,
         )
+        store.register_source(source)
         store.extend(
             findings_from_row(
                 row,

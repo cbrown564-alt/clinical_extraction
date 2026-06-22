@@ -1,54 +1,57 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 import {
   Activity,
+  BarChart3,
   CheckCircle2,
   FileText,
+  GalleryHorizontalEnd,
   Layers3,
   Search,
   ShieldAlert,
 } from "lucide-react";
-import { fetchExectv2Runs } from "@/lib/api";
 import LetterRenderer from "@/components/observatory/LetterRenderer";
+import { exectv2Dataset, EXECTV2_FAMILIES, surfaceHref } from "@/lib/datasets";
+import type { RunDecision } from "@/lib/datasets";
 import type {
   Exectv2Entity,
   Exectv2LetterRecord,
   Exectv2Mention,
   Exectv2RunSummary,
 } from "@/lib/types";
+import { compactRunLabel, formatMetric, useExectv2Runs, useExectv2UrlState } from "./useExectv2";
 
-const FAMILIES: Exectv2Entity[] = [
-  "Diagnosis",
-  "SeizureFrequency",
-  "Prescription",
-  "Investigations",
-];
+const FAMILY_IDS = EXECTV2_FAMILIES.map((f) => f.id as Exectv2Entity);
 
-function formatMetric(value: number | null | undefined): string {
-  return typeof value === "number" ? value.toFixed(4) : "-";
-}
-
-function compactRunLabel(run: Exectv2RunSummary): string {
-  return run.label.replace("dev140", "140").replace("dev25", "25");
+function shortFamily(family: string): string {
+  return EXECTV2_FAMILIES.find((f) => f.id === family)?.shortLabel ?? family.slice(0, 2);
 }
 
 function decisionClass(decision: string): string {
-  if (decision === "control") return "border-deterministic/25 bg-deterministic/10 text-deterministic";
-  if (decision === "diagnostic") return "border-llm/25 bg-llm/10 text-llm";
-  return "border-muted/20 bg-muted/10 text-muted";
+  switch (decision as RunDecision) {
+    case "control":
+      return "border-deterministic/25 bg-deterministic/10 text-deterministic";
+    case "simplification":
+      return "border-success/25 bg-success/10 text-success";
+    case "diagnostic":
+      return "border-llm/25 bg-llm/10 text-llm";
+    default:
+      return "border-muted/20 bg-muted/10 text-muted";
+  }
 }
 
 function familyTint(family: string): string {
-  switch (family) {
-    case "Diagnosis":
+  const tone = EXECTV2_FAMILIES.find((f) => f.id === family)?.tone ?? "muted";
+  switch (tone) {
+    case "deterministic":
       return "border-deterministic/25 bg-deterministic/8";
-    case "SeizureFrequency":
+    case "llm":
       return "border-llm/25 bg-llm/8";
-    case "Prescription":
+    case "success":
       return "border-success/25 bg-success/10";
-    case "Investigations":
+    case "deterministic-alt":
       return "border-deterministic-alt/25 bg-deterministic-alt/8";
     default:
       return "border-border bg-surface";
@@ -70,9 +73,7 @@ function MentionRow({ mention }: { mention: Exectv2Mention }) {
         </div>
         <span
           className={`shrink-0 rounded px-1.5 py-0.5 text-[9px] font-medium ${
-            mention.evidence_valid
-              ? "bg-success/10 text-success"
-              : "bg-error/10 text-error"
+            mention.evidence_valid ? "bg-success/10 text-success" : "bg-error/10 text-error"
           }`}
         >
           {mention.evidence_valid ? "exact" : "invalid"}
@@ -159,9 +160,7 @@ function RunButton({
     <button
       onClick={onClick}
       className={`w-full rounded-md border px-3 py-2 text-left transition-colors ${
-        active
-          ? "border-deterministic/30 bg-deterministic/8"
-          : "border-border bg-surface hover:bg-surface-raised"
+        active ? "border-deterministic/30 bg-deterministic/8" : "border-border bg-surface hover:bg-surface-raised"
       }`}
     >
       <div className="flex items-start justify-between gap-2">
@@ -174,11 +173,10 @@ function RunButton({
         </span>
       </div>
       <div className="mt-2 grid grid-cols-5 gap-1 font-mono text-[9px] text-muted">
-        <span>O {formatMetric(run.metrics.overall_f1)}</span>
-        {FAMILIES.map((family) => (
+        <span>O {formatMetric(run.metrics.overall_f1, 3)}</span>
+        {FAMILY_IDS.map((family) => (
           <span key={family}>
-            {family === "SeizureFrequency" ? "SF" : family.slice(0, 2)}{" "}
-            {formatMetric(run.metrics.families[family]?.f1)}
+            {shortFamily(family)} {formatMetric(run.metrics.families[family]?.f1, 3)}
           </span>
         ))}
       </div>
@@ -193,7 +191,7 @@ function MetricStrip({ run }: { run: Exectv2RunSummary }) {
         <p className="text-[10px] uppercase tracking-wider text-muted">Overall</p>
         <p className="font-mono text-lg font-semibold text-foreground">{formatMetric(run.metrics.overall_f1)}</p>
       </div>
-      {FAMILIES.map((family) => (
+      {FAMILY_IDS.map((family) => (
         <div key={family} className="rounded-md border border-border bg-surface px-3 py-2">
           <p className="truncate text-[10px] uppercase tracking-wider text-muted">{family}</p>
           <p className="font-mono text-lg font-semibold text-foreground">
@@ -213,19 +211,16 @@ function SameLetterComparison({
   letterId: string;
 }) {
   const rows = runs
-    .map((run) => ({
-      run,
-      letter: run.letters.find((item) => item.letter_id === letterId),
-    }))
+    .map((run) => ({ run, letter: run.letters.find((item) => item.letter_id === letterId) }))
     .filter((row): row is { run: Exectv2RunSummary; letter: Exectv2LetterRecord } => Boolean(row.letter));
+
+  if (rows.length <= 1) return null;
 
   return (
     <section className="rounded-md border border-border bg-surface">
       <div className="flex items-center gap-2 border-b border-border px-3 py-2">
         <Layers3 className="h-3.5 w-3.5 text-muted" />
-        <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted">
-          Same Letter Across Runs
-        </h3>
+        <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted">Same Letter Across Runs</h3>
       </div>
       <div className="divide-y divide-border/70">
         {rows.map(({ run, letter }) => (
@@ -235,10 +230,9 @@ function SameLetterComparison({
               <p className="font-mono text-[9px] text-muted">{formatMetric(run.metrics.overall_f1)}</p>
             </div>
             <div className="grid grid-cols-4 gap-1 font-mono text-[9px] text-muted">
-              {FAMILIES.map((family) => (
+              {FAMILY_IDS.map((family) => (
                 <span key={family}>
-                  {family === "SeizureFrequency" ? "SF" : family.slice(0, 2)}{" "}
-                  {letter.family_counts.predicted[family]}/{letter.family_counts.gold[family]}
+                  {shortFamily(family)} {letter.family_counts.predicted[family]}/{letter.family_counts.gold[family]}
                 </span>
               ))}
             </div>
@@ -249,19 +243,14 @@ function SameLetterComparison({
   );
 }
 
-export default function Exectv2Explorer() {
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["exectv2-runs"],
-    queryFn: fetchExectv2Runs,
-  });
-  const runs = useMemo(() => data?.runs ?? [], [data?.runs]);
-  const [selectedRunId, setSelectedRunId] = useState<string | null>(null);
-  const [selectedLetterId, setSelectedLetterId] = useState<string | null>(null);
+export default function Exectv2ExampleExplorer() {
+  const { runs, isLoading, error, sourceIndex } = useExectv2Runs();
+  const { get, set } = useExectv2UrlState();
   const [letterSearch, setLetterSearch] = useState("");
 
   const selectedRun = useMemo(
-    () => runs.find((run) => run.run_id === selectedRunId) ?? runs[0],
-    [runs, selectedRunId]
+    () => runs.find((run) => run.run_id === get("run")) ?? runs[0],
+    [runs, get]
   );
 
   const filteredLetters = useMemo(() => {
@@ -272,8 +261,8 @@ export default function Exectv2Explorer() {
       const haystack = [
         letter.letter_id,
         letter.letter_text,
-        ...letter.predicted_mentions.map((mention) => mention.text),
-        ...letter.gold_mentions.map((mention) => mention.text),
+        ...letter.predicted_mentions.map((m) => m.text),
+        ...letter.gold_mentions.map((m) => m.text),
       ]
         .join(" ")
         .toLowerCase();
@@ -284,18 +273,18 @@ export default function Exectv2Explorer() {
   const selectedLetter = useMemo(() => {
     if (!selectedRun) return undefined;
     return (
-      selectedRun.letters.find((letter) => letter.letter_id === selectedLetterId) ??
+      selectedRun.letters.find((letter) => letter.letter_id === get("letter")) ??
       filteredLetters[0] ??
       selectedRun.letters[0]
     );
-  }, [filteredLetters, selectedLetterId, selectedRun]);
+  }, [filteredLetters, get, selectedRun]);
 
   if (isLoading) {
     return (
       <div className="flex h-full items-center justify-center bg-background text-muted">
         <div className="space-y-3 text-center">
           <div className="mx-auto h-8 w-40 animate-pulse rounded bg-surface-raised" />
-          <p className="text-sm font-medium">Loading ExECTv2 data...</p>
+          <p className="text-sm font-medium">Loading ExECTv2 data…</p>
         </div>
       </div>
     );
@@ -337,16 +326,28 @@ export default function Exectv2Explorer() {
           <div>
             <div className="flex items-center gap-2">
               <FileText className="h-4 w-4 text-deterministic" />
-              <h1 className="text-sm font-semibold text-foreground">ExECTv2 Letter Explorer</h1>
+              <h1 className="text-sm font-semibold text-foreground">ExECTv2 · Example Explorer</h1>
               <span className="rounded border border-border bg-surface-raised px-2 py-0.5 text-[10px] text-muted">
-                {runs.length} runs
+                {runs.length} {exectv2Dataset.runLabel}s
               </span>
             </div>
-            <p className="mt-1 font-mono text-[10px] text-muted">{data?.source_index}</p>
+            <p className="mt-1 font-mono text-[10px] text-muted">{sourceIndex}</p>
           </div>
           <div className="flex items-center gap-2">
+            <Link
+              href={surfaceHref("observatory", "exectv2", { run: selectedRun.run_id })}
+              className="inline-flex items-center gap-1 rounded border border-llm/25 bg-llm/10 px-2 py-1 text-[10px] font-medium text-llm transition-colors hover:bg-llm/15"
+            >
+              <BarChart3 className="h-3 w-3" /> Aggregate
+            </Link>
+            <Link
+              href={surfaceHref("gallery", "exectv2", { run: selectedRun.run_id })}
+              className="inline-flex items-center gap-1 rounded border border-error/25 bg-error/8 px-2 py-1 text-[10px] font-medium text-error transition-colors hover:bg-error/12"
+            >
+              <GalleryHorizontalEnd className="h-3 w-3" /> Errors
+            </Link>
             <span className="rounded border border-success/25 bg-success/10 px-2 py-1 text-[10px] font-medium text-success">
-              exact evidence {formatMetric(selectedRun.operational.exact_evidence_rate)}
+              exact evidence {formatMetric(selectedRun.operational.exact_evidence_rate, 2)}
             </span>
             <span className="rounded border border-border bg-surface-raised px-2 py-1 font-mono text-[10px] text-muted">
               {selectedRun.split} / {selectedRun.row_count}
@@ -359,9 +360,7 @@ export default function Exectv2Explorer() {
         <aside className="min-h-0 overflow-y-auto border-b border-border bg-surface-raised/40 p-4 lg:border-b-0 lg:border-r">
           <div className="mb-3 flex items-center gap-2">
             <Activity className="h-3.5 w-3.5 text-muted" />
-            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted">
-              Final Set
-            </h2>
+            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted">Architectures</h2>
           </div>
           <div className="space-y-2">
             {runs.map((run) => (
@@ -369,18 +368,13 @@ export default function Exectv2Explorer() {
                 key={run.run_id}
                 run={run}
                 active={run.run_id === selectedRun.run_id}
-                onClick={() => {
-                  setSelectedRunId(run.run_id);
-                  setSelectedLetterId(null);
-                }}
+                onClick={() => set({ run: run.run_id, letter: undefined })}
               />
             ))}
           </div>
 
           <div className="mt-5 rounded-md border border-border bg-surface p-3">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-muted">
-              Claim Boundary
-            </p>
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-muted">Claim Boundary</p>
             <p className="mt-2 text-[11px] leading-snug text-foreground">{selectedRun.claim_boundary}</p>
             <p className="mt-2 font-mono text-[9px] text-muted">{selectedRun.scorer_view}</p>
           </div>
@@ -407,16 +401,12 @@ export default function Exectv2Explorer() {
                   {filteredLetters.map((letter) => (
                     <button
                       key={letter.letter_id}
-                      onClick={() => setSelectedLetterId(letter.letter_id)}
+                      onClick={() => set({ letter: letter.letter_id })}
                       className={`grid w-full grid-cols-[1fr_auto] items-center gap-2 border-b border-border/60 px-3 py-2 text-left transition-colors last:border-b-0 ${
-                        selectedLetter.letter_id === letter.letter_id
-                          ? "bg-deterministic/8"
-                          : "hover:bg-surface-raised"
+                        selectedLetter.letter_id === letter.letter_id ? "bg-deterministic/8" : "hover:bg-surface-raised"
                       }`}
                     >
-                      <span className="font-mono text-[11px] font-semibold text-foreground">
-                        {letter.letter_id}
-                      </span>
+                      <span className="font-mono text-[11px] font-semibold text-foreground">{letter.letter_id}</span>
                       {selectedLetter.letter_id === letter.letter_id && (
                         <CheckCircle2 className="h-3.5 w-3.5 text-deterministic" />
                       )}
@@ -432,18 +422,16 @@ export default function Exectv2Explorer() {
                 <div className="rounded-md border border-border bg-surface px-3 py-2">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div>
-                      <p className="font-mono text-xs font-semibold text-foreground">
-                        {selectedLetter.letter_id}
-                      </p>
+                      <p className="font-mono text-xs font-semibold text-foreground">{selectedLetter.letter_id}</p>
                       <p className="mt-1 text-[11px] text-muted">
                         {selectedRun.label} / {selectedRun.model}
                       </p>
                     </div>
                     <div className="flex flex-wrap gap-1 font-mono text-[9px] text-muted">
-                      {FAMILIES.map((family) => (
+                      {FAMILY_IDS.map((family) => (
                         <span key={family} className="rounded border border-border bg-surface-raised px-1.5 py-0.5">
-                          {family === "SeizureFrequency" ? "SF" : family.slice(0, 2)}{" "}
-                          {selectedLetter.family_counts.predicted[family]}/{selectedLetter.family_counts.gold[family]}
+                          {shortFamily(family)} {selectedLetter.family_counts.predicted[family]}/
+                          {selectedLetter.family_counts.gold[family]}
                         </span>
                       ))}
                     </div>
@@ -453,7 +441,7 @@ export default function Exectv2Explorer() {
                 <LetterRenderer text={selectedLetter.letter_text} highlights={highlightSpans} />
 
                 <div className="grid grid-cols-1 gap-3">
-                  {FAMILIES.map((family) => (
+                  {FAMILY_IDS.map((family) => (
                     <FamilyPanel key={family} family={family} letter={selectedLetter} />
                   ))}
                 </div>
