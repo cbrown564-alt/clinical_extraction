@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchRegistry } from "@/lib/api";
+import { fetchArtifact, fetchRegistry } from "@/lib/api";
 import { isActivePipelineFamily } from "@/lib/pipelineFamilies";
 import type { RegistryEntry, RowScore, RunSummary, CategoryMetrics } from "@/lib/types";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
@@ -382,6 +382,7 @@ export function useObservatoryData() {
   const runs = useMemo(
     () =>
       (registryData?.runs ?? []).filter((run) =>
+        (run.task ?? "gan2026") === "gan2026" &&
         isActivePipelineFamily(run.pipeline_family)
       ),
     [registryData?.runs]
@@ -429,26 +430,9 @@ export function useObservatoryData() {
     }
   }, [selectedRunIds]);
 
-  // Fetch with timeout helper
   const fetchArtifactWithTimeout = useCallback(
-    async (runId: string, path?: string, timeoutMs = 30000) => {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), timeoutMs);
-      try {
-        const url = path
-          ? `/api/artifacts/${runId}?artifact_path=${encodeURIComponent(path)}`
-          : `/api/artifacts/${runId}`;
-        const res = await fetch(url, { signal: controller.signal });
-        clearTimeout(timeout);
-        if (!res.ok) {
-          const text = await res.text();
-          throw new Error(`HTTP ${res.status}: ${text}`);
-        }
-        return res.json() as Promise<{ content: unknown[] }>;
-      } catch (err) {
-        clearTimeout(timeout);
-        throw err;
-      }
+    async (runId: string, path?: string) => {
+      return fetchArtifact(runId, path);
     },
     []
   );

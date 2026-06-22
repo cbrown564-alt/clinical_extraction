@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Microscope, LayoutGrid, FileCheck } from "lucide-react";
+import { Microscope, FileCheck } from "lucide-react";
 
 const navItems = [
   { href: "/workbench", label: "Example Explorer", color: "deterministic" },
+  { href: "/exectv2", label: "ExECTv2", color: "hybrid" },
   { href: "/observatory", label: "Aggregate Performance", color: "llm" },
   { href: "/laboratory", label: "Component Impact", color: "deterministic-alt" },
   { href: "/gallery", label: "Error Gallery", color: "error" },
@@ -38,6 +39,8 @@ export default function Navbar() {
                 ? "bg-llm/10 text-llm border-llm/20"
                 : item.color === "deterministic-alt"
                 ? "bg-deterministic-alt/10 text-deterministic-alt border-deterministic-alt/20"
+                : item.color === "hybrid"
+                ? "bg-hybrid/10 text-hybrid border-hybrid/20"
                 : item.color === "error"
                 ? "bg-error/10 text-error border-error/20"
                   : "bg-muted/10 text-muted border-muted/20";

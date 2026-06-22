@@ -167,6 +167,8 @@ async function fetchMockData<T>(path: string, init?: RequestInit): Promise<T> {
     mockPath = "/mock-data/rules.json";
   } else if (path === "/prompts") {
     mockPath = "/mock-data/prompts.json";
+  } else if (path === "/exectv2/runs") {
+    mockPath = "/mock-data/exectv2/runs.json";
   } else if (path.startsWith("/artifacts/")) {
     const runId = path.split("/")[2].split("?")[0];
     mockPath = `/mock-data/artifacts/${runId}.json`;
@@ -324,6 +326,10 @@ export function fetchArtifact(runId: string, artifactPath?: string, limit?: numb
   return fetchJson<import("./types").ArtifactResponse>(
     `/artifacts/${runId}${query ? "?" + query : ""}`
   );
+}
+
+export function fetchExectv2Runs() {
+  return fetchJson<import("./types").Exectv2RunsResponse>("/exectv2/runs");
 }
 
 export function runAblation(params: {

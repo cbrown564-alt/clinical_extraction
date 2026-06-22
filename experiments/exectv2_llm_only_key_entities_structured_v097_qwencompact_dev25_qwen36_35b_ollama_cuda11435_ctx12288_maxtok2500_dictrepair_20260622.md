@@ -1,7 +1,5 @@
 # ExECTv2 Key Entities Structured Events
 
-CHECKPOINT ONLY: processed 25 / 25 letters
-
 - JSONL: `experiments\exectv2_llm_only_key_entities_structured_v097_qwencompact_dev25_qwen36_35b_ollama_cuda11435_ctx12288_maxtok2500_dictrepair_20260622.jsonl`
 - Prompt version: `exectv2_hybrid_key_family_event_ledger_v0.9.7_qwen_compact`
 - Pipeline family: `exectv2_hybrid_key_family_event_ledger`

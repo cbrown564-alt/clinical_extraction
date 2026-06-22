@@ -81,6 +81,9 @@ def test_prompt_hygiene_and_four_family_schema() -> None:
     assert "Never write 'tonic chronic'" in clinical_rules
     assert "possible JME" in clinical_rules
     assert "complex partial seizures" in clinical_rules
+    assert "symptomatic structural focal epilepsy" in clinical_rules
+    assert "intractable epilepsy" in clinical_rules
+    assert "general and complex partial seizures" in clinical_rules
     assert "Keep plural seizure-type wording plural" in clinical_rules
     assert "generic seizure phrase" in clinical_rules
     assert "Never emit a SeizureFrequency mention with empty attributes" in clinical_rules
@@ -97,6 +100,8 @@ def test_prompt_hygiene_and_four_family_schema() -> None:
     assert "Seizure type and frequency headings are high-value evidence" in clinical_rules
     assert "seizures have returned" in clinical_rules
     assert "reject generic spell anchors" in clinical_rules
+    assert "risk of further seizures" in clinical_rules
+    assert "episodes around twice a week of an unusual thought" in clinical_rules
     assert "generic events, blackouts" in clinical_rules
     assert "Medication current-list split dosing" in clinical_rules
     assert "Medication plan boundary" in clinical_rules
@@ -219,6 +224,23 @@ def test_prompt_hygiene_and_four_family_schema() -> None:
         "Temporal lobe epilepsy",
         "epilepsy",
     ]
+    structural_focal_example = next(
+        example
+        for example in payload["worked_examples"]
+        if example["note_fragment"] == "Diagnosis: symptomatic structural focal epilepsy."
+    )
+    assert [
+        m["text"] for m in structural_focal_example["correct_event"]["mentions"]
+    ] == ["symptomatic structural focal epilepsy"]
+    intractable_example = next(
+        example
+        for example in payload["worked_examples"]
+        if example["note_fragment"]
+        == "I reviewed this lady with intractable epilepsy in clinic today."
+    )
+    assert [m["text"] for m in intractable_example["correct_event"]["mentions"]] == [
+        "intractable epilepsy"
+    ]
     gtc_jme_example = next(
         example
         for example in payload["worked_examples"]
@@ -236,6 +258,18 @@ def test_prompt_hygiene_and_four_family_schema() -> None:
     assert [m["text"] for m in composite_dx_example["correct_event"]["mentions"]] == [
         "Complex partial seizures",
         "secondary generalised tonic clonic seizures",
+    ]
+    general_complex_example = next(
+        example
+        for example in payload["worked_examples"]
+        if example["note_fragment"].startswith(
+            "Despite this she continues to get general and complex partial seizures"
+        )
+    )
+    assert [
+        m["text"] for m in general_complex_example["correct_event"]["mentions"]
+    ] == [
+        "complex partial seizures"
     ]
     unclassified_example = next(
         example
@@ -333,6 +367,24 @@ def test_prompt_hygiene_and_four_family_schema() -> None:
         if example["note_fragment"].startswith("He suffered with generalised")
     )
     assert well_controlled_example["correct_event"]["mentions"] == []
+    risk_example = next(
+        example
+        for example in payload["worked_examples"]
+        if example["note_fragment"].startswith("I explained that even though")
+    )
+    assert risk_example["correct_event"]["mentions"] == []
+    unusual_thought_example = next(
+        example
+        for example in payload["worked_examples"]
+        if example["note_fragment"].startswith("She tells me that she has been getting")
+    )
+    assert unusual_thought_example["correct_event"]["mentions"] == []
+    contextual_episode_example = next(
+        example
+        for example in payload["worked_examples"]
+        if example["note_fragment"].startswith("The episodes last no longer")
+    )
+    assert contextual_episode_example["correct_event"]["mentions"] == []
     teenage_example = next(
         example
         for example in payload["worked_examples"]
@@ -383,11 +435,15 @@ def test_qwen_compact_prompt_profile_keeps_schema_with_shorter_payload() -> None
     rules = " ".join(compact["rules"])
     assert "one Prescription mention per dose" in rules
     assert "render both separately" in rules
+    assert "intractable epilepsy" in rules
     assert "do not render bare modifiers" in rules
     assert "Do not render myoclonic jerks" in rules
+    assert "nonepileptic events" in rules
     assert "never emit an SF mention with empty attributes" in rules
     assert "SeizureFrequency headings are high-value evidence" in rules
+    assert "diagnostically vague episodes" in rules
     assert "NumberOfSeizures='1', YearDate='2014'" in rules
+    assert "do not default unrelated modalities to No" in rules
     assert "both entity and text" in rules
     assert "Do not invent CUI values" in rules
     assert compact["candidate_evidence_ledger"]
@@ -407,6 +463,30 @@ def test_qwen_compact_prompt_profile_keeps_schema_with_shorter_payload() -> None
     assert dated_example["correct_event"]["mentions"][0]["attributes"][
         "NumberOfSeizures"
     ] == "1"
+    intractable_example = next(
+        example
+        for example in compact["worked_examples"]
+        if example["note_fragment"]
+        == "I reviewed this lady with intractable epilepsy in clinic today."
+    )
+    assert intractable_example["correct_event"]["mentions"][0]["text"] == (
+        "intractable epilepsy"
+    )
+    vague_episode_example = next(
+        example
+        for example in compact["worked_examples"]
+        if example["note_fragment"].startswith("She has been getting episodes")
+    )
+    assert vague_episode_example["correct_event"]["mentions"] == []
+    eeg_example = next(
+        example
+        for example in compact["worked_examples"]
+        if example["note_fragment"] == "An EEG in 2016 did show focal slowing."
+    )
+    assert eeg_example["correct_event"]["mentions"][0]["attributes"] == {
+        "EEG_Performed": "Yes",
+        "EEG_Results": "Abnormal",
+    }
 
 
 def test_candidate_evidence_ledger_types_family_lanes() -> None:

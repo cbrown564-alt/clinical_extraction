@@ -1,0 +1,18 @@
+
+> frontend@0.1.0 dev
+> next dev --hostname 127.0.0.1 --port 3000
+
+▲ Next.js 16.2.7 (Turbopack)
+- Local:         http://127.0.0.1:3000
+- Network:       http://127.0.0.1:3000
+✓ Ready in 1143ms
+
+ GET /exectv2 200 in 3.0s (next.js: 2.8s, application-code: 226ms)
+ GET /exectv2 200 in 63ms (next.js: 9ms, application-code: 54ms)
+ GET /workbench 200 in 579ms (next.js: 540ms, application-code: 39ms)
+ GET /workbench?split=validation&row=10 200 in 128ms (next.js: 15ms, application-code: 114ms)
+ GET /workbench?split=validation&row=10 200 in 38ms (next.js: 8ms, application-code: 30ms)
+ GET /exectv2 200 in 32ms (next.js: 6ms, application-code: 26ms)
+ GET /workbench 200 in 31ms (next.js: 6ms, application-code: 24ms)
+ GET /workbench?split=validation&row=10 200 in 120ms (next.js: 36ms, application-code: 84ms)
+ GET /workbench?split=validation&row=10 200 in 31ms (next.js: 8ms, application-code: 23ms)

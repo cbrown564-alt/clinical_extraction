@@ -13,6 +13,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.finding_sto
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.lenses import (
     DiagnosisDictionaryLens,
+    InvestigationsDictionaryLens,
     LensPolicy,
     PrescriptionDictionaryLens,
     SeizureFrequencyDictionaryLens,
@@ -185,7 +186,10 @@ def test_diagnosis_dictionary_lens_repairs_deepseek_category_and_typo() -> None:
                     "Certainty": "5",
                     "Negation": "Affirmed",
                 },
-                "evidence": "Diagnosis: generalised tonic chronic seizures with myoclonic jerks, possible JME.",
+                "evidence": (
+                    "Diagnosis: generalised tonic chronic seizures with myoclonic "
+                    "jerks, possible JME."
+                ),
             },
             {
                 "entity": "Diagnosis",
@@ -212,6 +216,291 @@ def test_diagnosis_dictionary_lens_repairs_deepseek_category_and_typo() -> None:
     assert by_text["generalised tonic clonic seizure"].attributes["DiagCategory"] == (
         "SingleSeizure"
     )
+
+
+def test_diagnosis_dictionary_lens_suppresses_redundant_heading_and_residual_fragments() -> None:
+    note = (
+        "Diagnosis: symptomatic structural focal epilepsy. "
+        "Seizure type and frequency: focal seizures with altered awareness every 3 weeks. "
+        "Diagnosis: Complex partial seizures with secondary generalised tonic clonic seizures."
+    )
+    store = _store(
+        note,
+        [
+            {
+                "entity": "Diagnosis",
+                "text": "symptomatic structural focal epilepsy",
+                "attributes": {
+                    "DiagCategory": "Epilepsy",
+                    "Certainty": "5",
+                    "Negation": "Affirmed",
+                },
+                "evidence": "Diagnosis: symptomatic structural focal epilepsy.",
+            },
+            {
+                "entity": "Diagnosis",
+                "text": "focal seizures with altered awareness",
+                "attributes": {
+                    "DiagCategory": "MultipleSeizures",
+                    "Certainty": "5",
+                    "Negation": "Affirmed",
+                },
+                "evidence": "focal seizures with altered awareness every 3 weeks",
+            },
+            {
+                "entity": "Diagnosis",
+                "text": "Complex partial seizures",
+                "attributes": {
+                    "DiagCategory": "MultipleSeizures",
+                    "Certainty": "5",
+                    "Negation": "Affirmed",
+                },
+                "evidence": (
+                    "Diagnosis: Complex partial seizures with secondary generalised "
+                    "tonic clonic seizures."
+                ),
+            },
+            {
+                "entity": "Diagnosis",
+                "text": "secondary generalised tonic clonic seizures",
+                "attributes": {
+                    "DiagCategory": "MultipleSeizures",
+                    "Certainty": "5",
+                    "Negation": "Affirmed",
+                },
+                "evidence": (
+                    "Diagnosis: Complex partial seizures with secondary generalised "
+                    "tonic clonic seizures."
+                ),
+            },
+        ],
+    )
+
+    result = DiagnosisDictionaryLens(
+        lens_id="diagnosis_convention_dictionary_v09", entity="Diagnosis"
+    ).reconcile(store, policy=_policy())
+    texts = [finding.text for finding in result.findings]
+
+    assert "symptomatic structural focal epilepsy" in texts
+    assert "focal seizures with altered awareness" in texts
+    assert "secondary generalised tonic clonic seizures" in texts
+    assert "focal epilepsy" not in texts
+    assert "focal" not in texts
+    assert "generalised" not in texts
+
+
+def test_diagnosis_dictionary_lens_repairs_intractable_and_drops_noise() -> None:
+    note = (
+        "I reviewed this lady with intractable epilepsy in clinic today. "
+        "Despite this she continues to get general and complex partial seizures. "
+        "In the last 2 years he developed some minor seizures."
+    )
+    store = _store(
+        note,
+        [
+            {
+                "entity": "Diagnosis",
+                "text": "epilepsy",
+                "attributes": {
+                    "DiagCategory": "Epilepsy",
+                    "Certainty": "5",
+                    "Negation": "Affirmed",
+                },
+                "evidence": "I reviewed this lady with intractable epilepsy in clinic today.",
+            },
+            {
+                "entity": "Diagnosis",
+                "text": "general seizures",
+                "attributes": {
+                    "DiagCategory": "Epilepsy",
+                    "Certainty": "5",
+                    "Negation": "Affirmed",
+                },
+                "evidence": (
+                    "Despite this she continues to get general and complex partial "
+                    "seizures."
+                ),
+            },
+            {
+                "entity": "Diagnosis",
+                "text": "complex partial seizures",
+                "attributes": {
+                    "DiagCategory": "MultipleSeizures",
+                    "Certainty": "5",
+                    "Negation": "Affirmed",
+                },
+                "evidence": (
+                    "Despite this she continues to get general and complex partial "
+                    "seizures."
+                ),
+            },
+            {
+                "entity": "Diagnosis",
+                "text": "minor seizures",
+                "attributes": {
+                    "DiagCategory": "Epilepsy",
+                    "Certainty": "5",
+                    "Negation": "Affirmed",
+                },
+                "evidence": "In the last 2 years he developed some minor seizures.",
+            },
+        ],
+    )
+
+    result = DiagnosisDictionaryLens(
+        lens_id="diagnosis_convention_dictionary_v09", entity="Diagnosis"
+    ).reconcile(store, policy=_policy())
+    texts = [finding.text for finding in result.findings]
+
+    assert "intractable epilepsy" in texts
+    assert "complex partial seizures" in texts
+    assert "epilepsy" not in texts
+    assert "general seizures" not in texts
+    assert "minor seizures" not in texts
+
+
+def test_diagnosis_dictionary_lens_drops_qwen_dev25_noise_surfaces() -> None:
+    note = (
+        "Diagnosis: Epilepsy - unclassified, possibly generalised. "
+        "Mr Turko understands that convulsive seizures with loss of consciousness "
+        "can rarely cause serious injury or even death. "
+        "She continues to get a combination of epileptic and nonepileptic events. "
+        "This was a craniotomy for her frontal lobe brain tumour."
+    )
+    store = _store(
+        note,
+        [
+            {
+                "entity": "Diagnosis",
+                "text": "generalised epilepsy",
+                "attributes": {
+                    "DiagCategory": "Epilepsy",
+                    "Certainty": "4",
+                    "Negation": "Affirmed",
+                },
+                "evidence": "Diagnosis: Epilepsy - unclassified, possibly generalised.",
+            },
+            {
+                "entity": "Diagnosis",
+                "text": "convulsive seizures",
+                "attributes": {
+                    "DiagCategory": "MultipleSeizures",
+                    "Certainty": "5",
+                    "Negation": "Affirmed",
+                },
+                "evidence": "convulsive seizures with loss of consciousness",
+            },
+            {
+                "entity": "Diagnosis",
+                "text": "nonepileptic events",
+                "attributes": {
+                    "DiagCategory": "MultipleSeizures",
+                    "Certainty": "5",
+                    "Negation": "Affirmed",
+                },
+                "evidence": "nonepileptic events",
+            },
+            {
+                "entity": "Diagnosis",
+                "text": "frontal lobe brain tumour",
+                "attributes": {
+                    "DiagCategory": "Epilepsy",
+                    "Certainty": "5",
+                    "Negation": "Affirmed",
+                },
+                "evidence": "frontal lobe brain tumour",
+            },
+        ],
+    )
+
+    result = DiagnosisDictionaryLens(
+        lens_id="diagnosis_convention_dictionary_v09", entity="Diagnosis"
+    ).reconcile(store, policy=_policy())
+    by_text = {finding.text: finding for finding in result.findings}
+
+    assert by_text["generalised epilepsy"].attributes["Certainty"] == "3"
+    assert "convulsive seizures" not in by_text
+    assert "nonepileptic events" not in by_text
+    assert "frontal lobe brain tumour" not in by_text
+
+
+def test_investigations_dictionary_lens_prunes_qwen_cross_modality_defaults() -> None:
+    note = (
+        "Previous investigations have included an MRI brain which have shown a small "
+        "focus of gliosis. An EEG in 2016 did show some focal slowing. "
+        "There was a previous CT scan from 2017 showing a left hemisphere infarct. "
+        "I am therefore arranging an MRI scan of the brain. "
+        "I will arrange further tests including an MR brain and EEG."
+    )
+    store = _store(
+        note,
+        [
+            {
+                "entity": "Investigations",
+                "text": "MRI brain",
+                "attributes": {
+                    "MRI_Performed": "Yes",
+                    "MRI_Results": "Abnormal",
+                    "CT_Performed": "No",
+                },
+                "evidence": (
+                    "Previous investigations have included an MRI brain which have "
+                    "shown a small focus of gliosis."
+                ),
+            },
+            {
+                "entity": "Investigations",
+                "text": "EEG",
+                "attributes": {
+                    "EEG_Performed": "Yes",
+                    "EEG_Results": "Abnormal",
+                    "MRI_Performed": "No",
+                    "CT_Performed": "No",
+                },
+                "evidence": "An EEG in 2016 did show some focal slowing.",
+            },
+            {
+                "entity": "Investigations",
+                "text": "previous CT scan from 2017",
+                "attributes": {
+                    "CT_Performed": "Yes",
+                    "CT_Results": "Abnormal",
+                    "EEG_Performed": "No",
+                    "MRI_Performed": "No",
+                },
+                "evidence": (
+                    "There was a previous CT scan from 2017 showing a left hemisphere "
+                    "infarct."
+                ),
+            },
+            {
+                "entity": "Investigations",
+                "text": "MRI scan",
+                "attributes": {"MRI_Performed": "No"},
+                "evidence": "I am therefore arranging an MRI scan of the brain.",
+            },
+            {
+                "entity": "Investigations",
+                "text": "EEG",
+                "attributes": {"EEG_Performed": "No", "EEG_Results": "Unknown"},
+                "evidence": "I will arrange further tests including an MR brain and EEG.",
+            },
+        ],
+    )
+
+    result = InvestigationsDictionaryLens(
+        lens_id="investigations_convention_dictionary_v09", entity="Investigations"
+    ).reconcile(store, policy=_policy())
+    by_text = {finding.text: finding for finding in result.findings}
+
+    assert set(by_text) == {"MRI brain", "EEG", "previous CT scan from 2017"}
+    assert "CT_Performed" not in by_text["MRI brain"].attributes
+    assert "MRI_Performed" not in by_text["EEG"].attributes
+    assert "CT_Performed" not in by_text["EEG"].attributes
+    assert "EEG_Performed" not in by_text["previous CT scan from 2017"].attributes
+    assert "MRI_Performed" not in by_text["previous CT scan from 2017"].attributes
+    assert result.diagnostics["normalized_dictionary_findings"] == 3
+    assert result.diagnostics["dropped_dictionary_findings"] == 2
 
 
 def test_sf_dictionary_lens_applies_benchmark_rewrite() -> None:

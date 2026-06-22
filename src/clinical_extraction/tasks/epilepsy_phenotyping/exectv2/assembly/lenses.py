@@ -639,6 +639,13 @@ class DiagnosisDictionaryLens(DiagnosisHeadingRecoveryLens):
         for text, evidence in sd.diagnosis_residual_additions(store.note_text):
             if _has_diagnosis_concept([*kept, *added], text=text):
                 continue
+            selected_texts = [finding.text for finding in [*kept, *added]]
+            if sd.is_redundant_diagnosis_residual_addition(
+                text,
+                evidence=evidence,
+                selected_texts=selected_texts,
+            ):
+                continue
             finding = _diagnosis_added_finding(
                 store,
                 text=text,
@@ -890,6 +897,89 @@ class PrescriptionLens(_ThinArtifactLens):
     pass
 
 
+class InvestigationsDictionaryLens(_ThinArtifactLens):
+    """v09 Investigations: standard-dictionary cleanup for Qwen convention drift.
+
+    The prompt owns whether a test is clinically selected. This lens removes
+    unsupported cross-modality ``No`` defaults and drops planned/resultless
+    investigation renderings that the headline scorer treats as false positives.
+    """
+
+    def reconcile(
+        self,
+        store: ClinicalFindingStore,
+        *,
+        policy: LensPolicy,
+    ) -> LensResult:
+        selected = list(
+            store.findings(
+                entity=self.entity,
+                producer_id=policy.producer_id,
+                raw_surface=False,
+            )
+        )
+        out: list[ClinicalFinding] = []
+        normalized = 0
+        dropped: list[ClinicalFinding] = []
+        for finding in selected:
+            attrs = dict(finding.attributes)
+            repaired_attrs = sd.investigation_convention_attribute_repairs(
+                finding.text,
+                evidence=finding.evidence,
+                attributes=attrs,
+            )
+            if sd.is_investigation_convention_noise(
+                finding.text,
+                evidence=finding.evidence,
+                attributes=repaired_attrs,
+            ):
+                dropped.append(finding)
+                continue
+            if repaired_attrs != attrs:
+                finding = _finding_with_text_attributes(
+                    finding,
+                    text=finding.text,
+                    attributes=repaired_attrs,
+                    owner_suffix="standard_dictionary_investigations",
+                    provenance=ProvenanceEvent(
+                        stage="entity_lens",
+                        action="normalized_investigations_from_dictionary",
+                        owner="standard_dictionary",
+                        portability="clinical_epilepsy",
+                        detail={"lens_id": self.lens_id},
+                    ),
+                )
+                normalized += 1
+            out.append(finding)
+
+        event = ProvenanceEvent(
+            stage="entity_lens",
+            action="applied_standard_dictionary_investigations_repair",
+            owner="standard_dictionary",
+            portability=policy.portability,
+            detail={
+                "lens_id": self.lens_id,
+                "producer_id": policy.producer_id,
+                "source_lane": policy.source_lane,
+                "normalized_count": normalized,
+                "dropped_count": len(dropped),
+                "dropped_text_counts": _text_counts(dropped),
+            },
+        )
+        final_findings = tuple(finding.with_provenance(event) for finding in out)
+        return LensResult(
+            entity=self.entity,
+            lens_id=self.lens_id,
+            findings=final_findings,
+            diagnostics={
+                "lens_id": self.lens_id,
+                "normalized_dictionary_findings": normalized,
+                "dropped_dictionary_findings": len(dropped),
+                "selected_findings": len(final_findings),
+            },
+        )
+
+
 class InvestigationsLens(_ThinArtifactLens):
     pass
 
@@ -910,6 +1000,11 @@ def lens_from_manifest(config: LensManifest) -> EntityLens:
         and config.lens == "prescription_dictionary_v09"
     ):
         return PrescriptionDictionaryLens(lens_id=config.lens, entity=config.entity)
+    if (
+        config.entity == INVESTIGATIONS.name
+        and config.lens == "investigations_convention_dictionary_v09"
+    ):
+        return InvestigationsDictionaryLens(lens_id=config.lens, entity=config.entity)
     if (
         config.entity == DIAGNOSIS.name
         and config.lens == "diagnosis_heading_recovery_residual_benchmark_v05"
@@ -960,7 +1055,11 @@ def _focal_epilepsy_heading_findings(
         "Certainty": "4" if _CERTAINTY_4_CUE.search(section[: focal_match.end()]) else "5",
         "Negation": "Affirmed",
     }
-    if _has_diagnosis_key(selected, text="focal epilepsy", attributes=attributes):
+    if _has_diagnosis_concept(selected, text="focal epilepsy"):
+        return ()
+    if _has_diagnosis_key(
+        selected, text="focal epilepsy", attributes=attributes
+    ) or _has_diagnosis_concept(selected, text="focal epilepsy"):
         return ()
 
     source_seed = selected[0] if selected else _first_source_finding(store, policy)
@@ -1138,7 +1237,14 @@ def _diagnosis_residual_benchmark_additions(
 
 def _has_diagnosis_concept(findings: list[ClinicalFinding], *, text: str) -> bool:
     target = canonicalize_diagnosis_concept(text)
-    return any(canonicalize_diagnosis_concept(finding.text) == target for finding in findings)
+    for finding in findings:
+        concept = canonicalize_diagnosis_concept(finding.text)
+        if concept == target:
+            return True
+        if target in {"drug", "focal", "generalised", "occipital", "secondary", "symptomatic"}:
+            if target in concept.split():
+                return True
+    return False
 
 
 def _diagnosis_added_finding(

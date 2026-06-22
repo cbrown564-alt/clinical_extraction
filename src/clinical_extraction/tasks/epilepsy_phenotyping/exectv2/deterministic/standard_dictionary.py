@@ -27,7 +27,7 @@ sources is the floor and is guarded by tests.
 from __future__ import annotations
 
 import re
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from typing import Any
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.benchmark_projection import (
@@ -205,12 +205,14 @@ DIAGNOSIS_STANDALONE_NOISE: frozenset[str] = frozenset(
         "absence like seizures",
         "absence seizures",
         "absences",
+        "convulsive seizures",
         "convulsive seizure",
         "dissociative seizures",
         "learning difficulties",
         "multiple seizures",
         "myoclonic jerks",
         "myoclonus",
+        "nonepileptic events",
         "seizures",
         "single seizure",
     }
@@ -233,9 +235,9 @@ DIAGNOSIS_CONVENTION_ALIAS_REPAIRS: dict[str, str] = {
 }
 
 DIAGNOSIS_SURFACE_CONVENTION_REPAIRS: dict[str, str] = {
+    "epilepsy due to perinatal insult": "epilepsy",
     "generalised tonic chronic seizure": "generalised tonic clonic seizure",
     "generalised tonic chronic seizures": "generalised tonic clonic seizures",
-    "generalised tonic clonic seizures": "generalised tonic clonic seizures",
     "generalised tonic clonic seizures alone": "generalised tonic clonic seizures",
     "epilepsy with generalised tonic clonic seizure alone": (
         "epilepsy with generalised tonic clonic seizures alone"
@@ -248,8 +250,13 @@ DIAGNOSIS_SURFACE_CONVENTION_REPAIRS: dict[str, str] = {
 DIAGNOSIS_RESIDUAL_CONVENTION_NOISE: frozenset[str] = frozenset(
     {
         "drop attacks",
+        "focal",
+        "frontal lobe brain tumour",
+        "general seizures",
+        "generalised",
         "hydrocephalus",
         "learning difficulties",
+        "minor seizures",
         "nocturnal seizures",
         "seizure",
     }
@@ -276,6 +283,14 @@ _STRONG_GENERIC_EPILEPSY_CONTEXT = re.compile(
 )
 _SECONDARY_GENERALISED_EVIDENCE = re.compile(
     r"secondary generalised|secondary generalisation",
+    re.IGNORECASE,
+)
+_GENERAL_AND_COMPLEX_PARTIAL_EVIDENCE = re.compile(
+    r"\bgeneral and complex partial seizures\b",
+    re.IGNORECASE,
+)
+_MINOR_SEIZURES_CONTEXTUAL_NOISE = re.compile(
+    r"\bminor seizures\b",
     re.IGNORECASE,
 )
 _RESIDUAL_GENERIC_EPILEPSY_NOISE = re.compile(
@@ -405,6 +420,8 @@ def diagnosis_convention_target(text: str, evidence: str) -> str | None:
     """
 
     surface = normalize_phrase(text)
+    if surface == "epilepsy" and re.search(r"\bintractable epilepsy\b", evidence, re.IGNORECASE):
+        return "intractable epilepsy"
     surface_target = DIAGNOSIS_SURFACE_CONVENTION_REPAIRS.get(surface)
     if surface_target is not None:
         return surface_target
@@ -436,6 +453,23 @@ def diagnosis_convention_attribute_repairs(
     ):
         repaired["Certainty"] = "5"
         repaired["Negation"] = "Affirmed"
+    if concept == "epilepsy" and re.search(
+        r"\b(?:epilepsy due to perinatal insult|symptomatic structural focal epilepsy)\b",
+        evidence,
+        re.IGNORECASE,
+    ):
+        repaired["Certainty"] = "5"
+        repaired["Negation"] = "Affirmed"
+    if concept == "generalised epilepsy" and re.search(
+        r"\bpossibly generalised\b|\bpossible generalised\b", evidence, re.IGNORECASE
+    ):
+        repaired["Certainty"] = "3"
+        repaired["Negation"] = "Affirmed"
+    if concept == "tonic clonic seizures" and re.search(
+        r"\bdiagnosis\s*:\s*generalised tonic clonic seizures\b", evidence, re.IGNORECASE
+    ):
+        repaired["Certainty"] = "5"
+        repaired["Negation"] = "Affirmed"
     return repaired
 
 
@@ -450,6 +484,8 @@ def _diagnosis_residual_benchmark_target(concept: str, evidence: str) -> str | N
         r"\bsymptomatic focal epilepsy\b", evidence, re.IGNORECASE
     ):
         return "symptomatic focal epilepsy"
+    if concept == "epilepsy" and re.search(r"\bintractable epilepsy\b", evidence, re.IGNORECASE):
+        return "intractable epilepsy"
     if concept == "temporal lobe epilepsy" and re.search(
         r"focal seizures, probably temporal lobe", evidence, re.IGNORECASE
     ):
@@ -494,6 +530,12 @@ def is_diagnosis_convention_noise(
         return True
     if concept == "epilepsy" and _RESIDUAL_GENERIC_EPILEPSY_NOISE.search(evidence):
         return True
+    if concept == "general seizures" and _GENERAL_AND_COMPLEX_PARTIAL_EVIDENCE.search(
+        evidence
+    ):
+        return True
+    if concept == "minor seizures" and _MINOR_SEIZURES_CONTEXTUAL_NOISE.search(evidence):
+        return True
 
     # v03: weak generic-epilepsy context without a strong diagnostic assertion.
     if concept == "epilepsy":
@@ -522,6 +564,169 @@ def diagnosis_residual_additions(note_text: str) -> list[tuple[str, str]]:
         seen.add(concept)
         added.append((text, match.group(0)))
     return added
+
+
+def is_redundant_diagnosis_residual_addition(
+    text: str,
+    *,
+    evidence: str,
+    selected_texts: Sequence[str],
+) -> bool:
+    """True when a dev residual fragment is already covered by a specific concept."""
+
+    del evidence
+    concept = canonicalize_diagnosis_concept(text)
+    selected = {canonicalize_diagnosis_concept(item) for item in selected_texts}
+    if concept == "focal":
+        return bool(
+            selected
+            & {
+                "focal epilepsy",
+                "focal seizures",
+                "focal seizures with altered awareness",
+            }
+        )
+    if concept == "generalised":
+        return bool(
+            selected
+            & {
+                "tonic clonic seizures",
+                "secondary generalised tonic clonic seizures",
+                "secondary generalised seizures",
+            }
+        )
+    if concept == "secondary":
+        return bool(
+            selected
+            & {
+                "secondary generalised tonic clonic seizures",
+                "secondary generalised seizures",
+            }
+        )
+    return False
+
+
+# ---------------------------------------------------------------------------
+# Investigations: modality/result convention cleanup for Qwen compact runs
+# ---------------------------------------------------------------------------
+
+_INVESTIGATION_MODALITY_ATTRS: dict[str, tuple[str, str | None]] = {
+    "MRI": ("MRI_Performed", "MRI_Results"),
+    "CT": ("CT_Performed", "CT_Results"),
+    "EEG": ("EEG_Performed", "EEG_Results"),
+}
+_INVESTIGATION_MODALITY_PATTERNS: dict[str, re.Pattern[str]] = {
+    "MRI": re.compile(r"\b(?:MRI|MR\s+brain|magnetic resonance)\b", re.IGNORECASE),
+    "CT": re.compile(r"\bCT\b", re.IGNORECASE),
+    "EEG": re.compile(r"\b(?:EEG|VEEG|video[-\s]+EEG|telemetry)\b", re.IGNORECASE),
+}
+_PLANNED_INVESTIGATION_EVIDENCE = re.compile(
+    r"\b(?:arrang(?:e|ing)|request(?:ed|ing)?|repeat|await(?:ed|ing)|pending|"
+    r"future|appointment|will\s+(?:arrange|request)|to\s+(?:arrange|request)|"
+    r"with\s+the\s+results)\b",
+    re.IGNORECASE,
+)
+_EXPLICIT_NO_TEST_CUE = re.compile(
+    r"\b(?:no|never|not|without|had\s+not|has\s+not|have\s+not|hasn't|haven't)\b",
+    re.IGNORECASE,
+)
+
+
+def investigation_convention_attribute_repairs(
+    text: str,
+    *,
+    evidence: str,
+    attributes: Mapping[str, Any],
+) -> dict[str, str]:
+    """Remove cross-modality or unsupported no-test attributes from an investigation.
+
+    Qwen often renders a valid completed test while also defaulting unrelated
+    modalities to ``*_Performed='No'``. This is a convention cleanup over the
+    model-selected investigation, not a new investigation detector.
+    """
+
+    repaired = {str(key): str(value) for key, value in attributes.items()}
+    surface = " ".join(part for part in (text, evidence) if part)
+    for modality, (performed_key, result_key) in _INVESTIGATION_MODALITY_ATTRS.items():
+        if repaired.get(performed_key) != "No":
+            continue
+        if _explicit_not_performed(modality, surface):
+            continue
+        repaired.pop(performed_key, None)
+        if result_key is not None and repaired.get(result_key) == "Unknown":
+            repaired.pop(result_key, None)
+    return repaired
+
+
+def is_investigation_convention_noise(
+    text: str,
+    *,
+    evidence: str,
+    attributes: Mapping[str, Any],
+) -> bool:
+    """True when an Investigations mention is unsupported by completed/no-test evidence."""
+
+    repaired = {str(key): str(value) for key, value in attributes.items()}
+    scoring_attrs = _investigation_scoring_attributes(repaired)
+    if not scoring_attrs:
+        return True
+
+    surface = " ".join(part for part in (text, evidence) if part)
+    if _PLANNED_INVESTIGATION_EVIDENCE.search(surface) and not _has_positive_investigation(
+        scoring_attrs
+    ):
+        return True
+
+    performed_yes = [
+        key
+        for key, value in scoring_attrs.items()
+        if key.endswith("_Performed") and value == "Yes"
+    ]
+    result_attrs = [
+        key
+        for key, value in scoring_attrs.items()
+        if key.endswith("_Results") and value in {"Normal", "Abnormal"}
+    ]
+    type_attrs = [key for key in scoring_attrs if key == "EEG_Type"]
+    performed_no = [
+        key for key, value in scoring_attrs.items() if key.endswith("_Performed") and value == "No"
+    ]
+    if performed_yes and not result_attrs and not type_attrs:
+        return True
+    if performed_no and not any(
+        _explicit_not_performed(modality, surface)
+        for modality, (performed_key, _) in _INVESTIGATION_MODALITY_ATTRS.items()
+        if performed_key in performed_no
+    ):
+        return True
+    return False
+
+
+def _investigation_scoring_attributes(attributes: Mapping[str, Any]) -> dict[str, str]:
+    return {
+        str(key): str(value)
+        for key, value in attributes.items()
+        if str(key) not in {"CUI", "CUIPhrase"}
+    }
+
+
+def _has_positive_investigation(attributes: Mapping[str, str]) -> bool:
+    return any(
+        (key.endswith("_Performed") and value == "Yes")
+        or (key.endswith("_Results") and value in {"Normal", "Abnormal"})
+        or key == "EEG_Type"
+        for key, value in attributes.items()
+    )
+
+
+def _explicit_not_performed(modality: str, surface: str) -> bool:
+    pattern = _INVESTIGATION_MODALITY_PATTERNS[modality]
+    for match in pattern.finditer(surface):
+        start = max(0, match.start() - 45)
+        end = min(len(surface), match.end() + 45)
+        if _EXPLICIT_NO_TEST_CUE.search(surface[start:end]):
+            return True
+    return False
 
 
 # ---------------------------------------------------------------------------

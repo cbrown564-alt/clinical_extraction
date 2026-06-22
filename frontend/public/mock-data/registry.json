@@ -27,6 +27,110 @@
       "split": "validation+test",
       "superseded_by": null,
       "supersedes": []
+    },
+    {
+      "task": "exectv2",
+      "run_id": "exectv2_holistic_finding_assembly_v08_dev140",
+      "pipeline_family": "exectv2_holistic_finding_assembly",
+      "architecture_family": "holistic_finding_assembly",
+      "date": "2026-06-21",
+      "row_count": 140,
+      "artifact_paths": [
+        "configs/exectv2/finding_assembly/exectv2_holistic_finding_assembly_v08_dev140.yaml",
+        "docs/experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v08_dev140_20260621.md",
+        "experiments/exectv2_holistic_finding_assembly_v08_dev140_20260621.json",
+        "experiments/exectv2_holistic_finding_assembly_v08_dev140_20260621.jsonl"
+      ],
+      "mode": "v08 dev140 control",
+      "model": "openai/gpt-4.1-mini",
+      "model_role": "performance-control",
+      "split": "dev140",
+      "decision": "control",
+      "claim_boundary": "Dev-only component-attributed architecture evidence.",
+      "scorer_view": "headline_target"
+    },
+    {
+      "task": "exectv2",
+      "run_id": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
+      "pipeline_family": "exectv2_holistic_finding_assembly",
+      "architecture_family": "partial_hybrid_simplification",
+      "date": "2026-06-21",
+      "row_count": 140,
+      "artifact_paths": [
+        "configs/exectv2/finding_assembly/exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140.yaml",
+        "docs/experiments/exectv2/key_entities/exectv2_v09_single_gpt_simplification_study_dev140_20260621.md",
+        "experiments/exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140_20260621.json",
+        "experiments/exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140_20260621.jsonl"
+      ],
+      "mode": "v09 partial hybrid",
+      "model": "openai/gpt-4.1-mini",
+      "model_role": "simplicity-control",
+      "split": "dev140",
+      "decision": "control",
+      "claim_boundary": "Dev-only simplification evidence.",
+      "scorer_view": "headline_target"
+    },
+    {
+      "task": "exectv2",
+      "run_id": "exectv2_holistic_finding_assembly_v097_deepseek_dev25",
+      "pipeline_family": "exectv2_holistic_finding_assembly",
+      "architecture_family": "single_model_standard_dictionary",
+      "date": "2026-06-22",
+      "row_count": 25,
+      "artifact_paths": [
+        "configs/exectv2/finding_assembly/exectv2_holistic_finding_assembly_v097_deepseek_dev25.yaml",
+        "experiments/exectv2_holistic_finding_assembly_v097_deepseek_dev25_20260622.md",
+        "experiments/exectv2_holistic_finding_assembly_v097_deepseek_dev25_20260622.json",
+        "experiments/exectv2_holistic_finding_assembly_v097_deepseek_dev25_20260622.jsonl"
+      ],
+      "mode": "DeepSeek v0.9.7 dev25",
+      "model": "deepseek/deepseek-chat",
+      "model_role": "diagnostic-comparator",
+      "split": "dev25",
+      "decision": "diagnostic",
+      "claim_boundary": "Hosted-DeepSeek v0.9.7 live dev25 diagnostic.",
+      "scorer_view": "headline_target"
+    },
+    {
+      "task": "exectv2",
+      "run_id": "exectv2_holistic_finding_assembly_v096_schema_repair_qwen_reparse_dev25",
+      "pipeline_family": "exectv2_holistic_finding_assembly",
+      "architecture_family": "schema_repair_reparse",
+      "date": "2026-06-22",
+      "row_count": 25,
+      "artifact_paths": [
+        "configs/exectv2/finding_assembly/exectv2_holistic_finding_assembly_v096_schema_repair_qwen_reparse_dev25.yaml",
+        "experiments/exectv2_holistic_finding_assembly_v096_schema_repair_qwen_reparse_dev25_20260622.md",
+        "experiments/exectv2_holistic_finding_assembly_v096_schema_repair_qwen_reparse_dev25_20260622.json",
+        "experiments/exectv2_holistic_finding_assembly_v096_schema_repair_qwen_reparse_dev25_20260622.jsonl"
+      ],
+      "mode": "Qwen v0.9.6 reparse",
+      "model": "ollama_chat/qwen3.6:35b",
+      "model_role": "do-not-promote",
+      "split": "dev25",
+      "decision": "diagnostic",
+      "claim_boundary": "Diagnostic no-call local-Qwen schema-repair reparse.",
+      "scorer_view": "headline_target"
+    },
+    {
+      "task": "exectv2",
+      "run_id": "exectv2_holistic_finding_assembly_v097_qwencompact_dictrepair_dev25",
+      "pipeline_family": "exectv2_holistic_finding_assembly",
+      "architecture_family": "qwen_compact_dictionary_repair",
+      "date": "2026-06-22",
+      "row_count": 25,
+      "artifact_paths": [
+        "experiments/exectv2_holistic_finding_assembly_v097_qwencompact_dictrepair_dev25_20260622.md",
+        "experiments/exectv2_holistic_finding_assembly_v097_qwencompact_dictrepair_dev25_20260622.json",
+        "experiments/exectv2_holistic_finding_assembly_v097_qwencompact_dictrepair_dev25_20260622.jsonl"
+      ],
+      "mode": "Qwen v0.9.7 compact",
+      "model": "ollama_chat/qwen3.6:35b",
+      "model_role": "do-not-promote",
+      "split": "dev25",
+      "decision": "diagnostic",
+      "claim_boundary": "Local-Qwen v0.9.7 qwen-compact live dev25 with dictionary repair.",
+      "scorer_view": "headline_target"
     }
   ]
 }

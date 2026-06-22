@@ -64,8 +64,8 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.schema_repair 
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
-PROMPT_VERSION = "exectv2_hybrid_key_family_event_ledger_v0.9.8"
-QWEN_COMPACT_PROMPT_VERSION = "exectv2_hybrid_key_family_event_ledger_v0.9.8_qwen_compact"
+PROMPT_VERSION = "exectv2_hybrid_key_family_event_ledger_v0.9.10"
+QWEN_COMPACT_PROMPT_VERSION = "exectv2_hybrid_key_family_event_ledger_v0.9.10_qwen_compact"
 PIPELINE_FAMILY = "exectv2_hybrid_key_family_event_ledger"
 COMPONENT_OWNER = "hybrid_key_family_event_ledger"
 
@@ -327,6 +327,27 @@ def build_prompt_input(letter: ExectLetter, *, prompt_profile: PromptProfile = "
                 "family history, clinic names, medication labels, or weak context."
             ),
             (
+                "Do not add a generic epilepsy companion to a specific epilepsy "
+                "subtype unless the source separately asserts generic epilepsy as its "
+                "own diagnosis or context says the patient has/has known epilepsy. "
+                "For example, 'Diagnosis: symptomatic structural focal epilepsy' "
+                "renders only 'symptomatic structural focal epilepsy'."
+            ),
+            (
+                "When narrative says 'intractable epilepsy', keep the modifier in "
+                "the Diagnosis text; do not shorten it to generic 'epilepsy'."
+            ),
+            (
+                "In phrases like 'general and complex partial seizures', do not emit "
+                "'general seizures'; render 'complex partial seizures' unless another "
+                "explicit named generalised seizure type is present."
+            ),
+            (
+                "Onset-history phrases such as 'epilepsy started at age 4' are not "
+                "a separate Diagnosis mention when the same letter already provides "
+                "the current diagnosis or named seizure types."
+            ),
+            (
                 "For Diagnosis mention text, render only the core clinical concept "
                 "span. Do not include section labels, dashes, hedging words "
                 "('probable', 'possible', 'query'), qualifiers like 'single' or "
@@ -488,6 +509,21 @@ def build_prompt_input(letter: ExectLetter, *, prompt_profile: PromptProfile = "
                 "risk discussion, or old previous-event context as current "
                 "SeizureFrequency unless the sentence explicitly gives the patient's "
                 "current frequency state."
+            ),
+            (
+                "SF precision: do not render risk or counselling statements such as "
+                "'risk of further seizures', 'at risk of further seizures', or "
+                "'even though he has only had one seizure' as SeizureFrequency."
+            ),
+            (
+                "SF precision: do not render non-epileptic or diagnostically vague "
+                "episode descriptions as SeizureFrequency, even when they include a "
+                "cadence, such as 'episodes around twice a week of an unusual thought'."
+            ),
+            (
+                "SF precision: do not render old or contextual minor-seizure episode "
+                "phrases such as 'the episodes occur 4 to 5 times a year' unless the "
+                "sentence explicitly asserts a current scorable epileptic seizure type."
             ),
             (
                 "Onset-history statements such as 'seizures since the age of 13' are "
@@ -763,6 +799,12 @@ def _build_qwen_compact_prompt_input(letter: ExectLetter) -> str:
                 "a specific type/syndrome are both stated, render both separately."
             ),
             (
+                "Do not add generic epilepsy as a companion to a specific epilepsy "
+                "subtype unless the letter separately asserts the patient has "
+                "epilepsy. Keep modifiers in diagnoses such as 'intractable "
+                "epilepsy'."
+            ),
+            (
                 "Diagnosis certainty: Certainty='5' for stated/known/diagnosed; "
                 "'4' for probable/likely; '3' for possible/query. Always include "
                 "Negation='Affirmed' unless the diagnosis itself is negated."
@@ -779,6 +821,11 @@ def _build_qwen_compact_prompt_input(letter: ExectLetter) -> str:
                 "'possibly generalised'. If a Diagnosis heading says epilepsy is "
                 "probable focal or possibly generalised, render 'focal epilepsy' or "
                 "'generalised epilepsy' with the hedging in Certainty."
+            ),
+            (
+                "Do not render non-epilepsy causes or contextual labels as Diagnosis, "
+                "including brain tumours, nonepileptic events, and risk-counselling "
+                "phrases such as convulsive seizures causing injury."
             ),
             (
                 "Diagnosis categories: epilepsy syndromes/types use DiagCategory="
@@ -811,6 +858,11 @@ def _build_qwen_compact_prompt_input(letter: ExectLetter) -> str:
                 "statement is an explicit newer quantified correction."
             ),
             (
+                "SeizureFrequency precision: reject risk/counselling statements, "
+                "diagnostically vague episodes, loss-of-consciousness spells, and "
+                "non-epileptic events even when they include a cadence."
+            ),
+            (
                 "If a seizure-frequency heading names a plural seizure type followed "
                 "only by a year or date, render one dated occurrence for that type: "
                 "NumberOfSeizures='1', YearDate='2014', "
@@ -821,6 +873,11 @@ def _build_qwen_compact_prompt_input(letter: ExectLetter) -> str:
                 "or explicit no-test statements. Reject planned/requested/repeat/"
                 "awaited tests unless a separate completed result is stated. Do not "
                 "default plain EEG to EEG_Type='Standard'."
+            ),
+            (
+                "Investigations attributes: do not default unrelated modalities to "
+                "No. An EEG result should not include MRI_Performed='No' or "
+                "CT_Performed='No'; a planned MR brain/EEG should emit no mention."
             ),
             (
                 "Every rendered mention object must include both entity and text. "
@@ -932,6 +989,74 @@ def _qwen_compact_examples() -> list[dict[str, Any]]:
             },
         },
         {
+            "note_fragment": "Diagnosis: symptomatic structural focal epilepsy.",
+            "correct_event": {
+                "family": "diagnosis",
+                "anchor_text": "symptomatic structural focal epilepsy",
+                "evidence": "Diagnosis: symptomatic structural focal epilepsy.",
+                "event_state": {"lane": "diagnosis_assertion"},
+                "mentions": [
+                    {
+                        "entity": "Diagnosis",
+                        "text": "symptomatic structural focal epilepsy",
+                        "attributes": {
+                            "DiagCategory": "Epilepsy",
+                            "Certainty": "5",
+                            "Negation": "Affirmed",
+                        },
+                    }
+                ],
+                "confidence": "high",
+                "rationale": "The heading states one specific epilepsy subtype.",
+            },
+        },
+        {
+            "note_fragment": "I reviewed this lady with intractable epilepsy in clinic today.",
+            "correct_event": {
+                "family": "diagnosis",
+                "anchor_text": "intractable epilepsy",
+                "evidence": "intractable epilepsy",
+                "event_state": {"lane": "diagnosis_assertion"},
+                "mentions": [
+                    {
+                        "entity": "Diagnosis",
+                        "text": "intractable epilepsy",
+                        "attributes": {
+                            "DiagCategory": "Epilepsy",
+                            "Certainty": "5",
+                            "Negation": "Affirmed",
+                        },
+                    }
+                ],
+                "confidence": "high",
+                "rationale": "The modifier is part of the stated diagnosis.",
+            },
+        },
+        {
+            "note_fragment": (
+                "Despite this she continues to get general and complex partial seizures."
+            ),
+            "correct_event": {
+                "family": "diagnosis",
+                "anchor_text": "complex partial seizures",
+                "evidence": "general and complex partial seizures",
+                "event_state": {"lane": "diagnosis_assertion"},
+                "mentions": [
+                    {
+                        "entity": "Diagnosis",
+                        "text": "complex partial seizures",
+                        "attributes": {
+                            "DiagCategory": "MultipleSeizures",
+                            "Certainty": "5",
+                            "Negation": "Affirmed",
+                        },
+                    }
+                ],
+                "confidence": "high",
+                "rationale": "General is a modifier here, not a separate seizure type.",
+            },
+        },
+        {
             "note_fragment": "Current medication: levetiracetam 750mg mane, 500 mg nocte.",
             "correct_event": {
                 "family": "medication",
@@ -1036,6 +1161,56 @@ def _qwen_compact_examples() -> list[dict[str, Any]]:
                 ],
                 "confidence": "high",
                 "rationale": "A last-event date means seizure-free since that event.",
+            },
+        },
+        {
+            "note_fragment": (
+                "I explained that even though he has only had one seizure he is at risk "
+                "of further seizures."
+            ),
+            "correct_event": {
+                "family": "seizure_frequency",
+                "anchor_text": "further seizures",
+                "evidence": "at risk of further seizures",
+                "event_state": {"lane": "reject", "reason": "risk_counselling"},
+                "mentions": [],
+                "confidence": "high",
+                "rationale": "Risk counselling is not a seizure-frequency state.",
+            },
+        },
+        {
+            "note_fragment": (
+                "She has been getting episodes around twice a week of an unusual thought."
+            ),
+            "correct_event": {
+                "family": "seizure_frequency",
+                "anchor_text": "episodes",
+                "evidence": "episodes around twice a week of an unusual thought",
+                "event_state": {"lane": "reject", "reason": "vague_episode"},
+                "mentions": [],
+                "confidence": "high",
+                "rationale": "The cadence belongs to vague episodes, not a scorable seizure type.",
+            },
+        },
+        {
+            "note_fragment": "An EEG in 2016 did show focal slowing.",
+            "correct_event": {
+                "family": "investigation",
+                "anchor_text": "EEG",
+                "evidence": "An EEG in 2016 did show focal slowing.",
+                "event_state": {"lane": "performed_investigation"},
+                "mentions": [
+                    {
+                        "entity": "Investigations",
+                        "text": "EEG",
+                        "attributes": {
+                            "EEG_Performed": "Yes",
+                            "EEG_Results": "Abnormal",
+                        },
+                    }
+                ],
+                "confidence": "high",
+                "rationale": "The EEG was completed and abnormal; no other modality is negated.",
             },
         },
         {
@@ -2116,6 +2291,50 @@ def _worked_examples() -> list[dict[str, Any]]:
             },
         },
         {
+            "note_fragment": "Diagnosis: symptomatic structural focal epilepsy.",
+            "correct_event": {
+                "family": "diagnosis",
+                "anchor_text": "symptomatic structural focal epilepsy",
+                "evidence": "Diagnosis: symptomatic structural focal epilepsy.",
+                "event_state": {"diagnosis": "symptomatic structural focal epilepsy"},
+                "mentions": [
+                    {
+                        "entity": "Diagnosis",
+                        "text": "symptomatic structural focal epilepsy",
+                        "attributes": {
+                            "DiagCategory": "Epilepsy",
+                            "Certainty": "5",
+                            "Negation": "Affirmed",
+                        },
+                    }
+                ],
+                "confidence": "high",
+                "rationale": "The heading gives one specific epilepsy subtype.",
+            },
+        },
+        {
+            "note_fragment": "I reviewed this lady with intractable epilepsy in clinic today.",
+            "correct_event": {
+                "family": "diagnosis",
+                "anchor_text": "intractable epilepsy",
+                "evidence": "intractable epilepsy",
+                "event_state": {"diagnosis": "intractable epilepsy"},
+                "mentions": [
+                    {
+                        "entity": "Diagnosis",
+                        "text": "intractable epilepsy",
+                        "attributes": {
+                            "DiagCategory": "Epilepsy",
+                            "Certainty": "5",
+                            "Negation": "Affirmed",
+                        },
+                    }
+                ],
+                "confidence": "high",
+                "rationale": "The modifier is part of the stated diagnosis.",
+            },
+        },
+        {
             "note_fragment": (
                 "Diagnosis: generalised tonic clonic seizures with myoclonic jerks, "
                 "possible JME."
@@ -2196,6 +2415,30 @@ def _worked_examples() -> list[dict[str, Any]]:
                 ],
                 "confidence": "high",
                 "rationale": "The compound heading names two seizure-type diagnoses.",
+            },
+        },
+        {
+            "note_fragment": (
+                "Despite this she continues to get general and complex partial seizures."
+            ),
+            "correct_event": {
+                "family": "diagnosis",
+                "anchor_text": "complex partial seizures",
+                "evidence": "general and complex partial seizures",
+                "event_state": {"seizure_type": "complex partial seizures"},
+                "mentions": [
+                    {
+                        "entity": "Diagnosis",
+                        "text": "complex partial seizures",
+                        "attributes": {
+                            "DiagCategory": "MultipleSeizures",
+                            "Certainty": "5",
+                            "Negation": "Affirmed",
+                        },
+                    }
+                ],
+                "confidence": "high",
+                "rationale": "General is a modifier in this phrase, not a seizure type.",
             },
         },
         {
@@ -2404,6 +2647,56 @@ def _worked_examples() -> list[dict[str, Any]]:
                 "mentions": [],
                 "confidence": "high",
                 "rationale": "Conditional safety advice is not a current seizure-frequency state.",
+            },
+        },
+        {
+            "note_fragment": (
+                "I explained that even though he's only had one seizure he is at risk "
+                "of further seizures."
+            ),
+            "correct_event": {
+                "family": "seizure_frequency",
+                "anchor_text": "further seizures",
+                "evidence": "at risk of further seizures",
+                "event_state": {"risk_discussion": "not_current_frequency"},
+                "mentions": [],
+                "confidence": "high",
+                "rationale": "Risk counselling is not a current seizure-frequency state.",
+            },
+        },
+        {
+            "note_fragment": (
+                "She tells me that she has been getting episodes around twice a week "
+                "of an unusual thought."
+            ),
+            "correct_event": {
+                "family": "seizure_frequency",
+                "anchor_text": "episodes",
+                "evidence": "episodes around twice a week of an unusual thought",
+                "event_state": {"episode_description": "diagnostically_vague"},
+                "mentions": [],
+                "confidence": "high",
+                "rationale": (
+                    "The cadence belongs to vague thought episodes, not a "
+                    "scorable seizure type."
+                ),
+            },
+        },
+        {
+            "note_fragment": (
+                "The episodes last no longer than 3 minutes and occur 4 to 5 times a year."
+            ),
+            "correct_event": {
+                "family": "seizure_frequency",
+                "anchor_text": "episodes",
+                "evidence": "episodes last no longer than 3 minutes and occur 4 to 5 times a year",
+                "event_state": {"episode_description": "contextual_minor_events"},
+                "mentions": [],
+                "confidence": "high",
+                "rationale": (
+                    "Episodes without a current scorable seizure-type anchor "
+                    "are excluded."
+                ),
             },
         },
         {

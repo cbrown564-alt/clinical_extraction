@@ -1,0 +1,47 @@
+candidate_id: exectv2_holistic_finding_assembly_v097_qwencompact_dictrepair_dev25
+pipeline_family: exectv2_holistic_finding_assembly
+ownership: single_gpt_engine_plus_standard_dictionary
+split: dev
+row_count: 25
+claim_boundary: local-qwen-v097-qwen-compact-live-dev25-ctx12288-maxtok2500-standard-dictionary-repair
+baseline_producer: key_entities_structured_v097_qwencompact_dictrepair
+focused_comparator_artifact: experiments/exectv2_holistic_finding_assembly_v08_dev140_20260621.jsonl
+promotion_decision: diagnostic-qwencompact-live-dev25
+producers:
+  key_entities_structured_v097_qwencompact_dictrepair:
+    kind: saved_jsonl
+    artifact: experiments/exectv2_llm_only_key_entities_structured_v097_qwencompact_dev25_qwen36_35b_ollama_cuda11435_ctx12288_maxtok2500_dictrepair_20260622.jsonl
+    ownership_label: single_gpt_key_family_event_ledger
+    source_lane: single_gpt_structured_v097_qwencompact
+    label: local Qwen3.6:35b structured key-family event ledger v0.9.7 qwen_compact (dev25, ctx12288) with standard-dictionary repairs
+lenses:
+  Diagnosis:
+    producer: key_entities_structured_v097_qwencompact_dictrepair
+    lens: diagnosis_convention_dictionary_v09
+    source_lane: single_gpt_structured_v097_qwencompact
+    ownership_label: single_gpt+standard_dictionary_diagnosis
+    portability: benchmark_format
+  SeizureFrequency:
+    producer: key_entities_structured_v097_qwencompact_dictrepair
+    lens: sf_convention_dictionary_v09
+    source_lane: single_gpt_structured_v097_qwencompact
+    ownership_label: single_gpt+standard_dictionary_sf
+    portability: seizure_frequency
+  Prescription:
+    producer: key_entities_structured_v097_qwencompact_dictrepair
+    lens: prescription_dictionary_v09
+    source_lane: single_gpt_structured_v097_qwencompact
+    ownership_label: single_gpt+standard_dictionary_prescription
+    portability: clinical_epilepsy
+  Investigations:
+    producer: key_entities_structured_v097_qwencompact_dictrepair
+    lens: investigations_passthrough_v09
+    source_lane: single_gpt_structured_v097_qwencompact
+    ownership_label: single_gpt_investigations_prompt_owned
+    portability: clinical_epilepsy
+views:
+  - raw_candidate
+  - evidence_valid
+  - clinical_headline
+  - fidelity_companion
+  - benchmark_cui

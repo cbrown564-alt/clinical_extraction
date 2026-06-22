@@ -303,12 +303,18 @@ export interface GoldAuditDecisionResponse {
 
 // ── Artifact / Registry ──
 
+export type ClinicalTask = "gan2026" | "exectv2";
+
 export interface RegistryEntry {
+  task?: ClinicalTask;
   run_id: string;
   pipeline_family: string;
   date: string;
   row_count: number;
   artifact_paths: string[];
+  architecture_family?: string;
+  claim_boundary?: string;
+  scorer_view?: string;
   mode?: string;
   model?: string;
   model_role?: string;
@@ -326,6 +332,109 @@ export interface ArtifactResponse {
   artifact_path: string;
   artifact_type: string;
   content: unknown[];
+}
+
+// ── ExECTv2 frontend review data ──
+
+export type Exectv2Entity =
+  | "Diagnosis"
+  | "SeizureFrequency"
+  | "Prescription"
+  | "Investigations";
+
+export interface Exectv2Mention {
+  id: string;
+  source: "gold" | "predicted";
+  entity: Exectv2Entity | string;
+  text: string;
+  evidence: string;
+  evidence_valid: boolean;
+  component_owner: string;
+  source_lane: string;
+  source_model: string;
+  confidence: string;
+  assertion: string;
+  attributes: Record<string, string>;
+  status: string;
+}
+
+export interface Exectv2EvidenceSpan {
+  start: number;
+  end: number;
+  text: string;
+  entity: Exectv2Entity | string;
+  kind: "gold" | "llm";
+  label: string;
+}
+
+export interface Exectv2FamilyMetrics {
+  f1: number | null;
+  precision: number | null;
+  recall: number | null;
+  tp: number | null;
+  fp: number | null;
+  fn: number | null;
+}
+
+export interface Exectv2LetterRecord {
+  letter_id: string;
+  split: string;
+  stage: string;
+  letter_text: string;
+  gold_mentions: Exectv2Mention[];
+  predicted_mentions: Exectv2Mention[];
+  family_counts: {
+    gold: Record<Exectv2Entity, number>;
+    predicted: Record<Exectv2Entity, number>;
+  };
+  evidence_spans: Exectv2EvidenceSpan[];
+}
+
+export interface Exectv2RunSummary {
+  run_id: string;
+  task: "exectv2";
+  label: string;
+  model: string;
+  architecture_family: string;
+  pipeline_family: string;
+  split: string;
+  row_count: number;
+  date: string;
+  decision: string;
+  promotion_decision: string;
+  claim_boundary: string;
+  scorer_view: string;
+  artifact_paths: string[];
+  source_paths: string[];
+  metrics: {
+    overall_f1: number | null;
+    precision: number | null;
+    recall: number | null;
+    families: Record<Exectv2Entity, Exectv2FamilyMetrics>;
+  };
+  operational: {
+    call_failures: number;
+    parse_schema_failures: number;
+    evidence_invalid_dropped: number;
+    exact_evidence_rate: number | null;
+    by_family: Record<string, unknown>;
+  };
+  letters: Exectv2LetterRecord[];
+}
+
+export interface Exectv2RunsResponse {
+  generated_on: string;
+  source_index: string;
+  runs: Exectv2RunSummary[];
+}
+
+export interface ReliabilityScorecardDimension {
+  id: string;
+  dimension: string;
+  coverage: number;
+  current_evidence: string;
+  gap_to_close: string;
+  artifact_path?: string;
 }
 
 // ── Hybrid artifact row ──
