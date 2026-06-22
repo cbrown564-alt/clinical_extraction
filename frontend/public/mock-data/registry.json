@@ -41,19 +41,19 @@
         "experiments/exectv2_holistic_finding_assembly_v08_dev140_20260621.json",
         "experiments/exectv2_holistic_finding_assembly_v08_dev140_20260621.jsonl"
       ],
-      "mode": "v08 dev140 control",
+      "mode": "v08 Dev140 Control",
       "model": "openai/gpt-4.1-mini",
       "model_role": "performance-control",
       "split": "dev140",
       "decision": "control",
-      "claim_boundary": "Dev-only component-attributed architecture evidence.",
+      "claim_boundary": "Dev-only component-attributed architecture evidence; not a benchmark, full-200, or locked-test claim",
       "scorer_view": "headline_target"
     },
     {
       "task": "exectv2",
       "run_id": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
       "pipeline_family": "exectv2_holistic_finding_assembly",
-      "architecture_family": "partial_hybrid_simplification",
+      "architecture_family": "partial_hybrid",
       "date": "2026-06-21",
       "row_count": 140,
       "artifact_paths": [
@@ -62,19 +62,19 @@
         "experiments/exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140_20260621.json",
         "experiments/exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140_20260621.jsonl"
       ],
-      "mode": "v09 partial hybrid",
+      "mode": "v09 Partial Hybrid Simplification",
       "model": "openai/gpt-4.1-mini",
       "model_role": "simplicity-control",
       "split": "dev140",
-      "decision": "control",
-      "claim_boundary": "Dev-only simplification evidence.",
+      "decision": "simplification",
+      "claim_boundary": "Dev-only simplification evidence; not a v08 replacement on all family surfaces",
       "scorer_view": "headline_target"
     },
     {
       "task": "exectv2",
       "run_id": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
       "pipeline_family": "exectv2_holistic_finding_assembly",
-      "architecture_family": "single_model_dictionary_reparse",
+      "architecture_family": "deepseek_reparse",
       "date": "2026-06-22",
       "row_count": 140,
       "artifact_paths": [
@@ -83,19 +83,19 @@
         "experiments/exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140_20260622.json",
         "experiments/exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140_20260622.jsonl"
       ],
-      "mode": "DeepSeek v0.9.16 dev140",
+      "mode": "DeepSeek v0.9.16 Dev140 Diagnostic",
       "model": "deepseek/deepseek-chat",
-      "model_role": "do-not-promote",
+      "model_role": "diagnostic-comparator",
       "split": "dev140",
       "decision": "diagnostic",
-      "claim_boundary": "Diagnostic no-call same-raw DeepSeek v0.9.10→v0.9.16 dictionary reparse, dev140.",
+      "claim_boundary": "diagnostic same raw deepseek v0910 through v0916 dictionary dev140",
       "scorer_view": "headline_target"
     },
     {
       "task": "exectv2",
       "run_id": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
       "pipeline_family": "exectv2_holistic_finding_assembly",
-      "architecture_family": "qwen_compact_residual_repair",
+      "architecture_family": "qwencompact_residualrepair",
       "date": "2026-06-22",
       "row_count": 140,
       "artifact_paths": [
@@ -104,12 +104,12 @@
         "experiments/exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140_20260622.json",
         "experiments/exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140_20260622.jsonl"
       ],
-      "mode": "Qwen v0.9.22 dev140",
+      "mode": "Qwen v0.9.22 Dev140 Diagnostic",
       "model": "ollama_chat/qwen3.6:35b",
-      "model_role": "do-not-promote",
+      "model_role": "diagnostic-comparator",
       "split": "dev140",
       "decision": "diagnostic",
-      "claim_boundary": "Local-Qwen v0.9.10 qwen-compact live dev140 (ctx12288, maxtok2500) with standard-dictionary residual-repair v1.3.",
+      "claim_boundary": "local qwen v0910 qwen compact live dev140 ctx12288 maxtok2500 standard dictionary residual repair v13",
       "scorer_view": "headline_target"
     }
   ]

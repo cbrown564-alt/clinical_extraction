@@ -48,18 +48,26 @@ Scoping decisions (deltas from the suggestions below):
   mentions, evidence, metrics, and operational fields). Errors and component
   summaries are derived client-side via adapters rather than from pre-sharded
   `errors/` and `components/` files. The data API is abstracted behind the
-  adapter/hook layer, so re-sharding into the dataset-indexed layout (Phase B)
-  and the generator extension remain a clean, additive follow-up — not required
-  for the surfaces to work.
+  adapter/hook layer, so re-sharding into the dataset-indexed static layout
+  remains a clean, additive follow-up — not required for the surfaces to work.
 - **Gan surfaces** are routed-to, not internally refactored: branching happens at
   the page level so the battle-tested Gan components and URLs are untouched
   (lowest-risk path to "Option C").
 
+Phase B — index-driven generator (delivered): `scripts/build_exectv2_frontend_mock_data.py`
+no longer hardcodes a run list. It parses the canonical runs directly from
+`docs/experiments/final_artifact_index_*.md` (each `### ExECTv2 …` section under
+`## Canonical Artifact Groups`), so incorporating a new architecture is "edit the
+index, re-run the generator" — no script change. It auto-discovers the newest
+index, validates that referenced artifacts exist, and is covered by
+`tests/test_build_exectv2_frontend_mock_data.py`. The remaining optional Phase B
+item is re-sharding the single `runs.json` into the dataset-indexed static layout.
+
 Verification: `npx tsc --noEmit` clean; `npm run build` prerenders all routes;
-24/24 Jest tests pass (12 new dataset-kernel/ad/ adapter tests); new code is
-ESLint-clean (remaining repo lint errors are pre-existing `any` debt in
-`lib/api.ts` and `lib/hooks.ts`); dev-server smoke test returns 200 for all
-dataset-aware routes.
+24/24 frontend Jest tests pass (12 new dataset-kernel/adapter tests) plus 6 new
+Python generator tests; new code is ESLint-clean (remaining repo lint errors are
+pre-existing `any` debt in `lib/api.ts` and `lib/hooks.ts`); dev-server smoke
+test returns 200 for all dataset-aware routes.
 
 ## Core Decision
 

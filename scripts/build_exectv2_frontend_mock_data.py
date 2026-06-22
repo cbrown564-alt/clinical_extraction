@@ -1,8 +1,21 @@
-"""Build static ExECTv2 frontend review data from assembly artifacts."""
+"""Build static ExECTv2 frontend review data from the final artifact index.
+
+Phase B: the run set is parsed directly from the canonical
+``docs/experiments/final_artifact_index_*.md`` rather than a hardcoded list, so
+updating the index and re-running this script is the only step needed to
+incorporate a new architecture into the frontend.
+
+The generator reads each ``### ExECTv2 …`` section under ``## Canonical Artifact
+Groups``, maps its ``| Field | Value |`` table onto a run spec, then renders the
+same per-letter review payload the frontend already consumes. Non-ExECTv2 and
+non-canonical sections are ignored.
+"""
 
 from __future__ import annotations
 
 import json
+import re
+from datetime import date
 from pathlib import Path
 from typing import Any
 
@@ -14,87 +27,217 @@ ARTIFACT_ROOT = MOCK_ROOT / "artifacts"
 
 FAMILIES = ["Diagnosis", "SeizureFrequency", "Prescription", "Investigations"]
 
+PIPELINE_FAMILY = "exectv2_holistic_finding_assembly"
+INDEX_DIR = ROOT / "docs" / "experiments"
+INDEX_GLOB = "final_artifact_index_*.md"
 
-RUN_SPECS: list[dict[str, Any]] = [
-    {
-        "run_id": "exectv2_holistic_finding_assembly_v08_dev140",
-        "label": "v08 dev140 control",
-        "model": "openai/gpt-4.1-mini",
-        "architecture_family": "holistic_finding_assembly",
-        "pipeline_family": "exectv2_holistic_finding_assembly",
-        "split": "dev140",
-        "decision": "control",
-        "promotion_decision": "performance-control",
-        "claim_boundary": "Dev-only component-attributed architecture evidence.",
-        "scorer_view": "headline_target",
-        "config_path": "configs/exectv2/finding_assembly/exectv2_holistic_finding_assembly_v08_dev140.yaml",
-        "report_path": "docs/experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v08_dev140_20260621.md",
-        "summary_path": "experiments/exectv2_holistic_finding_assembly_v08_dev140_20260621.json",
-        "assembly_jsonl_path": "experiments/exectv2_holistic_finding_assembly_v08_dev140_20260621.jsonl",
-        "text_source_paths": [
-            "experiments/exectv2_llm_only_key_entities_structured_v09_dev140_gpt41mini_20260621.jsonl"
-        ],
-    },
-    {
-        "run_id": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
-        "label": "v09 partial hybrid",
-        "model": "openai/gpt-4.1-mini",
-        "architecture_family": "partial_hybrid_simplification",
-        "pipeline_family": "exectv2_holistic_finding_assembly",
-        "split": "dev140",
-        "decision": "control",
-        "promotion_decision": "simplicity-control",
-        "claim_boundary": "Dev-only simplification evidence.",
-        "scorer_view": "headline_target",
-        "config_path": "configs/exectv2/finding_assembly/exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140.yaml",
-        "report_path": "docs/experiments/exectv2/key_entities/exectv2_v09_single_gpt_simplification_study_dev140_20260621.md",
-        "summary_path": "experiments/exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140_20260621.json",
-        "assembly_jsonl_path": "experiments/exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140_20260621.jsonl",
-        "text_source_paths": [
-            "experiments/exectv2_llm_only_key_entities_structured_v09_dev140_gpt41mini_20260621.jsonl"
-        ],
-    },
-    {
-        "run_id": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
-        "label": "DeepSeek v0.9.16 dev140",
-        "model": "deepseek/deepseek-chat",
-        "architecture_family": "single_model_dictionary_reparse",
-        "pipeline_family": "exectv2_holistic_finding_assembly",
-        "split": "dev140",
-        "decision": "diagnostic",
-        "promotion_decision": "do-not-promote",
-        "claim_boundary": "Diagnostic no-call same-raw DeepSeek v0.9.10→v0.9.16 dictionary reparse, dev140.",
-        "scorer_view": "headline_target",
-        "config_path": "configs/exectv2/finding_assembly/exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140.yaml",
-        "report_path": "experiments/exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140_20260622.md",
-        "summary_path": "experiments/exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140_20260622.json",
-        "assembly_jsonl_path": "experiments/exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140_20260622.jsonl",
-        "text_source_paths": [
-            "experiments/exectv2_llm_only_key_entities_structured_v0910_dev140_deepseek_chat_20260622.jsonl",
-            "experiments/exectv2_llm_only_key_entities_structured_v09_dev140_gpt41mini_20260621.jsonl",
-        ],
-    },
-    {
-        "run_id": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
-        "label": "Qwen v0.9.22 dev140",
-        "model": "ollama_chat/qwen3.6:35b",
-        "architecture_family": "qwen_compact_residual_repair",
-        "pipeline_family": "exectv2_holistic_finding_assembly",
-        "split": "dev140",
-        "decision": "diagnostic",
-        "promotion_decision": "do-not-promote",
-        "claim_boundary": "Local-Qwen v0.9.10 qwen-compact live dev140 (ctx12288, maxtok2500) with standard-dictionary residual-repair v1.3.",
-        "scorer_view": "headline_target",
-        "config_path": "configs/exectv2/finding_assembly/exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140.yaml",
-        "report_path": "experiments/exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140_20260622.md",
-        "summary_path": "experiments/exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140_20260622.json",
-        "assembly_jsonl_path": "experiments/exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140_20260622.jsonl",
-        "text_source_paths": [
-            "experiments/exectv2_llm_only_key_entities_structured_v0910_qwencompact_dev140_qwen36_35b_ollama_cuda11435_ctx12288_maxtok2500_20260622.jsonl",
-            "experiments/exectv2_llm_only_key_entities_structured_v09_dev140_gpt41mini_20260621.jsonl",
-        ],
-    },
-]
+# Canonical letter-text sources per split. The Field/Value tables for the v08 and
+# v09 controls do not list a "Source JSONL", and a model-specific source may omit
+# ``letter_text``, so these guarantee the renderer can always recover letter text.
+FALLBACK_TEXT_SOURCES: dict[str, list[str]] = {
+    "dev140": [
+        "experiments/exectv2_llm_only_key_entities_structured_v09_dev140_gpt41mini_20260621.jsonl",
+    ],
+}
+
+
+# ── Index parsing ─────────────────────────────────────────────────────
+
+_H2 = re.compile(r"^##\s+(.*\S)\s*$")
+_H3 = re.compile(r"^###\s+(.*\S)\s*$")
+_TABLE_ROW = re.compile(r"^\|(.*)\|\s*$")
+
+
+def find_index_path() -> Path:
+    """Return the newest ``final_artifact_index_*.md`` (ISO date sorts last)."""
+    candidates = sorted(INDEX_DIR.glob(INDEX_GLOB))
+    if not candidates:
+        raise FileNotFoundError(f"No {INDEX_GLOB} found under {INDEX_DIR}")
+    return candidates[-1]
+
+
+def index_date(path: Path) -> str:
+    match = re.search(r"(\d{4}-\d{2}-\d{2})", path.name)
+    return match.group(1) if match else date.today().isoformat()
+
+
+def _first_backtick(text: str | None) -> str | None:
+    match = re.search(r"`([^`]+)`", text or "")
+    return match.group(1).strip() if match else None
+
+
+def _strip_backticks(text: str | None) -> str:
+    return (text or "").replace("`", "").strip()
+
+
+def _parse_field_table(lines: list[str]) -> dict[str, str]:
+    """Parse the first ``| Field | Value |`` table in a section's lines.
+
+    Stops at the first non-table line so the trailing ``| Path | SHA-256 |``
+    hashes table is never folded into the fields.
+    """
+    fields: dict[str, str] = {}
+    in_table = False
+    for line in lines:
+        match = _TABLE_ROW.match(line.strip())
+        if not match:
+            if in_table:
+                break
+            continue
+        cells = [cell.strip() for cell in match.group(1).split("|")]
+        if not in_table:
+            if len(cells) >= 2 and cells[0].lower() == "field" and cells[1].lower() == "value":
+                in_table = True
+            continue
+        # Skip the markdown separator row (e.g. | --- | --- |).
+        if set("".join(cells)) <= set("-: "):
+            continue
+        if len(cells) >= 2:
+            fields[cells[0]] = cells[1]
+    return fields
+
+
+def _decision_from_heading(heading: str) -> str:
+    lowered = heading.lower()
+    if "diagnostic" in lowered:
+        return "diagnostic"
+    if "simplification" in lowered:
+        return "simplification"
+    if "control" in lowered:
+        return "control"
+    return "diagnostic"
+
+
+def _model_from_cell(cell: str) -> str:
+    backtick = _first_backtick(cell)
+    if backtick:
+        return backtick
+    if "gpt-4.1-mini" in cell.lower():
+        return "openai/gpt-4.1-mini"
+    return cell.strip()
+
+
+def _promotion_slug(cell: str) -> str:
+    lowered = cell.lower()
+    # Check the more specific phrase first: "Simplicity control, not performance
+    # control" must resolve to simplicity, not performance.
+    if "simplicity control" in lowered:
+        return "simplicity-control"
+    if "performance control" in lowered:
+        return "performance-control"
+    if "diagnostic comparator" in lowered:
+        return "diagnostic-comparator"
+    if "do not promote" in lowered:
+        return "do-not-promote"
+    words = re.findall(r"[a-z0-9]+", lowered)
+    return "-".join(words[:4]) or "unspecified"
+
+
+def _humanize_boundary(value: str) -> str:
+    text = _strip_backticks(value)
+    # Diagnostic claim boundaries are kebab slugs; controls are prose.
+    if text and " " not in text:
+        text = text.replace("-", " ").replace("_", " ")
+    return text
+
+
+def _architecture_family(run_id: str, split: str) -> str:
+    core = re.sub(r"^exectv2_holistic_finding_assembly_?", "", run_id)
+    core = re.sub(rf"_?{re.escape(split)}$", "", core)
+    core = re.sub(r"^v\d+_?", "", core)
+    core = core.strip("_")
+    return core or "holistic_finding_assembly"
+
+
+def _split_from_cell(cell: str) -> str:
+    backtick = _first_backtick(cell)
+    if backtick:
+        return backtick
+    match = re.search(r"dev\d+", cell or "")
+    return match.group(0) if match else ""
+
+
+def _fields_to_spec(heading: str, fields: dict[str, str]) -> dict[str, Any] | None:
+    run_id = _first_backtick(fields.get("Candidate", ""))
+    if not run_id:
+        # Prose Candidate (e.g. the Gan package) is not a renderable run.
+        return None
+
+    split = _split_from_cell(fields.get("Split and row count", ""))
+    source_jsonl = _first_backtick(fields.get("Source JSONL", "")) if "Source JSONL" in fields else None
+    text_sources: list[str] = []
+    if source_jsonl:
+        text_sources.append(source_jsonl)
+    text_sources.extend(FALLBACK_TEXT_SOURCES.get(split, []))
+
+    return {
+        "run_id": run_id,
+        "label": re.sub(r"^ExECTv2\s+", "", heading).strip(),
+        "model": _model_from_cell(fields.get("Model", "")),
+        "architecture_family": _architecture_family(run_id, split),
+        "pipeline_family": PIPELINE_FAMILY,
+        "split": split,
+        "decision": _decision_from_heading(heading),
+        "promotion_decision": _promotion_slug(fields.get("Promotion decision", "")),
+        "claim_boundary": _humanize_boundary(fields.get("Claim boundary", "")),
+        "scorer_view": _first_backtick(fields.get("Scorer/view", "")) or "headline_target",
+        "config_path": _first_backtick(fields.get("Config", "")),
+        "report_path": _first_backtick(fields.get("Report", "")),
+        "summary_path": _first_backtick(fields.get("JSON", "")),
+        "assembly_jsonl_path": _first_backtick(fields.get("JSONL", "")),
+        "text_source_paths": text_sources,
+    }
+
+
+def parse_canonical_exectv2_runs(md_text: str) -> list[dict[str, Any]]:
+    """Extract run specs from every canonical ``### ExECTv2 …`` section."""
+    lines = md_text.splitlines()
+    current_h2: str | None = None
+    runs: list[dict[str, Any]] = []
+    i = 0
+    while i < len(lines):
+        h2 = _H2.match(lines[i])
+        if h2:
+            current_h2 = h2.group(1)
+            i += 1
+            continue
+        h3 = _H3.match(lines[i])
+        if h3:
+            heading = h3.group(1)
+            j = i + 1
+            section: list[str] = []
+            while j < len(lines) and not _H2.match(lines[j]) and not _H3.match(lines[j]):
+                section.append(lines[j])
+                j += 1
+            if current_h2 == "Canonical Artifact Groups" and heading.startswith("ExECTv2"):
+                spec = _fields_to_spec(heading, _parse_field_table(section))
+                if spec:
+                    runs.append(spec)
+            i = j
+            continue
+        i += 1
+    return runs
+
+
+def load_run_specs_from_index(index_path: Path) -> list[dict[str, Any]]:
+    return parse_canonical_exectv2_runs(index_path.read_text(encoding="utf-8"))
+
+
+def validate_specs(specs: list[dict[str, Any]]) -> None:
+    """Fail loudly (with the offending run/field) if the index points nowhere."""
+    errors: list[str] = []
+    for spec in specs:
+        for key in ("summary_path", "assembly_jsonl_path"):
+            value = spec.get(key)
+            if not value:
+                errors.append(f"{spec['run_id']}: index is missing {key}")
+            elif not (ROOT / value).exists():
+                errors.append(f"{spec['run_id']}: {key} not found on disk: {value}")
+    if errors:
+        raise SystemExit("Index references missing ExECTv2 artifacts:\n  - " + "\n  - ".join(errors))
+
+
+# ── Rendering (unchanged) ─────────────────────────────────────────────
 
 
 def repo_path(path: str | None) -> Path | None:
@@ -361,7 +504,13 @@ def main() -> None:
     EXECTV2_ROOT.mkdir(parents=True, exist_ok=True)
     ARTIFACT_ROOT.mkdir(parents=True, exist_ok=True)
 
-    runs = [build_run(spec) for spec in RUN_SPECS]
+    index_path = find_index_path()
+    specs = load_run_specs_from_index(index_path)
+    if not specs:
+        raise SystemExit(f"No canonical ExECTv2 runs found in {index_path}")
+    validate_specs(specs)
+
+    runs = [build_run(spec) for spec in specs]
 
     public_runs = []
     for run in runs:
@@ -382,8 +531,8 @@ def main() -> None:
         public_runs.append(run)
 
     payload = {
-        "generated_on": "2026-06-22",
-        "source_index": "docs/experiments/final_artifact_index_2026-06-22.md",
+        "generated_on": index_date(index_path),
+        "source_index": index_path.relative_to(ROOT).as_posix(),
         "runs": public_runs,
     }
     (EXECTV2_ROOT / "runs.json").write_text(
@@ -392,7 +541,12 @@ def main() -> None:
     )
     update_registry(public_runs)
 
-    print(f"Wrote {len(public_runs)} ExECTv2 frontend runs to {EXECTV2_ROOT / 'runs.json'}")
+    print(
+        f"Wrote {len(public_runs)} ExECTv2 frontend runs from "
+        f"{index_path.relative_to(ROOT).as_posix()}:"
+    )
+    for run in public_runs:
+        print(f"  [{run['decision']:>14}] {run['split']:>6}  {run['run_id']}")
 
 
 if __name__ == "__main__":
