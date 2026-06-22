@@ -24,6 +24,8 @@ import {
 import Link from "next/link";
 import { useObservatoryData } from "@/components/observatory/useObservatoryData";
 import { useGalleryUrlSync } from "@/lib/hooks";
+import { useActiveDataset } from "@/lib/datasets";
+import Exectv2ErrorGallery from "@/components/exectv2/Exectv2ErrorGallery";
 import type { RowScore, RunSummary } from "@/lib/types";
 import {
   type EnrichedRow,
@@ -968,6 +970,12 @@ function GalleryInner() {
 
 // ── Page Export ──────────────────────────────────────────────────────
 
+function GalleryRoute() {
+  const dataset = useActiveDataset();
+  if (dataset === "exectv2") return <Exectv2ErrorGallery />;
+  return <GalleryInner />;
+}
+
 export default function GalleryPage() {
   return (
     <Suspense
@@ -979,7 +987,7 @@ export default function GalleryPage() {
         </div>
       }
     >
-      <GalleryInner />
+      <GalleryRoute />
     </Suspense>
   );
 }

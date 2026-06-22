@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Inter, Source_Serif_4, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
@@ -42,7 +43,13 @@ export default function RootLayout({
     >
       <body className="h-screen flex flex-col overflow-hidden bg-background text-foreground">
         <Providers>
-          <Navbar />
+          <Suspense
+            fallback={
+              <nav className="shrink-0 border-b border-border bg-surface px-4 py-2 shadow-sm h-[41px]" />
+            }
+          >
+            <Navbar />
+          </Suspense>
           <main className="flex-1 min-h-0">{children}</main>
         </Providers>
       </body>

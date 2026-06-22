@@ -3,10 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Microscope, FileCheck } from "lucide-react";
+import { DATASET_PARAM, useActiveDataset, DEFAULT_DATASET } from "@/lib/datasets";
+import DatasetSwitcher from "@/components/shell/DatasetSwitcher";
 
 const navItems = [
   { href: "/workbench", label: "Example Explorer", color: "deterministic" },
-  { href: "/exectv2", label: "ExECTv2", color: "hybrid" },
   { href: "/observatory", label: "Aggregate Performance", color: "llm" },
   { href: "/laboratory", label: "Component Impact", color: "deterministic-alt" },
   { href: "/gallery", label: "Error Gallery", color: "error" },
@@ -14,10 +15,16 @@ const navItems = [
 
 export default function Navbar() {
   const pathname = usePathname();
+  const datasetId = useActiveDataset();
+
+  // Preserve the active dataset across surface navigation. Bare Gan URLs stay
+  // bare so existing links keep working.
+  const datasetQuery =
+    datasetId === DEFAULT_DATASET ? "" : `?${DATASET_PARAM}=${datasetId}`;
 
   return (
     <nav className="shrink-0 border-b border-border bg-surface px-4 py-2 shadow-sm z-50">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-3">
         {/* Brand */}
         <Link href="/workbench" className="flex items-center gap-2">
           <div className="flex h-6 w-6 items-center justify-center rounded-md bg-deterministic/10">
@@ -39,16 +46,14 @@ export default function Navbar() {
                 ? "bg-llm/10 text-llm border-llm/20"
                 : item.color === "deterministic-alt"
                 ? "bg-deterministic-alt/10 text-deterministic-alt border-deterministic-alt/20"
-                : item.color === "hybrid"
-                ? "bg-hybrid/10 text-hybrid border-hybrid/20"
                 : item.color === "error"
                 ? "bg-error/10 text-error border-error/20"
-                  : "bg-muted/10 text-muted border-muted/20";
+                : "bg-muted/10 text-muted border-muted/20";
 
             return (
               <Link
                 key={item.href}
-                href={item.href}
+                href={`${item.href}${datasetQuery}`}
                 className={`rounded-md px-3 py-1 text-xs font-medium transition-colors border ${
                   active
                     ? colorClass
@@ -71,6 +76,10 @@ export default function Navbar() {
             <FileCheck className="h-3 w-3" />
             Audit
           </Link>
+
+          {/* Sticky dataset context selector */}
+          <div className="w-px h-4 bg-border mx-1" />
+          <DatasetSwitcher />
         </div>
       </div>
     </nav>

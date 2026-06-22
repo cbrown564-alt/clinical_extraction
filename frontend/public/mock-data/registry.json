@@ -72,64 +72,44 @@
     },
     {
       "task": "exectv2",
-      "run_id": "exectv2_holistic_finding_assembly_v097_deepseek_dev25",
+      "run_id": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
       "pipeline_family": "exectv2_holistic_finding_assembly",
-      "architecture_family": "single_model_standard_dictionary",
+      "architecture_family": "single_model_dictionary_reparse",
       "date": "2026-06-22",
-      "row_count": 25,
+      "row_count": 140,
       "artifact_paths": [
-        "configs/exectv2/finding_assembly/exectv2_holistic_finding_assembly_v097_deepseek_dev25.yaml",
-        "experiments/exectv2_holistic_finding_assembly_v097_deepseek_dev25_20260622.md",
-        "experiments/exectv2_holistic_finding_assembly_v097_deepseek_dev25_20260622.json",
-        "experiments/exectv2_holistic_finding_assembly_v097_deepseek_dev25_20260622.jsonl"
+        "configs/exectv2/finding_assembly/exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140.yaml",
+        "experiments/exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140_20260622.md",
+        "experiments/exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140_20260622.json",
+        "experiments/exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140_20260622.jsonl"
       ],
-      "mode": "DeepSeek v0.9.7 dev25",
+      "mode": "DeepSeek v0.9.16 dev140",
       "model": "deepseek/deepseek-chat",
-      "model_role": "diagnostic-comparator",
-      "split": "dev25",
+      "model_role": "do-not-promote",
+      "split": "dev140",
       "decision": "diagnostic",
-      "claim_boundary": "Hosted-DeepSeek v0.9.7 live dev25 diagnostic.",
+      "claim_boundary": "Diagnostic no-call same-raw DeepSeek v0.9.10→v0.9.16 dictionary reparse, dev140.",
       "scorer_view": "headline_target"
     },
     {
       "task": "exectv2",
-      "run_id": "exectv2_holistic_finding_assembly_v096_schema_repair_qwen_reparse_dev25",
+      "run_id": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
       "pipeline_family": "exectv2_holistic_finding_assembly",
-      "architecture_family": "schema_repair_reparse",
+      "architecture_family": "qwen_compact_residual_repair",
       "date": "2026-06-22",
-      "row_count": 25,
+      "row_count": 140,
       "artifact_paths": [
-        "configs/exectv2/finding_assembly/exectv2_holistic_finding_assembly_v096_schema_repair_qwen_reparse_dev25.yaml",
-        "experiments/exectv2_holistic_finding_assembly_v096_schema_repair_qwen_reparse_dev25_20260622.md",
-        "experiments/exectv2_holistic_finding_assembly_v096_schema_repair_qwen_reparse_dev25_20260622.json",
-        "experiments/exectv2_holistic_finding_assembly_v096_schema_repair_qwen_reparse_dev25_20260622.jsonl"
+        "configs/exectv2/finding_assembly/exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140.yaml",
+        "experiments/exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140_20260622.md",
+        "experiments/exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140_20260622.json",
+        "experiments/exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140_20260622.jsonl"
       ],
-      "mode": "Qwen v0.9.6 reparse",
+      "mode": "Qwen v0.9.22 dev140",
       "model": "ollama_chat/qwen3.6:35b",
       "model_role": "do-not-promote",
-      "split": "dev25",
+      "split": "dev140",
       "decision": "diagnostic",
-      "claim_boundary": "Diagnostic no-call local-Qwen schema-repair reparse.",
-      "scorer_view": "headline_target"
-    },
-    {
-      "task": "exectv2",
-      "run_id": "exectv2_holistic_finding_assembly_v097_qwencompact_dictrepair_dev25",
-      "pipeline_family": "exectv2_holistic_finding_assembly",
-      "architecture_family": "qwen_compact_dictionary_repair",
-      "date": "2026-06-22",
-      "row_count": 25,
-      "artifact_paths": [
-        "experiments/exectv2_holistic_finding_assembly_v097_qwencompact_dictrepair_dev25_20260622.md",
-        "experiments/exectv2_holistic_finding_assembly_v097_qwencompact_dictrepair_dev25_20260622.json",
-        "experiments/exectv2_holistic_finding_assembly_v097_qwencompact_dictrepair_dev25_20260622.jsonl"
-      ],
-      "mode": "Qwen v0.9.7 compact",
-      "model": "ollama_chat/qwen3.6:35b",
-      "model_role": "do-not-promote",
-      "split": "dev25",
-      "decision": "diagnostic",
-      "claim_boundary": "Local-Qwen v0.9.7 qwen-compact live dev25 with dictionary repair.",
+      "claim_boundary": "Local-Qwen v0.9.10 qwen-compact live dev140 (ctx12288, maxtok2500) with standard-dictionary residual-repair v1.3.",
       "scorer_view": "headline_target"
     }
   ]

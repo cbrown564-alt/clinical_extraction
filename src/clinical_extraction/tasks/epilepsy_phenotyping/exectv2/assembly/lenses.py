@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import Protocol
+from typing import Any, Protocol
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.clinical_finding import (
     ClinicalFinding,
@@ -657,6 +658,41 @@ class DiagnosisDictionaryLens(DiagnosisHeadingRecoveryLens):
             if finding is not None:
                 added.append(finding)
 
+        companion_added: list[ClinicalFinding] = []
+        for finding in [*kept, *added]:
+            if not sd.should_add_generic_epilepsy_companion(
+                finding.text,
+                evidence=finding.evidence or finding.text,
+                attributes=finding.attributes,
+            ):
+                continue
+            if _has_diagnosis_text_with_evidence(
+                [*kept, *added, *companion_added],
+                text="epilepsy",
+                evidence=finding.evidence or finding.text,
+                attributes=finding.attributes,
+            ):
+                continue
+            companion_added.append(
+                _diagnosis_finding_with_text(
+                    finding,
+                    "epilepsy",
+                    owner_suffix="standard_dictionary_generic_epilepsy_companion",
+                    provenance=ProvenanceEvent(
+                        stage="entity_lens",
+                        action="added_generic_epilepsy_companion_from_dictionary",
+                        owner="standard_dictionary",
+                        portability="benchmark_format",
+                        detail={
+                            "lens_id": self.lens_id,
+                            "rule_category": "benchmark_format",
+                            "source_text": finding.text,
+                            "target_text": "epilepsy",
+                        },
+                    ),
+                )
+            )
+
         event = ProvenanceEvent(
             stage="entity_lens",
             action="applied_standard_dictionary_diagnosis_repair",
@@ -671,6 +707,8 @@ class DiagnosisDictionaryLens(DiagnosisHeadingRecoveryLens):
                 "rewritten_text_counts": _rewrite_counts(rewritten),
                 "added_count": len(added),
                 "added_text_counts": _text_counts(list(added)),
+                "companion_added_count": len(companion_added),
+                "companion_added_text_counts": _text_counts(list(companion_added)),
                 "dropped_count": len(dropped),
                 "dropped_text_counts": _text_counts(dropped),
             },
@@ -678,6 +716,7 @@ class DiagnosisDictionaryLens(DiagnosisHeadingRecoveryLens):
         final_findings = tuple(
             [finding.with_provenance(event) for finding in kept]
             + [finding.with_provenance(event) for finding in added]
+            + [finding.with_provenance(event) for finding in companion_added]
         )
         diagnostics = dict(recovered.diagnostics)
         diagnostics.update(
@@ -685,6 +724,7 @@ class DiagnosisDictionaryLens(DiagnosisHeadingRecoveryLens):
                 "lens_id": self.lens_id,
                 "rewritten_dictionary_findings": len(rewritten),
                 "added_dictionary_findings": len(added),
+                "companion_dictionary_findings": len(companion_added),
                 "dropped_dictionary_findings": len(dropped),
                 "selected_findings": len(final_findings),
             }
@@ -719,6 +759,8 @@ class SeizureFrequencyDictionaryLens(_ThinArtifactLens):
         )
         out: list[ClinicalFinding] = []
         rewritten = 0
+        dropped: list[ClinicalFinding] = []
+        seen_exact: set[tuple[str, tuple[tuple[str, str], ...], str]] = set()
         for finding in selected:
             rewrite = sd.sf_convention_rewrite(
                 finding.text,
@@ -741,7 +783,45 @@ class SeizureFrequencyDictionaryLens(_ThinArtifactLens):
                     ),
                 )
                 rewritten += 1
+            if sd.is_sf_convention_noise(
+                finding.text,
+                evidence=finding.evidence or finding.text,
+                attributes=finding.attributes,
+            ):
+                dropped.append(finding)
+                continue
+            exact_key = (
+                normalize_phrase(finding.text),
+                tuple(sorted((str(k), str(v)) for k, v in finding.attributes.items())),
+                finding.evidence,
+            )
+            if exact_key in seen_exact:
+                dropped.append(finding)
+                continue
+            seen_exact.add(exact_key)
             out.append(finding)
+
+        added: list[ClinicalFinding] = []
+        existing_keys = {_sf_recovery_key(finding) for finding in out}
+        for text, evidence, attrs in sd.sf_residual_additions(store.note_text):
+            if sd.is_sf_convention_noise(text, evidence=evidence, attributes=attrs):
+                continue
+            key = _sf_recovery_key_from_parts(text, attrs)
+            if key in existing_keys:
+                continue
+            finding = _sf_added_finding(
+                store,
+                text=text,
+                evidence=evidence,
+                attributes=attrs,
+                selected=selected,
+                policy=policy,
+                lens_id=self.lens_id,
+            )
+            if finding is None:
+                continue
+            existing_keys.add(key)
+            added.append(finding)
 
         event = ProvenanceEvent(
             stage="entity_lens",
@@ -753,9 +833,16 @@ class SeizureFrequencyDictionaryLens(_ThinArtifactLens):
                 "producer_id": policy.producer_id,
                 "source_lane": policy.source_lane,
                 "rewritten_count": rewritten,
+                "added_count": len(added),
+                "added_text_counts": _text_counts(added),
+                "dropped_count": len(dropped),
+                "dropped_text_counts": _text_counts(dropped),
             },
         )
-        final_findings = tuple(finding.with_provenance(event) for finding in out)
+        final_findings = tuple(
+            [finding.with_provenance(event) for finding in out]
+            + [finding.with_provenance(event) for finding in added]
+        )
         return LensResult(
             entity=self.entity,
             lens_id=self.lens_id,
@@ -763,6 +850,8 @@ class SeizureFrequencyDictionaryLens(_ThinArtifactLens):
             diagnostics={
                 "lens_id": self.lens_id,
                 "rewritten_dictionary_findings": rewritten,
+                "added_dictionary_findings": len(added),
+                "dropped_dictionary_findings": len(dropped),
                 "selected_findings": len(final_findings),
             },
         )
@@ -792,6 +881,7 @@ class PrescriptionDictionaryLens(_ThinArtifactLens):
         out: list[ClinicalFinding] = []
         normalized = 0
         split_regimens = 0
+        dropped: list[ClinicalFinding] = []
         for finding in selected:
             attrs = dict(finding.attributes)
             changed = False
@@ -821,6 +911,13 @@ class PrescriptionDictionaryLens(_ThinArtifactLens):
                 if normalized_dose != dose:
                     attrs["DrugDose"] = normalized_dose
                     changed = True
+            if sd.is_prescription_convention_noise(
+                finding.text,
+                evidence=finding.evidence,
+                attributes=attrs,
+            ):
+                dropped.append(finding)
+                continue
             split_rows = sd.split_daily_dose_regimen(
                 finding.text,
                 evidence=finding.evidence,
@@ -862,6 +959,26 @@ class PrescriptionDictionaryLens(_ThinArtifactLens):
                 normalized += 1
             out.append(finding)
 
+        added: list[ClinicalFinding] = []
+        existing_keys = {_prescription_recovery_key(finding) for finding in out}
+        for text, evidence, attrs in sd.prescription_residual_additions(store.note_text):
+            key = _prescription_recovery_key_from_parts(attrs)
+            if key in existing_keys:
+                continue
+            finding = _prescription_added_finding(
+                store,
+                text=text,
+                evidence=evidence,
+                attributes=attrs,
+                selected=selected,
+                policy=policy,
+                lens_id=self.lens_id,
+            )
+            if finding is None:
+                continue
+            existing_keys.add(key)
+            added.append(finding)
+
         event = ProvenanceEvent(
             stage="entity_lens",
             action="applied_standard_dictionary_prescription_repair",
@@ -873,9 +990,16 @@ class PrescriptionDictionaryLens(_ThinArtifactLens):
                 "source_lane": policy.source_lane,
                 "normalized_count": normalized,
                 "split_regimen_count": split_regimens,
+                "added_count": len(added),
+                "added_text_counts": _text_counts(added),
+                "dropped_count": len(dropped),
+                "dropped_text_counts": _text_counts(dropped),
             },
         )
-        final_findings = tuple(finding.with_provenance(event) for finding in out)
+        final_findings = tuple(
+            [finding.with_provenance(event) for finding in out]
+            + [finding.with_provenance(event) for finding in added]
+        )
         return LensResult(
             entity=self.entity,
             lens_id=self.lens_id,
@@ -884,6 +1008,8 @@ class PrescriptionDictionaryLens(_ThinArtifactLens):
                 "lens_id": self.lens_id,
                 "normalized_dictionary_findings": normalized,
                 "split_regimen_dictionary_findings": split_regimens,
+                "added_dictionary_findings": len(added),
+                "dropped_dictionary_findings": len(dropped),
                 "selected_findings": len(final_findings),
             },
         )
@@ -921,6 +1047,7 @@ class InvestigationsDictionaryLens(_ThinArtifactLens):
         out: list[ClinicalFinding] = []
         normalized = 0
         dropped: list[ClinicalFinding] = []
+        seen_exact: set[tuple[str, tuple[tuple[str, str], ...], str]] = set()
         for finding in selected:
             attrs = dict(finding.attributes)
             repaired_attrs = sd.investigation_convention_attribute_repairs(
@@ -935,6 +1062,15 @@ class InvestigationsDictionaryLens(_ThinArtifactLens):
             ):
                 dropped.append(finding)
                 continue
+            exact_key = (
+                normalize_phrase(finding.text),
+                tuple(sorted((str(k), str(v)) for k, v in repaired_attrs.items())),
+                finding.evidence,
+            )
+            if exact_key in seen_exact:
+                dropped.append(finding)
+                continue
+            seen_exact.add(exact_key)
             if repaired_attrs != attrs:
                 finding = _finding_with_text_attributes(
                     finding,
@@ -952,6 +1088,26 @@ class InvestigationsDictionaryLens(_ThinArtifactLens):
                 normalized += 1
             out.append(finding)
 
+        added: list[ClinicalFinding] = []
+        existing_keys = {_investigation_recovery_key(finding) for finding in out}
+        for text, evidence, attrs in sd.investigation_residual_additions(store.note_text):
+            key = _investigation_recovery_key_from_parts(attrs)
+            if key in existing_keys:
+                continue
+            finding = _investigation_added_finding(
+                store,
+                text=text,
+                evidence=evidence,
+                attributes=attrs,
+                selected=selected,
+                policy=policy,
+                lens_id=self.lens_id,
+            )
+            if finding is None:
+                continue
+            existing_keys.add(key)
+            added.append(finding)
+
         event = ProvenanceEvent(
             stage="entity_lens",
             action="applied_standard_dictionary_investigations_repair",
@@ -962,11 +1118,16 @@ class InvestigationsDictionaryLens(_ThinArtifactLens):
                 "producer_id": policy.producer_id,
                 "source_lane": policy.source_lane,
                 "normalized_count": normalized,
+                "added_count": len(added),
+                "added_text_counts": _text_counts(added),
                 "dropped_count": len(dropped),
                 "dropped_text_counts": _text_counts(dropped),
             },
         )
-        final_findings = tuple(finding.with_provenance(event) for finding in out)
+        final_findings = tuple(
+            [finding.with_provenance(event) for finding in out]
+            + [finding.with_provenance(event) for finding in added]
+        )
         return LensResult(
             entity=self.entity,
             lens_id=self.lens_id,
@@ -974,6 +1135,7 @@ class InvestigationsDictionaryLens(_ThinArtifactLens):
             diagnostics={
                 "lens_id": self.lens_id,
                 "normalized_dictionary_findings": normalized,
+                "added_dictionary_findings": len(added),
                 "dropped_dictionary_findings": len(dropped),
                 "selected_findings": len(final_findings),
             },
@@ -1247,6 +1409,35 @@ def _has_diagnosis_concept(findings: list[ClinicalFinding], *, text: str) -> boo
     return False
 
 
+def _has_diagnosis_text_with_evidence(
+    findings: list[ClinicalFinding],
+    *,
+    text: str,
+    evidence: str,
+    attributes: Mapping[str, Any],
+) -> bool:
+    target_text = normalize_phrase(text)
+    target_evidence = normalize_phrase(evidence)
+    target_attrs = {
+        key: value
+        for key, value in dict(attributes).items()
+        if key in {"Certainty", "Negation"}
+    }
+    for finding in findings:
+        if normalize_phrase(finding.text) != target_text:
+            continue
+        if normalize_phrase(finding.evidence or finding.text) != target_evidence:
+            continue
+        attrs = {
+            key: value
+            for key, value in dict(finding.attributes).items()
+            if key in {"Certainty", "Negation"}
+        }
+        if attrs == target_attrs:
+            return True
+    return False
+
+
 def _diagnosis_added_finding(
     store: ClinicalFindingStore,
     *,
@@ -1256,26 +1447,20 @@ def _diagnosis_added_finding(
     policy: LensPolicy,
     lens_id: str,
 ) -> ClinicalFinding | None:
-    source_seed = selected[0] if selected else _first_source_finding(store, policy)
-    if source_seed is None:
+    source = _source_for_residual(
+        store,
+        entity=DIAGNOSIS.name,
+        selected=selected,
+        policy=policy,
+        ownership_suffix="deterministic_residual_benchmark_repair",
+    )
+    if source is None:
         return None
     attributes = {
         "DiagCategory": diagnosis_category_for_concept(text),
         "Certainty": "5",
         "Negation": "Affirmed",
     }
-    source = FindingSource(
-        producer_id=source_seed.source.producer_id,
-        artifact_path=source_seed.source.artifact_path,
-        pipeline_family=source_seed.source.pipeline_family,
-        model=source_seed.source.model,
-        prompt_version=source_seed.source.prompt_version,
-        mode=source_seed.source.mode,
-        ownership_label=(
-            f"{source_seed.source.ownership_label}+deterministic_residual_benchmark_repair"
-        ),
-        source_lane=source_seed.source.source_lane,
-    )
     return ClinicalFinding(
         finding_id=(
             f"{store.letter_id}:{policy.producer_id}:Diagnosis:lens:{lens_id}:"
@@ -1309,6 +1494,333 @@ def _diagnosis_added_finding(
         rationale="The source phrase matches a dev residual benchmark-format concept.",
         evidence_valid=evidence in store.note_text,
         raw_surface=False,
+    )
+
+
+def _sf_recovery_key(finding: ClinicalFinding) -> tuple[str, ...]:
+    return _sf_recovery_key_from_parts(finding.text, finding.attributes)
+
+
+_PRESCRIPTION_NAME_ALIASES = {
+    "brivetiracetam": "brivaracetam",
+    "brivitiracetam": "brivaracetam",
+    "epilim": "sodium-valproate",
+    "epilim-chrono": "sodium-valproate",
+    "eplim": "sodium-valproate",
+    "episenta": "sodium-valproate",
+    "sodiumvalproate": "sodium-valproate",
+    "tegretol-retard": "carbamazepine",
+}
+
+
+def _prescription_recovery_key(finding: ClinicalFinding) -> tuple[str, ...]:
+    return _prescription_recovery_key_from_parts(finding.attributes)
+
+
+def _prescription_recovery_key_from_parts(
+    attributes: Mapping[str, Any],
+) -> tuple[str, ...]:
+    attrs = {str(key): str(value) for key, value in attributes.items()}
+    drug = _prescription_drug_key(attrs.get("DrugName", ""))
+    frequency = attrs.get("Frequency", "").lower()
+    if not drug or not frequency:
+        return ()
+    if frequency == "as_required":
+        return "rescue", drug, frequency
+    dose = sd.normalize_dose_value(attrs.get("DrugDose", ""))
+    unit = sd.normalize_dose_unit(attrs.get("DoseUnit", "")) if attrs.get("DoseUnit") else ""
+    if not dose or not unit:
+        return ()
+    return "ordinary", drug, dose, unit, frequency
+
+
+def _prescription_drug_key(value: str) -> str:
+    generic = sd.normalize_drug_name(value) or value
+    key = normalize_phrase(generic).replace(" ", "-")
+    return _PRESCRIPTION_NAME_ALIASES.get(key, key)
+
+
+def _prescription_added_finding(
+    store: ClinicalFindingStore,
+    *,
+    text: str,
+    evidence: str,
+    attributes: dict[str, str],
+    selected: list[ClinicalFinding],
+    policy: LensPolicy,
+    lens_id: str,
+) -> ClinicalFinding | None:
+    source = _source_for_residual(
+        store,
+        entity=PRESCRIPTION.name,
+        selected=selected,
+        policy=policy,
+        ownership_suffix="standard_dictionary_prescription_residual",
+    )
+    if source is None:
+        return None
+    dose = attributes.get("DrugDose", "")
+    frequency = attributes.get("Frequency", "")
+    return ClinicalFinding(
+        finding_id=(
+            f"{store.letter_id}:{policy.producer_id}:Prescription:lens:{lens_id}:"
+            f"{normalize_phrase(text).replace(' ', '_')}:{dose}:{frequency}"
+        ),
+        letter_id=store.letter_id,
+        entity=PRESCRIPTION.name,
+        text=text,
+        attributes={str(key): str(value) for key, value in attributes.items()},
+        evidence=evidence,
+        normalized_concept=attributes.get("DrugName") or text,
+        assertion=None,
+        confidence="high",
+        source=source,
+        provenance=(
+            ProvenanceEvent(
+                stage="entity_lens",
+                action="added_prescription_residual_from_dictionary",
+                owner="standard_dictionary",
+                portability="clinical_epilepsy",
+                detail={
+                    "lens_id": lens_id,
+                    "producer_id": policy.producer_id,
+                    "source_lane": policy.source_lane,
+                    "rule_category": "prescription_current_regimen",
+                    "target_text": text,
+                    "evidence": evidence,
+                },
+            ),
+        ),
+        rationale="The source phrase matches a bounded dev residual current-regimen pattern.",
+        evidence_valid=evidence in store.note_text,
+        raw_surface=False,
+    )
+
+
+def _sf_recovery_key_from_parts(
+    text: str,
+    attributes: dict[str, str] | dict[str, object],
+) -> tuple[str, ...]:
+    attrs = {str(key): str(value) for key, value in attributes.items()}
+    concept = attrs.get("CUI") or normalize_phrase(text)
+    if attrs.get("NumberOfSeizures") == "0":
+        state = "seizure-free"
+    elif any(
+        key in attrs
+        for key in (
+            "NumberOfSeizures",
+            "LowerNumberOfSeizures",
+            "UpperNumberOfSeizures",
+        )
+    ) and any(
+        key in attrs
+        for key in (
+            "TimePeriod",
+            "YearDate",
+            "MonthDate",
+            "DayDate",
+            "PointInTime",
+        )
+    ):
+        state = "active-rate"
+    elif attrs.get("FrequencyChange"):
+        state = "unknown"
+    else:
+        state = "unknown"
+    if state == "active-rate":
+        fingerprint_keys = (
+            "NumberOfSeizures",
+            "LowerNumberOfSeizures",
+            "UpperNumberOfSeizures",
+            "NumberOfTimePeriods",
+            "LowerNumberOfTimePeriods",
+            "UpperNumberOfTimePeriods",
+            "TimePeriod",
+            "YearDate",
+            "MonthDate",
+            "DayDate",
+            "PointInTime",
+            "TimeSince_or_TimeOfEvent",
+        )
+        fingerprint = "|".join(
+            f"{key}={attrs[key]}" for key in fingerprint_keys if key in attrs
+        )
+        if fingerprint:
+            return concept, state, fingerprint
+    return concept, state
+
+
+def _sf_added_finding(
+    store: ClinicalFindingStore,
+    *,
+    text: str,
+    evidence: str,
+    attributes: dict[str, str],
+    selected: list[ClinicalFinding],
+    policy: LensPolicy,
+    lens_id: str,
+) -> ClinicalFinding | None:
+    source = _source_for_residual(
+        store,
+        entity=SEIZURE_FREQUENCY.name,
+        selected=selected,
+        policy=policy,
+        ownership_suffix="standard_dictionary_sf_residual",
+    )
+    if source is None:
+        return None
+    return ClinicalFinding(
+        finding_id=(
+            f"{store.letter_id}:{policy.producer_id}:SeizureFrequency:lens:{lens_id}:"
+            f"{normalize_phrase(text).replace(' ', '_')}"
+        ),
+        letter_id=store.letter_id,
+        entity=SEIZURE_FREQUENCY.name,
+        text=text,
+        attributes={str(key): str(value) for key, value in attributes.items()},
+        evidence=evidence,
+        normalized_concept=attributes.get("CUI") or text,
+        assertion=None,
+        confidence="high",
+        source=source,
+        provenance=(
+            ProvenanceEvent(
+                stage="entity_lens",
+                action="added_sf_residual_convention_from_dictionary",
+                owner="standard_dictionary",
+                portability="seizure_frequency",
+                detail={
+                    "lens_id": lens_id,
+                    "producer_id": policy.producer_id,
+                    "source_lane": policy.source_lane,
+                    "rule_category": "seizure_frequency",
+                    "target_text": text,
+                    "evidence": evidence,
+                },
+            ),
+        ),
+        rationale="The source phrase matches a bounded dev residual seizure-frequency pattern.",
+        evidence_valid=evidence in store.note_text,
+        raw_surface=False,
+    )
+
+
+def _investigation_recovery_key(finding: ClinicalFinding) -> tuple[str, str | None]:
+    return _investigation_recovery_key_from_parts(finding.attributes)
+
+
+def _investigation_recovery_key_from_parts(
+    attributes: Mapping[str, Any],
+) -> tuple[str, str | None]:
+    attrs = {str(key): str(value) for key, value in attributes.items()}
+    for modality in ("EEG", "MRI", "CT"):
+        if attrs.get(f"{modality}_Performed") == "Yes":
+            return modality, attrs.get(f"{modality}_Results")
+    return "", None
+
+
+def _investigation_added_finding(
+    store: ClinicalFindingStore,
+    *,
+    text: str,
+    evidence: str,
+    attributes: dict[str, str],
+    selected: list[ClinicalFinding],
+    policy: LensPolicy,
+    lens_id: str,
+) -> ClinicalFinding | None:
+    source = _source_for_residual(
+        store,
+        entity=INVESTIGATIONS.name,
+        selected=selected,
+        policy=policy,
+        ownership_suffix="standard_dictionary_investigation_residual",
+    )
+    if source is None:
+        return None
+    return ClinicalFinding(
+        finding_id=(
+            f"{store.letter_id}:{policy.producer_id}:Investigations:lens:{lens_id}:"
+            f"{normalize_phrase(text).replace(' ', '_')}"
+        ),
+        letter_id=store.letter_id,
+        entity=INVESTIGATIONS.name,
+        text=text,
+        attributes={str(key): str(value) for key, value in attributes.items()},
+        evidence=evidence,
+        normalized_concept=text,
+        assertion=None,
+        confidence="high",
+        source=source,
+        provenance=(
+            ProvenanceEvent(
+                stage="entity_lens",
+                action="added_investigation_residual_from_dictionary",
+                owner="standard_dictionary",
+                portability="clinical_epilepsy",
+                detail={
+                    "lens_id": lens_id,
+                    "producer_id": policy.producer_id,
+                    "source_lane": policy.source_lane,
+                    "rule_category": "clinical_epilepsy",
+                    "target_text": text,
+                    "evidence": evidence,
+                },
+            ),
+        ),
+        rationale=(
+            "The source phrase matches a bounded dev residual completed-investigation "
+            "pattern."
+        ),
+        evidence_valid=evidence in store.note_text,
+        raw_surface=False,
+    )
+
+
+def _first_source_finding_for_entity(
+    store: ClinicalFindingStore,
+    *,
+    entity: str | None,
+    policy: LensPolicy,
+) -> ClinicalFinding | None:
+    candidates = store.findings(
+        entity=entity,
+        producer_id=policy.producer_id,
+        raw_surface=None,
+    )
+    return candidates[0] if candidates else None
+
+
+def _source_for_residual(
+    store: ClinicalFindingStore,
+    *,
+    entity: str | None,
+    selected: list[ClinicalFinding],
+    policy: LensPolicy,
+    ownership_suffix: str,
+) -> FindingSource | None:
+    if selected:
+        base = selected[0].source
+    else:
+        seed = _first_source_finding_for_entity(store, entity=entity, policy=policy)
+        if seed is None:
+            seed = _first_source_finding_for_entity(store, entity=None, policy=policy)
+        if seed is not None:
+            base = seed.source
+        else:
+            sources = store.sources(producer_id=policy.producer_id) or store.sources()
+            if not sources:
+                return None
+            base = sources[0]
+    return FindingSource(
+        producer_id=base.producer_id,
+        artifact_path=base.artifact_path,
+        pipeline_family=base.pipeline_family,
+        model=base.model,
+        prompt_version=base.prompt_version,
+        mode=base.mode,
+        ownership_label=f"{base.ownership_label}+{ownership_suffix}",
+        source_lane=base.source_lane or policy.source_lane,
     )
 
 

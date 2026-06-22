@@ -8,6 +8,8 @@ import { useArchitectUrlSync } from "@/lib/hooks";
 import StageStrip from "@/components/architect/StageStrip";
 import StageInspector from "@/components/architect/StageInspector";
 import ArchitectNoteRenderer from "@/components/architect/ArchitectNoteRenderer";
+import { useActiveDataset } from "@/lib/datasets";
+import Exectv2ExampleExplorer from "@/components/exectv2/Exectv2ExampleExplorer";
 
 function PatientNoteMeta() {
   const trace = useArchitectStore((s) => s.trace);
@@ -81,6 +83,12 @@ function WorkbenchInner() {
   );
 }
 
+function WorkbenchRoute() {
+  const dataset = useActiveDataset();
+  if (dataset === "exectv2") return <Exectv2ExampleExplorer />;
+  return <WorkbenchInner />;
+}
+
 export default function WorkbenchPage() {
   return (
     <Suspense
@@ -92,7 +100,7 @@ export default function WorkbenchPage() {
         </div>
       }
     >
-      <WorkbenchInner />
+      <WorkbenchRoute />
     </Suspense>
   );
 }

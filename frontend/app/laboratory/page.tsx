@@ -6,6 +6,8 @@ import { useRules, useRunAblation, useLaboratoryUrlSync } from "@/lib/hooks";
 import { useLaboratoryStore } from "@/lib/stores";
 import RuleInventory from "@/components/laboratory/RuleInventory";
 import SimulationPanel from "@/components/laboratory/SimulationPanel";
+import { useActiveDataset } from "@/lib/datasets";
+import Exectv2ComponentImpact from "@/components/exectv2/Exectv2ComponentImpact";
 
 function LaboratoryInner() {
   const [search, setSearch] = useState("");
@@ -164,6 +166,12 @@ function LaboratoryInner() {
   );
 }
 
+function LaboratoryRoute() {
+  const dataset = useActiveDataset();
+  if (dataset === "exectv2") return <Exectv2ComponentImpact />;
+  return <LaboratoryInner />;
+}
+
 export default function LaboratoryPage() {
   return (
     <Suspense
@@ -175,7 +183,7 @@ export default function LaboratoryPage() {
         </div>
       }
     >
-      <LaboratoryInner />
+      <LaboratoryRoute />
     </Suspense>
   );
 }
