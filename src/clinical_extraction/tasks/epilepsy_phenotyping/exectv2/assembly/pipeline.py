@@ -31,6 +31,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.views impor
     changed_row_accounting,
     comparator_predictions_from_rows,
     control_predictions_from_rows,
+    predictions_from_prediction_surface,
     predictions_from_rows,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
@@ -60,6 +61,13 @@ FOCUSED_ROUTE_HEADLINES = {
 }
 BASELINE_DX_CONCEPT_NEGATION = 0.6693
 BASELINE_SF_ACTIVE_RATE_FIDELITY = 0.2887
+MATERIALIZED_SURFACES = (
+    "source_scored",
+    "evidence_valid",
+    "dictionary_normalized",
+    "residual_benchmark_added",
+    "final",
+)
 
 
 @dataclass(frozen=True)
@@ -114,12 +122,17 @@ def build_finding_assembly(
 
     raw_predictions = predictions_from_rows(rows, "raw_lane_mentions")
     scored_predictions = predictions_from_rows(rows, "predicted_mentions")
+    materialized_predictions = {
+        surface_key: predictions_from_prediction_surface(rows, surface_key)
+        for surface_key in MATERIALIZED_SURFACES
+    }
     views, score_ladder, target_report = build_scoring_views(
         candidate_name=manifest.candidate_id,
         ownership=manifest.ownership,
         gold_letters=gold_letters,
         raw_predictions=raw_predictions,
         scored_predictions=scored_predictions,
+        materialized_predictions=materialized_predictions,
     )
     baseline_producer = manifest.baseline_producer or _first_control_like_producer(manifest)
     control_predictions = control_predictions_from_rows(
@@ -234,6 +247,29 @@ def render_finding_assembly_markdown(
             f"{by_indicator[INVESTIGATIONS.name]['f1']:.4f} |"
         )
 
+    materialized = report["score_ladder"].get("materialized_surfaces", {})
+    if materialized:
+        lines += [
+            "",
+            "## Materialized Intermediate Surfaces",
+            "",
+            (
+                "| Surface | Overall F1 | Diagnosis | SeizureFrequency "
+                "| Prescription | Investigations |"
+            ),
+            "| --- | ---: | ---: | ---: | ---: | ---: |",
+        ]
+        for surface in MATERIALIZED_SURFACES:
+            scores = materialized[surface]
+            by_indicator = scores["by_indicator"]
+            lines.append(
+                f"| `{surface}` | {scores['overall']['f1']:.4f} | "
+                f"{by_indicator[DIAGNOSIS.name]['f1']:.4f} | "
+                f"{by_indicator[SEIZURE_FREQUENCY.name]['f1']:.4f} | "
+                f"{by_indicator[PRESCRIPTION.name]['f1']:.4f} | "
+                f"{by_indicator[INVESTIGATIONS.name]['f1']:.4f} |"
+            )
+
     benchmark = report["score_ladder"]["benchmark"]
     companions = report["score_ladder"]["fidelity_companions"]
     lines += [
@@ -314,6 +350,9 @@ def _assemble_letter(
     lane_blocks: dict[str, Any] = {}
     predicted_mentions: list[dict[str, Any]] = []
     raw_mentions: list[dict[str, Any]] = []
+    prediction_surfaces: dict[str, list[dict[str, Any]]] = {
+        surface_key: [] for surface_key in MATERIALIZED_SURFACES
+    }
 
     for indicator in TARGET_INDICATORS:
         lens_config = manifest.lenses[indicator]
@@ -361,16 +400,40 @@ def _assemble_letter(
             ),
         )
         lane_scored = [finding.to_row() for finding in lens_result.findings]
-        lane_raw = [
-            finding.to_row()
-            for finding in store.findings(
+        lane_surfaces = _lane_prediction_surfaces(
+            store,
+            entity=indicator,
+            producer_id=lens_config.producer,
+            final_findings=lens_result.findings,
+        )
+        lane_surface_rows = {
+            surface_key: [finding.to_row() for finding in findings]
+            for surface_key, findings in lane_surfaces.items()
+        }
+        lane_raw_findings = list(
+            store.findings(
                 entity=indicator,
                 producer_id=lens_config.producer,
                 raw_surface=True,
             )
-        ]
+        )
+        if not lane_raw_findings:
+            lane_raw_findings = list(
+                findings_from_row(
+                    row,
+                    letter_id=letter.letter_id,
+                    entity=indicator,
+                    note_text=letter.note_text,
+                    source=source,
+                    raw_surface=True,
+                    predicted_fallback=True,
+                )
+            )
+        lane_raw = [finding.to_row() for finding in lane_raw_findings]
         predicted_mentions.extend(lane_scored)
         raw_mentions.extend(lane_raw)
+        for surface_key, surface_rows in lane_surface_rows.items():
+            prediction_surfaces[surface_key].extend(surface_rows)
         lane_blocks[indicator] = {
             "source_artifact": producer.artifact_path.as_posix(),
             "source_lane": source_lane,
@@ -385,6 +448,7 @@ def _assemble_letter(
             "lens_diagnostics": lens_result.diagnostics,
             "predicted_mentions": lane_scored,
             "raw_lane_mentions": lane_raw,
+            "prediction_surfaces": lane_surface_rows,
         }
     return store, {
         "letter_id": letter.letter_id,
@@ -400,8 +464,38 @@ def _assemble_letter(
         ],
         "predicted_mentions": predicted_mentions,
         "raw_lane_mentions": raw_mentions,
+        "prediction_surfaces": prediction_surfaces,
         "lanes": lane_blocks,
     }
+
+
+def _lane_prediction_surfaces(
+    store: ClinicalFindingStore,
+    *,
+    entity: str,
+    producer_id: str,
+    final_findings: Sequence[Any],
+) -> dict[str, list[Any]]:
+    source_scored = list(
+        store.findings(entity=entity, producer_id=producer_id, raw_surface=False)
+    )
+    evidence_valid = [finding for finding in source_scored if finding.evidence_valid]
+    final = list(final_findings)
+    dictionary_normalized = [
+        finding for finding in final if not _is_deterministic_addition(finding)
+    ]
+    residual_benchmark_added = list(final)
+    return {
+        "source_scored": source_scored,
+        "evidence_valid": evidence_valid,
+        "dictionary_normalized": dictionary_normalized,
+        "residual_benchmark_added": residual_benchmark_added,
+        "final": final,
+    }
+
+
+def _is_deterministic_addition(finding: Any) -> bool:
+    return any(event.action.startswith("added_") for event in finding.provenance)
 
 
 def _build_report(

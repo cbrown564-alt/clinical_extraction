@@ -49,6 +49,22 @@ def predictions_from_rows(
     ]
 
 
+def predictions_from_prediction_surface(
+    rows: Sequence[Mapping[str, Any]],
+    surface_key: str,
+) -> list[PredictedLetter]:
+    return [
+        PredictedLetter(
+            letter_id=str(row["letter_id"]),
+            mentions=tuple(
+                _predicted_mention(m)
+                for m in row.get("prediction_surfaces", {}).get(surface_key, [])
+            ),
+        )
+        for row in rows
+    ]
+
+
 def build_scoring_views(
     *,
     candidate_name: str,
@@ -56,6 +72,7 @@ def build_scoring_views(
     gold_letters: Sequence[ExectLetter],
     raw_predictions: Sequence[PredictedLetter],
     scored_predictions: Sequence[PredictedLetter],
+    materialized_predictions: Mapping[str, Sequence[PredictedLetter]] | None = None,
 ) -> tuple[dict[str, FindingViewResult], dict[str, Any], dict[str, Any]]:
     """Render raw, evidence-valid, headline, fidelity, and benchmark/CUI views."""
 
@@ -100,6 +117,18 @@ def build_scoring_views(
         "benchmark": benchmark,
         "fidelity_companions": fidelity,
     }
+    materialized_scores: dict[str, Any] = {}
+    for surface_key, predictions in (materialized_predictions or {}).items():
+        arch = architecture_report(
+            name=f"{candidate_name}_{surface_key}",
+            ownership=ownership,
+            gold_letters=gold_letters,
+            pred_letters=predictions,
+            entities=TARGET_INDICATORS,
+        )
+        materialized_scores[surface_key] = _target_surface(arch, projected=False)
+    if materialized_scores:
+        score_ladder["materialized_surfaces"] = materialized_scores
     view_results = {
         "raw_candidate": FindingViewResult(
             view_id="raw_candidate",

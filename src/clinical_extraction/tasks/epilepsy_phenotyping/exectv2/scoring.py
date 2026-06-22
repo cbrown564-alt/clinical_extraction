@@ -863,6 +863,95 @@ def _frequency_state_keys(
     return list(dict.fromkeys(keys))
 
 
+# ── Headline duplicate tagging (exploration-surface support) ───────────
+#
+# A per-letter exploration surface (the frontend Example Explorer) renders raw
+# ExECT mentions, but the clinical-recovery headline scores a de-duplicated
+# `Headline Scoring Unit`. The two disagree exactly on duplicate-bearing letters,
+# which is why a raw-mention drill-down can look like it "missed" a gold the
+# headline never required. These helpers expose, per raw mention, how the headline
+# unit it maps to is treated, so the surface can score-status and count against the
+# headline rather than the raw multiset. Keying lives here (one home) and is reused
+# by the surface, never re-implemented downstream. See CONTEXT.md
+# (`Headline Scoring Unit`, `Redundant-Convention Duplicate`,
+# `Distinct-Assertion Duplicate`) and discoveries-log D20.
+
+#: A mention whose entire headline unit was already contributed by an earlier
+#: mention in the same letter+family that the headline *collapses* (Diagnosis,
+#: SeizureFrequency) — a Redundant-Convention Duplicate the model is not charged
+#: for. Badge: "removed from headline scoring - deduplicated".
+HEADLINE_DEDUPLICATED = "deduplicated"
+#: A mention that shares its headline unit with another mention in a family the
+#: headline counts *per occurrence* (Investigations, Prescription) — a
+#: Distinct-Assertion Duplicate the headline genuinely counts. Badge:
+#: "distinct assertion — counted".
+HEADLINE_DISTINCT_ASSERTION = "distinct_assertion"
+
+# Families whose clinical_headline key list applies `dict.fromkeys` and therefore
+# collapses same-unit duplicates within a letter. Investigations and Prescription
+# append per-occurrence instead (their 136→136 / 206→193 headline deltas are
+# unit filtering, not de-duplication), so a repeated unit there is counted.
+_DEDUPING_HEADLINE_ENTITIES: frozenset[str] = frozenset({"Diagnosis", "SeizureFrequency"})
+
+
+def clinical_headline_unit_keys(
+    entity: str,
+    annotations: Iterable[ExectAnnotation],
+    note_text: str = "",
+) -> list[Hashable]:
+    """The clinical-recovery headline unit keys the chips score for one family's
+    annotations in a letter. ``len(...)`` is that family's headline-unit count
+    (de-duplicated for Diagnosis/SeizureFrequency, per-occurrence for
+    Investigations/Prescription). Non-target families have no headline unit."""
+    if entity == "SeizureFrequency":
+        return _frequency_state_keys(annotations, "clinical_headline")
+    if entity == "Diagnosis":
+        return _concept_keys(annotations, "Diagnosis", "concept")
+    if entity == "Investigations":
+        return _investigation_component_keys(annotations, "clinical_headline")
+    if entity == _PRESCRIPTION_ENTITY:
+        return _prescription_component_keys(annotations, "clinical_headline", note_text)
+    return []
+
+
+def headline_duplicate_tags(
+    annotations: Sequence[ExectAnnotation],
+    note_text: str = "",
+) -> list[str | None]:
+    """Per-mention duplicate tag against the clinical-recovery headline unit.
+
+    Returns a list aligned with ``annotations``: ``HEADLINE_DEDUPLICATED`` (a
+    Redundant-Convention Duplicate the headline collapses), ``HEADLINE_DISTINCT_
+    ASSERTION`` (a Distinct-Assertion Duplicate the headline counts per
+    occurrence), or ``None`` (the sole/representative carrier of its headline unit,
+    or a mention that contributes no headline unit at all). Tagging is grouped by
+    family so each family's collapse semantics apply within that family.
+    """
+    annotations = list(annotations)
+    per_mention_keys = [
+        clinical_headline_unit_keys(a.entity, [a], note_text) for a in annotations
+    ]
+    tags: list[str | None] = [None] * len(annotations)
+    by_entity: dict[str, list[int]] = {}
+    for index, annotation in enumerate(annotations):
+        by_entity.setdefault(annotation.entity, []).append(index)
+    for entity, indices in by_entity.items():
+        if entity in _DEDUPING_HEADLINE_ENTITIES:
+            seen: set[Hashable] = set()
+            for index in indices:
+                keys = per_mention_keys[index]
+                if keys and all(key in seen for key in keys):
+                    tags[index] = HEADLINE_DEDUPLICATED
+                seen.update(keys)
+        else:
+            counts = Counter(key for index in indices for key in per_mention_keys[index])
+            for index in indices:
+                keys = per_mention_keys[index]
+                if keys and any(counts[key] >= 2 for key in keys):
+                    tags[index] = HEADLINE_DISTINCT_ASSERTION
+    return tags
+
+
 def _score_frequency_active_rate_fidelity(
     gold_letters: Sequence[ExectLetter],
     pred_letters: Sequence[ExectLetter],

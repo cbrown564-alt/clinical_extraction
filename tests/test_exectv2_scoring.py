@@ -13,10 +13,14 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     load_letters,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
+    HEADLINE_DEDUPLICATED,
+    HEADLINE_DISTINCT_ASSERTION,
     PHRASE_AND_FEATURES,
     PHRASE_ONLY,
     benchmark_config_for,
     canonicalize_medication_name,
+    clinical_headline_unit_keys,
+    headline_duplicate_tags,
     match_key,
     normalize_phrase,
     score_concept_identity,
@@ -1328,3 +1332,70 @@ def test_source_near_diagnostic_counts_same_entity_substring_overlap() -> None:
     assert diagnostic.per_entity[SEIZURE_FREQUENCY.name].overlap.tp == 1
     assert diagnostic.per_entity[SEIZURE_FREQUENCY.name].attribute_agreement_tp == 0
     assert diagnostic.overall.attribute_agreement_rate == 0.5
+
+
+def test_headline_duplicate_tags_ea0044_pattern():
+    """SF same-offset/attribute-only twin de-duplicates; distinct-offset EEG
+    duplicate is counted per occurrence (the EA0044 pattern, D20)."""
+    annotations = [
+        ExectAnnotation(
+            entity=SEIZURE_FREQUENCY.name,
+            text="seizures",
+            attributes={"NumberOfSeizures": "0", "PointInTime": "LastClinic"},
+        ),
+        ExectAnnotation(
+            entity=SEIZURE_FREQUENCY.name,
+            text="seizures",
+            attributes={"NumberOfSeizures": "0", "PointInTime": "DrugChange"},
+        ),
+        ExectAnnotation(
+            entity=INVESTIGATIONS.name,
+            text="MRI",
+            attributes={"MRI_Performed": "Yes", "MRI_Results": "Normal"},
+        ),
+        ExectAnnotation(
+            entity=INVESTIGATIONS.name,
+            text="EEG",
+            attributes={"EEG_Performed": "Yes", "EEG_Results": "Abnormal"},
+        ),
+        ExectAnnotation(
+            entity=INVESTIGATIONS.name,
+            text="EEG",
+            attributes={"EEG_Performed": "Yes", "EEG_Results": "Abnormal"},
+        ),
+    ]
+
+    tags = headline_duplicate_tags(annotations)
+    # Only the second SF mention (a Redundant-Convention Duplicate) is collapsed.
+    assert tags == [
+        None,
+        HEADLINE_DEDUPLICATED,
+        None,
+        HEADLINE_DISTINCT_ASSERTION,
+        HEADLINE_DISTINCT_ASSERTION,
+    ]
+
+    sf = [a for a in annotations if a.entity == SEIZURE_FREQUENCY.name]
+    inv = [a for a in annotations if a.entity == INVESTIGATIONS.name]
+    # SF collapses 2 raw mentions to 1 headline unit; Investigations preserves all 3.
+    assert len(clinical_headline_unit_keys(SEIZURE_FREQUENCY.name, sf)) == 1
+    assert len(clinical_headline_unit_keys(INVESTIGATIONS.name, inv)) == 3
+
+
+def test_headline_duplicate_tags_distinct_sf_states_not_deduplicated():
+    """Two SF mentions of one seizure type in different states (active + seizure
+    free) are distinct headline units, not duplicates — neither is tagged."""
+    annotations = [
+        ExectAnnotation(
+            entity=SEIZURE_FREQUENCY.name,
+            text="seizures",
+            attributes={"NumberOfSeizures": "5", "TimePeriod": "Month"},
+        ),
+        ExectAnnotation(
+            entity=SEIZURE_FREQUENCY.name,
+            text="seizures",
+            attributes={"NumberOfSeizures": "0", "PointInTime": "LastClinic"},
+        ),
+    ]
+    assert headline_duplicate_tags(annotations) == [None, None]
+    assert len(clinical_headline_unit_keys(SEIZURE_FREQUENCY.name, annotations)) == 2

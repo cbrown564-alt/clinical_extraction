@@ -4,92 +4,78 @@ Last updated: 2026-06-22
 
 ## Active Objective
 
-Final project consolidation is active. The goal is to preserve the canonical
-Gan 2026 and ExECTv2 evidence spine, report the final model/architecture
-comparison conservatively, make ExECTv2 reviewable in the frontend, and plan
-repo simplification without deleting or moving evidence.
+Final project consolidation Phase 1 is complete. The current objective is to
+run the next Qwen iteration under the new LLM repair attribution protocol:
+reach ExECTv2 F1 `>0.900` on the declared development surface using only
+model-preserving canonical repair, with prediction-bearing rescue repair
+disabled or counted as model error.
 
 ## Current Read
 
-ExECTv2 v08 is the achieved dev140 performance control:
-`exectv2_holistic_finding_assembly_v08_dev140`. Official family headlines are
-Diagnosis `0.9083`, SeizureFrequency `0.9053`, Prescription `0.9357`,
-Investigations `0.9132`, overall `0.9152`. Claim boundary: dev-only
-component-attributed evidence, not a full-200, locked-test, or benchmark claim.
+ExECTv2 v08 remains the dev140 GPT performance control: overall `0.9155`,
+Diagnosis `0.9090`, SeizureFrequency `0.9053`, Prescription `0.9357`,
+Investigations `0.9132`. ExECTv2 v09 partial hybrid is the simplification
+control at overall `0.9061`, not the performance control.
 
-ExECTv2 v09 partial hybrid is the simplification control:
-`exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140`, overall
-`0.9059`. It keeps focused Diagnosis/SF and deterministic Prescription while
-dropping the v08 Investigations stack. It is not the performance control because
-Investigations falls to `0.8549`.
+Final non-GPT diagnostics are complete and remain `do-not-promote`. DeepSeek
+v0.9.16 dev140 refreshed replay: overall `0.9174`, Dx `0.8898`, SF `0.9017`,
+Rx `0.9415`, Inv `0.9658`, raw-lane F1 `0.7498`, exact evidence `1.0000`.
+Qwen v0.9.22 dev140: overall `0.9001`, Dx
+`0.8563`, SF `0.8908`, Rx `0.9343`, Inv `0.9579`, exact evidence `1.0000`,
+raw-lane F1 `0.6406`, with ten visible parse/schema failures on each family
+lens surface. Neither justifies further dev140 or full-200 escalation without a
+predeclared protocol.
 
-DeepSeek v0.9.16 dev140 is the final hosted non-GPT diagnostic comparator:
-`exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140`, overall
-`0.9010`, Diagnosis `0.8828`, SeizureFrequency `0.8675`, Prescription
-`0.9430`, Investigations `0.9231`, exact evidence `1.0000`. It is strong
-transfer evidence, but its final gate decision is `do-not-promote` because
-Dx/SF remain below the GPT control and changed-row controls fail.
+The predeclared protocol now exists:
+`docs/design/llm_repair_attribution_protocol_2026-06-22.md`. It separates
+allowed model-preserving repair from disallowed prediction-bearing rescue
+repair. The Qwen target is no longer a residual-repair headline score; it is
+`>0.900` F1 on a protocol-clean `model_preserving_canonical` surface, while
+rescued facts remain visible as model false negatives/false positives.
 
-Qwen v0.9.22 dev140 is the final local-model diagnostic comparator:
-`exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140`,
-overall `0.9001`, Diagnosis `0.8563`, SeizureFrequency `0.8908`,
-Prescription `0.9343`, Investigations `0.9579`, exact evidence `1.0000`.
-It remains `do-not-promote` because Diagnosis and active-rate fidelity remain
-weak and ten parse/schema failures are visible on each family lens surface.
-
-Phase 0 consolidation artifacts now exist:
-`docs/experiments/final_artifact_index_2026-06-22.md`,
-`docs/experiments/exectv2/key_entities/exectv2_cross_model_closeout_2026-06-22.md`,
-`docs/experiments/exectv2/reliability/exectv2_cross_model_reliability_scorecard_2026-06-22.md`,
-`docs/research/final_architecture_selection_2026-06-22.md`, and
-`docs/plans/repo_simplification_plan_2026-06-22.md`.
-
-Frontend Phase 0 ExECTv2 support is present at `/exectv2`: static ExECTv2 mock
-data, task-aware registry entries, ExECTv2 frontend types, and a letter/result
-explorer for the earlier Phase 0 selected set. This route is now explicitly an
-interim prototype and data source, not the target app architecture. The
-frontend mock data and registry still need a refresh if the final DeepSeek
-v0.9.16 and Qwen v0.9.22 dev140 diagnostics should be visible in-app.
-
-The target frontend architecture is dataset-aware integration: ExECTv2 should
-be selectable as a sticky top-right dataset option and should drive the shared
-Example Explorer, Aggregate Performance, Component Impact, and Error Gallery
-surfaces. Implementation plan:
+Phase 1 closeout artifacts, frontend static review data, and the clinical-
+utility companion audit are current. Dataset-aware frontend integration remains
+tracked in
 `docs/plans/exectv2_frontend_dataset_integration_implementation_plan_2026-06-22.md`.
 
 ## Active Priorities
 
-1. Treat v08 as the ExECTv2 performance control and v09 partial hybrid as the
+1. Treat v08 as the performance control and v09 partial hybrid as the
    simplification control.
-2. Treat final DeepSeek/Qwen dev140 rows as diagnostic portability evidence
-   unless a future predeclared gate changes that.
+2. Treat DeepSeek/Qwen dev140 as diagnostic portability evidence; resume Qwen
+   only for the predeclared protocol-clean rerun objective.
 3. Keep deterministic semantic lenses and dictionary repairs visible as
    prediction-bearing when they change clinical facts or attributes.
-4. Do not run ExECTv2 full-200 or holdout-facing row-level analysis without a
+4. Do not count rescue-added facts toward Qwen model-quality F1; fix those
+   misses in model output, prompt/schema, or model settings.
+5. Do not run ExECTv2 full-200 or holdout-facing row-level analysis without a
    frozen aggregate/readout protocol.
-5. Integrate ExECTv2 into the existing explorer surfaces as a dataset, not as a
-   standalone tab or route.
-6. Defer destructive repo cleanup until the artifact index and report set are
-   accepted as the evidence spine.
+6. Continue ExECTv2 frontend dataset integration and defer destructive cleanup
+   until the final index/report set is accepted.
 
 ## Work Board
 
 ### Now
 
-- Review Phase 0 closeout docs for final-paper wording and decide whether
-  final DeepSeek/Qwen diagnostic wording is ready for paper tables.
-- Begin the dataset-integration frontend plan: add shared dataset descriptors,
+- Design and run the next Qwen ExECTv2 development iteration under
+  `docs/design/llm_repair_attribution_protocol_2026-06-22.md`, targeting
+  F1 `>0.900` on the `model_preserving_canonical` surface.
+- Build/report the four required Qwen score surfaces: `raw_model`,
+  `schema_format`, `model_preserving_canonical`, and `hybrid_full_stack`.
+- Continue the dataset-integration frontend plan: shared dataset descriptors,
   sticky dataset selection, dataset-indexed static data, and a workbench
-  `SpecimenRef` path that supports both Gan rows and ExECTv2 letters.
+  `SpecimenRef` path for Gan rows and ExECTv2 letters.
 
 ### Next
 
-- Refresh frontend static data and registry so `/exectv2` or the future
-  dataset-integrated explorer shows DeepSeek v0.9.16 and Qwen v0.9.22 dev140.
-- Stop non-GPT model iteration unless a new predeclared portability or
-  review-routing question justifies it.
+- Add tests or replay checks that disallowed rescue actions do not contribute
+  to the protocol-clean Qwen score.
+- Review the Phase 1 closeout report set for final-paper wording and table
+  shape using the new repair-attribution language.
 - Start a cleanup branch that archives/quarantines superseded diagnostics only
-  after the final index is accepted.
+  after the final artifact index is accepted.
+- Consolidate reusable ExECTv2 report/reliability builders and add replay or
+  governance tests around canonical configs.
 
 ### Blocked
 
@@ -100,17 +86,18 @@ surfaces. Implementation plan:
 
 ### Done Recently
 
-- 2026-06-22: Updated the final artifact index, ExECTv2 cross-model closeout,
-  reliability scorecard, architecture selection, and frontend integration plan
-  for final DeepSeek v0.9.16 and Qwen v0.9.22 dev140 diagnostics.
-- 2026-06-22: Added a separate ExECTv2 frontend dataset-integration plan that
-  supersedes `/exectv2` as the target destination.
-- 2026-06-22: Completed Phase 0 final consolidation docs and frontend ExECTv2
-  static-review slice.
-- 2026-06-21: Completed ExECTv2 v08 all-four clearance and reliability
-  scorecard.
-- 2026-06-21: Completed Gan 2026 Qwen v0.6 hybrid repairfix frozen aggregate
-  test450 audit without row-level test inspection for development.
+- 2026-06-22: Added
+  `docs/design/llm_repair_attribution_protocol_2026-06-22.md`, separating
+  model-preserving canonical repair from prediction-bearing rescue repair and
+  redefining the next Qwen target as protocol-clean F1 `>0.900`.
+- 2026-06-22: Added the visual Qwen repair walkthrough at
+  `docs/experiments/exectv2/key_entities/qwen_repair_examples_visual_2026-06-22.html`.
+- 2026-06-22: Completed ExECTv2 clinical-utility companion, intermediate score
+  surfaces, Phase 1 final consolidation refresh, and frontend static-review
+  data refresh.
+- 2026-06-21: Completed ExECTv2 v08 all-four clearance, reliability scorecard,
+  and Gan Qwen repairfix frozen aggregate test450 audit without row-level test
+  inspection for development.
 
 ## Guardrails
 

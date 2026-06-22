@@ -558,3 +558,38 @@ rather than recovery of a defined clinical object. PatientHistory is the case in
 point: recall-bound (most golds absent from the candidate pool) and open-ended
 (any past clinical concept with a time anchor).
 _Avoid_: PatientHistory headline F1, scored grab-bag entity
+
+**Headline Scoring Unit**: The de-duplicated, entity-specific unit the
+[[Clinical Recovery Headline]] actually scores, distinct from the raw ExECT
+mention. SeizureFrequency reduces every mention to `(seizure_type, state)` and
+de-duplicates (`scoring._frequency_state_keys`), so two mentions of the same
+seizure-free type are one unit; Diagnosis reduces to the [[Concept Recovery
+Unit]]. Any per-letter exploration surface must report match status and family
+counts against this unit, never the raw mention multiset — the two disagree on
+exactly the letters that carry duplicates, which is what makes a raw-mention
+drill-down contradict the headline chips above it.
+_Avoid_: raw ExECT mention as the scored unit, per-mention multiset counts as the
+exploration-surface truth
+
+**Redundant-Convention Duplicate**: Two or more raw gold mentions that reduce to
+the *same* [[Headline Scoring Unit]] because they differ only in a
+headline-demoted attribute — e.g. EA0044's two `seizures` SeizureFrequency
+mentions at the *same offset* differing only in `PointInTime` (LastClinic vs
+DrugChange) on one seizure-free state. The headline de-duplicates them, so a model
+that emits one is fully correct and is *not* charged for the second. The
+exploration surface keeps the extra raw copies visible but badges them "removed
+from headline scoring - deduplicated". It carries no additional clinical fact.
+_Avoid_: required duplicate target, missed gold, [[Distinct-Assertion Duplicate]]
+
+**Distinct-Assertion Duplicate**: Two or more raw gold mentions of one concept at
+*distinct offsets* — genuine repeat textual assertions (e.g. EEG in the
+Investigations heading and again later in the letter body). Per the duplicate-FN
+analysis (gold-representation principles P5 / all-9 Finding 3) the published
+offset-based benchmark counts each, so the [[Clinical Recovery Headline]]
+*preserves* them rather than collapsing — Investigations is not de-duplicated
+(corpus 136 = 136). They are therefore NOT badged "removed from headline scoring".
+The contrast with [[Redundant-Convention Duplicate]] — same scoring unit vs. same
+concept at distinct offsets — is the load-bearing distinction the exploration
+surface must keep legible.
+_Avoid_: [[Redundant-Convention Duplicate]], headline-collapsible duplicate,
+cheap recall ceiling

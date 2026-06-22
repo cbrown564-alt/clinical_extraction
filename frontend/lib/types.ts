@@ -356,6 +356,14 @@ export interface Exectv2Mention {
   assertion: string;
   attributes: Record<string, string>;
   status: string;
+  /**
+   * How the clinical-recovery headline treats this mention's scoring unit:
+   * "deduplicated" — a Redundant-Convention Duplicate the headline collapses
+   * (same unit as an earlier mention; the model is not charged for it);
+   * "distinct_assertion" — a Distinct-Assertion Duplicate the headline counts
+   * per occurrence (same concept repeated at distinct offsets); "" otherwise.
+   */
+  headline_status: "" | "deduplicated" | "distinct_assertion";
 }
 
 export interface Exectv2EvidenceSpan {

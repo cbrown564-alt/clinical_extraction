@@ -2,8 +2,9 @@
 
 Date: 2026-06-22
 
-Scope: Phase 0 closeout index for the final comparison set across Gan 2026,
-ExECTv2 GPT-4.1-mini controls, and completed DeepSeek/Qwen dev140 diagnostics.
+Scope: Phase 1 refreshed closeout index for the final comparison set across
+Gan 2026, ExECTv2 GPT-4.1-mini controls, and completed DeepSeek/Qwen dev140
+diagnostics.
 
 This index freezes the evidence spine before any repository simplification. It
 does not authorize deleting, moving, or renaming canonical artifacts. It also
@@ -196,11 +197,14 @@ Stable hashes:
 - Local logs such as `*.out.log` and `*.err.log` are operational scratch once
   their summary status is captured.
 
-## Pending Refresh Slots
+## Phase 1 Refresh Status
 
 - DeepSeek/Qwen dev140 diagnostics are now indexed as final selected diagnostic
   architecture rows. They do not promote to performance controls.
-- Frontend static data and registry rows should be refreshed separately if the
-  app is expected to show the final v0.9.16/v0.9.22 dev140 diagnostics.
+- Frontend static data and registry rows now include the final v0.9.16
+  DeepSeek and v0.9.22 Qwen dev140 diagnostics:
+  `frontend/public/mock-data/registry.json`,
+  `frontend/public/mock-data/exectv2/runs.json`, and the corresponding
+  `frontend/public/mock-data/artifacts/*.json` files.
 - Full hashes: stable key artifacts are hashed above. If files are moved,
   copied, or refreshed, update this index before cleanup.

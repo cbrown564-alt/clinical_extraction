@@ -227,8 +227,8 @@ Acceptance criteria:
 - Non-canonical artifacts are explicitly marked as scratch, diagnostic,
   superseded, or active.
 
-Parallel status: can start immediately while Qwen runs. Leave a `Qwen pending`
-section and fill it when the run completes.
+Parallel status: complete after the Phase 1 refresh. The Qwen slot now points to
+the final v0.9.22 dev140 diagnostic row.
 
 ## Stream B - ExECTv2 Cross-Model Comparison Report
 
@@ -696,6 +696,19 @@ Finish:
   results.
 - Decide whether DeepSeek or Qwen justifies dev140 escalation.
 - If no escalation is justified, stop model iteration and move to writing.
+
+Completion note, 2026-06-22:
+
+- Qwen v0.9.22 dev140 was scored through finding assembly as
+  `exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140`.
+- The Qwen real-scorer error ledger was generated at
+  `experiments/exectv2_v0922_qwencompact_residualrepair_dev140_error_ledger_20260622.md`.
+- Stream B and Stream C now use completed DeepSeek v0.9.16 and Qwen v0.9.22
+  dev140 rows rather than pending dev25 placeholders.
+- Frontend static registry, ExECTv2 run summary, and artifact mock data include
+  v08, v09 partial hybrid, DeepSeek v0.9.16, and Qwen v0.9.22.
+- Neither DeepSeek nor Qwen justifies promotion beyond diagnostic comparator
+  status; no additional dev140/full-200 escalation is predeclared.
 
 ### Phase 2 - Next Working Day
 

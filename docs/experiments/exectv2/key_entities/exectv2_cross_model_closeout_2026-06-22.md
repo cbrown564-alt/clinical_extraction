@@ -2,9 +2,9 @@
 
 Date: 2026-06-22
 
-Scope: Phase 0 comparison across the current GPT-4.1-mini dev140 controls and
-the completed DeepSeek/Qwen dev140 diagnostics. This is a no-call report built
-from existing artifacts.
+Scope: Phase 1 refreshed comparison across the current GPT-4.1-mini dev140
+controls and the completed DeepSeek/Qwen dev140 diagnostics. This is a no-call
+report built from existing artifacts.
 
 ## Claim Boundary
 

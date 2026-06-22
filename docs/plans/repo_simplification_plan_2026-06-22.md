@@ -109,7 +109,6 @@ Before cleanup, a fresh clone should be able to:
 | Phase | Allowed | Not allowed |
 | --- | --- | --- |
 | Phase 0 | Create reports, index, mock frontend data, and cleanup inventory | Delete, move, or rename evidence |
-| Phase 1 | Refresh reports from completed Qwen/DeepSeek artifacts | Dev140/full-200 escalation without predeclaration |
+| Phase 1 | Refresh reports, scorecards, app registry, and mock data from completed Qwen/DeepSeek artifacts | Dev140/full-200 escalation without predeclaration |
 | Phase 2 | Archive/quarantine superseded artifacts in a cleanup branch | Remove canonical artifacts |
 | Phase 3 | Consolidate builders/tests and shrink public repo shape | Rewrite claim history or hide deterministic semantic repairs |
-

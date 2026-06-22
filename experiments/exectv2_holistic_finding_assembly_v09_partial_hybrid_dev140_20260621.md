@@ -1,6 +1,6 @@
 # ExECTv2 Holistic Finding Assembly Replay
 
-- Generated: `2026-06-21`
+- Generated: `2026-06-22`
 - Split/stage: `dev` / `dev140`
 - Candidate: `exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140`
 - Gate decision: **do-not-promote**
@@ -23,18 +23,28 @@ This replay builds a per-letter clinical finding store, applies entity-specific 
 
 | View | Legacy surface | Overall F1 | Diagnosis | SeizureFrequency | Prescription | Investigations |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
-| raw_candidate | `raw_lane_score` | 0.7432 | 0.7625 | 0.7814 | 0.9357 | 0.0000 |
-| evidence_valid | `evidence_valid_score` | 0.8779 | 0.9083 | 0.7814 | 0.9357 | 0.8549 |
-| benchmark_cui | `cui_projection_companion` | 0.8779 | 0.9083 | 0.7814 | 0.9357 | 0.8549 |
-| clinical_headline | `headline_target` | 0.9059 | 0.9083 | 0.9053 | 0.9357 | 0.8549 |
+| raw_candidate | `raw_lane_score` | 0.8231 | 0.7625 | 0.7814 | 0.9357 | 0.8549 |
+| evidence_valid | `evidence_valid_score` | 0.8778 | 0.9090 | 0.7814 | 0.9357 | 0.8549 |
+| benchmark_cui | `cui_projection_companion` | 0.8778 | 0.9090 | 0.7814 | 0.9357 | 0.8549 |
+| clinical_headline | `headline_target` | 0.9061 | 0.9090 | 0.9053 | 0.9357 | 0.8549 |
+
+## Materialized Intermediate Surfaces
+
+| Surface | Overall F1 | Diagnosis | SeizureFrequency | Prescription | Investigations |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `source_scored` | 0.8211 | 0.7572 | 0.7814 | 0.9357 | 0.8549 |
+| `evidence_valid` | 0.8211 | 0.7572 | 0.7814 | 0.9357 | 0.8549 |
+| `dictionary_normalized` | 0.8601 | 0.8614 | 0.7814 | 0.9357 | 0.8549 |
+| `residual_benchmark_added` | 0.8778 | 0.9090 | 0.7814 | 0.9357 | 0.8549 |
+| `final` | 0.8778 | 0.9090 | 0.7814 | 0.9357 | 0.8549 |
 
 ## Benchmark And Fidelity Views
 
 | Surface | Value |
 | --- | ---: |
-| Benchmark raw | 0.3794 |
-| Benchmark after CUI/projection | 0.4093 |
-| Diagnosis.concept_negation | 0.9083 |
+| Benchmark raw | 0.3844 |
+| Benchmark after CUI/projection | 0.4104 |
+| Diagnosis.concept_negation | 0.9090 |
 | SeizureFrequency.active_rate_fidelity | 0.5969 |
 
 ## Gate Summary
@@ -43,8 +53,8 @@ This replay builds a per-letter clinical finding store, applies entity-specific 
 | --- | --- | --- |
 | Prescription control regression | pass | delta vs v0.42 control +0.1143; floor -0.0100 |
 | Investigations control regression | pass | delta vs v0.42 control -0.0066; floor -0.0100 |
-| Diagnosis headline | pass | 0.9083; must beat 0.6693 and tie/beat 0.7127 |
-| Diagnosis concept_negation | pass | 0.9083; baseline 0.6693 |
+| Diagnosis headline | pass | 0.9090; must beat 0.6693 and tie/beat 0.7127 |
+| Diagnosis concept_negation | pass | 0.9090; baseline 0.6693 |
 | SeizureFrequency headline | pass | 0.9053; must beat 0.5572 and tie/beat 0.6321 |
 | SeizureFrequency active_rate_fidelity | pass | 0.5969; baseline 0.2887 |
 | Prescription changed-row control | fail | 124 changed rows |
@@ -63,7 +73,7 @@ This replay builds a per-letter clinical finding store, applies entity-specific 
 
 | Comparison | Indicator | Changed rows | Categories |
 | --- | --- | ---: | --- |
-| versus_v042_default_quarantine | Diagnosis | 130 | assertion_or_negation_change=101, hierarchy_reconciliation_or_duplicate_collapse=101, hierarchy_reconciliation=29 |
+| versus_v042_default_quarantine | Diagnosis | 130 | hierarchy_reconciliation=34, assertion_or_negation_change=96, hierarchy_reconciliation_or_duplicate_collapse=96 |
 | versus_v042_default_quarantine | SeizureFrequency | 120 | active_rate=88, seizure_free=55, projection_action=34, generic_vs_specific=6, unknown_or_change_state=38, reject_or_drop=10 |
 | versus_v042_default_quarantine | Prescription | 124 | model_output=124 |
 | versus_v042_default_quarantine | Investigations | 0 | none |

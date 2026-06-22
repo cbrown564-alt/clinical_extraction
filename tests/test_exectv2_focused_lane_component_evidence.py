@@ -80,6 +80,38 @@ def test_focused_lane_replay_reconstructs_raw_lane_mentions(
     assert raw_dx[0]["source_artifact"].endswith("diagnosis.jsonl")
 
 
+def test_focused_lane_replay_uses_source_predictions_when_raw_schema_has_no_mentions(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    letters = _letters()[:1]
+    monkeypatch.setattr(replay, "load_letters_for_split", lambda _split: letters)
+    diagnosis_row = _diagnosis_row("EA1")
+    diagnosis_row["raw_output"] = json.dumps({"structured_events": [{"family": "Diagnosis"}]})
+
+    rows, _report = replay.build_focused_lane_replay(
+        row_count=1,
+        control_artifact=_write_jsonl(tmp_path / "control.jsonl", [_control_row("EA1")]),
+        diagnosis_artifact=_write_jsonl(tmp_path / "diagnosis.jsonl", [diagnosis_row]),
+        sf_artifact=_write_jsonl(tmp_path / "sf.jsonl", [_sf_row("EA1")]),
+        focused_comparator_artifact=None,
+    )
+
+    raw_dx = [
+        mention
+        for mention in rows[0]["raw_lane_mentions"]
+        if mention["entity"] == "Diagnosis"
+    ]
+    scored_dx = [
+        mention
+        for mention in rows[0]["predicted_mentions"]
+        if mention["entity"] == "Diagnosis"
+    ]
+    assert raw_dx[0]["text"] == "focal epilepsy"
+    assert raw_dx[0]["raw_surface"] is True
+    assert scored_dx[0]["raw_surface"] is False
+
+
 def test_focused_lane_replay_fails_closed_on_missing_source_row(
     tmp_path: Path,
     monkeypatch,

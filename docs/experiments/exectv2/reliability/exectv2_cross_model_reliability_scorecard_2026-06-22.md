@@ -2,7 +2,7 @@
 
 Date: 2026-06-22
 
-Scope: Phase 0 no-call scorecard for the ExECTv2 final comparison set. This
+Scope: Phase 1 no-call scorecard for the ExECTv2 final comparison set. This
 extends the v08 reliability language to completed DeepSeek/Qwen dev140
 diagnostics without claiming that calibration, abstention, robustness, or
 consistency are complete.
@@ -44,7 +44,7 @@ calibration and review routing.
 | Exact evidence rate by model/family | Available from assembly JSON lane diagnostics. |
 | Evidence-valid but wrong counts | Available through FP/FN and residual ledgers, but not yet normalized into a single table for every selected row. |
 | Family-level miss and over-emission | Available in `target_report.candidates[].error_analysis.per_indicator`; needs consolidation. |
-| Cross-model agreement on dev140 | Feasible because v08, v09, DeepSeek v0.9.16, and Qwen v0.9.22 share dev140 `letter_id`, but not built in Phase 0. |
+| Cross-model agreement on dev140 | Feasible because v08, v09, DeepSeek v0.9.16, and Qwen v0.9.22 share dev140 `letter_id`, but not built in this closeout pass. |
 | Review triggers from provenance | Feasible from component owner, source lane, evidence validity, and residual family tags; not operationalized. |
 
 ## Residual Risk Register
