@@ -9,7 +9,7 @@ import StageStrip from "@/components/architect/StageStrip";
 import StageInspector from "@/components/architect/StageInspector";
 import ArchitectNoteRenderer from "@/components/architect/ArchitectNoteRenderer";
 import { useActiveDataset, gan2026Dataset } from "@/lib/datasets";
-import { SurfaceHeader, SurfaceLayout, SurfaceLink } from "@/components/surface";
+import { SurfaceHeader, SurfaceLayout, SurfaceLink, ExplorerBody } from "@/components/surface";
 import Exectv2ExampleExplorer from "@/components/exectv2/Exectv2ExampleExplorer";
 
 function PatientNoteMeta() {
@@ -76,25 +76,12 @@ function WorkbenchInner() {
       <StageStrip />
 
       {/* Main content: Note + Inspector */}
-      <div className="flex min-h-0 flex-1 overflow-hidden">
-        {/* Left — Note */}
-        <div className="flex w-[55%] flex-col border-r border-border">
-          <div className="flex items-center justify-between border-b border-border bg-surface-raised/50 px-4 py-1.5">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted">
-              Patient Note
-            </span>
-            <PatientNoteMeta />
-          </div>
-          <div className="flex-1 overflow-y-auto p-6">
-            <ArchitectNoteRenderer />
-          </div>
-        </div>
-
-        {/* Right — Stage Inspector */}
-        <div className="flex w-[45%] flex-col bg-surface">
-          <StageInspector />
-        </div>
-      </div>
+      <ExplorerBody
+        sourceLabel="Patient Note"
+        sourceMeta={<PatientNoteMeta />}
+        source={<ArchitectNoteRenderer />}
+        inspector={<StageInspector />}
+      />
     </SurfaceLayout>
   );
 }
