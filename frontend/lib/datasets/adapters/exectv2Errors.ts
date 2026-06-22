@@ -95,8 +95,17 @@ export function deriveLetterErrors(
   const rows: Exectv2ErrorRow[] = [];
 
   for (const family of familiesIn(letter)) {
-    const gold = letter.gold_mentions.filter((m) => m.entity === family);
-    const predicted = letter.predicted_mentions.filter((m) => m.entity === family);
+    // Score against the clinical-recovery headline unit, not the raw mention
+    // multiset: mentions the headline de-duplicates away are excluded so a
+    // redundant-convention duplicate is never surfaced as a false negative (or a
+    // duplicate prediction as a false positive). Distinct-assertion duplicates are
+    // kept — the headline counts them per occurrence.
+    const gold = letter.gold_mentions.filter(
+      (m) => m.entity === family && m.headline_status !== "deduplicated"
+    );
+    const predicted = letter.predicted_mentions.filter(
+      (m) => m.entity === family && m.headline_status !== "deduplicated"
+    );
     const usedGold = new Set<number>();
 
     predicted.forEach((pred, pi) => {

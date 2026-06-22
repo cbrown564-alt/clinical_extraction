@@ -56,6 +56,68 @@ def test_manifest_driven_assembly_preserves_sources_and_views(tmp_path: Path) ->
         "fidelity_companion",
         "benchmark_cui",
     }
+    assert set(first["prediction_surfaces"]) == {
+        "source_scored",
+        "evidence_valid",
+        "dictionary_normalized",
+        "residual_benchmark_added",
+        "final",
+    }
+    assert run.report["score_ladder"]["materialized_surfaces"]["source_scored"][
+        "overall"
+    ]["f1"] == run.report["score_ladder"]["raw_lane_score"]["overall"]["f1"]
+
+
+def test_assembly_materializes_dictionary_and_residual_intermediate_surfaces(
+    tmp_path: Path,
+) -> None:
+    letters = _letters()[:1]
+    control_row = _control_row("EA1")
+    control_row["predicted_mentions"] = [
+        mention
+        for mention in control_row["predicted_mentions"]
+        if mention["entity"] != "Prescription"
+    ]
+    control_row["raw_output"] = json.dumps({"mentions": control_row["predicted_mentions"]})
+    control = _write_jsonl(tmp_path / "control.jsonl", [control_row])
+    diagnosis = _write_jsonl(tmp_path / "diagnosis.jsonl", [_diagnosis_row("EA1")])
+    sf = _write_jsonl(tmp_path / "sf.jsonl", [_sf_row("EA1")])
+    manifest = _manifest(control=control, diagnosis=diagnosis, sf=sf, row_count=1)
+    manifest = FindingAssemblyManifest(
+        **{
+            **manifest.__dict__,
+            "candidate_id": "test_materialized_surfaces",
+            "lenses": {
+                **manifest.lenses,
+                "Prescription": LensManifest(
+                    entity="Prescription",
+                    producer="control",
+                    lens="prescription_dictionary_v09",
+                    source_lane="v0.42_control",
+                    ownership_label="llm_first_control+standard_dictionary_prescription",
+                    portability="clinical_epilepsy",
+                ),
+            },
+        }
+    )
+
+    run = build_finding_assembly(
+        manifest,
+        generated_on="2026-06-22",
+        gold_loader=lambda _split: letters,
+    )
+
+    rx_surfaces = run.rows[0]["lanes"]["Prescription"]["prediction_surfaces"]
+    assert rx_surfaces["source_scored"] == []
+    assert rx_surfaces["dictionary_normalized"] == []
+    assert [m["text"] for m in rx_surfaces["residual_benchmark_added"]] == ["lamotrigine"]
+    assert "lamotrigine 100 mg bd" in rx_surfaces["residual_benchmark_added"][0][
+        "evidence"
+    ]
+    assert [m["text"] for m in rx_surfaces["final"]] == ["lamotrigine"]
+    materialized = run.report["score_ladder"]["materialized_surfaces"]
+    assert materialized["dictionary_normalized"]["overall"]["pred_count"] == 3
+    assert materialized["residual_benchmark_added"]["overall"]["pred_count"] == 4
 
 
 def test_assembly_retains_evidence_invalid_raw_findings_but_fails_final_invalid(

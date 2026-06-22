@@ -22,6 +22,11 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectAnnotation
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
+    headline_duplicate_tags,
+)
+
 
 def _find_repo_root() -> Path:
     """Walk up from this module to the directory holding ``pyproject.toml``."""
@@ -319,6 +324,8 @@ def simplify_mention(mention: dict[str, Any], fallback_id: str, source: str) -> 
         "assertion": str(mention.get("assertion") or ""),
         "attributes": simplify_attributes(mention.get("attributes")),
         "status": source,
+        # Set by apply_headline_status(): "deduplicated" | "distinct_assertion" | "".
+        "headline_status": "",
     }
 
 
@@ -353,12 +360,47 @@ def evidence_spans(letter_text: str, mentions: list[dict[str, Any]]) -> list[dic
 
 
 def family_counts(mentions: list[dict[str, Any]]) -> dict[str, int]:
+    """Per-family counts against the clinical-recovery headline unit.
+
+    Mentions the headline de-duplicates away (``headline_status ==
+    "deduplicated"``) are excluded so the family tabs agree with the headline
+    chips instead of the raw mention multiset. Distinct-assertion duplicates are
+    still counted — the headline counts them per occurrence.
+    """
     counts = {family: 0 for family in FAMILIES}
     for mention in mentions:
+        if mention.get("headline_status") == "deduplicated":
+            continue
         entity = str(mention.get("entity") or "")
         if entity in counts:
             counts[entity] += 1
     return counts
+
+
+def _annotation_from_mention(mention: dict[str, Any]) -> ExectAnnotation:
+    return ExectAnnotation(
+        entity=str(mention.get("entity") or "Unknown"),
+        text=str(mention.get("text") or ""),
+        attributes={
+            str(key): str(value)
+            for key, value in dict(mention.get("attributes") or {}).items()
+        },
+    )
+
+
+def apply_headline_status(mentions: list[dict[str, Any]], note_text: str) -> None:
+    """Tag each simplified mention with how the headline treats its scoring unit.
+
+    Sets ``headline_status`` to ``"deduplicated"`` (a Redundant-Convention
+    Duplicate the headline collapses), ``"distinct_assertion"`` (a
+    Distinct-Assertion Duplicate the headline counts per occurrence), or ``""``.
+    Keying is delegated to ``scoring.headline_duplicate_tags`` so the surface never
+    re-implements the per-family headline keys.
+    """
+    annotations = [_annotation_from_mention(mention) for mention in mentions]
+    tags = headline_duplicate_tags(annotations, note_text)
+    for mention, tag in zip(mentions, tags):
+        mention["headline_status"] = tag or ""
 
 
 def metrics_from_summary(summary: dict[str, Any]) -> dict[str, Any]:
@@ -434,6 +476,8 @@ def build_run(spec: dict[str, Any]) -> dict[str, Any]:
             for mention in predicted_mentions
             if mention.get("evidence")
         )
+        apply_headline_status(gold_mentions, letter_text)
+        apply_headline_status(predicted_mentions, letter_text)
         all_mentions = gold_mentions + predicted_mentions
         letters.append(
             {

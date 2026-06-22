@@ -255,3 +255,1826 @@ Error: connect ECONNREFUSED 127.0.0.1:8000
   271 |     }
   272 |     return await res.json() as Promise<T>;
   273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+Failed to proxy http://127.0.0.1:8000/rules Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Failed to proxy http://127.0.0.1:8000/records/validation Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Failed to proxy http://127.0.0.1:8000/records/validation/10 Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Failed to proxy http://127.0.0.1:8000/pipeline-families Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] API request to /rules failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+[browser] API request to /records/validation failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+[browser] API request to /records/validation/10 failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+[browser] API request to /pipeline-families failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+Failed to proxy http://127.0.0.1:8000/run/note Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] API request to /run/note failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+Failed to proxy http://127.0.0.1:8000/exectv2/runs Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] API request to /exectv2/runs failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+Failed to proxy http://127.0.0.1:8000/exectv2/runs Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] API request to /exectv2/runs failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+Failed to proxy http://127.0.0.1:8000/exectv2/runs Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] API request to /exectv2/runs failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+Failed to proxy http://127.0.0.1:8000/exectv2/runs Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] API request to /exectv2/runs failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+Failed to proxy http://127.0.0.1:8000/registry Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] API request to /registry failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+Failed to proxy http://127.0.0.1:8000/artifacts/gan2026_rules_only_v1_baseline_2026-05-31 Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] API request to /artifacts/gan2026_rules_only_v1_baseline_2026-05-31 failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+Failed to proxy http://127.0.0.1:8000/artifacts/gan2026_rules_only_v1_baseline_2026-05-31 Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] API request to /artifacts/gan2026_rules_only_v1_baseline_2026-05-31 failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+    at async useObservatoryData.useCallback[loadRunDetail] (components/observatory/useObservatoryData.ts:588:26)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+Failed to proxy http://127.0.0.1:8000/rules Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Failed to proxy http://127.0.0.1:8000/records/validation Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Failed to proxy http://127.0.0.1:8000/records/validation/10 Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] API request to /rules failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+[browser] API request to /records/validation failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+[browser] API request to /records/validation/10 failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+Failed to proxy http://127.0.0.1:8000/pipeline-families Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] API request to /pipeline-families failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+Failed to proxy http://127.0.0.1:8000/run/note Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] API request to /run/note failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+Failed to proxy http://127.0.0.1:8000/exectv2/runs Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] API request to /exectv2/runs failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+Failed to proxy http://127.0.0.1:8000/exectv2/runs Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] API request to /exectv2/runs failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+Failed to proxy http://127.0.0.1:8000/rules Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Failed to proxy http://127.0.0.1:8000/records/validation Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Failed to proxy http://127.0.0.1:8000/records/validation/10 Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Failed to proxy http://127.0.0.1:8000/pipeline-families Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] API request to /rules failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+[browser] API request to /records/validation failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+[browser] API request to /records/validation/10 failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+[browser] API request to /pipeline-families failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+Failed to proxy http://127.0.0.1:8000/run/note Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] API request to /run/note failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+Failed to proxy http://127.0.0.1:8000/exectv2/runs Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] API request to /exectv2/runs failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+Failed to proxy http://127.0.0.1:8000/exectv2/runs Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] API request to /exectv2/runs failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+Failed to proxy http://127.0.0.1:8000/exectv2/runs Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] API request to /exectv2/runs failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+Failed to proxy http://127.0.0.1:8000/exectv2/runs Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] API request to /exectv2/runs failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+Failed to proxy http://127.0.0.1:8000/exectv2/runs Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] API request to /exectv2/runs failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+Failed to proxy http://127.0.0.1:8000/exectv2/runs Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] API request to /exectv2/runs failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+Failed to proxy http://127.0.0.1:8000/exectv2/runs Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] API request to /exectv2/runs failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+Failed to proxy http://127.0.0.1:8000/rules Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Failed to proxy http://127.0.0.1:8000/records/validation Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Failed to proxy http://127.0.0.1:8000/records/validation/10 Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Failed to proxy http://127.0.0.1:8000/pipeline-families Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] API request to /rules failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+[browser] API request to /records/validation failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+[browser] API request to /pipeline-families failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+[browser] API request to /records/validation/10 failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+Failed to proxy http://127.0.0.1:8000/registry Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] API request to /registry failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+Failed to proxy http://127.0.0.1:8000/artifacts/gan2026_rules_only_v1_baseline_2026-05-31 Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] API request to /artifacts/gan2026_rules_only_v1_baseline_2026-05-31 failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+Failed to proxy http://127.0.0.1:8000/rules Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] API request to /rules failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+Failed to proxy http://127.0.0.1:8000/registry Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] API request to /registry failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+Failed to proxy http://127.0.0.1:8000/artifacts/gan2026_rules_only_v1_baseline_2026-05-31 Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] API request to /artifacts/gan2026_rules_only_v1_baseline_2026-05-31 failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+Failed to proxy http://127.0.0.1:8000/artifacts/gan2026_rules_only_v1_baseline_2026-05-31 Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] API request to /artifacts/gan2026_rules_only_v1_baseline_2026-05-31 failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+    at async useObservatoryData.useCallback[loadRunDetail] (components/observatory/useObservatoryData.ts:588:26)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+Failed to proxy http://127.0.0.1:8000/rules Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Failed to proxy http://127.0.0.1:8000/records/validation Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Failed to proxy http://127.0.0.1:8000/records/validation/10 Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] API request to /rules failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+[browser] API request to /records/validation/10 failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+[browser] API request to /records/validation failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+Failed to proxy http://127.0.0.1:8000/pipeline-families Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] API request to /pipeline-families failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+Failed to proxy http://127.0.0.1:8000/rules Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Failed to proxy http://127.0.0.1:8000/records/validation Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Failed to proxy http://127.0.0.1:8000/records/validation/10 Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Failed to proxy http://127.0.0.1:8000/pipeline-families Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Failed to proxy http://127.0.0.1:8000/run/note Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Failed to proxy http://127.0.0.1:8000/records/validation Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Failed to proxy http://127.0.0.1:8000/records/validation/10 Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] Uncaught Error: ./Code/clinical_extraction/frontend/components/review/ReportBuilder.tsx:309:7
+Expected corresponding JSX closing tag for <SurfaceLayout>
+  307 |         )}
+  308 |       </div>
+> 309 |     </div>
+      |       ^^^
+  310 |   );
+  311 | }
+  312 |
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./Code/clinical_extraction/frontend/components/review/ReportBuilder.tsx [Client Component Browser]
+    ./Code/clinical_extraction/frontend/app/observatory/page.tsx [Client Component Browser]
+    ./Code/clinical_extraction/frontend/app/observatory/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Code/clinical_extraction/frontend/components/review/ReportBuilder.tsx [Client Component SSR]
+    ./Code/clinical_extraction/frontend/app/observatory/page.tsx [Client Component SSR]
+    ./Code/clinical_extraction/frontend/app/observatory/page.tsx [Server Component]
+
+
+    at <unknown> (Error: ./Code/clinical_extraction/frontend/components/review/ReportBuilder.tsx:309:7)
+    at <unknown> (Error: (./Code/clinical_extraction/frontend/components/review/ReportBuilder.tsx:309:7)
+Failed to proxy http://127.0.0.1:8000/rules Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Failed to proxy http://127.0.0.1:8000/records/validation Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Failed to proxy http://127.0.0.1:8000/records/validation/10 Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Failed to proxy http://127.0.0.1:8000/pipeline-families Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Failed to proxy http://127.0.0.1:8000/run/note Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] Uncaught Error: ./Code/clinical_extraction/frontend/app/laboratory/page.tsx:175:7
+Expected corresponding JSX closing tag for <SurfaceLayout>
+  173 |         </div>
+  174 |       </div>
+> 175 |     </div>
+      |       ^^^
+  176 |   );
+  177 | }
+  178 |
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./Code/clinical_extraction/frontend/app/laboratory/page.tsx [Client Component Browser]
+    ./Code/clinical_extraction/frontend/app/laboratory/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Code/clinical_extraction/frontend/app/laboratory/page.tsx [Client Component SSR]
+    ./Code/clinical_extraction/frontend/app/laboratory/page.tsx [Server Component]
+
+
+    at <unknown> (Error: ./Code/clinical_extraction/frontend/app/laboratory/page.tsx:175:7)
+    at <unknown> (Error: (./Code/clinical_extraction/frontend/app/laboratory/page.tsx:175:7)
+Failed to proxy http://127.0.0.1:8000/rules Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Failed to proxy http://127.0.0.1:8000/records/validation Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Failed to proxy http://127.0.0.1:8000/records/validation/10 Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Failed to proxy http://127.0.0.1:8000/pipeline-families Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Failed to proxy http://127.0.0.1:8000/run/note Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] Uncaught Error: ./Code/clinical_extraction/frontend/app/gallery/page.tsx:977:7
+Expected corresponding JSX closing tag for <SurfaceLayout>
+  975 |         )}
+  976 |       </div>
+> 977 |     </div>
+      |       ^^^
+  978 |   );
+  979 | }
+  980 |
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./Code/clinical_extraction/frontend/app/gallery/page.tsx [Client Component Browser]
+    ./Code/clinical_extraction/frontend/app/gallery/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Code/clinical_extraction/frontend/app/gallery/page.tsx [Client Component SSR]
+    ./Code/clinical_extraction/frontend/app/gallery/page.tsx [Server Component]
+
+
+    at <unknown> (Error: ./Code/clinical_extraction/frontend/app/gallery/page.tsx:977:7)
+    at <unknown> (Error: (./Code/clinical_extraction/frontend/app/gallery/page.tsx:977:7)
+Failed to proxy http://127.0.0.1:8000/rules Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Failed to proxy http://127.0.0.1:8000/records/validation Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Failed to proxy http://127.0.0.1:8000/records/validation/10 Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Failed to proxy http://127.0.0.1:8000/pipeline-families Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Failed to proxy http://127.0.0.1:8000/run/note Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] API request to /rules failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+[browser] API request to /records/validation failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+[browser] API request to /records/validation/10 failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+[browser] API request to /pipeline-families failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+[browser] API request to /run/note failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+Failed to proxy http://127.0.0.1:8000/rules Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Failed to proxy http://127.0.0.1:8000/records/validation Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Failed to proxy http://127.0.0.1:8000/records/validation/10 Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Failed to proxy http://127.0.0.1:8000/pipeline-families Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] API request to /rules failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+[browser] API request to /records/validation/10 failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+[browser] API request to /records/validation failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+[browser] API request to /pipeline-families failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+Failed to proxy http://127.0.0.1:8000/run/note Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] API request to /run/note failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+Failed to proxy http://127.0.0.1:8000/exectv2/runs Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] API request to /exectv2/runs failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+Failed to proxy http://127.0.0.1:8000/exectv2/runs Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] API request to /exectv2/runs failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+Failed to proxy http://127.0.0.1:8000/exectv2/runs Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] API request to /exectv2/runs failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
+Failed to proxy http://127.0.0.1:8000/exectv2/runs Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+Error: connect ECONNREFUSED 127.0.0.1:8000
+    at <unknown> (Error: connect ECONNREFUSED 127.0.0.1:8000) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8000
+}
+[browser] API request to /exectv2/runs failed: Error: HTTP 500: Internal Server Error
+    at fetchJson (lib/api.ts:270:13)
+  268 |     if (!res.ok) {
+  269 |       const text = await res.text().catch(() => "Unknown error");
+> 270 |       throw new Error(`HTTP ${res.status}: ${text}`);
+      |             ^
+  271 |     }
+  272 |     return await res.json() as Promise<T>;
+  273 |   } catch (error) { . Falling back to mock data... (lib/api.ts:274:13)
