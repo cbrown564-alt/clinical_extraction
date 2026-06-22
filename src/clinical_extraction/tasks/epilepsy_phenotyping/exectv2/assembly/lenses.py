@@ -610,6 +610,29 @@ class DiagnosisDictionaryLens(DiagnosisHeadingRecoveryLens):
             ):
                 dropped.append(current)
                 continue
+            repaired_attributes = sd.diagnosis_convention_attribute_repairs(
+                current.text,
+                evidence=current.evidence or current.text,
+                attributes=current.attributes,
+            )
+            if repaired_attributes != dict(current.attributes):
+                current = _diagnosis_finding_with_text(
+                    current,
+                    current.text,
+                    owner_suffix="standard_dictionary_diagnosis_attributes",
+                    provenance=ProvenanceEvent(
+                        stage="entity_lens",
+                        action="repaired_diagnosis_attributes_from_dictionary",
+                        owner="standard_dictionary",
+                        portability="benchmark_format",
+                        detail={
+                            "lens_id": self.lens_id,
+                            "rule_category": "benchmark_format",
+                            "target_text": current.text,
+                        },
+                    ),
+                )
+                rewritten.append(current)
             kept.append(current)
 
         added: list[ClinicalFinding] = []
@@ -765,6 +788,14 @@ class PrescriptionDictionaryLens(_ThinArtifactLens):
         for finding in selected:
             attrs = dict(finding.attributes)
             changed = False
+            repaired_attrs = sd.prescription_convention_attribute_repairs(
+                finding.text,
+                evidence=finding.evidence,
+                attributes=attrs,
+            )
+            if repaired_attrs != attrs:
+                attrs = repaired_attrs
+                changed = True
             drug = attrs.get("DrugName")
             if drug:
                 generic = sd.normalize_drug_name(drug)
@@ -1229,7 +1260,12 @@ def _diagnosis_finding_with_text(
         for key, value in dict(finding.attributes).items()
         if key not in {"CUI", "CUIPhrase"}
     }
-    attributes["DiagCategory"] = diagnosis_category_for_concept(text)
+    attributes = sd.diagnosis_convention_attribute_repairs(
+        text,
+        evidence=finding.evidence or finding.text,
+        attributes=attributes,
+    )
+    attributes.setdefault("DiagCategory", diagnosis_category_for_concept(text))
     source = FindingSource(
         producer_id=finding.source.producer_id,
         artifact_path=finding.source.artifact_path,

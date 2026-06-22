@@ -35,6 +35,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.benchmark_projection
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalization import (
     canonicalize_diagnosis_concept,
+    diagnosis_category_for_concept,
     normalize_phrase,
 )
 
@@ -178,6 +179,22 @@ def split_daily_dose_regimen(
     return split_rows
 
 
+def prescription_convention_attribute_repairs(
+    text: str,
+    *,
+    evidence: str,
+    attributes: Mapping[str, Any],
+) -> dict[str, str]:
+    """Return benchmark-format prescription repairs for an emitted regimen."""
+
+    repaired = {str(key): str(value) for key, value in attributes.items()}
+    if not repaired.get("Frequency"):
+        frequency = frequency_code(" ".join(part for part in (text, evidence) if part))
+        if frequency is not None:
+            repaired["Frequency"] = frequency
+    return repaired
+
+
 # ---------------------------------------------------------------------------
 # Diagnosis: benchmark / CUIPhrase convention dictionary
 # (migrated from the v03-v05 diagnosis lenses)
@@ -215,6 +232,19 @@ DIAGNOSIS_CONVENTION_ALIAS_REPAIRS: dict[str, str] = {
     "tonic clonic seizures alone": "epilepsy with generalised tonic clonic seizures alone",
 }
 
+DIAGNOSIS_SURFACE_CONVENTION_REPAIRS: dict[str, str] = {
+    "generalised tonic chronic seizure": "generalised tonic clonic seizure",
+    "generalised tonic chronic seizures": "generalised tonic clonic seizures",
+    "generalised tonic clonic seizures": "generalised tonic clonic seizures",
+    "generalised tonic clonic seizures alone": "generalised tonic clonic seizures",
+    "epilepsy with generalised tonic clonic seizure alone": (
+        "epilepsy with generalised tonic clonic seizures alone"
+    ),
+    "possibly generalised epilepsy": "generalised epilepsy",
+    "temporal lobe": "temporal lobe epilepsy",
+    "unclassified epilepsy": "epilepsy",
+}
+
 DIAGNOSIS_RESIDUAL_CONVENTION_NOISE: frozenset[str] = frozenset(
     {
         "drop attacks",
@@ -222,6 +252,15 @@ DIAGNOSIS_RESIDUAL_CONVENTION_NOISE: frozenset[str] = frozenset(
         "learning difficulties",
         "nocturnal seizures",
         "seizure",
+    }
+)
+
+DIAGNOSIS_SINGLE_SEIZURE_SURFACES: frozenset[str] = frozenset(
+    {
+        "convulsive seizure",
+        "focal seizure",
+        "generalised tonic clonic seizure",
+        "tonic clonic seizure",
     }
 )
 
@@ -365,11 +404,39 @@ def diagnosis_convention_target(text: str, evidence: str) -> str | None:
     (alias repair first, then residual benchmark).
     """
 
+    surface = normalize_phrase(text)
+    surface_target = DIAGNOSIS_SURFACE_CONVENTION_REPAIRS.get(surface)
+    if surface_target is not None:
+        return surface_target
+
     concept = canonicalize_diagnosis_concept(text)
     alias = DIAGNOSIS_CONVENTION_ALIAS_REPAIRS.get(concept)
     if alias is not None:
         return alias
     return _diagnosis_residual_benchmark_target(concept, evidence)
+
+
+def diagnosis_convention_attribute_repairs(
+    text: str,
+    *,
+    evidence: str,
+    attributes: Mapping[str, Any],
+) -> dict[str, str]:
+    """Return benchmark-format assertion repairs for a convention-rewritten diagnosis."""
+
+    repaired = {str(key): str(value) for key, value in attributes.items()}
+    repaired["DiagCategory"] = (
+        "SingleSeizure"
+        if normalize_phrase(text) in DIAGNOSIS_SINGLE_SEIZURE_SURFACES
+        else diagnosis_category_for_concept(text)
+    )
+    concept = canonicalize_diagnosis_concept(text)
+    if concept == "epilepsy" and re.search(
+        r"Diagnosis:\s*Epilepsy\s*[-–]\s*unclassified", evidence, re.IGNORECASE
+    ):
+        repaired["Certainty"] = "5"
+        repaired["Negation"] = "Affirmed"
+    return repaired
 
 
 def _diagnosis_residual_benchmark_target(concept: str, evidence: str) -> str | None:

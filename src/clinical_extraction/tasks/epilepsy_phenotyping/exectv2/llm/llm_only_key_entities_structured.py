@@ -64,8 +64,8 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.schema_repair 
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
-PROMPT_VERSION = "exectv2_hybrid_key_family_event_ledger_v0.9.6"
-QWEN_COMPACT_PROMPT_VERSION = "exectv2_hybrid_key_family_event_ledger_v0.9.3_qwen_compact"
+PROMPT_VERSION = "exectv2_hybrid_key_family_event_ledger_v0.9.8"
+QWEN_COMPACT_PROMPT_VERSION = "exectv2_hybrid_key_family_event_ledger_v0.9.8_qwen_compact"
 PIPELINE_FAMILY = "exectv2_hybrid_key_family_event_ledger"
 COMPONENT_OWNER = "hybrid_key_family_event_ledger"
 
@@ -319,6 +319,14 @@ def build_prompt_input(letter: ExectLetter, *, prompt_profile: PromptProfile = "
                 "Diagnosis mentions; do not collapse one into the other."
             ),
             (
+                "When a Diagnosis heading or impression states an epilepsy subtype "
+                "using the word epilepsy, such as 'Temporal lobe epilepsy' or "
+                "'Symptomatic structural focal epilepsy', render the subtype and also "
+                "render generic 'epilepsy' only when the source itself explicitly uses "
+                "the word epilepsy as a diagnosis. Do not add generic epilepsy from "
+                "family history, clinic names, medication labels, or weak context."
+            ),
+            (
                 "For Diagnosis mention text, render only the core clinical concept "
                 "span. Do not include section labels, dashes, hedging words "
                 "('probable', 'possible', 'query'), qualifiers like 'single' or "
@@ -375,6 +383,18 @@ def build_prompt_input(letter: ExectLetter, *, prompt_profile: PromptProfile = "
                 "'tonic-clonic'. Never write 'tonic chronic'."
             ),
             (
+                "For Diagnosis headings like 'generalised tonic clonic seizures with "
+                "myoclonic jerks, possible JME', render the plural tonic-clonic "
+                "seizure type as Diagnosis and render JME with lower certainty; do "
+                "not render isolated 'myoclonic jerks' as a Diagnosis mention."
+            ),
+            (
+                "For composite Diagnosis headings such as 'complex partial seizures "
+                "with secondary generalised tonic clonic seizures', split the heading "
+                "into separate Diagnosis mentions for the named seizure types instead "
+                "of returning the whole clause as one text span."
+            ),
+            (
                 "A problem-list or Diagnosis header is not enough by itself: still "
                 "exclude anxiety, dissociative/non-epileptic events, blackouts, "
                 "collapse, and loss of consciousness from the requested Diagnosis "
@@ -418,7 +438,17 @@ def build_prompt_input(letter: ExectLetter, *, prompt_profile: PromptProfile = "
                 "'several seizures since last clinic', '2 generalised tonic clonic "
                 "seizures 2014', or a named seizure type plus a date, render a "
                 "SeizureFrequency mention for that anchor even when the count is "
-                "approximate or dated."
+                "approximate or dated. Do not replace a heading frequency with a "
+                "later vague narrative estimate unless the later statement is an "
+                "explicit newer quantified correction."
+            ),
+            (
+                "When a seizure-frequency heading names a plural seizure type "
+                "followed only by a year or date, treat it as one dated occurrence "
+                "of that named type unless another count is attached to that same "
+                "type. For example, 'absence like seizures 2014' has "
+                "NumberOfSeizures='1', YearDate='2014', and "
+                "TimeSince_or_TimeOfEvent='During'."
             ),
             (
                 "SF state choice: statements that seizures have returned or have "
@@ -458,6 +488,12 @@ def build_prompt_input(letter: ExectLetter, *, prompt_profile: PromptProfile = "
                 "risk discussion, or old previous-event context as current "
                 "SeizureFrequency unless the sentence explicitly gives the patient's "
                 "current frequency state."
+            ),
+            (
+                "Onset-history statements such as 'seizures since the age of 13' are "
+                "not SeizureFrequency by themselves. Use them only as a seizure-free "
+                "since-age anchor when the same sentence says the last seizures were "
+                "in a past age range such as the teenage years."
             ),
             (
                 "For seizure-frequency ranges, never write values like '2 to 3', "
@@ -503,7 +539,14 @@ def build_prompt_input(letter: ExectLetter, *, prompt_profile: PromptProfile = "
             (
                 "Phrases like 'last seizure', 'last event', or 'has had none since' "
                 "mean seizure-free since that anchor for the named seizure type; do "
-                "not render them as one seizure during that date."
+                "not render them as one seizure during that date or as an active "
+                "current-rate statement."
+            ),
+            (
+                "Do not infer seizure-free from phrases like 'last seizure coincided "
+                "with missing medication' or 'previous seizure was a year ago' unless "
+                "the source also gives a clear no-further/since frame for the same "
+                "seizure type."
             ),
             (
                 "For seizure-free statements, anchor text to the underlying seizure "
@@ -522,6 +565,12 @@ def build_prompt_input(letter: ExectLetter, *, prompt_profile: PromptProfile = "
                 "SeizureFrequency mention unless it is tied to a seizure type, a count, "
                 "or a temporal anchor (since/last/date). A standalone 'seizure free' "
                 "with no seizure type and no time frame is not a scorable SF state."
+            ),
+            (
+                "Phrases such as 'remains seizure free and is now driving' or "
+                "'seizures were well controlled on medication' are not enough for a "
+                "SeizureFrequency mention unless they name the seizure type and give "
+                "a since/date/drug-change frame."
             ),
             (
                 "SF precision: do not use an anaphoric anchor such as 'these seizures', "
@@ -551,6 +600,25 @@ def build_prompt_input(letter: ExectLetter, *, prompt_profile: PromptProfile = "
                 "if-further-seizures plans are usually rejected."
             ),
             (
+                "Medication current-list split dosing: if a current regimen gives "
+                "unequal time-of-day doses such as 'Epilim 300 mg mane and 600 mg "
+                "nocte' or 'Lamictal 100 mg in the morning, 175 mg in the afternoon', "
+                "render separate Prescription mentions with Frequency='1'. Do not "
+                "mark these current scheduled doses as As_Required."
+            ),
+            (
+                "Medication plan boundary: future starts, requested dose increases, "
+                "taper targets, or if-further-seizures instructions are not current "
+                "Prescription mentions unless a separate current/taking/on-medication "
+                "statement supports them."
+            ),
+            (
+                "Medication frequency completion: when the selected current regimen "
+                "says 'twice a day', 'twice daily', or 'bd', include Frequency='2'; "
+                "when it says once daily, mane, nocte, morning, or evening, include "
+                "Frequency='1'."
+            ),
+            (
                 "For medication list entries that contain a compact regimen, render "
                 "text as the exact medication item span including dose and frequency "
                 "when those words are part of the same short line, for example "
@@ -559,6 +627,11 @@ def build_prompt_input(letter: ExectLetter, *, prompt_profile: PromptProfile = "
             (
                 "For investigations, use one event per modality such as EEG, MRI, or "
                 "CT; put performed, result, and EEG type in attributes."
+            ),
+            (
+                "ECG is not an ExECTv2 target investigation. Never map ECG to EEG, "
+                "MRI, or CT, and do not emit an Investigations mention from ECG-only "
+                "evidence."
             ),
             (
                 "Investigation decision lane: completed historical tests and tests "
@@ -602,6 +675,12 @@ def build_prompt_input(letter: ExectLetter, *, prompt_profile: PromptProfile = "
             (
                 "Only include EEG_Type when the letter explicitly says sleep-deprived "
                 "EEG or video telemetry. Do not default a plain EEG to Standard."
+            ),
+            (
+                "Every rendered mention object must include both entity and text. "
+                "Do not emit projection-only companion mentions such as objects with "
+                "only CUI/CUIPhrase attributes; omit CUI and CUIPhrase unless they "
+                "are explicitly available in the source."
             ),
             "Do not invent CUI values. If a CUI is not explicitly available, omit it.",
             "If no requested findings are present, return {\"clinical_events\": []}.",
@@ -727,10 +806,25 @@ def _build_qwen_compact_prompt_input(letter: ExectLetter) -> str:
                 "letter explicitly says frequency is unknown."
             ),
             (
+                "SeizureFrequency headings are high-value evidence. Keep heading "
+                "counts such as 'several seizures since last clinic' unless a later "
+                "statement is an explicit newer quantified correction."
+            ),
+            (
+                "If a seizure-frequency heading names a plural seizure type followed "
+                "only by a year or date, render one dated occurrence for that type: "
+                "NumberOfSeizures='1', YearDate='2014', "
+                "TimeSince_or_TimeOfEvent='During'."
+            ),
+            (
                 "Investigations: render completed historical MRI/CT/EEG/telemetry "
                 "or explicit no-test statements. Reject planned/requested/repeat/"
                 "awaited tests unless a separate completed result is stated. Do not "
                 "default plain EEG to EEG_Type='Standard'."
+            ),
+            (
+                "Every rendered mention object must include both entity and text. "
+                "Never emit projection-only CUI/CUIPhrase companion objects."
             ),
             "Do not invent CUI values; omit CUI and CUIPhrase.",
             "If no requested findings are present, return {\"clinical_events\": []}.",
@@ -868,6 +962,53 @@ def _qwen_compact_examples() -> list[dict[str, Any]]:
                 ],
                 "confidence": "high",
                 "rationale": "The current regimen states two separate once-daily doses.",
+            },
+        },
+        {
+            "note_fragment": (
+                "Seizure type and frequency: Uncertain, several seizures since the "
+                "last clinic appointment."
+            ),
+            "correct_event": {
+                "family": "seizure_frequency",
+                "anchor_text": "several seizures",
+                "evidence": "several seizures since the last clinic appointment",
+                "event_state": {"lane": "active_rate", "frame": "LastClinic"},
+                "mentions": [
+                    {
+                        "entity": "SeizureFrequency",
+                        "text": "seizures",
+                        "attributes": {
+                            "NumberOfSeizures": "3",
+                            "TimeSince_or_TimeOfEvent": "Since",
+                            "PointInTime": "LastClinic",
+                        },
+                    }
+                ],
+                "confidence": "medium",
+                "rationale": "The heading gives an approximate count since last clinic.",
+            },
+        },
+        {
+            "note_fragment": "Seizure type and frequency: absence like seizures 2014.",
+            "correct_event": {
+                "family": "seizure_frequency",
+                "anchor_text": "absence like seizures",
+                "evidence": "absence like seizures 2014",
+                "event_state": {"lane": "active_rate", "date": "2014"},
+                "mentions": [
+                    {
+                        "entity": "SeizureFrequency",
+                        "text": "absence like seizures",
+                        "attributes": {
+                            "NumberOfSeizures": "1",
+                            "YearDate": "2014",
+                            "TimeSince_or_TimeOfEvent": "During",
+                        },
+                    }
+                ],
+                "confidence": "high",
+                "rationale": "A plural seizure type plus year is one dated occurrence.",
             },
         },
         {
@@ -1418,6 +1559,7 @@ def _worked_examples() -> list[dict[str, Any]]:
                         "entity": "SeizureFrequency",
                         "text": "absence like seizures",
                         "attributes": {
+                            "NumberOfSeizures": "1",
                             "TimeSince_or_TimeOfEvent": "During",
                             "YearDate": "2014",
                         },
@@ -1470,6 +1612,31 @@ def _worked_examples() -> list[dict[str, Any]]:
                 ],
                 "confidence": "medium",
                 "rationale": "Several is an approximate seizure count since last clinic.",
+            },
+        },
+        {
+            "note_fragment": (
+                "Seizure type and frequency: Uncertain, several seizures since the "
+                "last clinic appointment."
+            ),
+            "correct_event": {
+                "family": "seizure_frequency",
+                "anchor_text": "several seizures",
+                "evidence": "several seizures since the last clinic appointment",
+                "event_state": {"count": "several", "frame": "since last clinic"},
+                "mentions": [
+                    {
+                        "entity": "SeizureFrequency",
+                        "text": "seizures",
+                        "attributes": {
+                            "NumberOfSeizures": "3",
+                            "TimeSince_or_TimeOfEvent": "Since",
+                            "PointInTime": "LastClinic",
+                        },
+                    }
+                ],
+                "confidence": "medium",
+                "rationale": "The frequency heading gives an approximate count since clinic.",
             },
         },
         {
@@ -1531,6 +1698,7 @@ def _worked_examples() -> list[dict[str, Any]]:
                         "entity": "SeizureFrequency",
                         "text": "absence like seizures",
                         "attributes": {
+                            "NumberOfSeizures": "1",
                             "YearDate": "2014",
                             "TimeSince_or_TimeOfEvent": "During",
                         },
@@ -1693,6 +1861,63 @@ def _worked_examples() -> list[dict[str, Any]]:
             },
         },
         {
+            "note_fragment": "He remains seizure free and is now driving.",
+            "correct_event": {
+                "family": "seizure_frequency",
+                "anchor_text": "seizure free",
+                "evidence": "remains seizure free and is now driving",
+                "event_state": {"state": "bare_seizure_free_without_since_frame"},
+                "mentions": [],
+                "confidence": "medium",
+                "rationale": "The statement has no seizure type or since/date anchor.",
+            },
+        },
+        {
+            "note_fragment": (
+                "He suffered with generalised tonic clonic seizures, which were well "
+                "controlled on Sodium Valproate."
+            ),
+            "correct_event": {
+                "family": "seizure_frequency",
+                "anchor_text": "generalised tonic clonic seizures",
+                "evidence": (
+                    "generalised tonic clonic seizures, which were well controlled "
+                    "on Sodium Valproate"
+                ),
+                "event_state": {"state": "well_controlled_without_current_frame"},
+                "mentions": [],
+                "confidence": "medium",
+                "rationale": "Well controlled historical context is not a current frequency state.",
+            },
+        },
+        {
+            "note_fragment": (
+                "His last seizures were in his teenage years where he probably had "
+                "around 3 or 4 focal to bilateral convulsive seizures."
+            ),
+            "correct_event": {
+                "family": "seizure_frequency",
+                "anchor_text": "seizures",
+                "evidence": "last seizures were in his teenage years",
+                "event_state": {"state": "seizure-free", "since": "teenage years"},
+                "mentions": [
+                    {
+                        "entity": "SeizureFrequency",
+                        "text": "seizures",
+                        "attributes": {
+                            "NumberOfSeizures": "0",
+                            "AgeLower": "13",
+                            "AgeUpper": "19",
+                            "AgeUnit": "Year",
+                            "TimeSince_or_TimeOfEvent": "Since",
+                        },
+                    }
+                ],
+                "confidence": "medium",
+                "rationale": "Last seizures in teenage years means none since that age range.",
+            },
+        },
+        {
             "note_fragment": "She has 2 focal seizures per month.",
             "correct_event": {
                 "family": "seizure_frequency",
@@ -1751,6 +1976,87 @@ def _worked_examples() -> list[dict[str, Any]]:
             },
         },
         {
+            "note_fragment": "Medication: Keppra 1000 milligrams twice a day.",
+            "correct_event": {
+                "family": "medication",
+                "anchor_text": "Keppra",
+                "evidence": "Keppra 1000 milligrams twice a day",
+                "event_state": {
+                    "drug": "Keppra",
+                    "dose": "1000 milligrams",
+                    "frequency": "twice a day",
+                },
+                "mentions": [
+                    {
+                        "entity": "Prescription",
+                        "text": "Keppra 1000 milligrams twice a day",
+                        "attributes": {
+                            "DrugName": "Keppra",
+                            "DrugDose": "1000",
+                            "DoseUnit": "mg",
+                            "Frequency": "2",
+                        },
+                    }
+                ],
+                "confidence": "high",
+                "rationale": "Twice a day maps to Frequency 2.",
+            },
+        },
+        {
+            "note_fragment": "Current medication: Epilim 300 mg mane and 600 mg nocte.",
+            "correct_event": {
+                "family": "medication",
+                "anchor_text": "Epilim",
+                "evidence": "Epilim 300 mg mane and 600 mg nocte",
+                "event_state": {
+                    "drug": "Epilim",
+                    "dose_schedule": "300 mg mane and 600 mg nocte",
+                },
+                "mentions": [
+                    {
+                        "entity": "Prescription",
+                        "text": "Epilim 300 mg mane",
+                        "attributes": {
+                            "DrugName": "Epilim",
+                            "DrugDose": "300",
+                            "DoseUnit": "mg",
+                            "Frequency": "1",
+                        },
+                    },
+                    {
+                        "entity": "Prescription",
+                        "text": "Epilim 600 mg nocte",
+                        "attributes": {
+                            "DrugName": "Epilim",
+                            "DrugDose": "600",
+                            "DoseUnit": "mg",
+                            "Frequency": "1",
+                        },
+                    },
+                ],
+                "confidence": "high",
+                "rationale": "The current regimen has two unequal once-daily doses.",
+            },
+        },
+        {
+            "note_fragment": (
+                "Plan: start levetiracetam and increase valproate to 800 mg bd if "
+                "further seizures occur."
+            ),
+            "correct_event": {
+                "family": "medication",
+                "anchor_text": "levetiracetam and valproate",
+                "evidence": (
+                    "start levetiracetam and increase valproate to 800 mg bd if "
+                    "further seizures occur"
+                ),
+                "event_state": {"planned": "future start and conditional increase"},
+                "mentions": [],
+                "confidence": "high",
+                "rationale": "Future and conditional medication plans are not current regimens.",
+            },
+        },
+        {
             "note_fragment": "Diagnosis: probable temporal lobe epilepsy.",
             "correct_event": {
                 "family": "diagnosis",
@@ -1773,6 +2079,123 @@ def _worked_examples() -> list[dict[str, Any]]:
                 ],
                 "confidence": "high",
                 "rationale": "Probable maps to Certainty 4 while preserving the specific syndrome.",
+            },
+        },
+        {
+            "note_fragment": "Diagnosis: Temporal lobe epilepsy.",
+            "correct_event": {
+                "family": "diagnosis",
+                "anchor_text": "Temporal lobe epilepsy",
+                "evidence": "Diagnosis: Temporal lobe epilepsy.",
+                "event_state": {
+                    "generic_diagnosis": "epilepsy",
+                    "specific_diagnosis": "Temporal lobe epilepsy",
+                },
+                "mentions": [
+                    {
+                        "entity": "Diagnosis",
+                        "text": "Temporal lobe epilepsy",
+                        "attributes": {
+                            "DiagCategory": "Epilepsy",
+                            "Certainty": "5",
+                            "Negation": "Affirmed",
+                        },
+                    },
+                    {
+                        "entity": "Diagnosis",
+                        "text": "epilepsy",
+                        "attributes": {
+                            "DiagCategory": "Epilepsy",
+                            "Certainty": "5",
+                            "Negation": "Affirmed",
+                        },
+                    },
+                ],
+                "confidence": "high",
+                "rationale": "The source states an epilepsy subtype and contains generic epilepsy.",
+            },
+        },
+        {
+            "note_fragment": (
+                "Diagnosis: generalised tonic clonic seizures with myoclonic jerks, "
+                "possible JME."
+            ),
+            "correct_event": {
+                "family": "diagnosis",
+                "anchor_text": "generalised tonic clonic seizures",
+                "evidence": (
+                    "Diagnosis: generalised tonic clonic seizures with myoclonic jerks, "
+                    "possible JME."
+                ),
+                "event_state": {
+                    "seizure_type": "generalised tonic clonic seizures",
+                    "possible_syndrome": "JME",
+                    "symptom_not_diagnosis": "myoclonic jerks",
+                },
+                "mentions": [
+                    {
+                        "entity": "Diagnosis",
+                        "text": "generalised tonic clonic seizures",
+                        "attributes": {
+                            "DiagCategory": "MultipleSeizures",
+                            "Certainty": "5",
+                            "Negation": "Affirmed",
+                        },
+                    },
+                    {
+                        "entity": "Diagnosis",
+                        "text": "JME",
+                        "attributes": {
+                            "DiagCategory": "Epilepsy",
+                            "Certainty": "3",
+                            "Negation": "Affirmed",
+                        },
+                    },
+                ],
+                "confidence": "high",
+                "rationale": "The heading states GTC seizures and only possible JME.",
+            },
+        },
+        {
+            "note_fragment": (
+                "Diagnosis: Complex partial seizures with secondary generalised "
+                "tonic clonic seizures."
+            ),
+            "correct_event": {
+                "family": "diagnosis",
+                "anchor_text": "Complex partial seizures",
+                "evidence": (
+                    "Diagnosis: Complex partial seizures with secondary generalised "
+                    "tonic clonic seizures."
+                ),
+                "event_state": {
+                    "seizure_types": [
+                        "Complex partial seizures",
+                        "secondary generalised tonic clonic seizures",
+                    ]
+                },
+                "mentions": [
+                    {
+                        "entity": "Diagnosis",
+                        "text": "Complex partial seizures",
+                        "attributes": {
+                            "DiagCategory": "MultipleSeizures",
+                            "Certainty": "5",
+                            "Negation": "Affirmed",
+                        },
+                    },
+                    {
+                        "entity": "Diagnosis",
+                        "text": "secondary generalised tonic clonic seizures",
+                        "attributes": {
+                            "DiagCategory": "MultipleSeizures",
+                            "Certainty": "5",
+                            "Negation": "Affirmed",
+                        },
+                    },
+                ],
+                "confidence": "high",
+                "rationale": "The compound heading names two seizure-type diagnoses.",
             },
         },
         {
@@ -1916,6 +2339,18 @@ def _worked_examples() -> list[dict[str, Any]]:
             ],
         },
         {
+            "note_fragment": "Her ECG was normal.",
+            "correct_event": {
+                "family": "investigation",
+                "anchor_text": "ECG",
+                "evidence": "ECG was normal",
+                "event_state": {"modality": "ECG", "target": False},
+                "mentions": [],
+                "confidence": "high",
+                "rationale": "ECG is not one of the requested MRI, CT, or EEG targets.",
+            },
+        },
+        {
             "note_fragment": "EEG 2012 generalised spike and wave.",
             "correct_event": {
                 "family": "investigation",
@@ -2053,9 +2488,24 @@ def _coerce_structured_payload(payload: Any) -> tuple[Any, list[str]]:
             coerced_mentions: list[Any] = []
             for mention_index, mention in enumerate(mentions):
                 if not isinstance(mention, dict):
-                    coerced_mentions.append(mention)
+                    notes.append(
+                        "dropped_malformed_mention: "
+                        f"event[{event_index}].mentions[{mention_index}] not_object"
+                    )
                     continue
                 mention = dict(mention)
+                missing = [
+                    key
+                    for key in ("entity", "text")
+                    if not str(mention.get(key) or "").strip()
+                ]
+                if missing:
+                    notes.append(
+                        "dropped_malformed_mention: "
+                        f"event[{event_index}].mentions[{mention_index}] "
+                        f"missing={','.join(missing)}"
+                    )
+                    continue
                 mention["attributes"] = _stringify_mapping(
                     mention.get("attributes") or {},
                     notes=notes,

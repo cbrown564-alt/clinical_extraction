@@ -66,6 +66,7 @@ def test_prompt_hygiene_and_four_family_schema() -> None:
     assert "Every Diagnosis mention must include Certainty and Negation" in clinical_rules
     assert "Certainty='4' for probable or likely diagnoses" in clinical_rules
     assert "render only the core clinical concept" in clinical_rules
+    assert "Temporal lobe epilepsy" in clinical_rules
     assert "Do not render bare modifiers" in clinical_rules
     assert "focal epilepsy-Probable temporal" in clinical_rules
     assert "Epilepsy - unclassified, possibly generalised" in clinical_rules
@@ -78,19 +79,33 @@ def test_prompt_hygiene_and_four_family_schema() -> None:
     assert "A problem-list or Diagnosis header is not enough" in clinical_rules
     assert "myoclonic jerks" in clinical_rules
     assert "Never write 'tonic chronic'" in clinical_rules
+    assert "possible JME" in clinical_rules
+    assert "complex partial seizures" in clinical_rules
     assert "Keep plural seizure-type wording plural" in clinical_rules
     assert "generic seizure phrase" in clinical_rules
     assert "Never emit a SeizureFrequency mention with empty attributes" in clinical_rules
     assert "'several'='3'" in clinical_rules
+    assert "Do not replace a heading frequency with a later vague narrative estimate" in (
+        clinical_rules
+    )
+    assert "NumberOfSeizures='1', YearDate='2014'" in clinical_rules
     assert "last seizure" in clinical_rules
+    assert "active current-rate statement" in clinical_rules
+    assert "last seizure coincided" in clinical_rules
+    assert "remains seizure free and is now driving" in clinical_rules
     assert "with altered awareness" in clinical_rules
     assert "Seizure type and frequency headings are high-value evidence" in clinical_rules
     assert "seizures have returned" in clinical_rules
     assert "reject generic spell anchors" in clinical_rules
     assert "generic events, blackouts" in clinical_rules
+    assert "Medication current-list split dosing" in clinical_rules
+    assert "Medication plan boundary" in clinical_rules
+    assert "Medication frequency completion" in clinical_rules
     assert "future planned, requested, repeat, or follow-up investigations" in clinical_rules
+    assert "ECG is not an ExECTv2 target investigation" in clinical_rules
     assert "EEG did show temporal slowing" in clinical_rules
     assert "Do not default a plain EEG to Standard" in clinical_rules
+    assert "Every rendered mention object must include both entity and text" in clinical_rules
     med_example = next(
         example
         for example in payload["worked_examples"]
@@ -99,6 +114,27 @@ def test_prompt_hygiene_and_four_family_schema() -> None:
     assert med_example["correct_event"]["mentions"][0]["text"] == (
         "lamotrigine 200 mg twice daily"
     )
+    split_med_example = next(
+        example
+        for example in payload["worked_examples"]
+        if example["note_fragment"] == "Current medication: Epilim 300 mg mane and 600 mg nocte."
+    )
+    assert [
+        m["attributes"]["Frequency"]
+        for m in split_med_example["correct_event"]["mentions"]
+    ] == ["1", "1"]
+    planned_med_example = next(
+        example
+        for example in payload["worked_examples"]
+        if example["note_fragment"].startswith("Plan: start levetiracetam")
+    )
+    assert planned_med_example["correct_event"]["mentions"] == []
+    keppra_example = next(
+        example
+        for example in payload["worked_examples"]
+        if example["note_fragment"] == "Medication: Keppra 1000 milligrams twice a day."
+    )
+    assert keppra_example["correct_event"]["mentions"][0]["attributes"]["Frequency"] == "2"
     interval_example = next(
         example
         for example in payload["worked_examples"]
@@ -127,6 +163,9 @@ def test_prompt_hygiene_and_four_family_schema() -> None:
         "generalised tonic clonic seizures",
         "absence like seizures",
     ]
+    assert dated_type_example["correct_event"]["mentions"][1]["attributes"][
+        "NumberOfSeizures"
+    ] == "1"
     returned_example = next(
         example
         for example in payload["worked_examples"]
@@ -171,6 +210,33 @@ def test_prompt_hygiene_and_four_family_schema() -> None:
         m["attributes"]["Certainty"]
         for m in focal_temporal_example["correct_event"]["mentions"]
     ] == ["5", "4"]
+    temporal_lobe_example = next(
+        example
+        for example in payload["worked_examples"]
+        if example["note_fragment"] == "Diagnosis: Temporal lobe epilepsy."
+    )
+    assert [m["text"] for m in temporal_lobe_example["correct_event"]["mentions"]] == [
+        "Temporal lobe epilepsy",
+        "epilepsy",
+    ]
+    gtc_jme_example = next(
+        example
+        for example in payload["worked_examples"]
+        if example["note_fragment"].startswith("Diagnosis: generalised tonic clonic")
+    )
+    assert [m["text"] for m in gtc_jme_example["correct_event"]["mentions"]] == [
+        "generalised tonic clonic seizures",
+        "JME",
+    ]
+    composite_dx_example = next(
+        example
+        for example in payload["worked_examples"]
+        if example["note_fragment"].startswith("Diagnosis: Complex partial seizures")
+    )
+    assert [m["text"] for m in composite_dx_example["correct_event"]["mentions"]] == [
+        "Complex partial seizures",
+        "secondary generalised tonic clonic seizures",
+    ]
     unclassified_example = next(
         example
         for example in payload["worked_examples"]
@@ -219,6 +285,9 @@ def test_prompt_hygiene_and_four_family_schema() -> None:
     assert absence_like_example["correct_event"]["mentions"][0]["attributes"][
         "DiagCategory"
     ] == "MultipleSeizures"
+    assert absence_like_example["correct_event"]["mentions"][1]["attributes"][
+        "NumberOfSeizures"
+    ] == "1"
     planned_mri_example = next(
         example
         for example in payload["worked_examples"]
@@ -233,6 +302,16 @@ def test_prompt_hygiene_and_four_family_schema() -> None:
     assert several_example["correct_event"]["mentions"][0]["attributes"][
         "NumberOfSeizures"
     ] == "3"
+    heading_several_example = next(
+        example
+        for example in payload["worked_examples"]
+        if example["note_fragment"].startswith("Seizure type and frequency: Uncertain")
+    )
+    assert heading_several_example["correct_event"]["mentions"][0]["attributes"] == {
+        "NumberOfSeizures": "3",
+        "TimeSince_or_TimeOfEvent": "Since",
+        "PointInTime": "LastClinic",
+    }
     last_event_example = next(
         example
         for example in payload["worked_examples"]
@@ -242,6 +321,24 @@ def test_prompt_hygiene_and_four_family_schema() -> None:
     assert last_event_example["correct_event"]["mentions"][0]["attributes"][
         "NumberOfSeizures"
     ] == "0"
+    bare_seizure_free_example = next(
+        example
+        for example in payload["worked_examples"]
+        if example["note_fragment"] == "He remains seizure free and is now driving."
+    )
+    assert bare_seizure_free_example["correct_event"]["mentions"] == []
+    well_controlled_example = next(
+        example
+        for example in payload["worked_examples"]
+        if example["note_fragment"].startswith("He suffered with generalised")
+    )
+    assert well_controlled_example["correct_event"]["mentions"] == []
+    teenage_example = next(
+        example
+        for example in payload["worked_examples"]
+        if example["note_fragment"].startswith("His last seizures were in his teenage")
+    )
+    assert teenage_example["correct_event"]["mentions"][0]["attributes"]["AgeLower"] == "13"
     no_event_example = next(
         example
         for example in payload["worked_examples"]
@@ -266,6 +363,12 @@ def test_prompt_hygiene_and_four_family_schema() -> None:
         if example["note_fragment"].startswith("She has jerks while travelling")
     )
     assert jerks_example["correct_event"] == []
+    ecg_example = next(
+        example
+        for example in payload["worked_examples"]
+        if example["note_fragment"] == "Her ECG was normal."
+    )
+    assert ecg_example["correct_event"]["mentions"] == []
 
 
 def test_qwen_compact_prompt_profile_keeps_schema_with_shorter_payload() -> None:
@@ -283,8 +386,27 @@ def test_qwen_compact_prompt_profile_keeps_schema_with_shorter_payload() -> None
     assert "do not render bare modifiers" in rules
     assert "Do not render myoclonic jerks" in rules
     assert "never emit an SF mention with empty attributes" in rules
+    assert "SeizureFrequency headings are high-value evidence" in rules
+    assert "NumberOfSeizures='1', YearDate='2014'" in rules
+    assert "both entity and text" in rules
     assert "Do not invent CUI values" in rules
     assert compact["candidate_evidence_ledger"]
+    heading_example = next(
+        example
+        for example in compact["worked_examples"]
+        if example["note_fragment"].startswith("Seizure type and frequency: Uncertain")
+    )
+    assert heading_example["correct_event"]["mentions"][0]["attributes"][
+        "NumberOfSeizures"
+    ] == "3"
+    dated_example = next(
+        example
+        for example in compact["worked_examples"]
+        if example["note_fragment"] == "Seizure type and frequency: absence like seizures 2014."
+    )
+    assert dated_example["correct_event"]["mentions"][0]["attributes"][
+        "NumberOfSeizures"
+    ] == "1"
 
 
 def test_candidate_evidence_ledger_types_family_lanes() -> None:
@@ -462,6 +584,43 @@ def test_parse_structured_events_accepts_top_level_event_array() -> None:
 
     assert record is not None
     assert record.clinical_events[0].anchor_text == "epilepsy"
+    assert not any(error.startswith("schema_validation_error") for error in errors)
+
+
+def test_parse_structured_events_drops_malformed_nested_mentions() -> None:
+    raw = json.dumps(
+        {
+            "clinical_events": [
+                {
+                    "family": "investigation",
+                    "anchor_text": "EEG recording",
+                    "evidence": "confirmed with an EEG recording",
+                    "mentions": [
+                        {
+                            "entity": INVESTIGATIONS.name,
+                            "text": "EEG recording",
+                            "attributes": {
+                                "EEG_Performed": "Yes",
+                                "EEG_Results": "Abnormal",
+                            },
+                        },
+                        {"attributes": {"CUI": "UMLS CUI not available in text"}},
+                        "not a mention object",
+                    ],
+                    "confidence": "high",
+                    "rationale": "EEG recording is stated.",
+                }
+            ]
+        }
+    )
+
+    record, errors = structured.parse_structured_events_json(raw)
+
+    assert record is not None
+    assert len(record.clinical_events[0].mentions) == 1
+    assert record.clinical_events[0].mentions[0].entity == INVESTIGATIONS.name
+    assert any("missing=entity,text" in error for error in errors)
+    assert any("not_object" in error for error in errors)
     assert not any(error.startswith("schema_validation_error") for error in errors)
 
 
