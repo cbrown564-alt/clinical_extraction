@@ -2,39 +2,21 @@
 
 import { Highlighter, Scale, Target, Wrench, Trophy, CheckCircle, XCircle } from "lucide-react";
 import { useArchitectStore } from "@/lib/stores";
+import { LensStrip, type LensItem } from "@/components/surface";
+import type { DatasetTone } from "@/lib/datasets";
 import type { TraceStage } from "@/lib/types";
 
-const stages: { id: TraceStage; label: string; icon: React.ReactNode }[] = [
-  { id: "extract", label: "Extract", icon: <Highlighter className="h-3 w-3" /> },
-  { id: "normalise", label: "Normalise", icon: <Scale className="h-3 w-3" /> },
-  { id: "select", label: "Select", icon: <Target className="h-3 w-3" /> },
-  { id: "repair", label: "Repair", icon: <Wrench className="h-3 w-3" /> },
-  { id: "score", label: "Score", icon: <Trophy className="h-3 w-3" /> },
+const stages: { id: TraceStage; label: string; tone: DatasetTone; icon: React.ReactNode }[] = [
+  { id: "extract", label: "Extract", tone: "deterministic", icon: <Highlighter className="h-3 w-3" /> },
+  { id: "normalise", label: "Normalise", tone: "deterministic-alt", icon: <Scale className="h-3 w-3" /> },
+  { id: "select", label: "Select", tone: "hybrid", icon: <Target className="h-3 w-3" /> },
+  { id: "repair", label: "Repair", tone: "llm", icon: <Wrench className="h-3 w-3" /> },
+  { id: "score", label: "Score", tone: "success", icon: <Trophy className="h-3 w-3" /> },
 ];
 
-function activeColor(stage: TraceStage): string {
-  switch (stage) {
-    case "extract":
-      return "bg-deterministic text-white border-deterministic shadow-sm";
-    case "normalise":
-      return "bg-deterministic-alt text-white border-deterministic-alt shadow-sm";
-    case "select":
-      return "bg-hybrid text-white border-hybrid shadow-sm";
-    case "repair":
-      return "bg-llm text-white border-llm shadow-sm";
-    case "score":
-      return "bg-success text-white border-success shadow-sm";
-  }
-}
+type Trace = NonNullable<ReturnType<typeof useArchitectStore.getState>["trace"]>;
 
-function inactiveColor(traceLoaded: boolean): string {
-  if (!traceLoaded) {
-    return "bg-surface-raised/50 text-muted border-border/60 cursor-default";
-  }
-  return "bg-surface text-foreground border-border hover:bg-surface-raised hover:border-border hover:shadow-sm";
-}
-
-function stageSummary(stage: TraceStage, trace: NonNullable<ReturnType<typeof useArchitectStore.getState>["trace"]>): React.ReactNode {
+function stageSummary(stage: TraceStage, trace: Trace): React.ReactNode {
   switch (stage) {
     case "extract": {
       const count = trace.extract.items.length;
@@ -104,75 +86,41 @@ function stageSummary(stage: TraceStage, trace: NonNullable<ReturnType<typeof us
   }
 }
 
+function stageCount(stage: TraceStage, trace: Trace): number {
+  switch (stage) {
+    case "extract":
+      return trace.extract.items.length;
+    case "normalise":
+      return trace.normalise.items.length;
+    case "select":
+      return 1;
+    case "repair":
+      return trace.repair ? trace.repair.changes.length : 0;
+    case "score":
+      return trace.score.match ? 1 : 0;
+  }
+}
+
 export default function StageStrip() {
   const activeStage = useArchitectStore((s) => s.activeStage);
   const trace = useArchitectStore((s) => s.trace);
   const setActiveStage = useArchitectStore((s) => s.setActiveStage);
 
-  const getCount = (stage: TraceStage): number | null => {
-    if (!trace) return null;
-    switch (stage) {
-      case "extract":
-        return trace.extract.items.length;
-      case "normalise":
-        return trace.normalise.items.length;
-      case "select":
-        return 1;
-      case "repair":
-        return trace.repair ? trace.repair.changes.length : 0;
-      case "score":
-        return trace.score.match ? 1 : 0;
-    }
-  };
+  const items: LensItem[] = stages.map((stage) => ({
+    id: stage.id,
+    label: stage.label,
+    tone: stage.tone,
+    icon: stage.icon,
+    count: trace ? stageCount(stage.id, trace) : undefined,
+    sublabel: trace ? stageSummary(stage.id, trace) : "Awaiting trace",
+  }));
 
   return (
-    <div className="shrink-0 border-b border-border bg-surface px-4 py-2">
-      <div className="flex items-stretch gap-1.5">
-        {stages.map((stage) => {
-          const isActive = stage.id === activeStage;
-          const hasTrace = !!trace;
-          const count = getCount(stage.id);
-
-          return (
-            <button
-              key={stage.id}
-              onClick={() => hasTrace && setActiveStage(stage.id)}
-              disabled={!hasTrace}
-              className={`flex flex-col justify-center gap-0.5 rounded-md border px-3 py-1.5 text-left transition-all min-w-[120px] flex-1 ${
-                isActive
-                  ? activeColor(stage.id)
-                  : inactiveColor(hasTrace)
-              }`}
-            >
-              <div className="flex items-center gap-1.5">
-                {stage.icon}
-                <span className="text-[11px] font-semibold">{stage.label}</span>
-                {hasTrace && count !== null && (
-                  <span
-                    className={`ml-0.5 rounded-full px-1.5 py-0 text-[10px] font-semibold ${
-                      isActive
-                        ? "bg-white/25 text-white"
-                        : "bg-surface-raised text-muted"
-                    }`}
-                  >
-                    {count}
-                  </span>
-                )}
-              </div>
-              {hasTrace && trace && (
-                <div className={`text-[10px] leading-tight ${isActive ? "text-white/90" : "text-muted"}`}>
-                  {stageSummary(stage.id, trace)}
-                </div>
-              )}
-              {!hasTrace && (
-                <div className={`text-[10px] leading-tight ${isActive ? "text-white/70" : "text-muted"}`}>
-                  Awaiting trace
-                </div>
-              )}
-            </button>
-          );
-        })}
-      </div>
-    </div>
+    <LensStrip
+      items={items}
+      activeId={activeStage}
+      onSelect={(id) => setActiveStage(id as TraceStage)}
+      enabled={!!trace}
+    />
   );
 }

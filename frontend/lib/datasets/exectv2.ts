@@ -2,7 +2,7 @@ import type { DatasetDescriptor, TaskFamilyDescriptor } from "./types";
 
 /** The four ExECTv2 key-finding families, in canonical order. */
 export const EXECTV2_FAMILIES: TaskFamilyDescriptor[] = [
-  { id: "Diagnosis", label: "Diagnosis", shortLabel: "Dx", tone: "deterministic" },
+  { id: "Diagnosis", label: "Diagnosis", shortLabel: "Dx", tone: "hybrid" },
   { id: "SeizureFrequency", label: "Seizure Frequency", shortLabel: "SF", tone: "llm" },
   { id: "Prescription", label: "Prescription", shortLabel: "Rx", tone: "success" },
   { id: "Investigations", label: "Investigations", shortLabel: "Inv", tone: "deterministic-alt" },
