@@ -2,7 +2,7 @@
 
 Date: 2026-06-22
 
-Status: proposed implementation plan
+Status: implemented (frontend integration delivered 2026-06-22)
 
 Scope: replace the current ExECTv2-as-separate-page direction with a
 dataset-aware explorer architecture. ExECTv2 should be selectable as a sticky
@@ -13,6 +13,53 @@ surfaces.
 This plan supersedes treating `/exectv2` as the destination experience. The
 current `/exectv2` route and generated mock data remain useful as a prototype
 and data source while the integrated dataset model is built.
+
+## Implementation Status (2026-06-22)
+
+Delivered. ExECTv2 is now a first-class dataset selectable from a sticky
+top-right switcher that drives all four review surfaces. Gan behaviour and URLs
+are unchanged.
+
+What was built:
+
+- **Dataset kernel** (`frontend/lib/datasets/`): shared contracts (`types.ts`),
+  `gan2026` and `exectv2` descriptors, `registry.ts`, URL/`datasetId` helpers
+  (`url.ts`, `surfaceHref`), and a URL+localStorage-synced `useActiveDataset` /
+  `useDatasetNavigation` hook (`useDataset.ts`). Bare Gan URLs resolve to
+  `gan2026` (default); `?dataset=` wins; last choice persists in localStorage.
+- **Sticky switcher** (`components/shell/DatasetSwitcher.tsx`) in the app-shell
+  Navbar top-right; ExECTv2 removed from the primary nav; surface links preserve
+  the active dataset.
+- **ExECTv2 adapters** (`lib/datasets/adapters/`): `exectv2Errors.ts` derives
+  mention-level residuals (FP / FN / attribute-mismatch / evidence-invalid) by
+  gold↔predicted matching with exact-quote + CUI awareness; `exectv2Components.ts`
+  summarises component provenance and computes v08→v09 family deltas.
+- **Four ExECTv2 surfaces** (`components/exectv2/`): Example Explorer, Aggregate
+  Performance, Component Impact, Error Gallery, sharing run/letter/family URL
+  state and cross-surface deep links.
+- **Dataset routing**: `workbench`, `observatory`, `laboratory`, `gallery` pages
+  branch on the active dataset; `/exectv2` redirects to
+  `/workbench?dataset=exectv2`, forwarding any selection.
+
+Scoping decisions (deltas from the suggestions below):
+
+- **Data layout**: ExECTv2 surfaces read the existing
+  `public/mock-data/exectv2/runs.json` (which already carries runs, letters,
+  mentions, evidence, metrics, and operational fields). Errors and component
+  summaries are derived client-side via adapters rather than from pre-sharded
+  `errors/` and `components/` files. The data API is abstracted behind the
+  adapter/hook layer, so re-sharding into the dataset-indexed layout (Phase B)
+  and the generator extension remain a clean, additive follow-up — not required
+  for the surfaces to work.
+- **Gan surfaces** are routed-to, not internally refactored: branching happens at
+  the page level so the battle-tested Gan components and URLs are untouched
+  (lowest-risk path to "Option C").
+
+Verification: `npx tsc --noEmit` clean; `npm run build` prerenders all routes;
+24/24 Jest tests pass (12 new dataset-kernel/ad/ adapter tests); new code is
+ESLint-clean (remaining repo lint errors are pre-existing `any` debt in
+`lib/api.ts` and `lib/hooks.ts`); dev-server smoke test returns 200 for all
+dataset-aware routes.
 
 ## Core Decision
 
@@ -337,7 +384,9 @@ ExECTv2 behavior:
   - parse/schema failures;
   - row count and split;
   - decision and claim boundary.
-- Make dev140 controls visually distinct from dev25 diagnostics.
+- Make controls visually distinct from diagnostics even when both are dev140.
+  The final DeepSeek/Qwen dev140 rows should not look promoted merely because
+  they share the control split.
 - Add family-level details for active-rate or strict companion surfaces where
   available.
 - Link aggregate rows to the Example Explorer and Error Gallery with the active
@@ -629,7 +678,7 @@ Required tests:
     component summaries, and error rows.
 - Generator tests:
   - generated ExECTv2 static data contains all selected runs;
-  - dev25 diagnostics are not mixed into dev140 controls;
+  - diagnostic rows are not mixed into controls, including dev140 diagnostics;
   - required family metrics exist.
 - Build checks:
   - `npx tsc --noEmit`;
@@ -686,10 +735,10 @@ Risk: ExECTv2 evidence spans lack offsets.
 Mitigation: use exact quote matching for Phase 1, then add offsets if the data
 pipeline can provide them.
 
-Risk: dev25 diagnostics are visually mixed with dev140 controls.
+Risk: diagnostic rows are visually mixed with dev140 controls.
 
 Mitigation: make split, row count, decision, and claim boundary required run
-metadata.
+metadata, and treat decision status as a first-class visual filter.
 
 Risk: generated static JSON becomes too large.
 

@@ -12,8 +12,9 @@ closeout reports, frontend review surface, and paper-facing tables.
   separate.
 - Treat deterministic semantic lenses and repairs as prediction-bearing when
   they select, add, drop, replace, or arbitrate clinical facts.
-- Mark dev25 non-GPT rows as diagnostic unless a predeclared escalation gate
-  promotes them.
+- Mark non-GPT dev140 rows as diagnostic unless a predeclared promotion gate
+  promotes them. The completed DeepSeek/Qwen dev140 reports both remain
+  `do-not-promote`.
 
 ## Selected Set
 
@@ -22,8 +23,8 @@ closeout reports, frontend review surface, and paper-facing tables.
 | Gan reliability subject | Gan 2026 canonical reliability package | GPT-4.1-mini plus recorded comparators | Validation and locked-test reliability artifacts | Reliability package, with locked-test row-level guardrails | Mature reliability story and reusable scorecard pattern. |
 | ExECTv2 performance control | `exectv2_holistic_finding_assembly_v08_dev140` | GPT-4.1-mini-family source lanes | dev140 | Dev-only component evidence | Only current ExECTv2 row with all four target families above `0.900`. |
 | ExECTv2 simplicity control | `exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140` | GPT-4.1-mini-family source lanes | dev140 | Dev-only simplification evidence | Retains overall `0.9059` while dropping the v08 Investigations stack. |
-| ExECTv2 hosted non-GPT comparator | `exectv2_holistic_finding_assembly_v097_deepseek_dev25` | `deepseek/deepseek-chat` | dev25 | Diagnostic | Strong Prescription/Investigations and clean evidence; Diagnosis/SF below target. |
-| ExECTv2 local-model comparator | Qwen diagnostic pair: v0.9.6 no-call reparse and v0.9.7 compact dict-repair | `ollama_chat/qwen3.6:35b` | dev25 | Diagnostic | Shows local-model portability/runtime limits; no dev140 promotion evidence. |
+| ExECTv2 hosted non-GPT comparator | `exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140` | `deepseek/deepseek-chat` source artifact plus standard dictionary/lenses | dev140 | Diagnostic same-raw architecture evidence; do not promote | Final hosted non-GPT dev140 row: overall `0.9010`, strong Rx/Inv, clean operations, but Dx/SF below target and changed-row controls fail. |
+| ExECTv2 local-model comparator | `exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140` | `ollama_chat/qwen3.6:35b` compact source artifact plus standard dictionary/residual-repair lenses | dev140 | Diagnostic local-model architecture evidence; do not promote | Final local-model dev140 row: overall `0.9001`, strong SF headline and best Inv, but Dx below target, active-rate fidelity weak, and parse/schema burden remains. |
 
 ## Answers To Closeout Questions
 
@@ -41,8 +42,9 @@ does not replace v08 because Investigations falls to `0.8549`.
 
 ### Which Architecture Is The Model-Portability Evidence?
 
-DeepSeek v0.9.7 dev25 and Qwen dev25 diagnostics. They show that exact evidence
-and Prescription transfer better than Diagnosis and SeizureFrequency. They are
+DeepSeek v0.9.16 dev140 and Qwen v0.9.22 dev140 diagnostics. They show that
+exact evidence, Prescription, and Investigations transfer better than Diagnosis
+and active-rate SeizureFrequency. They are final diagnostic architecture rows,
 not promotion candidates.
 
 ### Which Components Are Prediction-Bearing?
@@ -54,6 +56,9 @@ not promotion candidates.
 - Investigations result-state lenses or prompt-owned pass-through decisions.
 - Standard dictionary repair when it changes clinical mention identity,
   attributes, or scorer-facing family membership.
+- Residual-repair lenses in the final non-GPT rows, because their
+  `raw_candidate` score view is `0.0000` and the meaningful scores are rendered
+  after dictionary/lens repair.
 
 ### Which Deterministic Layers Are Benchmark-Format Only?
 
@@ -67,13 +72,20 @@ selected clinical fact remains prediction-bearing.
 
 - Pure single-GPT plus dictionary v09 on GPT-4.1-mini: rejected as performance
   control because it scored `0.7552`.
-- Qwen compact profile as promotion path: rejected after completed dev25
-  assembly scored `0.7995`, with Diagnosis `0.7755` and SF `0.5882`.
-- DeepSeek v0.9.7 as replacement: rejected as v08 replacement because Diagnosis
-  `0.8456` and SF `0.7586` remain below target.
+- Earlier Qwen compact dev25 profile as promotion path: superseded after final
+  v0.9.22 dev140 diagnostic. It remains useful path evidence only.
+- Final Qwen v0.9.22 as replacement: rejected as v08 replacement because
+  Diagnosis is `0.8563`, active-rate fidelity is `0.3618`, ten parse/schema
+  failures remain visible, and changed-row controls fail despite overall
+  `0.9001`.
+- Earlier DeepSeek v0.9.7 dev25 and v0.9.9 dev25 diagnostics: superseded by the
+  final v0.9.16 dev140 diagnostic row.
+- Final DeepSeek v0.9.16 as replacement: rejected as v08 replacement because
+  Diagnosis `0.8828` and SF `0.8675` remain below target, and changed-row
+  controls fail despite overall `0.9010`.
 - Dev1/dev5 smoke runs: scratch diagnostics only.
-- DeepSeek v0.9.8 artifacts observed in the repo: diagnostic successors that
-  require an explicit replacement decision before entering the selected set.
+- DeepSeek v0.9.8 artifacts observed in the repo: superseded diagnostics that
+  are not part of the selected set.
 
 ## Paper Table Shape
 
@@ -91,4 +103,3 @@ Carry the selected set into a compact table with these columns:
 - evidence validity;
 - operational status;
 - claim boundary.
-

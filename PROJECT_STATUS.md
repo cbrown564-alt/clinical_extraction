@@ -23,17 +23,19 @@ ExECTv2 v09 partial hybrid is the simplification control:
 dropping the v08 Investigations stack. It is not the performance control because
 Investigations falls to `0.8549`.
 
-DeepSeek v0.9.7 dev25 is a hosted non-GPT diagnostic comparator:
-`exectv2_holistic_finding_assembly_v097_deepseek_dev25`, overall `0.8707`,
-Diagnosis `0.8456`, SeizureFrequency `0.7586`, Prescription `0.9610`,
-Investigations `0.9091`, exact evidence `1.0000`. It is useful portability
-evidence but not dev140 escalation evidence by default.
+DeepSeek v0.9.16 dev140 is the final hosted non-GPT diagnostic comparator:
+`exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140`, overall
+`0.9010`, Diagnosis `0.8828`, SeizureFrequency `0.8675`, Prescription
+`0.9430`, Investigations `0.9231`, exact evidence `1.0000`. It is strong
+transfer evidence, but its final gate decision is `do-not-promote` because
+Dx/SF remain below the GPT control and changed-row controls fail.
 
-Qwen remains diagnostic. The best completed no-call reparse is v0.9.6 dev25 at
-overall `0.8082`; the latest completed compact dict-repair dev25 run is v0.9.7
-at overall `0.7995`, Diagnosis `0.7755`, SeizureFrequency `0.5882`,
-Prescription `0.9487`, Investigations `0.8163`. This does not promote to
-dev140.
+Qwen v0.9.22 dev140 is the final local-model diagnostic comparator:
+`exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140`,
+overall `0.9001`, Diagnosis `0.8563`, SeizureFrequency `0.8908`,
+Prescription `0.9343`, Investigations `0.9579`, exact evidence `1.0000`.
+It remains `do-not-promote` because Diagnosis and active-rate fidelity remain
+weak and ten parse/schema failures are visible on each family lens surface.
 
 Phase 0 consolidation artifacts now exist:
 `docs/experiments/final_artifact_index_2026-06-22.md`,
@@ -44,9 +46,10 @@ Phase 0 consolidation artifacts now exist:
 
 Frontend Phase 0 ExECTv2 support is present at `/exectv2`: static ExECTv2 mock
 data, task-aware registry entries, ExECTv2 frontend types, and a letter/result
-explorer for v08, v09 partial hybrid, DeepSeek v0.9.7, Qwen v0.9.6, and Qwen
-v0.9.7 compact diagnostics. This route is now explicitly an interim prototype
-and data source, not the target app architecture.
+explorer for the earlier Phase 0 selected set. This route is now explicitly an
+interim prototype and data source, not the target app architecture. The
+frontend mock data and registry still need a refresh if the final DeepSeek
+v0.9.16 and Qwen v0.9.22 dev140 diagnostics should be visible in-app.
 
 The target frontend architecture is dataset-aware integration: ExECTv2 should
 be selectable as a sticky top-right dataset option and should drive the shared
@@ -58,8 +61,8 @@ surfaces. Implementation plan:
 
 1. Treat v08 as the ExECTv2 performance control and v09 partial hybrid as the
    simplification control.
-2. Treat DeepSeek/Qwen as diagnostic portability evidence unless a predeclared
-   dev140 gate changes that.
+2. Treat final DeepSeek/Qwen dev140 rows as diagnostic portability evidence
+   unless a future predeclared gate changes that.
 3. Keep deterministic semantic lenses and dictionary repairs visible as
    prediction-bearing when they change clinical facts or attributes.
 4. Do not run ExECTv2 full-200 or holdout-facing row-level analysis without a
@@ -74,17 +77,17 @@ surfaces. Implementation plan:
 ### Now
 
 - Review Phase 0 closeout docs for final-paper wording and decide whether
-  DeepSeek v0.9.8 diagnostics should replace v0.9.7 in the selected set.
+  final DeepSeek/Qwen diagnostic wording is ready for paper tables.
 - Begin the dataset-integration frontend plan: add shared dataset descriptors,
   sticky dataset selection, dataset-indexed static data, and a workbench
   `SpecimenRef` path that supports both Gan rows and ExECTv2 letters.
 
 ### Next
 
-- If refreshing Qwen/DeepSeek, update the artifact index, cross-model report,
-  reliability scorecard, frontend static data, and registry in one pass.
-- Decide whether any non-GPT dev140 run has an explicit purpose; otherwise stop
-  model iteration and move to writing.
+- Refresh frontend static data and registry so `/exectv2` or the future
+  dataset-integrated explorer shows DeepSeek v0.9.16 and Qwen v0.9.22 dev140.
+- Stop non-GPT model iteration unless a new predeclared portability or
+  review-routing question justifies it.
 - Start a cleanup branch that archives/quarantines superseded diagnostics only
   after the final index is accepted.
 
@@ -97,6 +100,9 @@ surfaces. Implementation plan:
 
 ### Done Recently
 
+- 2026-06-22: Updated the final artifact index, ExECTv2 cross-model closeout,
+  reliability scorecard, architecture selection, and frontend integration plan
+  for final DeepSeek v0.9.16 and Qwen v0.9.22 dev140 diagnostics.
 - 2026-06-22: Added a separate ExECTv2 frontend dataset-integration plan that
   supersedes `/exectv2` as the target destination.
 - 2026-06-22: Completed Phase 0 final consolidation docs and frontend ExECTv2
