@@ -78,9 +78,14 @@ def findings_from_row(
     note_text: str,
     source: FindingSource,
     raw_surface: bool,
+    predicted_fallback: bool = False,
 ) -> tuple[ClinicalFinding, ...]:
     mentions = (
-        raw_mentions_from_row(row, default_entity=entity)
+        raw_mentions_from_row(
+            row,
+            default_entity=entity,
+            predicted_fallback=predicted_fallback,
+        )
         if raw_surface
         else list(row.get("predicted_mentions", []))
     )
@@ -116,17 +121,49 @@ def raw_mentions_from_row(
     row: Mapping[str, Any],
     *,
     default_entity: str,
+    predicted_fallback: bool = False,
 ) -> list[dict[str, Any]]:
     raw = row.get("raw_output") or ""
     if not raw:
-        return []
+        return (
+            _predicted_mentions_fallback(row, default_entity=default_entity)
+            if predicted_fallback
+            else []
+        )
     try:
         payload = json.loads(str(raw))
     except json.JSONDecodeError:
-        return []
+        return (
+            _predicted_mentions_fallback(row, default_entity=default_entity)
+            if predicted_fallback
+            else []
+        )
     mentions = payload.get("mentions", []) if isinstance(payload, dict) else []
+    if not mentions:
+        return (
+            _predicted_mentions_fallback(row, default_entity=default_entity)
+            if predicted_fallback
+            else []
+        )
     out = []
     for mention in mentions:
+        if not isinstance(mention, dict):
+            continue
+        with_entity = dict(mention)
+        with_entity.setdefault("entity", default_entity)
+        out.append(with_entity)
+    return out
+
+
+def _predicted_mentions_fallback(
+    row: Mapping[str, Any],
+    *,
+    default_entity: str,
+) -> list[dict[str, Any]]:
+    """Use the saved source prediction surface when raw JSON has another schema."""
+
+    out: list[dict[str, Any]] = []
+    for mention in row.get("predicted_mentions", []):
         if not isinstance(mention, dict):
             continue
         with_entity = dict(mention)
