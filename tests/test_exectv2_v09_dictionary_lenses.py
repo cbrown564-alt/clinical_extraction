@@ -104,6 +104,116 @@ def test_diagnosis_dictionary_lens_rewrites_drops_and_adds() -> None:
     assert "status epilepticus" in texts
 
 
+def test_diagnosis_dictionary_lens_repairs_qwen_surface_conventions() -> None:
+    note = (
+        "Diagnosis: focal epilepsy-Probable temporal. "
+        "Diagnosis: Epilepsy - unclassified, possibly generalised. "
+        "Diagnosis: generalised tonic clonic seizures alone."
+    )
+    store = _store(
+        note,
+        [
+            {
+                "entity": "Diagnosis",
+                "text": "temporal lobe",
+                "attributes": {
+                    "DiagCategory": "Epilepsy",
+                    "Certainty": "4",
+                    "Negation": "Affirmed",
+                },
+                "evidence": "Diagnosis: focal epilepsy-Probable temporal",
+            },
+            {
+                "entity": "Diagnosis",
+                "text": "unclassified epilepsy",
+                "attributes": {
+                    "DiagCategory": "Epilepsy",
+                    "Certainty": "3",
+                    "Negation": "Affirmed",
+                },
+                "evidence": "Diagnosis: Epilepsy - unclassified, possibly generalised.",
+            },
+            {
+                "entity": "Diagnosis",
+                "text": "possibly generalised epilepsy",
+                "attributes": {
+                    "DiagCategory": "Epilepsy",
+                    "Certainty": "3",
+                    "Negation": "Affirmed",
+                },
+                "evidence": "Diagnosis: Epilepsy - unclassified, possibly generalised.",
+            },
+            {
+                "entity": "Diagnosis",
+                "text": "generalised tonic clonic seizures alone",
+                "attributes": {
+                    "DiagCategory": "Epilepsy",
+                    "Certainty": "5",
+                    "Negation": "Affirmed",
+                },
+                "evidence": "Diagnosis: generalised tonic clonic seizures alone.",
+            },
+        ],
+    )
+
+    result = DiagnosisDictionaryLens(
+        lens_id="diagnosis_convention_dictionary_v09", entity="Diagnosis"
+    ).reconcile(store, policy=_policy())
+    by_text = {finding.text: finding for finding in result.findings}
+
+    assert "temporal lobe epilepsy" in by_text
+    assert by_text["epilepsy"].attributes["Certainty"] == "5"
+    assert by_text["generalised epilepsy"].attributes["Certainty"] == "3"
+    assert by_text["generalised tonic clonic seizures"].attributes["DiagCategory"] == (
+        "MultipleSeizures"
+    )
+
+
+def test_diagnosis_dictionary_lens_repairs_deepseek_category_and_typo() -> None:
+    note = (
+        "Diagnosis: generalised tonic chronic seizures with myoclonic jerks, possible JME. "
+        "Unfortunately he had a generalised tonic clonic seizure last week."
+    )
+    store = _store(
+        note,
+        [
+            {
+                "entity": "Diagnosis",
+                "text": "generalised tonic chronic seizures",
+                "attributes": {
+                    "DiagCategory": "Epilepsy",
+                    "Certainty": "5",
+                    "Negation": "Affirmed",
+                },
+                "evidence": "Diagnosis: generalised tonic chronic seizures with myoclonic jerks, possible JME.",
+            },
+            {
+                "entity": "Diagnosis",
+                "text": "generalised tonic clonic seizure",
+                "attributes": {
+                    "DiagCategory": "Epilepsy",
+                    "Certainty": "5",
+                    "Negation": "Affirmed",
+                },
+                "evidence": "Unfortunately he had a generalised tonic clonic seizure last week.",
+            },
+        ],
+    )
+
+    result = DiagnosisDictionaryLens(
+        lens_id="diagnosis_convention_dictionary_v09", entity="Diagnosis"
+    ).reconcile(store, policy=_policy())
+    by_text = {finding.text: finding for finding in result.findings}
+
+    assert "generalised tonic clonic seizures" in by_text
+    assert by_text["generalised tonic clonic seizures"].attributes["DiagCategory"] == (
+        "MultipleSeizures"
+    )
+    assert by_text["generalised tonic clonic seizure"].attributes["DiagCategory"] == (
+        "SingleSeizure"
+    )
+
+
 def test_sf_dictionary_lens_applies_benchmark_rewrite() -> None:
     note = "She had a cluster of 3 in March."
     store = _store(
@@ -174,6 +284,30 @@ def test_prescription_dictionary_lens_normalizes_atomic_dose_value() -> None:
         lens_id="prescription_dictionary_v09", entity="Prescription"
     ).reconcile(store, policy=_policy())
     assert result.findings[0].attributes["DrugDose"] == "75"
+
+
+def test_prescription_dictionary_lens_fills_missing_frequency_from_selected_text() -> None:
+    note = "Medication: Keppra 1000 milligrams twice a day."
+    store = _store(
+        note,
+        [
+            {
+                "entity": "Prescription",
+                "text": "Keppra 1000 milligrams twice a day",
+                "attributes": {
+                    "DrugName": "keppra",
+                    "DrugDose": "1000",
+                    "DoseUnit": "mg",
+                },
+                "evidence": "Keppra 1000 milligrams twice a day",
+            }
+        ],
+    )
+    result = PrescriptionDictionaryLens(
+        lens_id="prescription_dictionary_v09", entity="Prescription"
+    ).reconcile(store, policy=_policy())
+
+    assert result.findings[0].attributes["Frequency"] == "2"
 
 
 def test_prescription_dictionary_lens_splits_explicit_uneven_daily_regimen() -> None:
