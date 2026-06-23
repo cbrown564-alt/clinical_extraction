@@ -1703,6 +1703,10 @@ def sf_convention_rewrite(
     phrase = normalize_phrase(text)
     surface = " ".join(part for part in (text, evidence) if part)
 
+    format_rewrite = _sf_operand_format_rewrite(text, surface=surface, attributes=attrs)
+    if format_rewrite is not None:
+        return format_rewrite
+
     match = _SF_GENERIC_EVERY_RANGE_RE.search(surface)
     if match is not None:
         attrs["CUI"] = "C0036572"
@@ -1796,6 +1800,16 @@ def sf_convention_rewrite(
         attrs["CUI"] = "C0494475"
         attrs["CUIPhrase"] = "generalised tonic clonic seizures"
         return "generalised tonic clonic seizures", attrs, "rewrite_typo_gtc_to_cui"
+    if phrase == "absence like seizures" and (
+        attrs.get("NumberOfSeizures") or attrs.get("YearDate")
+    ):
+        attrs["CUI"] = "C0563606"
+        attrs["CUIPhrase"] = "absence like seizures"
+        return (
+            "absence like seizures",
+            attrs,
+            "rewrite_absence_like_dated_occurrence_to_cui",
+        )
     if phrase in {"occasional absences", "absence like seizures"}:
         attrs["CUI"] = "C0563606"
         attrs["CUIPhrase"] = "absences"
@@ -1927,6 +1941,20 @@ def sf_convention_rewrite(
         attrs["CUIPhrase"] = "seizures"
         attrs["NumberOfSeizures"] = "0"
         return "seizures", attrs, "rewrite_no_further_seizures_to_generic_seizures"
+    if attrs.get("CUI") == "C0036572" and _SF_NO_FURTHER_GTC_SINCE_RE.search(evidence):
+        attrs["CUI"] = "C0494475"
+        attrs["CUIPhrase"] = "generalised tonic clonic seizures"
+        attrs["NumberOfSeizures"] = "0"
+        attrs["TimeSince_or_TimeOfEvent"] = "Since"
+        attrs.pop("LowerNumberOfSeizures", None)
+        attrs.pop("UpperNumberOfSeizures", None)
+        attrs.pop("MonthDate", None)
+        attrs.pop("YearDate", None)
+        return (
+            "generalised tonic clonic seizures",
+            attrs,
+            "rewrite_selected_no_further_gtc_to_named_seizure_free",
+        )
     if phrase == "focal to bilateral convulsive seizures" and re.search(
         r"\blast\s+seizures\s+were\s+in\s+his\s+teenage\s+years\b",
         evidence,
@@ -1952,6 +1980,81 @@ def sf_convention_rewrite(
         attrs["CUIPhrase"] = "absences"
         return "absences", attrs, "rewrite_absence_seizures_to_absences"
     return None
+
+
+def _sf_operand_format_rewrite(
+    text: str,
+    *,
+    surface: str,
+    attributes: Mapping[str, Any],
+) -> tuple[str, dict[str, Any], str] | None:
+    attrs = {str(key): str(value) for key, value in attributes.items()}
+    original = dict(attrs)
+    rule_ids: list[str] = []
+
+    if attrs.get("CUI") == "C0036572" and _SF_NO_FURTHER_GTC_SINCE_RE.search(surface):
+        return None
+
+    every_weeks = re.search(
+        r"\bevery\s+(?P<weeks>\d+)\s+weeks?\b",
+        surface,
+        re.IGNORECASE,
+    )
+    if every_weeks is not None and not re.search(
+        r"\bevery\s+\d+\s+to\s+\d+\s+weeks?\b",
+        surface,
+        re.IGNORECASE,
+    ):
+        attrs["NumberOfSeizures"] = attrs.get("NumberOfSeizures") or "1"
+        attrs["NumberOfTimePeriods"] = every_weeks.group("weeks")
+        attrs["TimePeriod"] = "Week"
+        attrs.pop("LowerNumberOfTimePeriods", None)
+        attrs.pop("UpperNumberOfTimePeriods", None)
+        rule_ids.append("rewrite_exact_every_weeks_operand_format")
+
+    over_months = re.search(
+        r"\b(?P<count>\d+)\s+seizures?\s+over\s+(?P<months>\d+)\s+months?\b",
+        surface,
+        re.IGNORECASE,
+    )
+    if over_months is not None:
+        attrs["NumberOfSeizures"] = over_months.group("count")
+        attrs["NumberOfTimePeriods"] = over_months.group("months")
+        attrs["TimePeriod"] = "Month"
+        attrs.pop("LowerNumberOfSeizures", None)
+        attrs.pop("UpperNumberOfSeizures", None)
+        rule_ids.append("rewrite_exact_count_over_months_operand_format")
+
+    if re.search(r"\bper\s+month\b", surface, re.IGNORECASE) and attrs.get("MonthDate") == "1":
+        attrs.pop("MonthDate", None)
+        rule_ids.append("drop_per_month_spurious_month_date")
+
+    if attrs.get("LowerNumberOfSeizures") == "0" and not attrs.get("UpperNumberOfSeizures"):
+        attrs["NumberOfSeizures"] = "0"
+        attrs.pop("LowerNumberOfSeizures", None)
+        rule_ids.append("collapse_lower_zero_to_exact_zero_count")
+
+    if (
+        attrs.get("LowerNumberOfSeizures")
+        and attrs.get("LowerNumberOfSeizures") == attrs.get("UpperNumberOfSeizures")
+    ):
+        attrs["NumberOfSeizures"] = attrs["LowerNumberOfSeizures"]
+        attrs.pop("LowerNumberOfSeizures", None)
+        attrs.pop("UpperNumberOfSeizures", None)
+        rule_ids.append("collapse_equal_seizure_count_range")
+
+    if (
+        attrs.get("LowerNumberOfTimePeriods")
+        and attrs.get("LowerNumberOfTimePeriods") == attrs.get("UpperNumberOfTimePeriods")
+    ):
+        attrs["NumberOfTimePeriods"] = attrs["LowerNumberOfTimePeriods"]
+        attrs.pop("LowerNumberOfTimePeriods", None)
+        attrs.pop("UpperNumberOfTimePeriods", None)
+        rule_ids.append("collapse_equal_time_period_range")
+
+    if attrs == original:
+        return None
+    return text, attrs, "+".join(rule_ids)
 
 
 def is_sf_convention_noise(
@@ -2017,6 +2120,8 @@ def is_sf_convention_noise(
         re.IGNORECASE,
     ):
         return True
+    if cui == "C1299590" and attrs.get("NumberOfSeizures") == "0":
+        return False
     if phrase in {"seizure", "seizures", "seizure free", "seizure freedom"} and (
         _SF_CONTEXTUAL_RATE_NOISE_RE.search(evidence)
     ):

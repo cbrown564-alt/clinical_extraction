@@ -342,11 +342,61 @@ def _extract_json_object(raw: str) -> str:
     fenced = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", text, flags=re.DOTALL)
     if fenced:
         return fenced.group(1)
-    first = text.find("{")
-    last = text.rfind("}")
-    if first != -1 and last != -1 and last > first:
-        return text[first : last + 1]
+    candidates = _balanced_json_candidates(text)
+    preferred_roots = ("clinical_events", "mentions", "decisions")
+    valid: list[tuple[int, str]] = []
+    for index, candidate in enumerate(candidates):
+        try:
+            payload = json.loads(candidate)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(payload, dict) and any(key in payload for key in preferred_roots):
+            valid.append((index, candidate))
+        elif isinstance(payload, list):
+            valid.append((index, candidate))
+    if valid:
+        return valid[-1][1]
+    if candidates:
+        return candidates[-1]
     return text
+
+
+def _balanced_json_candidates(text: str) -> list[str]:
+    candidates: list[str] = []
+    stack: list[str] = []
+    start: int | None = None
+    in_string = False
+    escaped = False
+    pairs = {"{": "}", "[": "]"}
+    closing = set(pairs.values())
+    for index, char in enumerate(text):
+        if in_string:
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == '"':
+                in_string = False
+            continue
+        if char == '"':
+            in_string = True
+            continue
+        if char in pairs:
+            if not stack:
+                start = index
+            stack.append(pairs[char])
+            continue
+        if char not in closing or not stack:
+            continue
+        expected = stack.pop()
+        if char != expected:
+            stack = []
+            start = None
+            continue
+        if not stack and start is not None:
+            candidates.append(text[start : index + 1])
+            start = None
+    return candidates
 
 
 def _coerce_payload(payload: Any) -> tuple[Any, list[str]]:

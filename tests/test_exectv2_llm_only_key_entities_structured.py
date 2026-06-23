@@ -667,6 +667,64 @@ def test_parse_structured_events_accepts_top_level_event_array() -> None:
     assert not any(error.startswith("schema_validation_error") for error in errors)
 
 
+def test_parse_structured_events_uses_last_complete_payload_after_thinking_leak() -> None:
+    first = json.dumps(
+        {
+            "clinical_events": [
+                {
+                    "family": "diagnosis",
+                    "anchor_text": "earlier epilepsy",
+                    "evidence": "Diagnosis: epilepsy",
+                    "mentions": [
+                        {
+                            "entity": DIAGNOSIS.name,
+                            "text": "epilepsy",
+                            "attributes": {
+                                "DiagCategory": "Epilepsy",
+                                "Certainty": "5",
+                                "Negation": "Affirmed",
+                            },
+                        }
+                    ],
+                    "confidence": "high",
+                    "rationale": "",
+                }
+            ]
+        }
+    )
+    final = json.dumps(
+        {
+            "clinical_events": [
+                {
+                    "family": "diagnosis",
+                    "anchor_text": "final focal epilepsy",
+                    "evidence": "Diagnosis: focal epilepsy",
+                    "mentions": [
+                        {
+                            "entity": DIAGNOSIS.name,
+                            "text": "focal epilepsy",
+                            "attributes": {
+                                "DiagCategory": "Epilepsy",
+                                "Certainty": "5",
+                                "Negation": "Affirmed",
+                            },
+                        }
+                    ],
+                    "confidence": "high",
+                    "rationale": "",
+                }
+            ]
+        }
+    )
+    raw = f"{first}\n</think>\nThe final answer is:\n{final}"
+
+    record, errors = structured.parse_structured_events_json(raw)
+
+    assert record is not None
+    assert errors == []
+    assert record.clinical_events[0].anchor_text == "final focal epilepsy"
+
+
 def test_parse_structured_events_drops_malformed_nested_mentions() -> None:
     raw = json.dumps(
         {

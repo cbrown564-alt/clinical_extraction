@@ -59,6 +59,7 @@ def test_manifest_driven_assembly_preserves_sources_and_views(tmp_path: Path) ->
     assert set(first["prediction_surfaces"]) == {
         "source_scored",
         "evidence_valid",
+        "protocol_model_preserving_canonical",
         "dictionary_normalized",
         "residual_benchmark_added",
         "final",
@@ -109,6 +110,7 @@ def test_assembly_materializes_dictionary_and_residual_intermediate_surfaces(
 
     rx_surfaces = run.rows[0]["lanes"]["Prescription"]["prediction_surfaces"]
     assert rx_surfaces["source_scored"] == []
+    assert rx_surfaces["protocol_model_preserving_canonical"] == []
     assert rx_surfaces["dictionary_normalized"] == []
     assert [m["text"] for m in rx_surfaces["residual_benchmark_added"]] == ["lamotrigine"]
     assert "lamotrigine 100 mg bd" in rx_surfaces["residual_benchmark_added"][0][
@@ -116,6 +118,7 @@ def test_assembly_materializes_dictionary_and_residual_intermediate_surfaces(
     ]
     assert [m["text"] for m in rx_surfaces["final"]] == ["lamotrigine"]
     materialized = run.report["score_ladder"]["materialized_surfaces"]
+    assert materialized["protocol_model_preserving_canonical"]["overall"]["pred_count"] == 3
     assert materialized["dictionary_normalized"]["overall"]["pred_count"] == 3
     assert materialized["residual_benchmark_added"]["overall"]["pred_count"] == 4
 

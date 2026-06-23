@@ -212,3 +212,145 @@ def test_sf_convention_rewrite_absences_requires_evidence() -> None:
     assert result[0] == "typical absences"
     # Without the evidence cue, no rewrite.
     assert sd.sf_convention_rewrite("absences", evidence="some absences", attributes={}) is None
+
+
+def test_sf_convention_rewrite_preserves_absence_like_dated_occurrence() -> None:
+    result = sd.sf_convention_rewrite(
+        "absence like seizures",
+        evidence="Around the same time he would also have absence-like episodes.",
+        attributes={
+            "NumberOfSeizures": "1",
+            "TimeSince_or_TimeOfEvent": "During",
+            "YearDate": "2014",
+        },
+    )
+
+    assert result is not None
+    text, attrs, rule = result
+    assert text == "absence like seizures"
+    assert attrs["CUI"] == "C0563606"
+    assert attrs["CUIPhrase"] == "absence like seizures"
+    assert attrs["NumberOfSeizures"] == "1"
+    assert rule == "rewrite_absence_like_dated_occurrence_to_cui"
+
+
+def test_sf_convention_noise_keeps_canonical_seizure_free_state() -> None:
+    assert not sd.is_sf_convention_noise(
+        "seizure-free",
+        evidence="I was pleased to hear that he remains seizure free and is now driving.",
+        attributes={
+            "CUI": "C1299590",
+            "CUIPhrase": "seizure-free",
+            "NumberOfSeizures": "0",
+        },
+    )
+
+
+def test_sf_convention_rewrite_drops_per_month_month_date_operand_noise() -> None:
+    result = sd.sf_convention_rewrite(
+        "seizures",
+        evidence="Currently she get around 2-4 seizures per month.",
+        attributes={
+            "LowerNumberOfSeizures": "2",
+            "UpperNumberOfSeizures": "4",
+            "NumberOfTimePeriods": "1",
+            "TimePeriod": "Month",
+            "MonthDate": "1",
+        },
+    )
+
+    assert result is not None
+    text, attrs, rule = result
+    assert text == "seizures"
+    assert "drop_per_month_spurious_month_date" in rule
+    assert "MonthDate" not in attrs
+
+
+def test_sf_convention_rewrite_collapses_exact_over_months_operands() -> None:
+    result = sd.sf_convention_rewrite(
+        "seizures",
+        evidence="approximately 15 seizures over 4 months",
+        attributes={
+            "LowerNumberOfSeizures": "15",
+            "UpperNumberOfSeizures": "15",
+            "TimePeriod": "Month",
+        },
+    )
+
+    assert result is not None
+    _text, attrs, rule = result
+    assert "rewrite_exact_count_over_months_operand_format" in rule
+    assert attrs == {
+        "NumberOfSeizures": "15",
+        "NumberOfTimePeriods": "4",
+        "TimePeriod": "Month",
+    }
+
+
+def test_sf_convention_rewrite_exact_every_weeks_not_range() -> None:
+    result = sd.sf_convention_rewrite(
+        "focal seizures with altered awareness",
+        evidence="focal seizures with altered awareness every 3 weeks",
+        attributes={
+            "NumberOfSeizures": "1",
+            "LowerNumberOfTimePeriods": "3",
+            "UpperNumberOfTimePeriods": "4",
+            "TimePeriod": "Week",
+        },
+    )
+
+    assert result is not None
+    _text, attrs, rule = result
+    assert rule == "rewrite_exact_every_weeks_operand_format"
+    assert attrs["NumberOfSeizures"] == "1"
+    assert attrs["NumberOfTimePeriods"] == "3"
+    assert attrs["TimePeriod"] == "Week"
+    assert "LowerNumberOfTimePeriods" not in attrs
+
+
+def test_sf_convention_rewrite_collapses_lower_zero_to_exact_zero() -> None:
+    result = sd.sf_convention_rewrite(
+        "absences",
+        evidence="There have been no absences since November 2016.",
+        attributes={
+            "CUI": "C0563606",
+            "CUIPhrase": "absences",
+            "LowerNumberOfSeizures": "0",
+            "MonthDate": "11",
+            "TimeSince_or_TimeOfEvent": "Since",
+        },
+    )
+
+    assert result is not None
+    _text, attrs, rule = result
+    assert "collapse_lower_zero_to_exact_zero_count" in rule
+    assert attrs["NumberOfSeizures"] == "0"
+    assert "LowerNumberOfSeizures" not in attrs
+
+
+def test_sf_convention_rewrite_projects_selected_no_further_gtc_state() -> None:
+    result = sd.sf_convention_rewrite(
+        "seizures",
+        evidence=(
+            "I was pleased to hear that she has not had any further generalised "
+            "tonic clonic seizures since August 2016."
+        ),
+        attributes={
+            "CUI": "C0036572",
+            "CUIPhrase": "seizures",
+            "LowerNumberOfSeizures": "0",
+            "MonthDate": "8",
+            "TimeSince_or_TimeOfEvent": "Since",
+        },
+    )
+
+    assert result is not None
+    text, attrs, rule = result
+    assert text == "generalised tonic clonic seizures"
+    assert attrs == {
+        "CUI": "C0494475",
+        "CUIPhrase": "generalised tonic clonic seizures",
+        "NumberOfSeizures": "0",
+        "TimeSince_or_TimeOfEvent": "Since",
+    }
+    assert rule == "rewrite_selected_no_further_gtc_to_named_seizure_free"

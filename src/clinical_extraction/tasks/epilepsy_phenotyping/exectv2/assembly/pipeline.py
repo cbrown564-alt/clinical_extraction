@@ -64,6 +64,7 @@ BASELINE_SF_ACTIVE_RATE_FIDELITY = 0.2887
 MATERIALIZED_SURFACES = (
     "source_scored",
     "evidence_valid",
+    "protocol_model_preserving_canonical",
     "dictionary_normalized",
     "residual_benchmark_added",
     "final",
@@ -480,6 +481,7 @@ def _lane_prediction_surfaces(
         store.findings(entity=entity, producer_id=producer_id, raw_surface=False)
     )
     evidence_valid = [finding for finding in source_scored if finding.evidence_valid]
+    protocol_model_preserving_canonical = list(source_scored)
     final = list(final_findings)
     dictionary_normalized = [
         finding for finding in final if not _is_deterministic_addition(finding)
@@ -488,6 +490,7 @@ def _lane_prediction_surfaces(
     return {
         "source_scored": source_scored,
         "evidence_valid": evidence_valid,
+        "protocol_model_preserving_canonical": protocol_model_preserving_canonical,
         "dictionary_normalized": dictionary_normalized,
         "residual_benchmark_added": residual_benchmark_added,
         "final": final,

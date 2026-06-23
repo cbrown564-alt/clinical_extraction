@@ -9,6 +9,7 @@ the stronger upstream components.
 from __future__ import annotations
 
 import json
+import re
 import sys
 from collections.abc import Mapping, Sequence
 from pathlib import Path
@@ -43,7 +44,13 @@ PROMPT_VERSION = "exectv2_hybrid_family_conditioned_candidate_adjudicator_v0.4"
 PIPELINE_FAMILY = "exectv2_hybrid_family_conditioned_candidate_adjudicator"
 COMPONENT_OWNER = "hybrid_family_conditioned_candidate_adjudicator"
 
-Mode = Literal["live", "live-actions", "prompt-only", "candidate-passthrough"]
+Mode = Literal[
+    "live",
+    "live-actions",
+    "live-actions-strict",
+    "prompt-only",
+    "candidate-passthrough",
+]
 
 
 class ExECTv2FamilyConditionedCandidateAdjudicatorSignature(dspy.Signature):
@@ -309,15 +316,22 @@ def parse_candidate_actions_json(raw_output: str) -> tuple[list[dict[str, str]],
     try:
         payload = json.loads(_extract_json_object(raw_output))
     except json.JSONDecodeError as exc:
+        repaired_actions = _recover_candidate_actions_from_malformed_json(raw_output)
+        if repaired_actions:
+            return repaired_actions, [f"recovered_malformed_candidate_actions: {exc.msg}"]
         return [], [f"invalid_json: {exc.msg}"]
-    if not isinstance(payload, dict):
+    if isinstance(payload, list):
+        actions = payload
+        notes = ["coerced_top_level_candidate_actions_list"]
+    elif isinstance(payload, dict):
+        actions = payload.get("candidate_actions")
+        notes = []
+    else:
         return [], ["schema_validation_error: top-level value is not an object"]
-    actions = payload.get("candidate_actions")
     if not isinstance(actions, list):
         return [], ["schema_validation_error: missing candidate_actions list"]
 
     parsed: list[dict[str, str]] = []
-    notes: list[str] = []
     for index, action in enumerate(actions):
         if not isinstance(action, dict):
             notes.append(f"dropped_non_object_action: {index}")
@@ -338,12 +352,43 @@ def parse_candidate_actions_json(raw_output: str) -> tuple[list[dict[str, str]],
     return parsed, notes
 
 
+def _recover_candidate_actions_from_malformed_json(raw_output: str) -> list[dict[str, str]]:
+    """Recover explicit action triples when only rationale text broke JSON.
+
+    Qwen sometimes emits valid candidate_id/action/reason_code fields followed by a
+    long rationale with unescaped quotes. The action fields are the only
+    prediction-bearing parts used by strict action mode, so this repair ignores
+    rationale content and recovers only complete triples.
+    """
+
+    actions: list[dict[str, str]] = []
+    pattern = re.compile(
+        r'"candidate_id"\s*:\s*"(?P<candidate_id>[^"]+)"'
+        r'(?:(?!"candidate_id").)*?'
+        r'"action"\s*:\s*"(?P<action>keep|reject)"'
+        r'(?:(?!"candidate_id").)*?'
+        r'"reason_code"\s*:\s*"(?P<reason_code>[^"]*)"',
+        re.IGNORECASE | re.DOTALL,
+    )
+    for match in pattern.finditer(raw_output):
+        actions.append(
+            {
+                "candidate_id": match.group("candidate_id"),
+                "action": match.group("action").lower(),
+                "reason_code": match.group("reason_code"),
+                "rationale": "",
+            }
+        )
+    return actions
+
+
 def apply_candidate_actions(
     candidate_bundle: Mapping[str, Any],
     actions: Sequence[Mapping[str, str]],
     *,
     target_family: str,
     note_text: str,
+    default_missing_action: Literal["keep", "reject"] = "keep",
 ) -> tuple[list[structured.MentionForEvidence], list[str]]:
     profile = direct.family_profile(target_family)
     action_by_id = {
@@ -358,11 +403,17 @@ def apply_candidate_actions(
     mentions: list[structured.MentionForEvidence] = []
     for candidate in candidate_bundle.get("candidate_mentions") or []:
         candidate_id = str(candidate.get("candidate_id", ""))
-        action = action_by_id.get(candidate_id, {"action": "keep", "reason_code": "missing"})
+        action = action_by_id.get(
+            candidate_id,
+            {"action": default_missing_action, "reason_code": "missing"},
+        )
         if _honor_reject(candidate, action, profile.entity, note_text):
             warnings.append(
                 f"honored_reject: {candidate_id}: {action.get('reason_code', '')}"
             )
+            continue
+        if action.get("action") == "reject" and action.get("reason_code") == "missing":
+            warnings.append(f"missing_action_rejected: {candidate_id}")
             continue
         if action.get("action") == "reject":
             warnings.append(
@@ -476,7 +527,7 @@ def run_split(
     profile = direct.family_profile(target_family)
     program = DspyFamilyConditionedCandidateAdjudicator()
     action_program = DspyFamilyConditionedCandidateActionAdjudicator()
-    if mode in {"live", "live-actions"}:
+    if mode in {"live", "live-actions", "live-actions-strict"}:
         dspy.configure(
             lm=build_dspy_lm(
                 model,
@@ -499,9 +550,10 @@ def run_split(
 
     for letter in todo:
         candidate_bundle = build_candidate_bundle(letter, profile.entity, candidate_sources)
+        action_mode = mode in {"live-actions", "live-actions-strict"}
         prompt_input_json = (
             build_action_prompt_input(letter, profile.entity, candidate_sources)
-            if mode == "live-actions"
+            if action_mode
             else build_prompt_input(letter, profile.entity, candidate_sources)
         )
         raw_output = ""
@@ -509,40 +561,51 @@ def run_split(
         record = None
         candidate_actions: list[dict[str, str]] = []
         action_warnings: list[str] = []
-        if mode == "live":
+        if action_mode and not candidate_bundle.get("candidate_mentions"):
+            parse_errors = ["no_candidate_mentions"]
+            mentions = []
+        elif mode == "live":
             try:
                 prediction = program(prompt_input_json=prompt_input_json)
                 raw_output = str(prediction.extraction_json)
             except Exception as exc:  # pragma: no cover
                 call_error = f"{type(exc).__name__}: {exc}"
-        elif mode == "live-actions":
+        elif action_mode:
             try:
                 prediction = action_program(prompt_input_json=prompt_input_json)
                 raw_output = str(prediction.candidate_actions_json)
             except Exception as exc:  # pragma: no cover
                 call_error = f"{type(exc).__name__}: {exc}"
 
-        if mode == "candidate-passthrough":
+        if action_mode and not candidate_bundle.get("candidate_mentions"):
+            pass
+        elif mode == "candidate-passthrough":
             parse_errors = ["candidate_passthrough"]
             mentions = candidate_mentions_as_flat_mentions(
                 candidate_bundle,
                 target_family=profile.entity,
             )
-        elif mode == "live-actions" and raw_output:
+        elif action_mode and raw_output:
             candidate_actions, parse_errors = parse_candidate_actions_json(raw_output)
             mentions, action_warnings = apply_candidate_actions(
                 candidate_bundle,
                 candidate_actions,
                 target_family=profile.entity,
                 note_text=letter.note_text,
+                default_missing_action=(
+                    "reject" if mode == "live-actions-strict" else "keep"
+                ),
             )
-        elif mode == "live-actions":
+        elif action_mode:
             parse_errors = ["not_run"]
             mentions, action_warnings = apply_candidate_actions(
                 candidate_bundle,
                 [],
                 target_family=profile.entity,
                 note_text=letter.note_text,
+                default_missing_action=(
+                    "reject" if mode == "live-actions-strict" else "keep"
+                ),
             )
         elif raw_output:
             record, parse_errors = parse_candidate_events_json(raw_output)

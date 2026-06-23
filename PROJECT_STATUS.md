@@ -1,14 +1,14 @@
 # Project Status
 
-Last updated: 2026-06-22
+Last updated: 2026-06-23
 
 ## Active Objective
 
-Final project consolidation Phase 1 is complete. The current objective is to
-run the next Qwen iteration under the new LLM repair attribution protocol:
-reach ExECTv2 F1 `>0.900` on the declared development surface using only
-model-preserving canonical repair, with prediction-bearing rescue repair
-disabled or counted as model error.
+Final project consolidation Phase 1 is complete. The Qwen repair-attribution
+objective is reopened under the tightened generation-and-selection protocol:
+candidate-backed Qwen default-keep adjudication is now classified as a hybrid
+selector diagnostic, not an LLM-attributed extraction pass, because Qwen did not
+generate the scored target facts.
 
 ## Current Read
 
@@ -26,12 +26,32 @@ raw-lane F1 `0.6406`, with ten visible parse/schema failures on each family
 lens surface. Neither justifies further dev140 or full-200 escalation without a
 predeclared protocol.
 
+Qwen repair-attribution rerun results are now recorded in
+`docs/experiments/exectv2/key_entities/qwen_protocol_clean_attribution_2026-06-23.md`.
+The direct compact dev25 diagnostic cleared the earlier dictionary-normalized
+proxy (`0.9055`) but did not establish the final corrected protocol surface;
+the declared compact dev140 run failed:
+`raw_model` `0.6975`, `schema_format` `0.6975`,
+`model_preserving_canonical` `0.7821`, and `hybrid_full_stack` `0.8483`.
+The richer `full` prompt profile failed operationally on dev25 due repeated
+truncation at `max_tokens=5000`. A candidate-backed Qwen strict-action
+iteration passed dev25 on the older non-rescue surface but missed dev140
+(`0.8977`; raw/schema `0.8977`, hybrid `0.9020`). A default-keep
+action-contract replay over the same Qwen responses reached dev140
+raw/schema/clean `0.9155` and hybrid `0.9091` on the older surface, but the
+tightened protocol now treats it as candidate-backed hybrid adjudication rather
+than a Qwen model-quality pass. The remaining qualifying Qwen objective is a
+generation-and-selection route where Qwen emits the scored facts and then
+selects among its own model-generated facts.
+
 The predeclared protocol now exists:
 `docs/design/llm_repair_attribution_protocol_2026-06-22.md`. It separates
 allowed model-preserving repair from disallowed prediction-bearing rescue
-repair. The Qwen target is no longer a residual-repair headline score; it is
-`>0.900` F1 on a protocol-clean `model_preserving_canonical` surface, while
-rescued facts remain visible as model false negatives/false positives.
+repair and now also requires model-origin generation of the scored facts. The
+Qwen target is no longer a residual-repair or selector-only headline score; it
+is `>0.900` F1 on a protocol-clean `model_preserving_canonical` surface where
+Qwen both generates and selects the prediction-bearing facts, while rescued or
+candidate-copied facts remain visible as hybrid behavior.
 
 Phase 1 closeout artifacts, frontend static review data, and the clinical-
 utility companion audit are current. Dataset-aware frontend integration remains
@@ -42,8 +62,9 @@ tracked in
 
 1. Treat v08 as the performance control and v09 partial hybrid as the
    simplification control.
-2. Treat DeepSeek/Qwen dev140 as diagnostic portability evidence; resume Qwen
-   only for the predeclared protocol-clean rerun objective.
+2. Treat DeepSeek/Qwen dev140 as diagnostic portability evidence; the direct
+   Qwen compact and strict-action ablations failed, while candidate-backed
+   default-keep Qwen adjudication is now hybrid selector evidence only.
 3. Keep deterministic semantic lenses and dictionary repairs visible as
    prediction-bearing when they change clinical facts or attributes.
 4. Do not count rescue-added facts toward Qwen model-quality F1; fix those
@@ -57,11 +78,12 @@ tracked in
 
 ### Now
 
-- Design and run the next Qwen ExECTv2 development iteration under
-  `docs/design/llm_repair_attribution_protocol_2026-06-22.md`, targeting
-  F1 `>0.900` on the `model_preserving_canonical` surface.
-- Build/report the four required Qwen score surfaces: `raw_model`,
-  `schema_format`, `model_preserving_canonical`, and `hybrid_full_stack`.
+- Decide whether direct free-form Qwen extraction still needs a separate
+  escalation path under the generation-and-selection protocol.
+- Keep using the four required Qwen score surfaces: `raw_model`,
+  `schema_format`, `model_preserving_canonical`, and `hybrid_full_stack`, with
+  explicit fact-origin accounting for model-generated versus candidate-copied
+  facts.
 - Continue the dataset-integration frontend plan: shared dataset descriptors,
   sticky dataset selection, dataset-indexed static data, and a workbench
   `SpecimenRef` path for Gan rows and ExECTv2 letters.
@@ -86,10 +108,23 @@ tracked in
 
 ### Done Recently
 
+- 2026-06-23: Ran Qwen repair-attribution iteration. Dev25 reached the earlier
+  dictionary-normalized proxy at `0.9055`, but dev140 failed at `0.7821` clean
+  and `0.8483` hybrid; full prompt dev25 failed due truncation.
+- 2026-06-23: Tightened the repair-attribution protocol to close the
+  selector-only loophole: a qualifying Qwen pass must generate and select the
+  scored facts, not merely select or default-keep candidate facts.
+- 2026-06-23: Ran candidate-backed Qwen action iteration. Dev25 strict passed
+  the older non-rescue surface at `0.9450`; dev140 strict missed at `0.8977`.
+  The default-keep action contract reached dev140 `0.9155` with hybrid
+  `0.9091`, but is now classified as hybrid selector evidence rather than a
+  Qwen extraction pass.
 - 2026-06-22: Added
   `docs/design/llm_repair_attribution_protocol_2026-06-22.md`, separating
   model-preserving canonical repair from prediction-bearing rescue repair and
-  redefining the next Qwen target as protocol-clean F1 `>0.900`.
+  redefining the next Qwen target as protocol-clean F1 `>0.900`; the protocol
+  was tightened on 2026-06-23 to require model-origin generation plus
+  selection.
 - 2026-06-22: Added the visual Qwen repair walkthrough at
   `docs/experiments/exectv2/key_entities/qwen_repair_examples_visual_2026-06-22.html`.
 - 2026-06-22: Completed ExECTv2 clinical-utility companion, intermediate score

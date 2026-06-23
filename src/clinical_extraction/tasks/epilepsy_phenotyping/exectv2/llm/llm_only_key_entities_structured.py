@@ -41,6 +41,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectAnnotation,
     ExectLetter,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
+    standard_dictionary as sd,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
     _extract_json_object,
     _has_blocking_parse_issue,
@@ -64,8 +67,8 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.schema_repair 
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
-PROMPT_VERSION = "exectv2_hybrid_key_family_event_ledger_v0.9.10"
-QWEN_COMPACT_PROMPT_VERSION = "exectv2_hybrid_key_family_event_ledger_v0.9.10_qwen_compact"
+PROMPT_VERSION = "exectv2_hybrid_key_family_event_ledger_v0.9.24"
+QWEN_COMPACT_PROMPT_VERSION = "exectv2_hybrid_key_family_event_ledger_v0.9.24_qwen_compact"
 PIPELINE_FAMILY = "exectv2_hybrid_key_family_event_ledger"
 COMPONENT_OWNER = "hybrid_key_family_event_ledger"
 
@@ -179,7 +182,8 @@ class ExECTv2KeyEntitiesStructuredSignature(dspy.Signature):
             "One strict JSON object: {\"clinical_events\": [{\"family\": ..., "
             "\"anchor_text\": ..., \"evidence\": ..., \"event_state\": {...}, "
             "\"mentions\": [{\"entity\": ..., \"text\": ..., \"attributes\": {...}}], "
-            "\"confidence\": ..., \"rationale\": ...}, ...]}"
+            "\"confidence\": ..., \"rationale\": \"\"}, ...]}. Rationale may be "
+            "an empty string; do not include analysis or first-person reasoning."
         )
     )
 
@@ -764,21 +768,34 @@ def _build_qwen_compact_prompt_input(letter: ExectLetter) -> str:
                         }
                     ],
                     "confidence": "low | medium | high",
-                    "rationale": "one short final-justification sentence",
+                    "rationale": "empty string or <= 8 words; no analysis",
                 }
             ]
         },
-        "candidate_evidence_ledger": candidate_evidence_ledger_for_letter(letter, max_items=36),
+        "candidate_evidence_ledger": candidate_evidence_ledger_for_letter(letter, max_items=64),
+        "high_priority_evidence_ledger": high_priority_evidence_ledger_for_letter(letter),
         "event_lane_guide": _event_lane_guide(),
         "attribute_vocabulary": _attribute_vocabulary(),
         "rules": [
             (
                 "Return exactly one JSON object with clinical_events; no markdown, "
-                "no analysis transcript, no quoted prompt rules."
+                "no analysis transcript, no first-person reasoning, no quoted "
+                "prompt rules."
+            ),
+            (
+                "Set rationale to an empty string unless a short phrase is needed. "
+                "Never write deliberation such as 'I will', 'let us', 'however', "
+                "or alternatives inside JSON strings."
             ),
             (
                 "Each event must be source-near: evidence must be copied exactly "
                 "from the letter and must support all rendered mentions."
+            ),
+            (
+                "Use high_priority_evidence_ledger rows as verified attention "
+                "cues for target facts previous Qwen runs often missed. They are "
+                "not predictions: check the evidence in the letter, choose the "
+                "right family/state, and emit the fact only if the source supports it."
             ),
             (
                 "Medication: render only current ordinary regimens and as-required "
@@ -835,6 +852,17 @@ def _build_qwen_compact_prompt_input(letter: ExectLetter) -> str:
                 "'tonic chronic'; use the source concept tonic clonic."
             ),
             (
+                "If Diagnosis text ends with plural 'seizures' or names a plural "
+                "seizure type, DiagCategory must be 'MultipleSeizures', not "
+                "'Epilepsy'."
+            ),
+            (
+                "For named seizure types, words such as 'without change in "
+                "awareness' describe the seizure semiology, not diagnostic "
+                "uncertainty. Use Certainty='5' unless the source says probable, "
+                "possible, query, or similar hedging."
+            ),
+            (
                 "SeizureFrequency: render only statements of current/historical "
                 "frequency state: active count/rate, seizure-free/last-event anchor, "
                 "unknown frequency, or qualitative change. Diagnosis-only mentions "
@@ -843,7 +871,26 @@ def _build_qwen_compact_prompt_input(letter: ExectLetter) -> str:
             (
                 "SeizureFrequency anchor: use the specific seizure phrase named in "
                 "the evidence; use generic 'seizures' only when the count/state is "
-                "generic. Do not use bare 'events' or 'these seizures' as text."
+                "generic. Do not use bare 'events', 'these seizures', or a count "
+                "phrase such as '2 to 3' as text."
+            ),
+            (
+                "For SeizureFrequency active-rate mentions, text must be the "
+                "seizure type or generic 'seizures', while attributes carry the "
+                "count/date/cadence. Example: evidence '2 to 3 focal seizures in "
+                "March' uses text='focal seizures', LowerNumberOfSeizures='2', "
+                "UpperNumberOfSeizures='3', MonthDate='3'."
+            ),
+            (
+                "Use numeric date attributes: January=1, February=2, March=3, "
+                "April=4, May=5, June=6, July=7, August=8, September=9, "
+                "October=10, November=11, December=12. Do not write MonthDate as "
+                "a month name."
+            ),
+            (
+                "Approximate count mapping for this benchmark surface: "
+                "'several' means NumberOfSeizures='3'; 'a few' means "
+                "NumberOfSeizures='2'."
             ),
             (
                 "SeizureFrequency attributes: never emit an SF mention with empty "
@@ -882,6 +929,56 @@ def _build_qwen_compact_prompt_input(letter: ExectLetter) -> str:
             (
                 "Every rendered mention object must include both entity and text. "
                 "Never emit projection-only CUI/CUIPhrase companion objects."
+            ),
+            (
+                "Exhaustiveness pass before final JSON: reread Diagnosis, "
+                "Impression, Seizure type and frequency, Current medication, "
+                "and Investigations sections. Add every explicitly stated target "
+                "fact as a model mention; do not rely on any later dictionary or "
+                "residual repair to add missed target facts."
+            ),
+            (
+                "Diagnosis residual concepts to emit when stated: secondary "
+                "generalised seizures, generalised epilepsy, focal epilepsy, "
+                "focal seizures with altered awareness, focal motor seizures, "
+                "temporal/frontal/parietal/occipital lobe epilepsy or seizures, "
+                "status epilepticus, drug refractory epilepsy, and nocturnal "
+                "seizures. These are target diagnoses when they describe the "
+                "patient, not projection companions."
+            ),
+            (
+                "Named seizure types are usually both Diagnosis and "
+                "SeizureFrequency when the same source clause names the type and "
+                "gives a count/rate/date. Emit a Diagnosis mention for the seizure "
+                "type with DiagCategory='MultipleSeizures', then emit the separate "
+                "SeizureFrequency mention with the count/rate attributes."
+            ),
+            (
+                "Never render anatomical qualifiers as bare modifiers: 'probable "
+                "temporal' means 'temporal lobe epilepsy' or 'temporal lobe "
+                "seizures' with Certainty='4'; 'focal onset' means 'focal "
+                "seizures' when the seizure type is being diagnosed."
+            ),
+            (
+                "SeizureFrequency residual facts to emit when stated: dated "
+                "seizure-type headings such as '2 generalised tonic clonic "
+                "seizures 2014', seizure-free clauses such as 'remains seizure "
+                "free', interval rates such as 'every 3 to 4 weeks', clusters "
+                "with counts, and qualitative changes such as returned/increased "
+                "seizures."
+            ),
+            (
+                "Investigation residual facts to emit when completed: MRI/CT/EEG "
+                "clauses with normal or abnormal results, including terse forms "
+                "such as 'MRI-normal', 'CT scan ... infarct', 'EEG ... slowing', "
+                "or telemetry/video EEG results. Planned or awaited tests still "
+                "emit no mention."
+            ),
+            (
+                "Prescription residual facts to emit when current: brand names "
+                "and short regimen lines such as Epilim/Episenta/Sodium Valproate, "
+                "Keppra/Levetiracetam, Tegretol/Carbamazepine, Clobazam PRN or "
+                "night doses, and bracketed regimen fragments like '200mg BD'."
             ),
             "Do not invent CUI values; omit CUI and CUIPhrase.",
             "If no requested findings are present, return {\"clinical_events\": []}.",
@@ -985,6 +1082,67 @@ def _qwen_compact_examples() -> list[dict[str, Any]]:
                 "rationale": (
                     "Myoclonic jerks are contextual symptoms, not a separate "
                     "diagnosis here."
+                ),
+            },
+        },
+        {
+            "note_fragment": (
+                "Diagnosis: focal epilepsy-Probable temporal. In March she had 2 to 3 "
+                "of her focal seizures. Since last clinic she has had four secondary "
+                "generalised seizures."
+            ),
+            "correct_event": {
+                "family": "diagnosis",
+                "anchor_text": "focal epilepsy-Probable temporal; focal seizures; secondary generalised seizures",
+                "evidence": (
+                    "Diagnosis: focal epilepsy-Probable temporal. In March she had 2 to 3 "
+                    "of her focal seizures. Since last clinic she has had four secondary "
+                    "generalised seizures."
+                ),
+                "event_state": {"lane": "diagnosis_and_seizure_types"},
+                "mentions": [
+                    {
+                        "entity": "Diagnosis",
+                        "text": "focal epilepsy",
+                        "attributes": {
+                            "DiagCategory": "Epilepsy",
+                            "Certainty": "5",
+                            "Negation": "Affirmed",
+                        },
+                    },
+                    {
+                        "entity": "Diagnosis",
+                        "text": "temporal lobe epilepsy",
+                        "attributes": {
+                            "DiagCategory": "Epilepsy",
+                            "Certainty": "4",
+                            "Negation": "Affirmed",
+                        },
+                    },
+                    {
+                        "entity": "Diagnosis",
+                        "text": "focal seizures",
+                        "attributes": {
+                            "DiagCategory": "MultipleSeizures",
+                            "Certainty": "5",
+                            "Negation": "Affirmed",
+                        },
+                    },
+                    {
+                        "entity": "Diagnosis",
+                        "text": "secondary generalised seizures",
+                        "attributes": {
+                            "DiagCategory": "MultipleSeizures",
+                            "Certainty": "5",
+                            "Negation": "Affirmed",
+                        },
+                    },
+                ],
+                "confidence": "high",
+                "rationale": (
+                    "The diagnosis line gives focal and probable temporal epilepsy; "
+                    "the frequency clauses name focal and secondary generalised "
+                    "seizure types."
                 ),
             },
         },
@@ -1226,6 +1384,67 @@ def _qwen_compact_examples() -> list[dict[str, Any]]:
             },
         },
     ]
+
+
+def high_priority_evidence_ledger_for_letter(letter: ExectLetter) -> list[dict[str, Any]]:
+    """Source-bound cue rows for facts Qwen must select itself.
+
+    The rows intentionally avoid scorer-ready attributes. They tell the model
+    where high-yield evidence lives, while the model still owns the final
+    keep/reject, family, text, and attribute rendering.
+    """
+
+    rows: list[dict[str, Any]] = []
+    seen: set[tuple[str, str, str]] = set()
+
+    def add(*, family: str, evidence: str, anchor_hint: str, lane_hint: str) -> None:
+        clean = " ".join(evidence.strip().split())
+        if not clean or clean not in letter.note_text:
+            return
+        key = (family, clean.lower(), anchor_hint.lower())
+        if key in seen:
+            return
+        seen.add(key)
+        rows.append(
+            {
+                "priority_id": f"HP{len(rows)}",
+                "family": family,
+                "evidence": clean,
+                "anchor_hint": anchor_hint,
+                "lane_hint": lane_hint,
+                "source": "source-bound-standard-dictionary-cue",
+            }
+        )
+
+    for text, evidence in sd.diagnosis_residual_additions(letter.note_text):
+        add(
+            family="diagnosis",
+            evidence=evidence,
+            anchor_hint=text,
+            lane_hint="diagnosis_assertion",
+        )
+    for text, evidence, _attrs in sd.sf_residual_additions(letter.note_text):
+        add(
+            family="seizure_frequency",
+            evidence=evidence,
+            anchor_hint=text,
+            lane_hint=_seizure_frequency_lane_hint(evidence.lower()),
+        )
+    for text, evidence, _attrs in sd.prescription_residual_additions(letter.note_text):
+        add(
+            family="medication",
+            evidence=evidence,
+            anchor_hint=text,
+            lane_hint=_medication_lane_hint(evidence.lower()),
+        )
+    for text, evidence, _attrs in sd.investigation_residual_additions(letter.note_text):
+        add(
+            family="investigation",
+            evidence=evidence,
+            anchor_hint=text,
+            lane_hint=_investigation_lane_hint(evidence.lower()),
+        )
+    return rows[:32]
 
 
 def candidate_evidence_ledger_for_letter(
