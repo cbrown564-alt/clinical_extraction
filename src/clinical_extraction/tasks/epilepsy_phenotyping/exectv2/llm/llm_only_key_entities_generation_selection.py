@@ -32,6 +32,7 @@ PromptProfile = Literal["compact", "full_examples"]
 CallStrategy = Literal[
     "two_stage",
     "single_call_dedup_facts",
+    "single_call_dedup_facts_per_family",
     "single_call_inventory",
     "single_call_mentions",
     "single_call_per_entity_mentions",
@@ -44,6 +45,18 @@ CallStrategy = Literal[
     "qwen_pool_entity_adjudication",
     "qwen_pool_group_adjudication",
 ]
+DedupFactFamily = Literal[
+    "diagnosis",
+    "seizure_frequency",
+    "prescription",
+    "investigation",
+]
+DEDUP_FACT_FAMILIES: tuple[DedupFactFamily, ...] = (
+    "diagnosis",
+    "seizure_frequency",
+    "prescription",
+    "investigation",
+)
 
 _ARCHITECTURE = {
     "name": "llm_only_generation_then_llm_selection",
@@ -262,6 +275,20 @@ _DEDUP_FACT_OUTPUT_SCHEMA = {
         },
     ],
 }
+
+
+def _dedup_fact_output_schema(
+    target_family: DedupFactFamily | None = None,
+) -> dict[str, Any]:
+    if target_family is None:
+        return _DEDUP_FACT_OUTPUT_SCHEMA
+    return {
+        "clinical_facts": [
+            fact
+            for fact in _DEDUP_FACT_OUTPUT_SCHEMA["clinical_facts"]
+            if fact.get("family") == target_family
+        ]
+    }
 
 _POOL_ADJUDICATION_OUTPUT_SCHEMA = {
     "final_mention_ids": ["mention_id values selected from model_generated_mentions"],
@@ -1199,131 +1226,164 @@ def build_single_call_dedup_facts_prompt_payload(
     letter: ExectLetter,
     *,
     prompt_profile: PromptProfile = "compact",
+    target_family: DedupFactFamily | None = None,
 ) -> dict[str, Any]:
     """Build a one-call prompt for direct de-duplicated clinical facts."""
 
-    return {
+    stage = (
+        "single_call_dedup_facts_per_family"
+        if target_family
+        else "single_call_dedup_facts"
+    )
+    architecture_name = (
+        "llm_only_single_call_dedup_facts_per_family"
+        if target_family
+        else "llm_only_single_call_dedup_facts"
+    )
+    model_origin_contract = [
+        (
+            "Emit clinical_facts directly from the letter. The model must "
+            "generate every scored fact; deterministic code only validates "
+            "evidence, maps representation fields, and scores."
+        ),
+        (
+            "Do not assume any precomputed span list, regex hit list, proposal "
+            "set, upstream target, or candidate evidence ledger."
+        ),
+        (
+            "De-duplicate at the source: emit each distinct clinical fact once. "
+            "Do not repeat a diagnosis, seizure-type state, drug regimen, or "
+            "investigation that you have already listed."
+        ),
+        "Every clinical_fact.evidence must be an exact substring copied from the letter.",
+        "Return only the JSON object; do not include chain-of-thought or private reasoning.",
+    ]
+    if target_family:
+        model_origin_contract.insert(
+            0,
+            (
+                f"Emit only {target_family} clinical_facts for this call. Omit every "
+                "other family even when present in the letter; separate calls will "
+                "handle those families."
+            ),
+        )
+
+    fact_guidance = [
+        (
+            "Diagnosis: one fact per distinct diagnosis concept. Use negation "
+            "affirmed or negated; do not emit Certainty or DiagCategory."
+        ),
+        (
+            "Diagnosis target scope is epilepsy, epilepsy syndromes, and named "
+            "seizure types only. Do not emit unrelated comorbidities, brain "
+            "lesions, symptoms, causes, or medication side effects as diagnoses."
+        ),
+        (
+            "Do not emit migraine, anxiety, alcohol use, blackouts, syncope, "
+            "dissociative seizures, non-epileptic events, febrile seizures, or "
+            "isolated myoclonic jerks as diagnosis facts unless the same phrase "
+            "is explicitly named as the patient's epileptic seizure type."
+        ),
+        (
+            "Split compound diagnosis headings into separate facts. For example, "
+            "focal epilepsy-Probable temporal supports focal epilepsy and "
+            "temporal lobe epilepsy; genetic generalised epilepsy-epilepsy with "
+            "generalised tonic clonic seizures alone supports both named epilepsy "
+            "concepts. Treat source typos such as tonic chronic as tonic clonic "
+            "when the surrounding phrase is a seizure type."
+        ),
+        (
+            "When a seizure-frequency sentence names a seizure type, also emit "
+            "a diagnosis fact for that named seizure type, such as focal seizures, "
+            "focal seizures with altered awareness, secondary generalised seizures, "
+            "absence-like seizures, or generalised tonic clonic seizures."
+        ),
+        (
+            "SeizureFrequency: one fact per distinct seizure type and coarse "
+            "state. Use active_rate for any stated nonzero count/rate/interval, "
+            "including historical years or named months; seizure_free for zero/no "
+            "seizures or seizure-free intervals; changed for explicit worsened/"
+            "improved/controlled/increased/decreased/change statements; and "
+            "unknown when a seizure-frequency reference has no recoverable coarse "
+            "state."
+        ),
+        (
+            "SeizureFrequency state boundary: active_rate requires an explicit "
+            "count, cadence, or interval such as 2 per month, twice a week, every "
+            "3 weeks, or one seizure last week. Phrases such as occasional, "
+            "frequent, infrequent, well controlled, continues to get, returned, "
+            "or improved are qualitative; use unknown for those only when they are "
+            "a target seizure-frequency statement, and omit them when they are "
+            "only narrative without a clear target seizure type."
+        ),
+        (
+            "SeizureFrequency last-event boundary: if the source says last event, "
+            "last seizure, no seizures since, or seizure-free since a date, use "
+            "seizure_free for that seizure type. Do not turn a last-event date "
+            "into active_rate."
+        ),
+        (
+            "Do not emit a SeizureFrequency fact for a one-off narrative event, "
+            "a first single seizure, a suspected attack, or a possible non-epileptic "
+            "loss-of-consciousness episode unless the letter also states a count, "
+            "rate, interval, seizure-free window, or frequency-change statement."
+        ),
+        (
+            "SeizureFrequency: scan the whole letter for counts, rates, intervals, "
+            "since/over/during windows, last-seizure statements, seizure-free "
+            "statements, and frequency-change statements. Do not skip a frequency "
+            "fact just because it is in past history."
+        ),
+        (
+            "SeizureFrequency: do not add a generic seizures fact when the same "
+            "evidence only supports a more specific seizure type you already "
+            "emitted. Add generic seizures only for a separate source statement "
+            "about overall seizures, overall seizure freedom, or overall change."
+        ),
+        (
+            "Prescription: current anti-seizure/antiepileptic medications only, "
+            "as drug plus stated dose, dose_unit, and frequency. Do not emit "
+            "non-antiepileptic medication-list items, prior trials, future "
+            "plans, options, or medications without a recoverable dose and "
+            "frequency."
+        ),
+        (
+            "Investigation: completed tests only. Use modality MRI, CT, EEG, "
+            "or telemetry and result normal, abnormal, or unknown."
+        ),
+        (
+            "Investigation: prior/previous/old dated MRI, CT, EEG, video EEG, "
+            "VEEG, or telemetry findings are completed tests when a result is "
+            "stated. Omit requested, arranged, awaiting, repeat, planned, or "
+            "future-only investigations."
+        ),
+        (
+            "Evidence: copy an exact contiguous substring from the letter. If a "
+            "full sentence is hard to copy exactly, use the shortest exact phrase "
+            "that still supports the fact; never paraphrase evidence."
+        ),
+    ]
+    if target_family:
+        fact_guidance = [
+            (
+                f"Family gate: emit only family={target_family}; output an empty "
+                "clinical_facts list if the letter has no source-supported "
+                f"{target_family} facts."
+            ),
+            *fact_guidance,
+        ]
+
+    payload = {
         "prompt_version": PROMPT_VERSION,
         "prompt_profile": prompt_profile,
         "architecture": {
             **_ARCHITECTURE,
-            "name": "llm_only_single_call_dedup_facts",
+            "name": architecture_name,
             "scored_surface": "clinical_headline",
         },
-        "stage": "single_call_dedup_facts",
-        "model_origin_contract": [
-            (
-                "Emit clinical_facts directly from the letter. The model must "
-                "generate every scored fact; deterministic code only validates "
-                "evidence, maps representation fields, and scores."
-            ),
-            (
-                "Do not assume any precomputed span list, regex hit list, proposal "
-                "set, upstream target, or candidate evidence ledger."
-            ),
-            (
-                "De-duplicate at the source: emit each distinct clinical fact once. "
-                "Do not repeat a diagnosis, seizure-type state, drug regimen, or "
-                "investigation that you have already listed."
-            ),
-            "Every clinical_fact.evidence must be an exact substring copied from the letter.",
-            "Return only the JSON object; do not include chain-of-thought or private reasoning.",
-        ],
-        "fact_guidance": [
-            (
-                "Diagnosis: one fact per distinct diagnosis concept. Use negation "
-                "affirmed or negated; do not emit Certainty or DiagCategory."
-            ),
-            (
-                "Diagnosis target scope is epilepsy, epilepsy syndromes, and named "
-                "seizure types only. Do not emit unrelated comorbidities, brain "
-                "lesions, symptoms, causes, or medication side effects as diagnoses."
-            ),
-            (
-                "Do not emit migraine, anxiety, alcohol use, blackouts, syncope, "
-                "dissociative seizures, non-epileptic events, febrile seizures, or "
-                "isolated myoclonic jerks as diagnosis facts unless the same phrase "
-                "is explicitly named as the patient's epileptic seizure type."
-            ),
-            (
-                "Split compound diagnosis headings into separate facts. For example, "
-                "focal epilepsy-Probable temporal supports focal epilepsy and "
-                "temporal lobe epilepsy; genetic generalised epilepsy-epilepsy with "
-                "generalised tonic clonic seizures alone supports both named epilepsy "
-                "concepts. Treat source typos such as tonic chronic as tonic clonic "
-                "when the surrounding phrase is a seizure type."
-            ),
-            (
-                "When a seizure-frequency sentence names a seizure type, also emit "
-                "a diagnosis fact for that named seizure type, such as focal seizures, "
-                "focal seizures with altered awareness, secondary generalised seizures, "
-                "absence-like seizures, or generalised tonic clonic seizures."
-            ),
-            (
-                "SeizureFrequency: one fact per distinct seizure type and coarse "
-                "state. Use active_rate for any stated nonzero count/rate/interval, "
-                "including historical years or named months; seizure_free for zero/no "
-                "seizures or seizure-free intervals; changed for explicit worsened/"
-                "improved/controlled/increased/decreased/change statements; and "
-                "unknown when a seizure-frequency reference has no recoverable coarse "
-                "state."
-            ),
-            (
-                "SeizureFrequency state boundary: active_rate requires an explicit "
-                "count, cadence, or interval such as 2 per month, twice a week, every "
-                "3 weeks, or one seizure last week. Phrases such as occasional, "
-                "frequent, infrequent, well controlled, continues to get, returned, "
-                "or improved are qualitative; use unknown for those only when they are "
-                "a target seizure-frequency statement, and omit them when they are "
-                "only narrative without a clear target seizure type."
-            ),
-            (
-                "SeizureFrequency last-event boundary: if the source says last event, "
-                "last seizure, no seizures since, or seizure-free since a date, use "
-                "seizure_free for that seizure type. Do not turn a last-event date "
-                "into active_rate."
-            ),
-            (
-                "Do not emit a SeizureFrequency fact for a one-off narrative event, "
-                "a first single seizure, a suspected attack, or a possible non-epileptic "
-                "loss-of-consciousness episode unless the letter also states a count, "
-                "rate, interval, seizure-free window, or frequency-change statement."
-            ),
-            (
-                "SeizureFrequency: scan the whole letter for counts, rates, intervals, "
-                "since/over/during windows, last-seizure statements, seizure-free "
-                "statements, and frequency-change statements. Do not skip a frequency "
-                "fact just because it is in past history."
-            ),
-            (
-                "SeizureFrequency: do not add a generic seizures fact when the same "
-                "evidence only supports a more specific seizure type you already "
-                "emitted. Add generic seizures only for a separate source statement "
-                "about overall seizures, overall seizure freedom, or overall change."
-            ),
-            (
-                "Prescription: current anti-seizure/antiepileptic medications only, "
-                "as drug plus stated dose, dose_unit, and frequency. Do not emit "
-                "non-antiepileptic medication-list items, prior trials, future "
-                "plans, options, or medications without a recoverable dose and "
-                "frequency."
-            ),
-            (
-                "Investigation: completed tests only. Use modality MRI, CT, EEG, "
-                "or telemetry and result normal, abnormal, or unknown."
-            ),
-            (
-                "Investigation: prior/previous/old dated MRI, CT, EEG, video EEG, "
-                "VEEG, or telemetry findings are completed tests when a result is "
-                "stated. Omit requested, arranged, awaiting, repeat, planned, or "
-                "future-only investigations."
-            ),
-            (
-                "Evidence: copy an exact contiguous substring from the letter. If a "
-                "full sentence is hard to copy exactly, use the shortest exact phrase "
-                "that still supports the fact; never paraphrase evidence."
-            ),
-        ],
+        "stage": stage,
+        "model_origin_contract": model_origin_contract,
+        "fact_guidance": fact_guidance,
         "adapter_contract": [
             (
                 "The adapter maps each diagnosis fact to Diagnosis concept+Negation; "
@@ -1341,20 +1401,29 @@ def build_single_call_dedup_facts_prompt_payload(
             "name": "clinical_headline",
             "diagnosis_component": "concept_negation",
         },
-        "output_schema": _DEDUP_FACT_OUTPUT_SCHEMA,
-        "worked_examples": _dedup_fact_worked_examples(prompt_profile),
+        "output_schema": _dedup_fact_output_schema(target_family),
+        "worked_examples": _dedup_fact_worked_examples(
+            prompt_profile,
+            target_family=target_family,
+        ),
     }
+    if target_family:
+        payload["target_family"] = target_family
+        payload["target_families"] = [target_family]
+    return payload
 
 
 def build_single_call_dedup_facts_prompt_input(
     letter: ExectLetter,
     *,
     prompt_profile: PromptProfile = "compact",
+    target_family: DedupFactFamily | None = None,
 ) -> str:
     return json.dumps(
         build_single_call_dedup_facts_prompt_payload(
             letter,
             prompt_profile=prompt_profile,
+            target_family=target_family,
         ),
         sort_keys=True,
     )
@@ -3133,6 +3202,36 @@ def run_split(
                 raw_generation_output=raw_generation_output,
                 generation_parse_errors=generation_parse_errors,
             )
+        elif call_strategy == "single_call_dedup_facts_per_family":
+            (
+                generation_prompt_input_json,
+                selection_prompt_input_json,
+                raw_generation_output,
+                raw_selection_output,
+                generation_call_error,
+                selection_call_error,
+                generation_parse_errors,
+                selection_parse_errors,
+                first_pass_record,
+                final_record,
+                inventory_details,
+            ) = _run_single_call_dedup_facts_per_family_letter(
+                letter,
+                mode=mode,
+                prompt_profile=prompt_profile,
+                program=dedup_facts_program,
+            )
+            row = row_from_final_dedup_facts(
+                letter,
+                DedupClinicalFactsRecord.model_validate(
+                    {"clinical_facts": inventory_details["clinical_facts_final"]}
+                ),
+                split=split,
+                model=model,
+                mode=mode,
+                raw_generation_output=raw_generation_output,
+                generation_parse_errors=generation_parse_errors,
+            )
         elif call_strategy == "qwen_pool_group_adjudication":
             (
                 generation_prompt_input_json,
@@ -4119,6 +4218,102 @@ def _run_single_call_dedup_facts_letter(
     )
 
 
+def _run_single_call_dedup_facts_per_family_letter(
+    letter: ExectLetter,
+    *,
+    mode: Literal["live", "prompt-only"],
+    prompt_profile: PromptProfile,
+    program: QwenSingleCallDedupFactsExtractor,
+) -> tuple[
+    str,
+    str,
+    str,
+    str,
+    str | None,
+    str | None,
+    list[str],
+    list[str],
+    structured.StructuredExtractionRecord,
+    structured.StructuredExtractionRecord,
+    dict[str, Any],
+]:
+    prompt_by_family: dict[str, str] = {}
+    raw_by_family: dict[str, str] = {}
+    call_error_by_family: dict[str, str] = {}
+    parse_errors: list[str] = []
+    facts: list[dict[str, Any]] = []
+
+    for family in DEDUP_FACT_FAMILIES:
+        prompt_input_json = build_single_call_dedup_facts_prompt_input(
+            letter,
+            prompt_profile=prompt_profile,
+            target_family=family,
+        )
+        prompt_by_family[family] = prompt_input_json
+        raw_output = ""
+        call_error: str | None = None
+        if mode == "live":
+            try:
+                prediction = program(prompt_input_json)
+                raw_output = str(prediction.extraction_json)
+            except Exception as exc:  # pragma: no cover
+                call_error = f"{type(exc).__name__}: {exc}"
+
+        raw_by_family[family] = raw_output
+        if call_error:
+            call_error_by_family[family] = call_error
+
+        fact_record, family_parse_errors = (
+            parse_dedup_clinical_facts_json(raw_output)
+            if raw_output
+            else (None, ["not_run"])
+        )
+        parse_errors.extend(f"{family}:{error}" for error in family_parse_errors)
+        for fact in (fact_record or DedupClinicalFactsRecord()).clinical_facts:
+            facts.append(fact.model_dump())
+
+    combined_record = DedupClinicalFactsRecord.model_validate({"clinical_facts": facts})
+    mentions, provenance, adapter_notes = clinical_facts_to_mentions(
+        combined_record.clinical_facts
+    )
+    all_errors = [*parse_errors, *adapter_notes]
+    prompt_bundle = json.dumps(prompt_by_family, sort_keys=True)
+    raw_bundle = json.dumps(raw_by_family, sort_keys=True)
+    combined_call_error = (
+        json.dumps(call_error_by_family, sort_keys=True) if call_error_by_family else None
+    )
+    return (
+        prompt_bundle,
+        "",
+        raw_bundle,
+        raw_bundle,
+        combined_call_error,
+        combined_call_error,
+        all_errors,
+        all_errors,
+        structured.StructuredExtractionRecord(),
+        structured.StructuredExtractionRecord(),
+        {
+            "inventory_prompt_input_json": prompt_bundle,
+            "raw_inventory_output": raw_bundle,
+            "inventory_call_error": combined_call_error,
+            "inventory_parse_errors": all_errors,
+            "inventory_selection_summary": [],
+            "clinical_facts_final": [fact.model_dump() for fact in combined_record.clinical_facts],
+            "adapter_provenance": provenance,
+            "structured_mentions_generation": [mention.model_dump() for mention in mentions],
+            "structured_mentions_final": [mention.model_dump() for mention in mentions],
+            "dedup_fact_prompt_inputs_by_family": prompt_by_family,
+            "dedup_fact_raw_outputs_by_family": raw_by_family,
+            "dedup_fact_call_errors_by_family": call_error_by_family,
+            "n_mentions_generation": len(mentions),
+            "n_clinical_facts_final": len(combined_record.clinical_facts),
+            "dedup_adapter_added_facts": 0,
+            "dedup_adapter_deduplicated_facts": 0,
+        },
+    )
+
+
 def _run_single_call_inventory_letter(
     letter: ExectLetter,
     *,
@@ -5036,7 +5231,11 @@ def _forbidden_attribute_combinations() -> list[dict[str, str]]:
     ]
 
 
-def _dedup_fact_worked_examples(prompt_profile: PromptProfile) -> list[dict[str, Any]]:
+def _dedup_fact_worked_examples(
+    prompt_profile: PromptProfile,
+    *,
+    target_family: DedupFactFamily | None = None,
+) -> list[dict[str, Any]]:
     examples: list[dict[str, Any]] = [
         {
             "note_fragment": (
@@ -5219,8 +5418,32 @@ def _dedup_fact_worked_examples(prompt_profile: PromptProfile) -> list[dict[str,
         },
     ]
     if prompt_profile == "full_examples":
-        return examples
-    return examples[:4]
+        selected_examples = examples
+    else:
+        selected_examples = examples[:4]
+    if target_family is None:
+        return selected_examples
+
+    filtered_examples: list[dict[str, Any]] = []
+    for example in selected_examples:
+        family_facts = [
+            fact
+            for fact in example.get("clinical_facts", [])
+            if fact.get("family") == target_family
+        ]
+        filtered = {
+            "note_fragment": example["note_fragment"],
+            "clinical_facts": family_facts,
+        }
+        if not family_facts:
+            filtered["omission_note"] = (
+                f"No source-supported {target_family} facts are emitted for this "
+                "family-specific call."
+            )
+        elif "omission_note" in example:
+            filtered["omission_note"] = example["omission_note"]
+        filtered_examples.append(filtered)
+    return filtered_examples
 
 
 def _worked_examples(prompt_profile: PromptProfile) -> list[dict[str, Any]]:

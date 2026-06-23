@@ -65,6 +65,7 @@ def _build_parser() -> argparse.ArgumentParser:
         "--call-strategy",
         choices=[
             "single_call_dedup_facts",
+            "single_call_dedup_facts_per_family",
             "single_call_inventory",
             "single_call_mentions",
             "single_call_per_entity_mentions",
