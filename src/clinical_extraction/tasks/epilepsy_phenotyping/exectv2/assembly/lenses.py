@@ -1236,6 +1236,7 @@ def _focal_epilepsy_heading_findings(
         mode=source_seed.source.mode,
         ownership_label=f"{policy.ownership_label}+deterministic_heading_recovery",
         source_lane=policy.source_lane,
+        fact_origin="post_model_rescue",
     )
     finding = ClinicalFinding(
         finding_id=f"{store.letter_id}:{policy.producer_id}:Diagnosis:lens:{lens_id}:focal_epilepsy",
@@ -1821,6 +1822,7 @@ def _source_for_residual(
         mode=base.mode,
         ownership_label=f"{base.ownership_label}+{ownership_suffix}",
         source_lane=base.source_lane or policy.source_lane,
+        fact_origin="post_model_rescue",
     )
 
 
@@ -1847,6 +1849,7 @@ def _finding_with_text_attributes(
         mode=finding.source.mode,
         ownership_label=f"{finding.source.ownership_label}+{owner_suffix}",
         source_lane=finding.source.source_lane,
+        fact_origin=finding.source.fact_origin,
     )
     return ClinicalFinding(
         finding_id=f"{finding.finding_id}:{owner_suffix}",
@@ -1893,6 +1896,7 @@ def _diagnosis_finding_with_text(
         mode=finding.source.mode,
         ownership_label=f"{finding.source.ownership_label}+{owner_suffix}",
         source_lane=finding.source.source_lane,
+        fact_origin=finding.source.fact_origin,
     )
     return ClinicalFinding(
         finding_id=f"{finding.finding_id}:alias:{normalize_phrase(text).replace(' ', '_')}",

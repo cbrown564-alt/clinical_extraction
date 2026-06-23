@@ -1093,7 +1093,10 @@ def _qwen_compact_examples() -> list[dict[str, Any]]:
             ),
             "correct_event": {
                 "family": "diagnosis",
-                "anchor_text": "focal epilepsy-Probable temporal; focal seizures; secondary generalised seizures",
+                "anchor_text": (
+                    "focal epilepsy-Probable temporal; focal seizures; "
+                    "secondary generalised seizures"
+                ),
                 "evidence": (
                     "Diagnosis: focal epilepsy-Probable temporal. In March she had 2 to 3 "
                     "of her focal seizures. Since last clinic she has had four secondary "
@@ -3087,6 +3090,8 @@ def to_predicted_letter(
     *,
     note_text: str,
     prompt_version: str = PROMPT_VERSION,
+    component_owner: str = COMPONENT_OWNER,
+    pipeline_family: str = PIPELINE_FAMILY,
 ) -> tuple[PredictedLetter, list[str]]:
     all_warnings: list[str] = []
     entity_valid: list[MentionForEvidence] = []
@@ -3119,7 +3124,7 @@ def to_predicted_letter(
                 evidence=mention.evidence,
                 confidence=mention.confidence,
                 rationale=mention.rationale,
-                component_owner=COMPONENT_OWNER,
+                component_owner=component_owner,
             )
         )
 
@@ -3132,7 +3137,7 @@ def to_predicted_letter(
                 mentions=tuple(predicted_mentions),
                 diagnostics={
                     "prompt_version": prompt_version,
-                    "pipeline_family": PIPELINE_FAMILY,
+                    "pipeline_family": pipeline_family,
                     "n_evidence_invalid": len(evidence_invalid),
                     "attribute_warnings": all_warnings,
                 },
@@ -3537,7 +3542,7 @@ def _key_clinical_recovery_to_dict(
             gold_letters,
             pred_letters,
             DIAGNOSIS.name,
-        ).concept_assertion,
+        ).concept_negation,
         SEIZURE_FREQUENCY.name: score_frequency_state(
             gold_letters,
             pred_letters,
@@ -3547,8 +3552,36 @@ def _key_clinical_recovery_to_dict(
             pred_letters,
         ).clinical_headline,
     }
+    precision_tp = sum(
+        int(getattr(score, "precision_tp", getattr(score, "tp", 0)))
+        for score in scores.values()
+    )
+    recall_tp = sum(
+        int(getattr(score, "recall_tp", getattr(score, "tp", 0)))
+        for score in scores.values()
+    )
+    pred_count = sum(
+        int(getattr(score, "pred_count", getattr(score, "tp", 0) + getattr(score, "fp", 0)))
+        for score in scores.values()
+    )
+    gold_count = sum(
+        int(getattr(score, "gold_count", getattr(score, "tp", 0) + getattr(score, "fn", 0)))
+        for score in scores.values()
+    )
+    precision = precision_tp / pred_count if pred_count else 0.0
+    recall = recall_tp / gold_count if gold_count else 0.0
+    f1 = 2 * precision * recall / (precision + recall) if precision + recall else 0.0
     return {
         "target_headline_f1": KEY_ENTITY_ITEM_F1_TARGET,
+        "overall": {
+            "precision": round(precision, 4),
+            "recall": round(recall, 4),
+            "f1": round(f1, 4),
+            "tp": recall_tp,
+            "fp": max(0, pred_count - precision_tp),
+            "fn": max(0, gold_count - recall_tp),
+        },
+        "diagnosis_component": "concept_negation",
         "per_entity": {entity: _prf1_to_dict(score) for entity, score in scores.items()},
     }
 
@@ -3627,10 +3660,19 @@ def _score_lines(config_name: str, scores: dict[str, Any]) -> list[str]:
 
 def _clinical_recovery_lines(scores: dict[str, Any]) -> list[str]:
     per_entity = scores.get("per_entity", {})
+    overall = scores.get("overall", {})
     target = float(scores.get("target_headline_f1", KEY_ENTITY_ITEM_F1_TARGET))
     lines = [
         "",
         "## Key Clinical-Recovery Headlines",
+        "",
+        (
+            f"- Canonical overall (`clinical_headline`, Diagnosis="
+            f"`{scores.get('diagnosis_component', 'concept_negation')}`): "
+            f"F1={overall.get('f1', 0):.3f} "
+            f"P={overall.get('precision', 0):.3f} "
+            f"R={overall.get('recall', 0):.3f}"
+        ),
         "",
         "| Entity | Target headline F1 | F1 | P | R | TP | FP | FN |",
         "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",

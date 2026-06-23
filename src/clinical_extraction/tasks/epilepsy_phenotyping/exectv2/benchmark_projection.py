@@ -638,7 +638,7 @@ def attach_benchmark_concept(
     """Attach CUI attributes and, optionally, the concept canonical value."""
 
     projected = dict(attributes)
-    if canonical_key is not None:
+    if canonical_key is not None and not str(projected.get(canonical_key, "")).strip():
         projected[canonical_key] = concept.canonical
     projected.update({"CUI": concept.cui, "CUIPhrase": concept.cui_phrase})
     return projected
