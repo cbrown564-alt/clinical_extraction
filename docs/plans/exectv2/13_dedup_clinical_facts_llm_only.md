@@ -1,7 +1,7 @@
 # Satellite 13 — De-duplicated Clinical-Fact LLM-Only Extraction (PRIMARY FOCUS)
 
 Parent: [[00_overarching_implementation_plan]]
-Status: **active — primary ExECTv2 research focus as of 2026-06-23; Phase 0, Phase 1, Phase 2, and Phase 3 complete; Phase 4 next.**
+Status: **active — primary ExECTv2 research focus as of 2026-06-24; Phase 0, Phase 1, Phase 2, Phase 3, and Phase 4 complete; no Phase 5 rollout promoted because no Phase 4 winner cleared the dev25 gate.**
 Dev-split only until a separately authorized Phase 7 audit.
 Decision basis:
 `docs/decisions/0027-clinical-recovery-is-the-exectv2-headline-projection-is-an-artifact-layer.md`,
@@ -264,10 +264,10 @@ Diagnosis (`0.672`) and SeizureFrequency (`0.558`), while Prescription (`0.814`)
 and Investigations (`0.832`) remain stronger but not enough to offset the gap.
 See
 `docs/experiments/exectv2/key_entities/exectv2_dedup_phase3_single_prompt_plateau_2026-06-23.md`.
-Phase 4 fallback rung 1 (lean per-family LLM-only prompts) is now the active
-next step.
+Phase 4 fallback rung 1 (lean per-family LLM-only prompts) was evaluated next
+and is documented below.
 
-### Phase 4 — Fallback rungs (only if single prompt plateaus < 0.900)
+### Phase 4 — Fallback rungs (only if single prompt plateaus < 0.900) — complete 2026-06-24 (fallback plateau)
 All still attribution-clean LLM-only. In order of preference:
 1. lean **per-family** prompts (one call per family) — trades single-prompt
    elegance for focus on Dx/SF;
@@ -278,6 +278,27 @@ All still attribution-clean LLM-only. In order of preference:
 Exit: the first rung that clears `0.900`, or a documented finding that LLM-only
 de-dup recovery plateaus below `0.900` with the gap localized.
 
+Completion note: Phase 4 added and tested
+`single_call_dedup_facts_per_family`, a four-call attribution-clean fallback
+route that gates each prompt to one model-emitted fact family and then reuses
+the Phase 2 one-to-one adapter. Two GPT-4.1-mini dev25 gates were run:
+
+- compact per-family:
+  `experiments/exectv2_llm_only_key_entities_generation_selection_single_call_dedup_facts_per_family_phase4_dev25_gpt41mini_20260624.{jsonl,md}`,
+  canonical `clinical_headline` `0.796`, Diagnosis `0.698`,
+  SeizureFrequency `0.690`, Prescription `0.873`, Investigations `0.976`,
+  evidence validity `0.9609`, 0 call/parse/schema failures.
+- full-example per-family:
+  `experiments/exectv2_llm_only_key_entities_generation_selection_single_call_dedup_facts_per_family_phase4_full_examples_dev25_gpt41mini_20260624.{jsonl,md}`,
+  canonical `clinical_headline` `0.782`, Diagnosis `0.701`,
+  SeizureFrequency `0.593`, Prescription `0.900`, Investigations `0.952`,
+  evidence validity `0.9562`, 0 call/parse/schema failures.
+
+Neither Phase 4 fallback beat the Phase 3 dev25 gate (`0.800`) or approached
+the `>0.900` target, so no dev140 confirmation or Phase 5 model rollout was
+promoted. The plateau remains localized to Diagnosis and SeizureFrequency. See
+`docs/experiments/exectv2/key_entities/exectv2_dedup_phase4_fallback_plateau_2026-06-24.md`.
+
 ### Phase 5 — Rollout to DeepSeek and Qwen
 Run the winning configuration unchanged (model swap only) on
 `deepseek/deepseek-chat` and `ollama_chat/qwen3.6:35b`. Report the three-model
@@ -285,6 +306,9 @@ de-dup comparison and per-family deltas; note any model-specific gap (expected:
 SF state for Qwen, per the closeout).
 Exit: dev140 de-dup `clinical_headline` for all three models, with a portability
 read (which families transfer, which need model-specific prompting).
+
+Status note: not started/promoted as of 2026-06-24 because Phase 4 did not
+produce a winning GPT-4.1-mini configuration to roll out unchanged.
 
 ### Phase 6 — (Optional, separately authorized) audit and paper framing
 If the dev result is strong and stable, predeclare a frozen full-200 /

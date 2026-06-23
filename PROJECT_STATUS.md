@@ -1,14 +1,13 @@
 # Project Status
 
-Last updated: 2026-06-23
+Last updated: 2026-06-24
 
 ## Active Objective
 
-Satellite 13 is now the primary ExECTv2 research focus: build an
-attribution-clean LLM-only route that emits de-duplicated clinical facts directly
-for the `clinical_headline` scorer. Phase 0, Phase 1 cleanup, Phase 2
-route/adapter construction, and Phase 3 single-prompt GPT-4.1-mini iteration are
-complete; Phase 4 per-family fallback prompts are next.
+Satellite 13 remains the primary ExECTv2 research focus, but the direct
+de-duplicated clinical-fact LLM-only path has now plateaued. Phase 0 through
+Phase 4 are complete. No Phase 5 DeepSeek/Qwen rollout is promoted because no
+GPT-4.1-mini fallback configuration cleared the dev25 gate.
 
 ## Current Read
 
@@ -38,11 +37,17 @@ Phase 3 tested five GPT-4.1-mini single-prompt variants. The best gate-clean
 candidate, `single_call_dedup_facts` v0.5, had zero call/parse failures and
 evidence validity `0.9613` on dev140, but plateaued at `0.710` canonical
 `clinical_headline` overall: Diagnosis `0.672`, SeizureFrequency `0.558`,
-Prescription `0.814`, Investigations `0.832`. This does not clear the `>0.900`
-target and is essentially the clean-render replay baseline, so Phase 4 should
-move to lean per-family LLM-only prompts rather than more single-prompt tuning.
-Readout:
+Prescription `0.814`, Investigations `0.832`. Readout:
 `docs/experiments/exectv2/key_entities/exectv2_dedup_phase3_single_prompt_plateau_2026-06-23.md`.
+
+Phase 4 added `single_call_dedup_facts_per_family` and ran two GPT-4.1-mini
+dev25 gates. Compact per-family reached `0.796` canonical `clinical_headline`
+with Diagnosis `0.698` and SeizureFrequency `0.690`; full-example per-family
+reached `0.782`, with SeizureFrequency falling to `0.593`. Both had zero
+call/parse/schema failures and evidence validity near Phase 3, but neither
+beat the Phase 3 dev25 gate (`0.800`) or approached `>0.900`, so no dev140
+confirmation or model rollout was promoted. Readout:
+`docs/experiments/exectv2/key_entities/exectv2_dedup_phase4_fallback_plateau_2026-06-24.md`.
 
 The Qwen generation-and-selection work remains useful negative evidence for the
 strict full-schema target. The strongest clean-render dev5 branch reached only
@@ -53,9 +58,8 @@ clinical facts directly.
 
 ## Active Priorities
 
-1. Start Phase 4 fallback rung 1: lean per-family LLM-only prompts for
-   Diagnosis and SeizureFrequency, preserving the same attribution-clean adapter
-   boundary.
+1. Decide whether Satellite 13 should close as a documented LLM-only plateau or
+   pivot to a new, explicitly hybrid/selector-owned recovery architecture.
 2. Treat `clinical_headline` de-duplicated clinical recovery as the primary
    LLM-only optimization target; report strict benchmark results only as a
    required diagnostic/comparability surface.
@@ -69,19 +73,18 @@ clinical facts directly.
 
 ### Now
 
-- Start Phase 4 fallback rung 1 with lean per-family LLM-only prompts, beginning
-  with Diagnosis and SeizureFrequency.
-- Keep `single_call_dedup_facts` v0.5 as the single-prompt plateau comparator
-  (`0.710` dev140 `clinical_headline`, evidence validity `0.9613`).
+- Choose the post-Phase-4 direction: close the Satellite 13 LLM-only direct
+  prompting track as a plateau, or predeclare a separate hybrid/selector
+  experiment with attribution language that is not LLM-only.
+- Keep `single_call_dedup_facts` v0.5 and
+  `single_call_dedup_facts_per_family` compact as plateau comparators.
 
 ### Next
 
-- If a per-family fallback clears the dev25 gate, confirm on dev140 against the
-  v0.5 single-prompt plateau, clean-render replay baseline, and v08 hybrid
-  control.
-- Roll a winning Phase 4 configuration to DeepSeek and Qwen only after
-  GPT-4.1-mini clears the dev140 de-duplicated target or the fallback plateau is
-  documented.
+- If a new architecture is authorized, predeclare the ownership boundary,
+  scorer surface, dev gate, stop rule, and whether it is still an LLM-only claim.
+- Keep DeepSeek/Qwen rollout parked unless there is a winning GPT-4.1-mini
+  configuration to transfer unchanged.
 
 ### Blocked
 
@@ -92,6 +95,11 @@ clinical facts directly.
 
 ### Done Recently
 
+- 2026-06-24: Completed Satellite 13 Phase 4 as a fallback plateau. Added the
+  `single_call_dedup_facts_per_family` route and tests, then ran compact and
+  full-example GPT-4.1-mini dev25 gates. Best canonical `clinical_headline` was
+  `0.796`, below the Phase 3 dev25 gate (`0.800`) and far below `>0.900`; the
+  remaining gap is still Diagnosis/SF, so no Phase 5 rollout was promoted.
 - 2026-06-23: Completed Satellite 13 Phase 3 as a localized single-prompt
   plateau. GPT-4.1-mini `single_call_dedup_facts` v0.5 reached dev140
   `clinical_headline` `0.710` with evidence validity `0.9613`, 0 call failures,

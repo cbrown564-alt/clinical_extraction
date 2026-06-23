@@ -125,6 +125,35 @@ def test_single_call_dedup_facts_prompt_is_headline_targeted() -> None:
     assert "candidate_id" not in payload_str
 
 
+def test_per_family_dedup_facts_prompt_is_family_gated() -> None:
+    payload_str = route.build_single_call_dedup_facts_prompt_input(
+        _LETTER,
+        target_family="seizure_frequency",
+    )
+    payload = json.loads(payload_str)
+
+    assert payload["stage"] == "single_call_dedup_facts_per_family"
+    assert payload["architecture"]["name"] == "llm_only_single_call_dedup_facts_per_family"
+    assert payload["target_family"] == "seizure_frequency"
+    assert payload["target_families"] == ["seizure_frequency"]
+    assert payload["output_schema"] == {
+        "clinical_facts": [
+            {
+                "family": "seizure_frequency",
+                "seizure_type": "named seizure type, or seizures if generic",
+                "state": "active_rate|seizure_free|changed|unknown",
+                "evidence": "exact substring copied from the letter",
+            }
+        ]
+    }
+    assert "emit only family=seizure_frequency" in " ".join(payload["fact_guidance"])
+    assert all(
+        fact["family"] == "seizure_frequency"
+        for example in payload["worked_examples"]
+        for fact in example["clinical_facts"]
+    )
+
+
 def test_parse_and_adapter_map_facts_one_to_one_without_deduplication() -> None:
     raw = json.dumps({"clinical_facts": [*_facts(), _facts()[0]]})
     record, errors = route.parse_dedup_clinical_facts_json(raw)
@@ -198,6 +227,43 @@ def test_prompt_only_run_split_records_dedup_facts_prompt(tmp_path: Path) -> Non
     assert row["dedup_adapter_added_facts"] == 0
     assert metadata["summary"]["inventory_parse_failures"] == 0
     assert "Call strategy: `single_call_dedup_facts`" in report_path.read_text(
+        encoding="utf-8"
+    )
+
+
+def test_prompt_only_run_split_records_per_family_dedup_prompts(tmp_path: Path) -> None:
+    jsonl_path = tmp_path / "rows.jsonl"
+    report_path = tmp_path / "report.md"
+
+    rows, metadata = route.run_split(
+        [_LETTER],
+        split="dev",
+        model="openai/gpt-4.1-mini",
+        temperature=0.0,
+        max_tokens=128,
+        mode="prompt-only",
+        call_strategy="single_call_dedup_facts_per_family",
+        checkpoint_jsonl_path=jsonl_path,
+        checkpoint_report_path=report_path,
+        progress_every=1,
+    )
+    route.write_report(rows, metadata, report_path, jsonl_path=jsonl_path)
+
+    row = rows[0]
+    prompt_bundle = json.loads(row["inventory_prompt_input_json"])
+    assert set(prompt_bundle) == {
+        "diagnosis",
+        "seizure_frequency",
+        "prescription",
+        "investigation",
+    }
+    sf_prompt = json.loads(prompt_bundle["seizure_frequency"])
+    assert sf_prompt["target_family"] == "seizure_frequency"
+    assert row["call_strategy"] == "single_call_dedup_facts_per_family"
+    assert row["clinical_facts_final"] == []
+    assert row["dedup_adapter_added_facts"] == 0
+    assert metadata["summary"]["inventory_parse_failures"] == 0
+    assert "Call strategy: `single_call_dedup_facts_per_family`" in report_path.read_text(
         encoding="utf-8"
     )
 
